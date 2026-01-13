@@ -184,16 +184,20 @@ export default function Home() {
                 }}
               >
                 <div className="flex items-start justify-between mb-6">
-                  <div className="relative w-20 h-20 flex-shrink-0 flex items-center justify-center">
+                  <div className="relative w-20 h-20 flex-shrink-0 flex items-center justify-center bg-slate-100 dark:bg-slate-700 rounded-xl">
                     {app.comingSoon || !app.icon.startsWith("/") ? (
                       <div className="text-6xl">{app.icon}</div>
                     ) : (
                       <Image
                         src={app.icon}
                         alt={`${app.name} icon`}
-                        fill
-                        className="object-contain"
-                        sizes="80px"
+                        width={80}
+                        height={80}
+                        className="object-contain rounded-xl"
+                        style={{ maxWidth: "100%", height: "auto" }}
+                        onError={(e) => {
+                          console.error(`Failed to load image: ${app.icon}`);
+                        }}
                       />
                     )}
                   </div>
