@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Image from "next/image";
+import Link from "next/link";
 import {
   DevicePhoneMobileIcon,
   GlobeAltIcon,
@@ -30,7 +32,7 @@ export default function Home() {
       tagline: "USCIS Case Tracker & Forecast",
       description:
         "Track and estimate your U.S. immigration case progress using recent approval trends and easy-to-understand insights. Get personalized timelines, trend charts, and service center insights.",
-      icon: "🛂",
+      icon: "/visanova-icon.png",
       appStoreUrl: "https://apps.apple.com/us/app/visanova/id6749717843",
       websiteUrl: "https://visanova.app",
       features: [
@@ -48,7 +50,7 @@ export default function Home() {
       tagline: "Health, Routine & Reminder",
       description:
         "Your personal health companion for managing routines, medications, and important reminders. Stay organized and never miss a beat with intelligent scheduling and notifications.",
-      icon: "💊",
+      icon: "/recallease-icon.png",
       appStoreUrl: "https://apps.apple.com/us/app/recallease/id6754576974",
       websiteUrl: null,
       features: [
@@ -182,7 +184,19 @@ export default function Home() {
                 }}
               >
                 <div className="flex items-start justify-between mb-6">
-                  <div className="text-6xl">{app.icon}</div>
+                  <div className="relative w-20 h-20 flex-shrink-0 flex items-center justify-center">
+                    {app.comingSoon || !app.icon.startsWith("/") ? (
+                      <div className="text-6xl">{app.icon}</div>
+                    ) : (
+                      <Image
+                        src={app.icon}
+                        alt={`${app.name} icon`}
+                        fill
+                        className="object-contain"
+                        sizes="80px"
+                      />
+                    )}
+                  </div>
                   {app.badge && (
                     <span
                       className={`px-3 py-1 rounded-full text-xs font-semibold ${
@@ -336,10 +350,8 @@ export default function Home() {
                 support@visionxixlabs.com
               </p>
             </a>
-            <a
-              href="https://sahme209.github.io/vision19-privacy-policy/"
-              target="_blank"
-              rel="noopener noreferrer"
+            <Link
+              href="/privacy"
               className="card-hover bg-white dark:bg-slate-800 rounded-2xl p-8 shadow-xl border border-slate-200 dark:border-slate-700"
             >
               <ShieldCheckIcon className="h-12 w-12 text-indigo-600 dark:text-indigo-400 mx-auto mb-4" />
@@ -349,7 +361,7 @@ export default function Home() {
               <p className="text-slate-600 dark:text-slate-400">
                 Learn how we protect your data
               </p>
-            </a>
+            </Link>
           </div>
         </div>
       </section>
@@ -402,14 +414,12 @@ export default function Home() {
               <h4 className="text-white font-semibold mb-4">Legal</h4>
               <ul className="space-y-2">
                 <li>
-                  <a
-                    href="https://sahme209.github.io/vision19-privacy-policy/"
-                    target="_blank"
-                    rel="noopener noreferrer"
+                  <Link
+                    href="/privacy"
                     className="hover:text-indigo-400 transition-colors"
                   >
                     Privacy Policy
-                  </a>
+                  </Link>
                 </li>
                 <li>
                   <a
