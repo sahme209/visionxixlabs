@@ -41,6 +41,10 @@ export const cloudSolutionsHero = {
   capabilities: [
     "Cloud Architecture",
     "DevOps Automation",
+    "AI/ML Engineering",
+    "Kubernetes & Containers",
+    "Data Engineering",
+    "Serverless Architecture",
     "FinOps",
     "Reliability Engineering",
     "Security & Governance",
@@ -129,6 +133,46 @@ export const cloudSolutionCards: Solution[] = [
     bestFor: "Hybrid and multi-environment architectures.",
     href: "/cloud-solutions/networking-connectivity",
   },
+  {
+    id: "ai-ml-engineering",
+    title: "AI/ML Engineering & MLOps",
+    description:
+      "Design and operate ML infrastructure, model deployment pipelines, and MLOps practices for production AI workloads.",
+    bestFor: "Teams deploying and operating ML models at scale.",
+    href: "/cloud-solutions/ai-ml-engineering",
+  },
+  {
+    id: "kubernetes-containers",
+    title: "Kubernetes & Container Orchestration",
+    description:
+      "Design, deploy, and operate Kubernetes clusters on AWS EKS, Azure AKS, or GCP GKE with production-ready patterns.",
+    bestFor: "Teams containerizing applications and scaling container workloads.",
+    href: "/cloud-solutions/kubernetes-containers",
+  },
+  {
+    id: "data-engineering-analytics",
+    title: "Data Engineering & Analytics",
+    description:
+      "Build data pipelines, data lakes, and analytics platforms on cloud-native services for real-time and batch processing.",
+    bestFor: "Organizations needing scalable data infrastructure and analytics capabilities.",
+    href: "/cloud-solutions/data-engineering-analytics",
+  },
+  {
+    id: "serverless-architecture",
+    title: "Serverless Architecture",
+    description:
+      "Design and implement serverless applications using AWS Lambda, Azure Functions, and Cloud Functions for cost-effective scaling.",
+    bestFor: "Teams building event-driven applications or optimizing compute costs.",
+    href: "/cloud-solutions/serverless-architecture",
+  },
+  {
+    id: "cloud-native-development",
+    title: "Cloud-Native Application Development",
+    description:
+      "Architect and build applications specifically designed for cloud platforms using microservices, APIs, and cloud-native patterns.",
+    bestFor: "Teams building new applications or modernizing legacy systems.",
+    href: "/cloud-solutions/cloud-native-development",
+  },
 ];
 
 export const engagementPackages: Package[] = [
@@ -199,7 +243,7 @@ export const trustPrinciples = [
 ];
 
 export const toolsWeWorkWith =
-  "AWS • Azure • Google Cloud (GCP) • GitHub • Octopus Deploy • Terraform • monitoring and logging tools";
+  "AWS • Azure • Google Cloud (GCP) • Kubernetes (EKS/AKS/GKE) • GitHub • Octopus Deploy • Terraform • AI/ML Platforms (SageMaker/Azure ML/Vertex AI) • monitoring and logging tools";
 
 export const cloudFAQ: FAQ[] = [
   {
@@ -600,6 +644,221 @@ export const solutionDetails: SolutionDetail[] = [
       "Organizations with hybrid or multi-cloud architectures",
     ],
     relatedProviders: ["aws", "azure", "gcp", "multi-cloud"],
+  },
+  {
+    id: "ai-ml-engineering",
+    title: "AI/ML Engineering & MLOps",
+    intro:
+      "Design and operate production ML infrastructure, model deployment pipelines, and MLOps practices for reliable AI workloads.",
+    sections: [
+      {
+        heading: "ML infrastructure and compute",
+        body:
+          "We design ML training and inference infrastructure using cloud-native services like AWS SageMaker, Azure ML, or GCP Vertex AI.",
+        bullets: [
+          "GPU and specialized compute for training workloads",
+          "Model serving infrastructure for real-time and batch inference",
+          "Cost optimization for ML workloads through right-sizing and spot instances",
+        ],
+      },
+      {
+        heading: "MLOps pipelines and automation",
+        body:
+          "We build CI/CD pipelines for ML models, including data validation, model training, testing, and deployment workflows.",
+        bullets: [
+          "Automated model training pipelines with versioning",
+          "Model registry and artifact management",
+          "A/B testing and gradual rollout patterns for model deployments",
+        ],
+      },
+      {
+        heading: "Monitoring and governance",
+        body:
+          "We establish monitoring for model performance, data drift, and infrastructure health to maintain production ML systems.",
+        bullets: [
+          "Model performance monitoring and alerting",
+          "Data quality and drift detection",
+          "Governance patterns for model lifecycle and compliance",
+        ],
+      },
+    ],
+    idealFor: [
+      "Teams deploying ML models to production",
+      "Organizations building AI capabilities and need reliable infrastructure",
+    ],
+    relatedProviders: ["aws", "azure", "gcp"],
+  },
+  {
+    id: "kubernetes-containers",
+    title: "Kubernetes & Container Orchestration",
+    intro:
+      "Design, deploy, and operate Kubernetes clusters on AWS EKS, Azure AKS, or GCP GKE with production-ready patterns.",
+    sections: [
+      {
+        heading: "Cluster design and networking",
+        body:
+          "We design Kubernetes clusters with appropriate node groups, networking, and security configurations for your workloads.",
+        bullets: [
+          "Multi-AZ cluster architecture for high availability",
+          "VPC/network integration and pod networking",
+          "RBAC and security policies aligned to least-privilege access",
+        ],
+      },
+      {
+        heading: "Container orchestration patterns",
+        body:
+          "We help teams adopt Kubernetes patterns for deployments, scaling, service discovery, and resource management.",
+        bullets: [
+          "Deployment strategies (rolling updates, blue-green, canary)",
+          "Horizontal Pod Autoscaling and resource requests/limits",
+          "Service mesh and ingress patterns where appropriate",
+        ],
+      },
+      {
+        heading: "CI/CD for Kubernetes",
+        body:
+          "We integrate Kubernetes deployments into CI/CD pipelines with GitOps patterns and deployment automation.",
+        bullets: [
+          "Container image builds and registry integration",
+          "GitOps workflows using ArgoCD, Flux, or similar",
+          "Environment promotion and release automation",
+        ],
+      },
+    ],
+    idealFor: [
+      "Teams containerizing applications and moving to Kubernetes",
+      "Organizations scaling container workloads and need orchestration",
+    ],
+    relatedProviders: ["aws", "azure", "gcp"],
+  },
+  {
+    id: "data-engineering-analytics",
+    title: "Data Engineering & Analytics",
+    intro:
+      "Build data pipelines, data lakes, and analytics platforms on cloud-native services for real-time and batch processing.",
+    sections: [
+      {
+        heading: "Data pipeline architecture",
+        body:
+          "We design data ingestion, transformation, and storage patterns using services like AWS Glue, Azure Data Factory, or GCP Dataflow.",
+        bullets: [
+          "Batch and streaming data pipeline patterns",
+          "Data lake architecture (S3, ADLS, GCS) with partitioning strategies",
+          "ETL/ELT workflows and data transformation logic",
+        ],
+      },
+      {
+        heading: "Analytics and data warehousing",
+        body:
+          "We help teams set up analytics platforms using services like Redshift, Synapse, or BigQuery for reporting and BI.",
+        bullets: [
+          "Data warehouse design and optimization",
+          "Integration with BI tools and reporting platforms",
+          "Cost optimization for data storage and query performance",
+        ],
+      },
+      {
+        heading: "Data governance and quality",
+        body:
+          "We establish data quality checks, cataloging, and governance patterns to ensure reliable analytics.",
+        bullets: [
+          "Data quality validation and monitoring",
+          "Metadata management and data cataloging",
+          "Access controls and compliance for sensitive data",
+        ],
+      },
+    ],
+    idealFor: [
+      "Organizations building data platforms and analytics capabilities",
+      "Teams needing scalable data infrastructure for business intelligence",
+    ],
+    relatedProviders: ["aws", "azure", "gcp"],
+  },
+  {
+    id: "serverless-architecture",
+    title: "Serverless Architecture",
+    intro:
+      "Design and implement serverless applications using AWS Lambda, Azure Functions, and Cloud Functions for cost-effective scaling.",
+    sections: [
+      {
+        heading: "Serverless compute patterns",
+        body:
+          "We design serverless architectures using functions, event-driven patterns, and managed services to reduce operational overhead.",
+        bullets: [
+          "Function design and optimization for cold starts and performance",
+          "Event-driven architectures using SQS, EventBridge, or Pub/Sub",
+          "API Gateway patterns for serverless APIs",
+        ],
+      },
+      {
+        heading: "Integration and orchestration",
+        body:
+          "We help teams integrate serverless functions with databases, storage, and other cloud services.",
+        bullets: [
+          "Serverless database patterns (DynamoDB, Cosmos DB, Firestore)",
+          "Step Functions or Logic Apps for workflow orchestration",
+          "Integration patterns with existing systems and APIs",
+        ],
+      },
+      {
+        heading: "Cost optimization and monitoring",
+        body:
+          "We optimize serverless costs through right-sizing, reserved capacity where applicable, and monitoring for cost anomalies.",
+        bullets: [
+          "Function memory and timeout optimization",
+          "Cost monitoring and alerting for serverless workloads",
+          "Performance tuning and observability for serverless applications",
+        ],
+      },
+    ],
+    idealFor: [
+      "Teams building event-driven or API-first applications",
+      "Organizations looking to reduce infrastructure management overhead",
+    ],
+    relatedProviders: ["aws", "azure", "gcp"],
+  },
+  {
+    id: "cloud-native-development",
+    title: "Cloud-Native Application Development",
+    intro:
+      "Architect and build applications specifically designed for cloud platforms using microservices, APIs, and cloud-native patterns.",
+    sections: [
+      {
+        heading: "Application architecture",
+        body:
+          "We design cloud-native application architectures using microservices, API-first design, and cloud-native patterns.",
+        bullets: [
+          "Microservices decomposition and service boundaries",
+          "API design and API Gateway patterns",
+          "Stateless application design for horizontal scaling",
+        ],
+      },
+      {
+        heading: "Cloud-native services integration",
+        body:
+          "We help teams leverage managed cloud services (databases, queues, storage) to reduce operational complexity.",
+        bullets: [
+          "Managed database selection and integration patterns",
+          "Message queues and event streaming (SQS, Service Bus, Pub/Sub)",
+          "Object storage and CDN integration for static assets",
+        ],
+      },
+      {
+        heading: "Development and deployment practices",
+        body:
+          "We establish development workflows, testing strategies, and deployment patterns optimized for cloud-native applications.",
+        bullets: [
+          "Local development environments and tooling",
+          "Testing strategies for distributed systems",
+          "Deployment patterns and feature flagging",
+        ],
+      },
+    ],
+    idealFor: [
+      "Teams building new applications from scratch",
+      "Organizations modernizing legacy applications to cloud-native patterns",
+    ],
+    relatedProviders: ["aws", "azure", "gcp"],
   },
 ];
 
