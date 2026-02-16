@@ -409,7 +409,7 @@ export default function Home() {
       {/* Footer */}
       <footer className="bg-slate-900 text-slate-300 py-12 px-4 sm:px-6 lg:px-8 border-t border-slate-800">
         <div className="max-w-6xl mx-auto">
-          <div className="grid md:grid-cols-4 gap-8 mb-8">
+          <div className="grid md:grid-cols-5 gap-8 mb-8">
             <div className="md:col-span-2">
               <div className="flex items-center space-x-3 mb-4">
                 <Image
@@ -461,8 +461,18 @@ export default function Home() {
               <ul className="space-y-2 text-sm">
                 <li><a href="#about" className="hover:text-white transition-colors">About</a></li>
                 <li><Link href="/apps" className="hover:text-white transition-colors">Products</Link></li>
-                <li><Link href="/contact" className="hover:text-white transition-colors">Contact</Link></li>
                 <li><Link href="/privacy" className="hover:text-white transition-colors">Privacy</Link></li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="text-white font-semibold mb-4 text-sm">Connect</h4>
+              <ul className="space-y-2 text-sm">
+                <li><Link href="/contact" className="hover:text-white transition-colors">Contact</Link></li>
+                <li>
+                  <a href="mailto:support@visionxixlabs.com" className="hover:text-white transition-colors">
+                    support@visionxixlabs.com
+                  </a>
+                </li>
               </ul>
             </div>
           </div>
@@ -470,14 +480,6 @@ export default function Home() {
             <p className="text-slate-400 text-sm">
               © {new Date().getFullYear()} Vision XIX Labs LLC. All rights reserved.
             </p>
-            <div className="flex items-center gap-4">
-              <a
-                href="mailto:support@visionxixlabs.com"
-                className="text-slate-400 hover:text-indigo-400 transition-colors text-sm"
-              >
-                support@visionxixlabs.com
-              </a>
-            </div>
           </div>
         </div>
       </footer>
