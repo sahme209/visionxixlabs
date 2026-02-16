@@ -103,6 +103,12 @@ export default function Home() {
                 Apps
               </a>
               <a
+                href="#solutions"
+                className="text-slate-700 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
+              >
+                Solutions
+              </a>
+              <a
                 href="#about"
                 className="text-slate-700 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
               >
@@ -114,6 +120,13 @@ export default function Home() {
               >
                 Contact
               </a>
+              <Link
+                href="/services"
+                className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-lg text-sm font-semibold shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-300"
+              >
+                AWS Services
+                <ArrowRightIcon className="ml-1 h-4 w-4" />
+              </Link>
             </div>
           </div>
         </div>
@@ -154,6 +167,13 @@ export default function Home() {
               >
                 Get in Touch
               </a>
+              <Link
+                href="/services"
+                className="inline-flex items-center px-8 py-4 bg-white/80 dark:bg-slate-900/70 text-slate-900 dark:text-slate-100 rounded-xl font-semibold shadow-lg hover:shadow-xl border border-slate-200/80 dark:border-slate-700 transform hover:-translate-y-1 transition-all duration-300"
+              >
+                AWS Services
+                <ArrowRightIcon className="ml-2 h-5 w-5" />
+              </Link>
             </div>
           </div>
         </div>
@@ -266,6 +286,88 @@ export default function Home() {
                 </div>
               </div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Solutions / Services Overview */}
+      <section
+        id="solutions"
+        className="py-20 px-4 sm:px-6 lg:px-8 bg-white dark:bg-slate-900"
+      >
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-12">
+            <h2 className="text-4xl md:text-5xl font-bold mb-4 text-slate-900 dark:text-slate-100">
+              AWS &amp; DevOps Solutions
+            </h2>
+            <p className="text-xl text-slate-600 dark:text-slate-400 max-w-3xl mx-auto">
+              Beyond mobile apps, we help teams design AWS cloud infrastructure,
+              modernize CI/CD with GitHub and Octopus Deploy, and improve cost,
+              reliability, and security.
+            </p>
+          </div>
+          <div className="grid gap-8 md:grid-cols-3">
+            <div className="card-hover bg-slate-50 dark:bg-slate-800 rounded-2xl p-8 shadow-xl border border-slate-200 dark:border-slate-700">
+              <h3 className="text-2xl font-bold mb-2 text-slate-900 dark:text-slate-100">
+                AWS Cloud Infrastructure
+              </h3>
+              <p className="text-slate-600 dark:text-slate-400 mb-4 text-sm">
+                Design, provisioning, and networking foundations for a stable AWS
+                environment.
+              </p>
+              <ul className="text-sm text-slate-600 dark:text-slate-400 space-y-1 mb-6">
+                <li>Design and scaling on AWS</li>
+                <li>EC2 and EBS architecture guidance</li>
+                <li>VPC patterns, routing, and security groups</li>
+              </ul>
+              <p className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-4">
+                Outcomes: stable, scalable foundation; faster deployments; fewer
+                incidents.
+              </p>
+            </div>
+            <div className="card-hover bg-slate-50 dark:bg-slate-800 rounded-2xl p-8 shadow-xl border border-slate-200 dark:border-slate-700">
+              <h3 className="text-2xl font-bold mb-2 text-slate-900 dark:text-slate-100">
+                CI/CD &amp; Release Automation
+              </h3>
+              <p className="text-slate-600 dark:text-slate-400 mb-4 text-sm">
+                Practical delivery pipelines built around GitHub and Octopus
+                Deploy.
+              </p>
+              <ul className="text-sm text-slate-600 dark:text-slate-400 space-y-1 mb-6">
+                <li>GitHub-based workflows</li>
+                <li>Octopus Deploy release pipelines</li>
+                <li>Environment consistency across dev, test, and prod</li>
+              </ul>
+              <p className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-4">
+                Outcomes: safer releases; repeatable deployments; reduced manual
+                effort.
+              </p>
+            </div>
+            <div className="card-hover bg-slate-50 dark:bg-slate-800 rounded-2xl p-8 shadow-xl border border-slate-200 dark:border-slate-700">
+              <h3 className="text-2xl font-bold mb-2 text-slate-900 dark:text-slate-100">
+                Cost, Reliability &amp; Security
+              </h3>
+              <p className="text-slate-600 dark:text-slate-400 mb-4 text-sm">
+                FinOps, observability, and governance practices that grow with
+                your business.
+              </p>
+              <ul className="text-sm text-slate-600 dark:text-slate-400 space-y-1 mb-6">
+                <li>Cost optimization and right-sizing</li>
+                <li>Monitoring, logging, and SLO-aligned alerts</li>
+                <li>IAM patterns and policy guardrails</li>
+              </ul>
+              <p className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-6">
+                Outcomes: lower spend; faster detection and recovery; reduced
+                risk.
+              </p>
+              <Link
+                href="/services"
+                className="inline-flex items-center text-sm font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300"
+              >
+                Learn more about our AWS services
+                <ArrowRightIcon className="ml-1 h-4 w-4" />
+              </Link>
+            </div>
           </div>
         </div>
       </section>
