@@ -1,24 +1,42 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import {
-  ArrowLeftIcon,
   CloudIcon,
   ArrowPathIcon,
   BanknotesIcon,
   ChartBarIcon,
   ShieldCheckIcon,
-  CheckCircleIcon,
-  ClockIcon,
-  UserGroupIcon,
-  SparklesIcon,
   EnvelopeIcon,
+  SparklesIcon,
 } from "@heroicons/react/24/outline";
 import { Navigation } from "../../components/Navigation";
+import {
+  cloudArchitectureSection,
+  devOpsSection,
+  engineeringPrinciples,
+  coreDeliverables,
+  idealClientsCloud,
+  techStackGroups,
+  howWeWorkPhases,
+  implementationMethodologyShort,
+  securityAccessWeDoNot,
+  securityAccessWeOperateUsing,
+  securityAccessBlocks,
+} from "@/lib/engineeringContent";
+import { engagementPackages, cloudFAQ } from "@/lib/cloudContent";
+import { TechnicalSection } from "@/components/TechnicalSection";
+import { ArchitectureBlock } from "@/components/ArchitectureBlock";
+import { DeliverableList } from "@/components/DeliverableList";
+import { TechStackSection } from "@/components/TechStackSection";
+import { SecurityAccessSection } from "@/components/SecurityAccessSection";
+import { HowWeWorkSection } from "@/components/HowWeWorkSection";
+import { FAQAccordion } from "@/components/FAQAccordion";
+import { PackageCard } from "@/components/PackageCard";
 
 export const metadata: Metadata = {
   title: "AWS & DevOps Services",
   description:
-    "AWS cloud infrastructure, CI/CD with GitHub and Octopus Deploy, cost optimization, reliability, and security services from Vision XIX Labs.",
+    "AWS cloud infrastructure, CI/CD with GitHub and Octopus Deploy, cost optimization, reliability, and security. Enterprise-grade delivery.",
   openGraph: { url: "https://visionxixlabs.com/services" },
   alternates: { canonical: "https://visionxixlabs.com/services" },
 };
@@ -85,294 +103,30 @@ function ServiceCard({
   );
 }
 
-type ProcessStepProps = {
-  step: string;
-  title: string;
-  description: string;
-};
-
-function ProcessStep({ step, title, description }: ProcessStepProps) {
-  return (
-    <div className="card-hover bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-lg border border-slate-200 dark:border-slate-700 h-full">
-      <div className="inline-flex items-center justify-center rounded-full bg-indigo-100 dark:bg-indigo-900/40 text-indigo-700 dark:text-indigo-300 px-3 py-1 text-xs font-semibold mb-3">
-        {step}
-      </div>
-      <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100 mb-2">
-        {title}
-      </h3>
-      <p className="text-sm text-slate-600 dark:text-slate-400">{description}</p>
-    </div>
-  );
-}
-
 function CTASection() {
   return (
-    <section className="py-16">
-      <div className="max-w-4xl mx-auto bg-gradient-to-r from-indigo-600 to-purple-600 rounded-3xl px-8 py-12 text-center text-white shadow-2xl">
-        <h2 className="text-3xl md:text-4xl font-bold mb-4">
-          Let&apos;s talk about your AWS roadmap.
+    <section className="py-12">
+      <div className="max-w-3xl mx-auto rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 px-6 py-8 text-center">
+        <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100 mb-2">
+          Discuss your AWS or DevOps requirements
         </h2>
-        <p className="text-base md:text-lg text-indigo-100 mb-8">
-          Whether you&apos;re just starting on AWS or modernizing an existing
-          platform, we help you move faster with confidence across cloud
-          infrastructure, CI/CD, cost optimization, reliability, and security.
+        <p className="text-slate-600 dark:text-slate-400 mb-6 text-sm">
+          For infrastructure, CI/CD, cost optimization, or security—we work with technical leads to define scope and delivery.
         </p>
-        <div className="flex flex-wrap justify-center gap-4">
+        <div className="flex flex-wrap justify-center gap-3">
           <Link
             href="/contact"
-            className="inline-flex items-center justify-center px-8 py-3 rounded-xl bg-white text-indigo-700 font-semibold shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all"
+            className="inline-flex items-center px-6 py-2.5 bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 rounded-lg font-semibold text-sm hover:opacity-90 transition-opacity"
           >
-            Book a Call
+            Contact
           </Link>
           <a
             href="mailto:support@visionxixlabs.com"
-            className="inline-flex items-center justify-center px-8 py-3 rounded-xl border border-indigo-200/70 bg-indigo-700/40 text-white font-semibold hover:bg-indigo-700/70 hover:-translate-y-0.5 transition-all"
+            className="inline-flex items-center px-6 py-2.5 border border-slate-200 dark:border-slate-600 text-slate-700 dark:text-slate-300 rounded-lg font-semibold text-sm hover:border-slate-300 dark:hover:border-slate-500 transition-colors"
           >
-            Email Us
+            Email
           </a>
         </div>
-      </div>
-    </section>
-  );
-}
-
-function TechnologiesSection() {
-  const technologies = [
-    { name: "AWS EC2", category: "Compute" },
-    { name: "AWS EBS", category: "Storage" },
-    { name: "AWS VPC", category: "Networking" },
-    { name: "AWS IAM", category: "Security" },
-    { name: "GitHub Actions", category: "CI/CD" },
-    { name: "Octopus Deploy", category: "CI/CD" },
-    { name: "CloudWatch", category: "Monitoring" },
-    { name: "AWS Cost Explorer", category: "FinOps" },
-  ];
-
-  return (
-    <section aria-labelledby="technologies-heading" className="mb-16">
-      <div className="mb-10 text-center">
-        <h2
-          id="technologies-heading"
-          className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-slate-100 mb-3"
-        >
-          Technologies we work with
-        </h2>
-        <p className="text-sm md:text-base text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
-          We specialize in AWS services, GitHub workflows, and Octopus Deploy
-          pipelines—the tools your teams already use or want to adopt.
-        </p>
-      </div>
-      <div className="flex flex-wrap justify-center gap-3">
-        {technologies.map((tech) => (
-          <div
-            key={tech.name}
-            className="inline-flex items-center px-4 py-2 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm hover:shadow-md transition-shadow"
-          >
-            <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
-              {tech.name}
-            </span>
-          </div>
-        ))}
-      </div>
-    </section>
-  );
-}
-
-function WhyChooseUsSection() {
-  const reasons = [
-    {
-      icon: CheckCircleIcon,
-      title: "Outcome-focused",
-      description:
-        "We measure success by business impact—faster deployments, lower costs, fewer incidents—not just technical metrics.",
-    },
-    {
-      icon: ClockIcon,
-      title: "Pragmatic approach",
-      description:
-        "We balance best practices with what works for your team and timeline, avoiding over-engineering.",
-    },
-    {
-      icon: UserGroupIcon,
-      title: "Team collaboration",
-      description:
-        "We work alongside your engineers, transferring knowledge so improvements stick after we&apos;re done.",
-    },
-    {
-      icon: SparklesIcon,
-      title: "Modern tooling",
-      description:
-        "We focus on GitHub, Octopus Deploy, and AWS services your teams already use or want to adopt.",
-    },
-  ];
-
-  return (
-    <section
-      aria-labelledby="why-choose-heading"
-      className="mb-16 bg-white dark:bg-slate-800 rounded-3xl p-8 md:p-12 shadow-xl border border-slate-200 dark:border-slate-700"
-    >
-      <div className="mb-10 text-center">
-        <h2
-          id="why-choose-heading"
-          className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-slate-100 mb-3"
-        >
-          Why choose Vision XIX Labs
-        </h2>
-        <p className="text-sm md:text-base text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
-          We bring a practical, collaborative approach to AWS and DevOps that
-          focuses on real business outcomes.
-        </p>
-      </div>
-      <div className="grid gap-6 md:grid-cols-2">
-        {reasons.map((reason) => {
-          const Icon = reason.icon;
-          return (
-            <div
-              key={reason.title}
-              className="flex gap-4 p-6 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700"
-            >
-              <div className="flex-shrink-0">
-                <div className="inline-flex h-10 w-10 items-center justify-center rounded-lg bg-indigo-100 dark:bg-indigo-900/40 text-indigo-700 dark:text-indigo-300">
-                  <Icon className="h-5 w-5" />
-                </div>
-              </div>
-              <div>
-                <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100 mb-2">
-                  {reason.title}
-                </h3>
-                <p className="text-sm text-slate-600 dark:text-slate-400">
-                  {reason.description}
-                </p>
-              </div>
-            </div>
-          );
-        })}
-      </div>
-    </section>
-  );
-}
-
-function FAQSection() {
-  const faqs = [
-    {
-      question: "What size teams do you typically work with?",
-      answer:
-        "We work with teams of all sizes—from startups building their first AWS infrastructure to larger organizations modernizing existing platforms. Our approach scales to fit your team structure and needs.",
-    },
-    {
-      question: "Do you work with teams outside of AWS?",
-      answer:
-        "While we specialize in AWS, we also help teams using GitHub Actions and Octopus Deploy regardless of cloud provider. Our CI/CD and DevOps practices apply across environments.",
-    },
-    {
-      question: "How long do typical engagements last?",
-      answer:
-        "Engagements vary based on scope. Some projects are 2–4 weeks for specific improvements, while others are ongoing partnerships. We can work in sprints, retainer models, or project-based arrangements.",
-    },
-    {
-      question: "Do you provide ongoing support after implementation?",
-      answer:
-        "Yes. We offer ongoing support, optimization, and training options. Many clients start with a focused project and then move to a retainer for continuous improvement and guidance.",
-    },
-    {
-      question: "What if we already have some AWS infrastructure?",
-      answer:
-        "Perfect. We often help teams optimize and modernize existing AWS setups. We assess what you have, identify improvements, and implement changes incrementally to minimize risk.",
-    },
-    {
-      question: "How do you handle security and compliance requirements?",
-      answer:
-        "We build security and governance into every engagement. We help establish IAM patterns, policy guardrails, and compliance-ready configurations that fit your regulatory needs.",
-    },
-  ];
-
-  return (
-    <section aria-labelledby="faq-heading" className="mb-16">
-      <div className="mb-10 text-center">
-        <h2
-          id="faq-heading"
-          className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-slate-100 mb-3"
-        >
-          Frequently asked questions
-        </h2>
-        <p className="text-sm md:text-base text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
-          Common questions about our AWS and DevOps services.
-        </p>
-      </div>
-      <div className="space-y-4">
-        {faqs.map((faq, index) => (
-          <div
-            key={index}
-            className="card-hover bg-white dark:bg-slate-800 rounded-xl p-6 shadow-lg border border-slate-200 dark:border-slate-700"
-          >
-            <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100 mb-2">
-              {faq.question}
-            </h3>
-            <p className="text-sm text-slate-600 dark:text-slate-400">
-              {faq.answer}
-            </p>
-          </div>
-        ))}
-      </div>
-    </section>
-  );
-}
-
-function EngagementModelsSection() {
-  const models = [
-    {
-      title: "Project-based",
-      description:
-        "Focused engagements for specific outcomes—like setting up CI/CD pipelines, optimizing costs, or improving reliability.",
-      duration: "2–8 weeks",
-    },
-    {
-      title: "Retainer",
-      description:
-        "Ongoing partnership for continuous improvement, guidance, and support as your AWS infrastructure evolves.",
-      duration: "Ongoing",
-    },
-    {
-      title: "Assessment & roadmap",
-      description:
-        "Quick assessment of your current setup with a prioritized roadmap for improvements you can execute internally or with our help.",
-      duration: "1–2 weeks",
-    },
-  ];
-
-  return (
-    <section aria-labelledby="engagement-heading" className="mb-16">
-      <div className="mb-10 text-center">
-        <h2
-          id="engagement-heading"
-          className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-slate-100 mb-3"
-        >
-          How we can work together
-        </h2>
-        <p className="text-sm md:text-base text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
-          Flexible engagement models that fit your timeline, budget, and team
-          structure.
-        </p>
-      </div>
-      <div className="grid gap-6 md:grid-cols-3">
-        {models.map((model) => (
-          <div
-            key={model.title}
-            className="card-hover bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-lg border border-slate-200 dark:border-slate-700"
-          >
-            <div className="flex items-start justify-between mb-4">
-              <h3 className="text-xl font-bold text-slate-900 dark:text-slate-100">
-                {model.title}
-              </h3>
-              <span className="px-3 py-1 rounded-full text-xs font-semibold bg-indigo-100 dark:bg-indigo-900/40 text-indigo-700 dark:text-indigo-300">
-                {model.duration}
-              </span>
-            </div>
-            <p className="text-sm text-slate-600 dark:text-slate-400">
-              {model.description}
-            </p>
-          </div>
-        ))}
       </div>
     </section>
   );
@@ -468,33 +222,6 @@ const services = [
   },
 ];
 
-const processSteps: ProcessStepProps[] = [
-  {
-    step: "01",
-    title: "Discover",
-    description:
-      "We listen first—understanding your products, teams, and AWS landscape so we can focus on what matters most to the business.",
-  },
-  {
-    step: "02",
-    title: "Plan",
-    description:
-      "We define a clear roadmap with priorities, scope, and measurable outcomes across infrastructure, CI/CD, cost, reliability, and security.",
-  },
-  {
-    step: "03",
-    title: "Implement",
-    description:
-      "We work alongside your team to implement changes in small, safe increments that can be rolled out and adopted quickly.",
-  },
-  {
-    step: "04",
-    title: "Optimize",
-    description:
-      "We refine based on data—tuning cost, performance, and processes so improvements stick and continue to deliver value.",
-  },
-];
-
 export default function ServicesPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
@@ -502,77 +229,106 @@ export default function ServicesPage() {
 
       <main className="pt-20 pb-24 px-4 sm:px-6 lg:px-8">
         <div className="max-w-5xl mx-auto">
-          {/* Hero */}
-          <section className="mb-16 text-center">
-            <p className="inline-flex items-center space-x-2 px-4 py-2 rounded-full bg-indigo-100 dark:bg-indigo-900/40 text-xs font-semibold uppercase tracking-wide text-indigo-700 dark:text-indigo-300 mb-6">
-              <span>AWS &amp; DevOps Consulting</span>
-            </p>
-            <h1 className="text-4xl md:text-5xl font-extrabold mb-4 bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
-              AWS Cloud &amp; DevOps Solutions
+          {/* 1. Overview */}
+          <section className="mb-12" aria-labelledby="overview-heading">
+            <h1 id="overview-heading" className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-slate-100 mb-4">
+              AWS Cloud &amp; DevOps Services
             </h1>
-            <p className="text-lg md:text-xl text-slate-600 dark:text-slate-400 max-w-3xl mx-auto">
-              We help engineering teams design reliable AWS cloud infrastructure,
-              build practical CI/CD with GitHub and Octopus Deploy, control cloud
-              costs, and improve reliability and security without slowing down
-              delivery.
+            <p className="text-lg text-slate-600 dark:text-slate-400 max-w-3xl">
+              We design and implement AWS infrastructure, CI/CD with GitHub and Octopus Deploy, cost optimization, reliability, and security—with clear deliverables and handover.
             </p>
           </section>
 
-          {/* Services */}
+          {/* 2. Technical Scope — service areas */}
           <section aria-labelledby="services-heading" className="mb-16">
-            <div className="mb-10 text-center">
-              <h2
-                id="services-heading"
-                className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-slate-100 mb-3"
-              >
-                Solutions we deliver
-              </h2>
-              <p className="text-sm md:text-base text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
-                Clear, outcome‑focused AWS and DevOps services grouped into
-                practical workstreams—so you know exactly where we can help.
-              </p>
-            </div>
-            <div className="grid gap-8 md:grid-cols-2">
+            <h2 id="services-heading" className="text-2xl font-bold text-slate-900 dark:text-slate-100 mb-6">
+              Technical scope
+            </h2>
+            <p className="text-slate-600 dark:text-slate-400 mb-8 max-w-3xl">
+              Outcome-focused workstreams: infrastructure, CI/CD, FinOps, observability, and security. Each with defined deliverables and outcomes.
+            </p>
+            <div className="grid gap-6 md:grid-cols-2">
               {services.map((service) => (
                 <ServiceCard key={service.id} {...service} />
               ))}
             </div>
           </section>
 
-          {/* How we work */}
-          <section aria-labelledby="process-heading" className="mb-16">
-            <div className="mb-8 text-center">
-              <h2
-                id="process-heading"
-                className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-slate-100 mb-3"
-              >
-                How we work
-              </h2>
-              <p className="text-sm md:text-base text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
-                A simple, transparent delivery approach that connects technical
-                decisions to business outcomes at every step.
-              </p>
-            </div>
-            <div className="grid gap-6 md:grid-cols-4">
-              {processSteps.map((step) => (
-                <ProcessStep key={step.step} {...step} />
+          <TechnicalSection {...cloudArchitectureSection} />
+          <TechnicalSection {...devOpsSection} />
+
+          {/* 3. Architecture Approach */}
+          <ArchitectureBlock title="Engineering principles" principles={engineeringPrinciples} />
+
+          {/* 4. Tooling & Stack */}
+          <TechStackSection title="Tooling & stack" groups={techStackGroups} />
+
+          {/* 5. Implementation Methodology */}
+          <section className="mb-16" aria-labelledby="methodology-heading">
+            <h2 id="methodology-heading" className="text-2xl font-bold text-slate-900 dark:text-slate-100 mb-2">
+              Implementation methodology
+            </h2>
+            <p className="text-slate-600 dark:text-slate-400 mb-8 max-w-3xl">
+              {implementationMethodologyShort}
+            </p>
+            <HowWeWorkSection phases={howWeWorkPhases} />
+          </section>
+
+          {/* 6. Deliverables */}
+          <DeliverableList title="Deliverables" items={coreDeliverables} />
+
+          {/* 7. Security & Governance Model */}
+          <SecurityAccessSection
+            weDoNot={securityAccessWeDoNot}
+            weOperateUsing={securityAccessWeOperateUsing}
+            blocks={securityAccessBlocks}
+          />
+
+          {/* 8. Engagement Model */}
+          <section className="mb-16" aria-labelledby="engagement-heading">
+            <h2 id="engagement-heading" className="text-2xl font-bold text-slate-900 dark:text-slate-100 mb-6">
+              Engagement model
+            </h2>
+            <p className="text-slate-600 dark:text-slate-400 mb-8 max-w-3xl">
+              Project-based, retainer, or assessment and roadmap. We align to your timeline and team structure.
+            </p>
+            <div className="grid gap-6 md:grid-cols-3">
+              {engagementPackages.map((pkg) => (
+                <PackageCard
+                  key={pkg.id}
+                  name={pkg.name}
+                  duration={pkg.duration}
+                  includes={pkg.includes}
+                  bestFor={pkg.bestFor}
+                />
               ))}
             </div>
           </section>
 
-          {/* Technologies */}
-          <TechnologiesSection />
+          {/* 9. Ideal Clients */}
+          <section className="mb-16" aria-labelledby="ideal-clients-heading">
+            <h2 id="ideal-clients-heading" className="text-2xl font-bold text-slate-900 dark:text-slate-100 mb-4">
+              Ideal clients
+            </h2>
+            <ul className="space-y-2 text-slate-600 dark:text-slate-400">
+              {idealClientsCloud.map((item) => (
+                <li key={item} className="flex items-start">
+                  <span className="text-indigo-500 mr-2 mt-0.5">•</span>
+                  {item}
+                </li>
+              ))}
+            </ul>
+          </section>
 
-          {/* Why Choose Us */}
-          <WhyChooseUsSection />
+          {/* 10. FAQ */}
+          <section className="mb-16" aria-labelledby="faq-heading">
+            <h2 id="faq-heading" className="text-2xl font-bold text-slate-900 dark:text-slate-100 mb-6">
+              Frequently asked questions
+            </h2>
+            <FAQAccordion items={cloudFAQ} />
+          </section>
 
-          {/* Engagement Models */}
-          <EngagementModelsSection />
-
-          {/* FAQ */}
-          <FAQSection />
-
-          {/* CTA */}
+          {/* 11. CTA */}
           <CTASection />
         </div>
       </main>
@@ -588,9 +344,8 @@ export default function ServicesPage() {
                   Vision XIX Labs
                 </span>
               </div>
-              <p className="text-slate-400">
-                AWS cloud infrastructure, CI/CD, and DevOps solutions that help
-                teams move faster with confidence.
+              <p className="text-slate-400 text-sm">
+                Cloud &amp; AI engineering. AWS, Azure, GCP — infrastructure, CI/CD, reliability, security.
               </p>
             </div>
             <div>
@@ -609,7 +364,7 @@ export default function ServicesPage() {
                     href="/services"
                     className="hover:text-indigo-400 transition-colors"
                   >
-                    AWS Services
+                    Services
                   </Link>
                 </li>
                 <li>

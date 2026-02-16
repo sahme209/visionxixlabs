@@ -41,6 +41,7 @@ import { UseCaseCard } from "@/components/UseCaseCard";
 import { HowWeWorkSection } from "@/components/HowWeWorkSection";
 import { SecurityAccessSection } from "@/components/SecurityAccessSection";
 import { ClientCollaborationSection } from "@/components/ClientCollaborationSection";
+import { EnterpriseTrustSignals } from "@/components/EnterpriseTrustSignals";
 
 export const metadata: Metadata = {
   title: "AI Solutions",
@@ -162,6 +163,8 @@ export default function AISolutionsPage() {
 
           {/* Architecture Approach */}
           <ArchitectureBlock title="Engineering principles" principles={engineeringPrinciples} />
+
+          <EnterpriseTrustSignals />
 
           {/* Tooling & Stack */}
           <TechStackSection title="Tooling & stack" groups={techStackGroups} />

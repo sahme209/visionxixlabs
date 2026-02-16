@@ -48,6 +48,7 @@ import { WhatWeDoNotDo } from "@/components/WhatWeDoNotDo";
 import { HowWeWorkSection } from "@/components/HowWeWorkSection";
 import { SecurityAccessSection } from "@/components/SecurityAccessSection";
 import { ClientCollaborationSection } from "@/components/ClientCollaborationSection";
+import { EnterpriseTrustSignals } from "@/components/EnterpriseTrustSignals";
 
 export const metadata: Metadata = {
   title: "Cloud Solutions",
@@ -198,6 +199,9 @@ export default function CloudSolutionsPage() {
             title="Engineering principles"
             principles={engineeringPrinciples}
           />
+
+          {/* Enterprise trust signals */}
+          <EnterpriseTrustSignals />
 
           {/* Tooling & Stack */}
           <TechStackSection title="Tooling & stack" groups={techStackGroups} />

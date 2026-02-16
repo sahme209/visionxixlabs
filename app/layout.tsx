@@ -19,7 +19,7 @@ export const metadata: Metadata = {
     template: "%s | Vision XIX Labs",
   },
   description:
-    "Engineering cloud platforms that scale. Multi-cloud consulting on AWS, Azure, and GCP: infrastructure, CI/CD, FinOps, security, and production AI. Reliable, secure, cost-effective.",
+    "Cloud & AI engineering for modern infrastructure. We design, automate, optimize, and secure cloud platforms across AWS, Azure, and GCP—with production-grade AI and DevOps automation.",
   keywords: [...primaryKeywords, ...secondaryKeywords],
   authors: [{ name: "Vision XIX Labs LLC", url: SITE_URL }],
   creator: "Vision XIX Labs",

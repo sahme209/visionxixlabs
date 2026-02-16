@@ -376,3 +376,18 @@ export const clientCollaborationItems = [
   "We align with internal security policies.",
   "We provide clear documentation.",
 ];
+
+// ——— Enterprise Trust Signals (for homepage and key pages) ———
+export const securityCommitmentItems = [
+  "Role-based access only — no shared credentials.",
+  "All access logged and auditable.",
+  "Change traceability via version control and pipelines.",
+  "Controlled deployments — no ad-hoc production changes.",
+];
+
+export const deliveryDisciplineItems = [
+  "Documented runbooks and escalation paths.",
+  "Version-controlled infrastructure — no manual drift.",
+  "Peer-reviewed changes where required.",
+  "Clear rollback procedures for every deployment path.",
+];

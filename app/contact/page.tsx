@@ -75,16 +75,14 @@ export default function ContactPage() {
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-700 p-8 md:p-10">
           <header className="mb-8 text-center">
-            <div className="inline-flex items-center justify-center rounded-full bg-indigo-100 dark:bg-indigo-900/40 px-4 py-2 text-xs font-semibold text-indigo-700 dark:text-indigo-300 mb-4">
-              AWS &amp; DevOps Engagements
+            <div className="inline-flex items-center justify-center rounded-full bg-slate-100 dark:bg-slate-700 px-4 py-2 text-xs font-semibold text-slate-700 dark:text-slate-300 mb-4">
+              Cloud &amp; AI Engineering
             </div>
             <h1 className="text-3xl md:text-4xl font-bold mb-3 text-slate-900 dark:text-slate-100">
-              Tell us about your AWS roadmap
+              Discuss your requirements
             </h1>
             <p className="text-sm md:text-base text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
-              Share a bit about your environment, challenges, and timelines. We&apos;ll
-              review and follow up to discuss how we can help with cloud
-              infrastructure, CI/CD, cost optimization, reliability, or security.
+              Share your environment, goals, and timeline. We review every request and follow up to align on scope—cloud infrastructure, CI/CD, cost, reliability, security, or AI.
             </p>
           </header>
 
