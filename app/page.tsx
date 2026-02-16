@@ -96,12 +96,12 @@ export default function Home() {
               </span>
             </div>
             <div className="hidden md:flex items-center space-x-8">
-              <a
-                href="#apps"
+              <Link
+                href="/apps"
                 className="text-slate-700 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
               >
                 Apps
-              </a>
+              </Link>
               <a
                 href="#solutions"
                 className="text-slate-700 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
@@ -149,30 +149,30 @@ export default function Home() {
             <div className="inline-flex items-center space-x-2 px-4 py-2 rounded-full bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 mb-8">
               <RocketLaunchIcon className="h-5 w-5" />
               <span className="text-sm font-semibold">
-                Building the Future of Digital Experiences
+                Cloud platforms and products, built with care
               </span>
             </div>
             <h1 className="text-5xl md:text-7xl font-extrabold mb-6 bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
               Vision XIX Labs
             </h1>
             <p className="text-xl md:text-2xl text-slate-600 dark:text-slate-400 mb-8 max-w-3xl mx-auto">
-              Creating innovative mobile applications that simplify complex
-              processes and enhance everyday life
+              A cloud consulting and product studio helping teams design,
+              automate, and operate reliable platforms on AWS and Azure.
             </p>
             <div className="flex flex-wrap justify-center gap-4">
-              <a
-                href="#apps"
-                className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300"
-              >
-                Explore Our Apps
-                <ArrowRightIcon className="ml-2 h-5 w-5" />
-              </a>
               <a
                 href="#contact"
                 className="inline-flex items-center px-8 py-4 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-xl font-semibold shadow-lg hover:shadow-xl border border-slate-200 dark:border-slate-700 transform hover:-translate-y-1 transition-all duration-300"
               >
                 Get in Touch
               </a>
+              <Link
+                href="/cloud-solutions"
+                className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300"
+              >
+                Explore Cloud Solutions
+                <ArrowRightIcon className="ml-2 h-5 w-5" />
+              </Link>
               <Link
                 href="/services"
                 className="inline-flex items-center px-8 py-4 bg-white/80 dark:bg-slate-900/70 text-slate-900 dark:text-slate-100 rounded-xl font-semibold shadow-lg hover:shadow-xl border border-slate-200/80 dark:border-slate-700 transform hover:-translate-y-1 transition-all duration-300"
@@ -185,116 +185,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Apps Showcase */}
-      <section id="apps" className="py-20 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold mb-4 text-slate-900 dark:text-slate-100">
-              Our Applications
-            </h2>
-            <p className="text-xl text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
-              Innovative solutions designed to make your life easier and more
-              organized
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-8">
-            {apps.map((app, index) => (
-              <div
-                key={app.id}
-                className={`card-hover bg-white dark:bg-slate-800 rounded-2xl p-8 shadow-xl border border-slate-200 dark:border-slate-700 ${
-                  mounted ? "animate-fade-in" : ""
-                }`}
-                style={{
-                  animationDelay: `${index * 0.1}s`,
-                }}
-              >
-                <div className="flex items-start justify-between mb-6">
-                  <div className="relative w-20 h-20 flex-shrink-0 flex items-center justify-center bg-slate-100 dark:bg-slate-700 rounded-xl">
-                    {app.comingSoon || !app.icon.startsWith("/") ? (
-                      <div className="text-6xl">{app.icon}</div>
-                    ) : (
-                      <Image
-                        src={app.icon}
-                        alt={`${app.name} icon`}
-                        width={80}
-                        height={80}
-                        className="object-contain rounded-xl"
-                        style={{ maxWidth: "100%", height: "auto" }}
-                        onError={(e) => {
-                          console.error(`Failed to load image: ${app.icon}`);
-                        }}
-                      />
-                    )}
-                  </div>
-                  {app.badge && (
-                    <span
-                      className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                        app.comingSoon
-                          ? "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300"
-                          : app.badge === "Featured"
-                          ? "bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300"
-                          : "bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300"
-                      }`}
-                    >
-                      {app.badge}
-                    </span>
-                  )}
-                </div>
-                <h3 className="text-2xl font-bold mb-2 text-slate-900 dark:text-slate-100">
-                  {app.name}
-                </h3>
-                <p className="text-indigo-600 dark:text-indigo-400 font-semibold mb-4">
-                  {app.tagline}
-                </p>
-                <p className="text-slate-600 dark:text-slate-400 mb-6">
-                  {app.description}
-                </p>
-                <ul className="space-y-2 mb-6">
-                  {app.features.map((feature, idx) => (
-                    <li
-                      key={idx}
-                      className="flex items-center text-sm text-slate-600 dark:text-slate-400"
-                    >
-                      <CheckBadgeIcon className="h-5 w-5 text-indigo-600 dark:text-indigo-400 mr-2 flex-shrink-0" />
-                      {feature}
-                    </li>
-                  ))}
-                </ul>
-                <div className="flex flex-col sm:flex-row gap-3">
-                  {app.appStoreUrl && (
-                    <a
-                      href={app.appStoreUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex-1 inline-flex items-center justify-center px-4 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-lg font-semibold hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-300"
-                    >
-                      <DevicePhoneMobileIconSolid className="h-5 w-5 mr-2" />
-                      App Store
-                    </a>
-                  )}
-                  {app.websiteUrl && (
-                    <a
-                      href={app.websiteUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex-1 inline-flex items-center justify-center px-4 py-3 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg font-semibold hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors"
-                    >
-                      <GlobeAltIconSolid className="h-5 w-5 mr-2" />
-                      Website
-                    </a>
-                  )}
-                  {app.comingSoon && (
-                    <div className="flex-1 inline-flex items-center justify-center px-4 py-3 bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400 rounded-lg font-semibold cursor-not-allowed">
-                      Coming Soon
-                    </div>
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+      {/* (Apps now live on /apps; homepage focuses on cloud solutions) */}
 
       {/* Solutions / Services Overview */}
       <section
@@ -511,12 +402,12 @@ export default function Home() {
               <h4 className="text-white font-semibold mb-4">Quick Links</h4>
               <ul className="space-y-2">
                 <li>
-                  <a
-                    href="#apps"
+                  <Link
+                    href="/apps"
                     className="hover:text-indigo-400 transition-colors"
                   >
                     Our Apps
-                  </a>
+                  </Link>
                 </li>
                 <li>
                   <a
