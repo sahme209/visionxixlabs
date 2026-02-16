@@ -301,6 +301,28 @@ export default function Home() {
               </Link>
             </div>
           </section>
+
+          {/* Secure-by-Design Cloud Engineering */}
+          <section
+            className="mt-16 pt-16 border-t border-slate-200 dark:border-slate-700"
+            aria-labelledby="cloud-security-heading"
+          >
+            <div className="text-center mb-8">
+              <h2 id="cloud-security-heading" className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-slate-100 mb-3">
+                Secure-by-Design Cloud Engineering
+              </h2>
+              <p className="text-slate-600 dark:text-slate-400 max-w-2xl mx-auto mb-6">
+                Security baseline, DevOps hardening, AI security review, and visibility setup — practical hardening without exaggerated claims.
+              </p>
+              <Link
+                href="/cloud-security"
+                className="inline-flex items-center text-indigo-600 dark:text-indigo-400 font-semibold hover:underline"
+              >
+                Cloud Security &amp; Hardening
+                <ArrowRightIcon className="ml-1 h-4 w-4" />
+              </Link>
+            </div>
+          </section>
         </div>
       </section>
 
@@ -448,6 +470,7 @@ export default function Home() {
               <h4 className="text-white font-semibold mb-4 text-sm">Solutions</h4>
               <ul className="space-y-2 text-sm">
                 <li><Link href="/cloud-solutions" className="hover:text-white transition-colors">Cloud Solutions</Link></li>
+                <li><Link href="/cloud-security" className="hover:text-white transition-colors">Cloud Security</Link></li>
                 <li><Link href="/cloud-solutions/aws" className="hover:text-white transition-colors">AWS</Link></li>
                 <li><Link href="/cloud-solutions/azure" className="hover:text-white transition-colors">Azure</Link></li>
                 <li><Link href="/cloud-solutions/gcp" className="hover:text-white transition-colors">GCP</Link></li>
