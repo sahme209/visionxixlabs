@@ -89,13 +89,13 @@ export default function Home() {
       <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 dark:bg-slate-900/80 backdrop-blur-lg border-b border-slate-200 dark:border-slate-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center space-x-3">
               <Image
                 src="/vision-xix-logo.png"
                 alt="Vision XIX Labs"
-                width={32}
-                height={32}
-                className="rounded-md"
+                width={44}
+                height={44}
+                className="rounded-xl shadow-sm"
                 priority
               />
               <span className="text-xl font-bold bg-gradient-to-r from-indigo-500 to-sky-400 bg-clip-text text-transparent">
@@ -399,9 +399,9 @@ export default function Home() {
                 <Image
                   src="/vision-xix-logo.png"
                   alt="Vision XIX Labs"
-                  width={28}
-                  height={28}
-                  className="rounded-md"
+                  width={36}
+                  height={36}
+                  className="rounded-lg"
                 />
                 <span className="text-lg font-bold text-white">Vision XIX Labs</span>
               </div>
