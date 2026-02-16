@@ -8,28 +8,56 @@ import {
   UserIcon,
   BuildingOfficeIcon,
   CloudIcon,
+  CheckCircleIcon,
 } from "@heroicons/react/24/outline";
 import { Navigation } from "../../components/Navigation";
 
 export default function ContactPage() {
   const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    setLoading(true);
+    setError(null);
+
     const formData = new FormData(event.currentTarget);
-    const name = formData.get("name") || "";
-    const email = formData.get("email") || "";
-    const company = formData.get("company") || "";
-    const topic = formData.get("topic") || "";
-    const message = formData.get("message") || "";
+    const name = formData.get("name")?.toString() || "";
+    const email = formData.get("email")?.toString() || "";
+    const company = formData.get("company")?.toString() || "";
+    const topic = formData.get("topic")?.toString() || "";
+    const message = formData.get("message")?.toString() || "";
 
-    const subject = encodeURIComponent("Vision XIX Labs – AWS & DevOps inquiry");
-    const body = encodeURIComponent(
-      `Name: ${name}\nEmail: ${email}\nCompany: ${company}\nTopic: ${topic}\n\nMessage:\n${message}`,
-    );
+    try {
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name,
+          email,
+          company,
+          topic,
+          message,
+        }),
+      });
 
-    window.location.href = `mailto:support@visionxixlabs.com?subject=${subject}&body=${body}`;
-    setSubmitted(true);
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to send message");
+      }
+
+      setSubmitted(true);
+      // Reset form
+      event.currentTarget.reset();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to send message. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -146,13 +174,39 @@ export default function ContactPage() {
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
               <button
                 type="submit"
-                className="inline-flex items-center justify-center rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 px-6 py-3 text-sm font-semibold text-white shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all"
+                disabled={loading}
+                className="inline-flex items-center justify-center rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 px-6 py-3 text-sm font-semibold text-white shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0"
               >
-                Send via Email
+                {loading ? (
+                  <>
+                    <svg
+                      className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      ></circle>
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                      ></path>
+                    </svg>
+                    Sending...
+                  </>
+                ) : (
+                  "Send Message"
+                )}
               </button>
               <p className="text-xs text-slate-500 dark:text-slate-400">
-                When you submit, we&apos;ll open your email client with a
-                pre-filled message to{" "}
+                We&apos;ll review your message and get back to you at{" "}
                 <a
                   href="mailto:support@visionxixlabs.com"
                   className="text-indigo-600 dark:text-indigo-400 hover:underline"
@@ -163,10 +217,21 @@ export default function ContactPage() {
               </p>
             </div>
 
+            {error && (
+              <div className="mt-4 rounded-lg border border-red-300 bg-red-50 px-4 py-3 text-sm text-red-800 dark:border-red-700 dark:bg-red-900/40 dark:text-red-100">
+                {error}
+              </div>
+            )}
+
             {submitted && (
-              <div className="mt-4 rounded-lg border border-emerald-300 bg-emerald-50 px-4 py-3 text-xs text-emerald-800 dark:border-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-100">
-                Thanks for reaching out. We&apos;ve opened a draft email with your
-                details—once you send it, we&apos;ll review and get back to you.
+              <div className="mt-4 rounded-lg border border-emerald-300 bg-emerald-50 px-4 py-3 text-sm text-emerald-800 dark:border-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-100 flex items-start">
+                <CheckCircleIcon className="h-5 w-5 mr-2 flex-shrink-0 mt-0.5" />
+                <div>
+                  <p className="font-semibold mb-1">Message sent successfully!</p>
+                  <p className="text-xs">
+                    Thank you for reaching out. We&apos;ve received your message and will get back to you soon.
+                  </p>
+                </div>
               </div>
             )}
           </form>
