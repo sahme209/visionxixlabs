@@ -11,6 +11,7 @@ import {
   cloudFAQ,
   awsSummaryBullets,
   azureSummaryBullets,
+  gcpSummaryBullets,
 } from "../../lib/cloudContent";
 import { SolutionCard } from "../../components/SolutionCard";
 import { PackageCard } from "../../components/PackageCard";
@@ -22,7 +23,7 @@ import { Navigation } from "../../components/Navigation";
 export const metadata: Metadata = {
   title: "Cloud Solutions | Vision XIX Labs",
   description:
-    "Cloud solutions on AWS and Azure that help teams ship faster, run reliably, and control costs. Infrastructure, CI/CD, FinOps, reliability, and security services.",
+    "Cloud solutions on AWS, Azure, and GCP that help teams ship faster, run reliably, and control costs. Infrastructure, CI/CD, FinOps, reliability, and security services.",
 };
 
 export default function CloudSolutionsPage() {
@@ -98,24 +99,31 @@ export default function CloudSolutionsPage() {
                 <p className="text-sm md:text-base text-slate-600 dark:text-slate-400 max-w-3xl">
                   A structured set of services that cover landing zones,
                   automation, cost optimization, reliability, security, and
-                  day-to-day operations on AWS and Azure.
+                  day-to-day operations on AWS, Azure, and GCP.
                 </p>
               </div>
               <div className="hidden md:block text-xs text-slate-500 dark:text-slate-400">
                 <p>
-                  Need AWS or Azure specifics? Visit{" "}
+                  Need AWS, Azure, or GCP specifics? Visit{" "}
                   <Link
                     href="/cloud-solutions/aws"
                     className="text-indigo-600 dark:text-indigo-400 hover:underline"
                   >
                     AWS Cloud Solutions
-                  </Link>{" "}
-                  or{" "}
+                  </Link>
+                  ,{" "}
                   <Link
                     href="/cloud-solutions/azure"
                     className="text-indigo-600 dark:text-indigo-400 hover:underline"
                   >
                     Azure Cloud Solutions
+                  </Link>
+                  , or{" "}
+                  <Link
+                    href="/cloud-solutions/gcp"
+                    className="text-indigo-600 dark:text-indigo-400 hover:underline"
+                  >
+                    GCP Cloud Solutions
                   </Link>
                   .
                 </p>
@@ -132,10 +140,10 @@ export default function CloudSolutionsPage() {
           <section className="mb-16">
             <div className="mb-6 text-center">
               <h2 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-slate-100 mb-2">
-                AWS and Azure delivery, unified approach
+                AWS, Azure, and GCP delivery, unified approach
               </h2>
               <p className="text-sm md:text-base text-slate-600 dark:text-slate-400 max-w-3xl mx-auto">
-                We work across AWS and Azure with a consistent way of designing,
+                We work across AWS, Azure, and Google Cloud Platform with a consistent way of designing,
                 automating, and operating platforms—while respecting each
                 provider&apos;s strengths.
               </p>
@@ -143,6 +151,7 @@ export default function CloudSolutionsPage() {
             <CloudProviderTabs
               awsBullets={awsSummaryBullets}
               azureBullets={azureSummaryBullets}
+              gcpBullets={gcpSummaryBullets}
             />
             <div className="mt-4 flex flex-wrap justify-center gap-4 text-xs text-slate-600 dark:text-slate-400">
               <Link
@@ -156,6 +165,12 @@ export default function CloudSolutionsPage() {
                 className="underline underline-offset-4 hover:text-indigo-600 dark:hover:text-indigo-400"
               >
                 View Azure Cloud Solutions
+              </Link>
+              <Link
+                href="/cloud-solutions/gcp"
+                className="underline underline-offset-4 hover:text-indigo-600 dark:hover:text-indigo-400"
+              >
+                View GCP Cloud Solutions
               </Link>
             </div>
           </section>
