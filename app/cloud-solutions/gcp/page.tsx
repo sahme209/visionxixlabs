@@ -1,8 +1,23 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { engagementPackages } from "../../../lib/cloudContent";
+import { engagementPackages, cloudFAQ } from "../../../lib/cloudContent";
+import {
+  engineeringPrinciples,
+  coreDeliverables,
+  idealClientsCloud,
+  techStackGroups,
+  whatWeFocusOn,
+  whatWeDoNotDo,
+  implementationMethodologyShort,
+} from "../../../lib/engineeringContent";
 import { PackageCard } from "../../../components/PackageCard";
 import { Navigation } from "../../../components/Navigation";
+import { ArchitectureBlock } from "../../../components/ArchitectureBlock";
+import { DeliverableList } from "../../../components/DeliverableList";
+import { TechStackSection } from "../../../components/TechStackSection";
+import { FAQAccordion } from "../../../components/FAQAccordion";
+import { CTASection } from "../../../components/CTASection";
+import { WhatWeDoNotDo } from "../../../components/WhatWeDoNotDo";
 
 export const metadata: Metadata = {
   title: "Google Cloud Platform (GCP) Engineering | Vision XIX Labs",
@@ -46,9 +61,9 @@ export default function GcpCloudSolutionsPage() {
             </ol>
           </nav>
 
-          {/* Hero */}
-          <section className="mb-12">
-            <h1 className="text-3xl md:text-4xl font-extrabold mb-3 bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
+          {/* 1. Overview */}
+          <section id="overview" className="mb-12" aria-labelledby="overview-heading">
+            <h1 id="overview-heading" className="text-3xl md:text-4xl font-extrabold mb-3 bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
               Google Cloud Platform (GCP) Engineering
             </h1>
             <p className="text-lg md:text-xl text-slate-600 dark:text-slate-400 max-w-3xl mb-4">
@@ -64,6 +79,10 @@ export default function GcpCloudSolutionsPage() {
           </section>
 
           <div className="space-y-10">
+            {/* 2. Technical Scope */}
+            <h2 id="technical-scope" className="text-2xl font-bold text-slate-900 dark:text-slate-100 mb-4">
+              Technical scope
+            </h2>
             {/* GCP Project Structure */}
             <section>
               <h2 className="text-xl md:text-2xl font-bold text-slate-900 dark:text-slate-100 mb-2">
@@ -238,10 +257,29 @@ export default function GcpCloudSolutionsPage() {
               </ul>
             </section>
 
-            {/* Engagement Packages */}
+            {/* 3. Architecture Approach */}
+            <ArchitectureBlock title="Engineering principles" principles={engineeringPrinciples} />
+
+            {/* 4. Tooling & Stack */}
+            <TechStackSection title="Tooling & stack" groups={techStackGroups} />
+
+            {/* 5. Implementation Methodology */}
+            <section id="implementation-methodology">
+              <h2 className="text-xl md:text-2xl font-bold text-slate-900 dark:text-slate-100 mb-2">
+                Implementation methodology
+              </h2>
+              <p className="text-sm md:text-base text-slate-600 dark:text-slate-400">
+                {implementationMethodologyShort}
+              </p>
+            </section>
+
+            {/* 6. Deliverables */}
+            <DeliverableList title="Deliverables" items={coreDeliverables} />
+
+            {/* 7. Engagement Model */}
             <section>
               <h2 className="text-xl md:text-2xl font-bold text-slate-900 dark:text-slate-100 mb-4">
-                Common engagement packages
+                Engagement model
               </h2>
               <p className="text-sm md:text-base text-slate-600 dark:text-slate-400 mb-6">
                 Our engagement models apply equally to GCP-focused work and
@@ -259,6 +297,41 @@ export default function GcpCloudSolutionsPage() {
                 ))}
               </div>
             </section>
+
+            {/* 8. Ideal Clients */}
+            <section>
+              <h2 className="text-xl md:text-2xl font-bold text-slate-900 dark:text-slate-100 mb-4">
+                Ideal clients
+              </h2>
+              <ul className="space-y-2 text-sm text-slate-700 dark:text-slate-300">
+                {idealClientsCloud.map((item) => (
+                  <li key={item} className="flex items-start">
+                    <span className="text-indigo-500 mr-2 mt-0.5">•</span>
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </section>
+
+            <WhatWeDoNotDo focusItems={whatWeFocusOn} notDoItems={whatWeDoNotDo} />
+
+            {/* 9. FAQ */}
+            <section>
+              <h2 className="text-xl md:text-2xl font-bold text-slate-900 dark:text-slate-100 mb-4">
+                FAQ
+              </h2>
+              <FAQAccordion items={cloudFAQ} />
+            </section>
+
+            {/* 10. CTA */}
+            <CTASection
+              title="Let's build a reliable GCP platform."
+              subtitle="Talk to us about your GCP project structure, CI/CD, cost, or operations. We'll help you chart a practical path."
+              primaryLabel="Book a Call"
+              primaryHref="/contact"
+              secondaryLabel="Email Us"
+              secondaryHref="mailto:support@visionxixlabs.com"
+            />
 
             {/* Navigation to related pages */}
             <section>

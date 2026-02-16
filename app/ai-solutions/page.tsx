@@ -9,7 +9,7 @@ import {
   aiGovernance,
   aiPackages,
   aiFAQ,
-} from "../../lib/aiContent";
+} from "@/lib/aiContent";
 import {
   aiTechnicalSection,
   engineeringPrinciples,
@@ -25,22 +25,22 @@ import {
   securityAccessWeOperateUsing,
   securityAccessBlocks,
   clientCollaborationItems,
-} from "../../lib/engineeringContent";
-import { AISolutionCard } from "../../components/AISolutionCard";
-import { AIProcessStep } from "../../components/AIProcessStep";
-import { AIPackageCard } from "../../components/AIPackageCard";
-import { FAQAccordion } from "../../components/FAQAccordion";
-import { CTASection } from "../../components/CTASection";
-import { Navigation } from "../../components/Navigation";
-import { TechnicalSection } from "../../components/TechnicalSection";
-import { ArchitectureBlock } from "../../components/ArchitectureBlock";
-import { DeliverableList } from "../../components/DeliverableList";
-import { TechStackSection } from "../../components/TechStackSection";
-import { WhatWeDoNotDo } from "../../components/WhatWeDoNotDo";
-import { UseCaseCard } from "../../components/UseCaseCard";
-import { HowWeWorkSection } from "../../components/HowWeWorkSection";
-import { SecurityAccessSection } from "../../components/SecurityAccessSection";
-import { ClientCollaborationSection } from "../../components/ClientCollaborationSection";
+} from "@/lib/engineeringContent";
+import { AISolutionCard } from "@/components/AISolutionCard";
+import { AIProcessStep } from "@/components/AIProcessStep";
+import { AIPackageCard } from "@/components/AIPackageCard";
+import { FAQAccordion } from "@/components/FAQAccordion";
+import { CTASection } from "@/components/CTASection";
+import { Navigation } from "@/components/Navigation";
+import { TechnicalSection } from "@/components/TechnicalSection";
+import { ArchitectureBlock } from "@/components/ArchitectureBlock";
+import { DeliverableList } from "@/components/DeliverableList";
+import { TechStackSection } from "@/components/TechStackSection";
+import { WhatWeDoNotDo } from "@/components/WhatWeDoNotDo";
+import { UseCaseCard } from "@/components/UseCaseCard";
+import { HowWeWorkSection } from "@/components/HowWeWorkSection";
+import { SecurityAccessSection } from "@/components/SecurityAccessSection";
+import { ClientCollaborationSection } from "@/components/ClientCollaborationSection";
 
 export const metadata: Metadata = {
   title: "AI Solutions | Vision XIX Labs",

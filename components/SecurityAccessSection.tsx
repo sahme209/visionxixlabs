@@ -2,7 +2,7 @@
 
 import { ShieldExclamationIcon, ShieldCheckIcon } from "@heroicons/react/24/outline";
 import { LockClosedIcon, CodeBracketIcon, ClipboardDocumentCheckIcon } from "@heroicons/react/24/outline";
-import type { SecurityAccessBlock } from "../lib/engineeringContent";
+import type { SecurityAccessBlock } from "@/lib/engineeringContent";
 
 const blockIcons = [LockClosedIcon, CodeBracketIcon, ClipboardDocumentCheckIcon];
 

@@ -11,7 +11,7 @@ import {
   awsSummaryBullets,
   azureSummaryBullets,
   gcpSummaryBullets,
-} from "../../lib/cloudContent";
+} from "@/lib/cloudContent";
 import {
   engineeringPrinciples,
   cloudArchitectureSection,
@@ -31,23 +31,23 @@ import {
   securityAccessWeOperateUsing,
   securityAccessBlocks,
   clientCollaborationItems,
-} from "../../lib/engineeringContent";
-import { SolutionCard } from "../../components/SolutionCard";
-import { PackageCard } from "../../components/PackageCard";
-import { FAQAccordion } from "../../components/FAQAccordion";
-import { CloudProviderTabs } from "../../components/CloudProviderTabs";
-import { CTASection } from "../../components/CTASection";
-import { Navigation } from "../../components/Navigation";
-import { TechnicalSection } from "../../components/TechnicalSection";
-import { DeliverableList } from "../../components/DeliverableList";
-import { ArchitectureBlock } from "../../components/ArchitectureBlock";
-import { ComparisonTable } from "../../components/ComparisonTable";
-import { UseCaseCard } from "../../components/UseCaseCard";
-import { TechStackSection } from "../../components/TechStackSection";
-import { WhatWeDoNotDo } from "../../components/WhatWeDoNotDo";
-import { HowWeWorkSection } from "../../components/HowWeWorkSection";
-import { SecurityAccessSection } from "../../components/SecurityAccessSection";
-import { ClientCollaborationSection } from "../../components/ClientCollaborationSection";
+} from "@/lib/engineeringContent";
+import { SolutionCard } from "@/components/SolutionCard";
+import { PackageCard } from "@/components/PackageCard";
+import { FAQAccordion } from "@/components/FAQAccordion";
+import { CloudProviderTabs } from "@/components/CloudProviderTabs";
+import { CTASection } from "@/components/CTASection";
+import { Navigation } from "@/components/Navigation";
+import { TechnicalSection } from "@/components/TechnicalSection";
+import { DeliverableList } from "@/components/DeliverableList";
+import { ArchitectureBlock } from "@/components/ArchitectureBlock";
+import { ComparisonTable } from "@/components/ComparisonTable";
+import { UseCaseCard } from "@/components/UseCaseCard";
+import { TechStackSection } from "@/components/TechStackSection";
+import { WhatWeDoNotDo } from "@/components/WhatWeDoNotDo";
+import { HowWeWorkSection } from "@/components/HowWeWorkSection";
+import { SecurityAccessSection } from "@/components/SecurityAccessSection";
+import { ClientCollaborationSection } from "@/components/ClientCollaborationSection";
 
 export const metadata: Metadata = {
   title: "Cloud Solutions | Vision XIX Labs",

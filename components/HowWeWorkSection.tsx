@@ -7,7 +7,7 @@ import {
   CheckCircleIcon,
   ArrowPathIcon,
 } from "@heroicons/react/24/outline";
-import type { HowWeWorkPhase } from "../lib/engineeringContent";
+import type { HowWeWorkPhase } from "@/lib/engineeringContent";
 
 const phaseIcons = [
   MagnifyingGlassIcon,
