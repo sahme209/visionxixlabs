@@ -279,6 +279,28 @@ export default function Home() {
               </div>
             </div>
           </div>
+
+          {/* Solutions for Growing Teams */}
+          <section
+            className="mt-16 pt-16 border-t border-slate-200 dark:border-slate-700"
+            aria-labelledby="growing-teams-heading"
+          >
+            <div className="text-center mb-8">
+              <h2 id="growing-teams-heading" className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-slate-100 mb-3">
+                Cloud &amp; AI Solutions for Growing Teams
+              </h2>
+              <p className="text-slate-600 dark:text-slate-400 max-w-2xl mx-auto mb-6">
+                Fixed-scope packages for startups and small businesses: health checks, CI/CD setup, AI automation, cost optimization.
+              </p>
+              <Link
+                href="/solutions-for-growing-teams"
+                className="inline-flex items-center text-indigo-600 dark:text-indigo-400 font-semibold hover:underline"
+              >
+                View packages
+                <ArrowRightIcon className="ml-1 h-4 w-4" />
+              </Link>
+            </div>
+          </section>
         </div>
       </section>
 
@@ -430,6 +452,7 @@ export default function Home() {
                 <li><Link href="/cloud-solutions/azure" className="hover:text-white transition-colors">Azure</Link></li>
                 <li><Link href="/cloud-solutions/gcp" className="hover:text-white transition-colors">GCP</Link></li>
                 <li><Link href="/ai-solutions" className="hover:text-white transition-colors">AI Solutions</Link></li>
+                <li><Link href="/solutions-for-growing-teams" className="hover:text-white transition-colors">Growing Teams</Link></li>
                 <li><Link href="/case-studies" className="hover:text-white transition-colors">Case Studies</Link></li>
               </ul>
             </div>

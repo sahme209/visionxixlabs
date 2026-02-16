@@ -39,6 +39,12 @@ export function Navigation() {
               AI Solutions
             </Link>
             <Link
+              href="/solutions-for-growing-teams"
+              className="px-4 py-2 text-slate-700 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 rounded-lg transition-all text-sm font-medium"
+            >
+              Growing Teams
+            </Link>
+            <Link
               href="/cloud-solutions/aws"
               className="px-4 py-2 text-slate-700 dark:text-slate-300 hover:text-orange-600 dark:hover:text-orange-400 hover:bg-orange-50 dark:hover:bg-orange-900/20 rounded-lg transition-all text-sm font-medium"
             >
@@ -109,6 +115,13 @@ export function Navigation() {
                 className="px-4 py-2 text-slate-700 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 rounded-lg transition-all text-sm font-medium"
               >
                 AI Solutions
+              </Link>
+              <Link
+                href="/solutions-for-growing-teams"
+                onClick={() => setMobileMenuOpen(false)}
+                className="px-4 py-2 text-slate-700 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 rounded-lg transition-all text-sm font-medium"
+              >
+                Growing Teams
               </Link>
               <Link
                 href="/cloud-solutions/aws"
