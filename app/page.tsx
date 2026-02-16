@@ -90,8 +90,15 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center space-x-2">
-              <SparklesIcon className="h-8 w-8 text-indigo-600 dark:text-indigo-400" />
-              <span className="text-xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+              <Image
+                src="/vision-xix-logo.png"
+                alt="Vision XIX Labs"
+                width={32}
+                height={32}
+                className="rounded-md"
+                priority
+              />
+              <span className="text-xl font-bold bg-gradient-to-r from-indigo-500 to-sky-400 bg-clip-text text-transparent">
                 Vision XIX Labs
               </span>
             </div>
@@ -389,13 +396,18 @@ export default function Home() {
           <div className="grid md:grid-cols-3 gap-8 mb-8">
             <div>
               <div className="flex items-center space-x-2 mb-4">
-                <SparklesIcon className="h-6 w-6 text-indigo-400" />
-                <span className="text-lg font-bold text-white">
-                  Vision XIX Labs
-                </span>
+                <Image
+                  src="/vision-xix-logo.png"
+                  alt="Vision XIX Labs"
+                  width={28}
+                  height={28}
+                  className="rounded-md"
+                />
+                <span className="text-lg font-bold text-white">Vision XIX Labs</span>
               </div>
               <p className="text-slate-400">
-                Creating innovative mobile applications that make life easier.
+                Engineering multi-cloud platforms and products with a focus on
+                reliability, security, and cost efficiency.
               </p>
             </div>
             <div>

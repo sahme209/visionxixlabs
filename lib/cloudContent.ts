@@ -6,6 +6,21 @@ export type Solution = {
   href: string;
 };
 
+export type SolutionDetailSection = {
+  heading: string;
+  body: string;
+  bullets?: string[];
+};
+
+export type SolutionDetail = {
+  id: string;
+  title: string;
+  intro: string;
+  sections: SolutionDetailSection[];
+  idealFor: string[];
+  relatedProviders: ("aws" | "azure" | "gcp" | "multi-cloud")[];
+};
+
 export type Package = {
   id: string;
   name: string;
@@ -20,15 +35,16 @@ export type FAQ = {
 };
 
 export const cloudSolutionsHero = {
-  title: "Cloud solutions that ship faster, run reliably, and cost less.",
+  title: "Engineering reliable, scalable cloud platforms.",
   subtitle:
-    "We help teams design, automate, optimize, and operate cloud platforms on AWS and Azure.",
+    "We design, automate, optimize, and operate cloud infrastructure across AWS, Azure, and Google Cloud.",
   capabilities: [
-    "Infrastructure",
-    "CI/CD",
+    "Cloud Architecture",
+    "DevOps Automation",
     "FinOps",
-    "Reliability",
-    "Security",
+    "Reliability Engineering",
+    "Security & Governance",
+    "Multi-Cloud Strategy",
   ],
 };
 
@@ -37,9 +53,9 @@ export const cloudSolutionCards: Solution[] = [
     id: "cloud-foundations",
     title: "Cloud Foundations",
     description:
-      "Landing zones and baseline architecture that give AWS and Azure platforms a secure, scalable starting point.",
+      "Landing zones and baseline architecture that give AWS, Azure, and GCP platforms a secure, scalable starting point.",
     bestFor: "Teams standardizing how new apps land in the cloud.",
-    href: "/cloud-solutions",
+    href: "/cloud-solutions/cloud-foundations",
   },
   {
     id: "cicd-release-automation",
@@ -47,15 +63,15 @@ export const cloudSolutionCards: Solution[] = [
     description:
       "GitHub-centric pipelines and Octopus Deploy release workflows so changes move from commit to production safely.",
     bestFor: "Teams wanting predictable, low-friction deployments.",
-    href: "/cloud-solutions",
+    href: "/cloud-solutions/cicd-release-automation",
   },
   {
     id: "cost-optimization",
     title: "Cost Optimization (FinOps)",
     description:
-      "Practical cost optimization on AWS and Azure, from right-sizing to storage tuning and budget guardrails.",
+      "Practical cost optimization on AWS, Azure, and GCP, from right-sizing to storage tuning and budget guardrails.",
     bestFor: "Leaders needing lower, more predictable cloud spend.",
-    href: "/cloud-solutions",
+    href: "/cloud-solutions/cost-optimization",
   },
   {
     id: "reliability-observability",
@@ -63,7 +79,7 @@ export const cloudSolutionCards: Solution[] = [
     description:
       "Monitoring, alerting, and dashboards tuned to business impact so issues are found and fixed quickly.",
     bestFor: "Teams owning uptime and on-call.",
-    href: "/cloud-solutions",
+    href: "/cloud-solutions/reliability-observability",
   },
   {
     id: "security-governance",
@@ -71,7 +87,7 @@ export const cloudSolutionCards: Solution[] = [
     description:
       "IAM and policy guardrails that keep access controlled without slowing engineering teams down.",
     bestFor: "Organizations with compliance and audit needs.",
-    href: "/cloud-solutions",
+    href: "/cloud-solutions/security-governance",
   },
   {
     id: "migration-modernization",
@@ -79,7 +95,7 @@ export const cloudSolutionCards: Solution[] = [
     description:
       "Structured migrations into AWS or Azure and modernization paths that reduce risk and technical debt.",
     bestFor: "Teams moving from data centers or legacy platforms.",
-    href: "/cloud-solutions",
+    href: "/cloud-solutions/migration-modernization",
   },
   {
     id: "backup-dr",
@@ -87,7 +103,7 @@ export const cloudSolutionCards: Solution[] = [
     description:
       "Backup strategy, recovery objectives, and DR patterns matched to your business tolerance and budget.",
     bestFor: "Systems that must be available when it matters most.",
-    href: "/cloud-solutions",
+    href: "/cloud-solutions/backup-dr",
   },
   {
     id: "platform-operations",
@@ -95,7 +111,7 @@ export const cloudSolutionCards: Solution[] = [
     description:
       "Runbooks, on-call readiness, and operating models so your cloud platform can be run with confidence.",
     bestFor: "Teams formalizing SRE and platform operations.",
-    href: "/cloud-solutions",
+    href: "/cloud-solutions/platform-operations",
   },
   {
     id: "data-storage-strategy",
@@ -103,7 +119,7 @@ export const cloudSolutionCards: Solution[] = [
     description:
       "High-level guidance for choosing storage patterns that balance performance, durability, and cost.",
     bestFor: "Product and data teams planning their next phase.",
-    href: "/cloud-solutions",
+    href: "/cloud-solutions/data-storage-strategy",
   },
   {
     id: "networking-connectivity",
@@ -111,7 +127,7 @@ export const cloudSolutionCards: Solution[] = [
     description:
       "VPCs/VNets, connectivity, and routing models that keep services talking securely and predictably.",
     bestFor: "Hybrid and multi-environment architectures.",
-    href: "/cloud-solutions",
+    href: "/cloud-solutions/networking-connectivity",
   },
 ];
 
@@ -121,7 +137,7 @@ export const engagementPackages: Package[] = [
     name: "Cloud Assessment",
     duration: "1–2 weeks",
     includes: [
-      "Current-state review of AWS and/or Azure",
+      "Current-state review of AWS, Azure, and/or GCP",
       "Risk and opportunity analysis",
       "Prioritized roadmap with quick wins and longer-term work",
       "Executive-friendly summary of key findings",
@@ -133,7 +149,7 @@ export const engagementPackages: Package[] = [
     name: "Foundation Build",
     duration: "2–6 weeks",
     includes: [
-      "Baseline AWS and/or Azure landing zone",
+      "Baseline AWS, Azure, and/or GCP landing zone",
       "Infrastructure as Code for core platform",
       "Initial CI/CD pipelines wired to environments",
       "Monitoring, alerting, and security guardrails",
@@ -155,13 +171,13 @@ export const engagementPackages: Package[] = [
 ];
 
 export const deliverables = [
-  "Architecture diagrams for AWS and Azure environments",
+  "Production-ready architecture diagrams for AWS, Azure, and GCP environments",
   "Infrastructure-as-Code repositories (Terraform, Bicep, or CloudFormation where applicable)",
-  "CI/CD pipeline templates and deployment workflows",
+  "CI/CD automation pipelines and deployment workflows",
   "Monitoring and alerting baselines",
   "Security guardrails and access model recommendations",
   "Cost optimization report and action plan",
-  "Runbooks and handover session for your team",
+  "Operational runbooks and handover session for your team",
 ];
 
 export const industries = [
@@ -174,31 +190,32 @@ export const industries = [
 ];
 
 export const trustPrinciples = [
-  "Security-first delivery",
-  "Documentation and handover included",
-  "Least-privilege access approach",
+  "Security-first delivery with least-privilege access by default",
+  "Infrastructure as Code for reproducible, reviewable changes",
+  "Audit-ready configurations and clear change control",
   "Repeatable automation over one-off changes",
-  "Clear change management and approvals",
+  "Documentation and handover included as part of delivery",
+  "Measurable outcomes for reliability, performance, and cost",
 ];
 
 export const toolsWeWorkWith =
-  "AWS • Azure • GitHub • Octopus Deploy • Terraform • monitoring and logging tools";
+  "AWS • Azure • Google Cloud (GCP) • GitHub • Octopus Deploy • Terraform • monitoring and logging tools";
 
 export const cloudFAQ: FAQ[] = [
   {
     question: "Do you do migrations?",
     answer:
-      "Yes. We help plan and execute migrations into AWS and Azure using an incremental, low-risk approach that aligns to your release and change-management processes.",
+      "Yes. We help plan and execute migrations into AWS, Azure, and GCP using an incremental, low-risk approach that aligns to your release and change-management processes.",
   },
   {
     question: "Can you optimize an existing cloud bill?",
     answer:
-      "Yes. We review your current AWS and Azure usage, identify waste and right-sizing opportunities, and provide a focused action plan with estimated impact.",
+      "Yes. We review your current AWS, Azure, and/or GCP usage, identify waste and right-sizing opportunities, and provide a focused action plan with estimated impact.",
   },
   {
-    question: "Do you support both AWS and Azure?",
+    question: "Do you support multi-cloud?",
     answer:
-      "Yes. We work with teams on AWS, Azure, or both, helping you standardize patterns while respecting provider differences.",
+      "Yes. We work with AWS, Azure, and GCP. Where multi-cloud or hybrid makes sense, we help you standardize patterns while respecting provider differences.",
   },
   {
     question: "Do you provide ongoing support?",
@@ -211,9 +228,24 @@ export const cloudFAQ: FAQ[] = [
       "Most engagements start with a discovery call and a short assessment. From there, we agree on scope, outcomes, and an engagement model that fits your needs.",
   },
   {
+    question: "How do you handle security?",
+    answer:
+      "Security is treated as a first-class concern. We design least-privilege access models, use Infrastructure as Code for changes, and align with your existing security and compliance processes.",
+  },
+  {
     question: "What access do you need?",
     answer:
       "We work with least-privilege principles. Typically we start with read-only access and work with your team to grant additional permissions as needed for implementation.",
+  },
+  {
+    question: "Do you work with internal teams or as an external function?",
+    answer:
+      "We prefer to work alongside your internal teams, pairing on design and implementation so knowledge, patterns, and ownership stay with you after the engagement.",
+  },
+  {
+    question: "Can you help if we already have a cloud platform?",
+    answer:
+      "Yes. Many engagements focus on improving an existing AWS, Azure, or GCP platform—addressing reliability, cost, security, or delivery friction rather than starting from scratch.",
   },
 ];
 
@@ -230,4 +262,346 @@ export const azureSummaryBullets = [
   "Optimize compute, storage, and networking for cost and performance.",
   "Establish monitoring, identity, and policy baselines across environments.",
 ];
+
+export const gcpSummaryBullets = [
+  "Design GCP project structures and network layouts that scale with your organization.",
+  "Shape compute and storage usage for balanced performance, resilience, and cost.",
+  "Integrate CI/CD workflows that target GCP services safely and predictably.",
+  "Establish logging, metrics, and access patterns that support day-to-day operations.",
+];
+
+export const solutionDetails: SolutionDetail[] = [
+  {
+    id: "cloud-foundations",
+    title: "Cloud Foundations",
+    intro:
+      "Establish a secure, scalable baseline on AWS, Azure, and GCP with clear patterns for accounts, projects, and networking.",
+    sections: [
+      {
+        heading: "Architecture and account structure",
+        body:
+          "We define high-level landing zone patterns, account and project structures, and environment boundaries so teams have a consistent place to build.",
+        bullets: [
+          "Landing zone concepts tailored to your organization and constraints",
+          "Environment separation for dev, test, staging, and production",
+          "Baseline guardrails for logging, security, and cost visibility",
+        ],
+      },
+      {
+        heading: "Network and connectivity",
+        body:
+          "We design VPCs, VNets, and VPC networks with routing and connectivity approaches that support current and future workloads.",
+        bullets: [
+          "Consistent subnet layout across environments",
+          "Options for hybrid connectivity where needed",
+          "Network security considerations aligned to least-privilege access",
+        ],
+      },
+    ],
+    idealFor: [
+      "Teams standardizing how new workloads land in the cloud",
+      "Organizations moving from ad-hoc to structured cloud usage",
+    ],
+    relatedProviders: ["aws", "azure", "gcp"],
+  },
+  {
+    id: "cicd-release-automation",
+    title: "CI/CD & Release Automation",
+    intro:
+      "Design and implement CI/CD workflows so code moves from commit to production safely and repeatably across cloud environments.",
+    sections: [
+      {
+        heading: "CI pipelines around GitHub",
+        body:
+          "We structure GitHub-based CI pipelines that fit your branching model and quality requirements.",
+        bullets: [
+          "Build, test, and artifact stages driven from pull requests",
+          "Policy-friendly checks before code merges",
+          "Reusable workflows for teams and services",
+        ],
+      },
+      {
+        heading: "Release orchestration with Octopus Deploy",
+        body:
+          "We configure Octopus Deploy pipelines to promote releases across environments with clear visibility and control.",
+        bullets: [
+          "Environment-specific configurations and approvals",
+          "Promotion flows from non-production through to production",
+          "Integration with infrastructure and application deployments",
+        ],
+      },
+    ],
+    idealFor: [
+      "Engineering teams looking to reduce deployment risk",
+      "Organizations standardizing release practices across services",
+    ],
+    relatedProviders: ["aws", "azure", "gcp"],
+  },
+  {
+    id: "cost-optimization",
+    title: "Cost Optimization (FinOps)",
+    intro:
+      "Bring structure to cloud spending with practical FinOps practices that keep costs predictable without sacrificing performance.",
+    sections: [
+      {
+        heading: "Usage and spend analysis",
+        body:
+          "We review how resources are used across AWS, Azure, and GCP to identify waste and right-sizing opportunities.",
+        bullets: [
+          "Highlight under-utilized or idle resources",
+          "Identify storage and data transfer patterns that drive cost",
+          "Map spend to teams, environments, or products where possible",
+        ],
+      },
+      {
+        heading: "Guardrails and reporting",
+        body:
+          "We set up basic budgets, alerts, and simple reporting so finance and engineering share the same view of cloud spend.",
+        bullets: [
+          "Budgets and alerts aligned to your review cadence",
+          "Lightweight reports for leadership and engineering leads",
+          "Clear backlog of optimization actions with estimated impact",
+        ],
+      },
+    ],
+    idealFor: [
+      "Teams looking to control or reduce cloud spend",
+      "Organizations needing better visibility into where money goes",
+    ],
+    relatedProviders: ["aws", "azure", "gcp"],
+  },
+  {
+    id: "reliability-observability",
+    title: "Reliability & Observability",
+    intro:
+      "Give teams the signals they need to detect and resolve issues quickly, without over-complicating monitoring.",
+    sections: [
+      {
+        heading: "Monitoring and alerting strategy",
+        body:
+          "We define what should be monitored and alerted on, tied to business impact rather than just infrastructure noise.",
+        bullets: [
+          "Service- and platform-level SLI/SLO thinking",
+          "Alert routing and on-call readiness patterns",
+          "Dashboards for key services and environments",
+        ],
+      },
+      {
+        heading: "Logs, metrics, and traces",
+        body:
+          "We align log and metric collection with your tools so teams can investigate issues without wading through unnecessary data.",
+        bullets: [
+          "Structured logging approaches that support troubleshooting",
+          "Metrics that reflect user experience and system health",
+          "Integration with existing observability tooling where practical",
+        ],
+      },
+    ],
+    idealFor: [
+      "Teams responsible for uptime and incident response",
+      "Organizations maturing SRE and platform operations practices",
+    ],
+    relatedProviders: ["aws", "azure", "gcp"],
+  },
+  {
+    id: "security-governance",
+    title: "Security & Governance",
+    intro:
+      "Shape identity, access, and policy patterns that keep systems secure and auditable without blocking delivery.",
+    sections: [
+      {
+        heading: "Access and identity design",
+        body:
+          "We design IAM, Entra ID, and GCP IAM patterns grounded in least privilege and team workflows.",
+        bullets: [
+          "Role patterns for engineers, automation, and services",
+          "Separation of duties where required by compliance",
+          "Guidance for integrating with existing identity providers",
+        ],
+      },
+      {
+        heading: "Guardrails and policy",
+        body:
+          "We define guardrails that catch risky configurations early, ideally through policy-as-code and CI integration.",
+        bullets: [
+          "Baseline policies and configuration standards",
+          "Checks wired into CI/CD where feasible",
+          "Documentation that explains intent and usage to teams",
+        ],
+      },
+    ],
+    idealFor: [
+      "Organizations with regulatory or audit requirements",
+      "Teams needing clearer, enforceable security practices",
+    ],
+    relatedProviders: ["aws", "azure", "gcp"],
+  },
+  {
+    id: "migration-modernization",
+    title: "Migration & Modernization",
+    intro:
+      "Move workloads into the cloud or modernize existing deployments without unnecessary disruption to teams or users.",
+    sections: [
+      {
+        heading: "Assessment and planning",
+        body:
+          "We start by understanding your current applications, constraints, and timelines to shape a realistic migration or modernization plan.",
+        bullets: [
+          "Inventory of workloads and dependencies at a practical level",
+          "Identification of quick wins vs. deeper modernization work",
+          "Risk assessment and mitigation options",
+        ],
+      },
+      {
+        heading: "Incremental execution",
+        body:
+          "We plan and support migrations in small, reversible steps where possible, aligned to your release processes.",
+        bullets: [
+          "Runbooks for each migration step",
+          "Testing and validation guidance for teams",
+          "Observation of platform behavior during and after cutovers",
+        ],
+      },
+    ],
+    idealFor: [
+      "Teams moving from on-premises systems",
+      "Organizations re-platforming or consolidating cloud usage",
+    ],
+    relatedProviders: ["aws", "azure", "gcp"],
+  },
+  {
+    id: "backup-dr",
+    title: "Backup, DR & Business Continuity",
+    intro:
+      "Design backup and recovery approaches that align with realistic recovery time and recovery point objectives.",
+    sections: [
+      {
+        heading: "Backup and retention patterns",
+        body:
+          "We help you decide what to back up, how often, and how long to retain it, using provider-native capabilities where appropriate.",
+        bullets: [
+          "Backups for critical data and configuration",
+          "Retention choices based on regulatory and business needs",
+          "Alignment with storage and cost considerations",
+        ],
+      },
+      {
+        heading: "Recovery planning",
+        body:
+          "We create practical recovery plans and runbooks that can be executed during incidents without guesswork.",
+        bullets: [
+          "Documented recovery paths for key services",
+          "Playbooks for regional or service-level disruptions",
+          "Opportunities for game days and testing where feasible",
+        ],
+      },
+    ],
+    idealFor: [
+      "Systems with clear availability or recovery expectations",
+      "Teams formalizing incident response and continuity planning",
+    ],
+    relatedProviders: ["aws", "azure", "gcp"],
+  },
+  {
+    id: "platform-operations",
+    title: "Platform Operations",
+    intro:
+      "Define how your cloud platform is operated day to day, from on-call readiness to change management.",
+    sections: [
+      {
+        heading: "Runbooks and operating model",
+        body:
+          "We work with your teams to define how the platform is supported, who does what, and how changes are coordinated.",
+        bullets: [
+          "Runbooks for common operational tasks and incidents",
+          "Clear delineation between platform and product responsibilities",
+          "Lightweight governance that keeps delivery moving",
+        ],
+      },
+      {
+        heading: "On-call readiness",
+        body:
+          "We help teams prepare for on-call with appropriate tooling, visibility, and processes.",
+        bullets: [
+          "Alerting tuned to reduce noise while catching real issues",
+          "Guidance for handoffs and escalation paths",
+          "Integration with incident tooling where applicable",
+        ],
+      },
+    ],
+    idealFor: [
+      "Teams formalizing SRE or platform engineering functions",
+      "Organizations scaling the number of cloud-hosted services",
+    ],
+    relatedProviders: ["aws", "azure", "gcp", "multi-cloud"],
+  },
+  {
+    id: "data-storage-strategy",
+    title: "Data & Storage Strategy",
+    intro:
+      "Shape how data is stored and accessed so performance, durability, and cost stay in balance as systems grow.",
+    sections: [
+      {
+        heading: "Selecting storage patterns",
+        body:
+          "We provide high-level guidance on when to use different storage options based on access patterns and requirements.",
+        bullets: [
+          "Understanding trade-offs between block, object, and database storage",
+          "Retention and lifecycle approaches that avoid uncontrolled growth",
+          "Patterns for analytics and reporting workloads",
+        ],
+      },
+      {
+        heading: "Data access and governance",
+        body:
+          "We consider how data is accessed, secured, and audited across teams and environments.",
+        bullets: [
+          "Approaches for securing sensitive data in transit and at rest",
+          "High-level governance considerations for shared datasets",
+          "Alignment with existing data management and privacy practices",
+        ],
+      },
+    ],
+    idealFor: [
+      "Product and data teams planning the next phase of a platform",
+      "Organizations consolidating data across systems or providers",
+    ],
+    relatedProviders: ["aws", "azure", "gcp"],
+  },
+  {
+    id: "networking-connectivity",
+    title: "Networking & Connectivity",
+    intro:
+      "Design networks that connect services and environments predictably while keeping security and operations manageable.",
+    sections: [
+      {
+        heading: "Environment and service connectivity",
+        body:
+          "We plan how environments and services connect to each other and, where needed, to on-premises locations.",
+        bullets: [
+          "Baseline patterns for environment isolation and communication",
+          "Options for hybrid connectivity where required",
+          "Routing approaches that avoid unnecessary complexity",
+        ],
+      },
+      {
+        heading: "Network security",
+        body:
+          "We help define high-level network security controls that support least-privilege access without blocking delivery.",
+        bullets: [
+          "Use of security groups, firewall rules, and network policies",
+          "Segmentation strategies appropriate to your risk profile",
+          "Visibility into network flows for troubleshooting and audit needs",
+        ],
+      },
+    ],
+    idealFor: [
+      "Teams connecting multiple environments or networks",
+      "Organizations with hybrid or multi-cloud architectures",
+    ],
+    relatedProviders: ["aws", "azure", "gcp", "multi-cloud"],
+  },
+];
+
+
 
