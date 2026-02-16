@@ -133,7 +133,7 @@ export default function Home() {
                 <ArrowRightIcon className="ml-2 h-5 w-5" />
               </Link>
             </div>
-            <div className="flex flex-wrap justify-center gap-3 mb-12">
+            <div className="flex flex-wrap justify-center gap-3 mb-4">
               <Link
                 href="/cloud-solutions/aws"
                 className="group inline-flex items-center px-6 py-3 bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm text-slate-900 dark:text-slate-100 rounded-lg text-sm font-semibold shadow-md hover:shadow-lg border border-slate-200 dark:border-slate-700 transform hover:-translate-y-0.5 hover:scale-105 transition-all duration-300 hover:border-orange-300 dark:hover:border-orange-600"
@@ -156,6 +156,9 @@ export default function Home() {
                 Cloud
               </Link>
             </div>
+            <p className="text-sm text-slate-500 dark:text-slate-400 mb-12 max-w-2xl mx-auto">
+              Foundations · CI/CD · FinOps · Observability · Security · IaC
+            </p>
           </div>
         </div>
       </section>
