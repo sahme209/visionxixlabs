@@ -7,6 +7,11 @@ import {
   BanknotesIcon,
   ChartBarIcon,
   ShieldCheckIcon,
+  CheckCircleIcon,
+  ClockIcon,
+  UserGroupIcon,
+  SparklesIcon,
+  EnvelopeIcon,
 } from "@heroicons/react/24/outline";
 
 export const metadata: Metadata = {
@@ -123,6 +128,248 @@ function CTASection() {
             Email Us
           </a>
         </div>
+      </div>
+    </section>
+  );
+}
+
+function TechnologiesSection() {
+  const technologies = [
+    { name: "AWS EC2", category: "Compute" },
+    { name: "AWS EBS", category: "Storage" },
+    { name: "AWS VPC", category: "Networking" },
+    { name: "AWS IAM", category: "Security" },
+    { name: "GitHub Actions", category: "CI/CD" },
+    { name: "Octopus Deploy", category: "CI/CD" },
+    { name: "CloudWatch", category: "Monitoring" },
+    { name: "AWS Cost Explorer", category: "FinOps" },
+  ];
+
+  return (
+    <section aria-labelledby="technologies-heading" className="mb-16">
+      <div className="mb-10 text-center">
+        <h2
+          id="technologies-heading"
+          className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-slate-100 mb-3"
+        >
+          Technologies we work with
+        </h2>
+        <p className="text-sm md:text-base text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
+          We specialize in AWS services, GitHub workflows, and Octopus Deploy
+          pipelines—the tools your teams already use or want to adopt.
+        </p>
+      </div>
+      <div className="flex flex-wrap justify-center gap-3">
+        {technologies.map((tech) => (
+          <div
+            key={tech.name}
+            className="inline-flex items-center px-4 py-2 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm hover:shadow-md transition-shadow"
+          >
+            <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
+              {tech.name}
+            </span>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function WhyChooseUsSection() {
+  const reasons = [
+    {
+      icon: CheckCircleIcon,
+      title: "Outcome-focused",
+      description:
+        "We measure success by business impact—faster deployments, lower costs, fewer incidents—not just technical metrics.",
+    },
+    {
+      icon: ClockIcon,
+      title: "Pragmatic approach",
+      description:
+        "We balance best practices with what works for your team and timeline, avoiding over-engineering.",
+    },
+    {
+      icon: UserGroupIcon,
+      title: "Team collaboration",
+      description:
+        "We work alongside your engineers, transferring knowledge so improvements stick after we&apos;re done.",
+    },
+    {
+      icon: SparklesIcon,
+      title: "Modern tooling",
+      description:
+        "We focus on GitHub, Octopus Deploy, and AWS services your teams already use or want to adopt.",
+    },
+  ];
+
+  return (
+    <section
+      aria-labelledby="why-choose-heading"
+      className="mb-16 bg-white dark:bg-slate-800 rounded-3xl p-8 md:p-12 shadow-xl border border-slate-200 dark:border-slate-700"
+    >
+      <div className="mb-10 text-center">
+        <h2
+          id="why-choose-heading"
+          className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-slate-100 mb-3"
+        >
+          Why choose Vision XIX Labs
+        </h2>
+        <p className="text-sm md:text-base text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
+          We bring a practical, collaborative approach to AWS and DevOps that
+          focuses on real business outcomes.
+        </p>
+      </div>
+      <div className="grid gap-6 md:grid-cols-2">
+        {reasons.map((reason) => {
+          const Icon = reason.icon;
+          return (
+            <div
+              key={reason.title}
+              className="flex gap-4 p-6 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700"
+            >
+              <div className="flex-shrink-0">
+                <div className="inline-flex h-10 w-10 items-center justify-center rounded-lg bg-indigo-100 dark:bg-indigo-900/40 text-indigo-700 dark:text-indigo-300">
+                  <Icon className="h-5 w-5" />
+                </div>
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100 mb-2">
+                  {reason.title}
+                </h3>
+                <p className="text-sm text-slate-600 dark:text-slate-400">
+                  {reason.description}
+                </p>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </section>
+  );
+}
+
+function FAQSection() {
+  const faqs = [
+    {
+      question: "What size teams do you typically work with?",
+      answer:
+        "We work with teams of all sizes—from startups building their first AWS infrastructure to larger organizations modernizing existing platforms. Our approach scales to fit your team structure and needs.",
+    },
+    {
+      question: "Do you work with teams outside of AWS?",
+      answer:
+        "While we specialize in AWS, we also help teams using GitHub Actions and Octopus Deploy regardless of cloud provider. Our CI/CD and DevOps practices apply across environments.",
+    },
+    {
+      question: "How long do typical engagements last?",
+      answer:
+        "Engagements vary based on scope. Some projects are 2–4 weeks for specific improvements, while others are ongoing partnerships. We can work in sprints, retainer models, or project-based arrangements.",
+    },
+    {
+      question: "Do you provide ongoing support after implementation?",
+      answer:
+        "Yes. We offer ongoing support, optimization, and training options. Many clients start with a focused project and then move to a retainer for continuous improvement and guidance.",
+    },
+    {
+      question: "What if we already have some AWS infrastructure?",
+      answer:
+        "Perfect. We often help teams optimize and modernize existing AWS setups. We assess what you have, identify improvements, and implement changes incrementally to minimize risk.",
+    },
+    {
+      question: "How do you handle security and compliance requirements?",
+      answer:
+        "We build security and governance into every engagement. We help establish IAM patterns, policy guardrails, and compliance-ready configurations that fit your regulatory needs.",
+    },
+  ];
+
+  return (
+    <section aria-labelledby="faq-heading" className="mb-16">
+      <div className="mb-10 text-center">
+        <h2
+          id="faq-heading"
+          className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-slate-100 mb-3"
+        >
+          Frequently asked questions
+        </h2>
+        <p className="text-sm md:text-base text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
+          Common questions about our AWS and DevOps services.
+        </p>
+      </div>
+      <div className="space-y-4">
+        {faqs.map((faq, index) => (
+          <div
+            key={index}
+            className="card-hover bg-white dark:bg-slate-800 rounded-xl p-6 shadow-lg border border-slate-200 dark:border-slate-700"
+          >
+            <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100 mb-2">
+              {faq.question}
+            </h3>
+            <p className="text-sm text-slate-600 dark:text-slate-400">
+              {faq.answer}
+            </p>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function EngagementModelsSection() {
+  const models = [
+    {
+      title: "Project-based",
+      description:
+        "Focused engagements for specific outcomes—like setting up CI/CD pipelines, optimizing costs, or improving reliability.",
+      duration: "2–8 weeks",
+    },
+    {
+      title: "Retainer",
+      description:
+        "Ongoing partnership for continuous improvement, guidance, and support as your AWS infrastructure evolves.",
+      duration: "Ongoing",
+    },
+    {
+      title: "Assessment & roadmap",
+      description:
+        "Quick assessment of your current setup with a prioritized roadmap for improvements you can execute internally or with our help.",
+      duration: "1–2 weeks",
+    },
+  ];
+
+  return (
+    <section aria-labelledby="engagement-heading" className="mb-16">
+      <div className="mb-10 text-center">
+        <h2
+          id="engagement-heading"
+          className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-slate-100 mb-3"
+        >
+          How we can work together
+        </h2>
+        <p className="text-sm md:text-base text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
+          Flexible engagement models that fit your timeline, budget, and team
+          structure.
+        </p>
+      </div>
+      <div className="grid gap-6 md:grid-cols-3">
+        {models.map((model) => (
+          <div
+            key={model.title}
+            className="card-hover bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-lg border border-slate-200 dark:border-slate-700"
+          >
+            <div className="flex items-start justify-between mb-4">
+              <h3 className="text-xl font-bold text-slate-900 dark:text-slate-100">
+                {model.title}
+              </h3>
+              <span className="px-3 py-1 rounded-full text-xs font-semibold bg-indigo-100 dark:bg-indigo-900/40 text-indigo-700 dark:text-indigo-300">
+                {model.duration}
+              </span>
+            </div>
+            <p className="text-sm text-slate-600 dark:text-slate-400">
+              {model.description}
+            </p>
+          </div>
+        ))}
       </div>
     </section>
   );
@@ -315,7 +562,7 @@ export default function ServicesPage() {
           </section>
 
           {/* How we work */}
-          <section aria-labelledby="process-heading" className="mb-8">
+          <section aria-labelledby="process-heading" className="mb-16">
             <div className="mb-8 text-center">
               <h2
                 id="process-heading"
@@ -335,10 +582,99 @@ export default function ServicesPage() {
             </div>
           </section>
 
+          {/* Technologies */}
+          <TechnologiesSection />
+
+          {/* Why Choose Us */}
+          <WhyChooseUsSection />
+
+          {/* Engagement Models */}
+          <EngagementModelsSection />
+
+          {/* FAQ */}
+          <FAQSection />
+
           {/* CTA */}
           <CTASection />
         </div>
       </main>
+
+      {/* Footer */}
+      <footer className="bg-slate-900 text-slate-300 py-12 px-4 sm:px-6 lg:px-8 mt-24">
+        <div className="max-w-7xl mx-auto">
+          <div className="grid md:grid-cols-3 gap-8 mb-8">
+            <div>
+              <div className="flex items-center space-x-2 mb-4">
+                <SparklesIcon className="h-6 w-6 text-indigo-400" />
+                <span className="text-lg font-bold text-white">
+                  Vision XIX Labs
+                </span>
+              </div>
+              <p className="text-slate-400">
+                AWS cloud infrastructure, CI/CD, and DevOps solutions that help
+                teams move faster with confidence.
+              </p>
+            </div>
+            <div>
+              <h4 className="text-white font-semibold mb-4">Quick Links</h4>
+              <ul className="space-y-2">
+                <li>
+                  <Link
+                    href="/"
+                    className="hover:text-indigo-400 transition-colors"
+                  >
+                    Home
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/services"
+                    className="hover:text-indigo-400 transition-colors"
+                  >
+                    AWS Services
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/contact"
+                    className="hover:text-indigo-400 transition-colors"
+                  >
+                    Contact
+                  </Link>
+                </li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="text-white font-semibold mb-4">Contact</h4>
+              <ul className="space-y-2">
+                <li>
+                  <a
+                    href="mailto:support@visionxixlabs.com"
+                    className="hover:text-indigo-400 transition-colors inline-flex items-center"
+                  >
+                    <EnvelopeIcon className="h-4 w-4 mr-2" />
+                    support@visionxixlabs.com
+                  </a>
+                </li>
+                <li>
+                  <Link
+                    href="/privacy"
+                    className="hover:text-indigo-400 transition-colors"
+                  >
+                    Privacy Policy
+                  </Link>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div className="border-t border-slate-800 pt-8 text-center text-slate-400">
+            <p>
+              © {new Date().getFullYear()} Vision XIX Labs LLC. All rights
+              reserved.
+            </p>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }
