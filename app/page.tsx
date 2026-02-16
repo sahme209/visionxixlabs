@@ -108,6 +108,12 @@ export default function Home() {
               >
                 Solutions
               </a>
+              <Link
+                href="/cloud-solutions"
+                className="text-slate-700 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
+              >
+                Cloud Solutions
+              </Link>
               <a
                 href="#about"
                 className="text-slate-700 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
@@ -360,13 +366,27 @@ export default function Home() {
                 Outcomes: lower spend; faster detection and recovery; reduced
                 risk.
               </p>
-              <Link
-                href="/services"
-                className="inline-flex items-center text-sm font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300"
-              >
-                Learn more about our AWS services
-                <ArrowRightIcon className="ml-1 h-4 w-4" />
-              </Link>
+              <div className="flex flex-wrap gap-3">
+                <Link
+                  href="/cloud-solutions"
+                  className="inline-flex items-center text-sm font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300"
+                >
+                  View Cloud Solutions
+                  <ArrowRightIcon className="ml-1 h-4 w-4" />
+                </Link>
+                <Link
+                  href="/cloud-solutions/aws"
+                  className="inline-flex items-center text-sm font-semibold text-slate-700 dark:text-slate-300 hover:text-indigo-700 dark:hover:text-indigo-300"
+                >
+                  AWS details
+                </Link>
+                <Link
+                  href="/cloud-solutions/azure"
+                  className="inline-flex items-center text-sm font-semibold text-slate-700 dark:text-slate-300 hover:text-indigo-700 dark:hover:text-indigo-300"
+                >
+                  Azure details
+                </Link>
+              </div>
             </div>
           </div>
         </div>
