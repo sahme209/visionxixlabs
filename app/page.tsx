@@ -80,8 +80,9 @@ export default function Home() {
       {/* Hero Section */}
       <section className="pt-32 pb-16 px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto text-center">
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-slate-900 dark:text-slate-100 mb-6 leading-tight">
-            Cloud &amp; AI Engineering for Modern Infrastructure
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
+            <span className="text-indigo-600 dark:text-indigo-400">Cloud &amp; AI Engineering</span>
+            <span className="text-slate-900 dark:text-slate-100"> for Modern Infrastructure</span>
           </h1>
           <p className="text-lg md:text-xl text-slate-600 dark:text-slate-400 mb-8 max-w-3xl mx-auto">
             We design, automate, optimize, and secure cloud platforms across AWS, Azure, and Google Cloud — with production-grade AI integration and DevOps automation.
