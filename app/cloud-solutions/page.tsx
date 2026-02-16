@@ -362,6 +362,19 @@ export default function CloudSolutionsPage() {
             <FAQAccordion items={cloudFAQ} />
           </section>
 
+          {/* Link to AI Solutions */}
+          <div className="mb-16 text-center">
+            <p className="text-sm text-slate-600 dark:text-slate-400 mb-2">
+              Building AI on top of your cloud? Explore our AI Solutions practice.
+            </p>
+            <Link
+              href="/ai-solutions"
+              className="text-sm font-semibold text-indigo-600 dark:text-indigo-400 hover:underline"
+            >
+              AI Solutions →
+            </Link>
+          </div>
+
           {/* CTA Footer */}
           <CTASection
             title="Let’s build a cloud platform you can trust."

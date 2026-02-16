@@ -1,9 +1,9 @@
 "use client";
 
-import type { FAQ } from "../lib/cloudContent";
+type FAQItem = { question: string; answer: string };
 
 type FAQAccordionProps = {
-  items: FAQ[];
+  items: FAQItem[];
 };
 
 export function FAQAccordion({ items }: FAQAccordionProps) {
