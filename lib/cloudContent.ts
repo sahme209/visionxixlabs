@@ -41,13 +41,18 @@ export const cloudSolutionsHero = {
   capabilities: [
     "Cloud Architecture",
     "DevOps Automation",
+    "DevSecOps",
     "AI/ML Engineering",
     "Kubernetes & Containers",
     "Data Engineering",
     "Serverless Architecture",
+    "Infrastructure as Code",
+    "Compliance & Security",
+    "Zero Trust Security",
     "FinOps",
+    "Performance Optimization",
+    "API Management",
     "Reliability Engineering",
-    "Security & Governance",
     "Multi-Cloud Strategy",
   ],
 };
@@ -173,6 +178,62 @@ export const cloudSolutionCards: Solution[] = [
     bestFor: "Teams building new applications or modernizing legacy systems.",
     href: "/cloud-solutions/cloud-native-development",
   },
+  {
+    id: "devsecops",
+    title: "DevSecOps & Security Automation",
+    description:
+      "Integrate security into your CI/CD pipelines with automated scanning, policy enforcement, and secure-by-default practices.",
+    bestFor: "Teams needing security built into their development workflow.",
+    href: "/cloud-solutions/devsecops",
+  },
+  {
+    id: "cloud-compliance-security",
+    title: "Cloud Compliance & Security",
+    description:
+      "Achieve and maintain compliance with SOC2, HIPAA, GDPR, PCI-DSS, and other frameworks through automated security controls.",
+    bestFor: "Organizations requiring regulatory compliance and audit readiness.",
+    href: "/cloud-solutions/cloud-compliance-security",
+  },
+  {
+    id: "infrastructure-as-code",
+    title: "Infrastructure as Code Consulting",
+    description:
+      "Design and implement IaC strategies using Terraform, Pulumi, AWS CDK, or Bicep for reproducible, reviewable infrastructure.",
+    bestFor: "Teams moving from manual infrastructure to code-driven deployments.",
+    href: "/cloud-solutions/infrastructure-as-code",
+  },
+  {
+    id: "zero-trust-security",
+    title: "Zero Trust Security Architecture",
+    description:
+      "Implement zero trust principles across cloud environments with identity-based access, micro-segmentation, and continuous verification.",
+    bestFor: "Organizations adopting modern security architectures.",
+    href: "/cloud-solutions/zero-trust-security",
+  },
+  {
+    id: "cloud-performance",
+    title: "Cloud Performance Optimization",
+    description:
+      "Optimize application performance, reduce latency, and improve user experience through architecture tuning and CDN strategies.",
+    bestFor: "Teams needing faster response times and better user experience.",
+    href: "/cloud-solutions/cloud-performance",
+  },
+  {
+    id: "api-management-microservices",
+    title: "API Management & Microservices",
+    description:
+      "Design and implement API gateways, service mesh architectures, and microservices patterns for scalable, maintainable systems.",
+    bestFor: "Teams building distributed systems and API-first architectures.",
+    href: "/cloud-solutions/api-management-microservices",
+  },
+  {
+    id: "cloud-training-enablement",
+    title: "Cloud Training & Enablement",
+    description:
+      "Train your teams on cloud best practices, architecture patterns, and platform-specific skills to build internal cloud expertise.",
+    bestFor: "Organizations building internal cloud capabilities and knowledge.",
+    href: "/cloud-solutions/cloud-training-enablement",
+  },
 ];
 
 export const engagementPackages: Package[] = [
@@ -243,7 +304,7 @@ export const trustPrinciples = [
 ];
 
 export const toolsWeWorkWith =
-  "AWS • Azure • Google Cloud (GCP) • Kubernetes (EKS/AKS/GKE) • GitHub • Octopus Deploy • Terraform • AI/ML Platforms (SageMaker/Azure ML/Vertex AI) • monitoring and logging tools";
+  "AWS • Azure • Google Cloud (GCP) • Kubernetes (EKS/AKS/GKE) • GitHub • Octopus Deploy • Terraform • Pulumi • AWS CDK • Bicep • AI/ML Platforms (SageMaker/Azure ML/Vertex AI) • API Gateways • Service Mesh (Istio/Linkerd) • Security Tools • monitoring and logging tools";
 
 export const cloudFAQ: FAQ[] = [
   {
@@ -859,6 +920,335 @@ export const solutionDetails: SolutionDetail[] = [
       "Organizations modernizing legacy applications to cloud-native patterns",
     ],
     relatedProviders: ["aws", "azure", "gcp"],
+  },
+  {
+    id: "devsecops",
+    title: "DevSecOps & Security Automation",
+    intro:
+      "Integrate security into your CI/CD pipelines and development workflow with automated scanning, policy enforcement, and secure-by-default practices.",
+    sections: [
+      {
+        heading: "Security in CI/CD pipelines",
+        body:
+          "We integrate security scanning, vulnerability assessment, and policy checks directly into your build and deployment pipelines.",
+        bullets: [
+          "Automated dependency scanning and vulnerability detection",
+          "Container image scanning and policy enforcement",
+          "Infrastructure-as-Code security validation before deployment",
+          "Secrets detection and management in pipelines",
+        ],
+      },
+      {
+        heading: "Policy as code and compliance automation",
+        body:
+          "We implement policy-as-code patterns that enforce security and compliance requirements automatically.",
+        bullets: [
+          "Policy frameworks using OPA, Sentinel, or cloud-native policy engines",
+          "Automated compliance checks in CI/CD",
+          "Security guardrails that prevent risky configurations",
+          "Audit trails and compliance reporting",
+        ],
+      },
+      {
+        heading: "Secure development practices",
+        body:
+          "We help teams adopt secure coding practices, threat modeling, and security testing as part of their development workflow.",
+        bullets: [
+          "Threat modeling and security architecture reviews",
+          "Secure coding guidelines and training",
+          "Security testing integration (SAST, DAST, IAST)",
+          "Incident response and security monitoring integration",
+        ],
+      },
+    ],
+    idealFor: [
+      "Teams needing security integrated into their development process",
+      "Organizations requiring automated compliance and security controls",
+    ],
+    relatedProviders: ["aws", "azure", "gcp", "multi-cloud"],
+  },
+  {
+    id: "cloud-compliance-security",
+    title: "Cloud Compliance & Security",
+    intro:
+      "Achieve and maintain compliance with SOC2, HIPAA, GDPR, PCI-DSS, and other regulatory frameworks through automated security controls and audit-ready configurations.",
+    sections: [
+      {
+        heading: "Compliance framework implementation",
+        body:
+          "We help you implement controls and configurations that meet specific compliance requirements for your industry and region.",
+        bullets: [
+          "SOC2 Type II readiness and ongoing compliance",
+          "HIPAA compliance for healthcare data handling",
+          "GDPR compliance for data privacy and protection",
+          "PCI-DSS compliance for payment card data",
+          "ISO 27001 and other international standards",
+        ],
+      },
+      {
+        heading: "Security controls and monitoring",
+        body:
+          "We implement security controls, monitoring, and alerting that support compliance requirements and provide audit evidence.",
+        bullets: [
+          "Identity and access management aligned to compliance needs",
+          "Encryption at rest and in transit",
+          "Logging and monitoring for security events",
+          "Automated compliance reporting and evidence collection",
+        ],
+      },
+      {
+        heading: "Audit readiness and documentation",
+        body:
+          "We prepare your cloud environment for audits with proper documentation, evidence collection, and control testing.",
+        bullets: [
+          "Compliance documentation and runbooks",
+          "Automated evidence collection and reporting",
+          "Control testing and validation procedures",
+          "Remediation guidance for compliance gaps",
+        ],
+      },
+    ],
+    idealFor: [
+      "Organizations requiring regulatory compliance",
+      "Companies handling sensitive data (healthcare, financial, personal)",
+      "Businesses needing audit-ready cloud environments",
+    ],
+    relatedProviders: ["aws", "azure", "gcp", "multi-cloud"],
+  },
+  {
+    id: "infrastructure-as-code",
+    title: "Infrastructure as Code Consulting",
+    intro:
+      "Design and implement Infrastructure as Code strategies using Terraform, Pulumi, AWS CDK, or Bicep for reproducible, reviewable, and maintainable infrastructure.",
+    sections: [
+      {
+        heading: "IaC strategy and tool selection",
+        body:
+          "We help you choose the right IaC tooling and establish patterns that fit your team's workflow and cloud provider mix.",
+        bullets: [
+          "Tool evaluation and selection (Terraform, Pulumi, CDK, Bicep, CloudFormation)",
+          "Multi-cloud and provider-agnostic strategies",
+          "Module and component design patterns",
+          "State management and collaboration workflows",
+        ],
+      },
+      {
+        heading: "Code organization and best practices",
+        body:
+          "We establish code organization, testing, and review practices that make infrastructure changes safe and predictable.",
+        bullets: [
+          "Repository structure and module organization",
+          "Infrastructure testing strategies (unit, integration, compliance)",
+          "Code review and change management processes",
+          "Documentation and knowledge sharing practices",
+        ],
+      },
+      {
+        heading: "CI/CD integration and automation",
+        body:
+          "We integrate IaC into your CI/CD pipelines so infrastructure changes are tested, reviewed, and deployed safely.",
+        bullets: [
+          "Automated plan and apply workflows",
+          "Policy checks and validation in CI",
+          "Environment promotion patterns",
+          "Rollback and disaster recovery procedures",
+        ],
+      },
+    ],
+    idealFor: [
+      "Teams moving from manual infrastructure to code-driven deployments",
+      "Organizations standardizing infrastructure across teams and environments",
+      "Companies needing reproducible and auditable infrastructure changes",
+    ],
+    relatedProviders: ["aws", "azure", "gcp", "multi-cloud"],
+  },
+  {
+    id: "zero-trust-security",
+    title: "Zero Trust Security Architecture",
+    intro:
+      "Implement zero trust principles across cloud environments with identity-based access, micro-segmentation, and continuous verification.",
+    sections: [
+      {
+        heading: "Identity and access management",
+        body:
+          "We design identity-centric access models where every request is authenticated, authorized, and verified before access is granted.",
+        bullets: [
+          "Identity-based access policies and roles",
+          "Multi-factor authentication and conditional access",
+          "Just-in-time access and privilege management",
+          "Integration with identity providers (Azure AD, Okta, etc.)",
+        ],
+      },
+      {
+        heading: "Network segmentation and micro-segmentation",
+        body:
+          "We implement network segmentation strategies that limit lateral movement and contain potential security incidents.",
+        bullets: [
+          "Network segmentation patterns and policies",
+          "Micro-segmentation for workloads and services",
+          "Zero trust networking principles",
+          "Service mesh and network policy enforcement",
+        ],
+      },
+      {
+        heading: "Continuous monitoring and verification",
+        body:
+          "We establish monitoring and verification systems that continuously assess security posture and detect anomalies.",
+        bullets: [
+          "Continuous security monitoring and threat detection",
+          "Behavioral analytics and anomaly detection",
+          "Automated response to security events",
+          "Security posture assessment and reporting",
+        ],
+      },
+    ],
+    idealFor: [
+      "Organizations adopting modern security architectures",
+      "Companies needing defense-in-depth security strategies",
+      "Businesses handling sensitive data requiring enhanced protection",
+    ],
+    relatedProviders: ["aws", "azure", "gcp", "multi-cloud"],
+  },
+  {
+    id: "cloud-performance",
+    title: "Cloud Performance Optimization",
+    intro:
+      "Optimize application performance, reduce latency, and improve user experience through architecture tuning, CDN strategies, and performance monitoring.",
+    sections: [
+      {
+        heading: "Application performance optimization",
+        body:
+          "We analyze and optimize application performance through architecture improvements, caching strategies, and resource tuning.",
+        bullets: [
+          "Application architecture performance analysis",
+          "Caching strategies (Redis, Memcached, CDN)",
+          "Database query optimization and indexing",
+          "Compute resource right-sizing and auto-scaling",
+        ],
+      },
+      {
+        heading: "Content delivery and edge optimization",
+        body:
+          "We implement CDN strategies and edge computing patterns to reduce latency and improve global user experience.",
+        bullets: [
+          "CDN configuration and optimization (CloudFront, Azure CDN, Cloud CDN)",
+          "Edge computing and edge function deployment",
+          "Static asset optimization and delivery",
+          "Geographic distribution strategies",
+        ],
+      },
+      {
+        heading: "Performance monitoring and optimization",
+        body:
+          "We establish performance monitoring, alerting, and optimization processes to maintain and improve performance over time.",
+        bullets: [
+          "Application performance monitoring (APM) setup",
+          "Performance metrics and SLI/SLO definition",
+          "Performance testing and benchmarking",
+          "Continuous performance optimization practices",
+        ],
+      },
+    ],
+    idealFor: [
+      "Teams needing faster response times and better user experience",
+      "Applications with global user bases",
+      "Organizations optimizing for performance and cost",
+    ],
+    relatedProviders: ["aws", "azure", "gcp"],
+  },
+  {
+    id: "api-management-microservices",
+    title: "API Management & Microservices",
+    intro:
+      "Design and implement API gateways, service mesh architectures, and microservices patterns for scalable, maintainable distributed systems.",
+    sections: [
+      {
+        heading: "API gateway design and implementation",
+        body:
+          "We design and implement API gateways that provide routing, authentication, rate limiting, and monitoring for your APIs.",
+        bullets: [
+          "API Gateway selection and configuration (API Gateway, Azure API Management, Apigee)",
+          "API versioning and lifecycle management",
+          "Authentication and authorization patterns",
+          "Rate limiting, throttling, and usage policies",
+        ],
+      },
+      {
+        heading: "Microservices architecture patterns",
+        body:
+          "We help teams design and implement microservices architectures with appropriate service boundaries and communication patterns.",
+        bullets: [
+          "Service decomposition and boundary definition",
+          "Inter-service communication patterns (REST, gRPC, messaging)",
+          "Service discovery and registration",
+          "Distributed tracing and observability",
+        ],
+      },
+      {
+        heading: "Service mesh and operational patterns",
+        body:
+          "We implement service mesh technologies and operational patterns that make microservices easier to run and observe.",
+        bullets: [
+          "Service mesh implementation (Istio, Linkerd, AWS App Mesh)",
+          "Traffic management and canary deployments",
+          "Security policies and mTLS configuration",
+          "Observability and monitoring for microservices",
+        ],
+      },
+    ],
+    idealFor: [
+      "Teams building distributed systems and API-first architectures",
+      "Organizations scaling beyond monolithic applications",
+      "Companies needing API management and governance",
+    ],
+    relatedProviders: ["aws", "azure", "gcp"],
+  },
+  {
+    id: "cloud-training-enablement",
+    title: "Cloud Training & Enablement",
+    intro:
+      "Train your teams on cloud best practices, architecture patterns, and platform-specific skills to build internal cloud expertise and reduce dependency on external consultants.",
+    sections: [
+      {
+        heading: "Cloud fundamentals and best practices",
+        body:
+          "We provide training on cloud computing fundamentals, architecture patterns, and best practices that apply across providers.",
+        bullets: [
+          "Cloud computing concepts and service models",
+          "Architecture patterns (12-factor app, microservices, serverless)",
+          "Security and compliance best practices",
+          "Cost optimization and FinOps principles",
+        ],
+      },
+      {
+        heading: "Platform-specific training",
+        body:
+          "We offer hands-on training on AWS, Azure, and GCP services, tools, and platform-specific patterns.",
+        bullets: [
+          "Provider-specific service deep-dives",
+          "Hands-on labs and workshops",
+          "Architecture certification preparation",
+          "Platform-specific tooling and workflows",
+        ],
+      },
+      {
+        heading: "DevOps and automation training",
+        body:
+          "We train teams on DevOps practices, CI/CD, Infrastructure as Code, and automation tools.",
+        bullets: [
+          "CI/CD pipeline design and implementation",
+          "Infrastructure as Code (Terraform, Pulumi, CDK)",
+          "Container and Kubernetes training",
+          "Monitoring, logging, and observability practices",
+        ],
+      },
+    ],
+    idealFor: [
+      "Organizations building internal cloud capabilities",
+      "Teams transitioning to cloud-native practices",
+      "Companies reducing dependency on external consultants",
+    ],
+    relatedProviders: ["aws", "azure", "gcp", "multi-cloud"],
   },
 ];
 
