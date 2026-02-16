@@ -20,6 +20,11 @@ export const metadata: Metadata = {
     "health apps",
   ],
   authors: [{ name: "Vision XIX Labs LLC" }],
+  icons: {
+    icon: "/vision-xix-logo.png",
+    shortcut: "/vision-xix-logo.png",
+    apple: "/vision-xix-logo.png",
+  },
   openGraph: {
     title: "Vision XIX Labs - Innovative Mobile Apps & Solutions",
     description:
