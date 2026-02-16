@@ -145,89 +145,85 @@ export default function Home() {
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
             <h2 className="text-4xl md:text-5xl font-bold mb-4 text-slate-900 dark:text-slate-100">
-              AWS &amp; DevOps Solutions
+              Multi-cloud engineering solutions
             </h2>
             <p className="text-xl text-slate-600 dark:text-slate-400 max-w-3xl mx-auto">
-              Beyond mobile apps, we help teams design AWS cloud infrastructure,
-              modernize CI/CD with GitHub and Octopus Deploy, and improve cost,
-              reliability, and security.
+              We design, automate, and operate cloud platforms across AWS, Azure,
+              and Google Cloud with a focus on reliability, security, and cost
+              efficiency.
             </p>
           </div>
           <div className="grid gap-8 md:grid-cols-3">
             <div className="card-hover bg-slate-50 dark:bg-slate-800 rounded-2xl p-8 shadow-xl border border-slate-200 dark:border-slate-700">
               <h3 className="text-2xl font-bold mb-2 text-slate-900 dark:text-slate-100">
-                AWS Cloud Infrastructure
+                AWS Cloud Engineering
               </h3>
               <p className="text-slate-600 dark:text-slate-400 mb-4 text-sm">
-                Design, provisioning, and networking foundations for a stable AWS
-                environment.
+                Foundations, automation, and operations for modern workloads on
+                AWS.
               </p>
               <ul className="text-sm text-slate-600 dark:text-slate-400 space-y-1 mb-6">
-                <li>Design and scaling on AWS</li>
-                <li>EC2 and EBS architecture guidance</li>
-                <li>VPC patterns, routing, and security groups</li>
+                <li>Landing zones, networking, and security baselines</li>
+                <li>CI/CD with GitHub and Octopus Deploy</li>
+                <li>FinOps and observability for production environments</li>
               </ul>
               <p className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-4">
-                Outcomes: stable, scalable foundation; faster deployments; fewer
-                incidents.
+                Outcomes: stable, scalable foundations and safer releases on AWS.
               </p>
+              <Link
+                href="/cloud-solutions/aws"
+                className="inline-flex items-center text-sm font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300"
+              >
+                Explore AWS solutions
+                <ArrowRightIcon className="ml-1 h-4 w-4" />
+              </Link>
             </div>
             <div className="card-hover bg-slate-50 dark:bg-slate-800 rounded-2xl p-8 shadow-xl border border-slate-200 dark:border-slate-700">
               <h3 className="text-2xl font-bold mb-2 text-slate-900 dark:text-slate-100">
-                CI/CD &amp; Release Automation
+                Azure Cloud Engineering
               </h3>
               <p className="text-slate-600 dark:text-slate-400 mb-4 text-sm">
-                Practical delivery pipelines built around GitHub and Octopus
-                Deploy.
+                Designing and hardening Azure platforms for enterprise workloads.
               </p>
               <ul className="text-sm text-slate-600 dark:text-slate-400 space-y-1 mb-6">
-                <li>GitHub-based workflows</li>
-                <li>Octopus Deploy release pipelines</li>
-                <li>Environment consistency across dev, test, and prod</li>
+                <li>Azure landing zones and subscription structure</li>
+                <li>Networking, identity, and governance patterns</li>
+                <li>Automation and CI/CD for Azure-native services</li>
               </ul>
               <p className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-4">
-                Outcomes: safer releases; repeatable deployments; reduced manual
-                effort.
+                Outcomes: well-governed Azure environments that are easier to run.
               </p>
+              <Link
+                href="/cloud-solutions/azure"
+                className="inline-flex items-center text-sm font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300"
+              >
+                Explore Azure solutions
+                <ArrowRightIcon className="ml-1 h-4 w-4" />
+              </Link>
             </div>
             <div className="card-hover bg-slate-50 dark:bg-slate-800 rounded-2xl p-8 shadow-xl border border-slate-200 dark:border-slate-700">
               <h3 className="text-2xl font-bold mb-2 text-slate-900 dark:text-slate-100">
-                Cost, Reliability &amp; Security
+                Google Cloud (GCP)
               </h3>
               <p className="text-slate-600 dark:text-slate-400 mb-4 text-sm">
-                FinOps, observability, and governance practices that grow with
-                your business.
+                Opinionated GCP architectures with automation, security, and
+                cost-control built in.
               </p>
               <ul className="text-sm text-slate-600 dark:text-slate-400 space-y-1 mb-6">
-                <li>Cost optimization and right-sizing</li>
-                <li>Monitoring, logging, and SLO-aligned alerts</li>
-                <li>IAM patterns and policy guardrails</li>
+                <li>Project structure and VPC networking</li>
+                <li>CI/CD pipelines for containerized and serverless workloads</li>
+                <li>Cost visibility, monitoring, and guardrails</li>
               </ul>
-              <p className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-6">
-                Outcomes: lower spend; faster detection and recovery; reduced
-                risk.
+              <p className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-4">
+                Outcomes: clear, reliable GCP environments with predictable spend.
               </p>
-              <div className="flex flex-wrap gap-3">
-                <Link
-                  href="/cloud-solutions"
-                  className="inline-flex items-center text-sm font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300"
-                >
-                  View Cloud Solutions
-                  <ArrowRightIcon className="ml-1 h-4 w-4" />
-                </Link>
-                <Link
-                  href="/cloud-solutions/aws"
-                  className="inline-flex items-center text-sm font-semibold text-slate-700 dark:text-slate-300 hover:text-indigo-700 dark:hover:text-indigo-300"
-                >
-                  AWS details
-                </Link>
-                <Link
-                  href="/cloud-solutions/azure"
-                  className="inline-flex items-center text-sm font-semibold text-slate-700 dark:text-slate-300 hover:text-indigo-700 dark:hover:text-indigo-300"
-                >
-                  Azure details
-                </Link>
-              </div>
+              <Link
+                href="/cloud-solutions/gcp"
+                className="inline-flex items-center text-sm font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300"
+              >
+                Explore GCP solutions
+                <ArrowRightIcon className="ml-1 h-4 w-4" />
+              </Link>
             </div>
           </div>
         </div>
