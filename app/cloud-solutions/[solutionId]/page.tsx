@@ -6,6 +6,7 @@ import {
   type SolutionDetail,
 } from "../../../lib/cloudContent";
 import { CTASection } from "../../../components/CTASection";
+import { Navigation } from "../../../components/Navigation";
 
 type Params = {
   solutionId: string;
@@ -108,6 +109,7 @@ export default async function SolutionDetailPage({
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
+      <Navigation />
       <main className="pt-24 pb-24 px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto">
           {/* Breadcrumb */}

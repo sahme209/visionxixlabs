@@ -5,12 +5,12 @@ import { PackageCard } from "../../../components/PackageCard";
 import { Navigation } from "../../../components/Navigation";
 
 export const metadata: Metadata = {
-  title: "Azure Cloud Solutions | Vision XIX Labs",
+  title: "Google Cloud Platform (GCP) Engineering | Vision XIX Labs",
   description:
-    "Azure cloud solutions to design, automate, optimize, and operate your platform. Landing zones, networking, CI/CD, cost management, observability, identity, governance, and DR.",
+    "GCP cloud solutions to design, automate, optimize, and operate your platform. Project structure, networking, compute, CI/CD, cost optimization, observability, identity, and governance.",
 };
 
-export default function AzureCloudSolutionsPage() {
+export default function GcpCloudSolutionsPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
       <Navigation />
@@ -41,7 +41,7 @@ export default function AzureCloudSolutionsPage() {
               </li>
               <li aria-hidden="true">/</li>
               <li aria-current="page" className="font-semibold">
-                Azure
+                GCP
               </li>
             </ol>
           </nav>
@@ -49,34 +49,34 @@ export default function AzureCloudSolutionsPage() {
           {/* Hero */}
           <section className="mb-12">
             <h1 className="text-3xl md:text-4xl font-extrabold mb-3 bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
-              Azure Cloud Solutions
+              Google Cloud Platform (GCP) Engineering
             </h1>
             <p className="text-lg md:text-xl text-slate-600 dark:text-slate-400 max-w-3xl mb-4">
-              Design, automate, optimize, and operate on Azure with patterns
-              that work in real engineering environments.
+              Design, automate, optimize, and operate on GCP with patterns that
+              leverage Google&apos;s strengths while keeping operations practical
+              and maintainable.
             </p>
             <p className="text-sm text-slate-600 dark:text-slate-400 max-w-3xl">
-              We help structure subscriptions, networking, CI/CD, observability,
-              identity, governance, and disaster recovery in a way that your
-              teams can own and evolve.
+              We help structure projects, networks, compute, CI/CD, observability,
+              identity, and governance so your teams can build and operate
+              confidently on GCP.
             </p>
           </section>
 
           <div className="space-y-10">
-            {/* Azure Landing Zone / subscription structure */}
+            {/* GCP Project Structure */}
             <section>
               <h2 className="text-xl md:text-2xl font-bold text-slate-900 dark:text-slate-100 mb-2">
-                Azure landing zone &amp; subscription structure
+                Project structure &amp; organization strategy
               </h2>
               <p className="text-sm md:text-base text-slate-600 dark:text-slate-400 mb-3">
-                We design Azure landing zones and subscription structures that
-                give you clear boundaries for environments, teams, and
-                workloads.
+                We design GCP project and folder structures that give you clear
+                boundaries for environments, teams, and workloads.
               </p>
               <ul className="list-disc list-inside text-sm text-slate-600 dark:text-slate-400 space-y-1">
                 <li>
-                  High-level subscription and management group strategies aligned
-                  to your organization.
+                  High-level project and folder organization aligned to your
+                  organization.
                 </li>
                 <li>
                   Baseline policies and configuration for security and
@@ -89,18 +89,18 @@ export default function AzureCloudSolutionsPage() {
               </ul>
             </section>
 
-            {/* Azure Networking */}
+            {/* VPC and Networking */}
             <section>
               <h2 className="text-xl md:text-2xl font-bold text-slate-900 dark:text-slate-100 mb-2">
-                Azure networking
+                VPC and networking patterns
               </h2>
               <p className="text-sm md:text-base text-slate-600 dark:text-slate-400 mb-3">
-                We help define VNet, subnet, and routing concepts that keep
+                We help define VPC, subnet, and routing concepts that keep
                 services connected and secure without unnecessary complexity.
               </p>
               <ul className="list-disc list-inside text-sm text-slate-600 dark:text-slate-400 space-y-1">
                 <li>
-                  High-level VNet and subnet patterns for your core environments.
+                  High-level VPC and subnet patterns for your core environments.
                 </li>
                 <li>
                   Routing and connectivity approaches for hybrid and cloud-only
@@ -116,41 +116,45 @@ export default function AzureCloudSolutionsPage() {
             {/* Compute & Storage */}
             <section>
               <h2 className="text-xl md:text-2xl font-bold text-slate-900 dark:text-slate-100 mb-2">
-                Compute &amp; Storage
+                Compute &amp; Storage Strategy
               </h2>
               <p className="text-sm md:text-base text-slate-600 dark:text-slate-400 mb-3">
-                We guide VM and managed disk usage so workloads have appropriate
-                performance, resilience, and cost characteristics.
+                We guide VM, managed instance groups, and storage usage so
+                workloads have appropriate performance, resilience, and cost
+                characteristics.
               </p>
               <ul className="list-disc list-inside text-sm text-slate-600 dark:text-slate-400 space-y-1">
-                <li>VM sizing and family guidance for representative workloads.</li>
                 <li>
-                  Managed disk strategies for performance and lifecycle
+                  VM sizing and machine family guidance for representative
+                  workloads.
+                </li>
+                <li>
+                  Persistent disk strategies for performance and lifecycle
                   management.
                 </li>
                 <li>
-                  High-level patterns for scale sets or PaaS options where
-                  appropriate.
+                  High-level patterns for managed instance groups or serverless
+                  options where appropriate.
                 </li>
               </ul>
             </section>
 
-            {/* CI/CD */}
+            {/* CI/CD Integration */}
             <section>
               <h2 className="text-xl md:text-2xl font-bold text-slate-900 dark:text-slate-100 mb-2">
-                CI/CD on Azure
+                CI/CD Integration
               </h2>
               <p className="text-sm md:text-base text-slate-600 dark:text-slate-400 mb-3">
-                We implement CI/CD using GitHub Actions or Azure DevOps pipelines
+                We implement CI/CD using GitHub Actions or Cloud Build pipelines
                 and can integrate with Octopus Deploy where it makes sense.
               </p>
               <ul className="list-disc list-inside text-sm text-slate-600 dark:text-slate-400 space-y-1">
                 <li>
                   CI workflows for build, test, and validation using GitHub
-                  Actions or Azure DevOps.
+                  Actions or Cloud Build.
                 </li>
                 <li>
-                  Deployment patterns for Azure resources and applications,
+                  Deployment patterns for GCP resources and applications,
                   including Octopus Deploy where used.
                 </li>
                 <li>
@@ -160,22 +164,23 @@ export default function AzureCloudSolutionsPage() {
               </ul>
             </section>
 
-            {/* Cost Management */}
+            {/* Cost Visibility & Optimization */}
             <section>
               <h2 className="text-xl md:text-2xl font-bold text-slate-900 dark:text-slate-100 mb-2">
-                Cost management &amp; optimization
+                Cost visibility &amp; optimization
               </h2>
               <p className="text-sm md:text-base text-slate-600 dark:text-slate-400 mb-3">
-                We make use of Azure Cost Management capabilities to analyze
-                spend and shape usage, budgets, and alerts.
+                We make use of GCP billing and cost management capabilities to
+                analyze spend and shape usage, budgets, and alerts.
               </p>
               <ul className="list-disc list-inside text-sm text-slate-600 dark:text-slate-400 space-y-1">
                 <li>
-                  Review of current Azure usage to identify optimization
+                  Review of current GCP usage to identify optimization
                   opportunities.
                 </li>
                 <li>
-                  Budget and alert configuration using Azure Cost Management.
+                  Budget and alert configuration using GCP billing and cost
+                  management.
                 </li>
                 <li>
                   Practical recommendations that teams can execute and maintain.
@@ -189,13 +194,13 @@ export default function AzureCloudSolutionsPage() {
                 Observability
               </h2>
               <p className="text-sm md:text-base text-slate-600 dark:text-slate-400 mb-3">
-                We help set up monitoring using Azure Monitor and Log Analytics
-                concepts at a high level, aligned to your existing tools where
-                appropriate.
+                We help set up monitoring using Cloud Monitoring and Cloud
+                Logging concepts at a high level, aligned to your existing tools
+                where appropriate.
               </p>
               <ul className="list-disc list-inside text-sm text-slate-600 dark:text-slate-400 space-y-1">
                 <li>
-                  Monitoring and alerting baselines using Azure Monitor or
+                  Monitoring and alerting baselines using Cloud Monitoring or
                   compatible tools.
                 </li>
                 <li>
@@ -208,51 +213,27 @@ export default function AzureCloudSolutionsPage() {
               </ul>
             </section>
 
-            {/* Identity & Governance */}
+            {/* Identity & Access Governance */}
             <section>
               <h2 className="text-xl md:text-2xl font-bold text-slate-900 dark:text-slate-100 mb-2">
-                Identity &amp; Governance
+                Identity &amp; Access Governance
               </h2>
               <p className="text-sm md:text-base text-slate-600 dark:text-slate-400 mb-3">
-                We apply Entra ID, RBAC, and policy concepts so access is
-                controlled and auditable while remaining workable for
-                engineering teams.
+                We apply Cloud IAM and policy concepts so access is controlled
+                and auditable while remaining workable for engineering teams.
               </p>
               <ul className="list-disc list-inside text-sm text-slate-600 dark:text-slate-400 space-y-1">
                 <li>
-                  High-level identity and access patterns using Entra ID and
-                  RBAC.
+                  High-level identity and access patterns using Cloud IAM and
+                  service accounts.
                 </li>
                 <li>
-                  Policy approaches that support compliance and guardrails
-                  without blocking delivery.
+                  Policy approaches that support compliance and guardrails without
+                  blocking delivery.
                 </li>
                 <li>
                   Integration with existing identity and approval processes where
                   needed.
-                </li>
-              </ul>
-            </section>
-
-            {/* DR */}
-            <section>
-              <h2 className="text-xl md:text-2xl font-bold text-slate-900 dark:text-slate-100 mb-2">
-                DR &amp; resilience
-              </h2>
-              <p className="text-sm md:text-base text-slate-600 dark:text-slate-400 mb-3">
-                We help you use Azure Backup and site recovery concepts at a
-                high level to meet realistic recovery objectives.
-              </p>
-              <ul className="list-disc list-inside text-sm text-slate-600 dark:text-slate-400 space-y-1">
-                <li>
-                  Backup strategies for critical workloads, using Azure-native
-                  options where appropriate.
-                </li>
-                <li>
-                  Recovery planning and simple, testable runbooks.
-                </li>
-                <li>
-                  High-level patterns for regional redundancy when required.
                 </li>
               </ul>
             </section>
@@ -263,8 +244,8 @@ export default function AzureCloudSolutionsPage() {
                 Common engagement packages
               </h2>
               <p className="text-sm md:text-base text-slate-600 dark:text-slate-400 mb-6">
-                Our engagement models apply equally to Azure-focused work and
-                hybrid cloud initiatives.
+                Our engagement models apply equally to GCP-focused work and
+                multi-cloud initiatives.
               </p>
               <div className="grid gap-6 md:grid-cols-3">
                 {engagementPackages.map((pkg) => (
@@ -295,10 +276,16 @@ export default function AzureCloudSolutionsPage() {
                   View AWS Cloud Solutions
                 </Link>
                 <Link
+                  href="/cloud-solutions/azure"
+                  className="underline underline-offset-4 hover:text-indigo-600 dark:hover:text-indigo-400"
+                >
+                  View Azure Cloud Solutions
+                </Link>
+                <Link
                   href="/contact"
                   className="underline underline-offset-4 hover:text-indigo-600 dark:hover:text-indigo-400"
                 >
-                  Talk to us about Azure
+                  Talk to us about GCP
                 </Link>
               </div>
             </section>
@@ -308,4 +295,3 @@ export default function AzureCloudSolutionsPage() {
     </div>
   );
 }
-

@@ -7,6 +7,7 @@ import {
   GlobeAltIcon as GlobeAltIconSolid,
 } from "@heroicons/react/24/solid";
 import { CheckBadgeIcon, SparklesIcon } from "@heroicons/react/24/outline";
+import { Navigation } from "../../components/Navigation";
 
 const apps = [
   {
@@ -43,6 +44,7 @@ const apps = [
 export default function AppsPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
+      <Navigation />
       <main className="pt-24 pb-24 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           {/* Header */}

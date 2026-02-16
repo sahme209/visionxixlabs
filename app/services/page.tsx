@@ -13,6 +13,7 @@ import {
   SparklesIcon,
   EnvelopeIcon,
 } from "@heroicons/react/24/outline";
+import { Navigation } from "../../components/Navigation";
 
 export const metadata: Metadata = {
   title: "AWS & DevOps Services | Vision XIX Labs",
@@ -495,32 +496,7 @@ const processSteps: ProcessStepProps[] = [
 export default function ServicesPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
-      {/* Navigation */}
-      <nav className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-lg border-b border-slate-200 dark:border-slate-800">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          <Link
-            href="/"
-            className="inline-flex items-center text-slate-800 dark:text-slate-100 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
-          >
-            <ArrowLeftIcon className="h-5 w-5 mr-2" />
-            Back to Home
-          </Link>
-          <div className="hidden md:flex items-center space-x-6 text-sm font-medium">
-            <Link
-              href="/services"
-              className="text-indigo-600 dark:text-indigo-400"
-            >
-              Services
-            </Link>
-            <Link
-              href="/contact"
-              className="text-slate-700 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
-            >
-              Contact
-            </Link>
-          </div>
-        </div>
-      </nav>
+      <Navigation />
 
       <main className="pt-20 pb-24 px-4 sm:px-6 lg:px-8">
         <div className="max-w-5xl mx-auto">
