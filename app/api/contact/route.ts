@@ -107,24 +107,23 @@ This email was sent from the Vision XIX Labs contact form.
     })();
 
     if (!resendResponse.ok) {
+      const resendMessage = errorData?.message ?? errorData?.msg ?? "";
       console.error("Resend API error:", { status: resendResponse.status, statusText: resendResponse.statusText, body: errorData });
-      const msg = errorData?.message ?? errorData?.msg ?? resendResponse.statusText;
+      const payload: { error: string; resend_status?: number; resend_message?: string } = {
+        error: "Email could not be sent. Please try again or email us at support@visionxixlabs.com.",
+        resend_status: resendResponse.status,
+        resend_message: typeof resendMessage === "string" ? resendMessage.slice(0, 200) : "",
+      };
       if (resendResponse.status === 401) {
-        return NextResponse.json(
-          { error: "Email service configuration error. Please contact support@visionxixlabs.com." },
-          { status: 500 }
-        );
+        payload.error = "Email service configuration error. Please contact support@visionxixlabs.com.";
+      } else if (resendResponse.status === 422) {
+        payload.error = "Email could not be sent (invalid configuration). Please email us directly at support@visionxixlabs.com.";
+      } else if (resendResponse.status === 403) {
+        payload.error = "Email service access denied. Check Resend dashboard: verify domain or use onboarding@resend.dev.";
+      } else if (resendResponse.status === 429) {
+        payload.error = "Too many requests. Please try again in a few minutes or email us at support@visionxixlabs.com.";
       }
-      if (resendResponse.status === 422) {
-        return NextResponse.json(
-          { error: "Email could not be sent (invalid configuration). Please email us directly at support@visionxixlabs.com." },
-          { status: 500 }
-        );
-      }
-      return NextResponse.json(
-        { error: "Email could not be sent. Please try again or email us at support@visionxixlabs.com." },
-        { status: 500 }
-      );
+      return NextResponse.json(payload, { status: 500 });
     }
 
     const data = (() => {
