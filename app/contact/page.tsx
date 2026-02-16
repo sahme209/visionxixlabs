@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { FormEvent, useState, useRef } from "react";
 import Link from "next/link";
 import {
   ArrowLeftIcon,
@@ -16,13 +16,15 @@ export default function ContactPage() {
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const formRef = useRef<HTMLFormElement>(null);
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setLoading(true);
     setError(null);
 
-    const formData = new FormData(event.currentTarget);
+    const form = event.currentTarget;
+    const formData = new FormData(form);
     const name = formData.get("name")?.toString() || "";
     const email = formData.get("email")?.toString() || "";
     const company = formData.get("company")?.toString() || "";
@@ -51,8 +53,12 @@ export default function ContactPage() {
       }
 
       setSubmitted(true);
-      // Reset form
-      event.currentTarget.reset();
+      // Reset form using ref or stored form reference
+      if (formRef.current) {
+        formRef.current.reset();
+      } else if (form) {
+        form.reset();
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to send message. Please try again.");
     } finally {
@@ -80,7 +86,7 @@ export default function ContactPage() {
             </p>
           </header>
 
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form ref={formRef} onSubmit={handleSubmit} className="space-y-6">
             <div className="grid gap-6 md:grid-cols-2">
               <div>
                 <label
