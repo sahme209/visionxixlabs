@@ -107,9 +107,9 @@ export default function Home() {
             </h1>
             <p className="text-xl md:text-2xl text-slate-600 dark:text-slate-400 mb-8 max-w-3xl mx-auto">
               A cloud consulting and product studio helping teams design,
-              automate, and operate reliable platforms on AWS and Azure.
+              automate, and operate reliable platforms on AWS, Azure, and Google Cloud.
             </p>
-            <div className="flex flex-wrap justify-center gap-4">
+            <div className="flex flex-wrap justify-center gap-4 mb-6">
               <a
                 href="#contact"
                 className="inline-flex items-center px-8 py-4 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-xl font-semibold shadow-lg hover:shadow-xl border border-slate-200 dark:border-slate-700 transform hover:-translate-y-1 transition-all duration-300"
@@ -123,12 +123,25 @@ export default function Home() {
                 Explore Cloud Solutions
                 <ArrowRightIcon className="ml-2 h-5 w-5" />
               </Link>
+            </div>
+            <div className="flex flex-wrap justify-center gap-3">
               <Link
-                href="/services"
-                className="inline-flex items-center px-8 py-4 bg-white/80 dark:bg-slate-900/70 text-slate-900 dark:text-slate-100 rounded-xl font-semibold shadow-lg hover:shadow-xl border border-slate-200/80 dark:border-slate-700 transform hover:-translate-y-1 transition-all duration-300"
+                href="/cloud-solutions/aws"
+                className="inline-flex items-center px-5 py-2.5 bg-white/90 dark:bg-slate-800/90 text-slate-900 dark:text-slate-100 rounded-lg text-sm font-semibold shadow-md hover:shadow-lg border border-slate-200 dark:border-slate-700 transform hover:-translate-y-0.5 transition-all duration-300"
               >
-                AWS Services
-                <ArrowRightIcon className="ml-2 h-5 w-5" />
+                AWS
+              </Link>
+              <Link
+                href="/cloud-solutions/azure"
+                className="inline-flex items-center px-5 py-2.5 bg-white/90 dark:bg-slate-800/90 text-slate-900 dark:text-slate-100 rounded-lg text-sm font-semibold shadow-md hover:shadow-lg border border-slate-200 dark:border-slate-700 transform hover:-translate-y-0.5 transition-all duration-300"
+              >
+                Azure
+              </Link>
+              <Link
+                href="/cloud-solutions/gcp"
+                className="inline-flex items-center px-5 py-2.5 bg-white/90 dark:bg-slate-800/90 text-slate-900 dark:text-slate-100 rounded-lg text-sm font-semibold shadow-md hover:shadow-lg border border-slate-200 dark:border-slate-700 transform hover:-translate-y-0.5 transition-all duration-300"
+              >
+                GCP
               </Link>
             </div>
           </div>
