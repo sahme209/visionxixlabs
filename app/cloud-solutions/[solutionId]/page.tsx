@@ -11,8 +11,16 @@ type Params = {
   solutionId: string;
 };
 
+function normalizeId(value: string): string {
+  return decodeURIComponent(value)
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, "-");
+}
+
 function getSolutionDetail(id: string): SolutionDetail | undefined {
-  return solutionDetails.find((s) => s.id === id);
+  const target = normalizeId(id);
+  return solutionDetails.find((s) => normalizeId(s.id) === target);
 }
 
 export function generateMetadata({ params }: { params: Params }): Metadata {
@@ -31,7 +39,13 @@ export function generateMetadata({ params }: { params: Params }): Metadata {
 
 export default function SolutionDetailPage({ params }: { params: Params }) {
   const detail = getSolutionDetail(params.solutionId);
-  const cardMeta = cloudSolutionCards.find((c) => c.id === params.solutionId);
+  const normalizedId = normalizeId(params.solutionId);
+  const cardMeta =
+    cloudSolutionCards.find((c) => normalizeId(c.id) === normalizedId) ??
+    cloudSolutionCards.find((c) =>
+      normalizeId(c.href.split("/").filter(Boolean).slice(-1)[0] ?? "") ===
+      normalizedId,
+    );
 
   if (!detail || !cardMeta) {
     return (
