@@ -10,12 +10,37 @@ import {
   aiPackages,
   aiFAQ,
 } from "../../lib/aiContent";
+import {
+  aiTechnicalSection,
+  engineeringPrinciples,
+  techStackGroups,
+  implementationMethodologyShort,
+  aiDeliverables,
+  idealClientsAI,
+  whatWeFocusOn,
+  whatWeDoNotDo,
+  useCases,
+  howWeWorkPhases,
+  securityAccessWeDoNot,
+  securityAccessWeOperateUsing,
+  securityAccessBlocks,
+  clientCollaborationItems,
+} from "../../lib/engineeringContent";
 import { AISolutionCard } from "../../components/AISolutionCard";
 import { AIProcessStep } from "../../components/AIProcessStep";
 import { AIPackageCard } from "../../components/AIPackageCard";
 import { FAQAccordion } from "../../components/FAQAccordion";
 import { CTASection } from "../../components/CTASection";
 import { Navigation } from "../../components/Navigation";
+import { TechnicalSection } from "../../components/TechnicalSection";
+import { ArchitectureBlock } from "../../components/ArchitectureBlock";
+import { DeliverableList } from "../../components/DeliverableList";
+import { TechStackSection } from "../../components/TechStackSection";
+import { WhatWeDoNotDo } from "../../components/WhatWeDoNotDo";
+import { UseCaseCard } from "../../components/UseCaseCard";
+import { HowWeWorkSection } from "../../components/HowWeWorkSection";
+import { SecurityAccessSection } from "../../components/SecurityAccessSection";
+import { ClientCollaborationSection } from "../../components/ClientCollaborationSection";
 
 export const metadata: Metadata = {
   title: "AI Solutions | Vision XIX Labs",
@@ -85,7 +110,7 @@ export default function AISolutionsPage() {
             </div>
           </section>
 
-          {/* What We Actually Build */}
+          {/* What We Actually Build (Overview continued) */}
           <section id="what-we-build" className="mb-20">
             <div className="text-center mb-12">
               <h2 className="text-2xl md:text-4xl font-bold text-slate-900 dark:text-slate-100 mb-3">
@@ -101,6 +126,9 @@ export default function AISolutionsPage() {
               ))}
             </div>
           </section>
+
+          {/* Technical Scope — Production AI depth */}
+          <TechnicalSection {...aiTechnicalSection} />
 
           {/* How We Deploy AI */}
           <section className="mb-20">
@@ -123,6 +151,38 @@ export default function AISolutionsPage() {
               ))}
             </div>
           </section>
+
+          {/* Architecture Approach */}
+          <ArchitectureBlock title="Engineering principles" principles={engineeringPrinciples} />
+
+          {/* Tooling & Stack */}
+          <TechStackSection title="Tooling & stack" groups={techStackGroups} />
+
+          {/* Implementation Methodology */}
+          <section className="mb-20">
+            <h2 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-slate-100 mb-4">
+              Implementation methodology
+            </h2>
+            <p className="text-slate-600 dark:text-slate-400 max-w-3xl">
+              {implementationMethodologyShort}
+            </p>
+          </section>
+
+          {/* How We Work */}
+          <HowWeWorkSection phases={howWeWorkPhases} />
+
+          {/* Security & Access Model */}
+          <SecurityAccessSection
+            weDoNot={securityAccessWeDoNot}
+            weOperateUsing={securityAccessWeOperateUsing}
+            blocks={securityAccessBlocks}
+          />
+
+          {/* Client Collaboration Model */}
+          <ClientCollaborationSection items={clientCollaborationItems} />
+
+          {/* Deliverables */}
+          <DeliverableList title="Deliverables" items={aiDeliverables} />
 
           {/* AI + Cloud Expertise */}
           <section className="mb-20">
@@ -228,11 +288,11 @@ export default function AISolutionsPage() {
             </div>
           </section>
 
-          {/* Engagement Packages */}
-          <section className="mb-20">
+          {/* Engagement Model */}
+          <section id="engagement" className="mb-20">
             <div className="text-center mb-12">
               <h2 className="text-2xl md:text-4xl font-bold text-slate-900 dark:text-slate-100 mb-3">
-                Engagement packages
+                Engagement model
               </h2>
               <p className="text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
                 From assessment to full platform build—structured ways to get started.
@@ -244,6 +304,42 @@ export default function AISolutionsPage() {
               ))}
             </div>
           </section>
+
+          {/* Ideal Clients */}
+          <section className="mb-20">
+            <h2 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-slate-100 mb-4">
+              Ideal clients
+            </h2>
+            <p className="text-slate-600 dark:text-slate-400 mb-6 max-w-3xl">
+              We work best with teams that have clear use cases and are ready to deploy AI in production.
+            </p>
+            <ul className="space-y-2 text-slate-700 dark:text-slate-300">
+              {idealClientsAI.map((item) => (
+                <li key={item} className="flex items-start">
+                  <span className="text-indigo-500 mr-2 mt-0.5">•</span>
+                  {item}
+                </li>
+              ))}
+            </ul>
+          </section>
+
+          {/* Use Cases */}
+          <section className="mb-20">
+            <h2 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-slate-100 mb-4">
+              Use cases
+            </h2>
+            <p className="text-slate-600 dark:text-slate-400 mb-8 max-w-3xl">
+              Problem → approach → outcome. Representative scenarios we are set up to address.
+            </p>
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+              {useCases.map((uc) => (
+                <UseCaseCard key={uc.title} {...uc} />
+              ))}
+            </div>
+          </section>
+
+          {/* Scope and boundaries */}
+          <WhatWeDoNotDo focusItems={whatWeFocusOn} notDoItems={whatWeDoNotDo} />
 
           {/* FAQ */}
           <section className="mb-20">

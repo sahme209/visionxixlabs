@@ -4,7 +4,6 @@ import {
   cloudSolutionsHero,
   cloudSolutionCards,
   engagementPackages,
-  deliverables,
   industries,
   trustPrinciples,
   toolsWeWorkWith,
@@ -13,12 +12,42 @@ import {
   azureSummaryBullets,
   gcpSummaryBullets,
 } from "../../lib/cloudContent";
+import {
+  engineeringPrinciples,
+  cloudArchitectureSection,
+  devOpsSection,
+  finOpsSection,
+  reliabilitySection,
+  securitySection,
+  coreDeliverables,
+  useCases,
+  providerComparison,
+  whatWeFocusOn,
+  whatWeDoNotDo,
+  idealClientsCloud,
+  techStackGroups,
+  howWeWorkPhases,
+  securityAccessWeDoNot,
+  securityAccessWeOperateUsing,
+  securityAccessBlocks,
+  clientCollaborationItems,
+} from "../../lib/engineeringContent";
 import { SolutionCard } from "../../components/SolutionCard";
 import { PackageCard } from "../../components/PackageCard";
 import { FAQAccordion } from "../../components/FAQAccordion";
 import { CloudProviderTabs } from "../../components/CloudProviderTabs";
 import { CTASection } from "../../components/CTASection";
 import { Navigation } from "../../components/Navigation";
+import { TechnicalSection } from "../../components/TechnicalSection";
+import { DeliverableList } from "../../components/DeliverableList";
+import { ArchitectureBlock } from "../../components/ArchitectureBlock";
+import { ComparisonTable } from "../../components/ComparisonTable";
+import { UseCaseCard } from "../../components/UseCaseCard";
+import { TechStackSection } from "../../components/TechStackSection";
+import { WhatWeDoNotDo } from "../../components/WhatWeDoNotDo";
+import { HowWeWorkSection } from "../../components/HowWeWorkSection";
+import { SecurityAccessSection } from "../../components/SecurityAccessSection";
+import { ClientCollaborationSection } from "../../components/ClientCollaborationSection";
 
 export const metadata: Metadata = {
   title: "Cloud Solutions | Vision XIX Labs",
@@ -89,8 +118,11 @@ export default function CloudSolutionsPage() {
             </div>
           </section>
 
-          {/* Solutions Grid */}
-          <section id="solutions-grid" className="mb-16">
+          {/* Overview */}
+          <section id="solutions-grid" className="mb-16" aria-labelledby="overview-heading">
+            <h2 id="overview-heading" className="sr-only">
+              Overview
+            </h2>
             <div className="mb-8 flex items-center justify-between gap-4">
               <div>
                 <h2 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-slate-100 mb-2">
@@ -136,6 +168,22 @@ export default function CloudSolutionsPage() {
             </div>
           </section>
 
+          {/* Technical Scope */}
+          <TechnicalSection {...cloudArchitectureSection} />
+          <TechnicalSection {...devOpsSection} />
+          <TechnicalSection {...finOpsSection} />
+          <TechnicalSection {...reliabilitySection} />
+          <TechnicalSection {...securitySection} />
+
+          {/* Architecture Approach / Engineering Principles */}
+          <ArchitectureBlock
+            title="Engineering principles"
+            principles={engineeringPrinciples}
+          />
+
+          {/* Tooling & Stack */}
+          <TechStackSection title="Tooling & stack" groups={techStackGroups} />
+
           {/* Cloud Provider Tabs */}
           <section className="mb-16">
             <div className="mb-6 text-center">
@@ -175,11 +223,11 @@ export default function CloudSolutionsPage() {
             </div>
           </section>
 
-          {/* How We Work */}
-          <section className="mb-16">
+          {/* Implementation Methodology */}
+          <section className="mb-16" aria-labelledby="methodology-heading">
             <div className="mb-8 text-center">
-              <h2 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-slate-100 mb-2">
-                How we work
+              <h2 id="methodology-heading" className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-slate-100 mb-2">
+                Implementation methodology
               </h2>
               <p className="text-sm md:text-base text-slate-600 dark:text-slate-400 max-w-3xl mx-auto">
                 A structured, outcome-focused approach that keeps delivery
@@ -239,34 +287,27 @@ export default function CloudSolutionsPage() {
             </div>
           </section>
 
-          {/* Deliverables / What you get */}
-          <section className="mb-16">
-            <div className="mb-6 text-center">
-              <h2 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-slate-100 mb-2">
-                What you get
-              </h2>
-              <p className="text-sm md:text-base text-slate-600 dark:text-slate-400 max-w-3xl mx-auto">
-                Clear, concrete deliverables so you know exactly what will be in
-                place when an engagement finishes.
-              </p>
-            </div>
-            <div className="grid gap-4 md:grid-cols-2">
-              {deliverables.map((item) => (
-                <div
-                  key={item}
-                  className="card-hover bg-white dark:bg-slate-800 rounded-2xl p-4 shadow-lg border border-slate-200 dark:border-slate-700 text-sm text-slate-700 dark:text-slate-300"
-                >
-                  {item}
-                </div>
-              ))}
-            </div>
-          </section>
+          {/* How We Work */}
+          <HowWeWorkSection phases={howWeWorkPhases} />
 
-          {/* Engagement Packages */}
+          {/* Security & Access Model */}
+          <SecurityAccessSection
+            weDoNot={securityAccessWeDoNot}
+            weOperateUsing={securityAccessWeOperateUsing}
+            blocks={securityAccessBlocks}
+          />
+
+          {/* Client Collaboration Model */}
+          <ClientCollaborationSection items={clientCollaborationItems} />
+
+          {/* Deliverables */}
+          <DeliverableList title="Deliverables" items={coreDeliverables} />
+
+          {/* Engagement Model */}
           <section className="mb-16">
             <div className="mb-8 text-center">
               <h2 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-slate-100 mb-2">
-                Engagement packages
+                Engagement model
               </h2>
               <p className="text-sm md:text-base text-slate-600 dark:text-slate-400 max-w-3xl mx-auto">
                 Structured ways to work together—whether you need a quick
@@ -287,11 +328,50 @@ export default function CloudSolutionsPage() {
             </div>
           </section>
 
-          {/* Industries / Use Cases */}
+          {/* Ideal Clients */}
+          <section className="mb-16">
+            <h2 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-slate-100 mb-4">
+              Ideal clients
+            </h2>
+            <p className="text-slate-600 dark:text-slate-400 mb-6 max-w-3xl">
+              We work best with teams that have clear goals and are ready to invest in platform quality.
+            </p>
+            <ul className="space-y-2 text-slate-700 dark:text-slate-300">
+              {idealClientsCloud.map((item) => (
+                <li key={item} className="flex items-start">
+                  <span className="text-indigo-500 mr-2 mt-0.5">•</span>
+                  {item}
+                </li>
+              ))}
+            </ul>
+          </section>
+
+          {/* Use Cases */}
+          <section className="mb-16">
+            <h2 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-slate-100 mb-4">
+              Use cases
+            </h2>
+            <p className="text-slate-600 dark:text-slate-400 mb-8 max-w-3xl">
+              Problem → approach → outcome. Representative scenarios we are set up to address.
+            </p>
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+              {useCases.map((uc) => (
+                <UseCaseCard key={uc.title} {...uc} />
+              ))}
+            </div>
+          </section>
+
+          {/* Provider Comparison */}
+          <ComparisonTable title="Provider comparison (high-level)" rows={providerComparison} />
+
+          {/* Scope and boundaries */}
+          <WhatWeDoNotDo focusItems={whatWeFocusOn} notDoItems={whatWeDoNotDo} />
+
+          {/* Industries */}
           <section className="mb-16">
             <div className="mb-6 text-center">
               <h2 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-slate-100 mb-2">
-                Industries and use cases
+                Industries
               </h2>
               <p className="text-sm md:text-base text-slate-600 dark:text-slate-400 max-w-3xl mx-auto">
                 We work with a range of teams and products. These examples are
