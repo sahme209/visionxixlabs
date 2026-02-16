@@ -153,9 +153,9 @@ export default function Home() {
               efficiency.
             </p>
           </div>
-          <div className="grid gap-8 md:grid-cols-3">
-            <div className="card-hover bg-slate-50 dark:bg-slate-800 rounded-2xl p-8 shadow-xl border border-slate-200 dark:border-slate-700">
-              <h3 className="text-2xl font-bold mb-2 text-slate-900 dark:text-slate-100">
+          <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
+            <div className="card-hover bg-slate-50 dark:bg-slate-800 rounded-2xl p-6 md:p-8 shadow-xl border border-slate-200 dark:border-slate-700">
+              <h3 className="text-xl md:text-2xl font-bold mb-2 text-slate-900 dark:text-slate-100">
                 AWS Cloud Engineering
               </h3>
               <p className="text-slate-600 dark:text-slate-400 mb-4 text-sm">
@@ -178,8 +178,8 @@ export default function Home() {
                 <ArrowRightIcon className="ml-1 h-4 w-4" />
               </Link>
             </div>
-            <div className="card-hover bg-slate-50 dark:bg-slate-800 rounded-2xl p-8 shadow-xl border border-slate-200 dark:border-slate-700">
-              <h3 className="text-2xl font-bold mb-2 text-slate-900 dark:text-slate-100">
+            <div className="card-hover bg-slate-50 dark:bg-slate-800 rounded-2xl p-6 md:p-8 shadow-xl border border-slate-200 dark:border-slate-700">
+              <h3 className="text-xl md:text-2xl font-bold mb-2 text-slate-900 dark:text-slate-100">
                 Azure Cloud Engineering
               </h3>
               <p className="text-slate-600 dark:text-slate-400 mb-4 text-sm">
@@ -201,8 +201,8 @@ export default function Home() {
                 <ArrowRightIcon className="ml-1 h-4 w-4" />
               </Link>
             </div>
-            <div className="card-hover bg-slate-50 dark:bg-slate-800 rounded-2xl p-8 shadow-xl border border-slate-200 dark:border-slate-700">
-              <h3 className="text-2xl font-bold mb-2 text-slate-900 dark:text-slate-100">
+            <div className="card-hover bg-slate-50 dark:bg-slate-800 rounded-2xl p-6 md:p-8 shadow-xl border border-slate-200 dark:border-slate-700">
+              <h3 className="text-xl md:text-2xl font-bold mb-2 text-slate-900 dark:text-slate-100">
                 Google Cloud (GCP)
               </h3>
               <p className="text-slate-600 dark:text-slate-400 mb-4 text-sm">
