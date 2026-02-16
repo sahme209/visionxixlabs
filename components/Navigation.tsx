@@ -5,11 +5,14 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowRightIcon, Bars3Icon, XMarkIcon, ChevronDownIcon } from "@heroicons/react/24/outline";
 
-const solutionsLinks = [
+const cloudLinks = [
   { href: "/cloud-solutions", label: "Cloud Solutions" },
   { href: "/cloud-solutions/aws", label: "AWS" },
   { href: "/cloud-solutions/azure", label: "Azure" },
   { href: "/cloud-solutions/gcp", label: "GCP" },
+];
+
+const solutionsLinks = [
   { href: "/ai-solutions", label: "AI Solutions" },
   { href: "/solutions-for-growing-teams", label: "Growing Teams" },
   { href: "/cloud-security", label: "Cloud Security" },
@@ -18,12 +21,14 @@ const solutionsLinks = [
 
 export function Navigation() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [cloudOpen, setCloudOpen] = useState(false);
   const [solutionsOpen, setSolutionsOpen] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
+  const navRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      if (navRef.current && !navRef.current.contains(event.target as Node)) {
+        setCloudOpen(false);
         setSolutionsOpen(false);
       }
     }
@@ -48,18 +53,42 @@ export function Navigation() {
               Vision XIX Labs
             </span>
           </Link>
-          <div className="hidden md:flex items-center gap-1">
-            <div className="relative" ref={dropdownRef}>
+          <div ref={navRef} className="hidden md:flex items-center gap-1">
+            <div className="relative">
               <button
                 type="button"
-                onClick={() => setSolutionsOpen(!solutionsOpen)}
+                onClick={() => { setCloudOpen(!cloudOpen); setSolutionsOpen(false); }}
+                className="inline-flex items-center px-4 py-2 text-slate-700 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 rounded-lg transition-all text-sm font-medium"
+              >
+                Cloud
+                <ChevronDownIcon className={`ml-1 h-4 w-4 transition-transform ${cloudOpen ? "rotate-180" : ""}`} />
+              </button>
+              {cloudOpen && (
+                <div className="absolute left-0 top-full mt-1 w-44 py-2 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-lg">
+                  {cloudLinks.map((item) => (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      onClick={() => setCloudOpen(false)}
+                      className="block px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/50 hover:text-indigo-600 dark:hover:text-indigo-400"
+                    >
+                      {item.label}
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </div>
+            <div className="relative">
+              <button
+                type="button"
+                onClick={() => { setSolutionsOpen(!solutionsOpen); setCloudOpen(false); }}
                 className="inline-flex items-center px-4 py-2 text-slate-700 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 rounded-lg transition-all text-sm font-medium"
               >
                 Solutions
                 <ChevronDownIcon className={`ml-1 h-4 w-4 transition-transform ${solutionsOpen ? "rotate-180" : ""}`} />
               </button>
               {solutionsOpen && (
-                <div className="absolute left-0 top-full mt-1 w-52 py-2 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-lg">
+                <div className="absolute left-0 top-full mt-1 w-48 py-2 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-lg">
                   {solutionsLinks.map((item) => (
                     <Link
                       key={item.href}
@@ -107,81 +136,19 @@ export function Navigation() {
         {mobileMenuOpen && (
           <div className="md:hidden py-4 border-t border-slate-200 dark:border-slate-800 mt-2">
             <div className="flex flex-col space-y-2">
-              <Link
-                href="/cloud-solutions"
-                onClick={() => setMobileMenuOpen(false)}
-                className="px-4 py-2 text-slate-700 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 rounded-lg transition-all text-sm font-medium"
-              >
-                Solutions
-              </Link>
-              <Link
-                href="/ai-solutions"
-                onClick={() => setMobileMenuOpen(false)}
-                className="px-4 py-2 text-slate-700 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 rounded-lg transition-all text-sm font-medium"
-              >
-                AI Solutions
-              </Link>
-              <Link
-                href="/solutions-for-growing-teams"
-                onClick={() => setMobileMenuOpen(false)}
-                className="px-4 py-2 text-slate-700 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 rounded-lg transition-all text-sm font-medium"
-              >
-                Growing Teams
-              </Link>
-              <Link
-                href="/cloud-security"
-                onClick={() => setMobileMenuOpen(false)}
-                className="px-4 py-2 text-slate-700 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 rounded-lg transition-all text-sm font-medium"
-              >
-                Cloud Security
-              </Link>
-              <Link
-                href="/cloud-solutions/aws"
-                onClick={() => setMobileMenuOpen(false)}
-                className="px-4 py-2 text-slate-700 dark:text-slate-300 hover:bg-orange-50 dark:hover:bg-orange-900/20 rounded-lg transition-all text-sm font-medium"
-              >
-                AWS
-              </Link>
-              <Link
-                href="/cloud-solutions/azure"
-                onClick={() => setMobileMenuOpen(false)}
-                className="px-4 py-2 text-slate-700 dark:text-slate-300 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-all text-sm font-medium"
-              >
-                Azure
-              </Link>
-              <Link
-                href="/cloud-solutions/gcp"
-                onClick={() => setMobileMenuOpen(false)}
-                className="px-4 py-2 text-slate-700 dark:text-slate-300 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-all text-sm font-medium"
-              >
-                GCP
-              </Link>
-              <Link
-                href="/apps"
-                onClick={() => setMobileMenuOpen(false)}
-                className="px-4 py-2 text-slate-700 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 rounded-lg transition-all text-sm font-medium"
-              >
-                Products
-              </Link>
-              <Link
-                href="/case-studies"
-                onClick={() => setMobileMenuOpen(false)}
-                className="px-4 py-2 text-slate-700 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 rounded-lg transition-all text-sm font-medium"
-              >
-                Case Studies
-              </Link>
-              <Link
-                href="/#about"
-                onClick={() => setMobileMenuOpen(false)}
-                className="px-4 py-2 text-slate-700 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 rounded-lg transition-all text-sm font-medium"
-              >
-                About
-              </Link>
-              <Link
-                href="/contact"
-                onClick={() => setMobileMenuOpen(false)}
-                className="mt-2 inline-flex items-center justify-center px-5 py-2.5 bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 rounded-lg text-sm font-semibold"
-              >
+              <p className="px-4 pt-2 text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Cloud</p>
+              <Link href="/cloud-solutions" onClick={() => setMobileMenuOpen(false)} className="px-4 py-2 text-slate-700 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 rounded-lg text-sm font-medium">Cloud Solutions</Link>
+              <Link href="/cloud-solutions/aws" onClick={() => setMobileMenuOpen(false)} className="px-4 py-2 text-slate-700 dark:text-slate-300 hover:bg-orange-50 dark:hover:bg-orange-900/20 rounded-lg text-sm font-medium">AWS</Link>
+              <Link href="/cloud-solutions/azure" onClick={() => setMobileMenuOpen(false)} className="px-4 py-2 text-slate-700 dark:text-slate-300 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg text-sm font-medium">Azure</Link>
+              <Link href="/cloud-solutions/gcp" onClick={() => setMobileMenuOpen(false)} className="px-4 py-2 text-slate-700 dark:text-slate-300 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg text-sm font-medium">GCP</Link>
+              <p className="px-4 pt-3 text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Solutions</p>
+              <Link href="/ai-solutions" onClick={() => setMobileMenuOpen(false)} className="px-4 py-2 text-slate-700 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 rounded-lg text-sm font-medium">AI Solutions</Link>
+              <Link href="/solutions-for-growing-teams" onClick={() => setMobileMenuOpen(false)} className="px-4 py-2 text-slate-700 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 rounded-lg text-sm font-medium">Growing Teams</Link>
+              <Link href="/cloud-security" onClick={() => setMobileMenuOpen(false)} className="px-4 py-2 text-slate-700 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 rounded-lg text-sm font-medium">Cloud Security</Link>
+              <Link href="/case-studies" onClick={() => setMobileMenuOpen(false)} className="px-4 py-2 text-slate-700 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 rounded-lg text-sm font-medium">Case Studies</Link>
+              <Link href="/apps" onClick={() => setMobileMenuOpen(false)} className="px-4 py-2 text-slate-700 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 rounded-lg text-sm font-medium">Products</Link>
+              <Link href="/#about" onClick={() => setMobileMenuOpen(false)} className="px-4 py-2 text-slate-700 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 rounded-lg text-sm font-medium">About</Link>
+              <Link href="/contact" onClick={() => setMobileMenuOpen(false)} className="mt-2 inline-flex items-center justify-center px-5 py-2.5 bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 rounded-lg text-sm font-semibold">
                 Contact
                 <ArrowRightIcon className="ml-1.5 h-4 w-4" />
               </Link>

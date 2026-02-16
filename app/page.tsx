@@ -431,7 +431,7 @@ export default function Home() {
       {/* Footer */}
       <footer className="bg-slate-900 text-slate-300 py-12 px-4 sm:px-6 lg:px-8 border-t border-slate-800">
         <div className="max-w-6xl mx-auto">
-          <div className="grid md:grid-cols-5 gap-8 mb-8">
+          <div className="grid md:grid-cols-6 gap-8 mb-8">
             <div className="md:col-span-2">
               <div className="flex items-center space-x-3 mb-4">
                 <Image
@@ -467,15 +467,20 @@ export default function Home() {
               </div>
             </div>
             <div>
-              <h4 className="text-white font-semibold mb-4 text-sm">Solutions</h4>
+              <h4 className="text-white font-semibold mb-4 text-sm">Cloud</h4>
               <ul className="space-y-2 text-sm">
                 <li><Link href="/cloud-solutions" className="hover:text-white transition-colors">Cloud Solutions</Link></li>
-                <li><Link href="/cloud-security" className="hover:text-white transition-colors">Cloud Security</Link></li>
                 <li><Link href="/cloud-solutions/aws" className="hover:text-white transition-colors">AWS</Link></li>
                 <li><Link href="/cloud-solutions/azure" className="hover:text-white transition-colors">Azure</Link></li>
                 <li><Link href="/cloud-solutions/gcp" className="hover:text-white transition-colors">GCP</Link></li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="text-white font-semibold mb-4 text-sm">Solutions</h4>
+              <ul className="space-y-2 text-sm">
                 <li><Link href="/ai-solutions" className="hover:text-white transition-colors">AI Solutions</Link></li>
                 <li><Link href="/solutions-for-growing-teams" className="hover:text-white transition-colors">Growing Teams</Link></li>
+                <li><Link href="/cloud-security" className="hover:text-white transition-colors">Cloud Security</Link></li>
                 <li><Link href="/case-studies" className="hover:text-white transition-colors">Case Studies</Link></li>
               </ul>
             </div>
