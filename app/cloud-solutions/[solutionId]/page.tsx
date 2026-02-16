@@ -23,8 +23,13 @@ function getSolutionDetail(id: string): SolutionDetail | undefined {
   return solutionDetails.find((s) => normalizeId(s.id) === target);
 }
 
-export function generateMetadata({ params }: { params: Params }): Metadata {
-  const detail = getSolutionDetail(params.solutionId);
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<Params>;
+}): Promise<Metadata> {
+  const resolvedParams = await params;
+  const detail = getSolutionDetail(resolvedParams.solutionId);
   if (!detail) {
     return {
       title: "Cloud Solution | Vision XIX Labs",
@@ -37,9 +42,15 @@ export function generateMetadata({ params }: { params: Params }): Metadata {
   };
 }
 
-export default function SolutionDetailPage({ params }: { params: Params }) {
-  const detail = getSolutionDetail(params.solutionId);
-  const normalizedId = normalizeId(params.solutionId);
+export default async function SolutionDetailPage({
+  params,
+}: {
+  params: Promise<Params>;
+}) {
+  const resolvedParams = await params;
+  const solutionId = resolvedParams.solutionId;
+  const detail = getSolutionDetail(solutionId);
+  const normalizedId = normalizeId(solutionId);
   const cardMeta =
     cloudSolutionCards.find((c) => normalizeId(c.id) === normalizedId) ??
     cloudSolutionCards.find((c) =>
