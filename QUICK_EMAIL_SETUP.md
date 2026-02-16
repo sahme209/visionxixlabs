@@ -18,14 +18,18 @@ If you're not receiving emails when submitting the contact form, it's because th
 4. Copy the API key (starts with `re_`)
 
 ### Step 3: Add API Key to Your Project
-1. Create a file named `.env.local` in the root of your project (same level as `package.json`)
-2. Add this line:
+
+**Local development:** Create a file named `.env.local` in the root of your project (same level as `package.json`). You can copy from `.env.example`:
    ```
    RESEND_API_KEY=re_your_actual_api_key_here
    CONTACT_EMAIL=support@visionxixlabs.com
    RESEND_FROM_EMAIL=onboarding@resend.dev
    ```
-3. Replace `re_your_actual_api_key_here` with your actual API key from Step 2
+   Replace `re_your_actual_api_key_here` with your actual API key from Step 2.
+
+**Deployed site (Vercel, Netlify, etc.):** `.env.local` is not deployed. Add the same variables in your host’s dashboard:
+- **Vercel:** Project → Settings → Environment Variables. Add `RESEND_API_KEY` (and optionally `CONTACT_EMAIL`, `RESEND_FROM_EMAIL`), then redeploy.
+- **Netlify:** Site → Site configuration → Environment variables. Add the variables, then trigger a new deploy.
 
 ### Step 4: Restart Your Server
 ```bash
@@ -67,8 +71,8 @@ If you see errors, check:
 ## Troubleshooting
 
 **Error: "Email service not configured"**
-- You haven't set up the RESEND_API_KEY yet
-- Follow Step 3 above
+- **Local:** Add `RESEND_API_KEY` to `.env.local` in the project root, then restart the dev server (`npm run dev`). Run the app from the project root (the folder that contains `package.json`).
+- **Deployed (Vercel/Netlify):** Set `RESEND_API_KEY` in your hosting dashboard under Environment Variables, then redeploy.
 
 **Error: "Invalid API key"**
 - Your API key is incorrect
