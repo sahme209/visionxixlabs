@@ -60,10 +60,12 @@ This email was sent from the Vision XIX Labs contact form.
       );
     }
 
-    // Resend free tier: "from" must be onboarding@resend.dev or a verified domain
-    const fromHeader = FROM_EMAIL === "onboarding@resend.dev"
-      ? "Vision XIX Labs <onboarding@resend.dev>"
-      : `Vision XIX Labs <${FROM_EMAIL}>`;
+    // Resend: without a verified domain, use only onboarding@resend.dev (no display name).
+    // After verifying your domain in Resend → Domains, set RESEND_FROM_EMAIL to e.g. contact@yourdomain.com
+    const fromHeader =
+      !FROM_EMAIL || FROM_EMAIL === "onboarding@resend.dev"
+        ? "onboarding@resend.dev"
+        : `Vision XIX Labs <${FROM_EMAIL}>`;
 
     const resendResponse = await fetch("https://api.resend.com/emails", {
       method: "POST",

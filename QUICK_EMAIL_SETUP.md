@@ -74,11 +74,17 @@ If you see errors, check:
 - **Local:** Add `RESEND_API_KEY` to `.env.local` in the project root, then restart the dev server (`npm run dev`). Run the app from the project root (the folder that contains `package.json`).
 - **Deployed (Vercel/Netlify):** Set `RESEND_API_KEY` in your hosting dashboard under Environment Variables, then redeploy.
 
-**Error: "Email could not be sent" (500 on production)**
-- In the browser: open DevTools → Network → submit the form → click the `contact` request → Response tab. Check `resend_status` and `resend_message`.
-- **403:** Use `RESEND_FROM_EMAIL=onboarding@resend.dev` until your domain is verified in Resend → Domains.
-- **401:** `RESEND_API_KEY` is missing or wrong in your host's Environment Variables (e.g. Vercel). Add it and redeploy.
-- **422:** Invalid "from" or "to" address; keep `onboarding@resend.dev` and a valid `CONTACT_EMAIL`.
+**Error: "Email service access denied" / 403**
+- Resend returns 403 until you **verify a domain**. Without it, you often cannot send to arbitrary addresses.
+- **Fix:** Go to [Resend → Domains](https://resend.com/domains) → Add domain → enter `visionxixlabs.com` (or your root domain).
+- Add the **SPF** and **DKIM** DNS records Resend shows (in your domain DNS / hosting).
+- After the domain shows **Verified**, in Vercel set `RESEND_FROM_EMAIL=contact@visionxixlabs.com` (or `noreply@visionxixlabs.com`) and redeploy.
+- Until then, leave `RESEND_FROM_EMAIL` unset or set to `onboarding@resend.dev`; the code will use `onboarding@resend.dev` as the sender (some accounts still get 403 until a domain is verified).
+
+**Other 500 errors**
+- In the browser: DevTools → Network → submit form → click `contact` → Response. Check `resend_status` and `resend_message`.
+- **401:** `RESEND_API_KEY` is missing or wrong in your host's Environment Variables. Add it and redeploy.
+- **422:** Invalid "from" or "to" address; use a valid `CONTACT_EMAIL` and, after verification, a from address on your verified domain.
 
 **Error: "Invalid API key"**
 - Your API key is incorrect
