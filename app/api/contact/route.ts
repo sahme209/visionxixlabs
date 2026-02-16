@@ -37,7 +37,7 @@ This email was sent from the Vision XIX Labs contact form.
     const TO_EMAIL = process.env.CONTACT_EMAIL || "support@visionxixlabs.com";
 
     if (!RESEND_API_KEY) {
-      // Fallback: Log the submission (for development)
+      // Log the submission for debugging
       console.log("Contact form submission (no API key configured):", {
         name,
         email,
@@ -46,16 +46,13 @@ This email was sent from the Vision XIX Labs contact form.
         message,
       });
       
-      // In production, you should set up Resend API key
-      // For now, return success but log a warning
-      console.warn("RESEND_API_KEY not configured. Email not sent. Please configure Resend API key.");
-      
+      // Return error so user knows email wasn't sent
       return NextResponse.json(
         { 
-          success: true,
-          message: "Thank you for your message. We'll get back to you soon!" 
+          error: "Email service not configured. Please set RESEND_API_KEY in your environment variables. For now, please email us directly at support@visionxixlabs.com",
+          requiresSetup: true
         },
-        { status: 200 }
+        { status: 500 }
       );
     }
 
@@ -96,11 +93,26 @@ This email was sent from the Vision XIX Labs contact form.
 
     if (!resendResponse.ok) {
       const errorData = await resendResponse.json().catch(() => ({}));
-      console.error("Resend API error:", errorData);
-      throw new Error("Failed to send email");
+      console.error("Resend API error:", {
+        status: resendResponse.status,
+        statusText: resendResponse.statusText,
+        error: errorData
+      });
+      
+      // Provide more specific error messages
+      if (resendResponse.status === 401) {
+        throw new Error("Invalid API key. Please check your RESEND_API_KEY configuration.");
+      } else if (resendResponse.status === 403) {
+        throw new Error("API key doesn't have permission to send emails. Please check your Resend account settings.");
+      } else if (resendResponse.status === 422) {
+        throw new Error(`Invalid email configuration: ${errorData.message || "Please check FROM_EMAIL and domain settings"}`);
+      } else {
+        throw new Error(`Failed to send email: ${errorData.message || resendResponse.statusText}`);
+      }
     }
 
     const data = await resendResponse.json();
+    console.log("Email sent successfully:", data);
 
     return NextResponse.json(
       { 

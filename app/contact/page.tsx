@@ -49,7 +49,9 @@ export default function ContactPage() {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || "Failed to send message");
+        // Show more detailed error message
+        const errorMessage = data.error || "Failed to send message";
+        throw new Error(errorMessage);
       }
 
       setSubmitted(true);
