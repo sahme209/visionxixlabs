@@ -49,6 +49,10 @@ export const cloudSolutionsHero = {
     "Infrastructure as Code",
     "Compliance & Security",
     "Zero Trust Security",
+    "Strategic Consulting",
+    "Change Management",
+    "Executive Advisory",
+    "Hands-on Mentoring",
     "FinOps",
     "Performance Optimization",
     "API Management",
@@ -233,6 +237,62 @@ export const cloudSolutionCards: Solution[] = [
       "Train your teams on cloud best practices, architecture patterns, and platform-specific skills to build internal cloud expertise.",
     bestFor: "Organizations building internal cloud capabilities and knowledge.",
     href: "/cloud-solutions/cloud-training-enablement",
+  },
+  {
+    id: "strategic-cloud-consulting",
+    title: "Strategic Cloud Consulting",
+    description:
+      "Executive-level strategic guidance that aligns cloud initiatives with business objectives, organizational culture, and long-term vision.",
+    bestFor: "C-suite and leadership teams making strategic cloud decisions.",
+    href: "/cloud-solutions/strategic-cloud-consulting",
+  },
+  {
+    id: "change-management-transformation",
+    title: "Change Management & Organizational Transformation",
+    description:
+      "Guide your organization through cloud transformation with change management, team enablement, and cultural alignment strategies.",
+    bestFor: "Organizations undergoing significant cloud transformation or cultural shifts.",
+    href: "/cloud-solutions/change-management-transformation",
+  },
+  {
+    id: "executive-advisory",
+    title: "Executive Advisory & C-Suite Consulting",
+    description:
+      "Board-level strategic advisory on cloud strategy, vendor relationships, risk management, and technology investment decisions.",
+    bestFor: "Executives and board members needing strategic cloud guidance.",
+    href: "/cloud-solutions/executive-advisory",
+  },
+  {
+    id: "hands-on-mentoring",
+    title: "Hands-on Mentoring & Pair Programming",
+    description:
+      "Real-time, collaborative mentoring where we work alongside your engineers, teaching through doing and building lasting capabilities.",
+    bestFor: "Teams wanting to learn by doing with expert guidance.",
+    href: "/cloud-solutions/hands-on-mentoring",
+  },
+  {
+    id: "crisis-incident-leadership",
+    title: "Crisis Management & Incident Response Leadership",
+    description:
+      "Lead and coordinate incident response during critical outages, security breaches, or major incidents with clear communication and decision-making.",
+    bestFor: "Organizations needing expert leadership during critical incidents.",
+    href: "/cloud-solutions/crisis-incident-leadership",
+  },
+  {
+    id: "vendor-relationship-management",
+    title: "Vendor Relationship & Contract Management",
+    description:
+      "Navigate cloud vendor relationships, negotiate contracts, manage SLAs, and optimize commercial terms with AWS, Azure, and GCP.",
+    bestFor: "Organizations managing complex vendor relationships and contracts.",
+    href: "/cloud-solutions/vendor-relationship-management",
+  },
+  {
+    id: "custom-workshops-facilitation",
+    title: "Custom Workshops & Facilitation",
+    description:
+      "Design and facilitate interactive workshops tailored to your team's needs, reading the room and adapting in real-time for maximum impact.",
+    bestFor: "Teams needing customized, interactive learning experiences.",
+    href: "/cloud-solutions/custom-workshops-facilitation",
   },
 ];
 
@@ -1247,6 +1307,335 @@ export const solutionDetails: SolutionDetail[] = [
       "Organizations building internal cloud capabilities",
       "Teams transitioning to cloud-native practices",
       "Companies reducing dependency on external consultants",
+    ],
+    relatedProviders: ["aws", "azure", "gcp", "multi-cloud"],
+  },
+  {
+    id: "strategic-cloud-consulting",
+    title: "Strategic Cloud Consulting",
+    intro:
+      "Executive-level strategic guidance that aligns cloud initiatives with business objectives, organizational culture, and long-term vision—where human judgment and business acumen matter most.",
+    sections: [
+      {
+        heading: "Business-aligned cloud strategy",
+        body:
+          "We work with leadership to understand business goals, competitive landscape, and organizational constraints to shape cloud strategies that drive real business value.",
+        bullets: [
+          "Cloud strategy aligned to business objectives and market position",
+          "Technology investment decisions and ROI analysis",
+          "Risk assessment and mitigation strategies",
+          "Organizational readiness and capability assessment",
+        ],
+      },
+      {
+        heading: "Strategic decision-making support",
+        body:
+          "We provide strategic counsel on complex decisions that require understanding of business context, politics, and long-term implications.",
+        bullets: [
+          "Build vs. buy vs. partner decisions",
+          "Multi-cloud vs. single-provider strategy",
+          "Vendor selection and relationship management",
+          "Timing and sequencing of cloud initiatives",
+        ],
+      },
+      {
+        heading: "Organizational alignment",
+        body:
+          "We help align cloud initiatives with organizational culture, change readiness, and team capabilities to ensure successful adoption.",
+        bullets: [
+          "Cultural assessment and change readiness",
+          "Stakeholder alignment and buy-in strategies",
+          "Organizational structure recommendations",
+          "Governance and decision-making frameworks",
+        ],
+      },
+    ],
+    idealFor: [
+      "C-suite and leadership teams making strategic cloud decisions",
+      "Organizations needing cloud strategy aligned to business goals",
+      "Companies navigating complex organizational and technical trade-offs",
+    ],
+    relatedProviders: ["aws", "azure", "gcp", "multi-cloud"],
+  },
+  {
+    id: "change-management-transformation",
+    title: "Change Management & Organizational Transformation",
+    intro:
+      "Guide your organization through cloud transformation with change management, team enablement, and cultural alignment strategies that address the human side of technology change.",
+    sections: [
+      {
+        heading: "Change management strategy",
+        body:
+          "We design change management approaches that address resistance, build buy-in, and create momentum for cloud transformation.",
+        bullets: [
+          "Stakeholder analysis and engagement strategies",
+          "Communication plans and change narratives",
+          "Resistance management and mitigation",
+          "Success metrics and change tracking",
+        ],
+      },
+      {
+        heading: "Team enablement and adoption",
+        body:
+          "We help teams adapt to new ways of working, building confidence and capability through hands-on support and training.",
+        bullets: [
+          "Skills gap analysis and development plans",
+          "Hands-on coaching and mentoring",
+          "Community building and knowledge sharing",
+          "Celebration of wins and momentum building",
+        ],
+      },
+      {
+        heading: "Cultural transformation",
+        body:
+          "We work with organizations to evolve culture toward cloud-native practices, DevOps mindsets, and continuous improvement.",
+        bullets: [
+          "Cultural assessment and transformation planning",
+          "Values and behaviors alignment",
+          "Reward and recognition system design",
+          "Long-term cultural sustainability strategies",
+        ],
+      },
+    ],
+    idealFor: [
+      "Organizations undergoing significant cloud transformation",
+      "Companies facing cultural resistance to cloud adoption",
+      "Teams needing support through major technology changes",
+    ],
+    relatedProviders: ["aws", "azure", "gcp", "multi-cloud"],
+  },
+  {
+    id: "executive-advisory",
+    title: "Executive Advisory & C-Suite Consulting",
+    intro:
+      "Board-level strategic advisory on cloud strategy, vendor relationships, risk management, and technology investment decisions—where experience, judgment, and trust are paramount.",
+    sections: [
+      {
+        heading: "Strategic cloud governance",
+        body:
+          "We provide strategic guidance on cloud governance, risk management, and technology investment decisions at the executive and board level.",
+        bullets: [
+          "Cloud strategy and roadmap for board presentation",
+          "Risk assessment and mitigation strategies",
+          "Technology investment and ROI analysis",
+          "Vendor relationship and contract strategy",
+        ],
+      },
+      {
+        heading: "Executive briefings and decision support",
+        body:
+          "We prepare executive briefings and provide decision support on complex cloud initiatives, helping leadership make informed choices.",
+        bullets: [
+          "Executive briefings on cloud initiatives and risks",
+          "Decision frameworks for complex technology choices",
+          "Vendor evaluation and selection support",
+          "Crisis management and incident communication",
+        ],
+      },
+      {
+        heading: "Board-level technology strategy",
+        body:
+          "We work with boards and executive teams to shape technology strategy that aligns with business objectives and risk tolerance.",
+        bullets: [
+          "Technology strategy alignment with business goals",
+          "Risk management and compliance oversight",
+          "Investment prioritization and resource allocation",
+          "Long-term technology vision and planning",
+        ],
+      },
+    ],
+    idealFor: [
+      "Executives and board members needing strategic cloud guidance",
+      "Organizations requiring board-level technology strategy",
+      "Companies navigating complex vendor and investment decisions",
+    ],
+    relatedProviders: ["aws", "azure", "gcp", "multi-cloud"],
+  },
+  {
+    id: "hands-on-mentoring",
+    title: "Hands-on Mentoring & Pair Programming",
+    intro:
+      "Real-time, collaborative mentoring where we work alongside your engineers, teaching through doing, building lasting capabilities, and fostering relationships that accelerate learning.",
+    sections: [
+      {
+        heading: "Pair programming and collaborative development",
+        body:
+          "We pair with your engineers on real work, teaching cloud patterns, best practices, and problem-solving approaches through hands-on collaboration.",
+        bullets: [
+          "Real-time pair programming on production code",
+          "Infrastructure as Code development together",
+          "Architecture decisions and trade-off discussions",
+          "Code review and knowledge sharing",
+        ],
+      },
+      {
+        heading: "Mentoring and knowledge transfer",
+        body:
+          "We build relationships with your team members, providing ongoing mentorship, career guidance, and technical coaching.",
+        bullets: [
+          "One-on-one mentoring relationships",
+          "Career development and growth planning",
+          "Technical coaching and skill development",
+          "Knowledge transfer and documentation practices",
+        ],
+      },
+      {
+        heading: "Team capability building",
+        body:
+          "We help teams build internal capabilities through hands-on learning, ensuring knowledge stays with your organization.",
+        bullets: [
+          "Learning-by-doing approaches",
+          "Team knowledge sharing and collaboration",
+          "Internal expertise development",
+          "Sustainable capability building",
+        ],
+      },
+    ],
+    idealFor: [
+      "Teams wanting to learn by doing with expert guidance",
+      "Organizations building internal cloud expertise",
+      "Engineers seeking mentorship and career growth",
+    ],
+    relatedProviders: ["aws", "azure", "gcp", "multi-cloud"],
+  },
+  {
+    id: "crisis-incident-leadership",
+    title: "Crisis Management & Incident Response Leadership",
+    intro:
+      "Lead and coordinate incident response during critical outages, security breaches, or major incidents with clear communication, decisive action, and human judgment under pressure.",
+    sections: [
+      {
+        heading: "Incident command and coordination",
+        body:
+          "We take command during critical incidents, coordinating response efforts, making decisions under pressure, and communicating clearly with stakeholders.",
+        bullets: [
+          "Incident command structure and roles",
+          "Real-time decision-making and prioritization",
+          "Stakeholder communication and updates",
+          "Escalation and resource coordination",
+        ],
+      },
+      {
+        heading: "Crisis communication",
+        body:
+          "We manage crisis communication with customers, executives, and teams, balancing transparency with appropriate messaging.",
+        bullets: [
+          "Executive and board communication",
+          "Customer-facing incident updates",
+          "Internal team communication and coordination",
+          "Post-incident communication and lessons learned",
+        ],
+      },
+      {
+        heading: "Post-incident recovery and learning",
+        body:
+          "We lead post-incident reviews, root cause analysis, and improvement planning to prevent future incidents and build resilience.",
+        bullets: [
+          "Post-incident review and root cause analysis",
+          "Blameless postmortem facilitation",
+          "Action planning and follow-through",
+          "Organizational learning and improvement",
+        ],
+      },
+    ],
+    idealFor: [
+      "Organizations needing expert leadership during critical incidents",
+      "Teams facing high-stakes outages or security incidents",
+      "Companies requiring crisis management and communication support",
+    ],
+    relatedProviders: ["aws", "azure", "gcp", "multi-cloud"],
+  },
+  {
+    id: "vendor-relationship-management",
+    title: "Vendor Relationship & Contract Management",
+    intro:
+      "Navigate cloud vendor relationships, negotiate contracts, manage SLAs, and optimize commercial terms with AWS, Azure, and GCP—where relationship building and negotiation skills are essential.",
+    sections: [
+      {
+        heading: "Contract negotiation and optimization",
+        body:
+          "We negotiate cloud vendor contracts, optimize commercial terms, and structure agreements that align with your business needs.",
+        bullets: [
+          "Contract review and negotiation strategy",
+          "Pricing optimization and discount structures",
+          "SLA negotiation and penalty structures",
+          "Term and renewal strategy",
+        ],
+      },
+      {
+        heading: "Vendor relationship management",
+        body:
+          "We help build and maintain productive relationships with cloud vendors, ensuring you get value from your partnerships.",
+        bullets: [
+          "Vendor relationship strategy and management",
+          "Account management and escalation",
+          "Technical account manager coordination",
+          "Vendor performance evaluation and feedback",
+        ],
+      },
+      {
+        heading: "Commercial optimization",
+        body:
+          "We help optimize your commercial relationship with vendors through usage optimization, commitment planning, and cost management.",
+        bullets: [
+          "Reserved instance and commitment planning",
+          "Enterprise discount program optimization",
+          "Usage optimization and cost management",
+          "Multi-vendor strategy and negotiation",
+        ],
+      },
+    ],
+    idealFor: [
+      "Organizations managing complex vendor relationships",
+      "Companies negotiating large cloud contracts",
+      "Businesses needing commercial optimization and relationship management",
+    ],
+    relatedProviders: ["aws", "azure", "gcp", "multi-cloud"],
+  },
+  {
+    id: "custom-workshops-facilitation",
+    title: "Custom Workshops & Facilitation",
+    intro:
+      "Design and facilitate interactive workshops tailored to your team's needs, reading the room, adapting in real-time, and creating learning experiences that stick—where human facilitation makes all the difference.",
+    sections: [
+      {
+        heading: "Custom workshop design",
+        body:
+          "We design workshops specifically for your team's needs, context, and learning style, ensuring maximum relevance and impact.",
+        bullets: [
+          "Needs assessment and learning objectives",
+          "Customized curriculum and materials",
+          "Interactive exercises and hands-on labs",
+          "Real-world scenarios and case studies",
+        ],
+      },
+      {
+        heading: "Expert facilitation",
+        body:
+          "We facilitate workshops with expertise, reading the room, adapting in real-time, and creating engaging learning experiences.",
+        bullets: [
+          "Interactive facilitation and engagement",
+          "Real-time adaptation to audience needs",
+          "Expert Q&A and discussion facilitation",
+          "Energy management and pacing",
+        ],
+      },
+      {
+        heading: "Follow-up and reinforcement",
+        body:
+          "We provide follow-up support, resources, and reinforcement to ensure learning sticks and teams can apply what they've learned.",
+        bullets: [
+          "Post-workshop resources and materials",
+          "Follow-up sessions and Q&A",
+          "Application support and coaching",
+          "Learning reinforcement and assessment",
+        ],
+      },
+    ],
+    idealFor: [
+      "Teams needing customized, interactive learning experiences",
+      "Organizations requiring tailored training for specific contexts",
+      "Companies wanting engaging, facilitator-led workshops",
     ],
     relatedProviders: ["aws", "azure", "gcp", "multi-cloud"],
   },
