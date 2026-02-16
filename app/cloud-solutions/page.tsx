@@ -50,9 +50,27 @@ import { SecurityAccessSection } from "@/components/SecurityAccessSection";
 import { ClientCollaborationSection } from "@/components/ClientCollaborationSection";
 
 export const metadata: Metadata = {
-  title: "Cloud Solutions | Vision XIX Labs",
+  title: "Cloud Solutions",
   description:
     "Cloud solutions on AWS, Azure, and GCP that help teams ship faster, run reliably, and control costs. Infrastructure, CI/CD, FinOps, reliability, and security services.",
+  keywords: [
+    "cloud solutions",
+    "AWS",
+    "Azure",
+    "GCP",
+    "Infrastructure as Code",
+    "CI/CD",
+    "FinOps",
+    "landing zone",
+    "cloud consulting",
+  ],
+  openGraph: {
+    title: "Cloud Solutions | AWS, Azure, GCP | Vision XIX Labs",
+    description:
+      "Cloud solutions on AWS, Azure, and GCP. Infrastructure, CI/CD, FinOps, reliability, security.",
+    url: "https://visionxixlabs.com/cloud-solutions",
+  },
+  alternates: { canonical: "https://visionxixlabs.com/cloud-solutions" },
 };
 
 export default function CloudSolutionsPage() {

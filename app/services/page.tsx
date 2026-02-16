@@ -16,9 +16,11 @@ import {
 import { Navigation } from "../../components/Navigation";
 
 export const metadata: Metadata = {
-  title: "AWS & DevOps Services | Vision XIX Labs",
+  title: "AWS & DevOps Services",
   description:
     "AWS cloud infrastructure, CI/CD with GitHub and Octopus Deploy, cost optimization, reliability, and security services from Vision XIX Labs.",
+  openGraph: { url: "https://visionxixlabs.com/services" },
+  alternates: { canonical: "https://visionxixlabs.com/services" },
 };
 
 type ServiceCardProps = {

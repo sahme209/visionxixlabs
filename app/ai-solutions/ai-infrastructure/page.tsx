@@ -21,9 +21,11 @@ import { CTASection } from "../../../components/CTASection";
 import { WhatWeDoNotDo } from "../../../components/WhatWeDoNotDo";
 
 export const metadata: Metadata = {
-  title: "Secure AI Infrastructure & AI Applications | AI Solutions | Vision XIX Labs",
+  title: "Secure AI Infrastructure & AI Applications",
   description:
     "Private LLM deployments, API-based AI integration, cloud model hosting, and AI-powered applications. Production-grade secure AI infrastructure.",
+  openGraph: { url: "https://visionxixlabs.com/ai-solutions/ai-infrastructure" },
+  alternates: { canonical: "https://visionxixlabs.com/ai-solutions/ai-infrastructure" },
 };
 
 export default function AIInfrastructurePage() {

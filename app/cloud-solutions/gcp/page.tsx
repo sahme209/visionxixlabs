@@ -20,9 +20,12 @@ import { CTASection } from "../../../components/CTASection";
 import { WhatWeDoNotDo } from "../../../components/WhatWeDoNotDo";
 
 export const metadata: Metadata = {
-  title: "Google Cloud Platform (GCP) Engineering | Vision XIX Labs",
+  title: "GCP Cloud Solutions",
   description:
     "GCP cloud solutions to design, automate, optimize, and operate your platform. Project structure, networking, compute, CI/CD, cost optimization, observability, identity, and governance.",
+  keywords: ["GCP consulting", "Google Cloud", "GCP cloud", "Google Cloud Platform", "GCP engineering"],
+  openGraph: { url: "https://visionxixlabs.com/cloud-solutions/gcp" },
+  alternates: { canonical: "https://visionxixlabs.com/cloud-solutions/gcp" },
 };
 
 export default function GcpCloudSolutionsPage() {

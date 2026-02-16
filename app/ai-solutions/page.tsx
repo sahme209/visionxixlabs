@@ -43,7 +43,7 @@ import { SecurityAccessSection } from "@/components/SecurityAccessSection";
 import { ClientCollaborationSection } from "@/components/ClientCollaborationSection";
 
 export const metadata: Metadata = {
-  title: "AI Solutions | Vision XIX Labs",
+  title: "AI Solutions",
   description:
     "Cloud-native AI implementation, secure AI integration, and production-grade AI deployment. Enterprise AI consulting on AWS, Azure, and GCP.",
   keywords: [
@@ -54,7 +54,15 @@ export const metadata: Metadata = {
     "Internal AI assistant",
     "Enterprise AI integration",
     "AI DevOps",
+    "production AI",
+    "LLM deployment",
   ],
+  openGraph: {
+    title: "AI Solutions | Production AI | Vision XIX Labs",
+    description: "Secure AI integration and production AI deployment. Enterprise AI on AWS, Azure, GCP.",
+    url: "https://visionxixlabs.com/ai-solutions",
+  },
+  alternates: { canonical: "https://visionxixlabs.com/ai-solutions" },
 };
 
 export default function AISolutionsPage() {

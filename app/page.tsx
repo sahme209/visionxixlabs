@@ -368,6 +368,12 @@ export default function Home() {
                   <ArrowRightIcon className="ml-2 h-5 w-5" />
                 </Link>
                 <Link
+                  href="/case-studies"
+                  className="inline-flex items-center px-6 py-3 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 rounded-lg font-semibold shadow-lg hover:shadow-xl border-2 border-slate-200 dark:border-slate-700 transform hover:-translate-y-0.5 transition-all duration-300"
+                >
+                  Work we&apos;ve done
+                </Link>
+                <Link
                   href="/contact"
                   className="inline-flex items-center px-6 py-3 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 rounded-lg font-semibold shadow-lg hover:shadow-xl border-2 border-slate-200 dark:border-slate-700 transform hover:-translate-y-0.5 transition-all duration-300"
                 >

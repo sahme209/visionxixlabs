@@ -20,9 +20,12 @@ import { CTASection } from "../../../components/CTASection";
 import { WhatWeDoNotDo } from "../../../components/WhatWeDoNotDo";
 
 export const metadata: Metadata = {
-  title: "Azure Cloud Solutions | Vision XIX Labs",
+  title: "Azure Cloud Solutions",
   description:
     "Azure cloud solutions to design, automate, optimize, and operate your platform. Landing zones, networking, CI/CD, cost management, observability, identity, governance, and DR.",
+  keywords: ["Azure consulting", "Microsoft Azure", "Azure cloud", "Azure landing zone", "Azure CI/CD"],
+  openGraph: { url: "https://visionxixlabs.com/cloud-solutions/azure" },
+  alternates: { canonical: "https://visionxixlabs.com/cloud-solutions/azure" },
 };
 
 export default function AzureCloudSolutionsPage() {

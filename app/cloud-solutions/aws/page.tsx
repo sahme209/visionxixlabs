@@ -20,9 +20,12 @@ import { CTASection } from "../../../components/CTASection";
 import { WhatWeDoNotDo } from "../../../components/WhatWeDoNotDo";
 
 export const metadata: Metadata = {
-  title: "AWS Cloud Solutions | Vision XIX Labs",
+  title: "AWS Cloud Solutions",
   description:
     "AWS cloud solutions to design, automate, optimize, and operate your platform. Foundations, CI/CD with GitHub and Octopus Deploy, cost optimization, reliability, security, and DR.",
+  keywords: ["AWS consulting", "AWS cloud", "Amazon Web Services", "AWS infrastructure", "AWS CI/CD", "AWS FinOps"],
+  openGraph: { url: "https://visionxixlabs.com/cloud-solutions/aws" },
+  alternates: { canonical: "https://visionxixlabs.com/cloud-solutions/aws" },
 };
 
 export default function AwsCloudSolutionsPage() {
