@@ -107,14 +107,17 @@ export default function CloudSecurityPage() {
 
           {/* CTA */}
           <div className="mt-16 text-center">
-            <p className="text-slate-600 dark:text-slate-400 mb-4">
-              Ready to discuss security hardening for your cloud environment?
+            <p className="text-slate-600 dark:text-slate-400 mb-3">
+              Book a cloud review call to walk through your environment, risks, and improvement options.
+            </p>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mb-4">
+              Includes a free 30-minute cloud health assessment for qualified teams.
             </p>
             <Link
               href="/contact"
               className="inline-flex items-center px-6 py-3 bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 rounded-xl font-semibold hover:opacity-90 transition-opacity"
             >
-              Get in touch
+              Book a Cloud Review Call
             </Link>
           </div>
         </div>

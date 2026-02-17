@@ -318,7 +318,7 @@ export default function Home() {
                 href="/cloud-security"
                 className="inline-flex items-center text-indigo-600 dark:text-indigo-400 font-semibold hover:underline"
               >
-                Cloud Security &amp; Hardening
+                Book a Cloud Review Call
                 <ArrowRightIcon className="ml-1 h-4 w-4" />
               </Link>
             </div>

@@ -29,6 +29,10 @@ export default function ContactPage() {
     const email = formData.get("email")?.toString() || "";
     const company = formData.get("company")?.toString() || "";
     const topic = formData.get("topic")?.toString() || "";
+    const companySize = formData.get("companySize")?.toString() || "";
+    const cloudProvider = formData.get("cloudProvider")?.toString() || "";
+    const mainConcern = formData.get("mainConcern")?.toString() || "";
+    const setupMaturity = formData.get("setupMaturity")?.toString() || "";
     const message = formData.get("message")?.toString() || "";
 
     try {
@@ -42,6 +46,10 @@ export default function ContactPage() {
           email,
           company,
           topic,
+          companySize,
+          cloudProvider,
+          mainConcern,
+          setupMaturity,
           message,
         }),
       });
@@ -75,7 +83,7 @@ export default function ContactPage() {
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-700 p-8 md:p-10">
           <header className="mb-8 text-center">
-            <div className="inline-flex items-center justify-center rounded-full bg-slate-100 dark:bg-slate-700 px-4 py-2 text-xs font-semibold text-slate-700 dark:text-slate-300 mb-4">
+            <div className="inline-flex items-center justify-center rounded-full bg-slate-100 dark:bg-slate-700 px-4 py-2 text-xs font-semibold text-slate-700 dark:text-slate-300 mb-2">
               Cloud &amp; AI Engineering
             </div>
             <h1 className="text-3xl md:text-4xl font-bold mb-3 text-slate-900 dark:text-slate-100">
@@ -83,6 +91,9 @@ export default function ContactPage() {
             </h1>
             <p className="text-sm md:text-base text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
               Share your environment, goals, and timeline. We review every request and follow up to align on scope—cloud infrastructure, CI/CD, cost, reliability, security, or AI.
+            </p>
+            <p className="mt-2 text-xs md:text-sm text-slate-500 dark:text-slate-400">
+              For qualified teams, we offer a free 30-minute cloud health assessment as part of the initial review.
             </p>
           </header>
 
@@ -156,7 +167,98 @@ export default function ContactPage() {
                   <option>Cost Optimization / FinOps</option>
                   <option>Reliability &amp; Observability</option>
                   <option>Security &amp; Governance</option>
+                  <option>Cloud Security Review</option>
                   <option>Other / Not sure yet</option>
+                </select>
+              </div>
+            </div>
+
+            <div className="grid gap-6 md:grid-cols-2">
+              <div>
+                <label
+                  htmlFor="companySize"
+                  className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-1 block"
+                >
+                  Company size
+                </label>
+                <select
+                  id="companySize"
+                  name="companySize"
+                  className="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 px-3 py-2 text-sm text-slate-900 dark:text-slate-100 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  defaultValue=""
+                >
+                  <option value="">Select range</option>
+                  <option>1–5</option>
+                  <option>6–20</option>
+                  <option>21–50</option>
+                  <option>51–200</option>
+                  <option>200+</option>
+                </select>
+              </div>
+              <div>
+                <label
+                  htmlFor="cloudProvider"
+                  className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-1 block"
+                >
+                  Primary cloud provider
+                </label>
+                <select
+                  id="cloudProvider"
+                  name="cloudProvider"
+                  className="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 px-3 py-2 text-sm text-slate-900 dark:text-slate-100 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  defaultValue=""
+                >
+                  <option value="">Select provider</option>
+                  <option>AWS</option>
+                  <option>Azure</option>
+                  <option>GCP</option>
+                  <option>Multi-cloud</option>
+                  <option>Other / Not sure</option>
+                </select>
+              </div>
+            </div>
+
+            <div className="grid gap-6 md:grid-cols-2">
+              <div>
+                <label
+                  htmlFor="mainConcern"
+                  className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-1 block"
+                >
+                  Main concern
+                </label>
+                <select
+                  id="mainConcern"
+                  name="mainConcern"
+                  className="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 px-3 py-2 text-sm text-slate-900 dark:text-slate-100 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  defaultValue=""
+                >
+                  <option value="">Select</option>
+                  <option>Cloud security hardening</option>
+                  <option>DevOps / CI/CD automation</option>
+                  <option>Cost optimization</option>
+                  <option>AI workflow integration</option>
+                  <option>Combination of the above</option>
+                  <option>Other</option>
+                </select>
+              </div>
+              <div>
+                <label
+                  htmlFor="setupMaturity"
+                  className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-1 block"
+                >
+                  Current setup maturity
+                </label>
+                <select
+                  id="setupMaturity"
+                  name="setupMaturity"
+                  className="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 px-3 py-2 text-sm text-slate-900 dark:text-slate-100 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  defaultValue=""
+                >
+                  <option value="">Select</option>
+                  <option>Mostly manual (console, scripts)</option>
+                  <option>Some automation (basic pipelines / scripts)</option>
+                  <option>CI/CD in place, needs hardening</option>
+                  <option>Mature setup, seeking external review</option>
                 </select>
               </div>
             </div>

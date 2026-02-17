@@ -11,7 +11,17 @@ function escapeHtml(s: string): string {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { name, email, company, topic, message } = body;
+    const {
+      name,
+      email,
+      company,
+      topic,
+      companySize,
+      cloudProvider,
+      mainConcern,
+      setupMaturity,
+      message,
+    } = body;
 
     // Validate required fields
     if (!name || !email || !message) {
@@ -26,6 +36,10 @@ export async function POST(request: NextRequest) {
       email: escapeHtml(String(email)),
       company: escapeHtml(String(company || "Not provided")),
       topic: escapeHtml(String(topic || "Not specified")),
+      companySize: escapeHtml(String(companySize || "Not specified")),
+      cloudProvider: escapeHtml(String(cloudProvider || "Not specified")),
+      mainConcern: escapeHtml(String(mainConcern || "Not specified")),
+      setupMaturity: escapeHtml(String(setupMaturity || "Not specified")),
       message: escapeHtml(String(message)),
     };
 
@@ -33,13 +47,17 @@ export async function POST(request: NextRequest) {
     const emailContent = `
 New Contact Form Submission
 
-Name: ${name}
-Email: ${email}
-Company: ${company || "Not provided"}
-Topic: ${topic || "Not specified"}
+Name: ${safe.name}
+Email: ${safe.email}
+Company: ${safe.company}
+Topic: ${safe.topic}
+Company size: ${safe.companySize}
+Cloud provider: ${safe.cloudProvider}
+Main concern: ${safe.mainConcern}
+Current setup maturity: ${safe.setupMaturity}
 
 Message:
-${message}
+${safe.message}
 
 ---
 This email was sent from the Vision XIX Labs contact form.
@@ -87,6 +105,10 @@ This email was sent from the Vision XIX Labs contact form.
               <p><strong>Email:</strong> ${safe.email}</p>
               <p><strong>Company:</strong> ${safe.company}</p>
               <p><strong>Topic:</strong> ${safe.topic}</p>
+              <p><strong>Company size:</strong> ${safe.companySize}</p>
+              <p><strong>Cloud provider:</strong> ${safe.cloudProvider}</p>
+              <p><strong>Main concern:</strong> ${safe.mainConcern}</p>
+              <p><strong>Current setup maturity:</strong> ${safe.setupMaturity}</p>
             </div>
             <div style="margin: 20px 0;">
               <h3 style="color: #334155;">Message:</h3>
