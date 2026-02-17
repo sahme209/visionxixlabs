@@ -85,6 +85,7 @@ This email was sent from the Vision XIX Labs contact form.
         ? "onboarding@resend.dev"
         : `Vision XIX Labs <${FROM_EMAIL}>`;
 
+    // 1) Internal notification to us
     const resendResponse = await fetch("https://api.resend.com/emails", {
       method: "POST",
       headers: {
@@ -148,6 +149,38 @@ This email was sent from the Vision XIX Labs contact form.
         payload.error = "Too many requests. Please try again in a few minutes or email us at support@visionxixlabs.com.";
       }
       return NextResponse.json(payload, { status: 500 });
+    }
+
+    // 2) Confirmation email to the requester (best-effort; failures should not block success)
+    try {
+      await fetch("https://api.resend.com/emails", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${RESEND_API_KEY}`,
+        },
+        body: JSON.stringify({
+          from: fromHeader,
+          to: [safe.email],
+          subject: "Thanks for reaching out to Vision XIX Labs",
+          text:
+            "Thank you for contacting Vision XIX Labs.\n\n" +
+            "We’ve received your message and will review it shortly. We typically respond within 1–2 business days.\n\n" +
+            "If you requested a cloud or security review, we’ll use the details you provided (company size, cloud provider, main concerns, and current setup) to prepare for the session.\n\n" +
+            "If this was sent in error, you can ignore this message.\n",
+          html: `
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+              <h2 style="color: #4f46e5;">Thanks for reaching out</h2>
+              <p>Hi ${safe.name},</p>
+              <p>We’ve received your message and will review it shortly. We typically respond within 1–2 business days.</p>
+              <p>If you requested a cloud or security review, we’ll use the details you provided (company size, cloud provider, main concerns, and current setup) to prepare for the session.</p>
+              <p style="font-size: 12px; color: #64748b;">If this wasn&apos;t intended for you, you can ignore this email.</p>
+            </div>
+          `,
+        }),
+      });
+    } catch (confirmationError) {
+      console.warn("Failed to send confirmation email:", confirmationError);
     }
 
     const data = (() => {
