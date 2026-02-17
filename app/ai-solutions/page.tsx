@@ -387,6 +387,19 @@ export default function AISolutionsPage() {
               Cloud Solutions →
             </Link>
           </div>
+
+          {/* Internal link to Cloud Review Session */}
+          <div className="mt-4 text-center">
+            <p className="text-sm text-slate-600 dark:text-slate-400 mb-2">
+              If you prefer a live working session first, we can start with a short review.
+            </p>
+            <Link
+              href="/cloud-review"
+              className="text-sm font-semibold text-indigo-600 dark:text-indigo-400 hover:underline"
+            >
+              Cloud &amp; AI Infrastructure Review Session →
+            </Link>
+          </div>
         </div>
       </main>
     </div>

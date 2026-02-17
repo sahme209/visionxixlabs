@@ -477,6 +477,19 @@ export default function CloudSolutionsPage() {
             </Link>
           </div>
 
+          {/* Link to Cloud Review Session */}
+          <div className="mb-16 text-center">
+            <p className="text-sm text-slate-600 dark:text-slate-400 mb-2">
+              Want a short, structured walkthrough before deciding on scope?
+            </p>
+            <Link
+              href="/cloud-review"
+              className="text-sm font-semibold text-indigo-600 dark:text-indigo-400 hover:underline"
+            >
+              Cloud &amp; AI Infrastructure Review Session →
+            </Link>
+          </div>
+
           {/* CTA Footer */}
           <CTASection
             title="Let’s build a cloud platform you can trust."
