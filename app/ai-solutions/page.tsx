@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { ArrowRightIcon } from "@heroicons/react/24/outline";
 import {
   aiHero,
   aiWhatWeBuild,
@@ -10,6 +11,7 @@ import {
   aiPackages,
   aiFAQ,
 } from "@/lib/aiContent";
+import { aiOfferings } from "@/lib/aiOfferingsContent";
 import {
   aiTechnicalSection,
   engineeringPrinciples,
@@ -133,6 +135,74 @@ export default function AISolutionsPage() {
               {aiWhatWeBuild.map((card) => (
                 <AISolutionCard key={card.id} {...card} />
               ))}
+            </div>
+          </section>
+
+          {/* Production AI Systems — structured offerings */}
+          <section id="production-ai" className="mb-20">
+            <div className="text-center mb-12">
+              <h2 className="text-2xl md:text-4xl font-bold text-slate-900 dark:text-slate-100 mb-3">
+                Production AI Systems, not AI demos
+              </h2>
+              <p className="text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
+                High-end AI offerings with clear scope, security, and deliverables. Each is designed for production deployment inside your cloud.
+              </p>
+            </div>
+            <div className="space-y-10">
+              {aiOfferings.map((offering) => (
+                <div
+                  key={offering.id}
+                  className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-6 md:p-8 shadow-sm"
+                >
+                  <h3 className="text-xl font-bold text-slate-900 dark:text-slate-100 mb-1">
+                    {offering.title}
+                  </h3>
+                  <p className="text-indigo-600 dark:text-indigo-400 text-sm font-medium mb-4">
+                    {offering.tagline}
+                  </p>
+                  <dl className="grid gap-4 sm:grid-cols-1">
+                    <div>
+                      <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400 mb-1">Problem</dt>
+                      <dd className="text-sm text-slate-700 dark:text-slate-300">{offering.problem}</dd>
+                    </div>
+                    <div>
+                      <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400 mb-1">Technical approach</dt>
+                      <dd className="text-sm text-slate-700 dark:text-slate-300">{offering.technicalApproach}</dd>
+                    </div>
+                    <div>
+                      <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400 mb-1">Deployment model</dt>
+                      <dd className="text-sm text-slate-700 dark:text-slate-300">{offering.deploymentModel}</dd>
+                    </div>
+                    <div>
+                      <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400 mb-1">Security model</dt>
+                      <dd className="text-sm text-slate-700 dark:text-slate-300">{offering.securityModel}</dd>
+                    </div>
+                    <div>
+                      <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400 mb-1">Deliverables</dt>
+                      <dd className="text-sm text-slate-700 dark:text-slate-300">
+                        <ul className="list-disc list-inside space-y-1">
+                          {offering.deliverables.map((d) => (
+                            <li key={d}>{d}</li>
+                          ))}
+                        </ul>
+                      </dd>
+                    </div>
+                    <div>
+                      <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400 mb-1">Ideal client</dt>
+                      <dd className="text-sm text-slate-700 dark:text-slate-300">{offering.idealClient}</dd>
+                    </div>
+                  </dl>
+                </div>
+              ))}
+            </div>
+            <div className="mt-8 text-center">
+              <Link
+                href="/contact"
+                className="inline-flex items-center px-5 py-2.5 rounded-xl bg-indigo-600 text-white text-sm font-semibold hover:bg-indigo-700 transition-colors"
+              >
+                Discuss your AI project
+                <ArrowRightIcon className="ml-2 h-4 w-4" />
+              </Link>
             </div>
           </section>
 

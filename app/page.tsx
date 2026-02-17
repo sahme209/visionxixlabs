@@ -87,7 +87,14 @@ export default function Home() {
           <p className="text-lg md:text-xl text-slate-600 dark:text-slate-400 mb-8 max-w-3xl mx-auto">
             We design, automate, optimize, and secure cloud platforms across AWS, Azure, and Google Cloud — with production-grade AI integration and DevOps automation.
           </p>
-          <div className="flex flex-wrap justify-center gap-4 mb-8">
+          <div className="flex flex-wrap justify-center gap-4 mb-6">
+            <Link
+              href="/free-review"
+              className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all"
+            >
+              Free Cloud &amp; AI Review
+              <ArrowRightIcon className="ml-2 h-5 w-5" />
+            </Link>
             <Link
               href="/contact"
               className="inline-flex items-center px-6 py-3 bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 rounded-xl font-semibold shadow-md hover:opacity-90 transition-opacity"
@@ -103,6 +110,9 @@ export default function Home() {
               <ArrowRightIcon className="ml-2 h-5 w-5" />
             </Link>
           </div>
+          <p className="text-sm text-slate-500 dark:text-slate-400 mb-2">
+            No obligation · 30-minute review · Discovery prep and custom demo outline
+          </p>
           <div className="flex flex-wrap justify-center gap-3 mb-4">
             <Link
               href="/cloud-solutions/aws"
@@ -315,10 +325,18 @@ export default function Home() {
                 Security baseline, DevOps hardening, AI security review, and visibility setup — practical hardening without exaggerated claims.
               </p>
               <Link
+                href="/free-review"
+                className="inline-flex items-center text-indigo-600 dark:text-indigo-400 font-semibold hover:underline"
+              >
+                Free Cloud &amp; AI Review
+                <ArrowRightIcon className="ml-1 h-4 w-4" />
+              </Link>
+              <span className="mx-2 text-slate-400">·</span>
+              <Link
                 href="/cloud-security"
                 className="inline-flex items-center text-indigo-600 dark:text-indigo-400 font-semibold hover:underline"
               >
-                Book a Cloud Review Call
+                Cloud Security
                 <ArrowRightIcon className="ml-1 h-4 w-4" />
               </Link>
             </div>

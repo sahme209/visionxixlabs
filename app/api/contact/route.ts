@@ -21,12 +21,21 @@ export async function POST(request: NextRequest) {
       mainConcern,
       setupMaturity,
       message,
+      source,
+      aiUsageStatus,
     } = body;
 
-    // Validate required fields
-    if (!name || !email || !message) {
+    // Validate required fields (message optional when source is free-review)
+    const isFreeReview = source === "free-review";
+    if (!name || !email) {
       return NextResponse.json(
-        { error: "Name, email, and message are required" },
+        { error: "Name and email are required" },
+        { status: 400 }
+      );
+    }
+    if (!isFreeReview && !message) {
+      return NextResponse.json(
+        { error: "Message is required" },
         { status: 400 }
       );
     }
@@ -40,12 +49,18 @@ export async function POST(request: NextRequest) {
       cloudProvider: escapeHtml(String(cloudProvider || "Not specified")),
       mainConcern: escapeHtml(String(mainConcern || "Not specified")),
       setupMaturity: escapeHtml(String(setupMaturity || "Not specified")),
-      message: escapeHtml(String(message)),
+      message: escapeHtml(String(message || (isFreeReview ? "Free Cloud & AI Infrastructure Review request." : ""))),
+      source: escapeHtml(String(source || "contact")),
+      aiUsageStatus: escapeHtml(String(aiUsageStatus || "Not specified")),
     };
+
+    const emailSubject = safe.source === "free-review"
+      ? `[Free Review] ${safe.company} – ${safe.name}`
+      : `Vision XIX Labs - Contact: ${safe.topic}`.slice(0, 255);
 
     // Format the email content (plain text)
     const emailContent = `
-New Contact Form Submission
+New Contact Form Submission${safe.source === "free-review" ? " (Free Cloud & AI Review)" : ""}
 
 Name: ${safe.name}
 Email: ${safe.email}
@@ -55,12 +70,13 @@ Company size: ${safe.companySize}
 Cloud provider: ${safe.cloudProvider}
 Main concern: ${safe.mainConcern}
 Current setup maturity: ${safe.setupMaturity}
+${safe.source === "free-review" ? `AI usage status: ${safe.aiUsageStatus}\n` : ""}
 
 Message:
 ${safe.message}
 
 ---
-This email was sent from the Vision XIX Labs contact form.
+This email was sent from the Vision XIX Labs contact form${safe.source === "free-review" ? " (Free Review landing page)" : ""}.
     `.trim();
 
     const RESEND_API_KEY = process.env.RESEND_API_KEY;
@@ -96,7 +112,7 @@ This email was sent from the Vision XIX Labs contact form.
         from: fromHeader,
         to: [TO_EMAIL],
         reply_to: email,
-        subject: `Vision XIX Labs - Contact: ${topic || "General Inquiry"}`.slice(0, 255),
+        subject: emailSubject,
         text: emailContent,
         html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -110,6 +126,7 @@ This email was sent from the Vision XIX Labs contact form.
               <p><strong>Cloud provider:</strong> ${safe.cloudProvider}</p>
               <p><strong>Main concern:</strong> ${safe.mainConcern}</p>
               <p><strong>Current setup maturity:</strong> ${safe.setupMaturity}</p>
+              ${safe.source === "free-review" ? `<p><strong>AI usage status:</strong> ${safe.aiUsageStatus}</p>` : ""}
             </div>
             <div style="margin: 20px 0;">
               <h3 style="color: #334155;">Message:</h3>
