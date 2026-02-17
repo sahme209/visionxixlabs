@@ -137,6 +137,65 @@ export default function CloudReviewPage() {
             </div>
           </section>
 
+          {/* Demo walkthrough */}
+          <section className="mb-12" aria-labelledby="demo-walkthrough-heading">
+            <h2
+              id="demo-walkthrough-heading"
+              className="text-2xl font-bold text-slate-900 dark:text-slate-100 mb-4"
+            >
+              What an example demo looks like
+            </h2>
+            <p className="text-slate-600 dark:text-slate-400 mb-4">
+              To make this concrete, here&apos;s how a typical review runs for a SaaS
+              team on AWS. The same structure applies to Azure and GCP.
+            </p>
+            <div className="space-y-4 text-sm text-slate-700 dark:text-slate-300">
+              <div>
+                <h3 className="font-semibold mb-1">1) Quick context (5 minutes)</h3>
+                <p>
+                  You briefly walk through your product, current architecture at a high
+                  level, and what&apos;s worrying you most (security, deployments, cost,
+                  AI, or a mix).
+                </p>
+              </div>
+              <div>
+                <h3 className="font-semibold mb-1">2) Architecture &amp; access review (10 minutes)</h3>
+                <p>
+                  We sketch or refine a simple view of your environments (dev / test /
+                  prod), networking, and IAM patterns. We highlight where access,
+                  logging, or deployment controls might need tightening.
+                </p>
+              </div>
+              <div>
+                <h3 className="font-semibold mb-1">3) Deployments, cost, and AI usage (10 minutes)</h3>
+                <p>
+                  We look at how changes reach production today (manual vs CI/CD),
+                  what you have for monitoring and alerts, and—if you&apos;re using
+                  AI—how endpoints are secured and monitored.
+                </p>
+              </div>
+              <div>
+                <h3 className="font-semibold mb-1">4) Concrete next steps (5 minutes)</h3>
+                <p>
+                  We summarise 3–5 specific, realistic changes you could make over the
+                  next few weeks, and how a short engagement or package might support
+                  that if you choose to involve us.
+                </p>
+              </div>
+              <div className="rounded-lg border border-dashed border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/40 p-4 text-xs text-slate-600 dark:text-slate-400">
+                <p className="font-semibold mb-1">Example flow (text-based diagram)</p>
+                <pre className="whitespace-pre-wrap font-mono text-[11px] leading-relaxed">
+{`Your context
+  → Quick diagram of environments & IAM
+    → Security & logging observations
+      → Deployments / CI/CD observations
+        → Cost & AI usage notes
+          → 3–5 recommended next steps`}
+                </pre>
+              </div>
+            </div>
+          </section>
+
           {/* How to prepare */}
           <section className="mb-12" aria-labelledby="prepare-heading">
             <h2
