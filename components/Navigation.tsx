@@ -16,6 +16,7 @@ const solutionsLinks = [
   { href: "/ai-solutions", label: "AI Solutions" },
   { href: "/solutions-for-growing-teams", label: "Growing Teams" },
   { href: "/cloud-security", label: "Cloud Security" },
+  { href: "/cloud-review", label: "Cloud Review Session" },
   { href: "/case-studies", label: "Case Studies" },
 ];
 
@@ -145,6 +146,7 @@ export function Navigation() {
               <Link href="/ai-solutions" onClick={() => setMobileMenuOpen(false)} className="px-4 py-2 text-slate-700 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 rounded-lg text-sm font-medium">AI Solutions</Link>
               <Link href="/solutions-for-growing-teams" onClick={() => setMobileMenuOpen(false)} className="px-4 py-2 text-slate-700 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 rounded-lg text-sm font-medium">Growing Teams</Link>
               <Link href="/cloud-security" onClick={() => setMobileMenuOpen(false)} className="px-4 py-2 text-slate-700 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 rounded-lg text-sm font-medium">Cloud Security</Link>
+              <Link href="/cloud-review" onClick={() => setMobileMenuOpen(false)} className="px-4 py-2 text-slate-700 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 rounded-lg text-sm font-medium">Cloud Review Session</Link>
               <Link href="/case-studies" onClick={() => setMobileMenuOpen(false)} className="px-4 py-2 text-slate-700 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 rounded-lg text-sm font-medium">Case Studies</Link>
               <Link href="/apps" onClick={() => setMobileMenuOpen(false)} className="px-4 py-2 text-slate-700 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 rounded-lg text-sm font-medium">Products</Link>
               <Link href="/#about" onClick={() => setMobileMenuOpen(false)} className="px-4 py-2 text-slate-700 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 rounded-lg text-sm font-medium">About</Link>
