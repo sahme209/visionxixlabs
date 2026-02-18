@@ -487,8 +487,8 @@ export default function Home() {
                 <Image
                   src="/vision-xix-logo.png"
                   alt="Vision XIX Labs"
-                  width={40}
-                  height={40}
+                  width={32}
+                  height={32}
                   className="rounded-lg"
                 />
                 <span className="text-lg font-bold text-white">

@@ -30,9 +30,12 @@ export const metadata: Metadata = {
     googleBot: { index: true, follow: true },
   },
   icons: {
-    icon: "/vision-xix-logo.png",
-    shortcut: "/vision-xix-logo.png",
-    apple: "/vision-xix-logo.png",
+    icon: [
+      { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
+      { url: "/vision-xix-logo.png", sizes: "any", type: "image/png" },
+    ],
+    shortcut: "/favicon-32x32.png",
+    apple: "/apple-icon.png",
   },
   openGraph: {
     type: "website",

@@ -48,8 +48,8 @@ export function Navigation() {
             <Image
               src="/vision-xix-logo.png"
               alt="Vision XIX Labs"
-              width={56}
-              height={56}
+              width={42}
+              height={42}
               className="rounded-xl shadow-lg group-hover:shadow-xl transition-shadow"
               priority
             />
