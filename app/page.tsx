@@ -290,6 +290,37 @@ export default function Home() {
             </div>
           </div>
 
+          {/* AI Solutions Section */}
+          <section
+            className="mt-16 pt-16 border-t border-slate-200 dark:border-slate-700"
+            aria-labelledby="ai-solutions-heading"
+          >
+            <div className="text-center mb-8">
+              <h2 id="ai-solutions-heading" className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-slate-100 mb-3">
+                Production AI Systems &amp; LLM Integration
+              </h2>
+              <p className="text-slate-600 dark:text-slate-400 max-w-2xl mx-auto mb-6">
+                We engineer AI systems for production environments: secure, scalable, and cost-aware AI deployment inside your cloud. Not demos—production systems.
+              </p>
+              <div className="flex flex-wrap justify-center gap-4">
+                <Link
+                  href="/ai-solutions"
+                  className="inline-flex items-center px-5 py-2.5 bg-indigo-600 text-white rounded-lg font-semibold text-sm hover:bg-indigo-700 transition-colors"
+                >
+                  AI Solutions
+                  <ArrowRightIcon className="ml-1.5 h-4 w-4" />
+                </Link>
+                <Link
+                  href="/ai-engineering"
+                  className="inline-flex items-center px-5 py-2.5 border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 rounded-lg font-semibold text-sm hover:border-slate-400 dark:hover:border-slate-500 transition-colors"
+                >
+                  AI Engineering &amp; LLM Systems
+                  <ArrowRightIcon className="ml-1.5 h-4 w-4" />
+                </Link>
+              </div>
+            </div>
+          </section>
+
           {/* Solutions for Growing Teams */}
           <section
             className="mt-16 pt-16 border-t border-slate-200 dark:border-slate-700"
@@ -439,6 +470,7 @@ export default function Home() {
           </div>
           <div className="flex flex-wrap justify-center gap-4 text-sm text-slate-600 dark:text-slate-400">
             <Link href="/privacy" className="hover:text-slate-900 dark:hover:text-slate-100 underline underline-offset-4">Privacy</Link>
+            <Link href="/terms" className="hover:text-slate-900 dark:hover:text-slate-100 underline underline-offset-4">Terms</Link>
             <Link href="/cloud-solutions" className="hover:text-slate-900 dark:hover:text-slate-100 underline underline-offset-4">Solutions</Link>
             <Link href="/case-studies" className="hover:text-slate-900 dark:hover:text-slate-100 underline underline-offset-4">Case Studies</Link>
             <Link href="/apps" className="hover:text-slate-900 dark:hover:text-slate-100 underline underline-offset-4">Products</Link>
@@ -497,6 +529,8 @@ export default function Home() {
               <h4 className="text-white font-semibold mb-4 text-sm">Solutions</h4>
               <ul className="space-y-2 text-sm">
                 <li><Link href="/ai-solutions" className="hover:text-white transition-colors">AI Solutions</Link></li>
+                <li><Link href="/ai-engineering" className="hover:text-white transition-colors">AI Engineering &amp; LLM Systems</Link></li>
+                <li><Link href="/enterprise-readiness" className="hover:text-white transition-colors">Enterprise Readiness</Link></li>
                 <li><Link href="/solutions-for-growing-teams" className="hover:text-white transition-colors">Growing Teams</Link></li>
                 <li><Link href="/cloud-security" className="hover:text-white transition-colors">Cloud Security</Link></li>
                 <li><Link href="/case-studies" className="hover:text-white transition-colors">Case Studies</Link></li>
@@ -508,6 +542,7 @@ export default function Home() {
                 <li><a href="#about" className="hover:text-white transition-colors">About</a></li>
                 <li><Link href="/apps" className="hover:text-white transition-colors">Products</Link></li>
                 <li><Link href="/privacy" className="hover:text-white transition-colors">Privacy</Link></li>
+                <li><Link href="/terms" className="hover:text-white transition-colors">Terms of Service</Link></li>
               </ul>
             </div>
             <div>
