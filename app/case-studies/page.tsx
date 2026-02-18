@@ -58,6 +58,10 @@ export default function CaseStudiesPage() {
             <p className="text-lg md:text-xl text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
               {caseStudiesHero.subtitle}
             </p>
+            <p className="mt-3 text-xs md:text-sm text-slate-500 dark:text-slate-400 max-w-2xl mx-auto">
+              These are representative examples of Cloud &amp; AI Engineering work&mdash;architecture, integration,
+              and operations. No client names, logos, or fabricated metrics.
+            </p>
           </header>
 
           {/* Case Studies */}

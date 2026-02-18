@@ -151,6 +151,45 @@ export const caseStudies: CaseStudy[] = [
     ],
   },
   {
+    id: "ai-workflow-automation",
+    title: "AI Workflow Automation for Support & Operations",
+    context:
+      "Team with high-volume, repetitive support and internal operations tasks, exploring AI for triage and enrichment while keeping existing tools in place.",
+    technicalChallenge: [
+      "Manual triage and routing of support and ops tickets",
+      "Inconsistent enrichment of records across tools",
+      "Limited visibility into AI-related cost and performance",
+    ],
+    architectureApproach: [
+      "Event-driven workflows triggered from existing systems (e.g. ticketing, email, or CRM)",
+      "Centralized AI integration layer calling managed or hosted models",
+      "Retrieval and context injection for domain-specific responses",
+      "Logging and metrics for AI calls and outcomes",
+    ],
+    implementationStrategy: [
+      "Design of classification and enrichment flows that feed back into existing tools",
+      "Guardrails for when to use AI vs hand off to humans",
+      "Rate limiting and quotas for AI usage per environment",
+      "Dashboards for monitoring accuracy indicators and cost",
+    ],
+    operationalModel: [
+      "Runbooks for reviewing and adjusting prompts and thresholds",
+      "Regular review of classification performance using sample tickets",
+      "Cost and usage review with owners of affected workflows",
+    ],
+    deliverables: [
+      "Workflow and integration diagrams for AI-assisted paths",
+      "Configuration and code for AI orchestration layer",
+      "Monitoring and alerting configuration for AI workflows",
+      "Runbooks for support and operations teams",
+    ],
+    outcome: [
+      "Reduced manual triage effort",
+      "More consistent enrichment and routing decisions",
+      "Controlled and observable AI usage integrated into existing operations",
+    ],
+  },
+  {
     id: "multi-environment-infrastructure",
     title: "Multi-Environment Infrastructure Engineering",
     context:

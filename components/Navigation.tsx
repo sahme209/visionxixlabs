@@ -15,6 +15,7 @@ const cloudLinks = [
 const solutionsLinks = [
   { href: "/ai-solutions", label: "AI Solutions" },
   { href: "/ai-engineering", label: "AI Engineering & LLM Systems" },
+  { href: "/enterprise-readiness", label: "Enterprise Readiness" },
   { href: "/solutions-for-growing-teams", label: "Growing Teams" },
   { href: "/cloud-security", label: "Cloud Security" },
   { href: "/free-review", label: "Free Cloud & AI Review" },
