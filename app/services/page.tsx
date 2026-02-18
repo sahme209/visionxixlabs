@@ -380,8 +380,8 @@ export default function ServicesPage() {
       {/* Footer */}
       <footer className="bg-slate-900 text-slate-300 py-12 px-4 sm:px-6 lg:px-8 mt-24">
         <div className="max-w-7xl mx-auto">
-          <div className="grid md:grid-cols-3 gap-8 mb-8">
-            <div>
+          <div className="grid md:grid-cols-5 gap-8 mb-8">
+            <div className="md:col-span-2">
               <div className="flex items-center space-x-2 mb-4">
                 <SparklesIcon className="h-6 w-6 text-indigo-400" />
                 <span className="text-lg font-bold text-white">
@@ -393,69 +393,46 @@ export default function ServicesPage() {
               </p>
             </div>
             <div>
-              <h4 className="text-white font-semibold mb-4">Quick Links</h4>
-              <ul className="space-y-2">
-                <li>
-                  <Link
-                    href="/"
-                    className="hover:text-indigo-400 transition-colors"
-                  >
-                    Home
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href="/services"
-                    className="hover:text-indigo-400 transition-colors"
-                  >
-                    Services
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href="/press"
-                    className="hover:text-indigo-400 transition-colors"
-                  >
-                    Press &amp; Media
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href="/contact"
-                    className="hover:text-indigo-400 transition-colors"
-                  >
-                    Contact
-                  </Link>
-                </li>
+              <h4 className="text-white font-semibold mb-4 text-sm">Cloud</h4>
+              <ul className="space-y-2 text-sm">
+                <li><Link href="/cloud-solutions" className="hover:text-indigo-400 transition-colors">Cloud Solutions</Link></li>
+                <li><Link href="/cloud-solutions/aws" className="hover:text-indigo-400 transition-colors">AWS</Link></li>
+                <li><Link href="/cloud-solutions/azure" className="hover:text-indigo-400 transition-colors">Azure</Link></li>
+                <li><Link href="/cloud-solutions/gcp" className="hover:text-indigo-400 transition-colors">GCP</Link></li>
               </ul>
             </div>
             <div>
-              <h4 className="text-white font-semibold mb-4">Contact</h4>
-              <ul className="space-y-2">
+              <h4 className="text-white font-semibold mb-4 text-sm">Solutions</h4>
+              <ul className="space-y-2 text-sm">
+                <li><Link href="/ai-solutions" className="hover:text-indigo-400 transition-colors">AI Solutions</Link></li>
+                <li><Link href="/ai-engineering" className="hover:text-indigo-400 transition-colors">AI Engineering</Link></li>
+                <li><Link href="/enterprise-readiness" className="hover:text-indigo-400 transition-colors">Enterprise Readiness</Link></li>
+                <li><Link href="/cloud-security" className="hover:text-indigo-400 transition-colors">Cloud Security</Link></li>
+                <li><Link href="/free-review" className="hover:text-indigo-400 transition-colors">Free Review</Link></li>
+                <li><Link href="/solutions-for-growing-teams" className="hover:text-indigo-400 transition-colors">Growing Teams</Link></li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="text-white font-semibold mb-4 text-sm">Company</h4>
+              <ul className="space-y-2 text-sm">
+                <li><Link href="/" className="hover:text-indigo-400 transition-colors">Home</Link></li>
+                <li><Link href="/services" className="hover:text-indigo-400 transition-colors">Services</Link></li>
+                <li><Link href="/case-studies" className="hover:text-indigo-400 transition-colors">Case Studies</Link></li>
+                <li><Link href="/press" className="hover:text-indigo-400 transition-colors">Press &amp; Media</Link></li>
+                <li><Link href="/insights" className="hover:text-indigo-400 transition-colors">Insights</Link></li>
+                <li><Link href="/privacy" className="hover:text-indigo-400 transition-colors">Privacy</Link></li>
+                <li><Link href="/terms" className="hover:text-indigo-400 transition-colors">Terms</Link></li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="text-white font-semibold mb-4 text-sm">Connect</h4>
+              <ul className="space-y-2 text-sm">
+                <li><Link href="/contact" className="hover:text-indigo-400 transition-colors">Contact</Link></li>
                 <li>
-                  <a
-                    href="mailto:support@visionxixlabs.com"
-                    className="hover:text-indigo-400 transition-colors inline-flex items-center"
-                  >
+                  <a href="mailto:support@visionxixlabs.com" className="hover:text-indigo-400 transition-colors inline-flex items-center">
                     <EnvelopeIcon className="h-4 w-4 mr-2" />
                     support@visionxixlabs.com
                   </a>
-                </li>
-                <li>
-                  <Link
-                    href="/privacy"
-                    className="hover:text-indigo-400 transition-colors"
-                  >
-                    Privacy Policy
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href="/terms"
-                    className="hover:text-indigo-400 transition-colors"
-                  >
-                    Terms of Service
-                  </Link>
                 </li>
               </ul>
             </div>
