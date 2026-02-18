@@ -21,6 +21,10 @@ Secondary: cloud migration, Kubernetes, Terraform, GitHub Actions, Octopus Deplo
 2. **Bing Webmaster Tools**: Add site and submit the same sitemap URL.
 3. After deploy, request indexing for the homepage and main sections (Cloud Solutions, AI Solutions, Contact) if you want faster discovery.
 
+## Backlinks and press
+
+- **`/press`** – Press & Media page for backlink acquisition. Provides canonical URL (`https://visionxixlabs.com`), suggested anchor text, logo usage, and a one-line description. Link is in the footer under Company. Use this URL when requesting or suggesting backlinks from partners, directories, or press.
+
 ## Optional next steps
 
 - Add FAQ schema (FAQPage JSON-LD) on cloud-solutions and ai-solutions if you want FAQ rich results in search.

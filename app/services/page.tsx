@@ -413,6 +413,14 @@ export default function ServicesPage() {
                 </li>
                 <li>
                   <Link
+                    href="/press"
+                    className="hover:text-indigo-400 transition-colors"
+                  >
+                    Press &amp; Media
+                  </Link>
+                </li>
+                <li>
+                  <Link
                     href="/contact"
                     className="hover:text-indigo-400 transition-colors"
                   >
@@ -439,6 +447,14 @@ export default function ServicesPage() {
                     className="hover:text-indigo-400 transition-colors"
                   >
                     Privacy Policy
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/terms"
+                    className="hover:text-indigo-400 transition-colors"
+                  >
+                    Terms of Service
                   </Link>
                 </li>
               </ul>
