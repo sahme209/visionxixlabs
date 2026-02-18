@@ -34,9 +34,9 @@ import { FAQAccordion } from "@/components/FAQAccordion";
 import { PackageCard } from "@/components/PackageCard";
 
 export const metadata: Metadata = {
-  title: "AWS & DevOps Services",
+  title: "Cloud & AI Engineering Services",
   description:
-    "AWS cloud infrastructure, CI/CD with GitHub and Octopus Deploy, cost optimization, reliability, and security. Enterprise-grade delivery.",
+    "Cloud & AI engineering: AWS infrastructure, CI/CD with GitHub and Octopus Deploy, production AI integration, cost optimization, reliability, and security.",
   openGraph: { url: "https://visionxixlabs.com/services" },
   alternates: { canonical: "https://visionxixlabs.com/services" },
 };
@@ -220,6 +220,23 @@ const services = [
       "Pipelines that ship securely by default",
     ],
   },
+  {
+    id: "ai-engineering-llm-systems",
+    icon: SparklesIcon,
+    title: "AI Engineering & LLM Systems",
+    description:
+      "Production-grade AI systems deployed inside your cloud: architecture, integration, and operations—not research or hype.",
+    items: [
+      "Architecture and strategy for LLM systems and AI-assisted workflows",
+      "Integration of models with your data, APIs, and internal applications",
+      "Deployment of AI services in your AWS, Azure, or GCP accounts with CI/CD and observability",
+    ],
+    outcomes: [
+      "AI that fits your existing cloud, security, and delivery practices",
+      "Clear ownership and runbooks for AI workloads",
+      "Predictable, governed AI usage instead of one-off demos",
+    ],
+  },
 ];
 
 export default function ServicesPage() {
@@ -232,10 +249,10 @@ export default function ServicesPage() {
           {/* 1. Overview */}
           <section className="mb-12" aria-labelledby="overview-heading">
             <h1 id="overview-heading" className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-slate-100 mb-4">
-              AWS Cloud &amp; DevOps Services
+              Cloud &amp; AI Engineering Services
             </h1>
             <p className="text-lg text-slate-600 dark:text-slate-400 max-w-3xl">
-              We design and implement AWS infrastructure, CI/CD with GitHub and Octopus Deploy, cost optimization, reliability, and security—with clear deliverables and handover.
+              We design and implement AWS infrastructure, CI/CD with GitHub and Octopus Deploy, AI integration, cost optimization, reliability, and security—with clear deliverables and handover.
             </p>
           </section>
 
@@ -245,12 +262,39 @@ export default function ServicesPage() {
               Technical scope
             </h2>
             <p className="text-slate-600 dark:text-slate-400 mb-8 max-w-3xl">
-              Outcome-focused workstreams: infrastructure, CI/CD, FinOps, observability, and security. Each with defined deliverables and outcomes.
+              Outcome-focused workstreams: infrastructure, CI/CD, FinOps, observability, security, and production AI integration. Each with defined deliverables and outcomes.
             </p>
             <div className="grid gap-6 md:grid-cols-2">
               {services.map((service) => (
                 <ServiceCard key={service.id} {...service} />
               ))}
+            </div>
+          </section>
+
+          {/* AI-focused services overview */}
+          <section className="mb-16" aria-labelledby="ai-services-heading">
+            <div className="rounded-2xl bg-slate-900 text-slate-100 p-6 md:p-8 shadow-xl">
+              <h2 id="ai-services-heading" className="text-2xl font-bold mb-3">
+                AI engineering as part of your platform
+              </h2>
+              <p className="text-sm md:text-base text-slate-200 mb-4 max-w-3xl">
+                We do not build new foundation models. We engineer AI systems for production environments:
+                secure, observable, and cost-aware AI workloads that live alongside your existing services.
+              </p>
+              <div className="flex flex-wrap gap-4 text-sm">
+                <Link
+                  href="/ai-engineering"
+                  className="inline-flex items-center px-4 py-2 rounded-lg bg-white text-slate-900 font-semibold hover:bg-slate-100 transition-colors"
+                >
+                  AI Engineering &amp; LLM Systems
+                </Link>
+                <Link
+                  href="/ai-solutions"
+                  className="inline-flex items-center px-4 py-2 rounded-lg border border-slate-500 text-slate-100 font-semibold hover:border-slate-300 transition-colors"
+                >
+                  Explore AI Solutions
+                </Link>
+              </div>
             </div>
           </section>
 
