@@ -256,6 +256,22 @@ export default function ServicesPage() {
             </p>
           </section>
 
+          {/* 1b. Common gaps we close */}
+          <section className="mb-16 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 p-6" aria-labelledby="gaps-heading">
+            <h2 id="gaps-heading" className="text-lg font-bold text-slate-900 dark:text-slate-100 mb-4">
+              Common gaps we close
+            </h2>
+            <p className="text-sm text-slate-600 dark:text-slate-400 mb-4 max-w-3xl">
+              Companies often struggle with: scale-up beyond pilots, digital maturity, technical capacity, strategy focus, and skills/governance. We help address these so cloud and AI deliver tangible value.
+            </p>
+            <Link
+              href="/markets"
+              className="text-sm font-semibold text-indigo-600 dark:text-indigo-400 hover:underline"
+            >
+              See where companies need AI →
+            </Link>
+          </section>
+
           {/* 2. Technical Scope — service areas */}
           <section aria-labelledby="services-heading" className="mb-16">
             <h2 id="services-heading" className="text-2xl font-bold text-slate-900 dark:text-slate-100 mb-6">
@@ -406,7 +422,7 @@ export default function ServicesPage() {
               <ul className="space-y-2 text-sm">
                 <li><Link href="/ai-solutions" className="hover:text-indigo-400 transition-colors">AI Solutions</Link></li>
                 <li><Link href="/ai-engineering" className="hover:text-indigo-400 transition-colors">AI Engineering</Link></li>
-                <li><Link href="/markets" className="hover:text-indigo-400 transition-colors">Markets We Serve</Link></li>
+                <li><Link href="/markets" className="hover:text-indigo-400 transition-colors">Where Companies Need AI</Link></li>
                 <li><Link href="/enterprise-readiness" className="hover:text-indigo-400 transition-colors">Enterprise Readiness</Link></li>
                 <li><Link href="/cloud-security" className="hover:text-indigo-400 transition-colors">Cloud Security</Link></li>
                 <li><Link href="/free-review" className="hover:text-indigo-400 transition-colors">Free Review</Link></li>

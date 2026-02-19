@@ -121,6 +121,22 @@ export default function AISolutionsPage() {
             </div>
           </section>
 
+          {/* Where companies need AI */}
+          <section className="mb-16 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-6" aria-labelledby="needs-heading">
+            <h2 id="needs-heading" className="text-lg font-bold text-slate-900 dark:text-slate-100 mb-3">
+              Where companies need AI
+            </h2>
+            <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">
+              Research shows companies need AI for: customer support, sales/marketing personalization, data extraction, internal knowledge bases, DevOps productivity, operational analytics, and sector-specific automation (agriculture, trade, manufacturing). We build production-grade solutions for these use cases.
+            </p>
+            <Link
+              href="/markets"
+              className="text-sm font-semibold text-indigo-600 dark:text-indigo-400 hover:underline"
+            >
+              Full list of needs and adoption gaps →
+            </Link>
+          </section>
+
           {/* What We Actually Build (Overview continued) */}
           <section id="what-we-build" className="mb-20">
             <div className="text-center mb-12">

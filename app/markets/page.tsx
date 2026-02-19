@@ -2,24 +2,24 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
 import {
-  BuildingOffice2Icon,
-  GlobeAmericasIcon,
-  CpuChipIcon,
+  ExclamationTriangleIcon,
   LightBulbIcon,
+  CpuChipIcon,
   ArrowRightIcon,
   CheckCircleIcon,
 } from "@heroicons/react/24/outline";
 import { Navigation } from "@/components/Navigation";
 import { SITE_URL } from "@/lib/seo";
+import { adoptionGaps, whereCompaniesNeedAI, sectorNeeds } from "@/lib/needsContent";
 
 export const metadata: Metadata = {
-  title: "Markets We Serve – US & Pakistan | Vision XIX Labs",
+  title: "Where Companies Need AI | Vision XIX Labs",
   description:
-    "AI adoption gaps in the US and Pakistan. Where companies need AI—customer support, automation, analytics, governance—and how Vision XIX Labs helps.",
+    "AI adoption gaps and where companies need AI: customer support, automation, analytics, internal AI, DevOps. How Vision XIX Labs helps close those gaps.",
   alternates: { canonical: `${SITE_URL}/markets` },
   openGraph: {
-    title: "Markets We Serve | US & Pakistan | Vision XIX Labs",
-    description: "Market intelligence on AI gaps. How we help US and Pakistani companies deploy cloud and AI solutions.",
+    title: "Where Companies Need AI | Vision XIX Labs",
+    description: "Research on AI adoption gaps and needs. How we help companies deploy practical, production-grade AI.",
     url: `${SITE_URL}/markets`,
   },
 };
@@ -46,167 +46,120 @@ export default function MarketsPage() {
               </li>
               <li aria-hidden="true">/</li>
               <li aria-current="page" className="font-semibold">
-                Markets We Serve
+                Where Companies Need AI
               </li>
             </ol>
           </nav>
 
           {/* Hero */}
           <header className="mb-16 text-center">
-            <div className="inline-flex items-center justify-center rounded-full bg-indigo-100 dark:bg-indigo-900/40 px-4 py-1.5 text-xs font-semibold text-indigo-700 dark:text-indigo-300 mb-3">
-              US & Pakistan
-            </div>
             <h1 className="text-3xl md:text-4xl lg:text-5xl font-extrabold text-slate-900 dark:text-slate-100 mb-4">
               Where companies need AI—and how we help
             </h1>
             <p className="text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
-              Market intelligence on AI adoption gaps in the US and Pakistan. We help companies in both markets close those gaps with practical cloud and AI solutions.
+              Research on adoption gaps and where AI delivers value. We help companies identify needs, choose the right use cases, and deploy practical, production-ready solutions.
             </p>
           </header>
 
-          {/* US Market */}
+          {/* Adoption gaps */}
           <section className="mb-20">
             <div className="flex items-center gap-3 mb-6">
-              <GlobeAmericasIcon className="h-8 w-8 text-indigo-600 dark:text-indigo-400" />
+              <ExclamationTriangleIcon className="h-8 w-8 text-indigo-600 dark:text-indigo-400" />
               <h2 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-slate-100">
-                United States
+                Common adoption gaps
               </h2>
             </div>
-
-            <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-6 mb-8">
-              <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100 mb-3">
-                Adoption gaps
-              </h3>
-              <ul className="space-y-3 text-slate-600 dark:text-slate-400">
-                <li className="flex gap-3">
-                  <span className="text-indigo-500 mt-0.5">•</span>
-                  <span><strong className="text-slate-700 dark:text-slate-300">SMB vs. enterprise:</strong> Large firms adopt AI faster; micro- and small businesses (1–50 employees) lag due to limited technical capacity and budgets.</span>
-                </li>
-                <li className="flex gap-3">
-                  <span className="text-indigo-500 mt-0.5">•</span>
-                  <span><strong className="text-slate-700 dark:text-slate-300">Digital maturity:</strong> Many SMBs lack automation, data hygiene, and security basics—prerequisites for AI. Organizations with higher digital maturity see roughly double the growth.</span>
-                </li>
-                <li className="flex gap-3">
-                  <span className="text-indigo-500 mt-0.5">•</span>
-                  <span><strong className="text-slate-700 dark:text-slate-300">Barriers:</strong> Data privacy concerns, workforce upskilling needs, limited technical expertise, and unclear ROI slow adoption.</span>
-                </li>
-                <li className="flex gap-3">
-                  <span className="text-indigo-500 mt-0.5">•</span>
-                  <span><strong className="text-slate-700 dark:text-slate-300">Intent vs. action:</strong> A majority of SMBs plan to invest in AI but need help choosing the right use cases and implementation path.</span>
-                </li>
-              </ul>
-            </div>
-
-            <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-6 mb-8">
-              <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100 mb-3">
-                Where US companies need AI
-              </h3>
-              <div className="grid sm:grid-cols-2 gap-4">
-                <div className="flex gap-3 p-3 rounded-lg bg-slate-50 dark:bg-slate-800/50">
-                  <CheckCircleIcon className="h-5 w-5 text-indigo-500 shrink-0 mt-0.5" />
-                  <span className="text-sm text-slate-600 dark:text-slate-400">Customer support automation and smart routing</span>
+            <div className="grid sm:grid-cols-2 gap-4">
+              {adoptionGaps.map((gap) => (
+                <div
+                  key={gap.title}
+                  className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-5"
+                >
+                  <h3 className="font-semibold text-slate-900 dark:text-slate-100 mb-2">
+                    {gap.title}
+                  </h3>
+                  <p className="text-sm text-slate-600 dark:text-slate-400">
+                    {gap.description}
+                  </p>
                 </div>
-                <div className="flex gap-3 p-3 rounded-lg bg-slate-50 dark:bg-slate-800/50">
-                  <CheckCircleIcon className="h-5 w-5 text-indigo-500 shrink-0 mt-0.5" />
-                  <span className="text-sm text-slate-600 dark:text-slate-400">Sales and marketing personalization at scale</span>
-                </div>
-                <div className="flex gap-3 p-3 rounded-lg bg-slate-50 dark:bg-slate-800/50">
-                  <CheckCircleIcon className="h-5 w-5 text-indigo-500 shrink-0 mt-0.5" />
-                  <span className="text-sm text-slate-600 dark:text-slate-400">Data extraction from invoices, forms, documents</span>
-                </div>
-                <div className="flex gap-3 p-3 rounded-lg bg-slate-50 dark:bg-slate-800/50">
-                  <CheckCircleIcon className="h-5 w-5 text-indigo-500 shrink-0 mt-0.5" />
-                  <span className="text-sm text-slate-600 dark:text-slate-400">Internal knowledge bases and internal AI assistants</span>
-                </div>
-                <div className="flex gap-3 p-3 rounded-lg bg-slate-50 dark:bg-slate-800/50 sm:col-span-2">
-                  <CheckCircleIcon className="h-5 w-5 text-indigo-500 shrink-0 mt-0.5" />
-                  <span className="text-sm text-slate-600 dark:text-slate-400">DevOps and developer productivity (code assistance, documentation)</span>
-                </div>
-              </div>
-            </div>
-
-            <div className="rounded-xl border-2 border-indigo-200 dark:border-indigo-800 bg-indigo-50/50 dark:bg-indigo-900/20 p-6">
-              <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100 mb-2 flex items-center gap-2">
-                <LightBulbIcon className="h-5 w-5 text-indigo-600" />
-                How we help US companies
-              </h3>
-              <p className="text-slate-600 dark:text-slate-400 mb-4">
-                We focus on practical AI that fits existing workflows. No data scientists or heavy infrastructure required. We start with a <Link href="/free-review" className="text-indigo-600 dark:text-indigo-400 hover:underline">free cloud and AI review</Link>, identify quick wins, and deliver fixed-scope packages for <Link href="/solutions-for-growing-teams" className="text-indigo-600 dark:text-indigo-400 hover:underline">growing teams</Link>. For larger organizations, we follow <Link href="/enterprise-readiness" className="text-indigo-600 dark:text-indigo-400 hover:underline">enterprise-ready</Link> governance and delivery practices.
-              </p>
-              <Link
-                href="/contact"
-                className="inline-flex items-center gap-2 text-indigo-600 dark:text-indigo-400 font-semibold hover:underline"
-              >
-                Discuss your US operations
-                <ArrowRightIcon className="h-4 w-4" />
-              </Link>
+              ))}
             </div>
           </section>
 
-          {/* Pakistan Market */}
+          {/* Where companies need AI */}
           <section className="mb-20">
-            <div className="flex items-center gap-3 mb-6">
-              <BuildingOffice2Icon className="h-8 w-8 text-indigo-600 dark:text-indigo-400" />
-              <h2 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-slate-100">
-                Pakistan
-              </h2>
-            </div>
-
-            <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-6 mb-8">
-              <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100 mb-3">
-                Market opportunity
-              </h3>
-              <p className="text-slate-600 dark:text-slate-400 mb-4">
-                Pakistan’s AI market is growing rapidly. Companies are adopting AI tools for customer support, sales, operations analytics, and developer productivity. A large share of online workers already use AI weekly—the gap is in structured implementation, governance, and production deployment.
-              </p>
-              <ul className="space-y-2 text-slate-600 dark:text-slate-400 text-sm">
-                <li>• <strong className="text-slate-700 dark:text-slate-300">Agriculture:</strong> Precision farming, pest detection, smart irrigation—high value in a sector central to the economy.</li>
-                <li>• <strong className="text-slate-700 dark:text-slate-300">International trade:</strong> AI to address language and regulatory barriers can unlock export growth.</li>
-                <li>• <strong className="text-slate-700 dark:text-slate-300">Digital services:</strong> Customer support automation, chatbots, and internal AI tools for knowledge and operations.</li>
-                <li>• <strong className="text-slate-700 dark:text-slate-300">Manufacturing & logistics:</strong> Demand forecasting, inventory optimization, and process automation.</li>
-              </ul>
-            </div>
-
-            <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-6 mb-8">
-              <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100 mb-3">
-                Where Pakistani companies need AI
-              </h3>
-              <div className="grid sm:grid-cols-2 gap-4">
-                <div className="flex gap-3 p-3 rounded-lg bg-slate-50 dark:bg-slate-800/50">
-                  <CheckCircleIcon className="h-5 w-5 text-indigo-500 shrink-0 mt-0.5" />
-                  <span className="text-sm text-slate-600 dark:text-slate-400">Customer support and sales enablement</span>
-                </div>
-                <div className="flex gap-3 p-3 rounded-lg bg-slate-50 dark:bg-slate-800/50">
-                  <CheckCircleIcon className="h-5 w-5 text-indigo-500 shrink-0 mt-0.5" />
-                  <span className="text-sm text-slate-600 dark:text-slate-400">Operational analytics and reporting</span>
-                </div>
-                <div className="flex gap-3 p-3 rounded-lg bg-slate-50 dark:bg-slate-800/50">
-                  <CheckCircleIcon className="h-5 w-5 text-indigo-500 shrink-0 mt-0.5" />
-                  <span className="text-sm text-slate-600 dark:text-slate-400">Developer productivity and DevOps</span>
-                </div>
-                <div className="flex gap-3 p-3 rounded-lg bg-slate-50 dark:bg-slate-800/50">
-                  <CheckCircleIcon className="h-5 w-5 text-indigo-500 shrink-0 mt-0.5" />
-                  <span className="text-sm text-slate-600 dark:text-slate-400">Data privacy and responsible AI governance</span>
-                </div>
+            <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-100 mb-6">
+              Where companies need AI
+            </h2>
+            <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-6">
+              <div className="grid sm:grid-cols-2 gap-3">
+                {whereCompaniesNeedAI.map((need) => (
+                  <div
+                    key={need}
+                    className="flex gap-3 p-3 rounded-lg bg-slate-50 dark:bg-slate-800/50"
+                  >
+                    <CheckCircleIcon className="h-5 w-5 text-indigo-500 shrink-0 mt-0.5" />
+                    <span className="text-sm text-slate-600 dark:text-slate-400">
+                      {need}
+                    </span>
+                  </div>
+                ))}
               </div>
             </div>
+          </section>
 
-            <div className="rounded-xl border-2 border-indigo-200 dark:border-indigo-800 bg-indigo-50/50 dark:bg-indigo-900/20 p-6">
-              <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100 mb-2 flex items-center gap-2">
-                <LightBulbIcon className="h-5 w-5 text-indigo-600" />
-                How we help Pakistani companies
-              </h3>
-              <p className="text-slate-600 dark:text-slate-400 mb-4">
-                We design AI solutions for Pakistani enterprises and scale-ups: cloud infrastructure (AWS, Azure, GCP), internal AI and LLM systems, automation, and security. We work with your team to deploy production-grade AI while building governance for data privacy and responsible use. Ideal for companies ready to move from pilots to production.
-              </p>
-              <Link
-                href="/contact"
-                className="inline-flex items-center gap-2 text-indigo-600 dark:text-indigo-400 font-semibold hover:underline"
-              >
-                Discuss your Pakistan operations
-                <ArrowRightIcon className="h-4 w-4" />
-              </Link>
+          {/* Sector needs */}
+          <section className="mb-20">
+            <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-100 mb-6">
+              Needs by sector
+            </h2>
+            <div className="grid sm:grid-cols-2 gap-4">
+              {sectorNeeds.map(({ sector, needs }) => (
+                <div
+                  key={sector}
+                  className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-5"
+                >
+                  <h3 className="font-semibold text-slate-900 dark:text-slate-100 mb-3">
+                    {sector}
+                  </h3>
+                  <ul className="space-y-1 text-sm text-slate-600 dark:text-slate-400">
+                    {needs.map((n) => (
+                      <li key={n}>• {n}</li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
             </div>
+          </section>
+
+          {/* How we help */}
+          <section className="rounded-xl border-2 border-indigo-200 dark:border-indigo-800 bg-indigo-50/50 dark:bg-indigo-900/20 p-8 mb-16">
+            <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100 mb-4 flex items-center gap-2">
+              <LightBulbIcon className="h-6 w-6 text-indigo-600" />
+              How we help
+            </h2>
+            <p className="text-slate-600 dark:text-slate-400 mb-4">
+              We focus on practical AI that fits existing workflows. No data scientists or heavy infrastructure required. We start with a{" "}
+              <Link href="/free-review" className="text-indigo-600 dark:text-indigo-400 hover:underline">
+                free cloud and AI review
+              </Link>
+              , identify quick wins, and deliver fixed-scope packages for{" "}
+              <Link href="/solutions-for-growing-teams" className="text-indigo-600 dark:text-indigo-400 hover:underline">
+                growing teams
+              </Link>
+              . For larger organizations, we follow{" "}
+              <Link href="/enterprise-readiness" className="text-indigo-600 dark:text-indigo-400 hover:underline">
+                enterprise-ready
+              </Link>{" "}
+              governance and delivery. We deploy cloud infrastructure (AWS, Azure, GCP), internal AI and LLM systems, automation, and security—so you move from pilots to production with clear deliverables.
+            </p>
+            <Link
+              href="/contact"
+              className="inline-flex items-center gap-2 text-indigo-600 dark:text-indigo-400 font-semibold hover:underline"
+            >
+              Discuss your needs
+              <ArrowRightIcon className="h-4 w-4" />
+            </Link>
           </section>
 
           {/* CTA */}
@@ -216,7 +169,7 @@ export default function MarketsPage() {
               Ready to close your AI gap?
             </h2>
             <p className="text-slate-600 dark:text-slate-400 mb-6 max-w-xl mx-auto">
-              US or Pakistan—we help companies identify where AI delivers value and implement it with clear deliverables.
+              We help companies identify where AI delivers value and implement it with clear deliverables.
             </p>
             <Link
               href="/contact"
@@ -268,7 +221,7 @@ export default function MarketsPage() {
               <ul className="space-y-2 text-sm">
                 <li><Link href="/ai-solutions" className="hover:text-white transition-colors">AI Solutions</Link></li>
                 <li><Link href="/ai-engineering" className="hover:text-white transition-colors">AI Engineering</Link></li>
-                <li><Link href="/markets" className="hover:text-white transition-colors">Markets We Serve</Link></li>
+                <li><Link href="/markets" className="hover:text-white transition-colors">Where Companies Need AI</Link></li>
                 <li><Link href="/enterprise-readiness" className="hover:text-white transition-colors">Enterprise Readiness</Link></li>
                 <li><Link href="/solutions-for-growing-teams" className="hover:text-white transition-colors">Growing Teams</Link></li>
                 <li><Link href="/cloud-security" className="hover:text-white transition-colors">Cloud Security</Link></li>
