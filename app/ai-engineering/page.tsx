@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRightIcon } from "@heroicons/react/24/outline";
 import { Navigation } from "@/components/Navigation";
+import { aiDifferentiators } from "@/lib/aiCapabilitiesContent";
 
 type AIPackage = {
   id: string;
@@ -160,6 +161,24 @@ export default function AIEngineeringPage() {
                   <ArrowRightIcon className="ml-2 h-5 w-5" />
                 </Link>
               </div>
+            </div>
+          </section>
+
+          {/* AI Differentiators */}
+          <section className="mb-16">
+            <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-100 mb-6">
+              Why Vision XIX for AI Engineering
+            </h2>
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {aiDifferentiators.map((d) => (
+                <div
+                  key={d.title}
+                  className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-5"
+                >
+                  <h3 className="font-semibold text-slate-900 dark:text-slate-100 mb-2">{d.title}</h3>
+                  <p className="text-sm text-slate-600 dark:text-slate-400">{d.description}</p>
+                </div>
+              ))}
             </div>
           </section>
 

@@ -2,6 +2,13 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRightIcon } from "@heroicons/react/24/outline";
 import {
+  aiDifferentiators,
+  aiUseCasesExpanded,
+  aiMethodology,
+  aiTechStack,
+  aiGovernanceExpanded,
+} from "@/lib/aiCapabilitiesContent";
+import {
   aiHero,
   aiWhatWeBuild,
   aiProcessSteps,
@@ -121,6 +128,56 @@ export default function AISolutionsPage() {
             </div>
           </section>
 
+          {/* Why Vision XIX for AI — differentiators */}
+          <section className="mb-20">
+            <div className="text-center mb-10">
+              <h2 className="text-2xl md:text-4xl font-bold text-slate-900 dark:text-slate-100 mb-3">
+                Why Vision XIX for AI
+              </h2>
+              <p className="text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
+                Production-first, cloud-native, and built for operations. We close the gap between AI demos and real business value.
+              </p>
+            </div>
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {aiDifferentiators.map((d) => (
+                <div
+                  key={d.title}
+                  className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-6"
+                >
+                  <h3 className="font-semibold text-slate-900 dark:text-slate-100 mb-2">{d.title}</h3>
+                  <p className="text-sm text-slate-600 dark:text-slate-400">{d.description}</p>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          {/* AI use cases expanded */}
+          <section className="mb-20">
+            <div className="text-center mb-10">
+              <h2 className="text-2xl md:text-4xl font-bold text-slate-900 dark:text-slate-100 mb-3">
+                AI use cases we build
+              </h2>
+              <p className="text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
+                From customer support to DevOps—we deliver production-grade AI across workflows.
+              </p>
+            </div>
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {aiUseCasesExpanded.map((uc) => (
+                <div
+                  key={uc.category}
+                  className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-6"
+                >
+                  <h3 className="font-semibold text-slate-900 dark:text-slate-100 mb-3">{uc.category}</h3>
+                  <ul className="space-y-1 text-sm text-slate-600 dark:text-slate-400">
+                    {uc.items.map((item) => (
+                      <li key={item}>• {item}</li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </div>
+          </section>
+
           {/* Where companies need AI */}
           <section className="mb-16 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-6" aria-labelledby="needs-heading">
             <h2 id="needs-heading" className="text-lg font-bold text-slate-900 dark:text-slate-100 mb-3">
@@ -224,6 +281,70 @@ export default function AISolutionsPage() {
 
           {/* Technical Scope — Production AI depth */}
           <TechnicalSection {...aiTechnicalSection} />
+
+          {/* AI methodology */}
+          <section className="mb-20">
+            <div className="text-center mb-10">
+              <h2 className="text-2xl md:text-4xl font-bold text-slate-900 dark:text-slate-100 mb-3">
+                Our AI methodology
+              </h2>
+              <p className="text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
+                Discovery, architecture, implementation, and operation—with clear handoffs at each phase.
+              </p>
+            </div>
+            <div className="grid gap-6 md:grid-cols-2">
+              {aiMethodology.map((m, i) => (
+                <div
+                  key={m.phase}
+                  className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-6"
+                >
+                  <span className="text-xs font-bold text-indigo-600 dark:text-indigo-400 mb-2 block">
+                    Phase {i + 1}
+                  </span>
+                  <h3 className="font-semibold text-slate-900 dark:text-slate-100 mb-2">{m.phase}</h3>
+                  <p className="text-sm text-slate-600 dark:text-slate-400">{m.description}</p>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          {/* AI tech stack */}
+          <section className="mb-20 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 p-8">
+            <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100 mb-4">
+              AI tech stack we use
+            </h2>
+            <p className="text-sm text-slate-600 dark:text-slate-400 mb-6">
+              LLM APIs, vector stores, orchestration, model hosting, and observability—integrated with your cloud and CI/CD.
+            </p>
+            <div className="flex flex-wrap gap-3">
+              {aiTechStack.map((tech) => (
+                <span
+                  key={tech}
+                  className="px-4 py-2 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm text-slate-700 dark:text-slate-300"
+                >
+                  {tech}
+                </span>
+              ))}
+            </div>
+          </section>
+
+          {/* AI governance expanded */}
+          <section className="mb-20">
+            <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-100 mb-4">
+              Responsible AI and governance
+            </h2>
+            <p className="text-slate-600 dark:text-slate-400 mb-6 max-w-3xl">
+              We design for security, privacy, and compliance from the start. No shortcuts—production AI requires governance.
+            </p>
+            <ul className="grid sm:grid-cols-2 gap-3 text-slate-600 dark:text-slate-400 text-sm">
+              {aiGovernanceExpanded.map((g) => (
+                <li key={g} className="flex gap-2">
+                  <span className="text-indigo-500">✓</span>
+                  <span>{g}</span>
+                </li>
+              ))}
+            </ul>
+          </section>
 
           {/* How We Deploy AI */}
           <section className="mb-20">

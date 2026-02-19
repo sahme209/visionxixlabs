@@ -26,7 +26,7 @@ export default function InsightsPage() {
             Insights
           </h1>
           <p className="text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
-            Technical deep-dives on cloud security, IAM, AI integration, DevOps automation, and cost optimization. No hype — practical guidance for modern infrastructure.
+            Technical deep-dives on production AI, RAG vs. fine-tuning, AI cost management, internal assistants, cloud security, IAM, and DevOps. No hype — practical guidance for modern infrastructure.
           </p>
         </header>
 

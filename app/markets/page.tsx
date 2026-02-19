@@ -10,7 +10,7 @@ import {
 } from "@heroicons/react/24/outline";
 import { Navigation } from "@/components/Navigation";
 import { SITE_URL } from "@/lib/seo";
-import { adoptionGaps, whereCompaniesNeedAI, sectorNeeds } from "@/lib/needsContent";
+import { adoptionGaps, whereCompaniesNeedAI, sectorNeeds, aiMarketContext } from "@/lib/needsContent";
 
 export const metadata: Metadata = {
   title: "Where Companies Need AI | Vision XIX Labs",
@@ -60,6 +60,21 @@ export default function MarketsPage() {
               Research on adoption gaps and where AI delivers value. We help companies identify needs, choose the right use cases, and deploy practical, production-ready solutions.
             </p>
           </header>
+
+          {/* Market context */}
+          <section className="mb-16 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 p-6">
+            <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100 mb-4">
+              Why this matters now
+            </h2>
+            <ul className="space-y-2 text-sm text-slate-600 dark:text-slate-400">
+              {aiMarketContext.map((point) => (
+                <li key={point} className="flex gap-2">
+                  <span className="text-indigo-500 shrink-0">•</span>
+                  <span>{point}</span>
+                </li>
+              ))}
+            </ul>
+          </section>
 
           {/* Adoption gaps */}
           <section className="mb-20">

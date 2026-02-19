@@ -49,3 +49,11 @@ export const sectorNeeds = [
   { sector: "Trade & logistics", needs: ["Language/regulatory barriers", "Demand forecasting", "Inventory optimization"] },
   { sector: "Manufacturing", needs: ["Process automation", "Quality control", "Supply chain visibility"] },
 ];
+
+export const aiMarketContext = [
+  "Most companies struggle to move beyond AI pilots and generate tangible value.",
+  "High-performing teams allocate resources to people, processes, and integration—not just models.",
+  "Focusing on fewer, high-impact use cases yields better ROI than scattering efforts.",
+  "Production AI requires security, governance, and cost controls—not just demos.",
+  "The gap between AI intent and AI impact is execution: clear scope, integration, and measurement.",
+];

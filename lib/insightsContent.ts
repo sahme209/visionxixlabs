@@ -71,6 +71,83 @@ export const insightsArticles: InsightArticle[] = [
     ],
   },
   {
+    slug: "production-ai-vs-demos",
+    title: "Production AI vs. demos: what it takes to ship",
+    excerpt:
+      "Why most AI demos never become production systems—and what separates teams that ship from those that stall.",
+    date: "2025-02-10",
+    readTime: "6 min",
+    body: [
+      "A demo is easy: call an API, show a result. Production AI requires integration with your systems, security and compliance controls, monitoring and alerting, cost management, and clear ownership. Most companies discover this gap only after the demo works.",
+      "Start with use-case clarity. Define what success looks like in business terms (e.g. reduce support ticket volume by 20%, cut document processing time by half). Without that, you cannot decide whether a model, architecture, or deployment strategy is good enough.",
+      "Design for operations from day one. Who monitors the system? Who gets paged? What happens when the model returns nonsense or the API is down? Production AI needs runbooks, fallbacks, and escalation paths.",
+      "Cost visibility is non-negotiable. LLM APIs charge per token. A chatbot that goes viral can multiply spend overnight. Set quotas, alerts, and budgets before launch—not after the first surprise bill.",
+      "We help teams bridge the demo-to-production gap: secure deployment patterns, operational readiness, and governance so AI delivers value without becoming a liability.",
+    ],
+  },
+  {
+    slug: "choosing-ai-models-for-production",
+    title: "Choosing AI models for production: a practical framework",
+    excerpt:
+      "How to select models based on use case, cost, latency, and data sensitivity—without chasing the latest release.",
+    date: "2025-02-08",
+    readTime: "7 min",
+    body: [
+      "New models ship every few months. The best choice for production is rarely the newest one—it's the one that fits your constraints and delivers consistent results.",
+      "Consider latency. Customer-facing chat needs sub-second response; internal summarization can batch and wait. Match model size and routing (e.g. fast model for routing, larger model for complex queries) to your SLA.",
+      "Consider cost. Token pricing varies widely. A cheap model that needs 10x more tokens may cost more than a premium one. Run experiments with real traffic patterns before committing.",
+      "Consider data sensitivity. PII, health data, or trade secrets may require private deployment (your VPC, your keys) rather than third-party APIs. Document where data flows and who can access it.",
+      "Consider vendor lock-in. Proprietary APIs are convenient but tie you to one provider. Open models and standard interfaces (e.g. OpenAI-compatible endpoints) give flexibility to switch or self-host later.",
+      "We help teams evaluate and select models for production: benchmarking, cost modeling, and architecture decisions so you choose confidently.",
+    ],
+  },
+  {
+    slug: "internal-ai-assistants-when-they-make-sense",
+    title: "Internal AI assistants: when they make sense",
+    excerpt:
+      "Company knowledge copilots, document search, and workflow assistants—when they add value and when they don't.",
+    date: "2025-02-05",
+    readTime: "6 min",
+    body: [
+      "Internal AI assistants can unlock knowledge scattered across docs, wikis, and tickets. But they only work when the underlying content is structured enough and the use case is well-defined.",
+      "Start with a narrow scope. A copilot that answers 'anything about our product' usually fails—too broad, too many edge cases. A copilot that answers 'how do we onboard enterprise customers?' or 'what's our refund policy?' can deliver immediate value.",
+      "Quality of source data matters. Garbage in, garbage out. If your docs are stale or contradictory, the assistant will reflect that. Invest in content hygiene before scaling the assistant.",
+      "Define the human handoff. When should the assistant escalate to a human? For compliance, policy, or sensitive topics, build explicit boundaries. Don't let the AI make decisions it shouldn't.",
+      "Measure adoption and usefulness. Track queries, resolution rate, and feedback. Iterate on prompts, retrieval, and scope based on real usage—not assumptions.",
+      "We build internal AI assistants with clear scope, secure deployment, and measurable outcomes. We help you avoid the trap of 'AI for everything' and focus where it matters.",
+    ],
+  },
+  {
+    slug: "ai-cost-management-in-production",
+    title: "AI cost management in production",
+    excerpt:
+      "Quotas, caching, model routing, and governance patterns to keep LLM spend predictable and under control.",
+    date: "2025-02-03",
+    readTime: "6 min",
+    body: [
+      "LLM APIs charge per token. A single misconfigured integration can generate thousands of dollars in a day. Cost management is not optional for production AI.",
+      "Set quotas per environment and per team. Dev and staging should have tight limits; production needs guardrails that prevent runaway usage. Use cloud billing alerts and custom dashboards to catch spikes early.",
+      "Cache aggressively. Many queries are repetitive—FAQ answers, common document lookups, similar prompts. Cache responses (with appropriate TTL and invalidation) to cut API calls and cost.",
+      "Route intelligently. Use small, fast models for classification and routing; reserve larger models for complex tasks. Tiered routing can cut cost by 50–70% without sacrificing quality for most requests.",
+      "Monitor cost per use case. Break down spend by feature, team, or endpoint. Without visibility, you cannot optimize. We help teams implement cost tracking, quotas, and optimization strategies so AI remains cost-effective at scale.",
+    ],
+  },
+  {
+    slug: "rag-vs-fine-tuning-when-to-use-which",
+    title: "RAG vs. fine-tuning: when to use which",
+    excerpt:
+      "Retrieval-augmented generation and fine-tuning solve different problems. Here's a practical guide to choosing.",
+    date: "2025-01-25",
+    readTime: "7 min",
+    body: [
+      "RAG (retrieval-augmented generation) fetches relevant context at query time and passes it to the model. Fine-tuning adjusts model weights on your data. Both improve output quality—but for different reasons.",
+      "Use RAG when knowledge changes frequently. Product docs, policies, support tickets—content that updates often. RAG lets you add or change documents without retraining. Vector search + LLM is the standard pattern.",
+      "Use fine-tuning when you need consistent style, format, or domain terminology. If your outputs must follow a specific schema or tone, fine-tuning can help. It's more effort to maintain (retraining when data evolves) but can reduce prompt engineering.",
+      "Often you need both. RAG for knowledge retrieval, fine-tuning for output formatting or task-specific behavior. Start with RAG; add fine-tuning only if RAG alone is insufficient.",
+      "We help teams choose and implement RAG, fine-tuning, or hybrid approaches—with clear evaluation criteria and operational practices for each.",
+    ],
+  },
+  {
     slug: "cost-optimization-strategies",
     title: "Cost optimization strategies that don’t rely on guesswork",
     excerpt:

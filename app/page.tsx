@@ -144,9 +144,56 @@ export default function Home() {
 
       <EnterpriseTrustSignals />
 
-      {/* (Apps now live on /apps; homepage focuses on cloud solutions) */}
+      {/* AI Capabilities — production-grade AI positioning */}
+      <section className="py-16 px-4 sm:px-6 lg:px-8 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-700">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-12">
+            <h2 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-slate-100 mb-4">
+              Production AI, not demos
+            </h2>
+            <p className="text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
+              We design and deploy AI inside your cloud—secure, observable, and built for operations. Internal assistants, workflow automation, document extraction, RAG, and custom LLM integration.
+            </p>
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 text-center mb-10">
+            <div className="rounded-xl p-4 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700">
+              <div className="text-lg font-bold text-slate-900 dark:text-slate-100">Internal AI</div>
+              <div className="text-xs text-slate-600 dark:text-slate-400">Knowledge copilots</div>
+            </div>
+            <div className="rounded-xl p-4 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700">
+              <div className="text-lg font-bold text-slate-900 dark:text-slate-100">RAG</div>
+              <div className="text-xs text-slate-600 dark:text-slate-400">Vector search & retrieval</div>
+            </div>
+            <div className="rounded-xl p-4 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700">
+              <div className="text-lg font-bold text-slate-900 dark:text-slate-100">Automation</div>
+              <div className="text-xs text-slate-600 dark:text-slate-400">Workflow & classification</div>
+            </div>
+            <div className="rounded-xl p-4 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700">
+              <div className="text-lg font-bold text-slate-900 dark:text-slate-100">Extraction</div>
+              <div className="text-xs text-slate-600 dark:text-slate-400">Docs, forms, invoices</div>
+            </div>
+            <div className="rounded-xl p-4 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700">
+              <div className="text-lg font-bold text-slate-900 dark:text-slate-100">Governance</div>
+              <div className="text-xs text-slate-600 dark:text-slate-400">Security & cost controls</div>
+            </div>
+            <div className="rounded-xl p-4 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700">
+              <div className="text-lg font-bold text-slate-900 dark:text-slate-100">AWS · Azure · GCP</div>
+              <div className="text-xs text-slate-600 dark:text-slate-400">Your cloud, your data</div>
+            </div>
+          </div>
+          <div className="text-center">
+            <Link
+              href="/ai-solutions"
+              className="inline-flex items-center text-indigo-600 dark:text-indigo-400 font-semibold hover:underline"
+            >
+              Explore AI Solutions
+              <ArrowRightIcon className="ml-1 h-4 w-4" />
+            </Link>
+          </div>
+        </div>
+      </section>
 
-      {/* Capabilities summary — no fabricated metrics */}
+      {/* Capabilities summary — cloud + AI */}
       <section className="py-12 px-4 sm:px-6 lg:px-8 border-t border-slate-200 dark:border-slate-700">
         <div className="max-w-5xl mx-auto">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
@@ -163,8 +210,8 @@ export default function Home() {
               <div className="text-xs text-slate-600 dark:text-slate-400">Cloud platforms</div>
             </div>
             <div>
-              <div className="text-2xl font-bold text-slate-900 dark:text-slate-100 mb-1">IaC</div>
-              <div className="text-xs text-slate-600 dark:text-slate-400">Infrastructure as Code</div>
+              <div className="text-2xl font-bold text-slate-900 dark:text-slate-100 mb-1">AI + IaC</div>
+              <div className="text-xs text-slate-600 dark:text-slate-400">Production AI · Infrastructure</div>
             </div>
           </div>
         </div>
@@ -372,6 +419,55 @@ export default function Home() {
               </Link>
             </div>
           </section>
+        </div>
+      </section>
+
+      {/* AI Insights — thought leadership */}
+      <section className="py-16 px-4 sm:px-6 lg:px-8 border-t border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-10">
+            <h2 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-slate-100 mb-4">
+              AI thought leadership
+            </h2>
+            <p className="text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
+              Practical articles on production AI, RAG vs. fine-tuning, cost management, internal assistants, and secure AI integration. No hype—actionable guidance.
+            </p>
+          </div>
+          <div className="flex flex-wrap justify-center gap-4 mb-6">
+            <Link
+              href="/insights/production-ai-vs-demos"
+              className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-5 py-3 text-sm font-medium text-slate-700 dark:text-slate-300 hover:border-indigo-300 dark:hover:border-indigo-600 transition-colors"
+            >
+              Production AI vs. demos
+            </Link>
+            <Link
+              href="/insights/rag-vs-fine-tuning-when-to-use-which"
+              className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-5 py-3 text-sm font-medium text-slate-700 dark:text-slate-300 hover:border-indigo-300 dark:hover:border-indigo-600 transition-colors"
+            >
+              RAG vs. fine-tuning
+            </Link>
+            <Link
+              href="/insights/ai-cost-management-in-production"
+              className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-5 py-3 text-sm font-medium text-slate-700 dark:text-slate-300 hover:border-indigo-300 dark:hover:border-indigo-600 transition-colors"
+            >
+              AI cost management
+            </Link>
+            <Link
+              href="/insights/choosing-ai-models-for-production"
+              className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-5 py-3 text-sm font-medium text-slate-700 dark:text-slate-300 hover:border-indigo-300 dark:hover:border-indigo-600 transition-colors"
+            >
+              Choosing AI models
+            </Link>
+          </div>
+          <div className="text-center">
+            <Link
+              href="/insights"
+              className="inline-flex items-center text-indigo-600 dark:text-indigo-400 font-semibold hover:underline"
+            >
+              All insights
+              <ArrowRightIcon className="ml-1 h-4 w-4" />
+            </Link>
+          </div>
         </div>
       </section>
 

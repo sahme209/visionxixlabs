@@ -198,6 +198,11 @@ export const aiPackages: AIPackage[] = [
 
 export const aiFAQ: AIFAQ[] = [
   {
+    question: "What makes Vision XIX Labs different for AI?",
+    answer:
+      "We focus on production deployment, not demos. Every engagement includes secure cloud deployment, integration with your existing systems, observability, cost controls, and governance. We design for operations from day one.",
+  },
+  {
     question: "Do you train custom models?",
     answer:
       "We work with off-the-shelf models, fine-tuned models, and custom training where it makes sense. We recommend the most practical approach for your use case and budget.",
@@ -226,5 +231,20 @@ export const aiFAQ: AIFAQ[] = [
     question: "What cloud providers do you support?",
     answer:
       "We support AWS, Azure, and GCP. We deploy and integrate AI on the provider you already use.",
+  },
+  {
+    question: "How do you handle AI cost management?",
+    answer:
+      "We design for cost visibility: quotas, budgets, usage dashboards, and alerts. We use caching, model routing, and right-sized inference to keep spend predictable. No surprises.",
+  },
+  {
+    question: "Can you help with RAG and vector search?",
+    answer:
+      "Yes. We build retrieval-augmented generation (RAG) systems for document search, knowledge bases, and Q&A. We use vector stores (Pinecone, pgvector, OpenSearch) and design for accuracy and latency.",
+  },
+  {
+    question: "Do you offer AI readiness assessments?",
+    answer:
+      "Yes. Our AI Readiness Assessment covers use-case evaluation, feasibility, architecture, and ROI estimation. It's a 1–2 week engagement to define your path before building.",
   },
 ];
