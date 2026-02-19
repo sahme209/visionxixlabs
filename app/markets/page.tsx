@@ -15,6 +15,9 @@ import {
   AIAdoptionFlowDiagram,
   SectorMatrixDiagram,
   SolutionArchitectureDiagram,
+  DataFlowDiagram,
+  DeliveryProcessFlowchart,
+  UseCaseDecisionFlow,
 } from "@/components/diagrams";
 
 export const metadata: Metadata = {
@@ -117,6 +120,12 @@ export default function MarketsPage() {
             <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-100 mb-6">
               Where companies need AI
             </h2>
+            <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/50 p-6 mb-8">
+              <h3 className="text-sm font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide mb-3">
+                Use case decision flow
+              </h3>
+              <UseCaseDecisionFlow />
+            </div>
             <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-6">
               <div className="grid sm:grid-cols-2 gap-3">
                 {whereCompaniesNeedAI.map((need) => (
@@ -175,6 +184,18 @@ export default function MarketsPage() {
                 Solution architecture
               </h3>
               <SolutionArchitectureDiagram />
+            </div>
+            <div className="rounded-xl border border-indigo-200 dark:border-indigo-700 bg-white dark:bg-slate-800/50 p-6 mb-6">
+              <h3 className="text-sm font-semibold text-indigo-700 dark:text-indigo-300 uppercase tracking-wide mb-3">
+                Data flow pipeline
+              </h3>
+              <DataFlowDiagram />
+            </div>
+            <div className="rounded-xl border border-indigo-200 dark:border-indigo-700 bg-white dark:bg-slate-800/50 p-6 mb-6">
+              <h3 className="text-sm font-semibold text-indigo-700 dark:text-indigo-300 uppercase tracking-wide mb-3">
+                Delivery process
+              </h3>
+              <DeliveryProcessFlowchart />
             </div>
             <p className="text-slate-600 dark:text-slate-400 mb-4">
               We focus on practical AI that fits existing workflows. No data scientists or heavy infrastructure required. We start with a{" "}

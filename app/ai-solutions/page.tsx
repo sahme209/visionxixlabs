@@ -51,6 +51,11 @@ import { HowWeWorkSection } from "@/components/HowWeWorkSection";
 import { SecurityAccessSection } from "@/components/SecurityAccessSection";
 import { ClientCollaborationSection } from "@/components/ClientCollaborationSection";
 import { EnterpriseTrustSignals } from "@/components/EnterpriseTrustSignals";
+import {
+  DataFlowDiagram,
+  SolutionArchitectureDiagram,
+  DeliveryProcessFlowchart,
+} from "@/components/diagrams";
 
 export const metadata: Metadata = {
   title: "AI Solutions",
@@ -281,6 +286,38 @@ export default function AISolutionsPage() {
 
           {/* Technical Scope — Production AI depth */}
           <TechnicalSection {...aiTechnicalSection} />
+
+          {/* Technical diagrams — Visio-style flowcharts */}
+          <section className="mb-20">
+            <div className="text-center mb-10">
+              <h2 className="text-2xl md:text-4xl font-bold text-slate-900 dark:text-slate-100 mb-3">
+                Technical architecture & flow
+              </h2>
+              <p className="text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
+                From data ingestion to production—our delivery model in technical detail.
+              </p>
+            </div>
+            <div className="space-y-8">
+              <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/50 p-6">
+                <h3 className="text-sm font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide mb-3">
+                  Solution architecture
+                </h3>
+                <SolutionArchitectureDiagram />
+              </div>
+              <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/50 p-6">
+                <h3 className="text-sm font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide mb-3">
+                  Data flow pipeline
+                </h3>
+                <DataFlowDiagram />
+              </div>
+              <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/50 p-6">
+                <h3 className="text-sm font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide mb-3">
+                  Delivery process
+                </h3>
+                <DeliveryProcessFlowchart />
+              </div>
+            </div>
+          </section>
 
           {/* AI methodology */}
           <section className="mb-20">
