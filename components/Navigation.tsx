@@ -15,6 +15,7 @@ const cloudLinks = [
 const solutionsLinks = [
   { href: "/ai-solutions", label: "AI Solutions" },
   { href: "/ai-engineering", label: "AI Engineering & LLM Systems" },
+  { href: "/markets", label: "Markets We Serve (US & Pakistan)" },
   { href: "/enterprise-readiness", label: "Enterprise Readiness" },
   { href: "/solutions-for-growing-teams", label: "Growing Teams" },
   { href: "/cloud-security", label: "Cloud Security" },
@@ -160,6 +161,7 @@ export function Navigation() {
               <p className="px-4 pt-3 text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Solutions</p>
               <Link href="/ai-solutions" onClick={() => setMobileMenuOpen(false)} className="px-4 py-2 text-slate-700 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 rounded-lg text-sm font-medium">AI Solutions</Link>
               <Link href="/ai-engineering" onClick={() => setMobileMenuOpen(false)} className="px-4 py-2 text-slate-700 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 rounded-lg text-sm font-medium">AI Engineering & LLM Systems</Link>
+              <Link href="/markets" onClick={() => setMobileMenuOpen(false)} className="px-4 py-2 text-slate-700 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 rounded-lg text-sm font-medium">Markets We Serve</Link>
               <Link href="/enterprise-readiness" onClick={() => setMobileMenuOpen(false)} className="px-4 py-2 text-slate-700 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 rounded-lg text-sm font-medium">Enterprise Readiness</Link>
               <Link href="/solutions-for-growing-teams" onClick={() => setMobileMenuOpen(false)} className="px-4 py-2 text-slate-700 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 rounded-lg text-sm font-medium">Growing Teams</Link>
               <Link href="/cloud-security" onClick={() => setMobileMenuOpen(false)} className="px-4 py-2 text-slate-700 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 rounded-lg text-sm font-medium">Cloud Security</Link>

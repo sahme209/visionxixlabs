@@ -406,6 +406,7 @@ export default function ServicesPage() {
               <ul className="space-y-2 text-sm">
                 <li><Link href="/ai-solutions" className="hover:text-indigo-400 transition-colors">AI Solutions</Link></li>
                 <li><Link href="/ai-engineering" className="hover:text-indigo-400 transition-colors">AI Engineering</Link></li>
+                <li><Link href="/markets" className="hover:text-indigo-400 transition-colors">Markets We Serve</Link></li>
                 <li><Link href="/enterprise-readiness" className="hover:text-indigo-400 transition-colors">Enterprise Readiness</Link></li>
                 <li><Link href="/cloud-security" className="hover:text-indigo-400 transition-colors">Cloud Security</Link></li>
                 <li><Link href="/free-review" className="hover:text-indigo-400 transition-colors">Free Review</Link></li>

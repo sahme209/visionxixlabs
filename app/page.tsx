@@ -530,6 +530,7 @@ export default function Home() {
               <ul className="space-y-2 text-sm">
                 <li><Link href="/ai-solutions" className="hover:text-white transition-colors">AI Solutions</Link></li>
                 <li><Link href="/ai-engineering" className="hover:text-white transition-colors">AI Engineering &amp; LLM Systems</Link></li>
+                <li><Link href="/markets" className="hover:text-white transition-colors">Markets We Serve</Link></li>
                 <li><Link href="/enterprise-readiness" className="hover:text-white transition-colors">Enterprise Readiness</Link></li>
                 <li><Link href="/solutions-for-growing-teams" className="hover:text-white transition-colors">Growing Teams</Link></li>
                 <li><Link href="/cloud-security" className="hover:text-white transition-colors">Cloud Security</Link></li>
