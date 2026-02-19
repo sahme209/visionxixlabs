@@ -11,6 +11,11 @@ import {
 import { Navigation } from "@/components/Navigation";
 import { SITE_URL } from "@/lib/seo";
 import { adoptionGaps, whereCompaniesNeedAI, sectorNeeds, aiMarketContext } from "@/lib/needsContent";
+import {
+  AIAdoptionFlowDiagram,
+  SectorMatrixDiagram,
+  SolutionArchitectureDiagram,
+} from "@/components/diagrams";
 
 export const metadata: Metadata = {
   title: "Where Companies Need AI | Vision XIX Labs",
@@ -84,6 +89,12 @@ export default function MarketsPage() {
                 Common adoption gaps
               </h2>
             </div>
+            <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/50 p-6 mb-8">
+              <h3 className="text-sm font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide mb-3">
+                AI adoption journey
+              </h3>
+              <AIAdoptionFlowDiagram />
+            </div>
             <div className="grid sm:grid-cols-2 gap-4">
               {adoptionGaps.map((gap) => (
                 <div
@@ -128,6 +139,12 @@ export default function MarketsPage() {
             <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-100 mb-6">
               Needs by sector
             </h2>
+            <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/50 p-6 mb-8">
+              <h3 className="text-sm font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide mb-3">
+                Sector × AI needs matrix
+              </h3>
+              <SectorMatrixDiagram />
+            </div>
             <div className="grid sm:grid-cols-2 gap-4">
               {sectorNeeds.map(({ sector, needs }) => (
                 <div
@@ -153,6 +170,12 @@ export default function MarketsPage() {
               <LightBulbIcon className="h-6 w-6 text-indigo-600" />
               How we help
             </h2>
+            <div className="rounded-xl border border-indigo-200 dark:border-indigo-700 bg-white dark:bg-slate-800/50 p-6 mb-6">
+              <h3 className="text-sm font-semibold text-indigo-700 dark:text-indigo-300 uppercase tracking-wide mb-3">
+                Solution architecture
+              </h3>
+              <SolutionArchitectureDiagram />
+            </div>
             <p className="text-slate-600 dark:text-slate-400 mb-4">
               We focus on practical AI that fits existing workflows. No data scientists or heavy infrastructure required. We start with a{" "}
               <Link href="/free-review" className="text-indigo-600 dark:text-indigo-400 hover:underline">
