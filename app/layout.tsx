@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { OrganizationJsonLd, WebSiteJsonLd } from "@/components/JsonLd";
 import { SITE_URL, defaultOgImage, primaryKeywords, secondaryKeywords } from "@/lib/seo";
+import { Analytics } from "@vercel/analytics/next";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -67,6 +68,7 @@ export default function RootLayout({
         <OrganizationJsonLd />
         <WebSiteJsonLd />
         {children}
+        <Analytics />
       </body>
     </html>
   );
