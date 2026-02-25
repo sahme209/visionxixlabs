@@ -61,12 +61,17 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    const [confirmOk, notifyOk] = await Promise.all([
-      sendLeadConfirmationEmail(data, estimate),
-      sendLeadInternalNotification(data, estimate),
-    ]);
-    if (!confirmOk) console.warn("[Leads API] Confirmation email failed");
-    if (!notifyOk) console.warn("[Leads API] Internal notification failed");
+    // Emails never block success — send in background, log failures safely
+    try {
+      const [confirmOk, notifyOk] = await Promise.all([
+        sendLeadConfirmationEmail(data, estimate),
+        sendLeadInternalNotification(data, estimate),
+      ]);
+      if (!confirmOk) console.warn("[Leads API] Confirmation email failed (lead saved)");
+      if (!notifyOk) console.warn("[Leads API] Internal notification failed (lead saved)");
+    } catch (emailErr) {
+      console.warn("[Leads API] Email send error (lead saved):", emailErr instanceof Error ? emailErr.message : String(emailErr));
+    }
 
     return NextResponse.json({
       success: true,

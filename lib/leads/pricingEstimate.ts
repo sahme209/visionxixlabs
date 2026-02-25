@@ -6,19 +6,21 @@ export interface PricingEstimate {
   breakdown: { label: string; min: number; max: number }[];
 }
 
+const MAX_TOTAL = 9000;
+
 const BASE_PRICES = {
-  new_website: { min: 3000, max: 8000 },
-  redesign: { min: 2500, max: 6000 },
-  landing_page: { min: 1500, max: 3500 },
+  new_website: { min: 2500, max: 6000 },
+  redesign: { min: 2000, max: 5000 },
+  landing_page: { min: 1200, max: 3000 },
 } as const;
 
-const PAGE_RATE = { perPage: 300, maxPages: 20 };
+const PAGE_RATE = { perPage: 250, maxPages: 20 };
 const ADDONS = {
-  copywriting: { min: 500, max: 2000 },
-  ecommerce: { min: 1500, max: 5000 },
-  blog: { min: 500, max: 1500 },
-  seo: { min: 500, max: 2000 },
-  hostingManagement: { min: 300, max: 800 },
+  copywriting: { min: 400, max: 1500 },
+  ecommerce: { min: 1200, max: 4000 },
+  blog: { min: 400, max: 1200 },
+  seo: { min: 400, max: 1500 },
+  hostingManagement: { min: 250, max: 600 },
 } as const;
 
 export function estimatePricing(payload: LeadFormData): PricingEstimate {
@@ -82,7 +84,7 @@ export function estimatePricing(payload: LeadFormData): PricingEstimate {
   }
 
   totalMin = Math.round(totalMin);
-  totalMax = Math.round(totalMax);
+  totalMax = Math.round(Math.min(totalMax, MAX_TOTAL));
 
   return { min: totalMin, max: totalMax, breakdown };
 }

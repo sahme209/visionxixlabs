@@ -21,11 +21,13 @@ import {
   BUDGET_RANGES,
   HOSTING_STATUS,
 } from "@/lib/leads/leadSchema";
+import { RequestPricingPanel } from "./RequestPricingPanel";
 
 const STEPS = [
   { id: 1, title: "Contact", icon: UserIcon },
   { id: 2, title: "Project", icon: BriefcaseIcon },
   { id: 3, title: "Details", icon: DocumentTextIcon },
+  { id: 4, title: "Review", icon: CheckCircleIcon },
 ];
 
 const initialForm: LeadFormData = {
@@ -151,12 +153,29 @@ export default function RequestPage() {
         </div>
       </nav>
 
-      <div className="mx-auto max-w-2xl px-4 py-12 sm:px-6">
+      <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
+        <div className="lg:grid lg:grid-cols-12 lg:gap-8">
+          <div className="lg:col-span-7 xl:col-span-8">
         <h1 className="text-2xl sm:text-3xl font-bold text-[var(--text-primary)] mb-2">
           New Website Request / Instant Quote
         </h1>
-        <p className="text-[var(--text-secondary)] mb-8">
+        <p className="text-[var(--text-secondary)] mb-4">
           Tell us about your project. We&apos;ll send you a tailored estimate.
+        </p>
+        <ul className="flex flex-wrap gap-x-6 gap-y-1 mb-8 text-sm text-[var(--text-secondary)]">
+          <li>No call required.</li>
+          <li>Takes less than 2 minutes.</li>
+          <li>We&apos;ll respond within 24 hours.</li>
+        </ul>
+
+        <div className="h-1 w-full rounded-full bg-[var(--border-color)] mb-6" role="progressbar" aria-valuenow={step} aria-valuemin={1} aria-valuemax={4}>
+          <div
+            className="h-full rounded-full bg-[var(--uscis-blue)] transition-all duration-300 ease-out"
+            style={{ width: `${(step / 4) * 100}%` }}
+          />
+        </div>
+        <p className="text-sm font-medium text-[var(--text-secondary)] mb-8">
+          Step {step} of 4
         </p>
 
         <div className="flex items-center gap-2 mb-10">
@@ -469,6 +488,36 @@ export default function RequestPage() {
                   placeholder="Tell us more about your project..."
                 />
               </div>
+              <div className="flex justify-between pt-4">
+                <button
+                  type="button"
+                  onClick={() => setStep(2)}
+                  className="inline-flex items-center gap-2 rounded-xl border border-[var(--border-color)] px-6 py-3 font-semibold text-[var(--text-primary)] hover:bg-[var(--bg-surface-alt)]"
+                >
+                  <ArrowLeftIcon className="h-5 w-5" />
+                  Back
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setStep(4)}
+                  className="inline-flex items-center gap-2 rounded-xl bg-[var(--uscis-blue)] px-6 py-3 font-semibold text-white hover:bg-[var(--uscis-blue-dark)]"
+                >
+                  Next
+                  <ArrowRightIcon className="h-5 w-5" />
+                </button>
+              </div>
+            </div>
+          )}
+
+          {step === 4 && (
+            <div className="space-y-6 animate-fade-in">
+              <h2 className="text-lg font-semibold text-[var(--text-primary)]">Review & submit</h2>
+              <div className="rounded-xl border border-[var(--border-color)] bg-[var(--bg-surface)] p-4 space-y-3 text-sm">
+                <p><span className="font-medium text-[var(--text-secondary)]">Name:</span> {form.fullName}</p>
+                <p><span className="font-medium text-[var(--text-secondary)]">Email:</span> {form.email}</p>
+                <p><span className="font-medium text-[var(--text-secondary)]">Project:</span> {form.projectType.replace(/_/g, " ")} · {form.numberOfPages} pages</p>
+                <p><span className="font-medium text-[var(--text-secondary)]">Goals:</span> {form.projectGoals.map((g) => g.replace(/_/g, " ")).join(", ")}</p>
+              </div>
               {error && (
                 <p className="text-sm text-[var(--uscis-red)]" role="alert">
                   {error}
@@ -477,7 +526,7 @@ export default function RequestPage() {
               <div className="flex justify-between pt-4">
                 <button
                   type="button"
-                  onClick={() => setStep(2)}
+                  onClick={() => setStep(3)}
                   className="inline-flex items-center gap-2 rounded-xl border border-[var(--border-color)] px-6 py-3 font-semibold text-[var(--text-primary)] hover:bg-[var(--bg-surface-alt)]"
                 >
                   <ArrowLeftIcon className="h-5 w-5" />
@@ -508,6 +557,12 @@ export default function RequestPage() {
         <p className="mt-8 text-sm text-[var(--text-tertiary)]">
           By submitting, you agree to receive follow-up from Vision XIX Labs. We respect your privacy.
         </p>
+          </div>
+
+          <div className="mt-10 lg:mt-0 lg:col-span-5 xl:col-span-4">
+            <RequestPricingPanel form={form} className="lg:sticky lg:top-24" />
+          </div>
+        </div>
       </div>
     </div>
   );
