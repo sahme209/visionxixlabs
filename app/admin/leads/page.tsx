@@ -8,6 +8,11 @@ import {
   MagnifyingGlassIcon,
   FunnelIcon,
   XMarkIcon,
+  ArrowPathIcon,
+  DocumentDuplicateIcon,
+  DocumentTextIcon,
+  ChevronDownIcon,
+  ChevronUpIcon,
 } from "@heroicons/react/24/outline";
 
 const STATUSES = ["new", "contacted", "won", "lost"] as const;
@@ -39,6 +44,10 @@ export default function AdminLeadsPage() {
   const [selectedLead, setSelectedLead] = useState<LeadDetail | null>(null);
   const [detailLoading, setDetailLoading] = useState(false);
   const [updatingStatus, setUpdatingStatus] = useState<string | null>(null);
+  const [regenerating, setRegenerating] = useState(false);
+  const [generatingScaffold, setGeneratingScaffold] = useState(false);
+  const [scaffoldDownloadUrl, setScaffoldDownloadUrl] = useState<string | null>(null);
+  const [showAiPackage, setShowAiPackage] = useState(false);
 
   const fetchLeads = useCallback(async (cursor?: string) => {
     if (!session) return;
@@ -122,8 +131,65 @@ export default function AdminLeadsPage() {
   }, [session, fetchLeads]);
 
   useEffect(() => {
-    if (selectedId) fetchDetail(selectedId);
+    if (selectedId) {
+      fetchDetail(selectedId);
+      setScaffoldDownloadUrl(null);
+    }
   }, [selectedId, fetchDetail]);
+
+  const regenerateAi = async (id: string) => {
+    setRegenerating(true);
+    setError("");
+    try {
+      const res = await fetch(`/api/admin/leads/${id}/starter`, {
+        method: "POST",
+        credentials: "include",
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setSelectedLead((prev) =>
+          prev && prev.id === id
+            ? {
+                ...prev,
+                fullPayload: {
+                  ...prev.fullPayload,
+                  aiStarterPackage: data.aiStarterPackage,
+                  aiStarterError: false,
+                },
+              }
+            : prev
+        );
+      } else {
+        setError(data.error || "Regenerate failed");
+      }
+    } catch {
+      setError("Network error");
+    } finally {
+      setRegenerating(false);
+    }
+  };
+
+  const generateScaffold = async (id: string) => {
+    setGeneratingScaffold(true);
+    setError("");
+    setScaffoldDownloadUrl(null);
+    try {
+      const res = await fetch(`/api/admin/leads/${id}/scaffold`, {
+        method: "POST",
+        credentials: "include",
+      });
+      const data = await res.json();
+      if (res.ok && data.downloadUrl) {
+        setScaffoldDownloadUrl(data.downloadUrl);
+      } else {
+        setError(data.error || "Scaffold generation failed");
+      }
+    } catch {
+      setError("Network error");
+    } finally {
+      setGeneratingScaffold(false);
+    }
+  };
 
   if (authStatus === "loading") {
     return (
@@ -328,6 +394,60 @@ export default function AdminLeadsPage() {
                       </select>
                     </div>
                   </div>
+
+                  {selectedLead.fullPayload?.aiStarterPackage && (
+                    <div className="space-y-3">
+                      <button
+                        type="button"
+                        onClick={() => setShowAiPackage(!showAiPackage)}
+                        className="flex items-center gap-2 text-sm font-medium text-gray-700"
+                      >
+                        {showAiPackage ? (
+                          <ChevronUpIcon className="h-4 w-4" />
+                        ) : (
+                          <ChevronDownIcon className="h-4 w-4" />
+                        )}
+                        View AI Starter Package
+                      </button>
+                      {showAiPackage && (
+                        <div className="rounded-xl border border-gray-200 bg-gray-50 p-4 text-sm max-h-72 overflow-y-auto">
+                          <pre className="whitespace-pre-wrap text-xs">
+                            {JSON.stringify(selectedLead.fullPayload.aiStarterPackage, null, 2)}
+                          </pre>
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  <div className="flex flex-wrap gap-2">
+                    <button
+                      onClick={() => regenerateAi(selectedLead.id)}
+                      disabled={regenerating}
+                      className="inline-flex items-center gap-2 rounded-lg bg-gray-100 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-200 disabled:opacity-60"
+                    >
+                      <ArrowPathIcon className="h-4 w-4" />
+                      {regenerating ? "Regenerating…" : "Regenerate AI"}
+                    </button>
+                    <button
+                      onClick={() => generateScaffold(selectedLead.id)}
+                      disabled={generatingScaffold}
+                      className="inline-flex items-center gap-2 rounded-lg bg-blue-100 px-4 py-2 text-sm font-medium text-blue-800 hover:bg-blue-200 disabled:opacity-60"
+                    >
+                      <DocumentDuplicateIcon className="h-4 w-4" />
+                      {generatingScaffold ? "Generating…" : "Generate Scaffold"}
+                    </button>
+                    {scaffoldDownloadUrl && (
+                      <a
+                        href={scaffoldDownloadUrl}
+                        download
+                        className="inline-flex items-center gap-2 rounded-lg bg-green-100 px-4 py-2 text-sm font-medium text-green-800 hover:bg-green-200"
+                      >
+                        <DocumentTextIcon className="h-4 w-4" />
+                        Download Scaffold
+                      </a>
+                    )}
+                  </div>
+
                   <div>
                     <p className="text-xs font-medium text-gray-500 uppercase mb-2">Full submission</p>
                     <pre className="rounded-xl border border-gray-200 bg-gray-50 p-4 text-xs overflow-x-auto max-h-64 overflow-y-auto">

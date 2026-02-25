@@ -10,10 +10,12 @@ export function formatEstimate(est: PricingEstimate): string {
 function generateConfirmationHtml(
   name: string,
   payload: LeadFormData,
-  estimate: PricingEstimate
+  estimate: PricingEstimate,
+  leadId?: string
 ): string {
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://visionxixlabs.com";
   const formatted = formatEstimate(estimate);
+  const starterUrl = leadId ? `${baseUrl}/request/thank-you?leadId=${leadId}&min=${estimate.min}&max=${estimate.max}` : null;
   return `
 <!DOCTYPE html>
 <html lang="en">
@@ -29,6 +31,7 @@ function generateConfirmationHtml(
         <p style="margin:12px 0 0;font-size:13px;color:#6b7280;">This is an estimate only. Final pricing will be confirmed after review.</p>
       </div>
       <p style="margin:24px 0 0;color:#6b7280;font-size:14px;">We'll be in touch within 1-2 business days.</p>
+      ${starterUrl ? `<p style="margin:16px 0 0;"><a href="${starterUrl}" style="display:inline-block;background:#0071e3;color:#fff;padding:12px 24px;border-radius:8px;text-decoration:none;font-weight:600;">View your Website Starter Package</a></p>` : ""}
       <p style="margin:20px 0 0;color:#9ca3af;font-size:12px;">Vision XIX Labs &middot; <a href="${baseUrl}" style="color:#0071e3;">visionxixlabs.com</a></p>
     </td></tr>
   </table>
@@ -79,7 +82,8 @@ function generateInternalHtml(payload: LeadFormData, estimate: PricingEstimate):
 
 export async function sendLeadConfirmationEmail(
   data: LeadFormData,
-  estimate: PricingEstimate
+  estimate: PricingEstimate,
+  leadId?: string
 ): Promise<boolean> {
   const key = process.env.RESEND_API_KEY;
   if (!key || !key.startsWith("re_")) {
@@ -88,7 +92,7 @@ export async function sendLeadConfirmationEmail(
   }
   const client = new Resend(key);
   const from = process.env.RESEND_FROM_EMAIL || `Vision XIX Labs <${SUPPORT_EMAIL}>`;
-  const html = generateConfirmationHtml(data.fullName, data, estimate);
+  const html = generateConfirmationHtml(data.fullName, data, estimate, leadId);
   const result = await client.emails.send({
     from,
     replyTo: SUPPORT_EMAIL,

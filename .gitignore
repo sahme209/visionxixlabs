@@ -36,6 +36,9 @@ prisma/dev.db-journal
 # vercel
 .vercel
 
+# generated scaffolds
+/data/scaffolds
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts

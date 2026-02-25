@@ -122,7 +122,7 @@ export default function RequestPage() {
       const data = await res.json();
       if (res.ok && data.success) {
         router.push(
-          `/request/thank-you?min=${data.estimate.min}&max=${data.estimate.max}`
+          `/request/thank-you?leadId=${data.leadId}&min=${data.estimate.min}&max=${data.estimate.max}`
         );
         return;
       }
