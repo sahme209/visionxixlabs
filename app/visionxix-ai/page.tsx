@@ -104,12 +104,12 @@ export default function VisionXIXAILandingPage() {
               Try live demo
               <ArrowRightIcon className="h-5 w-5" />
             </Link>
-            <a
-              href={`mailto:${SUPPORT_EMAIL}?subject=Vision XIX Labs AI - Free Trial`}
+            <Link
+              href="/visionxix-ai/pricing"
               className="inline-flex items-center gap-2 rounded-full border-2 border-indigo-600 px-6 py-3 text-base font-semibold text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-900/20"
             >
-              Start free trial
-            </a>
+              View pricing
+            </Link>
           </div>
           <p className="mt-4 text-sm text-slate-500">No credit card · 7-day trial · Cancel anytime</p>
         </div>
@@ -319,6 +319,7 @@ export default function VisionXIXAILandingPage() {
           <Link href="/" className="text-sm text-slate-600 dark:text-slate-400 hover:text-indigo-600">Vision XIX Labs</Link>
           <div className="flex gap-6 text-sm text-slate-600 dark:text-slate-400">
             <Link href="/visionxix-ai-assistant" className="hover:text-indigo-600">Try demo</Link>
+            <Link href="/visionxix-ai/pricing" className="hover:text-indigo-600">Pricing</Link>
             <Link href="/visionxix-ai/features" className="hover:text-indigo-600">Features</Link>
             <a href={`mailto:${SUPPORT_EMAIL}`} className="hover:text-indigo-600">Contact</a>
             <Link href="/privacy" className="hover:text-indigo-600">Privacy</Link>

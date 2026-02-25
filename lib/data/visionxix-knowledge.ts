@@ -58,7 +58,7 @@ export function getVisionXIXKnowledgeContext(): string {
 - Auto-sync: We retrain when your site or docs change — daily, weekly, or on-demand.
 - API access: Developers can call our chat API for custom integrations, dashboards, and workflows.
 - Multi-language: Assistant responds in 95+ languages when visitors ask in their language.
-- Pricing: Flexible — Starter, Growth, Enterprise. Free Cloud & AI Review to scope. No hidden usage caps.
+- Pricing: See visionxixlabs.com/visionxix-ai/pricing. Starter $35/mo (6k messages, 2.5k pages, 1 chatbot, white-label). Growth $75/mo (15k messages, 15k pages, 3 chatbots, API, integrations, white-label). Scale $249/mo (60k messages, 80k pages, 8 chatbots). Enterprise custom (unlimited, optional self-host, SOC2-ready). 7-day free trial. White-label included in all plans — no extra fee. Add-ons: +$25 for 10k messages.
 - When asked about our AI product, explain Vision XIX Labs AI and stress: production-grade, your cloud, API access, enterprise security. Invite them to request a demo.
 
 ## Answering guidelines

@@ -54,11 +54,11 @@ const suggestions = [
 ];
 
 const QUICK_ACTIONS = [
+  { label: "View pricing", href: "/visionxix-ai/pricing", icon: CurrencyDollarIcon },
   { label: "Request demo", href: `mailto:${SUPPORT_EMAIL}?subject=Vision XIX Labs AI - Demo`, icon: CalendarDaysIcon },
-  { label: "Get pricing", href: `mailto:${SUPPORT_EMAIL}?subject=Vision XIX Labs AI - Pricing`, icon: CurrencyDollarIcon },
-  { label: "Talk to engineer", href: `mailto:${SUPPORT_EMAIL}`, icon: ChatBubbleBottomCenterTextIcon },
   { label: "See features", href: "/visionxix-ai/features", icon: ChatBubbleBottomCenterTextIcon },
   { label: "Calculate ROI", href: "/visionxix-ai#roi", icon: CurrencyDollarIcon },
+  { label: "Talk to engineer", href: `mailto:${SUPPORT_EMAIL}`, icon: ChatBubbleBottomCenterTextIcon },
   { label: "Free Cloud & AI Review", href: `mailto:${SUPPORT_EMAIL}?subject=Free Cloud & AI Review`, icon: CalendarDaysIcon },
 ];
 
@@ -270,7 +270,8 @@ export default function VisionXIXAIAssistantPage() {
           <div className="mt-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 text-[11px] text-slate-500">
             <p>Vision XIX Labs · Cloud & AI engineering</p>
             <div className="flex items-center gap-4">
-              <Link href="/visionxix-ai" className="hover:text-indigo-600">Product & pricing</Link>
+              <Link href="/visionxix-ai" className="hover:text-indigo-600">Product</Link>
+              <Link href="/visionxix-ai/pricing" className="hover:text-indigo-600">Pricing</Link>
               <a href={`mailto:${SUPPORT_EMAIL}`} className="inline-flex items-center gap-1 hover:text-indigo-600">
                 <ChatBubbleBottomCenterTextIcon className="w-3.5 h-3.5" />
                 Talk to an engineer
