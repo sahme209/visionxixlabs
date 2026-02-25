@@ -4,6 +4,7 @@ import { compare } from "bcryptjs";
 import { prisma } from "./db";
 
 export const authOptions: NextAuthOptions = {
+  secret: process.env.NEXTAUTH_SECRET,
   providers: [
     CredentialsProvider({
       name: "credentials",
@@ -13,11 +14,16 @@ export const authOptions: NextAuthOptions = {
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) return null;
-        const user = await prisma.user.findUnique({ where: { email: credentials.email } });
-        if (!user?.passwordHash) return null;
-        const valid = await compare(credentials.password, user.passwordHash);
-        if (!valid) return null;
-        return { id: user.id, email: user.email, name: user.name, image: user.image };
+        try {
+          const user = await prisma.user.findUnique({ where: { email: credentials.email } });
+          if (!user?.passwordHash) return null;
+          const valid = await compare(credentials.password, user.passwordHash);
+          if (!valid) return null;
+          return { id: user.id, email: user.email, name: user.name, image: user.image };
+        } catch (err) {
+          console.error("[NextAuth authorize]", err);
+          return null;
+        }
       },
     }),
   ],
