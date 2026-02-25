@@ -47,3 +47,19 @@ model KnowledgeSource {
   charCount Int      @default(0)
   createdAt DateTime @default(now())
 }
+
+model Lead {
+  id         String   @id @default(cuid())
+  name       String
+  email      String
+  phone      String?
+  fullPayload Json
+  status     String   @default("new")
+  source     String   @default("website-request")
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([email])
+  @@index([status])
+  @@index([createdAt])
+}
