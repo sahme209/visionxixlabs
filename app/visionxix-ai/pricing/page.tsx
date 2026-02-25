@@ -3,23 +3,26 @@
 import { useState } from "react";
 import Link from "next/link";
 
-// Stripe Payment Links — per-plan env vars override; fallback for all plans.
-// Set NEXT_PUBLIC_STRIPE_STARTER_MONTHLY etc. in Vercel for plan-specific links.
+// Stripe Payment Links — env vars override per plan/billing; fallback to plan defaults.
 const STRIPE_LINKS = {
-  starter: { monthly: process.env.NEXT_PUBLIC_STRIPE_STARTER_MONTHLY, yearly: process.env.NEXT_PUBLIC_STRIPE_STARTER_YEARLY },
-  growth: { monthly: process.env.NEXT_PUBLIC_STRIPE_GROWTH_MONTHLY, yearly: process.env.NEXT_PUBLIC_STRIPE_GROWTH_YEARLY },
-  scale: { monthly: process.env.NEXT_PUBLIC_STRIPE_SCALE_MONTHLY, yearly: process.env.NEXT_PUBLIC_STRIPE_SCALE_YEARLY },
+  starter: {
+    monthly: process.env.NEXT_PUBLIC_STRIPE_STARTER_MONTHLY || "https://buy.stripe.com/8x25kE1ARe7gbGrcNX6c000",
+    yearly: process.env.NEXT_PUBLIC_STRIPE_STARTER_YEARLY || "https://buy.stripe.com/8x25kE1ARe7gbGrcNX6c000",
+  },
+  growth: {
+    monthly: process.env.NEXT_PUBLIC_STRIPE_GROWTH_MONTHLY || "https://buy.stripe.com/bJe28s3IZ7ISbGr29j6c001",
+    yearly: process.env.NEXT_PUBLIC_STRIPE_GROWTH_YEARLY || "https://buy.stripe.com/bJe28s3IZ7ISbGr29j6c001",
+  },
+  scale: {
+    monthly: process.env.NEXT_PUBLIC_STRIPE_SCALE_MONTHLY || "https://buy.stripe.com/aFa28scfv9R0cKv9BL6c002",
+    yearly: process.env.NEXT_PUBLIC_STRIPE_SCALE_YEARLY || "https://buy.stripe.com/aFa28scfv9R0cKv9BL6c002",
+  },
 } as const;
-const STRIPE_FALLBACK =
-  process.env.NEXT_PUBLIC_STRIPE_CHECKOUT_LINK ||
-  "https://buy.stripe.com/8x25kE1ARe7gbGrcNX6c000";
 
 function getStripeLink(planId: string, billing: "monthly" | "yearly"): string | null {
   const plan = STRIPE_LINKS[planId as keyof typeof STRIPE_LINKS];
-  const m = billing === "monthly";
-  const link = plan?.[m ? "monthly" : "yearly"];
-  if (link) return link;
-  return STRIPE_FALLBACK || null;
+  if (!plan) return null;
+  return plan[billing === "monthly" ? "monthly" : "yearly"];
 }
 import {
   CheckIcon,
