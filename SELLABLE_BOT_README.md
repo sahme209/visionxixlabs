@@ -45,12 +45,17 @@ You now have a **real bot product** to sell. Here's what's implemented.
 4. Run `npm run dev`
 5. Sign up at `/auth/signup`, create a bot, add a URL, copy embed code
 
+## Vercel deployment
+
+1. **Add env vars** in Vercel: `DATABASE_URL`, `NEXTAUTH_SECRET`, `NEXTAUTH_URL`, `OPENAI_API_KEY`
+2. **Database**: Use PostgreSQL (Vercel Postgres, [Neon](https://neon.tech), [Supabase](https://supabase.com)). SQLite does not work on Vercel.
+3. **First deploy**: After adding `DATABASE_URL`, run `npx prisma migrate deploy` from your local machine (with `DATABASE_URL` pointing to your Postgres) to apply migrations.
+
 ## What's next for monetization
 
 1. **Stripe** — wire pricing plans to Stripe checkout
 2. **Plan limits** — enforce bot count, message limits, page limits by plan
 3. **Usage reset** — monthly message count reset
-4. **Vercel Postgres** — switch from SQLite for production
 
 ## Files changed/added
 
