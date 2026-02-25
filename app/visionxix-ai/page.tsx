@@ -44,7 +44,7 @@ const COMPARISON = [
 ];
 
 const FAQ = [
-  { q: "How is Vision XIX AI different from SiteGPT?", a: "Same idea—chatbot trained on your site—but we’re production-grade: your data in your cloud, full API, enterprise security (RBAC, SOC2-ready), and built by cloud engineers. We focus on reliability, observability, and scale." },
+  { q: "What makes Vision XIX AI different?", a: "Same idea—chatbot trained on your site—but we’re production-grade: your data in your cloud, full API, enterprise security (RBAC, SOC2-ready), and built by cloud engineers. We focus on reliability, observability, and scale." },
   { q: "Do you support multiple languages?", a: "Yes. The assistant responds in 95+ languages automatically when visitors ask in their language." },
   { q: "Can I use an API?", a: "Yes. We offer a full chat API for custom integrations, dashboards, and workflows." },
   { q: "How do you train the chatbot?", a: "Add your URL, sitemap, PDFs, docs, or raw text. We index your content and keep it in sync (daily, weekly, or on-demand)." },
@@ -166,15 +166,15 @@ export default function VisionXIXAILandingPage() {
 
       <section id="comparison" className="py-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto">
-          <h2 className="text-2xl sm:text-3xl font-bold text-center text-slate-900 dark:text-slate-100 mb-4">Vision XIX AI vs SiteGPT</h2>
-          <p className="text-center text-slate-600 dark:text-slate-400 mb-12">Same idea. Built for production.</p>
+          <h2 className="text-2xl sm:text-3xl font-bold text-center text-slate-900 dark:text-slate-100 mb-4">Why Vision XIX AI</h2>
+          <p className="text-center text-slate-600 dark:text-slate-400 mb-12">Production-grade. Your cloud. Enterprise security.</p>
           <div className="rounded-2xl border border-slate-200 dark:border-slate-700 overflow-hidden bg-white dark:bg-slate-900 shadow-lg">
             <table className="w-full text-sm">
               <thead>
                 <tr className="bg-slate-50 dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700">
                   <th className="text-left py-4 px-4 font-semibold text-slate-900 dark:text-slate-100">Feature</th>
                   <th className="text-left py-4 px-4 font-semibold text-indigo-600">Vision XIX AI</th>
-                  <th className="text-left py-4 px-4 font-semibold text-slate-500">SiteGPT</th>
+                  <th className="text-left py-4 px-4 font-semibold text-slate-500">Typical SaaS</th>
                 </tr>
               </thead>
               <tbody>
@@ -195,7 +195,7 @@ export default function VisionXIXAILandingPage() {
         <div className="max-w-5xl mx-auto">
           <h2 className="text-2xl sm:text-3xl font-bold text-center text-slate-900 dark:text-slate-100 mb-4">Built for revenue & scale</h2>
           <p className="text-center text-slate-600 dark:text-slate-400 mb-16 max-w-2xl mx-auto">
-            Lead capture, analytics, 95+ languages, API access — everything SiteGPT has, plus production-grade security and your cloud.
+            Lead capture, analytics, 95+ languages, API access — plus production-grade security and your cloud.
           </p>
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {FEATURES.map((f) => {
