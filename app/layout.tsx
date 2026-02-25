@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { OrganizationJsonLd, WebSiteJsonLd } from "@/components/JsonLd";
 import AIChatWidget from "@/components/AIChatWidget";
+import { Providers } from "@/components/Providers";
 import { SITE_URL, defaultOgImage, primaryKeywords, secondaryKeywords } from "@/lib/seo";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -65,10 +66,12 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={inter.className}>
-        <OrganizationJsonLd />
-        <WebSiteJsonLd />
-        {children}
-        <AIChatWidget />
+        <Providers>
+          <OrganizationJsonLd />
+          <WebSiteJsonLd />
+          {children}
+          <AIChatWidget />
+        </Providers>
       </body>
     </html>
   );

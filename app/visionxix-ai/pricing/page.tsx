@@ -205,7 +205,7 @@ export default function VisionXIXAIPricingPage() {
                       </a>
                     ) : (
                       <Link
-                        href={`mailto:${SUPPORT_EMAIL}?subject=Vision XIX AI - Start trial - ${plan.name}`}
+                        href="/auth/signup"
                         className="block w-full rounded-xl bg-indigo-600 px-4 py-3 text-center text-sm font-semibold text-white hover:bg-indigo-700 transition-colors"
                       >
                         Start free trial
