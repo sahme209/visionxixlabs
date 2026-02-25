@@ -106,7 +106,7 @@ export default function DashboardPage() {
                 <div>
                   <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">{bot.name}</h2>
                   <div className="mt-2 flex flex-wrap gap-4 text-sm text-slate-500">
-                    <span>{bot.sources.length} sources</span>
+                    <span>{(bot.sources ?? []).length} sources</span>
                     <span>{bot.messageCount} / {bot.messageLimit} messages</span>
                     <span>{bot.pageCount} / {bot.pageLimit} pages</span>
                   </div>

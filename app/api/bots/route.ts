@@ -42,6 +42,7 @@ export async function POST(req: NextRequest) {
 
     const bot = await prisma.bot.create({
       data: { name, userId: session.user.id },
+      include: { sources: true },
     });
     return NextResponse.json({ bot });
   } catch (e) {

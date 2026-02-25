@@ -110,7 +110,7 @@ export default function BotManagePage() {
 
       <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">{bot.name}</h1>
       <p className="text-slate-600 dark:text-slate-400">
-        {bot.sources.length} sources · {bot.messageCount} / {bot.messageLimit} messages · {bot.pageCount} / {bot.pageLimit} pages
+        {(bot.sources ?? []).length} sources · {bot.messageCount} / {bot.messageLimit} messages · {bot.pageCount} / {bot.pageLimit} pages
       </p>
 
       <div className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-6">
@@ -156,11 +156,11 @@ export default function BotManagePage() {
             </button>
           </div>
           {error && <p className="text-sm text-red-600">{error}</p>}
-          {bot.sources.length > 0 && (
+          {(bot.sources ?? []).length > 0 && (
             <div className="mt-4 pt-4 border-t border-slate-200 dark:border-slate-700">
               <p className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Sources</p>
               <ul className="space-y-1 text-sm text-slate-600 dark:text-slate-400">
-                {bot.sources.map((s) => (
+                {(bot.sources ?? []).map((s) => (
                   <li key={s.id}>
                     {s.type === "url" ? s.url : `Text (${s.type})`}
                   </li>
