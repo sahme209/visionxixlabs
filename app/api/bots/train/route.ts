@@ -6,18 +6,41 @@ import { prisma } from "@/lib/db";
 
 export const runtime = "nodejs";
 
+function normalizeUrl(input: string): string {
+  const trimmed = input.trim();
+  if (!trimmed) return trimmed;
+  if (/^https?:\/\//i.test(trimmed)) return trimmed;
+  return `https://${trimmed}`;
+}
+
 async function scrapeUrl(url: string): Promise<string> {
-  const res = await fetch(url, {
-    headers: {
-      "User-Agent": "Mozilla/5.0 (compatible; VisionXIXBot/1.0; +https://visionxixlabs.com)",
-    },
-  });
-  if (!res.ok) throw new Error(`Failed to fetch: ${res.status}`);
-  const html = await res.text();
-  const $ = cheerio.load(html);
-  $("script, style, nav, footer, aside").remove();
-  const text = $("body").text().replace(/\s+/g, " ").trim();
-  return text.slice(0, 50000);
+  const normalized = normalizeUrl(url);
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 15000);
+  try {
+    const res = await fetch(normalized, {
+      signal: controller.signal,
+      headers: {
+        "User-Agent": "Mozilla/5.0 (compatible; VisionXIXBot/1.0; +https://visionxixlabs.com)",
+        Accept: "text/html,application/xhtml+xml",
+      },
+      redirect: "follow",
+    });
+    clearTimeout(timeout);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const html = await res.text();
+    const $ = cheerio.load(html);
+    $("script, style, nav, footer, aside").remove();
+    const text = $("body").text().replace(/\s+/g, " ").trim();
+    return text.slice(0, 50000) || "(No text content found)";
+  } catch (err) {
+    clearTimeout(timeout);
+    if (err instanceof Error) {
+      if (err.name === "AbortError") throw new Error("Request timed out");
+      throw err;
+    }
+    throw err;
+  }
 }
 
 export async function POST(req: NextRequest): Promise<Response> {
@@ -49,17 +72,21 @@ export async function POST(req: NextRequest): Promise<Response> {
     let content = "";
     let type = "text";
 
-    if (url && typeof url === "string") {
+    let storedUrl: string | undefined;
+    if (url && typeof url === "string" && url.trim()) {
       try {
-        const parsed = new URL(url);
+        const normalized = normalizeUrl(url);
+        const parsed = new URL(normalized);
         if (!["http:", "https:"].includes(parsed.protocol)) {
-          return NextResponse.json({ error: "Invalid URL" }, { status: 400 });
+          return NextResponse.json({ error: "Invalid URL protocol" }, { status: 400 });
         }
         content = await scrapeUrl(url);
+        storedUrl = normalized;
         type = "url";
       } catch (err) {
-        console.error("[Train] Scrape error:", err);
-        return NextResponse.json({ error: "Failed to fetch URL" }, { status: 400 });
+        const msg = err instanceof Error ? err.message : "Failed to fetch URL";
+        console.error("[Train] Scrape error:", msg);
+        return NextResponse.json({ error: msg }, { status: 400 });
       }
     } else if (text && typeof text === "string") {
       content = text.slice(0, 50000);
@@ -83,7 +110,7 @@ export async function POST(req: NextRequest): Promise<Response> {
         data: {
           botId,
           type,
-          url: type === "url" ? url : undefined,
+          url: storedUrl,
           content,
           charCount,
         },
