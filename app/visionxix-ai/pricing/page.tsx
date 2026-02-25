@@ -3,12 +3,23 @@
 import { useState } from "react";
 import Link from "next/link";
 
+// Stripe Payment Links — per-plan env vars override; fallback for all plans.
+// Set NEXT_PUBLIC_STRIPE_STARTER_MONTHLY etc. in Vercel for plan-specific links.
+const STRIPE_LINKS = {
+  starter: { monthly: process.env.NEXT_PUBLIC_STRIPE_STARTER_MONTHLY, yearly: process.env.NEXT_PUBLIC_STRIPE_STARTER_YEARLY },
+  growth: { monthly: process.env.NEXT_PUBLIC_STRIPE_GROWTH_MONTHLY, yearly: process.env.NEXT_PUBLIC_STRIPE_GROWTH_YEARLY },
+  scale: { monthly: process.env.NEXT_PUBLIC_STRIPE_SCALE_MONTHLY, yearly: process.env.NEXT_PUBLIC_STRIPE_SCALE_YEARLY },
+} as const;
+const STRIPE_FALLBACK =
+  process.env.NEXT_PUBLIC_STRIPE_CHECKOUT_LINK ||
+  "https://buy.stripe.com/8x25kE1ARe7gbGrcNX6c000";
+
 function getStripeLink(planId: string, billing: "monthly" | "yearly"): string | null {
+  const plan = STRIPE_LINKS[planId as keyof typeof STRIPE_LINKS];
   const m = billing === "monthly";
-  if (planId === "starter") return (m ? process.env.NEXT_PUBLIC_STRIPE_STARTER_MONTHLY : process.env.NEXT_PUBLIC_STRIPE_STARTER_YEARLY) || null;
-  if (planId === "growth") return (m ? process.env.NEXT_PUBLIC_STRIPE_GROWTH_MONTHLY : process.env.NEXT_PUBLIC_STRIPE_GROWTH_YEARLY) || null;
-  if (planId === "scale") return (m ? process.env.NEXT_PUBLIC_STRIPE_SCALE_MONTHLY : process.env.NEXT_PUBLIC_STRIPE_SCALE_YEARLY) || null;
-  return null;
+  const link = plan?.[m ? "monthly" : "yearly"];
+  if (link) return link;
+  return STRIPE_FALLBACK || null;
 }
 import {
   CheckIcon,
@@ -217,7 +228,6 @@ export default function VisionXIXAIPricingPage() {
                         return stripeLink ? (
                           <a
                             href={stripeLink}
-                            target="_blank"
                             rel="noopener noreferrer"
                             className="block w-full rounded-xl bg-indigo-600 px-4 py-3 text-center text-sm font-semibold text-white hover:bg-indigo-700 transition-colors"
                           >
