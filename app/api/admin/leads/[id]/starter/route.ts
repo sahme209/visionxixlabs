@@ -28,7 +28,7 @@ export async function POST(
 
     const pkg = await generateWebsiteStarterPackage(data);
     const merged = { ...payload, aiStarterPackage: pkg, aiStarterError: false };
-    await prisma.lead.update({ where: { id }, data: { fullPayload: merged } });
+    await prisma.lead.update({ where: { id }, data: { fullPayload: merged as object } });
 
     return NextResponse.json({ success: true, aiStarterPackage: pkg });
   } catch (e) {
@@ -37,7 +37,7 @@ export async function POST(
     if (lead) {
       const payload = lead.fullPayload as Record<string, unknown>;
       const merged = { ...payload, aiStarterError: true };
-      await prisma.lead.update({ where: { id }, data: { fullPayload: merged } });
+      await prisma.lead.update({ where: { id }, data: { fullPayload: merged as object } });
     }
     return NextResponse.json(
       { error: "AI generation failed. Try again or contact support." },
