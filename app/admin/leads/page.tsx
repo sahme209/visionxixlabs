@@ -47,6 +47,7 @@ export default function AdminLeadsPage() {
   const [regenerating, setRegenerating] = useState(false);
   const [generatingScaffold, setGeneratingScaffold] = useState(false);
   const [scaffoldDownloadUrl, setScaffoldDownloadUrl] = useState<string | null>(null);
+  const [scaffoldDisabledMessage, setScaffoldDisabledMessage] = useState<string | null>(null);
   const [showAiPackage, setShowAiPackage] = useState(false);
 
   const fetchLeads = useCallback(async (cursor?: string) => {
@@ -134,6 +135,7 @@ export default function AdminLeadsPage() {
     if (selectedId) {
       fetchDetail(selectedId);
       setScaffoldDownloadUrl(null);
+      setScaffoldDisabledMessage(null);
     }
   }, [selectedId, fetchDetail]);
 
@@ -172,6 +174,7 @@ export default function AdminLeadsPage() {
   const generateScaffold = async (id: string) => {
     setGeneratingScaffold(true);
     setError("");
+    setScaffoldDisabledMessage(null);
     setScaffoldDownloadUrl(null);
     try {
       const res = await fetch(`/api/admin/leads/${id}/scaffold`, {
@@ -181,6 +184,8 @@ export default function AdminLeadsPage() {
       const data = await res.json();
       if (res.ok && data.downloadUrl) {
         setScaffoldDownloadUrl(data.downloadUrl);
+      } else if (res.status === 503) {
+        setScaffoldDisabledMessage(data.message || "Scaffold generation is disabled in production. Local filesystem is ephemeral on serverless. Configure S3, R2, or Supabase storage for scaffold artifacts.");
       } else {
         setError(data.error || "Scaffold generation failed");
       }
@@ -395,7 +400,7 @@ export default function AdminLeadsPage() {
                     </div>
                   </div>
 
-                  {selectedLead.fullPayload?.aiStarterPackage && (
+                  {selectedLead.fullPayload?.aiStarterPackage ? (
                     <div className="space-y-3">
                       <button
                         type="button"
@@ -417,7 +422,7 @@ export default function AdminLeadsPage() {
                         </div>
                       )}
                     </div>
-                  )}
+                  ) : null}
 
                   <div className="flex flex-wrap gap-2">
                     <button
@@ -445,6 +450,12 @@ export default function AdminLeadsPage() {
                         <DocumentTextIcon className="h-4 w-4" />
                         Download Scaffold
                       </a>
+                    )}
+                    {scaffoldDisabledMessage && (
+                      <div className="mt-2 w-full rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+                        <p className="font-medium">Scaffold generation disabled in production</p>
+                        <p className="mt-1 text-amber-700">{scaffoldDisabledMessage}</p>
+                      </div>
                     )}
                   </div>
 
