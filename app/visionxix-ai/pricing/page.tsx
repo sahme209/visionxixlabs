@@ -2,6 +2,14 @@
 
 import { useState } from "react";
 import Link from "next/link";
+
+function getStripeLink(planId: string, billing: "monthly" | "yearly"): string | null {
+  const m = billing === "monthly";
+  if (planId === "starter") return (m ? process.env.NEXT_PUBLIC_STRIPE_STARTER_MONTHLY : process.env.NEXT_PUBLIC_STRIPE_STARTER_YEARLY) || null;
+  if (planId === "growth") return (m ? process.env.NEXT_PUBLIC_STRIPE_GROWTH_MONTHLY : process.env.NEXT_PUBLIC_STRIPE_GROWTH_YEARLY) || null;
+  if (planId === "scale") return (m ? process.env.NEXT_PUBLIC_STRIPE_SCALE_MONTHLY : process.env.NEXT_PUBLIC_STRIPE_SCALE_YEARLY) || null;
+  return null;
+}
 import {
   CheckIcon,
   SparklesIcon,
@@ -146,11 +154,11 @@ export default function VisionXIXAIPricingPage() {
               </span>
             </button>
           </div>
-          <p className="mt-2 text-sm text-slate-500">No credit card required for 7-day trial. Cancel anytime.</p>
+          <p className="mt-2 text-sm text-slate-500">7 days free, then charged. Cancel anytime before trial ends.</p>
         </div>
       </section>
 
-      <section className="pb-20 px-4 sm:px-6 lg:px-8">
+      <section id="plans" className="pb-20 px-4 sm:px-6 lg:px-8 scroll-mt-28">
         <div className="max-w-6xl mx-auto">
           <div className="grid md:grid-cols-2 xl:grid-cols-4 gap-6">
             {PLANS.map((plan) => {
@@ -204,12 +212,26 @@ export default function VisionXIXAIPricingPage() {
                         Contact sales
                       </a>
                     ) : (
-                      <Link
-                        href="/auth/signup"
-                        className="block w-full rounded-xl bg-indigo-600 px-4 py-3 text-center text-sm font-semibold text-white hover:bg-indigo-700 transition-colors"
-                      >
-                        Start free trial
-                      </Link>
+                      (() => {
+                        const stripeLink = getStripeLink(plan.id, billing);
+                        return stripeLink ? (
+                          <a
+                            href={stripeLink}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="block w-full rounded-xl bg-indigo-600 px-4 py-3 text-center text-sm font-semibold text-white hover:bg-indigo-700 transition-colors"
+                          >
+                            Start free trial
+                          </a>
+                        ) : (
+                          <Link
+                            href="/auth/signup"
+                            className="block w-full rounded-xl bg-indigo-600 px-4 py-3 text-center text-sm font-semibold text-white hover:bg-indigo-700 transition-colors"
+                          >
+                            Start free trial
+                          </Link>
+                        );
+                      })()
                     )}
                   </div>
                 </div>
@@ -269,9 +291,9 @@ export default function VisionXIXAIPricingPage() {
 
       <section className="py-16 px-4 sm:px-6 lg:px-8">
         <div className="max-w-3xl mx-auto text-center">
-          <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-100 mb-4">Try it free for 7 days</h2>
+          <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-100 mb-4">Start your 7-day free trial</h2>
           <p className="text-slate-600 dark:text-slate-400 mb-8">
-            No credit card. Train on your site, embed your chatbot, see the results.
+            Choose a plan above to go to checkout. 7 days free, then charged. Cancel anytime.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link
@@ -281,12 +303,12 @@ export default function VisionXIXAIPricingPage() {
               Try live demo
               <ArrowRightIcon className="h-5 w-5" />
             </Link>
-            <a
-              href={`mailto:${SUPPORT_EMAIL}?subject=Vision XIX AI - Start free trial`}
+            <Link
+              href="/visionxix-ai/pricing#plans"
               className="inline-flex items-center gap-2 rounded-full border-2 border-indigo-600 px-6 py-3 text-base font-semibold text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-900/20"
             >
-              Start free trial
-            </a>
+              View plans
+            </Link>
           </div>
         </div>
       </section>
