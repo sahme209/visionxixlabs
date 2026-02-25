@@ -19,6 +19,28 @@ interface Message {
   timestamp: Date;
 }
 
+const MSG_KEY = "visionxix-ai-widget-messages";
+
+function loadMessages(): Message[] {
+  if (typeof window === "undefined") return [];
+  try {
+    const raw = localStorage.getItem(MSG_KEY);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw) as { id: string; role: "user" | "assistant"; content: string; timestamp: string }[];
+    return parsed.slice(-30).map((m) => ({ ...m, timestamp: new Date(m.timestamp) }));
+  } catch {
+    return [];
+  }
+}
+
+function saveMessages(msgs: Message[]) {
+  if (typeof window === "undefined") return;
+  try {
+    const toSave = msgs.slice(-30).map((m) => ({ ...m, timestamp: m.timestamp.toISOString() }));
+    localStorage.setItem(MSG_KEY, JSON.stringify(toSave));
+  } catch {}
+}
+
 const SUGGESTIONS = [
   "How can Vision XIX Labs help us productionize AI in AWS?",
   "Do you build internal AI assistants on our own data?",
@@ -29,11 +51,21 @@ const SUGGESTIONS = [
 export default function AIChatWidget() {
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
+  const [mounted, setMounted] = useState(false);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
 
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+  useEffect(() => {
+    if (mounted) setMessages(loadMessages());
+  }, [mounted]);
+  useEffect(() => {
+    if (mounted && messages.length > 0) saveMessages(messages);
+  }, [mounted, messages]);
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
   }, [messages]);
