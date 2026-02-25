@@ -1,25 +1,27 @@
 import { NextRequest, NextResponse } from "next/server";
-import OpenAI from "openai";
 import { SUPPORT_EMAIL } from "@/lib/constants/company";
 import { getVisionXIXKnowledgeContext } from "@/lib/data/visionxix-knowledge";
+import { generateChatResponse } from "@/lib/ai/chat";
 
 export const runtime = "nodejs";
 
 function buildSystemPrompt(): string {
   const knowledge = getVisionXIXKnowledgeContext();
-  return `You are the Vision XIX Labs Site Assistant — a helpful cloud & AI engineer representing Vision XIX Labs.
+  return `You are the Vision XIX Labs Site Assistant — a knowledgeable cloud & AI engineer representing Vision XIX Labs.
 
 Your role:
 - Help visitors understand Vision XIX Labs' cloud and AI engineering services.
 - Explain how we work across AWS, Azure, and GCP with IaC, automation, security, and observability.
 - Describe how we build production AI systems (internal assistants, RAG, extraction, automation).
-- Provide practical guidance and suggest next steps like a Free Cloud & AI Review or talking to an engineer.
+- Provide practical, actionable guidance. Suggest next steps like a Free Cloud & AI Review or talking to an engineer.
+- Be conversational, clear, and concise. Use examples when helpful.
 
 Important:
 - Always identify as the Vision XIX Labs Site Assistant.
 - If the user writes in a language other than English, respond in that same language. We support 95+ languages.
 - Do NOT give immigration or legal advice (that belongs to VisaNova).
 - For detailed questions, suggest contacting ${SUPPORT_EMAIL}.
+- When asked about our AI product (Vision XIX AI), explain features, pricing, and invite them to request a demo.
 
 --- Knowledge Base ---
 ${knowledge}
@@ -33,11 +35,10 @@ interface Message {
 
 export async function POST(req: NextRequest): Promise<Response> {
   try {
-    const apiKey = process.env.OPENAI_API_KEY;
-    if (!apiKey || apiKey.trim() === "") {
-      console.error("[VisionXIX AI Chat] Missing or empty OPENAI_API_KEY environment variable.");
+    if (!process.env.OPENAI_API_KEY?.trim() && !process.env.GEMINI_API_KEY?.trim()) {
+      console.error("[VisionXIX AI Chat] Missing OPENAI_API_KEY and GEMINI_API_KEY.");
       return NextResponse.json(
-        { error: "AI assistant is not configured. Please add OPENAI_API_KEY." },
+        { error: "AI assistant is not configured. Please add OPENAI_API_KEY or GEMINI_API_KEY." },
         { status: 503 }
       );
     }
@@ -58,21 +59,17 @@ export async function POST(req: NextRequest): Promise<Response> {
       );
     }
 
-    const trimmed = messages.slice(-20).map((m) => ({
-      role: m.role === "system" ? "system" : m.role === "assistant" ? "assistant" : "user",
+    const chatMessages = messages.slice(-20).map((m) => ({
+      role: (m.role === "assistant" ? "assistant" : "user") as "user" | "assistant",
       content: String(m.content).slice(0, 4000),
-    })) as OpenAI.Chat.Completions.ChatCompletionMessageParam[];
+    }));
 
-    const openai = new OpenAI({ apiKey });
-
-    const completion = await openai.chat.completions.create({
-      model: "gpt-4o-mini",
-      messages: [{ role: "system", content: buildSystemPrompt() }, ...trimmed],
-      max_tokens: 1024,
-      temperature: 0.7,
+    const { text } = await generateChatResponse({
+      systemPrompt: buildSystemPrompt(),
+      messages: chatMessages,
+      maxTokens: 1536,
+      temperature: 0.4,
     });
-
-    const text = completion.choices?.[0]?.message?.content ?? "";
 
     return NextResponse.json({ message: text });
   } catch (e) {
@@ -86,14 +83,14 @@ export async function POST(req: NextRequest): Promise<Response> {
     let errorMessage = "AI service temporarily unavailable. Please try again later.";
     let statusCode = 500;
 
-    if (err?.message?.includes("401") || err?.message?.includes("Incorrect API key")) {
-      errorMessage = "API key invalid or expired. Please check your OpenAI configuration.";
+    if (err?.message?.includes("401") || err?.message?.includes("Incorrect API key") || err?.message?.includes("API key")) {
+      errorMessage = "AI provider API key invalid or expired. Please check your configuration.";
       statusCode = 503;
     } else if (err?.message?.includes("429") || err?.message?.includes("rate limit")) {
       errorMessage = "Too many requests. Please try again in a moment.";
       statusCode = 429;
     } else if (err?.message?.includes("500") || err?.message?.includes("503")) {
-      errorMessage = "OpenAI servers are busy. Please try again in a few minutes.";
+      errorMessage = "AI service is busy. Please try again in a few minutes.";
       statusCode = 502;
     }
 

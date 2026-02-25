@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import OpenAI from "openai";
 import { prisma } from "@/lib/db";
+import { generateChatResponse } from "@/lib/ai/chat";
 
 export const runtime = "nodejs";
 
@@ -16,8 +16,7 @@ function buildBotContext(content: string): string {
 
 export async function POST(req: NextRequest): Promise<Response> {
   try {
-    const apiKey = process.env.OPENAI_API_KEY;
-    if (!apiKey?.trim()) {
+    if (!process.env.OPENAI_API_KEY?.trim() && !process.env.GEMINI_API_KEY?.trim()) {
       return NextResponse.json({ error: "AI service unavailable." }, { status: 503 });
     }
 
@@ -49,26 +48,30 @@ export async function POST(req: NextRequest): Promise<Response> {
     const knowledgeContent = bot.sources.map((s) => s.content || "").join("\n\n");
     const context = buildBotContext(knowledgeContent);
 
-    const systemPrompt = `You are a helpful site assistant trained on the following content. Answer questions based on this knowledge. If the answer is not in the content, say so. Respond in the same language as the user when possible. Be concise and helpful.
+    const systemPrompt = `You are a helpful, knowledgeable site assistant trained on the following content.
+
+Guidelines:
+- Answer questions accurately based on the training content below.
+- If the answer is not in the content, say so and offer to help with related topics.
+- Respond in the same language as the user when possible.
+- Be concise, clear, and helpful. Use bullet points or short paragraphs when useful.
+- If asked about topics outside the content (e.g., pricing, contact), infer reasonable answers or suggest contacting the site owner.
 
 --- Training content ---
 ${context}
 --- End training content ---`;
 
-    const trimmed = messages.slice(-20).map((m) => ({
-      role: (m.role === "system" ? "system" : m.role === "assistant" ? "assistant" : "user") as "system" | "user" | "assistant",
+    const chatMessages = messages.slice(-20).map((m) => ({
+      role: (m.role === "assistant" ? "assistant" : "user") as "user" | "assistant",
       content: String(m.content).slice(0, 4000),
     }));
 
-    const openai = new OpenAI({ apiKey });
-    const completion = await openai.chat.completions.create({
-      model: "gpt-4o-mini",
-      messages: [{ role: "system", content: systemPrompt }, ...trimmed],
-      max_tokens: 1024,
-      temperature: 0.7,
+    const { text } = await generateChatResponse({
+      systemPrompt,
+      messages: chatMessages,
+      maxTokens: 1536,
+      temperature: 0.4,
     });
-
-    const text = completion.choices?.[0]?.message?.content ?? "";
 
     await prisma.bot.update({
       where: { id: botId },
