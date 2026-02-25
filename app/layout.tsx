@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { OrganizationJsonLd, WebSiteJsonLd } from "@/components/JsonLd";
+import AIChatWidget from "@/components/AIChatWidget";
 import { SITE_URL, defaultOgImage, primaryKeywords, secondaryKeywords } from "@/lib/seo";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -67,6 +68,7 @@ export default function RootLayout({
         <OrganizationJsonLd />
         <WebSiteJsonLd />
         {children}
+        <AIChatWidget />
       </body>
     </html>
   );
