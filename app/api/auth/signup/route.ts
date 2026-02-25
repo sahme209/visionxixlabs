@@ -24,6 +24,7 @@ export async function POST(req: NextRequest) {
         email: email.trim().toLowerCase(),
         passwordHash,
         name: (name || "").trim() || undefined,
+        plan: "starter",
       },
     });
     return NextResponse.json({ id: user.id, email: user.email, name: user.name });

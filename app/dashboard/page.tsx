@@ -20,18 +20,29 @@ type Bot = {
   sources: { id: string; type: string; url?: string | null }[];
 };
 
+type Usage = { messages: number; pages: number; bots: number };
+type Limits = { messages: number; pages: number; bots: number };
+
 export default function DashboardPage() {
   const [bots, setBots] = useState<Bot[]>([]);
+  const [usage, setUsage] = useState<Usage | null>(null);
+  const [limits, setLimits] = useState<Limits | null>(null);
+  const [plan, setPlan] = useState<string>("starter");
   const [loading, setLoading] = useState(true);
   const [creating, setCreating] = useState(false);
 
-  useEffect(() => {
+  const loadBots = () =>
     fetch("/api/bots")
       .then((r) => r.json())
       .then((data) => {
         setBots(data.bots || []);
-      })
-      .finally(() => setLoading(false));
+        setUsage(data.usage ?? null);
+        setLimits(data.limits ?? null);
+        setPlan(data.plan ?? "starter");
+      });
+
+  useEffect(() => {
+    loadBots().finally(() => setLoading(false));
   }, []);
 
   const createBot = async () => {
@@ -44,7 +55,7 @@ export default function DashboardPage() {
       });
       const data = await res.json();
       if (res.ok && data.bot) {
-        setBots((prev) => [...prev, data.bot]);
+        await loadBots();
       } else {
         alert(data.error || "Failed to create");
       }
@@ -68,6 +79,11 @@ export default function DashboardPage() {
         <p className="text-slate-600 dark:text-slate-400 mt-1">
           Create chatbots, train them on your site, and embed them on your website.
         </p>
+        {usage && limits && (
+          <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
+            Plan: <span className="font-medium capitalize">{plan}</span> — {usage.messages} / {limits.messages} messages · {usage.pages} / {limits.pages} pages · {usage.bots} / {limits.bots} chatbots
+          </p>
+        )}
       </div>
 
       <button
@@ -107,8 +123,8 @@ export default function DashboardPage() {
                   <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">{bot.name}</h2>
                   <div className="mt-2 flex flex-wrap gap-4 text-sm text-slate-500">
                     <span>{(bot.sources ?? []).length} sources</span>
-                    <span>{bot.messageCount} / {bot.messageLimit} messages</span>
-                    <span>{bot.pageCount} / {bot.pageLimit} pages</span>
+                    <span>{bot.messageCount} messages</span>
+                    <span>{bot.pageCount} pages</span>
                   </div>
                 </div>
                 <Link

@@ -27,6 +27,8 @@ export default function BotManagePage() {
   const botId = params.botId as string;
 
   const [bot, setBot] = useState<Bot | null>(null);
+  const [usage, setUsage] = useState<{ messages: number; pages: number } | null>(null);
+  const [limits, setLimits] = useState<{ messages: number; pages: number } | null>(null);
   const [loading, setLoading] = useState(true);
   const [url, setUrl] = useState("");
   const [text, setText] = useState("");
@@ -34,14 +36,18 @@ export default function BotManagePage() {
   const [error, setError] = useState("");
   const [copied, setCopied] = useState(false);
 
-  useEffect(() => {
+  const loadData = () =>
     fetch("/api/bots")
       .then((r) => r.json())
       .then((data) => {
         const b = (data.bots || []).find((x: Bot) => x.id === botId);
         setBot(b || null);
-      })
-      .finally(() => setLoading(false));
+        setUsage(data.usage ?? null);
+        setLimits(data.limits ?? null);
+      });
+
+  useEffect(() => {
+    loadData().finally(() => setLoading(false));
   }, [botId]);
 
   const train = async (type: "url" | "text") => {
@@ -61,12 +67,7 @@ export default function BotManagePage() {
       }
       setUrl("");
       setText("");
-      if (bot) {
-        const res2 = await fetch("/api/bots");
-        const d = await res2.json();
-        const b = (d.bots || []).find((x: Bot) => x.id === botId);
-        setBot(b || null);
-      }
+      await loadData();
     } finally {
       setTraining(false);
     }
@@ -110,7 +111,10 @@ export default function BotManagePage() {
 
       <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">{bot.name}</h1>
       <p className="text-slate-600 dark:text-slate-400">
-        {(bot.sources ?? []).length} sources · {bot.messageCount} / {bot.messageLimit} messages · {bot.pageCount} / {bot.pageLimit} pages
+        {(bot.sources ?? []).length} sources
+        {usage && limits && (
+          <> · {usage.messages} / {limits.messages} messages · {usage.pages} / {limits.pages} pages</>
+        )}
       </p>
 
       <div className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-6">

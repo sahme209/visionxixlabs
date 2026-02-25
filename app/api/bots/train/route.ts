@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth";
 import * as cheerio from "cheerio";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/db";
+import { getPlanLimits } from "@/lib/planLimits";
 
 export const runtime = "nodejs";
 
@@ -64,6 +65,7 @@ export async function POST(req: NextRequest): Promise<Response> {
 
     const bot = await prisma.bot.findFirst({
       where: { id: botId, userId: session.user.id },
+      include: { user: true },
     });
     if (!bot) {
       return NextResponse.json({ error: "Bot not found" }, { status: 404 });
@@ -98,9 +100,15 @@ export async function POST(req: NextRequest): Promise<Response> {
     const charCount = content.length;
     const pageCount = Math.ceil(charCount / 2500);
 
-    if (bot.pageCount + pageCount > bot.pageLimit) {
+    const limits = getPlanLimits(bot.user?.plan ?? null);
+    const totalPages = await prisma.bot.aggregate({
+      where: { userId: session.user.id },
+      _sum: { pageCount: true },
+    });
+    const usedPages = totalPages._sum.pageCount ?? 0;
+    if (usedPages + pageCount > limits.pages) {
       return NextResponse.json(
-        { error: `Page limit (${bot.pageLimit}) exceeded. Upgrade your plan.` },
+        { error: `Page limit (${limits.pages}) exceeded. Upgrade your plan for more.` },
         { status: 403 }
       );
     }

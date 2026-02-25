@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { generateChatResponse } from "@/lib/ai/chat";
+import { getPlanLimits } from "@/lib/planLimits";
 
 export const runtime = "nodejs";
 
@@ -34,15 +35,23 @@ export async function POST(req: NextRequest): Promise<Response> {
 
     const bot = await prisma.bot.findUnique({
       where: { id: botId },
-      include: { sources: true },
+      include: { sources: true, user: true },
     });
     if (!bot) {
       return NextResponse.json({ error: "Bot not found" }, { status: 404 });
     }
 
-    // Check message limit (per-month; for MVP we check total count as proxy)
-    if (bot.messageCount >= bot.messageLimit) {
-      return NextResponse.json({ error: "Message limit reached. Upgrade your plan." }, { status: 403 });
+    const limits = getPlanLimits(bot.user?.plan ?? null);
+    const totalMessages = await prisma.bot.aggregate({
+      where: { userId: bot.userId },
+      _sum: { messageCount: true },
+    });
+    const used = totalMessages._sum.messageCount ?? 0;
+    if (used >= limits.messages) {
+      return NextResponse.json(
+        { error: `Message limit reached (${limits.messages}/mo). Upgrade your plan for more.` },
+        { status: 403 }
+      );
     }
 
     const knowledgeContent = bot.sources.map((s) => s.content || "").join("\n\n");
