@@ -50,13 +50,16 @@ const suggestions = [
   "Do you build internal AI assistants on our own data?",
   "What does a Free Cloud & AI Review include?",
   "How do you think about RAG vs fine-tuning?",
-  "How is Vision XIX Labs AI different from SiteGPT?",
+  "What makes Vision XIX Labs AI different?",
 ];
 
 const QUICK_ACTIONS = [
   { label: "Request demo", href: `mailto:${SUPPORT_EMAIL}?subject=Vision XIX Labs AI - Demo`, icon: CalendarDaysIcon },
   { label: "Get pricing", href: `mailto:${SUPPORT_EMAIL}?subject=Vision XIX Labs AI - Pricing`, icon: CurrencyDollarIcon },
   { label: "Talk to engineer", href: `mailto:${SUPPORT_EMAIL}`, icon: ChatBubbleBottomCenterTextIcon },
+  { label: "See features", href: "/visionxix-ai/features", icon: ChatBubbleBottomCenterTextIcon },
+  { label: "Calculate ROI", href: "/visionxix-ai#roi", icon: CurrencyDollarIcon },
+  { label: "Free Cloud & AI Review", href: `mailto:${SUPPORT_EMAIL}?subject=Free Cloud & AI Review`, icon: CalendarDaysIcon },
 ];
 
 export default function VisionXIXAIAssistantPage() {

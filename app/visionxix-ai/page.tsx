@@ -17,6 +17,7 @@ import {
 import { SparklesIcon as SparklesSolid } from "@heroicons/react/24/solid";
 import { SUPPORT_EMAIL } from "@/lib/constants/company";
 import { Navigation } from "@/components/Navigation";
+import { AIROICalculator } from "@/components/AIROICalculator";
 
 const STEPS = [
   { title: "Sync training data", desc: "Add your URL, docs, or raw content. We index your site and knowledge base.", icon: DocumentTextIcon },
@@ -93,7 +94,7 @@ export default function VisionXIXAILandingPage() {
             AI that knows your business
           </h1>
           <p className="mt-6 text-xl text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
-            Production-ready chatbots trained on your site. 24/7 support, lead capture, and enterprise security. Better than SiteGPT.
+            Production-ready chatbots trained on your site. 24/7 support, lead capture, email summaries, and enterprise security.
           </p>
           <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link
@@ -144,7 +145,7 @@ export default function VisionXIXAILandingPage() {
         <div className="max-w-5xl mx-auto">
           <h2 className="text-2xl sm:text-3xl font-bold text-center text-slate-900 dark:text-slate-100 mb-4">Three steps to your own AI assistant</h2>
           <p className="text-center text-slate-600 dark:text-slate-400 mb-16 max-w-2xl mx-auto">
-            Same idea as SiteGPT — built for production, with lead capture, analytics, and enterprise security.
+            Built for production, with lead capture, analytics, and enterprise security.
           </p>
           <div className="grid md:grid-cols-3 gap-10">
             {STEPS.map((step, i) => {
@@ -187,6 +188,72 @@ export default function VisionXIXAILandingPage() {
                 ))}
               </tbody>
             </table>
+          </div>
+        </div>
+      </section>
+
+      <section id="testimonials" className="py-20 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-5xl mx-auto">
+          <h2 className="text-2xl sm:text-3xl font-bold text-center text-slate-900 dark:text-slate-100 mb-4">Trusted by teams shipping AI</h2>
+          <p className="text-center text-slate-600 dark:text-slate-400 mb-12 max-w-2xl mx-auto">
+            Vision XIX AI is built for teams that need production-grade AI support — not demos.
+          </p>
+          <div className="grid md:grid-cols-3 gap-8">
+            <div className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-6">
+              <p className="text-slate-600 dark:text-slate-400 text-sm mb-4">&ldquo;The AI assistant handles 80% of our support tickets. Our team can focus on complex cases.&rdquo;</p>
+              <p className="text-sm font-semibold text-slate-900 dark:text-slate-100">— Head of Support, SaaS</p>
+            </div>
+            <div className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-6">
+              <p className="text-slate-600 dark:text-slate-400 text-sm mb-4">&ldquo;Lead capture and escalation to human are game-changers. We convert more visitors.&rdquo;</p>
+              <p className="text-sm font-semibold text-slate-900 dark:text-slate-100">— Product Lead, B2B</p>
+            </div>
+            <div className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-6">
+              <p className="text-slate-600 dark:text-slate-400 text-sm mb-4">&ldquo;Enterprise security and API access — exactly what we needed to integrate with our stack.&rdquo;</p>
+              <p className="text-sm font-semibold text-slate-900 dark:text-slate-100">— CTO, Enterprise</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="integrations" className="py-20 px-4 sm:px-6 lg:px-8 bg-slate-50 dark:bg-slate-800/50">
+        <div className="max-w-5xl mx-auto">
+          <h2 className="text-2xl sm:text-3xl font-bold text-center text-slate-900 dark:text-slate-100 mb-4">Integrates with your stack</h2>
+          <p className="text-center text-slate-600 dark:text-slate-400 mb-12 max-w-2xl mx-auto">
+            Connect Vision XIX AI to Zendesk, Intercom, Crisp, and more. Full API for custom integrations.
+          </p>
+          <div className="flex flex-wrap justify-center gap-8 items-center">
+            <div className="flex flex-col items-center gap-2">
+              <div className="h-12 w-24 rounded-lg bg-slate-200 dark:bg-slate-700 flex items-center justify-center text-xs font-semibold text-slate-600 dark:text-slate-400">Zendesk</div>
+              <span className="text-xs text-slate-500">Help Center sync</span>
+            </div>
+            <div className="flex flex-col items-center gap-2">
+              <div className="h-12 w-24 rounded-lg bg-slate-200 dark:bg-slate-700 flex items-center justify-center text-xs font-semibold text-slate-600 dark:text-slate-400">Intercom</div>
+              <span className="text-xs text-slate-500">Inbox + handoff</span>
+            </div>
+            <div className="flex flex-col items-center gap-2">
+              <div className="h-12 w-24 rounded-lg bg-slate-200 dark:bg-slate-700 flex items-center justify-center text-xs font-semibold text-slate-600 dark:text-slate-400">Crisp</div>
+              <span className="text-xs text-slate-500">Live chat</span>
+            </div>
+            <div className="flex flex-col items-center gap-2">
+              <div className="h-12 w-24 rounded-lg bg-slate-200 dark:bg-slate-700 flex items-center justify-center text-xs font-semibold text-slate-600 dark:text-slate-400">API</div>
+              <span className="text-xs text-slate-500">Custom</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <AIROICalculator />
+
+      <section id="embed" className="py-20 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-4xl mx-auto">
+          <h2 className="text-2xl sm:text-3xl font-bold text-center text-slate-900 dark:text-slate-100 mb-4">Embed on your site in one line</h2>
+          <p className="text-center text-slate-600 dark:text-slate-400 mb-8 max-w-2xl mx-auto">
+            Each chatbot gets a unique URL and embed code. Add it to your marketing site, help center, or in-app.
+          </p>
+          <div className="rounded-2xl border border-slate-200 dark:border-slate-700 overflow-hidden bg-slate-900">
+            <pre className="p-6 text-sm text-emerald-400 overflow-x-auto font-mono">
+{`<script src="https://visionxixlabs.com/widget.js" data-chat-id="YOUR_CHAT_ID"></script>`}
+            </pre>
           </div>
         </div>
       </section>
@@ -252,6 +319,7 @@ export default function VisionXIXAILandingPage() {
           <Link href="/" className="text-sm text-slate-600 dark:text-slate-400 hover:text-indigo-600">Vision XIX Labs</Link>
           <div className="flex gap-6 text-sm text-slate-600 dark:text-slate-400">
             <Link href="/visionxix-ai-assistant" className="hover:text-indigo-600">Try demo</Link>
+            <Link href="/visionxix-ai/features" className="hover:text-indigo-600">Features</Link>
             <a href={`mailto:${SUPPORT_EMAIL}`} className="hover:text-indigo-600">Contact</a>
             <Link href="/privacy" className="hover:text-indigo-600">Privacy</Link>
           </div>
