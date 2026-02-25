@@ -1,12 +1,17 @@
 # Vercel Environment Variables Checklist
 
-To fix 500 errors on `/api/auth/session` and `/api/auth/signup`, add these in Vercel → Project → Settings → Environment Variables:
+To fix 500/503 errors on `/api/auth/session` and `/api/auth/signup`, add **all** of these in **Vercel → Project → Settings → Environment Variables**:
 
-| Variable | Required | Notes |
-|----------|----------|-------|
-| `DATABASE_URL` | Yes | PostgreSQL connection string (Neon, Vercel Postgres, Supabase). After adding, run `DATABASE_URL="your_url" npx prisma migrate deploy` locally to create tables. |
-| `NEXTAUTH_SECRET` | Yes | Run `openssl rand -base64 32` to generate. |
-| `NEXTAUTH_URL` | Yes | Your production URL, e.g. `https://visionxixlabs.com` (no trailing slash). |
-| `OPENAI_API_KEY` | Yes | For AI chat. Get from https://platform.openai.com |
+| Variable | Required | Example | Notes |
+|----------|----------|---------|-------|
+| `NEXTAUTH_SECRET` | **Yes** | *(32+ char string)* | Run `openssl rand -base64 32` to generate. |
+| `NEXTAUTH_URL` | **Yes** | `https://visionxixlabs.com` | Your production URL, no trailing slash. |
+| `DATABASE_URL` | **Yes** | `postgresql://...` | PostgreSQL from Neon, Vercel Postgres, or Supabase. |
+| `OPENAI_API_KEY` | Yes | `sk-...` | For AI chat. Get from https://platform.openai.com |
 
-**Note:** The `runtime.lastError`, `FrameDoesNotExistError`, and `utils.js/extensionState.js` errors are from **browser extensions** (ad blockers, password managers, etc.), not your app. They can be ignored.
+**After adding DATABASE_URL**, run migrations once from your machine:
+```bash
+DATABASE_URL="your_postgres_url" npx prisma migrate deploy
+```
+
+**Important:** The `runtime.lastError`, `FrameDoesNotExistError`, `background.js`, `utils.js`, `extensionState.js` errors are from **browser extensions** (ad blockers, password managers, dev tools), not your app. Ignore them.
