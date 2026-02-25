@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import { usePathname } from "next/navigation";
 import Link from "next/link";
 import {
   PaperAirplaneIcon,
@@ -45,11 +46,15 @@ const SUGGESTIONS = [
   "How can Vision XIX Labs help us productionize AI in AWS?",
   "Do you build internal AI assistants on our own data?",
   "What does a Free Cloud & AI Review include?",
-  "How is Vision XIX Labs AI different from SiteGPT?",
+  "What makes Vision XIX Labs AI different?",
 ];
 
 export default function AIChatWidget() {
+  const pathname = usePathname();
   const [open, setOpen] = useState(false);
+
+  // Don't show Vision XIX Labs widget inside embed iframe — only show the customer's bot
+  if (pathname?.startsWith("/embed/")) return null;
   const [messages, setMessages] = useState<Message[]>([]);
   const [mounted, setMounted] = useState(false);
   const [input, setInput] = useState("");
