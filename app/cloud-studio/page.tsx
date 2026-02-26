@@ -104,6 +104,21 @@ export default function CloudStudioPage() {
           <ArrowLeftIcon className="h-4 w-4" />
           Back to Home
         </Link>
+        <div className="mb-6 rounded-2xl border border-indigo-200 dark:border-indigo-800 bg-indigo-50/60 dark:bg-indigo-900/30 p-4">
+          <p className="text-xs font-semibold text-indigo-900 dark:text-indigo-100 mb-2">
+            Cloud Studio is now part of Axiom.
+          </p>
+          <p className="text-xs text-indigo-900/80 dark:text-indigo-200 mb-3">
+            For full infrastructure intelligence scores and a 30-day optimization roadmap across AWS, Azure, GCP, and AI workloads, run Axiom.
+          </p>
+          <Link
+            href="/cloud-operator"
+            className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-indigo-700"
+          >
+            Run Full Axiom Analysis
+            <ArrowLeftIcon className="h-3 w-3 rotate-180" />
+          </Link>
+        </div>
         <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-700 p-8">
           <header className="mb-8 text-center">
             <div className="inline-flex items-center justify-center rounded-full bg-indigo-100 dark:bg-indigo-900/40 px-4 py-2 text-xs font-semibold text-indigo-700 dark:text-indigo-300 mb-4">
