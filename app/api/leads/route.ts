@@ -5,7 +5,6 @@ import {
   sendLeadConfirmationEmail,
   sendLeadInternalNotification,
 } from "@/lib/leads/leadEmailService";
-import { createStarterToken } from "@/lib/leads/starterToken";
 import { prisma } from "@/lib/db";
 
 const MIN_COMPLETION_MS = 10_000; // 10 seconds minimum
@@ -62,18 +61,8 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    let starterToken = "";
-    try {
-      starterToken = createStarterToken(lead.id);
-    } catch {
-      // STARTER_TOKEN_SECRET not set; token omitted, thank-you page will work without preview
-    }
-
     const [confirmOk, notifyOk] = await Promise.all([
-      sendLeadConfirmationEmail(data, estimate, {
-        leadId: lead.id,
-        starterToken: starterToken || undefined,
-      }),
+      sendLeadConfirmationEmail(data, estimate),
       sendLeadInternalNotification(data, estimate),
     ]);
     if (!confirmOk) console.warn("[Leads API] Confirmation email failed");
@@ -82,7 +71,6 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({
       success: true,
       leadId: lead.id,
-      starterToken: starterToken || undefined,
       estimate: { min: estimate.min, max: estimate.max, breakdown: estimate.breakdown },
     });
   } catch (e) {

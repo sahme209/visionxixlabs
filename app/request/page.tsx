@@ -122,8 +122,6 @@ export default function RequestPage() {
         const params = new URLSearchParams();
         params.set("min", String(data.estimate.min));
         params.set("max", String(data.estimate.max));
-        if (data.leadId) params.set("leadId", data.leadId);
-        if (data.starterToken) params.set("token", data.starterToken);
         router.push(`/request/thank-you?${params}`);
         return;
       }

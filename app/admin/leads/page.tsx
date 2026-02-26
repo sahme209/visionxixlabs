@@ -41,7 +41,6 @@ export default function AdminLeadsPage() {
   const [selectedLead, setSelectedLead] = useState<LeadDetail | null>(null);
   const [detailLoading, setDetailLoading] = useState(false);
   const [updatingStatus, setUpdatingStatus] = useState<string | null>(null);
-  const [actionLoading, setActionLoading] = useState<string | null>(null);
 
   const fetchLeads = useCallback(async (cursor?: string) => {
     if (!user) return;
@@ -95,34 +94,6 @@ export default function AdminLeadsPage() {
       setDetailLoading(false);
     }
   }, [user]);
-
-  const adminAction = async (id: string, action: "starter" | "preview" | "publish") => {
-    if (!user) return;
-    setActionLoading(`${id}-${action}`);
-    try {
-      const token = await user.getIdToken();
-      const path =
-        action === "starter"
-          ? `/api/admin/leads/${id}/starter`
-          : action === "preview"
-            ? `/api/admin/leads/${id}/preview/regenerate`
-            : `/api/admin/leads/${id}/preview/publish`;
-      const res = await fetch(path, {
-        method: "POST",
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      const data = await res.json();
-      if (res.ok) {
-        await fetchDetail(id);
-      } else {
-        setError(data.error || `Action failed: ${action}`);
-      }
-    } catch {
-      setError("Network error");
-    } finally {
-      setActionLoading(null);
-    }
-  };
 
   const updateStatus = async (id: string, status: string) => {
     if (!user) return;
@@ -372,42 +343,6 @@ export default function AdminLeadsPage() {
                         ))}
                       </select>
                     </div>
-                  </div>
-                  <div>
-                    <p className="text-xs font-medium text-[var(--text-tertiary)] uppercase tracking-wide mb-2">Actions</p>
-                    <div className="flex flex-wrap gap-2 mb-4">
-                      <button
-                        onClick={() => adminAction(selectedLead.id, "starter")}
-                        disabled={actionLoading !== null}
-                        className="rounded-lg border border-[var(--border-color)] px-3 py-2 text-sm font-medium text-[var(--text-primary)] hover:bg-[var(--bg-surface-alt)] disabled:opacity-60"
-                      >
-                        {actionLoading === `${selectedLead.id}-starter` ? "..." : "Regenerate AI"}
-                      </button>
-                      <button
-                        onClick={() => adminAction(selectedLead.id, "preview")}
-                        disabled={actionLoading !== null}
-                        className="rounded-lg border border-[var(--border-color)] px-3 py-2 text-sm font-medium text-[var(--text-primary)] hover:bg-[var(--bg-surface-alt)] disabled:opacity-60"
-                      >
-                        {actionLoading === `${selectedLead.id}-preview` ? "..." : "Regenerate preview"}
-                      </button>
-                      <button
-                        onClick={() => adminAction(selectedLead.id, "publish")}
-                        disabled={actionLoading !== null}
-                        className="rounded-lg bg-[var(--uscis-blue)] px-3 py-2 text-sm font-medium text-white hover:bg-[var(--uscis-blue-dark)] disabled:opacity-60"
-                      >
-                        {actionLoading === `${selectedLead.id}-publish` ? "..." : "Publish"}
-                      </button>
-                    </div>
-                    {(selectedLead.fullPayload?.previewUrl as string) && (
-                      <p className="text-sm text-[var(--text-secondary)] mb-2">
-                        Preview: <a href={selectedLead.fullPayload.previewUrl as string} target="_blank" rel="noopener noreferrer" className="text-[var(--uscis-blue)] hover:underline">{selectedLead.fullPayload.previewUrl as string}</a>
-                      </p>
-                    )}
-                    {(selectedLead.fullPayload?.productionUrl as string) && (
-                      <p className="text-sm text-[var(--text-secondary)] mb-2">
-                        Production: <a href={selectedLead.fullPayload.productionUrl as string} target="_blank" rel="noopener noreferrer" className="text-[var(--uscis-blue)] hover:underline">{selectedLead.fullPayload.productionUrl as string}</a>
-                      </p>
-                    )}
                   </div>
                   <div>
                     <p className="text-xs font-medium text-[var(--text-tertiary)] uppercase tracking-wide mb-2">Full submission</p>

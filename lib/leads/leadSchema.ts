@@ -80,27 +80,3 @@ export const leadFormSchema = z.object({
 });
 
 export type LeadFormData = z.infer<typeof leadFormSchema>;
-
-/** Partial schema for pricing estimate — accepts incomplete form data with defaults */
-export const leadEstimatePayloadSchema = z.object({
-  fullName: z.string().optional().default(""),
-  businessName: z.string().optional().default(""),
-  email: z.string().optional().default(""),
-  phone: z.string().optional().default(""),
-  currentWebsiteUrl: z.string().optional().default(""),
-  industry: z.enum(INDUSTRIES).optional().default("technology"),
-  projectType: z.enum(PROJECT_TYPES).optional().default("new_website"),
-  numberOfPages: z.coerce.number().int().min(1).max(100).optional().default(5),
-  requiredSections: z.string().optional().default(""),
-  projectGoals: z.array(z.enum(PROJECT_GOALS)).optional().default([]),
-  designPreference: z.string().optional().default(""),
-  referenceSites: z.string().optional().default(""),
-  copywritingNeeded: z.boolean().optional().default(false),
-  logoBrandAssetsReady: z.boolean().optional().default(false),
-  hostingDomainStatus: z.enum(HOSTING_STATUS).optional().default("unsure"),
-  timeline: z.enum(TIMELINE_OPTIONS).optional().default("flexible"),
-  budgetRange: z.enum(BUDGET_RANGES).optional().default("undecided"),
-  additionalNotes: z.string().optional().default(""),
-  _honeypot: z.string().optional().default(""),
-  _startTime: z.number().optional(),
-});

@@ -10,19 +10,10 @@ export function formatEstimate(est: PricingEstimate): string {
 function generateConfirmationHtml(
   name: string,
   payload: LeadFormData,
-  estimate: PricingEstimate,
-  options?: { leadId?: string; starterToken?: string }
+  estimate: PricingEstimate
 ): string {
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://visanova.app";
   const formatted = formatEstimate(estimate);
-  const thankYouUrl =
-    options?.leadId && options?.starterToken
-      ? `${baseUrl}/request/thank-you?leadId=${encodeURIComponent(options.leadId)}&token=${encodeURIComponent(options.starterToken)}&min=${estimate.min}&max=${estimate.max}`
-      : `${baseUrl}/request/thank-you`;
-  const previewNote =
-    options?.leadId && options?.starterToken
-      ? "<p style=\"margin:16px 0 0;color:#4b5563;font-size:14px;\">Your website preview will be generated and ready on the thank-you page. Bookmark this link to check back: <a href=\"" + thankYouUrl + "\" style=\"color:#0071e3;\">View your request & preview</a></p>"
-      : "";
   return `
 <!DOCTYPE html>
 <html lang="en">
@@ -38,7 +29,6 @@ function generateConfirmationHtml(
         <p style="margin:12px 0 0;font-size:13px;color:#6b7280;">This is an estimate only. Final pricing will be confirmed after review.</p>
       </div>
       <p style="margin:24px 0 0;color:#6b7280;font-size:14px;">We'll be in touch within 1-2 business days.</p>
-      ${previewNote}
       <p style="margin:20px 0 0;color:#9ca3af;font-size:12px;">Vision XIX Labs &middot; <a href="${baseUrl}" style="color:#0071e3;">visionxixlabs.com</a></p>
     </td></tr>
   </table>
@@ -89,8 +79,7 @@ function generateInternalHtml(payload: LeadFormData, estimate: PricingEstimate):
 
 export async function sendLeadConfirmationEmail(
   data: LeadFormData,
-  estimate: PricingEstimate,
-  options?: { leadId?: string; starterToken?: string }
+  estimate: PricingEstimate
 ): Promise<boolean> {
   const key = process.env.RESEND_API_KEY;
   if (!key || !key.startsWith("re_")) {
@@ -99,7 +88,7 @@ export async function sendLeadConfirmationEmail(
   }
   const client = new Resend(key);
   const from = process.env.RESEND_FROM_EMAIL || `Vision XIX Labs <${SUPPORT_EMAIL}>`;
-  const html = generateConfirmationHtml(data.fullName, data, estimate, options);
+  const html = generateConfirmationHtml(data.fullName, data, estimate);
   const result = await client.emails.send({
     from,
     replyTo: SUPPORT_EMAIL,
