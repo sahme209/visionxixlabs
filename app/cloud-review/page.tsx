@@ -42,13 +42,28 @@ export default function CloudReviewPage() {
             </ol>
           </nav>
 
+          <div className="mb-6 rounded-2xl border border-indigo-200 dark:border-indigo-800 bg-indigo-50/70 dark:bg-indigo-900/30 p-4">
+            <p className="text-xs font-semibold text-slate-900 dark:text-slate-100 mb-1">
+              Prefer instant infrastructure intelligence? Run Axiom.
+            </p>
+            <p className="text-xs text-slate-900/80 dark:text-slate-200 mb-3">
+              Axiom provides automated infrastructure scoring and a 30-day plan. This Cloud Review Session is a human-led working session.
+            </p>
+            <Link
+              href="/cloud-operator"
+              className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-indigo-700"
+            >
+              Run Axiom Analysis
+            </Link>
+          </div>
+
           {/* Hero */}
           <header className="mb-12 text-center">
             <h1 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-slate-100 mb-4">
               Cloud &amp; AI Infrastructure Review Session
             </h1>
             <p className="text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
-              A 20–30 minute working session to understand your current cloud and AI
+              A 20–30 minute human-led working session to understand your current cloud and AI
               setup, surface risks and gaps, and outline practical next steps. Designed
               for SaaS startups and growing engineering teams.
             </p>

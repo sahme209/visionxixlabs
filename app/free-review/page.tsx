@@ -69,6 +69,22 @@ export default function FreeReviewPage() {
           Back to home
         </Link>
 
+        <div className="mb-4 rounded-2xl border border-indigo-200 dark:border-indigo-800 bg-indigo-50/70 dark:bg-indigo-900/30 p-4">
+          <p className="text-xs font-semibold text-slate-900 dark:text-slate-100 mb-1">
+            Prefer instant infrastructure intelligence? Run Axiom.
+          </p>
+          <p className="text-xs text-slate-900/80 dark:text-slate-200 mb-3">
+            Axiom analyzes your cloud, CI/CD, cost, and security automatically. This page is for a human-led review session.
+          </p>
+          <Link
+            href="/cloud-operator"
+            className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-indigo-700"
+          >
+            Run Axiom Analysis
+            <ArrowLeftIcon className="h-3 w-3 rotate-180" />
+          </Link>
+        </div>
+
         <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-700 p-8 md:p-10">
           <header className="mb-8 text-center">
             <div className="inline-flex items-center justify-center rounded-full bg-indigo-100 dark:bg-indigo-900/40 px-4 py-2 text-xs font-semibold text-indigo-700 dark:text-indigo-300 mb-4">
@@ -78,7 +94,7 @@ export default function FreeReviewPage() {
               Free Cloud &amp; AI Infrastructure Review
             </h1>
             <p className="text-sm text-slate-600 dark:text-slate-400 max-w-lg mx-auto">
-              Share your environment and priorities. We’ll use this to prepare a focused review and, if useful, a custom demo outline. We’ll send a discovery call prep after we review your submission.
+              Share your environment and priorities. Our engineers will prepare and deliver a focused, human-led review and, if useful, a custom demo outline. We’ll send a discovery call prep after we review your submission.
             </p>
           </header>
 
