@@ -6,6 +6,7 @@ export const dynamic = "force-dynamic";
 import { useEffect, useState, useMemo, useRef } from "react";
 import { doc, getDoc, collection, query, orderBy, limit, getDocs, where } from "firebase/firestore";
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip, Cell } from "recharts";
+import { BoltIcon } from "@heroicons/react/24/solid";
 import { HERO_IMAGES, ICON_IMAGES } from "@/lib/images";
 import { db } from "@/lib/firebase";
 import { useAuth } from "@/contexts/AuthContext";
@@ -30,7 +31,6 @@ import QueuePositionCard from "@/components/QueuePositionCard";
 import CurrentProcessingTimesCard from "@/components/CurrentProcessingTimesCard";
 import DailyApprovalCard from "@/components/DailyApprovalCard";
 import EmailVerificationBanner from "@/components/EmailVerificationBanner";
-import { BoltIcon } from "@heroicons/react/24/solid";
 import { analytics } from "@/lib/analytics";
 import DataSourceIndicator from "@/components/DataSourceIndicator";
 import { isCountryAffectedByPause } from "@/lib/data/visaPauseCountries";
@@ -865,7 +865,7 @@ export default function Home() {
                 <div className="space-y-3 sm:space-y-4">
                   {/* Case Overview — single source for profile setup when incomplete */}
                   <HomeCard
-                    icon={<BoltIcon className="w-6 h-6 text-amber-600 dark:text-amber-500" aria-hidden />}
+                    icon={<div className="w-full h-full flex items-center justify-center rounded-lg bg-gradient-to-br from-amber-400 to-amber-600"><BoltIcon className="w-5 h-5 text-white" /></div>}
                     title="Case Overview"
                     subtitle="Your full case timeline, current stage, and what’s coming next in one place."
                     noInnerWrap
