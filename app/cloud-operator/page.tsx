@@ -600,6 +600,22 @@ function CloudOperatorPageInner() {
           </span>
         </section>
 
+        {inDashboard && !status && (
+          <section className="mb-8 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 p-8">
+            <div className="animate-pulse space-y-4">
+              <div className="h-4 w-48 rounded-full bg-slate-200 dark:bg-slate-700" />
+              <div className="grid md:grid-cols-5 gap-3 mt-6">
+                {[1, 2, 3, 4, 5].map((i) => (
+                  <div key={i} className="h-24 rounded-xl bg-slate-200 dark:bg-slate-700" />
+                ))}
+              </div>
+              <p className="text-sm text-slate-500 dark:text-slate-400 mt-4">
+                Generating your Operator plan…
+              </p>
+            </div>
+          </section>
+        )}
+
         {inDashboard && status && (
           <section
             className={`mb-8 transition-all duration-200 ease-in-out ${

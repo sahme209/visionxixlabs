@@ -245,6 +245,7 @@ export default function RequestPage() {
                 type="submit"
                 disabled={loading}
                 className="w-full rounded-xl bg-indigo-600 py-3 font-semibold text-white hover:bg-indigo-700 disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                aria-busy={loading}
               >
                 {loading ? (
                   <>

@@ -124,7 +124,23 @@ export default function CloudStudioResultPage() {
             </p>
           </div>
 
-          {polling && outputStatus !== "ready" && outputStatus !== "failed" && (
+          {!status && (
+            <div className="mb-8 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 p-6">
+              <div className="animate-pulse space-y-4">
+                <div className="h-4 w-40 mx-auto rounded-full bg-slate-200 dark:bg-slate-700" />
+                <div className="grid grid-cols-2 gap-3 mt-4">
+                  {[0, 1, 2, 3].map((i) => (
+                    <div key={i} className="h-16 rounded-xl bg-slate-100 dark:bg-slate-800" />
+                  ))}
+                </div>
+                <p className="text-sm text-slate-500 dark:text-slate-400 mt-4 text-center">
+                  Loading your output…
+                </p>
+              </div>
+            </div>
+          )}
+
+          {status && polling && outputStatus !== "ready" && outputStatus !== "failed" && (
             <div className="mb-8 space-y-4">
               <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 p-6">
                 <div className="animate-pulse space-y-3">
