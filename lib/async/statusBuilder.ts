@@ -288,9 +288,10 @@ export function buildEngineStatusResponse({
   const infrastructure = (payload.infrastructure as Record<string, unknown>) || {};
 
   const resolvedTier = resolveWebsiteTier((payloadForm.tier as string) || "starter");
-  const tierConfig = { starter: 3, professional: 0, enterprise: 0 }[resolvedTier] ?? 3;
+  const tierConfig: Record<string, number> = { starter: 3, growth: 0, scale: 0, enterprise: 0, professional: 0 };
+  const revisions = tierConfig[resolvedTier] ?? 3;
   const revisionCount = (payload.revisionCount as number) || 0;
-  const revisionsRemaining = tierConfig > 0 ? Math.max(0, tierConfig - revisionCount) : null;
+  const revisionsRemaining = revisions > 0 ? Math.max(0, revisions - revisionCount) : null;
 
   const deployStatus = payload.deployStatus as string | undefined;
 
@@ -311,12 +312,12 @@ export function buildEngineStatusResponse({
       sslEnabled: infrastructure.sslEnabled ?? true,
       cicdEnabled:
         infrastructure.cicdEnabled ??
-        (resolvedTier === "professional" || resolvedTier === "enterprise"),
+        (resolvedTier === "growth" || resolvedTier === "scale" || resolvedTier === "enterprise"),
       securityLevel:
         infrastructure.securityLevel ||
         (resolvedTier === "enterprise"
           ? "hardened"
-          : resolvedTier === "professional"
+          : resolvedTier === "growth" || resolvedTier === "scale"
           ? "standard"
           : "basic"),
       addOns: infrastructure.addOns || [],

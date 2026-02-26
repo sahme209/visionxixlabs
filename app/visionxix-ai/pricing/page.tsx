@@ -296,22 +296,22 @@ export default function VisionXIXAIPricingPage() {
             Why a unified membership beats point solutions
           </h2>
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            <div className="card-hover rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-5 text-center">
+            <div className="card-hover group rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-5 text-center">
               <SparklesIcon className="h-8 w-8 text-violet-600 mx-auto mb-2 icon-bounce" />
               <p className="font-semibold text-slate-900 dark:text-slate-100">Production-grade</p>
               <p className="text-sm text-slate-500 mt-1">Built for reliability, not demos. Your data, your cloud.</p>
             </div>
-            <div className="card-hover rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-5 text-center">
+            <div className="card-hover group rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-5 text-center">
               <BoltIcon className="h-8 w-8 text-violet-600 mx-auto mb-2 icon-bounce" />
               <p className="font-semibold text-slate-900 dark:text-slate-100">White-label included</p>
               <p className="text-sm text-slate-500 mt-1">No +$39 add-on. Your brand, zero extra cost.</p>
             </div>
-            <div className="card-hover rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-5 text-center">
+            <div className="card-hover group rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-5 text-center">
               <RocketLaunchIcon className="h-8 w-8 text-violet-600 mx-auto mb-2 icon-bounce" />
               <p className="font-semibold text-slate-900 dark:text-slate-100">More value per $</p>
               <p className="text-sm text-slate-500 mt-1">More messages and pages at comparable or lower price.</p>
             </div>
-            <div className="card-hover rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-5 text-center">
+            <div className="card-hover group rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-5 text-center">
               <BuildingOffice2Icon className="h-8 w-8 text-violet-600 mx-auto mb-2 icon-bounce" />
               <p className="font-semibold text-slate-900 dark:text-slate-100">Enterprise-ready</p>
               <p className="text-sm text-slate-500 mt-1">SOC2-ready, RBAC, optional self-host.</p>

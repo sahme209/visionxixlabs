@@ -18,7 +18,7 @@ import { AxiomButton } from "@/components/axiom-ui/AxiomButton";
 export default function RequestPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [selectedTier, setSelectedTier] = useState<string>("starter");
+  const [selectedTier, setSelectedTier] = useState<string>("growth");
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -65,7 +65,11 @@ export default function RequestPage() {
   };
 
   return (
-    <div className="axiom-page min-h-screen bg-gradient-to-br from-slate-50 via-violet-50/40 to-fuchsia-50/30 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
+    <div className="axiom-page min-h-screen bg-gradient-to-br from-slate-50 via-violet-50/40 to-fuchsia-50/30 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 relative">
+      <div className="pointer-events-none fixed inset-0 overflow-hidden -z-10">
+        <div className="absolute -top-40 -right-40 w-[400px] h-[400px] rounded-full bg-violet-300/20 dark:bg-violet-600/10 blur-3xl animate-blob" />
+        <div className="absolute -bottom-40 -left-40 w-[400px] h-[400px] rounded-full bg-fuchsia-300/15 dark:bg-fuchsia-600/10 blur-3xl animate-blob" style={{ animationDelay: "-4s" }} />
+      </div>
       <Navigation />
       <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-20">
         <div className="max-w-3xl mx-auto">
@@ -87,12 +91,20 @@ export default function RequestPage() {
               <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">
                 Generate a site and deploy to Managed Cloud, AWS, Azure, or GCP with CDN, SSL, and CI/CD.
               </p>
-              <Link
-                href="/website-builder"
-                className="inline-flex items-center gap-2 text-sm font-semibold text-violet-600 dark:text-violet-400 hover:text-violet-700 dark:hover:text-violet-300"
-              >
-                Prefer a simple prompt? Try AI Website Builder →
-              </Link>
+              <div className="flex flex-wrap gap-4 justify-center">
+                <Link
+                  href="/website-builder"
+                  className="inline-flex items-center gap-2 text-sm font-semibold text-violet-600 dark:text-violet-400 hover:text-violet-700 dark:hover:text-violet-300"
+                >
+                  Prefer a simple prompt? Try AI Website Builder →
+                </Link>
+                <Link
+                  href="/visionxix-ai/pricing"
+                  className="inline-flex items-center gap-2 text-sm font-semibold text-violet-600 dark:text-violet-400 hover:text-violet-700 dark:hover:text-violet-300"
+                >
+                  View Plans &amp; Membership →
+                </Link>
+              </div>
             </header>
 
             <div className="mb-6 rounded-2xl border-2 border-violet-200/80 dark:border-violet-800/80 bg-gradient-to-br from-violet-50/80 to-fuchsia-50/60 dark:from-violet-900/20 dark:to-fuchsia-900/20 p-4 text-sm text-slate-900 dark:text-slate-100">
@@ -220,20 +232,35 @@ export default function RequestPage() {
             <div>
               <label className="flex items-center gap-2 text-sm font-medium text-slate-700 dark:text-slate-300 mb-3">
                 <SparklesIcon className="h-4 w-4" />
-                Choose your tier
+                Choose your plan
               </label>
+              <p className="text-xs text-slate-500 dark:text-slate-400 mb-3">
+                Same plans as our unified membership — chatbots, Axiom, website builder, cloud guidance.{" "}
+                <Link href="/visionxix-ai/pricing" className="font-semibold text-violet-600 dark:text-violet-400 hover:underline">
+                  View full pricing →
+                </Link>
+              </p>
               <div className="space-y-3">
                 {Object.values(WEBSITE_BUILD_TIERS).map((t) => (
                   <label
                     key={t.id}
-                    className="flex items-start gap-3 p-4 rounded-2xl border-2 border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 cursor-pointer hover:border-violet-400 dark:hover:border-violet-500 has-[:checked]:border-violet-500 has-[:checked]:ring-2 has-[:checked]:ring-violet-200 dark:has-[:checked]:ring-violet-900/40 transition-all"
+                    className={`flex items-start gap-3 p-4 rounded-2xl border-2 cursor-pointer transition-all card-hover ${
+                      t.popular
+                        ? "border-violet-500 bg-violet-50/50 dark:bg-violet-950/30 hover:border-violet-500"
+                        : "border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 hover:border-violet-400 dark:hover:border-violet-500"
+                    } has-[:checked]:border-violet-500 has-[:checked]:ring-2 has-[:checked]:ring-violet-200 dark:has-[:checked]:ring-violet-900/40`}
                   >
-                    <input type="radio" name="tier" value={t.id} defaultChecked={t.id === "starter"} onChange={() => setSelectedTier(t.id)} className="mt-1" />
-                    <div>
-                      <span className="font-semibold text-slate-900 dark:text-slate-100">{t.name}</span>
-                      <span className="ml-2 text-violet-600 dark:text-violet-400 font-medium">
-                        {t.id === "enterprise" ? t.priceRange : `$${t.price}`}
-                      </span>
+                    <input type="radio" name="tier" value={t.id} defaultChecked={t.id === "growth"} onChange={() => setSelectedTier(t.id)} className="mt-1" />
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className="font-semibold text-slate-900 dark:text-slate-100">{t.name}</span>
+                        {t.popular && (
+                          <span className="px-2 py-0.5 rounded-full bg-violet-600 text-[10px] font-semibold text-white">Most popular</span>
+                        )}
+                        <span className="text-violet-600 dark:text-violet-400 font-medium">
+                          {"priceRange" in t ? t.priceRange : t.priceLabel}
+                        </span>
+                      </div>
                       <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{t.description}</p>
                     </div>
                   </label>

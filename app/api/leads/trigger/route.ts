@@ -115,8 +115,8 @@ export async function POST(req: NextRequest) {
 
     const cdnEnabled = tier !== "starter";
     const sslEnabled = true;
-    const cicdEnabled = tier === "professional" || tier === "enterprise";
-    const securityLevel = tier === "enterprise" ? "hardened" : tier === "professional" ? "standard" : "basic";
+    const cicdEnabled = tier === "growth" || tier === "scale" || tier === "enterprise";
+    const securityLevel = tier === "enterprise" ? "hardened" : tier === "growth" || tier === "scale" ? "standard" : "basic";
 
     const finalPayload = {
       ...(payload as Record<string, unknown>),

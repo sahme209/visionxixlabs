@@ -14,12 +14,13 @@ export function userPlanToUnified(plan: string | null | undefined): UnifiedTier 
   return "free";
 }
 
-/** Website Builder tiers (starter | professional | enterprise) */
+/** Website Builder tiers (starter | growth | scale | enterprise) — unified membership */
 export function websiteBuilderTierToUnified(tier: string | null | undefined): UnifiedTier {
   const t = (tier ?? "").toLowerCase();
-  if (t === "professional" || t === "pro") return "pro";
-  if (t === "enterprise" || t === "done_for_you" || t === "doneforyou") return "enterprise";
-  return "free";
+  if (t === "growth") return "growth";
+  if (t === "scale" || t === "enterprise" || t === "done_for_you" || t === "doneforyou") return "enterprise";
+  if (t === "professional" || t === "pro") return "growth"; // legacy
+  return "free"; // starter
 }
 
 /** Cloud Studio tiers (free | professional | enterprise) */
