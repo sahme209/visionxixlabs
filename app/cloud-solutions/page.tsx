@@ -76,7 +76,7 @@ export const metadata: Metadata = {
 
 export default function CloudSolutionsPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-violet-50/40 to-fuchsia-50/30 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
       <Navigation />
       <main className="pt-24 pb-24 px-4 sm:px-6 lg:px-8">
         <div className="max-w-6xl mx-auto">
@@ -104,7 +104,7 @@ export default function CloudSolutionsPage() {
           {/* Hero */}
           <section className="mb-16">
             <div className="text-left">
-              <h1 className="text-3xl md:text-5xl font-extrabold mb-4 bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
+              <h1 className="text-3xl md:text-5xl font-extrabold mb-4 bg-gradient-to-r from-violet-600 via-fuchsia-600 to-violet-600 bg-clip-text text-transparent">
                 {cloudSolutionsHero.title}
               </h1>
               <p className="text-lg md:text-xl text-slate-600 dark:text-slate-400 max-w-3xl">
@@ -113,13 +113,13 @@ export default function CloudSolutionsPage() {
               <div className="mt-8 flex flex-wrap gap-4">
                 <Link
                   href="/contact"
-                  className="inline-flex items-center px-6 py-3 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 text-white text-sm font-semibold shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all"
+                  className="inline-flex items-center px-6 py-3 rounded-2xl bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white text-sm font-semibold shadow-lg shadow-violet-500/30 hover:shadow-violet-500/40 hover:-translate-y-0.5 transition-all"
                 >
                   Book a Call
                 </Link>
                 <a
                   href="#solutions-grid"
-                  className="inline-flex items-center px-6 py-3 rounded-xl bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 text-sm font-semibold shadow-lg hover:shadow-xl border border-slate-200 dark:border-slate-700 hover:-translate-y-0.5 transition-all"
+                  className="inline-flex items-center px-6 py-3 rounded-2xl bg-white/80 dark:bg-slate-900/80 backdrop-blur text-slate-800 dark:text-slate-100 text-sm font-semibold shadow-lg border-2 border-slate-200/80 dark:border-slate-700/80 hover:border-violet-300 dark:hover:border-violet-600 hover:-translate-y-0.5 transition-all"
                 >
                   View Solutions
                 </a>
@@ -158,21 +158,21 @@ export default function CloudSolutionsPage() {
                   Need AWS, Azure, or GCP specifics? Visit{" "}
                   <Link
                     href="/cloud-solutions/aws"
-                    className="text-indigo-600 dark:text-indigo-400 hover:underline"
+                    className="text-violet-600 dark:text-violet-400 hover:underline"
                   >
                     AWS Cloud Solutions
                   </Link>
                   ,{" "}
                   <Link
                     href="/cloud-solutions/azure"
-                    className="text-indigo-600 dark:text-indigo-400 hover:underline"
+                    className="text-violet-600 dark:text-violet-400 hover:underline"
                   >
                     Azure Cloud Solutions
                   </Link>
                   , or{" "}
                   <Link
                     href="/cloud-solutions/gcp"
-                    className="text-indigo-600 dark:text-indigo-400 hover:underline"
+                    className="text-violet-600 dark:text-violet-400 hover:underline"
                   >
                     GCP Cloud Solutions
                   </Link>
@@ -361,7 +361,7 @@ export default function CloudSolutionsPage() {
             <ul className="space-y-2 text-slate-700 dark:text-slate-300">
               {idealClientsCloud.map((item) => (
                 <li key={item} className="flex items-start">
-                  <span className="text-indigo-500 mr-2 mt-0.5">•</span>
+                  <span className="text-violet-500 mr-2 mt-0.5">•</span>
                   {item}
                 </li>
               ))}
@@ -471,7 +471,7 @@ export default function CloudSolutionsPage() {
             </p>
             <Link
               href="/ai-solutions"
-              className="text-sm font-semibold text-indigo-600 dark:text-indigo-400 hover:underline"
+              className="text-sm font-semibold text-violet-600 dark:text-violet-400 hover:underline"
             >
               AI Solutions →
             </Link>
@@ -484,7 +484,7 @@ export default function CloudSolutionsPage() {
             </p>
             <Link
               href="/cloud-review"
-              className="text-sm font-semibold text-indigo-600 dark:text-indigo-400 hover:underline"
+              className="text-sm font-semibold text-violet-600 dark:text-violet-400 hover:underline"
             >
               Cloud &amp; AI Infrastructure Review Session →
             </Link>
