@@ -530,6 +530,9 @@ function CloudOperatorPageInner() {
     const name = fd.get("name")?.toString()?.trim() || "";
 
     try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 30000);
+
       const res = await fetch("/api/cloud-operator/submit", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -539,7 +542,10 @@ function CloudOperatorPageInner() {
           email,
           name,
         }),
+        signal: controller.signal,
       });
+      clearTimeout(timeoutId);
+
       const data = await res.json();
       if (!res.ok) {
         throw new Error(data.error || "Failed to submit");
@@ -547,7 +553,11 @@ function CloudOperatorPageInner() {
       const t = encodeURIComponent(data.token);
       window.location.href = `/cloud-operator?token=${t}`;
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to submit. Please try again.");
+      if (err instanceof Error && err.name === "AbortError") {
+        setError("Request timed out. The server may be slow. Please try again.");
+      } else {
+        setError(err instanceof Error ? err.message : "Failed to submit. Please try again.");
+      }
     } finally {
       setSubmitting(false);
     }
@@ -964,6 +974,11 @@ function CloudOperatorPageInner() {
                 </div>
               </div>
 
+              {error && (
+                <div className="rounded-xl bg-rose-50 dark:bg-rose-900/20 px-4 py-3 text-sm text-rose-700 dark:text-rose-200 border border-rose-200 dark:border-rose-800">
+                  {error}
+                </div>
+              )}
               <div className="flex items-center justify-between pt-2">
                 <p className="text-xs text-slate-500 dark:text-slate-500 max-w-sm">
                   Autopilot Mode: Generates step-by-step playbooks and validated configs. Execution
