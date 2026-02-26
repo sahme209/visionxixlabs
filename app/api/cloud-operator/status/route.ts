@@ -100,6 +100,8 @@ export async function GET(req: NextRequest) {
       playbooks?: Record<string, unknown>;
       quality?: { pass: boolean; issues: string[] };
       policyPack?: Record<string, unknown>;
+      explainability?: unknown;
+      dealSignals?: Record<string, unknown>;
     } | null | undefined;
     const driftSignals = rawAxiomResult?.driftSignals;
     if (hasContinuousReassessment(tier) && driftSignals) {
