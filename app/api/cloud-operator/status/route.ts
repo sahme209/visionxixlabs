@@ -103,6 +103,53 @@ export async function GET(req: NextRequest) {
 
     const scores = operatorOutput?.scores || null;
 
+    // Optional trend tracking based on previous Axiom scores history.
+    const axiomHistory = payload.axiomHistory as
+      | {
+          scores?: {
+            infrastructureScore?: number;
+            estimatedAnnualSavings?: number | null;
+            riskExposureLevel?: string;
+          } | null;
+        }[]
+      | null
+      | undefined;
+
+    let trend: { scoreDelta: number | null; savingsDelta: number | null; riskDelta: number | null } | null =
+      null;
+
+    if (axiomScores && Array.isArray(axiomHistory) && axiomHistory.length > 0) {
+      const lastEntry = axiomHistory[axiomHistory.length - 1];
+      const lastScores = lastEntry?.scores || {};
+
+      const currentScore = axiomScores.infrastructureScore ?? null;
+      const previousScore =
+        typeof lastScores.infrastructureScore === "number" ? lastScores.infrastructureScore : null;
+
+      const currentSavings = axiomScores.estimatedAnnualSavings ?? null;
+      const previousSavings =
+        typeof lastScores.estimatedAnnualSavings === "number"
+          ? lastScores.estimatedAnnualSavings
+          : null;
+
+      const currentRisk = axiomScores.riskExposureLevel || null;
+      const previousRisk = lastScores.riskExposureLevel || null;
+
+      const scoreDelta =
+        currentScore != null && previousScore != null ? currentScore - previousScore : null;
+      const savingsDelta =
+        currentSavings != null && previousSavings != null
+          ? currentSavings - previousSavings
+          : null;
+
+      const riskDelta =
+        currentRisk && previousRisk && currentRisk !== previousRisk
+          ? 0 // placeholder numeric delta; exact interpretation left to clients
+          : null;
+
+      trend = { scoreDelta, savingsDelta, riskDelta };
+    }
+
     const response: Record<string, unknown> = {
       leadId: lead.id,
       status: lead.status,
@@ -134,6 +181,7 @@ export async function GET(req: NextRequest) {
       recommendedImprovements: operatorOutput?.recommendedImprovements ?? [],
       businessImpactSummary: operatorOutput?.business?.businessImpactSummary ?? "",
       recommendedNextAction: operatorOutput?.business?.recommendedNextAction ?? "",
+      trend,
     };
 
     // Tier-gated 30-Day roadmap exposure
