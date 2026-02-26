@@ -1,73 +1,2168 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
+/* Apple-inspired design system - clean, refined, premium */
 :root {
-  --bg-primary: #ffffff;
-  --bg-secondary: #f8fafc;
-  --bg-surface: #ffffff;
-  --bg-surface-alt: #f8fafc;
-  --text-primary: #1e293b;
-  --text-secondary: #64748b;
-  --text-tertiary: #94a3b8;
-  --accent: #0ea5e9;
-  --accent-dark: #0284c7;
+  /* Apple-style blue - refined, premium (apple.com / Mac blue) */
   --uscis-blue: #0071e3;
   --uscis-blue-dark: #0066cc;
-  --border-color: #e2e8f0;
-  --uscis-red: #dc2626;
+  --uscis-blue-light: #42a1ec;
+  --uscis-blue-gradient: linear-gradient(180deg, #0071e3 0%, #0066cc 100%);
+  --uscis-gray: #6e6e73;
+  --uscis-gray-light: #f5f5f7;
+  --uscis-gray-dark: #3a3a3c;
+  --uscis-blue-text: #e5e7eb;
+  --uscis-white: #ffffff;
+  --uscis-red: #ff3b30;
+  --uscis-green: #34c759;
+  --uscis-orange: #ff9500;
+  --uscis-accent-soft: #42a1ec;
+  --color-accent: #6e6e73;
+  
+  /* Apple hero/dark surfaces - charcoal, not navy */
+  --hero-dark: #1d1d1f;
+  --hero-dark-alt: #000000;
+  --hero-dark-soft: #2c2c2e;
+
+  /* Huly-inspired gradients - azure, violet, energetic */
+  --huly-azure: #0071e3;
+  --huly-violet: #6366f1;
+  --huly-purple: #8b5cf6;
+  --huly-gradient: linear-gradient(135deg, #0071e3 0%, #6366f1 50%, #8b5cf6 100%);
+  --huly-gradient-soft: linear-gradient(180deg, rgba(0, 113, 227, 0.08) 0%, rgba(99, 102, 241, 0.06) 50%, rgba(139, 92, 246, 0.04) 100%);
+  
+  /* Nav / header - Apple dark */
+  --header-dark: #1d1d1f;
+  --header-dark-alt: #2c2c2e;
+  --state-top-bar: #1d1d1f;
+  --state-main-nav: #1d1d1f;
+  --state-tab-active: #0071e3;
+  --state-red-accent: #ff3b30;
+  --state-subnav-bg: #e5e5ea;
+  
+  /* Apple backgrounds - f5f5f7 standard (apple.com) */
+  --bg-primary: #fbfbfd;
+  --bg-secondary: #ffffff;
+  --bg-tertiary: #e8e8ed;
+  --bg-surface: #ffffff;
+  --bg-surface-alt: #f5f5f7;
+  --bg-glass: rgba(255, 255, 255, 0.92);
+  --bg-glass-hover: rgba(255, 255, 255, 1);
+  --bg-overlay: rgba(255, 255, 255, 0.85);
+  
+  /* Apple text - SF system grays (exact) */
+  --text-primary: #1d1d1f;
+  --text-secondary: #6e6e73;
+  --text-tertiary: #86868b;
+  --text-muted: #aeaeb2;
+  --text-disabled: #c7c7cc;
+  
+  /* Apple borders - d2d2d7 / e5e5ea */
+  --border-color: #d2d2d7;
+  --border-color-hover: #b8b8bd;
+  --border-glass: rgba(255, 255, 255, 0.2);
+  --border-subtle: #e5e5ea;
+  
+  /* Apple shadows - barely there, soft */
+  --shadow-xs: 0 1px 0 0 rgba(0, 0, 0, 0.03);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.05);
+  --shadow-lg: 0 4px 12px rgba(0, 0, 0, 0.05);
+  --shadow-xl: 0 8px 24px rgba(0, 0, 0, 0.06);
+  --shadow-2xl: 0 12px 32px rgba(0, 0, 0, 0.06);
+  --shadow-glass: 0 1px 3px rgba(0, 0, 0, 0.03);
+  --shadow-colored: 0 2px 8px rgba(0, 113, 227, 0.1);
+  --shadow-elevated: 0 4px 16px rgba(0, 0, 0, 0.04);
+  
+  /* Subtle depth - no glow */
+  --glow-blue: none;
+  --glow-blue-strong: none;
+  
+  /* Apple radius - 10–12px standard for cards/buttons */
+  --radius-sm: 8px;
+  --radius-md: 10px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-2xl: 20px;
+  --radius-pill: 9999px;
+  
+  --background: var(--bg-primary);
+  --foreground: var(--text-primary);
+
+  /* Foreground tokens - used by surface-dark/surface-light for contrast-aware text + icons */
+  --fg: var(--text-primary);
+  --mutedFg: var(--text-secondary);
+  --icon: #1d1d1f;
+  
+  /* Standardized Spacing System */
+  --spacing-xs: 0.25rem;    /* 4px - Tight spacing */
+  --spacing-sm: 0.5rem;    /* 8px - Small spacing */
+  --spacing-md: 0.75rem;   /* 12px - Medium spacing */
+  --spacing-lg: 1rem;      /* 16px - Large spacing (standard card padding) */
+  --spacing-xl: 1.25rem;   /* 20px - Extra large spacing */
+  --spacing-2xl: 1.5rem;   /* 24px - Section spacing */
+  --spacing-3xl: 2rem;     /* 32px - Major section spacing */
+  
+  /* Typography Scale - bumped up one step */
+  --font-size-caption: 0.625rem;   /* 10px - Badges, tiny labels */
+  --font-size-footnote: 0.6875rem;   /* 11px - Small labels, tertiary */
+  --font-size-body-sm: 0.75rem;   /* 12px - Body text */
+  --font-size-body: 0.8125rem;        /* 13px - Slightly larger body */
+  --font-size-subhead: 0.9375rem;  /* 15px - Subheading */
+  --font-size-headline: 1rem; /* 16px - Section headline */
+  --font-size-title: 1.125rem;    /* 18px - Page title */
+  
+  /* Font Weights */
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
 }
 
+/* Dark Mode - subtle Apple-like dark gray */
 .dark {
-  --bg-primary: #0f172a;
-  --bg-secondary: #1e293b;
-  --text-primary: #f1f5f9;
-  --text-secondary: #94a3b8;
+  --bg-primary: #1d1d1f;
+  --bg-secondary: #2c2c2e;
+  --bg-tertiary: #242426;
+  --bg-surface: #2c2c2e;
+  --bg-surface-alt: #363638;
+  --bg-glass: rgba(10, 39, 66, 0.9);
+  --bg-glass-hover: rgba(13, 45, 77, 0.95);
+  
+  /* Text - clear on dark, darker grays (not light blue) */
+  --text-primary: #E8EEF4;
+  --text-secondary: #9CA8B8;
+  --text-tertiary: #7A8A9A;
+  --text-muted: #5C6B7A;
+  
+  /* Borders - subtle blue tint */
+  --border-color: rgba(255, 255, 255, 0.06);
+  --border-color-hover: rgba(255, 255, 255, 0.12);
+  --border-glass: rgba(255, 255, 255, 0.08);
+  --border-subtle: rgba(255, 255, 255, 0.03);
+  
+  /* Shadows - blue tint */
+  --shadow-xs: 0 0.5px 1px 0 rgba(0, 34, 68, 0.5);
+  --shadow-sm: 0 1px 2px 0 rgba(0, 34, 68, 0.6), 0 0.5px 1px -0.5px rgba(0, 34, 68, 0.5);
+  --shadow-md: 0 2px 4px -1px rgba(0, 34, 68, 0.7), 0 1px 2px -1px rgba(0, 34, 68, 0.6);
+  --shadow-lg: 0 4px 8px -2px rgba(0, 34, 68, 0.75), 0 2px 4px -2px rgba(0, 34, 68, 0.65);
+  --shadow-xl: 0 8px 16px -4px rgba(0, 34, 68, 0.8), 0 4px 8px -4px rgba(0, 34, 68, 0.7);
+  --shadow-2xl: 0 12px 24px -6px rgba(0, 34, 68, 0.85), 0 6px 12px -6px rgba(0, 34, 68, 0.75);
+  --shadow-glass: 0 4px 16px 0 rgba(0, 0, 0, 0.2);
+  --shadow-colored: 0 4px 12px -2px rgba(0, 0, 0, 0.15);
+  --shadow-elevated: 0 8px 24px -4px rgba(0, 34, 68, 0.9), 0 4px 12px -4px rgba(0, 34, 68, 0.8);
+  
+  --glow-blue: none;
+  --glow-blue-strong: none;
+  
+  --background: var(--bg-primary);
+  --foreground: var(--text-primary);
+
+  --fg: var(--text-primary);
+  --mutedFg: var(--text-secondary);
+  --icon: #1d1d1f;
+  
+  --uscis-gray-light: #242426;
+  --uscis-gray-dark: #1d1d1f;
+  --hero-dark: #1d1d1f;
+  --hero-dark-alt: #000000;
+  --hero-dark-soft: #2c2c2e;
 }
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+/* ============================================
+   CLEAN TOKEN-BASED SURFACE SYSTEM
+   Architecture: Surfaces set CSS variables, typography inherits
+   ============================================ */
+
+/* SURFACE-DARK: For dark backgrounds (navbar, hero, footer, dark cards) */
+.surface-dark {
+  --fg: #ffffff;
+  --mutedFg: rgba(255, 255, 255, 0.8);
+  --icon: #94a3b8;
+  --link: #ffffff;
+}
+
+/* SURFACE-LIGHT: For light backgrounds (main content, light cards) */
+.surface-light {
+  --fg: var(--text-primary);
+  --mutedFg: var(--text-secondary);
+  --icon: #6b7280;
+  --link: var(--text-primary);
+}
+
+/* Hero sections: force white text in light/dark mode */
+.hero-text-white,
+.hero-text-white * {
+  color: #ffffff !important;
+}
+
+/* Base typography: defaults to light surface, inherits from surface context */
+body {
+  color: var(--fg);
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Helvetica Neue", Helvetica, Arial, system-ui, sans-serif;
+}
+
+/* Default body to surface-light so light backgrounds work correctly */
+body:not(.surface-dark) {
+  --fg: var(--text-primary);
+  --mutedFg: var(--text-secondary);
+  --icon: #1d1d1f;
+  --link: var(--text-primary);
+}
+
+/* All typography inherits from parent surface */
+:where(p, h1, h2, h3, h4, h5, h6, span, div, li, td, th, label, button, input, textarea, select) {
+  color: inherit;
+}
+
+/* Ensure Tailwind text utilities override inherit in surface-dark */
+.surface-dark .text-white,
+.surface-dark .text-white\/90,
+.surface-dark [class*="text-white"] {
+  color: rgb(255 255 255 / var(--tw-text-opacity, 1)) !important;
+}
+
+.surface-dark .text-white\/90 {
+  color: rgb(255 255 255 / 0.9) !important;
+}
+
+/* Ensure all paragraphs and headings in surface-dark default to white text */
+.surface-dark p:not([class*="text-"]):not([class*="text-white"]):not([class*="text-black"]):not([class*="text-gray"]):not([class*="text-slate"]),
+.surface-dark h1:not([class*="text-"]):not([class*="text-white"]):not([class*="text-black"]):not([class*="text-gray"]):not([class*="text-slate"]),
+.surface-dark h2:not([class*="text-"]):not([class*="text-white"]):not([class*="text-black"]):not([class*="text-gray"]):not([class*="text-slate"]),
+.surface-dark h3:not([class*="text-"]):not([class*="text-white"]):not([class*="text-black"]):not([class*="text-gray"]):not([class*="text-slate"]),
+.surface-dark h4:not([class*="text-"]):not([class*="text-white"]):not([class*="text-black"]):not([class*="text-gray"]):not([class*="text-slate"]),
+.surface-dark h5:not([class*="text-"]):not([class*="text-white"]):not([class*="text-black"]):not([class*="text-gray"]):not([class*="text-slate"]),
+.surface-dark h6:not([class*="text-"]):not([class*="text-white"]):not([class*="text-black"]):not([class*="text-gray"]):not([class*="text-slate"]),
+.surface-dark span:not([class*="text-"]):not([class*="text-white"]):not([class*="text-black"]):not([class*="text-gray"]):not([class*="text-slate"]),
+.surface-dark div:not([class*="text-"]):not([class*="text-white"]):not([class*="text-black"]):not([class*="text-gray"]):not([class*="text-slate"]) {
+  color: var(--fg) !important;
+}
+
+/* Links use --link token */
+a {
+  color: var(--link);
+}
+
+/* Force white text on USCIS blue primary buttons - overrides link color inheritance */
+a[class*="bg-[var(--uscis-blue)"]:not([class*="/10"]):not([class*="/20"]):not([class*="/30"]):not([class*="/40"]):not([class*="/5"]),
+button[class*="bg-[var(--uscis-blue)"]:not([class*="/10"]):not([class*="/20"]):not([class*="/30"]):not([class*="/40"]):not([class*="/5"]) {
+  color: #ffffff !important;
+}
+
+/* Same for gradient primary buttons */
+a[class*="from-[var(--uscis-blue)"][class*="rounded"]:not([class*="/10"]),
+button[class*="from-[var(--uscis-blue)"][class*="rounded"]:not([class*="/10"]) {
+  color: #ffffff !important;
+}
+
+.surface-dark a {
+  text-decoration: none;
+}
+
+.surface-dark a:hover,
+.surface-dark a:focus-visible {
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
+.surface-light a {
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+  text-decoration-thickness: 1px;
+  text-decoration-color: rgba(29, 29, 31, 0.3);
+  transition: color 0.2s ease, text-decoration-color 0.2s ease;
+}
+
+.surface-light a:hover,
+.surface-light a:focus-visible {
+  color: var(--text-primary);
+  text-decoration-color: var(--text-secondary);
+}
+
+/* Form placeholders */
+input::placeholder,
+textarea::placeholder {
+  color: var(--mutedFg);
+}
+
+/* SVG icons: use currentColor ONLY inside surfaces, NEVER touch Recharts */
+/* Exclude any SVG with class containing "recharts" (e.g. recharts-surface) so chart colors are never overridden */
+.surface-dark svg:not([class*="recharts"]),
+.surface-light svg:not([class*="recharts"]) {
+  color: var(--icon);
+}
+
+.surface-dark svg:not([class*="recharts"]) path,
+.surface-dark svg:not([class*="recharts"]) circle,
+.surface-dark svg:not([class*="recharts"]) rect,
+.surface-dark svg:not([class*="recharts"]) polygon,
+.surface-dark svg:not([class*="recharts"]) line,
+.surface-dark svg:not([class*="recharts"]) polyline,
+.surface-light svg:not([class*="recharts"]) path,
+.surface-light svg:not([class*="recharts"]) circle,
+.surface-light svg:not([class*="recharts"]) rect,
+.surface-light svg:not([class*="recharts"]) polygon,
+.surface-light svg:not([class*="recharts"]) line,
+.surface-light svg:not([class*="recharts"]) polyline {
+  fill: currentColor;
+  stroke: currentColor;
+}
+
+/* Recharts: do NOT add any fill/stroke/color here. Excluding via :not([class*="recharts"]) above is enough.
+   Chart SVGs have class recharts-surface; we never apply currentColor to them, so their fill/stroke attributes work. */
+
+/* Prevent dark text utilities on dark backgrounds */
+.surface-dark .text-black,
+.surface-dark .text-gray-900,
+.surface-dark .text-gray-800,
+.surface-dark .text-gray-700,
+.surface-dark .text-gray-600,
+.surface-dark .text-gray-500,
+.surface-dark .text-slate-900,
+.surface-dark .text-slate-800 {
+  color: var(--fg);
+}
+
+/* Utility classes for token-based text */
+.text-fg { color: var(--fg); }
+.text-muted { color: var(--mutedFg); }
+.text-icon { color: var(--icon); }
+
+/* Calendar hover tooltip: always white text for readability */
+.calendar-tooltip,
+.calendar-tooltip * {
+  color: #ffffff !important;
+}
+
+/* Footer links: when highlighted/active/visited/focused, text should be black for readability */
+/* This ensures links like "Terms of Use", "Privacy Policy", "Help Center" are readable when highlighted */
+footer a:active,
+footer a:focus,
+footer a:focus-visible,
+footer a:visited,
+footer a[aria-current="page"],
+footer a.active,
+footer a[style*="background"],
+footer a[style*="background-color"] {
+  color: #000000 !important;
+}
+
+/* Also handle any link that gets a background via CSS classes or inline styles */
+footer a[class*="bg-"],
+footer a[class*="background"] {
+  color: #000000 !important;
+}
+
+/* Sources & further reading: force black text for source links (Guardian, CLINIC, etc.) */
+.sources-reading-black .sources-reading-link,
+.sources-reading-black .sources-reading-link span {
+  color: #000000 !important;
+}
+.sources-reading-black .sources-reading-link:hover span {
+  color: #ffffff !important;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", system-ui, "Helvetica Neue", Arial, sans-serif;
+}
+
+/* Apple-style subtle grid */
+.bg-institutional-pattern {
+  background-color: var(--bg-primary);
+  background-image:
+    linear-gradient(to right, rgba(0, 113, 227, 0.015) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(0, 113, 227, 0.015) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+/* Travel.State.Gov-style nav - serif title */
+.gov-travel-state-nav .font-serif {
+  font-family: Georgia, "Times New Roman", Times, serif;
+}
+
+/* Apple-style page wrapper - clean solid background, no grid */
+.gov-page-bg {
+  background-image: none;
+}
+
+.bg-paper-surface {
+  background: linear-gradient(180deg, var(--bg-surface) 0%, var(--bg-surface-alt) 100%);
+  box-shadow: 0 1px 0 0 var(--border-color) inset;
+}
+
+/* Official card frame - USCIS-style, government document look */
+.card-official-frame {
+  border: 1px solid var(--border-color);
+  border-left: 4px solid var(--uscis-blue);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+  border-radius: 2px;
+}
+
+/* Government card accent - add to any card for official document feel */
+.gov-card-accent {
+  border-left: 4px solid var(--uscis-blue) !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+}
+
+/* Section header */
+.section-header-official {
+  letter-spacing: 0.02em;
+  font-weight: 600;
+  font-size: clamp(0.875rem, 2vw, 1rem);
+}
+
+/* Card styling in main - no left accent (cleaner look) */
+
+/* REMOVED: All wildcard background selectors - use surface-dark class instead */
+
+/* Mobile-first: prevent horizontal scroll, support safe areas */
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  scroll-behavior: smooth;
+}
+
+html, body {
+  overflow-x: hidden;
+  max-width: 100vw;
+}
+
+/* Safe area for notched devices (iPhone X+, etc.) */
+@supports (padding: env(safe-area-inset-bottom)) {
+  body {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+}
+
+/* Main content: comfortable bottom padding on mobile */
+@media (max-width: 768px) {
+  .main-content-mobile-pb {
+    padding-bottom: max(1.5rem, env(safe-area-inset-bottom));
+  }
+}
+
+::selection {
+  background: rgba(0, 113, 227, 0.2);
+  color: inherit;
 }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
-    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
-    sans-serif;
+  background: var(--bg-primary);
+  background-image: none;
+  color: var(--text-primary);
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", system-ui, "Helvetica Neue", Arial, sans-serif;
+  font-size: 12px;
+  line-height: 1.6;
+  letter-spacing: 0;
+  transition: background-color 0.4s cubic-bezier(0.16, 1, 0.3, 1), color 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-color: var(--bg-primary);
-  color: var(--text-primary);
-  transition: background-color 0.3s ease, color 0.3s ease;
+  text-rendering: optimizeLegibility;
+  width: 100%;
+  position: relative;
+  font-feature-settings: "kern" 1, "liga" 1, "calt" 1;
+  font-variant-ligatures: common-ligatures;
+  font-weight: 400;
 }
 
+/* Mobile view: two steps down on fonts for tighter fit, touch targets preserved */
+@media (max-width: 768px) {
+  html {
+    font-size: 16px; /* Prevents zoom on input focus (iOS) */
+  }
+  
+  body {
+    font-size: 0.8125rem; /* 13px */
+    line-height: 1.55;
+  }
+  
+  /* Heading sizes - two steps down on mobile */
+  h1 {
+    font-size: 1.0625rem !important;
+    line-height: 1.3;
+  }
+  
+  h2 {
+    font-size: 1rem !important;
+    line-height: 1.35;
+  }
+  
+  h3 {
+    font-size: 0.9375rem !important;
+    line-height: 1.4;
+  }
+  
+  h4 {
+    font-size: 0.8125rem !important;
+  }
+  
+  h5 {
+    font-size: 0.75rem !important;
+  }
+  
+  h6 {
+    font-size: 0.6875rem !important;
+  }
+  
+  /* Paragraph - two steps down */
+  p {
+    font-size: 0.8125rem !important;
+    line-height: 1.6;
+  }
+  
+  /* Touch-friendly: remove tap highlight, ensure 44px min targets */
+  button, a, [role="button"], input[type="submit"], input[type="button"] {
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+  
+  /* Buttons - two steps down on mobile */
+  button:not(.text-xs):not(.text-sm):not(.text-lg):not(.text-xl):not(.text-2xl):not(.text-3xl),
+  .uscis-button:not(.text-xs):not(.text-sm):not(.text-lg):not(.text-xl):not(.text-2xl):not(.text-3xl) {
+    font-size: 0.6875rem !important;
+  }
+  
+  /* Inputs - 16px prevents iOS zoom on focus (unchanged) */
+  input:not(.text-xs):not(.text-sm):not(.text-lg):not(.text-xl),
+  textarea:not(.text-xs):not(.text-sm):not(.text-lg):not(.text-xl),
+  select:not(.text-xs):not(.text-sm):not(.text-lg):not(.text-xl) {
+    font-size: 1rem !important;
+  }
+  input[type="text"], input[type="email"], input[type="password"], input[type="tel"], input[type="search"],
+  select {
+    min-height: 44px;
+  }
+  
+  /* Labels - two steps down */
+  label:not(.text-xs):not(.text-sm):not(.text-lg):not(.text-xl) {
+    font-size: 0.6875rem !important;
+  }
+  
+  /* Navigation - two steps down */
+  nav a, nav button, nav span {
+    font-size: 0.6875rem !important;
+  }
+  
+  /* Card text - two steps down */
+  .uscis-card p,
+  .uscis-card span:not(.text-xs):not(.text-sm):not(.text-lg):not(.text-xl) {
+    font-size: 0.6875rem !important;
+    line-height: 1.5 !important;
+  }
+  
+  /* Improve readability with better contrast */
+  .uscis-card {
+    background-color: var(--bg-surface) !important;
+  }
+  
+  /* Reduce visual noise - softer shadows */
+  .uscis-card {
+    box-shadow: 
+      0 1px 2px rgba(0, 0, 0, 0.03),
+      0 2px 4px rgba(0, 0, 0, 0.02) !important;
+  }
+  
+  /* REMOVED: All wildcard background selectors - use surface-dark/light classes instead */
+}
+
+/* Global text color overrides for dark/light mode */
+/* Override common hardcoded gray text colors to use CSS variables */
+.text-gray-900, .dark .text-gray-900 {
+  color: var(--text-primary) !important;
+}
+
+.text-gray-600, .dark .text-gray-600 {
+  color: var(--text-secondary) !important;
+}
+
+.text-gray-500, .dark .text-gray-500 {
+  color: var(--text-secondary) !important;
+}
+
+.text-gray-400, .dark .text-gray-400 {
+  color: var(--text-tertiary) !important;
+}
+
+/* Ensure dark mode variants also use variables */
+.dark .text-gray-900 {
+  color: var(--text-primary) !important;
+}
+
+.dark .text-gray-600 {
+  color: var(--text-secondary) !important;
+}
+
+.dark .text-gray-500 {
+  color: var(--text-secondary) !important;
+}
+
+.dark .text-gray-400 {
+  color: var(--text-tertiary) !important;
+}
+
+/* Override colorful text utilities to keep typography professional & neutral */
+.text-green-600,
+.text-green-700,
+.text-blue-900,
+.text-blue-700,
+.text-purple-700,
+.text-indigo-700,
+.text-blue-600,
+.text-blue-700 {
+  color: var(--text-primary) !important;
+}
+
+.dark .text-green-600,
+.dark .text-green-700,
+.dark .text-blue-900,
+.dark .text-blue-700,
+.dark .text-purple-700,
+.dark .text-indigo-700,
+.dark .text-blue-600,
+.dark .text-blue-700 {
+  color: var(--text-primary) !important;
+}
+
+/* Light blue text → dark for better readability site-wide (light + dark mode) */
+.text-blue-400,
+.text-blue-300,
+.text-sky-400,
+.text-sky-300,
+.dark .text-blue-400,
+.dark .text-blue-300,
+.dark .text-sky-400,
+.dark .text-sky-300 {
+  color: var(--text-primary) !important;
+}
+
+/* Typography - Guides-style compact, readable site-wide
+   Uses var(--fg) so surface-dark/surface-light override correctly */
+h1, h2, h3, h4, h5, h6 {
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", system-ui, "Helvetica Neue", Arial, sans-serif;
+  font-weight: 600;
+  letter-spacing: 0;
+  line-height: 1.3;
+  color: var(--fg);
+  text-rendering: optimizeLegibility;
+  font-feature-settings: "kern" 1, "liga" 1, "calt" 1;
+  font-variant-ligatures: common-ligatures;
+}
+
+h1 {
+  font-size: clamp(0.9375rem, 2.5vw, 1.0625rem);
+  font-weight: 600;
+  line-height: 1.25;
+  color: var(--fg);
+}
+
+h2 {
+  font-size: clamp(0.8125rem, 2vw, 0.9375rem);
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+h3 {
+  font-size: clamp(0.8125rem, 1.75vw, 0.875rem);
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+h4 {
+  font-size: clamp(0.75rem, 1.75vw, 0.8125rem);
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+/* Official badge and label styles */
+.official-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.375rem 0.75rem;
+  background: linear-gradient(135deg, rgba(11, 61, 145, 0.1) 0%, rgba(11, 61, 145, 0.05) 100%);
+  border: 1px solid rgba(11, 61, 145, 0.2);
+  border-radius: 6px;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-primary);
+}
+
+.dark .official-badge {
+  background: linear-gradient(135deg, rgba(11, 61, 145, 0.25) 0%, rgba(11, 61, 145, 0.15) 100%);
+  border-color: rgba(11, 61, 145, 0.4);
+  color: var(--text-primary);
+}
+
+/* Header transitions for dark mode */
+.dark nav {
+  background-color: var(--uscis-blue-dark) !important;
+}
+
+/* Classic USCIS Button Style - Ultra-sleek & Premium - Ultra-Refined */
+.uscis-button {
+  background: linear-gradient(135deg, var(--uscis-blue) 0%, var(--uscis-blue-dark) 100%);
+  color: var(--uscis-white);
+  border: 1px solid transparent;
+  padding: 0.75rem 1.875rem;
+  font-weight: 600;
+  text-transform: none;
+  letter-spacing: -0.002em;
+  border-radius: 12px;
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 2px 6px rgba(11, 61, 145, 0.12), 0 1px 2px rgba(11, 61, 145, 0.08);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  position: relative;
+  font-size: 0.875rem;
+  backdrop-filter: blur(10px);
+}
+
+
+.uscis-button:hover {
+  background: linear-gradient(135deg, var(--uscis-blue-dark) 0%, var(--uscis-blue) 100%);
+  box-shadow: 0 4px 12px rgba(11, 61, 145, 0.18), 0 2px 4px rgba(11, 61, 145, 0.1);
+  transform: translateY(-0.5px);
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+.uscis-button:active {
+  transform: translateY(0);
+  box-shadow: var(--shadow-xs);
+}
+
+.uscis-button-secondary {
+  background-color: var(--uscis-white);
+  color: var(--text-primary);
+  border: 2px solid var(--border-color);
+  padding: 0.75rem 2rem;
+  border-radius: 8px;
+  font-weight: 600;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.uscis-button-secondary:hover {
+  background-color: var(--uscis-gray-light);
+  border-color: var(--uscis-blue-dark);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  transform: translateY(-1px);
+}
+
+.dark .uscis-button-secondary {
+  background-color: var(--bg-surface);
+  color: var(--text-primary);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.dark .uscis-button-secondary:hover {
+  background-color: var(--bg-surface-alt);
+  border-color: var(--uscis-blue-light);
+}
+
+/* Apple-style cards - clean, subtle shadow, refined corners */
+.card-see-through {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  box-shadow: var(--shadow-sm);
+  width: 100%;
+  min-width: 0;
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+}
+.dark .card-see-through {
+  background: var(--bg-surface);
+  border-color: var(--border-color);
+  box-shadow: var(--shadow-sm);
+}
+.uscis-card.card-see-through {
+  background: var(--bg-surface);
+}
+.dark .uscis-card.card-see-through {
+  background: var(--bg-surface);
+}
+
+/* Apple card - clean, subtle shadow, refined corners */
+.uscis-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  box-shadow: var(--shadow-sm);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  overflow: hidden;
+  position: relative;
+  width: 100%;
+  min-width: 0;
+}
+
+.uscis-card:hover {
+  border-color: var(--border-color-hover);
+  box-shadow: var(--shadow-md);
+}
+
+.dark .uscis-card {
+  border-color: var(--border-color);
+  box-shadow: var(--shadow-sm);
+  background: var(--bg-surface);
+}
+
+.dark .uscis-card:hover {
+  border-color: var(--border-color-hover);
+  background: var(--bg-surface);
+}
+
+.uscis-card-header {
+  background: var(--bg-surface-alt);
+  border-bottom: 1px solid var(--border-color);
+  padding: 0.9375rem 1.125rem;
+  font-weight: 600;
+  font-size: 0.9375rem;
+  color: var(--text-primary);
+}
+
+/* Mobile: Ultra-compact view - maximize content density */
+@media (max-width: 768px) {
+  .uscis-card-header {
+    padding: 0.5rem 0.75rem !important;
+    font-size: 0.75rem !important;
+  }
+  
+  .uscis-card > div:not(.uscis-card-header) {
+    padding: 0.5rem 0.75rem !important;
+  }
+  
+  .uscis-card .space-y-6,
+  .uscis-card .space-y-8 {
+    gap: 0.5rem !important;
+  }
+  
+  .uscis-card .mb-6,
+  .uscis-card .mb-8 {
+    margin-bottom: 0.5rem !important;
+  }
+  
+  .uscis-card .mt-6,
+  .uscis-card .mt-8 {
+    margin-top: 0.5rem !important;
+  }
+  
+  p, span, div {
+    line-height: 1.45 !important;
+  }
+  
+  section {
+    margin-bottom: 0.75rem !important;
+  }
+  
+  ul, ol {
+    padding-left: 1rem !important;
+    margin-top: 0.25rem !important;
+    margin-bottom: 0.25rem !important;
+  }
+  
+  li {
+    margin-bottom: 0.25rem !important;
+  }
+  
+  .flex.gap-4,
+  .flex.gap-6,
+  .flex.gap-8 {
+    gap: 0.5rem !important;
+  }
+  
+  button:not(.text-xs):not(.text-sm),
+  .uscis-button {
+    padding: 0.375rem 0.75rem !important;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    margin-top: 0.5rem !important;
+    margin-bottom: 0.375rem !important;
+    line-height: 1.25 !important;
+  }
+  
+  .p-6, .p-8, .px-6, .px-8, .py-6, .py-8 {
+    padding: 0.5rem 0.75rem !important;
+  }
+  
+  .space-y-4 > * + * {
+    margin-top: 0.5rem !important;
+  }
+  
+  .space-y-6 > * + * {
+    margin-top: 0.75rem !important;
+  }
+  
+  .space-y-8 > * + * {
+    margin-top: 1rem !important;
+  }
+  
+  .uscis-card {
+    border-width: 1px !important;
+  }
+  
+  .text-gray-600,
+  .text-gray-500 {
+    color: var(--text-secondary) !important;
+  }
+  
+  svg.w-6.h-6,
+  svg.w-5.h-5 {
+    width: 0.875rem !important;
+    height: 0.875rem !important;
+  }
+  
+  .grid.gap-4,
+  .grid.gap-6,
+  .grid.gap-8 {
+    gap: 0.5rem !important;
+  }
+  
+  .grid {
+    gap: 0.5rem !important;
+  }
+  
+  .rounded-xl,
+  .rounded-lg {
+    border-radius: 0.375rem !important;
+  }
+  
+  .rounded-2xl,
+  .rounded-3xl {
+    border-radius: 0.5rem !important;
+  }
+  
+  .border-2 {
+    border-width: 1px !important;
+  }
+  
+  .shadow-lg,
+  .shadow-xl {
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08) !important;
+  }
+  
+  .max-w-md,
+  .max-w-lg {
+    max-width: 100% !important;
+  }
+  
+  /* Touch targets - compact 40px for primary actions */
+  button,
+  [role="button"],
+  .touch-target {
+    min-height: 40px !important;
+  }
+  button,
+  [role="button"] {
+    min-width: 40px !important;
+  }
+  
+  input,
+  textarea,
+  select {
+    padding: 0.375rem 0.5rem !important;
+    margin-bottom: 0.5rem !important;
+  }
+  
+  .py-12,
+  .py-16,
+  .py-20 {
+    padding-top: 0.75rem !important;
+    padding-bottom: 0.75rem !important;
+  }
+  
+  .py-10,
+  .py-8 {
+    padding-top: 0.5rem !important;
+    padding-bottom: 0.5rem !important;
+  }
+  
+  table {
+    font-size: 0.75rem !important;
+  }
+  
+  th, td {
+    padding: 0.375rem 0.5rem !important;
+  }
+  
+  code, pre {
+    font-size: 0.75rem !important;
+    padding: 0.375rem !important;
+  }
+  
+  .uscis-card + .uscis-card {
+    margin-top: 0.5rem !important;
+  }
+  
+  .text-gray-400,
+  .text-gray-500 {
+    color: var(--text-secondary) !important;
+  }
+  
+  .w-6.h-6 {
+    width: 1rem !important;
+    height: 1rem !important;
+  }
+  
+  .w-5.h-5 {
+    width: 0.875rem !important;
+    height: 0.875rem !important;
+  }
+  
+  /* Ultra-compact page containers - reduce horizontal padding */
+  main .w-full.mx-auto,
+  main .max-w-4xl {
+    padding-left: 0.5rem !important;
+    padding-right: 0.5rem !important;
+  }
+  /* Subscribe page - balanced mobile padding */
+  .subscribe-page-content {
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+  }
+  
+  /* Tighter mb/mt utilities on mobile */
+  .mb-4, .mb-5, .mb-6 { margin-bottom: 0.5rem !important; }
+  .mt-4, .mt-5, .mt-6 { margin-top: 0.5rem !important; }
+  .mb-8 { margin-bottom: 0.75rem !important; }
+  .mt-8 { margin-top: 0.75rem !important; }
+  
+  /* Compact gap utilities */
+  .gap-3 { gap: 0.375rem !important; }
+  .gap-4 { gap: 0.5rem !important; }
+  .gap-5 { gap: 0.5rem !important; }
+  .gap-6 { gap: 0.5rem !important; }
+  
+  /* Mobile menu - ultra compact */
+  .mobile-menu-panel .sticky.px-5 {
+    padding: 0.5rem 0.75rem !important;
+  }
+  .mobile-menu-panel .space-y-1 > * {
+    margin-top: 0.25rem !important;
+  }
+}
+
+
+.dark .uscis-card-header {
+  background: var(--bg-surface-alt);
+  border-bottom-color: var(--border-color);
+}
+
+/* USCIS Form Input Style */
+.uscis-input {
+  border: 1px solid #5b616b;
+  border-radius: 0;
+  padding: 0.5rem;
+  font-size: 1rem;
+}
+
+.uscis-input:focus {
+  outline: 3px solid #005ea2;
+  outline-offset: 2px;
+  border-color: #005ea2;
+}
+
+/* Official Case Number Display - Monospaced Font */
+.case-number,
+.receipt-number,
+[class*="case-number"],
+[class*="receipt-number"] {
+  font-family: 'Courier New', Courier, monospace;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+/* Official Disclaimer Box */
+.official-disclaimer {
+  background: #F0F4F8;
+  border-left: 4px solid var(--uscis-blue);
+  padding: 1rem 1.25rem;
+  margin: 1.5rem 0;
+  border-radius: 4px;
+}
+
+.dark .official-disclaimer {
+  background: rgba(11, 61, 145, 0.15);
+  border-left-color: var(--uscis-blue);
+}
+
+.official-disclaimer-title {
+  font-weight: 700;
+  font-size: 0.875rem;
+  color: var(--text-primary);
+  margin-bottom: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.official-disclaimer-text {
+  font-size: 0.8125rem;
+  line-height: 1.6;
+  color: var(--text-secondary);
+}
+
+/* Official Status Badge */
+.official-status-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.375rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-radius: 4px;
+  border: 1px solid;
+}
+
+/* Official Document Style Typography */
+.official-document {
+  font-family: 'Georgia', 'Times New Roman', serif;
+  line-height: 1.7;
+  color: var(--text-primary);
+}
+
+.official-document h1,
+.official-document h2,
+.official-document h3 {
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", system-ui, "Helvetica Neue", Arial, sans-serif;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+/* USCIS Link Style */
+.uscis-link {
+  color: var(--text-primary);
+  text-decoration: underline;
+  transition: color 0.2s ease;
+}
+
+.uscis-link:hover {
+  color: var(--text-secondary);
+}
+
+.dark .uscis-link {
+  color: var(--text-primary);
+}
+
+.dark .uscis-link:hover {
+  color: var(--text-secondary);
+}
+
+/* Smooth scrolling */
 html {
   scroll-behavior: smooth;
 }
 
-/* Gradient backgrounds */
-.gradient-primary {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+/* Better focus styles (USCIS accessibility) */
+*:focus-visible {
+  outline: 3px solid #005ea2;
+  outline-offset: 2px;
 }
 
-.gradient-secondary {
-  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+/* Professional polish - Trust signals and authenticity */
+.trust-badge {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.25rem 1.5rem;
+  background: var(--bg-surface);
+  border: 1.5px solid rgba(0, 0, 0, 0.08);
+  border-radius: 12px;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
-.gradient-accent {
-  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+.trust-badge:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+  border-color: rgba(0, 0, 0, 0.12);
 }
 
-/* Glass morphism effect */
-.glass {
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+.dark .trust-badge {
+  border-color: rgba(255, 255, 255, 0.12);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
 }
 
-/* Smooth animations */
-@keyframes fadeIn {
+.dark .trust-badge:hover {
+  border-color: rgba(255, 255, 255, 0.18);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+}
+
+/* Professional data source labels */
+.data-source-label {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-tertiary);
+  margin-top: 0.5rem;
+}
+
+/* Enhanced card hover effects for professional feel - removed duplicate */
+
+/* Professional loading states */
+.loading-skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--bg-surface-alt) 0%,
+    var(--bg-surface) 50%,
+    var(--bg-surface-alt) 100%
+  );
+  background-size: 200% 100%;
+  animation: loading 1.5s ease-in-out infinite;
+}
+
+@keyframes slide-up {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.animate-slide-up {
+  animation: slide-up 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes slide-in-right {
+  from {
+    transform: translateX(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.animate-slide-in-right {
+  animation: slide-in-right 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Mobile menu panel - slide in from right, smooth */
+@keyframes mobile-menu-slide-in {
+  from {
+    transform: translateX(100%);
+    opacity: 0.97;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.mobile-menu-panel {
+  animation: mobile-menu-slide-in 0.28s cubic-bezier(0.32, 0.72, 0, 1) forwards;
+}
+
+@keyframes fade-in-smooth {
+  from {
+    opacity: 0;
+    transform: scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-fade-in-smooth {
+  animation: fade-in-smooth 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* Professional empty states */
+.empty-state {
+  text-align: center;
+  padding: 3rem 1.5rem;
+  color: var(--text-secondary);
+}
+
+.empty-state-icon {
+  width: 4rem;
+  height: 4rem;
+  margin: 0 auto 1rem;
+  opacity: 0.4;
+}
+
+/* Timeline Animations - Ultra-smooth and Premium */
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-in {
+  animation: fade-in-up 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.slide-in-from-top-2 {
+  animation: slide-in-from-top-2 0.2s ease-out;
+}
+
+@keyframes slide-in-from-top-2 {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in {
+  animation: fade-in 0.2s ease-out;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Timeline Stage Hover Effects */
+.timeline-stage {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.timeline-stage:hover {
+  transform: translateX(2px);
+}
+
+/* Smooth expand/collapse for timeline details */
+.timeline-expandable {
+  overflow: hidden;
+  transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.2s ease-out, padding 0.2s ease-out;
+}
+
+/* Timeline indicator pulse animation */
+@keyframes timeline-pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.05);
+  }
+}
+
+.timeline-indicator-pulse {
+  animation: timeline-pulse 2s ease-in-out infinite;
+}
+
+/* Smooth gradient transitions */
+.timeline-gradient {
+  background: linear-gradient(135deg, var(--bg-surface-alt) 0%, var(--bg-surface) 100%);
+  transition: background 0.3s ease;
+}
+
+.timeline-gradient:hover {
+  background: linear-gradient(135deg, var(--bg-surface) 0%, var(--bg-surface-alt) 100%);
+}
+
+/* Enhanced typography for readability */
+p, li {
+  line-height: 1.7;
+}
+
+/* Fix date input overflow on mobile */
+input[type="date"] {
+  max-width: 100%;
+  box-sizing: border-box;
+  width: 100%;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+  padding: 4px;
+}
+
+/* Ensure inputs don't overflow on mobile */
+input, select, textarea {
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* Subscribe CTA in banner: USCIS blue bg + light grey text */
+.subscribe-cta-banner {
+  background-color: var(--uscis-blue) !important;
+  color: #E5E7EB !important;
+}
+
+/* REMOVED: All wildcard gradient selectors - use surface-dark class instead */
+
+/* REMOVED: All wildcard background selectors - use surface-dark/light classes instead */
+
+/* Professional section dividers - Official Government Style */
+.section-divider {
+  height: 2px;
+  background: linear-gradient(
+    to right,
+    transparent,
+    rgba(11, 61, 145, 0.15),
+    rgba(11, 61, 145, 0.25),
+    rgba(11, 61, 145, 0.15),
+    transparent
+  );
+  margin: 3rem 0;
+  border-radius: 2px;
+}
+
+.dark .section-divider {
+  background: linear-gradient(
+    to right,
+    transparent,
+    rgba(30, 136, 229, 0.2),
+    rgba(30, 136, 229, 0.35),
+    rgba(30, 136, 229, 0.2),
+    transparent
+  );
+}
+
+/* Official status indicators */
+.status-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  border: 1.5px solid;
+}
+
+.status-indicator.active {
+  background: rgba(46, 125, 50, 0.1);
+  border-color: rgba(46, 125, 50, 0.3);
+  color: #2E7D32;
+}
+
+.status-indicator.pending {
+  background: rgba(245, 124, 0, 0.1);
+  border-color: rgba(245, 124, 0, 0.3);
+  color: #F57C00;
+}
+
+.status-indicator.completed {
+  background: rgba(46, 125, 50, 0.15);
+  border-color: rgba(46, 125, 50, 0.4);
+  color: #1B5E20;
+}
+
+.dark .status-indicator.active {
+  background: rgba(46, 125, 50, 0.2);
+  border-color: rgba(46, 125, 50, 0.5);
+  color: #66BB6A;
+}
+
+.dark .status-indicator.pending {
+  background: rgba(245, 124, 0, 0.2);
+  border-color: rgba(245, 124, 0, 0.5);
+  color: #FFA726;
+}
+
+.dark .status-indicator.completed {
+  background: rgba(46, 125, 50, 0.25);
+  border-color: rgba(46, 125, 50, 0.6);
+  color: #81C784;
+}
+
+/* Enhanced animations for better engagement */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slide-up-fade {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.3s ease-out;
+}
+
+.animate-slide-up-fade {
+  animation: slide-up-fade 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.animate-scale-in {
+  animation: scale-in 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Stagger animation for lists */
+.animate-stagger > * {
+  animation: slide-up-fade 0.4s cubic-bezier(0.16, 1, 0.3, 1) backwards;
+}
+
+.animate-stagger > *:nth-child(1) { animation-delay: 0.05s; }
+.animate-stagger > *:nth-child(2) { animation-delay: 0.1s; }
+.animate-stagger > *:nth-child(3) { animation-delay: 0.15s; }
+.animate-stagger > *:nth-child(4) { animation-delay: 0.2s; }
+.animate-stagger > *:nth-child(5) { animation-delay: 0.25s; }
+.animate-stagger > *:nth-child(6) { animation-delay: 0.3s; }
+
+/* Enhanced button interactions - Ultra-smooth */
+button:not(.uscis-button):not(.uscis-button-secondary) {
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+button:not(.uscis-button):not(.uscis-button-secondary):hover {
+  transform: translateY(-2px) scale(1.02);
+}
+
+button:not(.uscis-button):not(.uscis-button-secondary):active {
+  transform: translateY(0) scale(0.98);
+  transition: all 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Smooth page transitions */
+.page-transition {
+  animation: fade-in 0.3s ease-out;
+}
+
+/* Enhanced loading states */
+.loading-shimmer {
+  background: linear-gradient(
+    90deg,
+    var(--bg-surface-alt) 0%,
+    var(--bg-surface) 50%,
+    var(--bg-surface-alt) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* Professional focus states */
+*:focus-visible {
+  outline: 3px solid var(--uscis-blue);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Smooth scroll behavior */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Enhanced card entrance animations - Ultra-smooth - Premium */
+.uscis-card {
+  animation: fade-in-smooth 0.5s cubic-bezier(0.16, 1, 0.3, 1) backwards;
+}
+
+/* Premium spacing utilities */
+.space-y-refined > * + * {
+  margin-top: 1.5rem;
+}
+
+.gap-refined {
+  gap: 1.25rem;
+}
+
+/* Premium text utilities */
+.text-refined {
+  letter-spacing: -0.01em;
+  line-height: 1.6;
+}
+
+.text-refined-tight {
+  letter-spacing: -0.015em;
+  line-height: 1.4;
+}
+
+/* Better touch targets on mobile */
+@media (max-width: 768px) {
+  button, a, [role="button"] {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
+
+/* Enhanced information architecture - Government document style */
+.info-section {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-left: 4px solid var(--uscis-blue);
+  border-radius: 2px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+}
+
+.info-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 2px solid rgba(11, 61, 145, 0.1);
+}
+
+.info-section-title {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -0.01em;
+}
+
+.info-section-description {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin-top: 0.5rem;
+}
+
+/* Official data source labels */
+.data-source-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.25rem 0.75rem;
+  background: linear-gradient(135deg, rgba(11, 61, 145, 0.1) 0%, rgba(11, 61, 145, 0.05) 100%);
+  border: 1px solid rgba(11, 61, 145, 0.2);
+  border-radius: 6px;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-primary);
+}
+
+.dark .data-source-badge {
+  background: linear-gradient(135deg, rgba(11, 61, 145, 0.25) 0%, rgba(11, 61, 145, 0.15) 100%);
+  border-color: rgba(11, 61, 145, 0.4);
+  color: var(--text-primary);
+}
+
+/* Enhanced clarity - Better visual hierarchy */
+.stat-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-secondary);
+  margin-bottom: 0.25rem;
+}
+
+.stat-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.2;
+}
+
+.stat-description {
+  font-size: 0.8125rem;
+  color: var(--text-tertiary);
+  line-height: 1.5;
+  margin-top: 0.25rem;
+}
+
+/* Professional help text */
+.help-text {
+  font-size: 0.8125rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin-top: 0.5rem;
+  padding: 0.75rem;
+  background: var(--bg-surface-alt);
+  border-left: 3px solid var(--uscis-blue);
+  border-radius: 4px;
+}
+
+/* Enhanced card clarity */
+.card-header-enhanced {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 1rem;
+  margin-bottom: 1rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.card-title-enhanced {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.card-subtitle {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  margin-top: 0.25rem;
+}
+
+/* Enhanced micro-interactions */
+.interactive-element {
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  cursor: pointer;
+}
+
+.interactive-element:hover {
+  transform: translateY(-1px);
+}
+
+.interactive-element:active {
+  transform: translateY(0) scale(0.98);
+}
+
+/* Smooth number animations */
+@keyframes count-up {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-count-up {
+  animation: count-up 0.5s ease-out;
+}
+
+/* Enhanced data visualization - Premium */
+.data-visualization {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: 14px;
+  padding: 1.75rem;
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.data-visualization:hover {
+  border-color: rgba(11, 61, 145, 0.25);
+  box-shadow: 0 4px 10px rgba(11, 61, 145, 0.08);
+  transform: translateY(-0.5px);
+}
+
+/* Professional progress indicators */
+.progress-bar {
+  height: 8px;
+  background: var(--bg-surface-alt);
+  border-radius: 4px;
+  overflow: hidden;
+  position: relative;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--uscis-blue), var(--uscis-blue-light));
+  border-radius: 4px;
+  transition: width 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+}
+
+.progress-bar-fill::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+/* Enhanced empty states */
+.empty-state-enhanced {
+  text-align: center;
+  padding: 3rem 1.5rem;
+  color: var(--text-secondary);
+}
+
+.empty-state-enhanced-icon {
+  width: 4rem;
+  height: 4rem;
+  margin: 0 auto 1rem;
+  opacity: 0.3;
+  color: var(--text-primary);
+}
+
+.empty-state-enhanced-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 0.5rem;
+}
+
+.empty-state-enhanced-description {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+/* Enhanced professional polish */
+.professional-section {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 2px 8px rgba(11, 61, 145, 0.08);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.professional-section:hover {
+  box-shadow: 0 4px 16px rgba(11, 61, 145, 0.12);
+  transform: translateY(-2px);
+}
+
+.professional-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid rgba(11, 61, 145, 0.1);
+}
+
+.professional-section-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -0.02em;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.professional-section-icon {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 12px;
+  background: linear-gradient(135deg, var(--uscis-blue), var(--uscis-blue-dark));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  box-shadow: 0 4px 12px rgba(11, 61, 145, 0.3);
+}
+
+/* Enhanced trust signals */
+.trust-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: linear-gradient(135deg, rgba(46, 125, 50, 0.1), rgba(46, 125, 50, 0.05));
+  border: 1px solid rgba(46, 125, 50, 0.2);
+  border-radius: 8px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #2E7D32;
+}
+
+.dark .trust-indicator {
+  background: linear-gradient(135deg, rgba(46, 125, 50, 0.2), rgba(46, 125, 50, 0.1));
+  border-color: rgba(46, 125, 50, 0.4);
+  color: #66BB6A;
+}
+
+/* Enhanced number displays */
+.number-display {
+  font-family: 'SF Mono', 'Monaco', 'Courier New', monospace;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: var(--text-primary);
+}
+
+.number-display-large {
+  font-size: 2rem;
+  line-height: 1.2;
+}
+
+.number-display-medium {
+  font-size: 1.5rem;
+  line-height: 1.3;
+}
+
+/* Enhanced metric cards - Premium */
+.metric-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: 14px;
+  padding: 1.75rem;
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.metric-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--uscis-blue), var(--uscis-blue-dark));
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.metric-card:hover {
+  border-color: rgba(11, 61, 145, 0.25);
+  box-shadow: 0 4px 10px rgba(11, 61, 145, 0.1);
+  transform: translateY(-0.5px);
+}
+
+.metric-card:hover::before {
+  opacity: 1;
+}
+
+.metric-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-secondary);
+  margin-bottom: 0.5rem;
+}
+
+.metric-value {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.2;
+}
+
+.metric-description {
+  font-size: 0.8125rem;
+  color: var(--text-tertiary);
+  margin-top: 0.5rem;
+  line-height: 1.5;
+}
+
+/* Recharts charts: Don't touch fill/stroke - let SVG attributes work naturally */
+/* The SVG icon rules above already exclude Recharts, so we don't need protection rules */
+/* Recharts sets fill='#A855F7' etc. as SVG attributes, which work without CSS interference */
+
+/* Escape hatch for third-party widgets */
+.no-theme,
+.no-theme * {
+  color: unset !important;
+  fill: unset !important;
+  stroke: unset !important;
+}
+
+/* Enhanced chart interactions - Premium */
+.chart-container {
+  position: relative;
+  padding: 1.25rem;
+  background: var(--bg-surface);
+  border-radius: 14px;
+  border: 1px solid var(--border-color);
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.chart-container:hover {
+  border-color: rgba(11, 61, 145, 0.25);
+  box-shadow: 0 4px 10px rgba(11, 61, 145, 0.08);
+}
+
+.chart-tooltip {
+  background: var(--uscis-blue-dark) !important;
+  border: 1px solid var(--uscis-blue) !important;
+  border-radius: 8px !important;
+  padding: 0.75rem 1rem !important;
+  box-shadow: 0 4px 12px rgba(11, 61, 145, 0.3) !important;
+}
+
+.chart-tooltip-label {
+  color: white !important;
+  font-weight: 600 !important;
+  font-size: 0.875rem !important;
+}
+
+.chart-tooltip-value {
+  color: white !important;
+  font-weight: 700 !important;
+  font-size: 1rem !important;
+}
+
+/* Enhanced section headers */
+.section-header-enhanced {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid rgba(11, 61, 145, 0.1);
+}
+
+.section-title-enhanced {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -0.02em;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.section-subtitle-enhanced {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  margin-top: 0.5rem;
+  line-height: 1.6;
+}
+
+/* Enhanced badge styles */
+.badge-enhanced {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  transition: all 0.2s ease;
+}
+
+.badge-enhanced:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* Enhanced interactive elements - Ultra-sleek */
+.interactive-card {
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  cursor: pointer;
+}
+
+.interactive-card:hover {
+  transform: translateY(-3px) scale(1.01);
+  box-shadow: var(--shadow-elevated);
+}
+
+.interactive-card:active {
+  transform: translateY(-1px) scale(0.99);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Enhanced data visualization */
+.data-point {
+  transition: all 0.2s ease;
+}
+
+.data-point:hover {
+  transform: scale(1.05);
+  filter: brightness(1.1);
+}
+
+/* Professional gradient backgrounds */
+.gradient-bg-official {
+  background: linear-gradient(135deg, 
+    var(--uscis-blue-dark) 0%,
+    var(--uscis-blue) 50%,
+    var(--uscis-blue-dark) 100%);
+}
+
+.gradient-bg-subtle {
+  background: linear-gradient(135deg,
+    var(--bg-surface) 0%,
+    var(--bg-surface-alt) 100%);
+}
+
+/* Enhanced focus states for accessibility */
+.focus-enhanced:focus-visible {
+  outline: 3px solid var(--uscis-blue);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
+/* Smooth page transitions */
+.page-enter {
+  animation: fade-in-up 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes fade-in-up {
   from {
     opacity: 0;
     transform: translateY(20px);
@@ -78,21 +2173,378 @@ html {
   }
 }
 
-.animate-fade-in {
-  animation: fadeIn 0.6s ease-out;
+/* Enhanced chart tooltips - Desktop: minimal, Mobile: visible and compact */
+.recharts-tooltip-wrapper {
+  z-index: 1000 !important;
 }
 
-/* Card hover effects */
-.card-hover {
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+.recharts-default-tooltip {
+  background: rgba(11, 61, 145, 0.9) !important;
+  backdrop-filter: blur(8px) !important;
+  -webkit-backdrop-filter: blur(8px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  border-radius: 8px !important;
+  padding: 6px 10px !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15) !important;
 }
 
-.card-hover:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+/* Desktop tooltip text - white */
+.recharts-tooltip-item {
+  color: white !important;
 }
 
-/* Enhanced animations */
+.recharts-tooltip-item-value {
+  color: white !important;
+  font-weight: 700 !important;
+}
+
+.recharts-tooltip-label {
+  color: white !important;
+}
+
+/* Mobile-specific tooltip styling - cleaner, smaller, and touch-friendly */
+@media (max-width: 768px) {
+  .recharts-tooltip-wrapper {
+    pointer-events: auto !important;
+    z-index: 1000 !important;
+  }
+  
+  .recharts-default-tooltip {
+    background: rgba(11, 61, 145, 0.96) !important;
+    backdrop-filter: blur(12px) !important;
+    -webkit-backdrop-filter: blur(12px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    border-radius: 8px !important;
+    padding: 6px 10px !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25), 0 1px 3px rgba(0, 0, 0, 0.15) !important;
+    font-size: 10px !important;
+    min-width: auto !important;
+    max-width: 90px !important;
+    white-space: nowrap !important;
+    transform: translateY(-6px) scale(0.95) !important;
+    transition: transform 0.2s ease-out !important;
+  }
+  
+  .recharts-tooltip-label {
+    display: none !important;
+  }
+  
+  .recharts-tooltip-item {
+    padding: 0 !important;
+    margin: 0 !important;
+    font-size: 10px !important;
+    line-height: 1.3 !important;
+    color: white !important;
+  }
+  
+  .recharts-tooltip-item-name {
+    display: none !important;
+  }
+  
+  .recharts-tooltip-item-value {
+    font-size: 12px !important;
+    font-weight: 700 !important;
+    color: white !important;
+    letter-spacing: -0.01em !important;
+  }
+  
+  .recharts-tooltip-item-separator {
+    display: none !important;
+  }
+  
+  /* Compact tooltip on very small screens */
+  @media (max-width: 480px) {
+    .recharts-default-tooltip {
+      padding: 5px 8px !important;
+      font-size: 9px !important;
+      max-width: 75px !important;
+      border-radius: 6px !important;
+    }
+    
+    .recharts-tooltip-item-value {
+      font-size: 11px !important;
+    }
+  }
+}
+
+.recharts-tooltip-label {
+  color: white !important;
+  font-weight: 600 !important;
+  font-size: 0.875rem !important;
+  margin-bottom: 0.5rem !important;
+}
+
+.recharts-tooltip-item {
+  color: white !important;
+  font-size: 0.875rem !important;
+}
+
+.recharts-tooltip-item-value {
+  font-weight: 700 !important;
+  color: white !important;
+}
+
+/* Enhanced accessibility */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* Standardized Typography Classes */
+.text-caption {
+  font-size: var(--font-size-caption);
+  line-height: 1.4;
+  font-weight: var(--font-weight-regular);
+}
+
+.text-footnote {
+  font-size: var(--font-size-footnote);
+  line-height: 1.5;
+  font-weight: var(--font-weight-regular);
+}
+
+.text-body-sm {
+  font-size: var(--font-size-body-sm);
+  line-height: 1.5;
+  font-weight: var(--font-weight-regular);
+}
+
+.text-body {
+  font-size: var(--font-size-body);
+  line-height: 1.5;
+  font-weight: var(--font-weight-regular);
+}
+
+.text-subhead {
+  font-size: var(--font-size-subhead);
+  line-height: 1.4;
+  font-weight: var(--font-weight-semibold);
+}
+
+.text-headline {
+  font-size: var(--font-size-headline);
+  line-height: 1.3;
+  font-weight: var(--font-weight-bold);
+}
+
+.text-title {
+  font-size: var(--font-size-title);
+  line-height: 1.2;
+  font-weight: var(--font-weight-bold);
+}
+
+/* Standardized Spacing Utilities */
+.spacing-xs { gap: var(--spacing-xs); }
+.spacing-sm { gap: var(--spacing-sm); }
+.spacing-md { gap: var(--spacing-md); }
+.spacing-lg { gap: var(--spacing-lg); }
+.spacing-xl { gap: var(--spacing-xl); }
+.spacing-2xl { gap: var(--spacing-2xl); }
+.spacing-3xl { gap: var(--spacing-3xl); }
+
+.p-xs { padding: var(--spacing-xs); }
+.p-sm { padding: var(--spacing-sm); }
+.p-md { padding: var(--spacing-md); }
+.p-lg { padding: var(--spacing-lg); }
+.p-xl { padding: var(--spacing-xl); }
+.p-2xl { padding: var(--spacing-2xl); }
+.p-3xl { padding: var(--spacing-3xl); }
+
+.m-xs { margin: var(--spacing-xs); }
+.m-sm { margin: var(--spacing-sm); }
+.m-md { margin: var(--spacing-md); }
+.m-lg { margin: var(--spacing-lg); }
+.m-xl { margin: var(--spacing-xl); }
+.m-2xl { margin: var(--spacing-2xl); }
+.m-3xl { margin: var(--spacing-3xl); }
+
+/* Enhanced focus rings */
+.focus-ring {
+  outline: 3px solid var(--uscis-blue);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Professional data table styling */
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+.data-table th {
+  background: var(--bg-surface-alt);
+  padding: 0.75rem 1rem;
+  text-align: left;
+  font-weight: 600;
+  color: var(--text-primary);
+  border-bottom: 2px solid var(--border-color);
+}
+
+.data-table td {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--border-color);
+  color: var(--text-secondary);
+}
+
+.data-table tr:hover {
+  background: var(--bg-surface-alt);
+}
+
+/* Enhanced button groups */
+.button-group {
+  display: inline-flex;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid var(--border-color);
+  background: var(--bg-surface);
+}
+
+.button-group button {
+  border: none;
+  border-right: 1px solid var(--border-color);
+  background: transparent;
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  transition: all 0.2s ease;
+}
+
+.button-group button:last-child {
+  border-right: none;
+}
+
+.button-group button:hover {
+  background: var(--bg-surface-alt);
+  color: var(--text-primary);
+}
+
+.button-group button.active {
+  background: var(--uscis-blue);
+  color: white;
+  font-weight: 600;
+}
+
+/* Enhanced success states */
+.success-state {
+  background: linear-gradient(135deg, rgba(46, 125, 50, 0.1), rgba(46, 125, 50, 0.05));
+  border: 1px solid rgba(46, 125, 50, 0.3);
+  border-radius: 12px;
+  padding: 1.5rem;
+  color: #2E7D32;
+}
+
+.dark .success-state {
+  background: linear-gradient(135deg, rgba(46, 125, 50, 0.2), rgba(46, 125, 50, 0.1));
+  border-color: rgba(46, 125, 50, 0.5);
+  color: #66BB6A;
+}
+
+/* Enhanced warning states */
+.warning-state {
+  background: linear-gradient(135deg, rgba(245, 124, 0, 0.1), rgba(245, 124, 0, 0.05));
+  border: 1px solid rgba(245, 124, 0, 0.3);
+  border-radius: 12px;
+  padding: 1.5rem;
+  color: #F57C00;
+}
+
+.dark .warning-state {
+  background: linear-gradient(135deg, rgba(245, 124, 0, 0.2), rgba(245, 124, 0, 0.1));
+  border-color: rgba(245, 124, 0, 0.5);
+  color: #FFA726;
+}
+
+/* Enhanced error states */
+.error-state {
+  background: linear-gradient(135deg, rgba(211, 47, 47, 0.1), rgba(211, 47, 47, 0.05));
+  border: 1px solid rgba(211, 47, 47, 0.3);
+  border-radius: 12px;
+  padding: 1.5rem;
+  color: #D32F2F;
+}
+
+.dark .error-state {
+  background: linear-gradient(135deg, rgba(211, 47, 47, 0.2), rgba(211, 47, 47, 0.1));
+  border-color: rgba(211, 47, 47, 0.5);
+  color: #EF5350;
+}
+
+/* Enhanced info states */
+.info-state {
+  background: linear-gradient(135deg, rgba(11, 61, 145, 0.1), rgba(11, 61, 145, 0.05));
+  border: 1px solid rgba(11, 61, 145, 0.3);
+  border-radius: 12px;
+  padding: 1.5rem;
+  color: var(--text-primary);
+}
+
+.dark .info-state {
+  background: linear-gradient(135deg, rgba(11, 61, 145, 0.2), rgba(11, 61, 145, 0.1));
+  border-color: rgba(11, 61, 145, 0.5);
+  color: var(--text-primary);
+}
+
+/* Enhanced scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-surface-alt);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--uscis-blue);
+  border-radius: 4px;
+  opacity: 0.5;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  opacity: 0.8;
+}
+
+/* Enhanced selection styling */
+::selection {
+  background: var(--uscis-blue);
+  color: white;
+}
+
+::-moz-selection {
+  background: var(--uscis-blue);
+  color: white;
+}
+
+/* Glassmorphism Utility Classes */
+.glass {
+  background: var(--bg-glass);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid var(--border-glass);
+  box-shadow: var(--shadow-glass);
+}
+
+.glass-hover {
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.glass-hover:hover {
+  background: var(--bg-glass-hover);
+  box-shadow: var(--shadow-xl), var(--shadow-colored);
+  transform: translateY(-2px);
+}
+
+/* Advanced Animation Utilities */
 @keyframes float {
   0%, 100% {
     transform: translateY(0px);
@@ -104,10 +2556,10 @@ html {
 
 @keyframes pulse-glow {
   0%, 100% {
-    box-shadow: 0 0 20px rgba(99, 102, 241, 0.3);
+    box-shadow: var(--shadow-md), var(--glow-blue);
   }
   50% {
-    box-shadow: 0 0 30px rgba(99, 102, 241, 0.6);
+    box-shadow: var(--shadow-xl), var(--glow-blue-strong);
   }
 }
 
@@ -123,6 +2575,15 @@ html {
   }
 }
 
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
 .animate-float {
   animation: float 6s ease-in-out infinite;
 }
@@ -131,31 +2592,808 @@ html {
   animation: pulse-glow 3s ease-in-out infinite;
 }
 
-.gradient-animated {
+.animate-gradient {
   background-size: 200% 200%;
-  animation: gradient-shift 8s ease infinite;
+  animation: gradient-shift 3s ease infinite;
 }
 
-/* Glass morphism enhanced */
-.glass-card {
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+.animate-shimmer {
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.1),
+    transparent
+  );
+  background-size: 1000px 100%;
+  animation: shimmer 2s infinite;
 }
 
-/* Text gradient */
-.text-gradient {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
-  background-size: 200% 200%;
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  animation: gradient-shift 5s ease infinite;
+/* Huly Effect - laser beam pulse animation */
+@keyframes huly-beam-pulse {
+  0%, 100% {
+    opacity: 0.5;
+    transform: translateX(-50%) scaleY(0.95);
+  }
+  50% {
+    opacity: 0.75;
+    transform: translateX(-50%) scaleY(1.05);
+  }
 }
 
-/* Smooth scroll */
+@keyframes huly-wisps {
+  0%, 100% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+/* Glowing CTA button - Huly style */
+.cta-glow {
+  box-shadow: 0 0 20px rgba(0, 113, 227, 0.3), 0 0 40px rgba(99, 102, 241, 0.15);
+  transition: box-shadow 0.3s ease, transform 0.2s ease;
+}
+
+.cta-glow:hover {
+  box-shadow: 0 0 30px rgba(0, 113, 227, 0.4), 0 0 60px rgba(99, 102, 241, 0.25);
+  transform: translateY(-1px);
+}
+
+/* Smooth scroll reveal animations */
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fade-in-scale {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.reveal-up {
+  animation: fade-in-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) backwards;
+}
+
+.reveal-scale {
+  animation: fade-in-scale 0.5s cubic-bezier(0.16, 1, 0.3, 1) backwards;
+}
+
+/* Stagger animation delays */
+.reveal-up:nth-child(1) { animation-delay: 0.1s; }
+.reveal-up:nth-child(2) { animation-delay: 0.2s; }
+.reveal-up:nth-child(3) { animation-delay: 0.3s; }
+.reveal-up:nth-child(4) { animation-delay: 0.4s; }
+.reveal-up:nth-child(5) { animation-delay: 0.5s; }
+.reveal-up:nth-child(6) { animation-delay: 0.6s; }
+
+/* Mobile Optimizations - Better Touch Targets & Readability */
+@media (max-width: 768px) {
+  /* Mobile-first: Native app feel */
+  
+  /* Ensure minimum touch target size (44x44px) */
+  button:not([class*="w-"]):not([class*="h-"]), 
+  a:not([class*="w-"]):not([class*="h-"]), 
+  input[type="button"], 
+  input[type="submit"], 
+  [role="button"] {
+    min-height: 44px;
+  }
+  
+  /* Better text readability on mobile */
+  body {
+    font-size: 16px; /* Prevent zoom on iOS */
+    -webkit-text-size-adjust: 100%;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  
+  /* Improved spacing for mobile - more compact */
+  .uscis-card,
+  [class*="card"],
+  [class*="Card"] {
+    padding: 0.875rem;
+    margin-bottom: 0.75rem;
+    border-radius: 0.75rem;
+  }
+  
+  /* Better form inputs on mobile */
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="number"],
+  textarea,
+  select {
+    font-size: 16px !important; /* Prevent zoom on iOS */
+    min-height: 44px;
+    padding: 0.75rem 1rem;
+    border-radius: 0.75rem;
+  }
+  
+  /* Better button spacing - mobile native feel */
+  button:not([class*="py-"]), .btn:not([class*="py-"]) {
+    padding: 0.75rem 1.25rem;
+    font-size: 1rem;
+    font-weight: 600;
+    border-radius: 0.75rem;
+  }
+  
+  /* Improved card spacing - tighter for mobile */
+  .space-y-4 > * + * {
+    margin-top: 0.875rem;
+  }
+  
+  .space-y-6 > * + * {
+    margin-top: 1.25rem;
+  }
+  
+  .space-y-3 > * + * {
+    margin-top: 0.75rem;
+  }
+  
+  .space-y-2 > * + * {
+    margin-top: 0.5rem;
+  }
+  
+  /* Better link spacing */
+  a:not([class*="px-"]):not([class*="py-"]) {
+    padding: 0.5rem 0.75rem;
+    display: inline-block;
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+  }
+  
+  /* Touch-friendly interactions */
+  * {
+    -webkit-tap-highlight-color: rgba(11, 61, 145, 0.1);
+  }
+  
+  /* Better scrolling - native feel */
+  * {
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  html {
+    scroll-behavior: smooth;
+  }
+  
+  /* Improved readability - mobile optimized typography */
+  h1 {
+    font-size: 1.5rem;
+    line-height: 1.25;
+    margin-bottom: 0.75rem;
+    font-weight: 700;
+  }
+  
+  h2 {
+    font-size: 1.25rem;
+    line-height: 1.3;
+    margin-bottom: 0.625rem;
+    font-weight: 600;
+  }
+  
+  h3 {
+    font-size: 1.125rem;
+    line-height: 1.35;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+  }
+  
+  h4 {
+    font-size: 1rem;
+    line-height: 1.4;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+  }
+  
+  p {
+    margin-bottom: 0.875rem;
+    line-height: 1.6;
+    font-size: 0.9375rem;
+  }
+  
+  /* Better grid spacing on mobile - tighter */
+  .grid {
+    gap: 0.75rem;
+  }
+  
+  /* Improved container padding - mobile optimized */
+  .container, 
+  [class*="max-w"] {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+  
+  /* Better mobile menu spacing */
+  nav a, nav button {
+    min-height: 48px;
+    padding: 0.75rem 1rem;
+  }
+  
+  /* Mobile-specific: Reduce padding on sections */
+  section {
+    padding-top: 1.5rem;
+    padding-bottom: 1.5rem;
+  }
+  
+  /* Mobile cards: More compact, native feel */
+  [class*="rounded"] {
+    border-radius: 0.75rem;
+  }
+  
+  /* Better mobile list spacing */
+  ul, ol {
+    padding-left: 1.25rem;
+    margin-bottom: 0.875rem;
+  }
+  
+  li {
+    margin-bottom: 0.5rem;
+    line-height: 1.6;
+  }
+  
+  /* Mobile-optimized badges and chips */
+  [class*="badge"],
+  [class*="chip"],
+  span[class*="px-2"],
+  span[class*="px-3"] {
+    font-size: 0.75rem;
+    padding: 0.375rem 0.625rem;
+    border-radius: 0.5rem;
+  }
+  
+  /* Mobile-optimized icons */
+  svg {
+    flex-shrink: 0;
+  }
+  
+  /* Better mobile images */
+  img {
+    max-width: 100%;
+    height: auto;
+  }
+  
+  /* Mobile-optimized tables (if any) */
+  table {
+    font-size: 0.875rem;
+  }
+  
+  /* Better mobile spacing utilities */
+  .mb-6 {
+    margin-bottom: 1.25rem !important;
+  }
+  
+  .mb-8 {
+    margin-bottom: 1.5rem !important;
+  }
+  
+  .mt-6 {
+    margin-top: 1.25rem !important;
+  }
+  
+  .mt-8 {
+    margin-top: 1.5rem !important;
+  }
+  
+  .py-6 {
+    padding-top: 1.25rem !important;
+    padding-bottom: 1.25rem !important;
+  }
+  
+  .py-8 {
+    padding-top: 1.5rem !important;
+    padding-bottom: 1.5rem !important;
+  }
+  
+  /* Mobile-optimized flex gaps */
+  .gap-4 {
+    gap: 0.875rem !important;
+  }
+  
+  .gap-6 {
+    gap: 1rem !important;
+  }
+  
+  .gap-8 {
+    gap: 1.25rem !important;
+  }
+}
+
+/* ============================================
+   SUBTLE SITE-WIDE ANIMATIONS
+   Professional, gentle animations for better UX
+   ============================================ */
+
+/* Smooth scroll behavior */
 html {
   scroll-behavior: smooth;
-  scroll-padding-top: 80px;
+}
+
+/* Subtle fade-in for main content */
+main,
+[role="main"],
+.page-content {
+  animation: fade-in-content 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes fade-in-content {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Gentle card hover effects */
+.uscis-card,
+[class*="card"],
+[class*="Card"] {
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 0.2s ease;
+}
+
+.uscis-card:hover,
+[class*="card"]:hover:not([class*="no-hover"]),
+[class*="Card"]:hover:not([class*="no-hover"]) {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+/* Smooth button transitions */
+button:not([disabled]),
+a[role="button"],
+[role="button"] {
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+button:not([disabled]):hover,
+a[role="button"]:hover,
+[role="button"]:hover {
+  transform: translateY(-1px);
+}
+
+button:not([disabled]):active,
+a[role="button"]:active,
+[role="button"]:active {
+  transform: translateY(0);
+  transition: transform 0.1s ease;
+}
+
+/* Subtle link transitions - Apple-like */
+a:not([class*="no-transition"]) {
+  transition: color 0.2s ease, text-decoration-color 0.2s ease;
+}
+
+/* Gentle input focus animations */
+input:not([disabled]),
+textarea:not([disabled]),
+select:not([disabled]) {
+  transition: border-color 0.2s ease,
+              box-shadow 0.2s ease,
+              transform 0.1s ease;
+}
+
+input:not([disabled]):focus,
+textarea:not([disabled]):focus,
+select:not([disabled]):focus {
+  transform: scale(1.01);
+}
+
+/* Subtle icon animations */
+svg {
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+button:hover svg,
+a:hover svg,
+[role="button"]:hover svg {
+  transform: scale(1.05);
+}
+
+/* Gentle list item animations */
+li,
+[role="listitem"] {
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+/* Smooth section transitions */
+section {
+  animation: fade-in-section 0.4s cubic-bezier(0.16, 1, 0.3, 1) backwards;
+}
+
+@keyframes fade-in-section {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Subtle image loading animation */
+img {
+  transition: opacity 0.3s ease;
+}
+
+img[loading="lazy"] {
+  opacity: 0;
+  animation: fade-in-image 0.4s ease forwards;
+}
+
+@keyframes fade-in-image {
+  to {
+    opacity: 1;
+  }
+}
+
+/* Gentle badge/chip animations */
+[class*="badge"],
+[class*="Badge"],
+[class*="chip"],
+[class*="Chip"] {
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+[class*="badge"]:hover,
+[class*="Badge"]:hover,
+[class*="chip"]:hover,
+[class*="Chip"]:hover {
+  transform: scale(1.05);
+}
+
+/* Smooth modal/overlay animations */
+[role="dialog"],
+[class*="modal"],
+[class*="Modal"],
+[class*="overlay"],
+[class*="Overlay"] {
+  animation: fade-in-modal 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes fade-in-modal {
+  from {
+    opacity: 0;
+    transform: scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Respect user's motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ============================================
+   THEME DEBUG HELPER (Dev Only)
+   ============================================ */
+/* Add ?debug-theme=true to URL to enable theme debugging */
+/* Shows outlines for surface-dark (blue) and surface-light (green) containers */
+body:has([data-debug-theme="true"]) .surface-dark {
+  outline: 2px solid rgba(0, 113, 227, 0.5) !important;
+  outline-offset: -2px;
+  position: relative;
+}
+
+body:has([data-debug-theme="true"]) .surface-dark::before {
+  content: "surface-dark";
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  background: rgba(0, 113, 227, 0.9);
+  color: white;
+  padding: 2px 6px;
+  font-size: 10px;
+  font-weight: bold;
+  z-index: 9999;
+  pointer-events: none;
+}
+
+body:has([data-debug-theme="true"]) .surface-light {
+  outline: 2px solid rgba(34, 197, 94, 0.5) !important;
+  outline-offset: -2px;
+  position: relative;
+}
+
+body:has([data-debug-theme="true"]) .surface-light::before {
+  content: "surface-light";
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  background: rgba(34, 197, 94, 0.9);
+  color: white;
+  padding: 2px 6px;
+  font-size: 10px;
+  font-weight: bold;
+  z-index: 9999;
+  pointer-events: none;
+}
+
+/* ============================================
+   ENHANCED ACCESSIBILITY & UX IMPROVEMENTS
+   ============================================ */
+
+/* Smooth scroll behavior */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Enhanced focus indicators for better accessibility */
+*:focus-visible {
+  outline: 2px solid var(--uscis-blue);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: 2px solid var(--uscis-blue);
+  outline-offset: 2px;
+}
+
+/* Skip to main content link for screen readers */
+.skip-to-main {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  background: var(--uscis-blue);
+  color: white;
+  padding: 8px 16px;
+  text-decoration: none;
+  z-index: 10000;
+  border-radius: 0 0 4px 0;
+}
+
+.skip-to-main:focus {
+  top: 0;
+}
+
+/* Enhanced button states */
+button:not(:disabled):hover {
+  transform: translateY(-1px);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+button:not(:disabled):active {
+  transform: translateY(0);
+}
+
+/* Better touch targets for mobile (minimum 44x44px) */
+button,
+a[role="button"],
+input[type="button"],
+input[type="submit"] {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+/* Improved loading states */
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
+.loading-shimmer {
+  background: linear-gradient(
+    90deg,
+    var(--bg-surface-alt) 0%,
+    var(--bg-surface) 50%,
+    var(--bg-surface-alt) 100%
+  );
+  background-size: 1000px 100%;
+  animation: shimmer 2s infinite;
+}
+
+/* Enhanced card hover effects */
+.uscis-card:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* Better form input states */
+input:not(:disabled):hover,
+textarea:not(:disabled):hover,
+select:not(:disabled):hover {
+  border-color: var(--uscis-blue-light);
+}
+
+input:not(:disabled):focus,
+textarea:not(:disabled):focus,
+select:not(:disabled):focus {
+  border-color: var(--uscis-blue);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+}
+
+/* Improved link hover states */
+a:not([class*="button"]):hover {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+/* Enhanced disabled states */
+button:disabled,
+input:disabled,
+textarea:disabled,
+select:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* Better error states */
+.error-message {
+  color: var(--uscis-red);
+  font-size: 0.875rem;
+  margin-top: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.error-message::before {
+  content: "⚠";
+  font-size: 1rem;
+}
+
+/* Success states */
+.success-message {
+  color: var(--uscis-green);
+  font-size: 0.875rem;
+  margin-top: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.success-message::before {
+  content: "✓";
+  font-size: 1rem;
+}
+
+/* Improved loading spinner */
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.spinner {
+  border: 2px solid var(--bg-surface-alt);
+  border-top-color: var(--uscis-blue);
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  animation: spin 0.8s linear infinite;
+}
+
+/* Better image loading */
+img {
+  transition: opacity 0.3s ease;
+}
+
+img[loading="lazy"] {
+  opacity: 0;
+}
+
+img[loading="lazy"].loaded {
+  opacity: 1;
+}
+
+/* Enhanced tooltip styles */
+[data-tooltip] {
+  position: relative;
+}
+
+[data-tooltip]:hover::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 6px 12px;
+  background: rgba(0, 0, 0, 0.9);
+  color: white;
+  font-size: 0.75rem;
+  white-space: nowrap;
+  border-radius: 4px;
+  pointer-events: none;
+  z-index: 1000;
+  margin-bottom: 4px;
+}
+
+/* Better print styles */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  
+  body {
+    background: white;
+    color: black;
+  }
+  
+  a {
+    color: black;
+    text-decoration: underline;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  * {
+    border-color: currentColor !important;
+  }
+  
+  button,
+  a[role="button"] {
+    border: 2px solid currentColor;
+  }
+}
+
+/* Travel Safety Score — force white text inside dark circle */
+.travel-safety-score-inner,
+.travel-safety-score-inner * {
+  color: #ffffff !important;
+}
+.travel-safety-score-inner span:last-child {
+  color: rgba(255, 255, 255, 0.9) !important;
+}
+
+/* Dark mode preference support (already handled, but ensuring consistency) */
+@media (prefers-color-scheme: dark) {
+  /* Dark mode styles are already handled by .dark class */
 }
