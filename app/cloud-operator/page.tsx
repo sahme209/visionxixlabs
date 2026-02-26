@@ -22,6 +22,7 @@ import { AxiomButton } from "@/components/axiom-ui/AxiomButton";
 type OperatorStatus = {
   outputStatus?: string;
   tier?: string;
+  scoringVersion?: string | null;
   infrastructureReadinessScore?: number | null;
   costEfficiencyScore?: number | null;
   securityRiskLevel?: string | null;
