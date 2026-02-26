@@ -1,7 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
-import { usePathname } from "next/navigation";
+import { useState, useRef, useEffect, useCallback } from "react";
 import Link from "next/link";
 import {
   PaperAirplaneIcon,
@@ -9,9 +8,12 @@ import {
   XMarkIcon,
   ClipboardDocumentIcon,
   ChatBubbleBottomCenterTextIcon,
+  ArrowPathIcon,
+  CheckIcon,
 } from "@heroicons/react/24/outline";
-import { SparklesIcon } from "@heroicons/react/24/solid";
-import { SUPPORT_EMAIL } from "@/lib/constants/company";
+import { SparklesIcon as SparklesIconSolid } from "@heroicons/react/24/solid";
+import { MAILTO_SUPPORT } from "@/lib/constants/company";
+import { ChatMessageContent } from "@/components/ChatMessageContent";
 
 interface Message {
   id: string;
@@ -20,60 +22,45 @@ interface Message {
   timestamp: Date;
 }
 
-const MSG_KEY = "visionxix-ai-widget-messages";
+const SUGGESTIONS_BY_CATEGORY = [
+  { label: "Tracking", items: ["How do I track my USCIS case?", "What does my case status mean?"] },
+  { label: "Timelines", items: ["What is typical I-130 processing time?", "When might my case be approved?"] },
+  { label: "Documents", items: ["What documents do I need for my interview?", "How can I expedite my case?"] },
+];
 
-function loadMessages(): Message[] {
-  if (typeof window === "undefined") return [];
-  try {
-    const raw = localStorage.getItem(MSG_KEY);
-    if (!raw) return [];
-    const parsed = JSON.parse(raw) as { id: string; role: "user" | "assistant"; content: string; timestamp: string }[];
-    return parsed.slice(-30).map((m) => ({ ...m, timestamp: new Date(m.timestamp) }));
-  } catch {
-    return [];
-  }
-}
-
-function saveMessages(msgs: Message[]) {
-  if (typeof window === "undefined") return;
-  try {
-    const toSave = msgs.slice(-30).map((m) => ({ ...m, timestamp: m.timestamp.toISOString() }));
-    localStorage.setItem(MSG_KEY, JSON.stringify(toSave));
-  } catch {}
-}
-
-const SUGGESTIONS = [
-  "How can Vision XIX Labs help us productionize AI in AWS?",
-  "Do you build internal AI assistants on our own data?",
-  "What does a Free Cloud & AI Review include?",
-  "What makes Vision XIX Labs AI different?",
+const FOLLOW_UPS = [
+  "Tell me more about processing times",
+  "How do I check my status online?",
+  "What if my case is delayed?",
+  "What documents are needed?",
+  "How can I expedite?",
 ];
 
 export default function AIChatWidget() {
-  const pathname = usePathname();
   const [open, setOpen] = useState(false);
-
-  // Don't show Vision XIX Labs widget inside embed iframe — only show the customer's bot
-  if (pathname?.startsWith("/embed/")) return null;
   const [messages, setMessages] = useState<Message[]>([]);
-  const [mounted, setMounted] = useState(false);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [copiedId, setCopiedId] = useState<string | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    setMounted(true);
+  const clearChat = useCallback(() => {
+    setMessages([]);
+    setError(null);
   }, []);
-  useEffect(() => {
-    if (mounted) setMessages(loadMessages());
-  }, [mounted]);
-  useEffect(() => {
-    if (mounted && messages.length > 0) saveMessages(messages);
-  }, [mounted, messages]);
+
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
   }, [messages]);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setOpen(false);
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
 
   const sendMessage = async () => {
     const text = input.trim();
@@ -96,7 +83,7 @@ export default function AIChatWidget() {
     }));
 
     try {
-      const res = await fetch("/api/visionxix-ai-chat", {
+      const res = await fetch("/api/ai-chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ messages: history }),
@@ -129,65 +116,93 @@ export default function AIChatWidget() {
     }
   };
 
-  const copyResponse = (text: string) => {
+  const copyResponse = (id: string, text: string) => {
     navigator.clipboard?.writeText(text);
+    setCopiedId(id);
+    setTimeout(() => setCopiedId(null), 2000);
   };
 
   return (
     <>
+      {/* Floating bubble */}
       <button
         onClick={() => setOpen(true)}
         aria-label="Open Vision XIX Labs AI Assistant"
-        className="fixed bottom-4 right-4 z-[9998] flex h-14 w-14 items-center justify-center rounded-full bg-indigo-600 text-white shadow-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-all hover:scale-105"
+        className="fixed bottom-4 right-4 z-[9998] flex h-14 w-14 items-center justify-center rounded-full bg-teal-600 text-white shadow-lg hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 transition-all hover:scale-105"
       >
-        <SparklesIcon className="h-7 w-7" />
+        <SparklesIconSolid className="h-7 w-7 text-teal-200" />
       </button>
 
+      {/* Expanded chat panel - teal/stone palette */}
       {open && (
         <div
-          className="fixed bottom-4 right-4 z-[9999] flex w-[calc(100vw-2rem)] max-w-[420px] flex-col overflow-hidden rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 shadow-xl"
+          className="fixed bottom-4 right-4 z-[9999] flex w-[calc(100vw-2rem)] max-w-[420px] flex-col overflow-hidden rounded-2xl border border-stone-200 bg-stone-50 shadow-xl"
           role="dialog"
           aria-label="Vision XIX Labs AI chat"
         >
-          <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-700 bg-indigo-600 px-4 py-3">
+          {/* Header */}
+          <div className="flex items-center justify-between border-b border-teal-800/30 bg-teal-700 px-4 py-3">
             <div className="flex items-center gap-2">
-              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-white/20">
-                <SparklesIcon className="h-5 w-5 text-white" />
+              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-white/15 border border-white/25">
+                <SparklesIconSolid className="h-5 w-5 text-teal-200" />
               </div>
               <div>
                 <h2 className="text-sm font-semibold text-white">Vision XIX Labs AI</h2>
-                <p className="text-xs text-white/90">Cloud & AI assistant</p>
+                <p className="text-xs text-white/85">USCIS & immigration assistant</p>
               </div>
             </div>
-            <button
-              onClick={() => setOpen(false)}
-              aria-label="Close chat"
-              className="rounded-lg p-1.5 text-white/80 hover:bg-white/20 hover:text-white"
-            >
-              <XMarkIcon className="h-6 w-6" />
-            </button>
+            <div className="flex items-center gap-1">
+              {messages.length > 0 && (
+                <button
+                  onClick={clearChat}
+                  aria-label="New chat"
+                  className="rounded-lg p-1.5 text-white/80 hover:bg-white/10 hover:text-white"
+                  title="New chat"
+                >
+                  <ArrowPathIcon className="h-5 w-5" />
+                </button>
+              )}
+              <button
+                onClick={() => setOpen(false)}
+                aria-label="Close chat"
+                className="rounded-lg p-1.5 text-white/80 hover:bg-white/10 hover:text-white"
+              >
+                <XMarkIcon className="h-6 w-6" />
+              </button>
+            </div>
           </div>
 
+          {/* Chat area */}
           <div
             ref={scrollRef}
-            className="flex max-h-[320px] min-h-[240px] flex-1 flex-col overflow-y-auto p-4 bg-slate-50 dark:bg-slate-800/50"
+            className="flex max-h-[min(400px,70vh)] min-h-[260px] flex-1 flex-col overflow-y-auto p-4 bg-stone-100"
           >
             {messages.length === 0 ? (
-              <div className="flex flex-1 flex-col items-center justify-center text-center">
-                <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
-                  <ChatBubbleLeftRightIcon className="h-6 w-6 text-indigo-600" />
+              <div className="flex flex-1 flex-col items-center justify-center text-center px-2">
+                <div className="mb-3 flex h-14 w-14 items-center justify-center rounded-2xl bg-white shadow-md border border-stone-200">
+                  <ChatBubbleLeftRightIcon className="h-7 w-7 text-teal-600" />
                 </div>
-                <p className="text-sm font-medium text-slate-900 dark:text-slate-100">Hi, I&apos;m Vision XIX Labs AI</p>
-                <p className="mt-1 text-xs text-slate-600 dark:text-slate-400">Ask about cloud, AI, or our services.</p>
-                <div className="mt-4 flex flex-wrap justify-center gap-2">
-                  {SUGGESTIONS.slice(0, 4).map((s) => (
-                    <button
-                      key={s}
-                      onClick={() => setInput(s)}
-                      className="rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 px-3 py-1.5 text-left text-xs text-slate-600 dark:text-slate-400 hover:border-indigo-400 hover:text-indigo-600"
-                    >
-                      {s}
-                    </button>
+                <p className="text-base font-semibold text-stone-900">Hi, I&apos;m your AI assistant</p>
+                <p className="mt-2 text-sm text-stone-600 max-w-[280px]">
+                  I can help with USCIS tracking, processing times, documents, and immigration questions.
+                </p>
+                <p className="mt-3 text-xs text-stone-500">Choose a topic to get started</p>
+                <div className="mt-4 space-y-3 w-full max-w-[320px]">
+                  {SUGGESTIONS_BY_CATEGORY.map((cat) => (
+                    <div key={cat.label}>
+                      <p className="text-[10px] font-semibold uppercase tracking-wider text-stone-400 mb-1.5 text-left">{cat.label}</p>
+                      <div className="flex flex-wrap gap-2">
+                        {cat.items.map((s) => (
+                          <button
+                            key={s}
+                            onClick={() => setInput(s)}
+                            className="rounded-full border border-stone-200 bg-white px-3 py-2 text-left text-xs text-stone-700 hover:border-teal-400 hover:bg-teal-50/50 hover:text-stone-900 shadow-sm transition-colors"
+                          >
+                            {s}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
                   ))}
                 </div>
               </div>
@@ -196,78 +211,104 @@ export default function AIChatWidget() {
                 {messages.map((m) => (
                   <div
                     key={m.id}
-                    className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}
+                    className={`flex ${m.role === "user" ? "justify-end" : "justify-start"} animate-fade-in-smooth`}
                   >
                     <div
                       className={`max-w-[85%] rounded-2xl px-3 py-2 text-sm ${
                         m.role === "user"
-                          ? "bg-indigo-600 text-white rounded-br-xl"
-                          : "bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-slate-100 rounded-bl-xl"
+                          ? "bg-teal-600 text-white rounded-br-xl shadow-md"
+                          : "bg-white border border-stone-200 text-stone-900 rounded-bl-xl shadow-sm"
                       }`}
                     >
                       {m.role === "assistant" && (
-                        <div className="mb-1 flex items-center justify-between gap-2">
-                          <span className="text-[10px] font-medium text-slate-500">Vision XIX Labs AI</span>
+                        <div className="mb-1.5 flex items-center justify-between gap-2">
+                          <span className="text-[10px] font-medium text-stone-500">
+                            Vision XIX Labs AI
+                          </span>
                           <button
-                            onClick={() => copyResponse(m.content)}
-                            aria-label="Copy"
-                            className="rounded p-0.5 text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-600 hover:text-slate-700"
+                            onClick={() => copyResponse(m.id, m.content)}
+                            aria-label={copiedId === m.id ? "Copied" : "Copy response"}
+                            className={`rounded p-0.5 transition-colors ${
+                              copiedId === m.id ? "text-teal-600" : "text-stone-500 hover:bg-stone-200 hover:text-stone-900"
+                            }`}
                           >
-                            <ClipboardDocumentIcon className="h-3.5 w-3.5" />
+                            {copiedId === m.id ? <CheckIcon className="h-3.5 w-3.5" /> : <ClipboardDocumentIcon className="h-3.5 w-3.5" />}
                           </button>
                         </div>
                       )}
-                      <p className="whitespace-pre-wrap leading-relaxed">{m.content}</p>
+                      {m.role === "user" ? (
+                        <p className="whitespace-pre-wrap leading-relaxed text-[15px]">{m.content}</p>
+                      ) : (
+                        <ChatMessageContent content={m.content} />
+                      )}
                     </div>
                   </div>
                 ))}
                 {loading && (
-                  <div className="flex justify-start">
-                    <div className="flex gap-1 rounded-2xl rounded-bl-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2">
-                      <span className="h-2 w-2 animate-pulse rounded-full bg-indigo-600" />
-                      <span className="h-2 w-2 animate-pulse rounded-full bg-indigo-600 [animation-delay:0.2s]" />
-                      <span className="h-2 w-2 animate-pulse rounded-full bg-indigo-600 [animation-delay:0.4s]" />
+                  <div className="flex justify-start animate-fade-in-smooth">
+                    <div className="flex items-center gap-2 rounded-2xl rounded-bl-xl border border-stone-200 bg-white px-4 py-2.5 shadow-sm">
+                      <span className="h-2 w-2 animate-pulse rounded-full bg-teal-500" />
+                      <span className="h-2 w-2 animate-pulse rounded-full bg-teal-500 [animation-delay:0.2s]" />
+                      <span className="h-2 w-2 animate-pulse rounded-full bg-teal-500 [animation-delay:0.4s]" />
+                      <span className="text-xs text-stone-500 ml-1">Thinking...</span>
                     </div>
+                  </div>
+                )}
+                {!loading && messages.length > 0 && messages[messages.length - 1].role === "assistant" && (
+                  <div className="flex flex-wrap gap-2 pt-1">
+                    {FOLLOW_UPS.slice(0, 3).map((s) => (
+                      <button
+                        key={s}
+                        onClick={() => setInput(s)}
+                        className="rounded-full border border-stone-200 bg-white px-3 py-1.5 text-left text-[11px] text-stone-600 hover:border-teal-400 hover:bg-teal-50/50 hover:text-stone-900 transition-colors"
+                      >
+                        {s}
+                      </button>
+                    ))}
                   </div>
                 )}
               </div>
             )}
           </div>
 
-          <div className="border-t border-slate-200 dark:border-slate-700 px-4 py-2">
+          {/* Escalate to human */}
+          <div className="border-t border-stone-200 px-4 py-2 bg-white">
             <a
-              href={`mailto:${SUPPORT_EMAIL}`}
-              className="flex items-center gap-2 text-xs text-slate-600 dark:text-slate-400 hover:text-indigo-600"
+              href={MAILTO_SUPPORT}
+              className="flex items-center gap-2 text-xs text-stone-600 hover:text-teal-600"
             >
               <ChatBubbleBottomCenterTextIcon className="h-4 w-4" />
               Talk to support
             </a>
           </div>
 
-          <div className="border-t border-slate-200 dark:border-slate-700 p-3">
-            {error && <p className="mb-2 text-xs text-red-600">{error}</p>}
+          {/* Input */}
+          <div className="border-t border-stone-200 p-3 bg-white">
+            {error && (
+              <p className="mb-2 text-xs text-red-600">{error}</p>
+            )}
             <div className="flex gap-2">
               <input
                 type="text"
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={handleKeyDown}
-                placeholder="Ask about cloud, AI..."
+                placeholder="Ask about cases, timelines..."
                 disabled={loading}
-                className="flex-1 rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-800 px-3 py-2.5 text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:opacity-60"
+                className="flex-1 rounded-xl border border-stone-300 bg-stone-50 px-3 py-2.5 text-sm text-stone-900 placeholder:text-stone-500 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent disabled:opacity-60"
               />
               <button
                 onClick={sendMessage}
                 disabled={!input.trim() || loading}
-                className="rounded-xl bg-indigo-600 px-3 py-2.5 text-white hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-50"
+                className="rounded-xl bg-teal-600 px-3 py-2.5 text-white hover:bg-teal-700 disabled:cursor-not-allowed disabled:opacity-50"
                 aria-label="Send"
               >
                 <PaperAirplaneIcon className="h-5 w-5" />
               </button>
             </div>
             <Link
-              href="/visionxix-ai-assistant"
-              className="mt-2 block text-center text-[10px] text-slate-500 hover:text-indigo-600"
+              href="/help/ai-assistant"
+              className="mt-2 block text-center text-[10px] text-stone-500 hover:text-teal-600"
             >
               Open full AI assistant
             </Link>

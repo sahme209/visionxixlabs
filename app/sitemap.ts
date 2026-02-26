@@ -1,49 +1,54 @@
-import { MetadataRoute } from "next";
+import type { MetadataRoute } from "next";
 import { SITE_URL } from "@/lib/seo";
-import { cloudSolutionCards } from "@/lib/cloudContent";
-import { getAllInsightSlugs } from "@/lib/insightsContent";
+import { guides } from "@/lib/guides-data";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const staticRoutes: MetadataRoute.Sitemap = [
-    { url: SITE_URL, lastModified: new Date(), changeFrequency: "weekly", priority: 1 },
-    { url: `${SITE_URL}/cloud-solutions`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.95 },
-    { url: `${SITE_URL}/cloud-solutions/aws`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.9 },
-    { url: `${SITE_URL}/cloud-solutions/azure`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.9 },
-    { url: `${SITE_URL}/cloud-solutions/gcp`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.9 },
-    { url: `${SITE_URL}/ai-solutions`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.9 },
-    { url: `${SITE_URL}/ai-engineering`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.9 },
-    { url: `${SITE_URL}/ai-solutions/internal-ai`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.8 },
-    { url: `${SITE_URL}/ai-solutions/ai-automation`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.8 },
-    { url: `${SITE_URL}/ai-solutions/ai-infrastructure`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.8 },
-    { url: `${SITE_URL}/enterprise-readiness`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.85 },
-    { url: `${SITE_URL}/free-review`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.9 },
-    { url: `${SITE_URL}/cloud-review`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.85 },
-    { url: `${SITE_URL}/cloud-security`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.85 },
-    { url: `${SITE_URL}/solutions-for-growing-teams`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.85 },
-    { url: `${SITE_URL}/markets`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.85 },
-    { url: `${SITE_URL}/case-studies`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.85 },
-    { url: `${SITE_URL}/services`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.85 },
-    { url: `${SITE_URL}/apps`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.8 },
-    { url: `${SITE_URL}/contact`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.9 },
-    { url: `${SITE_URL}/press`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.7 },
-    { url: `${SITE_URL}/terms`, lastModified: new Date(), changeFrequency: "yearly", priority: 0.3 },
-    { url: `${SITE_URL}/privacy`, lastModified: new Date(), changeFrequency: "yearly", priority: 0.3 },
-    { url: `${SITE_URL}/insights`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.8 },
+  const base: MetadataRoute.Sitemap = [
+    { url: SITE_URL, lastModified: new Date(), changeFrequency: "daily", priority: 1 },
+    { url: `${SITE_URL}/stats`, lastModified: new Date(), changeFrequency: "daily", priority: 0.95 },
+    { url: `${SITE_URL}/guides`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.95 },
+    { url: `${SITE_URL}/resources`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.9 },
+    { url: `${SITE_URL}/official-links`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.85 },
+    { url: `${SITE_URL}/embassy`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.85 },
+    { url: `${SITE_URL}/travel-safety`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.85 },
+    { url: `${SITE_URL}/travel-advisories`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.85 },
+    { url: `${SITE_URL}/passports`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.85 },
+    { url: `${SITE_URL}/visa-types`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.85 },
+    { url: `${SITE_URL}/step`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.85 },
+    { url: `${SITE_URL}/nvc-guide`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.85 },
+    { url: `${SITE_URL}/records`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.85 },
+    { url: `${SITE_URL}/processing-times`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.88 },
+    { url: `${SITE_URL}/fees`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.88 },
+    { url: `${SITE_URL}/status-decoder`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.88 },
+    { url: `${SITE_URL}/search`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.85 },
+    { url: `${SITE_URL}/help`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.9 },
+    { url: `${SITE_URL}/visa-pause-impact`, lastModified: new Date(), changeFrequency: "daily", priority: 0.9 },
+    { url: `${SITE_URL}/news`, lastModified: new Date(), changeFrequency: "daily", priority: 0.85 },
+    { url: `${SITE_URL}/subscribe`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.8 },
+    { url: `${SITE_URL}/about`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.7 },
+    { url: `${SITE_URL}/login`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.5 },
+    { url: `${SITE_URL}/privacy`, lastModified: new Date(), changeFrequency: "yearly", priority: 0.4 },
+    { url: `${SITE_URL}/terms`, lastModified: new Date(), changeFrequency: "yearly", priority: 0.4 },
+    { url: `${SITE_URL}/profile-setup`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.5 },
+    { url: `${SITE_URL}/tools/case-tools`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.85 },
+    { url: `${SITE_URL}/tools/queue-position`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.85 },
+    { url: `${SITE_URL}/tools/expedite`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.8 },
+    { url: `${SITE_URL}/tools/action-plan`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.8 },
+    { url: `${SITE_URL}/tools/timeline-alerts`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.8 },
+    { url: `${SITE_URL}/help/faq`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.85 },
+    { url: `${SITE_URL}/help/timelines`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.8 },
+    { url: `${SITE_URL}/help/track-case`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.8 },
+    { url: `${SITE_URL}/help/documents`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.8 },
+    { url: `${SITE_URL}/help/interview-prep`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.8 },
+    { url: `${SITE_URL}/help/example-forms`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.75 },
   ];
 
-  const cloudSolutionRoutes: MetadataRoute.Sitemap = cloudSolutionCards.map((card) => ({
-    url: `${SITE_URL}${card.href}`,
+  const guideUrls: MetadataRoute.Sitemap = guides.map((g) => ({
+    url: `${SITE_URL}/guides/${g.id}`,
     lastModified: new Date(),
-    changeFrequency: "monthly" as const,
-    priority: 0.75,
+    changeFrequency: "weekly" as const,
+    priority: 0.85,
   }));
 
-  const insightRoutes: MetadataRoute.Sitemap = getAllInsightSlugs().map((slug) => ({
-    url: `${SITE_URL}/insights/${slug}`,
-    lastModified: new Date(),
-    changeFrequency: "yearly" as const,
-    priority: 0.7,
-  }));
-
-  return [...staticRoutes, ...cloudSolutionRoutes, ...insightRoutes];
+  return [...base, ...guideUrls];
 }

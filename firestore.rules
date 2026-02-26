@@ -1,0 +1,306 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helper: admin check (uses your existing custom claim)
+    function isAdmin() {
+      return request.auth != null && request.auth.token.admin == true;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    // ✅ App Config (Version Check) ✅ ADDED
+    // Used by: AppVersionManager -> appConfig/version
+    match /appConfig/{docId} {
+      allow read: if true;        // allow version checks even without login
+      allow write: if isAdmin();  // only admin updates config
+    }
+
+    // ✅ Daily Approval (public read, admin write)
+    match /dailyApproval/{documentId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // ✅ I-130 approvals dataset (public read, admin write)
+    match /i130Approvals/{docId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // ✅ I-129F (K-1) approvals dataset (public read, admin write)
+    match /i129fApprovals/{docId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // (Optional) If you ever add subcollections under i129fApprovals
+    match /i129fApprovals/{docId}/{document=**} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // ✅ I-130 precomputed stats (public read, admin write)
+    match /i130Stats/{docId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // ✅ I-130 Embassy stats (public read, admin write)
+    match /i130EmbassyStats/{countryCode} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // If you have subcollections under each country doc, keep this too:
+    match /i130EmbassyStats/{countryCode}/{doc=**} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // ✅ I-129F Embassy stats (public read, admin write)
+    match /i129fEmbassyStats/{embassy} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // If you have subcollections under each embassy doc, keep this too:
+    match /i129fEmbassyStats/{embassy}/{doc=**} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // ✅ I-130 Embassy Timing (public read, admin write)
+    // Used by: I130EmbassyTimingService listener
+    match /i130EmbassyTiming/{docId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Optional subcollections under i130EmbassyTiming
+    match /i130EmbassyTiming/{docId}/{document=**} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // ✅ System Daily Stats (public read, admin write)
+    match /systemDailyStats/{date} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // ✅ System Monthly Stats (public read, admin write)
+    match /systemMonthlyStats/{month} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // ✅ System Coverage (public read, admin write)
+    match /systemCoverage/{scopeId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // ✅ Trends Data (public read, admin write)
+    match /trends/{scopeId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // ✅ PD Stats (public read, admin write)
+    match /pdStats/{scopeId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // ✅ RFE Stats (public read, admin write)
+    match /rfeStats/{scopeId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // ✅ Calendar Approvals (public read, admin write)
+    match /calendarApprovals/{month} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // ✅ Global notifications (public read, admin write)
+    // NOTE: This is your existing collection "userNotification" (singular). Keep as-is.
+    match /userNotification/{docId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // ✅ Current Processing Times (public read, admin write)
+    // Used by Home card listener: currentProcessingTimes/global
+    match /currentProcessingTimes/{docId} {
+      allow read: if true;        // or restrict: if isSignedIn()
+      allow write: if isAdmin();
+    }
+
+    // If you later add subcollections under currentProcessingTimes
+    match /currentProcessingTimes/{docId}/{document=**} {
+      allow read: if true;        // or restrict: if isSignedIn()
+      allow write: if isAdmin();
+    }
+
+    // ✅ News Collection (public read, admin write)
+    match /news/{docId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // ✅ Subscriptions Collection (user can read own, only Admin SDK can write)
+    // Used by: subscriptionService -> subscriptions/{userId}
+    // Writes are done server-side via Admin SDK (webhooks)
+    match /subscriptions/{userId} {
+      // User can read their own subscription document
+      allow read: if isOwner(userId) || isAdmin();
+      // Only server (Admin SDK) can write subscriptions via webhooks
+      // Client-side writes are blocked for security
+      allow write: if false;
+    }
+
+    // ✅ User Notifications (per-user)
+    // Path used by your app:
+    // userNotifications/{uid}/notifications/{notificationId}
+    match /userNotifications/{userId} {
+      // allow reading the parent doc if you ever fetch it
+      allow read: if isOwner(userId) || isAdmin();
+      allow write: if isAdmin(); // usually only admin touches parent doc
+    }
+
+    match /userNotifications/{userId}/notifications/{notificationId} {
+      // Read: owner or admin
+      allow read: if isOwner(userId) || isAdmin();
+
+      // Create: owner or admin (your app creates docs here)
+      allow create: if isOwner(userId) || isAdmin();
+
+      // Update:
+      // - Admin can update anything
+      // - User can only update read/readAt (so they can mark read)
+      allow update: if isAdmin() || (
+        isOwner(userId) &&
+        request.resource.data.diff(resource.data).changedKeys().hasOnly(["read", "readAt"])
+      );
+
+      // Delete: block for users (optional admin delete)
+      allow delete: if isAdmin();
+      // If you prefer nobody deletes:
+      // allow delete: if false;
+    }
+
+    // ✅ User Profiles (user only own doc, admin can read all)
+    match /userProfiles/{userId} {
+      // normal user: only their own doc
+      allow read, write: if isOwner(userId);
+
+      // admin: read ALL profiles
+      allow read: if isAdmin();
+      // If you want admin to also edit profiles, enable:
+      // allow write: if isAdmin();
+    }
+    
+    // ✅ Allow listening to userProfiles collection for counting (for RealTimeUserCounter)
+    // This allows counting total users - signed-in users can count, but can only read their own documents
+    match /userProfiles {
+      // Allow listing/querying the collection (for counting) if signed in
+      // Individual document reads are still controlled by the userProfiles/{userId} rule above
+      allow list: if isSignedIn() || isAdmin();
+    }
+
+    // ✅ Users Collection (private per-user data)
+    // Used by NotificationSettingsManager:
+    // users/{uid}/notificationSettings/settings
+    // Also used for storing push tokens:
+    // users/{uid}/pushTokens/{tokenId}
+    match /users/{userId} {
+      // Allow user to read/write their own doc (if you store anything at /users/{uid})
+      allow read, write: if isOwner(userId) || isAdmin();
+
+      // Notification settings doc(s)
+      match /notificationSettings/{docId} {
+        allow read, write: if isOwner(userId) || isAdmin();
+      }
+
+      // Push tokens (recommended)
+      match /pushTokens/{tokenId} {
+        allow read, write: if isOwner(userId) || isAdmin();
+      }
+
+      // Optional: allow other subcollections under /users/{uid}/...
+      match /{document=**} {
+        allow read, write: if isOwner(userId) || isAdmin();
+      }
+    }
+
+    // ✅ All Users Collection (admin read only - for admin tool)
+    // This collection stores basic user signup data for admin visibility
+    match /allUsers/{docId} {
+      // Only admins can read all users (for admin tool)
+      allow read: if isAdmin();
+      // Allow writes during signup (users can create their own doc) OR admin can write
+      allow create: if isSignedIn();
+      allow update, delete: if isAdmin();
+    }
+
+    // ✅ Community Access Requests (per-user + admin)
+    // Collection: communityAccessRequests
+    // Each doc MUST include: userId (string) == request.auth.uid
+    match /communityAccessRequests/{docId} {
+
+      // User can CREATE only their own request doc
+      allow create: if isSignedIn()
+        && request.resource.data.userId == request.auth.uid;
+
+      // User can READ only their own request doc
+      allow read: if isSignedIn()
+        && resource.data.userId == request.auth.uid;
+
+      // Admin can read/update/delete everything
+      allow read, update, delete: if isAdmin();
+    }
+
+    // Optional: if you ever add subcollections under communityAccessRequests
+    match /communityAccessRequests/{docId}/{document=**} {
+      allow read, write: if isAdmin();
+    }
+
+    // ✅ App Stats (Real-Time User Counter)
+    // Collection: appStats/userCounts
+    // Public read (for displaying user counts), signed-in users can write (for activity tracking)
+    match /appStats/{docId} {
+      allow read: if true;  // Anyone can read user counts
+      allow write: if isSignedIn() || isAdmin();
+    }
+
+    // If you have subcollections under appStats
+    match /appStats/{docId}/{document=**} {
+      allow read: if true;
+      allow write: if isSignedIn() || isAdmin();
+    }
+
+    // ✅ Position History (per-user queue position snapshots)
+    // Collection: positionHistory/{userId}/snapshots
+    // Used by: QueuePositionCard / positionHistoryService for movement metrics
+    match /positionHistory/{userId} {
+      allow read, write: if isOwner(userId) || isAdmin();
+      match /snapshots/{snapshotId} {
+        allow read, write: if isOwner(userId) || isAdmin();
+      }
+    }
+
+    // ✅ Deny everything else
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

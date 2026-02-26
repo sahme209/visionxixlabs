@@ -1,46 +1,42 @@
 /**
- * SEO constants and helpers for Vision XIX Labs.
+ * Central SEO constants and helpers for immigration-related search visibility.
+ * Target: immigration, USCIS, visa, I-130, I-129F, case status, processing times, etc.
  */
 
-export const SITE_URL = "https://visionxixlabs.com";
+export const SITE_URL = "https://visanova.app";
+export const SITE_NAME = "VisaNova";
 
-export const defaultOgImage = `${SITE_URL}/vision-xix-logo.png`;
+export const DEFAULT_TITLE = "VisaNova — USCIS Case Tracking & Immigration Timeline | I-130, I-129F";
+export const DEFAULT_DESCRIPTION =
+  "Track your USCIS case status, I-130 and I-129F processing times, and immigration timeline. Real processing data, queue position, and approval estimates. Know where you stand.";
 
-export const organization = {
-  name: "Vision XIX Labs",
-  legalName: "Vision XIX Labs LLC",
-  url: SITE_URL,
-  logo: `${SITE_URL}/vision-xix-logo.png`,
-  description:
-    "Engineering cloud platforms that scale. Multi-cloud engineering across AWS, Azure, and GCP. Reliable, secure, cost-effective infrastructure, CI/CD, FinOps, and AI solutions.",
-  foundingDate: "2024",
-  sameAs: [] as string[],
-};
-
-export const primaryKeywords = [
-  "cloud engineering",
-  "AWS consulting",
-  "Azure consulting",
-  "GCP consulting",
-  "multi-cloud",
-  "Infrastructure as Code",
-  "CI/CD",
-  "DevOps",
-  "FinOps",
-  "cloud cost optimization",
-  "landing zone",
-  "Vision XIX Labs",
+/** Long-tail and core keywords for immigration, forms, and case tracking */
+export const SEO_KEYWORDS = [
+  "USCIS case status",
+  "immigration case tracking",
+  "I-130 processing time",
+  "I-129F processing time",
+  "I-130 approval",
+  "I-129F approval",
+  "USCIS processing times",
+  "immigration timeline",
+  "visa bulletin",
+  "priority date",
+  "NVC case status",
+  "consular processing",
+  "green card timeline",
+  "family based immigration",
+  "fiancé visa",
+  "K-1 visa",
+  "I-485",
+  "I-765",
+  "I-140",
+  "adjustment of status",
+  "case status check",
+  "USCIS receipt number",
+  "immigration case status",
+  "visa case tracking",
+  "VisaNova",
 ];
 
-export const secondaryKeywords = [
-  "cloud migration",
-  "Kubernetes",
-  "Terraform",
-  "GitHub Actions",
-  "Octopus Deploy",
-  "AI solutions",
-  "enterprise cloud",
-  "cloud security",
-  "SRE",
-  "observability",
-];
+export const OG_IMAGE_URL = `${SITE_URL}/icon.png`;

@@ -1,0 +1,63 @@
+"use client";
+
+import Image from "next/image";
+import DataSourceIndicator from "./DataSourceIndicator";
+import { ICON_IMAGES } from "@/lib/images";
+
+interface NowTileProps {
+  latest: number;
+  previous: number;
+  lastPD: string;
+}
+
+export default function NowTile({ latest, previous, lastPD }: NowTileProps) {
+  const trendUp = latest > previous;
+  const trendFlat = latest === previous;
+
+  return (
+    <div className="uscis-card">
+      <div className="p-4">
+        <div className="flex items-center gap-4">
+          {/* Icon */}
+          <div className="w-11 h-11 rounded-lg overflow-hidden flex-shrink-0 border border-[var(--border-color)]/50">
+            <Image src={ICON_IMAGES.chart} alt="" width={44} height={44} className="w-full h-full object-cover" />
+          </div>
+
+          {/* Content */}
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2 mb-1">
+              <span className="text-xs text-[var(--text-secondary)]">Now</span>
+              <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></div>
+            </div>
+            <div className="flex items-baseline gap-2 mb-1">
+              <span className="text-base font-semibold text-[var(--text-primary)]">
+                {latest} Priority Dates
+              </span>
+              {trendFlat ? (
+                <span className="text-xs font-semibold text-[var(--text-secondary)]">steady</span>
+              ) : trendUp ? (
+                <span className="text-xs font-semibold text-green-600 dark:text-green-400">
+                  +{latest - previous}
+                </span>
+              ) : (
+                <span className="text-xs font-semibold text-red-600 dark:text-red-400">
+                  -{previous - latest}
+                </span>
+              )}
+            </div>
+            <p className="text-xs text-[var(--text-secondary)] mb-1">
+              Last approved Priority Date: {lastPD}
+            </p>
+            <p className="text-xs text-[var(--text-secondary)] italic">
+              Processing continues. These numbers update throughout the day.
+            </p>
+            <div className="mt-2">
+              <DataSourceIndicator source="community" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+

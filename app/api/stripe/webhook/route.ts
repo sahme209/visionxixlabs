@@ -5,11 +5,9 @@ import { sendSubscriptionEmail } from "@/lib/services/emailService";
 import { getAdminDb, getAdminAuth } from "@/lib/firebase-admin";
 import { generateTimeline } from "@/lib/services/timelineService";
 
-function getStripe(): Stripe {
-  const key = process.env.STRIPE_SECRET_KEY;
-  if (!key) throw new Error("STRIPE_SECRET_KEY not configured");
-  return new Stripe(key, { apiVersion: "2025-12-15.clover" });
-}
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "", {
+  apiVersion: "2025-12-15.clover",
+});
 
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET || "";
 
@@ -27,7 +25,6 @@ export async function POST(request: NextRequest) {
   }
 
   let event: Stripe.Event;
-  const stripe = getStripe();
 
   try {
     event = stripe.webhooks.constructEvent(body, signature, webhookSecret);

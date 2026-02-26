@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { Resend } from "resend";
 import { SUPPORT_EMAIL } from "@/lib/constants/company";
 
 export async function POST(req: NextRequest) {
@@ -21,14 +22,13 @@ export async function POST(req: NextRequest) {
   const resendApiKey = process.env.RESEND_API_KEY;
   if (!resendApiKey || !resendApiKey.startsWith("re_")) {
     return NextResponse.json(
-      { error: "Lead capture is not configured. Please email us directly." },
+      { error: "Lead capture is not configured. Please try emailing us directly." },
       { status: 503 }
     );
   }
 
-  const fromHeader = process.env.RESEND_FROM_EMAIL
-    ? `Vision XIX Labs <${process.env.RESEND_FROM_EMAIL}>`
-    : "onboarding@resend.dev";
+  const client = new Resend(resendApiKey);
+  const fromEmail = process.env.RESEND_FROM_EMAIL || `Vision XIX Labs <${SUPPORT_EMAIL}>`;
 
   const subject = `[Vision XIX AI Lead] ${name || "New lead"} — ${source}`;
   const html = `
@@ -41,24 +41,16 @@ export async function POST(req: NextRequest) {
   `;
 
   try {
-    const res = await fetch("https://api.resend.com/emails", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${resendApiKey}`,
-      },
-      body: JSON.stringify({
-        from: fromHeader,
-        reply_to: email,
-        to: SUPPORT_EMAIL,
-        subject,
-        html,
-      }),
+    const result = await client.emails.send({
+      from: fromEmail,
+      replyTo: email,
+      to: SUPPORT_EMAIL,
+      subject,
+      html,
     });
 
-    if (!res.ok) {
-      const err = await res.text();
-      console.error("[VisionXIX Lead] Resend error:", res.status, err);
+    if (result.error) {
+      console.error("[VisionXIX Lead] Resend error:", result.error);
       return NextResponse.json(
         { error: "Failed to submit. Please try emailing us directly." },
         { status: 502 }

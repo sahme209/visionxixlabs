@@ -1,0 +1,47 @@
+{
+  "indexes": [
+    {
+      "collectionGroup": "i130Approvals",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "formType",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "createdAt",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "i129fApprovals",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "formType",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "createdAt",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "snapshots",
+      "queryScope": "COLLECTION_GROUP",
+      "fields": [
+        {
+          "fieldPath": "formType",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "calculatedAt",
+          "order": "ASCENDING"
+        }
+      ]
+    }
+  ],
+  "fieldOverrides": []
+}

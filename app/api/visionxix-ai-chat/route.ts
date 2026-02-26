@@ -1,27 +1,28 @@
 import { NextRequest, NextResponse } from "next/server";
 import { SUPPORT_EMAIL } from "@/lib/constants/company";
 import { getVisionXIXKnowledgeContext } from "@/lib/data/visionxix-knowledge";
-import { generateChatResponse } from "@/lib/ai/chat";
-
-export const runtime = "nodejs";
+import {
+  canSendMessage,
+  incrementMessageUsage,
+  upsertBot,
+} from "@/lib/visionxix/usage";
 
 function buildSystemPrompt(): string {
   const knowledge = getVisionXIXKnowledgeContext();
-  return `You are the Vision XIX Labs Site Assistant — a knowledgeable cloud & AI engineer representing Vision XIX Labs.
+  return `You are the Vision XIX Labs Site Assistant — a helpful, senior cloud & AI engineer representing Vision XIX Labs.
 
 Your role:
 - Help visitors understand Vision XIX Labs' cloud and AI engineering services.
-- Explain how we work across AWS, Azure, and GCP with IaC, automation, security, and observability.
-- Describe how we build production AI systems (internal assistants, RAG, extraction, automation).
-- Provide practical, actionable guidance. Suggest next steps like a Free Cloud & AI Review or talking to an engineer.
-- Be conversational, clear, and concise. Use examples when helpful.
+- Explain how we work across AWS, Azure, and GCP with infrastructure as code, automation, security, and observability.
+- Describe how we build production AI systems (internal assistants, RAG, extraction, automation) inside a customer's cloud.
+- Provide practical, non-hype guidance and suggest next steps like a Free Cloud & AI Review or talking to an engineer.
 
 Important:
 - Always identify as the Vision XIX Labs Site Assistant.
-- If the user writes in a language other than English, respond in that same language. We support 95+ languages.
-- Do NOT give immigration or legal advice (that belongs to VisaNova).
-- For detailed questions, suggest contacting ${SUPPORT_EMAIL}.
-- When asked about our AI product (Vision XIX AI), explain features, pricing, and invite them to request a demo.
+- Do NOT give immigration or legal advice (that belongs to VisaNova, a product of Vision XIX Labs).
+- For detailed or sensitive questions, suggest a discovery call or contacting us at ${SUPPORT_EMAIL}.
+
+Use the knowledge base below as your primary source of truth:
 
 --- Knowledge Base ---
 ${knowledge}
@@ -33,67 +34,133 @@ interface Message {
   content: string;
 }
 
-export async function POST(req: NextRequest): Promise<Response> {
+export async function POST(req: NextRequest) {
+  const apiKey = process.env.OPENAI_API_KEY;
+  if (!apiKey) {
+    console.error("[VisionXIX AI Chat] Missing OPENAI_API_KEY environment variable.");
+    return NextResponse.json(
+      { error: "AI service is temporarily unavailable. Please try again later." },
+      { status: 503 }
+    );
+  }
+
+  let body: { messages?: Message[]; botId?: string };
   try {
-    if (!process.env.OPENAI_API_KEY?.trim() && !process.env.GEMINI_API_KEY?.trim()) {
-      console.error("[VisionXIX AI Chat] Missing OPENAI_API_KEY and GEMINI_API_KEY.");
-      return NextResponse.json(
-        { error: "AI assistant is not configured. Please add OPENAI_API_KEY or GEMINI_API_KEY." },
-        { status: 503 }
-      );
-    }
+    body = await req.json();
+  } catch {
+    return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
+  }
 
-    let body: { messages?: Message[] };
+  const messages = body.messages;
+  const botId = body.botId ?? process.env.VISIONXIX_DEMO_BOT_ID ?? "demo";
+
+  if (!botId || botId.trim() === "") {
+    return NextResponse.json(
+      {
+        error:
+          "botId is required. Use your bot ID from the Vision XIX Labs dashboard. Demo uses 'demo'.",
+      },
+      { status: 400 }
+    );
+  }
+
+  if (!Array.isArray(messages) || messages.length === 0) {
+    return NextResponse.json(
+      { error: "messages array is required and must not be empty" },
+      { status: 400 }
+    );
+  }
+
+  // Ensure demo bot exists for demo/assistant page
+  if (botId === "demo" || botId === process.env.VISIONXIX_DEMO_BOT_ID) {
     try {
-      body = await req.json();
-    } catch (parseErr) {
-      console.error("[VisionXIX AI Chat] Invalid JSON body:", parseErr);
-      return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
+      await upsertBot({ botId, plan: "demo" });
+    } catch {
+      // Ignore — bot may already exist
     }
+  }
 
-    const messages = body.messages;
-    if (!Array.isArray(messages) || messages.length === 0) {
+  // Enforce plan limits — check before processing
+  try {
+    const check = await canSendMessage(botId);
+    if (!check.allowed) {
       return NextResponse.json(
-        { error: "messages array is required and must not be empty" },
-        { status: 400 }
+        {
+          error: `Message limit reached. You've used ${check.used.toLocaleString()} of ${check.limit.toLocaleString()} messages this month. Upgrade your plan or add message add-ons at visionxixlabs.com/visionxix-ai/pricing.`,
+        },
+        { status: 402 }
       );
     }
+  } catch (usageErr) {
+    console.error("[VisionXIX AI Chat] Usage check error:", usageErr);
+    return NextResponse.json(
+      {
+        error:
+          "Usage tracking temporarily unavailable. Please try again or contact " +
+          SUPPORT_EMAIL,
+      },
+      { status: 503 }
+    );
+  }
 
-    const chatMessages = messages.slice(-20).map((m) => ({
-      role: (m.role === "assistant" ? "assistant" : "user") as "user" | "assistant",
-      content: String(m.content).slice(0, 4000),
-    }));
+  const trimmed = messages.slice(-20).map((m) => ({
+    role: m.role === "system" ? "system" : m.role === "assistant" ? "assistant" : "user",
+    content: String(m.content).slice(0, 4000),
+  }));
 
-    const { text } = await generateChatResponse({
-      systemPrompt: buildSystemPrompt(),
-      messages: chatMessages,
-      maxTokens: 1536,
-      temperature: 0.4,
+  const payload = {
+    model: "gpt-4o-mini",
+    messages: [{ role: "system" as const, content: buildSystemPrompt() }, ...trimmed],
+    max_tokens: 1024,
+    temperature: 0.7,
+  };
+
+  const doFetch = () =>
+    fetch("https://api.openai.com/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${apiKey}`,
+      },
+      body: JSON.stringify(payload),
     });
+
+  try {
+    let res = await doFetch();
+    if (res.status === 429) {
+      await new Promise((r) => setTimeout(r, 2000));
+      res = await doFetch();
+    }
+
+    if (!res.ok) {
+      const err = await res.text();
+      console.error("[VisionXIX AI Chat] OpenAI API error:", res.status, err);
+      let message = "AI service temporarily unavailable. Please try again later.";
+      if (res.status === 401) message = "API key invalid or expired. Please check your OpenAI configuration.";
+      else if (res.status === 429) message = "Too many requests. Please try again in a moment.";
+      else if (res.status >= 500) message = "OpenAI servers are busy. Please try again in a few minutes.";
+      return NextResponse.json({ error: message }, { status: 502 });
+    }
+
+    const data = (await res.json()) as {
+      choices?: Array<{ message?: { content?: string } }>;
+    };
+    const text = data?.choices?.[0]?.message?.content ?? "";
+
+    // Increment usage after successful response
+    try {
+      await incrementMessageUsage(botId);
+    } catch (incErr) {
+      console.error("[VisionXIX AI Chat] Usage increment error:", incErr);
+    }
 
     return NextResponse.json({ message: text });
   } catch (e) {
-    const err = e as Error & { status?: number; code?: string };
-    console.error("[VisionXIX AI Chat] Full error:", err);
-    console.error("[VisionXIX AI Chat] Error message:", err?.message ?? String(e));
-    console.error("[VisionXIX AI Chat] Error stack:", err?.stack);
-    if ("status" in err) console.error("[VisionXIX AI Chat] Error status:", (err as { status?: number }).status);
-    if ("code" in err) console.error("[VisionXIX AI Chat] Error code:", (err as { code?: string }).code);
-
-    let errorMessage = "AI service temporarily unavailable. Please try again later.";
-    let statusCode = 500;
-
-    if (err?.message?.includes("401") || err?.message?.includes("Incorrect API key") || err?.message?.includes("API key")) {
-      errorMessage = "AI provider API key invalid or expired. Please check your configuration.";
-      statusCode = 503;
-    } else if (err?.message?.includes("429") || err?.message?.includes("rate limit")) {
-      errorMessage = "Too many requests. Please try again in a moment.";
-      statusCode = 429;
-    } else if (err?.message?.includes("500") || err?.message?.includes("503")) {
-      errorMessage = "AI service is busy. Please try again in a few minutes.";
-      statusCode = 502;
-    }
-
-    return NextResponse.json({ error: errorMessage }, { status: statusCode });
+    console.error("[VisionXIX AI Chat] Error:", e);
+    return NextResponse.json(
+      { error: "AI service temporarily unavailable. Please try again later." },
+      { status: 500 }
+    );
   }
 }
+
