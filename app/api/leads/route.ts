@@ -5,7 +5,6 @@ import {
   sendLeadConfirmationEmail,
   sendLeadInternalNotification,
 } from "@/lib/leads/leadEmailService";
-import { prisma } from "@/lib/db";
 
 const MIN_COMPLETION_MS = 10_000; // 10 seconds minimum
 
@@ -47,20 +46,8 @@ export async function POST(req: NextRequest) {
   }
 
   const estimate = estimatePricing(data);
-  const fullPayload = { ...data, _honeypot: undefined, _startTime: undefined };
 
   try {
-    const lead = await prisma.lead.create({
-      data: {
-        name: data.fullName,
-        email: data.email.trim().toLowerCase(),
-        phone: data.phone?.trim() || null,
-        fullPayload: fullPayload as object,
-        status: "new",
-        source: "website-request",
-      },
-    });
-
     const [confirmOk, notifyOk] = await Promise.all([
       sendLeadConfirmationEmail(data, estimate),
       sendLeadInternalNotification(data, estimate),
@@ -70,13 +57,12 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      leadId: lead.id,
       estimate: { min: estimate.min, max: estimate.max, breakdown: estimate.breakdown },
     });
   } catch (e) {
-    console.error("[Leads API] Database error:", e);
+    console.error("[Leads API] Error:", e);
     return NextResponse.json(
-      { error: "Failed to save request. Please try again." },
+      { error: "Failed to send request. Please try again." },
       { status: 500 }
     );
   }
