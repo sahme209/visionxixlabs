@@ -1,11 +1,12 @@
 "use client";
 
+import { Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { CheckCircleIcon, ArrowRightIcon } from "@heroicons/react/24/outline";
 import { PARENT_WEBSITE } from "@/lib/constants/company";
 
-export default function ThankYouPage() {
+function ThankYouContent() {
   const searchParams = useSearchParams();
   const min = Number(searchParams.get("min")) || 0;
   const max = Number(searchParams.get("max")) || 0;
@@ -66,5 +67,17 @@ export default function ThankYouPage() {
         </div>
       </main>
     </div>
+  );
+}
+
+export default function ThankYouPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-[var(--bg-primary)] flex items-center justify-center">
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-[var(--uscis-blue)] border-t-transparent" />
+      </div>
+    }>
+      <ThankYouContent />
+    </Suspense>
   );
 }

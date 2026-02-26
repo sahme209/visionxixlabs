@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
-import { useAuth } from "@/contexts/AuthContext";
+import { onAuthStateChanged, type User } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 import {
   ArrowLeftIcon,
@@ -30,7 +30,16 @@ interface LeadDetail extends LeadSummary {
 }
 
 export default function AdminLeadsPage() {
-  const { user, loading: authLoading } = useAuth();
+  const [user, setUser] = useState<User | null>(null);
+  const [authLoading, setAuthLoading] = useState(true);
+
+  useEffect(() => {
+    const unsub = onAuthStateChanged(auth, (u) => {
+      setUser(u);
+      setAuthLoading(false);
+    });
+    return unsub;
+  }, []);
   const [leads, setLeads] = useState<LeadSummary[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
