@@ -5,13 +5,14 @@ import { sendSubscriptionEmail } from "@/lib/services/emailService";
 import { getAdminDb, getAdminAuth } from "@/lib/firebase-admin";
 import { generateTimeline } from "@/lib/services/timelineService";
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "", {
-  apiVersion: "2025-12-15.clover",
-});
-
-const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET || "";
+function getStripe(): Stripe {
+  const key = process.env.STRIPE_SECRET_KEY;
+  if (!key?.trim()) throw new Error("STRIPE_SECRET_KEY not configured");
+  return new Stripe(key, { apiVersion: "2025-12-15.clover" });
+}
 
 export async function POST(request: NextRequest) {
+  const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET || "";
   if (!webhookSecret || webhookSecret.trim() === "") {
     console.error("[WEBHOOK] STRIPE_WEBHOOK_SECRET is not configured");
     return NextResponse.json({ error: "Webhook not configured" }, { status: 500 });
@@ -26,6 +27,7 @@ export async function POST(request: NextRequest) {
 
   let event: Stripe.Event;
 
+  const stripe = getStripe();
   try {
     event = stripe.webhooks.constructEvent(body, signature, webhookSecret);
   } catch (err: any) {
