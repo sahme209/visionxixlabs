@@ -17,7 +17,9 @@ import {
 } from "@heroicons/react/24/outline";
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip } from "recharts";
 import SkeletonLoader from "./SkeletonLoader";
-import { SECTION_IMAGES, EMPTY_STATE_IMAGES, ICON_IMAGES } from "@/lib/images";
+import { SECTION_IMAGES, EMPTY_STATE_IMAGES } from "@/lib/images";
+import GradientIconBadge from "@/components/GradientIconBadge";
+import { ChartBarIcon } from "@heroicons/react/24/solid";
 
 export default function WeeklySummary() {
   const { profile } = useProfile();
@@ -58,8 +60,8 @@ export default function WeeklySummary() {
         <div className="absolute inset-0 opacity-[0.05]">
           <Image src={EMPTY_STATE_IMAGES.profile} alt="" fill className="object-cover" sizes="400px" />
         </div>
-        <div className="relative w-14 h-14 rounded-2xl overflow-hidden mx-auto mb-4 border border-[var(--border-color)]">
-          <Image src={ICON_IMAGES.chart} alt="" width={56} height={56} className="w-full h-full object-cover" />
+        <div className="mx-auto mb-4">
+          <GradientIconBadge icon={ChartBarIcon} color="emerald" size="lg" />
         </div>
         <h3 className="text-lg font-semibold text-[var(--text-primary)] mb-1">Weekly Summary</h3>
         <p className="text-sm text-[var(--text-secondary)] max-w-xs mx-auto">

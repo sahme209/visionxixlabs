@@ -2,7 +2,9 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { EMPTY_STATE_IMAGES, ICON_IMAGES } from "@/lib/images";
+import { EMPTY_STATE_IMAGES } from "@/lib/images";
+import GradientIconBadge, { BadgeColor } from "@/components/GradientIconBadge";
+import { DocumentTextIcon, ChartBarIcon, ClockIcon, ClipboardDocumentListIcon, ExclamationTriangleIcon } from "@heroicons/react/24/solid";
 
 interface EmptyStateProps {
   icon?: "document" | "chart" | "clock" | "info" | "warning";
@@ -16,6 +18,14 @@ interface EmptyStateProps {
   imageVariant?: "documents" | "search" | "news" | "guides" | "profile";
 }
 
+const EMPTY_ICON_MAP: Record<string, { Icon: React.ComponentType<{ className?: string }>; color: BadgeColor }> = {
+  document: { Icon: DocumentTextIcon, color: "blue" },
+  chart: { Icon: ChartBarIcon, color: "emerald" },
+  clock: { Icon: ClockIcon, color: "sky" },
+  info: { Icon: ClipboardDocumentListIcon, color: "violet" },
+  warning: { Icon: ExclamationTriangleIcon, color: "red" },
+};
+
 export default function EmptyState({
   icon = "info",
   title,
@@ -27,14 +37,7 @@ export default function EmptyState({
   imageVariant,
 }: EmptyStateProps) {
   const imageSrc = imageVariant ? EMPTY_STATE_IMAGES[imageVariant] : null;
-  const iconImageMap = {
-    document: ICON_IMAGES.documents,
-    chart: ICON_IMAGES.chart,
-    clock: ICON_IMAGES.calendar,
-    info: ICON_IMAGES.checklist,
-    warning: ICON_IMAGES.warning,
-  } as const;
-  const iconImageSrc = iconImageMap[icon];
+  const { Icon, color } = EMPTY_ICON_MAP[icon];
 
   const actionButton = actionLabel && (actionHref || onAction) ? (
     actionHref ? (
@@ -67,8 +70,8 @@ export default function EmptyState({
           <Image src={imageSrc} alt="" fill className="object-cover" sizes="600px" />
         </div>
       )}
-      <div className={`empty-state-enhanced-icon ${imageSrc ? "relative" : ""} w-16 h-16 rounded-2xl overflow-hidden mx-auto border border-[var(--border-color)]`}>
-        <Image src={iconImageSrc} alt="" width={64} height={64} className="w-full h-full object-cover" />
+      <div className={`empty-state-enhanced-icon ${imageSrc ? "relative" : ""} mx-auto`}>
+        <GradientIconBadge icon={Icon} color={color} size="lg" />
       </div>
       <h3 className={`empty-state-enhanced-title ${imageSrc ? "relative" : ""}`}>{title}</h3>
       <p className={`empty-state-enhanced-description ${imageSrc ? "relative" : ""}`}>{description}</p>

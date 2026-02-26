@@ -1,8 +1,8 @@
 "use client";
 
-import Image from "next/image";
 import DataSourceIndicator from "./DataSourceIndicator";
-import { ICON_IMAGES } from "@/lib/images";
+import GradientIconBadge from "@/components/GradientIconBadge";
+import { ChartBarIcon } from "@heroicons/react/24/solid";
 
 interface NowTileProps {
   latest: number;
@@ -19,9 +19,7 @@ export default function NowTile({ latest, previous, lastPD }: NowTileProps) {
       <div className="p-4">
         <div className="flex items-center gap-4">
           {/* Icon */}
-          <div className="w-11 h-11 rounded-lg overflow-hidden flex-shrink-0 border border-[var(--border-color)]/50">
-            <Image src={ICON_IMAGES.chart} alt="" width={44} height={44} className="w-full h-full object-cover" />
-          </div>
+          <GradientIconBadge icon={ChartBarIcon} color="emerald" size="md" />
 
           {/* Content */}
           <div className="flex-1 min-w-0">

@@ -5,16 +5,18 @@ import Link from "next/link";
 import { useSubscription } from "@/hooks/useSubscription";
 import Image from "next/image";
 import ToolUsageChart from "@/components/charts/ToolUsageChart";
-import { HERO_IMAGES, TOOL_CARD_IMAGES, ICON_IMAGES } from "@/lib/images";
+import { HERO_IMAGES, TOOL_CARD_IMAGES } from "@/lib/images";
+import GradientIconBadge from "@/components/GradientIconBadge";
+import { BriefcaseIcon, DocumentTextIcon, FolderIcon, BellIcon, ClipboardDocumentListIcon, LockClosedIcon } from "@heroicons/react/24/solid";
 
 export default function CaseToolsPage() {
   const { isSubscribed, hasUsedTrial } = useSubscription();
   
   const tools = [
-    { title: "RFE/NOID Response", description: "Draft response + exhibit list + cover letter", iconImage: "documents" as const, href: "/tools/rfe-response", color: "orange" },
-    { title: "Document Pack Organizer", description: "Scan, label, merge + table of contents", iconImage: "folder" as const, href: "/tools/document-pack", color: "blue" },
-    { title: "Timeline Alerts & Reminders", description: "Smart notifications + calendar sync", iconImage: "bell" as const, href: "/tools/timeline-alerts", color: "blue" },
-    { title: "Evidence Checklist Builder", description: "By form type + progress tracker", iconImage: "checklist" as const, href: "/tools/evidence-checklist", color: "indigo" },
+    { title: "RFE/NOID Response", description: "Draft response + exhibit list + cover letter", icon: DocumentTextIcon, badgeColor: "orange" as const, href: "/tools/rfe-response", color: "orange" },
+    { title: "Document Pack Organizer", description: "Scan, label, merge + table of contents", icon: FolderIcon, badgeColor: "teal" as const, href: "/tools/document-pack", color: "blue" },
+    { title: "Timeline Alerts & Reminders", description: "Smart notifications + calendar sync", icon: BellIcon, badgeColor: "sky" as const, href: "/tools/timeline-alerts", color: "blue" },
+    { title: "Evidence Checklist Builder", description: "By form type + progress tracker", icon: ClipboardDocumentListIcon, badgeColor: "violet" as const, href: "/tools/evidence-checklist", color: "indigo" },
   ];
 
   if (!isSubscribed) {
@@ -28,9 +30,7 @@ export default function CaseToolsPage() {
           <div className="h-0.5 bg-gradient-to-r from-[var(--uscis-blue)] via-[var(--uscis-blue-light)] to-[var(--uscis-blue)]" aria-hidden="true" />
           <div className="relative max-w-7xl mx-auto px-2 min-[380px]:px-3 sm:px-6 lg:px-8 py-5 sm:py-6 w-full min-w-0">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg overflow-hidden border border-white/25 shrink-0 ring-2 ring-white/20">
-                <Image src={ICON_IMAGES.tools} alt="" width={40} height={40} className="w-full h-full object-cover" />
-              </div>
+              <GradientIconBadge icon={BriefcaseIcon} color="blue" size="xs" />
               <div>
                 <h1 className="text-lg sm:text-xl font-semibold text-white">Case Tools</h1>
                 <p className="text-sm text-white/90 mt-0.5">RFE responses, document packs, alerts, and checklists</p>
@@ -41,8 +41,8 @@ export default function CaseToolsPage() {
         <div className="max-w-7xl mx-auto px-2 min-[380px]:px-3 sm:px-6 lg:px-8 py-8 w-full min-w-0">
           <div className="rounded-xl border border-[var(--border-color)] bg-[var(--bg-surface)] shadow-sm overflow-hidden">
             <div className="p-8 sm:p-10 text-center">
-              <div className="mx-auto mb-4 flex h-14 w-14 rounded-xl overflow-hidden border border-[var(--border-color)]">
-                <Image src={ICON_IMAGES.lock} alt="" width={56} height={56} className="w-full h-full object-cover" />
+              <div className="mx-auto mb-4">
+                <GradientIconBadge icon={LockClosedIcon} color="indigo" size="lg" />
               </div>
               <span className="inline-block text-[10px] font-semibold uppercase tracking-wider text-[var(--text-primary)] bg-[var(--uscis-blue)]/10 px-2.5 py-1 rounded-md mb-4">Premium</span>
               <div className="flex flex-col items-center gap-2 mb-2">
@@ -93,9 +93,7 @@ export default function CaseToolsPage() {
         <div className="h-0.5 bg-gradient-to-r from-[var(--uscis-blue)] via-[var(--uscis-blue-light)] to-[var(--uscis-blue)]" aria-hidden="true" />
         <div className="relative max-w-7xl mx-auto px-2 min-[380px]:px-3 sm:px-6 lg:px-8 py-5 sm:py-6 w-full min-w-0">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg overflow-hidden border border-white/25 shrink-0 ring-2 ring-white/20">
-              <Image src={ICON_IMAGES.tools} alt="" width={40} height={40} className="w-full h-full object-cover" />
-            </div>
+            <GradientIconBadge icon={BriefcaseIcon} color="blue" size="xs" />
             <div>
               <h1 className="text-lg sm:text-xl font-semibold text-white">Case Tools</h1>
               <p className="text-sm text-white/90 mt-0.5">RFE responses, document packs, alerts, and checklists—so you stay on track</p>
@@ -129,9 +127,7 @@ export default function CaseToolsPage() {
                         <Image src={cardImage} alt="" fill className="object-cover" sizes="400px" />
                       </div>
                     )}
-                    <div className="relative w-11 h-11 rounded-lg overflow-hidden shrink-0 border border-[var(--border-color)]/50">
-                      <Image src={ICON_IMAGES[tool.iconImage]} alt="" width={44} height={44} className="w-full h-full object-cover" />
-                    </div>
+                    <GradientIconBadge icon={tool.icon} color={tool.badgeColor} size="xs" />
                     <div className="flex-1 min-w-0">
                       <h3 className="font-semibold text-[var(--text-primary)] mb-1 text-base group-hover:text-[var(--text-primary)] transition-colors">
                         {tool.title}

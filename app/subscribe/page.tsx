@@ -3,8 +3,9 @@
 import React from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { CheckIcon, SparklesIcon, ShieldCheckIcon } from "@heroicons/react/24/solid";
-import { HERO_IMAGES, ICON_IMAGES } from "@/lib/images";
+import { CheckIcon, SparklesIcon, ShieldCheckIcon, BoltIcon, MapIcon, ChartBarIcon, CalendarDaysIcon } from "@heroicons/react/24/solid";
+import { HERO_IMAGES } from "@/lib/images";
+import GradientIconBadge from "@/components/GradientIconBadge";
 import { useAuth } from "@/contexts/AuthContext";
 import { useSubscription } from "@/hooks/useSubscription";
 
@@ -12,12 +13,12 @@ import { useSubscription } from "@/hooks/useSubscription";
 const STRIPE_PAYMENT_LINK = "https://buy.stripe.com/5kQ00ja0Bbbb47f6g79oc01";
 
 const benefits = [
-  { iconImage: "hands" as const, title: "Expedite Request", description: "Request expedited processing with representative lookup and email generation" },
-  { iconImage: "family" as const, title: "Action Plan", description: "Country-specific guidance for NVC, DQ, and Interview stages" },
-  { iconImage: "chart" as const, title: "Advanced Timeline", description: "Detailed processing timeline with stage-by-stage estimates" },
-  { iconImage: "chart" as const, title: "Daily Approvals", description: "Real-time I-130 and I-129F approval tracking" },
-  { iconImage: "calendar" as const, title: "Processing Times", description: "Current processing times for your service center and form type" },
-  { iconImage: "chart" as const, title: "Statistics & Insights", description: "Processing stats and trends from real data—see how the system is moving" },
+  { icon: BoltIcon, badgeColor: "amber" as const, title: "Expedite Request", description: "Request expedited processing with representative lookup and email generation" },
+  { icon: MapIcon, badgeColor: "emerald" as const, title: "Action Plan", description: "Country-specific guidance for NVC, DQ, and Interview stages" },
+  { icon: ChartBarIcon, badgeColor: "blue" as const, title: "Advanced Timeline", description: "Detailed processing timeline with stage-by-stage estimates" },
+  { icon: ChartBarIcon, badgeColor: "emerald" as const, title: "Daily Approvals", description: "Real-time I-130 and I-129F approval tracking" },
+  { icon: CalendarDaysIcon, badgeColor: "sky" as const, title: "Processing Times", description: "Current processing times for your service center and form type" },
+  { icon: ChartBarIcon, badgeColor: "indigo" as const, title: "Statistics & Insights", description: "Processing stats and trends from real data—see how the system is moving" },
 ];
 
 export default function SubscribePage() {
@@ -49,9 +50,7 @@ export default function SubscribePage() {
         <div className="h-px bg-[var(--border-color)]" aria-hidden="true" />
         <div className="relative w-full mx-auto px-2 min-[380px]:px-3 sm:px-6 lg:px-8 py-3 sm:py-4 w-full min-w-0">
           <div className="flex items-center gap-2 sm:gap-3">
-            <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl overflow-hidden border border-white/30 flex-shrink-0 ring-2 ring-white/20">
-              <Image src={ICON_IMAGES.sparkles} alt="" width={40} height={40} className="w-full h-full object-cover" />
-            </div>
+            <GradientIconBadge icon={SparklesIcon} color="violet" size="xs" />
             <div className="min-w-0 flex-1">
               <div className="flex items-center gap-2 flex-wrap">
                 <h1 className="text-sm sm:text-lg font-semibold text-white tracking-tight">
@@ -186,9 +185,7 @@ export default function SubscribePage() {
                       key={index}
                       className="flex items-center gap-2.5 bg-[var(--bg-surface)] rounded-lg px-3 py-2.5 border border-[var(--border-color)]"
                     >
-                      <div className="flex-shrink-0 w-7 h-7 rounded-md overflow-hidden border border-[var(--border-color)]/50">
-                        <Image src={ICON_IMAGES[benefit.iconImage]} alt="" width={28} height={28} className="w-full h-full object-cover" />
-                      </div>
+                      <GradientIconBadge icon={benefit.icon} color={benefit.badgeColor} size="xxs" />
                       <span className="text-xs font-semibold text-[var(--text-primary)] leading-tight line-clamp-2">
                         {benefit.title}
                       </span>
@@ -214,9 +211,7 @@ export default function SubscribePage() {
                     >
                       <div className="absolute inset-0 bg-[var(--uscis-blue)]/5 dark:bg-[var(--uscis-blue)]/10 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity" />
                       <div className="relative flex items-start gap-3">
-                        <div className="flex-shrink-0 w-8 h-8 rounded-lg overflow-hidden border border-[var(--border-color)]/50">
-                          <Image src={ICON_IMAGES[benefit.iconImage]} alt="" width={32} height={32} className="w-full h-full object-cover" />
-                        </div>
+                        <GradientIconBadge icon={benefit.icon} color={benefit.badgeColor} size="sm" />
                         <div className="flex-1 min-w-0">
                           <h3 className="font-bold text-sm text-[var(--text-primary)] leading-tight">
                             {benefit.title}

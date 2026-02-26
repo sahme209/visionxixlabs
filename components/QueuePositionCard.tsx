@@ -12,7 +12,9 @@ import { positionTrendAnalyzer, PaceTrendAnalysis } from "@/lib/services/positio
 import { useAuth } from "@/contexts/AuthContext";
 import Tooltip from "./Tooltip";
 import SkeletonLoader from "./SkeletonLoader";
-import { SECTION_IMAGES, ICON_IMAGES } from "@/lib/images";
+import { SECTION_IMAGES } from "@/lib/images";
+import GradientIconBadge from "@/components/GradientIconBadge";
+import { ChartBarIcon } from "@heroicons/react/24/solid";
 
 interface QueuePositionCardProps {
   userPriorityDate?: Date;
@@ -249,9 +251,7 @@ export default function QueuePositionCard({
       </div>
       {/* Header — Apple-style compact */}
       <div className="relative mb-3 flex items-start gap-3">
-        <div className="flex h-10 w-10 rounded-xl overflow-hidden border border-[var(--border-color)] flex-shrink-0 bg-[var(--bg-surface-alt)]">
-          <Image src={ICON_IMAGES.chart} alt="" width={40} height={40} className="w-full h-full object-cover" />
-        </div>
+        <GradientIconBadge icon={ChartBarIcon} color="blue" size="xs" />
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
             <h3 className="text-base font-semibold text-[var(--text-primary)]">Queue Position</h3>

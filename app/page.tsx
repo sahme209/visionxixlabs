@@ -6,7 +6,17 @@ export const dynamic = "force-dynamic";
 import { useEffect, useState, useMemo, useRef } from "react";
 import { doc, getDoc, collection, query, orderBy, limit, getDocs, where } from "firebase/firestore";
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip, Cell } from "recharts";
-import { HERO_IMAGES, ICON_IMAGES } from "@/lib/images";
+import { HERO_IMAGES } from "@/lib/images";
+import {
+  ClipboardDocumentListIcon,
+  CalendarDaysIcon,
+  BoltIcon,
+  CheckCircleIcon,
+  ChartBarIcon,
+  NewspaperIcon,
+  ExclamationTriangleIcon,
+} from "@heroicons/react/24/solid";
+import GradientIconBadge from "@/components/GradientIconBadge";
 import { db } from "@/lib/firebase";
 import { useAuth } from "@/contexts/AuthContext";
 import { useRouter } from "next/navigation";
@@ -864,7 +874,7 @@ export default function Home() {
                 <div className="space-y-3 sm:space-y-4">
                   {/* Case Overview — single source for profile setup when incomplete */}
                   <HomeCard
-                    icon={<Image src={ICON_IMAGES.checklist} alt="" width={44} height={44} className="w-full h-full object-cover rounded-lg" />}
+                    icon={<GradientIconBadge icon={ClipboardDocumentListIcon} color="blue" size="md" />}
                     title="Case Overview"
                     subtitle="Your full case timeline, current stage, and what’s coming next in one place."
                     noInnerWrap
@@ -961,8 +971,8 @@ export default function Home() {
                       ) : null}
                       {!profile?.priorityDate && (
                         <div className="p-4 sm:p-6 rounded-xl bg-[var(--bg-surface-alt)]/30 border border-[var(--border-color)]/50 text-center">
-                          <div className="w-12 h-12 rounded-2xl overflow-hidden mx-auto mb-3 border border-[var(--border-color)]">
-                            <Image src={ICON_IMAGES.checklist} alt="" width={48} height={48} className="w-full h-full object-cover" />
+                          <div className="mx-auto mb-3">
+                            <GradientIconBadge icon={ClipboardDocumentListIcon} color="blue" size="lg" />
                           </div>
                           <p className="text-sm sm:text-base font-semibold text-[var(--text-primary)] mb-1.5">Set up your profile</p>
                           <p className="text-xs sm:text-sm text-[var(--text-secondary)] mb-4 max-w-sm mx-auto leading-relaxed">
@@ -990,7 +1000,7 @@ export default function Home() {
                   {profile?.priorityDate ? (
                     <HomeCard
                       id="key-dates"
-                      icon={<Image src={ICON_IMAGES.calendar} alt="" width={44} height={44} className="w-full h-full object-cover rounded-lg" />}
+                      icon={<GradientIconBadge icon={CalendarDaysIcon} color="emerald" size="md" />}
                       title="Key dates"
                       subtitle="Important milestones—filings, biometrics, interviews, and more—in one simple calendar."
                       noInnerWrap
@@ -1008,7 +1018,7 @@ export default function Home() {
                   {/* Quick actions — moved up, right after Key dates */}
                   {profile?.priorityDate && (
                   <HomeCard
-                    icon={<Image src={ICON_IMAGES.lightning} alt="" width={44} height={44} className="w-full h-full object-cover rounded-lg" />}
+                    icon={<GradientIconBadge icon={BoltIcon} color="amber" size="md" />}
                     title="Quick actions"
                     subtitle="Daily briefing, shortcuts, and official USCIS links tailored to your case."
                     accent="violet"
@@ -1055,7 +1065,7 @@ export default function Home() {
                   {/* Approvals this week — moved up, right after Queue/Processing */}
                   {profile?.priorityDate && profile?.formType && recentApprovalsCount !== null && (
                 <HomeCard
-                  icon={<Image src={ICON_IMAGES.check} alt="" width={44} height={44} className="w-full h-full object-cover rounded-lg" />}
+                  icon={<GradientIconBadge icon={CheckCircleIcon} color="emerald" size="md" />}
                   title="Approvals this week"
                   accent="emerald"
                   subtitle={
@@ -1131,7 +1141,7 @@ export default function Home() {
                   {/* Latest processing & pace — only after profile complete */}
                   {profile?.priorityDate && profile?.formType && (currentLatestPD || pdStatsExtra) && (
                     <HomeCard
-                      icon={<Image src={ICON_IMAGES.chart} alt="" width={44} height={44} className="w-full h-full object-cover rounded-lg" />}
+                      icon={<GradientIconBadge icon={ChartBarIcon} color="amber" size="md" />}
                       title="Latest processing & pace"
                       subtitle={`${profile.formType} case movement right now, how fast the queue is clearing, and how long cases are taking.`}
                       gridCols={3}
@@ -1219,7 +1229,7 @@ export default function Home() {
                   {/* Latest update — moved down, after Latest processing */}
                   {profile?.priorityDate && latestNewsItem && (
                     <HomeCard
-                      icon={<Image src={ICON_IMAGES.newspaper} alt="" width={44} height={44} className="w-full h-full object-cover rounded-lg" />}
+                      icon={<GradientIconBadge icon={NewspaperIcon} color="indigo" size="md" />}
                       title="Latest update"
                       subtitle="High-signal immigration news that actually affects family and fiancé visa timelines."
                       accent="indigo"
@@ -1270,9 +1280,7 @@ export default function Home() {
           <div className="rounded-2xl bg-[var(--bg-surface)] border-2 border-red-200 shadow-[var(--shadow-md)] mb-8 overflow-hidden">
             <div className="bg-red-50/50 dark:bg-red-950/30 border-b border-red-200/50 px-4 py-3">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-lg overflow-hidden border border-red-200">
-                  <Image src={ICON_IMAGES.warning} alt="" width={40} height={40} className="w-full h-full object-cover" />
-                </div>
+                <GradientIconBadge icon={ExclamationTriangleIcon} color="red" size="sm" />
                 <h3 className="text-sm font-semibold text-[var(--text-primary)]">Data Retrieval Error</h3>
               </div>
             </div>

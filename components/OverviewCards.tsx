@@ -4,10 +4,12 @@ import Image from "next/image";
 import Tooltip from "./Tooltip";
 import AnimatedCounter from "./AnimatedCounter";
 import DataSourceIndicator from "./DataSourceIndicator";
-import { SECTION_IMAGES, ICON_IMAGES } from "@/lib/images";
+import { SECTION_IMAGES } from "@/lib/images";
+import GradientIconBadge, { BadgeColor } from "@/components/GradientIconBadge";
+import { CalendarDaysIcon, CpuChipIcon, ClockIcon, ExclamationTriangleIcon } from "@heroicons/react/24/solid";
 
 interface OverviewCardProps {
-  icon: string;
+  icon: "calendar" | "speedometer" | "clock" | "exclamation";
   title: string;
   value: string;
   isLive?: boolean;
@@ -15,9 +17,16 @@ interface OverviewCardProps {
   tooltip?: string;
 }
 
+const ICON_MAP = {
+  calendar: { Icon: CalendarDaysIcon, color: "blue" as BadgeColor },
+  speedometer: { Icon: CpuChipIcon, color: "sky" as BadgeColor },
+  clock: { Icon: ClockIcon, color: "orange" as BadgeColor },
+  exclamation: { Icon: ExclamationTriangleIcon, color: "red" as BadgeColor },
+};
+
 function SmallStatCard({ icon, title, value, isLive = false, accent, tooltip }: OverviewCardProps) {
   const bgImage = icon === "calendar" ? SECTION_IMAGES.calendar : icon === "speedometer" ? SECTION_IMAGES.office : icon === "clock" ? SECTION_IMAGES.checklist : SECTION_IMAGES.documents;
-  const iconImg = icon === "calendar" ? ICON_IMAGES.calendar : icon === "speedometer" ? ICON_IMAGES.office : icon === "clock" ? ICON_IMAGES.checklist : ICON_IMAGES.documents;
+  const { Icon, color } = ICON_MAP[icon];
 
   return (
     <div className="uscis-card p-3 h-24 group hover:shadow-md transition-all duration-200 relative overflow-hidden">
@@ -26,9 +35,7 @@ function SmallStatCard({ icon, title, value, isLive = false, accent, tooltip }: 
       </div>
       <div className="relative flex items-start justify-between mb-2">
         <div className="flex items-center gap-2 flex-1 min-w-0">
-          <div className="w-6 h-6 rounded overflow-hidden flex-shrink-0 border border-[var(--border-color)]/50">
-            <Image src={iconImg} alt="" width={24} height={24} className="w-full h-full object-cover" />
-          </div>
+          <GradientIconBadge icon={Icon} color={color} size="xxs" />
           <div className="flex items-center gap-1.5 flex-1 min-w-0">
             <span className="text-xs text-[var(--text-secondary)] font-medium truncate">{title}</span>
             {tooltip && (

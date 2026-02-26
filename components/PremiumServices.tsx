@@ -6,6 +6,7 @@ import Image from "next/image";
 import { useSubscription } from "@/hooks/useSubscription";
 import { StarIcon, LockClosedIcon, BoltIcon, SparklesIcon, BriefcaseIcon } from "@heroicons/react/24/solid";
 import { HERO_IMAGES, TOOL_PILL_IMAGES } from "@/lib/images";
+import GradientIconBadge, { BadgeColor } from "@/components/GradientIconBadge";
 
 /**
  * Premium Services Section
@@ -19,6 +20,7 @@ interface PremiumPillProps {
   subtitle: string;
   color: string;
   colorLight: string;
+  badgeColor: BadgeColor;
   href: string;
   onClick?: () => void;
   isLocked?: boolean;
@@ -26,7 +28,7 @@ interface PremiumPillProps {
 }
 
 // Premium pill component (matches iOS compactPremiumPillContent)
-function PremiumPill({ icon, title, subtitle, color, colorLight, href, onClick, isLocked, imageSrc }: PremiumPillProps) {
+function PremiumPill({ icon, title, subtitle, color, colorLight, badgeColor, href, onClick, isLocked, imageSrc }: PremiumPillProps) {
   const content = (
     <div
       className="relative flex flex-col items-center gap-2 sm:gap-2.5 rounded-xl p-3 sm:p-5 min-h-[88px] sm:min-h-0 transition-all duration-300 hover:scale-[1.02] sm:hover:scale-[1.03] active:scale-[0.98] hover:shadow-lg touch-manipulation overflow-hidden"
@@ -41,15 +43,9 @@ function PremiumPill({ icon, title, subtitle, color, colorLight, href, onClick, 
           <Image src={imageSrc} alt="" fill className="object-cover" sizes="200px" />
         </div>
       )}
-      {/* Icon with gradient background */}
-      <div
-        className="relative flex h-10 w-10 items-center justify-center rounded-xl shadow-sm"
-        style={{
-          background: `linear-gradient(135deg, ${colorLight}, ${color})`,
-          boxShadow: `0 4px 12px ${color}40`,
-        }}
-      >
-        {React.createElement(icon, { className: "w-5 h-5 text-white" })}
+      {/* Icon with gradient background - Expedite style */}
+      <div className="relative">
+        <GradientIconBadge icon={icon} color={badgeColor} size="xs" />
       </div>
 
       {/* Text */}
@@ -98,9 +94,7 @@ export default function PremiumServices() {
       <div className="relative space-y-4">
         {/* Header */}
         <div className="flex items-center gap-2.5">
-          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-[var(--uscis-blue)]">
-            <StarIcon className="w-4 h-4 text-white" />
-          </div>
+          <GradientIconBadge icon={StarIcon} color="blue" size="sm" />
           <div>
             <h3 className="text-base font-bold text-[var(--text-primary)]">Premium Services</h3>
             <p className="text-xs text-[var(--text-secondary)]">Case tools, expedite & smart guidance</p>
@@ -116,6 +110,7 @@ export default function PremiumServices() {
           subtitle="Premium suite"
           color="#1E3A8A"
           colorLight="#3B82F6"
+          badgeColor="blue"
           href="/tools/case-tools"
           isLocked={!isSubscribed}
           imageSrc={TOOL_PILL_IMAGES.caseTools}
@@ -127,6 +122,7 @@ export default function PremiumServices() {
           subtitle="Priority service"
           color="#D97706"
           colorLight="#FBBF24"
+          badgeColor="amber"
           href="/tools/expedite"
           isLocked={!isSubscribed}
           imageSrc={TOOL_PILL_IMAGES.expedite}
@@ -138,6 +134,7 @@ export default function PremiumServices() {
           subtitle="Smart guidance"
           color="#059669"
           colorLight="#10B981"
+          badgeColor="emerald"
           href="/tools/action-plan"
           isLocked={!isSubscribed}
           imageSrc={TOOL_PILL_IMAGES.actionPlan}

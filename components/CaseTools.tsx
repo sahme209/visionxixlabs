@@ -2,82 +2,37 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { HERO_IMAGES, SECTION_IMAGES, ICON_IMAGES } from "@/lib/images";
+import { HERO_IMAGES, SECTION_IMAGES } from "@/lib/images";
+import GradientIconBadge, { BadgeColor } from "@/components/GradientIconBadge";
+import {
+  BoltIcon,
+  MapIcon,
+  ChartBarIcon,
+  BuildingOfficeIcon,
+  DocumentTextIcon,
+  CalendarDaysIcon,
+  ClipboardDocumentListIcon,
+  BriefcaseIcon,
+} from "@heroicons/react/24/solid";
 
 interface ToolItem {
   id: string;
   title: string;
   description: string;
-  iconImage: keyof typeof ICON_IMAGES;
-  color: string;
+  icon: React.ComponentType<{ className?: string }>;
+  badgeColor: BadgeColor;
   path: string;
 }
 
 const tools: ToolItem[] = [
-  {
-    id: "expedite",
-    title: "Expedite Request",
-    description: "Request expedited processing for urgent cases",
-    iconImage: "hands",
-    color: "yellow",
-    path: "/tools/expedite",
-  },
-  {
-    id: "action-plan",
-    title: "Action Plan",
-    description: "Personalized next steps based on your case stage",
-    iconImage: "family",
-    color: "green",
-    path: "/tools/action-plan",
-  },
-  {
-    id: "case-progress",
-    title: "Case Progress",
-    description: "Track your case progress and milestones",
-    iconImage: "chart",
-    color: "blue",
-    path: "/tools/case-progress",
-  },
-  {
-    id: "queue-position",
-    title: "Queue Position",
-    description: "See your position in the processing queue",
-    iconImage: "office",
-    color: "purple",
-    path: "/tools/queue-position",
-  },
-  {
-    id: "rfe-response",
-    title: "RFE/NOID Response",
-    description: "Draft response templates and exhibit lists",
-    iconImage: "documents",
-    color: "orange",
-    path: "/tools/rfe-response",
-  },
-  {
-    id: "document-pack",
-    title: "Document Pack Organizer",
-    description: "Scan, label, and organize your documents",
-    iconImage: "documents",
-    color: "indigo",
-    path: "/tools/document-pack",
-  },
-  {
-    id: "timeline-alerts",
-    title: "Timeline Alerts",
-    description: "Smart notifications and calendar sync",
-    iconImage: "calendar",
-    color: "blue",
-    path: "/tools/timeline-alerts",
-  },
-  {
-    id: "evidence-checklist",
-    title: "Evidence Checklist",
-    description: "Form-specific checklists with progress tracking",
-    iconImage: "checklist",
-    color: "blue",
-    path: "/tools/evidence-checklist",
-  },
+  { id: "expedite", title: "Expedite Request", description: "Request expedited processing for urgent cases", icon: BoltIcon, badgeColor: "amber", path: "/tools/expedite" },
+  { id: "action-plan", title: "Action Plan", description: "Personalized next steps based on your case stage", icon: MapIcon, badgeColor: "emerald", path: "/tools/action-plan" },
+  { id: "case-progress", title: "Case Progress", description: "Track your case progress and milestones", icon: ChartBarIcon, badgeColor: "blue", path: "/tools/case-progress" },
+  { id: "queue-position", title: "Queue Position", description: "See your position in the processing queue", icon: BuildingOfficeIcon, badgeColor: "indigo", path: "/tools/queue-position" },
+  { id: "rfe-response", title: "RFE/NOID Response", description: "Draft response templates and exhibit lists", icon: DocumentTextIcon, badgeColor: "orange", path: "/tools/rfe-response" },
+  { id: "document-pack", title: "Document Pack Organizer", description: "Scan, label, and organize your documents", icon: DocumentTextIcon, badgeColor: "teal", path: "/tools/document-pack" },
+  { id: "timeline-alerts", title: "Timeline Alerts", description: "Smart notifications and calendar sync", icon: CalendarDaysIcon, badgeColor: "sky", path: "/tools/timeline-alerts" },
+  { id: "evidence-checklist", title: "Evidence Checklist", description: "Form-specific checklists with progress tracking", icon: ClipboardDocumentListIcon, badgeColor: "violet", path: "/tools/evidence-checklist" },
 ];
 
 const TOOL_IMAGES: Record<string, string> = {
@@ -99,9 +54,7 @@ export default function CaseTools() {
       </div>
       <div className="relative uscis-card-header">
         <div className="flex items-center gap-3">
-          <div className="flex h-12 w-12 rounded-xl overflow-hidden border border-[var(--border-color)] shadow-lg flex-shrink-0">
-            <Image src={ICON_IMAGES.tools} alt="" width={48} height={48} className="w-full h-full object-cover" />
-          </div>
+          <GradientIconBadge icon={BriefcaseIcon} color="blue" size="md" />
           <div className="flex-1">
             <h3 className="text-sm font-semibold text-[var(--text-primary)]">Case Tools</h3>
             <p className="text-sm text-[var(--text-secondary)] mt-1">
@@ -125,8 +78,8 @@ export default function CaseTools() {
                 )}
                 <div className="relative flex flex-col gap-3">
                   <div className="flex items-start gap-3">
-                    <div className="w-12 h-12 rounded-xl overflow-hidden flex-shrink-0 border border-[var(--border-color)] shadow-md group-hover:scale-110 transition-transform duration-200">
-                      <Image src={ICON_IMAGES[tool.iconImage]} alt="" width={48} height={48} className="w-full h-full object-cover" />
+                    <div className="flex-shrink-0 group-hover:scale-110 transition-transform duration-200">
+                      <GradientIconBadge icon={tool.icon} color={tool.badgeColor} size="xs" />
                     </div>
                     <div className="flex-1 min-w-0">
                       <h3 className="font-bold text-[var(--text-primary)] mb-1.5 text-base">

@@ -52,7 +52,7 @@ export default function HomeCard({
       {accentBar && <div className={`absolute top-0 left-0 w-1 h-full rounded-l-xl ${accentBar}`} aria-hidden />}
       {/* Header: icon + title + subtitle + badge */}
       <div className="flex items-start gap-3 mb-4">
-        <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl overflow-hidden bg-[var(--bg-surface-alt)] border border-[var(--border-color)]">
+        <div className="flex h-11 w-11 shrink-0 items-center justify-center">
           {icon}
         </div>
         <div className="flex-1 min-w-0">

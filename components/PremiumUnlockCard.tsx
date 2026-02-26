@@ -15,15 +15,16 @@ import {
   CheckCircleIcon,
 } from "@heroicons/react/24/solid";
 import { HERO_IMAGES } from "@/lib/images";
+import GradientIconBadge, { BadgeColor } from "@/components/GradientIconBadge";
 
-const FEATURES = [
-  { icon: ChartBarIcon, label: "Your queue position", short: "Queue position" },
-  { icon: ClockIcon, label: "Current processing times", short: "Processing times" },
-  { icon: ArrowTrendingUpIcon, label: "Daily approval activity", short: "Approval activity" },
-  { icon: BriefcaseIcon, label: "Case tools", short: "Case tools" },
-  { icon: BoltIcon, label: "Expedite request", short: "Expedite" },
-  { icon: MapIcon, label: "Action plan", short: "Action plan" },
-] as const;
+const FEATURES: { icon: React.ComponentType<{ className?: string }>; label: string; short: string; color: BadgeColor }[] = [
+  { icon: ChartBarIcon, label: "Your queue position", short: "Queue position", color: "blue" },
+  { icon: ClockIcon, label: "Current processing times", short: "Processing times", color: "sky" },
+  { icon: ArrowTrendingUpIcon, label: "Daily approval activity", short: "Approval activity", color: "emerald" },
+  { icon: BriefcaseIcon, label: "Case tools", short: "Case tools", color: "indigo" },
+  { icon: BoltIcon, label: "Expedite request", short: "Expedite", color: "amber" },
+  { icon: MapIcon, label: "Action plan", short: "Action plan", color: "teal" },
+];
 
 export default function PremiumUnlockCard() {
   const { hasUsedTrial } = useSubscription();
@@ -35,9 +36,7 @@ export default function PremiumUnlockCard() {
       {/* Header - Approvals-style */}
       <div className="relative mb-4">
         <div className="flex items-center gap-3 sm:gap-4">
-          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[var(--bg-surface-alt)] border border-[var(--border-color)]">
-            <SparklesIcon className="w-5 h-5 text-[var(--text-primary)]" />
-          </div>
+          <GradientIconBadge icon={SparklesIcon} color="violet" size="md" />
           <div className="min-w-0">
             <h3 className="text-base font-bold text-[var(--text-primary)]">
               Premium features
@@ -52,14 +51,12 @@ export default function PremiumUnlockCard() {
       {/* Feature list - compact, mobile-friendly */}
       <div className="relative">
         <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
-          {FEATURES.map(({ icon: Icon, label, short }) => (
+          {FEATURES.map(({ icon: Icon, label, short, color }) => (
             <li
               key={label}
               className="flex items-center gap-2.5 py-2.5 px-3 rounded-lg bg-[var(--bg-surface-alt)]/50 border border-[var(--border-color)]/50"
             >
-              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[var(--bg-surface)] border border-[var(--border-color)]">
-                <Icon className="w-4 h-4 text-[var(--text-primary)]" />
-              </div>
+              <GradientIconBadge icon={Icon} color={color} size="sm" />
               <span className="text-sm font-medium text-[var(--text-primary)] min-w-0 truncate sm:truncate-none" title={label}>
                 <span className="hidden sm:inline">{label}</span>
                 <span className="sm:hidden">{short}</span>
