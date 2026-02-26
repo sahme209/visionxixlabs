@@ -261,9 +261,33 @@ function buildDeterministicTasks(
   return { critical, highImpact, strategic, optimization };
 }
 
+/** AI-generated phase; maps to PlanPhase when valid */
+function toPlanPhase(
+  custom: { label?: string; dayRange?: string; category?: string; tasks?: Array<{ technicalAction: string; businessImpact: string; estimatedImprovementEffect: string }> } | undefined,
+  fallback: PlanPhase
+): PlanPhase {
+  if (!custom?.tasks?.length) return fallback;
+  return {
+    label: custom.label || fallback.label,
+    dayRange: custom.dayRange || fallback.dayRange,
+    category: (custom.category as PlanPhase["category"]) || fallback.category,
+    tasks: custom.tasks.map((t) => ({
+      technicalAction: t.technicalAction || "",
+      businessImpact: t.businessImpact || "",
+      estimatedImprovementEffect: t.estimatedImprovementEffect || "",
+    })),
+  };
+}
+
 export function generateInfrastructureAdvantageModel(
   profile: AxiomProfile,
-  existingScores?: CloudOperatorScores | null
+  existingScores?: CloudOperatorScores | null,
+  customPlan?: {
+    stabilization?: { label?: string; dayRange?: string; category?: string; tasks?: PlanTask[] };
+    costOptimization?: { label?: string; dayRange?: string; category?: string; tasks?: PlanTask[] };
+    deploymentAcceleration?: { label?: string; dayRange?: string; category?: string; tasks?: PlanTask[] };
+    scalabilityHardening?: { label?: string; dayRange?: string; category?: string; tasks?: PlanTask[] };
+  } | null
 ): AxiomResult {
   const operatorScores = existingScores ?? computeCloudOperatorScores(profile);
 
@@ -292,6 +316,11 @@ export function generateInfrastructureAdvantageModel(
 
   const deterministicTasks = buildDeterministicTasks(profile, operatorScores);
 
+  const baseStabilization: PlanPhase = { label: "Days 1–3: Stabilization", dayRange: "1-3", category: "Critical", tasks: deterministicTasks.critical };
+  const baseCost: PlanPhase = { label: "Days 4–10: Cost Optimization", dayRange: "4-10", category: "High Impact", tasks: deterministicTasks.highImpact };
+  const baseDeploy: PlanPhase = { label: "Days 11–20: Deployment Acceleration", dayRange: "11-20", category: "Strategic", tasks: deterministicTasks.strategic };
+  const baseScale: PlanPhase = { label: "Days 21–30: Scalability Hardening", dayRange: "21-30", category: "Optimization", tasks: deterministicTasks.optimization };
+
   const plan: ThirtyDayPlan = {
     executiveSummary: {
       infrastructureScore: scores.infrastructureScore,
@@ -307,30 +336,10 @@ export function generateInfrastructureAdvantageModel(
       optimization: deterministicTasks.optimization,
     },
     timeSequencedPlan: {
-      stabilization: {
-        label: "Days 1–3: Stabilization",
-        dayRange: "1-3",
-        category: "Critical",
-        tasks: deterministicTasks.critical,
-      },
-      costOptimization: {
-        label: "Days 4–10: Cost Optimization",
-        dayRange: "4-10",
-        category: "High Impact",
-        tasks: deterministicTasks.highImpact,
-      },
-      deploymentAcceleration: {
-        label: "Days 11–20: Deployment Acceleration",
-        dayRange: "11-20",
-        category: "Strategic",
-        tasks: deterministicTasks.strategic,
-      },
-      scalabilityHardening: {
-        label: "Days 21–30: Scalability Hardening",
-        dayRange: "21-30",
-        category: "Optimization",
-        tasks: deterministicTasks.optimization,
-      },
+      stabilization: toPlanPhase(customPlan?.stabilization, baseStabilization),
+      costOptimization: toPlanPhase(customPlan?.costOptimization, baseCost),
+      deploymentAcceleration: toPlanPhase(customPlan?.deploymentAcceleration, baseDeploy),
+      scalabilityHardening: toPlanPhase(customPlan?.scalabilityHardening, baseScale),
     },
   };
 

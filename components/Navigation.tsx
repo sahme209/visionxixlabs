@@ -13,6 +13,7 @@ const cloudLinks = [
 ];
 
 const solutionsLinks = [
+  { href: "/website-builder", label: "AI Website Builder (Prompt)" },
   { href: "/request", label: "Website Request / Get a Quote" },
   { href: "/visionxix-ai", label: "Vision XIX AI" },
   { href: "/visionxix-ai/pricing", label: "Vision XIX AI — Pricing" },
@@ -30,7 +31,8 @@ const solutionsLinks = [
 // Axiom products — single Run Axiom entry (no duplicate); Cloud Studio not in primary nav
 const axiomLinks = [
   { href: "/cloud-operator", label: "Run Axiom Analysis", highlight: true },
-  { href: "/request", label: "AI Website Builder", highlight: false },
+  { href: "/website-builder", label: "AI Website Builder", highlight: false },
+  { href: "/request", label: "Get a Quote", highlight: false },
   { href: "/visionxix-ai", label: "Vision XIX AI", highlight: false },
   { href: "/dashboard", label: "Bots & Assistants", highlight: false },
 ];

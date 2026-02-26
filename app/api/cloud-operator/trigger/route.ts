@@ -142,7 +142,8 @@ export async function POST(req: NextRequest) {
         const operatorScores = computeOperatorScores(operatorInput);
 
         const axiomProfile = { ...profile, contextType: "operator" as const };
-        const axiom = computeInfrastructureAdvantageScore(axiomProfile, operatorScores);
+        const customPlan = (operatorOutput as { thirtyDayPlan?: unknown })?.thirtyDayPlan;
+        const axiom = computeInfrastructureAdvantageScore(axiomProfile, operatorScores, customPlan ?? null);
 
         return {
           operatorOutput,

@@ -162,7 +162,7 @@ export default function ThankYouPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-violet-50/40 to-fuchsia-50/30 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
       <Navigation />
       <main className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <Link
@@ -172,7 +172,7 @@ export default function ThankYouPage() {
           <ArrowLeftIcon className="h-4 w-4" />
           Back to Request
         </Link>
-        <div className="mb-6 rounded-2xl border border-indigo-200 dark:border-indigo-800 bg-indigo-50/60 dark:bg-indigo-900/30 p-4">
+        <div className="mb-6 rounded-3xl border-2 border-violet-200/80 dark:border-violet-800/80 bg-gradient-to-br from-violet-50/80 to-fuchsia-50/60 dark:from-violet-900/30 dark:to-fuchsia-900/20 p-5">
           <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-1">
             Want infra optimization + deployment hardening?
           </h2>
@@ -181,14 +181,14 @@ export default function ThankYouPage() {
           </p>
           <Link
             href={token ? `/cloud-operator?ref=${encodeURIComponent(token)}` : "/cloud-operator"}
-            className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-indigo-700"
+            className="inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-violet-600 to-fuchsia-600 px-4 py-2 text-xs font-semibold text-white shadow-lg shadow-violet-500/30 hover:shadow-violet-500/40 hover:from-violet-500 hover:to-fuchsia-500"
           >
             Run Axiom Analysis
             <CloudIcon className="h-3 w-3" />
           </Link>
         </div>
 
-        <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-700 p-8">
+        <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-3xl shadow-xl shadow-slate-200/50 dark:shadow-none border-2 border-slate-200/80 dark:border-slate-700/80 p-8 sm:p-10">
           <div className="text-center mb-8">
             <CheckCircleIcon className="h-16 w-16 text-emerald-500 mx-auto mb-4" />
             <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100 mb-2">

@@ -65,37 +65,43 @@ export default function RequestPage() {
   };
 
   return (
-    <div className="axiom-page min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
+    <div className="axiom-page min-h-screen bg-gradient-to-br from-slate-50 via-violet-50/40 to-fuchsia-50/30 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
       <Navigation />
       <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-20">
         <div className="max-w-3xl mx-auto">
           <Link
             href="/"
-            className="inline-flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 mb-8"
+            className="inline-flex items-center gap-2 text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-violet-600 dark:hover:text-violet-400 transition-colors mb-8"
           >
             <ArrowLeftIcon className="h-4 w-4" />
             Back to Home
           </Link>
-          <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-700 p-8">
+          <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-3xl shadow-xl shadow-slate-200/50 dark:shadow-none border-2 border-slate-200/80 dark:border-slate-700/80 p-8 sm:p-10">
             <header className="mb-8 text-center">
-              <div className="inline-flex items-center justify-center rounded-full bg-indigo-100 dark:bg-indigo-900/40 px-4 py-2 text-xs font-semibold text-indigo-700 dark:text-indigo-300 mb-4">
+              <div className="inline-flex items-center justify-center rounded-full bg-gradient-to-r from-violet-100 to-fuchsia-100 dark:from-violet-900/40 dark:to-fuchsia-900/40 px-4 py-2 text-xs font-semibold text-violet-700 dark:text-violet-300 mb-4">
                 Website Builder + Managed Cloud
               </div>
               <h1 className="axiom-heading-xl text-3xl md:text-4xl font-extrabold text-slate-900 dark:text-slate-100 mb-2">
                 AI-built site, production-ready hosting
               </h1>
-              <p className="text-sm text-slate-600 dark:text-slate-400">
+              <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">
                 Generate a site and deploy to Managed Cloud, AWS, Azure, or GCP with CDN, SSL, and CI/CD.
               </p>
+              <Link
+                href="/website-builder"
+                className="inline-flex items-center gap-2 text-sm font-semibold text-violet-600 dark:text-violet-400 hover:text-violet-700 dark:hover:text-violet-300"
+              >
+                Prefer a simple prompt? Try AI Website Builder →
+              </Link>
             </header>
 
-            <div className="mb-4 rounded-xl border border-indigo-200 dark:border-indigo-800 bg-indigo-50/60 dark:bg-indigo-900/30 p-3 text-xs text-slate-900 dark:text-slate-100">
-              <p className="mb-1 font-semibold text-indigo-900 dark:text-indigo-100">
+            <div className="mb-6 rounded-2xl border-2 border-violet-200/80 dark:border-violet-800/80 bg-gradient-to-br from-violet-50/80 to-fuchsia-50/60 dark:from-violet-900/20 dark:to-fuchsia-900/20 p-4 text-sm text-slate-900 dark:text-slate-100">
+              <p className="mb-1 font-semibold text-violet-900 dark:text-violet-100">
                 Need full cloud, security, and automation strategy?
               </p>
-              <p className="text-indigo-900/80 dark:text-indigo-200">
+              <p className="text-slate-700 dark:text-slate-300">
                 Run{" "}
-                <Link href="/cloud-operator" className="font-semibold underline hover:no-underline">
+                <Link href="/cloud-operator" className="font-semibold text-violet-600 dark:text-violet-400 underline hover:no-underline">
                   Axiom
                 </Link>{" "}
                 before building to get infrastructure scores and a 30-day optimization roadmap.
@@ -114,7 +120,7 @@ export default function RequestPage() {
                   name="name"
                   type="text"
                   required
-                  className="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 px-3 py-2 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-indigo-500"
+                  className="w-full rounded-xl border-2 border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-slate-900 dark:text-slate-100 focus:border-violet-500 focus:ring-2 focus:ring-violet-200 dark:focus:ring-violet-900/50"
                   placeholder="Your name"
                 />
               </div>
@@ -128,7 +134,7 @@ export default function RequestPage() {
                   name="email"
                   type="email"
                   required
-                  className="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 px-3 py-2 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-indigo-500"
+                  className="w-full rounded-xl border-2 border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-slate-900 dark:text-slate-100 focus:border-violet-500 focus:ring-2 focus:ring-violet-200 dark:focus:ring-violet-900/50"
                   placeholder="you@company.com"
                 />
               </div>
@@ -143,7 +149,7 @@ export default function RequestPage() {
                 id="company"
                 name="company"
                 type="text"
-                className="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 px-3 py-2 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-indigo-500"
+                className="w-full rounded-xl border-2 border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-slate-900 dark:text-slate-100 focus:border-violet-500 focus:ring-2 focus:ring-violet-200 dark:focus:ring-violet-900/50"
                 placeholder="Your company"
               />
             </div>
@@ -155,7 +161,7 @@ export default function RequestPage() {
               <select
                 id="industry"
                 name="industry"
-                className="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 px-3 py-2 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-indigo-500"
+                className="w-full rounded-xl border-2 border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-slate-900 dark:text-slate-100 focus:border-violet-500 focus:ring-2 focus:ring-violet-200 dark:focus:ring-violet-900/50"
               >
                 <option value="">Select</option>
                 <option>Professional services</option>
@@ -176,7 +182,7 @@ export default function RequestPage() {
                 id="message"
                 name="message"
                 rows={4}
-                className="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 px-3 py-2 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-indigo-500"
+                className="w-full rounded-xl border-2 border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-slate-900 dark:text-slate-100 focus:border-violet-500 focus:ring-2 focus:ring-violet-200 dark:focus:ring-violet-900/50"
                 placeholder="Describe your business, target audience, and what you want your website to convey."
               />
             </div>
@@ -206,7 +212,7 @@ export default function RequestPage() {
                 id="domainName"
                 name="domainName"
                 type="text"
-                className="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 px-3 py-2 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-indigo-500"
+                className="w-full rounded-xl border-2 border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-slate-900 dark:text-slate-100 focus:border-violet-500 focus:ring-2 focus:ring-violet-200 dark:focus:ring-violet-900/50"
                 placeholder="example.com"
               />
             </div>
@@ -220,12 +226,12 @@ export default function RequestPage() {
                 {Object.values(WEBSITE_BUILD_TIERS).map((t) => (
                   <label
                     key={t.id}
-                    className="flex items-start gap-3 p-4 rounded-xl border-2 border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-900 cursor-pointer hover:border-indigo-400 dark:hover:border-indigo-500 has-[:checked]:border-indigo-500 has-[:checked]:ring-2 has-[:checked]:ring-indigo-200 dark:has-[:checked]:ring-indigo-900/40"
+                    className="flex items-start gap-3 p-4 rounded-2xl border-2 border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 cursor-pointer hover:border-violet-400 dark:hover:border-violet-500 has-[:checked]:border-violet-500 has-[:checked]:ring-2 has-[:checked]:ring-violet-200 dark:has-[:checked]:ring-violet-900/40 transition-all"
                   >
                     <input type="radio" name="tier" value={t.id} defaultChecked={t.id === "starter"} onChange={() => setSelectedTier(t.id)} className="mt-1" />
                     <div>
                       <span className="font-semibold text-slate-900 dark:text-slate-100">{t.name}</span>
-                      <span className="ml-2 text-indigo-600 dark:text-indigo-400 font-medium">
+                      <span className="ml-2 text-violet-600 dark:text-violet-400 font-medium">
                         {t.id === "enterprise" ? t.priceRange : `$${t.price}`}
                       </span>
                       <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{t.description}</p>
@@ -236,7 +242,7 @@ export default function RequestPage() {
             </div>
 
             {error && (
-              <div className="rounded-lg border border-red-300 bg-red-50 dark:border-red-700 dark:bg-red-900/30 px-4 py-3 text-sm text-red-800 dark:text-red-200">
+              <div className="rounded-2xl border-2 border-rose-200 dark:border-rose-800 bg-rose-50/80 dark:bg-rose-900/30 px-4 py-3 text-sm text-rose-800 dark:text-rose-200">
                 {error}
               </div>
             )}
@@ -244,7 +250,7 @@ export default function RequestPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full rounded-xl bg-indigo-600 py-3 font-semibold text-white hover:bg-indigo-700 disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                className="w-full rounded-2xl bg-gradient-to-r from-violet-600 to-fuchsia-600 py-3 font-semibold text-white shadow-lg shadow-violet-500/30 hover:shadow-violet-500/40 hover:from-violet-500 hover:to-fuchsia-500 disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2 transition-all"
                 aria-busy={loading}
               >
                 {loading ? (

@@ -55,6 +55,29 @@ export type DetectionSignals = {
   ciCdInefficiencies?: string[];
 };
 
+/** AI-generated task for 30-day plan phases */
+export type PlanTask = {
+  technicalAction: string;
+  businessImpact: string;
+  estimatedImprovementEffect: string;
+};
+
+/** AI-generated phase with tasks */
+export type CustomPlanPhase = {
+  label: string;
+  dayRange: string;
+  category: string;
+  tasks: PlanTask[];
+};
+
+/** AI-generated 30-day plan (overrides deterministic templates when present) */
+export type CustomThirtyDayPlan = {
+  stabilization?: CustomPlanPhase;
+  costOptimization?: CustomPlanPhase;
+  deploymentAcceleration?: CustomPlanPhase;
+  scalabilityHardening?: CustomPlanPhase;
+};
+
 export type OperatorEngineOutput = {
   launch?: LaunchModule;
   optimize?: OptimizeModule;
@@ -62,6 +85,7 @@ export type OperatorEngineOutput = {
   business?: BusinessModule;
   detections?: DetectionSignals;
   recommendedImprovements?: string[];
+  thirtyDayPlan?: CustomThirtyDayPlan;
   scores?: CloudOperatorScores;
   generatedAt?: string;
 };

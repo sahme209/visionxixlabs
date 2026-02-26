@@ -36,12 +36,13 @@ export function computeOperatorScores(profile: OperatorProfileInput): CloudOpera
 
 /**
  * Infrastructure Advantage Model™ scores and 30-day plan.
- * Delegates to the Axiom meta-engine while preserving deterministic scoring.
+ * Delegates to the Axiom meta-engine. Optional customPlan (AI-generated) overrides deterministic tasks.
  */
 export function computeInfrastructureAdvantageScore(
   profile: AxiomProfile,
-  existingScores?: CloudOperatorScores | null
+  existingScores?: CloudOperatorScores | null,
+  customPlan?: import("@/lib/cloudOperator/types").CustomThirtyDayPlan | null
 ): AxiomResult {
-  return generateInfrastructureAdvantageModel(profile, existingScores ?? null);
+  return generateInfrastructureAdvantageModel(profile, existingScores ?? null, customPlan ?? null);
 }
 
