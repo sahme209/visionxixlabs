@@ -111,7 +111,7 @@ export async function POST(req: NextRequest) {
       where: { id: leadId },
       data: {
         status: "package_ready",
-        fullPayload: updatedPayload,
+        fullPayload: updatedPayload as object,
       },
     });
 
