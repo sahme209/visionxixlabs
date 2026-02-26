@@ -157,15 +157,15 @@ export async function generateWebsiteStarterPackage(
 
 function validateAndNormalize(obj: unknown): AiStarterPackage {
   const o = obj as Record<string, unknown>;
+  const siteStruct = o.siteStructure as Record<string, unknown> | undefined;
+  const pages = Array.isArray(siteStruct?.pages)
+    ? (siteStruct.pages as Array<{ name?: string; sections?: unknown }>).map((p) => ({
+        name: String(p?.name ?? ""),
+        sections: Array.isArray(p?.sections) ? (p.sections as string[]).map(String) : [],
+      }))
+    : [];
   return {
-    siteStructure: {
-      pages: Array.isArray(o.siteStructure?.pages)
-        ? (o.siteStructure.pages as Array<{ name: string; sections: string[] }>).map((p) => ({
-            name: String(p?.name ?? ""),
-            sections: Array.isArray(p?.sections) ? (p.sections as string[]).map(String) : [],
-          }))
-        : [],
-    },
+    siteStructure: { pages },
     heroHeadline: String(o.heroHeadline ?? ""),
     heroSubheadline: String(o.heroSubheadline ?? ""),
     draftCopy: {
