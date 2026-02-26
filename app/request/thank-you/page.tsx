@@ -169,6 +169,21 @@ export default function ThankYouPage() {
           <ArrowLeftIcon className="h-4 w-4" />
           Back to Request
         </Link>
+        <div className="mb-6 rounded-2xl border border-indigo-200 dark:border-indigo-800 bg-indigo-50/60 dark:bg-indigo-900/30 p-4">
+          <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-1">
+            Want Full Infrastructure Optimization?
+          </h2>
+          <p className="text-xs text-slate-900/80 dark:text-slate-200 mb-3">
+            Your site is built. Now optimize your cloud, CI/CD, cost, and security with Axiom.
+          </p>
+          <Link
+            href="/cloud-operator"
+            className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-indigo-700"
+          >
+            Run Axiom
+            <CloudIcon className="h-3 w-3" />
+          </Link>
+        </div>
 
         <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-700 p-8">
           <div className="text-center mb-8">

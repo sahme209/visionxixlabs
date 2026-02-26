@@ -87,6 +87,19 @@ export default function RequestPage() {
             </p>
           </header>
 
+          <div className="mb-4 rounded-xl border border-indigo-200 dark:border-indigo-800 bg-indigo-50/60 dark:bg-indigo-900/30 p-3 text-xs text-slate-900 dark:text-slate-100">
+            <p className="mb-1 font-semibold text-indigo-900 dark:text-indigo-100">
+              Need full cloud, security, and automation strategy?
+            </p>
+            <p className="text-indigo-900/80 dark:text-indigo-200">
+              Run{" "}
+              <Link href="/cloud-operator" className="font-semibold underline hover:no-underline">
+                Axiom
+              </Link>{" "}
+              before building to get infrastructure scores and a 30-day optimization roadmap.
+            </p>
+          </div>
+
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="grid gap-6 sm:grid-cols-2">
               <div>
