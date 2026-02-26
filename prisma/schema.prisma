@@ -48,18 +48,18 @@ model KnowledgeSource {
   createdAt DateTime @default(now())
 }
 
+// AI Website Build — New Website Request leads
 model Lead {
   id         String   @id @default(cuid())
-  name       String
   email      String
-  phone      String?
-  fullPayload Json
-  status     String   @default("new")
-  source     String   @default("website-request")
+  name       String?
+  source     String   @default("website-request") // website-request, etc.
+  status     String   @default("created") // created, package_generating, package_ready, deploy_generating, deploy_ready, published
+  fullPayload Json    @default("{}") // form data, aiPackage, previewUrl, vercelDeploymentId, etc.
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 
-  @@index([email])
+  @@index([source])
   @@index([status])
   @@index([createdAt])
 }

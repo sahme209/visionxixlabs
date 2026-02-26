@@ -1,379 +1,196 @@
 "use client";
 
-import { Suspense, useEffect, useState } from "react";
-import { useSearchParams } from "next/navigation";
+import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
 import {
+  ArrowLeftIcon,
   CheckCircleIcon,
-  ArrowRightIcon,
-  ArrowDownTrayIcon,
+  LinkIcon,
   DocumentTextIcon,
+  GlobeAltIcon,
 } from "@heroicons/react/24/outline";
-import { PARENT_WEBSITE } from "@/lib/constants/company";
+import { Navigation } from "@/components/Navigation";
 
-interface AiStarterPackage {
-  siteStructure: { pages: Array<{ name: string; sections: string[] }> };
-  heroHeadline: string;
-  heroSubheadline: string;
-  draftCopy: { home: string; services: string; about: string; contact: string };
-  ctaRecommendations: Array<{ label: string; placement: string; type: string }>;
-  colorStyleDirection: string;
-  seoStarter: { keywords: string[]; metaTitle: string; metaDescription: string };
-  nextStepsDomainHosting: {
-    haveDomainHosting: { whatWeNeed: string[] };
-    needHelp: {
-      recommendedRegistrar: string;
-      recommendedHosting: string;
-      stepsWeHandle: string[];
-    };
-  };
-  disclaimer: string;
-}
+export default function ThankYouPage() {
+  const [token, setToken] = useState<string | null>(null);
+  const [status, setStatus] = useState<string>("");
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [polling, setPolling] = useState(false);
+  const [hasDomain, setHasDomain] = useState<boolean | null>(null);
+  const [domainName, setDomainName] = useState<string>("");
 
-function ThankYouContent() {
-  const searchParams = useSearchParams();
-  const leadId = searchParams.get("leadId");
-  const token = searchParams.get("token");
-  const min = Number(searchParams.get("min")) || 0;
-  const max = Number(searchParams.get("max")) || 0;
-  const hasEstimate = min > 0 && max > 0;
-  const formatted = hasEstimate
-    ? `$${min.toLocaleString()} – $${max.toLocaleString()}`
-    : "—";
-
-  const [starter, setStarter] = useState<AiStarterPackage | null>(null);
-  const [status, setStatus] = useState<"loading" | "pending" | "ready" | "error" | "no-token">(
-    leadId && token ? "loading" : leadId && !token ? "no-token" : "ready"
-  );
-
-  useEffect(() => {
-    if (!leadId || !token) return;
-
-    const fetchStarter = async () => {
-      try {
-        const res = await fetch(`/api/leads/${leadId}/starter?token=${encodeURIComponent(token)}`);
-        const data = await res.json();
-
-        if (res.status === 401) {
-          setStatus("no-token");
-          return;
-        }
-        if (data.error === true) {
-          setStatus("error");
-          return;
-        }
-        if (data.pending) {
-          setStatus("pending");
-          return;
-        }
-        if (data.aiStarterPackage) {
-          setStarter(data.aiStarterPackage);
-          setStatus("ready");
-        }
-      } catch {
-        setStatus("error");
+  const fetchStatus = useCallback(async () => {
+    if (!token) return;
+    try {
+      const res = await fetch(`/api/leads/status?token=${encodeURIComponent(token)}`);
+      const data = await res.json();
+      if (res.ok) {
+        setStatus(data.status || "");
+        setPreviewUrl(data.previewUrl || null);
+        return data;
       }
-    };
-
-    fetchStarter();
-  }, [leadId, token]);
+    } catch {
+      // ignore
+    }
+    return null;
+  }, [token]);
 
   useEffect(() => {
-    if (status !== "pending" || !leadId || !token) return;
+    const params = new URLSearchParams(window.location.search);
+    const t = params.get("token");
+    setToken(t);
 
-    const triggerGenerate = async () => {
-      try {
-        await fetch(`/api/leads/${leadId}/starter/generate?token=${encodeURIComponent(token)}`, {
-          method: "POST",
-        });
-      } catch {
-        // ignore
+    if (!t) return;
+
+    // Trigger generation + deploy (fire-and-forget)
+    fetch(`/api/leads/trigger?token=${encodeURIComponent(t)}`, { method: "POST" }).catch(() => {});
+
+    // Initial status
+    fetchStatus().then((d) => {
+      if (d?.form) {
+        setHasDomain(Boolean(d.form.hasDomain));
+        setDomainName(String(d.form.domainName || ""));
       }
-    };
-    triggerGenerate();
-  }, [status, leadId, token]);
+    });
 
-  useEffect(() => {
-    if (status !== "pending" || !leadId || !token) return;
-    const t = setInterval(async () => {
-      try {
-        const res = await fetch(`/api/leads/${leadId}/starter?token=${encodeURIComponent(token)}`);
-        const data = await res.json();
-        if (data.aiStarterPackage) {
-          setStarter(data.aiStarterPackage);
-          setStatus("ready");
-        } else if (data.error === true) {
-          setStatus("error");
-        }
-      } catch {
-        // keep polling
+    // Poll every 3s
+    setPolling(true);
+    const interval = setInterval(async () => {
+      const d = await fetchStatus();
+      if (d?.form) {
+        setHasDomain(Boolean(d.form.hasDomain));
+        setDomainName(String(d.form.domainName || ""));
+      }
+      if (d?.deployReady) {
+        clearInterval(interval);
+        setPolling(false);
       }
     }, 3000);
-    return () => clearInterval(t);
-  }, [status, leadId, token]);
+
+    return () => clearInterval(interval);
+  }, [token, fetchStatus]);
+
+  if (!token) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
+        <Navigation />
+        <main className="max-w-2xl mx-auto px-4 py-24 text-center">
+          <p className="text-slate-600 dark:text-slate-400 mb-4">Invalid or missing access. Please submit your request from the form.</p>
+          <Link href="/request" className="text-indigo-600 dark:text-indigo-400 hover:underline">
+            Go to New Website Request
+          </Link>
+        </main>
+      </div>
+    );
+  }
+
+  const isReady = previewUrl && (status === "deploy_ready" || status === "published");
 
   return (
-    <div className="min-h-screen bg-[var(--bg-primary)] flex flex-col">
-      <nav className="border-b border-[var(--border-color)] bg-[var(--bg-surface)]">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4 sm:px-6">
-          <Link
-            href={PARENT_WEBSITE}
-            className="font-semibold text-[var(--text-primary)] hover:text-[var(--uscis-blue)]"
-          >
-            Vision XIX Labs
-          </Link>
-          <Link
-            href="/request"
-            className="text-sm text-[var(--text-secondary)] hover:text-[var(--uscis-blue)]"
-          >
-            New request
-          </Link>
-        </div>
-      </nav>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
+      <Navigation />
+      <main className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <Link
+          href="/request"
+          className="inline-flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 mb-8"
+        >
+          <ArrowLeftIcon className="h-4 w-4" />
+          Back to Request
+        </Link>
 
-      <main className="flex-1 px-4 py-12 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-3xl">
-          <div className="flex justify-center mb-6">
-            <div className="flex h-16 w-16 items-center justify-center rounded-full bg-green-500/20 text-green-600">
-              <CheckCircleIcon className="h-10 w-10" />
-            </div>
-          </div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-[var(--text-primary)] mb-3 text-center">
-            Thank you!
-          </h1>
-          <p className="text-[var(--text-secondary)] mb-8 text-center">
-            We&apos;ve received your website request and will be in touch within 1–2 business days.
-          </p>
-
-          <div className="rounded-2xl border border-[var(--border-color)] bg-[var(--bg-surface)] p-6 mb-8">
-            <h2 className="text-lg font-semibold text-[var(--text-primary)] mb-2">
-              Estimated Project Range
-            </h2>
-            <p className="text-2xl font-bold text-[var(--uscis-blue)] mb-4">{formatted}</p>
-            <p className="text-sm text-[var(--text-tertiary)]">
-              This is an estimate only. Final pricing will be confirmed after review.
+        <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-700 p-8">
+          <div className="text-center mb-8">
+            <CheckCircleIcon className="h-16 w-16 text-emerald-500 mx-auto mb-4" />
+            <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100 mb-2">
+              Thank you!
+            </h1>
+            <p className="text-slate-600 dark:text-slate-400">
+              We&apos;ve received your request. Your website preview is being generated.
             </p>
           </div>
 
-          {status === "loading" && (
-            <div className="rounded-2xl border border-[var(--border-color)] bg-[var(--bg-surface)] p-8 text-center">
-              <div className="h-8 w-8 animate-spin rounded-full border-2 border-[var(--uscis-blue)] border-t-transparent mx-auto mb-4" />
-              <p className="text-[var(--text-secondary)]">Loading your Website Starter Package…</p>
-            </div>
-          )}
-
-          {status === "pending" && (
-            <div className="rounded-2xl border border-[var(--border-color)] bg-[var(--bg-surface)] p-8 text-center">
-              <DocumentTextIcon className="h-12 w-12 text-[var(--uscis-blue)] mx-auto mb-4" />
-              <p className="text-[var(--text-secondary)] mb-2">
-                We&apos;re preparing your Website Starter Package…
-              </p>
-              <p className="text-sm text-[var(--text-tertiary)]">
-                This usually takes about 30 seconds. This page will update automatically.
-              </p>
-              <div className="h-6 w-6 animate-spin rounded-full border-2 border-[var(--uscis-blue)] border-t-transparent mx-auto mt-4" />
-            </div>
-          )}
-
-          {status === "no-token" && (
-            <div className="rounded-2xl border border-[var(--border-color)] bg-[var(--bg-surface)] p-6 mb-8">
-              <p className="text-[var(--text-primary)]">
-                Use the link from your confirmation email to view your Website Starter Package, or we&apos;ll follow up within 1–2 business days.
-              </p>
-            </div>
-          )}
-
-          {status === "error" && (
-            <div className="rounded-2xl border border-[var(--border-color)] bg-[var(--bg-surface)] p-6 mb-8">
-              <p className="text-[var(--text-primary)]">
-                We received your request. Our team will follow up via email with your Website Starter Package.
-              </p>
-            </div>
-          )}
-
-          {status === "ready" && starter && (
-            <div className="space-y-8 mb-10">
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                <h2 className="text-xl font-semibold text-[var(--text-primary)]">
-                  Your Website Starter Package
-                </h2>
-                {leadId && token && (
-                  <a
-                    href={`/api/leads/${leadId}/starter/download?token=${encodeURIComponent(token)}`}
-                    download
-                    className="inline-flex items-center gap-2 rounded-xl bg-[var(--uscis-blue)] px-5 py-2.5 font-medium text-white hover:opacity-90 transition-opacity"
-                  >
-                    <ArrowDownTrayIcon className="h-5 w-5" />
-                    Download Starter Package
-                  </a>
-                )}
+          {polling && !isReady && (
+            <div className="mb-8 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 p-6 text-center">
+              <div className="animate-pulse flex items-center justify-center gap-3 mb-2">
+                <div className="h-3 w-3 rounded-full bg-indigo-500 animate-ping" />
+                <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                  Generating your preview...
+                </span>
               </div>
-
-              <section className="rounded-2xl border border-[var(--border-color)] bg-[var(--bg-surface)] p-6">
-                <h3 className="text-base font-semibold text-[var(--text-primary)] mb-3">
-                  Recommended Site Structure
-                </h3>
-                <ul className="space-y-3">
-                  {starter.siteStructure?.pages?.map((p, i) => (
-                    <li key={i} className="text-[var(--text-secondary)]">
-                      <span className="font-medium text-[var(--text-primary)]">{p.name}</span>
-                      {p.sections?.length ? (
-                        <ul className="ml-4 mt-1 list-disc text-sm text-[var(--text-tertiary)]">
-                          {p.sections.map((s, j) => (
-                            <li key={j}>{s}</li>
-                          ))}
-                        </ul>
-                      ) : null}
-                    </li>
-                  ))}
-                </ul>
-              </section>
-
-              <section className="rounded-2xl border border-[var(--border-color)] bg-[var(--bg-surface)] p-6">
-                <h3 className="text-base font-semibold text-[var(--text-primary)] mb-3">Hero</h3>
-                <p className="text-lg font-medium text-[var(--text-primary)] mb-1">
-                  {starter.heroHeadline || "—"}
-                </p>
-                <p className="text-[var(--text-secondary)]">{starter.heroSubheadline || "—"}</p>
-              </section>
-
-              <section className="rounded-2xl border border-[var(--border-color)] bg-[var(--bg-surface)] p-6">
-                <h3 className="text-base font-semibold text-[var(--text-primary)] mb-3">
-                  Draft Copy
-                </h3>
-                <div className="space-y-4 text-[var(--text-secondary)] text-sm">
-                  <div>
-                    <span className="font-medium text-[var(--text-primary)]">Home</span>
-                    <p className="mt-1">{starter.draftCopy?.home || "—"}</p>
-                  </div>
-                  <div>
-                    <span className="font-medium text-[var(--text-primary)]">Services</span>
-                    <p className="mt-1">{starter.draftCopy?.services || "—"}</p>
-                  </div>
-                  <div>
-                    <span className="font-medium text-[var(--text-primary)]">About</span>
-                    <p className="mt-1">{starter.draftCopy?.about || "—"}</p>
-                  </div>
-                  <div>
-                    <span className="font-medium text-[var(--text-primary)]">Contact</span>
-                    <p className="mt-1">{starter.draftCopy?.contact || "—"}</p>
-                  </div>
-                </div>
-              </section>
-
-              {starter.ctaRecommendations?.length > 0 && (
-                <section className="rounded-2xl border border-[var(--border-color)] bg-[var(--bg-surface)] p-6">
-                  <h3 className="text-base font-semibold text-[var(--text-primary)] mb-3">
-                    CTA Recommendations
-                  </h3>
-                  <ul className="space-y-2">
-                    {starter.ctaRecommendations.map((c, i) => (
-                      <li key={i} className="text-[var(--text-secondary)] text-sm">
-                        <span className="font-medium text-[var(--text-primary)]">{c.label}</span>
-                        {" "}— {c.placement} ({c.type})
-                      </li>
-                    ))}
-                  </ul>
-                </section>
-              )}
-
-              {starter.colorStyleDirection && (
-                <section className="rounded-2xl border border-[var(--border-color)] bg-[var(--bg-surface)] p-6">
-                  <h3 className="text-base font-semibold text-[var(--text-primary)] mb-2">
-                    Color & Style Direction
-                  </h3>
-                  <p className="text-[var(--text-secondary)] text-sm">
-                    {starter.colorStyleDirection}
-                  </p>
-                </section>
-              )}
-
-              <section className="rounded-2xl border border-[var(--border-color)] bg-[var(--bg-surface)] p-6">
-                <h3 className="text-base font-semibold text-[var(--text-primary)] mb-3">
-                  SEO Starter
-                </h3>
-                <p className="text-sm text-[var(--text-secondary)] mb-2">
-                  <span className="font-medium text-[var(--text-primary)]">Keywords:</span>{" "}
-                  {starter.seoStarter?.keywords?.join(", ") || "—"}
-                </p>
-                <p className="text-sm text-[var(--text-secondary)] mb-2">
-                  <span className="font-medium text-[var(--text-primary)]">Meta Title:</span>{" "}
-                  {starter.seoStarter?.metaTitle || "—"}
-                </p>
-                <p className="text-sm text-[var(--text-secondary)]">
-                  <span className="font-medium text-[var(--text-primary)]">Meta Description:</span>{" "}
-                  {starter.seoStarter?.metaDescription || "—"}
-                </p>
-              </section>
-
-              <section className="rounded-2xl border border-[var(--border-color)] bg-[var(--bg-surface)] p-6">
-                <h3 className="text-base font-semibold text-[var(--text-primary)] mb-3">
-                  Next Steps — Domain & Hosting
-                </h3>
-                <div className="space-y-4 text-sm">
-                  <div>
-                    <p className="font-medium text-[var(--text-primary)] mb-2">
-                      If you have domain/hosting
-                    </p>
-                    <p className="text-[var(--text-secondary)] mb-1">What we need:</p>
-                    <ul className="list-disc ml-4 text-[var(--text-secondary)]">
-                      {starter.nextStepsDomainHosting?.haveDomainHosting?.whatWeNeed?.map((w, i) => (
-                        <li key={i}>{w}</li>
-                      ))}
-                      {(!starter.nextStepsDomainHosting?.haveDomainHosting?.whatWeNeed?.length) && (
-                        <li>Registrar access, DNS access, hosting login</li>
-                      )}
-                    </ul>
-                  </div>
-                  <div>
-                    <p className="font-medium text-[var(--text-primary)] mb-2">If you need help</p>
-                    <p className="text-[var(--text-secondary)] mb-1">
-                      Recommended registrar:{" "}
-                      {starter.nextStepsDomainHosting?.needHelp?.recommendedRegistrar || "—"}
-                    </p>
-                    <p className="text-[var(--text-secondary)] mb-2">
-                      Recommended hosting:{" "}
-                      {starter.nextStepsDomainHosting?.needHelp?.recommendedHosting || "—"}
-                    </p>
-                    <p className="text-[var(--text-secondary)] mb-1">What we&apos;ll handle:</p>
-                    <ul className="list-disc ml-4 text-[var(--text-secondary)]">
-                      {starter.nextStepsDomainHosting?.needHelp?.stepsWeHandle?.map((s, i) => (
-                        <li key={i}>{s}</li>
-                      ))}
-                    </ul>
-                  </div>
-                </div>
-              </section>
-
-              <p className="text-xs text-[var(--text-tertiary)] italic">{starter.disclaimer}</p>
+              <p className="text-xs text-slate-500 dark:text-slate-400">
+                This usually takes 1–3 minutes. We&apos;ll email you when it&apos;s ready.
+              </p>
             </div>
           )}
 
-          <div className="text-center">
-            <Link
-              href={PARENT_WEBSITE}
-              className="inline-flex items-center gap-2 rounded-xl bg-[var(--uscis-blue)] px-6 py-3 font-semibold text-white hover:opacity-90"
-            >
-              Back to Vision XIX Labs
-              <ArrowRightIcon className="h-5 w-5" />
-            </Link>
-          </div>
+          {isReady && (
+            <div className="mb-8 rounded-xl border-2 border-emerald-200 dark:border-emerald-800 bg-emerald-50/50 dark:bg-emerald-900/20 p-6">
+              <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100 mb-2 flex items-center gap-2">
+                <LinkIcon className="h-5 w-5 text-emerald-600" />
+                Your website preview is ready
+              </h2>
+              <a
+                href={previewUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-emerald-600 text-white font-semibold hover:bg-emerald-700"
+              >
+                View preview
+                <LinkIcon className="h-4 w-4" />
+              </a>
+              <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">
+                We&apos;ve also sent you this link by email.
+              </p>
+            </div>
+          )}
+
+          <section className="rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 p-6">
+            <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100 mb-4 flex items-center gap-2">
+              <DocumentTextIcon className="h-5 w-5 text-indigo-600" />
+              Domain & hosting next steps
+            </h2>
+            <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">
+              We&apos;ll help you connect your domain and go live—no call required. Reply to our email with the info below.
+            </p>
+
+            {hasDomain && domainName ? (
+              <div>
+                <h3 className="font-medium text-slate-800 dark:text-slate-200 mb-2">You have a domain: {domainName}</h3>
+                <p className="text-sm text-slate-600 dark:text-slate-400 mb-2">Please send us:</p>
+                <ul className="list-disc list-inside text-sm text-slate-600 dark:text-slate-400 space-y-1">
+                  <li>Registrar name (e.g. Namecheap, GoDaddy, Cloudflare)</li>
+                  <li>Access to update DNS records, or willingness to add the records we provide</li>
+                  <li>We&apos;ll handle the rest and confirm when your site is live</li>
+                </ul>
+              </div>
+            ) : (
+              <div>
+                <h3 className="font-medium text-slate-800 dark:text-slate-200 mb-2 flex items-center gap-2">
+                  <GlobeAltIcon className="h-4 w-4" />
+                  You don&apos;t have a domain yet
+                </h3>
+                <p className="text-sm text-slate-600 dark:text-slate-400 mb-2">
+                  We recommend registrars like Namecheap, Cloudflare Registrar, or Google Domains for simple setup. Tell us:
+                </p>
+                <ul className="list-disc list-inside text-sm text-slate-600 dark:text-slate-400 space-y-1 mb-4">
+                  <li>What domain you&apos;d like (e.g. yourcompany.com)</li>
+                  <li>Whether you&apos;ll purchase it yourself or want us to purchase and set it up with your approval</li>
+                </ul>
+                <p className="text-sm text-slate-500 dark:text-slate-500 italic">
+                  We can purchase and set up the domain with your approval. Just let us know in your reply.
+                </p>
+              </div>
+            )}
+          </section>
+
+          <p className="mt-8 text-center text-sm text-slate-500 dark:text-slate-400">
+            Questions? Email us at{" "}
+            <a href="mailto:support@visionxixlabs.com" className="text-indigo-600 dark:text-indigo-400 hover:underline">
+              support@visionxixlabs.com
+            </a>
+          </p>
         </div>
       </main>
     </div>
-  );
-}
-
-export default function ThankYouPage() {
-  return (
-    <Suspense
-      fallback={
-        <div className="min-h-screen flex items-center justify-center bg-[var(--bg-primary)]">
-          <div className="h-8 w-8 animate-spin rounded-full border-2 border-[var(--uscis-blue)] border-t-transparent" />
-        </div>
-      }
-    >
-      <ThankYouContent />
-    </Suspense>
   );
 }
