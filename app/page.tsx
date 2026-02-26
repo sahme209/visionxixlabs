@@ -37,8 +37,6 @@ import CardContainer from "@/components/CardContainer";
 import CaseCalendar from "@/components/CaseCalendar";
 import WeeklySummary from "@/components/WeeklySummary";
 import HomeCard, { HomeCardInner } from "@/components/HomeCard";
-import HulyEffect from "@/components/HulyEffect";
-import HulyGradientMesh from "@/components/HulyGradientMesh";
 
 
 export default function Home() {
@@ -382,10 +380,10 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-[var(--bg-primary)] text-[var(--text-primary)] relative overflow-x-hidden min-w-0">
-      {/* Subtle background pattern — Huly-inspired azure/violet gradients */}
+      {/* Subtle background pattern — Apple-style refined */}
       <div className="fixed inset-0 pointer-events-none z-0" aria-hidden>
-        <div className="absolute inset-0 opacity-60" style={{ background: "var(--huly-gradient-soft)" }} />
-        <div className="absolute inset-0 opacity-[0.35] dark:opacity-[0.12]" style={{ backgroundImage: "radial-gradient(circle at 1px 1px, rgba(99,102,241,0.06) 1px, transparent 0), radial-gradient(circle at 80% 20%, rgba(139,92,246,0.03) 0px, transparent 40px)", backgroundSize: "40px 40px, 100% 100%" }} />
+        <div className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(0,113,227,0.02)_0%,transparent_40%)]" />
+        <div className="absolute inset-0 opacity-[0.35] dark:opacity-[0.12]" style={{ backgroundImage: "radial-gradient(circle at 1px 1px, rgba(0,113,227,0.06) 1px, transparent 0)", backgroundSize: "40px 40px" }} />
       </div>
       {showHomeUSCISDebug && (
         <USCISStatusAPIDebug onClose={() => setShowHomeUSCISDebug(false)} />
@@ -571,7 +569,7 @@ export default function Home() {
                 <Link
                   href="/subscribe"
                   onClick={() => setShowPremiumBenefitsModal(false)}
-                  className="cta-glow inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-[var(--uscis-green)] to-emerald-600 hover:from-emerald-600 hover:to-[#166534] text-white rounded-xl font-semibold text-lg sm:text-xl shadow-lg active:scale-95 transition-all duration-300"
+                  className="inline-flex items-center gap-3 px-8 py-4 bg-[var(--uscis-green)] hover:bg-[#166534] text-white rounded-xl font-semibold text-lg sm:text-xl shadow-md active:scale-95 transition-all duration-300"
                 >
                   <span style={{ color: "#fff" }}>{hasUsedTrial ? "Subscribe Now" : "Start Your 3-Day Free Trial"}</span>
                   <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={3} style={{ color: "#fff" }}>
@@ -589,24 +587,19 @@ export default function Home() {
       {/* Official Header - Desktop: Full Dashboard, Mobile: Compact - shown to all users */}
       {!authLoading && !profileLoading && (
         <>
-          {/* Desktop Header - Huly-inspired gradient + laser beam effect */}
-          <div className="hidden md:block surface-dark relative overflow-hidden bg-gradient-to-br from-[var(--hero-dark)] via-[#1a1a2e] to-[var(--hero-dark)] border-b border-white/5 shadow-lg">
-            {/* Huly Gradient Mesh - floating blobs */}
-            <HulyGradientMesh />
-            {/* Huly Effect - laser beam animation */}
-            <HulyEffect />
+          {/* Desktop Header - Apple-style refined navy gradient */}
+          <div className="hidden md:block surface-dark relative overflow-hidden bg-gradient-to-b from-[var(--hero-dark)] via-[var(--hero-dark-soft)] to-[var(--hero-dark)] border-b border-white/5 shadow-lg">
             <div className="absolute inset-0 hidden md:block w-full">
               <Image
                 src={HERO_IMAGES.office}
                 alt=""
                 fill
-                className="object-cover object-center opacity-10 w-full"
+                className="object-cover object-center opacity-15 w-full"
                 sizes="100vw"
               />
-              <div className="absolute inset-0 bg-gradient-to-b from-[var(--hero-dark)]/92 via-[#1a1a2e]/88 to-[var(--hero-dark)]/92" />
-              <div className="absolute inset-0 bg-gradient-to-t from-transparent via-transparent to-[var(--huly-gradient-soft)] opacity-30" />
+              <div className="absolute inset-0 bg-gradient-to-b from-[var(--hero-dark)]/95 via-[var(--hero-dark-soft)]/90 to-[var(--hero-dark)]/95" />
             </div>
-            <div className="absolute bottom-0 left-0 right-0 h-px" style={{ background: "linear-gradient(90deg, transparent, rgba(99,102,241,0.5), rgba(0,113,227,0.6), transparent)" }} aria-hidden="true" />
+            <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[var(--uscis-blue)]/50 to-transparent" aria-hidden="true" />
             <div className="pointer-events-none absolute inset-0 opacity-[0.04] hidden md:block" aria-hidden="true" style={{ backgroundImage: "linear-gradient(rgba(255,255,255,0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.08) 1px, transparent 1px)", backgroundSize: "16px 16px" }} />
             <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
               <div className="grid grid-cols-12 gap-4 items-start">
