@@ -14,6 +14,7 @@ const cloudLinks = [
 
 const solutionsLinks = [
   { href: "/request", label: "Website Request / Get a Quote" },
+  { href: "/cloud-studio", label: "AI Cloud Studio" },
   { href: "/visionxix-ai", label: "Vision XIX AI" },
   { href: "/visionxix-ai/pricing", label: "Vision XIX AI — Pricing" },
   { href: "/visionxix-ai/features", label: "Vision XIX AI — Features" },
