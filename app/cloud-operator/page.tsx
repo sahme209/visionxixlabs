@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useCallback, useEffect, useState } from "react";
+import { FormEvent, Suspense, useCallback, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import {
@@ -117,7 +117,7 @@ const OPERATOR_TIERS = [
   { id: "enterprise", label: "Enterprise — Strategic engagement" },
 ] as const;
 
-export default function CloudOperatorPage() {
+function CloudOperatorPageInner() {
   const searchParams = useSearchParams();
   const tokenFromUrl = searchParams.get("token");
 
@@ -950,4 +950,24 @@ export default function CloudOperatorPage() {
     </div>
   );
 }
+
+export default function CloudOperatorPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
+          <Navigation />
+          <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-20">
+            <p className="text-sm text-slate-600 dark:text-slate-400">
+              Loading Axiom cloud-operator analysis…
+            </p>
+          </main>
+        </div>
+      }
+    >
+      <CloudOperatorPageInner />
+    </Suspense>
+  );
+}
+
 
