@@ -16,10 +16,14 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Token required" }, { status: 400 });
   }
 
-  const leadId = verifyStarterToken(token);
-  if (!leadId) {
-    return NextResponse.json({ error: "Invalid token" }, { status: 401 });
+  const result = verifyStarterToken(token);
+  if ("error" in result) {
+    return NextResponse.json(
+      { error: result.error === "expired" ? "Token expired" : "Invalid token" },
+      { status: 401 }
+    );
   }
+  const leadId = result.leadId;
 
   try {
     const lead = await prisma.lead.findUnique({ where: { id: leadId } });
@@ -71,13 +75,34 @@ export async function POST(req: NextRequest) {
     });
 
     const projectName = `preview-${leadId.slice(-8)}`;
-    const result = await deployPreview(pkg, projectName);
+    const form = (payload.form as Record<string, unknown>) || {};
+    const cloudProvider = (form.cloudProvider as string) || "vercel";
+    const tier = (form.tier as string) || "starter";
+    const deployResult = await deployPreview(
+      pkg,
+      projectName,
+      ["vercel", "aws", "azure", "gcp"].includes(cloudProvider) ? cloudProvider : "vercel"
+    );
+
+    const cdnEnabled = tier !== "starter";
+    const sslEnabled = true;
+    const cicdEnabled = tier === "professional" || tier === "done_for_you";
+    const securityLevel = tier === "done_for_you" ? "hardened" : tier === "professional" ? "standard" : "basic";
+    const addOns = (form.addOns as string[]) || [];
 
     const finalPayload = {
       ...(payload as Record<string, unknown>),
       aiPackage: pkg,
-      previewUrl: result.url,
-      vercelDeploymentId: result.deploymentId,
+      previewUrl: deployResult.url,
+      vercelDeploymentId: deployResult.deploymentId,
+      infrastructure: {
+        cloudProvider,
+        cdnEnabled,
+        sslEnabled,
+        cicdEnabled,
+        securityLevel,
+        addOns,
+      },
     };
 
     await prisma.lead.update({
@@ -90,7 +115,6 @@ export async function POST(req: NextRequest) {
 
     // Send confirmation email with preview link
     try {
-      const form = (payload.form as Record<string, unknown>) || {};
       const toEmail = (form.email as string) || lead.email;
       const name = (form.name as string) || "there";
       const resendKey = process.env.RESEND_API_KEY;
@@ -108,14 +132,14 @@ export async function POST(req: NextRequest) {
             from: fromHeader,
             to: [toEmail],
             subject: "Your website preview is ready",
-            text: `Hi ${name},\n\nYour website preview is ready!\n\nView it here: ${result.url}\n\nIf you have questions about domains or going live, just reply to this email.\n\n— Vision XIX Labs`,
+            text: `Hi ${name},\n\nYour website preview is ready!\n\nView it here: ${deployResult.url}\n\nIf you have questions about domains or going live, just reply to this email.\n\n— Vision XIX Labs`,
             html: `
               <div style="font-family: Arial, sans-serif; max-width: 600px;">
                 <h2 style="color: #4f46e5;">Your website preview is ready</h2>
                 <p>Hi ${name},</p>
                 <p>Your website preview is ready. Click below to view it:</p>
-                <p><a href="${result.url}" style="display: inline-block; background: #4f46e5; color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none;">View preview</a></p>
-                <p><a href="${result.url}">${result.url}</a></p>
+                <p><a href="${deployResult.url}" style="display: inline-block; background: #4f46e5; color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none;">View preview</a></p>
+                <p><a href="${deployResult.url}">${deployResult.url}</a></p>
                 <p>If you have questions about domains or going live, just reply to this email.</p>
                 <p>— Vision XIX Labs</p>
               </div>
@@ -130,7 +154,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({
       success: true,
       status: "deploy_ready",
-      previewUrl: result.url,
+      previewUrl: deployResult.url,
     });
   } catch (e) {
     console.error("[leads trigger]", e);

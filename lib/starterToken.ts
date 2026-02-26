@@ -2,33 +2,47 @@ import { createHmac } from "crypto";
 
 const SECRET = process.env.STARTER_TOKEN_SECRET || "";
 const SEP = ".";
+const EXPIRY_DAYS = 7;
 
 /**
  * Create signed token for lead access.
- * Format: base64(leadId).hmac(base64(leadId))
- * Do NOT use raw leadId in public URLs; use token only.
+ * Format: base64url(leadId).timestamp.signature
+ * Expires in 7 days.
  */
 export function createStarterToken(leadId: string): string {
   if (!SECRET) throw new Error("STARTER_TOKEN_SECRET is required");
   const payload = Buffer.from(leadId, "utf8").toString("base64url");
-  const sig = createHmac("sha256", SECRET).update(payload).digest("base64url");
-  return `${payload}${SEP}${sig}`;
+  const timestamp = Math.floor(Date.now() / 1000).toString(36);
+  const toSign = `${payload}${SEP}${timestamp}`;
+  const sig = createHmac("sha256", SECRET).update(toSign).digest("base64url");
+  return `${toSign}${SEP}${sig}`;
 }
+
+export type VerifyResult = { leadId: string } | { error: "invalid" | "expired" };
 
 /**
  * Verify token and return leadId if valid.
+ * Returns { error: "expired" } if token is older than 7 days.
  */
-export function verifyStarterToken(token: string): string | null {
-  if (!SECRET || !token) return null;
-  const idx = token.lastIndexOf(SEP);
-  if (idx <= 0) return null;
-  const payload = token.slice(0, idx);
-  const sig = token.slice(idx + 1);
-  const expected = createHmac("sha256", SECRET).update(payload).digest("base64url");
-  if (sig !== expected) return null;
+export function verifyStarterToken(token: string): VerifyResult {
+  if (!SECRET || !token) return { error: "invalid" };
+  const parts = token.split(SEP);
+  if (parts.length < 3) return { error: "invalid" };
+  const sig = parts.pop()!;
+  const timestamp = parts.pop()!;
+  const payload = parts.join(SEP);
+  const toSign = `${payload}${SEP}${timestamp}`;
+  const expected = createHmac("sha256", SECRET).update(toSign).digest("base64url");
+  if (sig !== expected) return { error: "invalid" };
+  const ts = parseInt(timestamp, 36);
+  if (Number.isNaN(ts) || ts < 0) return { error: "invalid" };
+  const expiryMs = EXPIRY_DAYS * 24 * 60 * 60 * 1000;
+  if (Date.now() - ts * 1000 > expiryMs) return { error: "expired" };
   try {
-    return Buffer.from(payload, "base64url").toString("utf8");
+    const leadId = Buffer.from(payload, "base64url").toString("utf8");
+    return { leadId };
   } catch {
-    return null;
+    return { error: "invalid" };
   }
 }
+

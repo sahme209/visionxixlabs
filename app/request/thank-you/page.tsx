@@ -8,16 +8,31 @@ import {
   LinkIcon,
   DocumentTextIcon,
   GlobeAltIcon,
+  CloudIcon,
+  ShieldCheckIcon,
 } from "@heroicons/react/24/outline";
 import { Navigation } from "@/components/Navigation";
 
 export default function ThankYouPage() {
   const [token, setToken] = useState<string | null>(null);
+  const [leadId, setLeadId] = useState<string | null>(null);
   const [status, setStatus] = useState<string>("");
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [polling, setPolling] = useState(false);
   const [hasDomain, setHasDomain] = useState<boolean | null>(null);
   const [domainName, setDomainName] = useState<string>("");
+  const [changeRequest, setChangeRequest] = useState("");
+  const [changeSubmitting, setChangeSubmitting] = useState(false);
+  const [changeError, setChangeError] = useState<string | null>(null);
+  const [revisionsRemaining, setRevisionsRemaining] = useState<number | null>(null);
+  const [infrastructure, setInfrastructure] = useState<{
+    cloudProvider?: string;
+    cdnEnabled?: boolean;
+    sslEnabled?: boolean;
+    cicdEnabled?: boolean;
+    securityLevel?: string;
+    addOns?: string[];
+  } | null>(null);
 
   const fetchStatus = useCallback(async () => {
     if (!token) return;
@@ -27,6 +42,9 @@ export default function ThankYouPage() {
       if (res.ok) {
         setStatus(data.status || "");
         setPreviewUrl(data.previewUrl || null);
+        setLeadId(data.leadId || null);
+        setRevisionsRemaining(data.revisionsRemaining ?? null);
+        setInfrastructure(data.infrastructure || null);
         return data;
       }
     } catch {
@@ -61,6 +79,7 @@ export default function ThankYouPage() {
         setHasDomain(Boolean(d.form.hasDomain));
         setDomainName(String(d.form.domainName || ""));
       }
+      if (d?.infrastructure) setInfrastructure(d.infrastructure);
       if (d?.deployReady) {
         clearInterval(interval);
         setPolling(false);
@@ -86,6 +105,31 @@ export default function ThankYouPage() {
 
   const isReady = previewUrl && (status === "deploy_ready" || status === "published");
 
+  const submitChangeRequest = async () => {
+    if (!token || !leadId || !changeRequest.trim()) return;
+    setChangeSubmitting(true);
+    setChangeError(null);
+    try {
+      const res = await fetch(`/api/leads/${leadId}/preview/update?token=${encodeURIComponent(token)}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ changeRequest: changeRequest.trim() }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setPreviewUrl(data.previewUrl || previewUrl);
+        setChangeRequest("");
+        setRevisionsRemaining(data.revisionsRemaining ?? revisionsRemaining);
+      } else {
+        setChangeError(data.error || "Update failed");
+      }
+    } catch {
+      setChangeError("Update failed. Please try again.");
+    } finally {
+      setChangeSubmitting(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
       <Navigation />
@@ -102,10 +146,10 @@ export default function ThankYouPage() {
           <div className="text-center mb-8">
             <CheckCircleIcon className="h-16 w-16 text-emerald-500 mx-auto mb-4" />
             <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100 mb-2">
-              Thank you!
+              Thank you
             </h1>
             <p className="text-slate-600 dark:text-slate-400">
-              We&apos;ve received your request. Your website preview is being generated.
+              Your AI-built website is being generated. You&apos;ll see your live preview link below when it&apos;s ready.
             </p>
           </div>
 
@@ -127,7 +171,7 @@ export default function ThankYouPage() {
             <div className="mb-8 rounded-xl border-2 border-emerald-200 dark:border-emerald-800 bg-emerald-50/50 dark:bg-emerald-900/20 p-6">
               <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100 mb-2 flex items-center gap-2">
                 <LinkIcon className="h-5 w-5 text-emerald-600" />
-                Your website preview is ready
+                Your AI-built website is live
               </h2>
               <a
                 href={previewUrl}
@@ -135,13 +179,80 @@ export default function ThankYouPage() {
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-emerald-600 text-white font-semibold hover:bg-emerald-700"
               >
-                View preview
+                View your website
                 <LinkIcon className="h-4 w-4" />
               </a>
               <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">
-                We&apos;ve also sent you this link by email.
+                Link also sent by email. Clear next steps for domain & hosting below.
               </p>
+
+              <div className="mt-6 pt-6 border-t border-emerald-200 dark:border-emerald-700">
+                <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-2">Request changes</h3>
+                <p className="text-xs text-slate-600 dark:text-slate-400 mb-2">
+                  Tell us what to adjust. We&apos;ll regenerate and redeploy.{revisionsRemaining !== null && revisionsRemaining >= 0 && (
+                    <span className="ml-1">({revisionsRemaining} revisions left)</span>
+                  )}
+                </p>
+                <textarea
+                  value={changeRequest}
+                  onChange={(e) => setChangeRequest(e.target.value)}
+                  placeholder="e.g. Make the tone more formal, add a section about our team..."
+                  rows={3}
+                  className="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 px-3 py-2 text-sm text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-indigo-500 mb-2"
+                />
+                {changeError && <p className="text-sm text-red-600 dark:text-red-400 mb-2">{changeError}</p>}
+                <button
+                  onClick={submitChangeRequest}
+                  disabled={changeSubmitting || !changeRequest.trim()}
+                  className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-700 disabled:opacity-50"
+                >
+                  {changeSubmitting ? "Updating..." : "Submit changes"}
+                </button>
+              </div>
             </div>
+          )}
+
+          {isReady && infrastructure && (
+            <section className="mb-8 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 p-6">
+              <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100 mb-4 flex items-center gap-2">
+                <CloudIcon className="h-5 w-5 text-indigo-600" />
+                Infrastructure Stack Overview
+              </h2>
+              <dl className="grid gap-2 text-sm">
+                <div className="flex justify-between">
+                  <dt className="text-slate-500 dark:text-slate-400">Cloud Provider</dt>
+                  <dd className="font-medium text-slate-700 dark:text-slate-300 capitalize">{infrastructure.cloudProvider || "Vercel"}</dd>
+                </div>
+                <div className="flex justify-between">
+                  <dt className="text-slate-500 dark:text-slate-400">CDN</dt>
+                  <dd className="font-medium text-slate-700 dark:text-slate-300">{infrastructure.cdnEnabled ? "Enabled" : "—"}</dd>
+                </div>
+                <div className="flex justify-between">
+                  <dt className="text-slate-500 dark:text-slate-400">SSL</dt>
+                  <dd className="font-medium text-slate-700 dark:text-slate-300">{infrastructure.sslEnabled ? "Enabled" : "—"}</dd>
+                </div>
+                <div className="flex justify-between">
+                  <dt className="text-slate-500 dark:text-slate-400">CI/CD</dt>
+                  <dd className="font-medium text-slate-700 dark:text-slate-300">{infrastructure.cicdEnabled ? "Enabled" : "—"}</dd>
+                </div>
+                <div className="flex justify-between">
+                  <dt className="text-slate-500 dark:text-slate-400">Security Level</dt>
+                  <dd className="font-medium text-slate-700 dark:text-slate-300 capitalize">{infrastructure.securityLevel || "Basic"}</dd>
+                </div>
+              </dl>
+              {infrastructure.addOns && infrastructure.addOns.length > 0 && (
+                <div className="mt-4 pt-4 border-t border-slate-200 dark:border-slate-700">
+                  <h3 className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Selected Add-ons</h3>
+                  <ul className="flex flex-wrap gap-2">
+                    {infrastructure.addOns.map((a) => (
+                      <li key={a} className="px-2 py-1 rounded-lg bg-indigo-100 dark:bg-indigo-900/40 text-indigo-700 dark:text-indigo-300 text-xs font-medium capitalize">
+                        {a}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </section>
           )}
 
           <section className="rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 p-6">

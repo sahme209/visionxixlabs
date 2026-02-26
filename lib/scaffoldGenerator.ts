@@ -20,6 +20,10 @@ export function generateSiteFiles(pkg: AIStarterPackage): GeneratedFile[] {
 
   const files: GeneratedFile[] = [];
 
+  const heroHeadline = pkg.homepageHero || pkg.companyName;
+  const metaTitle = pkg.metaTitle || `${pkg.companyName} | ${pkg.tagline}`;
+  const metaDesc = pkg.metaDescription || pkg.tagline;
+
   files.push({
     path: "index.html",
     content: wrapPage(
@@ -27,9 +31,11 @@ export function generateSiteFiles(pkg: AIStarterPackage): GeneratedFile[] {
       baseCss,
       navItems,
       "Home",
+      metaTitle,
+      metaDesc,
       `
       <header class="hero">
-        <h1>${escapeHtml(pkg.companyName)}</h1>
+        <h1>${escapeHtml(heroHeadline)}</h1>
         <p class="tagline">${escapeHtml(pkg.tagline)}</p>
       </header>
       <section>
@@ -55,6 +61,8 @@ export function generateSiteFiles(pkg: AIStarterPackage): GeneratedFile[] {
       baseCss,
       navItems,
       "About",
+      metaTitle,
+      metaDesc,
       `
       <header>
         <h1>About Us</h1>
@@ -73,6 +81,8 @@ export function generateSiteFiles(pkg: AIStarterPackage): GeneratedFile[] {
       baseCss,
       navItems,
       "Services",
+      metaTitle,
+      metaDesc,
       `
       <header>
         <h1>Our Services</h1>
@@ -93,6 +103,8 @@ export function generateSiteFiles(pkg: AIStarterPackage): GeneratedFile[] {
       baseCss,
       navItems,
       "Contact",
+      metaTitle,
+      metaDesc,
       `
       <header>
         <h1>Contact Us</h1>
@@ -116,6 +128,8 @@ export function generateSiteFiles(pkg: AIStarterPackage): GeneratedFile[] {
         baseCss,
         navItems,
         "FAQ",
+        metaTitle,
+        metaDesc,
         `
         <header>
           <h1>Frequently Asked Questions</h1>
@@ -168,17 +182,21 @@ function wrapPage(
   css: string,
   navItems: { label: string; href: string }[],
   pageTitle: string,
+  metaTitle: string,
+  metaDesc: string,
   body: string
 ): string {
   const nav = navItems
     .map((n) => `<a href="${escapeHtml(n.href)}">${escapeHtml(n.label)}</a>`)
     .join("");
+  const fullTitle = pageTitle === "Home" ? metaTitle : `${pageTitle} | ${title}`;
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>${escapeHtml(pageTitle)} | ${escapeHtml(title)}</title>
+  <title>${escapeHtml(fullTitle)}</title>
+  <meta name="description" content="${escapeHtml(metaDesc)}">
   <style>${css}</style>
 </head>
 <body>
