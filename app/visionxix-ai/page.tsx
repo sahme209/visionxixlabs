@@ -120,7 +120,7 @@ export default function VisionXIXAILandingPage() {
               href="/cloud-operator"
               className="inline-flex items-center gap-2 rounded-full border border-slate-300 dark:border-slate-600 px-4 py-2 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:border-indigo-500 hover:text-indigo-600 dark:hover:text-indigo-300"
             >
-              Run Axiom for Infrastructure Intelligence
+              Run Infrastructure Analysis with Axiom
               <ArrowRightIcon className="h-4 w-4" />
             </Link>
           </div>

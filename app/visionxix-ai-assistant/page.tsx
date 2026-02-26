@@ -161,7 +161,7 @@ export default function VisionXIXAIAssistantPage() {
       <div className="border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 pt-24">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
           <div>
-            <p className="text-xs font-medium text-slate-500 uppercase tracking-wider mb-1">Vision XIX Labs · Part of the Axiom ecosystem</p>
+            <p className="text-xs font-medium text-slate-500 uppercase tracking-wider mb-1">Vision XIX AI is part of the Axiom ecosystem.</p>
             <h1 className="text-xl sm:text-2xl font-semibold text-slate-900 dark:text-slate-100">Site Assistant — Cloud & AI</h1>
             <p className="text-sm text-slate-600 dark:text-slate-400 mt-1 max-w-2xl">
               Ask how we design, automate, and secure cloud platforms, or how we build production AI (internal assistants, RAG, more).
@@ -180,7 +180,7 @@ export default function VisionXIXAIAssistantPage() {
               })}
             </div>
             <a href="/cloud-operator" className="inline-flex items-center justify-center rounded-full bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700">
-              Run Axiom for Infrastructure Intelligence
+              Run Infrastructure Analysis with Axiom
             </a>
             <button onClick={() => setLeadModalOpen(true)} className="text-[11px] text-indigo-600 hover:underline">
               Get personalized demo →
