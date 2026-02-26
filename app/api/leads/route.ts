@@ -66,7 +66,7 @@ export async function POST(req: NextRequest) {
           infrastructure: {},
           metadata: {},
           // Legacy keys (preserved for backward compatibility)
-          form: normalizedForm,
+          // (form remains available at the same key via the standardized structure)
         },
       },
     });
