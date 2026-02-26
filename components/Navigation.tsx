@@ -16,7 +16,7 @@ const solutionsLinks = [
   { href: "/website-builder", label: "AI Website Builder (Prompt)" },
   { href: "/request", label: "Website Request / Get a Quote" },
   { href: "/visionxix-ai", label: "Vision XIX AI" },
-  { href: "/visionxix-ai/pricing", label: "Vision XIX AI — Pricing" },
+  { href: "/visionxix-ai/pricing", label: "Plans & Membership" },
   { href: "/visionxix-ai/features", label: "Vision XIX AI — Features" },
   { href: "/ai-solutions", label: "AI Solutions" },
   { href: "/ai-engineering", label: "AI Engineering & LLM Systems" },
@@ -211,7 +211,7 @@ export function Navigation() {
               <p className="px-4 pt-3 text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Solutions</p>
               <Link href="/request" onClick={() => setMobileMenuOpen(false)} className="px-4 py-2 text-slate-700 dark:text-slate-300 hover:bg-violet-50 dark:hover:bg-violet-900/20 rounded-lg text-sm font-medium">Website Request / Get a Quote</Link>
               <Link href="/visionxix-ai" onClick={() => setMobileMenuOpen(false)} className="px-4 py-2 text-slate-700 dark:text-slate-300 hover:bg-violet-50 dark:hover:bg-violet-900/20 rounded-lg text-sm font-medium">Vision XIX AI</Link>
-              <Link href="/visionxix-ai/pricing" onClick={() => setMobileMenuOpen(false)} className="px-4 py-2 text-slate-700 dark:text-slate-300 hover:bg-violet-50 dark:hover:bg-violet-900/20 rounded-lg text-sm font-medium pl-6">Vision XIX AI — Pricing</Link>
+              <Link href="/visionxix-ai/pricing" onClick={() => setMobileMenuOpen(false)} className="px-4 py-2 text-slate-700 dark:text-slate-300 hover:bg-violet-50 dark:hover:bg-violet-900/20 rounded-lg text-sm font-medium pl-6">Plans & Membership</Link>
               <Link href="/visionxix-ai/features" onClick={() => setMobileMenuOpen(false)} className="px-4 py-2 text-slate-700 dark:text-slate-300 hover:bg-violet-50 dark:hover:bg-violet-900/20 rounded-lg text-sm font-medium pl-6">Vision XIX AI — Features</Link>
               <Link href="/ai-solutions" onClick={() => setMobileMenuOpen(false)} className="px-4 py-2 text-slate-700 dark:text-slate-300 hover:bg-violet-50 dark:hover:bg-violet-900/20 rounded-lg text-sm font-medium">AI Solutions</Link>
               <Link href="/ai-engineering" onClick={() => setMobileMenuOpen(false)} className="px-4 py-2 text-slate-700 dark:text-slate-300 hover:bg-violet-50 dark:hover:bg-violet-900/20 rounded-lg text-sm font-medium">AI Engineering & LLM Systems</Link>

@@ -138,10 +138,10 @@ export default function VisionXIXAIPricingPage() {
       <section className="pt-28 pb-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto text-center">
           <h1 className="text-4xl sm:text-5xl font-bold text-slate-900 dark:text-slate-100 tracking-tight">
-            Simple, transparent pricing
+            One membership. Full stack.
           </h1>
           <p className="mt-6 text-xl text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
-            Production-ready AI support that pays for itself in saved support time. White-label included — no extra fee.
+            Cloud, AI, and automation — unified. Axiom, chatbots, website builder, and cloud guidance in every plan. Production-ready, white-label included.
           </p>
           <div className="mt-8 flex items-center justify-center gap-3">
             <button
@@ -169,6 +169,17 @@ export default function VisionXIXAIPricingPage() {
             </button>
           </div>
           <p className="mt-2 text-sm text-slate-500">7 days free, then charged. Cancel anytime before trial ends.</p>
+          <div className="mt-12 rounded-2xl border-2 border-slate-200/80 dark:border-slate-700/80 bg-slate-50/50 dark:bg-slate-800/50 p-6 text-left max-w-3xl mx-auto">
+            <h2 className="text-sm font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-3">Included in every plan</h2>
+            <ul className="grid sm:grid-cols-2 gap-3 text-sm text-slate-700 dark:text-slate-300">
+              <li className="flex items-center gap-2"><CheckIcon className="h-5 w-5 text-emerald-500 shrink-0" /> Vision XIX AI chatbots (white-label)</li>
+              <li className="flex items-center gap-2"><CheckIcon className="h-5 w-5 text-emerald-500 shrink-0" /> Axiom Cloud Operator (infra scoring & roadmaps)</li>
+              <li className="flex items-center gap-2"><CheckIcon className="h-5 w-5 text-emerald-500 shrink-0" /> AI Website Builder (prompt-driven sites)</li>
+              <li className="flex items-center gap-2"><CheckIcon className="h-5 w-5 text-emerald-500 shrink-0" /> Cloud Studio (cloud project setup)</li>
+              <li className="flex items-center gap-2"><CheckIcon className="h-5 w-5 text-emerald-500 shrink-0" /> Cloud solutions guidance (AWS, Azure, GCP)</li>
+              <li className="flex items-center gap-2"><CheckIcon className="h-5 w-5 text-emerald-500 shrink-0" /> AI solutions & engineering resources</li>
+            </ul>
+          </div>
         </div>
       </section>
 
@@ -275,7 +286,7 @@ export default function VisionXIXAIPricingPage() {
       <section className="py-16 px-4 sm:px-6 lg:px-8 bg-slate-50 dark:bg-slate-800/50">
         <div className="max-w-4xl mx-auto">
           <h2 className="text-2xl font-bold text-center text-slate-900 dark:text-slate-100 mb-12">
-            Why Vision XIX AI beats generic chatbots
+            Why a unified membership beats point solutions
           </h2>
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
             <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-5 text-center">
@@ -304,9 +315,9 @@ export default function VisionXIXAIPricingPage() {
 
       <section className="py-16 px-4 sm:px-6 lg:px-8">
         <div className="max-w-3xl mx-auto text-center">
-          <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-100 mb-4">Start your 7-day free trial</h2>
+          <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-100 mb-4">One plan. All services.</h2>
           <p className="text-slate-600 dark:text-slate-400 mb-8">
-            Choose a plan above to go to checkout. 7 days free, then charged. Cancel anytime.
+            Get Axiom, chatbots, website builder, and cloud guidance — one membership. 7 days free, then charged. Cancel anytime.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link
@@ -332,6 +343,9 @@ export default function VisionXIXAIPricingPage() {
             Vision XIX Labs
           </Link>
           <div className="flex gap-6 text-sm text-slate-600 dark:text-slate-400">
+            <Link href="/visionxix-ai/pricing#plans" className="font-semibold text-indigo-600">
+              Plans & Membership
+            </Link>
             <Link href="/visionxix-ai" className="hover:text-indigo-600">
               Product
             </Link>

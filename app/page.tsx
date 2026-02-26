@@ -641,6 +641,7 @@ export default function Home() {
             <div>
               <h4 className="text-white font-semibold mb-4 text-sm">Connect</h4>
               <ul className="space-y-2 text-sm">
+                <li><Link href="/visionxix-ai/pricing" className="hover:text-white transition-colors">Plans & Membership</Link></li>
                 <li><Link href="/request" className="hover:text-white transition-colors">Website Request / Get a Quote</Link></li>
                 <li><Link href="/contact" className="hover:text-white transition-colors">Contact</Link></li>
                 <li>

@@ -145,6 +145,7 @@ export default function AIInfrastructurePage() {
             primaryHref="/contact"
             secondaryLabel="Email Us"
             secondaryHref="mailto:support@visionxixlabs.com"
+            plansHref="/visionxix-ai/pricing"
           />
 
           <p className="mt-8">

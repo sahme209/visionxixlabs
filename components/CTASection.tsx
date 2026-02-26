@@ -9,6 +9,8 @@ type CTASectionProps = {
   primaryHref: string;
   secondaryLabel: string;
   secondaryHref: string;
+  /** Optional: Plans & Membership link shown below main CTAs */
+  plansHref?: string;
 };
 
 export function CTASection({
@@ -18,6 +20,7 @@ export function CTASection({
   primaryHref,
   secondaryLabel,
   secondaryHref,
+  plansHref,
 }: CTASectionProps) {
   const isEmail = secondaryHref.startsWith("mailto:");
 
@@ -42,6 +45,14 @@ export function CTASection({
             {secondaryLabel}
           </SecondaryComponent>
         </div>
+        {plansHref && (
+          <p className="mt-6 text-sm text-indigo-200">
+            One membership, full stack —{" "}
+            <Link href={plansHref} className="font-semibold text-white underline underline-offset-2 hover:text-indigo-100">
+              View plans &amp; membership
+            </Link>
+          </p>
+        )}
       </div>
     </section>
   );

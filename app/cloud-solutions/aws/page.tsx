@@ -326,6 +326,7 @@ export default function AwsCloudSolutionsPage() {
               primaryHref="/contact"
               secondaryLabel="Email Us"
               secondaryHref="mailto:support@visionxixlabs.com"
+              plansHref="/visionxix-ai/pricing"
             />
 
             {/* Navigation to related pages */}

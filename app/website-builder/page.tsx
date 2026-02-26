@@ -412,13 +412,21 @@ export default function WebsiteBuilderPage() {
               <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">
                 Deploy your site, then run Axiom for infrastructure scores, CI/CD YAML, cost optimization, and a 30-day roadmap.
               </p>
-              <Link
-                href="/cloud-operator"
-                className="inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-violet-600 to-fuchsia-600 px-5 py-2.5 font-semibold text-white shadow-lg shadow-violet-500/30 hover:shadow-violet-500/40 hover:from-violet-500 hover:to-fuchsia-500 transition-all"
-              >
-                <CloudIcon className="h-5 w-5" />
-                Run Axiom Analysis
-              </Link>
+              <div className="flex flex-wrap gap-4">
+                <Link
+                  href="/cloud-operator"
+                  className="inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-violet-600 to-fuchsia-600 px-5 py-2.5 font-semibold text-white shadow-lg shadow-violet-500/30 hover:shadow-violet-500/40 hover:from-violet-500 hover:to-fuchsia-500 transition-all"
+                >
+                  <CloudIcon className="h-5 w-5" />
+                  Run Axiom Analysis
+                </Link>
+                <Link
+                  href="/visionxix-ai/pricing"
+                  className="inline-flex items-center gap-2 rounded-2xl border-2 border-violet-600 px-5 py-2.5 font-semibold text-violet-600 dark:text-violet-400 hover:bg-violet-50 dark:hover:bg-violet-900/20 transition-all"
+                >
+                  View plans & membership
+                </Link>
+              </div>
             </div>
 
             <button

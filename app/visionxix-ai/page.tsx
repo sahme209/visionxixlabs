@@ -331,7 +331,7 @@ export default function VisionXIXAILandingPage() {
           <Link href="/" className="text-sm text-slate-600 dark:text-slate-400 hover:text-indigo-600">Vision XIX Labs</Link>
           <div className="flex gap-6 text-sm text-slate-600 dark:text-slate-400">
             <Link href="/visionxix-ai-assistant" className="hover:text-indigo-600">Try demo</Link>
-            <Link href="/visionxix-ai/pricing" className="hover:text-indigo-600">Pricing</Link>
+            <Link href="/visionxix-ai/pricing" className="hover:text-indigo-600">Plans & Membership</Link>
             <Link href="/visionxix-ai/features" className="hover:text-indigo-600">Features</Link>
             <a href={`mailto:${SUPPORT_EMAIL}`} className="hover:text-indigo-600">Contact</a>
             <Link href="/privacy" className="hover:text-indigo-600">Privacy</Link>

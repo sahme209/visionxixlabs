@@ -3,7 +3,10 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   turbopack: { root: process.cwd() },
   async redirects() {
-    return [{ source: "/cloud-review", destination: "/free-review", permanent: true }];
+    return [
+      { source: "/cloud-review", destination: "/free-review", permanent: true },
+      { source: "/pricing", destination: "/visionxix-ai/pricing", permanent: true },
+    ];
   },
   images: {
     unoptimized: false,

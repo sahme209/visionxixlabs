@@ -54,7 +54,7 @@ const suggestions = [
 ];
 
 const QUICK_ACTIONS = [
-  { label: "View pricing", href: "/visionxix-ai/pricing", icon: CurrencyDollarIcon },
+  { label: "View plans & membership", href: "/visionxix-ai/pricing", icon: CurrencyDollarIcon },
   { label: "Request demo", href: `mailto:${SUPPORT_EMAIL}?subject=Vision XIX Labs AI - Demo`, icon: CalendarDaysIcon },
   { label: "See features", href: "/visionxix-ai/features", icon: ChatBubbleBottomCenterTextIcon },
   { label: "Calculate ROI", href: "/visionxix-ai#roi", icon: CurrencyDollarIcon },
@@ -279,7 +279,7 @@ export default function VisionXIXAIAssistantPage() {
             <p>Vision XIX Labs · Cloud & AI engineering</p>
             <div className="flex items-center gap-4">
               <Link href="/visionxix-ai" className="hover:text-indigo-600">Product</Link>
-              <Link href="/visionxix-ai/pricing" className="hover:text-indigo-600">Pricing</Link>
+              <Link href="/visionxix-ai/pricing" className="hover:text-indigo-600">Plans & Membership</Link>
               <a href={`mailto:${SUPPORT_EMAIL}`} className="inline-flex items-center gap-1 hover:text-indigo-600">
                 <ChatBubbleBottomCenterTextIcon className="w-3.5 h-3.5" />
                 Talk to an engineer

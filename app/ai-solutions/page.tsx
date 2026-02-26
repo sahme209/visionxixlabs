@@ -617,6 +617,7 @@ export default function AISolutionsPage() {
             primaryHref="/contact"
             secondaryLabel="Email Us"
             secondaryHref="mailto:support@visionxixlabs.com"
+            plansHref="/visionxix-ai/pricing"
           />
 
           {/* Internal link to Cloud Solutions */}

@@ -500,6 +500,7 @@ export default function CloudSolutionsPage() {
             primaryHref="/contact"
             secondaryLabel="Email Us"
             secondaryHref="mailto:support@visionxixlabs.com"
+            plansHref="/visionxix-ai/pricing"
           />
         </div>
       </main>

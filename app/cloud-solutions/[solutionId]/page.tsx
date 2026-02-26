@@ -220,6 +220,7 @@ export default async function SolutionDetailPage({
             primaryHref="/contact"
             secondaryLabel="Email Us"
             secondaryHref="mailto:support@visionxixlabs.com"
+            plansHref="/visionxix-ai/pricing"
           />
         </div>
       </main>
