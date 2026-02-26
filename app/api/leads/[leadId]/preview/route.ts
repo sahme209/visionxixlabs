@@ -3,8 +3,8 @@ import { prisma } from "@/lib/db";
 import { verifyStarterToken } from "@/lib/leads/starterToken";
 
 /**
- * GET /api/leads/[leadId]/starter?token=
- * Returns AI Starter Package if ready, or pending. Requires valid token.
+ * GET /api/leads/[leadId]/preview?token=
+ * Returns preview status and URL. Requires valid token.
  */
 export async function GET(
   req: NextRequest,
@@ -24,17 +24,13 @@ export async function GET(
     }
 
     const payload = lead.fullPayload as Record<string, unknown>;
-    if (payload?.aiStarterError === true) {
-      return NextResponse.json({ error: true, message: "AI generation failed" });
-    }
-    if (payload?.aiStarterPackage && typeof payload.aiStarterPackage === "object") {
-      return NextResponse.json({
-        pending: false,
-        aiStarterPackage: payload.aiStarterPackage,
-        previewUrl: payload.previewUrl ?? null,
-      });
-    }
-    return NextResponse.json({ pending: true });
+    const previewUrl = payload?.previewUrl as string | undefined;
+    const previewStatus = (payload?.previewStatus as string) || (previewUrl ? "ready" : "pending");
+
+    return NextResponse.json({
+      previewStatus: previewUrl ? "ready" : previewStatus,
+      previewUrl: previewUrl || null,
+    });
   } catch {
     return NextResponse.json({ error: "Server error" }, { status: 500 });
   }

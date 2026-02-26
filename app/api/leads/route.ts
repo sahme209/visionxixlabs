@@ -6,7 +6,6 @@ import {
   sendLeadInternalNotification,
 } from "@/lib/leads/leadEmailService";
 import { createStarterToken } from "@/lib/leads/starterToken";
-import { checkLeadsRateLimit, getClientIp } from "@/lib/leads/rateLimit";
 import { prisma } from "@/lib/db";
 
 const MIN_COMPLETION_MS = 10_000; // 10 seconds minimum
@@ -48,15 +47,6 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const ip = getClientIp(req);
-  const { ok: rateOk, remaining } = checkLeadsRateLimit(ip);
-  if (!rateOk) {
-    return NextResponse.json(
-      { error: "Too many requests. Please try again later." },
-      { status: 429, headers: { "X-RateLimit-Remaining": String(remaining) } }
-    );
-  }
-
   const estimate = estimatePricing(data);
   const fullPayload = { ...data, _honeypot: undefined, _startTime: undefined };
 
@@ -72,32 +62,29 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    // Token for secure starter package access (AI generation via POST /starter/generate)
-    let starterToken: string | undefined;
+    let starterToken = "";
     try {
       starterToken = createStarterToken(lead.id);
-    } catch (e) {
-      console.warn("[Leads API] STARTER_TOKEN_SECRET not set, starter access disabled");
+    } catch {
+      // STARTER_TOKEN_SECRET not set; token omitted, thank-you page will work without preview
     }
 
-    // Emails never block success — send in background, log failures safely
-    try {
-      const [confirmOk, notifyOk] = await Promise.all([
-        sendLeadConfirmationEmail(data, estimate, lead.id, starterToken),
-        sendLeadInternalNotification(data, estimate),
-      ]);
-      if (!confirmOk) console.warn("[Leads API] Confirmation email failed (lead saved)");
-      if (!notifyOk) console.warn("[Leads API] Internal notification failed (lead saved)");
-    } catch (emailErr) {
-      console.warn("[Leads API] Email send error (lead saved):", emailErr instanceof Error ? emailErr.message : String(emailErr));
-    }
+    const [confirmOk, notifyOk] = await Promise.all([
+      sendLeadConfirmationEmail(data, estimate, {
+        leadId: lead.id,
+        starterToken: starterToken || undefined,
+      }),
+      sendLeadInternalNotification(data, estimate),
+    ]);
+    if (!confirmOk) console.warn("[Leads API] Confirmation email failed");
+    if (!notifyOk) console.warn("[Leads API] Internal notification failed");
 
     return NextResponse.json({
       success: true,
       leadId: lead.id,
-      starterToken: starterToken ?? undefined,
+      starterToken: starterToken || undefined,
       estimate: { min: estimate.min, max: estimate.max, breakdown: estimate.breakdown },
-    }, { headers: { "X-RateLimit-Remaining": String(remaining) } });
+    });
   } catch (e) {
     console.error("[Leads API] Database error:", e);
     return NextResponse.json(

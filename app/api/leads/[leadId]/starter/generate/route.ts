@@ -5,9 +5,9 @@ import { generateWebsiteStarterPackage } from "@/lib/leads/aiWebsiteStarter";
 import type { LeadFormData } from "@/lib/leads/leadSchema";
 
 /**
- * POST /api/leads/[leadId]/starter/generate
- * Runs AI generation if not already present. Requires token in query (token=) or body (token).
- * Deterministic on serverless: caller triggers when pending.
+ * POST /api/leads/[leadId]/starter/generate?token=
+ * Runs AI generation if not already present. Requires token.
+ * Non-blocking: caller triggers when pending.
  */
 export async function POST(
   req: NextRequest,

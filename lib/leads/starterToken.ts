@@ -1,48 +1,33 @@
 /**
- * Signed token for secure starter package access.
- * Token = base64url(leadId).base64url(hmac)
- * Env: STARTER_TOKEN_SECRET (required for token operations)
+ * HMAC-signed access tokens for starter/preview endpoints.
+ * Do NOT expose content by raw leadId; require signed token.
+ * Env: STARTER_TOKEN_SECRET
  */
 
 import { createHmac, timingSafeEqual } from "crypto";
 
-function getSecret(): string {
-  const secret = process.env.STARTER_TOKEN_SECRET;
-  if (!secret || secret.length < 16) {
-    throw new Error("STARTER_TOKEN_SECRET must be set and at least 16 characters");
-  }
-  return secret;
-}
-
-function base64UrlEncode(buf: Buffer): string {
-  return buf.toString("base64url");
-}
-
-function base64UrlDecode(str: string): Buffer {
-  return Buffer.from(str, "base64url");
-}
+const SECRET = process.env.STARTER_TOKEN_SECRET;
 
 export function createStarterToken(leadId: string): string {
-  const secret = getSecret();
-  const hmac = createHmac("sha256", secret).update(leadId).digest();
-  const leadIdEncoded = base64UrlEncode(Buffer.from(leadId, "utf-8"));
-  const sigEncoded = base64UrlEncode(hmac);
-  return `${leadIdEncoded}.${sigEncoded}`;
+  if (!SECRET || SECRET.length < 16) {
+    throw new Error("STARTER_TOKEN_SECRET must be set and at least 16 chars");
+  }
+  const payload = leadId;
+  const sig = createHmac("sha256", SECRET).update(payload).digest("hex");
+  const raw = `${leadId}.${sig}`;
+  return Buffer.from(raw, "utf8").toString("base64url");
 }
 
 export function verifyStarterToken(token: string): string | null {
-  if (!token || typeof token !== "string") return null;
-  const parts = token.split(".");
-  if (parts.length !== 2) return null;
-
+  if (!SECRET || SECRET.length < 16 || !token) return null;
   try {
-    const secret = getSecret();
-    const leadIdBuf = base64UrlDecode(parts[0]);
-    const leadId = leadIdBuf.toString("utf-8");
-    const expectedHmac = createHmac("sha256", secret).update(leadId).digest();
-    const providedSig = base64UrlDecode(parts[1]);
-
-    if (expectedHmac.length !== providedSig.length || !timingSafeEqual(expectedHmac, providedSig)) {
+    const raw = Buffer.from(token, "base64url").toString("utf8");
+    const dot = raw.lastIndexOf(".");
+    if (dot < 1) return null;
+    const leadId = raw.slice(0, dot);
+    const sigGiven = raw.slice(dot + 1);
+    const sigExpected = createHmac("sha256", SECRET).update(leadId).digest("hex");
+    if (sigGiven.length !== sigExpected.length || !timingSafeEqual(Buffer.from(sigGiven, "hex"), Buffer.from(sigExpected, "hex"))) {
       return null;
     }
     return leadId;
