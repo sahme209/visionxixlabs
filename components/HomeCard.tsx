@@ -47,7 +47,7 @@ export default function HomeCard({
   return (
     <section
       id={id}
-      className={`relative rounded-xl border border-[var(--border-color)]/60 bg-[var(--bg-surface)] p-4 sm:p-6 shadow-sm hover:shadow-lg hover:border-[var(--border-color-hover)] transition-all duration-300 ease-out overflow-hidden w-full min-w-0 group/card ${id === "key-dates" ? "scroll-mt-24" : ""} ${className}`}
+      className={`relative rounded-xl border border-[var(--border-color)]/60 bg-[var(--bg-surface)] p-4 sm:p-6 shadow-sm overflow-hidden w-full min-w-0 group/card huly-card-hover ${id === "key-dates" ? "scroll-mt-24" : ""} ${className}`}
     >
       {accentBar && <div className={`absolute top-0 left-0 w-1 h-full rounded-l-xl ${accentBar}`} aria-hidden />}
       {/* Header: icon + title + subtitle + badge */}

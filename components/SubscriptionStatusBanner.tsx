@@ -3,6 +3,7 @@
 import React from "react";
 import { useState } from "react";
 import Link from "next/link";
+import HulyGradientMesh from "@/components/HulyGradientMesh";
 import { XMarkIcon, ArrowPathIcon } from "@heroicons/react/24/outline";
 import { LockClosedIcon } from "@heroicons/react/24/solid";
 import { useAuth } from "@/contexts/AuthContext";
@@ -47,11 +48,12 @@ export default function SubscriptionStatusBanner({ onRefresh }: SubscriptionStat
 
   return (
     <div
-      className="sticky top-0 z-[60] border-b border-white/15 shadow-lg"
+      className="sticky top-0 z-[60] border-b border-white/15 shadow-lg relative overflow-hidden"
       style={{
         background: "linear-gradient(135deg, var(--hero-dark) 0%, var(--hero-dark-soft) 50%, var(--hero-dark) 100%)",
       }}
     >
+      <HulyGradientMesh />
       {/* Top accent line */}
       <div
         className="h-0.5 opacity-90"
@@ -109,7 +111,7 @@ export default function SubscriptionStatusBanner({ onRefresh }: SubscriptionStat
             </div>
             <Link
               href="/subscribe"
-              className="subscribe-cta-banner min-h-[48px] sm:min-h-[44px] w-full sm:w-auto sm:flex-initial order-1 sm:order-2 inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl text-sm font-bold hover:opacity-95 active:scale-[0.98] transition-all touch-manipulation border border-white/20 shadow-md"
+              className="subscribe-cta-banner cta-glow huly-border-glow min-h-[48px] sm:min-h-[44px] w-full sm:w-auto sm:flex-initial order-1 sm:order-2 inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl text-sm font-bold hover:opacity-95 active:scale-[0.98] transition-all touch-manipulation border border-white/20 shadow-md"
               style={{ backgroundColor: "var(--uscis-blue)", color: "#fff" }}
             >
               <span style={{ color: "#fff" }}>{hasUsedTrial ? "Subscribe Now" : "Start 3-day free trial"}</span>

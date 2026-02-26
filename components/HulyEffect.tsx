@@ -2,7 +2,7 @@
 
 /**
  * Huly-inspired laser beam effect — glowing light beam for hero sections.
- * Inspired by huly.io's signature hero animation.
+ * Inspired by huly.io's signature hero animation with enhanced dynamics.
  */
 export default function HulyEffect() {
   return (
@@ -42,6 +42,14 @@ export default function HulyEffect() {
           animation: "huly-beam-pulse 5s ease-in-out infinite 0.5s",
         }}
       />
+      {/* Animated gradient streak - horizontal accent */}
+      <div
+        className="absolute left-0 right-0 top-1/3 h-px opacity-60"
+        style={{
+          background: "linear-gradient(90deg, transparent, rgba(0,113,227,0.4), rgba(99,102,241,0.5), rgba(139,92,246,0.4), transparent)",
+          animation: "huly-streak-shimmer 3s ease-in-out infinite",
+        }}
+      />
       {/* Floating wisps - particles along the beam */}
       <div className="absolute inset-0" style={{ animation: "huly-wisps 6s ease-in-out infinite" }}>
         <div className="absolute left-[45%] top-[20%] w-2 h-2 rounded-full bg-white/40 blur-sm animate-pulse" style={{ animationDelay: "0s" }} />
@@ -49,6 +57,9 @@ export default function HulyEffect() {
         <div className="absolute left-[48%] top-[50%] w-2 h-2 rounded-full bg-violet-300/40 blur-sm animate-pulse" style={{ animationDelay: "1.4s" }} />
         <div className="absolute left-[55%] top-[65%] w-1 h-1 rounded-full bg-blue-200/60 blur-sm animate-pulse" style={{ animationDelay: "2.1s" }} />
         <div className="absolute left-[46%] top-[75%] w-1.5 h-1.5 rounded-full bg-white/30 blur-sm animate-pulse" style={{ animationDelay: "2.8s" }} />
+        {/* Extra floating dots - Huly-style sparkle */}
+        <div className="absolute left-[38%] top-[40%] w-1 h-1 rounded-full bg-white/50 blur-[1px]" style={{ animation: "huly-float-dot 4s ease-in-out infinite" }} />
+        <div className="absolute left-[62%] top-[55%] w-1 h-1 rounded-full bg-indigo-200/60 blur-[1px]" style={{ animation: "huly-float-dot 5s ease-in-out infinite 1s" }} />
       </div>
     </div>
   );

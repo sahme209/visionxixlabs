@@ -38,6 +38,7 @@ import CaseCalendar from "@/components/CaseCalendar";
 import WeeklySummary from "@/components/WeeklySummary";
 import HomeCard, { HomeCardInner } from "@/components/HomeCard";
 import HulyEffect from "@/components/HulyEffect";
+import HulyGradientMesh from "@/components/HulyGradientMesh";
 
 
 export default function Home() {
@@ -590,6 +591,8 @@ export default function Home() {
         <>
           {/* Desktop Header - Huly-inspired gradient + laser beam effect */}
           <div className="hidden md:block surface-dark relative overflow-hidden bg-gradient-to-br from-[var(--hero-dark)] via-[#1a1a2e] to-[var(--hero-dark)] border-b border-white/5 shadow-lg">
+            {/* Huly Gradient Mesh - floating blobs */}
+            <HulyGradientMesh />
             {/* Huly Effect - laser beam animation */}
             <HulyEffect />
             <div className="absolute inset-0 hidden md:block w-full">
