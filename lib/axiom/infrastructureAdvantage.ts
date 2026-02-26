@@ -13,6 +13,7 @@ export type AxiomScores = {
   riskExposureLevel: string;
   deploymentFrictionIndex: number;
   complexityTier: string;
+  automationReadinessScore: number;
   // Raw underlying scores for transparency
   operatorScores: CloudOperatorScores;
 };
@@ -88,6 +89,32 @@ function computeInfrastructureScore(scores: CloudOperatorScores): number {
   return Math.round(Math.min(100, Math.max(0, raw)));
 }
 
+function computeAutomationReadinessScore(
+  profile: AxiomProfile,
+  scores: CloudOperatorScores
+): number {
+  // Start from CI/CD maturity as base signal.
+  let readiness = scores.ciCdMaturityScore || 50;
+
+  // Penalize if CI/CD is explicitly absent.
+  if (profile.hasCiCd === "no") {
+    readiness -= 20;
+  }
+
+  // Adjust based on architecture complexity: higher complexity requires stronger automation.
+  if (scores.architectureComplexityTier === "Enterprise") {
+    if ((scores.infrastructureReadinessScore || 0) >= 70 && readiness < 70) {
+      readiness -= 10;
+    } else if (readiness >= 70) {
+      readiness += 5;
+    }
+  } else if (scores.architectureComplexityTier === "Growth" && readiness >= 60) {
+    readiness += 5;
+  }
+
+  return Math.round(Math.min(100, Math.max(0, readiness)));
+}
+
 function buildDeterministicTasks(
   profile: AxiomProfile,
   scores: CloudOperatorScores
@@ -160,6 +187,7 @@ export function generateInfrastructureAdvantageModel(
 
   const infrastructureScore = computeInfrastructureScore(operatorScores);
   const deploymentFrictionIndex = computeDeploymentFrictionIndex(operatorScores);
+  const automationReadinessScore = computeAutomationReadinessScore(profile, operatorScores);
 
   const scores: AxiomScores = {
     infrastructureScore,
@@ -167,6 +195,7 @@ export function generateInfrastructureAdvantageModel(
     riskExposureLevel: operatorScores.securityRiskLevel,
     deploymentFrictionIndex,
     complexityTier: operatorScores.architectureComplexityTier,
+    automationReadinessScore,
     operatorScores,
   };
 

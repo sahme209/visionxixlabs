@@ -74,6 +74,7 @@ export async function GET(req: NextRequest) {
           riskExposureLevel: string;
           deploymentFrictionIndex: number;
           complexityTier: string;
+          automationReadinessScore: number;
         }
       | null
       | undefined) || null;
@@ -92,6 +93,7 @@ export async function GET(req: NextRequest) {
             riskExposureLevel: rawAxiomResult.scores.riskExposureLevel,
             deploymentFrictionIndex: rawAxiomResult.scores.deploymentFrictionIndex,
             complexityTier: rawAxiomResult.scores.complexityTier,
+            automationReadinessScore: rawAxiomResult.scores.automationReadinessScore,
           }
         : null);
 
@@ -178,6 +180,7 @@ export async function GET(req: NextRequest) {
       riskExposureLevel: axiomScores?.riskExposureLevel ?? scores?.securityRiskLevel ?? null,
       deploymentFrictionIndex: axiomScores?.deploymentFrictionIndex ?? null,
       complexityTier: axiomScores?.complexityTier ?? scores?.architectureComplexityTier ?? null,
+      automationReadinessScore: axiomScores?.automationReadinessScore ?? null,
       recommendedImprovements: operatorOutput?.recommendedImprovements ?? [],
       businessImpactSummary: operatorOutput?.business?.businessImpactSummary ?? "",
       recommendedNextAction: operatorOutput?.business?.recommendedNextAction ?? "",

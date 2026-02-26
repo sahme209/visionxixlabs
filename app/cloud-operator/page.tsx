@@ -29,6 +29,7 @@ type OperatorStatus = {
   riskExposureLevel?: string | null;
   deploymentFrictionIndex?: number | null;
   complexityTier?: string | null;
+  automationReadinessScore?: number | null;
   recommendedImprovements?: string[];
   businessImpactSummary?: string;
   recommendedNextAction?: string;
@@ -256,7 +257,7 @@ function CloudOperatorPageInner() {
 
         {inDashboard && status && (
           <section className="mb-8">
-            <div className="grid md:grid-cols-5 gap-3">
+            <div className="grid md:grid-cols-6 gap-3">
               <div className="rounded-xl bg-white dark:bg-slate-900 shadow border border-slate-200 dark:border-slate-700 p-4 text-center">
                 <p className="text-xs font-medium text-slate-500 uppercase tracking-wide">
                   Infrastructure Score
@@ -301,6 +302,16 @@ function CloudOperatorPageInner() {
                 </p>
                 <p className="mt-2 text-sm font-semibold text-slate-900 dark:text-slate-100">
                   {status.complexityTier ?? status.architectureComplexity ?? "—"}
+                </p>
+              </div>
+              <div className="rounded-xl bg-white dark:bg-slate-900 shadow border border-slate-200 dark:border-slate-700 p-4 text-center">
+                <p className="text-xs font-medium text-slate-500 uppercase tracking-wide">
+                  Automation Readiness
+                </p>
+                <p className="mt-2 text-sm font-semibold text-slate-900 dark:text-slate-100">
+                  {status.automationReadinessScore != null
+                    ? `${status.automationReadinessScore}/100`
+                    : "—"}
                 </p>
               </div>
             </div>
