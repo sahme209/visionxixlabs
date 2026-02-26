@@ -45,8 +45,14 @@ export async function POST(req: NextRequest) {
     if (!pkg || lead.status === "created" || lead.status === "package_generating") {
       const { generated } = await runAsyncLeadEngine<AIStarterPackage>({
         leadId,
-        engineName: "leads-trigger-package",
-        async generateFunction({ payload: currentPayload }) {
+        engineName: "website-builder",
+        expectedSource: "website-request",
+        getTier: (_, currentPayload) =>
+          resolveTier(((currentPayload.form as Record<string, unknown>)?.tier as string) || "starter"),
+        isReady: (currentPayload) => !!currentPayload.aiPackage,
+        getExistingResult: (currentPayload) =>
+          (currentPayload.aiPackage as AIStarterPackage) || null,
+        async generate({ payload: currentPayload }) {
           const form = (currentPayload.form as Record<string, unknown>) || {};
           return generateAIStarterPackage({
             name: form.name as string,
@@ -58,15 +64,14 @@ export async function POST(req: NextRequest) {
             domainName: form.domainName as string,
           });
         },
-        updatePayloadFunction({ payload: currentPayload, generated: generatedPkg }) {
+        persist({ result: generatedPkg }) {
           return {
-            ...currentPayload,
             aiPackage: generatedPkg,
+            engine: {
+              website: { aiPackage: generatedPkg },
+            },
           };
         },
-        initialStatus: "package_generating",
-        readyStatus: "package_ready",
-        failureStatus: "created",
       });
       pkg = generated;
     }

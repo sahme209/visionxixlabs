@@ -29,6 +29,12 @@ export default async function AdminLayout({
             >
               Leads
             </Link>
+            <Link
+              href="/admin/enterprise-dashboard"
+              className="text-sm text-indigo-600 dark:text-indigo-400 hover:underline"
+            >
+              Enterprise Dashboard
+            </Link>
           </div>
           <div className="flex items-center gap-4">
             <span className="text-sm text-slate-600 dark:text-slate-400 flex items-center gap-2">

@@ -171,16 +171,16 @@ export default function ThankYouPage() {
         </Link>
         <div className="mb-6 rounded-2xl border border-indigo-200 dark:border-indigo-800 bg-indigo-50/60 dark:bg-indigo-900/30 p-4">
           <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-1">
-            Want Full Infrastructure Optimization?
+            Want infra optimization + deployment hardening?
           </h2>
           <p className="text-xs text-slate-900/80 dark:text-slate-200 mb-3">
-            Your site is built. Now optimize your cloud, CI/CD, cost, and security with Axiom.
+            Run Axiom on this project for 30-day roadmap, playbooks, and infrastructure intelligence.
           </p>
           <Link
-            href="/cloud-operator"
+            href={token ? `/cloud-operator?ref=${encodeURIComponent(token)}` : "/cloud-operator"}
             className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-indigo-700"
           >
-            Run Axiom
+            Run Axiom Analysis
             <CloudIcon className="h-3 w-3" />
           </Link>
         </div>

@@ -5,6 +5,7 @@ const MAX_REQUESTS = 10;
 /**
  * Simple in-memory rate limit. Returns true if allowed, false if rate limited.
  * Key by token or IP. Resets after WINDOW_MS.
+ * Phase 7: Use checkTieredRateLimit for tier-based limits on submit/trigger/link.
  */
 export function checkRateLimit(key: string): boolean {
   const now = Date.now();

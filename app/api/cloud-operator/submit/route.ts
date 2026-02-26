@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { createStarterToken } from "@/lib/starterToken";
-import { checkRateLimit } from "@/lib/rateLimit";
+import { checkTieredRateLimit } from "@/lib/rateLimitTiered";
 import { resolveOperatorTier } from "@/lib/cloudOperator/pricing";
 
 function getClientIp(req: NextRequest): string {
@@ -27,7 +29,7 @@ type SubmitBody = {
  */
 export async function POST(req: NextRequest) {
   const ip = getClientIp(req);
-  if (!checkRateLimit(`cloud-operator-submit:${ip}`)) {
+  if (!checkTieredRateLimit("free", ip)) {
     return NextResponse.json(
       { error: "Too many requests. Please try again in a minute." },
       { status: 429 }
@@ -74,10 +76,14 @@ export async function POST(req: NextRequest) {
   }
 
   try {
+    const session = await getServerSession(authOptions);
+    const userId = session?.user && "id" in session.user ? (session.user as { id: string }).id : null;
+
     const lead = await prisma.lead.create({
       data: {
         email: email || "cloud-operator@placeholder.local",
         name,
+        userId: userId ?? undefined,
         source: "cloud-operator",
         status: "created",
         fullPayload: {
@@ -93,6 +99,8 @@ export async function POST(req: NextRequest) {
           },
           engine: {
             outputStatus: "pending",
+            engineName: "cloud-operator",
+            updatedAt: new Date().toISOString(),
             rawOutput: null,
             scores: null,
             axiomScores: null,

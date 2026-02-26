@@ -39,6 +39,7 @@ type OperatorStatus = {
   recommendedNextAction?: string;
   canViewTechnicalOutputs?: boolean;
   canDownloadConfigs?: boolean;
+  hasEnterpriseEngagement?: boolean;
   launch?: {
     architecturePlan?: string;
     ciCdYaml?: string;
@@ -61,6 +62,64 @@ type OperatorStatus = {
     hardeningChecklist?: string[];
     publicAttackSurfaceFindings?: string[];
   } | null;
+  simulation?: {
+    scoreLift: { min: number; max: number };
+    savingsLift: { min: number; max: number };
+    riskReduction: { min: number; max: number };
+    frictionLift: { min: number; max: number };
+    confidence: string;
+    assumptions: string[];
+  } | null;
+  quality?: { pass: boolean; issues: string[] };
+  playbooks?: {
+    phasePlaybooks: Array<{
+      phaseName: string;
+      objective: string;
+      prerequisites: string[];
+      stepByStep: Array<{ step: string; command?: string; file?: string; validation?: string }>;
+      rollbackPlan: string[];
+      successCriteria: string[];
+    }>;
+    cutoverChecklist: string[];
+    ownerRoles: string[];
+    estimatedEffortHours: number;
+  };
+  playbookPreview?: string[];
+  playbookUpsell?: string;
+  policyPackPreview?: string;
+  explainability?: {
+    infrastructureScoreBreakdown: Array<{ factor: string; weight: number; value: number; contribution: number }>;
+    keyDrivers: string[];
+    penalties: string[];
+    improvementLevers: string[];
+  };
+  enterpriseBriefPreview?: {
+    biggestRiskExposures: string[];
+    biggestSavingsLevers: string[];
+    cta: string;
+  };
+  strategicReadinessScore?: number | null;
+  enterpriseReadinessIndex?: number | null;
+  dealSignals?: {
+    urgencyLevel?: string;
+    expansionProbability?: number;
+    enterpriseLikelihood?: number;
+    recommendedSalesAngle?: string[];
+  };
+  upgradeRecommendation?: {
+    recommendedTier: string;
+    reasoning: string[];
+    urgencyMessage: string;
+    expectedValueIncrease: number;
+  };
+  financialModel?: {
+    projectedSavings3Year: number;
+    riskCostAvoidanceEstimate: number;
+    reinvestmentOpportunity: string[];
+    budgetReallocationSuggestion: string[];
+    confidenceBand: "low" | "medium" | "high";
+  };
+  trendHistory?: Array<{ id: string; createdAt: string; infrastructureScore?: number | null; estimatedAnnualSavings?: number | null }>;
   axiomPlan?: {
     executiveSummary: {
       infrastructureScore: number;
@@ -104,6 +163,273 @@ type OperatorStatus = {
   } | null;
 };
 
+function EmailReportButton({ token }: { token: string | null }) {
+  const [sending, setSending] = useState(false);
+  const [sent, setSent] = useState(false);
+  const [err, setErr] = useState<string | null>(null);
+
+  const send = async () => {
+    if (!token) return;
+    setSending(true);
+    setErr(null);
+    try {
+      const res = await fetch(`/api/cloud-operator/send-report?token=${encodeURIComponent(token)}`, {
+        method: "POST",
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Failed");
+      setSent(true);
+    } catch (e) {
+      setErr(e instanceof Error ? e.message : "Failed");
+    } finally {
+      setSending(false);
+    }
+  };
+
+  return (
+    <AxiomCard className="p-5">
+      <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-2">Email Report</h3>
+      <p className="text-xs text-slate-600 dark:text-slate-400 mb-2">Send executive summary to your registered email.</p>
+      {sent && <p className="text-xs text-emerald-600 dark:text-emerald-400 mb-2">Report sent.</p>}
+      {err && <p className="text-xs text-rose-600 dark:text-rose-400 mb-2">{err}</p>}
+      <button
+        type="button"
+        onClick={send}
+        disabled={sending || !token}
+        className="inline-flex items-center gap-2 rounded-lg border border-slate-200 dark:border-slate-700 px-3 py-1.5 text-xs font-medium hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-50"
+      >
+        {sending ? "Sending…" : "Send Report"}
+      </button>
+    </AxiomCard>
+  );
+}
+
+function StrategicTab({ token, status }: { token: string | null; status: OperatorStatus | null }) {
+  const [strategicBrief, setStrategicBrief] = useState<{
+    executiveSummary?: string;
+    financialRiskNarrative?: string;
+    operationalRiskNarrative?: string;
+    scalabilityOutlook?: string;
+    "90DayStrategicFocus"?: string[];
+    boardLevelKPIsToTrack?: string[];
+    recommendedInvestmentZones?: string[];
+    riskIfIgnored?: string;
+  } | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [fetched, setFetched] = useState(false);
+
+  useEffect(() => {
+    if (!token || !status?.canViewTechnicalOutputs || !status?.outputStatus || status.outputStatus !== "ready") return;
+    if (fetched) return;
+    setLoading(true);
+    fetch(`/api/cloud-operator/strategic-brief?token=${encodeURIComponent(token)}`)
+      .then((r) => r.json())
+      .then((d) => {
+        if (d.executiveSummary) setStrategicBrief(d);
+        setFetched(true);
+      })
+      .catch(() => setFetched(true))
+      .finally(() => setLoading(false));
+  }, [token, status?.canViewTechnicalOutputs, status?.outputStatus, fetched]);
+
+  if (!status?.canViewTechnicalOutputs) {
+    return (
+      <AxiomSection>
+        <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">Strategic</h2>
+        <p className="text-xs text-slate-600 dark:text-slate-400">Upgrade to Pro+ to view strategic brief, CFO model, and board deck.</p>
+      </AxiomSection>
+    );
+  }
+
+  return (
+    <AxiomSection className="space-y-6">
+      <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">Strategic</h2>
+
+      {status.canViewTechnicalOutputs ? (
+        <AxiomCard className="p-5 bg-slate-50 dark:bg-slate-900/40">
+          <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-3">Business Impact & Expansion Signals</h3>
+          <div className="grid grid-cols-2 gap-3 text-xs mb-3">
+            {status.enterpriseReadinessIndex != null && (
+              <div>
+                <span className="text-slate-500">Enterprise Readiness Index:</span> {status.enterpriseReadinessIndex}/100
+              </div>
+            )}
+            {status.dealSignals?.urgencyLevel && (
+              <div>
+                <span className="text-slate-500">Urgency:</span> <span className="capitalize font-medium">{status.dealSignals.urgencyLevel}</span>
+              </div>
+            )}
+            {status.dealSignals?.expansionProbability != null && (
+              <div>
+                <span className="text-slate-500">Expansion Probability:</span> {status.dealSignals.expansionProbability}%
+              </div>
+            )}
+            {status.upgradeRecommendation && (
+              <div>
+                <span className="text-slate-500">Recommended Tier:</span> <span className="font-medium capitalize">{status.upgradeRecommendation.recommendedTier}</span>
+              </div>
+            )}
+          </div>
+          {status.upgradeRecommendation?.urgencyMessage && (
+            <p className="text-sm text-slate-700 dark:text-slate-300 mb-2">{status.upgradeRecommendation.urgencyMessage}</p>
+          )}
+          {status.dealSignals?.recommendedSalesAngle && status.dealSignals.recommendedSalesAngle.length > 0 && (
+            <ul className="text-xs text-slate-600 dark:text-slate-400 space-y-0.5 mt-2">
+              {status.dealSignals.recommendedSalesAngle.slice(0, 3).map((a, i) => (
+                <li key={i}>• {a}</li>
+              ))}
+            </ul>
+          )}
+        </AxiomCard>
+      ) : (
+        <AxiomCard className="p-5 bg-slate-50 dark:bg-slate-900/40">
+          <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-2">Business Signal Preview</h3>
+          <p className="text-xs text-slate-600 dark:text-slate-400 mb-2">Upgrade to Pro+ to view Enterprise Readiness Index, Urgency Level, Expansion Probability, and Recommended Upgrade Tier.</p>
+          <p className="text-xs text-indigo-600 dark:text-indigo-400">Unlock deal acceleration signals and psychological upgrade framing.</p>
+        </AxiomCard>
+      )}
+
+      {status.strategicReadinessScore != null && (
+        <AxiomCard className="p-5 bg-indigo-50 dark:bg-indigo-900/20">
+          <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-2">Strategic Readiness Score</h3>
+          <p className="text-4xl font-bold text-indigo-600 dark:text-indigo-400">{status.strategicReadinessScore}/100</p>
+          <p className="text-xs text-slate-600 dark:text-slate-400 mt-1">Board-level composite metric</p>
+        </AxiomCard>
+      )}
+      {status.financialModel && (
+        <AxiomCard className="p-5">
+          <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-2">CFO Model</h3>
+          <div className="grid grid-cols-2 gap-2 text-xs mb-3">
+            <div><span className="text-slate-500">3-year savings:</span> ${status.financialModel.projectedSavings3Year.toLocaleString()}</div>
+            <div><span className="text-slate-500">Risk avoidance:</span> ${status.financialModel.riskCostAvoidanceEstimate.toLocaleString()}</div>
+            <div><span className="text-slate-500">Confidence:</span> {status.financialModel.confidenceBand}</div>
+          </div>
+          <ul className="text-xs text-slate-700 dark:text-slate-300 space-y-1">
+            {status.financialModel.reinvestmentOpportunity.map((r, i) => (
+              <li key={i}>• {r}</li>
+            ))}
+          </ul>
+        </AxiomCard>
+      )}
+      {loading && <p className="text-xs text-slate-500">Generating strategic brief…</p>}
+      {strategicBrief && !loading && (
+        <AxiomCard className="p-5">
+          <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-2">Executive Brief</h3>
+          <p className="text-sm text-slate-700 dark:text-slate-300 mb-4">{strategicBrief.executiveSummary}</p>
+          <p className="text-xs text-slate-600 dark:text-slate-400 mb-2">{strategicBrief.financialRiskNarrative}</p>
+          {strategicBrief["90DayStrategicFocus"] && strategicBrief["90DayStrategicFocus"].length > 0 && (
+            <ul className="text-xs text-slate-700 dark:text-slate-300 space-y-1 mt-2">
+              {strategicBrief["90DayStrategicFocus"].map((f, i) => (
+                <li key={i}>• {f}</li>
+              ))}
+            </ul>
+          )}
+        </AxiomCard>
+      )}
+      {status.hasEnterpriseEngagement && (
+        <AxiomCard className="p-5">
+          <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-2">Board Deck</h3>
+          <a
+            href={`/api/cloud-operator/board-deck?token=${encodeURIComponent(token ?? "")}`}
+            className="inline-flex items-center gap-2 rounded-lg border border-indigo-200 dark:border-indigo-800 bg-indigo-50 dark:bg-indigo-900/30 px-3 py-2 text-xs font-medium text-indigo-700 dark:text-indigo-300 hover:bg-indigo-100 dark:hover:bg-indigo-900/50"
+          >
+            <DocumentArrowDownIcon className="h-4 w-4" />
+            Download Board Deck Outline
+          </a>
+        </AxiomCard>
+      )}
+      <EmailReportButton token={token} />
+    </AxiomSection>
+  );
+}
+
+function RequestImplementationCard({ token }: { token: string }) {
+  const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!token) return;
+    setSubmitting(true);
+    setError(null);
+    const fd = new FormData(e.currentTarget);
+    try {
+      const res = await fetch(`/api/cloud-operator/request-implementation?token=${encodeURIComponent(token)}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          contactEmail: fd.get("email")?.toString()?.trim(),
+          notes: fd.get("notes")?.toString()?.trim(),
+          preferredWindow: fd.get("preferredWindow")?.toString()?.trim(),
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Failed");
+      setSubmitted(true);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to submit");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  if (submitted) {
+    return (
+      <AxiomCard className="p-5 bg-emerald-50 dark:bg-emerald-900/20">
+        <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-2">
+          Request submitted
+        </h3>
+        <p className="text-xs text-slate-600 dark:text-slate-400 mb-2">
+          Our team will reach out within 1–2 business days.
+        </p>
+        <ul className="text-xs text-slate-600 dark:text-slate-400 space-y-0.5">
+          <li>• Check your email for confirmation</li>
+          <li>• Prepare cloud account details for the call</li>
+        </ul>
+      </AxiomCard>
+    );
+  }
+
+  return (
+    <AxiomCard className="p-5">
+      <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-2">
+        Request Implementation
+      </h3>
+      <p className="text-xs text-slate-600 dark:text-slate-400 mb-3">
+        Get help implementing your 30-day plan. We&apos;ll schedule a call to walk through your infrastructure.
+      </p>
+      <form onSubmit={handleSubmit} className="space-y-3">
+        <input
+          name="email"
+          type="email"
+          placeholder="Work email"
+          className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 px-3 py-2 text-sm text-slate-900 dark:text-slate-100"
+        />
+        <input
+          name="preferredWindow"
+          type="text"
+          placeholder="Preferred time (e.g. mornings PST)"
+          className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 px-3 py-2 text-sm text-slate-900 dark:text-slate-100"
+        />
+        <textarea
+          name="notes"
+          rows={2}
+          placeholder="Notes or questions"
+          className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 px-3 py-2 text-sm text-slate-900 dark:text-slate-100"
+        />
+        {error && (
+          <p className="text-xs text-rose-600 dark:text-rose-400">{error}</p>
+        )}
+        <AxiomButton type="submit" disabled={submitting}>
+          {submitting ? "Submitting…" : "Request Implementation"}
+          <ArrowRightIcon className="h-3 w-3" />
+        </AxiomButton>
+      </form>
+    </AxiomCard>
+  );
+}
+
 const TRAFFIC_LEVELS = ["Low", "Medium", "High"] as const;
 const HOSTING_PROVIDERS = ["AWS", "GCP", "Azure", "Vercel", "Other"] as const;
 const PUBLIC_EXPOSURE = ["API", "Public Web", "Internal Only"] as const;
@@ -132,6 +458,7 @@ function CloudOperatorPageInner() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isReady, setIsReady] = useState(false);
+  const [activeTab, setActiveTab] = useState<"overview" | "roadmap" | "playbooks" | "strategic" | "trends" | "export" | "connectors">("overview");
 
   useEffect(() => {
     if (tokenFromUrl && tokenFromUrl !== token) {
@@ -622,8 +949,8 @@ function CloudOperatorPageInner() {
 
               <div className="flex items-center justify-between pt-2">
                 <p className="text-xs text-slate-500 dark:text-slate-500 max-w-sm">
-                  Phase 1: the Operator only generates plans and configurations. It never
-                  auto-executes infrastructure changes.
+                  Autopilot Mode: Generates step-by-step playbooks and validated configs. Execution
+                  requires your approval.
                 </p>
                 <AxiomButton type="submit" disabled={submitting}>
                   <BoltIcon className="h-4 w-4" />
@@ -654,8 +981,8 @@ function CloudOperatorPageInner() {
                   Automation safety, by default
                 </h3>
                 <p className="text-xs text-slate-300 mb-3">
-                  Phase 1 of AI Cloud Operator only prepares automation. You choose if and how to
-                  execute changes in your environment.
+                  Autopilot Mode: Generates step-by-step playbooks and validated configs. Execution
+                  requires your approval.
                 </p>
                 <button
                   type="button"
@@ -670,12 +997,47 @@ function CloudOperatorPageInner() {
           </section>
         )}
 
-        {inDashboard && (
+        {inDashboard && status && (
           <section
             className={`space-y-8 transition-all duration-200 ease-in-out ${
               isReady ? "opacity-100 translate-y-0" : "opacity-0 translate-y-2"
             }`}
           >
+            {/* Phase 5: Top tabs */}
+            <div className="flex flex-wrap gap-2 border-b border-slate-200 dark:border-slate-700 pb-2">
+              {[
+                { id: "overview" as const, label: "Overview" },
+                { id: "roadmap" as const, label: "Roadmap" },
+                { id: "playbooks" as const, label: "Playbooks", previewForFree: true },
+                { id: "strategic" as const, label: "Strategic", proOnly: true },
+                { id: "trends" as const, label: "Trends", proOnly: true },
+                { id: "export" as const, label: "Export" },
+                { id: "connectors" as const, label: "Connectors", proOnly: true },
+              ].map((t) => {
+                const proOnly = "proOnly" in t && t.proOnly;
+                const visible = !proOnly || status.canViewTechnicalOutputs;
+                if (!visible) return null;
+                return (
+                  <button
+                    key={t.id}
+                    type="button"
+                    onClick={() => setActiveTab(t.id)}
+                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                      activeTab === t.id
+                        ? "bg-indigo-100 dark:bg-indigo-900/50 text-indigo-700 dark:text-indigo-300"
+                        : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"
+                    }`}
+                  >
+                    {t.label}
+                    {proOnly && (
+                      <span className="ml-1 text-[10px] text-slate-400 dark:text-slate-500">Pro+</span>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+
+            {activeTab === "overview" && (
             <AxiomSection>
               <div className="flex items-center justify-between gap-4 mb-6">
                 <div>
@@ -741,6 +1103,47 @@ function CloudOperatorPageInner() {
                 </div>
               </div>
 
+              {status?.explainability && (
+                <AxiomCard className="p-4 bg-slate-50 dark:bg-slate-900/50 mb-6">
+                  <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-2">
+                    Score Breakdown
+                  </h3>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 mb-3">
+                    Scoring version: {status.scoringVersion ?? "—"}
+                  </p>
+                  <div className="grid sm:grid-cols-2 gap-4 mb-4">
+                    {status.explainability.infrastructureScoreBreakdown.map((item) => (
+                      <div key={item.factor} className="flex justify-between text-xs">
+                        <span className="text-slate-600 dark:text-slate-400">{item.factor}</span>
+                        <span className="font-medium text-slate-900 dark:text-slate-100">
+                          {item.value} × {item.weight}% = {item.contribution.toFixed(1)}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                  {status.explainability.keyDrivers.length > 0 && (
+                    <div className="mb-2">
+                      <p className="text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Key drivers</p>
+                      <ul className="text-xs text-slate-700 dark:text-slate-300 space-y-0.5">
+                        {status.explainability.keyDrivers.map((d, i) => (
+                          <li key={i}>• {d}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                  {status.explainability.improvementLevers.length > 0 && (
+                    <div>
+                      <p className="text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Improvement levers</p>
+                      <ul className="text-xs text-slate-700 dark:text-slate-300 space-y-0.5">
+                        {status.explainability.improvementLevers.map((l, i) => (
+                          <li key={i}>• {l}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                </AxiomCard>
+              )}
+
               <div className="grid md:grid-cols-2 gap-6">
                 <div className="space-y-4">
                   <AxiomCard className="p-4 bg-slate-50 dark:bg-slate-900/50">
@@ -782,8 +1185,9 @@ function CloudOperatorPageInner() {
                 </AxiomCard>
               </div>
             </AxiomSection>
+            )}
 
-            {status?.axiomPlan && (
+            {activeTab === "roadmap" && status?.axiomPlan && (
               <AxiomSection className="space-y-6">
                 <div className="flex items-center justify-between mb-2">
                   <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">
@@ -838,8 +1242,175 @@ function CloudOperatorPageInner() {
               </AxiomSection>
             )}
 
+            {activeTab === "playbooks" && (
+              <AxiomSection className="space-y-6">
+                <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">
+                  Playbooks
+                </h2>
+                {status.playbooks ? (
+                  <>
+                    {status.quality && (
+                      <div className={`inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-medium ${status.quality.pass ? "bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300" : "bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300"}`}>
+                        {status.quality.pass ? "Quality Gate: Passed" : "Quality Gate: Needs review"}
+                      </div>
+                    )}
+                    <p className="text-xs text-slate-600 dark:text-slate-400">
+                      Estimated effort: {status.playbooks.estimatedEffortHours} hours
+                    </p>
+                    <div className="space-y-4">
+                      {status.playbooks.phasePlaybooks.map((pp) => (
+                        <AxiomCard key={pp.phaseName} className="p-5 bg-slate-50 dark:bg-slate-900/40">
+                          <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-2">{pp.phaseName}</h3>
+                          <p className="text-xs text-slate-600 dark:text-slate-400 mb-3">{pp.objective}</p>
+                          <ol className="list-decimal list-inside text-xs text-slate-700 dark:text-slate-300 space-y-1">
+                            {pp.stepByStep.map((s, i) => (
+                              <li key={i}>{s.step}</li>
+                            ))}
+                          </ol>
+                        </AxiomCard>
+                      ))}
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    {status.playbookPreview && status.playbookPreview.length > 0 && (
+                      <div className="space-y-2">
+                        <p className="text-xs text-slate-600 dark:text-slate-400">Preview (first 3 steps):</p>
+                        <ol className="list-decimal list-inside text-xs text-slate-700 dark:text-slate-300 space-y-1">
+                          {status.playbookPreview.map((s, i) => (
+                            <li key={i}>{s}</li>
+                          ))}
+                        </ol>
+                      </div>
+                    )}
+                    {status.playbookUpsell && (
+                      <p className="text-xs text-slate-600 dark:text-slate-400">{status.playbookUpsell}</p>
+                    )}
+                  </>
+                )}
+              </AxiomSection>
+            )}
+
+            {activeTab === "strategic" && (
+              <StrategicTab token={token} status={status} />
+            )}
+
+            {activeTab === "trends" && (
+              <AxiomSection className="space-y-6">
+                <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">Trends</h2>
+                {status?.trendHistory && Array.isArray(status.trendHistory) && status.trendHistory.length > 0 ? (
+                  <div className="space-y-3">
+                    {status.trendHistory.map((t) => (
+                      <AxiomCard key={t.id} className="p-4">
+                        <p className="text-xs text-slate-500 dark:text-slate-400">{t.createdAt}</p>
+                        <p className="text-sm text-slate-900 dark:text-slate-100">
+                          Score: {t.infrastructureScore ?? "—"} · Savings: {t.estimatedAnnualSavings != null ? `$${t.estimatedAnnualSavings.toLocaleString()}` : "—"}
+                        </p>
+                      </AxiomCard>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-xs text-slate-600 dark:text-slate-400">Trend history available for Growth+ tier with reassessment data.</p>
+                )}
+              </AxiomSection>
+            )}
+
+            {activeTab === "export" && (
+              <AxiomSection className="space-y-6">
+                <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">Export</h2>
+                <AxiomCard className="p-5">
+                  <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-2">Download Export Pack</h3>
+                  {status?.canDownloadConfigs ? (
+                    <a
+                      href={`/api/cloud-operator/export?token=${encodeURIComponent(token ?? "")}`}
+                      className="inline-flex items-center gap-2 rounded-lg border border-indigo-200 dark:border-indigo-800 bg-indigo-50 dark:bg-indigo-900/30 px-3 py-2 text-xs font-medium text-indigo-700 dark:text-indigo-300 hover:bg-indigo-100 dark:hover:bg-indigo-900/50"
+                    >
+                      <DocumentArrowDownIcon className="h-4 w-4" />
+                      Download Export Pack
+                    </a>
+                  ) : (
+                    <p className="text-xs text-slate-600 dark:text-slate-400">Upgrade to Pro+ to download.</p>
+                  )}
+                </AxiomCard>
+                {status?.canDownloadConfigs && status.launch && (
+                  <AxiomCard className="p-5">
+                    <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-2">Download configs</h3>
+                    <div className="flex flex-wrap gap-2">
+                      {status.launch.ciCdYaml && (
+                        <a href={`data:text/plain;charset=utf-8,${encodeURIComponent(status.launch.ciCdYaml)}`} download="operator-ci-cd.yml" className="inline-flex items-center gap-2 rounded-lg border border-slate-200 dark:border-slate-700 px-3 py-1.5 text-xs">CI/CD YAML</a>
+                      )}
+                      {status.launch.dockerfile && (
+                        <a href={`data:text/plain;charset=utf-8,${encodeURIComponent(status.launch.dockerfile)}`} download="Dockerfile" className="inline-flex items-center gap-2 rounded-lg border border-slate-200 dark:border-slate-700 px-3 py-1.5 text-xs">Dockerfile</a>
+                      )}
+                      {status.launch.terraformTemplates && status.launch.terraformTemplates.length > 0 && (
+                        <a href={`data:text/plain;charset=utf-8,${encodeURIComponent(status.launch.terraformTemplates.join("\n\n"))}`} download="operator-terraform.tf" className="inline-flex items-center gap-2 rounded-lg border border-slate-200 dark:border-slate-700 px-3 py-1.5 text-xs">Terraform</a>
+                      )}
+                    </div>
+                  </AxiomCard>
+                )}
+                {status?.simulation && status.canViewTechnicalOutputs && (
+                  <AxiomCard className="p-5 bg-slate-50 dark:bg-slate-900/50">
+                    <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-2">Impact Forecast</h3>
+                    <p className="text-xs text-slate-600 dark:text-slate-400">
+                      Score lift: +{status.simulation.scoreLift.min}–{status.simulation.scoreLift.max} pts · Savings: ${status.simulation.savingsLift.min.toLocaleString()}–${status.simulation.savingsLift.max.toLocaleString()}
+                    </p>
+                  </AxiomCard>
+                )}
+              </AxiomSection>
+            )}
+
+            {activeTab === "connectors" && (
+              <AxiomSection className="space-y-6">
+                <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">Connectors</h2>
+                <p className="text-xs text-slate-600 dark:text-slate-400">
+                  Link read-only connectors (GitHub, AWS, Azure, GCP) to fetch metadata. Connector linking requires a valid token.
+                </p>
+                <AxiomCard className="p-5">
+                  <p className="text-xs text-slate-600 dark:text-slate-400">
+                    Use POST /api/connectors/link to link a connector. GET /api/connectors/status returns connector status.
+                  </p>
+                </AxiomCard>
+              </AxiomSection>
+            )}
+
+            {activeTab === "overview" && (
             <div className="grid lg:grid-cols-3 gap-6">
               <div className="lg:col-span-2 space-y-4">
+                <AxiomCard className="p-5">
+                  <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-2">
+                    Download Export Pack
+                  </h3>
+                  {status?.canDownloadConfigs ? (
+                    <a
+                      href={`/api/cloud-operator/export?token=${encodeURIComponent(token ?? "")}`}
+                      className="inline-flex items-center gap-2 rounded-lg border border-indigo-200 dark:border-indigo-800 bg-indigo-50 dark:bg-indigo-900/30 px-3 py-2 text-xs font-medium text-indigo-700 dark:text-indigo-300 hover:bg-indigo-100 dark:hover:bg-indigo-900/50 transition-all duration-200"
+                    >
+                      <DocumentArrowDownIcon className="h-4 w-4" />
+                      Download Export Pack
+                    </a>
+                  ) : (
+                    <div className="space-y-2">
+                      <p className="text-xs text-slate-600 dark:text-slate-400">
+                        Upgrade to Roadmap (Pro+) or unlock for this report:
+                      </p>
+                      <div className="flex flex-wrap gap-2">
+                        <Link
+                          href="/contact?intent=axiom-upgrade"
+                          className="inline-flex items-center gap-2 rounded-lg border border-indigo-200 dark:border-indigo-800 bg-indigo-50 dark:bg-indigo-900/30 px-3 py-1.5 text-xs font-medium text-indigo-700 dark:text-indigo-300 hover:bg-indigo-100 dark:hover:bg-indigo-900/50"
+                        >
+                          Upgrade
+                        </Link>
+                        <a
+                          href={`/contact?intent=roadmap-unlock&token=${encodeURIComponent(token ?? "")}`}
+                          className="inline-flex items-center gap-2 rounded-lg border border-emerald-200 dark:border-emerald-800 bg-emerald-50 dark:bg-emerald-900/30 px-3 py-1.5 text-xs font-medium text-emerald-700 dark:text-emerald-300 hover:bg-emerald-100 dark:hover:bg-emerald-900/50"
+                        >
+                          $29 Full Roadmap Unlock
+                        </a>
+                      </div>
+                    </div>
+                  )}
+                </AxiomCard>
+
                 <AxiomCard className="p-5">
                   <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-2">
                     Download configurations
@@ -891,6 +1462,49 @@ function CloudOperatorPageInner() {
                   )}
                 </AxiomCard>
 
+                {status?.simulation && status.canViewTechnicalOutputs && (
+                  <AxiomCard className="p-5 bg-slate-50 dark:bg-slate-900/50">
+                    <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-2">
+                      Impact Forecast
+                    </h3>
+                    <p className="text-xs text-slate-600 dark:text-slate-400 mb-3">
+                      Estimated impact from executing the 30-day plan (deterministic simulation).
+                    </p>
+                    <div className="grid grid-cols-2 gap-2 text-xs mb-3">
+                      <div>
+                        <span className="text-slate-500 dark:text-slate-400">Score lift:</span>{" "}
+                        +{status.simulation.scoreLift.min}–{status.simulation.scoreLift.max} pts
+                      </div>
+                      <div>
+                        <span className="text-slate-500 dark:text-slate-400">Savings lift:</span>{" "}
+                        ${status.simulation.savingsLift.min.toLocaleString()}–$
+                        {status.simulation.savingsLift.max.toLocaleString()}
+                      </div>
+                      <div>
+                        <span className="text-slate-500 dark:text-slate-400">Risk reduction:</span>{" "}
+                        {status.simulation.riskReduction.min}–{status.simulation.riskReduction.max}%
+                      </div>
+                      <div>
+                        <span className="text-slate-500 dark:text-slate-400">Friction lift:</span>{" "}
+                        {status.simulation.frictionLift.min}–{status.simulation.frictionLift.max} pts
+                      </div>
+                    </div>
+                    <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                      Confidence: {status.simulation.confidence}
+                    </p>
+                  </AxiomCard>
+                )}
+                {!status?.canViewTechnicalOutputs && status?.outputStatus === "ready" && (
+                  <AxiomCard className="p-5 bg-slate-50 dark:bg-slate-900/50">
+                    <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-2">
+                      Impact Forecast
+                    </h3>
+                    <p className="text-xs text-slate-600 dark:text-slate-400">
+                      Upgrade to Pro+ to see simulation of expected score, savings, and risk impact.
+                    </p>
+                  </AxiomCard>
+                )}
+
                 <AxiomCard className="p-5">
                   <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-2">
                     Request automation
@@ -904,6 +1518,28 @@ function CloudOperatorPageInner() {
                     <ArrowRightIcon className="h-3 w-3" />
                   </AxiomButton>
                 </AxiomCard>
+
+                {status?.enterpriseBriefPreview && !status?.hasEnterpriseEngagement && (
+                  <AxiomCard className="p-5 bg-slate-50 dark:bg-slate-900/50">
+                    <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-2">
+                      Enterprise Readiness Brief (Preview)
+                    </h3>
+                    <p className="text-xs text-slate-600 dark:text-slate-400 mb-2">
+                      Top risks: {status.enterpriseBriefPreview.biggestRiskExposures.slice(0, 2).join("; ")}
+                    </p>
+                    <p className="text-xs text-slate-600 dark:text-slate-400 mb-3">
+                      Top savings: {status.enterpriseBriefPreview.biggestSavingsLevers.slice(0, 2).join("; ")}
+                    </p>
+                    <Link
+                      href="/contact?intent=enterprise-brief"
+                      className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-indigo-700"
+                    >
+                      {status.enterpriseBriefPreview.cta}
+                      <ArrowRightIcon className="h-3 w-3" />
+                    </Link>
+                  </AxiomCard>
+                )}
+                <RequestImplementationCard token={token ?? ""} />
               </div>
 
               <div className="space-y-4">
@@ -913,32 +1549,32 @@ function CloudOperatorPageInner() {
                   </h3>
                   <ul className="text-xs text-slate-600 dark:text-slate-400 space-y-1.5 mb-3">
                     <li>
-                      <strong>Free</strong>: Summary dashboard only.
+                      <strong>Analysis</strong> (free): Summary dashboard only.
                     </li>
                     <li>
-                      <strong>Pro</strong>: Full technical outputs, configs, savings breakdown,
-                      business impact report.
+                      <strong>Roadmap</strong> (pro): Full technical outputs, configs, savings breakdown.
                     </li>
                     <li>
-                      <strong>Growth</strong>: Adds continuous reassessment and advanced
-                      optimization logic.
+                      <strong>Automation Signals</strong> (growth): Drift detection, trend history.
                     </li>
                     <li>
-                      <strong>Enterprise</strong>: Strategic engagement and dedicated automation
-                      implementation.
+                      <strong>Strategic Advisory</strong> (enterprise): Policy packs, enterprise brief.
                     </li>
                   </ul>
-                  <AxiomButton
-                    href="/request"
-                    variant="secondary"
-                    className="text-xs px-3 py-1.5 border border-slate-200 dark:border-slate-700"
+                  <Link
+                    href="/auth/signin?callbackUrl=/cloud-operator"
+                    className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-xs font-semibold text-white hover:bg-indigo-700"
                   >
-                    Discuss Operator pricing
+                    Upgrade
                     <ArrowRightIcon className="h-3 w-3" />
-                  </AxiomButton>
+                  </Link>
+                  <p className="mt-2 text-[11px] text-slate-500 dark:text-slate-400">
+                    Or <Link href="/contact?intent=axiom-upgrade" className="underline">Contact Sales</Link>
+                  </p>
                 </AxiomCard>
               </div>
             </div>
+            )}
           </section>
         )}
       </main>

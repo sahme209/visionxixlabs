@@ -49,10 +49,12 @@ model KnowledgeSource {
 }
 
 // AI Website Build — New Website Request leads
+// Phase 7: Optional userId for identity tie-in
 model Lead {
   id         String   @id @default(cuid())
   email      String
   name       String?
+  userId     String?  // Optional: bind to authenticated user
   source     String   @default("website-request") // website-request, etc.
   status     String   @default("created") // created, package_generating, package_ready, deploy_generating, deploy_ready, published
   fullPayload Json    @default("{}") // form data, aiPackage, previewUrl, vercelDeploymentId, etc.
@@ -61,5 +63,70 @@ model Lead {
 
   @@index([source])
   @@index([status])
+  @@index([createdAt])
+  @@index([userId])
+}
+
+// Phase 4: Axiom score snapshots for persistent trend history
+// Phase 7: scoringVersion for audit and compliance
+model AxiomScoreSnapshot {
+  id        String   @id @default(cuid())
+  leadId    String
+  createdAt DateTime @default(now())
+
+  tier   String
+  provider String?
+
+  infrastructureScore     Int?
+  estimatedAnnualSavings  Int?
+  riskExposureLevel       String?
+  deploymentFrictionIndex Int?
+  complexityTier          String?
+  automationReadinessScore Int?
+  scoringVersion          String?
+
+  raw Json?
+
+  @@index([leadId])
+}
+
+// Phase 9: Sales pipeline snapshots (admin dashboard)
+model SalesPipelineSnapshot {
+  id                    String   @id @default(cuid())
+  createdAt             DateTime @default(now())
+  highUrgencyCount      Int
+  enterpriseLikelihoodAvg Float
+  expansionProbabilityAvg Float
+  avgStrategicReadiness Float
+
+  @@index([createdAt])
+}
+
+// Phase 8: Recurring analysis for Growth+/Enterprise
+model RecurringAnalysis {
+  id         String   @id @default(cuid())
+  leadId     String
+  frequency  String   // "weekly" | "monthly"
+  lastRunAt  DateTime?
+  nextRunAt  DateTime
+  enabled    Boolean  @default(true)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([leadId])
+  @@index([nextRunAt])
+}
+
+// Phase 5: Audit log for enterprise-grade security
+model AuditLog {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  leadId    String?
+  action    String
+  actor     String   // "system" | "user" | "admin"
+  metadata  Json?
+
+  @@index([leadId])
+  @@index([action])
   @@index([createdAt])
 }

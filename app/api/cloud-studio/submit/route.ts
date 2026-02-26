@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { createStarterToken } from "@/lib/starterToken";
-import { checkRateLimit } from "@/lib/rateLimit";
+import { checkTieredRateLimit } from "@/lib/rateLimitTiered";
 import { CLOUD_STUDIO_SERVICE_TYPES } from "@/lib/cloudStudio/types";
 
 function getClientIp(req: NextRequest): string {
@@ -19,7 +19,7 @@ function getClientIp(req: NextRequest): string {
  */
 export async function POST(req: NextRequest) {
   const ip = getClientIp(req);
-  if (!checkRateLimit(`cloud-studio-submit:${ip}`)) {
+  if (!checkTieredRateLimit("free", ip)) {
     return NextResponse.json(
       { error: "Too many requests. Please try again in a minute." },
       { status: 429 }
@@ -74,6 +74,8 @@ export async function POST(req: NextRequest) {
           form,
           engine: {
             outputStatus: "pending",
+            engineName: "cloud-studio",
+            updatedAt: new Date().toISOString(),
             rawOutput: null,
             scores: null,
             axiomScores: null,

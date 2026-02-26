@@ -58,6 +58,8 @@ export async function POST(req: NextRequest) {
           form: normalizedForm,
           engine: {
             outputStatus: "pending",
+            engineName: "website-builder",
+            updatedAt: new Date().toISOString(),
             rawOutput: null,
             scores: null,
             axiomScores: null,

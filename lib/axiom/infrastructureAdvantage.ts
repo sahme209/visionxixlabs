@@ -14,6 +14,10 @@ export type AxiomScores = {
   deploymentFrictionIndex: number;
   complexityTier: string;
   automationReadinessScore: number;
+  /** Phase 8: Strategic meta-metric (0–100) for board-level readiness */
+  strategicReadinessScore?: number;
+  /** Phase 9: Enterprise readiness (0–100) for sales intelligence */
+  enterpriseReadinessIndex?: number;
   // Raw underlying scores for transparency
   operatorScores: CloudOperatorScores;
 };
@@ -53,13 +57,91 @@ export type ThirtyDayPlan = {
   };
 };
 
+/** Phase 5: Quality gate from validators */
+export type AxiomQuality = { pass: boolean; issues: string[] };
+
+/** Phase 5: Playbook pack from 30-day plan (schema matches lib/axiom/playbooks.ts) */
+export type AxiomPlaybooks = {
+  phasePlaybooks: Array<{
+    phaseName: string;
+    objective: string;
+    prerequisites: string[];
+    stepByStep: Array<{ step: string; command?: string; file?: string; validation?: string }>;
+    rollbackPlan: string[];
+    successCriteria: string[];
+  }>;
+  cutoverChecklist: string[];
+  ownerRoles: string[];
+  estimatedEffortHours: number;
+};
+
+/** Phase 5: Policy pack (Enterprise only) */
+export type AxiomPolicyPack = {
+  iamTemplates: string[];
+  networkSegmentation: string[];
+  loggingMonitoring: string[];
+  incidentResponse: string[];
+};
+
 export type AxiomResult = {
   scores: AxiomScores;
   plan: ThirtyDayPlan;
   // Simple placeholders for Growth/Enterprise features
   trendSignals?: string[];
-  driftSignals?: string[];
+  /** Phase 4: Full drift report from drift detector (Growth+) */
+  driftSignals?: { hasDrift: boolean; driftLevel: string; signals: string[]; recommendedNextActions: string[] } | string[];
+  /** Phase 9: Deal acceleration signals for sales intelligence */
+  dealSignals?: import("./dealSignals").DealSignals;
+  /** Phase 5: Playbooks generated from 30-day plan */
+  playbooks?: AxiomPlaybooks;
+  /** Phase 5: Quality gate (pass/issues) */
+  quality?: AxiomQuality;
+  /** Phase 5: Policy pack (Enterprise only) */
+  policyPack?: AxiomPolicyPack;
+  /** Phase 7: Deterministic score explainability */
+  explainability?: import("./explainability").ScoreExplanation;
 };
+
+function computeStrategicReadinessScore(
+  infrastructureScore: number,
+  frictionIndex: number,
+  riskLevel: string,
+  automationReadiness: number,
+  complexityTier: string
+): number {
+  const riskScore = riskLevel === "High" ? 0 : riskLevel === "Medium" ? 50 : 100;
+  const frictionScore = Math.max(0, 100 - frictionIndex);
+  const complianceMaturity = complexityTier === "Enterprise" ? 70 : complexityTier === "Growth" ? 60 : 50;
+  const raw =
+    infrastructureScore * 0.3 +
+    frictionScore * 0.15 +
+    riskScore * 0.2 +
+    automationReadiness * 0.25 +
+    complianceMaturity * 0.1;
+  return Math.round(Math.min(100, Math.max(0, raw)));
+}
+
+/** Phase 9: Enterprise Readiness Index (0–100) for sales intelligence */
+export function computeEnterpriseReadinessIndex(params: {
+  complianceMaturity: number; // 0–100 from complexityTier
+  multiRegionComplexity: number; // 0–100, Enterprise=80 Growth=50 else=30
+  automationReadiness: number;
+  driftDetected: boolean;
+  trendVolatilityScore: number; // 0–100, 0=none
+  monthlySpendProxy: number;
+}): number {
+  const { complianceMaturity, multiRegionComplexity, automationReadiness, driftDetected, trendVolatilityScore, monthlySpendProxy } = params;
+  const driftPenalty = driftDetected ? 15 : 0;
+  const spendScore = monthlySpendProxy > 100000 ? 90 : monthlySpendProxy > 50000 ? 70 : monthlySpendProxy > 20000 ? 50 : 30;
+  const raw =
+    complianceMaturity * 0.2 +
+    multiRegionComplexity * 0.15 +
+    automationReadiness * 0.25 +
+    (100 - driftPenalty) * 0.1 +
+    Math.min(100, trendVolatilityScore + 50) * 0.1 +
+    spendScore * 0.2;
+  return Math.round(Math.min(100, Math.max(0, raw)));
+}
 
 function computeDeploymentFrictionIndex(scores: CloudOperatorScores): number {
   // Start from inverse of CI/CD maturity and adjust for complexity
@@ -189,6 +271,14 @@ export function generateInfrastructureAdvantageModel(
   const deploymentFrictionIndex = computeDeploymentFrictionIndex(operatorScores);
   const automationReadinessScore = computeAutomationReadinessScore(profile, operatorScores);
 
+  const strategicReadinessScore = computeStrategicReadinessScore(
+    infrastructureScore,
+    deploymentFrictionIndex,
+    operatorScores.securityRiskLevel,
+    automationReadinessScore,
+    operatorScores.architectureComplexityTier
+  );
+
   const scores: AxiomScores = {
     infrastructureScore,
     estimatedAnnualSavings: operatorScores.estimatedAnnualSavings,
@@ -196,6 +286,7 @@ export function generateInfrastructureAdvantageModel(
     deploymentFrictionIndex,
     complexityTier: operatorScores.architectureComplexityTier,
     automationReadinessScore,
+    strategicReadinessScore,
     operatorScores,
   };
 

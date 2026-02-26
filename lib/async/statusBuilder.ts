@@ -45,7 +45,11 @@ export function buildEngineStatusResponse({
   payloadOverride,
 }: BuildEngineStatusResponseArgs): Record<string, unknown> {
   const payload = payloadOverride ?? ((lead.fullPayload as Record<string, unknown>) || {});
-  const outputStatus = (payload.outputStatus as string) || "pending";
+  const engine = (payload.engine as Record<string, unknown>) || {};
+  const outputStatus =
+    (payload.outputStatus as string) ||
+    (engine.outputStatus as string) ||
+    "pending";
 
   if (engineType === "operator") {
     const resolvedTier =
@@ -198,7 +202,9 @@ export function buildEngineStatusResponse({
   }
 
   if (engineType === "cloud-studio") {
-    const resolvedTier = ((tier as CloudStudioTier | undefined) || "free") as CloudStudioTier;
+    const resolvedTier = ((tier as CloudStudioTier | undefined) ??
+      (payload.tier as CloudStudioTier) ??
+      "free") as CloudStudioTier;
     const output = payload.output as Record<string, unknown> | null;
     const cloudIntelligence = payload.cloudIntelligence as
       | Record<string, unknown>

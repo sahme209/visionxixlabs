@@ -1,3 +1,7 @@
+/** Phase 7: Scoring version for audit and compliance. Increment when scoring logic changes. */
+/** Phase 8: Bumped for StrategicReadinessScore. Phase 9: Bumped for EnterpriseReadinessIndex. */
+export const SCORING_VERSION = "1.2.0";
+
 import {
   computeCloudIntelligence,
   computeCloudOperatorScores,
