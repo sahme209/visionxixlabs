@@ -1,4 +1,6 @@
 /**
+ * DEPRECATED: Use lib/starterToken.ts for all new lead-scoped token flows. This helper will be phased out.
+ *
  * Signed token for secure starter package access.
  * Token = base64url(leadId).base64url(hmac)
  * Env: STARTER_TOKEN_SECRET (required for token operations)
