@@ -13,6 +13,7 @@ import {
 } from "@heroicons/react/24/outline";
 import { WEBSITE_BUILD_TIERS } from "@/lib/websiteBuildPricing";
 import { Navigation } from "@/components/Navigation";
+import { AxiomButton } from "@/components/axiom-ui/AxiomButton";
 
 export default function RequestPage() {
   const [loading, setLoading] = useState(false);
@@ -64,43 +65,44 @@ export default function RequestPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
+    <div className="axiom-page min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
       <Navigation />
-      <main className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <Link
-          href="/"
-          className="inline-flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 mb-8"
-        >
-          <ArrowLeftIcon className="h-4 w-4" />
-          Back to Home
-        </Link>
-        <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-700 p-8">
-          <header className="mb-8 text-center">
-            <div className="inline-flex items-center justify-center rounded-full bg-indigo-100 dark:bg-indigo-900/40 px-4 py-2 text-xs font-semibold text-indigo-700 dark:text-indigo-300 mb-4">
-              AI + Enterprise Cloud Deployment Platform
+      <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-20">
+        <div className="max-w-3xl mx-auto">
+          <Link
+            href="/"
+            className="inline-flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 mb-8"
+          >
+            <ArrowLeftIcon className="h-4 w-4" />
+            Back to Home
+          </Link>
+          <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-700 p-8">
+            <header className="mb-8 text-center">
+              <div className="inline-flex items-center justify-center rounded-full bg-indigo-100 dark:bg-indigo-900/40 px-4 py-2 text-xs font-semibold text-indigo-700 dark:text-indigo-300 mb-4">
+                Website Builder + Managed Cloud
+              </div>
+              <h1 className="axiom-heading-xl text-3xl md:text-4xl font-extrabold text-slate-900 dark:text-slate-100 mb-2">
+                AI-built site, production-ready hosting
+              </h1>
+              <p className="text-sm text-slate-600 dark:text-slate-400">
+                Generate a site and deploy to Managed Cloud, AWS, Azure, or GCP with CDN, SSL, and CI/CD.
+              </p>
+            </header>
+
+            <div className="mb-4 rounded-xl border border-indigo-200 dark:border-indigo-800 bg-indigo-50/60 dark:bg-indigo-900/30 p-3 text-xs text-slate-900 dark:text-slate-100">
+              <p className="mb-1 font-semibold text-indigo-900 dark:text-indigo-100">
+                Need full cloud, security, and automation strategy?
+              </p>
+              <p className="text-indigo-900/80 dark:text-indigo-200">
+                Run{" "}
+                <Link href="/cloud-operator" className="font-semibold underline hover:no-underline">
+                  Axiom
+                </Link>{" "}
+                before building to get infrastructure scores and a 30-day optimization roadmap.
+              </p>
             </div>
-            <h1 className="text-3xl font-bold text-slate-900 dark:text-slate-100 mb-2">
-              AI-built site. Enterprise cloud deployment.
-            </h1>
-            <p className="text-slate-600 dark:text-slate-400">
-              Generate your site with AI. Deploy on Managed Cloud, AWS, Azure, or GCP—CDN, SSL, CI/CD.
-            </p>
-          </header>
 
-          <div className="mb-4 rounded-xl border border-indigo-200 dark:border-indigo-800 bg-indigo-50/60 dark:bg-indigo-900/30 p-3 text-xs text-slate-900 dark:text-slate-100">
-            <p className="mb-1 font-semibold text-indigo-900 dark:text-indigo-100">
-              Need full cloud, security, and automation strategy?
-            </p>
-            <p className="text-indigo-900/80 dark:text-indigo-200">
-              Run{" "}
-              <Link href="/cloud-operator" className="font-semibold underline hover:no-underline">
-                Axiom
-              </Link>{" "}
-              before building to get infrastructure scores and a 30-day optimization roadmap.
-            </p>
-          </div>
-
-          <form onSubmit={handleSubmit} className="space-y-6">
+            <form onSubmit={handleSubmit} className="space-y-6">
             <div className="grid gap-6 sm:grid-cols-2">
               <div>
                 <label htmlFor="name" className="flex items-center gap-2 text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
@@ -239,28 +241,45 @@ export default function RequestPage() {
               </div>
             )}
 
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full rounded-xl bg-indigo-600 py-3 font-semibold text-white hover:bg-indigo-700 disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-            >
-              {loading ? (
-                <>
-                  <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-                  </svg>
-                  Submitting...
-                </>
-              ) : (
-                "Get my AI-built site preview"
-              )}
-            </button>
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full rounded-xl bg-indigo-600 py-3 font-semibold text-white hover:bg-indigo-700 disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              >
+                {loading ? (
+                  <>
+                    <svg
+                      className="animate-spin h-5 w-5 text-white"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      />
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+                      />
+                    </svg>
+                    Submitting...
+                  </>
+                ) : (
+                  "Get my AI-built site preview"
+                )}
+              </button>
 
-            <p className="text-center text-xs text-slate-500 dark:text-slate-400">
-              Managed cloud preview in 1–3 minutes. Select AWS/Azure/GCP on the next page if needed.
-            </p>
-          </form>
+              <p className="text-center text-xs text-slate-500 dark:text-slate-400">
+                Managed cloud preview in 1–3 minutes. Select AWS/Azure/GCP on the next page if needed.
+              </p>
+            </form>
+          </div>
         </div>
       </main>
     </div>

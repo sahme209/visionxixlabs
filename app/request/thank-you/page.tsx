@@ -197,21 +197,21 @@ export default function ThankYouPage() {
           </div>
 
           {polling && !isReady && (
-            <div className="mb-8 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 p-6 text-center">
-              <div className="animate-pulse flex items-center justify-center gap-3 mb-2">
-                <div className="h-3 w-3 rounded-full bg-indigo-500 animate-ping" />
-                <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
-                  Generating your managed cloud preview...
-                </span>
+            <div className="mb-8 space-y-4">
+              <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 p-6">
+                <div className="animate-pulse space-y-3">
+                  <div className="h-4 w-48 mx-auto rounded-full bg-slate-200 dark:bg-slate-700" />
+                  <div className="h-40 rounded-xl bg-slate-100 dark:bg-slate-800 mt-4" />
+                </div>
               </div>
-              <p className="text-xs text-slate-500 dark:text-slate-400">
+              <p className="text-xs text-slate-500 dark:text-slate-400 text-center">
                 Managed cloud preview in 1–3 minutes. We&apos;ll email you when it&apos;s ready.
               </p>
             </div>
           )}
 
           {isReady && (
-            <div className="mb-8 rounded-xl border-2 border-emerald-200 dark:border-emerald-800 bg-emerald-50/50 dark:bg-emerald-900/20 p-6">
+            <div className="mb-8 rounded-xl border-2 border-emerald-200 dark:border-emerald-800 bg-emerald-50/50 dark:bg-emerald-900/20 p-6 transition-opacity duration-200 ease-in-out">
               <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100 mb-2 flex items-center gap-2">
                 <LinkIcon className="h-5 w-5 text-emerald-600" />
                 Your AI-built site is live

@@ -5,8 +5,12 @@ import { checkRateLimit } from "@/lib/rateLimit";
 import { generateOperatorEngineOutput } from "@/lib/cloudOperator/generate";
 import { resolveOperatorTier } from "@/lib/cloudOperator/pricing";
 import type { OperatorProfile, OperatorTier } from "@/lib/cloudOperator/types";
-import { generateInfrastructureAdvantageModel } from "@/lib/axiom/infrastructureAdvantage";
-
+import { runAsyncLeadEngine } from "@/lib/async/engineRunner";
+import {
+  computeInfrastructureAdvantageScore,
+  computeOperatorScores,
+} from "@/lib/axiom/scoringRegistry";
+import type { OperatorProfileInput } from "@/lib/cloudStudio/scoring";
 /**
  * POST /api/cloud-operator/trigger?token=XXX
  * Generates AI Cloud Operator output for the request.
@@ -44,76 +48,103 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Invalid request" }, { status: 400 });
     }
 
-    const payload = (lead.fullPayload as Record<string, unknown>) || {};
-    if (payload.outputStatus === "ready") {
+    const existingPayload = (lead.fullPayload as Record<string, unknown>) || {};
+    if (existingPayload.outputStatus === "ready") {
       return NextResponse.json({
         success: true,
         status: "ready",
-        operatorOutput: payload.operatorOutput,
-        operatorScores: payload.operatorScores,
+        operatorOutput: existingPayload.operatorOutput,
+        operatorScores: existingPayload.operatorScores,
       });
     }
 
-    const rawProfile = (payload.operatorProfile as Record<string, unknown>) || {};
-    const tier = resolveOperatorTier((payload.tier as string) || "free") as OperatorTier;
+    const { generated } = await runAsyncLeadEngine<{
+      operatorOutput: Awaited<ReturnType<typeof generateOperatorEngineOutput>>;
+      operatorScores: ReturnType<typeof computeOperatorScores>;
+      axiom: ReturnType<typeof computeInfrastructureAdvantageScore>;
+      rawProfile: Record<string, unknown>;
+      profile: OperatorProfile;
+      tier: OperatorTier;
+    }>({
+      leadId,
+      engineName: "cloud-operator-trigger",
+      expectedSource: "cloud-operator",
+      async generateFunction({ payload }) {
+        const rawProfile = (payload.operatorProfile as Record<string, unknown>) || {};
+        const tier = resolveOperatorTier((payload.tier as string) || "free") as OperatorTier;
 
-    const profile: OperatorProfile = {
-      projectType: String(rawProfile.projectType ?? "").trim(),
-      hostingProvider: String(rawProfile.hostingProvider ?? "").trim(),
-      monthlySpend: String(rawProfile.monthlySpend ?? "").trim(),
-      trafficLevel: (String(rawProfile.trafficLevel ?? "Low").trim() || "Low") as
-        | "Low"
-        | "Medium"
-        | "High",
-      hasCiCd: (String(rawProfile.hasCiCd ?? "no").trim().toLowerCase() === "yes"
-        ? "yes"
-        : "no") as "yes" | "no",
-      publicExposure: (String(rawProfile.publicExposure ?? "Internal Only").trim() ||
-        "Internal Only") as "API" | "Public Web" | "Internal Only" | "Other",
-      complianceNeeds: String(rawProfile.complianceNeeds ?? "").trim(),
-      gitProvider: (String(rawProfile.gitProvider ?? "None").trim() || "None") as
-        | "GitHub"
-        | "GitLab"
-        | "Bitbucket"
-        | "None"
-        | "Other",
-      primaryGoal: String(rawProfile.primaryGoal ?? "").trim(),
-    };
+        const profile: OperatorProfile = {
+          projectType: String(rawProfile.projectType ?? "").trim(),
+          hostingProvider: String(rawProfile.hostingProvider ?? "").trim(),
+          monthlySpend: String(rawProfile.monthlySpend ?? "").trim(),
+          trafficLevel: (String(rawProfile.trafficLevel ?? "Low").trim() || "Low") as
+            | "Low"
+            | "Medium"
+            | "High",
+          hasCiCd: (String(rawProfile.hasCiCd ?? "no").trim().toLowerCase() === "yes"
+            ? "yes"
+            : "no") as "yes" | "no",
+          publicExposure: (String(rawProfile.publicExposure ?? "Internal Only").trim() ||
+            "Internal Only") as "API" | "Public Web" | "Internal Only" | "Other",
+          complianceNeeds: String(rawProfile.complianceNeeds ?? "").trim(),
+          gitProvider: (String(rawProfile.gitProvider ?? "None").trim() || "None") as
+            | "GitHub"
+            | "GitLab"
+            | "Bitbucket"
+            | "None"
+            | "Other",
+          primaryGoal: String(rawProfile.primaryGoal ?? "").trim(),
+        };
 
-    await prisma.lead.update({
-      where: { id: leadId },
-      data: { status: "package_generating" },
-    });
+        const tierResolved = resolveOperatorTier((payload.tier as string) || "free") as OperatorTier;
+        const operatorOutput = await generateOperatorEngineOutput(profile, tierResolved);
+        const operatorInput: OperatorProfileInput = {
+          projectType: profile.projectType,
+          hostingProvider: profile.hostingProvider,
+          monthlySpend: profile.monthlySpend,
+          trafficLevel: profile.trafficLevel,
+          hasCiCd: profile.hasCiCd,
+          publicExposure: profile.publicExposure,
+          complianceNeeds: profile.complianceNeeds,
+          gitProvider: profile.gitProvider,
+          primaryGoal: profile.primaryGoal,
+        };
+        const operatorScores = computeOperatorScores(operatorInput);
 
-    const operatorOutput = await generateOperatorEngineOutput(profile, tier);
+        const axiomProfile = {
+          ...profile,
+          contextType: "operator" as const,
+        };
+        const axiom = computeInfrastructureAdvantageScore(axiomProfile, operatorScores);
 
-    const axiomProfile = {
-      ...profile,
-      contextType: "operator" as const,
-    };
-    const axiom = generateInfrastructureAdvantageModel(axiomProfile, operatorOutput.scores || null);
-
-    const updatedPayload = {
-      ...payload,
-      operatorProfile: rawProfile,
-      operatorOutput,
-      operatorScores: operatorOutput.scores || null,
-      axiomProfile,
-      axiomScores: axiom.scores,
-      // Store full AxiomResult object for future use
-      axiomResult: axiom,
-      // Backwards-compatible plan field for older readers
-      axiomPlan: axiom.plan,
-      outputStatus: "ready",
-    };
-
-    await prisma.lead.update({
-      where: { id: leadId },
-      data: {
-        status: "package_ready",
-        fullPayload: updatedPayload as object,
+        return { operatorOutput, operatorScores, axiom, rawProfile, profile, tier: tierResolved };
       },
+      updatePayloadFunction({ payload, generated }) {
+        const { operatorOutput, operatorScores, axiom, rawProfile, profile } = generated;
+        const axiomProfile = {
+          ...profile,
+          contextType: "operator" as const,
+        };
+
+        return {
+          ...payload,
+          operatorProfile: rawProfile,
+          operatorOutput,
+          operatorScores,
+          axiomProfile,
+          axiomScores: axiom.scores,
+          // Store full AxiomResult object for future use
+          axiomResult: axiom,
+          // Backwards-compatible plan field for older readers
+          axiomPlan: axiom.plan,
+        };
+      },
+      initialStatus: "package_generating",
+      readyStatus: "package_ready",
+      failureStatus: "created",
     });
+
+    const { operatorOutput, axiom } = generated;
 
     return NextResponse.json({
       success: true,
@@ -125,18 +156,6 @@ export async function POST(req: NextRequest) {
     });
   } catch (e) {
     console.error("[cloud-operator trigger]", e);
-    try {
-      const lead = await prisma.lead.findUnique({ where: { id: leadId } });
-      if (lead) {
-        const p = (lead.fullPayload as Record<string, unknown>) || {};
-        await prisma.lead.update({
-          where: { id: leadId },
-          data: { fullPayload: { ...p, outputStatus: "failed" }, status: "created" },
-        });
-      }
-    } catch {
-      // ignore
-    }
     return NextResponse.json(
       { error: "Failed to generate output. Please try again." },
       { status: 500 }

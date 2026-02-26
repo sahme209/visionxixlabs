@@ -80,11 +80,11 @@ export default function Home() {
       {/* Hero Section */}
       <section className="pt-32 pb-16 px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto text-center">
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight text-slate-900 dark:text-slate-100">
-            Axiom — Autonomous Infrastructure Intelligence
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-4 leading-tight text-slate-900 dark:text-slate-100">
+            Axiom — Infrastructure Intelligence
           </h1>
           <p className="text-lg md:text-xl text-slate-600 dark:text-slate-400 mb-8 max-w-3xl mx-auto">
-            Analyze. Score. Optimize. Automate your cloud across AWS, Azure, GCP, and AI stacks with a single autonomous operator.
+            One operator to score, optimize, and guide your cloud across AWS, Azure, and GCP.
           </p>
           <div className="flex flex-wrap justify-center gap-4 mb-6">
             <Link
@@ -140,11 +140,11 @@ export default function Home() {
       <section className="py-16 px-4 sm:px-6 lg:px-8 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-700">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-12">
-            <h2 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-slate-100 mb-4">
-              Production AI, not demos
+            <h2 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-slate-100 mb-3">
+              Production systems, not demos
             </h2>
-            <p className="text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
-              We design and deploy AI inside your cloud—secure, observable, and built for operations. Internal assistants, workflow automation, document extraction, RAG, and custom LLM integration.
+            <p className="text-sm text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
+              We build internal assistants, automation, and extraction workflows that run safely inside your cloud.
             </p>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 text-center mb-10">
@@ -336,10 +336,10 @@ export default function Home() {
           >
             <div className="text-center mb-8">
               <h2 id="ai-solutions-heading" className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-slate-100 mb-3">
-                Production AI Systems &amp; LLM Integration
+                Applied AI in your cloud
               </h2>
-              <p className="text-slate-600 dark:text-slate-400 max-w-2xl mx-auto mb-6">
-                We engineer AI systems for production environments: secure, scalable, and cost-aware AI deployment inside your cloud. Not demos—production systems.
+              <p className="text-sm text-slate-600 dark:text-slate-400 max-w-2xl mx-auto mb-6">
+                Secure, scalable assistants and workflows wired into your existing infrastructure.
               </p>
               <div className="flex flex-wrap justify-center gap-4">
                 <Link
@@ -351,10 +351,10 @@ export default function Home() {
                 </Link>
                 <Link
                   href="/ai-engineering"
-                  className="inline-flex items-center px-5 py-2.5 border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 rounded-lg font-semibold text-sm hover:border-slate-400 dark:hover:border-slate-500 transition-colors"
+                  className="inline-flex items-center text-sm font-semibold text-indigo-600 dark:text-indigo-400 hover:underline"
                 >
                   AI Engineering &amp; LLM Systems
-                  <ArrowRightIcon className="ml-1.5 h-4 w-4" />
+                  <ArrowRightIcon className="ml-1 h-4 w-4" />
                 </Link>
               </div>
             </div>
@@ -367,10 +367,10 @@ export default function Home() {
           >
             <div className="text-center mb-8">
               <h2 id="growing-teams-heading" className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-slate-100 mb-3">
-                Cloud &amp; AI Solutions for Growing Teams
+                Packages for growing teams
               </h2>
-              <p className="text-slate-600 dark:text-slate-400 max-w-2xl mx-auto mb-6">
-                Fixed-scope packages for startups and small businesses: health checks, CI/CD setup, AI automation, cost optimization.
+              <p className="text-sm text-slate-600 dark:text-slate-400 max-w-2xl mx-auto mb-6">
+                Fixed-scope health checks, CI/CD setup, automation, and cost tuning.
               </p>
               <Link
                 href="/solutions-for-growing-teams"
@@ -389,10 +389,10 @@ export default function Home() {
           >
             <div className="text-center mb-8">
               <h2 id="cloud-security-heading" className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-slate-100 mb-3">
-                Secure-by-Design Cloud Engineering
+                Practical cloud security
               </h2>
-              <p className="text-slate-600 dark:text-slate-400 max-w-2xl mx-auto mb-6">
-                Security baseline, DevOps hardening, AI security review, and visibility setup — practical hardening without exaggerated claims.
+              <p className="text-sm text-slate-600 dark:text-slate-400 max-w-2xl mx-auto mb-6">
+                Baselines, hardening, and visibility focused on real risk reduction.
               </p>
               <Link
                 href="/free-review"
@@ -418,11 +418,11 @@ export default function Home() {
       <section className="py-16 px-4 sm:px-6 lg:px-8 border-t border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-10">
-            <h2 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-slate-100 mb-4">
-              AI thought leadership
+            <h2 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-slate-100 mb-3">
+              Insights from real projects
             </h2>
-            <p className="text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
-              Practical articles on production AI, RAG vs. fine-tuning, cost management, internal assistants, and secure AI integration. No hype—actionable guidance.
+            <p className="text-sm text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
+              Short, practical notes on production AI, cost, and cloud engineering.
             </p>
           </div>
           <div className="flex flex-wrap justify-center gap-4 mb-6">
@@ -472,14 +472,11 @@ export default function Home() {
         <div className="max-w-6xl mx-auto">
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div>
-              <h2 id="about-heading" className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-slate-100 mb-6">
+              <h2 id="about-heading" className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-slate-100 mb-4">
                 Engineering-first cloud consulting
               </h2>
-              <p className="text-slate-600 dark:text-slate-400 mb-4 leading-relaxed">
-                We work alongside engineering teams to design, automate, and operate cloud platforms. Infrastructure as Code, CI/CD, and clear documentation so you can run and improve after handover.
-              </p>
-              <p className="text-slate-600 dark:text-slate-400 mb-6 leading-relaxed">
-                We also build products—from immigration case tracking to health and productivity apps—shipping software that solves real problems.
+              <p className="text-sm text-slate-600 dark:text-slate-400 mb-6 leading-relaxed">
+                We help teams design, automate, and operate platforms with IaC, CI/CD, and clear handover.
               </p>
               <div className="flex flex-wrap gap-3">
                 <Link

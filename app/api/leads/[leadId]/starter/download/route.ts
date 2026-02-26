@@ -14,8 +14,8 @@ export async function GET(
 ) {
   const { leadId } = await params;
   const token = req.nextUrl.searchParams.get("token");
-  const verifiedLeadId = verifyStarterToken(token ?? "");
-  if (!verifiedLeadId || verifiedLeadId !== leadId) {
+  const result = verifyStarterToken(token ?? "");
+  if ("error" in result || result.leadId !== leadId) {
     return NextResponse.json({ error: "Invalid or missing token" }, { status: 401 });
   }
 

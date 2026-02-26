@@ -5,6 +5,7 @@ import { generateAIStarterPackage } from "@/lib/aiWebsiteStarter";
 import { resolveTier } from "@/lib/websiteBuildPricing";
 import { deployPreview } from "@/lib/previewDeploy";
 import type { AIStarterPackage } from "@/lib/aiWebsiteStarter";
+import { runAsyncLeadEngine } from "@/lib/async/engineRunner";
 
 /**
  * POST /api/leads/trigger?token=XXX
@@ -40,29 +41,34 @@ export async function POST(req: NextRequest) {
     const payload = (lead.fullPayload as Record<string, unknown>) || {};
     let pkg = payload.aiPackage as AIStarterPackage | undefined;
 
-    // 1. Generate AI package if not ready
+    // 1. Generate AI package if not ready (uses shared async engine helper)
     if (!pkg || lead.status === "created" || lead.status === "package_generating") {
-      await prisma.lead.update({
-        where: { id: leadId },
-        data: { status: "package_generating" },
+      const { generated } = await runAsyncLeadEngine<AIStarterPackage>({
+        leadId,
+        engineName: "leads-trigger-package",
+        async generateFunction({ payload: currentPayload }) {
+          const form = (currentPayload.form as Record<string, unknown>) || {};
+          return generateAIStarterPackage({
+            name: form.name as string,
+            email: form.email as string,
+            company: form.company as string,
+            message: form.message as string,
+            industry: form.industry as string,
+            hasDomain: form.hasDomain as boolean,
+            domainName: form.domainName as string,
+          });
+        },
+        updatePayloadFunction({ payload: currentPayload, generated: generatedPkg }) {
+          return {
+            ...currentPayload,
+            aiPackage: generatedPkg,
+          };
+        },
+        initialStatus: "package_generating",
+        readyStatus: "package_ready",
+        failureStatus: "created",
       });
-
-      const form = (payload.form as Record<string, unknown>) || {};
-      pkg = await generateAIStarterPackage({
-        name: form.name as string,
-        email: form.email as string,
-        company: form.company as string,
-        message: form.message as string,
-        industry: form.industry as string,
-        hasDomain: form.hasDomain as boolean,
-        domainName: form.domainName as string,
-      });
-
-      const updatedPayload1 = { ...payload, aiPackage: pkg };
-      await prisma.lead.update({
-        where: { id: leadId },
-        data: { status: "package_ready", fullPayload: updatedPayload1 },
-      });
+      pkg = generated;
     }
 
     if (!pkg) {

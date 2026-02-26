@@ -33,23 +33,40 @@ export async function POST(req: NextRequest) {
 
     const resolvedTier = resolveTier(String(tier || "starter"));
 
+    const normalizedForm = {
+      name: String(name || "").trim().slice(0, 200),
+      email: trimmedEmail,
+      company: String(company || "").trim().slice(0, 200),
+      message: String(message || "").trim().slice(0, 4000),
+      industry: String(industry || "").trim().slice(0, 100),
+      hasDomain: Boolean(hasDomain),
+      domainName: String(domainName || "").trim().slice(0, 200),
+      tier: resolvedTier,
+    };
+
     const lead = await prisma.lead.create({
       data: {
         email: trimmedEmail,
-        name: String(name || "").trim().slice(0, 200),
+        name: normalizedForm.name,
         source: "website-request",
         status: "created",
         fullPayload: {
-          form: {
-            name: String(name || "").trim().slice(0, 200),
-            email: trimmedEmail,
-            company: String(company || "").trim().slice(0, 200),
-            message: String(message || "").trim().slice(0, 4000),
-            industry: String(industry || "").trim().slice(0, 100),
-            hasDomain: Boolean(hasDomain),
-            domainName: String(domainName || "").trim().slice(0, 200),
-            tier: resolvedTier,
+          // Standardized structure
+          context: {
+            type: "website",
           },
+          form: normalizedForm,
+          engine: {
+            outputStatus: "pending",
+            rawOutput: null,
+            scores: null,
+            axiomScores: null,
+            roadmap: null,
+          },
+          infrastructure: {},
+          metadata: {},
+          // Legacy keys (preserved for backward compatibility)
+          form: normalizedForm,
         },
       },
     });

@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { verifyStarterToken } from "@/lib/starterToken";
-import { canViewFullOutput, canDownload } from "@/lib/cloudStudio/pricing";
 import type { CloudStudioTier } from "@/lib/cloudStudio/types";
+import { buildEngineStatusResponse } from "@/lib/async/statusBuilder";
 
 /**
  * GET /api/cloud-studio/status?token=XXX
@@ -33,30 +33,19 @@ export async function GET(req: NextRequest) {
 
     const payload = (lead.fullPayload as Record<string, unknown>) || {};
     const tier = (payload.tier as CloudStudioTier) || "free";
-    const output = payload.output as Record<string, unknown> | null;
-    const outputStatus = (payload.outputStatus as string) || "pending";
 
-    const cloudIntelligence = payload.cloudIntelligence as Record<string, unknown> | null | undefined;
+    const base = buildEngineStatusResponse({
+      lead,
+      engineType: "cloud-studio",
+      tier,
+      payloadOverride: payload,
+    });
 
     const response: Record<string, unknown> = {
       leadId: lead.id,
       status: lead.status,
-      outputStatus,
-      serviceType: payload.serviceType,
-      tier,
-      canViewFullOutput: canViewFullOutput(tier),
-      canDownload: canDownload(tier),
-      cloudIntelligence: cloudIntelligence || null,
+      ...base,
     };
-
-    if (output) {
-      response.summary = output.summary;
-      if (canViewFullOutput(tier)) {
-        response.fullOutput = output.fullOutput;
-        response.artifacts = output.artifacts;
-      }
-      response.generatedAt = output.generatedAt;
-    }
 
     return NextResponse.json(response);
   } catch (e) {

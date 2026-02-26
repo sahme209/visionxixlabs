@@ -1,0 +1,72 @@
+:root {
+  /* Font scale */
+  --axiom-font-size-base: 1rem;
+  --axiom-font-size-sm: 0.875rem;
+  --axiom-font-size-lg: 1.125rem;
+  --axiom-font-size-xl: 1.5rem;
+  --axiom-font-size-2xl: 1.875rem;
+
+  /* Heading weights */
+  --axiom-heading-weight: 800;
+  --axiom-subheading-weight: 600;
+
+  /* Radius scale */
+  --axiom-radius-md: 0.75rem;
+  --axiom-radius-lg: 1rem;
+  --axiom-radius-xl: 1.25rem;
+  --axiom-radius-2xl: 1.5rem;
+
+  /* Shadow tokens */
+  --axiom-shadow-subtle: 0 10px 25px rgba(15, 23, 42, 0.06);
+  --axiom-shadow-soft: 0 16px 40px rgba(15, 23, 42, 0.08);
+
+  /* Animation timings */
+  --axiom-transition-fast: 200ms ease-in-out;
+  --axiom-transition-medium: 250ms ease-in-out;
+}
+
+.axiom-page {
+  font-size: var(--axiom-font-size-base);
+}
+
+.axiom-heading-xl {
+  font-weight: var(--axiom-heading-weight);
+  letter-spacing: -0.03em;
+}
+
+.axiom-heading-lg {
+  font-weight: var(--axiom-heading-weight);
+  letter-spacing: -0.02em;
+}
+
+.axiom-subheading {
+  font-weight: var(--axiom-subheading-weight);
+}
+
+.axiom-card {
+  border-radius: var(--axiom-radius-2xl);
+  box-shadow: var(--axiom-shadow-subtle);
+}
+
+.axiom-button-primary {
+  border-radius: var(--axiom-radius-2xl);
+  box-shadow: var(--axiom-shadow-subtle);
+}
+
+.axiom-button-primary:hover {
+  box-shadow: var(--axiom-shadow-soft);
+}
+
+.axiom-fade-in {
+  opacity: 0;
+  transform: translateY(4px);
+  transition:
+    opacity var(--axiom-transition-fast),
+    transform var(--axiom-transition-fast);
+}
+
+.axiom-fade-in--visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { resolveTier } from "@/lib/websiteBuildPricing";
 import { prisma } from "@/lib/db";
 import { verifyStarterToken } from "@/lib/starterToken";
+import { buildEngineStatusResponse } from "@/lib/async/statusBuilder";
 
 /**
  * GET /api/leads/status?token=XXX
@@ -32,34 +32,15 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: "Lead not found" }, { status: 404 });
     }
 
-    const payload = (lead.fullPayload as Record<string, unknown>) || {};
-    const previewUrl = payload.previewUrl as string | undefined;
-    const form = (payload.form as Record<string, unknown>) || {};
-    const infrastructure = (payload.infrastructure as Record<string, unknown>) || {};
-    const tier = resolveTier((form.tier as string) || "starter");
-    const tierConfig = { starter: 3, professional: 0, enterprise: 0 }[tier] ?? 3;
-    const revisionCount = (payload.revisionCount as number) || 0;
-    const revisionsRemaining = tierConfig > 0 ? Math.max(0, tierConfig - revisionCount) : null;
+    const base = buildEngineStatusResponse({
+      lead,
+      engineType: "website",
+    });
 
     return NextResponse.json({
       leadId,
       status: lead.status,
-      previewUrl: previewUrl || null,
-      packageReady: lead.status === "package_ready" || lead.status === "deploy_ready" || lead.status === "deploy_generating" || lead.status === "published",
-      deployReady: lead.status === "deploy_ready" || lead.status === "published",
-      revisionsRemaining,
-      infrastructure: {
-        cloudProvider: infrastructure.cloudProvider || "managed",
-        cdnEnabled: infrastructure.cdnEnabled ?? (tier !== "starter"),
-        sslEnabled: infrastructure.sslEnabled ?? true,
-        cicdEnabled: infrastructure.cicdEnabled ?? (tier === "professional" || tier === "enterprise"),
-        securityLevel: infrastructure.securityLevel || (tier === "enterprise" ? "hardened" : tier === "professional" ? "standard" : "basic"),
-        addOns: infrastructure.addOns || [],
-      },
-      form: {
-        hasDomain: form.hasDomain,
-        domainName: form.domainName,
-      },
+      ...base,
     });
   } catch (e) {
     console.error("[leads status GET]", e);

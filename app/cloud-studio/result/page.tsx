@@ -125,12 +125,27 @@ export default function CloudStudioResultPage() {
           </div>
 
           {polling && outputStatus !== "ready" && outputStatus !== "failed" && (
-            <div className="mb-8 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 p-6 text-center">
-              <div className="animate-pulse flex items-center justify-center gap-3 mb-2">
-                <div className="h-3 w-3 rounded-full bg-indigo-500 animate-ping" />
-                <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
-                  Generating {serviceType || "service"} output...
-                </span>
+            <div className="mb-8 space-y-4">
+              <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 p-6">
+                <div className="animate-pulse space-y-3">
+                  <div className="h-4 w-40 mx-auto rounded-full bg-slate-200 dark:bg-slate-700" />
+                  <div className="grid grid-cols-2 gap-3 mt-4">
+                    {[0, 1, 2, 3].map((i) => (
+                      <div
+                        // biome-ignore lint/suspicious/noArrayIndexKey: skeleton only
+                        key={i}
+                        className="h-16 rounded-xl bg-slate-100 dark:bg-slate-800"
+                      />
+                    ))}
+                  </div>
+                </div>
+              </div>
+              <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 p-6">
+                <div className="animate-pulse space-y-2">
+                  <div className="h-3 w-32 rounded-full bg-slate-200 dark:bg-slate-700" />
+                  <div className="h-3 w-full rounded-full bg-slate-100 dark:bg-slate-800" />
+                  <div className="h-3 w-5/6 rounded-full bg-slate-100 dark:bg-slate-800" />
+                </div>
               </div>
             </div>
           )}
@@ -138,7 +153,7 @@ export default function CloudStudioResultPage() {
           {outputStatus === "ready" && summary && (
             <>
               {cloudIntelligence && (
-                <section className="mb-8 rounded-xl border-2 border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-6">
+                <section className="mb-8 rounded-xl border-2 border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-6 transition-opacity duration-200 ease-in-out">
                   <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100 mb-4 flex items-center gap-2">
                     <ChartBarIcon className="h-5 w-5 text-indigo-600" />
                     Cloud Intelligence Score

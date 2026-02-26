@@ -159,10 +159,12 @@ export default function VisionXIXAIAssistantPage() {
       <Navigation />
 
       <div className="border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 pt-24">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
           <div>
             <p className="text-xs font-medium text-slate-500 uppercase tracking-wider mb-1">Vision XIX AI is part of the Axiom ecosystem.</p>
-            <h1 className="text-xl sm:text-2xl font-semibold text-slate-900 dark:text-slate-100">Site Assistant — Cloud & AI</h1>
+            <h1 className="text-3xl md:text-4xl font-extrabold text-slate-900 dark:text-slate-100">
+              Site Assistant — Cloud & AI
+            </h1>
             <p className="text-sm text-slate-600 dark:text-slate-400 mt-1 max-w-2xl">
               Ask how we design, automate, and secure cloud platforms, or how we build production AI (internal assistants, RAG, more).
             </p>
@@ -179,7 +181,10 @@ export default function VisionXIXAIAssistantPage() {
                 );
               })}
             </div>
-            <a href="/cloud-operator" className="inline-flex items-center justify-center rounded-full bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700">
+            <a
+              href="/cloud-operator"
+              className="inline-flex items-center justify-center rounded-full bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700"
+            >
               Run Infrastructure Analysis with Axiom
             </a>
             <button onClick={() => setLeadModalOpen(true)} className="text-[11px] text-indigo-600 hover:underline">
@@ -189,7 +194,10 @@ export default function VisionXIXAIAssistantPage() {
         </div>
       </div>
 
-      <div ref={scrollRef} className="flex-1 overflow-y-auto max-w-4xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-6 bg-gradient-to-b from-white to-slate-50 dark:from-slate-900 dark:to-slate-800/50">
+      <div
+        ref={scrollRef}
+        className="flex-1 overflow-y-auto max-w-6xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-6 bg-gradient-to-b from-white to-slate-50 dark:from-slate-900 dark:to-slate-800/50"
+      >
         {messages.length === 0 ? (
           <div className="text-center py-12">
             <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-md mb-6">
@@ -251,7 +259,7 @@ export default function VisionXIXAIAssistantPage() {
       </div>
 
       <div className="shrink-0 border-t border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           {error && <p className="text-sm text-red-600 mb-2">{error}</p>}
           <div className="flex gap-2">
             <input

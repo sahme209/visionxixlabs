@@ -81,6 +81,26 @@ export async function POST(req: NextRequest) {
         source: "cloud-operator",
         status: "created",
         fullPayload: {
+          // Standardized structure
+          context: {
+            type: "operator",
+          },
+          form: {
+            operatorProfile: rawProfile,
+            tier,
+            email,
+            name,
+          },
+          engine: {
+            outputStatus: "pending",
+            rawOutput: null,
+            scores: null,
+            axiomScores: null,
+            roadmap: null,
+          },
+          infrastructure: {},
+          metadata: {},
+          // Legacy keys (preserved for backward compatibility)
           operatorProfile: rawProfile,
           // AxiomProfile – normalized wrapper for future meta-engine use.
           axiomProfile: {

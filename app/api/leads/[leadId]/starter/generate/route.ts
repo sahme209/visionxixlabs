@@ -15,8 +15,8 @@ export async function POST(
 ) {
   const { leadId } = await params;
   const token = req.nextUrl.searchParams.get("token");
-  const verifiedLeadId = token ? verifyStarterToken(token) : null;
-  if (!verifiedLeadId || verifiedLeadId !== leadId) {
+  const result = token ? verifyStarterToken(token) : { error: "invalid" as const };
+  if ("error" in result || result.leadId !== leadId) {
     return NextResponse.json({ error: "Invalid or missing token" }, { status: 401 });
   }
 

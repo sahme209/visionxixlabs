@@ -67,6 +67,23 @@ export async function POST(req: NextRequest) {
         source: "cloud-studio",
         status: "created",
         fullPayload: {
+          // Standardized structure
+          context: {
+            type: "cloud-studio",
+          },
+          form,
+          engine: {
+            outputStatus: "pending",
+            rawOutput: null,
+            scores: null,
+            axiomScores: null,
+            roadmap: null,
+          },
+          infrastructure: {},
+          metadata: {
+            serviceType,
+          },
+          // Legacy keys (preserved for backward compatibility)
           serviceType,
           form,
           tier,

@@ -13,6 +13,7 @@ import {
   UserIcon,
 } from "@heroicons/react/24/outline";
 import { Navigation } from "@/components/Navigation";
+import { AxiomButton } from "@/components/axiom-ui/AxiomButton";
 import { CLOUD_STUDIO_SERVICE_TYPES, CLOUD_STUDIO_TIERS } from "@/lib/cloudStudio/types";
 
 const SERVICE_OPTIONS: { id: (typeof CLOUD_STUDIO_SERVICE_TYPES)[number]; label: string; icon: React.ElementType }[] = [
@@ -94,45 +95,43 @@ export default function CloudStudioPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
+    <div className="axiom-page min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
       <Navigation />
-      <main className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <Link
-          href="/"
-          className="inline-flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 mb-8"
-        >
-          <ArrowLeftIcon className="h-4 w-4" />
-          Back to Home
-        </Link>
-        <div className="mb-6 rounded-2xl border border-indigo-200 dark:border-indigo-800 bg-indigo-50/60 dark:bg-indigo-900/30 p-4">
-          <p className="text-xs font-semibold text-indigo-900 dark:text-indigo-100 mb-2">
-            Cloud Studio is legacy service-mode analysis.
-          </p>
-          <p className="text-xs text-indigo-900/80 dark:text-indigo-200 mb-3">
-            For full Infrastructure Advantage Model™ scoring and a 30-day roadmap, use Axiom.
-          </p>
+      <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-20">
+        <div className="max-w-3xl mx-auto">
           <Link
-            href="/cloud-operator"
-            className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-indigo-700"
+            href="/"
+            className="inline-flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 mb-8"
           >
-            Run Axiom
-            <ArrowLeftIcon className="h-3 w-3 rotate-180" />
+            <ArrowLeftIcon className="h-4 w-4" />
+            Back to Home
           </Link>
-        </div>
-        <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-700 p-8">
-          <header className="mb-8 text-center">
-            <div className="inline-flex items-center justify-center rounded-full bg-indigo-100 dark:bg-indigo-900/40 px-4 py-2 text-xs font-semibold text-indigo-700 dark:text-indigo-300 mb-4">
-              AI Cloud Studio
-            </div>
-            <h1 className="text-3xl font-bold text-slate-900 dark:text-slate-100 mb-2">
-              Cloud automation, designed by AI
-            </h1>
-            <p className="text-slate-600 dark:text-slate-400">
-              Get CI/CD, cost optimization, security, architecture, or networking blueprints. No auto-execution—review and request implementation when ready.
+          <div className="mb-6 rounded-2xl border border-indigo-200 dark:border-indigo-800 bg-indigo-50/60 dark:bg-indigo-900/30 p-4">
+            <p className="text-xs font-semibold text-indigo-900 dark:text-indigo-100 mb-1">
+              Cloud Studio is legacy, human-guided analysis.
             </p>
-          </header>
+            <p className="text-xs text-indigo-900/80 dark:text-indigo-200 mb-3">
+              For full scoring and a 30-day roadmap, run Axiom first.
+            </p>
+            <AxiomButton href="/cloud-operator" variant="primary" className="text-xs px-3 py-1.5">
+              Run Axiom
+              <ArrowLeftIcon className="h-3 w-3 rotate-180" />
+            </AxiomButton>
+          </div>
+          <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-700 p-8">
+            <header className="mb-8 text-center">
+              <div className="inline-flex items-center justify-center rounded-full bg-indigo-100 dark:bg-indigo-900/40 px-4 py-2 text-xs font-semibold text-indigo-700 dark:text-indigo-300 mb-4">
+                AI Cloud Studio
+              </div>
+              <h1 className="axiom-heading-xl text-3xl md:text-4xl font-extrabold text-slate-900 dark:text-slate-100 mb-2">
+                Cloud Studio
+              </h1>
+              <p className="text-sm text-slate-600 dark:text-slate-400">
+                One-off CI/CD, cost, security, architecture, or networking blueprints you review before any changes.
+              </p>
+            </header>
 
-          <form onSubmit={handleSubmit} className="space-y-6">
+            <form onSubmit={handleSubmit} className="space-y-6">
             <div>
               <label className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-2 block">
                 Service type
@@ -369,21 +368,22 @@ export default function CloudStudioPage() {
               </div>
             )}
 
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full rounded-xl bg-indigo-600 py-3 font-semibold text-white hover:bg-indigo-700 disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-            >
-              {loading ? (
-                <>
-                  <span className="h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent" />
-                  Submitting...
-                </>
-              ) : (
-                "Generate AI output"
-              )}
-            </button>
-          </form>
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full rounded-xl bg-indigo-600 py-3 font-semibold text-white hover:bg-indigo-700 disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              >
+                {loading ? (
+                  <>
+                    <span className="h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                    Submitting...
+                  </>
+                ) : (
+                  "Generate AI output"
+                )}
+              </button>
+            </form>
+          </div>
         </div>
       </main>
     </div>
