@@ -5,27 +5,11 @@ import {
   sendLeadConfirmationEmail,
   sendLeadInternalNotification,
 } from "@/lib/leads/leadEmailService";
-import { generateWebsiteStarterPackage } from "@/lib/leads/aiWebsiteStarter";
+import { createStarterToken } from "@/lib/leads/starterToken";
 import { checkLeadsRateLimit, getClientIp } from "@/lib/leads/rateLimit";
 import { prisma } from "@/lib/db";
 
 const MIN_COMPLETION_MS = 10_000; // 10 seconds minimum
-
-async function triggerAiStarterPackage(leadId: string, data: Record<string, unknown>) {
-  try {
-    const pkg = await generateWebsiteStarterPackage(data as Parameters<typeof generateWebsiteStarterPackage>[0]);
-    const fullPayload = (await prisma.lead.findUnique({ where: { id: leadId }, select: { fullPayload: true } }))
-      ?.fullPayload as Record<string, unknown> | null;
-    const merged = { ...fullPayload, aiStarterPackage: pkg, aiStarterError: false };
-    await prisma.lead.update({ where: { id: leadId }, data: { fullPayload: merged } });
-  } catch (e) {
-    console.warn("[Leads API] AI Starter Package generation failed:", e instanceof Error ? e.message : String(e));
-    const fullPayload = (await prisma.lead.findUnique({ where: { id: leadId }, select: { fullPayload: true } }))
-      ?.fullPayload as Record<string, unknown> | null;
-    const merged = { ...fullPayload, aiStarterError: true };
-    await prisma.lead.update({ where: { id: leadId }, data: { fullPayload: merged } });
-  }
-}
 
 export async function POST(req: NextRequest) {
   let body: unknown;
@@ -88,10 +72,18 @@ export async function POST(req: NextRequest) {
       },
     });
 
+    // Token for secure starter package access (AI generation via POST /starter/generate)
+    let starterToken: string | undefined;
+    try {
+      starterToken = createStarterToken(lead.id);
+    } catch (e) {
+      console.warn("[Leads API] STARTER_TOKEN_SECRET not set, starter access disabled");
+    }
+
     // Emails never block success — send in background, log failures safely
     try {
       const [confirmOk, notifyOk] = await Promise.all([
-        sendLeadConfirmationEmail(data, estimate, lead.id),
+        sendLeadConfirmationEmail(data, estimate, lead.id, starterToken),
         sendLeadInternalNotification(data, estimate),
       ]);
       if (!confirmOk) console.warn("[Leads API] Confirmation email failed (lead saved)");
@@ -100,12 +92,10 @@ export async function POST(req: NextRequest) {
       console.warn("[Leads API] Email send error (lead saved):", emailErr instanceof Error ? emailErr.message : String(emailErr));
     }
 
-    // Non-blocking: trigger AI Starter Package generation (fire-and-forget)
-    triggerAiStarterPackage(lead.id, data as Record<string, unknown>).catch(() => {});
-
     return NextResponse.json({
       success: true,
       leadId: lead.id,
+      starterToken: starterToken ?? undefined,
       estimate: { min: estimate.min, max: estimate.max, breakdown: estimate.breakdown },
     }, { headers: { "X-RateLimit-Remaining": String(remaining) } });
   } catch (e) {
