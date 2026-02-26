@@ -15,6 +15,7 @@ import {
   QuestionMarkCircleIcon,
 } from "@heroicons/react/24/outline";
 import { Navigation } from "@/components/Navigation";
+import { BackgroundBlobs } from "@/components/BackgroundBlobs";
 
 type WebsitePlan = {
   sections: { id: string; name: string; description: string }[];
@@ -121,7 +122,8 @@ export default function WebsiteBuilderPage() {
 
   // Huly-inspired: generous white space, vibrant gradients, rounded-3xl, clean typography
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-violet-50/40 to-fuchsia-50/30 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-violet-50/40 to-fuchsia-50/30 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 relative">
+      <BackgroundBlobs />
       <Navigation />
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-20">
         <Link

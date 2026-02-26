@@ -12,6 +12,8 @@ import {
 } from "@heroicons/react/24/outline";
 import { Navigation } from "../components/Navigation";
 import { EnterpriseTrustSignals } from "@/components/EnterpriseTrustSignals";
+import { AnimateOnScroll } from "@/components/AnimateOnScroll";
+import { BackgroundBlobs } from "@/components/BackgroundBlobs";
 
 export default function Home() {
 
@@ -74,11 +76,12 @@ export default function Home() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-violet-50/40 to-fuchsia-50/30 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-violet-50/40 to-fuchsia-50/30 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 relative">
+      <BackgroundBlobs />
       <Navigation />
 
       {/* Hero Section */}
-      <section className="pt-32 pb-16 px-4 sm:px-6 lg:px-8">
+      <section className="pt-32 pb-16 px-4 sm:px-6 lg:px-8 relative">
         <div className="max-w-4xl mx-auto text-center">
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-4 leading-tight text-slate-900 dark:text-slate-100">
             Axiom — Infrastructure Intelligence
@@ -89,14 +92,14 @@ export default function Home() {
           <div className="flex flex-wrap justify-center gap-4 mb-6">
             <Link
               href="/cloud-operator"
-              className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white rounded-2xl font-semibold shadow-lg shadow-violet-500/30 hover:shadow-violet-500/40 hover:-translate-y-0.5 transition-all"
+              className="btn-huly inline-flex items-center px-6 py-3 bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white rounded-2xl font-semibold shadow-lg shadow-violet-500/30 hover:shadow-violet-500/40"
             >
               Run Axiom Analysis
               <ArrowRightIcon className="ml-2 h-5 w-5" />
             </Link>
             <Link
               href="/contact"
-              className="inline-flex items-center px-6 py-3 bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 rounded-2xl font-semibold shadow-lg hover:bg-slate-800 dark:hover:bg-slate-200 transition-colors"
+              className="btn-huly inline-flex items-center px-6 py-3 bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 rounded-2xl font-semibold shadow-lg hover:bg-slate-800 dark:hover:bg-slate-200"
             >
               Talk to an Architect
               <ArrowRightIcon className="ml-2 h-5 w-5" />
@@ -137,7 +140,8 @@ export default function Home() {
       <EnterpriseTrustSignals />
 
       {/* AI Capabilities — production-grade AI positioning */}
-      <section className="py-16 px-4 sm:px-6 lg:px-8 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-700">
+      <AnimateOnScroll>
+        <section className="py-16 px-4 sm:px-6 lg:px-8 bg-white/60 dark:bg-slate-900/80 backdrop-blur border-t border-slate-200/80 dark:border-slate-700/80">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-12">
             <h2 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-slate-100 mb-3">
@@ -148,27 +152,27 @@ export default function Home() {
             </p>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 text-center mb-10">
-            <div className="rounded-2xl p-4 bg-white/80 dark:bg-slate-800/60 backdrop-blur border-2 border-slate-200/80 dark:border-slate-700/80 shadow-sm">
+            <div className="card-hover rounded-2xl p-4 bg-white/80 dark:bg-slate-800/60 backdrop-blur border-2 border-slate-200/80 dark:border-slate-700/80 shadow-sm">
               <div className="text-lg font-bold text-slate-900 dark:text-slate-100">Internal AI</div>
               <div className="text-xs text-slate-600 dark:text-slate-400">Knowledge copilots</div>
             </div>
-            <div className="rounded-2xl p-4 bg-white/80 dark:bg-slate-800/60 backdrop-blur border-2 border-slate-200/80 dark:border-slate-700/80 shadow-sm">
+            <div className="card-hover rounded-2xl p-4 bg-white/80 dark:bg-slate-800/60 backdrop-blur border-2 border-slate-200/80 dark:border-slate-700/80 shadow-sm">
               <div className="text-lg font-bold text-slate-900 dark:text-slate-100">RAG</div>
               <div className="text-xs text-slate-600 dark:text-slate-400">Vector search & retrieval</div>
             </div>
-            <div className="rounded-2xl p-4 bg-white/80 dark:bg-slate-800/60 backdrop-blur border-2 border-slate-200/80 dark:border-slate-700/80 shadow-sm">
+            <div className="card-hover rounded-2xl p-4 bg-white/80 dark:bg-slate-800/60 backdrop-blur border-2 border-slate-200/80 dark:border-slate-700/80 shadow-sm">
               <div className="text-lg font-bold text-slate-900 dark:text-slate-100">Automation</div>
               <div className="text-xs text-slate-600 dark:text-slate-400">Workflow & classification</div>
             </div>
-            <div className="rounded-2xl p-4 bg-white/80 dark:bg-slate-800/60 backdrop-blur border-2 border-slate-200/80 dark:border-slate-700/80 shadow-sm">
+            <div className="card-hover rounded-2xl p-4 bg-white/80 dark:bg-slate-800/60 backdrop-blur border-2 border-slate-200/80 dark:border-slate-700/80 shadow-sm">
               <div className="text-lg font-bold text-slate-900 dark:text-slate-100">Extraction</div>
               <div className="text-xs text-slate-600 dark:text-slate-400">Docs, forms, invoices</div>
             </div>
-            <div className="rounded-2xl p-4 bg-white/80 dark:bg-slate-800/60 backdrop-blur border-2 border-slate-200/80 dark:border-slate-700/80 shadow-sm">
+            <div className="card-hover rounded-2xl p-4 bg-white/80 dark:bg-slate-800/60 backdrop-blur border-2 border-slate-200/80 dark:border-slate-700/80 shadow-sm">
               <div className="text-lg font-bold text-slate-900 dark:text-slate-100">Governance</div>
               <div className="text-xs text-slate-600 dark:text-slate-400">Security & cost controls</div>
             </div>
-            <div className="rounded-2xl p-4 bg-white/80 dark:bg-slate-800/60 backdrop-blur border-2 border-slate-200/80 dark:border-slate-700/80 shadow-sm">
+            <div className="card-hover rounded-2xl p-4 bg-white/80 dark:bg-slate-800/60 backdrop-blur border-2 border-slate-200/80 dark:border-slate-700/80 shadow-sm">
               <div className="text-lg font-bold text-slate-900 dark:text-slate-100">AWS · Azure · GCP</div>
               <div className="text-xs text-slate-600 dark:text-slate-400">Your cloud, your data</div>
             </div>
@@ -225,7 +229,7 @@ export default function Home() {
             </p>
           </div>
           <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-            <div className="rounded-3xl border-2 border-slate-200/80 dark:border-slate-700/80 bg-white/80 dark:bg-slate-800/80 backdrop-blur p-6 shadow-lg shadow-slate-200/30 dark:shadow-none hover:shadow-xl hover:shadow-violet-500/5 transition-shadow">
+            <div className="card-hover rounded-3xl border-2 border-slate-200/80 dark:border-slate-700/80 bg-white/80 dark:bg-slate-800/80 backdrop-blur p-6 shadow-lg shadow-slate-200/30 dark:shadow-none">
               <div>
                 <div className="inline-flex items-center px-3 py-1 rounded-full bg-orange-200 dark:bg-orange-900/50 text-orange-800 dark:text-orange-300 text-xs font-bold mb-4">
                   AWS
@@ -259,7 +263,7 @@ export default function Home() {
                 </Link>
               </div>
             </div>
-            <div className="rounded-3xl border-2 border-slate-200/80 dark:border-slate-700/80 bg-white/80 dark:bg-slate-800/80 backdrop-blur p-6 shadow-lg shadow-slate-200/30 dark:shadow-none hover:shadow-xl hover:shadow-violet-500/5 transition-shadow">
+            <div className="card-hover rounded-3xl border-2 border-slate-200/80 dark:border-slate-700/80 bg-white/80 dark:bg-slate-800/80 backdrop-blur p-6 shadow-lg shadow-slate-200/30 dark:shadow-none">
               <div>
                 <div className="inline-flex items-center px-3 py-1 rounded-full bg-blue-200 dark:bg-blue-900/50 text-blue-800 dark:text-blue-300 text-xs font-bold mb-4">
                   AZURE
@@ -293,7 +297,7 @@ export default function Home() {
                 </Link>
               </div>
             </div>
-            <div className="rounded-3xl border-2 border-slate-200/80 dark:border-slate-700/80 bg-white/80 dark:bg-slate-800/80 backdrop-blur p-6 shadow-lg shadow-slate-200/30 dark:shadow-none hover:shadow-xl hover:shadow-violet-500/5 transition-shadow">
+            <div className="card-hover rounded-3xl border-2 border-slate-200/80 dark:border-slate-700/80 bg-white/80 dark:bg-slate-800/80 backdrop-blur p-6 shadow-lg shadow-slate-200/30 dark:shadow-none">
               <div>
                 <div className="inline-flex items-center px-3 py-1 rounded-full bg-red-200 dark:bg-red-900/50 text-red-800 dark:text-red-300 text-xs font-bold mb-4">
                   GCP
@@ -501,22 +505,22 @@ export default function Home() {
               </div>
             </div>
             <div className="grid grid-cols-2 gap-4">
-              <div className="rounded-3xl border-2 border-slate-200/80 dark:border-slate-700/80 bg-white/80 dark:bg-slate-800/80 backdrop-blur p-6 shadow-lg shadow-slate-200/30 dark:shadow-none hover:shadow-xl hover:shadow-violet-500/5 transition-shadow">
+              <div className="card-hover rounded-3xl border-2 border-slate-200/80 dark:border-slate-700/80 bg-white/80 dark:bg-slate-800/80 backdrop-blur p-6 shadow-lg shadow-slate-200/30 dark:shadow-none">
                 <SparklesIcon className="h-7 w-7 text-slate-600 dark:text-slate-400 mb-3" />
                 <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100 mb-1">Proven patterns</h3>
                 <p className="text-sm text-slate-600 dark:text-slate-400">We use established practices, not unproven trends.</p>
               </div>
-              <div className="rounded-3xl border-2 border-slate-200/80 dark:border-slate-700/80 bg-white/80 dark:bg-slate-800/80 backdrop-blur p-6 shadow-lg shadow-slate-200/30 dark:shadow-none hover:shadow-xl hover:shadow-violet-500/5 transition-shadow">
+              <div className="card-hover rounded-3xl border-2 border-slate-200/80 dark:border-slate-700/80 bg-white/80 dark:bg-slate-800/80 backdrop-blur p-6 shadow-lg shadow-slate-200/30 dark:shadow-none">
                 <CheckBadgeIcon className="h-7 w-7 text-slate-600 dark:text-slate-400 mb-3" />
                 <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100 mb-1">Production-ready</h3>
                 <p className="text-sm text-slate-600 dark:text-slate-400">Code and infrastructure built to run in production.</p>
               </div>
-              <div className="rounded-3xl border-2 border-slate-200/80 dark:border-slate-700/80 bg-white/80 dark:bg-slate-800/80 backdrop-blur p-6 shadow-lg shadow-slate-200/30 dark:shadow-none hover:shadow-xl hover:shadow-violet-500/5 transition-shadow">
+              <div className="card-hover rounded-3xl border-2 border-slate-200/80 dark:border-slate-700/80 bg-white/80 dark:bg-slate-800/80 backdrop-blur p-6 shadow-lg shadow-slate-200/30 dark:shadow-none">
                 <RocketLaunchIcon className="h-7 w-7 text-slate-600 dark:text-slate-400 mb-3" />
                 <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100 mb-1">Automation</h3>
                 <p className="text-sm text-slate-600 dark:text-slate-400">Pipelines and IaC to ship faster and safer.</p>
               </div>
-              <div className="rounded-3xl border-2 border-slate-200/80 dark:border-slate-700/80 bg-white/80 dark:bg-slate-800/80 backdrop-blur p-6 shadow-lg shadow-slate-200/30 dark:shadow-none hover:shadow-xl hover:shadow-violet-500/5 transition-shadow">
+              <div className="card-hover rounded-3xl border-2 border-slate-200/80 dark:border-slate-700/80 bg-white/80 dark:bg-slate-800/80 backdrop-blur p-6 shadow-lg shadow-slate-200/30 dark:shadow-none">
                 <ShieldCheckIcon className="h-7 w-7 text-slate-600 dark:text-slate-400 mb-3" />
                 <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100 mb-1">Security by design</h3>
                 <p className="text-sm text-slate-600 dark:text-slate-400">Access control and governance built in from the start.</p>

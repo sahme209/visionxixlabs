@@ -38,6 +38,7 @@ import { FAQAccordion } from "@/components/FAQAccordion";
 import { CloudProviderTabs } from "@/components/CloudProviderTabs";
 import { CTASection } from "@/components/CTASection";
 import { Navigation } from "@/components/Navigation";
+import { BackgroundBlobs } from "@/components/BackgroundBlobs";
 import { TechnicalSection } from "@/components/TechnicalSection";
 import { DeliverableList } from "@/components/DeliverableList";
 import { ArchitectureBlock } from "@/components/ArchitectureBlock";
@@ -76,7 +77,8 @@ export const metadata: Metadata = {
 
 export default function CloudSolutionsPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-violet-50/40 to-fuchsia-50/30 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-violet-50/40 to-fuchsia-50/30 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 relative">
+      <BackgroundBlobs />
       <Navigation />
       <main className="pt-24 pb-24 px-4 sm:px-6 lg:px-8">
         <div className="max-w-6xl mx-auto">
@@ -89,7 +91,7 @@ export default function CloudSolutionsPage() {
               <li>
                 <Link
                   href="/"
-                  className="hover:text-indigo-600 dark:hover:text-indigo-400"
+                  className="hover:text-violet-600 dark:hover:text-violet-400"
                 >
                   Home
                 </Link>
@@ -226,19 +228,19 @@ export default function CloudSolutionsPage() {
             <div className="mt-4 flex flex-wrap justify-center gap-4 text-xs text-slate-600 dark:text-slate-400">
               <Link
                 href="/cloud-solutions/aws"
-                className="underline underline-offset-4 hover:text-indigo-600 dark:hover:text-indigo-400"
+                className="underline underline-offset-4 hover:text-violet-600 dark:hover:text-violet-400"
               >
                 View AWS Cloud Solutions
               </Link>
               <Link
                 href="/cloud-solutions/azure"
-                className="underline underline-offset-4 hover:text-indigo-600 dark:hover:text-indigo-400"
+                className="underline underline-offset-4 hover:text-violet-600 dark:hover:text-violet-400"
               >
                 View Azure Cloud Solutions
               </Link>
               <Link
                 href="/cloud-solutions/gcp"
-                className="underline underline-offset-4 hover:text-indigo-600 dark:hover:text-indigo-400"
+                className="underline underline-offset-4 hover:text-violet-600 dark:hover:text-violet-400"
               >
                 View GCP Cloud Solutions
               </Link>
