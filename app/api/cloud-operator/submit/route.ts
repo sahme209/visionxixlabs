@@ -82,6 +82,11 @@ export async function POST(req: NextRequest) {
         status: "created",
         fullPayload: {
           operatorProfile: rawProfile,
+          // AxiomProfile – normalized wrapper for future meta-engine use.
+          axiomProfile: {
+            ...rawProfile,
+            contextType: "operator",
+          },
           tier,
           operatorOutput: null,
           outputStatus: "pending",

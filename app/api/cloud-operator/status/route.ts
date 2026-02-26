@@ -62,6 +62,45 @@ export async function GET(req: NextRequest) {
       | null
       | undefined;
 
+    const rawAxiomResult = payload.axiomResult as
+      | (import("@/lib/axiom/infrastructureAdvantage").AxiomResult | import("@/lib/axiom/infrastructureAdvantage").ThirtyDayPlan)
+      | null
+      | undefined;
+
+    const axiomScoresExplicit = (payload.axiomScores as
+      | {
+          infrastructureScore: number;
+          estimatedAnnualSavings: number | null;
+          riskExposureLevel: string;
+          deploymentFrictionIndex: number;
+          complexityTier: string;
+        }
+      | null
+      | undefined) || null;
+
+    const axiomPlanExplicit = payload.axiomPlan as
+      | import("@/lib/axiom/infrastructureAdvantage").ThirtyDayPlan
+      | null
+      | undefined;
+
+    let axiomScores =
+      axiomScoresExplicit ||
+      (rawAxiomResult && "scores" in rawAxiomResult
+        ? {
+            infrastructureScore: rawAxiomResult.scores.infrastructureScore,
+            estimatedAnnualSavings: rawAxiomResult.scores.estimatedAnnualSavings,
+            riskExposureLevel: rawAxiomResult.scores.riskExposureLevel,
+            deploymentFrictionIndex: rawAxiomResult.scores.deploymentFrictionIndex,
+            complexityTier: rawAxiomResult.scores.complexityTier,
+          }
+        : null);
+
+    const axiomPlan =
+      axiomPlanExplicit ||
+      (rawAxiomResult && "plan" in rawAxiomResult
+        ? rawAxiomResult.plan
+        : (rawAxiomResult as import("@/lib/axiom/infrastructureAdvantage").ThirtyDayPlan | null | undefined) || null);
+
     const scores = operatorOutput?.scores || null;
 
     const response: Record<string, unknown> = {
@@ -82,10 +121,25 @@ export async function GET(req: NextRequest) {
         scores?.estimatedAnnualSavings ??
         operatorOutput?.optimize?.estimatedAnnualSavings ??
         null,
+      // Axiom Executive Summary – always returned
+      infrastructureScore: axiomScores?.infrastructureScore ?? scores?.infrastructureReadinessScore ?? null,
+      axiomEstimatedAnnualSavings:
+        axiomScores?.estimatedAnnualSavings ??
+        scores?.estimatedAnnualSavings ??
+        operatorOutput?.optimize?.estimatedAnnualSavings ??
+        null,
+      riskExposureLevel: axiomScores?.riskExposureLevel ?? scores?.securityRiskLevel ?? null,
+      deploymentFrictionIndex: axiomScores?.deploymentFrictionIndex ?? null,
+      complexityTier: axiomScores?.complexityTier ?? scores?.architectureComplexityTier ?? null,
       recommendedImprovements: operatorOutput?.recommendedImprovements ?? [],
       businessImpactSummary: operatorOutput?.business?.businessImpactSummary ?? "",
       recommendedNextAction: operatorOutput?.business?.recommendedNextAction ?? "",
     };
+
+    // Tier-gated 30-Day roadmap exposure
+    if (axiomPlan && canViewTechnicalOutputs(tier)) {
+      response.axiomPlan = axiomPlan;
+    }
 
     if (operatorOutput && canViewTechnicalOutputs(tier)) {
       response.launch = operatorOutput.launch ?? null;

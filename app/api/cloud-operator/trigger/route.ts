@@ -5,6 +5,7 @@ import { checkRateLimit } from "@/lib/rateLimit";
 import { generateOperatorEngineOutput } from "@/lib/cloudOperator/generate";
 import { resolveOperatorTier } from "@/lib/cloudOperator/pricing";
 import type { OperatorProfile, OperatorTier } from "@/lib/cloudOperator/types";
+import { generateInfrastructureAdvantageModel } from "@/lib/axiom/infrastructureAdvantage";
 
 /**
  * POST /api/cloud-operator/trigger?token=XXX
@@ -86,11 +87,23 @@ export async function POST(req: NextRequest) {
 
     const operatorOutput = await generateOperatorEngineOutput(profile, tier);
 
+    const axiomProfile = {
+      ...profile,
+      contextType: "operator" as const,
+    };
+    const axiom = generateInfrastructureAdvantageModel(axiomProfile, operatorOutput.scores || null);
+
     const updatedPayload = {
       ...payload,
       operatorProfile: rawProfile,
       operatorOutput,
       operatorScores: operatorOutput.scores || null,
+      axiomProfile,
+      axiomScores: axiom.scores,
+      // Store full AxiomResult object for future use
+      axiomResult: axiom,
+      // Backwards-compatible plan field for older readers
+      axiomPlan: axiom.plan,
       outputStatus: "ready",
     };
 
@@ -107,6 +120,8 @@ export async function POST(req: NextRequest) {
       status: "ready",
       operatorOutput,
       operatorScores: operatorOutput.scores || null,
+      axiomScores: axiom.scores,
+      axiomResult: axiom,
     });
   } catch (e) {
     console.error("[cloud-operator trigger]", e);

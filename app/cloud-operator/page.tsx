@@ -24,6 +24,11 @@ type OperatorStatus = {
   ciCdMaturityScore?: number | null;
   architectureComplexity?: string | null;
   estimatedAnnualSavings?: number | null;
+  infrastructureScore?: number | null;
+  axiomEstimatedAnnualSavings?: number | null;
+  riskExposureLevel?: string | null;
+  deploymentFrictionIndex?: number | null;
+  complexityTier?: string | null;
   recommendedImprovements?: string[];
   businessImpactSummary?: string;
   recommendedNextAction?: string;
@@ -50,6 +55,47 @@ type OperatorStatus = {
     networkSegmentation?: string;
     hardeningChecklist?: string[];
     publicAttackSurfaceFindings?: string[];
+  } | null;
+  axiomPlan?: {
+    executiveSummary: {
+      infrastructureScore: number;
+      estimatedAnnualSavings: number | null;
+      riskExposureLevel: string;
+      complexityTier: string;
+      deploymentFrictionIndex: number;
+    };
+    prioritizedCategories: {
+      critical: { technicalAction: string; businessImpact: string; estimatedImprovementEffect: string }[];
+      highImpact: { technicalAction: string; businessImpact: string; estimatedImprovementEffect: string }[];
+      strategic: { technicalAction: string; businessImpact: string; estimatedImprovementEffect: string }[];
+      optimization: { technicalAction: string; businessImpact: string; estimatedImprovementEffect: string }[];
+    };
+    timeSequencedPlan: {
+      stabilization: {
+        label: string;
+        dayRange: string;
+        category: string;
+        tasks: { technicalAction: string; businessImpact: string; estimatedImprovementEffect: string }[];
+      };
+      costOptimization: {
+        label: string;
+        dayRange: string;
+        category: string;
+        tasks: { technicalAction: string; businessImpact: string; estimatedImprovementEffect: string }[];
+      };
+      deploymentAcceleration: {
+        label: string;
+        dayRange: string;
+        category: string;
+        tasks: { technicalAction: string; businessImpact: string; estimatedImprovementEffect: string }[];
+      };
+      scalabilityHardening: {
+        label: string;
+        dayRange: string;
+        category: string;
+        tasks: { technicalAction: string; businessImpact: string; estimatedImprovementEffect: string }[];
+      };
+    };
   } | null;
 };
 
@@ -207,6 +253,59 @@ export default function CloudOperatorPage() {
             deployment-ready configurations you can review and execute.
           </p>
         </section>
+
+        {inDashboard && status && (
+          <section className="mb-8">
+            <div className="grid md:grid-cols-5 gap-3">
+              <div className="rounded-xl bg-white dark:bg-slate-900 shadow border border-slate-200 dark:border-slate-700 p-4 text-center">
+                <p className="text-xs font-medium text-slate-500 uppercase tracking-wide">
+                  Infrastructure Score
+                </p>
+                <p className="mt-2 text-2xl font-extrabold text-indigo-600 dark:text-indigo-400">
+                  {status.infrastructureScore ?? status.infrastructureReadinessScore ?? "—"}
+                </p>
+              </div>
+              <div className="rounded-xl bg-white dark:bg-slate-900 shadow border border-slate-200 dark:border-slate-700 p-4 text-center">
+                <p className="text-xs font-medium text-slate-500 uppercase tracking-wide">
+                  Estimated Savings
+                </p>
+                <p className="mt-2 text-lg font-semibold text-slate-900 dark:text-slate-100">
+                  {status.axiomEstimatedAnnualSavings != null
+                    ? `$${status.axiomEstimatedAnnualSavings.toLocaleString()}`
+                    : status.estimatedAnnualSavings != null
+                    ? `$${status.estimatedAnnualSavings.toLocaleString()}`
+                    : "—"}
+                </p>
+              </div>
+              <div className="rounded-xl bg-white dark:bg-slate-900 shadow border border-slate-200 dark:border-slate-700 p-4 text-center">
+                <p className="text-xs font-medium text-slate-500 uppercase tracking-wide">
+                  Risk Level
+                </p>
+                <p className="mt-2 text-sm font-semibold text-slate-900 dark:text-slate-100">
+                  {status.riskExposureLevel ?? status.securityRiskLevel ?? "—"}
+                </p>
+              </div>
+              <div className="rounded-xl bg-white dark:bg-slate-900 shadow border border-slate-200 dark:border-slate-700 p-4 text-center">
+                <p className="text-xs font-medium text-slate-500 uppercase tracking-wide">
+                  Friction Index
+                </p>
+                <p className="mt-2 text-sm font-semibold text-slate-900 dark:text-slate-100">
+                  {status.deploymentFrictionIndex != null
+                    ? `${status.deploymentFrictionIndex}/100`
+                    : "—"}
+                </p>
+              </div>
+              <div className="rounded-xl bg-white dark:bg-slate-900 shadow border border-slate-200 dark:border-slate-700 p-4 text-center">
+                <p className="text-xs font-medium text-slate-500 uppercase tracking-wide">
+                  Complexity Tier
+                </p>
+                <p className="mt-2 text-sm font-semibold text-slate-900 dark:text-slate-100">
+                  {status.complexityTier ?? status.architectureComplexity ?? "—"}
+                </p>
+              </div>
+            </div>
+          </section>
+        )}
 
         {!inDashboard && (
           <section className="grid lg:grid-cols-3 gap-8 items-start">
@@ -638,6 +737,109 @@ export default function CloudOperatorPage() {
                 </div>
               </div>
             </div>
+
+            {status?.axiomPlan && (
+              <div className="rounded-2xl bg-white dark:bg-slate-900 shadow-xl border border-slate-200 dark:border-slate-700 p-6 md:p-8 space-y-6">
+                <div className="flex items-center justify-between mb-2">
+                  <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">
+                    30-Day Infrastructure Optimization Plan
+                  </h2>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">
+                    Structured by Axiom — Autonomous Infrastructure Intelligence Platform
+                  </p>
+                </div>
+
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/40 p-4">
+                    <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-2">
+                      Executive Summary
+                    </h3>
+                    <ul className="text-xs text-slate-700 dark:text-slate-300 space-y-1.5">
+                      <li>
+                        <span className="font-semibold">Infrastructure Score:</span>{" "}
+                        {status.axiomPlan.executiveSummary.infrastructureScore}
+                      </li>
+                      <li>
+                        <span className="font-semibold">Estimated Annual Savings:</span>{" "}
+                        {status.axiomPlan.executiveSummary.estimatedAnnualSavings != null
+                          ? `$${status.axiomPlan.executiveSummary.estimatedAnnualSavings.toLocaleString()}`
+                          : "—"}
+                      </li>
+                      <li>
+                        <span className="font-semibold">Risk Exposure Level:</span>{" "}
+                        {status.axiomPlan.executiveSummary.riskExposureLevel}
+                      </li>
+                      <li>
+                        <span className="font-semibold">Complexity Tier:</span>{" "}
+                        {status.axiomPlan.executiveSummary.complexityTier}
+                      </li>
+                      <li>
+                        <span className="font-semibold">Deployment Friction Index:</span>{" "}
+                        {status.axiomPlan.executiveSummary.deploymentFrictionIndex}
+                      </li>
+                    </ul>
+                  </div>
+
+                  <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/40 p-4">
+                    <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-2">
+                      Prioritized Categories
+                    </h3>
+                    <div className="grid grid-cols-2 gap-2 text-xs text-slate-700 dark:text-slate-300">
+                      <div>
+                        <p className="font-semibold mb-1">Critical</p>
+                        <ul className="space-y-1">
+                          {status.axiomPlan.prioritizedCategories.critical.map((task, idx) => (
+                            <li key={`critical-${idx}`}>{task.technicalAction}</li>
+                          ))}
+                        </ul>
+                      </div>
+                      <div>
+                        <p className="font-semibold mb-1">High Impact</p>
+                        <ul className="space-y-1">
+                          {status.axiomPlan.prioritizedCategories.highImpact.map((task, idx) => (
+                            <li key={`high-${idx}`}>{task.technicalAction}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="grid md:grid-cols-2 gap-4">
+                  {[
+                    status.axiomPlan.timeSequencedPlan.stabilization,
+                    status.axiomPlan.timeSequencedPlan.costOptimization,
+                    status.axiomPlan.timeSequencedPlan.deploymentAcceleration,
+                    status.axiomPlan.timeSequencedPlan.scalabilityHardening,
+                  ].map((phase) => (
+                    <div
+                      key={phase.label}
+                      className="rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/40 p-4"
+                    >
+                      <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-1">
+                        {phase.label}
+                      </h3>
+                      <p className="text-[11px] text-slate-500 dark:text-slate-400 mb-2">
+                        Days {phase.dayRange} · {phase.category}
+                      </p>
+                      <ul className="space-y-2 text-xs text-slate-700 dark:text-slate-300">
+                        {phase.tasks.map((task, idx) => (
+                          <li key={`${phase.label}-${idx}`} className="border-l border-slate-300 dark:border-slate-600 pl-2">
+                            <p className="font-semibold">{task.technicalAction}</p>
+                            <p className="text-slate-600 dark:text-slate-400">
+                              {task.businessImpact}
+                            </p>
+                            <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                              Effect: {task.estimatedImprovementEffect}
+                            </p>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
 
             <div className="grid lg:grid-cols-3 gap-6">
               <div className="lg:col-span-2 space-y-4">
