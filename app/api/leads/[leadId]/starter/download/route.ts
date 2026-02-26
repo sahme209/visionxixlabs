@@ -35,7 +35,7 @@ export async function GET(
       );
     }
 
-    const businessName = (payload?.businessName as string) || lead.name;
+    const businessName = (payload?.businessName as string) || lead.name || "";
     const markdown = aiStarterToMarkdown(pkg, businessName);
     const filename = `website-starter-${leadId.slice(0, 8)}.md`;
 
