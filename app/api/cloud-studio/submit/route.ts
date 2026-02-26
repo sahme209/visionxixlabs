@@ -72,7 +72,7 @@ export async function POST(req: NextRequest) {
           tier,
           output: null,
           outputStatus: "pending",
-        },
+        } as object,
       },
     });
 
