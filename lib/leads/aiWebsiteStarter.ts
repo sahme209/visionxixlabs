@@ -116,14 +116,15 @@ async function callGemini(prompt: string): Promise<string> {
   if (!apiKey?.trim()) throw new Error("GEMINI_API_KEY not set");
 
   const ai = new GoogleGenAI({ apiKey });
-  const model = ai.getGenerativeModel({
+  const fullPrompt = `${SYSTEM_PROMPT}\n\n---\n\n${prompt}`;
+
+  const response = await ai.models.generateContent({
     model: process.env.GEMINI_MODEL || "gemini-2.0-flash",
-    generationConfig: { responseMimeType: "application/json" },
+    contents: fullPrompt,
+    config: { responseMimeType: "application/json" },
   });
 
-  const result = await model.generateContent([SYSTEM_PROMPT, prompt].join("\n\n---\n\n"));
-  const response = result.response;
-  const text = response.text?.()?.trim() ?? "";
+  const text = (response.text ?? "").trim();
   if (!text) throw new Error("Empty Gemini response");
   return text;
 }
