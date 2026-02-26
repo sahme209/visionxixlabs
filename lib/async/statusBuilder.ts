@@ -292,9 +292,12 @@ export function buildEngineStatusResponse({
   const revisionCount = (payload.revisionCount as number) || 0;
   const revisionsRemaining = tierConfig > 0 ? Math.max(0, tierConfig - revisionCount) : null;
 
+  const deployStatus = payload.deployStatus as string | undefined;
+
   return {
     outputStatus,
     previewUrl: previewUrl || null,
+    deployStatus: deployStatus || null,
     packageReady:
       lead.status === "package_ready" ||
       lead.status === "deploy_ready" ||

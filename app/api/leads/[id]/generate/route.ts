@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
-import { generateAIStarterPackage } from "@/lib/aiWebsiteStarter";
+import { generateWebsiteStarter } from "@/lib/websiteStarter/engine";
 
 /**
  * POST /api/leads/[id]/generate — Trigger AI package generation.
@@ -26,15 +26,21 @@ export async function POST(
     const payload = (lead.fullPayload as Record<string, unknown>) || {};
     const form = (payload.form as Record<string, unknown>) || {};
 
-    const pkg = await generateAIStarterPackage({
-      name: form.name as string,
-      email: form.email as string,
-      company: form.company as string,
-      message: form.message as string,
-      industry: form.industry as string,
-      hasDomain: form.hasDomain as boolean,
-      domainName: form.domainName as string,
-    });
+    const pkg = await generateWebsiteStarter(
+      {
+        variant: "simple",
+        form: {
+          name: form.name as string,
+          email: form.email as string,
+          company: form.company as string,
+          message: form.message as string,
+          industry: form.industry as string,
+          hasDomain: form.hasDomain as boolean,
+          domainName: form.domainName as string,
+        },
+      },
+      "free"
+    );
 
     const updatedPayload = { ...payload, aiPackage: pkg };
 
@@ -42,7 +48,7 @@ export async function POST(
       where: { id },
       data: {
         status: "package_ready",
-        fullPayload: updatedPayload,
+        fullPayload: updatedPayload as object,
       },
     });
 

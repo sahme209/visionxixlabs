@@ -61,6 +61,9 @@ model Lead {
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 
+  AxiomScoreSnapshots  AxiomScoreSnapshot[]
+  RecurringAnalyses    RecurringAnalysis[]
+
   @@index([source])
   @@index([status])
   @@index([createdAt])
@@ -69,9 +72,11 @@ model Lead {
 
 // Phase 4: Axiom score snapshots for persistent trend history
 // Phase 7: scoringVersion for audit and compliance
+// Structural Stabilization: FK to Lead with onDelete Cascade
 model AxiomScoreSnapshot {
   id        String   @id @default(cuid())
   leadId    String
+  lead      Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
 
   tier   String
@@ -103,9 +108,11 @@ model SalesPipelineSnapshot {
 }
 
 // Phase 8: Recurring analysis for Growth+/Enterprise
+// Structural Stabilization: FK to Lead with onDelete Cascade
 model RecurringAnalysis {
   id         String   @id @default(cuid())
   leadId     String
+  lead       Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
   frequency  String   // "weekly" | "monthly"
   lastRunAt  DateTime?
   nextRunAt  DateTime

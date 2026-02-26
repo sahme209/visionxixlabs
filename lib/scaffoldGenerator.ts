@@ -1,4 +1,4 @@
-import type { AIStarterPackage } from "./aiWebsiteStarter";
+import type { AIStarterPackage } from "@/lib/websiteStarter/engine";
 
 export type GeneratedFile = { path: string; content: string };
 

@@ -1,6 +1,9 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  async redirects() {
+    return [{ source: "/cloud-review", destination: "/free-review", permanent: true }];
+  },
   images: {
     unoptimized: false,
     remotePatterns: [],

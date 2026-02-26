@@ -985,14 +985,14 @@ function CloudOperatorPageInner() {
                   Autopilot Mode: Generates step-by-step playbooks and validated configs. Execution
                   requires your approval.
                 </p>
-                <button
-                  type="button"
-                  disabled
-                  className="inline-flex items-center gap-2 rounded-xl border border-slate-700 bg-slate-800 px-3 py-1.5 text-[11px] text-slate-300 cursor-not-allowed"
+                <Link
+                  href="/contact?subject=Request+Implementation+Support"
+                  className="inline-flex items-center gap-2 rounded-xl border border-slate-600 bg-slate-800 px-3 py-1.5 text-[11px] text-slate-200 hover:bg-slate-700 hover:text-white transition-colors"
+                  title="Autopilot execution coming soon. Request implementation support today."
                 >
                   <BoltIcon className="h-3 w-3 text-amber-400" />
-                  Execute with Operator (coming soon)
-                </button>
+                  Request implementation support
+                </Link>
               </AxiomCard>
             </aside>
           </section>

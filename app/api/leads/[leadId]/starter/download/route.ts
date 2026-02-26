@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { verifyStarterToken } from "@/lib/leads/starterToken";
-import { aiStarterToMarkdown } from "@/lib/leads/aiWebsiteStarter";
-import type { AiStarterPackage } from "@/lib/leads/aiWebsiteStarter";
+import { aiStarterToMarkdown } from "@/lib/websiteStarter/engine";
+import type { AiStarterPackage } from "@/lib/websiteStarter/engine";
 
 /**
  * GET /api/leads/[leadId]/starter/download?token=...

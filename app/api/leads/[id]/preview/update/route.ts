@@ -2,9 +2,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { verifyStarterToken } from "@/lib/starterToken";
 import { checkRateLimit } from "@/lib/rateLimit";
-import { generateAIStarterPackageWithChanges } from "@/lib/aiWebsiteStarter";
+import { generateWebsiteStarterWithChanges } from "@/lib/websiteStarter/engine";
 import { deployPreview } from "@/lib/previewDeploy";
-import type { AIStarterPackage } from "@/lib/aiWebsiteStarter";
+import type { AIStarterPackage } from "@/lib/websiteStarter/engine";
 import { WEBSITE_BUILD_TIERS, resolveTier } from "@/lib/websiteBuildPricing";
 
 /**
@@ -91,7 +91,7 @@ export async function POST(
       hasDomain: form.hasDomain as boolean,
       domainName: form.domainName as string,
     };
-    const updatedPkg = await generateAIStarterPackageWithChanges(pkg, formData, changeRequest);
+    const updatedPkg = await generateWebsiteStarterWithChanges(pkg, formData, changeRequest);
 
     const projectName = `preview-${id.slice(-8)}`;
     const deployResult = await deployPreview(updatedPkg, projectName);

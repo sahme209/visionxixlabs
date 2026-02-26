@@ -19,27 +19,44 @@ type EventPayload = {
   leadId?: string;
   engineName?: string;
   tier?: string;
+  unifiedTier?: string;
+  scoringVersion?: string;
   [key: string]: unknown;
 };
 
 function emit(event: EventPayload): void {
   const line = JSON.stringify(event);
   console.info(line);
-  // Optional: OpenTelemetry hook placeholder
-  // if (typeof (globalThis as any).__otelSpan?.addEvent === 'function') {
-  //   (globalThis as any).__otelSpan.addEvent(event.event, event);
-  // }
 }
 
-export function eventEngineTriggered(args: { leadId: string; engineName: string; tier?: string }) {
+/** Structured engine event — include leadId, engineName, unifiedTier, scoringVersion if applicable */
+export function eventEngineTriggered(args: {
+  leadId: string;
+  engineName: string;
+  tier?: string;
+  unifiedTier?: string;
+  scoringVersion?: string;
+}) {
   emit({ event: "ENGINE_TRIGGERED", ts: new Date().toISOString(), ...args });
 }
 
-export function eventEngineCompleted(args: { leadId: string; engineName: string; tier?: string }) {
+export function eventEngineCompleted(args: {
+  leadId: string;
+  engineName: string;
+  tier?: string;
+  unifiedTier?: string;
+  scoringVersion?: string;
+}) {
   emit({ event: "ENGINE_COMPLETED", ts: new Date().toISOString(), ...args });
 }
 
-export function eventEngineFailed(args: { leadId: string; engineName: string; error?: string }) {
+export function eventEngineFailed(args: {
+  leadId: string;
+  engineName: string;
+  error?: string;
+  tier?: string;
+  unifiedTier?: string;
+}) {
   emit({ event: "ENGINE_FAILED", ts: new Date().toISOString(), ...args });
 }
 

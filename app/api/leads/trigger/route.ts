@@ -1,11 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { verifyStarterToken } from "@/lib/starterToken";
-import { generateAIStarterPackage } from "@/lib/aiWebsiteStarter";
+import { generateWebsiteStarter } from "@/lib/websiteStarter/engine";
 import { resolveTier } from "@/lib/websiteBuildPricing";
+import { websiteBuilderTierToUnified } from "@/lib/pricing/unifiedTier";
 import { deployPreview } from "@/lib/previewDeploy";
-import type { AIStarterPackage } from "@/lib/aiWebsiteStarter";
+import type { AIStarterPackage } from "@/lib/websiteStarter/engine";
 import { runAsyncLeadEngine } from "@/lib/async/engineRunner";
+import { checkRateLimit } from "@/lib/rateLimit";
+import { eventEngineTriggered, eventEngineCompleted, eventEngineFailed } from "@/lib/observability/events";
 
 /**
  * POST /api/leads/trigger?token=XXX
@@ -18,6 +21,13 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Token required" }, { status: 400 });
   }
 
+  if (!checkRateLimit(`leads-trigger:${token.slice(0, 32)}`)) {
+    return NextResponse.json(
+      { error: "Too many requests. Please try again in a minute." },
+      { status: 429 }
+    );
+  }
+
   const result = verifyStarterToken(token);
   if ("error" in result) {
     return NextResponse.json(
@@ -26,6 +36,8 @@ export async function POST(req: NextRequest) {
     );
   }
   const leadId = result.leadId;
+
+  eventEngineTriggered({ leadId, engineName: "website-builder", unifiedTier: "free" });
 
   try {
     const lead = await prisma.lead.findUnique({ where: { id: leadId } });
@@ -54,15 +66,22 @@ export async function POST(req: NextRequest) {
           (currentPayload.aiPackage as AIStarterPackage) || null,
         async generate({ payload: currentPayload }) {
           const form = (currentPayload.form as Record<string, unknown>) || {};
-          return generateAIStarterPackage({
-            name: form.name as string,
-            email: form.email as string,
-            company: form.company as string,
-            message: form.message as string,
-            industry: form.industry as string,
-            hasDomain: form.hasDomain as boolean,
-            domainName: form.domainName as string,
-          });
+          const tier = websiteBuilderTierToUnified((form.tier as string) || "starter");
+          return generateWebsiteStarter(
+            {
+              variant: "simple",
+              form: {
+                name: form.name as string,
+                email: form.email as string,
+                company: form.company as string,
+                message: form.message as string,
+                industry: form.industry as string,
+                hasDomain: form.hasDomain as boolean,
+                domainName: form.domainName as string,
+              },
+            },
+            tier
+          ) as Promise<AIStarterPackage>;
         },
         persist({ result: generatedPkg }) {
           return {
@@ -92,6 +111,8 @@ export async function POST(req: NextRequest) {
     // Managed cloud (vercel) for initial preview; user selects AWS/Azure/GCP after preview
     const deployResult = await deployPreview(pkg, projectName, "vercel");
 
+    const deployManagedPending = deployResult.state === "PENDING" && !deployResult.url;
+
     const cdnEnabled = tier !== "starter";
     const sslEnabled = true;
     const cicdEnabled = tier === "professional" || tier === "enterprise";
@@ -100,8 +121,9 @@ export async function POST(req: NextRequest) {
     const finalPayload = {
       ...(payload as Record<string, unknown>),
       aiPackage: pkg,
-      previewUrl: deployResult.url,
+      previewUrl: deployResult.url || null,
       vercelDeploymentId: deployResult.deploymentId,
+      deployStatus: deployManagedPending ? "managed_pending" : undefined,
       infrastructure: {
         cloudProvider: "managed", // default; user selects on thank-you page
         cdnEnabled,
@@ -115,12 +137,13 @@ export async function POST(req: NextRequest) {
     await prisma.lead.update({
       where: { id: leadId },
       data: {
-        status: "deploy_ready",
+        status: deployManagedPending ? "package_ready" : "deploy_ready",
         fullPayload: finalPayload,
       },
     });
 
-    // Send confirmation email with preview link
+    // Send confirmation email with preview link (skip when deploy is managed-pending)
+    if (!deployManagedPending) {
     try {
       const toEmail = (form.email as string) || lead.email;
       const name = (form.name as string) || "there";
@@ -157,13 +180,17 @@ export async function POST(req: NextRequest) {
     } catch (emailErr) {
       console.warn("[leads trigger] Confirmation email failed:", emailErr);
     }
+    }
 
+    eventEngineCompleted({ leadId, engineName: "website-builder", unifiedTier: "free" });
     return NextResponse.json({
       success: true,
-      status: "deploy_ready",
-      previewUrl: deployResult.url,
+      status: deployManagedPending ? "package_ready" : "deploy_ready",
+      previewUrl: deployResult.url || null,
+      deployStatus: deployManagedPending ? "managed_pending" : undefined,
     });
   } catch (e) {
+    eventEngineFailed({ leadId, engineName: "website-builder", error: e instanceof Error ? e.message : String(e), unifiedTier: "free" });
     console.error("[leads trigger]", e);
     await prisma.lead
       .update({ where: { id: leadId }, data: { status: "created" } })

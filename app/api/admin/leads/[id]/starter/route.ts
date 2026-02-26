@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/admin/auth";
 import { prisma } from "@/lib/db";
-import { generateWebsiteStarterPackage } from "@/lib/leads/aiWebsiteStarter";
+import { generateWebsiteStarter } from "@/lib/websiteStarter/engine";
 import type { LeadFormData } from "@/lib/leads/leadSchema";
 
 /**
@@ -26,7 +26,7 @@ export async function POST(
     const payload = lead.fullPayload as Record<string, unknown>;
     const data = payload as unknown as LeadFormData;
 
-    const pkg = await generateWebsiteStarterPackage(data);
+    const pkg = await generateWebsiteStarter({ variant: "detailed", form: data }, "free");
     const merged = { ...payload, aiStarterPackage: pkg, aiStarterError: false };
     await prisma.lead.update({ where: { id }, data: { fullPayload: merged as object } });
 

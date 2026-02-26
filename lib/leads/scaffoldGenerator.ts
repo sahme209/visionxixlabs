@@ -7,7 +7,7 @@
 import fs from "fs";
 import path from "path";
 import archiver from "archiver";
-import type { AiStarterPackage } from "./aiWebsiteStarter";
+import type { AiStarterPackage } from "@/lib/websiteStarter/engine";
 
 const SCAFFOLDS_DIR = path.join(process.cwd(), "data", "scaffolds");
 

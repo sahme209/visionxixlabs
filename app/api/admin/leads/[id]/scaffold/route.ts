@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/admin/auth";
 import { prisma } from "@/lib/db";
 import { generateScaffold } from "@/lib/leads/scaffoldGenerator";
-import type { AiStarterPackage } from "@/lib/leads/aiWebsiteStarter";
+import type { AiStarterPackage } from "@/lib/websiteStarter/engine";
 
 const isProduction = process.env.VERCEL === "1" || process.env.NODE_ENV === "production";
 

@@ -1,4 +1,5 @@
 import type { OperatorTier } from "./types";
+import { operatorTierToUnified, type UnifiedTier } from "@/lib/pricing/unifiedTier";
 
 export function resolveOperatorTier(raw: string | null | undefined): OperatorTier {
   const value = (raw || "").toLowerCase();
@@ -22,5 +23,10 @@ export function hasContinuousReassessment(tier: OperatorTier): boolean {
 
 export function hasEnterpriseEngagement(tier: OperatorTier): boolean {
   return tier === "enterprise";
+}
+
+/** Resolve Operator tier to UnifiedTier for internal gating */
+export function toUnifiedTier(tier: OperatorTier | string | null | undefined): UnifiedTier {
+  return operatorTierToUnified(tier);
 }
 

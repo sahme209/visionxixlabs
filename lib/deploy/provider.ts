@@ -1,5 +1,5 @@
 import { generateSiteFiles } from "../scaffoldGenerator";
-import type { AIStarterPackage } from "../aiWebsiteStarter";
+import type { AIStarterPackage } from "@/lib/websiteStarter/engine";
 
 export type DeployProvider = "vercel" | "aws" | "azure" | "gcp";
 export type DeployResult = { url: string; deploymentId: string; state: string };
@@ -41,7 +41,13 @@ async function deployToVercel(
   const token = process.env.VERCEL_TOKEN || options.credentials?.vercelToken;
   const teamId = process.env.VERCEL_TEAM_ID;
 
-  if (!token) throw new Error("VERCEL_TOKEN is required");
+  if (!token) {
+    return {
+      url: "",
+      deploymentId: "managed-pending",
+      state: "PENDING",
+    };
+  }
 
   const body = {
     name: options.projectName,

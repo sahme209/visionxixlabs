@@ -77,7 +77,7 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  eventEngineTriggered({ leadId, engineName: "cloud-operator", tier: tierForRate });
+  eventEngineTriggered({ leadId, engineName: "cloud-operator", tier: tierForRate, unifiedTier: tierForRate, scoringVersion: SCORING_VERSION });
 
   try {
     const { generated } = await runAsyncLeadEngine<Generated>({
@@ -265,7 +265,7 @@ export async function POST(req: NextRequest) {
       await logAudit({ leadId, action: "drift_detected", actor: "system", metadata: { signalCount: drift.signals.length } });
       eventDriftDetected({ leadId, signalCount: drift.signals.length });
     }
-    eventEngineCompleted({ leadId, engineName: "cloud-operator", tier: tierResolved });
+    eventEngineCompleted({ leadId, engineName: "cloud-operator", tier: tierResolved, unifiedTier: tierResolved, scoringVersion: SCORING_VERSION });
 
     const latest = await prisma.lead.findUnique({ where: { id: leadId } });
     const currentPayload = (latest?.fullPayload as Record<string, unknown>) ?? {};
@@ -304,7 +304,7 @@ export async function POST(req: NextRequest) {
       axiomResult: axiomFinal,
     });
   } catch (e) {
-    eventEngineFailed({ leadId, engineName: "cloud-operator", error: e instanceof Error ? e.message : String(e) });
+    eventEngineFailed({ leadId, engineName: "cloud-operator", error: e instanceof Error ? e.message : String(e), unifiedTier: tierForRate });
     return NextResponse.json(
       { error: "Failed to generate output. Please try again." },
       { status: 500 }

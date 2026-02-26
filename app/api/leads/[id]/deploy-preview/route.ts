@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { deployPreview } from "@/lib/previewDeploy";
-import type { AIStarterPackage } from "@/lib/aiWebsiteStarter";
+import type { AIStarterPackage } from "@/lib/websiteStarter/engine";
 
 /**
  * POST /api/leads/[id]/deploy-preview — Trigger preview deployment to Vercel.

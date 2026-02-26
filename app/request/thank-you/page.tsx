@@ -35,6 +35,7 @@ export default function ThankYouPage() {
   } | null>(null);
   const [infraProvider, setInfraProvider] = useState<string>("managed");
   const [infraSaving, setInfraSaving] = useState(false);
+  const [deployStatus, setDeployStatus] = useState<string | null>(null);
 
   const fetchStatus = useCallback(async () => {
     if (!token) return;
@@ -45,6 +46,7 @@ export default function ThankYouPage() {
         setStatus(data.status || "");
         setPreviewUrl(data.previewUrl || null);
         setLeadId(data.leadId || null);
+        setDeployStatus(data.deployStatus || null);
         setRevisionsRemaining(data.revisionsRemaining ?? null);
         const inf = data.infrastructure || null;
         setInfrastructure(inf);
@@ -87,7 +89,7 @@ export default function ThankYouPage() {
         setInfrastructure(d.infrastructure);
         if (d.infrastructure.cloudProvider) setInfraProvider(String(d.infrastructure.cloudProvider));
       }
-      if (d?.deployReady) {
+      if (d?.deployReady || d?.deployStatus === "managed_pending") {
         clearInterval(interval);
         setPolling(false);
       }
@@ -111,6 +113,7 @@ export default function ThankYouPage() {
   }
 
   const isReady = previewUrl && (status === "deploy_ready" || status === "published");
+  const isManagedPending = deployStatus === "managed_pending" || (status === "package_ready" && !previewUrl);
 
   const saveInfrastructureSelection = async (provider: string) => {
     if (!token || !leadId || infraSaving) return;
@@ -196,7 +199,7 @@ export default function ThankYouPage() {
             </p>
           </div>
 
-          {polling && !isReady && (
+          {polling && !isReady && !isManagedPending && (
             <div className="mb-8 space-y-4">
               <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 p-6">
                 <div className="animate-pulse space-y-3">
@@ -207,6 +210,29 @@ export default function ThankYouPage() {
               <p className="text-xs text-slate-500 dark:text-slate-400 text-center">
                 Managed cloud preview in 1–3 minutes. We&apos;ll email you when it&apos;s ready.
               </p>
+            </div>
+          )}
+
+          {isManagedPending && (
+            <div className="mb-8 rounded-xl border-2 border-amber-200 dark:border-amber-800 bg-amber-50/60 dark:bg-amber-900/20 p-6">
+              <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100 mb-2">
+                Your AI site is ready—preview pending
+              </h2>
+              <p className="text-sm text-slate-600 dark:text-slate-400 mb-3">
+                We&apos;ve generated your site. Preview deployment requires our team to complete it—we&apos;ll deploy and email you when it&apos;s live.
+              </p>
+              <p className="text-xs text-slate-500 dark:text-slate-400">
+                Questions? Email us at{" "}
+                <a href="mailto:support@visionxixlabs.com" className="text-indigo-600 dark:text-indigo-400 hover:underline">
+                  support@visionxixlabs.com
+                </a>
+              </p>
+              <Link
+                href="/contact"
+                className="mt-4 inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-700"
+              >
+                Contact us
+              </Link>
             </div>
           )}
 

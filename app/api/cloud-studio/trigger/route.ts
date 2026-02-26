@@ -10,6 +10,8 @@ import {
 } from "@/lib/axiom/scoringRegistry";
 import { insertAxiomSnapshot } from "@/lib/axiom/snapshotService";
 import { runAsyncLeadEngine } from "@/lib/async/engineRunner";
+import { cloudStudioTierToUnified } from "@/lib/pricing/unifiedTier";
+import { eventEngineTriggered, eventEngineCompleted, eventEngineFailed } from "@/lib/observability/events";
 import type { AxiomProfile, AxiomResult } from "@/lib/axiom/infrastructureAdvantage";
 
 function buildAxiomProfileFromCloudStudio(
@@ -129,6 +131,11 @@ export async function POST(req: NextRequest) {
   }
 
   const leadId = result.leadId;
+  const payloadForTier = (await prisma.lead.findUnique({ where: { id: leadId } }))?.fullPayload as Record<string, unknown> | null;
+  const tierForEvent = String(payloadForTier?.tier ?? "free");
+  const unifiedTier = cloudStudioTierToUnified(tierForEvent);
+
+  eventEngineTriggered({ leadId, engineName: "cloud-studio", tier: tierForEvent, unifiedTier });
 
   try {
     const { generated, payload } = await runAsyncLeadEngine<Generated>({
@@ -222,12 +229,14 @@ export async function POST(req: NextRequest) {
       });
     }
 
+    eventEngineCompleted({ leadId, engineName: "cloud-studio", tier: tierForEvent, unifiedTier });
     return NextResponse.json({
       success: true,
       status: "ready",
       output,
     });
   } catch (e) {
+    eventEngineFailed({ leadId, engineName: "cloud-studio", error: e instanceof Error ? e.message : String(e), unifiedTier });
     console.error("[cloud-studio trigger]", e);
     return NextResponse.json(
       { error: "Failed to generate output. Please try again." },

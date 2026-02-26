@@ -3,7 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { deployPreview } from "@/lib/previewDeploy";
-import type { AIStarterPackage } from "@/lib/aiWebsiteStarter";
+import type { AIStarterPackage } from "@/lib/websiteStarter/engine";
 
 /**
  * POST /api/leads/[id]/publish — Production deployment (admin only).
