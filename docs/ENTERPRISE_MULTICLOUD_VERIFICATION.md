@@ -90,6 +90,13 @@ Preview flow uses Vercel by default. Non-Vercel providers are prepared for futur
 
 - `GOOGLE_APPLICATION_CREDENTIALS` or service account JSON path
 
+## 9) Failed Migration Fix (P3009)
+
+If build fails with `migrate found failed migrations` for `20260219120000_add_lead_model`:
+
+1. **Automatic (during build):** The build script now runs `prisma migrate resolve --applied` before deploy to clear failed state.
+2. **Manual:** Run `npm run migrate:resolve` with `DATABASE_URL` set, then re-run build.
+
 ## 8) Assumptions and Simplifications
 
 1. **AWS/Azure/GCP deploys:** Stubbed to contact URL; no S3/Azure Static/GCP Storage implementation yet.

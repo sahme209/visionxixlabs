@@ -4,8 +4,9 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "prisma generate && prisma migrate deploy && next build",
+    "build": "prisma generate && (npx prisma migrate resolve --applied 20260219120000_add_lead_model 2>/dev/null || true) && prisma migrate deploy && next build",
     "postinstall": "prisma generate",
+    "migrate:resolve": "npx prisma migrate resolve --applied 20260219120000_add_lead_model",
     "start": "next start",
     "lint": "next lint"
   },
