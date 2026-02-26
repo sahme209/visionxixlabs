@@ -20,11 +20,13 @@ export async function GET(
       return NextResponse.json({ error: "Lead not found" }, { status: 404 });
     }
 
+    const payload = (lead.fullPayload as Record<string, unknown>) || {};
+    const form = (payload.form as Record<string, unknown>) || {};
     return NextResponse.json({
       id: lead.id,
       name: lead.name,
       email: lead.email,
-      phone: lead.phone,
+      phone: form.phone ?? null,
       fullPayload: lead.fullPayload,
       status: lead.status,
       source: lead.source,
