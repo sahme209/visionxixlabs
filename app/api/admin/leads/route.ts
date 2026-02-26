@@ -35,16 +35,20 @@ export async function GET(req: NextRequest) {
     const nextCursor = hasMore ? items[items.length - 1]?.id : null;
 
     return NextResponse.json({
-      leads: items.map((l) => ({
-        id: l.id,
-        name: l.name,
-        email: l.email,
-        phone: l.phone,
-        status: l.status,
+      leads: items.map((l) => {
+        const payload = (l.fullPayload as Record<string, unknown>) || {};
+        const form = (payload.form as Record<string, unknown>) || {};
+        return {
+          id: l.id,
+          name: l.name,
+          email: l.email,
+          phone: form.phone ?? null,
+          status: l.status,
         source: l.source,
         createdAt: l.createdAt,
         updatedAt: l.updatedAt,
-      })),
+        };
+      }),
       nextCursor,
     });
   } catch (e) {
