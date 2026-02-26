@@ -151,3 +151,129 @@ export function computeCloudIntelligence(
     generatedAt: now,
   };
 }
+
+/**
+ * Lightweight input shape for the AI Cloud Operator profile.
+ * Kept separate from UI types to avoid circular imports.
+ */
+export type OperatorProfileInput = {
+  projectType?: string | null;
+  hostingProvider?: string | null;
+  monthlySpend?: string | number | null;
+  trafficLevel?: string | null;
+  hasCiCd?: string | boolean | null;
+  publicExposure?: string | null;
+  complianceNeeds?: string | null;
+  gitProvider?: string | null;
+  primaryGoal?: string | null;
+};
+
+export type CloudOperatorScores = {
+  infrastructureReadinessScore: number;
+  costEfficiencyScore: number;
+  securityRiskLevel: RiskLevel;
+  ciCdMaturityScore: number;
+  architectureComplexityTier: ComplexityTier;
+  estimatedAnnualSavings: number | null;
+};
+
+function normalizeMonthlySpend(value: OperatorProfileInput["monthlySpend"]): string {
+  if (value == null) return "0";
+  return String(value);
+}
+
+function normalizeTrafficLevel(value: OperatorProfileInput["trafficLevel"]): string {
+  const s = String(value || "").toLowerCase();
+  if (!s) return "Low";
+  if (s.includes("high")) return "High";
+  if (s.includes("medium")) return "Medium";
+  return "Low";
+}
+
+function hasCiCdEnabled(value: OperatorProfileInput["hasCiCd"]): boolean {
+  if (typeof value === "boolean") return value;
+  const s = String(value || "").toLowerCase();
+  return s === "yes" || s === "y" || s === "true";
+}
+
+/**
+ * Deterministic Operator scores, derived from the existing cloud intelligence engine.
+ * This keeps scoring rule-based and reuses computeCloudIntelligence under the hood.
+ */
+export function computeCloudOperatorScores(profile: OperatorProfileInput): CloudOperatorScores {
+  const hostingProvider = (profile.hostingProvider || "").toString();
+  const projectType = (profile.projectType || "").toString();
+  const trafficLevel = normalizeTrafficLevel(profile.trafficLevel);
+  const monthlySpend = normalizeMonthlySpend(profile.monthlySpend);
+
+  // Cost-focused intelligence
+  const costIntelligence = computeCloudIntelligence(
+    "cost",
+    {
+      cloudProvider: hostingProvider,
+      servicesUsed: projectType || hostingProvider || "general workload",
+      estimatedMonthlySpend: monthlySpend,
+      region: hostingProvider || "generic",
+    },
+    null
+  );
+
+  // Architecture-focused intelligence
+  const architectureIntelligence = computeCloudIntelligence(
+    "architecture",
+    {
+      cloudProvider: hostingProvider,
+      appType: projectType || "Application",
+      trafficEstimate: trafficLevel,
+      dataStorageNeeds: "Primary application data and logs",
+    },
+    null
+  );
+
+  // Security-focused intelligence
+  const securityIntelligence = computeCloudIntelligence(
+    "security",
+    {
+      cloudProvider: hostingProvider,
+      publicServices: profile.publicExposure || "",
+      complianceGoal: profile.complianceNeeds || "",
+    },
+    null
+  );
+
+  // Infrastructure readiness is aligned with architecture maturity.
+  const infrastructureReadinessScore = architectureIntelligence.cloudMaturityScore;
+
+  // Cost efficiency: higher savings potential implies lower current efficiency.
+  let baseEfficiency = 80;
+  if (costIntelligence.optimizationOpportunity === "High") {
+    baseEfficiency = 50;
+  } else if (costIntelligence.optimizationOpportunity === "Medium") {
+    baseEfficiency = 65;
+  }
+  if ((costIntelligence.estimatedAnnualSavings || 0) > 50000) {
+    baseEfficiency -= 10;
+  } else if ((costIntelligence.estimatedAnnualSavings || 0) > 20000) {
+    baseEfficiency -= 5;
+  }
+  const costEfficiencyScore = Math.min(100, Math.max(0, baseEfficiency));
+
+  // CI/CD maturity: derived from whether CI/CD exists and Git provider presence.
+  let ciCdMaturityScore = hasCiCdEnabled(profile.hasCiCd) ? 70 : 30;
+  if (profile.gitProvider && profile.gitProvider.toLowerCase() !== "none") {
+    ciCdMaturityScore += 10;
+  }
+  if (profile.primaryGoal && profile.primaryGoal.toLowerCase().includes("scale")) {
+    ciCdMaturityScore += 5;
+  }
+  ciCdMaturityScore = Math.min(100, Math.max(0, ciCdMaturityScore));
+
+  return {
+    infrastructureReadinessScore,
+    costEfficiencyScore,
+    securityRiskLevel: securityIntelligence.riskLevel,
+    ciCdMaturityScore,
+    architectureComplexityTier: architectureIntelligence.complexityTier,
+    estimatedAnnualSavings: costIntelligence.estimatedAnnualSavings,
+  };
+}

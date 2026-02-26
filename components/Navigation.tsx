@@ -13,8 +13,8 @@ const cloudLinks = [
 ];
 
 const solutionsLinks = [
+  { href: "/cloud-operator", label: "AI Cloud Operator" },
   { href: "/request", label: "Website Request / Get a Quote" },
-  { href: "/cloud-studio", label: "AI Cloud Studio" },
   { href: "/visionxix-ai", label: "Vision XIX AI" },
   { href: "/visionxix-ai/pricing", label: "Vision XIX AI — Pricing" },
   { href: "/visionxix-ai/features", label: "Vision XIX AI — Features" },
@@ -176,6 +176,7 @@ export function Navigation() {
               <Link href="/cloud-solutions/azure" onClick={() => setMobileMenuOpen(false)} className="px-4 py-2 text-slate-700 dark:text-slate-300 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg text-sm font-medium">Azure</Link>
               <Link href="/cloud-solutions/gcp" onClick={() => setMobileMenuOpen(false)} className="px-4 py-2 text-slate-700 dark:text-slate-300 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg text-sm font-medium">GCP</Link>
               <p className="px-4 pt-3 text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Solutions</p>
+              <Link href="/cloud-operator" onClick={() => setMobileMenuOpen(false)} className="px-4 py-2 text-slate-700 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 rounded-lg text-sm font-medium">AI Cloud Operator</Link>
               <Link href="/request" onClick={() => setMobileMenuOpen(false)} className="px-4 py-2 text-slate-700 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 rounded-lg text-sm font-medium">Website Request / Get a Quote</Link>
               <Link href="/visionxix-ai" onClick={() => setMobileMenuOpen(false)} className="px-4 py-2 text-slate-700 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 rounded-lg text-sm font-medium">Vision XIX AI</Link>
               <Link href="/visionxix-ai/pricing" onClick={() => setMobileMenuOpen(false)} className="px-4 py-2 text-slate-700 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 rounded-lg text-sm font-medium pl-6">Vision XIX AI — Pricing</Link>
