@@ -121,9 +121,13 @@ export default function RequestPage() {
       });
       const data = await res.json();
       if (res.ok && data.success) {
-        router.push(
-          `/request/thank-you?leadId=${data.leadId}&min=${data.estimate.min}&max=${data.estimate.max}`
-        );
+        const params = new URLSearchParams({
+          leadId: data.leadId,
+          min: String(data.estimate.min),
+          max: String(data.estimate.max),
+        });
+        if (data.starterToken) params.set("token", data.starterToken);
+        router.push(`/request/thank-you?${params.toString()}`);
         return;
       }
       setError(data.error || "Something went wrong. Please try again.");

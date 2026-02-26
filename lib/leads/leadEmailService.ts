@@ -11,11 +11,15 @@ function generateConfirmationHtml(
   name: string,
   payload: LeadFormData,
   estimate: PricingEstimate,
-  leadId?: string
+  leadId?: string,
+  starterToken?: string
 ): string {
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://visionxixlabs.com";
   const formatted = formatEstimate(estimate);
-  const starterUrl = leadId ? `${baseUrl}/request/thank-you?leadId=${leadId}&min=${estimate.min}&max=${estimate.max}` : null;
+  const params = new URLSearchParams({ min: String(estimate.min), max: String(estimate.max) });
+  if (leadId) params.set("leadId", leadId);
+  if (starterToken) params.set("token", starterToken);
+  const starterUrl = leadId ? `${baseUrl}/request/thank-you?${params.toString()}` : null;
   return `
 <!DOCTYPE html>
 <html lang="en">
@@ -83,7 +87,8 @@ function generateInternalHtml(payload: LeadFormData, estimate: PricingEstimate):
 export async function sendLeadConfirmationEmail(
   data: LeadFormData,
   estimate: PricingEstimate,
-  leadId?: string
+  leadId?: string,
+  starterToken?: string
 ): Promise<boolean> {
   const key = process.env.RESEND_API_KEY;
   if (!key || !key.startsWith("re_")) {
@@ -92,7 +97,7 @@ export async function sendLeadConfirmationEmail(
   }
   const client = new Resend(key);
   const from = process.env.RESEND_FROM_EMAIL || `Vision XIX Labs <${SUPPORT_EMAIL}>`;
-  const html = generateConfirmationHtml(data.fullName, data, estimate, leadId);
+  const html = generateConfirmationHtml(data.fullName, data, estimate, leadId, starterToken);
   const result = await client.emails.send({
     from,
     replyTo: SUPPORT_EMAIL,

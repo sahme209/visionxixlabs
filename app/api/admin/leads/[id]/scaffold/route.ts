@@ -4,10 +4,12 @@ import { prisma } from "@/lib/db";
 import { generateScaffold } from "@/lib/leads/scaffoldGenerator";
 import type { AiStarterPackage } from "@/lib/leads/aiWebsiteStarter";
 
+const isProduction = process.env.VERCEL === "1" || process.env.NODE_ENV === "production";
+
 /**
  * POST /api/admin/leads/[id]/scaffold
  * Generate Website Build Starter scaffold for a lead. Admin only.
- * Requires aiStarterPackage in fullPayload. Returns download path.
+ * Disabled in production (no local filesystem); use S3/R2/Supabase for durable storage.
  */
 export async function POST(
   _req: NextRequest,
@@ -17,6 +19,16 @@ export async function POST(
   if ("error" in auth) return auth.error;
 
   const { id } = await params;
+
+  if (isProduction) {
+    return NextResponse.json(
+      {
+        error: "Scaffold generation is disabled in production.",
+        message: "Local filesystem is ephemeral on Vercel/serverless. Configure S3, R2, or Supabase storage for scaffold artifacts to enable this feature.",
+      },
+      { status: 503 }
+    );
+  }
 
   try {
     const lead = await prisma.lead.findUnique({ where: { id } });

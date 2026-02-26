@@ -1,16 +1,22 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
+import { verifyStarterToken } from "@/lib/leads/starterToken";
 
 /**
- * GET /api/leads/[leadId]/starter
- * Returns AI Website Starter Package for a lead. Public (leadId is unguessable cuid).
+ * GET /api/leads/[leadId]/starter?token=...
+ * Returns AI Website Starter Package. Requires signed token.
  * Returns { pending: true } if AI has not finished yet; { error: true } if AI failed.
  */
 export async function GET(
-  _req: NextRequest,
+  req: NextRequest,
   { params }: { params: Promise<{ leadId: string }> }
 ) {
   const { leadId } = await params;
+  const token = req.nextUrl.searchParams.get("token");
+  const verifiedLeadId = verifyStarterToken(token ?? "");
+  if (!verifiedLeadId || verifiedLeadId !== leadId) {
+    return NextResponse.json({ error: "Invalid or missing token" }, { status: 401 });
+  }
 
   try {
     const lead = await prisma.lead.findUnique({ where: { id: leadId } });

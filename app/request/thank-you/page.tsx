@@ -33,6 +33,7 @@ interface AiStarterPackage {
 function ThankYouContent() {
   const searchParams = useSearchParams();
   const leadId = searchParams.get("leadId");
+  const token = searchParams.get("token");
   const min = Number(searchParams.get("min")) || 0;
   const max = Number(searchParams.get("max")) || 0;
   const hasEstimate = min > 0 && max > 0;
@@ -41,18 +42,22 @@ function ThankYouContent() {
     : "—";
 
   const [starter, setStarter] = useState<AiStarterPackage | null>(null);
-  const [status, setStatus] = useState<"loading" | "pending" | "ready" | "error">(
-    leadId ? "loading" : "ready"
+  const [status, setStatus] = useState<"loading" | "pending" | "ready" | "error" | "no-token">(
+    leadId && token ? "loading" : leadId && !token ? "no-token" : "ready"
   );
 
   useEffect(() => {
-    if (!leadId) return;
+    if (!leadId || !token) return;
 
     const fetchStarter = async () => {
       try {
-        const res = await fetch(`/api/leads/${leadId}/starter`);
+        const res = await fetch(`/api/leads/${leadId}/starter?token=${encodeURIComponent(token)}`);
         const data = await res.json();
 
+        if (res.status === 401) {
+          setStatus("no-token");
+          return;
+        }
         if (data.error === true) {
           setStatus("error");
           return;
@@ -71,13 +76,28 @@ function ThankYouContent() {
     };
 
     fetchStarter();
-  }, [leadId]);
+  }, [leadId, token]);
 
   useEffect(() => {
-    if (status !== "pending") return;
+    if (status !== "pending" || !leadId || !token) return;
+
+    const triggerGenerate = async () => {
+      try {
+        await fetch(`/api/leads/${leadId}/starter/generate?token=${encodeURIComponent(token)}`, {
+          method: "POST",
+        });
+      } catch {
+        // ignore
+      }
+    };
+    triggerGenerate();
+  }, [status, leadId, token]);
+
+  useEffect(() => {
+    if (status !== "pending" || !leadId || !token) return;
     const t = setInterval(async () => {
       try {
-        const res = await fetch(`/api/leads/${leadId}/starter`);
+        const res = await fetch(`/api/leads/${leadId}/starter?token=${encodeURIComponent(token)}`);
         const data = await res.json();
         if (data.aiStarterPackage) {
           setStarter(data.aiStarterPackage);
@@ -90,7 +110,7 @@ function ThankYouContent() {
       }
     }, 3000);
     return () => clearInterval(t);
-  }, [leadId, status]);
+  }, [status, leadId, token]);
 
   return (
     <div className="min-h-screen bg-[var(--bg-primary)] flex flex-col">
@@ -155,6 +175,14 @@ function ThankYouContent() {
             </div>
           )}
 
+          {status === "no-token" && (
+            <div className="rounded-2xl border border-[var(--border-color)] bg-[var(--bg-surface)] p-6 mb-8">
+              <p className="text-[var(--text-primary)]">
+                Use the link from your confirmation email to view your Website Starter Package, or we&apos;ll follow up within 1–2 business days.
+              </p>
+            </div>
+          )}
+
           {status === "error" && (
             <div className="rounded-2xl border border-[var(--border-color)] bg-[var(--bg-surface)] p-6 mb-8">
               <p className="text-[var(--text-primary)]">
@@ -169,9 +197,9 @@ function ThankYouContent() {
                 <h2 className="text-xl font-semibold text-[var(--text-primary)]">
                   Your Website Starter Package
                 </h2>
-                {leadId && (
+                {leadId && token && (
                   <a
-                    href={`/api/leads/${leadId}/starter/download`}
+                    href={`/api/leads/${leadId}/starter/download?token=${encodeURIComponent(token)}`}
                     download
                     className="inline-flex items-center gap-2 rounded-xl bg-[var(--uscis-blue)] px-5 py-2.5 font-medium text-white hover:opacity-90 transition-opacity"
                   >
