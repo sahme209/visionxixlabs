@@ -5,23 +5,23 @@ import { generateWebsiteStarter } from "@/lib/websiteStarter/engine";
 import type { LeadFormData } from "@/lib/leads/leadSchema";
 
 /**
- * POST /api/leads/[leadId]/starter/generate
+ * POST /api/leads/[id]/starter/generate
  * Runs AI generation if not already present. Requires token in query (token=) or body (token).
  * Deterministic on serverless: caller triggers when pending.
  */
 export async function POST(
   req: NextRequest,
-  { params }: { params: Promise<{ leadId: string }> }
+  { params }: { params: Promise<{ id: string }> }
 ) {
-  const { leadId } = await params;
+  const { id } = await params;
   const token = req.nextUrl.searchParams.get("token");
   const result = token ? verifyStarterToken(token) : { error: "invalid" as const };
-  if ("error" in result || result.leadId !== leadId) {
+  if ("error" in result || result.leadId !== id) {
     return NextResponse.json({ error: "Invalid or missing token" }, { status: 401 });
   }
 
   try {
-    const lead = await prisma.lead.findUnique({ where: { id: leadId } });
+    const lead = await prisma.lead.findUnique({ where: { id } });
     if (!lead) {
       return NextResponse.json({ error: "Lead not found" }, { status: 404 });
     }
@@ -38,7 +38,7 @@ export async function POST(
     const data = payload as unknown as LeadFormData;
     const pkg = await generateWebsiteStarter({ variant: "detailed", form: data }, "free");
     const merged = { ...payload, aiStarterPackage: pkg, aiStarterError: false };
-    await prisma.lead.update({ where: { id: leadId }, data: { fullPayload: merged as object } });
+    await prisma.lead.update({ where: { id }, data: { fullPayload: merged as object } });
 
     return NextResponse.json({
       success: true,
@@ -47,11 +47,11 @@ export async function POST(
     });
   } catch (e) {
     console.warn("[Starter Generate] AI failed:", e instanceof Error ? e.message : String(e));
-    const lead = await prisma.lead.findUnique({ where: { id: leadId } });
+    const lead = await prisma.lead.findUnique({ where: { id } });
     if (lead) {
       const payload = (lead.fullPayload as Record<string, unknown>) ?? {};
       const merged = { ...payload, aiStarterError: true };
-      await prisma.lead.update({ where: { id: leadId }, data: { fullPayload: merged as object } });
+      await prisma.lead.update({ where: { id }, data: { fullPayload: merged as object } });
     }
     return NextResponse.json(
       { error: true, message: "AI generation failed. Our team will follow up." },

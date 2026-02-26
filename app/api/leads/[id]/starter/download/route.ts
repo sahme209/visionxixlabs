@@ -5,22 +5,22 @@ import { aiStarterToMarkdown } from "@/lib/websiteStarter/engine";
 import type { AiStarterPackage } from "@/lib/websiteStarter/engine";
 
 /**
- * GET /api/leads/[leadId]/starter/download?token=...
+ * GET /api/leads/[id]/starter/download?token=...
  * Returns markdown file download. Requires signed token.
  */
 export async function GET(
   req: NextRequest,
-  { params }: { params: Promise<{ leadId: string }> }
+  { params }: { params: Promise<{ id: string }> }
 ) {
-  const { leadId } = await params;
+  const { id } = await params;
   const token = req.nextUrl.searchParams.get("token");
   const result = verifyStarterToken(token ?? "");
-  if ("error" in result || result.leadId !== leadId) {
+  if ("error" in result || result.leadId !== id) {
     return NextResponse.json({ error: "Invalid or missing token" }, { status: 401 });
   }
 
   try {
-    const lead = await prisma.lead.findUnique({ where: { id: leadId } });
+    const lead = await prisma.lead.findUnique({ where: { id } });
     if (!lead) {
       return NextResponse.json({ error: "Lead not found" }, { status: 404 });
     }
@@ -37,7 +37,7 @@ export async function GET(
 
     const businessName = (payload?.businessName as string) || lead.name || "";
     const markdown = aiStarterToMarkdown(pkg, businessName);
-    const filename = `website-starter-${leadId.slice(0, 8)}.md`;
+    const filename = `website-starter-${id.slice(0, 8)}.md`;
 
     return new NextResponse(markdown, {
       headers: {

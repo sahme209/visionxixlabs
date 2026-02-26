@@ -6,6 +6,8 @@ import { createStarterToken } from "@/lib/starterToken";
 import { checkTieredRateLimit } from "@/lib/rateLimitTiered";
 import { resolveOperatorTier } from "@/lib/cloudOperator/pricing";
 
+export const maxDuration = 30;
+
 function getClientIp(req: NextRequest): string {
   return (
     req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
@@ -76,7 +78,12 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const session = await getServerSession(authOptions);
+    // Session is optional for submit; avoid blocking on slow getServerSession (causes timeouts)
+    const sessionPromise = getServerSession(authOptions);
+    const session = await Promise.race([
+      sessionPromise,
+      new Promise<null>((resolve) => setTimeout(() => resolve(null), 2000)),
+    ]);
     const userId = session?.user && "id" in session.user ? (session.user as { id: string }).id : null;
 
     const lead = await prisma.lead.create({

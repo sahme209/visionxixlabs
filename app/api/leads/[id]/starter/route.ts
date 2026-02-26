@@ -3,23 +3,23 @@ import { prisma } from "@/lib/db";
 import { verifyStarterToken } from "@/lib/leads/starterToken";
 
 /**
- * GET /api/leads/[leadId]/starter?token=...
+ * GET /api/leads/[id]/starter?token=...
  * Returns AI Website Starter Package. Requires signed token.
  * Returns { pending: true } if AI has not finished yet; { error: true } if AI failed.
  */
 export async function GET(
   req: NextRequest,
-  { params }: { params: Promise<{ leadId: string }> }
+  { params }: { params: Promise<{ id: string }> }
 ) {
-  const { leadId } = await params;
+  const { id } = await params;
   const token = req.nextUrl.searchParams.get("token");
   const result = verifyStarterToken(token ?? "");
-  if ("error" in result || result.leadId !== leadId) {
+  if ("error" in result || result.leadId !== id) {
     return NextResponse.json({ error: "Invalid or missing token" }, { status: 401 });
   }
 
   try {
-    const lead = await prisma.lead.findUnique({ where: { id: leadId } });
+    const lead = await prisma.lead.findUnique({ where: { id } });
     if (!lead) {
       return NextResponse.json({ error: "Lead not found" }, { status: 404 });
     }
