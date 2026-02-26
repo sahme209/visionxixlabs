@@ -83,13 +83,14 @@ export default function Home() {
       {/* Hero Section */}
       <section className="pt-32 pb-16 px-4 sm:px-6 lg:px-8 relative">
         <div className="max-w-4xl mx-auto text-center">
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-4 leading-tight text-slate-900 dark:text-slate-100">
-            Axiom — Infrastructure Intelligence
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-4 leading-tight animate-hero-enter">
+            <span className="text-gradient">Axiom</span>
+            <span className="text-slate-900 dark:text-slate-100"> — Infrastructure Intelligence</span>
           </h1>
-          <p className="text-lg md:text-xl text-slate-600 dark:text-slate-400 mb-8 max-w-3xl mx-auto">
+          <p className="text-lg md:text-xl text-slate-600 dark:text-slate-400 mb-8 max-w-3xl mx-auto animate-hero-enter animate-hero-enter-delay-1">
             One operator to score, optimize, and guide your cloud across AWS, Azure, and GCP.
           </p>
-          <div className="flex flex-wrap justify-center gap-4 mb-6">
+          <div className="flex flex-wrap justify-center gap-4 mb-6 animate-hero-enter animate-hero-enter-delay-2">
             <Link
               href="/cloud-operator"
               className="btn-huly inline-flex items-center px-6 py-3 bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white rounded-2xl font-semibold shadow-lg shadow-violet-500/30 hover:shadow-violet-500/40"
@@ -191,6 +192,7 @@ export default function Home() {
       </AnimateOnScroll>
 
       {/* Capabilities summary — cloud + AI */}
+      <AnimateOnScroll>
       <section className="py-12 px-4 sm:px-6 lg:px-8 border-t border-slate-200 dark:border-slate-700">
         <div className="max-w-5xl mx-auto">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
@@ -213,8 +215,10 @@ export default function Home() {
           </div>
         </div>
       </section>
+      </AnimateOnScroll>
 
       {/* Solutions / Services Overview */}
+      <AnimateOnScroll>
       <section
         id="solutions"
         className="py-20 px-4 sm:px-6 lg:px-8 bg-white dark:bg-slate-900"
@@ -418,8 +422,10 @@ export default function Home() {
           </section>
         </div>
       </section>
+      </AnimateOnScroll>
 
       {/* AI Insights — thought leadership */}
+      <AnimateOnScroll>
       <section className="py-16 px-4 sm:px-6 lg:px-8 border-t border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-10">
@@ -433,25 +439,25 @@ export default function Home() {
           <div className="flex flex-wrap justify-center gap-4 mb-6">
             <Link
               href="/insights/production-ai-vs-demos"
-              className="rounded-2xl border-2 border-slate-200/80 dark:border-slate-700/80 bg-white/80 dark:bg-slate-800/80 backdrop-blur px-5 py-3 text-sm font-medium text-slate-700 dark:text-slate-300 hover:border-violet-300 dark:hover:border-violet-600 transition-all"
+              className="card-hover rounded-2xl border-2 border-slate-200/80 dark:border-slate-700/80 bg-white/80 dark:bg-slate-800/80 backdrop-blur px-5 py-3 text-sm font-medium text-slate-700 dark:text-slate-300 hover:border-violet-300 dark:hover:border-violet-600"
             >
               Production AI vs. demos
             </Link>
             <Link
               href="/insights/rag-vs-fine-tuning-when-to-use-which"
-              className="rounded-2xl border-2 border-slate-200/80 dark:border-slate-700/80 bg-white/80 dark:bg-slate-800/80 backdrop-blur px-5 py-3 text-sm font-medium text-slate-700 dark:text-slate-300 hover:border-violet-300 dark:hover:border-violet-600 transition-all"
+              className="card-hover rounded-2xl border-2 border-slate-200/80 dark:border-slate-700/80 bg-white/80 dark:bg-slate-800/80 backdrop-blur px-5 py-3 text-sm font-medium text-slate-700 dark:text-slate-300 hover:border-violet-300 dark:hover:border-violet-600"
             >
               RAG vs. fine-tuning
             </Link>
             <Link
               href="/insights/ai-cost-management-in-production"
-              className="rounded-2xl border-2 border-slate-200/80 dark:border-slate-700/80 bg-white/80 dark:bg-slate-800/80 backdrop-blur px-5 py-3 text-sm font-medium text-slate-700 dark:text-slate-300 hover:border-violet-300 dark:hover:border-violet-600 transition-all"
+              className="card-hover rounded-2xl border-2 border-slate-200/80 dark:border-slate-700/80 bg-white/80 dark:bg-slate-800/80 backdrop-blur px-5 py-3 text-sm font-medium text-slate-700 dark:text-slate-300 hover:border-violet-300 dark:hover:border-violet-600"
             >
               AI cost management
             </Link>
             <Link
               href="/insights/choosing-ai-models-for-production"
-              className="rounded-2xl border-2 border-slate-200/80 dark:border-slate-700/80 bg-white/80 dark:bg-slate-800/80 backdrop-blur px-5 py-3 text-sm font-medium text-slate-700 dark:text-slate-300 hover:border-violet-300 dark:hover:border-violet-600 transition-all"
+              className="card-hover rounded-2xl border-2 border-slate-200/80 dark:border-slate-700/80 bg-white/80 dark:bg-slate-800/80 backdrop-blur px-5 py-3 text-sm font-medium text-slate-700 dark:text-slate-300 hover:border-violet-300 dark:hover:border-violet-600"
             >
               Choosing AI models
             </Link>
@@ -467,8 +473,10 @@ export default function Home() {
           </div>
         </div>
       </section>
+      </AnimateOnScroll>
 
       {/* About Section */}
+      <AnimateOnScroll>
       <section
         id="about"
         className="py-20 px-4 sm:px-6 lg:px-8 border-t border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30"
@@ -530,8 +538,10 @@ export default function Home() {
           </div>
         </div>
       </section>
+      </AnimateOnScroll>
 
       {/* Contact Section */}
+      <AnimateOnScroll>
       <section id="contact" className="py-20 px-4 sm:px-6 lg:px-8 border-t border-slate-200 dark:border-slate-700" aria-labelledby="contact-heading">
         <div className="max-w-3xl mx-auto text-center">
           <h2 id="contact-heading" className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-slate-100 mb-4">
@@ -543,17 +553,17 @@ export default function Home() {
           <div className="grid md:grid-cols-2 gap-6 mb-10">
             <a
               href="mailto:support@visionxixlabs.com"
-              className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-6 shadow-sm hover:border-slate-300 dark:hover:border-slate-600 transition-colors"
+              className="card-hover group rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-6 shadow-sm hover:border-violet-300 dark:hover:border-violet-600"
             >
-              <EnvelopeIcon className="h-8 w-8 text-slate-600 dark:text-slate-400 mb-3" />
+              <EnvelopeIcon className="h-8 w-8 text-slate-600 dark:text-slate-400 mb-3 icon-bounce group-hover:text-violet-600 dark:group-hover:text-violet-400" />
               <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100 mb-1">Email</h3>
               <p className="text-slate-600 dark:text-slate-400 text-sm">support@visionxixlabs.com</p>
             </a>
             <Link
               href="/contact"
-              className="rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 p-6 shadow-sm hover:opacity-90 transition-opacity"
+              className="card-hover btn-huly group rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 p-6 shadow-sm hover:shadow-lg hover:shadow-violet-500/10 transition-all"
             >
-              <RocketLaunchIcon className="h-8 w-8 text-white dark:text-slate-900 mb-3" />
+              <RocketLaunchIcon className="h-8 w-8 text-white dark:text-slate-900 mb-3 icon-bounce" />
               <h3 className="text-lg font-semibold mb-1">Contact form</h3>
               <p className="text-slate-300 dark:text-slate-600 text-sm">Request a call or send a message</p>
             </Link>
@@ -567,6 +577,7 @@ export default function Home() {
           </div>
         </div>
       </section>
+      </AnimateOnScroll>
 
       {/* Footer */}
       <footer className="bg-slate-900 text-slate-300 py-12 px-4 sm:px-6 lg:px-8 border-t border-slate-800">

@@ -11,6 +11,8 @@ import {
   CheckCircleIcon,
 } from "@heroicons/react/24/outline";
 import { Navigation } from "../../components/Navigation";
+import { BackgroundBlobs } from "@/components/BackgroundBlobs";
+import { AnimateOnScroll } from "@/components/AnimateOnScroll";
 
 export default function ContactPage() {
   const [submitted, setSubmitted] = useState(false);
@@ -77,11 +79,13 @@ export default function ContactPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-violet-50/40 to-fuchsia-50/30 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-violet-50/40 to-fuchsia-50/30 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 relative">
+      <BackgroundBlobs />
       <Navigation />
 
-      <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur rounded-3xl shadow-xl shadow-slate-200/50 dark:shadow-none border-2 border-slate-200/80 dark:border-slate-700/80 p-8 md:p-10">
+      <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 pt-28">
+        <AnimateOnScroll>
+        <div className="card-hover bg-white/80 dark:bg-slate-800/80 backdrop-blur rounded-3xl shadow-xl shadow-slate-200/50 dark:shadow-none border-2 border-slate-200/80 dark:border-slate-700/80 p-8 md:p-10">
           <header className="mb-8 text-center">
             <div className="inline-flex items-center justify-center rounded-full bg-gradient-to-r from-violet-100 to-fuchsia-100 dark:from-violet-900/40 dark:to-fuchsia-900/40 px-4 py-2 text-xs font-semibold text-violet-700 dark:text-violet-300 mb-2">
               Cloud &amp; AI Engineering
@@ -344,6 +348,7 @@ export default function ContactPage() {
             )}
           </form>
         </div>
+        </AnimateOnScroll>
       </main>
     </div>
   );

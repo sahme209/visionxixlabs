@@ -272,3 +272,80 @@ html {
   scroll-behavior: smooth;
   scroll-padding-top: 80px;
 }
+
+/* Huly-style: grid mesh background */
+.bg-grid-mesh {
+  background-image:
+    linear-gradient(to right, rgb(124 58 237 / 0.03) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(124 58 237 / 0.03) 1px, transparent 1px);
+  background-size: 48px 48px;
+}
+
+.dark .bg-grid-mesh {
+  background-image:
+    linear-gradient(to right, rgb(167 139 250 / 0.06) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(167 139 250 / 0.06) 1px, transparent 1px);
+}
+
+/* Gradient border — Huly-style glow */
+.gradient-border {
+  position: relative;
+  background: linear-gradient(white, white) padding-box,
+    linear-gradient(135deg, #7c3aed, #a855f7, #d946ef, #7c3aed) border-box;
+  border: 2px solid transparent;
+}
+
+/* Icon bounce on hover — use with group on parent */
+.icon-bounce {
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.icon-bounce:hover,
+.group:hover .icon-bounce {
+  transform: translateY(-3px) scale(1.05);
+}
+
+/* Stagger delays for cascading reveals */
+.stagger-1 { animation-delay: 0.05s; }
+.stagger-2 { animation-delay: 0.1s; }
+.stagger-3 { animation-delay: 0.15s; }
+.stagger-4 { animation-delay: 0.2s; }
+.stagger-5 { animation-delay: 0.25s; }
+.stagger-6 { animation-delay: 0.3s; }
+
+/* Entrance — hero-style */
+@keyframes heroEnter {
+  from {
+    opacity: 0;
+    transform: translateY(32px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-hero-enter {
+  animation: heroEnter 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  opacity: 0;
+}
+
+.animate-hero-enter-delay-1 { animation-delay: 0.1s; opacity: 0; }
+.animate-hero-enter-delay-2 { animation-delay: 0.2s; opacity: 0; }
+.animate-hero-enter-delay-3 { animation-delay: 0.3s; opacity: 0; }
+
+/* Spotlight gradient orb */
+.spotlight-orb {
+  background: radial-gradient(
+    ellipse 80% 50% at 50% 0%,
+    rgb(124 58 237 / 0.15),
+    rgb(217 70 239 / 0.08),
+    transparent 70%
+  );
+}
+
+/* Dot pattern overlay */
+.bg-dots {
+  background-image: radial-gradient(rgb(124 58 237 / 0.12) 1px, transparent 1px);
+  background-size: 24px 24px;
+}

@@ -34,6 +34,8 @@ import {
 } from "@heroicons/react/24/outline";
 import { SUPPORT_EMAIL } from "@/lib/constants/company";
 import { Navigation } from "@/components/Navigation";
+import { BackgroundBlobs } from "@/components/BackgroundBlobs";
+import { AnimateOnScroll } from "@/components/AnimateOnScroll";
 
 type BillingCycle = "monthly" | "yearly";
 
@@ -132,10 +134,12 @@ export default function VisionXIXAIPricingPage() {
   const [billing, setBilling] = useState<BillingCycle>("monthly");
 
   return (
-    <div className="min-h-screen bg-white dark:bg-slate-900">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-violet-50/30 to-fuchsia-50/20 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 relative">
+      <BackgroundBlobs />
       <Navigation />
 
-      <section className="pt-28 pb-12 px-4 sm:px-6 lg:px-8">
+      <AnimateOnScroll>
+      <section className="pt-28 pb-12 px-4 sm:px-6 lg:px-8 relative">
         <div className="max-w-4xl mx-auto text-center">
           <h1 className="text-4xl sm:text-5xl font-bold text-slate-900 dark:text-slate-100 tracking-tight">
             One membership. Full stack.
@@ -148,7 +152,7 @@ export default function VisionXIXAIPricingPage() {
               onClick={() => setBilling("monthly")}
               className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                 billing === "monthly"
-                  ? "bg-indigo-600 text-white"
+                  ? "bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white"
                   : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"
               }`}
             >
@@ -158,7 +162,7 @@ export default function VisionXIXAIPricingPage() {
               onClick={() => setBilling("yearly")}
               className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2 ${
                 billing === "yearly"
-                  ? "bg-indigo-600 text-white"
+                  ? "bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white"
                   : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"
               }`}
             >
@@ -182,7 +186,9 @@ export default function VisionXIXAIPricingPage() {
           </div>
         </div>
       </section>
+      </AnimateOnScroll>
 
+      <AnimateOnScroll>
       <section id="plans" className="pb-20 px-4 sm:px-6 lg:px-8 scroll-mt-28">
         <div className="max-w-6xl mx-auto">
           <div className="grid md:grid-cols-2 xl:grid-cols-4 gap-6">
@@ -192,14 +198,14 @@ export default function VisionXIXAIPricingPage() {
               return (
                 <div
                   key={plan.id}
-                  className={`relative rounded-2xl border-2 p-6 flex flex-col ${
+                  className={`card-hover relative rounded-2xl border-2 p-6 flex flex-col ${
                     plan.popular
-                      ? "border-indigo-500 bg-indigo-50/50 dark:bg-indigo-950/30 shadow-lg shadow-indigo-500/10"
+                      ? "border-violet-500 bg-violet-50/50 dark:bg-violet-950/30 shadow-lg shadow-violet-500/10"
                       : "border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900"
                   }`}
                 >
                   {plan.popular && (
-                    <span className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full bg-indigo-600 text-xs font-semibold text-white">
+                    <span className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full bg-gradient-to-r from-violet-600 to-fuchsia-600 text-xs font-semibold text-white">
                       Most popular
                     </span>
                   )}
@@ -232,7 +238,7 @@ export default function VisionXIXAIPricingPage() {
                     {isEnterprise ? (
                       <a
                         href={`mailto:${SUPPORT_EMAIL}?subject=Vision XIX AI - Enterprise`}
-                        className="block w-full rounded-xl border-2 border-indigo-600 px-4 py-3 text-center text-sm font-semibold text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 transition-colors"
+                        className="block w-full rounded-xl border-2 border-violet-600 px-4 py-3 text-center text-sm font-semibold text-violet-600 hover:bg-violet-50 dark:hover:bg-violet-900/20 transition-colors"
                       >
                         Contact sales
                       </a>
@@ -243,14 +249,14 @@ export default function VisionXIXAIPricingPage() {
                           <a
                             href={stripeLink}
                             rel="noopener noreferrer"
-                            className="block w-full rounded-xl bg-indigo-600 px-4 py-3 text-center text-sm font-semibold text-white hover:bg-indigo-700 transition-colors"
+                            className="block w-full rounded-xl bg-violet-600 px-4 py-3 text-center text-sm font-semibold text-white hover:bg-violet-700 transition-colors"
                           >
                             Start free trial
                           </a>
                         ) : (
                           <Link
                             href="/auth/signup"
-                            className="block w-full rounded-xl bg-indigo-600 px-4 py-3 text-center text-sm font-semibold text-white hover:bg-indigo-700 transition-colors"
+                            className="block w-full rounded-xl bg-violet-600 px-4 py-3 text-center text-sm font-semibold text-white hover:bg-violet-700 transition-colors"
                           >
                             Start free trial
                           </Link>
@@ -282,6 +288,7 @@ export default function VisionXIXAIPricingPage() {
           </div>
         </div>
       </section>
+      </AnimateOnScroll>
 
       <section className="py-16 px-4 sm:px-6 lg:px-8 bg-slate-50 dark:bg-slate-800/50">
         <div className="max-w-4xl mx-auto">
@@ -289,23 +296,23 @@ export default function VisionXIXAIPricingPage() {
             Why a unified membership beats point solutions
           </h2>
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-5 text-center">
-              <SparklesIcon className="h-8 w-8 text-indigo-600 mx-auto mb-2" />
+            <div className="card-hover rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-5 text-center">
+              <SparklesIcon className="h-8 w-8 text-violet-600 mx-auto mb-2 icon-bounce" />
               <p className="font-semibold text-slate-900 dark:text-slate-100">Production-grade</p>
               <p className="text-sm text-slate-500 mt-1">Built for reliability, not demos. Your data, your cloud.</p>
             </div>
-            <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-5 text-center">
-              <BoltIcon className="h-8 w-8 text-indigo-600 mx-auto mb-2" />
+            <div className="card-hover rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-5 text-center">
+              <BoltIcon className="h-8 w-8 text-violet-600 mx-auto mb-2 icon-bounce" />
               <p className="font-semibold text-slate-900 dark:text-slate-100">White-label included</p>
               <p className="text-sm text-slate-500 mt-1">No +$39 add-on. Your brand, zero extra cost.</p>
             </div>
-            <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-5 text-center">
-              <RocketLaunchIcon className="h-8 w-8 text-indigo-600 mx-auto mb-2" />
+            <div className="card-hover rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-5 text-center">
+              <RocketLaunchIcon className="h-8 w-8 text-violet-600 mx-auto mb-2 icon-bounce" />
               <p className="font-semibold text-slate-900 dark:text-slate-100">More value per $</p>
               <p className="text-sm text-slate-500 mt-1">More messages and pages at comparable or lower price.</p>
             </div>
-            <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-5 text-center">
-              <BuildingOffice2Icon className="h-8 w-8 text-indigo-600 mx-auto mb-2" />
+            <div className="card-hover rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-5 text-center">
+              <BuildingOffice2Icon className="h-8 w-8 text-violet-600 mx-auto mb-2 icon-bounce" />
               <p className="font-semibold text-slate-900 dark:text-slate-100">Enterprise-ready</p>
               <p className="text-sm text-slate-500 mt-1">SOC2-ready, RBAC, optional self-host.</p>
             </div>
@@ -322,14 +329,14 @@ export default function VisionXIXAIPricingPage() {
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link
               href="/visionxix-ai-assistant"
-              className="inline-flex items-center gap-2 rounded-full bg-indigo-600 px-6 py-3 text-base font-semibold text-white hover:bg-indigo-700"
+              className="inline-flex items-center gap-2 rounded-full bg-violet-600 px-6 py-3 text-base font-semibold text-white hover:bg-violet-700"
             >
               Try live demo
               <ArrowRightIcon className="h-5 w-5" />
             </Link>
             <Link
               href="/visionxix-ai/pricing#plans"
-              className="inline-flex items-center gap-2 rounded-full border-2 border-indigo-600 px-6 py-3 text-base font-semibold text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-900/20"
+              className="inline-flex items-center gap-2 rounded-full border-2 border-violet-600 px-6 py-3 text-base font-semibold text-violet-600 hover:bg-violet-50 dark:hover:bg-violet-900/20"
             >
               View plans
             </Link>
@@ -339,23 +346,23 @@ export default function VisionXIXAIPricingPage() {
 
       <footer className="border-t border-slate-200 dark:border-slate-700 py-8 px-4">
         <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
-          <Link href="/" className="text-sm text-slate-600 dark:text-slate-400 hover:text-indigo-600">
+          <Link href="/" className="text-sm text-slate-600 dark:text-slate-400 hover:text-violet-600">
             Vision XIX Labs
           </Link>
           <div className="flex gap-6 text-sm text-slate-600 dark:text-slate-400">
-            <Link href="/visionxix-ai/pricing#plans" className="font-semibold text-indigo-600">
+            <Link href="/visionxix-ai/pricing#plans" className="font-semibold text-violet-600">
               Plans & Membership
             </Link>
-            <Link href="/visionxix-ai" className="hover:text-indigo-600">
+            <Link href="/visionxix-ai" className="hover:text-violet-600">
               Product
             </Link>
-            <Link href="/visionxix-ai/features" className="hover:text-indigo-600">
+            <Link href="/visionxix-ai/features" className="hover:text-violet-600">
               Features
             </Link>
-            <Link href="/visionxix-ai-assistant" className="hover:text-indigo-600">
+            <Link href="/visionxix-ai-assistant" className="hover:text-violet-600">
               Demo
             </Link>
-            <a href={`mailto:${SUPPORT_EMAIL}`} className="hover:text-indigo-600">
+            <a href={`mailto:${SUPPORT_EMAIL}`} className="hover:text-violet-600">
               Contact
             </a>
           </div>
