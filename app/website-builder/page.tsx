@@ -10,6 +10,9 @@ import {
   ChatBubbleLeftRightIcon,
   Squares2X2Icon,
   CheckCircleIcon,
+  ShieldCheckIcon,
+  BoltIcon,
+  QuestionMarkCircleIcon,
 } from "@heroicons/react/24/outline";
 import { Navigation } from "@/components/Navigation";
 
@@ -18,6 +21,15 @@ type WebsitePlan = {
   designLanguage: string;
   colorPalette: { primary: string; secondary: string; accent: string };
   siteName: string;
+  heroHtml?: string;
+  inferredOperatorProfile?: {
+    projectType: string;
+    hostingProvider: string;
+    trafficLevel: string;
+    hasCiCd: string;
+    publicExposure: string;
+    primaryGoal: string;
+  };
 };
 
 export default function WebsiteBuilderPage() {
@@ -26,6 +38,7 @@ export default function WebsiteBuilderPage() {
   const [plan, setPlan] = useState<WebsitePlan | null>(null);
   const [step, setStep] = useState<"prompt" | "plan" | "form">("prompt");
   const [loading, setLoading] = useState(false);
+  const [axiomLoading, setAxiomLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -82,6 +95,30 @@ export default function WebsiteBuilderPage() {
     }
   };
 
+  const handleRunAxiom = async () => {
+    if (!plan?.inferredOperatorProfile || axiomLoading) return;
+    setAxiomLoading(true);
+    setError(null);
+    try {
+      const res = await fetch("/api/website-builder/run-axiom", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          inferredProfile: plan.inferredOperatorProfile,
+          siteName: plan.siteName,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Failed");
+      const token = encodeURIComponent(data.token);
+      window.location.href = `/cloud-operator?token=${token}`;
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to start Axiom");
+    } finally {
+      setAxiomLoading(false);
+    }
+  };
+
   // Huly-inspired: generous white space, vibrant gradients, rounded-3xl, clean typography
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-violet-50/40 to-fuchsia-50/30 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
@@ -103,8 +140,11 @@ export default function WebsiteBuilderPage() {
           <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight text-slate-900 dark:text-slate-100 mb-4">
             Build your site with a single prompt
           </h1>
-          <p className="text-lg text-slate-600 dark:text-slate-400 max-w-2xl">
-            Describe what you need—we&apos;ll plan the structure, design, and deploy to cloud with CDN, SSL, and CI/CD.
+          <p className="text-lg text-slate-600 dark:text-slate-400 max-w-2xl mb-2">
+            Describe what you need—we&apos;ll plan the structure, generate a live preview, and deploy to cloud with CDN, SSL, and CI/CD.
+          </p>
+          <p className="text-sm text-slate-500 dark:text-slate-500">
+            Enterprise-ready: add infra analysis for cost optimization and automated deployment.
           </p>
         </header>
 
@@ -155,7 +195,7 @@ export default function WebsiteBuilderPage() {
               </div>
             </form>
 
-            {/* Cloud Operator CTA - Huly style */}
+            {/* Cloud integration hook — curiosity */}
             <div className="rounded-3xl border-2 border-slate-200/80 dark:border-slate-700/80 bg-white/60 dark:bg-slate-900/60 backdrop-blur-sm p-6 sm:p-8">
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <div className="flex items-start gap-4">
@@ -163,9 +203,9 @@ export default function WebsiteBuilderPage() {
                     <CloudIcon className="h-8 w-8 text-violet-600 dark:text-violet-400" />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-slate-900 dark:text-slate-100">Need infra optimization too?</h3>
+                    <h3 className="font-semibold text-slate-900 dark:text-slate-100">Site + cloud, together</h3>
                     <p className="text-sm text-slate-600 dark:text-slate-400 mt-0.5">
-                      Run Axiom before building for 30-day roadmap, playbooks, and infrastructure intelligence.
+                      After generating your plan, add Axiom for infra scores, CI/CD automation, and cost optimization.
                     </p>
                     <Link
                       href="/cloud-operator"
@@ -181,9 +221,27 @@ export default function WebsiteBuilderPage() {
           </section>
         )}
 
-        {/* Step 2: Plan preview */}
+        {/* Step 2: Plan preview + live hero + enterprise hooks */}
         {step === "plan" && plan && (
           <section className="space-y-8">
+            {/* Live preview */}
+            {plan.heroHtml && (
+              <div className="rounded-3xl border-2 border-slate-200/80 dark:border-slate-700/80 bg-white dark:bg-slate-900 overflow-hidden shadow-xl shadow-slate-200/50 dark:shadow-none">
+                <div className="px-6 py-3 border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/80 flex items-center gap-2">
+                  <div className="w-2 h-2 rounded-full bg-emerald-500" />
+                  <span className="text-xs font-medium text-slate-600 dark:text-slate-400">Live preview</span>
+                </div>
+                <div className="h-[340px] sm:h-[400px] overflow-auto">
+                  <iframe
+                    title="Hero preview"
+                    srcDoc={plan.heroHtml}
+                    sandbox="allow-same-origin"
+                    className="w-full h-full min-h-[320px] border-0"
+                  />
+                </div>
+              </div>
+            )}
+
             <div className="rounded-3xl border-2 border-emerald-200/80 dark:border-emerald-800/80 bg-emerald-50/50 dark:bg-emerald-900/20 p-6 sm:p-8">
               <div className="flex items-center gap-2 mb-4">
                 <CheckCircleIcon className="h-6 w-6 text-emerald-600" />
@@ -224,6 +282,69 @@ export default function WebsiteBuilderPage() {
                   </li>
                 ))}
               </ul>
+            </div>
+
+            {/* Infrastructure readiness — psychological hook */}
+            <div className="rounded-3xl border-2 border-amber-200/80 dark:border-amber-800/80 bg-gradient-to-br from-amber-50/80 to-orange-50/60 dark:from-amber-900/20 dark:to-orange-900/20 p-6 sm:p-8">
+              <h3 className="font-semibold text-slate-900 dark:text-slate-100 mb-1 flex items-center gap-2">
+                <ShieldCheckIcon className="h-5 w-5 text-amber-600" />
+                Infrastructure readiness
+              </h3>
+              <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">
+                What enterprise teams unlock before going live
+              </p>
+              <div className="grid sm:grid-cols-2 gap-3 mb-4">
+                <div className="flex items-center gap-3 rounded-xl bg-white/80 dark:bg-slate-800/80 px-4 py-3 border border-slate-200 dark:border-slate-700">
+                  <CheckCircleIcon className="h-5 w-5 text-emerald-500 shrink-0" />
+                  <span className="text-sm font-medium text-slate-700 dark:text-slate-300">CDN + SSL</span>
+                </div>
+                <div className="flex items-center gap-3 rounded-xl bg-white/80 dark:bg-slate-800/80 px-4 py-3 border border-slate-200 dark:border-slate-700">
+                  <QuestionMarkCircleIcon className="h-5 w-5 text-amber-500 shrink-0" />
+                  <span className="text-sm font-medium text-slate-700 dark:text-slate-300">CI/CD automation</span>
+                </div>
+                <div className="flex items-center gap-3 rounded-xl bg-white/80 dark:bg-slate-800/80 px-4 py-3 border border-slate-200 dark:border-slate-700">
+                  <QuestionMarkCircleIcon className="h-5 w-5 text-amber-500 shrink-0" />
+                  <span className="text-sm font-medium text-slate-700 dark:text-slate-300">Cost optimization</span>
+                </div>
+                <div className="flex items-center gap-3 rounded-xl bg-white/80 dark:bg-slate-800/80 px-4 py-3 border border-slate-200 dark:border-slate-700">
+                  <QuestionMarkCircleIcon className="h-5 w-5 text-amber-500 shrink-0" />
+                  <span className="text-sm font-medium text-slate-700 dark:text-slate-300">30-day roadmap</span>
+                </div>
+              </div>
+              <p className="text-xs text-slate-600 dark:text-slate-400 mb-4">
+                Teams that add infra analysis see faster deploys and lower risk. Run Axiom to unlock.
+              </p>
+              {plan.inferredOperatorProfile ? (
+                <button
+                  type="button"
+                  onClick={handleRunAxiom}
+                  disabled={axiomLoading}
+                  className="inline-flex items-center gap-2 rounded-2xl bg-slate-900 dark:bg-slate-100 px-5 py-2.5 font-semibold text-white dark:text-slate-900 hover:bg-slate-800 dark:hover:bg-slate-200 transition-colors disabled:opacity-60"
+                >
+                  {axiomLoading ? (
+                    <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                    </svg>
+                  ) : (
+                    <>
+                      <BoltIcon className="h-5 w-5" />
+                      Run Axiom with this project
+                    </>
+                  )}
+                </button>
+              ) : (
+                <Link
+                  href="/cloud-operator"
+                  className="inline-flex items-center gap-2 rounded-2xl bg-slate-900 dark:bg-slate-100 px-5 py-2.5 font-semibold text-white dark:text-slate-900 hover:bg-slate-800 dark:hover:bg-slate-200 transition-colors"
+                >
+                  <BoltIcon className="h-5 w-5" />
+                  Run Axiom Analysis
+                </Link>
+              )}
+              {error && plan.inferredOperatorProfile && (
+                <p className="mt-2 text-sm text-rose-600 dark:text-rose-400">{error}</p>
+              )}
             </div>
 
             {/* Get site form */}
@@ -283,15 +404,15 @@ export default function WebsiteBuilderPage() {
               </p>
             </form>
 
-            {/* Cloud Operator integration CTA */}
+            {/* Enterprise unlock CTA */}
             <div className="rounded-3xl border-2 border-violet-200/80 dark:border-violet-800/80 bg-gradient-to-br from-violet-50/80 to-fuchsia-50/60 dark:from-violet-900/30 dark:to-fuchsia-900/20 p-6 sm:p-8">
-              <h3 className="font-semibold text-slate-900 dark:text-slate-100 mb-2">Site + Cloud, together</h3>
+              <h3 className="font-semibold text-slate-900 dark:text-slate-100 mb-2">Full automation, one step</h3>
               <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">
-                Get infrastructure scores, CI/CD YAML, cost optimization, and 30-day roadmap for this project.
+                Deploy your site, then run Axiom for infrastructure scores, CI/CD YAML, cost optimization, and a 30-day roadmap.
               </p>
               <Link
                 href="/cloud-operator"
-                className="inline-flex items-center gap-2 rounded-2xl bg-slate-900 dark:bg-slate-100 px-5 py-2.5 font-semibold text-white dark:text-slate-900 hover:bg-slate-800 dark:hover:bg-slate-200 transition-colors"
+                className="inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-violet-600 to-fuchsia-600 px-5 py-2.5 font-semibold text-white shadow-lg shadow-violet-500/30 hover:shadow-violet-500/40 hover:from-violet-500 hover:to-fuchsia-500 transition-all"
               >
                 <CloudIcon className="h-5 w-5" />
                 Run Axiom Analysis

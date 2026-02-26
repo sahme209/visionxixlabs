@@ -6,6 +6,15 @@ export type WebsitePlan = {
   designLanguage: string;
   colorPalette: { primary: string; secondary: string; accent: string };
   siteName: string;
+  heroHtml?: string;
+  inferredOperatorProfile?: {
+    projectType: string;
+    hostingProvider: string;
+    trafficLevel: string;
+    hasCiCd: string;
+    publicExposure: string;
+    primaryGoal: string;
+  };
 };
 
 function parseJSON<T>(text: string): Partial<T> {
@@ -20,7 +29,7 @@ function parseJSON<T>(text: string): Partial<T> {
 /**
  * POST /api/website-builder/plan
  * Body: { prompt: string }
- * Returns: { sections, designLanguage, colorPalette, siteName }
+ * Returns: { sections, designLanguage, colorPalette, siteName, heroHtml, inferredOperatorProfile }
  */
 export async function POST(req: NextRequest) {
   try {
@@ -36,29 +45,35 @@ export async function POST(req: NextRequest) {
     }
 
     const openai = new OpenAI({ apiKey });
-    const completion = await openai.chat.completions.create({
+
+    // 1. Plan (sections, design, colors, inferred infra profile)
+    const planCompletion = await openai.chat.completions.create({
       model: process.env.MODEL_NAME || "gpt-4o-mini",
       messages: [
         {
           role: "system",
-          content: `You are a website builder AI. Given a user prompt describing the site they want, output a JSON object with:
-- sections: array of { id, name, description } for each page section (e.g. Hero, Services, About, Process, Testimonials, FAQ, Contact)
-- designLanguage: 1-2 sentence aesthetic (e.g. "Clean, professional, trustworthy")
-- colorPalette: { primary, secondary, accent } hex colors (e.g. "#1e3a5f", "#f97316", "#06b6d4")
+          content: `You are a website builder AI. Given a user prompt, output a JSON object with:
+- sections: array of { id, name, description } (e.g. Hero, Services, About, Process, Testimonials, FAQ, Contact)
+- designLanguage: 1-2 sentence aesthetic
+- colorPalette: { primary, secondary, accent } hex colors
 - siteName: short name for the site
+- inferredOperatorProfile: { projectType, hostingProvider, trafficLevel, hasCiCd, publicExposure, primaryGoal }
+  projectType: "SaaS"|"Static Site"|"E-commerce"|"Internal Tool"|"API"|"Microservices"
+  hostingProvider: "AWS"|"GCP"|"Azure"|"Vercel"|"Other"
+  trafficLevel: "Low"|"Medium"|"High"
+  hasCiCd: "yes"|"no"
+  publicExposure: "API"|"Public Web"|"Internal Only"
+  primaryGoal: "Launch faster"|"Reduce costs"|"Improve security"|"Scale architecture"
 
-Output ONLY valid JSON. No markdown, no code blocks.`,
+Output ONLY valid JSON. No markdown.`,
         },
-        {
-          role: "user",
-          content: prompt,
-        },
+        { role: "user", content: prompt },
       ],
       temperature: 0.5,
     });
 
-    const text = completion.choices[0]?.message?.content?.trim() || "{}";
-    const parsed = parseJSON<WebsitePlan>(text);
+    const planText = planCompletion.choices[0]?.message?.content?.trim() || "{}";
+    const parsed = parseJSON<WebsitePlan>(planText);
 
     const sections = Array.isArray(parsed.sections)
       ? parsed.sections.slice(0, 10).map((s) => ({
@@ -73,15 +88,61 @@ Output ONLY valid JSON. No markdown, no code blocks.`,
           { id: "contact", name: "Contact", description: "Get in touch form" },
         ];
 
+    const siteName = String(parsed.siteName ?? "").trim() || "Your Site";
+    const colorPalette = {
+      primary: String(parsed.colorPalette?.primary ?? "#1e3a5f").trim(),
+      secondary: String(parsed.colorPalette?.secondary ?? "#64748b").trim(),
+      accent: String(parsed.colorPalette?.accent ?? "#f97316").trim(),
+    };
+
+    const inferredOperatorProfile = parsed.inferredOperatorProfile
+      ? {
+          projectType: String(parsed.inferredOperatorProfile.projectType ?? "Static Site").trim(),
+          hostingProvider: String(parsed.inferredOperatorProfile.hostingProvider ?? "Vercel").trim(),
+          trafficLevel: String(parsed.inferredOperatorProfile.trafficLevel ?? "Low").trim(),
+          hasCiCd: String(parsed.inferredOperatorProfile.hasCiCd ?? "no").trim(),
+          publicExposure: String(parsed.inferredOperatorProfile.publicExposure ?? "Public Web").trim(),
+          primaryGoal: String(parsed.inferredOperatorProfile.primaryGoal ?? "Launch faster").trim(),
+        }
+      : undefined;
+
+    // 2. Hero HTML preview (GPT generates self-contained HTML)
+    const heroCompletion = await openai.chat.completions.create({
+      model: process.env.MODEL_NAME || "gpt-4o-mini",
+      messages: [
+        {
+          role: "system",
+          content: `You generate a self-contained HTML hero section for a website. Output ONLY raw HTML (no markdown, no code blocks). Use inline styles. The HTML must be a single block: a hero section with:
+- A compelling headline for "${siteName}"
+- A subheadline (1-2 sentences)
+- A primary CTA button
+- Use colors: primary ${colorPalette.primary}, accent ${colorPalette.accent}
+- Modern, professional layout
+- Max 80 lines of HTML
+- No script tags, no external links
+- Use system fonts (sans-serif)`,
+        },
+        {
+          role: "user",
+          content: `Create hero HTML for: ${prompt}. Design: ${parsed.designLanguage ?? "Clean, professional"}`,
+        },
+      ],
+      temperature: 0.6,
+    });
+
+    let heroHtml = heroCompletion.choices[0]?.message?.content?.trim() ?? "";
+    if (heroHtml) {
+      heroHtml = heroHtml.replace(/```html?\s*/gi, "").replace(/```\s*/g, "").trim();
+      if (!heroHtml.startsWith("<")) heroHtml = "";
+    }
+
     return NextResponse.json({
       sections,
       designLanguage: String(parsed.designLanguage ?? "").trim() || "Clean, professional, modern",
-      colorPalette: {
-        primary: String(parsed.colorPalette?.primary ?? "#1e3a5f").trim(),
-        secondary: String(parsed.colorPalette?.secondary ?? "#64748b").trim(),
-        accent: String(parsed.colorPalette?.accent ?? "#f97316").trim(),
-      },
-      siteName: String(parsed.siteName ?? "").trim() || "Your Site",
+      colorPalette,
+      siteName,
+      heroHtml: heroHtml || undefined,
+      inferredOperatorProfile,
     });
   } catch (e) {
     console.error("[website-builder plan]", e);
