@@ -95,16 +95,16 @@ export default function CloudStudioResultPage() {
         </Link>
         <div className="mb-6 rounded-2xl border border-indigo-200 dark:border-indigo-800 bg-indigo-50/60 dark:bg-indigo-900/30 p-4">
           <p className="text-xs font-semibold text-indigo-900 dark:text-indigo-100 mb-2">
-            Cloud Studio is now part of Axiom.
+            Cloud Studio is legacy service-mode analysis.
           </p>
           <p className="text-xs text-indigo-900/80 dark:text-indigo-200 mb-3">
-            For a unified infrastructure score, risk view, and a 30-day optimization roadmap, run the full Axiom analysis.
+            For full Infrastructure Advantage Model™ scoring and a 30-day roadmap, use Axiom.
           </p>
           <Link
             href="/cloud-operator"
             className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-indigo-700"
           >
-            Run Full Axiom Analysis
+            Run Axiom
             <ArrowLeftIcon className="h-3 w-3 rotate-180" />
           </Link>
         </div>
