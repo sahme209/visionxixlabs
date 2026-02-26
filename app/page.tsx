@@ -80,38 +80,30 @@ export default function Home() {
       {/* Hero Section */}
       <section className="pt-32 pb-16 px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto text-center">
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
-            <span className="text-indigo-600 dark:text-indigo-400">Cloud &amp; AI Engineering</span>
-            <span className="text-slate-900 dark:text-slate-100"> for Modern Infrastructure</span>
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight text-slate-900 dark:text-slate-100">
+            Axiom — Autonomous Infrastructure Intelligence
           </h1>
           <p className="text-lg md:text-xl text-slate-600 dark:text-slate-400 mb-8 max-w-3xl mx-auto">
-            We design, automate, optimize, and secure cloud platforms across AWS, Azure, and Google Cloud — with production-grade AI integration and DevOps automation.
+            Analyze. Score. Optimize. Automate your cloud across AWS, Azure, GCP, and AI stacks with a single autonomous operator.
           </p>
           <div className="flex flex-wrap justify-center gap-4 mb-6">
             <Link
-              href="/free-review"
+              href="/cloud-operator"
               className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all"
             >
-              Free Cloud &amp; AI Review
+              Run Axiom Analysis
               <ArrowRightIcon className="ml-2 h-5 w-5" />
             </Link>
             <Link
               href="/contact"
               className="inline-flex items-center px-6 py-3 bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 rounded-xl font-semibold shadow-md hover:opacity-90 transition-opacity"
             >
-              Talk to an Engineer
-              <ArrowRightIcon className="ml-2 h-5 w-5" />
-            </Link>
-            <Link
-              href="/cloud-solutions"
-              className="inline-flex items-center px-6 py-3 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 rounded-xl font-semibold border border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600 transition-colors"
-            >
-              Explore Solutions
+              Talk to an Architect
               <ArrowRightIcon className="ml-2 h-5 w-5" />
             </Link>
           </div>
           <p className="text-sm text-slate-500 dark:text-slate-400 mb-2">
-            No obligation · 30-minute review · Discovery prep and custom demo outline
+            No obligation · Operator-only analysis · No changes to your cloud without approval
           </p>
           <div className="flex flex-wrap justify-center gap-3 mb-4">
             <Link

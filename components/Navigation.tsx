@@ -29,10 +29,18 @@ const solutionsLinks = [
   { href: "/case-studies", label: "Case Studies" },
 ];
 
+const productLinks = [
+  { href: "/cloud-operator", label: "Axiom — Autonomous Infrastructure Intelligence", highlight: true },
+  { href: "/request", label: "AI Website Builder", highlight: false },
+  { href: "/visionxix-ai", label: "Vision XIX AI", highlight: false },
+  { href: "/dashboard", label: "Bots & Assistants", highlight: false },
+];
+
 export function Navigation() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [cloudOpen, setCloudOpen] = useState(false);
   const [solutionsOpen, setSolutionsOpen] = useState(false);
+  const [productsOpen, setProductsOpen] = useState(false);
   const navRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -40,6 +48,7 @@ export function Navigation() {
       if (navRef.current && !navRef.current.contains(event.target as Node)) {
         setCloudOpen(false);
         setSolutionsOpen(false);
+        setProductsOpen(false);
       }
     }
     document.addEventListener("mousedown", handleClickOutside);
@@ -91,7 +100,7 @@ export function Navigation() {
             <div className="relative">
               <button
                 type="button"
-                onClick={() => { setSolutionsOpen(!solutionsOpen); setCloudOpen(false); }}
+                onClick={() => { setSolutionsOpen(!solutionsOpen); setCloudOpen(false); setProductsOpen(false); }}
                 className="inline-flex items-center px-4 py-2 text-slate-700 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 rounded-lg transition-all text-sm font-medium"
               >
                 Solutions
@@ -112,17 +121,39 @@ export function Navigation() {
                 </div>
               )}
             </div>
+            <div className="relative">
+              <button
+                type="button"
+                onClick={() => { setProductsOpen(!productsOpen); setCloudOpen(false); setSolutionsOpen(false); }}
+                className="inline-flex items-center px-4 py-2 text-slate-700 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 rounded-lg transition-all text-sm font-medium"
+              >
+                Products
+                <ChevronDownIcon className={`ml-1 h-4 w-4 transition-transform ${productsOpen ? "rotate-180" : ""}`} />
+              </button>
+              {productsOpen && (
+                <div className="absolute left-0 top-full mt-1 w-64 py-2 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-lg">
+                  {productLinks.map((item) => (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      onClick={() => setProductsOpen(false)}
+                      className={`block px-4 py-2 text-sm ${
+                        item.highlight
+                          ? "font-semibold text-indigo-700 dark:text-indigo-300 bg-indigo-50 dark:bg-indigo-900/30"
+                          : "text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/50"
+                      } hover:text-indigo-600 dark:hover:text-indigo-400`}
+                    >
+                      {item.label}
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </div>
             <Link
               href="/insights"
               className="px-4 py-2 text-slate-700 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 rounded-lg transition-all text-sm font-medium"
             >
               Insights
-            </Link>
-            <Link
-              href="/apps"
-              className="px-4 py-2 text-slate-700 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 rounded-lg transition-all text-sm font-medium"
-            >
-              Products
             </Link>
             <Link
               href="/#about"
@@ -191,7 +222,13 @@ export function Navigation() {
               <Link href="/cloud-review" onClick={() => setMobileMenuOpen(false)} className="px-4 py-2 text-slate-700 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 rounded-lg text-sm font-medium">Cloud Review Session</Link>
               <Link href="/insights" onClick={() => setMobileMenuOpen(false)} className="px-4 py-2 text-slate-700 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 rounded-lg text-sm font-medium">Insights</Link>
               <Link href="/case-studies" onClick={() => setMobileMenuOpen(false)} className="px-4 py-2 text-slate-700 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 rounded-lg text-sm font-medium">Case Studies</Link>
-              <Link href="/apps" onClick={() => setMobileMenuOpen(false)} className="px-4 py-2 text-slate-700 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 rounded-lg text-sm font-medium">Products</Link>
+              <p className="px-4 pt-3 text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Products</p>
+              <Link href="/cloud-operator" onClick={() => setMobileMenuOpen(false)} className="px-4 py-2 text-slate-900 dark:text-slate-100 bg-indigo-50 dark:bg-indigo-900/40 border border-indigo-200 dark:border-indigo-700 rounded-lg text-sm font-semibold">
+                Axiom — Autonomous Infrastructure Intelligence
+              </Link>
+              <Link href="/request" onClick={() => setMobileMenuOpen(false)} className="px-4 py-2 text-slate-700 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 rounded-lg text-sm font-medium">AI Website Builder</Link>
+              <Link href="/visionxix-ai" onClick={() => setMobileMenuOpen(false)} className="px-4 py-2 text-slate-700 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 rounded-lg text-sm font-medium">Vision XIX AI</Link>
+              <Link href="/dashboard" onClick={() => setMobileMenuOpen(false)} className="px-4 py-2 text-slate-700 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 rounded-lg text-sm font-medium">Bots &amp; Assistants</Link>
               <Link href="/#about" onClick={() => setMobileMenuOpen(false)} className="px-4 py-2 text-slate-700 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 rounded-lg text-sm font-medium">About</Link>
               <Link href="/press" onClick={() => setMobileMenuOpen(false)} className="px-4 py-2 text-slate-700 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 rounded-lg text-sm font-medium">Press &amp; Media</Link>
               <Link href="/request"
