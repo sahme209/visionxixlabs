@@ -268,7 +268,7 @@ function CloudOperatorPageInner() {
               </div>
               <div className="rounded-xl bg-white dark:bg-slate-900 shadow border border-slate-200 dark:border-slate-700 p-4 text-center">
                 <p className="text-xs font-medium text-slate-500 uppercase tracking-wide">
-                  Estimated Savings
+                  Estimated Annual Savings
                 </p>
                 <p className="mt-2 text-lg font-semibold text-slate-900 dark:text-slate-100">
                   {status.axiomEstimatedAnnualSavings != null
@@ -288,7 +288,7 @@ function CloudOperatorPageInner() {
               </div>
               <div className="rounded-xl bg-white dark:bg-slate-900 shadow border border-slate-200 dark:border-slate-700 p-4 text-center">
                 <p className="text-xs font-medium text-slate-500 uppercase tracking-wide">
-                  Friction Index
+                  Deployment Friction Index
                 </p>
                 <p className="mt-2 text-sm font-semibold text-slate-900 dark:text-slate-100">
                   {status.deploymentFrictionIndex != null
@@ -306,7 +306,7 @@ function CloudOperatorPageInner() {
               </div>
               <div className="rounded-xl bg-white dark:bg-slate-900 shadow border border-slate-200 dark:border-slate-700 p-4 text-center">
                 <p className="text-xs font-medium text-slate-500 uppercase tracking-wide">
-                  Automation Readiness
+                  Automation Readiness Score
                 </p>
                 <p className="mt-2 text-sm font-semibold text-slate-900 dark:text-slate-100">
                   {status.automationReadinessScore != null
