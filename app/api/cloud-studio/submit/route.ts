@@ -85,7 +85,6 @@ export async function POST(req: NextRequest) {
           },
           // Legacy keys (preserved for backward compatibility)
           serviceType,
-          form,
           tier,
           output: null,
           outputStatus: "pending",
