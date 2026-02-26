@@ -111,10 +111,10 @@ const PRIMARY_GOALS = [
   "Scale architecture",
 ] as const;
 const OPERATOR_TIERS = [
-  { id: "free", label: "Free — Summary only" },
-  { id: "pro", label: "Pro — Full technical outputs" },
-  { id: "growth", label: "Growth — Continuous reassessment" },
-  { id: "enterprise", label: "Enterprise — Strategic engagement" },
+  { id: "free", label: "Analysis" },
+  { id: "pro", label: "Roadmap" },
+  { id: "growth", label: "Automation Signals" },
+  { id: "enterprise", label: "Strategic Advisory" },
 ] as const;
 
 function CloudOperatorPageInner() {
