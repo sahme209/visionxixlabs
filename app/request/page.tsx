@@ -2,7 +2,6 @@
 
 import { FormEvent, useState } from "react";
 import Link from "next/link";
-import { useState } from "react";
 import {
   ArrowLeftIcon,
   EnvelopeIcon,
@@ -11,25 +10,13 @@ import {
   DocumentTextIcon,
   GlobeAltIcon,
   SparklesIcon,
-  CloudIcon,
-  KeyIcon,
 } from "@heroicons/react/24/outline";
 import { WEBSITE_BUILD_TIERS } from "@/lib/websiteBuildPricing";
-import { INFRASTRUCTURE_ADDONS } from "@/lib/infrastructureAddOns";
 import { Navigation } from "@/components/Navigation";
-
-const CLOUD_PROVIDERS = [
-  { id: "vercel", label: "Vercel (default preview)" },
-  { id: "aws", label: "AWS" },
-  { id: "azure", label: "Azure" },
-  { id: "gcp", label: "GCP" },
-] as const;
 
 export default function RequestPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [useMyCloud, setUseMyCloud] = useState(false);
-  const [cloudProvider, setCloudProvider] = useState<string>("vercel");
   const [selectedTier, setSelectedTier] = useState<string>("starter");
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
@@ -47,14 +34,6 @@ export default function RequestPage() {
     const hasDomain = formData.get("hasDomain") === "yes";
     const domainName = formData.get("domainName")?.toString() || "";
     const tier = formData.get("tier")?.toString() || "starter";
-    const cloud = formData.get("cloudProvider")?.toString() || "vercel";
-    const useCloud = formData.get("useMyCloud") === "yes";
-    const addOns = formData.getAll("addOns").filter((v): v is string => typeof v === "string");
-    const awsAccessKey = formData.get("awsAccessKey")?.toString();
-    const awsSecretKey = formData.get("awsSecretKey")?.toString();
-    const awsBucket = formData.get("awsBucket")?.toString();
-    const azureServicePrincipal = formData.get("azureServicePrincipal")?.toString();
-    const gcpServiceAccount = formData.get("gcpServiceAccount")?.toString();
 
     try {
       const res = await fetch("/api/leads", {
@@ -69,14 +48,6 @@ export default function RequestPage() {
           hasDomain,
           domainName,
           tier,
-          cloudProvider: cloud,
-          useMyCloud: useCloud,
-          addOns,
-          awsAccessKey: useCloud && cloud === "aws" ? awsAccessKey : undefined,
-          awsSecretKey: useCloud && cloud === "aws" ? awsSecretKey : undefined,
-          awsBucket: useCloud && cloud === "aws" ? awsBucket : undefined,
-          azureServicePrincipal: useCloud && cloud === "azure" ? azureServicePrincipal : undefined,
-          gcpServiceAccount: useCloud && cloud === "gcp" ? gcpServiceAccount : undefined,
         }),
       });
 
@@ -106,13 +77,13 @@ export default function RequestPage() {
         <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-700 p-8">
           <header className="mb-8 text-center">
             <div className="inline-flex items-center justify-center rounded-full bg-indigo-100 dark:bg-indigo-900/40 px-4 py-2 text-xs font-semibold text-indigo-700 dark:text-indigo-300 mb-4">
-              AI Website Builder
+              AI + Enterprise Cloud Deployment Platform
             </div>
             <h1 className="text-3xl font-bold text-slate-900 dark:text-slate-100 mb-2">
-              Describe your business. Get a live website preview.
+              AI-built site. Enterprise cloud deployment.
             </h1>
             <p className="text-slate-600 dark:text-slate-400">
-              AI generates your 4-page website in minutes. Preview it live—no code, no complexity.
+              Generate your site with AI. Deploy on Managed Cloud, AWS, Azure, or GCP—CDN, SSL, CI/CD.
             </p>
           </header>
 
@@ -226,66 +197,6 @@ export default function RequestPage() {
             </div>
 
             <div>
-              <label className="flex items-center gap-2 text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                <CloudIcon className="h-4 w-4" />
-                Preferred cloud provider
-              </label>
-              <select
-                name="cloudProvider"
-                value={cloudProvider}
-                onChange={(e) => setCloudProvider(e.target.value)}
-                className="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 px-3 py-2 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-indigo-500"
-              >
-                {CLOUD_PROVIDERS.map((p) => (
-                  <option key={p.id} value={p.id}>{p.label}</option>
-                ))}
-              </select>
-            </div>
-
-            <div>
-              <label className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-2 block">
-                Use my cloud account?
-              </label>
-              <div className="flex gap-6">
-                <label className="flex items-center gap-2">
-                  <input type="radio" name="useMyCloud" value="yes" checked={useMyCloud} onChange={() => setUseMyCloud(true)} />
-                  <span className="text-sm text-slate-600 dark:text-slate-400">Yes</span>
-                </label>
-                <label className="flex items-center gap-2">
-                  <input type="radio" name="useMyCloud" value="no" checked={!useMyCloud} onChange={() => setUseMyCloud(false)} />
-                  <span className="text-sm text-slate-600 dark:text-slate-400">No (use platform-managed)</span>
-                </label>
-              </div>
-            </div>
-
-            {useMyCloud && cloudProvider === "aws" && (
-              <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 p-4 space-y-3">
-                <h3 className="flex items-center gap-2 text-sm font-semibold text-slate-700 dark:text-slate-300">
-                  <KeyIcon className="h-4 w-4" /> AWS credentials (temporary)
-                </h3>
-                <input name="awsAccessKey" type="text" placeholder="Access Key" className="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 px-3 py-2 text-sm" />
-                <input name="awsSecretKey" type="password" placeholder="Secret Key" className="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 px-3 py-2 text-sm" />
-                <input name="awsBucket" type="text" placeholder="S3 Bucket name" className="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 px-3 py-2 text-sm" />
-              </div>
-            )}
-            {useMyCloud && cloudProvider === "azure" && (
-              <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 p-4">
-                <h3 className="flex items-center gap-2 text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
-                  <KeyIcon className="h-4 w-4" /> Azure Service Principal JSON
-                </h3>
-                <textarea name="azureServicePrincipal" rows={4} placeholder="Paste Service Principal JSON" className="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 px-3 py-2 text-sm font-mono" />
-              </div>
-            )}
-            {useMyCloud && cloudProvider === "gcp" && (
-              <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 p-4">
-                <h3 className="flex items-center gap-2 text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
-                  <KeyIcon className="h-4 w-4" /> GCP Service Account JSON
-                </h3>
-                <textarea name="gcpServiceAccount" rows={4} placeholder="Paste Service Account JSON" className="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 px-3 py-2 text-sm font-mono" />
-              </div>
-            )}
-
-            <div>
               <label className="flex items-center gap-2 text-sm font-medium text-slate-700 dark:text-slate-300 mb-3">
                 <SparklesIcon className="h-4 w-4" />
                 Choose your tier
@@ -300,7 +211,7 @@ export default function RequestPage() {
                     <div>
                       <span className="font-semibold text-slate-900 dark:text-slate-100">{t.name}</span>
                       <span className="ml-2 text-indigo-600 dark:text-indigo-400 font-medium">
-                        {t.id === "done_for_you" ? t.priceRange : `$${t.price}`}
+                        {t.id === "enterprise" ? t.priceRange : `$${t.price}`}
                       </span>
                       <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{t.description}</p>
                     </div>
@@ -308,22 +219,6 @@ export default function RequestPage() {
                 ))}
               </div>
             </div>
-
-            {(selectedTier === "professional" || selectedTier === "done_for_you") && (
-              <div>
-                <label className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-2 block">
-                  Infrastructure add-ons
-                </label>
-                <div className="space-y-2">
-                  {INFRASTRUCTURE_ADDONS[cloudProvider as keyof typeof INFRASTRUCTURE_ADDONS]?.filter((a) => (selectedTier === "done_for_you" ? true : a.tier === selectedTier)).map((a) => (
-                    <label key={a.id} className="flex items-center gap-2">
-                      <input type="checkbox" name="addOns" value={a.id} />
-                      <span className="text-sm text-slate-600 dark:text-slate-400">{a.label}</span>
-                    </label>
-                  )) || null}
-                </div>
-              </div>
-            )}
 
             {error && (
               <div className="rounded-lg border border-red-300 bg-red-50 dark:border-red-700 dark:bg-red-900/30 px-4 py-3 text-sm text-red-800 dark:text-red-200">
@@ -345,12 +240,12 @@ export default function RequestPage() {
                   Submitting...
                 </>
               ) : (
-                "Get my AI-built website preview"
+                "Get my AI-built site preview"
               )}
             </button>
 
             <p className="text-center text-xs text-slate-500 dark:text-slate-400">
-              Preview in 1–3 minutes. Link sent by email and shown on the next page.
+              Managed cloud preview in 1–3 minutes. Select AWS/Azure/GCP on the next page if needed.
             </p>
           </form>
         </div>

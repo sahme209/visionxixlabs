@@ -8,7 +8,7 @@ import {
   ChevronDownIcon,
   ChevronUpIcon,
 } from "@heroicons/react/24/outline";
-import { WEBSITE_BUILD_TIERS } from "@/lib/websiteBuildPricing";
+import { WEBSITE_BUILD_TIERS, resolveTier } from "@/lib/websiteBuildPricing";
 
 type Lead = {
   id: string;
@@ -181,7 +181,7 @@ export default function AdminLeadsPage() {
                     View AI output
                   </button>
                   <select
-                    value={(form.tier as string) || "starter"}
+                    value={resolveTier((form.tier as string) || "starter")}
                     onChange={(e) => {
                       const v = e.target.value;
                       if (v && v !== (form.tier as string)) upgradeTier(lead.id, v);

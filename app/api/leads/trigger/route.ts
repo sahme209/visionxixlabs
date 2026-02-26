@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { verifyStarterToken } from "@/lib/starterToken";
 import { generateAIStarterPackage } from "@/lib/aiWebsiteStarter";
+import { resolveTier } from "@/lib/websiteBuildPricing";
 import { deployPreview } from "@/lib/previewDeploy";
 import type { AIStarterPackage } from "@/lib/aiWebsiteStarter";
 
@@ -76,19 +77,14 @@ export async function POST(req: NextRequest) {
 
     const projectName = `preview-${leadId.slice(-8)}`;
     const form = (payload.form as Record<string, unknown>) || {};
-    const cloudProvider = (form.cloudProvider as string) || "vercel";
-    const tier = (form.tier as string) || "starter";
-    const deployResult = await deployPreview(
-      pkg,
-      projectName,
-      ["vercel", "aws", "azure", "gcp"].includes(cloudProvider) ? cloudProvider : "vercel"
-    );
+    const tier = resolveTier((form.tier as string) || "starter");
+    // Managed cloud (vercel) for initial preview; user selects AWS/Azure/GCP after preview
+    const deployResult = await deployPreview(pkg, projectName, "vercel");
 
     const cdnEnabled = tier !== "starter";
     const sslEnabled = true;
-    const cicdEnabled = tier === "professional" || tier === "done_for_you";
-    const securityLevel = tier === "done_for_you" ? "hardened" : tier === "professional" ? "standard" : "basic";
-    const addOns = (form.addOns as string[]) || [];
+    const cicdEnabled = tier === "professional" || tier === "enterprise";
+    const securityLevel = tier === "enterprise" ? "hardened" : tier === "professional" ? "standard" : "basic";
 
     const finalPayload = {
       ...(payload as Record<string, unknown>),
@@ -96,12 +92,12 @@ export async function POST(req: NextRequest) {
       previewUrl: deployResult.url,
       vercelDeploymentId: deployResult.deploymentId,
       infrastructure: {
-        cloudProvider,
+        cloudProvider: "managed", // default; user selects on thank-you page
         cdnEnabled,
         sslEnabled,
         cicdEnabled,
         securityLevel,
-        addOns,
+        addOns: [],
       },
     };
 
@@ -131,13 +127,13 @@ export async function POST(req: NextRequest) {
           body: JSON.stringify({
             from: fromHeader,
             to: [toEmail],
-            subject: "Your website preview is ready",
-            text: `Hi ${name},\n\nYour website preview is ready!\n\nView it here: ${deployResult.url}\n\nIf you have questions about domains or going live, just reply to this email.\n\n— Vision XIX Labs`,
+            subject: "Your AI + Enterprise Cloud preview is ready",
+            text: `Hi ${name},\n\nYour AI-built site is deployed on managed cloud and ready to view.\n\nView it here: ${deployResult.url}\n\nSelect AWS, Azure, or GCP on the thank-you page if you want a different cloud provider.\n\n— Vision XIX Labs`,
             html: `
               <div style="font-family: Arial, sans-serif; max-width: 600px;">
-                <h2 style="color: #4f46e5;">Your website preview is ready</h2>
+                <h2 style="color: #4f46e5;">Your AI + Enterprise Cloud preview is ready</h2>
                 <p>Hi ${name},</p>
-                <p>Your website preview is ready. Click below to view it:</p>
+                <p>Your AI-built site is deployed on managed cloud. Click below to view it:</p>
                 <p><a href="${deployResult.url}" style="display: inline-block; background: #4f46e5; color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none;">View preview</a></p>
                 <p><a href="${deployResult.url}">${deployResult.url}</a></p>
                 <p>If you have questions about domains or going live, just reply to this email.</p>

@@ -1,5 +1,5 @@
--- CreateTable
-CREATE TABLE "Lead" (
+-- CreateTable (idempotent: skip if Lead already exists)
+CREATE TABLE IF NOT EXISTS "Lead" (
     "id" TEXT NOT NULL,
     "email" TEXT NOT NULL,
     "name" TEXT,
@@ -12,11 +12,11 @@ CREATE TABLE "Lead" (
     CONSTRAINT "Lead_pkey" PRIMARY KEY ("id")
 );
 
--- CreateIndex
-CREATE INDEX "Lead_source_idx" ON "Lead"("source");
+-- CreateIndex (idempotent)
+CREATE INDEX IF NOT EXISTS "Lead_source_idx" ON "Lead"("source");
 
 -- CreateIndex
-CREATE INDEX "Lead_status_idx" ON "Lead"("status");
+CREATE INDEX IF NOT EXISTS "Lead_status_idx" ON "Lead"("status");
 
 -- CreateIndex
-CREATE INDEX "Lead_createdAt_idx" ON "Lead"("createdAt");
+CREATE INDEX IF NOT EXISTS "Lead_createdAt_idx" ON "Lead"("createdAt");

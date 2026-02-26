@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/db";
-import { WEBSITE_BUILD_TIERS } from "@/lib/websiteBuildPricing";
+import { WEBSITE_BUILD_TIERS, resolveTier } from "@/lib/websiteBuildPricing";
 
 /**
  * POST /api/leads/[id]/upgrade-tier — Admin: update lead tier.
@@ -26,8 +26,9 @@ export async function POST(
     return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
   }
 
-  const tier = String(body.tier || "").trim();
-  if (!tier || !(tier in WEBSITE_BUILD_TIERS)) {
+  const rawTier = String(body.tier || "").trim();
+  const tier = resolveTier(rawTier);
+  if (!(tier in WEBSITE_BUILD_TIERS)) {
     return NextResponse.json({ error: "Invalid tier" }, { status: 400 });
   }
 

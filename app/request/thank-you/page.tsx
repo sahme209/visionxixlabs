@@ -33,6 +33,8 @@ export default function ThankYouPage() {
     securityLevel?: string;
     addOns?: string[];
   } | null>(null);
+  const [infraProvider, setInfraProvider] = useState<string>("managed");
+  const [infraSaving, setInfraSaving] = useState(false);
 
   const fetchStatus = useCallback(async () => {
     if (!token) return;
@@ -44,7 +46,9 @@ export default function ThankYouPage() {
         setPreviewUrl(data.previewUrl || null);
         setLeadId(data.leadId || null);
         setRevisionsRemaining(data.revisionsRemaining ?? null);
-        setInfrastructure(data.infrastructure || null);
+        const inf = data.infrastructure || null;
+        setInfrastructure(inf);
+        if (inf?.cloudProvider) setInfraProvider(String(inf.cloudProvider));
         return data;
       }
     } catch {
@@ -79,7 +83,10 @@ export default function ThankYouPage() {
         setHasDomain(Boolean(d.form.hasDomain));
         setDomainName(String(d.form.domainName || ""));
       }
-      if (d?.infrastructure) setInfrastructure(d.infrastructure);
+      if (d?.infrastructure) {
+        setInfrastructure(d.infrastructure);
+        if (d.infrastructure.cloudProvider) setInfraProvider(String(d.infrastructure.cloudProvider));
+      }
       if (d?.deployReady) {
         clearInterval(interval);
         setPolling(false);
@@ -96,7 +103,7 @@ export default function ThankYouPage() {
         <main className="max-w-2xl mx-auto px-4 py-24 text-center">
           <p className="text-slate-600 dark:text-slate-400 mb-4">Invalid or missing access. Please submit your request from the form.</p>
           <Link href="/request" className="text-indigo-600 dark:text-indigo-400 hover:underline">
-            Go to New Website Request
+            Go to AI + Cloud Deployment Request
           </Link>
         </main>
       </div>
@@ -104,6 +111,27 @@ export default function ThankYouPage() {
   }
 
   const isReady = previewUrl && (status === "deploy_ready" || status === "published");
+
+  const saveInfrastructureSelection = async (provider: string) => {
+    if (!token || !leadId || infraSaving) return;
+    setInfraSaving(true);
+    try {
+      const res = await fetch(`/api/leads/${leadId}/infrastructure?token=${encodeURIComponent(token)}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ provider }),
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setInfraProvider(provider);
+        setInfrastructure((prev) => (prev ? { ...prev, cloudProvider: provider } : { cloudProvider: provider }));
+      }
+    } catch {
+      // ignore
+    } finally {
+      setInfraSaving(false);
+    }
+  };
 
   const submitChangeRequest = async () => {
     if (!token || !leadId || !changeRequest.trim()) return;
@@ -149,7 +177,7 @@ export default function ThankYouPage() {
               Thank you
             </h1>
             <p className="text-slate-600 dark:text-slate-400">
-              Your AI-built website is being generated. You&apos;ll see your live preview link below when it&apos;s ready.
+              Your AI + Enterprise Cloud deployment is in progress. You&apos;ll see your live preview link when it&apos;s ready.
             </p>
           </div>
 
@@ -158,11 +186,11 @@ export default function ThankYouPage() {
               <div className="animate-pulse flex items-center justify-center gap-3 mb-2">
                 <div className="h-3 w-3 rounded-full bg-indigo-500 animate-ping" />
                 <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
-                  Generating your preview...
+                  Generating your managed cloud preview...
                 </span>
               </div>
               <p className="text-xs text-slate-500 dark:text-slate-400">
-                This usually takes 1–3 minutes. We&apos;ll email you when it&apos;s ready.
+                Managed cloud preview in 1–3 minutes. We&apos;ll email you when it&apos;s ready.
               </p>
             </div>
           )}
@@ -171,7 +199,7 @@ export default function ThankYouPage() {
             <div className="mb-8 rounded-xl border-2 border-emerald-200 dark:border-emerald-800 bg-emerald-50/50 dark:bg-emerald-900/20 p-6">
               <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100 mb-2 flex items-center gap-2">
                 <LinkIcon className="h-5 w-5 text-emerald-600" />
-                Your AI-built website is live
+                Your AI-built site is live
               </h2>
               <a
                 href={previewUrl}
@@ -183,8 +211,37 @@ export default function ThankYouPage() {
                 <LinkIcon className="h-4 w-4" />
               </a>
               <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">
-                Link also sent by email. Clear next steps for domain & hosting below.
+                Link also sent by email. Select your infrastructure below.
               </p>
+
+              <div className="mt-6 pt-6 border-t border-emerald-200 dark:border-emerald-700">
+                <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-2">Infrastructure selection</h3>
+                <p className="text-xs text-slate-600 dark:text-slate-400 mb-3">
+                  Choose your cloud provider for production deployment.
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {[
+                    { id: "managed", label: "Managed Cloud (default)" },
+                    { id: "aws", label: "AWS" },
+                    { id: "azure", label: "Azure" },
+                    { id: "gcp", label: "GCP" },
+                  ].map((p) => (
+                    <button
+                      key={p.id}
+                      type="button"
+                      onClick={() => saveInfrastructureSelection(p.id)}
+                      disabled={infraSaving}
+                      className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                        infraProvider === p.id
+                          ? "bg-indigo-600 text-white"
+                          : "bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600"
+                      }`}
+                    >
+                      {p.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
 
               <div className="mt-6 pt-6 border-t border-emerald-200 dark:border-emerald-700">
                 <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-2">Request changes</h3>
@@ -212,35 +269,35 @@ export default function ThankYouPage() {
             </div>
           )}
 
-          {isReady && infrastructure && (
+          {isReady && (
             <section className="mb-8 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 p-6">
               <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100 mb-4 flex items-center gap-2">
                 <CloudIcon className="h-5 w-5 text-indigo-600" />
-                Infrastructure Stack Overview
+                Infrastructure Stack
               </h2>
               <dl className="grid gap-2 text-sm">
                 <div className="flex justify-between">
-                  <dt className="text-slate-500 dark:text-slate-400">Cloud Provider</dt>
-                  <dd className="font-medium text-slate-700 dark:text-slate-300 capitalize">{infrastructure.cloudProvider || "Vercel"}</dd>
+                  <dt className="text-slate-500 dark:text-slate-400">Provider</dt>
+                  <dd className="font-medium text-slate-700 dark:text-slate-300 capitalize">{infrastructure?.cloudProvider || infraProvider || "Managed Cloud"}</dd>
                 </div>
                 <div className="flex justify-between">
                   <dt className="text-slate-500 dark:text-slate-400">CDN</dt>
-                  <dd className="font-medium text-slate-700 dark:text-slate-300">{infrastructure.cdnEnabled ? "Enabled" : "—"}</dd>
+                  <dd className="font-medium text-slate-700 dark:text-slate-300">{infrastructure?.cdnEnabled ? "Enabled" : "—"}</dd>
                 </div>
                 <div className="flex justify-between">
                   <dt className="text-slate-500 dark:text-slate-400">SSL</dt>
-                  <dd className="font-medium text-slate-700 dark:text-slate-300">{infrastructure.sslEnabled ? "Enabled" : "—"}</dd>
+                  <dd className="font-medium text-slate-700 dark:text-slate-300">{infrastructure?.sslEnabled ? "Enabled" : "—"}</dd>
                 </div>
                 <div className="flex justify-between">
                   <dt className="text-slate-500 dark:text-slate-400">CI/CD</dt>
-                  <dd className="font-medium text-slate-700 dark:text-slate-300">{infrastructure.cicdEnabled ? "Enabled" : "—"}</dd>
+                  <dd className="font-medium text-slate-700 dark:text-slate-300">{infrastructure?.cicdEnabled ? "Enabled" : "—"}</dd>
                 </div>
                 <div className="flex justify-between">
-                  <dt className="text-slate-500 dark:text-slate-400">Security Level</dt>
-                  <dd className="font-medium text-slate-700 dark:text-slate-300 capitalize">{infrastructure.securityLevel || "Basic"}</dd>
+                  <dt className="text-slate-500 dark:text-slate-400">Security status</dt>
+                  <dd className="font-medium text-slate-700 dark:text-slate-300 capitalize">{infrastructure?.securityLevel || "Basic"}</dd>
                 </div>
               </dl>
-              {infrastructure.addOns && infrastructure.addOns.length > 0 && (
+              {infrastructure?.addOns && infrastructure.addOns.length > 0 && (
                 <div className="mt-4 pt-4 border-t border-slate-200 dark:border-slate-700">
                   <h3 className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Selected Add-ons</h3>
                   <ul className="flex flex-wrap gap-2">

@@ -2,7 +2,7 @@ export type CloudProvider = "vercel" | "aws" | "azure" | "gcp";
 
 export const INFRASTRUCTURE_ADDONS: Record<
   CloudProvider,
-  { id: string; label: string; tier: "professional" | "done_for_you" }[]
+  { id: string; label: string; tier: "professional" | "enterprise" }[]
 > = {
   vercel: [
     { id: "cdn", label: "CDN", tier: "professional" },
@@ -13,8 +13,8 @@ export const INFRASTRUCTURE_ADDONS: Record<
     { id: "s3", label: "S3 storage", tier: "professional" },
     { id: "cloudfront", label: "CloudFront CDN", tier: "professional" },
     { id: "route53", label: "Route53 DNS", tier: "professional" },
-    { id: "waf", label: "WAF", tier: "done_for_you" },
-    { id: "autoscaling", label: "Auto scaling", tier: "done_for_you" },
+    { id: "waf", label: "WAF", tier: "enterprise" },
+    { id: "autoscaling", label: "Auto scaling", tier: "enterprise" },
   ],
   azure: [
     { id: "blob", label: "Blob storage", tier: "professional" },
@@ -25,7 +25,7 @@ export const INFRASTRUCTURE_ADDONS: Record<
   gcp: [
     { id: "storage", label: "Cloud Storage", tier: "professional" },
     { id: "cdn", label: "Cloud CDN", tier: "professional" },
-    { id: "armor", label: "Cloud Armor", tier: "done_for_you" },
-    { id: "run", label: "Cloud Run", tier: "done_for_you" },
+    { id: "armor", label: "Cloud Armor", tier: "enterprise" },
+    { id: "run", label: "Cloud Run", tier: "enterprise" },
   ],
 };

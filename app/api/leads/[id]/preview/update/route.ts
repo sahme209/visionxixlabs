@@ -5,7 +5,7 @@ import { checkRateLimit } from "@/lib/rateLimit";
 import { generateAIStarterPackageWithChanges } from "@/lib/aiWebsiteStarter";
 import { deployPreview } from "@/lib/previewDeploy";
 import type { AIStarterPackage } from "@/lib/aiWebsiteStarter";
-import { WEBSITE_BUILD_TIERS } from "@/lib/websiteBuildPricing";
+import { WEBSITE_BUILD_TIERS, resolveTier } from "@/lib/websiteBuildPricing";
 
 /**
  * POST /api/leads/[id]/preview/update?token=XXX
@@ -66,8 +66,8 @@ export async function POST(
     }
 
     const form = (payload.form as Record<string, unknown>) || {};
-    const tier = (form.tier as string) || "starter";
-    const tierConfig = WEBSITE_BUILD_TIERS[tier as keyof typeof WEBSITE_BUILD_TIERS] ?? WEBSITE_BUILD_TIERS.starter;
+    const tier = resolveTier((form.tier as string) || "starter");
+    const tierConfig = WEBSITE_BUILD_TIERS[tier] ?? WEBSITE_BUILD_TIERS.starter;
     const revisionCount = (payload.revisionCount as number) || 0;
 
     if (tierConfig.revisions > 0 && revisionCount >= tierConfig.revisions) {

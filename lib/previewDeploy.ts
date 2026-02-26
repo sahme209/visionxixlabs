@@ -1,4 +1,4 @@
-import { deploySite, type DeployProvider } from "./provider";
+import { deploySite, type DeployProvider } from "./deploy/provider";
 import type { AIStarterPackage } from "./aiWebsiteStarter";
 
 export type DeployResult = {
