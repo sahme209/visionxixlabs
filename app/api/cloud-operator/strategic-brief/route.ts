@@ -56,7 +56,12 @@ export async function GET(req: NextRequest) {
   }));
 
   const brief = await generateStrategicBrief({
-    profile: { projectType: profile.projectType, hostingProvider: profile.hostingProvider, monthlySpend: profile.monthlySpend, complianceNeeds: profile.complianceNeeds },
+    profile: {
+      projectType: profile.projectType as string | undefined,
+      hostingProvider: profile.hostingProvider as string | undefined,
+      monthlySpend: profile.monthlySpend as string | undefined,
+      complianceNeeds: profile.complianceNeeds as string | undefined,
+    },
     axiomScores: {
       infrastructureScore: scores.infrastructureScore as number,
       estimatedAnnualSavings: scores.estimatedAnnualSavings as number | null,
