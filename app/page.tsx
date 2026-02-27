@@ -15,9 +15,7 @@ import { EnterpriseTrustSignals } from "@/components/EnterpriseTrustSignals";
 import { AnimateOnScroll } from "@/components/AnimateOnScroll";
 import { BackgroundBlobs } from "@/components/BackgroundBlobs";
 import { HeroLightBeam } from "@/components/HeroLightBeam";
-import { HeroOrb } from "@/components/HeroOrb";
 import { ServicePipeline } from "@/components/ServicePipeline";
-import { StaggeredReveal } from "@/components/StaggeredReveal";
 
 export default function Home() {
 
@@ -84,43 +82,42 @@ export default function Home() {
       <BackgroundBlobs />
       <Navigation />
 
-      {/* Hero Section — split layout: text left, orb right */}
+      {/* Hero Section */}
       <section className="pt-32 pb-16 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
         <HeroLightBeam />
-        <div className="max-w-6xl mx-auto relative flex flex-col md:flex-row items-center gap-12 md:gap-16">
-          <div className="flex-1 text-center md:text-left">
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-4 leading-tight animate-hero-enter">
-              <span className="text-gradient">Axiom</span>
-              <span className="text-slate-900 dark:text-slate-100"> — Infrastructure Intelligence</span>
-            </h1>
-            <p className="text-lg md:text-xl text-slate-600 dark:text-slate-400 mb-8 max-w-xl md:max-w-2xl mx-auto md:mx-0 animate-hero-enter animate-hero-enter-delay-1">
-              One operator to score, optimize, and guide your cloud across AWS, Azure, and GCP.
-            </p>
-            <div className="flex flex-wrap justify-center md:justify-start gap-4 mb-6 animate-hero-enter animate-hero-enter-delay-2">
-              <Link
-                href="/cloud-operator"
-                className="btn-huly cta-glow inline-flex items-center px-6 py-3 bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white rounded-2xl font-semibold shadow-lg shadow-violet-500/30 hover:shadow-violet-500/40"
-              >
-                Run Axiom Analysis
-                <ArrowRightIcon className="ml-2 h-5 w-5" />
-              </Link>
-              <Link
-                href="/contact"
-                className="btn-huly inline-flex items-center px-6 py-3 bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 rounded-2xl font-semibold shadow-lg hover:bg-slate-800 dark:hover:bg-slate-200"
-              >
-                Talk to an Architect
-                <ArrowRightIcon className="ml-2 h-5 w-5" />
-              </Link>
-            </div>
-            <p className="text-sm text-slate-500 dark:text-slate-400 mb-2">
-              No obligation · Operator-only analysis · No changes to your cloud without approval
-            </p>
-            <div className="flex flex-wrap justify-center md:justify-start gap-3 mb-4">
-              <Link
-                href="/cloud-solutions/aws"
-                className="inline-flex items-center px-4 py-2 rounded-2xl text-sm font-medium bg-white/80 dark:bg-slate-800/80 backdrop-blur border-2 border-slate-200/80 dark:border-slate-700/80 text-slate-700 dark:text-slate-300 hover:border-orange-300 dark:hover:border-orange-600 transition-all"
-              >
-                <span className="text-orange-600 dark:text-orange-400 font-semibold mr-1">AWS</span>
+        <div className="max-w-4xl mx-auto text-center relative">
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-4 leading-tight animate-hero-enter">
+            <span className="text-gradient">Axiom</span>
+            <span className="text-slate-900 dark:text-slate-100"> — Infrastructure Intelligence</span>
+          </h1>
+          <p className="text-lg md:text-xl text-slate-600 dark:text-slate-400 mb-8 max-w-3xl mx-auto animate-hero-enter animate-hero-enter-delay-1">
+            One operator to score, optimize, and guide your cloud across AWS, Azure, and GCP.
+          </p>
+          <div className="flex flex-wrap justify-center gap-4 mb-6 animate-hero-enter animate-hero-enter-delay-2">
+            <Link
+              href="/cloud-operator"
+              className="btn-huly cta-glow inline-flex items-center px-6 py-3 bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white rounded-2xl font-semibold shadow-lg shadow-violet-500/30 hover:shadow-violet-500/40"
+            >
+              Run Axiom Analysis
+              <ArrowRightIcon className="ml-2 h-5 w-5" />
+            </Link>
+            <Link
+              href="/contact"
+              className="btn-huly inline-flex items-center px-6 py-3 bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 rounded-2xl font-semibold shadow-lg hover:bg-slate-800 dark:hover:bg-slate-200"
+            >
+              Talk to an Architect
+              <ArrowRightIcon className="ml-2 h-5 w-5" />
+            </Link>
+          </div>
+          <p className="text-sm text-slate-500 dark:text-slate-400 mb-2">
+            No obligation · Operator-only analysis · No changes to your cloud without approval
+          </p>
+          <div className="flex flex-wrap justify-center gap-3 mb-4">
+            <Link
+              href="/cloud-solutions/aws"
+              className="inline-flex items-center px-4 py-2 rounded-2xl text-sm font-medium bg-white/80 dark:bg-slate-800/80 backdrop-blur border-2 border-slate-200/80 dark:border-slate-700/80 text-slate-700 dark:text-slate-300 hover:border-orange-300 dark:hover:border-orange-600 transition-all"
+            >
+              <span className="text-orange-600 dark:text-orange-400 font-semibold mr-1">AWS</span>
               Cloud
             </Link>
             <Link
@@ -138,13 +135,9 @@ export default function Home() {
               Cloud
             </Link>
           </div>
-          <p className="text-sm text-slate-500 dark:text-slate-400 max-w-2xl mx-auto md:mx-0">
+          <p className="text-sm text-slate-500 dark:text-slate-400 max-w-2xl mx-auto">
             Foundations · CI/CD · FinOps · Observability · Security · IaC
           </p>
-          </div>
-          <div className="hidden md:flex flex-1 justify-center lg:justify-end">
-            <HeroOrb />
-          </div>
         </div>
       </section>
 
@@ -162,7 +155,7 @@ export default function Home() {
         </section>
       </AnimateOnScroll>
 
-      {/* AI Capabilities — bento grid with staggered reveal */}
+      {/* AI Capabilities — production-grade AI positioning */}
       <AnimateOnScroll>
         <section className="py-16 px-4 sm:px-6 lg:px-8 bg-white/60 dark:bg-slate-900/80 backdrop-blur border-t border-slate-200/80 dark:border-slate-700/80">
         <div className="max-w-6xl mx-auto">
@@ -174,14 +167,10 @@ export default function Home() {
               We build internal assistants, automation, and extraction workflows that run safely inside your cloud.
             </p>
           </div>
-          <StaggeredReveal
-            className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10"
-            staggerMs={60}
-          >
-            <div className="card-hover md:col-span-2 md:row-span-2 rounded-2xl p-6 bg-gradient-to-br from-violet-50/80 to-fuchsia-50/60 dark:from-violet-950/50 dark:to-fuchsia-950/30 backdrop-blur border-2 border-violet-200/80 dark:border-violet-700/50 shadow-lg shadow-violet-200/20 dark:shadow-violet-900/10">
-              <div className="text-xl font-bold text-slate-900 dark:text-slate-100 mb-1">Internal AI</div>
-              <div className="text-sm text-slate-600 dark:text-slate-400 mb-3">Knowledge copilots</div>
-              <p className="text-sm text-slate-700 dark:text-slate-300">Secure assistants that answer from your docs and run inside your cloud.</p>
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 text-center mb-10">
+            <div className="card-hover rounded-2xl p-4 bg-white/80 dark:bg-slate-800/60 backdrop-blur border-2 border-slate-200/80 dark:border-slate-700/80 shadow-sm">
+              <div className="text-lg font-bold text-slate-900 dark:text-slate-100">Internal AI</div>
+              <div className="text-xs text-slate-600 dark:text-slate-400">Knowledge copilots</div>
             </div>
             <div className="card-hover rounded-2xl p-4 bg-white/80 dark:bg-slate-800/60 backdrop-blur border-2 border-slate-200/80 dark:border-slate-700/80 shadow-sm">
               <div className="text-lg font-bold text-slate-900 dark:text-slate-100">RAG</div>
@@ -199,11 +188,11 @@ export default function Home() {
               <div className="text-lg font-bold text-slate-900 dark:text-slate-100">Governance</div>
               <div className="text-xs text-slate-600 dark:text-slate-400">Security & cost controls</div>
             </div>
-            <div className="card-hover md:col-span-2 rounded-2xl p-4 bg-white/80 dark:bg-slate-800/60 backdrop-blur border-2 border-slate-200/80 dark:border-slate-700/80 shadow-sm">
+            <div className="card-hover rounded-2xl p-4 bg-white/80 dark:bg-slate-800/60 backdrop-blur border-2 border-slate-200/80 dark:border-slate-700/80 shadow-sm">
               <div className="text-lg font-bold text-slate-900 dark:text-slate-100">AWS · Azure · GCP</div>
               <div className="text-xs text-slate-600 dark:text-slate-400">Your cloud, your data</div>
             </div>
-          </StaggeredReveal>
+          </div>
           <div className="text-center">
             <Link
               href="/ai-solutions"
@@ -539,7 +528,7 @@ export default function Home() {
                 </Link>
               </div>
             </div>
-            <StaggeredReveal className="grid grid-cols-2 gap-4" staggerMs={70}>
+            <div className="grid grid-cols-2 gap-4">
               <div className="card-hover group rounded-3xl border-2 border-slate-200/80 dark:border-slate-700/80 bg-white/80 dark:bg-slate-800/80 backdrop-blur p-6 shadow-lg shadow-slate-200/30 dark:shadow-none">
                 <SparklesIcon className="h-7 w-7 text-violet-600 dark:text-violet-400 mb-3 icon-bounce" />
                 <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100 mb-1">Proven patterns</h3>
@@ -560,7 +549,7 @@ export default function Home() {
                 <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100 mb-1">Security by design</h3>
                 <p className="text-sm text-slate-600 dark:text-slate-400">Access control and governance built in from the start.</p>
               </div>
-            </StaggeredReveal>
+            </div>
           </div>
         </div>
       </section>
