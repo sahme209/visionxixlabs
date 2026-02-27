@@ -4,13 +4,13 @@ import { updateSubscriptionStatusAdmin } from "@/lib/services/subscriptionServic
 
 function getStripe(): Stripe {
   const key = process.env.STRIPE_SECRET_KEY;
-  if (!key?.trim()) throw new Error("STRIPE_SECRET_KEY not configured");
+  if (!key) throw new Error("STRIPE_SECRET_KEY is not configured");
   return new Stripe(key, { apiVersion: "2025-12-15.clover" });
 }
 
 export async function POST(request: NextRequest) {
-  const stripe = getStripe();
   try {
+    const stripe = getStripe();
     const { sessionId, userId: requestUserId } = await request.json();
 
     if (!sessionId) {

@@ -7,17 +7,19 @@ import { generateTimeline } from "@/lib/services/timelineService";
 
 function getStripe(): Stripe {
   const key = process.env.STRIPE_SECRET_KEY;
-  if (!key?.trim()) throw new Error("STRIPE_SECRET_KEY not configured");
+  if (!key) throw new Error("STRIPE_SECRET_KEY is not configured");
   return new Stripe(key, { apiVersion: "2025-12-15.clover" });
 }
 
+const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET || "";
+
 export async function POST(request: NextRequest) {
-  const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET || "";
   if (!webhookSecret || webhookSecret.trim() === "") {
     console.error("[WEBHOOK] STRIPE_WEBHOOK_SECRET is not configured");
     return NextResponse.json({ error: "Webhook not configured" }, { status: 500 });
   }
 
+  const stripe = getStripe();
   const body = await request.text();
   const signature = request.headers.get("stripe-signature");
 
@@ -27,7 +29,6 @@ export async function POST(request: NextRequest) {
 
   let event: Stripe.Event;
 
-  const stripe = getStripe();
   try {
     event = stripe.webhooks.constructEvent(body, signature, webhookSecret);
   } catch (err: any) {
