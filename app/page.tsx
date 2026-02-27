@@ -14,6 +14,8 @@ import { Navigation } from "../components/Navigation";
 import { EnterpriseTrustSignals } from "@/components/EnterpriseTrustSignals";
 import { AnimateOnScroll } from "@/components/AnimateOnScroll";
 import { BackgroundBlobs } from "@/components/BackgroundBlobs";
+import { HeroLightBeam } from "@/components/HeroLightBeam";
+import { ServicePipeline } from "@/components/ServicePipeline";
 
 export default function Home() {
 
@@ -81,8 +83,9 @@ export default function Home() {
       <Navigation />
 
       {/* Hero Section */}
-      <section className="pt-32 pb-16 px-4 sm:px-6 lg:px-8 relative">
-        <div className="max-w-4xl mx-auto text-center">
+      <section className="pt-32 pb-16 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+        <HeroLightBeam />
+        <div className="max-w-4xl mx-auto text-center relative">
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-4 leading-tight animate-hero-enter">
             <span className="text-gradient">Axiom</span>
             <span className="text-slate-900 dark:text-slate-100"> — Infrastructure Intelligence</span>
@@ -93,7 +96,7 @@ export default function Home() {
           <div className="flex flex-wrap justify-center gap-4 mb-6 animate-hero-enter animate-hero-enter-delay-2">
             <Link
               href="/cloud-operator"
-              className="btn-huly inline-flex items-center px-6 py-3 bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white rounded-2xl font-semibold shadow-lg shadow-violet-500/30 hover:shadow-violet-500/40"
+              className="btn-huly cta-glow inline-flex items-center px-6 py-3 bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white rounded-2xl font-semibold shadow-lg shadow-violet-500/30 hover:shadow-violet-500/40"
             >
               Run Axiom Analysis
               <ArrowRightIcon className="ml-2 h-5 w-5" />
@@ -139,6 +142,18 @@ export default function Home() {
       </section>
 
       <EnterpriseTrustSignals />
+
+      {/* Service Pipeline — Huly MetaBrain-style: connected services */}
+      <AnimateOnScroll>
+        <section className="py-12 px-4 sm:px-6 lg:px-8 border-t border-slate-200/80 dark:border-slate-700/80">
+          <div className="max-w-5xl mx-auto">
+            <h2 className="text-center text-lg font-semibold text-slate-700 dark:text-slate-300 mb-6">
+              Everything connected in one flow
+            </h2>
+            <ServicePipeline />
+          </div>
+        </section>
+      </AnimateOnScroll>
 
       {/* AI Capabilities — production-grade AI positioning */}
       <AnimateOnScroll>
@@ -514,23 +529,23 @@ export default function Home() {
               </div>
             </div>
             <div className="grid grid-cols-2 gap-4">
-              <div className="card-hover rounded-3xl border-2 border-slate-200/80 dark:border-slate-700/80 bg-white/80 dark:bg-slate-800/80 backdrop-blur p-6 shadow-lg shadow-slate-200/30 dark:shadow-none">
-                <SparklesIcon className="h-7 w-7 text-slate-600 dark:text-slate-400 mb-3" />
+              <div className="card-hover group rounded-3xl border-2 border-slate-200/80 dark:border-slate-700/80 bg-white/80 dark:bg-slate-800/80 backdrop-blur p-6 shadow-lg shadow-slate-200/30 dark:shadow-none">
+                <SparklesIcon className="h-7 w-7 text-violet-600 dark:text-violet-400 mb-3 icon-bounce" />
                 <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100 mb-1">Proven patterns</h3>
                 <p className="text-sm text-slate-600 dark:text-slate-400">We use established practices, not unproven trends.</p>
               </div>
-              <div className="card-hover rounded-3xl border-2 border-slate-200/80 dark:border-slate-700/80 bg-white/80 dark:bg-slate-800/80 backdrop-blur p-6 shadow-lg shadow-slate-200/30 dark:shadow-none">
-                <CheckBadgeIcon className="h-7 w-7 text-slate-600 dark:text-slate-400 mb-3" />
+              <div className="card-hover group rounded-3xl border-2 border-slate-200/80 dark:border-slate-700/80 bg-white/80 dark:bg-slate-800/80 backdrop-blur p-6 shadow-lg shadow-slate-200/30 dark:shadow-none">
+                <CheckBadgeIcon className="h-7 w-7 text-slate-600 dark:text-slate-400 mb-3 icon-bounce" />
                 <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100 mb-1">Production-ready</h3>
                 <p className="text-sm text-slate-600 dark:text-slate-400">Code and infrastructure built to run in production.</p>
               </div>
-              <div className="card-hover rounded-3xl border-2 border-slate-200/80 dark:border-slate-700/80 bg-white/80 dark:bg-slate-800/80 backdrop-blur p-6 shadow-lg shadow-slate-200/30 dark:shadow-none">
-                <RocketLaunchIcon className="h-7 w-7 text-slate-600 dark:text-slate-400 mb-3" />
+              <div className="card-hover group rounded-3xl border-2 border-slate-200/80 dark:border-slate-700/80 bg-white/80 dark:bg-slate-800/80 backdrop-blur p-6 shadow-lg shadow-slate-200/30 dark:shadow-none">
+                <RocketLaunchIcon className="h-7 w-7 text-slate-600 dark:text-slate-400 mb-3 icon-bounce" />
                 <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100 mb-1">Automation</h3>
                 <p className="text-sm text-slate-600 dark:text-slate-400">Pipelines and IaC to ship faster and safer.</p>
               </div>
-              <div className="card-hover rounded-3xl border-2 border-slate-200/80 dark:border-slate-700/80 bg-white/80 dark:bg-slate-800/80 backdrop-blur p-6 shadow-lg shadow-slate-200/30 dark:shadow-none">
-                <ShieldCheckIcon className="h-7 w-7 text-slate-600 dark:text-slate-400 mb-3" />
+              <div className="card-hover group rounded-3xl border-2 border-slate-200/80 dark:border-slate-700/80 bg-white/80 dark:bg-slate-800/80 backdrop-blur p-6 shadow-lg shadow-slate-200/30 dark:shadow-none">
+                <ShieldCheckIcon className="h-7 w-7 text-slate-600 dark:text-slate-400 mb-3 icon-bounce" />
                 <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100 mb-1">Security by design</h3>
                 <p className="text-sm text-slate-600 dark:text-slate-400">Access control and governance built in from the start.</p>
               </div>
@@ -574,6 +589,38 @@ export default function Home() {
             <Link href="/cloud-solutions" className="hover:text-slate-900 dark:hover:text-slate-100 underline underline-offset-4">Solutions</Link>
             <Link href="/case-studies" className="hover:text-slate-900 dark:hover:text-slate-100 underline underline-offset-4">Case Studies</Link>
             <Link href="/apps" className="hover:text-slate-900 dark:hover:text-slate-100 underline underline-offset-4">Products</Link>
+          </div>
+        </div>
+      </section>
+      </AnimateOnScroll>
+
+      {/* Join the movement — Huly-style dark CTA */}
+      <AnimateOnScroll>
+      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-slate-900 dark:bg-slate-950 relative overflow-hidden">
+        <div className="absolute inset-0 diagonal-streak opacity-30" aria-hidden />
+        <div className="absolute -top-40 -right-40 w-80 h-80 rounded-full bg-violet-500/10 blur-3xl" aria-hidden />
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 rounded-full bg-fuchsia-500/10 blur-3xl" aria-hidden />
+        <div className="relative max-w-3xl mx-auto text-center">
+          <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
+            Join the movement
+          </h2>
+          <p className="text-slate-300 text-lg mb-8">
+            Unlock the future of cloud and AI. One membership, full stack — infrastructure intelligence, chatbots, and automation.
+          </p>
+          <div className="flex flex-wrap justify-center gap-4">
+            <Link
+              href="/cloud-operator"
+              className="cta-glow inline-flex items-center px-6 py-3 bg-white text-slate-900 rounded-2xl font-semibold shadow-lg hover:bg-slate-100 transition-colors"
+            >
+              Run Axiom
+              <ArrowRightIcon className="ml-2 h-5 w-5" />
+            </Link>
+            <Link
+              href="/visionxix-ai/pricing"
+              className="inline-flex items-center px-6 py-3 border-2 border-white/30 text-white rounded-2xl font-semibold hover:bg-white/10 hover:border-white/50 transition-all"
+            >
+              View plans
+            </Link>
           </div>
         </div>
       </section>

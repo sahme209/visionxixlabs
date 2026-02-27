@@ -329,7 +329,7 @@ export default function VisionXIXAIPricingPage() {
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link
               href="/visionxix-ai-assistant"
-              className="inline-flex items-center gap-2 rounded-full bg-violet-600 px-6 py-3 text-base font-semibold text-white hover:bg-violet-700"
+              className="cta-glow btn-huly inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-violet-600 to-fuchsia-600 px-6 py-3 text-base font-semibold text-white hover:shadow-lg hover:shadow-violet-500/30"
             >
               Try live demo
               <ArrowRightIcon className="h-5 w-5" />

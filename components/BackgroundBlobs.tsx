@@ -3,9 +3,14 @@
 export function BackgroundBlobs() {
   return (
     <div className="pointer-events-none fixed inset-0 overflow-hidden -z-10">
+      {/* Dot grid — Huly subtle texture */}
+      <div
+        className="absolute inset-0 bg-dots opacity-50"
+        aria-hidden
+      />
       {/* Grid mesh overlay — Huly-style */}
       <div
-        className="absolute inset-0 bg-grid-mesh opacity-60"
+        className="absolute inset-0 bg-grid-mesh opacity-40"
         aria-hidden
       />
       {/* Violet blob */}

@@ -344,8 +344,114 @@ html {
   );
 }
 
-/* Dot pattern overlay */
+/* Dot pattern overlay — Huly-style subtle texture */
 .bg-dots {
   background-image: radial-gradient(rgb(124 58 237 / 0.12) 1px, transparent 1px);
   background-size: 24px 24px;
+}
+
+/* Animated glowing border — Huly orange/blue diagonal glow */
+@keyframes glow-border {
+  0%, 100% { opacity: 0.6; filter: blur(8px); }
+  50% { opacity: 1; filter: blur(12px); }
+}
+
+@keyframes glow-border-rotate {
+  0% { --glow-angle: 0deg; }
+  100% { --glow-angle: 360deg; }
+}
+
+.glow-border-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.glow-border-card::before {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  border-radius: inherit;
+  padding: 2px;
+  background: linear-gradient(135deg, #f97316 0%, #7c3aed 25%, #d946ef 50%, #0ea5e9 75%, #f97316 100%);
+  background-size: 300% 300%;
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  animation: gradient-shift 6s ease infinite;
+  opacity: 0.8;
+}
+
+/* Vertical light beam — Huly hero pillar */
+.light-beam {
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    rgb(124 58 237 / 0.03) 20%,
+    rgb(217 70 239 / 0.08) 40%,
+    rgb(124 58 237 / 0.12) 60%,
+    rgb(217 70 239 / 0.06) 80%,
+    transparent 100%
+  );
+  width: 100%;
+  max-width: 400px;
+  height: 80vh;
+}
+
+/* Pulsating CTA glow — Huly "SEE IN ACTION" style */
+@keyframes cta-glow {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(124, 58, 237, 0.4), 0 0 40px rgba(217, 70, 239, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(124, 58, 237, 0.6), 0 0 60px rgba(217, 70, 239, 0.3);
+  }
+}
+
+.cta-glow {
+  animation: cta-glow 2.5s ease-in-out infinite;
+}
+
+/* Frosted glass dark — Huly card style */
+.glass-dark {
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+/* Concentric rings — Huly notification graphic */
+@keyframes ring-pulse {
+  0%, 100% { transform: scale(1); opacity: 0.3; }
+  50% { transform: scale(1.05); opacity: 0.5; }
+}
+
+.ring-pulse {
+  animation: ring-pulse 3s ease-in-out infinite;
+}
+
+/* Pipeline / ribbon glow — connecting services */
+.pipeline-glow {
+  background: linear-gradient(90deg, transparent, rgb(124 58 237 / 0.3), rgb(217 70 239 / 0.4), rgb(124 58 237 / 0.3), transparent);
+  background-size: 200% 100%;
+  animation: gradient-shift 4s ease infinite;
+}
+
+/* Diagonal streak — Huly ambient light */
+.diagonal-streak {
+  background: linear-gradient(
+    135deg,
+    transparent 0%,
+    rgb(124 58 237 / 0.06) 30%,
+    rgb(217 70 239 / 0.08) 50%,
+    transparent 70%
+  );
+}
+
+/* Luminous icon — gradient icon style */
+.icon-luminous {
+  background: linear-gradient(135deg, #7c3aed, #d946ef);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
