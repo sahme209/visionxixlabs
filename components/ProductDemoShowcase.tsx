@@ -179,7 +179,7 @@ const DEMOS = [
     id: "website-builder",
     title: "AI Website Builder",
     tagline: "Design, structure, graphics — one prompt.",
-    href: "/website-builder",
+    href: "/builder",
     icon: SparklesIcon,
     gradient: "from-violet-500 to-fuchsia-500",
     steps: ["Describe your site", "AI builds everything", "Deploy to cloud"],

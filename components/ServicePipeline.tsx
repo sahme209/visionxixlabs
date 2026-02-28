@@ -8,7 +8,7 @@ import Link from "next/link";
 const SERVICES = [
   { name: "Axiom", href: "/cloud-operator", short: "Infra scores" },
   { name: "AI Chatbots", href: "/visionxix-ai", short: "White-label" },
-  { name: "Website Builder", href: "/website-builder", short: "Prompt-first" },
+  { name: "Website Builder", href: "/builder", short: "Prompt-first" },
   { name: "Cloud Studio", href: "/cloud-studio", short: "Cloud setup" },
   { name: "Cloud Solutions", href: "/cloud-solutions", short: "AWS · Azure · GCP" },
 ];

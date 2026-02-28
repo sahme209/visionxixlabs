@@ -5,7 +5,9 @@ const nextConfig: NextConfig = {
   async redirects() {
     return [
       { source: "/cloud-review", destination: "/free-review", permanent: true },
-      { source: "/pricing", destination: "/visionxix-ai/pricing", permanent: true },
+      { source: "/website-builder", destination: "/builder", permanent: true },
+      { source: "/visionxix-ai/pricing", destination: "/products", permanent: false },
+      { source: "/pricing", destination: "/products", permanent: false },
     ];
   },
   images: {

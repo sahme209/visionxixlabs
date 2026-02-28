@@ -70,14 +70,14 @@ export function WebsiteBuilderJourney({
       id: "axiom",
       label: "Add Axiom (infra)",
       shortLabel: "Axiom",
-      href: token ? `/cloud-operator?ref=${token}` : "/cloud-operator",
+      href: token ? `/cloud-operator?ref=${token}` : "/axiom",
       cta: "Run analysis",
     },
     {
       id: "membership",
       label: "Join membership",
       shortLabel: "Membership",
-      href: "/visionxix-ai/pricing",
+      href: "/builder/pricing",
       cta: "View plans",
     },
   ];
@@ -174,10 +174,10 @@ export function WebsiteBuilderJourney({
           <strong>Membership</strong> unlocks Axiom, chatbots, priority support, and all products. One plan, full access.
         </p>
         <Link
-          href="/visionxix-ai/pricing"
+          href="/builder/pricing"
           className="mt-3 inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-violet-600 to-fuchsia-600 px-5 py-2.5 font-semibold text-white shadow-lg shadow-violet-500/30 hover:shadow-violet-500/40 transition-all"
         >
-          Explore membership
+          Explore Builder pricing
           <ArrowRightIcon className="h-5 w-5" />
         </Link>
       </div>

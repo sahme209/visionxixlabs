@@ -175,7 +175,7 @@ export default function ThankYouPage() {
             Back to Request
           </Link>
           <Link
-            href="/website-builder"
+            href="/builder"
             className="text-sm text-slate-500 dark:text-slate-400 hover:text-violet-600 dark:hover:text-violet-400"
           >
             Build another site
@@ -407,10 +407,10 @@ export default function ThankYouPage() {
               Membership unlocks Axiom, chatbots, priority support, and all products. One plan, everything included.
             </p>
             <Link
-              href="/visionxix-ai/pricing"
+              href="/products"
               className="inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-violet-600 to-fuchsia-600 px-5 py-2.5 font-semibold text-white shadow-lg shadow-violet-500/30 hover:shadow-violet-500/40 transition-all"
             >
-              View plans & membership
+              View plans
               <ArrowRightIcon className="h-5 w-5" />
             </Link>
             <span className="mx-3 text-slate-400">or</span>

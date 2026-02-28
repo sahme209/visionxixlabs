@@ -98,17 +98,17 @@ export default function Home() {
           </p>
           <div className="flex flex-wrap justify-center gap-4 mb-6 animate-hero-enter animate-hero-enter-delay-2">
             <Link
-              href="/contact?subject=Free%20Cloud%20Health%20Snapshot"
+              href="/builder"
               className="btn-huly cta-glow inline-flex items-center px-6 py-3 bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white rounded-2xl font-semibold shadow-lg shadow-violet-500/30 hover:shadow-violet-500/40"
             >
-              Get a Free Cloud Health Snapshot
+              Build & Deploy a Website
               <ArrowRightIcon className="ml-2 h-5 w-5" />
             </Link>
             <Link
-              href="/cloud-operator"
+              href="/axiom"
               className="btn-huly inline-flex items-center px-6 py-3 bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 rounded-2xl font-semibold shadow-lg hover:bg-slate-800 dark:hover:bg-slate-200"
             >
-              See Axiom Capabilities
+              Automate Your Cloud Infrastructure
               <ArrowRightIcon className="ml-2 h-5 w-5" />
             </Link>
           </div>
@@ -687,7 +687,7 @@ export default function Home() {
               <ArrowRightIcon className="ml-2 h-5 w-5" />
             </Link>
             <Link
-              href="/visionxix-ai/pricing"
+              href="/products"
               className="inline-flex items-center px-6 py-3 border-2 border-white/30 text-white rounded-2xl font-semibold hover:bg-white/10 hover:border-white/50 transition-all"
             >
               View plans
@@ -771,7 +771,7 @@ export default function Home() {
             <div>
               <h4 className="text-white font-semibold mb-4 text-sm">Connect</h4>
               <ul className="space-y-2 text-sm">
-                <li><Link href="/visionxix-ai/pricing" className="hover:text-white transition-colors">Plans & Membership</Link></li>
+                <li><Link href="/products" className="hover:text-white transition-colors">Plans & Products</Link></li>
                 <li><Link href="/request" className="hover:text-white transition-colors">Website Request / Get a Quote</Link></li>
                 <li><Link href="/contact" className="hover:text-white transition-colors">Contact</Link></li>
                 <li>

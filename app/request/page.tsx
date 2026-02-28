@@ -93,13 +93,13 @@ export default function RequestPage() {
               </p>
               <div className="flex flex-wrap gap-4 justify-center">
                 <Link
-                  href="/website-builder"
+                  href="/builder"
                   className="inline-flex items-center gap-2 text-sm font-semibold text-violet-600 dark:text-violet-400 hover:text-violet-700 dark:hover:text-violet-300"
                 >
                   Prefer a simple prompt? Try AI Website Builder →
                 </Link>
                 <Link
-                  href="/visionxix-ai/pricing"
+                  href="/builder/pricing"
                   className="inline-flex items-center gap-2 text-sm font-semibold text-violet-600 dark:text-violet-400 hover:text-violet-700 dark:hover:text-violet-300"
                 >
                   View Plans &amp; Membership →
@@ -235,9 +235,9 @@ export default function RequestPage() {
                 Choose your plan
               </label>
               <p className="text-xs text-slate-500 dark:text-slate-400 mb-3">
-                Same plans as our unified membership — chatbots, Axiom, website builder, cloud guidance.{" "}
-                <Link href="/visionxix-ai/pricing" className="font-semibold text-violet-600 dark:text-violet-400 hover:underline">
-                  View full pricing →
+                Choose Builder or Axiom plans. Separate products, one account.{" "}
+                <Link href="/products" className="font-semibold text-violet-600 dark:text-violet-400 hover:underline">
+                  View pricing →
                 </Link>
               </p>
               <div className="space-y-3">
