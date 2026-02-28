@@ -13,6 +13,7 @@ import {
 import { Navigation } from "../components/Navigation";
 import { EnterpriseTrustSignals } from "@/components/EnterpriseTrustSignals";
 import { AnimateOnScroll } from "@/components/AnimateOnScroll";
+import { ProductDemoShowcase } from "@/components/ProductDemoShowcase";
 import { BackgroundBlobs } from "@/components/BackgroundBlobs";
 import { HeroLightBeam } from "@/components/HeroLightBeam";
 import { ServicePipeline } from "@/components/ServicePipeline";
@@ -142,6 +143,9 @@ export default function Home() {
           </p>
         </div>
       </section>
+
+      {/* Product demos — visual clarity for clients */}
+      <ProductDemoShowcase />
 
       {/* Outcome cards — what we deliver */}
       <section className="py-12 px-4 sm:px-6 lg:px-8 border-t border-slate-200/80 dark:border-slate-700/80">
