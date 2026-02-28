@@ -199,10 +199,10 @@ export default function WebsiteBuilderPage() {
             Design, structure, graphics — one prompt.
           </h1>
           <p className="text-lg text-slate-600 dark:text-slate-400 max-w-2xl mb-2">
-            Like Base44: describe your vision and we build the entire site—layout, design, copy, sections. Deploy to cloud with CDN, SSL, CI/CD.
+            Premium sites with real images, animations, gradients, and balanced design—competing with Wix and Webflow. One prompt, production-ready.
           </p>
           <p className="text-sm text-slate-500 dark:text-slate-500">
-            Enterprise-ready: add Axiom for infra analysis, cost optimization, and automated deployment.
+            Vibrant colors, smooth animations, Unsplash imagery. Deploy to cloud with CDN, SSL, CI/CD. Add Axiom for infra.
           </p>
         </header>
 
