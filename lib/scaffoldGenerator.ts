@@ -2,6 +2,46 @@ import type { AIStarterPackage } from "@/lib/websiteStarter/engine";
 
 export type GeneratedFile = { path: string; content: string };
 
+/** Website plan from /api/website-builder/plan (Base44-style full build) */
+export type WebsiteBuilderPlan = {
+  siteName: string;
+  fullPageHtml?: string;
+  heroHtml?: string;
+  designLanguage?: string;
+  colorPalette?: { primary: string; secondary: string; accent: string };
+  sections?: Array<{ id: string; name: string; description: string }>;
+};
+
+/**
+ * Generate deployable files from website-builder plan (full HTML).
+ * Used when user builds from /website-builder with fullPageHtml.
+ */
+export function generateSiteFilesFromPlan(plan: WebsiteBuilderPlan): GeneratedFile[] {
+  let html = plan.fullPageHtml || plan.heroHtml || "";
+  if (!html.trim()) return [];
+
+  html = html.replace(/```html?\s*/gi, "").replace(/```\s*/g, "").trim();
+  if (!html.startsWith("<")) return [];
+
+  const siteName = plan.siteName || "Your Site";
+  const metaDesc = plan.designLanguage || "Professional website built with Vision XIX AI.";
+
+  if (!html.includes("<!DOCTYPE") && !html.includes("<html")) {
+    html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>${escapeHtml(siteName)}</title>
+  <meta name="description" content="${escapeHtml(metaDesc)}">
+</head>
+<body>${html}</body>
+</html>`;
+  }
+
+  return [{ path: "index.html", content: html }];
+}
+
 /**
  * Generate static site files (3-5 pages) from AI starter package.
  * Output: index.html, about.html, services.html, contact.html, faq.html (optional)

@@ -23,6 +23,9 @@ type WebsitePlan = {
   colorPalette: { primary: string; secondary: string; accent: string };
   siteName: string;
   heroHtml?: string;
+  fullPageHtml?: string;
+  layout?: string;
+  visualStyle?: string;
   inferredOperatorProfile?: {
     projectType: string;
     hostingProvider: string;
@@ -35,6 +38,8 @@ type WebsitePlan = {
 
 export default function WebsiteBuilderPage() {
   const [prompt, setPrompt] = useState("");
+  const [visualStyle, setVisualStyle] = useState("");
+  const [layout, setLayout] = useState("");
   const [planning, setPlanning] = useState(false);
   const [plan, setPlan] = useState<WebsitePlan | null>(null);
   const [step, setStep] = useState<"prompt" | "plan" | "form">("prompt");
@@ -43,6 +48,31 @@ export default function WebsiteBuilderPage() {
   const [error, setError] = useState<string | null>(null);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+
+  const PROMPT_TEMPLATES = [
+    "Build a professional immigration consulting site – trustworthy, with services, testimonials, and contact form",
+    "Create a high-converting SaaS landing page – modern, bold, with pricing tiers and demo CTA",
+    "Design a personal portfolio – dark mode, futuristic, glassmorphism with project grid",
+    "Build an e-commerce storefront – streetwear luxury, black and white, minimal",
+    "Create a corporate website – Fortune 500 trust, navy and gold, authoritative",
+    "Design a blog – editorial, Substack-style, cream background, serif headlines",
+  ];
+
+  const VISUAL_STYLES = [
+    { id: "modern professional", label: "Modern professional" },
+    { id: "bold minimal", label: "Bold & minimal" },
+    { id: "glassmorphism dark", label: "Glassmorphism / dark" },
+    { id: "editorial warm", label: "Editorial & warm" },
+    { id: "corporate trustworthy", label: "Corporate & trustworthy" },
+  ];
+
+  const LAYOUTS = [
+    { id: "split", label: "Split screen" },
+    { id: "bento", label: "Bento grid" },
+    { id: "zigzag", label: "Zig-zag" },
+    { id: "grid", label: "Clean grid" },
+    { id: "editorial", label: "Editorial" },
+  ];
 
   const handlePromptSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -54,7 +84,11 @@ export default function WebsiteBuilderPage() {
       const res = await fetch("/api/website-builder/plan", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ prompt: trimmed }),
+        body: JSON.stringify({
+          prompt: trimmed,
+          visualStyle: visualStyle || undefined,
+          layout: layout || undefined,
+        }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Failed to generate plan");
@@ -83,6 +117,18 @@ export default function WebsiteBuilderPage() {
           message: prompt.trim(),
           industry: plan ? "Technology" : undefined,
           tier: "starter",
+          websiteBuilderPlan: plan
+            ? {
+                siteName: plan.siteName,
+                fullPageHtml: plan.fullPageHtml,
+                heroHtml: plan.heroHtml,
+                designLanguage: plan.designLanguage,
+                colorPalette: plan.colorPalette,
+                sections: plan.sections,
+                layout: plan.layout,
+                visualStyle: plan.visualStyle,
+              }
+            : undefined,
         }),
       });
       const data = await res.json();
@@ -137,16 +183,16 @@ export default function WebsiteBuilderPage() {
         <header className="mb-12">
           <div className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-violet-100 to-fuchsia-100 dark:from-violet-900/40 dark:to-fuchsia-900/40 px-4 py-2 text-xs font-semibold text-violet-700 dark:text-violet-300 mb-5">
             <SparklesIcon className="h-4 w-4" />
-            AI Website Builder
+            AI Website Builder — Builds everything
           </div>
           <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight text-slate-900 dark:text-slate-100 mb-4">
-            Build your site with a single prompt
+            Design, structure, graphics — one prompt.
           </h1>
           <p className="text-lg text-slate-600 dark:text-slate-400 max-w-2xl mb-2">
-            Describe what you need—we&apos;ll plan the structure, generate a live preview, and deploy to cloud with CDN, SSL, and CI/CD.
+            Like Base44: describe your vision and we build the entire site—layout, design, copy, sections. Deploy to cloud with CDN, SSL, CI/CD.
           </p>
           <p className="text-sm text-slate-500 dark:text-slate-500">
-            Enterprise-ready: add infra analysis for cost optimization and automated deployment.
+            Enterprise-ready: add Axiom for infra analysis, cost optimization, and automated deployment.
           </p>
         </header>
 
@@ -154,30 +200,70 @@ export default function WebsiteBuilderPage() {
         {step === "prompt" && (
           <section className="space-y-6">
             <form onSubmit={handlePromptSubmit} className="space-y-4">
-              <div
-                className="rounded-3xl border-2 border-slate-200/80 dark:border-slate-700/80 bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm shadow-xl shadow-slate-200/50 dark:shadow-none p-6 sm:p-8"
-              >
-                <label htmlFor="prompt" className="flex items-center gap-2 text-sm font-semibold text-slate-700 dark:text-slate-300 mb-3">
-                  <ChatBubbleLeftRightIcon className="h-5 w-5 text-violet-500" />
-                  What kind of site do you want?
-                </label>
-                <textarea
-                  id="prompt"
-                  value={prompt}
-                  onChange={(e) => setPrompt(e.target.value)}
-                  placeholder="e.g. build visanova immigration site for me – professional, trustworthy, with services, testimonials, and contact form"
-                  rows={4}
-                  required
-                  disabled={planning}
-                  className="w-full rounded-2xl border-2 border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 px-4 py-3 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:border-violet-500 focus:ring-2 focus:ring-violet-200 dark:focus:ring-violet-900/50 transition-all resize-none"
-                />
+              <div className="rounded-3xl border-2 border-slate-200/80 dark:border-slate-700/80 bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm shadow-xl shadow-slate-200/50 dark:shadow-none p-6 sm:p-8 space-y-4">
+                <div>
+                  <label htmlFor="prompt" className="flex items-center gap-2 text-sm font-semibold text-slate-700 dark:text-slate-300 mb-3">
+                    <ChatBubbleLeftRightIcon className="h-5 w-5 text-violet-500" />
+                    Describe your site — we build design, structure & copy
+                  </label>
+                  <textarea
+                    id="prompt"
+                    value={prompt}
+                    onChange={(e) => setPrompt(e.target.value)}
+                    placeholder="e.g. Build a professional immigration consulting site – trustworthy, with services, testimonials, and contact form"
+                    rows={4}
+                    required
+                    disabled={planning}
+                    className="w-full rounded-2xl border-2 border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 px-4 py-3 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:border-violet-500 focus:ring-2 focus:ring-violet-200 dark:focus:ring-violet-900/50 transition-all resize-none"
+                  />
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {PROMPT_TEMPLATES.slice(0, 4).map((t, i) => (
+                    <button
+                      key={i}
+                      type="button"
+                      onClick={() => setPrompt(t)}
+                      className="text-xs px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:border-violet-400 hover:text-violet-600 dark:hover:text-violet-400 transition-colors"
+                    >
+                      {t.length > 45 ? `${t.slice(0, 45)}…` : t}
+                    </button>
+                  ))}
+                </div>
+                <div className="grid sm:grid-cols-2 gap-4 pt-2">
+                  <div>
+                    <label className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-2">Visual style</label>
+                    <select
+                      value={visualStyle}
+                      onChange={(e) => setVisualStyle(e.target.value)}
+                      className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 px-3 py-2 text-sm text-slate-900 dark:text-slate-100"
+                    >
+                      <option value="">Auto</option>
+                      {VISUAL_STYLES.map((s) => (
+                        <option key={s.id} value={s.id}>{s.label}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-2">Layout</label>
+                    <select
+                      value={layout}
+                      onChange={(e) => setLayout(e.target.value)}
+                      className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 px-3 py-2 text-sm text-slate-900 dark:text-slate-100"
+                    >
+                      <option value="">Auto</option>
+                      {LAYOUTS.map((l) => (
+                        <option key={l.id} value={l.id}>{l.label}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
                 {error && (
                   <p className="mt-2 text-sm text-rose-600 dark:text-rose-400">{error}</p>
                 )}
                 <button
                   type="submit"
                   disabled={planning || !prompt.trim()}
-                  className="mt-4 inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-violet-600 to-fuchsia-600 px-6 py-3 font-semibold text-white shadow-lg shadow-violet-500/30 hover:shadow-violet-500/40 hover:from-violet-500 hover:to-fuchsia-500 transition-all disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:shadow-violet-500/30"
+                  className="mt-2 inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-violet-600 to-fuchsia-600 px-6 py-3 font-semibold text-white shadow-lg shadow-violet-500/30 hover:shadow-violet-500/40 hover:from-violet-500 hover:to-fuchsia-500 transition-all disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:shadow-violet-500/30"
                 >
                   {planning ? (
                     <>
@@ -185,11 +271,11 @@ export default function WebsiteBuilderPage() {
                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
                         <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
                       </svg>
-                      Generating plan…
+                      Building full site…
                     </>
                   ) : (
                     <>
-                      Generate plan
+                      Build everything
                       <ArrowRightIcon className="h-5 w-5" />
                     </>
                   )}
@@ -226,17 +312,19 @@ export default function WebsiteBuilderPage() {
         {/* Step 2: Plan preview + live hero + enterprise hooks */}
         {step === "plan" && plan && (
           <section className="space-y-8">
-            {/* Live preview */}
-            {plan.heroHtml && (
+            {/* Live preview — full page when available, else hero */}
+            {(plan.fullPageHtml || plan.heroHtml) && (
               <div className="rounded-3xl border-2 border-slate-200/80 dark:border-slate-700/80 bg-white dark:bg-slate-900 overflow-hidden shadow-xl shadow-slate-200/50 dark:shadow-none">
                 <div className="px-6 py-3 border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/80 flex items-center gap-2">
                   <div className="w-2 h-2 rounded-full bg-emerald-500" />
-                  <span className="text-xs font-medium text-slate-600 dark:text-slate-400">Live preview</span>
+                  <span className="text-xs font-medium text-slate-600 dark:text-slate-400">
+                    Live preview {plan.fullPageHtml ? "(full site)" : "(hero)"}
+                  </span>
                 </div>
-                <div className="h-[340px] sm:h-[400px] overflow-auto">
+                <div className="h-[340px] sm:h-[480px] overflow-auto">
                   <iframe
-                    title="Hero preview"
-                    srcDoc={plan.heroHtml}
+                    title="Site preview"
+                    srcDoc={plan.fullPageHtml || plan.heroHtml}
                     sandbox="allow-same-origin"
                     className="w-full h-full min-h-[320px] border-0"
                   />

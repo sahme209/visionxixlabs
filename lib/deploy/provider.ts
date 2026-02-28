@@ -1,4 +1,4 @@
-import { generateSiteFiles } from "../scaffoldGenerator";
+import { generateSiteFiles, generateSiteFilesFromPlan, type WebsiteBuilderPlan } from "../scaffoldGenerator";
 import type { AIStarterPackage } from "@/lib/websiteStarter/engine";
 
 export type DeployProvider = "vercel" | "aws" | "azure" | "gcp";
@@ -8,6 +8,30 @@ export type DeployOptions = {
   projectName: string;
   credentials?: Record<string, string>;
 };
+
+/**
+ * Deploy from website-builder plan (full HTML).
+ */
+export async function deploySiteFromPlan(
+  provider: DeployProvider,
+  plan: WebsiteBuilderPlan,
+  options: DeployOptions
+): Promise<DeployResult> {
+  const files = generateSiteFilesFromPlan(plan);
+  if (files.length === 0) throw new Error("No HTML generated from plan");
+  switch (provider) {
+    case "vercel":
+      return deployToVercel(files, options);
+    case "aws":
+      return deployToAws(files, options);
+    case "azure":
+      return deployToAzure(files, options);
+    case "gcp":
+      return deployToGcp(files, options);
+    default:
+      return deployToVercel(files, options);
+  }
+}
 
 /**
  * Provider abstraction for multi-cloud deploy.

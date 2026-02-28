@@ -20,6 +20,7 @@ export async function POST(req: NextRequest) {
       hasDomain,
       domainName,
       tier,
+      websiteBuilderPlan,
     } = body;
 
     if (!email || typeof email !== "string") {
@@ -54,8 +55,21 @@ export async function POST(req: NextRequest) {
           // Standardized structure
           context: {
             type: "website",
+            source: websiteBuilderPlan ? "website-builder" : "website-request",
           },
           form: normalizedForm,
+          websiteBuilderPlan: websiteBuilderPlan && typeof websiteBuilderPlan === "object"
+            ? {
+                siteName: websiteBuilderPlan.siteName,
+                fullPageHtml: websiteBuilderPlan.fullPageHtml,
+                heroHtml: websiteBuilderPlan.heroHtml,
+                designLanguage: websiteBuilderPlan.designLanguage,
+                colorPalette: websiteBuilderPlan.colorPalette,
+                sections: websiteBuilderPlan.sections,
+                layout: websiteBuilderPlan.layout,
+                visualStyle: websiteBuilderPlan.visualStyle,
+              }
+            : undefined,
           engine: {
             outputStatus: "pending",
             engineName: "website-builder",
