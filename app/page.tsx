@@ -16,6 +16,7 @@ import { AnimateOnScroll } from "@/components/AnimateOnScroll";
 import { BackgroundBlobs } from "@/components/BackgroundBlobs";
 import { HeroLightBeam } from "@/components/HeroLightBeam";
 import { ServicePipeline } from "@/components/ServicePipeline";
+import { CloudHealthSnapshotForm } from "@/components/CloudHealthSnapshotForm";
 
 export default function Home() {
 
@@ -87,25 +88,27 @@ export default function Home() {
         <HeroLightBeam />
         <div className="max-w-4xl mx-auto text-center relative">
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-4 leading-tight animate-hero-enter">
-            <span className="text-gradient">Axiom</span>
-            <span className="text-slate-900 dark:text-slate-100"> — Infrastructure Intelligence</span>
+            Cloud &amp; AI Engineering That Delivers Production Results — AWS, Azure, GCP
           </h1>
-          <p className="text-lg md:text-xl text-slate-600 dark:text-slate-400 mb-8 max-w-3xl mx-auto animate-hero-enter animate-hero-enter-delay-1">
-            One operator to score, optimize, and guide your cloud across AWS, Azure, and GCP.
+          <p className="text-lg md:text-xl text-slate-600 dark:text-slate-400 mb-4 max-w-3xl mx-auto animate-hero-enter animate-hero-enter-delay-1">
+            We design, automate, secure, and optimize multi-cloud platforms with production-grade AI workflows (RAG, retrieval, automation) — focused on reliability, security, and cost efficiency.
+          </p>
+          <p className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-8 max-w-2xl mx-auto animate-hero-enter animate-hero-enter-delay-1">
+            For CTOs, VP Engineering, and teams scaling production systems who need secure automation without hype.
           </p>
           <div className="flex flex-wrap justify-center gap-4 mb-6 animate-hero-enter animate-hero-enter-delay-2">
             <Link
-              href="/cloud-operator"
+              href="/contact?subject=Free%20Cloud%20Health%20Snapshot"
               className="btn-huly cta-glow inline-flex items-center px-6 py-3 bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white rounded-2xl font-semibold shadow-lg shadow-violet-500/30 hover:shadow-violet-500/40"
             >
-              Run Axiom Analysis
+              Get a Free Cloud Health Snapshot
               <ArrowRightIcon className="ml-2 h-5 w-5" />
             </Link>
             <Link
-              href="/contact"
+              href="/cloud-operator"
               className="btn-huly inline-flex items-center px-6 py-3 bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 rounded-2xl font-semibold shadow-lg hover:bg-slate-800 dark:hover:bg-slate-200"
             >
-              Talk to an Architect
+              See Axiom Capabilities
               <ArrowRightIcon className="ml-2 h-5 w-5" />
             </Link>
           </div>
@@ -138,6 +141,47 @@ export default function Home() {
           <p className="text-sm text-slate-500 dark:text-slate-400 max-w-2xl mx-auto">
             Foundations · CI/CD · FinOps · Observability · Security · IaC
           </p>
+        </div>
+      </section>
+
+      {/* Outcome cards — what we deliver */}
+      <section className="py-12 px-4 sm:px-6 lg:px-8 border-t border-slate-200/80 dark:border-slate-700/80">
+        <div className="max-w-6xl mx-auto">
+          <div className="grid md:grid-cols-3 gap-6">
+            <div className="card-hover rounded-2xl border-2 border-slate-200/80 dark:border-slate-700/80 bg-white/80 dark:bg-slate-800/80 backdrop-blur p-6 shadow-sm">
+              <h3 className="text-lg font-bold text-slate-900 dark:text-slate-100 mb-2">Reliability (SLO-first)</h3>
+              <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">
+                We build for uptime targets and observability, not wishful thinking.
+              </p>
+              <ul className="text-sm text-slate-700 dark:text-slate-300 space-y-2">
+                <li className="flex items-start"><span className="text-violet-500 mr-2">✓</span>SLO/SLI definitions and dashboards</li>
+                <li className="flex items-start"><span className="text-violet-500 mr-2">✓</span>Alerting and incident response patterns</li>
+                <li className="flex items-start"><span className="text-violet-500 mr-2">✓</span>Runbooks and operational handover</li>
+              </ul>
+            </div>
+            <div className="card-hover rounded-2xl border-2 border-slate-200/80 dark:border-slate-700/80 bg-white/80 dark:bg-slate-800/80 backdrop-blur p-6 shadow-sm">
+              <h3 className="text-lg font-bold text-slate-900 dark:text-slate-100 mb-2">Security &amp; Governance</h3>
+              <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">
+                Access control, baselines, and hardening focused on real risk reduction.
+              </p>
+              <ul className="text-sm text-slate-700 dark:text-slate-300 space-y-2">
+                <li className="flex items-start"><span className="text-violet-500 mr-2">✓</span>IAM, landing zones, network segmentation</li>
+                <li className="flex items-start"><span className="text-violet-500 mr-2">✓</span>Compliance-ready patterns (SOC2, HIPAA)</li>
+                <li className="flex items-start"><span className="text-violet-500 mr-2">✓</span>Visibility and audit logging</li>
+              </ul>
+            </div>
+            <div className="card-hover rounded-2xl border-2 border-slate-200/80 dark:border-slate-700/80 bg-white/80 dark:bg-slate-800/80 backdrop-blur p-6 shadow-sm">
+              <h3 className="text-lg font-bold text-slate-900 dark:text-slate-100 mb-2">Cost Efficiency (FinOps)</h3>
+              <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">
+                Right-sized resources, reserved capacity, and cost allocation you can act on.
+              </p>
+              <ul className="text-sm text-slate-700 dark:text-slate-300 space-y-2">
+                <li className="flex items-start"><span className="text-violet-500 mr-2">✓</span>Cost attribution and tagging strategy</li>
+                <li className="flex items-start"><span className="text-violet-500 mr-2">✓</span>Savings plans and committed use</li>
+                <li className="flex items-start"><span className="text-violet-500 mr-2">✓</span>Anomaly detection and guardrails</li>
+              </ul>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -257,6 +301,9 @@ export default function Home() {
                 <h3 className="text-xl md:text-2xl font-bold mb-3 text-slate-900 dark:text-slate-100">
                   AWS Cloud Engineering
                 </h3>
+                <p className="text-slate-600 dark:text-slate-400 text-xs font-semibold mb-2">
+                  Typical outcome: 20–40% cost reduction, SLO-aligned dashboards, CI/CD from day one
+                </p>
                 <p className="text-slate-700 dark:text-slate-300 mb-4 text-sm font-medium">
                   Production-ready AWS infrastructure, automation, and operations for modern workloads.
                 </p>
@@ -291,6 +338,9 @@ export default function Home() {
                 <h3 className="text-xl md:text-2xl font-bold mb-3 text-slate-900 dark:text-slate-100">
                   Azure Cloud Engineering
                 </h3>
+                <p className="text-slate-600 dark:text-slate-400 text-xs font-semibold mb-2">
+                  Typical outcome: Landing zones, identity governance, repeatable pipelines
+                </p>
                 <p className="text-slate-700 dark:text-slate-300 mb-4 text-sm font-medium">
                   Enterprise-grade Azure platforms with governance, security, and automation built-in.
                 </p>
@@ -325,6 +375,9 @@ export default function Home() {
                 <h3 className="text-xl md:text-2xl font-bold mb-3 text-slate-900 dark:text-slate-100">
                   Google Cloud Platform
                 </h3>
+                <p className="text-slate-600 dark:text-slate-400 text-xs font-semibold mb-2">
+                  Typical outcome: Project structure, VPC design, cost visibility and guardrails
+                </p>
                 <p className="text-slate-700 dark:text-slate-300 mb-4 text-sm font-medium">
                   Scalable GCP architectures with automation, security, and cost-control engineered in.
                 </p>
@@ -588,8 +641,23 @@ export default function Home() {
             <Link href="/terms" className="hover:text-slate-900 dark:hover:text-slate-100 underline underline-offset-4">Terms</Link>
             <Link href="/cloud-solutions" className="hover:text-slate-900 dark:hover:text-slate-100 underline underline-offset-4">Solutions</Link>
             <Link href="/case-studies" className="hover:text-slate-900 dark:hover:text-slate-100 underline underline-offset-4">Case Studies</Link>
-            <Link href="/apps" className="hover:text-slate-900 dark:hover:text-slate-100 underline underline-offset-4">Products</Link>
+            <Link href="/apps" className="hover:text-slate-900 dark:hover:text-slate-100 underline underline-offset-4">Apps (VisaNova, RecallEase)</Link>
           </div>
+        </div>
+      </section>
+      </AnimateOnScroll>
+
+      {/* Lead magnet — 10-minute Cloud Health Snapshot */}
+      <AnimateOnScroll>
+      <section className="py-16 px-4 sm:px-6 lg:px-8 border-t border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30">
+        <div className="max-w-xl mx-auto text-center">
+          <h2 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-slate-100 mb-3">
+            Get a 10-minute Cloud Health Snapshot
+          </h2>
+          <p className="text-slate-600 dark:text-slate-400 text-sm mb-6">
+            Share your email, company, and primary cloud provider. We&apos;ll send a quick assessment and next steps.
+          </p>
+          <CloudHealthSnapshotForm />
         </div>
       </section>
       </AnimateOnScroll>
@@ -605,7 +673,7 @@ export default function Home() {
             Join the movement
           </h2>
           <p className="text-slate-300 text-lg mb-8">
-            Unlock the future of cloud and AI. One membership, full stack — infrastructure intelligence, chatbots, and automation.
+            Axiom infrastructure intelligence, cloud consulting, and AI automation — one membership for teams ready to scale production systems.
           </p>
           <div className="flex flex-wrap justify-center gap-4">
             <Link
@@ -688,9 +756,10 @@ export default function Home() {
             <div>
               <h4 className="text-white font-semibold mb-4 text-sm">Company</h4>
               <ul className="space-y-2 text-sm">
-                <li><a href="#about" className="hover:text-white transition-colors">About</a></li>
-                <li><Link href="/apps" className="hover:text-white transition-colors">Products</Link></li>
-                <li><Link href="/press" className="hover:text-white transition-colors">Press &amp; Media</Link></li>
+                <li><Link href="/#about" className="hover:text-white transition-colors">About</Link></li>
+                <li><Link href="/press" className="hover:text-white transition-colors">Press</Link></li>
+                <li><Link href="/dashboard" className="hover:text-white transition-colors">Dashboard</Link></li>
+                <li><Link href="/apps" className="hover:text-white transition-colors">Apps (VisaNova, RecallEase)</Link></li>
                 <li><Link href="/insights" className="hover:text-white transition-colors">Insights</Link></li>
                 <li><Link href="/privacy" className="hover:text-white transition-colors">Privacy</Link></li>
                 <li><Link href="/terms" className="hover:text-white transition-colors">Terms of Service</Link></li>

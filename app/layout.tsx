@@ -5,6 +5,7 @@ import "../styles/axiom-theme.css";
 import { OrganizationJsonLd, WebSiteJsonLd } from "@/components/JsonLd";
 import AIChatWidget from "@/components/AIChatWidget";
 import { Providers } from "@/components/Providers";
+import { StickyMobileCTA } from "@/components/StickyMobileCTA";
 import { SITE_URL, defaultOgImage, primaryKeywords, secondaryKeywords } from "@/lib/seo";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -70,7 +71,8 @@ export default function RootLayout({
         <Providers>
           <OrganizationJsonLd />
           <WebSiteJsonLd />
-          {children}
+          <div className="pb-20 md:pb-0">{children}</div>
+          <StickyMobileCTA />
           <AIChatWidget />
         </Providers>
       </body>

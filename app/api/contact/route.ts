@@ -25,15 +25,16 @@ export async function POST(request: NextRequest) {
       aiUsageStatus,
     } = body;
 
-    // Validate required fields (message optional when source is free-review)
+    // Validate required fields (message optional when source is free-review or cloud-health-snapshot)
     const isFreeReview = source === "free-review";
+    const isCloudHealthSnapshot = source === "cloud-health-snapshot";
     if (!name || !email) {
       return NextResponse.json(
         { error: "Name and email are required" },
         { status: 400 }
       );
     }
-    if (!isFreeReview && !message) {
+    if (!isFreeReview && !isCloudHealthSnapshot && !message) {
       return NextResponse.json(
         { error: "Message is required" },
         { status: 400 }
@@ -49,14 +50,16 @@ export async function POST(request: NextRequest) {
       cloudProvider: escapeHtml(String(cloudProvider || "Not specified")),
       mainConcern: escapeHtml(String(mainConcern || "Not specified")),
       setupMaturity: escapeHtml(String(setupMaturity || "Not specified")),
-      message: escapeHtml(String(message || (isFreeReview ? "Free Cloud & AI Infrastructure Review request." : ""))),
+      message: escapeHtml(String(message || (isFreeReview ? "Free Cloud & AI Infrastructure Review request." : isCloudHealthSnapshot ? "Cloud Health Snapshot request." : ""))),
       source: escapeHtml(String(source || "contact")),
       aiUsageStatus: escapeHtml(String(aiUsageStatus || "Not specified")),
     };
 
     const emailSubject = safe.source === "free-review"
       ? `[Free Review] ${safe.company} – ${safe.name}`
-      : `Vision XIX Labs - Contact: ${safe.topic}`.slice(0, 255);
+      : safe.source === "cloud-health-snapshot"
+        ? `[Cloud Health Snapshot] ${safe.company || safe.name} – ${safe.email}`
+        : `Vision XIX Labs - Contact: ${safe.topic}`.slice(0, 255);
 
     // Format the email content (plain text)
     const emailContent = `

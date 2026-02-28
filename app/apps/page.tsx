@@ -47,6 +47,13 @@ export default function AppsPage() {
       <Navigation />
       <main className="pt-24 pb-24 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
+          <p className="mb-6 px-4 py-3 rounded-xl bg-slate-100 dark:bg-slate-800/80 text-slate-600 dark:text-slate-400 text-sm border border-slate-200 dark:border-slate-700">
+            Apps are separate from our cloud consulting offerings. For cloud services, see{" "}
+            <Link href="/cloud-solutions" className="text-indigo-600 dark:text-indigo-400 hover:underline font-medium">
+              Solutions
+            </Link>
+            .
+          </p>
           {/* Header */}
           <header className="mb-12 flex flex-col md:flex-row md:items-end md:justify-between gap-6">
             <div>

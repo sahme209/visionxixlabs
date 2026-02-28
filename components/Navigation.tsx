@@ -13,35 +13,19 @@ const cloudLinks = [
 ];
 
 const solutionsLinks = [
-  { href: "/website-builder", label: "AI Website Builder (Prompt)" },
-  { href: "/request", label: "Website Request / Get a Quote" },
-  { href: "/visionxix-ai", label: "Vision XIX AI" },
-  { href: "/visionxix-ai/pricing", label: "Plans & Membership" },
-  { href: "/visionxix-ai/features", label: "Vision XIX AI — Features" },
   { href: "/ai-solutions", label: "AI Solutions" },
   { href: "/ai-engineering", label: "AI Engineering & LLM Systems" },
-  { href: "/markets", label: "Where Companies Need AI" },
-  { href: "/enterprise-readiness", label: "Enterprise Readiness" },
-  { href: "/solutions-for-growing-teams", label: "Growing Teams" },
   { href: "/cloud-security", label: "Cloud Security" },
-  { href: "/free-review", label: "Free Review (Human-Led)" },
+  { href: "/solutions-for-growing-teams", label: "Growing Teams" },
   { href: "/case-studies", label: "Case Studies" },
-];
-
-// Axiom products — single Run Axiom entry (no duplicate); Cloud Studio not in primary nav
-const axiomLinks = [
-  { href: "/cloud-operator", label: "Run Axiom Analysis", highlight: true },
-  { href: "/website-builder", label: "AI Website Builder", highlight: false },
-  { href: "/request", label: "Get a Quote", highlight: false },
-  { href: "/visionxix-ai", label: "Vision XIX AI", highlight: false },
-  { href: "/dashboard", label: "Bots & Assistants", highlight: false },
+  { href: "/free-review", label: "Free Cloud Review" },
+  { href: "/cloud-solutions", label: "Cloud Solutions Overview" },
 ];
 
 export function Navigation() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [cloudOpen, setCloudOpen] = useState(false);
   const [solutionsOpen, setSolutionsOpen] = useState(false);
-  const [productsOpen, setProductsOpen] = useState(false);
   const navRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -49,7 +33,6 @@ export function Navigation() {
       if (navRef.current && !navRef.current.contains(event.target as Node)) {
         setCloudOpen(false);
         setSolutionsOpen(false);
-        setProductsOpen(false);
       }
     }
     document.addEventListener("mousedown", handleClickOutside);
@@ -101,7 +84,7 @@ export function Navigation() {
             <div className="relative">
               <button
                 type="button"
-                onClick={() => { setSolutionsOpen(!solutionsOpen); setCloudOpen(false); setProductsOpen(false); }}
+                onClick={() => { setSolutionsOpen(!solutionsOpen); setCloudOpen(false); }}
                 className="inline-flex items-center px-4 py-2 text-slate-700 dark:text-slate-300 hover:text-violet-600 dark:hover:text-violet-400 hover:bg-violet-50 dark:hover:bg-violet-900/20 rounded-xl transition-all text-sm font-medium"
               >
                 Solutions
@@ -122,34 +105,12 @@ export function Navigation() {
                 </div>
               )}
             </div>
-            <div className="relative">
-              <button
-                type="button"
-                onClick={() => { setProductsOpen(!productsOpen); setCloudOpen(false); setSolutionsOpen(false); }}
-                className="inline-flex items-center px-4 py-2 text-slate-700 dark:text-slate-300 hover:text-violet-600 dark:hover:text-violet-400 hover:bg-violet-50 dark:hover:bg-violet-900/20 rounded-xl transition-all text-sm font-medium"
-              >
-                Axiom
-                <ChevronDownIcon className={`ml-1 h-4 w-4 transition-transform ${productsOpen ? "rotate-180" : ""}`} />
-              </button>
-              {productsOpen && (
-                <div className="absolute left-0 top-full mt-2 w-64 py-2 rounded-2xl bg-white dark:bg-slate-800 border-2 border-slate-200/80 dark:border-slate-700/80 shadow-xl shadow-slate-200/50 dark:shadow-none">
-                  {axiomLinks.map((item) => (
-                    <Link
-                      key={item.href}
-                      href={item.href}
-                      onClick={() => setProductsOpen(false)}
-                      className={`block px-4 py-2 text-sm ${
-                        item.highlight
-                          ? "font-semibold text-violet-700 dark:text-violet-300 bg-violet-50 dark:bg-violet-900/30 rounded-lg"
-                          : "text-slate-700 dark:text-slate-300 hover:bg-violet-50 dark:hover:bg-violet-900/20 rounded-lg"
-                      } hover:text-violet-600 dark:hover:text-violet-400`}
-                    >
-                      {item.label}
-                    </Link>
-                  ))}
-                </div>
-              )}
-            </div>
+            <Link
+              href="/cloud-operator"
+              className="px-4 py-2 text-slate-700 dark:text-slate-300 hover:text-violet-600 dark:hover:text-violet-400 hover:bg-violet-50 dark:hover:bg-violet-900/20 rounded-xl transition-all text-sm font-medium"
+            >
+              Axiom
+            </Link>
             <Link
               href="/insights"
               className="px-4 py-2 text-slate-700 dark:text-slate-300 hover:text-violet-600 dark:hover:text-violet-400 hover:bg-violet-50 dark:hover:bg-violet-900/20 rounded-lg transition-all text-sm font-medium"
@@ -157,16 +118,11 @@ export function Navigation() {
               Insights
             </Link>
             <Link
-              href="/#about"
-              className="px-4 py-2 text-slate-700 dark:text-slate-300 hover:text-violet-600 dark:hover:text-violet-400 hover:bg-violet-50 dark:hover:bg-violet-900/20 rounded-lg transition-all text-sm font-medium"
+              href="/contact"
+              className="inline-flex items-center px-5 py-2.5 bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 rounded-2xl text-sm font-semibold hover:bg-slate-800 dark:hover:bg-slate-200 transition-colors"
             >
-              Company
-            </Link>
-            <Link
-              href="/press"
-              className="px-4 py-2 text-slate-700 dark:text-slate-300 hover:text-violet-600 dark:hover:text-violet-400 hover:bg-violet-50 dark:hover:bg-violet-900/20 rounded-lg transition-all text-sm font-medium"
-            >
-              Press
+              Contact
+              <ArrowRightIcon className="ml-1.5 h-4 w-4" />
             </Link>
             <Link
               href="/cloud-operator"
@@ -174,19 +130,6 @@ export function Navigation() {
             >
               Run Axiom
               <ArrowRightIcon className="h-4 w-4" />
-            </Link>
-            <Link
-              href="/dashboard"
-              className="px-4 py-2 text-slate-700 dark:text-slate-300 hover:text-violet-600 dark:hover:text-violet-400 hover:bg-violet-50 dark:hover:bg-violet-900/20 rounded-lg transition-all text-sm font-medium"
-            >
-              Dashboard
-            </Link>
-            <Link
-              href="/contact"
-              className="inline-flex items-center px-5 py-2.5 bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 rounded-2xl text-sm font-semibold hover:bg-slate-800 dark:hover:bg-slate-200 transition-colors"
-            >
-              Contact
-              <ArrowRightIcon className="ml-1.5 h-4 w-4" />
             </Link>
           </div>
           <button
@@ -209,32 +152,19 @@ export function Navigation() {
               <Link href="/cloud-solutions/azure" onClick={() => setMobileMenuOpen(false)} className="px-4 py-2 text-slate-700 dark:text-slate-300 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg text-sm font-medium">Azure</Link>
               <Link href="/cloud-solutions/gcp" onClick={() => setMobileMenuOpen(false)} className="px-4 py-2 text-slate-700 dark:text-slate-300 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg text-sm font-medium">GCP</Link>
               <p className="px-4 pt-3 text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Solutions</p>
-              <Link href="/request" onClick={() => setMobileMenuOpen(false)} className="px-4 py-2 text-slate-700 dark:text-slate-300 hover:bg-violet-50 dark:hover:bg-violet-900/20 rounded-lg text-sm font-medium">Website Request / Get a Quote</Link>
-              <Link href="/visionxix-ai" onClick={() => setMobileMenuOpen(false)} className="px-4 py-2 text-slate-700 dark:text-slate-300 hover:bg-violet-50 dark:hover:bg-violet-900/20 rounded-lg text-sm font-medium">Vision XIX AI</Link>
-              <Link href="/visionxix-ai/pricing" onClick={() => setMobileMenuOpen(false)} className="px-4 py-2 text-slate-700 dark:text-slate-300 hover:bg-violet-50 dark:hover:bg-violet-900/20 rounded-lg text-sm font-medium pl-6">Plans & Membership</Link>
-              <Link href="/visionxix-ai/features" onClick={() => setMobileMenuOpen(false)} className="px-4 py-2 text-slate-700 dark:text-slate-300 hover:bg-violet-50 dark:hover:bg-violet-900/20 rounded-lg text-sm font-medium pl-6">Vision XIX AI — Features</Link>
               <Link href="/ai-solutions" onClick={() => setMobileMenuOpen(false)} className="px-4 py-2 text-slate-700 dark:text-slate-300 hover:bg-violet-50 dark:hover:bg-violet-900/20 rounded-lg text-sm font-medium">AI Solutions</Link>
-              <Link href="/ai-engineering" onClick={() => setMobileMenuOpen(false)} className="px-4 py-2 text-slate-700 dark:text-slate-300 hover:bg-violet-50 dark:hover:bg-violet-900/20 rounded-lg text-sm font-medium">AI Engineering & LLM Systems</Link>
-              <Link href="/markets" onClick={() => setMobileMenuOpen(false)} className="px-4 py-2 text-slate-700 dark:text-slate-300 hover:bg-violet-50 dark:hover:bg-violet-900/20 rounded-lg text-sm font-medium">Where Companies Need AI</Link>
-              <Link href="/enterprise-readiness" onClick={() => setMobileMenuOpen(false)} className="px-4 py-2 text-slate-700 dark:text-slate-300 hover:bg-violet-50 dark:hover:bg-violet-900/20 rounded-lg text-sm font-medium">Enterprise Readiness</Link>
-              <Link href="/solutions-for-growing-teams" onClick={() => setMobileMenuOpen(false)} className="px-4 py-2 text-slate-700 dark:text-slate-300 hover:bg-violet-50 dark:hover:bg-violet-900/20 rounded-lg text-sm font-medium">Growing Teams</Link>
               <Link href="/cloud-security" onClick={() => setMobileMenuOpen(false)} className="px-4 py-2 text-slate-700 dark:text-slate-300 hover:bg-violet-50 dark:hover:bg-violet-900/20 rounded-lg text-sm font-medium">Cloud Security</Link>
-              <Link href="/free-review" onClick={() => setMobileMenuOpen(false)} className="px-4 py-2 text-slate-700 dark:text-slate-300 hover:bg-violet-50 dark:hover:bg-violet-900/20 rounded-lg text-sm font-medium">Free Review (Human-Led)</Link>
-              <Link href="/insights" onClick={() => setMobileMenuOpen(false)} className="px-4 py-2 text-slate-700 dark:text-slate-300 hover:bg-violet-50 dark:hover:bg-violet-900/20 rounded-lg text-sm font-medium">Insights</Link>
+              <Link href="/solutions-for-growing-teams" onClick={() => setMobileMenuOpen(false)} className="px-4 py-2 text-slate-700 dark:text-slate-300 hover:bg-violet-50 dark:hover:bg-violet-900/20 rounded-lg text-sm font-medium">Growing Teams</Link>
               <Link href="/case-studies" onClick={() => setMobileMenuOpen(false)} className="px-4 py-2 text-slate-700 dark:text-slate-300 hover:bg-violet-50 dark:hover:bg-violet-900/20 rounded-lg text-sm font-medium">Case Studies</Link>
-              <p className="px-4 pt-3 text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Axiom</p>
-              <Link href="/cloud-operator" onClick={() => setMobileMenuOpen(false)} className="inline-flex items-center gap-2 px-4 py-2 text-white bg-gradient-to-r from-violet-600 to-fuchsia-600 rounded-2xl text-sm font-semibold shadow-lg shadow-violet-500/30">
-                Run Axiom Analysis
-                <ArrowRightIcon className="h-4 w-4" />
-              </Link>
-              <Link href="/request" onClick={() => setMobileMenuOpen(false)} className="px-4 py-2 text-slate-700 dark:text-slate-300 hover:bg-violet-50 dark:hover:bg-violet-900/20 rounded-lg text-sm font-medium">AI Website Builder</Link>
-              <Link href="/visionxix-ai" onClick={() => setMobileMenuOpen(false)} className="px-4 py-2 text-slate-700 dark:text-slate-300 hover:bg-violet-50 dark:hover:bg-violet-900/20 rounded-lg text-sm font-medium">Vision XIX AI</Link>
-              <Link href="/dashboard" onClick={() => setMobileMenuOpen(false)} className="px-4 py-2 text-slate-700 dark:text-slate-300 hover:bg-violet-50 dark:hover:bg-violet-900/20 rounded-lg text-sm font-medium">Bots &amp; Assistants</Link>
-              <Link href="/#about" onClick={() => setMobileMenuOpen(false)} className="px-4 py-2 text-slate-700 dark:text-slate-300 hover:bg-violet-50 dark:hover:bg-violet-900/20 rounded-lg text-sm font-medium">About</Link>
-              <Link href="/press" onClick={() => setMobileMenuOpen(false)} className="px-4 py-2 text-slate-700 dark:text-slate-300 hover:bg-violet-50 dark:hover:bg-violet-900/20 rounded-lg text-sm font-medium">Press &amp; Media</Link>
+              <Link href="/insights" onClick={() => setMobileMenuOpen(false)} className="px-4 py-2 text-slate-700 dark:text-slate-300 hover:bg-violet-50 dark:hover:bg-violet-900/20 rounded-lg text-sm font-medium">Insights</Link>
+              <Link href="/cloud-operator" onClick={() => setMobileMenuOpen(false)} className="px-4 py-2 text-slate-700 dark:text-slate-300 hover:bg-violet-50 dark:hover:bg-violet-900/20 rounded-lg text-sm font-medium">Axiom</Link>
               <Link href="/contact" onClick={() => setMobileMenuOpen(false)} className="mt-2 inline-flex items-center justify-center px-5 py-2.5 bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 rounded-lg text-sm font-semibold">
                 Contact
                 <ArrowRightIcon className="ml-1.5 h-4 w-4" />
+              </Link>
+              <Link href="/cloud-operator" onClick={() => setMobileMenuOpen(false)} className="inline-flex items-center justify-center gap-2 px-4 py-2 text-white bg-gradient-to-r from-violet-600 to-fuchsia-600 rounded-2xl text-sm font-semibold shadow-lg shadow-violet-500/30">
+                Run Axiom
+                <ArrowRightIcon className="h-4 w-4" />
               </Link>
             </div>
           </div>

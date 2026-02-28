@@ -1,6 +1,7 @@
 "use client";
 
-import { FormEvent, useState, useRef } from "react";
+import { FormEvent, useState, useRef, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import {
   ArrowLeftIcon,
@@ -14,7 +15,9 @@ import { Navigation } from "../../components/Navigation";
 import { BackgroundBlobs } from "@/components/BackgroundBlobs";
 import { AnimateOnScroll } from "@/components/AnimateOnScroll";
 
-export default function ContactPage() {
+function ContactForm() {
+  const searchParams = useSearchParams();
+  const subjectParam = searchParams.get("subject") || "";
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -164,8 +167,9 @@ export default function ContactPage() {
                   id="topic"
                   name="topic"
                   className="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 px-3 py-2 text-sm text-slate-900 dark:text-slate-100 shadow-sm focus:outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-200 dark:focus:ring-violet-900/50"
-                  defaultValue="AWS Cloud Infrastructure"
+                  defaultValue={subjectParam || "AWS Cloud Infrastructure"}
                 >
+                  <option value="Free Cloud Health Snapshot">Free Cloud Health Snapshot</option>
                   <option>AWS Cloud Infrastructure</option>
                   <option>CI/CD &amp; Octopus Deploy</option>
                   <option>Cost Optimization / FinOps</option>
@@ -351,6 +355,19 @@ export default function ContactPage() {
         </AnimateOnScroll>
       </main>
     </div>
+  );
+}
+
+export default function ContactPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-violet-50/40 to-fuchsia-50/30 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
+        <Navigation />
+        <main className="max-w-4xl mx-auto px-4 py-12 pt-28"><div className="animate-pulse h-96 bg-slate-200 dark:bg-slate-700 rounded-3xl" /></main>
+      </div>
+    }>
+      <ContactForm />
+    </Suspense>
   );
 }
 
