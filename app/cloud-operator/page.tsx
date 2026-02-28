@@ -21,6 +21,7 @@ import { AxiomMetricCard } from "@/components/axiom-ui/AxiomMetricCard";
 import { AxiomSection } from "@/components/axiom-ui/AxiomSection";
 import { AxiomCard } from "@/components/axiom-ui/AxiomCard";
 import { AxiomButton } from "@/components/axiom-ui/AxiomButton";
+import { AxiomAIVision } from "@/components/AxiomAIVision";
 
 type OperatorStatus = {
   outputStatus?: string;
@@ -625,7 +626,7 @@ function CloudOperatorPageInner() {
             AI-powered cloud intelligence for AWS, Azure &amp; GCP.
           </h1>
           <p className="text-sm text-slate-600 dark:text-slate-400 max-w-2xl mb-2">
-            Score, optimize, and secure your multi-cloud stack. Axiom uses AI to analyze your profile and generate deterministic roadmaps, playbooks, cost estimates, and security recommendations.
+            Score, optimize, and secure your multi-cloud stack. Connect your environment via APIs for real-time analysis—AI turns your actual inventory, cost data, and config into roadmaps, playbooks, and automation. Beyond basic: AI recommendations today, approved execution tomorrow.
           </p>
           <div className="flex flex-wrap gap-2">
             <span className="inline-flex items-center gap-1 rounded-full bg-slate-900/5 dark:bg-slate-100/5 px-3 py-1 text-[11px] font-medium text-slate-600 dark:text-slate-300">
@@ -638,6 +639,9 @@ function CloudOperatorPageInner() {
             </span>
             <span className="inline-flex items-center gap-1 rounded-full bg-slate-900/5 dark:bg-slate-100/5 px-3 py-1 text-[11px] font-medium text-slate-600 dark:text-slate-300">
               FinOps &amp; drift detection
+            </span>
+            <span className="inline-flex items-center gap-1 rounded-full bg-violet-100 dark:bg-violet-900/30 px-3 py-1 text-[11px] font-medium text-violet-700 dark:text-violet-300">
+              API access to your cloud
             </span>
           </div>
         </section>
@@ -1108,6 +1112,7 @@ function CloudOperatorPageInner() {
                   Connectors for GitHub, AWS, Azure, GCP (Growth+). Read-only metadata for richer analysis.
                 </p>
               </AxiomCard>
+              <AxiomAIVision />
               <AxiomCard className="bg-slate-900 text-slate-100 p-5">
                 <h3 className="text-sm font-semibold mb-2 flex items-center gap-2">
                   <ShieldCheckIcon className="h-4 w-4 text-emerald-400" />
@@ -1492,10 +1497,20 @@ function CloudOperatorPageInner() {
 
             {activeTab === "connectors" && (
               <AxiomSection className="space-y-6">
-                <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">Cloud Connectors</h2>
-                <p className="text-sm text-slate-600 dark:text-slate-400 max-w-2xl">
-                  Link read-only connectors to enrich your Axiom analysis. GitHub, AWS, Azure, and GCP connectors fetch metadata for deeper infrastructure insights. Available on Growth+ tier.
-                </p>
+                <div className="rounded-2xl border-2 border-violet-200/80 dark:border-violet-700/50 bg-gradient-to-br from-violet-50/60 to-indigo-50/40 dark:from-violet-950/30 dark:to-indigo-950/20 p-6 mb-6">
+                  <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100 mb-2">Connect your environment via APIs</h2>
+                  <p className="text-sm text-slate-600 dark:text-slate-400 max-w-2xl mb-4">
+                    Link AWS, Azure, GCP, or GitHub with read-only credentials. Axiom fetches real inventory, cost data, and config—so AI analyzes your actual environment, not just forms. More accurate scores, tailored recommendations, drift detection.
+                  </p>
+                  <Link
+                    href="/contact?subject=Connect+Cloud+APIs+%28Axiom%29"
+                    className="inline-flex items-center gap-2 rounded-xl bg-violet-600 hover:bg-violet-700 text-white px-4 py-2 text-sm font-semibold transition-colors"
+                  >
+                    Get connector access (Growth+)
+                    <ArrowRightIcon className="h-4 w-4" />
+                  </Link>
+                </div>
+                <h2 className="text-base font-semibold text-slate-900 dark:text-slate-100">Supported connectors</h2>
                 <div className="grid sm:grid-cols-2 gap-4">
                   <AxiomCard className="p-5 border-l-4 border-l-orange-500">
                     <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-1">AWS</h3>
@@ -1692,6 +1707,7 @@ function CloudOperatorPageInner() {
               </div>
 
               <div className="space-y-4">
+                <AxiomAIVision />
                 <AxiomCard className="p-5">
                   <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-2">
                     Upgrade plan
