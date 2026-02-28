@@ -1,44 +1,52 @@
-/** Unified membership tiers — same as visionxix-ai/pricing */
-export type WebsiteBuildTier = "starter" | "growth" | "scale" | "enterprise";
+/**
+ * Website Builder tiers — derived from membership (visionxix-ai/pricing).
+ */
+
+import {
+  MEMBERSHIP_PLANS,
+  type MembershipPlanId,
+} from "@/lib/pricing/membership";
+
+export type WebsiteBuildTier = MembershipPlanId;
 
 export const WEBSITE_BUILD_TIERS = {
   starter: {
     id: "starter" as const,
-    name: "Starter",
-    price: 35,
+    name: MEMBERSHIP_PLANS.starter.name,
+    price: MEMBERSHIP_PLANS.starter.monthlyPrice ?? 0,
     priceLabel: "$35/mo",
-    description: "1 chatbot, 6k messages/mo, 2.5k pages, AI Website Builder, Axiom, cloud guidance",
+    description: MEMBERSHIP_PLANS.starter.websiteBuilder.includes.join(", "),
     revisions: 3,
     productionDeploy: false,
     popular: false,
   },
   growth: {
     id: "growth" as const,
-    name: "Growth",
-    price: 75,
+    name: MEMBERSHIP_PLANS.growth.name,
+    price: MEMBERSHIP_PLANS.growth.monthlyPrice ?? 0,
     priceLabel: "$75/mo",
-    description: "3 chatbots, 15k messages/mo, 15k pages, API, integrations, full suite included",
+    description: MEMBERSHIP_PLANS.growth.websiteBuilder.includes.join(", "),
     revisions: 0,
     productionDeploy: true,
     popular: true,
   },
   scale: {
     id: "scale" as const,
-    name: "Scale",
-    price: 249,
+    name: MEMBERSHIP_PLANS.scale.name,
+    price: MEMBERSHIP_PLANS.scale.monthlyPrice ?? 0,
     priceLabel: "$249/mo",
-    description: "8 chatbots, 60k messages/mo, 80k pages, priority support, full suite included",
+    description: MEMBERSHIP_PLANS.scale.websiteBuilder.includes.join(", "),
     revisions: 0,
     productionDeploy: true,
     popular: false,
   },
   enterprise: {
     id: "enterprise" as const,
-    name: "Enterprise",
+    name: MEMBERSHIP_PLANS.enterprise.name,
     price: 0,
     priceLabel: "Custom",
     priceRange: "Custom",
-    description: "Unlimited chatbots, custom volume, optional self-host, SOC2-ready, dedicated success",
+    description: MEMBERSHIP_PLANS.enterprise.websiteBuilder.includes.join(", "),
     revisions: 0,
     productionDeploy: true,
     popular: false,
@@ -49,7 +57,7 @@ export const WEBSITE_BUILD_TIERS = {
 export function resolveTier(tier: string): keyof typeof WEBSITE_BUILD_TIERS {
   const t = tier.toLowerCase();
   if (t === "done_for_you") return "enterprise";
-  if (t === "professional") return "growth";
+  if (t === "professional" || t === "pro") return "growth";
   if (t in WEBSITE_BUILD_TIERS) return tier as keyof typeof WEBSITE_BUILD_TIERS;
   return "starter";
 }

@@ -1,9 +1,9 @@
 /**
  * Phase 8: Strategic Brief Engine — C-level intelligence.
- * LLM + structured guardrails. Deterministic fallback if OpenAI fails.
+ * Uses unified AI provider (OpenAI, Gemini, Anthropic). Deterministic fallback if no provider or on error.
  */
 
-import OpenAI from "openai";
+import { generateCompletion } from "@/lib/ai/provider";
 
 export type StrategicBriefInput = {
   profile: { projectType?: string; hostingProvider?: string; monthlySpend?: string; complianceNeeds?: string };
@@ -169,21 +169,14 @@ export async function generateStrategicBrief(input: StrategicBriefInput): Promis
     };
   }
 
-  const apiKey = process.env.OPENAI_API_KEY;
-  if (!apiKey) return fallback;
-
   try {
-    const openai = new OpenAI({ apiKey });
-    const completion = await openai.chat.completions.create({
-      model: process.env.MODEL_NAME || "gpt-4o-mini",
-      messages: [
-        { role: "system", content: buildSystemPrompt(input.tier) },
-        { role: "user", content: buildUserPrompt(input) },
-      ],
+    const { text } = await generateCompletion({
+      systemPrompt: buildSystemPrompt(input.tier),
+      userPrompt: buildUserPrompt(input),
       temperature: 0.3,
+      maxTokens: 2048,
+      responseFormat: "json",
     });
-
-    const text = completion.choices[0]?.message?.content?.trim() || "";
     const parsed = parseJSON<StrategicBrief>(text);
 
     return {

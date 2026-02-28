@@ -1,9 +1,10 @@
 /**
  * AI Website Starter Package generator.
- * Uses OpenAI (or Gemini fallback) to produce structured Website Starter output.
- * Env: OPENAI_API_KEY, GEMINI_API_KEY (optional fallback), NEXT_PUBLIC_BASE_URL.
+ * Uses unified provider (OpenAI, Gemini, Anthropic) per AI_PROVIDER or fallback order.
+ * Env: OPENAI_API_KEY | GEMINI_API_KEY | ANTHROPIC_API_KEY, AI_PROVIDER (optional), NEXT_PUBLIC_BASE_URL.
  */
 
+import { generateCompletion } from "@/lib/ai/provider";
 import type { LeadFormData } from "./leadSchema";
 
 export interface AiStarterPackage {
@@ -88,69 +89,20 @@ function buildUserPrompt(data: LeadFormData): string {
   return `Generate a Website Starter Package for this project:\n\n${lines.join("\n")}\n\nOutput JSON only.`;
 }
 
-async function callOpenAI(prompt: string): Promise<string> {
-  const OpenAI = (await import("openai")).default;
-  const apiKey = process.env.OPENAI_API_KEY;
-  if (!apiKey?.trim()) throw new Error("OPENAI_API_KEY not set");
-
-  const openai = new OpenAI({ apiKey });
-  const completion = await openai.chat.completions.create({
-    model: process.env.MODEL_NAME || "gpt-4o-mini",
-    messages: [
-      { role: "system", content: SYSTEM_PROMPT },
-      { role: "user", content: prompt },
-    ],
-    response_format: { type: "json_object" },
-    max_tokens: 2048,
-    temperature: 0.5,
-  });
-
-  const text = completion.choices?.[0]?.message?.content ?? "";
-  if (!text.trim()) throw new Error("Empty OpenAI response");
-  return text;
-}
-
-async function callGemini(prompt: string): Promise<string> {
-  const { GoogleGenAI } = await import("@google/genai");
-  const apiKey = process.env.GEMINI_API_KEY;
-  if (!apiKey?.trim()) throw new Error("GEMINI_API_KEY not set");
-
-  const ai = new GoogleGenAI({ apiKey });
-  const fullPrompt = `${SYSTEM_PROMPT}\n\n---\n\n${prompt}`;
-
-  const response = await ai.models.generateContent({
-    model: process.env.GEMINI_MODEL || "gemini-2.0-flash",
-    contents: fullPrompt,
-    config: { responseMimeType: "application/json" },
-  });
-
-  const text = (response.text ?? "").trim();
-  if (!text) throw new Error("Empty Gemini response");
-  return text;
-}
-
 export async function generateWebsiteStarterPackage(
   data: LeadFormData
 ): Promise<AiStarterPackage> {
   const prompt = buildUserPrompt(data);
+  const { text } = await generateCompletion({
+    systemPrompt: SYSTEM_PROMPT,
+    userPrompt: prompt,
+    temperature: 0.5,
+    maxTokens: 2048,
+    responseFormat: "json",
+  });
 
-  let raw: string;
-  if (process.env.OPENAI_API_KEY?.trim()) {
-    try {
-      raw = await callOpenAI(prompt);
-    } catch (e) {
-      if (process.env.GEMINI_API_KEY?.trim()) {
-        raw = await callGemini(prompt);
-      } else {
-        throw e;
-      }
-    }
-  } else if (process.env.GEMINI_API_KEY?.trim()) {
-    raw = await callGemini(prompt);
-  } else {
-    throw new Error("No AI provider. Set OPENAI_API_KEY or GEMINI_API_KEY.");
-  }
-
+  const raw = (text ?? "").trim();
+  if (!raw) throw new Error("Empty AI response");
   const parsed = JSON.parse(raw) as unknown;
   return validateAndNormalize(parsed);
 }

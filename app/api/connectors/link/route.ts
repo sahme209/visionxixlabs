@@ -74,7 +74,7 @@ export async function POST(req: NextRequest) {
     }
 
     if (connectorType !== "github" && !canPro) {
-      return NextResponse.json({ error: "Cloud connectors (AWS, Azure, GCP) require Pro or higher" }, { status: 403 });
+      return NextResponse.json({ error: "Cloud connectors (AWS, Azure, GCP) require Growth or higher membership. Upgrade at /visionxix-ai/pricing" }, { status: 403 });
     }
 
     const authMethod = (body.authMethod as ConnectorAuthMethod) || "token";

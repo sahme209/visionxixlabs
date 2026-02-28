@@ -36,99 +36,23 @@ import { SUPPORT_EMAIL } from "@/lib/constants/company";
 import { Navigation } from "@/components/Navigation";
 import { BackgroundBlobs } from "@/components/BackgroundBlobs";
 import { AnimateOnScroll } from "@/components/AnimateOnScroll";
+import { MEMBERSHIP_PLANS, INCLUDED_IN_EVERY_PLAN, ADDONS } from "@/lib/pricing/membership";
 
 type BillingCycle = "monthly" | "yearly";
 
-const PLANS = [
-  {
-    id: "starter",
-    name: "Starter",
-    monthlyPrice: 35,
-    yearlyPrice: 252,
-    desc: "For small sites and solo founders",
-    popular: false,
-    features: [
-      "1 chatbot",
-      "Up to 6k messages / month",
-      "Up to 2,500 pages",
-      "Manual refresh",
-      "1 team member",
-      "White-label branding included",
-      "95+ languages",
-      "Lead capture",
-      "Embed on your site",
-    ],
-  },
-  {
-    id: "growth",
-    name: "Growth",
-    monthlyPrice: 75,
-    yearlyPrice: 540,
-    desc: "For growing teams and multiple sites",
-    popular: true,
-    features: [
-      "Up to 3 chatbots",
-      "Up to 15k messages / month",
-      "Up to 15,000 pages",
-      "Auto refresh (monthly)",
-      "Up to 5 team members",
-      "White-label branding included",
-      "Integrations (Zendesk, Intercom, Crisp)",
-      "Full API access",
-      "Rate limiting",
-      "95+ languages",
-      "Lead capture + escalation to human",
-      "Conversation analytics",
-    ],
-  },
-  {
-    id: "scale",
-    name: "Scale",
-    monthlyPrice: 249,
-    yearlyPrice: 1794,
-    desc: "For high-traffic sites and agencies",
-    popular: false,
-    features: [
-      "Up to 8 chatbots",
-      "Up to 60k messages / month",
-      "Up to 80,000 pages",
-      "Auto refresh (weekly)",
-      "Auto scan (daily)",
-      "Up to 15 team members",
-      "White-label branding included",
-      "Integrations + API + Webhooks",
-      "Priority support",
-      "95+ languages",
-      "Lead capture + escalation to human",
-      "Conversation analytics + email summaries",
-    ],
-  },
-  {
-    id: "enterprise",
-    name: "Enterprise",
-    monthlyPrice: null,
-    yearlyPrice: null,
-    desc: "Custom volume, your cloud, SOC2-ready",
-    popular: false,
-    features: [
-      "Unlimited chatbots",
-      "Custom message volume",
-      "Up to 500k+ pages",
-      "Auto refresh (daily)",
-      "Unlimited team members",
-      "Optional self-host / your cloud",
-      "SOC2-ready, RBAC, audit logs",
-      "Custom integrations",
-      "Dedicated success manager",
-      "SLA",
-    ],
-  },
-];
-
-const ADDONS = [
-  { name: "Extra 10k messages", monthly: 25, yearly: 180 },
-  { name: "Extra 25k messages", monthly: 49, yearly: 353 },
-];
+/** Build plans from canonical membership config */
+const PLANS = (["starter", "growth", "scale", "enterprise"] as const).map((id) => {
+  const p = MEMBERSHIP_PLANS[id];
+  return {
+    id,
+    name: p.name,
+    monthlyPrice: p.monthlyPrice,
+    yearlyPrice: p.yearlyPrice,
+    desc: p.description,
+    popular: p.popular ?? false,
+    features: p.features,
+  };
+});
 
 export default function VisionXIXAIPricingPage() {
   const [billing, setBilling] = useState<BillingCycle>("monthly");
@@ -176,12 +100,12 @@ export default function VisionXIXAIPricingPage() {
           <div className="mt-12 rounded-2xl border-2 border-slate-200/80 dark:border-slate-700/80 bg-slate-50/50 dark:bg-slate-800/50 p-6 text-left max-w-3xl mx-auto">
             <h2 className="text-sm font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-3">Included in every plan</h2>
             <ul className="grid sm:grid-cols-2 gap-3 text-sm text-slate-700 dark:text-slate-300">
-              <li className="flex items-center gap-2"><CheckIcon className="h-5 w-5 text-emerald-500 shrink-0" /> Vision XIX AI chatbots (white-label)</li>
-              <li className="flex items-center gap-2"><CheckIcon className="h-5 w-5 text-emerald-500 shrink-0" /> Axiom Cloud Operator (infra scoring & roadmaps)</li>
-              <li className="flex items-center gap-2"><CheckIcon className="h-5 w-5 text-emerald-500 shrink-0" /> AI Website Builder (prompt-driven sites)</li>
-              <li className="flex items-center gap-2"><CheckIcon className="h-5 w-5 text-emerald-500 shrink-0" /> Cloud Studio (cloud project setup)</li>
-              <li className="flex items-center gap-2"><CheckIcon className="h-5 w-5 text-emerald-500 shrink-0" /> Cloud solutions guidance (AWS, Azure, GCP)</li>
-              <li className="flex items-center gap-2"><CheckIcon className="h-5 w-5 text-emerald-500 shrink-0" /> AI solutions & engineering resources</li>
+              {INCLUDED_IN_EVERY_PLAN.map((item) => (
+                <li key={item} className="flex items-center gap-2">
+                  <CheckIcon className="h-5 w-5 text-emerald-500 shrink-0" />
+                  {item}
+                </li>
+              ))}
             </ul>
           </div>
         </div>
@@ -269,7 +193,48 @@ export default function VisionXIXAIPricingPage() {
             })}
           </div>
 
-          <div className="mt-16 max-w-3xl mx-auto">
+          <div className="mt-16 max-w-4xl mx-auto">
+            <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100 mb-4">What each plan delivers</h2>
+            <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">
+              One membership unlocks Axiom, Cloud Studio, Website Builder, Chatbots, and Automation. Capabilities scale with your plan.
+            </p>
+            <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 overflow-hidden mb-12">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50">
+                    <th className="text-left py-3 px-4 font-semibold text-slate-900 dark:text-slate-100">Product</th>
+                    <th className="text-left py-3 px-4 font-semibold text-slate-900 dark:text-slate-100">Starter ($35)</th>
+                    <th className="text-left py-3 px-4 font-semibold text-slate-900 dark:text-slate-100">Growth ($75)</th>
+                    <th className="text-left py-3 px-4 font-semibold text-slate-900 dark:text-slate-100">Scale ($249)</th>
+                    <th className="text-left py-3 px-4 font-semibold text-slate-900 dark:text-slate-100">Enterprise</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr className="border-b border-slate-100 dark:border-slate-800">
+                    <td className="py-3 px-4 font-medium text-slate-700 dark:text-slate-300">Axiom Cloud Operator</td>
+                    <td className="py-3 px-4 text-slate-600 dark:text-slate-400">Analysis only</td>
+                    <td className="py-3 px-4 text-slate-600 dark:text-slate-400">Roadmap, configs, GitHub</td>
+                    <td className="py-3 px-4 text-slate-600 dark:text-slate-400">Drift, trends, AWS/Azure/GCP</td>
+                    <td className="py-3 px-4 text-slate-600 dark:text-slate-400">Strategic advisory</td>
+                  </tr>
+                  <tr className="border-b border-slate-100 dark:border-slate-800">
+                    <td className="py-3 px-4 font-medium text-slate-700 dark:text-slate-300">Cloud Studio</td>
+                    <td className="py-3 px-4 text-slate-600 dark:text-slate-400">Summary</td>
+                    <td className="py-3 px-4 text-slate-600 dark:text-slate-400">Full output, downloads</td>
+                    <td className="py-3 px-4 text-slate-600 dark:text-slate-400">Full + priority</td>
+                    <td className="py-3 px-4 text-slate-600 dark:text-slate-400">Custom support</td>
+                  </tr>
+                  <tr className="border-b border-slate-100 dark:border-slate-800">
+                    <td className="py-3 px-4 font-medium text-slate-700 dark:text-slate-300">Automation (Remediation)</td>
+                    <td className="py-3 px-4 text-slate-600 dark:text-slate-400">—</td>
+                    <td className="py-3 px-4 text-slate-600 dark:text-slate-400">GitHub PR, connectors</td>
+                    <td className="py-3 px-4 text-slate-600 dark:text-slate-400">Full access</td>
+                    <td className="py-3 px-4 text-slate-600 dark:text-slate-400">Full access</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
             <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100 mb-4">Add-ons</h2>
             <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-6">
               <div className="space-y-4">

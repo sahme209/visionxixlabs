@@ -1,4 +1,4 @@
-import OpenAI from "openai";
+import { generateCompletion } from "@/lib/ai/provider";
 
 export type AIStarterPackage = {
   companyName: string;
@@ -31,29 +31,18 @@ type LeadFormData = {
  * Generate AI starter package from lead request.
  */
 export async function generateAIStarterPackage(formData: LeadFormData): Promise<AIStarterPackage> {
-  const apiKey = process.env.OPENAI_API_KEY;
-  if (!apiKey) {
-    throw new Error("OPENAI_API_KEY is required");
-  }
-
-  const openai = new OpenAI({ apiKey });
   const prompt = buildPrompt(formData);
-
-  const completion = await openai.chat.completions.create({
-    model: process.env.MODEL_NAME || "gpt-4o-mini",
-    messages: [
-      {
-        role: "system",
-        content:
-          "You generate professional website content packages for small businesses. Output valid JSON only, no markdown, no code blocks. Be concise and professional.",
-      },
-      { role: "user", content: prompt },
-    ],
+  const { text } = await generateCompletion({
+    systemPrompt:
+      "You generate professional website content packages for small businesses. Output valid JSON only, no markdown, no code blocks. Be concise and professional.",
+    userPrompt: prompt,
     temperature: 0.7,
+    maxTokens: 2048,
+    responseFormat: "json",
   });
 
-  const text = completion.choices[0]?.message?.content?.trim() || "{}";
-  const parsed = parseJSON<AIStarterPackage>(text);
+  const raw = text?.trim() || "{}";
+  const parsed = parseJSON<AIStarterPackage>(raw);
 
   return {
     companyName: parsed.companyName || formData.company || "Company",
@@ -81,11 +70,7 @@ export async function generateAIStarterPackageWithChanges(
   formData: LeadFormData,
   changeRequest: string
 ): Promise<AIStarterPackage> {
-  const apiKey = process.env.OPENAI_API_KEY;
-  if (!apiKey) throw new Error("OPENAI_API_KEY is required");
-
-  const openai = new OpenAI({ apiKey });
-  const prompt = `Update this website content package based on the customer's change request.
+  const userPrompt = `Update this website content package based on the customer's change request.
 
 Current content (JSON):
 ${JSON.stringify(existingPackage, null, 2)}
@@ -97,17 +82,16 @@ Form context: Company ${formData.company || "N/A"}, Industry ${formData.industry
 Output a JSON object with the same structure as the current content, but updated per the change request.
 Output only valid JSON, no markdown.`;
 
-  const completion = await openai.chat.completions.create({
-    model: process.env.MODEL_NAME || "gpt-4o-mini",
-    messages: [
-      { role: "system", content: "You update website content based on customer feedback. Output valid JSON only." },
-      { role: "user", content: prompt },
-    ],
+  const { text } = await generateCompletion({
+    systemPrompt: "You update website content based on customer feedback. Output valid JSON only.",
+    userPrompt,
     temperature: 0.6,
+    maxTokens: 2048,
+    responseFormat: "json",
   });
 
-  const text = completion.choices[0]?.message?.content?.trim() || "{}";
-  const parsed = parseJSON<AIStarterPackage>(text);
+  const raw = text?.trim() || "{}";
+  const parsed = parseJSON<AIStarterPackage>(raw);
 
   return {
     ...existingPackage,

@@ -10,7 +10,7 @@ import { prisma } from "@/lib/db";
 import { verifyStarterToken } from "@/lib/starterToken";
 import { decryptCredential } from "@/lib/security/credentialVault";
 import { logAudit } from "@/lib/security/auditLog";
-import { resolveOperatorTier, canViewTechnicalOutputs } from "@/lib/cloudOperator/pricing";
+import { resolveEffectiveOperatorTier, canViewTechnicalOutputs } from "@/lib/cloudOperator/pricing";
 import { runAgentLoop } from "@/lib/automation/agentLoop";
 import { observeCostIdleResources, planCostIdleResources } from "@/lib/automation/playbooks/costIdleResources";
 import { createPullRequest } from "@/lib/connectors/githubWrite";
@@ -70,10 +70,15 @@ export async function POST(req: NextRequest) {
   }
 
   const payload = (lead.fullPayload as Record<string, unknown>) || {};
-  const tier = resolveOperatorTier(payload.tier as string);
+  let userPlan: string | null = null;
+  if (lead.userId) {
+    const user = await prisma.user.findUnique({ where: { id: lead.userId }, select: { plan: true } });
+    userPlan = user?.plan ?? null;
+  }
+  const tier = resolveEffectiveOperatorTier(payload.tier as string, userPlan);
   if (!canViewTechnicalOutputs(tier)) {
     return NextResponse.json(
-      { error: "Pro or higher required for autonomous remediation" },
+      { error: "Growth or higher membership required for autonomous remediation. Upgrade at /visionxix-ai/pricing" },
       { status: 403 }
     );
   }

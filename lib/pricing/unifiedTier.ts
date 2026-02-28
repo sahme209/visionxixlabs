@@ -4,14 +4,13 @@
  * Public tier labels remain unchanged.
  */
 
+import { membershipToOperatorTier } from "./membership";
+
 export type UnifiedTier = "free" | "pro" | "growth" | "enterprise";
 
-/** User.plan from Stripe (starter | growth | scale) */
+/** User.plan from Stripe (starter | growth | scale | enterprise) → UnifiedTier */
 export function userPlanToUnified(plan: string | null | undefined): UnifiedTier {
-  const p = (plan ?? "").toLowerCase();
-  if (p === "growth") return "growth";
-  if (p === "scale") return "enterprise";
-  return "free";
+  return membershipToOperatorTier(plan) as UnifiedTier;
 }
 
 /** Website Builder tiers (starter | growth | scale | enterprise) — unified membership */

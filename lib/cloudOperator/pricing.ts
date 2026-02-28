@@ -1,5 +1,6 @@
 import type { OperatorTier } from "./types";
 import { operatorTierToUnified, type UnifiedTier } from "@/lib/pricing/unifiedTier";
+import { membershipToOperatorTier } from "@/lib/pricing/membership";
 
 export function resolveOperatorTier(raw: string | null | undefined): OperatorTier {
   const value = (raw || "").toLowerCase();
@@ -28,5 +29,20 @@ export function hasEnterpriseEngagement(tier: OperatorTier): boolean {
 /** Resolve Operator tier to UnifiedTier for internal gating */
 export function toUnifiedTier(tier: OperatorTier | string | null | undefined): UnifiedTier {
   return operatorTierToUnified(tier);
+}
+
+/**
+ * Resolve effective Operator tier for a lead.
+ * If lead has userId and user has a membership plan, use membership tier (Growth+ = Pro+).
+ * Otherwise use fullPayload.tier from form.
+ */
+export function resolveEffectiveOperatorTier(
+  payloadTier: string | null | undefined,
+  userPlan: string | null | undefined
+): OperatorTier {
+  if (userPlan) {
+    return membershipToOperatorTier(userPlan) as OperatorTier;
+  }
+  return resolveOperatorTier(payloadTier);
 }
 

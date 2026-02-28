@@ -990,6 +990,10 @@ function CloudOperatorPageInner() {
                 <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">
                   Choose your Operator tier
                 </h3>
+                <p className="text-xs text-slate-500 dark:text-slate-400">
+                  Included with membership: Starter ($35)→Analysis · Growth ($75)→Roadmap · Scale ($249)→Automation Signals · Enterprise→Strategic Advisory.{" "}
+                  <Link href="/visionxix-ai/pricing" className="text-indigo-600 hover:underline">View plans</Link>
+                </p>
                 <div className="grid sm:grid-cols-2 gap-3">
                   {OPERATOR_TIERS.map((t) => (
                     <label

@@ -1,4 +1,4 @@
-import OpenAI from "openai";
+import { generateCompletion } from "@/lib/ai/provider";
 import type { CloudStudioForm, CloudStudioOutput, CloudStudioTier } from "./types";
 import { isFreeTier } from "./pricing";
 import {
@@ -22,10 +22,6 @@ export async function generateCloudStudioOutput(
   request: CloudStudioForm,
   tier: CloudStudioTier
 ): Promise<CloudStudioOutput> {
-  const apiKey = process.env.OPENAI_API_KEY;
-  if (!apiKey) throw new Error("OPENAI_API_KEY is required");
-
-  const openai = new OpenAI({ apiKey });
   const fullOutput = !isFreeTier(tier);
 
   let prompt: string;
@@ -49,20 +45,14 @@ export async function generateCloudStudioOutput(
       throw new Error("Unknown service type");
   }
 
-  const completion = await openai.chat.completions.create({
-    model: process.env.MODEL_NAME || "gpt-4o-mini",
-    messages: [
-      {
-        role: "system",
-        content:
-          "You are an expert cloud and DevOps consultant. Output valid JSON when asked for JSON; otherwise output plain text. Be professional and concise.",
-      },
-      { role: "user", content: prompt },
-    ],
+  const { text } = await generateCompletion({
+    systemPrompt:
+      "You are an expert cloud and DevOps consultant. Output valid JSON when asked for JSON; otherwise output plain text. Be professional and concise.",
+    userPrompt: prompt,
     temperature: 0.5,
+    maxTokens: 4096,
+    responseFormat: fullOutput ? "json" : "text",
   });
-
-  const text = completion.choices[0]?.message?.content?.trim() || "";
 
   if (fullOutput) {
     const parsed = parseJSON<Record<string, unknown>>(text);

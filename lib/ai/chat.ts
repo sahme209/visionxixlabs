@@ -1,7 +1,6 @@
 /**
- * AI chat abstraction — OpenAI primary, Gemini fallback.
- * Env: OPENAI_API_KEY (required), GEMINI_API_KEY (optional fallback).
- * MODEL_NAME: gpt-4o-mini | gpt-4o | gpt-4.1 (default: gpt-4o for smarter answers).
+ * AI chat abstraction — OpenAI, Gemini, Anthropic.
+ * Env: AI_PROVIDER (optional) or fallback order: OpenAI → Gemini → Anthropic.
  */
 
 export type ChatMessage = { role: "user" | "assistant" | "system"; content: string };
@@ -15,7 +14,7 @@ export interface ChatOptions {
 
 export interface ChatResult {
   text: string;
-  provider: "openai" | "gemini";
+  provider: "openai" | "gemini" | "anthropic";
 }
 
 async function chatWithOpenAI(opts: ChatOptions): Promise<ChatResult> {
@@ -83,32 +82,80 @@ async function chatWithGemini(opts: ChatOptions): Promise<ChatResult> {
   return { text, provider: "gemini" };
 }
 
+async function chatWithAnthropic(opts: ChatOptions): Promise<ChatResult> {
+  const Anthropic = (await import("@anthropic-ai/sdk")).default;
+  const apiKey = process.env.ANTHROPIC_API_KEY;
+  if (!apiKey?.trim()) throw new Error("ANTHROPIC_API_KEY not set");
+
+  const model = process.env.ANTHROPIC_MODEL || "claude-sonnet-4-20250514";
+  const maxTokens = opts.maxTokens ?? 1536;
+  const temperature = opts.temperature ?? 0.4;
+
+  const msgs = opts.messages
+    .filter((m) => m.role !== "system")
+    .slice(-20)
+    .map((m) => ({
+      role: m.role as "user" | "assistant",
+      content: String(m.content).slice(0, 4000),
+    }));
+
+  const client = new Anthropic({ apiKey });
+  const message = await client.messages.create({
+    model,
+    max_tokens: maxTokens,
+    temperature,
+    system: opts.systemPrompt,
+    messages: msgs,
+  });
+
+  const block = message.content.find((b) => b.type === "text");
+  const text = block && "text" in block ? block.text : "";
+  return { text, provider: "anthropic" };
+}
+
+function getChatProviderOrder(): ("openai" | "gemini" | "anthropic")[] {
+  const preferred = process.env.AI_PROVIDER?.toLowerCase();
+  const order: ("openai" | "gemini" | "anthropic")[] = ["openai", "gemini", "anthropic"];
+  if (preferred === "gemini" || preferred === "anthropic" || preferred === "openai") {
+    return [preferred, ...order.filter((p) => p !== preferred)];
+  }
+  return order;
+}
+
+const CHAT_PROVIDERS = {
+  openai: chatWithOpenAI,
+  gemini: chatWithGemini,
+  anthropic: chatWithAnthropic,
+} as const;
+
+function hasChatProvider(p: "openai" | "gemini" | "anthropic"): boolean {
+  switch (p) {
+    case "openai":
+      return !!process.env.OPENAI_API_KEY?.trim();
+    case "gemini":
+      return !!process.env.GEMINI_API_KEY?.trim();
+    case "anthropic":
+      return !!process.env.ANTHROPIC_API_KEY?.trim();
+    default:
+      return false;
+  }
+}
+
 export async function generateChatResponse(opts: ChatOptions): Promise<ChatResult> {
+  const order = getChatProviderOrder();
   let lastError: Error | null = null;
 
-  if (process.env.OPENAI_API_KEY?.trim()) {
+  for (const p of order) {
+    if (!hasChatProvider(p)) continue;
     try {
-      return await chatWithOpenAI(opts);
-    } catch (e) {
-      lastError = e instanceof Error ? e : new Error(String(e));
-      if (process.env.GEMINI_API_KEY?.trim()) {
-        try {
-          return await chatWithGemini(opts);
-        } catch (geminiErr) {
-          throw lastError;
-        }
-      }
-      throw lastError;
-    }
-  }
-
-  if (process.env.GEMINI_API_KEY?.trim()) {
-    try {
-      return await chatWithGemini(opts);
+      return await CHAT_PROVIDERS[p](opts);
     } catch (e) {
       lastError = e instanceof Error ? e : new Error(String(e));
     }
   }
 
-  throw lastError ?? new Error("No AI provider configured. Set OPENAI_API_KEY or GEMINI_API_KEY.");
+  throw (
+    lastError ??
+    new Error("No AI provider configured. Set OPENAI_API_KEY, GEMINI_API_KEY, or ANTHROPIC_API_KEY.")
+  );
 }

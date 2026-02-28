@@ -1,4 +1,4 @@
-import OpenAI from "openai";
+import { generateCompletion } from "@/lib/ai/provider";
 import type {
   OperatorProfile,
   OperatorTier,
@@ -142,32 +142,17 @@ export async function generateOperatorEngineOutput(
   profile: OperatorProfile,
   tier: OperatorTier
 ): Promise<OperatorEngineOutput> {
-  const apiKey = process.env.OPENAI_API_KEY;
-  if (!apiKey) throw new Error("OPENAI_API_KEY is required");
-
-  const openai = new OpenAI({ apiKey });
-  const useProModel = PRO_TIERS.includes(tier);
-  const model =
-    useProModel
-      ? (process.env.CLOUD_OPERATOR_PRO_MODEL || process.env.MODEL_NAME || "gpt-4o")
-      : (process.env.MODEL_NAME || "gpt-4o-mini");
-
   const prompt = buildOperatorPrompt(profile);
+  const systemPrompt =
+    "You are the AI Cloud Operator™. You produce concrete, provider-specific, actionable JSON outputs for cloud automation planning. Never execute changes. Output only valid JSON.";
 
-  const completion = await openai.chat.completions.create({
-    model,
-    messages: [
-      {
-        role: "system",
-        content:
-          "You are the AI Cloud Operator™. You produce concrete, provider-specific, actionable JSON outputs for cloud automation planning. Never execute changes. Output only valid JSON.",
-      },
-      { role: "user", content: prompt },
-    ],
+  const { text } = await generateCompletion({
+    systemPrompt,
+    userPrompt: prompt,
     temperature: 0.35,
+    maxTokens: 8192,
+    responseFormat: "json",
   });
-
-  const text = completion.choices[0]?.message?.content?.trim() || "";
   const parsed = parseJSON<{
     launch?: LaunchModule;
     optimize?: OptimizeModule;

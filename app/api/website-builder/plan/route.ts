@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import OpenAI from "openai";
+import { generateCompletion } from "@/lib/ai/provider";
 
 export type WebsitePlan = {
   sections: { id: string; name: string; description: string }[];
@@ -39,20 +39,11 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Prompt is required" }, { status: 400 });
     }
 
-    const apiKey = process.env.OPENAI_API_KEY;
-    if (!apiKey) {
-      return NextResponse.json({ error: "AI not configured" }, { status: 503 });
-    }
-
-    const openai = new OpenAI({ apiKey });
-
     // 1. Plan (sections, design, colors, inferred infra profile)
-    const planCompletion = await openai.chat.completions.create({
-      model: process.env.MODEL_NAME || "gpt-4o-mini",
-      messages: [
-        {
-          role: "system",
-          content: `You are a website builder AI. Given a user prompt, output a JSON object with:
+    let planResult;
+    try {
+      planResult = await generateCompletion({
+        systemPrompt: `You are a website builder AI. Given a user prompt, output a JSON object with:
 - sections: array of { id, name, description } (e.g. Hero, Services, About, Process, Testimonials, FAQ, Contact)
 - designLanguage: 1-2 sentence aesthetic
 - colorPalette: { primary, secondary, accent } hex colors
@@ -66,13 +57,19 @@ export async function POST(req: NextRequest) {
   primaryGoal: "Launch faster"|"Reduce costs"|"Improve security"|"Scale architecture"
 
 Output ONLY valid JSON. No markdown.`,
-        },
-        { role: "user", content: prompt },
-      ],
-      temperature: 0.5,
-    });
+        userPrompt: prompt,
+        temperature: 0.5,
+        maxTokens: 2048,
+        responseFormat: "json",
+      });
+    } catch (aiErr) {
+      return NextResponse.json(
+        { error: "AI not configured. Set OPENAI_API_KEY, GEMINI_API_KEY, or ANTHROPIC_API_KEY." },
+        { status: 503 }
+      );
+    }
 
-    const planText = planCompletion.choices[0]?.message?.content?.trim() || "{}";
+    const planText = planResult.text?.trim() || "{}";
     const parsed = parseJSON<WebsitePlan>(planText);
 
     const sections = Array.isArray(parsed.sections)
@@ -106,13 +103,9 @@ Output ONLY valid JSON. No markdown.`,
         }
       : undefined;
 
-    // 2. Hero HTML preview (GPT generates self-contained HTML)
-    const heroCompletion = await openai.chat.completions.create({
-      model: process.env.MODEL_NAME || "gpt-4o-mini",
-      messages: [
-        {
-          role: "system",
-          content: `You generate a self-contained HTML hero section for a website. Output ONLY raw HTML (no markdown, no code blocks). Use inline styles. The HTML must be a single block: a hero section with:
+    // 2. Hero HTML preview (AI generates self-contained HTML)
+    const heroResult = await generateCompletion({
+      systemPrompt: `You generate a self-contained HTML hero section for a website. Output ONLY raw HTML (no markdown, no code blocks). Use inline styles. The HTML must be a single block: a hero section with:
 - A compelling headline for "${siteName}"
 - A subheadline (1-2 sentences)
 - A primary CTA button
@@ -121,16 +114,12 @@ Output ONLY valid JSON. No markdown.`,
 - Max 80 lines of HTML
 - No script tags, no external links
 - Use system fonts (sans-serif)`,
-        },
-        {
-          role: "user",
-          content: `Create hero HTML for: ${prompt}. Design: ${parsed.designLanguage ?? "Clean, professional"}`,
-        },
-      ],
+      userPrompt: `Create hero HTML for: ${prompt}. Design: ${parsed.designLanguage ?? "Clean, professional"}`,
       temperature: 0.6,
+      maxTokens: 2048,
     });
 
-    let heroHtml = heroCompletion.choices[0]?.message?.content?.trim() ?? "";
+    let heroHtml = heroResult.text?.trim() ?? "";
     if (heroHtml) {
       heroHtml = heroHtml.replace(/```html?\s*/gi, "").replace(/```\s*/g, "").trim();
       if (!heroHtml.startsWith("<")) heroHtml = "";
