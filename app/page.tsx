@@ -17,6 +17,7 @@ import { BackgroundBlobs } from "@/components/BackgroundBlobs";
 import { HeroLightBeam } from "@/components/HeroLightBeam";
 import { ServicePipeline } from "@/components/ServicePipeline";
 import { CloudHealthSnapshotForm } from "@/components/CloudHealthSnapshotForm";
+import { HeroHeadlineGlow } from "@/components/HeroHeadlineGlow";
 
 export default function Home() {
 
@@ -87,9 +88,7 @@ export default function Home() {
       <section className="pt-32 pb-16 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
         <HeroLightBeam />
         <div className="max-w-4xl mx-auto text-center relative">
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-4 leading-tight animate-hero-enter">
-            Cloud &amp; AI Engineering That Delivers Production Results — AWS, Azure, GCP
-          </h1>
+          <HeroHeadlineGlow />
           <p className="text-lg md:text-xl text-slate-600 dark:text-slate-400 mb-4 max-w-3xl mx-auto animate-hero-enter animate-hero-enter-delay-1">
             We design, automate, secure, and optimize multi-cloud platforms with production-grade AI workflows (RAG, retrieval, automation) — focused on reliability, security, and cost efficiency.
           </p>

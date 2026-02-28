@@ -412,6 +412,22 @@ html {
   animation: cta-glow 2.5s ease-in-out infinite;
 }
 
+/* Hero headline — per-word hover glow (futuristic) */
+.hero-word-glow[data-glow-color]:hover {
+  text-shadow:
+    0 0 8px var(--glow-color),
+    0 0 16px var(--glow-color),
+    0 0 32px var(--glow-color),
+    0 0 48px var(--glow-color);
+  color: var(--glow-color);
+  filter: brightness(1.15);
+  transform: scale(1.02);
+}
+
+.hero-word-glow[data-glow-color] {
+  transition: text-shadow 0.3s ease, color 0.3s ease, filter 0.3s ease, transform 0.3s ease;
+}
+
 /* Frosted glass dark — Huly card style */
 .glass-dark {
   background: rgba(15, 23, 42, 0.6);
