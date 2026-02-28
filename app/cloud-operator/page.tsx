@@ -10,8 +10,11 @@ import {
   ChartBarIcon,
   CheckCircleIcon,
   CloudIcon,
+  CpuChipIcon,
   DocumentArrowDownIcon,
+  SparklesIcon,
   ShieldCheckIcon,
+  VariableIcon,
 } from "@heroicons/react/24/outline";
 import { Navigation } from "@/components/Navigation";
 import { AxiomMetricCard } from "@/components/axiom-ui/AxiomMetricCard";
@@ -442,6 +445,9 @@ const PRIMARY_GOALS = [
   "Improve security",
   "Scale architecture",
 ] as const;
+const WORKLOAD_TYPES = ["Container (Docker/K8s)", "Serverless", "VM/Bare metal", "Hybrid"] as const;
+const DATABASE_TYPES = ["RDS/Managed SQL", "NoSQL (DynamoDB, Cosmos, etc.)", "Self-hosted DB", "Multiple"] as const;
+const KUBERNETES_OPTIONS = ["Yes, in production", "Yes, staging only", "Evaluating", "No"] as const;
 const OPERATOR_TIERS = [
   { id: "free", label: "Analysis" },
   { id: "pro", label: "Roadmap" },
@@ -523,6 +529,9 @@ function CloudOperatorPageInner() {
       complianceNeeds: fd.get("complianceNeeds")?.toString() || "",
       gitProvider: fd.get("gitProvider")?.toString() || "None",
       primaryGoal: fd.get("primaryGoal")?.toString() || "",
+      workloadType: fd.get("workloadType")?.toString() || "",
+      databaseType: fd.get("databaseType")?.toString() || "",
+      kubernetesUsage: fd.get("kubernetesUsage")?.toString() || "",
     };
 
     const tier = fd.get("tier")?.toString() || "free";
@@ -593,21 +602,44 @@ function CloudOperatorPageInner() {
           <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 tracking-wide uppercase mb-1">
             Infrastructure Advantage Model™
           </p>
-          <div className="inline-flex items-center gap-2 rounded-full bg-indigo-100 dark:bg-indigo-900/40 px-4 py-1.5 text-xs font-semibold text-indigo-700 dark:text-indigo-300 mb-3">
-            <CloudIcon className="h-4 w-4" />
-            AI Cloud Operator™
+          <div className="flex flex-wrap items-center gap-2 mb-3">
+            <div className="inline-flex items-center gap-2 rounded-full bg-indigo-100 dark:bg-indigo-900/40 px-4 py-1.5 text-xs font-semibold text-indigo-700 dark:text-indigo-300">
+              <CloudIcon className="h-4 w-4" />
+              AI Cloud Operator™
+            </div>
+            <div className="inline-flex items-center gap-2 rounded-full bg-violet-100 dark:bg-violet-900/40 px-3 py-1 text-[11px] font-semibold text-violet-700 dark:text-violet-300">
+              <SparklesIcon className="h-3.5 w-3.5" />
+              AI-Powered Analysis
+            </div>
+            <div className="inline-flex items-center gap-2 rounded-full bg-slate-200/80 dark:bg-slate-700/60 px-3 py-1 text-[11px] font-medium text-slate-700 dark:text-slate-300">
+              AWS
+            </div>
+            <div className="inline-flex items-center gap-2 rounded-full bg-slate-200/80 dark:bg-slate-700/60 px-3 py-1 text-[11px] font-medium text-slate-700 dark:text-slate-300">
+              Azure
+            </div>
+            <div className="inline-flex items-center gap-2 rounded-full bg-slate-200/80 dark:bg-slate-700/60 px-3 py-1 text-[11px] font-medium text-slate-700 dark:text-slate-300">
+              GCP
+            </div>
           </div>
           <h1 className="axiom-heading-xl text-3xl md:text-4xl font-extrabold text-slate-900 dark:text-slate-100 mb-2">
-            One operator for your cloud stack.
+            AI-powered cloud intelligence for AWS, Azure &amp; GCP.
           </h1>
           <p className="text-sm text-slate-600 dark:text-slate-400 max-w-2xl mb-2">
-            Cross-cloud intelligence across AWS, Azure, GCP and AI systems.
+            Score, optimize, and secure your multi-cloud stack. Axiom uses AI to analyze your profile and generate deterministic roadmaps, playbooks, cost estimates, and security recommendations.
           </p>
-          <span className="inline-flex items-center gap-1 rounded-full bg-slate-900/5 dark:bg-slate-100/5 px-3 py-1 text-[11px] font-medium text-slate-600 dark:text-slate-300">
-            Deterministic scoring
-            <span className="text-slate-400">·</span>
-            Structured 30-day roadmap
-          </span>
+          <div className="flex flex-wrap gap-2">
+            <span className="inline-flex items-center gap-1 rounded-full bg-slate-900/5 dark:bg-slate-100/5 px-3 py-1 text-[11px] font-medium text-slate-600 dark:text-slate-300">
+              <CpuChipIcon className="h-3 w-3" />
+              Deterministic scoring
+            </span>
+            <span className="inline-flex items-center gap-1 rounded-full bg-slate-900/5 dark:bg-slate-100/5 px-3 py-1 text-[11px] font-medium text-slate-600 dark:text-slate-300">
+              <VariableIcon className="h-3 w-3" />
+              Structured 30-day roadmap
+            </span>
+            <span className="inline-flex items-center gap-1 rounded-full bg-slate-900/5 dark:bg-slate-100/5 px-3 py-1 text-[11px] font-medium text-slate-600 dark:text-slate-300">
+              FinOps &amp; drift detection
+            </span>
+          </div>
         </section>
 
         {inDashboard && !status && (
@@ -900,6 +932,54 @@ function CloudOperatorPageInner() {
                     ))}
                   </div>
                 </div>
+
+                <div className="grid sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+                      Primary workload type
+                    </label>
+                    <select
+                      name="workloadType"
+                      defaultValue="Container (Docker/K8s)"
+                      className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 px-3 py-2.5 text-sm text-slate-900 dark:text-slate-100"
+                    >
+                      {WORKLOAD_TYPES.map((w) => (
+                        <option key={w} value={w}>{w}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+                      Database setup
+                    </label>
+                    <select
+                      name="databaseType"
+                      defaultValue="RDS/Managed SQL"
+                      className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 px-3 py-2.5 text-sm text-slate-900 dark:text-slate-100"
+                    >
+                      {DATABASE_TYPES.map((d) => (
+                        <option key={d} value={d}>{d}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+                    Kubernetes usage
+                  </label>
+                  <div className="flex flex-wrap gap-2">
+                    {KUBERNETES_OPTIONS.map((k) => (
+                      <label
+                        key={k}
+                        className="flex items-center gap-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/40 px-3 py-2 text-xs sm:text-sm cursor-pointer has-[:checked]:border-indigo-500 has-[:checked]:ring-2 has-[:checked]:ring-indigo-200"
+                      >
+                        <input type="radio" name="kubernetesUsage" value={k} defaultChecked={k === "Evaluating"} className="sr-only" />
+                        <span className="text-slate-800 dark:text-slate-100">{k}</span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
               </div>
 
                 <div className="pt-4 border-t border-slate-200/80 dark:border-slate-700/80 space-y-4">
@@ -994,32 +1074,51 @@ function CloudOperatorPageInner() {
             </form>
 
             <aside className="space-y-4">
+              <AxiomCard className="p-5 border-l-4 border-l-violet-500">
+                <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-2 flex items-center gap-2">
+                  <SparklesIcon className="h-4 w-4 text-violet-500" />
+                  AI-Powered Analysis
+                </h3>
+                <ul className="text-xs text-slate-600 dark:text-slate-400 space-y-1.5">
+                  <li>Explainable scoring with factor breakdown</li>
+                  <li>Impact simulation (score, savings, risk)</li>
+                  <li>Drift detection and trend history (Growth+)</li>
+                  <li>Deal signals and enterprise readiness</li>
+                </ul>
+              </AxiomCard>
               <AxiomCard className="p-5">
                 <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-2 flex items-center gap-2">
                   <ChartBarIcon className="h-4 w-4 text-indigo-500" />
                   What the Operator returns
                 </h3>
                 <ul className="text-xs text-slate-600 dark:text-slate-400 space-y-1.5">
-                  <li>Infrastructure readiness, cost, security, CI/CD, and complexity scores</li>
-                  <li>Architecture, CI/CD YAML, Dockerfile, and deployment steps</li>
-                  <li>Cost breakdown, savings estimates, and optimization levers</li>
-                  <li>Security risks, IAM and network hardening recommendations</li>
-                  <li>Business impact summary and implementation effort estimate</li>
+                  <li>Infrastructure readiness, cost, security, CI/CD scores</li>
+                  <li>Architecture, CI/CD YAML, Dockerfile, Terraform</li>
+                  <li>FinOps: cost breakdown, savings, Reserved Instance suggestions</li>
+                  <li>IAM, network hardening, security checklist</li>
+                  <li>30-day roadmap and playbooks</li>
                 </ul>
+              </AxiomCard>
+              <AxiomCard className="p-5 bg-indigo-50/80 dark:bg-indigo-950/30">
+                <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-2 flex items-center gap-2">
+                  <CloudIcon className="h-4 w-4 text-indigo-600" />
+                  Multi-cloud: AWS · Azure · GCP
+                </h3>
+                <p className="text-xs text-slate-600 dark:text-slate-400">
+                  Connectors for GitHub, AWS, Azure, GCP (Growth+). Read-only metadata for richer analysis.
+                </p>
               </AxiomCard>
               <AxiomCard className="bg-slate-900 text-slate-100 p-5">
                 <h3 className="text-sm font-semibold mb-2 flex items-center gap-2">
                   <ShieldCheckIcon className="h-4 w-4 text-emerald-400" />
-                  Automation safety, by default
+                  Autopilot safety
                 </h3>
                 <p className="text-xs text-slate-300 mb-3">
-                  Autopilot Mode: Generates step-by-step playbooks and validated configs. Execution
-                  requires your approval.
+                  Generates playbooks and validated configs. Execution requires your approval.
                 </p>
                 <Link
                   href="/contact?subject=Request+Implementation+Support"
                   className="inline-flex items-center gap-2 rounded-xl border border-slate-600 bg-slate-800 px-3 py-1.5 text-[11px] text-slate-200 hover:bg-slate-700 hover:text-white transition-colors"
-                  title="Autopilot execution coming soon. Request implementation support today."
                 >
                   <BoltIcon className="h-3 w-3 text-amber-400" />
                   Request implementation support
@@ -1393,13 +1492,31 @@ function CloudOperatorPageInner() {
 
             {activeTab === "connectors" && (
               <AxiomSection className="space-y-6">
-                <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">Connectors</h2>
-                <p className="text-xs text-slate-600 dark:text-slate-400">
-                  Link read-only connectors (GitHub, AWS, Azure, GCP) to fetch metadata. Connector linking requires a valid token.
+                <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">Cloud Connectors</h2>
+                <p className="text-sm text-slate-600 dark:text-slate-400 max-w-2xl">
+                  Link read-only connectors to enrich your Axiom analysis. GitHub, AWS, Azure, and GCP connectors fetch metadata for deeper infrastructure insights. Available on Growth+ tier.
                 </p>
-                <AxiomCard className="p-5">
+                <div className="grid sm:grid-cols-2 gap-4">
+                  <AxiomCard className="p-5 border-l-4 border-l-orange-500">
+                    <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-1">AWS</h3>
+                    <p className="text-xs text-slate-600 dark:text-slate-400">Account metadata, resource inventory, cost data</p>
+                  </AxiomCard>
+                  <AxiomCard className="p-5 border-l-4 border-l-blue-500">
+                    <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-1">Azure</h3>
+                    <p className="text-xs text-slate-600 dark:text-slate-400">Subscription, resource groups, compliance posture</p>
+                  </AxiomCard>
+                  <AxiomCard className="p-5 border-l-4 border-l-red-500">
+                    <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-1">GCP</h3>
+                    <p className="text-xs text-slate-600 dark:text-slate-400">Project metadata, billing, asset inventory</p>
+                  </AxiomCard>
+                  <AxiomCard className="p-5 border-l-4 border-l-slate-600">
+                    <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-1">GitHub</h3>
+                    <p className="text-xs text-slate-600 dark:text-slate-400">Repos, CI/CD workflows, deployment patterns</p>
+                  </AxiomCard>
+                </div>
+                <AxiomCard className="p-5 bg-slate-50 dark:bg-slate-900/50">
                   <p className="text-xs text-slate-600 dark:text-slate-400">
-                    Use POST /api/connectors/link to link a connector. GET /api/connectors/status returns connector status.
+                    API: POST /api/connectors/link to link. GET /api/connectors/status for status. All connectors are read-only.
                   </p>
                 </AxiomCard>
               </AxiomSection>
@@ -1621,9 +1738,16 @@ export default function CloudOperatorPage() {
         <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
           <Navigation />
           <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-20">
-            <p className="text-sm text-slate-600 dark:text-slate-400">
-              Loading Axiom cloud-operator analysis…
-            </p>
+            <div className="space-y-4">
+              <p className="text-sm text-slate-600 dark:text-slate-400">
+                Loading Axiom AI cloud analysis…
+              </p>
+              <div className="flex gap-2">
+                <span className="rounded-full bg-slate-200 dark:bg-slate-700 px-3 py-1 text-xs">AWS</span>
+                <span className="rounded-full bg-slate-200 dark:bg-slate-700 px-3 py-1 text-xs">Azure</span>
+                <span className="rounded-full bg-slate-200 dark:bg-slate-700 px-3 py-1 text-xs">GCP</span>
+              </div>
+            </div>
           </main>
         </div>
       }
