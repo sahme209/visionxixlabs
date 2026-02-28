@@ -47,7 +47,12 @@ export async function POST(req: NextRequest) {
         automationReadinessScore: scores.automationReadinessScore as number | null,
       });
 
-      const intervalMs = ra.frequency === "weekly" ? 7 * 24 * 60 * 60 * 1000 : 30 * 24 * 60 * 60 * 1000;
+      const intervalMs =
+        ra.frequency === "daily"
+          ? 24 * 60 * 60 * 1000
+          : ra.frequency === "weekly"
+            ? 7 * 24 * 60 * 60 * 1000
+            : 30 * 24 * 60 * 60 * 1000;
       const nextRun = new Date(Date.now() + intervalMs);
 
       await prisma.recurringAnalysis.update({
