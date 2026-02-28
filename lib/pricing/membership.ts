@@ -62,7 +62,7 @@ export const MEMBERSHIP_PLANS: Record<MembershipPlanId, MembershipPlan> = {
     name: "Starter",
     monthlyPrice: 35,
     yearlyPrice: 252,
-    description: "For small sites and solo founders",
+    description: "For solo founders and small projects",
     popular: false,
     bots: 1,
     messagesPerMonth: 6000,
@@ -90,15 +90,15 @@ export const MEMBERSHIP_PLANS: Record<MembershipPlanId, MembershipPlan> = {
       cloudConnectors: false,
     },
     features: [
-      "1 chatbot",
-      "Up to 6k messages / month",
-      "Up to 2,500 pages",
+      "1 AI assistant + 1 website project",
+      "Up to 6k AI operations / month",
+      "Up to 2,500 pages (sites, docs, knowledge)",
       "Manual refresh",
       "1 team member",
       "White-label branding included",
       "95+ languages",
-      "Lead capture",
-      "Embed on your site",
+      "Lead capture & embed",
+      "Axiom analysis + Website Builder",
     ],
   },
   growth: {
@@ -106,7 +106,7 @@ export const MEMBERSHIP_PLANS: Record<MembershipPlanId, MembershipPlan> = {
     name: "Growth",
     monthlyPrice: 75,
     yearlyPrice: 540,
-    description: "For growing teams and multiple sites",
+    description: "For growing teams and multiple projects",
     popular: true,
     bots: 3,
     messagesPerMonth: 15000,
@@ -136,18 +136,18 @@ export const MEMBERSHIP_PLANS: Record<MembershipPlanId, MembershipPlan> = {
       cloudConnectors: true,
     },
     features: [
-      "Up to 3 chatbots",
-      "Up to 15k messages / month",
+      "Up to 3 AI assistants + 3 website projects",
+      "Up to 15k AI operations / month",
       "Up to 15,000 pages",
       "Auto refresh (monthly)",
       "Up to 5 team members",
       "White-label branding included",
       "Integrations (Zendesk, Intercom, Crisp)",
       "Full API access",
-      "Rate limiting",
+      "Axiom Roadmap + CI/CD configs",
       "95+ languages",
-      "Lead capture + escalation to human",
-      "Conversation analytics",
+      "Lead capture + human escalation",
+      "Usage analytics & insights",
     ],
   },
   scale: {
@@ -155,7 +155,7 @@ export const MEMBERSHIP_PLANS: Record<MembershipPlanId, MembershipPlan> = {
     name: "Scale",
     monthlyPrice: 249,
     yearlyPrice: 1794,
-    description: "For high-traffic sites and agencies",
+    description: "For agencies and high-volume operations",
     popular: false,
     bots: 8,
     messagesPerMonth: 60000,
@@ -185,18 +185,19 @@ export const MEMBERSHIP_PLANS: Record<MembershipPlanId, MembershipPlan> = {
       cloudConnectors: true,
     },
     features: [
-      "Up to 8 chatbots",
-      "Up to 60k messages / month",
+      "Up to 8 AI assistants + 8 website projects",
+      "Up to 60k AI operations / month",
       "Up to 80,000 pages",
       "Auto refresh (weekly)",
       "Auto scan (daily)",
       "Up to 15 team members",
       "White-label branding included",
       "Integrations + API + Webhooks",
+      "Axiom drift detection + cloud connectors",
       "Priority support",
       "95+ languages",
-      "Lead capture + escalation to human",
-      "Conversation analytics + email summaries",
+      "Lead capture + human escalation",
+      "Analytics + email summaries",
     ],
   },
   enterprise: {
@@ -234,8 +235,8 @@ export const MEMBERSHIP_PLANS: Record<MembershipPlanId, MembershipPlan> = {
       cloudConnectors: true,
     },
     features: [
-      "Unlimited chatbots",
-      "Custom message volume",
+      "Unlimited AI assistants & projects",
+      "Custom volume & usage",
       "Up to 500k+ pages",
       "Auto refresh (daily)",
       "Unlimited team members",
@@ -250,7 +251,7 @@ export const MEMBERSHIP_PLANS: Record<MembershipPlanId, MembershipPlan> = {
 
 /** Included in every plan (from website) */
 export const INCLUDED_IN_EVERY_PLAN = [
-  "Vision XIX AI chatbots (white-label)",
+  "AI assistants & chatbots (white-label)",
   "Axiom Cloud Operator (infra scoring & roadmaps)",
   "AI Website Builder (prompt-driven sites)",
   "Cloud Studio (cloud project setup)",
@@ -259,8 +260,8 @@ export const INCLUDED_IN_EVERY_PLAN = [
 ] as const;
 
 export const ADDONS = [
-  { name: "Extra 10k messages", monthly: 25, yearly: 180 },
-  { name: "Extra 25k messages", monthly: 49, yearly: 353 },
+  { name: "Extra 10k AI operations", monthly: 25, yearly: 180 },
+  { name: "Extra 25k AI operations", monthly: 49, yearly: 353 },
 ] as const;
 
 /** User.plan (from Stripe) → MembershipPlan */

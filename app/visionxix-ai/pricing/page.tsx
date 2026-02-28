@@ -69,7 +69,7 @@ export default function VisionXIXAIPricingPage() {
             One membership. Full stack.
           </h1>
           <p className="mt-6 text-xl text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
-            Cloud, AI, and automation — unified. Axiom, chatbots, website builder, and cloud guidance in every plan. Production-ready, white-label included.
+            One membership for everything: Axiom, Website Builder, AI assistants, Cloud Studio, and cloud guidance. Production-ready, white-label included.
           </p>
           <div className="mt-8 flex items-center justify-center gap-3">
             <button
@@ -196,7 +196,7 @@ export default function VisionXIXAIPricingPage() {
           <div className="mt-16 max-w-4xl mx-auto">
             <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100 mb-4">What each plan delivers</h2>
             <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">
-              One membership unlocks Axiom, Cloud Studio, Website Builder, Chatbots, and Automation. Capabilities scale with your plan.
+              One membership unlocks Axiom, Website Builder, AI assistants, Cloud Studio, and automation. Capabilities scale with your plan.
             </p>
             <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 overflow-hidden mb-12">
               <table className="w-full text-sm">
@@ -225,7 +225,14 @@ export default function VisionXIXAIPricingPage() {
                     <td className="py-3 px-4 text-slate-600 dark:text-slate-400">Custom support</td>
                   </tr>
                   <tr className="border-b border-slate-100 dark:border-slate-800">
-                    <td className="py-3 px-4 font-medium text-slate-700 dark:text-slate-300">Automation (Remediation)</td>
+                    <td className="py-3 px-4 font-medium text-slate-700 dark:text-slate-300">Website Builder</td>
+                    <td className="py-3 px-4 text-slate-600 dark:text-slate-400">3 revisions, preview</td>
+                    <td className="py-3 px-4 text-slate-600 dark:text-slate-400">Production deploy, CDN</td>
+                    <td className="py-3 px-4 text-slate-600 dark:text-slate-400">Priority deploy</td>
+                    <td className="py-3 px-4 text-slate-600 dark:text-slate-400">Custom, SLA</td>
+                  </tr>
+                  <tr className="border-b border-slate-100 dark:border-slate-800">
+                    <td className="py-3 px-4 font-medium text-slate-700 dark:text-slate-300">Automation</td>
                     <td className="py-3 px-4 text-slate-600 dark:text-slate-400">—</td>
                     <td className="py-3 px-4 text-slate-600 dark:text-slate-400">GitHub PR, connectors</td>
                     <td className="py-3 px-4 text-slate-600 dark:text-slate-400">Full access</td>
@@ -274,7 +281,7 @@ export default function VisionXIXAIPricingPage() {
             <div className="card-hover group rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-5 text-center">
               <RocketLaunchIcon className="h-8 w-8 text-violet-600 mx-auto mb-2 icon-bounce" />
               <p className="font-semibold text-slate-900 dark:text-slate-100">More value per $</p>
-              <p className="text-sm text-slate-500 mt-1">More messages and pages at comparable or lower price.</p>
+              <p className="text-sm text-slate-500 mt-1">More operations, pages, and projects per dollar.</p>
             </div>
             <div className="card-hover group rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-5 text-center">
               <BuildingOffice2Icon className="h-8 w-8 text-violet-600 mx-auto mb-2 icon-bounce" />
@@ -289,7 +296,7 @@ export default function VisionXIXAIPricingPage() {
         <div className="max-w-3xl mx-auto text-center">
           <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-100 mb-4">One plan. All services.</h2>
           <p className="text-slate-600 dark:text-slate-400 mb-8">
-            Get Axiom, chatbots, website builder, and cloud guidance — one membership. 7 days free, then charged. Cancel anytime.
+            Get Axiom, Website Builder, AI assistants, and cloud guidance — one membership. 7 days free, then charged. Cancel anytime.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link
