@@ -16,6 +16,7 @@ import {
 } from "@heroicons/react/24/outline";
 import { Navigation } from "@/components/Navigation";
 import { BackgroundBlobs } from "@/components/BackgroundBlobs";
+import { WebsiteBuilderJourney } from "@/components/WebsiteBuilderJourney";
 
 type WebsitePlan = {
   sections: { id: string; name: string; description: string }[];
@@ -181,6 +182,15 @@ export default function WebsiteBuilderPage() {
         </Link>
 
         <header className="mb-12">
+          <div className="flex items-center gap-2 mb-4 overflow-x-auto">
+            <span className={`rounded-full px-3 py-1 text-xs font-semibold ${step === "prompt" ? "bg-violet-500 text-white" : "bg-emerald-500 text-white"}`}>
+              {step === "prompt" ? "Step 1" : "Step 2"}
+            </span>
+            <span className="text-slate-400 dark:text-slate-500 text-xs">of 2</span>
+            <span className="text-slate-500 dark:text-slate-400 text-xs">
+              {step === "prompt" ? "Describe your site" : "Preview & deploy"}
+            </span>
+          </div>
           <div className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-violet-100 to-fuchsia-100 dark:from-violet-900/40 dark:to-fuchsia-900/40 px-4 py-2 text-xs font-semibold text-violet-700 dark:text-violet-300 mb-5">
             <SparklesIcon className="h-4 w-4" />
             AI Website Builder — Builds everything
@@ -267,7 +277,7 @@ export default function WebsiteBuilderPage() {
                 >
                   {planning ? (
                     <>
-                      <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
+                      <svg className="animate-spin h-5 w-5 shrink-0" viewBox="0 0 24 24">
                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
                         <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
                       </svg>
@@ -280,6 +290,17 @@ export default function WebsiteBuilderPage() {
                     </>
                   )}
                 </button>
+                {planning && (
+                  <div className="mt-4 flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400">
+                    <span className="inline-flex gap-1">
+                      <span className="animate-pulse">●</span> Generating design
+                    </span>
+                    <span>→</span>
+                    <span>Creating sections</span>
+                    <span>→</span>
+                    <span>Preparing preview</span>
+                  </div>
+                )}
               </div>
             </form>
 
@@ -312,6 +333,13 @@ export default function WebsiteBuilderPage() {
         {/* Step 2: Plan preview + live hero + enterprise hooks */}
         {step === "plan" && plan && (
           <section className="space-y-8">
+            {/* Journey + next steps — clear path to deploy & membership */}
+            <div className="rounded-2xl border-2 border-violet-200/80 dark:border-violet-700/80 bg-white/80 dark:bg-slate-900/80 p-4 mb-4">
+              <p className="text-sm font-semibold text-slate-800 dark:text-slate-200 mb-1">What&apos;s next?</p>
+              <p className="text-xs text-slate-600 dark:text-slate-400">
+                Enter your email below to deploy your site. Then add Axiom for infra, or join membership for full access.
+              </p>
+            </div>
             {/* Live preview — full page when available, else hero */}
             {(plan.fullPageHtml || plan.heroHtml) && (
               <div className="rounded-3xl border-2 border-slate-200/80 dark:border-slate-700/80 bg-white dark:bg-slate-900 overflow-hidden shadow-xl shadow-slate-200/50 dark:shadow-none">
@@ -332,43 +360,93 @@ export default function WebsiteBuilderPage() {
               </div>
             )}
 
-            <div className="rounded-3xl border-2 border-emerald-200/80 dark:border-emerald-800/80 bg-emerald-50/50 dark:bg-emerald-900/20 p-6 sm:p-8">
+            {/* Step 2: Get site deployed — PRIMARY CTA */}
+            <form onSubmit={handleGetSite} className="rounded-3xl border-2 border-violet-500/80 dark:border-violet-500/80 bg-white/95 dark:bg-slate-900/95 backdrop-blur-sm shadow-xl shadow-violet-500/20 dark:shadow-violet-500/10 p-6 sm:p-8 ring-2 ring-violet-200/50 dark:ring-violet-800/50">
+              <h3 className="text-xl font-bold text-slate-900 dark:text-slate-100 mb-2 flex items-center gap-2">
+                <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-violet-500 text-white text-sm font-bold">2</span>
+                Get your site deployed
+              </h3>
+              <p className="text-sm text-slate-600 dark:text-slate-400 mb-6">
+                Enter your email — we&apos;ll deploy to managed cloud with CDN, SSL, and email you the live link in 1–3 minutes.
+              </p>
+              <div className="grid sm:grid-cols-2 gap-4 mb-4">
+                <div>
+                  <label htmlFor="name" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Name</label>
+                  <input
+                    id="name"
+                    type="text"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    placeholder="Your name"
+                    className="w-full rounded-xl border-2 border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 px-4 py-2.5 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:border-violet-500 focus:ring-2 focus:ring-violet-200"
+                  />
+                </div>
+                <div>
+                  <label htmlFor="email" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Email *</label>
+                  <input
+                    id="email"
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="you@company.com"
+                    required
+                    className="w-full rounded-xl border-2 border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 px-4 py-2.5 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:border-violet-500 focus:ring-2 focus:ring-violet-200"
+                  />
+                </div>
+              </div>
+              {error && <p className="mb-4 text-sm text-rose-600 dark:text-rose-400">{error}</p>}
+              <button
+                type="submit"
+                disabled={loading || !email.trim()}
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-violet-600 to-fuchsia-600 px-8 py-3 font-semibold text-white shadow-lg shadow-violet-500/30 hover:shadow-violet-500/40 transition-all disabled:opacity-60 disabled:cursor-not-allowed"
+              >
+                {loading ? (
+                  <>
+                    <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                    </svg>
+                    Submitting…
+                  </>
+                ) : (
+                  <>
+                    Deploy my site
+                    <ArrowRightIcon className="h-5 w-5" />
+                  </>
+                )}
+              </button>
+            </form>
+
+            {/* Your journey — full path to membership */}
+            <WebsiteBuilderJourney
+              variant="full"
+              currentStep="deploy"
+              previewReady
+              deploySubmitted={false}
+            />
+
+            <div className="rounded-3xl border-2 border-slate-200/80 dark:border-slate-700/80 bg-white/80 dark:bg-slate-900/80 p-6 sm:p-8">
               <div className="flex items-center gap-2 mb-4">
                 <CheckCircleIcon className="h-6 w-6 text-emerald-600" />
-                <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100">
+                <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100">
                   Your plan: {plan.siteName}
                 </h2>
               </div>
-              <p className="text-slate-700 dark:text-slate-300 mb-6">{plan.designLanguage}</p>
-              <div className="flex flex-wrap gap-2 mb-6">
-                <span
-                  className="w-8 h-8 rounded-xl shadow-inner"
-                  style={{ backgroundColor: plan.colorPalette.primary }}
-                  title="Primary"
-                />
-                <span
-                  className="w-8 h-8 rounded-xl shadow-inner"
-                  style={{ backgroundColor: plan.colorPalette.secondary }}
-                  title="Secondary"
-                />
-                <span
-                  className="w-8 h-8 rounded-xl shadow-inner"
-                  style={{ backgroundColor: plan.colorPalette.accent }}
-                  title="Accent"
-                />
+              <p className="text-slate-700 dark:text-slate-300 mb-4 text-sm">{plan.designLanguage}</p>
+              <div className="flex flex-wrap gap-2 mb-4">
+                <span className="w-6 h-6 rounded-lg shadow-inner" style={{ backgroundColor: plan.colorPalette.primary }} title="Primary" />
+                <span className="w-6 h-6 rounded-lg shadow-inner" style={{ backgroundColor: plan.colorPalette.secondary }} title="Secondary" />
+                <span className="w-6 h-6 rounded-lg shadow-inner" style={{ backgroundColor: plan.colorPalette.accent }} title="Accent" />
               </div>
-              <div className="flex items-center gap-2 text-sm font-semibold text-slate-700 dark:text-slate-300 mb-3">
-                <Squares2X2Icon className="h-5 w-5 text-violet-500" />
+              <div className="flex items-center gap-2 text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
+                <Squares2X2Icon className="h-4 w-4 text-violet-500" />
                 Sections
               </div>
               <ul className="space-y-2">
                 {plan.sections.map((s) => (
-                  <li
-                    key={s.id}
-                    className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/80 px-4 py-3"
-                  >
+                  <li key={s.id} className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/80 px-3 py-2 text-sm">
                     <span className="font-medium text-slate-900 dark:text-slate-100">{s.name}</span>
-                    <p className="text-sm text-slate-600 dark:text-slate-400 mt-0.5">{s.description}</p>
+                    <p className="text-xs text-slate-600 dark:text-slate-400 mt-0.5">{s.description}</p>
                   </li>
                 ))}
               </ul>
@@ -437,84 +515,22 @@ export default function WebsiteBuilderPage() {
               )}
             </div>
 
-            {/* Get site form */}
-            <form onSubmit={handleGetSite} className="rounded-3xl border-2 border-slate-200/80 dark:border-slate-700/80 bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm shadow-xl shadow-slate-200/50 dark:shadow-none p-6 sm:p-8">
-              <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100 mb-4">Get your AI-built site</h3>
-              <p className="text-sm text-slate-600 dark:text-slate-400 mb-6">
-                We&apos;ll generate your site and deploy to managed cloud with CDN, SSL, and CI/CD.
-              </p>
-              <div className="grid sm:grid-cols-2 gap-4 mb-4">
-                <div>
-                  <label htmlFor="name" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Name</label>
-                  <input
-                    id="name"
-                    type="text"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    placeholder="Your name"
-                    className="w-full rounded-xl border-2 border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 px-4 py-2.5 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:border-violet-500 focus:ring-2 focus:ring-violet-200"
-                  />
-                </div>
-                <div>
-                  <label htmlFor="email" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Email *</label>
-                  <input
-                    id="email"
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="you@company.com"
-                    required
-                    className="w-full rounded-xl border-2 border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 px-4 py-2.5 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:border-violet-500 focus:ring-2 focus:ring-violet-200"
-                  />
-                </div>
+            {/* End goal: Membership — full journey destination */}
+            <div className="rounded-3xl border-2 border-violet-500/60 dark:border-violet-500/60 bg-gradient-to-br from-violet-100/80 to-fuchsia-100/60 dark:from-violet-900/40 dark:to-fuchsia-900/30 p-6 sm:p-8 shadow-xl shadow-violet-500/10">
+              <div className="flex items-center gap-2 mb-2">
+                <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white text-sm font-bold">5</span>
+                <h3 className="text-xl font-bold text-slate-900 dark:text-slate-100">Join membership — full access</h3>
               </div>
-              {error && <p className="mb-4 text-sm text-rose-600 dark:text-rose-400">{error}</p>}
-              <button
-                type="submit"
-                disabled={loading || !email.trim()}
-                className="inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-violet-600 to-fuchsia-600 px-6 py-3 font-semibold text-white shadow-lg shadow-violet-500/30 hover:shadow-violet-500/40 transition-all disabled:opacity-60 disabled:cursor-not-allowed"
-              >
-                {loading ? (
-                  <>
-                    <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-                    </svg>
-                    Submitting…
-                  </>
-                ) : (
-                  <>
-                    Get my AI-built site
-                    <ArrowRightIcon className="h-5 w-5" />
-                  </>
-                )}
-              </button>
-              <p className="mt-4 text-xs text-slate-500 dark:text-slate-400">
-                Managed cloud preview in 1–3 minutes. You can run Axiom for infra roadmap after.
-              </p>
-            </form>
-
-            {/* Enterprise unlock CTA */}
-            <div className="rounded-3xl border-2 border-violet-200/80 dark:border-violet-800/80 bg-gradient-to-br from-violet-50/80 to-fuchsia-50/60 dark:from-violet-900/30 dark:to-fuchsia-900/20 p-6 sm:p-8">
-              <h3 className="font-semibold text-slate-900 dark:text-slate-100 mb-2">Full automation, one step</h3>
               <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">
-                Deploy your site, then run Axiom for infrastructure scores, CI/CD YAML, cost optimization, and a 30-day roadmap.
+                One plan unlocks Axiom, website builder, chatbots, cloud guidance, and priority support. Everything you need to scale.
               </p>
-              <div className="flex flex-wrap gap-4">
-                <Link
-                  href="/cloud-operator"
-                  className="inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-violet-600 to-fuchsia-600 px-5 py-2.5 font-semibold text-white shadow-lg shadow-violet-500/30 hover:shadow-violet-500/40 hover:from-violet-500 hover:to-fuchsia-500 transition-all"
-                >
-                  <CloudIcon className="h-5 w-5" />
-                  Run Axiom Analysis
-                </Link>
-                <Link
-                  href="/visionxix-ai/pricing"
-                  className="inline-flex items-center gap-2 rounded-2xl border-2 border-violet-600 px-5 py-2.5 font-semibold text-violet-600 dark:text-violet-400 hover:bg-violet-50 dark:hover:bg-violet-900/20 transition-all"
-                >
-                  View plans & membership
-                </Link>
-              </div>
+              <Link
+                href="/visionxix-ai/pricing"
+                className="inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-violet-600 to-fuchsia-600 px-6 py-3 font-semibold text-white shadow-lg shadow-violet-500/30 hover:shadow-violet-500/40 hover:from-violet-500 hover:to-fuchsia-500 transition-all"
+              >
+                View plans & membership
+                <ArrowRightIcon className="h-5 w-5" />
+              </Link>
             </div>
 
             <button

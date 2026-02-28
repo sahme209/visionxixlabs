@@ -9,9 +9,10 @@ import {
   DocumentTextIcon,
   GlobeAltIcon,
   CloudIcon,
-  ShieldCheckIcon,
+  ArrowRightIcon,
 } from "@heroicons/react/24/outline";
 import { Navigation } from "@/components/Navigation";
+import { WebsiteBuilderJourney } from "@/components/WebsiteBuilderJourney";
 
 export default function ThankYouPage() {
   const [token, setToken] = useState<string | null>(null);
@@ -165,27 +166,31 @@ export default function ThankYouPage() {
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-violet-50/40 to-fuchsia-50/30 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
       <Navigation />
       <main className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <Link
-          href="/request"
-          className="inline-flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 mb-8"
-        >
-          <ArrowLeftIcon className="h-4 w-4" />
-          Back to Request
-        </Link>
-        <div className="mb-6 rounded-3xl border-2 border-violet-200/80 dark:border-violet-800/80 bg-gradient-to-br from-violet-50/80 to-fuchsia-50/60 dark:from-violet-900/30 dark:to-fuchsia-900/20 p-5">
-          <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-1">
-            Want infra optimization + deployment hardening?
-          </h2>
-          <p className="text-xs text-slate-900/80 dark:text-slate-200 mb-3">
-            Run Axiom on this project for 30-day roadmap, playbooks, and infrastructure intelligence.
-          </p>
+        <div className="flex flex-wrap items-center gap-4 mb-6">
           <Link
-            href={token ? `/cloud-operator?ref=${encodeURIComponent(token)}` : "/cloud-operator"}
-            className="inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-violet-600 to-fuchsia-600 px-4 py-2 text-xs font-semibold text-white shadow-lg shadow-violet-500/30 hover:shadow-violet-500/40 hover:from-violet-500 hover:to-fuchsia-500"
+            href="/request"
+            className="inline-flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400"
           >
-            Run Axiom Analysis
-            <CloudIcon className="h-3 w-3" />
+            <ArrowLeftIcon className="h-4 w-4" />
+            Back to Request
           </Link>
+          <Link
+            href="/website-builder"
+            className="text-sm text-slate-500 dark:text-slate-400 hover:text-violet-600 dark:hover:text-violet-400"
+          >
+            Build another site
+          </Link>
+        </div>
+
+        {/* Your journey — where you are, what's next */}
+        <div className="mb-8">
+          <WebsiteBuilderJourney
+            variant="full"
+            currentStep={!!isReady ? "axiom" : "deploy"}
+            previewReady={!!isReady}
+            deploySubmitted={!!isReady}
+            token={token ?? undefined}
+          />
         </div>
 
         <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-3xl shadow-xl shadow-slate-200/50 dark:shadow-none border-2 border-slate-200/80 dark:border-slate-700/80 p-8 sm:p-10">
@@ -391,6 +396,31 @@ export default function ThankYouPage() {
                 </p>
               </div>
             )}
+          </section>
+
+          {/* End goal: Membership CTA */}
+          <section className="mt-10 rounded-2xl border-2 border-violet-500/60 dark:border-violet-500/60 bg-gradient-to-br from-violet-100/80 to-fuchsia-100/60 dark:from-violet-900/40 dark:to-fuchsia-900/30 p-6">
+            <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100 mb-2">
+              Ready for full access?
+            </h2>
+            <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">
+              Membership unlocks Axiom, chatbots, priority support, and all products. One plan, everything included.
+            </p>
+            <Link
+              href="/visionxix-ai/pricing"
+              className="inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-violet-600 to-fuchsia-600 px-5 py-2.5 font-semibold text-white shadow-lg shadow-violet-500/30 hover:shadow-violet-500/40 transition-all"
+            >
+              View plans & membership
+              <ArrowRightIcon className="h-5 w-5" />
+            </Link>
+            <span className="mx-3 text-slate-400">or</span>
+            <Link
+              href={token ? `/cloud-operator?ref=${encodeURIComponent(token)}` : "/cloud-operator"}
+              className="inline-flex items-center gap-2 text-sm font-semibold text-violet-600 dark:text-violet-400 hover:underline"
+            >
+              Run Axiom on this project
+              <CloudIcon className="h-4 w-4" />
+            </Link>
           </section>
 
           <p className="mt-8 text-center text-sm text-slate-500 dark:text-slate-400">
