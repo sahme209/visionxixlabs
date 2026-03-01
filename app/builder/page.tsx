@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useState, useEffect } from "react";
+import { FormEvent, useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import {
   ArrowLeftIcon,
@@ -19,6 +19,28 @@ import { BackgroundBlobs } from "@/components/BackgroundBlobs";
 import { WebsiteBuilderJourney } from "@/components/WebsiteBuilderJourney";
 import { PluginAddOns, type PluginInfo } from "@/components/builder/PluginAddOns";
 import { CloudServicesAddOns, type CloudServiceId } from "@/components/builder/CloudServicesAddOns";
+
+/** Uses data URL so scripts run in opaque origin—no sandbox escape. */
+function PreviewIframe({ html }: { html: string }) {
+  const src = useMemo(() => {
+    if (!html?.trim()) return undefined;
+    const doc = html.trim().startsWith("<!") ? html : `<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet"></head><body>${html}</body></html>`;
+    try {
+      return `data:text/html;charset=utf-8,${encodeURIComponent(doc)}`;
+    } catch {
+      return undefined;
+    }
+  }, [html]);
+  if (!src) return <div className="w-full h-full min-h-[320px] flex items-center justify-center text-slate-500">No preview</div>;
+  return (
+    <iframe
+      title="Site preview"
+      src={src}
+      sandbox="allow-scripts allow-popups allow-forms"
+      className="w-full h-full min-h-[320px] border-0"
+    />
+  );
+}
 
 type WebsitePlan = {
   sections: { id: string; name: string; description: string }[];
@@ -62,6 +84,10 @@ export default function WebsiteBuilderPage() {
     "Build an e-commerce storefront – streetwear luxury, black and white, minimal",
     "Create a corporate website – Fortune 500 trust, navy and gold, authoritative",
     "Design a blog – editorial, Substack-style, cream background, serif headlines",
+    "Build a fitness studio site – energetic, bold typography, class schedule, testimonials",
+    "Create a restaurant landing page – warm, appetizing imagery, menu highlights, reservations CTA",
+    "Design a real estate agency site – property showcases, agent team, contact form",
+    "Build a medical/health clinic site – trustworthy, calming colors, services and booking",
   ];
 
   const VISUAL_STYLES = [
@@ -70,6 +96,7 @@ export default function WebsiteBuilderPage() {
     { id: "glassmorphism dark", label: "Glassmorphism / dark" },
     { id: "editorial warm", label: "Editorial & warm" },
     { id: "corporate trustworthy", label: "Corporate & trustworthy" },
+    { id: "creative vibrant", label: "Creative & vibrant" },
   ];
 
   useEffect(() => {
@@ -374,12 +401,7 @@ export default function WebsiteBuilderPage() {
                   </span>
                 </div>
                 <div className="h-[340px] sm:h-[480px] overflow-auto">
-                  <iframe
-                    title="Site preview"
-                    srcDoc={plan.fullPageHtml || plan.heroHtml}
-                    sandbox="allow-same-origin allow-popups"
-                    className="w-full h-full min-h-[320px] border-0"
-                  />
+                  <PreviewIframe html={plan.fullPageHtml || plan.heroHtml || ""} />
                 </div>
               </div>
             )}
