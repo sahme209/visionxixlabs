@@ -184,6 +184,14 @@ Output ONLY valid JSON. No markdown.`,
     if (fullPageHtml) {
       fullPageHtml = fullPageHtml.replace(/```html?\s*/gi, "").replace(/```\s*/g, "").trim();
       if (!fullPageHtml.startsWith("<")) fullPageHtml = "";
+      // Inject CSP meta for iframe preview: allow Google Fonts, Unsplash images
+      const cspMeta =
+        '<meta http-equiv="Content-Security-Policy" content="style-src \'self\' \'unsafe-inline\' https://fonts.googleapis.com; font-src \'self\' https://fonts.gstatic.com; img-src \'self\' https: data: blob:;">';
+      if (fullPageHtml.includes("<head>")) {
+        fullPageHtml = fullPageHtml.replace("<head>", `<head>${cspMeta}`);
+      } else if (fullPageHtml.includes("<html")) {
+        fullPageHtml = fullPageHtml.replace(/<html[^>]*>/i, (m) => m + `<head>${cspMeta}</head>`);
+      }
     }
 
     // Hero-only for backward compat (extract or generate minimal)
