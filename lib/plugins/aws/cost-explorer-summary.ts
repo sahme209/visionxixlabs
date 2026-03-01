@@ -14,15 +14,9 @@ async function run(input: Record<string, unknown>, ctx: ExecutionPluginContext):
   const creds = await getCredentialProvider().getAWSCredentials(ctx.userId, ctx.credentialsKey);
   if (!creds) {
     return {
-      ok: true,
-      data: {
-        status: "mock",
-        message: "No AWS credentials configured. Connect your AWS account in Connectors for live cost data.",
-        totalCost: 0,
-        currency: "USD",
-        period: "current_month",
-      },
-      summary: "Mock cost summary (no credentials) — $0.",
+      ok: false,
+      error: "No AWS credentials configured. Connect your AWS account in Connectors for live cost data.",
+      summary: "Credentials required.",
     };
   }
 

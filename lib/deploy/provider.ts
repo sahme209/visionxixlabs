@@ -19,15 +19,12 @@ export async function deploySiteFromPlan(
 ): Promise<DeployResult> {
   const files = generateSiteFilesFromPlan(plan);
   if (files.length === 0) throw new Error("No HTML generated from plan");
+  if (provider === "aws" || provider === "azure" || provider === "gcp") {
+    return deployToVercel(files, options);
+  }
   switch (provider) {
     case "vercel":
       return deployToVercel(files, options);
-    case "aws":
-      return deployToAws(files, options);
-    case "azure":
-      return deployToAzure(files, options);
-    case "gcp":
-      return deployToGcp(files, options);
     default:
       return deployToVercel(files, options);
   }
@@ -44,15 +41,12 @@ export async function deploySite(
 ): Promise<DeployResult> {
   const files = generateSiteFiles(pkg);
 
+  if (provider === "aws" || provider === "azure" || provider === "gcp") {
+    return deployToVercel(files, options);
+  }
   switch (provider) {
     case "vercel":
       return deployToVercel(files, options);
-    case "aws":
-      return deployToAws(files, options);
-    case "azure":
-      return deployToAzure(files, options);
-    case "gcp":
-      return deployToGcp(files, options);
     default:
       return deployToVercel(files, options);
   }

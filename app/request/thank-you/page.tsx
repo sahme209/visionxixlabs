@@ -267,10 +267,7 @@ export default function ThankYouPage() {
                 </p>
                 <div className="flex flex-wrap gap-2">
                   {[
-                    { id: "managed", label: "Managed Cloud (default)" },
-                    { id: "aws", label: "AWS" },
-                    { id: "azure", label: "Azure" },
-                    { id: "gcp", label: "GCP" },
+                    { id: "managed", label: "Managed Cloud (Vercel)" },
                   ].map((p) => (
                     <button
                       key={p.id}

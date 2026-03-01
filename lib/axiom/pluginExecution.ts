@@ -73,6 +73,7 @@ export async function executeFixes(opts: ExecuteFixOptions): Promise<ExecuteFixR
         userId: opts.userId,
         projectId: opts.projectId,
         leadId: opts.leadId,
+        credentialsKey: opts.leadId ?? undefined,
       },
       actions: toExecute,
       approvedActionIds: opts.approvedActionIds,

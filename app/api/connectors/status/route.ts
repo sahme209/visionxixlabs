@@ -1,10 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { verifyStarterToken } from "@/lib/starterToken";
+import { isCloudConnectorEnabled } from "@/lib/featureFlags";
 
 /**
  * Phase 5: GET /api/connectors/status?token=
  * Returns connector status (no credentials, only metadata).
+ * Stub cloud connectors (AWS/Azure/GCP) show "unavailable" when feature flag is off.
  */
 export async function GET(req: NextRequest) {
   const token = req.nextUrl.searchParams.get("token");
@@ -30,8 +32,14 @@ export async function GET(req: NextRequest) {
     const status: Record<string, { status: string; linkedAt?: string }> = {};
     for (const [k, v] of Object.entries(connectors)) {
       const meta = v as Record<string, unknown>;
+      let s = (meta.status as string) || "pending";
+      if (k === "aws" || k === "azure" || k === "gcp") {
+        if (!isCloudConnectorEnabled(k as "aws" | "azure" | "gcp")) {
+          s = "unavailable";
+        }
+      }
       status[k] = {
-        status: (meta.status as string) || "pending",
+        status: s,
         linkedAt: meta.linkedAt as string | undefined,
       };
     }

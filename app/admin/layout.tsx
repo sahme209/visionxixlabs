@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
+import { isAdminEmail } from "@/lib/admin/auth";
 import Link from "next/link";
 import { ArrowLeftIcon, UserCircleIcon } from "@heroicons/react/24/outline";
 import { SignOutButton } from "@/app/dashboard/SignOutButton";
@@ -13,6 +14,9 @@ export default async function AdminLayout({
   const session = await getServerSession(authOptions);
   if (!session?.user) {
     redirect("/auth/signin?callbackUrl=/admin/leads");
+  }
+  if (!isAdminEmail(session.user.email)) {
+    redirect("/dashboard");
   }
 
   return (

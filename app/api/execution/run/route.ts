@@ -86,6 +86,7 @@ export async function POST(req: NextRequest) {
         leadId,
         dryRun,
         userPlan,
+        credentialsKey: leadId ?? undefined,
       },
     });
 

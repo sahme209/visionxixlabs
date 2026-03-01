@@ -22,16 +22,9 @@ async function run(input: Record<string, unknown>, ctx: ExecutionPluginContext):
   const creds = await getCredentialProvider().getAWSCredentials(ctx.userId, ctx.credentialsKey);
   if (!creds) {
     return {
-      ok: true,
-      data: {
-        status: "mock",
-        message: "No AWS credentials configured. Connect your AWS account in Connectors to run a live scan.",
-        usersCount: 0,
-        rolesCount: 0,
-        policiesCount: 0,
-        sample: [],
-      },
-      summary: "Mock IAM scan (no credentials) — 0 users, 0 roles.",
+      ok: false,
+      error: "No AWS credentials configured. Connect your AWS account in Connectors to run a live scan.",
+      summary: "Credentials required.",
     };
   }
 

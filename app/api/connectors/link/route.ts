@@ -7,6 +7,7 @@ import {
   hasEnterpriseEngagement,
   resolveEffectiveOperatorTier,
 } from "@/lib/entitlements";
+import { isCloudConnectorEnabled } from "@/lib/featureFlags";
 import type { ConnectorType, ConnectorAuthMethod } from "@/lib/connectors/types";
 import { validateGithubConnection } from "@/lib/connectors/github";
 import { validateAwsConnection } from "@/lib/connectors/aws";
@@ -82,6 +83,13 @@ export async function POST(req: NextRequest) {
 
     if (connectorType !== "github" && !canPro) {
       return NextResponse.json({ error: "Cloud connectors (AWS, Azure, GCP) require Growth or higher membership. Upgrade at /visionxix-ai/pricing" }, { status: 403 });
+    }
+
+    if (connectorType !== "github" && !isCloudConnectorEnabled(connectorType as "aws" | "azure" | "gcp")) {
+      return NextResponse.json(
+        { error: `${connectorType.toUpperCase()} connector is not yet available. Coming soon.` },
+        { status: 503 }
+      );
     }
 
     const authMethod = (body.authMethod as ConnectorAuthMethod) || "token";

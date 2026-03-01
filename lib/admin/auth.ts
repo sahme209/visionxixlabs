@@ -12,6 +12,11 @@ const ADMIN_EMAILS = (process.env.ADMIN_EMAILS ?? "")
   .map((e) => e.trim().toLowerCase())
   .filter(Boolean);
 
+export function isAdminEmail(email: string | null | undefined): boolean {
+  if (!email) return false;
+  return ADMIN_EMAILS.length > 0 && ADMIN_EMAILS.includes(email.toLowerCase());
+}
+
 export async function requireAdmin(
   _req: NextRequest
 ): Promise<{ user: AdminUser } | { error: NextResponse }> {

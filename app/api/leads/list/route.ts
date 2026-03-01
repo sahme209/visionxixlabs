@@ -1,16 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
+import { requireAdmin } from "@/lib/admin/auth";
 import { prisma } from "@/lib/db";
 
 /**
  * GET /api/leads/list — Admin: list website request leads.
+ * Requires ADMIN_EMAILS allowlist.
  */
 export async function GET(req: NextRequest) {
-  const session = await getServerSession(authOptions);
-  if (!session?.user) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const auth = await requireAdmin(req);
+  if ("error" in auth) return auth.error;
 
   try {
     const leads = await prisma.lead.findMany({

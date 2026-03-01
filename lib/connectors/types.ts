@@ -1,6 +1,6 @@
 export type ConnectorType = "github" | "aws" | "azure" | "gcp";
 
-export type ConnectorStatus = "pending" | "linked" | "error" | "disconnected";
+export type ConnectorStatus = "pending" | "linked" | "error" | "disconnected" | "unavailable" | "beta";
 
 export type ConnectorAuthMethod = "token" | "oauth" | "app";
 
