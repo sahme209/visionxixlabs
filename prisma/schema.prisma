@@ -125,6 +125,27 @@ model RecurringAnalysis {
   @@index([nextRunAt])
 }
 
+// Execution logs — automation engine audit trail, rollback capability
+model ExecutionLog {
+  id            String    @id @default(cuid())
+  userId        String
+  projectId     String?
+  leadId        String?
+  action        String
+  pluginId      String
+  status        String    // pending | success | failed | rolled_back
+  params        Json?
+  result        Json?
+  error         String?
+  rollbackSteps String[]  @default([])
+  executedAt    DateTime  @default(now())
+
+  @@index([userId])
+  @@index([projectId])
+  @@index([leadId])
+  @@index([executedAt])
+}
+
 // Phase 5: Audit log for enterprise-grade security
 model AuditLog {
   id        String   @id @default(cuid())

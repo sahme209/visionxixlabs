@@ -18,6 +18,7 @@ import { Navigation } from "@/components/Navigation";
 import { BackgroundBlobs } from "@/components/BackgroundBlobs";
 import { WebsiteBuilderJourney } from "@/components/WebsiteBuilderJourney";
 import { PluginAddOns, type PluginInfo } from "@/components/builder/PluginAddOns";
+import { CloudServicesAddOns, type CloudServiceId } from "@/components/builder/CloudServicesAddOns";
 
 type WebsitePlan = {
   sections: { id: string; name: string; description: string }[];
@@ -52,6 +53,7 @@ export default function WebsiteBuilderPage() {
   const [email, setEmail] = useState("");
   const [builderPlugins, setBuilderPlugins] = useState<PluginInfo[]>([]);
   const [selectedPluginIds, setSelectedPluginIds] = useState<string[]>([]);
+  const [cloudServices, setCloudServices] = useState<CloudServiceId[]>([]);
 
   const PROMPT_TEMPLATES = [
     "Build a professional immigration consulting site – trustworthy, with services, testimonials, and contact form",
@@ -141,6 +143,7 @@ export default function WebsiteBuilderPage() {
                 layout: plan.layout,
                 visualStyle: plan.visualStyle,
                 plugins: selectedPluginIds,
+                cloudServices: cloudServices.length > 0 ? cloudServices : undefined,
               }
             : undefined,
         }),
@@ -214,7 +217,7 @@ export default function WebsiteBuilderPage() {
           </div>
           <div className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-violet-100 to-fuchsia-100 dark:from-violet-900/40 dark:to-fuchsia-900/40 px-4 py-2 text-xs font-semibold text-violet-700 dark:text-violet-300 mb-5">
             <SparklesIcon className="h-4 w-4" />
-            AI Website Builder — Builds everything
+            AI Website Engine — Optional cloud infrastructure add-ons
           </div>
           <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight text-slate-900 dark:text-slate-100 mb-4">
             Design, structure, graphics — one prompt.
@@ -223,7 +226,7 @@ export default function WebsiteBuilderPage() {
             Premium sites with real images, animations, gradients, and balanced design—competing with Wix and Webflow. One prompt, production-ready.
           </p>
           <p className="text-sm text-slate-500 dark:text-slate-500">
-            Vibrant colors, smooth animations, Unsplash imagery. Deploy to cloud with CDN, SSL, CI/CD. Add Axiom for infra.
+            Vibrant colors, smooth animations, Unsplash imagery. Optionally enable hosting, storage, CI/CD, monitoring—provisioned via cloud APIs, not text suggestions.
           </p>
         </header>
 
@@ -390,6 +393,12 @@ export default function WebsiteBuilderPage() {
               <p className="text-sm text-slate-600 dark:text-slate-400 mb-6">
                 Enter your email — we&apos;ll deploy to managed cloud with CDN, SSL, and email you the live link in 1–3 minutes.
               </p>
+              <div className="mb-6">
+                <CloudServicesAddOns
+                  selectedIds={cloudServices}
+                  onChange={(ids) => setCloudServices(ids)}
+                />
+              </div>
               {builderPlugins.length > 0 && (
                 <div className="mb-6">
                   <PluginAddOns

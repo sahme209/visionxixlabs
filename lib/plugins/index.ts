@@ -9,7 +9,11 @@ import "./deployment";
 import "./analytics";
 import "./domain-dns";
 import "./monitoring";
+import "./monitoring-builder";
 import "./crm";
+import "./hosting";
+import "./storage";
+import "./cicd";
 
 export {
   registerPlugin,

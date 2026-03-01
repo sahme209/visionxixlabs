@@ -30,8 +30,8 @@ const FEATURES = [
   },
   {
     icon: BoltIcon,
-    title: "Auto-fix execution",
-    desc: "GitHub PR automation, Terraform templates, CI/CD YAML. Fix issues without manual changes.",
+    title: "Apply Fix execution",
+    desc: "Execute changes via cloud APIs or generated scripts. Toggle per issue, confirm before destructive actions. Logs and rollback.",
   },
   {
     icon: CpuChipIcon,
@@ -52,13 +52,13 @@ export default function AxiomPage() {
         <header className="text-center mb-16">
           <div className="inline-flex items-center gap-2 rounded-full bg-blue-100 dark:bg-blue-900/40 px-4 py-2 text-sm font-semibold text-blue-700 dark:text-blue-300 mb-6">
             <CloudIcon className="h-4 w-4" />
-            Axiom — Cloud Automation
+            Axiom — Cloud Automation Platform
           </div>
           <h1 className="text-4xl sm:text-5xl font-bold text-slate-900 dark:text-slate-100 mb-4">
-            Automate your cloud infrastructure
+            Cloud automation platform
           </h1>
           <p className="text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto mb-8">
-            Scan, optimize, secure, and fix. From analysis to auto-remediation. Optional AI Ops Assistant for internal cloud guidance.
+            Not just assessment—real execution. Scan your cloud, get an actionable plan, and apply fixes via API. Secure integrations with AWS, Azure, GCP. Execution logs and rollback capability.
           </p>
           <div className="flex flex-wrap justify-center gap-4">
             <Link

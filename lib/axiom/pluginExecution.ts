@@ -1,10 +1,11 @@
 /**
  * Axiom — plugin execution layer for cloud fix execution.
  * Scan → generate fix plan → execute via plugins (with user approval toggle).
+ * Delegates to execution engine for validation, logging, and error recovery.
  */
 
-import { getPlugin } from "@/lib/plugins";
-import type { PluginExecuteResult } from "@/lib/plugins";
+import { execute } from "@/lib/execution/engine";
+import type { ExecutionAction } from "@/lib/execution/types";
 
 export type FixAction = {
   id: string;
@@ -13,47 +14,105 @@ export type FixAction = {
   params: Record<string, unknown>;
   approvalRequired: boolean;
   description?: string;
+  rollbackSteps?: string[];
 };
 
 export type ExecuteFixOptions = {
   userId: string;
   projectId?: string;
+  leadId?: string;
   actions: FixAction[];
-  approvedActionIds?: string[];
+  approvedActionIds: string[];
+  userModules?: unknown;
 };
 
 export type ExecuteFixResult = {
-  executed: Array<{ actionId: string; pluginId: string; result: PluginExecuteResult }>;
+  executed: Array<{
+    actionId: string;
+    pluginId: string;
+    success: boolean;
+    data?: unknown;
+    error?: string;
+    executionLogId?: string;
+  }>;
   skipped: Array<{ actionId: string; reason: string }>;
 };
 
 /**
- * Execute approved fix actions via plugin layer.
- * Only actions in approvedActionIds (or with approvalRequired=false) are executed.
+ * Execute approved fix actions via execution engine.
+ * Logs actions, supports rollback, requires explicit user confirmation for destructive actions.
  */
 export async function executeFixes(opts: ExecuteFixOptions): Promise<ExecuteFixResult> {
-  const executed: ExecuteFixResult["executed"] = [];
+  const approved = new Set(opts.approvedActionIds);
   const skipped: ExecuteFixResult["skipped"] = [];
-  const approved = new Set(opts.approvedActionIds ?? []);
+  const toExecute: ExecutionAction[] = [];
 
   for (const action of opts.actions) {
-    const plugin = getPlugin(action.pluginId);
-    if (!plugin) {
-      skipped.push({ actionId: action.id, reason: `Plugin ${action.pluginId} not found` });
-      continue;
-    }
     if (action.approvalRequired && !approved.has(action.id)) {
       skipped.push({ actionId: action.id, reason: "Not approved by user" });
       continue;
     }
-
-    const result = await plugin.execute({
-      userId: opts.userId,
-      projectId: opts.projectId,
-      params: { action: action.action, ...action.params },
+    toExecute.push({
+      id: action.id,
+      pluginId: action.pluginId,
+      action: action.action,
+      params: action.params,
+      approvalRequired: action.approvalRequired,
+      description: action.description,
+      rollbackSteps: action.rollbackSteps,
     });
-    executed.push({ actionId: action.id, pluginId: action.pluginId, result });
   }
 
-  return { executed, skipped };
+  if (toExecute.length === 0) {
+    return { executed: [], skipped };
+  }
+
+  const { results } = await execute(
+    {
+      context: {
+        userId: opts.userId,
+        projectId: opts.projectId,
+        leadId: opts.leadId,
+      },
+      actions: toExecute,
+      approvedActionIds: opts.approvedActionIds,
+    },
+    opts.userModules ?? {},
+    "axiom"
+  );
+
+  return {
+    executed: results.map((r) => ({
+      actionId: r.actionId,
+      pluginId: r.pluginId,
+      success: r.success,
+      data: r.data,
+      error: r.error,
+      executionLogId: r.executionLogId,
+    })),
+    skipped,
+  };
+}
+
+/** Map recommended improvement text to FixAction (plugin inferred from hostingProvider). */
+export function improvementToFixAction(
+  improvement: string,
+  index: number,
+  hostingProvider: string
+): FixAction {
+  const provider = hostingProvider.toLowerCase();
+  const pluginId =
+    provider.includes("aws") ? "aws"
+    : provider.includes("azure") ? "azure"
+    : provider.includes("gcp") || provider.includes("google") ? "gcp"
+    : "aws";
+  return {
+    id: `fix-${index}-${Date.now()}`,
+    pluginId,
+    action: "remediate",
+    params: { improvementText: improvement },
+    approvalRequired: true,
+    description: improvement,
+    rollbackSteps: ["Revert changes via cloud console", "Restore from backup if applicable"],
+  };
 }

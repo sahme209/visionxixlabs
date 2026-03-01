@@ -68,6 +68,8 @@ export async function POST(req: NextRequest) {
                 sections: websiteBuilderPlan.sections,
                 layout: websiteBuilderPlan.layout,
                 visualStyle: websiteBuilderPlan.visualStyle,
+                plugins: websiteBuilderPlan.plugins,
+                cloudServices: websiteBuilderPlan.cloudServices,
               }
             : undefined,
           engine: {

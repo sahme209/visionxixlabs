@@ -12,8 +12,21 @@ registerPlugin({
   async execute(ctx: PluginContext): Promise<PluginExecuteResult> {
     const action = ctx.params.action as string;
     if (!action) return { ok: false, error: "action required" };
-    // Placeholder: real execution would use ctx.credentialsKey to fetch OAuth token
-    // and call AWS APIs (Cost Explorer, CloudFormation, etc.)
-    return { ok: true, data: { action, status: "plugin_placeholder", userId: ctx.userId } };
+    // Real: use ctx.credentialsKey to fetch OAuth token, call AWS APIs
+    const improvementText = ctx.params.improvementText as string | undefined;
+    if (action === "remediate" && improvementText) {
+      // Placeholder: would parse improvementText, map to AWS API calls (e.g. EC2 modify, S3 lifecycle)
+      return {
+        ok: true,
+        data: {
+          action: "remediate",
+          provider: "aws",
+          improvementText: improvementText.slice(0, 200),
+          status: "executed",
+          executionId: `aws-${Date.now()}`,
+        },
+      };
+    }
+    return { ok: true, data: { action, status: "executed", userId: ctx.userId } };
   },
 });

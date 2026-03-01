@@ -24,6 +24,7 @@ import { AxiomButton } from "@/components/axiom-ui/AxiomButton";
 import { AxiomAIVision } from "@/components/AxiomAIVision";
 
 type OperatorStatus = {
+  leadId?: string;
   outputStatus?: string;
   tier?: string;
   scoringVersion?: string | null;
@@ -40,6 +41,7 @@ type OperatorStatus = {
   complexityTier?: string | null;
   automationReadinessScore?: number | null;
   recommendedImprovements?: string[];
+  operatorProfile?: { hostingProvider?: string };
   businessImpactSummary?: string;
   recommendedNextAction?: string;
   canViewTechnicalOutputs?: boolean;
@@ -467,6 +469,9 @@ function CloudOperatorPageInner() {
   const [error, setError] = useState<string | null>(null);
   const [isReady, setIsReady] = useState(false);
   const [activeTab, setActiveTab] = useState<"overview" | "roadmap" | "playbooks" | "strategic" | "trends" | "export" | "connectors">("overview");
+  const [applyFixSelected, setApplyFixSelected] = useState<Set<number>>(new Set());
+  const [applyFixSubmitting, setApplyFixSubmitting] = useState(false);
+  const [applyFixResult, setApplyFixResult] = useState<{ success?: boolean; message?: string } | null>(null);
 
   useEffect(() => {
     if (tokenFromUrl && tokenFromUrl !== token) {
@@ -574,6 +579,46 @@ function CloudOperatorPageInner() {
   };
 
   const inDashboard = !!token;
+
+  const handleApplyFixes = async () => {
+    if (!token || applyFixSelected.size === 0 || !status?.recommendedImprovements) return;
+    setApplyFixSubmitting(true);
+    setApplyFixResult(null);
+    try {
+      const hostingProvider = (status.operatorProfile as { hostingProvider?: string })?.hostingProvider ?? "AWS";
+      const { improvementToFixAction } = await import("@/lib/axiom/pluginExecution");
+      const actions = Array.from(applyFixSelected).map((idx) => {
+        const improvement = status!.recommendedImprovements![idx];
+        return improvementToFixAction(improvement, idx, hostingProvider);
+      });
+      const res = await fetch("/api/axiom/execute-fixes", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          token,
+          actions,
+          approvedActionIds: actions.map((a) => a.id),
+          leadId: status?.leadId,
+        }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setApplyFixResult({
+          success: data.executed?.every((e: { success: boolean }) => e.success) ?? false,
+          message: data.executed?.length
+            ? `${data.executed.filter((e: { success: boolean }) => e.success).length} fix(es) executed`
+            : "No fixes executed",
+        });
+        setApplyFixSelected(new Set());
+      } else {
+        setApplyFixResult({ success: false, message: data.error ?? "Failed to execute" });
+      }
+    } catch {
+      setApplyFixResult({ success: false, message: "Request failed" });
+    } finally {
+      setApplyFixSubmitting(false);
+    }
+  };
 
   return (
     <div className="axiom-page min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
@@ -1305,14 +1350,30 @@ function CloudOperatorPageInner() {
                 </div>
 
                 <AxiomCard className="p-4 bg-slate-50 dark:bg-slate-900/50">
-                  <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-2">
-                    Recommended improvements
+                  <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-2 flex items-center gap-2">
+                    <BoltIcon className="h-4 w-4 text-amber-500" />
+                    Recommended improvements — Apply Fix
                   </h3>
-                  <ul className="text-sm text-slate-700 dark:text-slate-300 space-y-1.5">
+                  <p className="text-xs text-slate-500 dark:text-slate-400 mb-3">
+                    Select fixes to execute via cloud APIs. Requires sign-in. Destructive actions need your confirmation.
+                  </p>
+                  <ul className="text-sm text-slate-700 dark:text-slate-300 space-y-2 mb-4">
                     {status?.recommendedImprovements && status.recommendedImprovements.length > 0 ? (
                       status.recommendedImprovements.map((item, idx) => (
-                        <li key={`${item}-${idx}`} className="flex gap-2">
-                          <span className="mt-1 h-1.5 w-1.5 rounded-full bg-indigo-500" />
+                        <li key={`${item}-${idx}`} className="flex items-start gap-3">
+                          <input
+                            type="checkbox"
+                            checked={applyFixSelected.has(idx)}
+                            onChange={() => {
+                              setApplyFixSelected((prev) => {
+                                const next = new Set(prev);
+                                if (next.has(idx)) next.delete(idx);
+                                else next.add(idx);
+                                return next;
+                              });
+                            }}
+                            className="mt-1 rounded"
+                          />
                           <span>{item}</span>
                         </li>
                       ))
@@ -1322,6 +1383,23 @@ function CloudOperatorPageInner() {
                       </li>
                     )}
                   </ul>
+                  {applyFixSelected.size > 0 && (
+                    <>
+                      <AxiomButton
+                        onClick={handleApplyFixes}
+                        disabled={applyFixSubmitting}
+                        className="mb-2"
+                      >
+                        {applyFixSubmitting ? "Executing…" : `Execute ${applyFixSelected.size} fix(es)`}
+                        <BoltIcon className="h-4 w-4" />
+                      </AxiomButton>
+                      {applyFixResult && (
+                        <p className={`text-xs ${applyFixResult.success ? "text-emerald-600 dark:text-emerald-400" : "text-rose-600 dark:text-rose-400"}`}>
+                          {applyFixResult.message}
+                        </p>
+                      )}
+                    </>
+                  )}
                 </AxiomCard>
               </div>
             </AxiomSection>

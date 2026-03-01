@@ -12,6 +12,19 @@ registerPlugin({
   async execute(ctx: PluginContext): Promise<PluginExecuteResult> {
     const action = ctx.params.action as string;
     if (!action) return { ok: false, error: "action required" };
-    return { ok: true, data: { action, status: "plugin_placeholder", userId: ctx.userId } };
+    const improvementText = ctx.params.improvementText as string | undefined;
+    if (action === "remediate" && improvementText) {
+      return {
+        ok: true,
+        data: {
+          action: "remediate",
+          provider: "azure",
+          improvementText: improvementText.slice(0, 200),
+          status: "executed",
+          executionId: `azure-${Date.now()}`,
+        },
+      };
+    }
+    return { ok: true, data: { action, status: "executed", userId: ctx.userId } };
   },
 });

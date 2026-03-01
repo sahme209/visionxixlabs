@@ -26,7 +26,7 @@ export default function BuilderPricingPage() {
             Website Builder Pricing
           </h1>
           <p className="mt-4 text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
-            AI website generation, real preview, one-click deploy. Add chatbot for engagement.
+            AI website engine with optional cloud infrastructure add-ons: hosting, storage, CI/CD, monitoring.
           </p>
           <div className="mt-6 flex justify-center gap-3">
             <button

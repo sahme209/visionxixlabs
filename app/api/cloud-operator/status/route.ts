@@ -154,9 +154,11 @@ export async function GET(req: NextRequest) {
     }
 
     const engine = payload.engine as { scoringVersion?: string } | undefined;
+    const operatorProfile = (payload.operatorProfile as Record<string, unknown>) || {};
     const response: Record<string, unknown> = {
       leadId: lead.id,
       status: lead.status,
+      operatorProfile: { hostingProvider: operatorProfile.hostingProvider },
       scoringVersion: engine?.scoringVersion ?? null,
       ...base,
       recommendedImprovements: operatorOutput?.recommendedImprovements ?? [],
