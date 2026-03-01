@@ -12,6 +12,7 @@ import {
   CloudIcon,
   CpuChipIcon,
   DocumentArrowDownIcon,
+  MagnifyingGlassIcon,
   SparklesIcon,
   ShieldCheckIcon,
   VariableIcon,
@@ -169,6 +170,74 @@ type OperatorStatus = {
     };
   } | null;
 };
+
+function RunScanCard({ token }: { token: string | null }) {
+  const [running, setRunning] = useState(false);
+  const [result, setResult] = useState<{ status: string; resultSummary?: string; error?: string; data?: Record<string, unknown> } | null>(null);
+
+  const runScan = async () => {
+    if (!token) return;
+    setRunning(true);
+    setResult(null);
+    try {
+      const res = await fetch("/api/execution/run", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          pluginId: "aws:iam-readonly-scan",
+          dryRun: true,
+          input: {},
+          token,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error ?? "Scan failed");
+      setResult({
+        status: data.status ?? "unknown",
+        resultSummary: data.resultSummary,
+        error: data.error,
+        data: data.data,
+      });
+    } catch (e) {
+      setResult({
+        status: "failed",
+        error: e instanceof Error ? e.message : "Scan failed",
+      });
+    } finally {
+      setRunning(false);
+    }
+  };
+
+  return (
+    <AxiomCard className="p-5 border-l-4 border-l-amber-500">
+      <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-2 flex items-center gap-2">
+        <MagnifyingGlassIcon className="h-4 w-4 text-amber-500" />
+        Run Scan (dry run)
+      </h3>
+      <p className="text-xs text-slate-600 dark:text-slate-400 mb-3">
+        Run a safe, read-only IAM scan. No changes made. Requires linked account.
+      </p>
+      <button
+        type="button"
+        onClick={runScan}
+        disabled={running || !token}
+        className="inline-flex items-center gap-2 rounded-lg border border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-900/30 px-3 py-1.5 text-xs font-medium text-amber-700 dark:text-amber-300 hover:bg-amber-100 dark:hover:bg-amber-900/50 disabled:opacity-50"
+      >
+        {running ? "Running…" : "Run IAM Scan"}
+        <MagnifyingGlassIcon className="h-3.5 w-3.5" />
+      </button>
+      {result && (
+        <div className="mt-3 rounded-lg bg-slate-50 dark:bg-slate-900/50 p-3 text-xs">
+          <p className={`font-medium ${result.status === "success" ? "text-emerald-600 dark:text-emerald-400" : "text-rose-600 dark:text-rose-400"}`}>
+            {result.status === "success" ? "Success" : "Failed"}
+          </p>
+          {result.resultSummary && <p className="text-slate-600 dark:text-slate-400 mt-1">{result.resultSummary}</p>}
+          {result.error && <p className="text-rose-600 dark:text-rose-400 mt-1">{result.error}</p>}
+        </div>
+      )}
+    </AxiomCard>
+  );
+}
 
 function EmailReportButton({ token }: { token: string | null }) {
   const [sending, setSending] = useState(false);
@@ -1611,6 +1680,7 @@ function CloudOperatorPageInner() {
                     <p className="text-xs text-slate-600 dark:text-slate-400">Repos, CI/CD workflows, deployment patterns</p>
                   </AxiomCard>
                 </div>
+                <RunScanCard token={token} />
                 <AxiomCard className="p-5 bg-slate-50 dark:bg-slate-900/50">
                   <p className="text-xs text-slate-600 dark:text-slate-400">
                     API: POST /api/connectors/link to link. GET /api/connectors/status for status. All connectors are read-only.

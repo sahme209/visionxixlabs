@@ -4,6 +4,53 @@
  * Connect via OAuth where possible, store encrypted credentials, execute real actions.
  */
 
+// --- Execution Plugin Layer (Axiom automation) ---
+
+export type ExecutionScope = "cloud:aws" | "cloud:azure" | "cloud:gcp" | "cloud:read" | "cloud:write";
+
+export type PluginEntitlements = {
+  plan?: string | null;
+  purchasedPlugins?: string[];
+};
+
+export interface ExecutionPluginLogger {
+  info(msg: string, meta?: Record<string, unknown>): void;
+  warn(msg: string, meta?: Record<string, unknown>): void;
+  error(msg: string, meta?: Record<string, unknown>): void;
+}
+
+export interface ExecutionPluginContext {
+  userId: string;
+  projectId?: string;
+  leadId?: string;
+  dryRun: boolean;
+  entitlements: PluginEntitlements;
+  logger: ExecutionPluginLogger;
+  /** Encrypted credential key — never store raw secrets */
+  credentialsKey?: string;
+}
+
+export interface PluginResult {
+  ok: boolean;
+  data?: Record<string, unknown>;
+  error?: string;
+  summary?: string;
+  rollbackHints?: string[];
+}
+
+export interface ExecutionPlugin {
+  id: string;
+  name: string;
+  description: string;
+  scopesRequired: ExecutionScope[];
+  planRequired?: string;
+  /** Read-only plugins may only run in dryRun */
+  readOnly?: boolean;
+  run(input: Record<string, unknown>, ctx: ExecutionPluginContext): Promise<PluginResult>;
+}
+
+// --- Builder/Axiom Plugin Layer (existing) ---
+
 export type PluginPermission =
   | "cloud:read"
   | "cloud:write"

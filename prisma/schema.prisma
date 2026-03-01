@@ -134,16 +134,44 @@ model ExecutionLog {
   action        String
   pluginId      String
   status        String    // pending | success | failed | rolled_back
+  dryRun        Boolean   @default(false)
   params        Json?
   result        Json?
   error         String?
+  inputHash     String?
+  outputJson    Json?
+  errorMessage  String?
   rollbackSteps String[]  @default([])
   executedAt    DateTime  @default(now())
+  startedAt     DateTime? @default(now())
+  finishedAt    DateTime?
 
   @@index([userId])
   @@index([projectId])
   @@index([leadId])
   @@index([executedAt])
+}
+
+// AI invocation log — PII-safe, for tracing and cost attribution
+model AIInvocation {
+  id           String   @id @default(cuid())
+  userId       String?
+  taskType     String
+  provider     String
+  model        String
+  latencyMs    Int?
+  success      Boolean
+  errorMessage String?
+  tokensIn     Int?
+  tokensOut    Int?
+  promptHash   String?
+  promptPreview String? @db.VarChar(200)
+  requestId    String?
+  createdAt    DateTime @default(now())
+
+  @@index([userId])
+  @@index([taskType])
+  @@index([createdAt])
 }
 
 // Phase 5: Audit log for enterprise-grade security
