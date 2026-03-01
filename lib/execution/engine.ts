@@ -5,15 +5,15 @@
 
 import { prisma } from "@/lib/db";
 import { getPlugin } from "@/lib/plugins";
-import { hasAxiomModule, hasBuilderModule, hasPlugin } from "@/lib/userModules";
+import { getEntitlementsFromPlan } from "@/lib/entitlements";
 import type { ExecutionAction, ExecutionContext, ExecutionResult } from "./types";
 
 export type ExecuteOptions = {
   context: ExecutionContext;
   actions: ExecutionAction[];
   approvedActionIds: string[];
-  /** Skip module/plugin check when user explicitly selected add-ons (e.g. Builder cloud services) */
-  skipModuleCheck?: boolean;
+  /** Skip plan check when user explicitly authorized (e.g. Builder cloud services) */
+  skipPlanCheck?: boolean;
 };
 
 export type ExecuteEngineResult = {
@@ -22,23 +22,18 @@ export type ExecuteEngineResult = {
 };
 
 function validatePermissions(
-  userId: string,
-  userModules: unknown,
+  userPlan: string | null | undefined,
   actions: ExecutionAction[],
   source: "builder" | "axiom",
-  opts?: { skipModuleCheck?: boolean }
+  opts?: { skipPlanCheck?: boolean }
 ): { ok: true } | { ok: false; error: string } {
-  if (!opts?.skipModuleCheck) {
-    if (source === "axiom" && !hasAxiomModule(userModules)) {
-      return { ok: false, error: "Axiom module required" };
+  if (!opts?.skipPlanCheck) {
+    const ent = getEntitlementsFromPlan(userPlan);
+    if (source === "axiom" && !ent.axiomExecution) {
+      return { ok: false, error: "Scale or Enterprise plan required for Axiom execution" };
     }
-    if (source === "builder" && !hasBuilderModule(userModules)) {
-      return { ok: false, error: "Builder module required" };
-    }
-    for (const a of actions) {
-      if (!hasPlugin(userModules, a.pluginId)) {
-        return { ok: false, error: `Plugin ${a.pluginId} not enabled` };
-      }
+    if (source === "builder" && !ent.builder) {
+      return { ok: false, error: "Builder access required" };
     }
   }
   return { ok: true };
@@ -72,22 +67,21 @@ async function logExecution(
 
 /**
  * Execute actions via execution engine.
- * Validates permissions, requires explicit approval for destructive actions, logs all executions.
+ * Validates permissions from User.plan, requires explicit approval for destructive actions, logs all executions.
  */
 export async function execute(
   opts: ExecuteOptions,
-  userModules: unknown,
+  userPlan: string | null | undefined,
   source: "builder" | "axiom"
 ): Promise<ExecuteEngineResult> {
   const { context, actions, approvedActionIds } = opts;
   const approved = new Set(approvedActionIds);
 
   const perm = validatePermissions(
-    context.userId,
-    userModules,
+    userPlan,
     actions,
     source,
-    { skipModuleCheck: opts.skipModuleCheck }
+    { skipPlanCheck: opts.skipPlanCheck }
   );
   if (!perm.ok) {
     throw new Error(perm.error);

@@ -23,7 +23,7 @@ export type ExecuteFixOptions = {
   leadId?: string;
   actions: FixAction[];
   approvedActionIds: string[];
-  userModules?: unknown;
+  userPlan?: string | null;
 };
 
 export type ExecuteFixResult = {
@@ -77,7 +77,7 @@ export async function executeFixes(opts: ExecuteFixOptions): Promise<ExecuteFixR
       actions: toExecute,
       approvedActionIds: opts.approvedActionIds,
     },
-    opts.userModules ?? {},
+    opts.userPlan ?? null,
     "axiom"
   );
 

@@ -11,7 +11,7 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { verifyStarterToken } from "@/lib/starterToken";
 import { executeFixes } from "@/lib/axiom/pluginExecution";
-import { hasAxiomModule } from "@/lib/userModules";
+import { getEntitlementsFromPlan } from "@/lib/entitlements";
 
 export async function POST(req: NextRequest) {
   try {
@@ -19,7 +19,7 @@ export async function POST(req: NextRequest) {
     const { token, actions: bodyActions, approvedActionIds, leadId, projectId } = body;
 
     let userId: string;
-    let userModules: unknown = {};
+    let userPlan: string | null = null;
     let resolvedLeadId: string | undefined = leadId;
 
     const session = await getServerSession(authOptions);
@@ -27,11 +27,15 @@ export async function POST(req: NextRequest) {
       userId = (session.user as { id: string }).id;
       const user = await prisma.user.findUnique({
         where: { id: userId },
-        select: { modules: true },
+        select: { plan: true },
       });
-      userModules = user?.modules ?? {};
-      if (!hasAxiomModule(userModules)) {
-        return NextResponse.json({ error: "Axiom module required" }, { status: 403 });
+      userPlan = user?.plan ?? null;
+      const entitlements = getEntitlementsFromPlan(userPlan);
+      if (!entitlements.axiomExecution) {
+        return NextResponse.json(
+          { error: "Scale or Enterprise plan required. Upgrade at /visionxix-ai/pricing" },
+          { status: 403 }
+        );
       }
     } else if (token) {
       const result = verifyStarterToken(token);
@@ -56,9 +60,16 @@ export async function POST(req: NextRequest) {
       resolvedLeadId = lead.id;
       const user = await prisma.user.findUnique({
         where: { id: userId },
-        select: { modules: true },
+        select: { plan: true },
       });
-      userModules = user?.modules ?? {};
+      userPlan = user?.plan ?? null;
+      const entitlements = getEntitlementsFromPlan(userPlan);
+      if (!entitlements.axiomExecution) {
+        return NextResponse.json(
+          { error: "Scale or Enterprise plan required. Upgrade at /visionxix-ai/pricing" },
+          { status: 403 }
+        );
+      }
     } else {
       return NextResponse.json({ error: "Unauthorized. Sign in or provide token." }, { status: 401 });
     }
@@ -84,7 +95,7 @@ export async function POST(req: NextRequest) {
         rollbackSteps: a.rollbackSteps,
       })),
       approvedActionIds: approved,
-      userModules,
+      userPlan,
     });
 
     return NextResponse.json(result);

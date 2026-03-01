@@ -1,48 +1,24 @@
+/**
+ * Re-exports from entitlements — single source of truth.
+ * @deprecated Prefer importing from @/lib/entitlements directly.
+ */
+
 import type { OperatorTier } from "./types";
-import { operatorTierToUnified, type UnifiedTier } from "@/lib/pricing/unifiedTier";
-import { membershipToOperatorTier } from "@/lib/pricing/membership";
+import {
+  resolveOperatorTier as resolve,
+  canViewTechnicalOutputs,
+  canDownloadConfigs,
+  hasContinuousReassessment,
+  hasEnterpriseEngagement,
+  operatorTierToUnified,
+} from "@/lib/entitlements";
 
-export function resolveOperatorTier(raw: string | null | undefined): OperatorTier {
-  const value = (raw || "").toLowerCase();
-  if (value === "pro" || value === "professional") return "pro";
-  if (value === "growth") return "growth";
-  if (value === "enterprise") return "enterprise";
-  return "free";
-}
+export type { UnifiedTier } from "@/lib/entitlements";
 
-export function canViewTechnicalOutputs(tier: OperatorTier): boolean {
-  return tier === "pro" || tier === "growth" || tier === "enterprise";
-}
+export const resolveOperatorTier = resolve as (raw: string | null | undefined) => OperatorTier;
+export { resolveEffectiveOperatorTier } from "@/lib/entitlements";
+export { canViewTechnicalOutputs, canDownloadConfigs, hasContinuousReassessment, hasEnterpriseEngagement };
 
-export function canDownloadConfigs(tier: OperatorTier): boolean {
-  return tier === "pro" || tier === "growth" || tier === "enterprise";
-}
-
-export function hasContinuousReassessment(tier: OperatorTier): boolean {
-  return tier === "growth" || tier === "enterprise";
-}
-
-export function hasEnterpriseEngagement(tier: OperatorTier): boolean {
-  return tier === "enterprise";
-}
-
-/** Resolve Operator tier to UnifiedTier for internal gating */
-export function toUnifiedTier(tier: OperatorTier | string | null | undefined): UnifiedTier {
+export function toUnifiedTier(tier: OperatorTier | string | null | undefined) {
   return operatorTierToUnified(tier);
 }
-
-/**
- * Resolve effective Operator tier for a lead.
- * If lead has userId and user has a membership plan, use membership tier (Growth+ = Pro+).
- * Otherwise use fullPayload.tier from form.
- */
-export function resolveEffectiveOperatorTier(
-  payloadTier: string | null | undefined,
-  userPlan: string | null | undefined
-): OperatorTier {
-  if (userPlan) {
-    return membershipToOperatorTier(userPlan) as OperatorTier;
-  }
-  return resolveOperatorTier(payloadTier);
-}
-

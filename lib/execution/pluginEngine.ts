@@ -5,7 +5,7 @@
 
 import { prisma } from "@/lib/db";
 import { getExecutionPlugin } from "@/lib/plugins/executionRegistry";
-import { hasAxiomModule, hasPlugin, parseUserModules } from "@/lib/userModules";
+import { getEntitlementsFromPlan } from "@/lib/entitlements";
 import type { ExecutionPluginContext, PluginEntitlements } from "@/lib/plugins/types";
 
 const PLUGIN_TIMEOUT_MS = Number(process.env.PLUGIN_TIMEOUT_MS) || 60_000;
@@ -37,7 +37,6 @@ export interface ExecutePluginOptions {
     projectId?: string;
     leadId?: string;
     dryRun: boolean;
-    userModules?: unknown;
     userPlan?: string | null;
     credentialsKey?: string;
   };
@@ -52,14 +51,12 @@ export interface ExecutePluginResult {
 }
 
 function validateEntitlement(
-  pluginId: string,
-  userModules: unknown,
   userPlan: string | null | undefined,
-  pluginPlanRequired?: string,
-  options?: { dryRun?: boolean; readOnly?: boolean }
+  pluginPlanRequired?: string
 ): { ok: true } | { ok: false; error: string } {
-  if (!hasAxiomModule(userModules)) {
-    return { ok: false, error: "Axiom module required" };
+  const ent = getEntitlementsFromPlan(userPlan);
+  if (!ent.axiomExecution) {
+    return { ok: false, error: "Scale or Enterprise plan required for execution" };
   }
   if (pluginPlanRequired) {
     const plan = (userPlan ?? "").toLowerCase();
@@ -70,11 +67,6 @@ function validateEntitlement(
     if (requiredIdx >= 0 && (planIdx < 0 || planIdx < requiredIdx)) {
       return { ok: false, error: `Plan ${pluginPlanRequired} or higher required` };
     }
-  }
-  const parentPlugin = pluginId.split(":")[0];
-  const hasPluginAccess = hasPlugin(userModules, pluginId) || hasPlugin(userModules, parentPlugin);
-  if (!hasPluginAccess && !(options?.dryRun && options?.readOnly)) {
-    return { ok: false, error: `Plugin ${pluginId} (or ${parentPlugin}) not enabled. Add it in Connectors.` };
   }
   return { ok: true };
 }
@@ -103,20 +95,13 @@ export async function executePlugin(opts: ExecutePluginOptions): Promise<Execute
     throw new Error(`Plugin ${pluginId} not found`);
   }
 
-  const userModules = ctx.userModules ?? {};
-  const entitlements: PluginEntitlements = {
-    plan: ctx.userPlan ?? null,
-    purchasedPlugins: parseUserModules(userModules).plugins ?? [],
-  };
-
-  const ent = validateEntitlement(
-    pluginId,
-    userModules,
-    ctx.userPlan,
-    plugin.planRequired,
-    { dryRun: ctx.dryRun, readOnly: plugin.readOnly }
-  );
+  const ent = validateEntitlement(ctx.userPlan, plugin.planRequired);
   if (!ent.ok) throw new Error(ent.error);
+
+  const pluginEntitlements: PluginEntitlements = {
+    plan: ctx.userPlan ?? null,
+    purchasedPlugins: [], // plan-based; scale+ gets all plugins
+  };
 
   const userScopes = ["cloud:read", "cloud:aws"];
   const scopeCheck = validateScopes(userScopes, plugin.scopesRequired);
@@ -149,7 +134,7 @@ export async function executePlugin(opts: ExecutePluginOptions): Promise<Execute
     projectId: ctx.projectId,
     leadId: ctx.leadId,
     dryRun: ctx.dryRun,
-    entitlements,
+    entitlements: pluginEntitlements,
     logger,
     credentialsKey: ctx.credentialsKey,
   };

@@ -1,5 +1,7 @@
 /**
- * Website Builder — separate product pricing.
+ * Website Builder — separate product pricing (display only).
+ * @deprecated Use MEMBERSHIP_PLANS from @/lib/pricing/membership for entitlements.
+ * Display-only; UI still uses BUILDER_PLANS for /builder/pricing page.
  * Track: builder
  * Plans: Starter (Website only), Pro (Website + Chatbot), Business (Website + Chatbot + Advanced Deploy)
  */

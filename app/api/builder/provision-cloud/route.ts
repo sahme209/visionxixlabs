@@ -39,12 +39,15 @@ export async function POST(req: NextRequest) {
     }
 
     let userId: string;
+    let userPlan: string | null = null;
     let resolvedLeadId: string;
     let resolvedProjectId: string;
 
     const session = await getServerSession(authOptions);
     if (session?.user && (session.user as { id?: string }).id) {
       userId = (session.user as { id: string }).id;
+      const user = await prisma.user.findUnique({ where: { id: userId }, select: { plan: true } });
+      userPlan = user?.plan ?? null;
       if (!leadId) {
         return NextResponse.json(
           { error: "leadId required when authenticated" },
@@ -75,6 +78,8 @@ export async function POST(req: NextRequest) {
       userId = lead.userId;
       resolvedLeadId = lead.id;
       resolvedProjectId = projectId ?? lead.id;
+      const user = await prisma.user.findUnique({ where: { id: userId }, select: { plan: true } });
+      userPlan = user?.plan ?? null;
     } else {
       return NextResponse.json(
         { error: "Token or session required" },
@@ -99,9 +104,9 @@ export async function POST(req: NextRequest) {
         },
         actions,
         approvedActionIds: actions.map((a) => a.id),
-        skipModuleCheck: true,
+        skipPlanCheck: true,
       },
-      {},
+      userPlan,
       "builder"
     );
 

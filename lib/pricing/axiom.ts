@@ -1,5 +1,7 @@
 /**
- * Axiom Cloud Automation — separate product pricing.
+ * Axiom Cloud Automation — separate product pricing (display only).
+ * @deprecated Use MEMBERSHIP_PLANS from @/lib/pricing/membership for entitlements.
+ * Display-only; UI still uses AXIOM_PLANS for /axiom/pricing page.
  * Track: axiom
  * Plans: Cloud Basic (Scan only), Cloud Pro (Scan + Fix), Enterprise (Scan + Fix + AI Ops Assistant)
  */

@@ -11,7 +11,7 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { verifyStarterToken } from "@/lib/starterToken";
 import { executePlugin } from "@/lib/execution/pluginEngine";
-import { hasAxiomModule } from "@/lib/userModules";
+import { getEntitlementsFromPlan } from "@/lib/entitlements";
 
 // Register AWS execution plugins
 import "@/lib/plugins/aws";
@@ -20,7 +20,6 @@ export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
     let userId: string;
-    let userModules: unknown = {};
     let userPlan: string | null = null;
     let leadId: string | undefined;
 
@@ -29,10 +28,9 @@ export async function POST(req: NextRequest) {
       userId = (session.user as { id: string }).id;
       const user = await prisma.user.findUnique({
         where: { id: userId },
-        select: { modules: true, plan: true },
+        select: { plan: true },
       });
       if (!user) return NextResponse.json({ error: "User not found" }, { status: 404 });
-      userModules = user.modules ?? {};
       userPlan = user.plan ?? null;
     } else if (body?.token) {
       const result = verifyStarterToken(body.token);
@@ -57,16 +55,19 @@ export async function POST(req: NextRequest) {
       leadId = lead.id;
       const user = await prisma.user.findUnique({
         where: { id: userId },
-        select: { modules: true, plan: true },
+        select: { plan: true },
       });
-      userModules = user?.modules ?? {};
       userPlan = user?.plan ?? null;
     } else {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    if (!hasAxiomModule(userModules)) {
-      return NextResponse.json({ error: "Axiom module required" }, { status: 403 });
+    const entitlements = getEntitlementsFromPlan(userPlan);
+    if (!entitlements.axiomExecution) {
+      return NextResponse.json(
+        { error: "Scale or Enterprise plan required for execution. Upgrade at /visionxix-ai/pricing" },
+        { status: 403 }
+      );
     }
 
     const pluginId = String(body?.pluginId ?? "").trim();
@@ -84,7 +85,6 @@ export async function POST(req: NextRequest) {
         userId,
         leadId,
         dryRun,
-        userModules,
         userPlan,
       },
     });

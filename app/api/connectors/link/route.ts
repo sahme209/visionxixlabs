@@ -2,7 +2,11 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { verifyStarterToken } from "@/lib/starterToken";
 import { checkTieredRateLimit } from "@/lib/rateLimitTiered";
-import { canViewTechnicalOutputs, hasEnterpriseEngagement, resolveOperatorTier } from "@/lib/cloudOperator/pricing";
+import {
+  canViewTechnicalOutputs,
+  hasEnterpriseEngagement,
+  resolveEffectiveOperatorTier,
+} from "@/lib/entitlements";
 import type { ConnectorType, ConnectorAuthMethod } from "@/lib/connectors/types";
 import { validateGithubConnection } from "@/lib/connectors/github";
 import { validateAwsConnection } from "@/lib/connectors/aws";
@@ -40,7 +44,10 @@ export async function POST(req: NextRequest) {
     }
 
     const payload = (lead.fullPayload as Record<string, unknown>) || {};
-    const tier = resolveOperatorTier(payload.tier as string);
+    const userPlan = lead.userId
+      ? (await prisma.user.findUnique({ where: { id: lead.userId }, select: { plan: true } }))?.plan ?? null
+      : null;
+    const tier = resolveEffectiveOperatorTier(payload.tier as string, userPlan);
     const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || req.headers.get("x-real-ip") || "anon";
     if (!checkTieredRateLimit(tier, ip)) {
       return NextResponse.json({ error: "Too many requests. Please try again in a minute." }, { status: 429 });
