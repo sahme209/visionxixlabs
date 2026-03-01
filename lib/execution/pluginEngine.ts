@@ -40,6 +40,8 @@ export interface ExecutePluginOptions {
     userPlan?: string | null;
     credentialsKey?: string;
   };
+  /** When true, skip entitlement check (trusted agent context only) */
+  skipEntitlementCheck?: boolean;
 }
 
 export interface ExecutePluginResult {
@@ -89,14 +91,16 @@ function validateScopes(
  * Execute a single plugin with validation, timeout, and logging.
  */
 export async function executePlugin(opts: ExecutePluginOptions): Promise<ExecutePluginResult> {
-  const { pluginId, input = {}, ctx } = opts;
+  const { pluginId, input = {}, ctx, skipEntitlementCheck } = opts;
   const plugin = getExecutionPlugin(pluginId);
   if (!plugin) {
     throw new Error(`Plugin ${pluginId} not found`);
   }
 
-  const ent = validateEntitlement(ctx.userPlan, plugin.planRequired);
-  if (!ent.ok) throw new Error(ent.error);
+  if (!skipEntitlementCheck) {
+    const ent = validateEntitlement(ctx.userPlan, plugin.planRequired);
+    if (!ent.ok) throw new Error(ent.error);
+  }
 
   const pluginEntitlements: PluginEntitlements = {
     plan: ctx.userPlan ?? null,
