@@ -171,9 +171,88 @@ type OperatorStatus = {
   } | null;
 };
 
-function RunScanCard({ token }: { token: string | null }) {
+type ConnectorStatusEntry = {
+  status: string;
+  linkedAt?: string;
+  verifiedAccountId?: string;
+  verifiedCallerArn?: string;
+};
+
+function ConnectorStatusDisplay({
+  token,
+  connectors,
+}: {
+  token: string | null;
+  connectors: Record<string, ConnectorStatusEntry> | null;
+}) {
+  const aws = connectors?.aws;
+  if (!aws) return null;
+  if (aws.status === "unavailable") {
+    return (
+      <p className="text-xs text-amber-600 dark:text-amber-400 mt-1">
+        AWS connector is not enabled in this environment.
+      </p>
+    );
+  }
+  if (aws.status === "invalid") {
+    return (
+      <p className="text-xs text-rose-600 dark:text-rose-400 mt-1">
+        Could not verify AWS role. Check Role ARN / External ID.
+      </p>
+    );
+  }
+  if (aws.status === "linked" && (aws.verifiedAccountId || aws.verifiedCallerArn)) {
+    return (
+      <div className="mt-1 space-y-0.5">
+        {aws.verifiedAccountId && (
+          <p className="text-xs text-emerald-600 dark:text-emerald-400">Account: {aws.verifiedAccountId}</p>
+        )}
+        {aws.verifiedCallerArn && (
+          <p className="text-xs text-slate-600 dark:text-slate-400 truncate" title={aws.verifiedCallerArn}>
+            {aws.verifiedCallerArn}
+          </p>
+        )}
+      </div>
+    );
+  }
+  return null;
+}
+
+type IAMFinding = {
+  type: string;
+  severity: string;
+  principal?: string;
+  principalType?: string;
+  detail: string;
+  policyArn?: string;
+  accessKeyId?: string;
+  daysUnused?: number;
+};
+
+type IAMScanData = {
+  status?: string;
+  region?: string;
+  users?: Array<{
+    userName: string;
+    arn: string;
+    accessKeys: Array<{ accessKeyId: string; status: string; lastUsed?: string; daysUnused?: number | null }>;
+    attachedPolicies: string[];
+  }>;
+  roles?: Array<{ roleName: string; arn: string; attachedPolicies: string[] }>;
+  findings?: IAMFinding[];
+  summary?: {
+    usersCount: number;
+    rolesCount: number;
+    findingsCount: number;
+    findingsByType?: Record<string, number>;
+  };
+};
+
+function RunScanCard({ token, connectorStatus }: { token: string | null; connectorStatus: Record<string, ConnectorStatusEntry> | null }) {
   const [running, setRunning] = useState(false);
-  const [result, setResult] = useState<{ status: string; resultSummary?: string; error?: string; data?: Record<string, unknown> } | null>(null);
+  const [result, setResult] = useState<{ status: string; resultSummary?: string; error?: string; data?: IAMScanData } | null>(null);
+
+  const awsLinked = connectorStatus?.aws?.status === "linked";
 
   const runScan = async () => {
     if (!token) return;
@@ -196,7 +275,7 @@ function RunScanCard({ token }: { token: string | null }) {
         status: data.status ?? "unknown",
         resultSummary: data.resultSummary,
         error: data.error,
-        data: data.data,
+        data: data.data as IAMScanData | undefined,
       });
     } catch (e) {
       setResult({
@@ -212,27 +291,89 @@ function RunScanCard({ token }: { token: string | null }) {
     <AxiomCard className="p-5 border-l-4 border-l-amber-500">
       <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-2 flex items-center gap-2">
         <MagnifyingGlassIcon className="h-4 w-4 text-amber-500" />
-        Run Scan (dry run)
+        IAM Exposure Scan
       </h3>
       <p className="text-xs text-slate-600 dark:text-slate-400 mb-3">
-        Run a safe, read-only IAM scan. No changes made. Requires linked account.
+        Read-only scan of IAM users, roles, policies. Detects AdministratorAccess, wildcard policies, unused access keys (&gt;90 days).
       </p>
+      {!awsLinked && (
+        <p className="text-xs text-amber-600 dark:text-amber-400 mb-2">
+          Link your AWS account in Connectors to run the scan.
+        </p>
+      )}
       <button
         type="button"
         onClick={runScan}
-        disabled={running || !token}
+        disabled={running || !token || !awsLinked}
         className="inline-flex items-center gap-2 rounded-lg border border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-900/30 px-3 py-1.5 text-xs font-medium text-amber-700 dark:text-amber-300 hover:bg-amber-100 dark:hover:bg-amber-900/50 disabled:opacity-50"
       >
         {running ? "Running…" : "Run IAM Scan"}
         <MagnifyingGlassIcon className="h-3.5 w-3.5" />
       </button>
       {result && (
-        <div className="mt-3 rounded-lg bg-slate-50 dark:bg-slate-900/50 p-3 text-xs">
+        <div className="mt-3 rounded-lg bg-slate-50 dark:bg-slate-900/50 p-3 text-xs space-y-3">
           <p className={`font-medium ${result.status === "success" ? "text-emerald-600 dark:text-emerald-400" : "text-rose-600 dark:text-rose-400"}`}>
             {result.status === "success" ? "Success" : "Failed"}
           </p>
-          {result.resultSummary && <p className="text-slate-600 dark:text-slate-400 mt-1">{result.resultSummary}</p>}
-          {result.error && <p className="text-rose-600 dark:text-rose-400 mt-1">{result.error}</p>}
+          {result.resultSummary && <p className="text-slate-600 dark:text-slate-400">{result.resultSummary}</p>}
+          {result.error && <p className="text-rose-600 dark:text-rose-400">{result.error}</p>}
+          {result.status === "success" && result.data && (
+            <div className="space-y-3 pt-2 border-t border-slate-200 dark:border-slate-700">
+              {result.data.summary && (
+                <div className="grid grid-cols-3 gap-2">
+                  <div className="rounded bg-white dark:bg-slate-800/80 px-2 py-1">
+                    <span className="text-slate-500 dark:text-slate-400">Users</span>
+                    <p className="font-semibold text-slate-900 dark:text-slate-100">{result.data.summary.usersCount}</p>
+                  </div>
+                  <div className="rounded bg-white dark:bg-slate-800/80 px-2 py-1">
+                    <span className="text-slate-500 dark:text-slate-400">Roles</span>
+                    <p className="font-semibold text-slate-900 dark:text-slate-100">{result.data.summary.rolesCount}</p>
+                  </div>
+                  <div className="rounded bg-white dark:bg-slate-800/80 px-2 py-1">
+                    <span className="text-slate-500 dark:text-slate-400">Findings</span>
+                    <p className="font-semibold text-slate-900 dark:text-slate-100">{result.data.summary.findingsCount}</p>
+                  </div>
+                </div>
+              )}
+              {result.data.findings && result.data.findings.length > 0 && (
+                <div>
+                  <p className="font-medium text-slate-700 dark:text-slate-300 mb-1">Findings</p>
+                  <ul className="space-y-1 max-h-48 overflow-y-auto">
+                    {result.data.findings.map((f, i) => (
+                      <li
+                        key={i}
+                        className={`flex flex-wrap gap-1 rounded px-2 py-1 ${
+                          f.severity === "high"
+                            ? "bg-rose-100 dark:bg-rose-900/30 text-rose-800 dark:text-rose-200"
+                            : "bg-amber-100 dark:bg-amber-900/30 text-amber-800 dark:text-amber-200"
+                        }`}
+                      >
+                        <span className="font-medium">{f.type}</span>
+                        {f.principal && <span>— {f.principal}</span>}
+                        <span>{f.detail}</span>
+                        {f.daysUnused != null && <span>({f.daysUnused}d unused)</span>}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+              {result.data.users && result.data.users.length > 0 && (
+                <details className="group">
+                  <summary className="cursor-pointer font-medium text-slate-700 dark:text-slate-300">Users ({result.data.users.length})</summary>
+                  <ul className="mt-1 space-y-0.5 pl-2 text-slate-600 dark:text-slate-400">
+                    {result.data.users.slice(0, 10).map((u) => (
+                      <li key={u.userName}>
+                        {u.userName} — {u.accessKeys?.length ?? 0} key(s), {u.attachedPolicies?.length ?? 0} policy(s)
+                      </li>
+                    ))}
+                    {result.data.users.length > 10 && (
+                      <li className="text-slate-500">+{result.data.users.length - 10} more</li>
+                    )}
+                  </ul>
+                </details>
+              )}
+            </div>
+          )}
         </div>
       )}
     </AxiomCard>
@@ -541,6 +682,19 @@ function CloudOperatorPageInner() {
   const [applyFixSelected, setApplyFixSelected] = useState<Set<number>>(new Set());
   const [applyFixSubmitting, setApplyFixSubmitting] = useState(false);
   const [applyFixResult, setApplyFixResult] = useState<{ success?: boolean; message?: string } | null>(null);
+  const [connectorStatus, setConnectorStatus] = useState<Record<string, ConnectorStatusEntry> | null>(null);
+
+  const fetchConnectorStatus = useCallback(async () => {
+    if (!token) return null;
+    try {
+      const res = await fetch(`/api/connectors/status?token=${encodeURIComponent(token)}`);
+      const data = await res.json();
+      if (res.ok && data.connectors) return data.connectors as Record<string, ConnectorStatusEntry>;
+    } catch {
+      // ignore
+    }
+    return null;
+  }, [token]);
 
   useEffect(() => {
     if (tokenFromUrl && tokenFromUrl !== token) {
@@ -586,6 +740,12 @@ function CloudOperatorPageInner() {
 
     return () => clearInterval(interval);
   }, [token, fetchStatus]);
+
+  useEffect(() => {
+    if (token && activeTab === "connectors") {
+      fetchConnectorStatus().then((c) => c && setConnectorStatus(c));
+    }
+  }, [token, activeTab, fetchConnectorStatus]);
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -1665,7 +1825,8 @@ function CloudOperatorPageInner() {
                 <div className="grid sm:grid-cols-2 gap-4">
                   <AxiomCard className="p-5 border-l-4 border-l-orange-500">
                     <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-1">AWS</h3>
-                    <p className="text-xs text-slate-600 dark:text-slate-400">Account metadata, resource inventory, cost data</p>
+                    <p className="text-xs text-slate-600 dark:text-slate-400">Account metadata, resource inventory, cost data. Use assume-role (Role ARN + External ID).</p>
+                    <ConnectorStatusDisplay token={token} connectors={connectorStatus} />
                   </AxiomCard>
                   <AxiomCard className="p-5 border-l-4 border-l-blue-500">
                     <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-1">Azure</h3>
@@ -1680,7 +1841,7 @@ function CloudOperatorPageInner() {
                     <p className="text-xs text-slate-600 dark:text-slate-400">Repos, CI/CD workflows, deployment patterns</p>
                   </AxiomCard>
                 </div>
-                <RunScanCard token={token} />
+                <RunScanCard token={token} connectorStatus={connectorStatus} />
                 <AxiomCard className="p-5 bg-slate-50 dark:bg-slate-900/50">
                   <p className="text-xs text-slate-600 dark:text-slate-400">
                     API: POST /api/connectors/link to link. GET /api/connectors/status for status. All connectors are read-only.

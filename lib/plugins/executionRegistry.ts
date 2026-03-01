@@ -8,7 +8,6 @@ import type { ExecutionPlugin } from "./types";
 import { ENABLE_PLACEHOLDER_PLUGINS } from "@/lib/featureFlags";
 
 const PLACEHOLDER_EXECUTION_PLUGIN_IDS = new Set([
-  "aws:iam-readonly-scan",
   "aws:cost-explorer-summary",
 ]);
 

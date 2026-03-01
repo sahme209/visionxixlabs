@@ -78,6 +78,24 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "pluginId required" }, { status: 400 });
     }
 
+    // AWS IAM scan requires linked AWS connector
+    if (pluginId === "aws:iam-readonly-scan" && leadId) {
+      const lead = await prisma.lead.findUnique({
+        where: { id: leadId },
+        select: { fullPayload: true },
+      });
+      const payload = (lead?.fullPayload as Record<string, unknown>) || {};
+      const connectors = (payload.connectors as Record<string, Record<string, unknown>>) || {};
+      const aws = connectors.aws;
+      const awsStatus = (aws?.status as string) ?? "pending";
+      if (awsStatus !== "linked") {
+        return NextResponse.json(
+          { error: "AWS connector not linked or validated. Connect your AWS account in Connectors first." },
+          { status: 400 }
+        );
+      }
+    }
+
     const result = await executePlugin({
       pluginId,
       input,

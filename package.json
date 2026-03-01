@@ -12,6 +12,8 @@
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.78.0",
+    "@aws-sdk/client-iam": "^3.1000.0",
+    "@aws-sdk/client-sts": "^3.1000.0",
     "@google/genai": "^1.42.0",
     "@heroicons/react": "^2.2.0",
     "@prisma/client": "^5.22.0",
