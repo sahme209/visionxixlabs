@@ -377,7 +377,7 @@ export default function WebsiteBuilderPage() {
                   <iframe
                     title="Site preview"
                     srcDoc={plan.fullPageHtml || plan.heroHtml}
-                    sandbox="allow-same-origin allow-popups allow-scripts"
+                    sandbox="allow-same-origin allow-popups"
                     className="w-full h-full min-h-[320px] border-0"
                   />
                 </div>
