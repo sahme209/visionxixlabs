@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { FormEvent, useState, useEffect } from "react";
 import Link from "next/link";
 import {
   ArrowLeftIcon,
@@ -17,6 +17,7 @@ import {
 import { Navigation } from "@/components/Navigation";
 import { BackgroundBlobs } from "@/components/BackgroundBlobs";
 import { WebsiteBuilderJourney } from "@/components/WebsiteBuilderJourney";
+import { PluginAddOns, type PluginInfo } from "@/components/builder/PluginAddOns";
 
 type WebsitePlan = {
   sections: { id: string; name: string; description: string }[];
@@ -49,6 +50,8 @@ export default function WebsiteBuilderPage() {
   const [error, setError] = useState<string | null>(null);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [builderPlugins, setBuilderPlugins] = useState<PluginInfo[]>([]);
+  const [selectedPluginIds, setSelectedPluginIds] = useState<string[]>([]);
 
   const PROMPT_TEMPLATES = [
     "Build a professional immigration consulting site – trustworthy, with services, testimonials, and contact form",
@@ -66,6 +69,15 @@ export default function WebsiteBuilderPage() {
     { id: "editorial warm", label: "Editorial & warm" },
     { id: "corporate trustworthy", label: "Corporate & trustworthy" },
   ];
+
+  useEffect(() => {
+    if (step === "plan") {
+      fetch("/api/plugins/list?track=builder")
+        .then((r) => r.json())
+        .then((d) => setBuilderPlugins(d.plugins ?? []))
+        .catch(() => setBuilderPlugins([]));
+    }
+  }, [step]);
 
   const LAYOUTS = [
     { id: "split", label: "Split screen" },
@@ -128,6 +140,7 @@ export default function WebsiteBuilderPage() {
                 sections: plan.sections,
                 layout: plan.layout,
                 visualStyle: plan.visualStyle,
+                plugins: selectedPluginIds,
               }
             : undefined,
         }),
@@ -377,6 +390,15 @@ export default function WebsiteBuilderPage() {
               <p className="text-sm text-slate-600 dark:text-slate-400 mb-6">
                 Enter your email — we&apos;ll deploy to managed cloud with CDN, SSL, and email you the live link in 1–3 minutes.
               </p>
+              {builderPlugins.length > 0 && (
+                <div className="mb-6">
+                  <PluginAddOns
+                    plugins={builderPlugins}
+                    selectedPluginIds={selectedPluginIds}
+                    onChange={setSelectedPluginIds}
+                  />
+                </div>
+              )}
               <div className="grid sm:grid-cols-2 gap-4 mb-4">
                 <div>
                   <label htmlFor="name" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Name</label>

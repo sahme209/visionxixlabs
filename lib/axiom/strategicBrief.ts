@@ -3,7 +3,7 @@
  * Uses unified AI provider (OpenAI, Gemini, Anthropic). Deterministic fallback if no provider or on error.
  */
 
-import { generateCompletion } from "@/lib/ai/provider";
+import { orchestrateGenerate } from "@/lib/ai/orchestrator";
 
 export type StrategicBriefInput = {
   profile: { projectType?: string; hostingProvider?: string; monthlySpend?: string; complianceNeeds?: string };
@@ -170,7 +170,8 @@ export async function generateStrategicBrief(input: StrategicBriefInput): Promis
   }
 
   try {
-    const { text } = await generateCompletion({
+    const { text } = await orchestrateGenerate({
+      taskType: "reasoning_planning",
       systemPrompt: buildSystemPrompt(input.tier),
       userPrompt: buildUserPrompt(input),
       temperature: 0.3,

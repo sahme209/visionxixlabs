@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { SUPPORT_EMAIL } from "@/lib/constants/company";
 import { getVisionXIXKnowledgeContext } from "@/lib/data/visionxix-knowledge";
-import { generateChatResponse } from "@/lib/ai/chat";
+import { orchestrateChat } from "@/lib/ai/orchestrator";
 
 export const runtime = "nodejs";
 
@@ -64,7 +64,8 @@ export async function POST(req: NextRequest): Promise<Response> {
       content: String(m.content).slice(0, 4000),
     }));
 
-    const { text } = await generateChatResponse({
+    const { text } = await orchestrateChat({
+      taskType: "chat",
       systemPrompt: buildSystemPrompt(),
       messages: chatMessages,
       maxTokens: 1536,

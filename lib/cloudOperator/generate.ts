@@ -1,4 +1,4 @@
-import { generateCompletion } from "@/lib/ai/provider";
+import { orchestrateGenerate } from "@/lib/ai/orchestrator";
 import type {
   OperatorProfile,
   OperatorTier,
@@ -146,7 +146,8 @@ export async function generateOperatorEngineOutput(
   const systemPrompt =
     "You are the AI Cloud Operator™. You produce concrete, provider-specific, actionable JSON outputs for cloud automation planning. Never execute changes. Output only valid JSON.";
 
-  const { text } = await generateCompletion({
+  const { text } = await orchestrateGenerate({
+    taskType: "cloud_automation",
     systemPrompt,
     userPrompt: prompt,
     temperature: 0.35,

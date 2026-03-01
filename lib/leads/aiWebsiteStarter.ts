@@ -4,7 +4,7 @@
  * Env: OPENAI_API_KEY | GEMINI_API_KEY | ANTHROPIC_API_KEY, AI_PROVIDER (optional), NEXT_PUBLIC_BASE_URL.
  */
 
-import { generateCompletion } from "@/lib/ai/provider";
+import { orchestrateGenerate } from "@/lib/ai/orchestrator";
 import type { LeadFormData } from "./leadSchema";
 
 export interface AiStarterPackage {
@@ -93,7 +93,8 @@ export async function generateWebsiteStarterPackage(
   data: LeadFormData
 ): Promise<AiStarterPackage> {
   const prompt = buildUserPrompt(data);
-  const { text } = await generateCompletion({
+  const { text } = await orchestrateGenerate({
+    taskType: "content_generation",
     systemPrompt: SYSTEM_PROMPT,
     userPrompt: prompt,
     temperature: 0.5,

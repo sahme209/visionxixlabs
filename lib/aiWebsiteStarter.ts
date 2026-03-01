@@ -1,4 +1,4 @@
-import { generateCompletion } from "@/lib/ai/provider";
+import { orchestrateGenerate } from "@/lib/ai/orchestrator";
 
 export type AIStarterPackage = {
   companyName: string;
@@ -32,7 +32,8 @@ type LeadFormData = {
  */
 export async function generateAIStarterPackage(formData: LeadFormData): Promise<AIStarterPackage> {
   const prompt = buildPrompt(formData);
-  const { text } = await generateCompletion({
+  const { text } = await orchestrateGenerate({
+    taskType: "content_generation",
     systemPrompt:
       "You generate professional website content packages for small businesses. Output valid JSON only, no markdown, no code blocks. Be concise and professional.",
     userPrompt: prompt,
@@ -82,7 +83,8 @@ Form context: Company ${formData.company || "N/A"}, Industry ${formData.industry
 Output a JSON object with the same structure as the current content, but updated per the change request.
 Output only valid JSON, no markdown.`;
 
-  const { text } = await generateCompletion({
+  const { text } = await orchestrateGenerate({
+    taskType: "content_generation",
     systemPrompt: "You update website content based on customer feedback. Output valid JSON only.",
     userPrompt,
     temperature: 0.6,

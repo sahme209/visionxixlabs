@@ -10,6 +10,9 @@ export interface ChatOptions {
   messages: ChatMessage[];
   maxTokens?: number;
   temperature?: number;
+  /** Orchestrator override: force provider */
+  _orchestratorProvider?: "openai" | "gemini" | "anthropic";
+  _orchestratorTaskType?: string;
 }
 
 export interface ChatResult {
@@ -113,7 +116,10 @@ async function chatWithAnthropic(opts: ChatOptions): Promise<ChatResult> {
   return { text, provider: "anthropic" };
 }
 
-function getChatProviderOrder(): ("openai" | "gemini" | "anthropic")[] {
+function getChatProviderOrder(opts?: ChatOptions): ("openai" | "gemini" | "anthropic")[] {
+  if (opts?._orchestratorProvider) {
+    return [opts._orchestratorProvider];
+  }
   const preferred = process.env.AI_PROVIDER?.toLowerCase();
   const order: ("openai" | "gemini" | "anthropic")[] = ["openai", "gemini", "anthropic"];
   if (preferred === "gemini" || preferred === "anthropic" || preferred === "openai") {
@@ -142,7 +148,7 @@ function hasChatProvider(p: "openai" | "gemini" | "anthropic"): boolean {
 }
 
 export async function generateChatResponse(opts: ChatOptions): Promise<ChatResult> {
-  const order = getChatProviderOrder();
+  const order = getChatProviderOrder(opts);
   let lastError: Error | null = null;
 
   for (const p of order) {

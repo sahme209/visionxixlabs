@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { generateCompletion } from "@/lib/ai/provider";
+import { orchestrateGenerate } from "@/lib/ai/orchestrator";
 
 export type WebsitePlan = {
   sections: { id: string; name: string; description: string }[];
@@ -72,7 +72,8 @@ export async function POST(req: NextRequest) {
     // 1. Plan (sections, design, colors, layout, vibe, inferred infra profile)
     let planResult;
     try {
-      planResult = await generateCompletion({
+      planResult = await orchestrateGenerate({
+        taskType: "content_generation",
         systemPrompt: `You are an expert website builder AI. Given a user prompt, output a JSON object with:
 - sections: array of { id, name, description } (e.g. Hero, Services, About, Process, Testimonials, FAQ, Contact)
 - designLanguage: 1-2 sentence aesthetic + vibe (e.g. "Bold, futuristic, trustworthy. Feels like Stripe meets Vercel.")
@@ -143,7 +144,8 @@ Output ONLY valid JSON. No markdown.`,
     const imageKeywords = deriveImageKeywords(prompt, siteName);
 
     // 2. Full-page HTML — premium, futuristic, competitive with top website builders
-    const fullPageResult = await generateCompletion({
+    const fullPageResult = await orchestrateGenerate({
+      taskType: "code_generation",
       systemPrompt: `You generate PREMIUM, FUTURISTIC single-page websites that compete with Wix, Webflow, and Framer. Output ONLY raw HTML (no markdown, no code blocks).
 
 === DESIGN PRINCIPLES ===

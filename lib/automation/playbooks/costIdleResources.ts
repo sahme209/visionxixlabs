@@ -6,7 +6,7 @@
  */
 
 import type { AgentContext, ObserveResult, PlanResult } from "../agentLoop";
-import { generateCompletion } from "@/lib/ai/provider";
+import { orchestrateGenerate } from "@/lib/ai/orchestrator";
 
 export async function observeCostIdleResources(ctx: AgentContext): Promise<ObserveResult> {
   const payload = ctx.fullPayload ?? {};
@@ -48,7 +48,8 @@ export async function planCostIdleResources(
   const provider = profile?.hostingProvider ?? "AWS";
   const gitProvider = profile?.gitProvider ?? "GitHub";
 
-  const { text } = await generateCompletion({
+  const { text } = await orchestrateGenerate({
+    taskType: "cloud_automation",
     systemPrompt: `You are a cloud cost optimization expert. Given idle resource signals, generate an actionable remediation.
 
 Output a JSON object with exactly this structure (no other text):

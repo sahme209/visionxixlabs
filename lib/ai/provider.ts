@@ -13,6 +13,9 @@ export interface GenerateOptions {
   maxTokens?: number;
   temperature?: number;
   responseFormat?: "text" | "json";
+  /** Orchestrator override: force provider and optionally model */
+  _orchestratorProvider?: AIProvider;
+  _orchestratorTaskType?: string;
 }
 
 export interface GenerateResult {
@@ -20,7 +23,10 @@ export interface GenerateResult {
   provider: AIProvider;
 }
 
-function getProviderOrder(): AIProvider[] {
+function getProviderOrder(opts?: { _orchestratorProvider?: AIProvider }): AIProvider[] {
+  if (opts?._orchestratorProvider) {
+    return [opts._orchestratorProvider];
+  }
   const preferred = process.env.AI_PROVIDER?.toLowerCase();
   const order: AIProvider[] = ["openai", "gemini", "anthropic"];
   if (preferred === "gemini" || preferred === "anthropic" || preferred === "openai") {
@@ -127,7 +133,7 @@ const PROVIDER_IMPL: Record<AIProvider, (opts: GenerateOptions) => Promise<Gener
  * Tries providers in AI_PROVIDER order, then fallback chain.
  */
 export async function generateCompletion(opts: GenerateOptions): Promise<GenerateResult> {
-  const order = getProviderOrder();
+  const order = getProviderOrder(opts);
   let lastError: Error | null = null;
 
   for (const p of order) {

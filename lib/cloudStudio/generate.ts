@@ -1,4 +1,4 @@
-import { generateCompletion } from "@/lib/ai/provider";
+import { orchestrateGenerate } from "@/lib/ai/orchestrator";
 import type { CloudStudioForm, CloudStudioOutput, CloudStudioTier } from "./types";
 import { isFreeTier } from "./pricing";
 import {
@@ -45,7 +45,8 @@ export async function generateCloudStudioOutput(
       throw new Error("Unknown service type");
   }
 
-  const { text } = await generateCompletion({
+  const { text } = await orchestrateGenerate({
+    taskType: "cloud_automation",
     systemPrompt:
       "You are an expert cloud and DevOps consultant. Output valid JSON when asked for JSON; otherwise output plain text. Be professional and concise.",
     userPrompt: prompt,

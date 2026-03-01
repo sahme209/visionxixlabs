@@ -18,7 +18,7 @@ model User {
   stripeSubscriptionId String?
   plan          String?   // starter | growth | scale | enterprise
   planExpiresAt DateTime?
-  modules       Json? // { builder, axiom, chatbot } - chatbot add-on, not standalone
+  modules       Json? // { builder, axiom, chatbot, plugins: [plugin_ids] } - chatbot add-on, plugins as paid add-ons
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
   bots          Bot[]

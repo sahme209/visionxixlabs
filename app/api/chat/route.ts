@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
-import { generateChatResponse } from "@/lib/ai/chat";
+import { orchestrateChat } from "@/lib/ai/orchestrator";
 import { getPlanLimits } from "@/lib/planLimits";
 
 export const runtime = "nodejs";
@@ -75,7 +75,8 @@ ${context}
       content: String(m.content).slice(0, 4000),
     }));
 
-    const { text } = await generateChatResponse({
+    const { text } = await orchestrateChat({
+      taskType: "chat",
       systemPrompt,
       messages: chatMessages,
       maxTokens: 1536,
