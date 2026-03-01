@@ -4,27 +4,21 @@
  * Hero headline with per-word hover glow — futuristic multi-color animation
  */
 const HEADLINE_WORDS = [
+  { text: "Axiom:", color: "#818cf8" },     // indigo
+  { text: " ", color: "transparent" },
+  { text: "Enterprise", color: "#a78bfa" }, // violet
+  { text: " ", color: "transparent" },
   { text: "Cloud", color: "#22d3ee" },      // cyan
   { text: " ", color: "transparent" },
-  { text: "&", color: "#94a3b8" },
+  { text: "Automation", color: "#34d399" }, // emerald
   { text: " ", color: "transparent" },
-  { text: "AI", color: "#a78bfa" },         // violet
-  { text: " ", color: "transparent" },
-  { text: "Engineering", color: "#34d399" }, // emerald
-  { text: " ", color: "transparent" },
-  { text: "That", color: "#64748b" },
-  { text: " ", color: "transparent" },
-  { text: "Delivers", color: "#fbbf24" },   // amber
-  { text: " ", color: "transparent" },
-  { text: "Production", color: "#fb7185" },  // rose
-  { text: " ", color: "transparent" },
-  { text: "Results", color: "#818cf8" },    // indigo
-  { text: " ", color: "transparent" },
-  { text: "—", color: "#64748b" },
+  { text: "for", color: "#64748b" },
   { text: " ", color: "transparent" },
   { text: "AWS,", color: "#f97316" },       // orange
   { text: " ", color: "transparent" },
-  { text: "Azure,", color: "#3b82f6" },     // blue
+  { text: "Azure", color: "#3b82f6" },      // blue
+  { text: " ", color: "transparent" },
+  { text: "&", color: "#94a3b8" },
   { text: " ", color: "transparent" },
   { text: "GCP", color: "#ef4444" },        // red
 ] as const;

@@ -176,6 +176,16 @@ function CloudSolutionsVisual() {
 
 const DEMOS = [
   {
+    id: "axiom",
+    title: "Axiom — Enterprise Cloud Automation",
+    tagline: "Infra scores, roadmap, cost optimization. Real connectors, safe execution.",
+    href: "/cloud-operator",
+    icon: ChartBarIcon,
+    gradient: "from-blue-500 to-indigo-600",
+    steps: ["Connect your cloud", "AI analyzes infra", "Get scores & roadmap"],
+    visual: <AxiomVisual />,
+  },
+  {
     id: "website-builder",
     title: "AI Website Builder",
     tagline: "Design, structure, graphics — one prompt.",
@@ -186,23 +196,13 @@ const DEMOS = [
     visual: <WebsiteBuilderVisual />,
   },
   {
-    id: "axiom",
-    title: "Axiom — AI Cloud Analysis",
-    tagline: "Infra scores, roadmap, cost optimization.",
-    href: "/cloud-operator",
-    icon: ChartBarIcon,
-    gradient: "from-blue-500 to-indigo-600",
-    steps: ["Connect your cloud", "AI analyzes infra", "Get scores & roadmap"],
-    visual: <AxiomVisual />,
-  },
-  {
     id: "cloud-solutions",
     title: "Cloud Solutions",
     tagline: "AWS, Azure, GCP — design, automate, optimize.",
     href: "/cloud-solutions",
     icon: CloudIcon,
     gradient: "from-orange-500 to-red-500",
-    steps: ["Choose cloud", "We design & build", "Production-ready"],
+    steps: ["Choose cloud", "We design & build", "Handover complete"],
     visual: <CloudSolutionsVisual />,
   },
 ];
@@ -272,7 +272,7 @@ export function ProductDemoShowcase() {
           })}
         </div>
         <p className="text-center text-slate-500 dark:text-slate-400 mt-10 text-sm">
-          All products work together — build a site, run Axiom for infra analysis, or go deep with cloud engineering.
+          Axiom first. Also build a site or go deep with cloud engineering.
         </p>
       </div>
     </section>

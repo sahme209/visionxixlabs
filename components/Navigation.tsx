@@ -5,10 +5,10 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowRightIcon, Bars3Icon, XMarkIcon, ChevronDownIcon } from "@heroicons/react/24/outline";
 
-// Two product tracks: Builder and Axiom
+// Solutions: Axiom first, Builder in dropdown
 const solutionsLinks: { href: string; label: string; highlight?: boolean }[] = [
-  { href: "/builder", label: "Website Builder", highlight: true },
   { href: "/axiom", label: "Axiom — Cloud Automation", highlight: true },
+  { href: "/builder", label: "Website Builder", highlight: false },
   { href: "/cloud-solutions", label: "Cloud Solutions" },
   { href: "/cloud-solutions/aws", label: "AWS" },
   { href: "/cloud-solutions/azure", label: "Azure" },
@@ -53,17 +53,15 @@ export function Navigation() {
             </span>
           </Link>
           <div ref={navRef} className="hidden md:flex items-center gap-2">
-            {/* Two primary product CTAs */}
-            <Link
-              href="/builder"
-              className="btn-huly cta-glow inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white rounded-2xl text-sm font-semibold shadow-lg shadow-violet-500/30 hover:shadow-violet-500/40 transition-all"
-            >
-              Build Website
-              <ArrowRightIcon className="h-4 w-4" />
-            </Link>
             <Link
               href="/axiom"
-              className="btn-huly inline-flex items-center gap-2 px-5 py-2.5 bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 rounded-2xl text-sm font-semibold hover:bg-slate-800 dark:hover:bg-slate-200 transition-colors"
+              className="px-4 py-2 text-slate-700 dark:text-slate-300 hover:text-violet-600 dark:hover:text-violet-400 hover:bg-violet-50 dark:hover:bg-violet-900/20 rounded-xl transition-all text-sm font-medium"
+            >
+              Axiom
+            </Link>
+            <Link
+              href="/cloud-operator"
+              className="btn-huly cta-glow inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white rounded-2xl text-sm font-semibold shadow-lg shadow-violet-500/30 hover:shadow-violet-500/40 transition-all"
             >
               Run Axiom
               <ArrowRightIcon className="h-4 w-4" />
@@ -98,6 +96,12 @@ export function Navigation() {
               )}
             </div>
             <Link
+              href="/products"
+              className="px-4 py-2 text-slate-700 dark:text-slate-300 hover:text-violet-600 dark:hover:text-violet-400 hover:bg-violet-50 dark:hover:bg-violet-900/20 rounded-xl transition-all text-sm font-medium"
+            >
+              Pricing
+            </Link>
+            <Link
               href="/insights"
               className="px-4 py-2 text-slate-700 dark:text-slate-300 hover:text-violet-600 dark:hover:text-violet-400 hover:bg-violet-50 dark:hover:bg-violet-900/20 rounded-xl transition-all text-sm font-medium"
             >
@@ -125,18 +129,17 @@ export function Navigation() {
         {mobileMenuOpen && (
           <div className="md:hidden py-4 border-t border-slate-200 dark:border-slate-800 mt-2">
             <div className="flex flex-col space-y-2">
-              {/* Product-first on mobile too */}
-              <Link href="/builder" onClick={() => setMobileMenuOpen(false)} className="mx-4 inline-flex items-center justify-center gap-2 px-4 py-3 text-white bg-gradient-to-r from-violet-600 to-fuchsia-600 rounded-2xl text-sm font-semibold shadow-lg shadow-violet-500/30 cta-glow">
-                Build Website
-                <ArrowRightIcon className="h-4 w-4" />
-              </Link>
-              <Link href="/axiom" onClick={() => setMobileMenuOpen(false)} className="mx-4 inline-flex items-center justify-center gap-2 px-4 py-3 bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 rounded-2xl text-sm font-semibold">
+              <Link href="/cloud-operator" onClick={() => setMobileMenuOpen(false)} className="mx-4 inline-flex items-center justify-center gap-2 px-4 py-3 text-white bg-gradient-to-r from-violet-600 to-fuchsia-600 rounded-2xl text-sm font-semibold shadow-lg shadow-violet-500/30 cta-glow">
                 Run Axiom
                 <ArrowRightIcon className="h-4 w-4" />
               </Link>
+              <Link href="/products" onClick={() => setMobileMenuOpen(false)} className="mx-4 inline-flex items-center justify-center gap-2 px-4 py-3 border-2 border-slate-200 dark:border-slate-600 text-slate-700 dark:text-slate-300 rounded-2xl text-sm font-semibold">
+                Pricing
+                <ArrowRightIcon className="h-4 w-4" />
+              </Link>
               <p className="px-4 pt-3 text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Solutions</p>
-              <Link href="/builder" onClick={() => setMobileMenuOpen(false)} className="px-4 py-2 text-violet-600 dark:text-violet-400 font-medium hover:bg-violet-50 dark:hover:bg-violet-900/20 rounded-lg text-sm">Website Builder</Link>
               <Link href="/axiom" onClick={() => setMobileMenuOpen(false)} className="px-4 py-2 text-violet-600 dark:text-violet-400 font-medium hover:bg-violet-50 dark:hover:bg-violet-900/20 rounded-lg text-sm">Axiom — Cloud Automation</Link>
+              <Link href="/builder" onClick={() => setMobileMenuOpen(false)} className="px-4 py-2 text-slate-700 dark:text-slate-300 font-medium hover:bg-violet-50 dark:hover:bg-violet-900/20 rounded-lg text-sm">Website Builder</Link>
               <Link href="/cloud-solutions" onClick={() => setMobileMenuOpen(false)} className="px-4 py-2 text-slate-700 dark:text-slate-300 hover:bg-violet-50 dark:hover:bg-violet-900/20 rounded-lg text-sm font-medium">Cloud Solutions</Link>
               <Link href="/cloud-solutions/aws" onClick={() => setMobileMenuOpen(false)} className="px-4 py-2 pl-6 text-slate-600 dark:text-slate-400 hover:bg-orange-50 dark:hover:bg-orange-900/20 rounded-lg text-sm">AWS</Link>
               <Link href="/cloud-solutions/azure" onClick={() => setMobileMenuOpen(false)} className="px-4 py-2 pl-6 text-slate-600 dark:text-slate-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg text-sm">Azure</Link>

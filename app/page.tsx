@@ -91,29 +91,26 @@ export default function Home() {
         <div className="max-w-4xl mx-auto text-center relative">
           <HeroHeadlineGlow />
           <p className="text-lg md:text-xl text-slate-600 dark:text-slate-400 mb-4 max-w-3xl mx-auto animate-hero-enter animate-hero-enter-delay-1">
-            We design, automate, secure, and optimize multi-cloud platforms with production-grade AI workflows (RAG, retrieval, automation) — focused on reliability, security, and cost efficiency.
-          </p>
-          <p className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-8 max-w-2xl mx-auto animate-hero-enter animate-hero-enter-delay-1">
-            For CTOs, VP Engineering, and teams scaling production systems who need secure automation without hype.
+            Securely connect your cloud. Run real analysis. Approve safe fixes. No changes without your permission.
           </p>
           <div className="flex flex-wrap justify-center gap-4 mb-6 animate-hero-enter animate-hero-enter-delay-2">
             <Link
-              href="/builder"
+              href="/cloud-operator"
               className="btn-huly cta-glow inline-flex items-center px-6 py-3 bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white rounded-2xl font-semibold shadow-lg shadow-violet-500/30 hover:shadow-violet-500/40"
             >
-              Build & Deploy a Website
+              Run Axiom
               <ArrowRightIcon className="ml-2 h-5 w-5" />
             </Link>
             <Link
               href="/axiom"
               className="btn-huly inline-flex items-center px-6 py-3 bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 rounded-2xl font-semibold shadow-lg hover:bg-slate-800 dark:hover:bg-slate-200"
             >
-              Automate Your Cloud Infrastructure
+              See how it works
               <ArrowRightIcon className="ml-2 h-5 w-5" />
             </Link>
           </div>
           <p className="text-sm text-slate-500 dark:text-slate-400 mb-2">
-            No obligation · Operator-only analysis · No changes to your cloud without approval
+            No obligation · Read-only by default · No changes without your approval
           </p>
           <div className="flex flex-wrap justify-center gap-3 mb-4">
             <Link
@@ -141,10 +138,17 @@ export default function Home() {
           <p className="text-sm text-slate-500 dark:text-slate-400 max-w-2xl mx-auto">
             Foundations · CI/CD · FinOps · Observability · Security · IaC
           </p>
+          <ul className="mt-8 flex flex-wrap justify-center gap-x-6 gap-y-2 text-xs text-slate-600 dark:text-slate-400 max-w-2xl mx-auto animate-hero-enter animate-hero-enter-delay-2">
+            <li className="flex items-center gap-1.5">✓ Assume-role model (no stored access keys)</li>
+            <li className="flex items-center gap-1.5">✓ AES-256-GCM encrypted credentials</li>
+            <li className="flex items-center gap-1.5">✓ Explicit approval required before execution</li>
+            <li className="flex items-center gap-1.5">✓ Execution logs &amp; audit trail</li>
+            <li className="flex items-center gap-1.5">✓ Read-only by default</li>
+          </ul>
         </div>
       </section>
 
-      {/* Product demos — visual clarity for clients */}
+      {/* Product demos — Axiom first */}
       <ProductDemoShowcase />
 
       {/* Outcome cards — what we deliver */}
