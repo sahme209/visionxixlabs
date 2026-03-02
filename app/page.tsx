@@ -1,7 +1,7 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
+import Image from "next/image";
 import {
   EnvelopeIcon,
   ShieldCheckIcon,
@@ -19,6 +19,9 @@ import { HeroLightBeam } from "@/components/HeroLightBeam";
 import { ServicePipeline } from "@/components/ServicePipeline";
 import { CloudHealthSnapshotForm } from "@/components/CloudHealthSnapshotForm";
 import { HeroHeadlineGlow } from "@/components/HeroHeadlineGlow";
+import { Reveal } from "@/components/motion/Reveal";
+import { Stagger } from "@/components/motion/Stagger";
+import { HoverCard } from "@/components/ui/HoverCard";
 
 export default function Home() {
 
@@ -89,29 +92,37 @@ export default function Home() {
       <section className="pt-32 pb-16 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
         <HeroLightBeam />
         <div className="max-w-4xl mx-auto text-center relative">
-          <HeroHeadlineGlow />
-          <p className="text-lg md:text-xl text-slate-600 dark:text-slate-400 mb-4 max-w-3xl mx-auto animate-hero-enter animate-hero-enter-delay-1">
-            Securely connect your cloud. Run real analysis. Approve safe fixes. No changes without your permission.
-          </p>
-          <div className="flex flex-wrap justify-center gap-4 mb-6 animate-hero-enter animate-hero-enter-delay-2">
-            <Link
-              href="/cloud-operator"
-              className="btn-huly cta-glow inline-flex items-center px-6 py-3 bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white rounded-2xl font-semibold shadow-lg shadow-violet-500/30 hover:shadow-violet-500/40"
-            >
-              Run Axiom
-              <ArrowRightIcon className="ml-2 h-5 w-5" />
-            </Link>
-            <Link
-              href="/axiom"
-              className="btn-huly inline-flex items-center px-6 py-3 bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 rounded-2xl font-semibold shadow-lg hover:bg-slate-800 dark:hover:bg-slate-200"
-            >
-              See how it works
-              <ArrowRightIcon className="ml-2 h-5 w-5" />
-            </Link>
-          </div>
-          <p className="text-sm text-slate-500 dark:text-slate-400 mb-2">
-            No obligation · Read-only by default · No changes without your approval
-          </p>
+          <Reveal direction="up" blur>
+            <HeroHeadlineGlow />
+          </Reveal>
+          <Reveal direction="up" delay={0.06}>
+            <p className="text-lg md:text-xl text-slate-600 dark:text-slate-400 mb-4 max-w-3xl mx-auto">
+              Securely connect your cloud. Run real analysis. Approve safe fixes. No changes without your permission.
+            </p>
+          </Reveal>
+          <Stagger delay={0.12}>
+            <div className="flex flex-wrap justify-center gap-4 mb-6">
+              <Link
+                href="/cloud-operator"
+                className="btn-huly cta-glow inline-flex items-center px-6 py-3 bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white rounded-2xl font-semibold shadow-lg shadow-violet-500/30 hover:shadow-violet-500/40"
+              >
+                Run Axiom
+                <ArrowRightIcon className="ml-2 h-5 w-5" />
+              </Link>
+              <Link
+                href="/axiom"
+                className="btn-huly inline-flex items-center px-6 py-3 bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 rounded-2xl font-semibold shadow-lg hover:bg-slate-800 dark:hover:bg-slate-200"
+              >
+                See how it works
+                <ArrowRightIcon className="ml-2 h-5 w-5" />
+              </Link>
+            </div>
+          </Stagger>
+          <Reveal direction="up" delay={0.2}>
+            <p className="text-sm text-slate-500 dark:text-slate-400 mb-2">
+              No obligation · Read-only by default · No changes without your approval
+            </p>
+          </Reveal>
           <div className="flex flex-wrap justify-center gap-3 mb-4">
             <Link
               href="/cloud-solutions/aws"
@@ -135,16 +146,20 @@ export default function Home() {
               Cloud
             </Link>
           </div>
-          <p className="text-sm text-slate-500 dark:text-slate-400 max-w-2xl mx-auto">
-            Foundations · CI/CD · FinOps · Observability · Security · IaC
-          </p>
-          <ul className="mt-8 flex flex-wrap justify-center gap-x-6 gap-y-2 text-xs text-slate-600 dark:text-slate-400 max-w-2xl mx-auto animate-hero-enter animate-hero-enter-delay-2">
-            <li className="flex items-center gap-1.5">✓ Assume-role model (no stored access keys)</li>
-            <li className="flex items-center gap-1.5">✓ AES-256-GCM encrypted credentials</li>
-            <li className="flex items-center gap-1.5">✓ Explicit approval required before execution</li>
-            <li className="flex items-center gap-1.5">✓ Execution logs &amp; audit trail</li>
-            <li className="flex items-center gap-1.5">✓ Read-only by default</li>
-          </ul>
+          <Reveal direction="up" delay={0.24}>
+            <p className="text-sm text-slate-500 dark:text-slate-400 max-w-2xl mx-auto">
+              Foundations · CI/CD · FinOps · Observability · Security · IaC
+            </p>
+          </Reveal>
+          <Reveal direction="up" delay={0.3}>
+            <ul className="mt-8 flex flex-wrap justify-center gap-x-6 gap-y-2 text-xs text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
+              <li className="flex items-center gap-1.5">✓ Assume-role model (no stored access keys)</li>
+              <li className="flex items-center gap-1.5">✓ AES-256-GCM encrypted credentials</li>
+              <li className="flex items-center gap-1.5">✓ Explicit approval required before execution</li>
+              <li className="flex items-center gap-1.5">✓ Execution logs &amp; audit trail</li>
+              <li className="flex items-center gap-1.5">✓ Read-only by default</li>
+            </ul>
+          </Reveal>
         </div>
       </section>
 
@@ -155,39 +170,45 @@ export default function Home() {
       <section className="py-12 px-4 sm:px-6 lg:px-8 border-t border-slate-200/80 dark:border-slate-700/80">
         <div className="max-w-6xl mx-auto">
           <div className="grid md:grid-cols-3 gap-6">
-            <div className="card-hover rounded-2xl border-2 border-slate-200/80 dark:border-slate-700/80 bg-white/80 dark:bg-slate-800/80 backdrop-blur p-6 shadow-sm">
-              <h3 className="text-lg font-bold text-slate-900 dark:text-slate-100 mb-2">Reliability (SLO-first)</h3>
-              <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">
-                We build for uptime targets and observability, not wishful thinking.
-              </p>
-              <ul className="text-sm text-slate-700 dark:text-slate-300 space-y-2">
-                <li className="flex items-start"><span className="text-violet-500 mr-2">✓</span>SLO/SLI definitions and dashboards</li>
-                <li className="flex items-start"><span className="text-violet-500 mr-2">✓</span>Alerting and incident response patterns</li>
-                <li className="flex items-start"><span className="text-violet-500 mr-2">✓</span>Runbooks and operational handover</li>
-              </ul>
-            </div>
-            <div className="card-hover rounded-2xl border-2 border-slate-200/80 dark:border-slate-700/80 bg-white/80 dark:bg-slate-800/80 backdrop-blur p-6 shadow-sm">
-              <h3 className="text-lg font-bold text-slate-900 dark:text-slate-100 mb-2">Security &amp; Governance</h3>
-              <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">
-                Access control, baselines, and hardening focused on real risk reduction.
-              </p>
-              <ul className="text-sm text-slate-700 dark:text-slate-300 space-y-2">
-                <li className="flex items-start"><span className="text-violet-500 mr-2">✓</span>IAM, landing zones, network segmentation</li>
-                <li className="flex items-start"><span className="text-violet-500 mr-2">✓</span>Compliance-ready patterns (SOC2, HIPAA)</li>
-                <li className="flex items-start"><span className="text-violet-500 mr-2">✓</span>Visibility and audit logging</li>
-              </ul>
-            </div>
-            <div className="card-hover rounded-2xl border-2 border-slate-200/80 dark:border-slate-700/80 bg-white/80 dark:bg-slate-800/80 backdrop-blur p-6 shadow-sm">
-              <h3 className="text-lg font-bold text-slate-900 dark:text-slate-100 mb-2">Cost Efficiency (FinOps)</h3>
-              <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">
-                Right-sized resources, reserved capacity, and cost allocation you can act on.
-              </p>
-              <ul className="text-sm text-slate-700 dark:text-slate-300 space-y-2">
-                <li className="flex items-start"><span className="text-violet-500 mr-2">✓</span>Cost attribution and tagging strategy</li>
-                <li className="flex items-start"><span className="text-violet-500 mr-2">✓</span>Savings plans and committed use</li>
-                <li className="flex items-start"><span className="text-violet-500 mr-2">✓</span>Anomaly detection and guardrails</li>
-              </ul>
-            </div>
+            <Reveal direction="up">
+              <HoverCard className="p-6">
+                <h3 className="text-lg font-bold text-slate-900 dark:text-slate-100 mb-2">Reliability (SLO-first)</h3>
+                <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">
+                  We build for uptime targets and observability, not wishful thinking.
+                </p>
+                <ul className="text-sm text-slate-700 dark:text-slate-300 space-y-2">
+                  <li className="flex items-start"><span className="text-violet-500 mr-2">✓</span>SLO/SLI definitions and dashboards</li>
+                  <li className="flex items-start"><span className="text-violet-500 mr-2">✓</span>Alerting and incident response patterns</li>
+                  <li className="flex items-start"><span className="text-violet-500 mr-2">✓</span>Runbooks and operational handover</li>
+                </ul>
+              </HoverCard>
+            </Reveal>
+            <Reveal direction="up" delay={0.06}>
+              <HoverCard className="p-6">
+                <h3 className="text-lg font-bold text-slate-900 dark:text-slate-100 mb-2">Security &amp; Governance</h3>
+                <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">
+                  Access control, baselines, and hardening focused on real risk reduction.
+                </p>
+                <ul className="text-sm text-slate-700 dark:text-slate-300 space-y-2">
+                  <li className="flex items-start"><span className="text-violet-500 mr-2">✓</span>IAM, landing zones, network segmentation</li>
+                  <li className="flex items-start"><span className="text-violet-500 mr-2">✓</span>Compliance-ready patterns (SOC2, HIPAA)</li>
+                  <li className="flex items-start"><span className="text-violet-500 mr-2">✓</span>Visibility and audit logging</li>
+                </ul>
+              </HoverCard>
+            </Reveal>
+            <Reveal direction="up" delay={0.12}>
+              <HoverCard className="p-6">
+                <h3 className="text-lg font-bold text-slate-900 dark:text-slate-100 mb-2">Cost Efficiency (FinOps)</h3>
+                <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">
+                  Right-sized resources, reserved capacity, and cost allocation you can act on.
+                </p>
+                <ul className="text-sm text-slate-700 dark:text-slate-300 space-y-2">
+                  <li className="flex items-start"><span className="text-violet-500 mr-2">✓</span>Cost attribution and tagging strategy</li>
+                  <li className="flex items-start"><span className="text-violet-500 mr-2">✓</span>Savings plans and committed use</li>
+                  <li className="flex items-start"><span className="text-violet-500 mr-2">✓</span>Anomaly detection and guardrails</li>
+                </ul>
+              </HoverCard>
+            </Reveal>
           </div>
         </div>
       </section>

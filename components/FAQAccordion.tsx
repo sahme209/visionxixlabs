@@ -1,5 +1,9 @@
 "use client";
 
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { motionConfig } from "@/lib/motion/tokens";
+
 type FAQItem = { question: string; answer: string };
 
 type FAQAccordionProps = {
@@ -7,26 +11,55 @@ type FAQAccordionProps = {
 };
 
 export function FAQAccordion({ items }: FAQAccordionProps) {
+  const [openIndex, setOpenIndex] = useState<number | null>(null);
+
   return (
     <div className="space-y-3">
-      {items.map((item) => (
-        <details
-          key={item.question}
-          className="group card-hover bg-white dark:bg-slate-800 rounded-xl p-4 md:p-5 shadow-lg border border-slate-200 dark:border-slate-700"
-        >
-          <summary className="flex cursor-pointer list-none items-center justify-between gap-3">
-            <span className="text-sm md:text-base font-semibold text-slate-900 dark:text-slate-100">
-              {item.question}
-            </span>
-            <span className="flex h-6 w-6 items-center justify-center rounded-full border border-slate-300 text-slate-500 text-xs group-open:rotate-90 transition-transform">
-              +
-            </span>
-          </summary>
-          <div className="mt-3 text-sm text-slate-600 dark:text-slate-400">
-            {item.answer}
+      {items.map((item, idx) => {
+        const isOpen = openIndex === idx;
+        const panelId = `faq-panel-${idx}`;
+        return (
+          <div
+            key={item.question}
+            className="card-hover bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-lg"
+          >
+            <button
+              type="button"
+              onClick={() => setOpenIndex(isOpen ? null : idx)}
+              className="w-full flex items-center justify-between gap-3 px-4 md:px-5 py-3 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-50 dark:focus-visible:ring-offset-slate-900"
+              aria-expanded={isOpen}
+              aria-controls={panelId}
+            >
+              <span className="text-sm md:text-base font-semibold text-slate-900 dark:text-slate-100">
+                {item.question}
+              </span>
+              <span
+                className={`flex h-6 w-6 items-center justify-center rounded-full border border-slate-300 text-slate-500 text-xs transition-transform ${
+                  isOpen ? "rotate-90" : ""
+                }`}
+              >
+                +
+              </span>
+            </button>
+            <AnimatePresence initial={false}>
+              {isOpen && (
+                <motion.div
+                  id={panelId}
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: "auto", opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  transition={{ duration: motionConfig.duration, ease: motionConfig.ease }}
+                  className="overflow-hidden px-4 md:px-5 pb-4"
+                >
+                  <div className="mt-1 text-sm text-slate-600 dark:text-slate-400">
+                    {item.answer}
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
-        </details>
-      ))}
+        );
+      })}
     </div>
   );
 }
