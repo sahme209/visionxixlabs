@@ -118,74 +118,76 @@ export default function TopNavigation({ children }: { children: React.ReactNode 
         <header className="gov-travel-state-nav">
           {/* Microsoft-style main nav: white bar, no underline on menu links */}
           <nav className="hidden md:block bg-white border-b border-[var(--border-color)] nav-no-underline">
-            <div className="max-w-7xl mx-auto flex items-center justify-between gap-4 px-4 sm:px-6 lg:px-8 py-3">
-              {/* Left: Logo + VisaNova + Menu items */}
-              <div className="flex items-center gap-6 flex-1 min-w-0">
-                <Link href="/" className="flex items-center gap-2 shrink-0 no-underline hover:no-underline">
-                  <div className="w-8 h-8 flex items-center justify-center">
-                    <img src="/logo.svg" alt="" className="w-full h-full object-contain" />
-                  </div>
-                  <span className="text-[var(--text-primary)] font-semibold text-base">VisaNova</span>
-                </Link>
-                <div className="flex items-center gap-1 flex-wrap">
-                  <Link href="/" className="px-3 py-2 text-[var(--text-primary)] text-sm hover:bg-[var(--bg-surface-alt)] rounded no-underline hover:no-underline transition-colors">{t("home")}</Link>
-                  <Link href="/resources" className="px-3 py-2 text-[var(--text-primary)] text-sm hover:bg-[var(--bg-surface-alt)] rounded no-underline hover:no-underline transition-colors">Resources</Link>
-                  <Link href="/guides" className="px-3 py-2 text-[var(--text-primary)] text-sm hover:bg-[var(--bg-surface-alt)] rounded no-underline hover:no-underline transition-colors">{t("guides")}</Link>
-                  <Link href="/tools/case-tools" className="px-3 py-2 text-[var(--text-primary)] text-sm hover:bg-[var(--bg-surface-alt)] rounded no-underline hover:no-underline transition-colors">Tools</Link>
-                  <Link href="/stats" className="px-3 py-2 text-[var(--uscis-blue)] font-medium text-sm hover:bg-[var(--uscis-blue)]/5 rounded no-underline hover:no-underline transition-colors">Statistics Pro</Link>
-                  <Link href="/news" className="px-3 py-2 text-[var(--text-primary)] text-sm hover:bg-[var(--bg-surface-alt)] rounded no-underline hover:no-underline transition-colors">{t("news")}</Link>
-                  <Link href="/processing-times" className="px-3 py-2 text-[var(--text-primary)] text-sm hover:bg-[var(--bg-surface-alt)] rounded no-underline hover:no-underline transition-colors">Processing Times</Link>
-                  <Link href="/fees" className="px-3 py-2 text-[var(--text-primary)] text-sm hover:bg-[var(--bg-surface-alt)] rounded no-underline hover:no-underline transition-colors">Fees</Link>
-                  <Link href="/status-decoder" className="px-3 py-2 text-[var(--text-primary)] text-sm hover:bg-[var(--bg-surface-alt)] rounded no-underline hover:no-underline transition-colors">Status Decoder</Link>
-                  <Link href="/official-links" className="px-3 py-2 text-[var(--text-primary)] text-sm hover:bg-[var(--bg-surface-alt)] rounded no-underline hover:no-underline transition-colors">Official Links</Link>
-                  <Link href="/travel-safety" className="px-3 py-2 text-[var(--text-primary)] text-sm hover:bg-[var(--bg-surface-alt)] rounded no-underline hover:no-underline transition-colors">Travel Safety</Link>
-                  <Link href="/travel-advisories" className="px-3 py-2 text-[var(--text-primary)] text-sm hover:bg-[var(--bg-surface-alt)] rounded no-underline hover:no-underline transition-colors">Travel Advisories</Link>
-                  <Link href="/embassy" className="px-3 py-2 text-[var(--text-primary)] text-sm hover:bg-[var(--bg-surface-alt)] rounded no-underline hover:no-underline transition-colors">Embassy</Link>
-                  <Link href="/about" className="px-3 py-2 text-[var(--text-primary)] text-sm hover:bg-[var(--bg-surface-alt)] rounded no-underline hover:no-underline transition-colors">About</Link>
-                  <Link href="/help" className="px-3 py-2 text-[var(--text-primary)] text-sm hover:bg-[var(--bg-surface-alt)] rounded no-underline hover:no-underline transition-colors">Help</Link>
+            <div className="max-w-7xl mx-auto flex items-center justify-between gap-4 px-4 sm:px-6 lg:px-8 py-2.5">
+              {/* Left: Logo + VisaNova */}
+              <Link href="/" className="flex items-center gap-2 shrink-0 no-underline hover:no-underline">
+                <div className="w-7 h-7 flex items-center justify-center">
+                  <img src="/logo.svg" alt="" className="w-full h-full object-contain" />
                 </div>
+                <span className="text-[var(--text-primary)] font-semibold text-sm">VisaNova</span>
+              </Link>
+              {/* Center: Menu items - Microsoft-style smaller fonts, Home first */}
+              <div className="flex items-center justify-center gap-0.5 flex-1 min-w-0 flex-wrap">
+                  <Link href="/" className="px-2.5 py-1.5 text-[var(--text-primary)] text-xs hover:bg-[var(--bg-surface-alt)] rounded no-underline hover:no-underline transition-colors">{t("home")}</Link>
+                  <Link href="/resources" className="px-2.5 py-1.5 text-[var(--text-primary)] text-xs hover:bg-[var(--bg-surface-alt)] rounded no-underline hover:no-underline transition-colors">Resources</Link>
+                  <Link href="/guides" className="px-2.5 py-1.5 text-[var(--text-primary)] text-xs hover:bg-[var(--bg-surface-alt)] rounded no-underline hover:no-underline transition-colors">{t("guides")}</Link>
+                  <Link href="/tools/case-tools" className="px-2.5 py-1.5 text-[var(--text-primary)] text-xs hover:bg-[var(--bg-surface-alt)] rounded no-underline hover:no-underline transition-colors">Tools</Link>
+                  <Link href="/stats" className="px-2.5 py-1.5 text-[var(--uscis-blue)] font-medium text-xs hover:bg-[var(--uscis-blue)]/5 rounded no-underline hover:no-underline transition-colors">Statistics Pro</Link>
+                  <Link href="/news" className="px-2.5 py-1.5 text-[var(--text-primary)] text-xs hover:bg-[var(--bg-surface-alt)] rounded no-underline hover:no-underline transition-colors">{t("news")}</Link>
+                  <Link href="/processing-times" className="px-2.5 py-1.5 text-[var(--text-primary)] text-xs hover:bg-[var(--bg-surface-alt)] rounded no-underline hover:no-underline transition-colors">Processing Times</Link>
+                  <Link href="/fees" className="px-2.5 py-1.5 text-[var(--text-primary)] text-xs hover:bg-[var(--bg-surface-alt)] rounded no-underline hover:no-underline transition-colors">Fees</Link>
+                  <Link href="/status-decoder" className="px-2.5 py-1.5 text-[var(--text-primary)] text-xs hover:bg-[var(--bg-surface-alt)] rounded no-underline hover:no-underline transition-colors">Status Decoder</Link>
+                  <Link href="/official-links" className="px-2.5 py-1.5 text-[var(--text-primary)] text-xs hover:bg-[var(--bg-surface-alt)] rounded no-underline hover:no-underline transition-colors">Official Links</Link>
+                  <Link href="/travel-safety" className="px-2.5 py-1.5 text-[var(--text-primary)] text-xs hover:bg-[var(--bg-surface-alt)] rounded no-underline hover:no-underline transition-colors">Travel Safety</Link>
+                  <Link href="/travel-advisories" className="px-2.5 py-1.5 text-[var(--text-primary)] text-xs hover:bg-[var(--bg-surface-alt)] rounded no-underline hover:no-underline transition-colors">Travel Advisories</Link>
+                  <Link href="/embassy" className="px-2.5 py-1.5 text-[var(--text-primary)] text-xs hover:bg-[var(--bg-surface-alt)] rounded no-underline hover:no-underline transition-colors">Embassy</Link>
+                  <Link href="/about" className="px-2.5 py-1.5 text-[var(--text-primary)] text-xs hover:bg-[var(--bg-surface-alt)] rounded no-underline hover:no-underline transition-colors">About</Link>
+                  <Link href="/help" className="px-2.5 py-1.5 text-[var(--text-primary)] text-xs hover:bg-[var(--bg-surface-alt)] rounded no-underline hover:no-underline transition-colors">Help</Link>
               </div>
               {/* Right: All VisaNova dropdown + Search + Subscribe + User */}
-              <div className="flex items-center gap-2 shrink-0">
-                <div className="relative">
+              <div className="flex items-center gap-1 shrink-0">
+                <div className="relative" onMouseLeave={() => setAllVisaNovaOpen(false)}>
                   <button
+                    type="button"
                     onClick={() => setAllVisaNovaOpen(!allVisaNovaOpen)}
-                    onBlur={() => setTimeout(() => setAllVisaNovaOpen(false), 150)}
-                    className="flex items-center gap-1 px-3 py-2 text-[var(--text-primary)] text-sm hover:bg-[var(--bg-surface-alt)] rounded no-underline transition-colors"
+                    className="flex items-center gap-0.5 px-2.5 py-1.5 text-[var(--text-primary)] text-xs hover:bg-[var(--bg-surface-alt)] rounded no-underline transition-colors"
                   >
                     All VisaNova
-                    <ChevronDownIcon className={`w-4 h-4 transition-transform ${allVisaNovaOpen ? "rotate-180" : ""}`} />
+                    <ChevronDownIcon className={`w-3.5 h-3.5 transition-transform ${allVisaNovaOpen ? "rotate-180" : ""}`} />
                   </button>
                   {allVisaNovaOpen && (
-                    <div className="absolute top-full left-0 mt-1 py-2 w-56 bg-white border border-[var(--border-color)] rounded-lg shadow-lg z-50">
-                      <Link href="/" className="block px-4 py-2 text-sm text-[var(--text-primary)] hover:bg-[var(--bg-surface-alt)] no-underline" onMouseDown={(e) => e.preventDefault()}>{t("home")}</Link>
-                      <Link href="/resources" className="block px-4 py-2 text-sm text-[var(--text-primary)] hover:bg-[var(--bg-surface-alt)] no-underline" onMouseDown={(e) => e.preventDefault()}>Resources</Link>
-                      <Link href="/guides" className="block px-4 py-2 text-sm text-[var(--text-primary)] hover:bg-[var(--bg-surface-alt)] no-underline" onMouseDown={(e) => e.preventDefault()}>{t("guides")}</Link>
-                      <Link href="/tools/case-tools" className="block px-4 py-2 text-sm text-[var(--text-primary)] hover:bg-[var(--bg-surface-alt)] no-underline" onMouseDown={(e) => e.preventDefault()}>Tools</Link>
-                      <Link href="/stats" className="block px-4 py-2 text-sm text-[var(--uscis-blue)] font-medium hover:bg-[var(--bg-surface-alt)] no-underline" onMouseDown={(e) => e.preventDefault()}>Statistics Pro</Link>
-                      <Link href="/news" className="block px-4 py-2 text-sm text-[var(--text-primary)] hover:bg-[var(--bg-surface-alt)] no-underline" onMouseDown={(e) => e.preventDefault()}>{t("news")}</Link>
-                      <Link href="/travel-safety" className="block px-4 py-2 text-sm text-[var(--text-primary)] hover:bg-[var(--bg-surface-alt)] no-underline" onMouseDown={(e) => e.preventDefault()}>Travel Safety</Link>
-                      <Link href="/subscribe" className="block px-4 py-2 text-sm text-[var(--uscis-blue)] font-medium hover:bg-[var(--bg-surface-alt)] no-underline border-t border-[var(--border-color)] mt-1 pt-2" onMouseDown={(e) => e.preventDefault()}>Subscribe</Link>
+                    <div
+                      className="absolute top-full right-0 mt-1 py-2 w-52 bg-white border border-[var(--border-color)] rounded-lg shadow-lg z-[60]"
+                      onMouseDown={(e) => e.preventDefault()}
+                    >
+                      <Link href="/" onClick={() => setAllVisaNovaOpen(false)} className="block px-4 py-2 text-xs text-[var(--text-primary)] hover:bg-[var(--bg-surface-alt)] no-underline">Home</Link>
+                      <Link href="/resources" onClick={() => setAllVisaNovaOpen(false)} className="block px-4 py-2 text-xs text-[var(--text-primary)] hover:bg-[var(--bg-surface-alt)] no-underline">Resources</Link>
+                      <Link href="/guides" onClick={() => setAllVisaNovaOpen(false)} className="block px-4 py-2 text-xs text-[var(--text-primary)] hover:bg-[var(--bg-surface-alt)] no-underline">{t("guides")}</Link>
+                      <Link href="/tools/case-tools" onClick={() => setAllVisaNovaOpen(false)} className="block px-4 py-2 text-xs text-[var(--text-primary)] hover:bg-[var(--bg-surface-alt)] no-underline">Tools</Link>
+                      <Link href="/stats" onClick={() => setAllVisaNovaOpen(false)} className="block px-4 py-2 text-xs text-[var(--uscis-blue)] font-medium hover:bg-[var(--bg-surface-alt)] no-underline">Statistics Pro</Link>
+                      <Link href="/news" onClick={() => setAllVisaNovaOpen(false)} className="block px-4 py-2 text-xs text-[var(--text-primary)] hover:bg-[var(--bg-surface-alt)] no-underline">{t("news")}</Link>
+                      <Link href="/travel-safety" onClick={() => setAllVisaNovaOpen(false)} className="block px-4 py-2 text-xs text-[var(--text-primary)] hover:bg-[var(--bg-surface-alt)] no-underline">Travel Safety</Link>
+                      <Link href="/subscribe" onClick={() => setAllVisaNovaOpen(false)} className="block px-4 py-2 text-xs text-[var(--uscis-blue)] font-medium hover:bg-[var(--bg-surface-alt)] no-underline border-t border-[var(--border-color)] mt-1 pt-2">Subscribe</Link>
                     </div>
                   )}
                 </div>
-                <Link href="/search" className="flex h-9 w-9 items-center justify-center text-[var(--text-primary)] hover:bg-[var(--bg-surface-alt)] rounded transition-colors no-underline hover:no-underline" aria-label="Search">
-                  <MagnifyingGlassIcon className="w-5 h-5" />
+                <Link href="/search" className="flex h-8 w-8 items-center justify-center text-[var(--text-primary)] hover:bg-[var(--bg-surface-alt)] rounded no-underline hover:no-underline" aria-label="Search">
+                  <MagnifyingGlassIcon className="w-4 h-4" />
                 </Link>
                 {!subscriptionLoading && !isSubscribed && (
-                  <Link href="/subscribe" className="px-4 py-2 bg-[var(--uscis-blue)] hover:bg-[var(--uscis-blue-dark)] text-white text-sm font-medium rounded no-underline hover:no-underline transition-colors">
+                  <Link href="/subscribe" className="px-3 py-1.5 bg-[var(--uscis-blue)] hover:bg-[var(--uscis-blue-dark)] text-white text-xs font-medium rounded no-underline hover:no-underline transition-colors">
                     Subscribe
                   </Link>
                 )}
                 {user ? (
-                  <Link href="/settings" className="flex items-center gap-2 px-3 py-2 text-[var(--text-primary)] text-sm hover:bg-[var(--bg-surface-alt)] rounded no-underline hover:no-underline transition-colors" title={user.displayName || user.email || "User"}>
-                    <span className="hidden lg:inline">{user.displayName?.split(" ")[0] || user.email?.split("@")[0] || "User"}</span>
-                    <div className="w-8 h-8 rounded-full bg-[var(--uscis-blue)]/20 flex items-center justify-center font-semibold text-[var(--uscis-blue)]">
+                  <Link href="/settings" className="flex items-center gap-1.5 px-2.5 py-1.5 text-[var(--text-primary)] text-xs hover:bg-[var(--bg-surface-alt)] rounded no-underline hover:no-underline transition-colors" title={user.displayName || user.email || "User"}>
+                    <span className="hidden lg:inline text-xs">{user.displayName?.split(" ")[0] || user.email?.split("@")[0] || "User"}</span>
+                    <div className="w-7 h-7 rounded-full bg-[var(--uscis-blue)]/20 flex items-center justify-center font-semibold text-[var(--uscis-blue)] text-xs">
                       {user.displayName?.charAt(0).toUpperCase() || user.email?.charAt(0).toUpperCase() || "U"}
                     </div>
                   </Link>
                 ) : (
-                  <Link href="/login" className="px-4 py-2 text-[var(--text-primary)] text-sm hover:bg-[var(--bg-surface-alt)] rounded no-underline hover:no-underline transition-colors">
+                  <Link href="/login" className="px-3 py-1.5 text-[var(--text-primary)] text-xs hover:bg-[var(--bg-surface-alt)] rounded no-underline hover:no-underline transition-colors">
                     {t("login")}
                   </Link>
                 )}
