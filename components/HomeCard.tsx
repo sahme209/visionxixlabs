@@ -13,8 +13,6 @@ interface HomeCardProps {
   badge?: React.ReactNode;
   /** Skip inner card wrapper for custom/complex content */
   noInnerWrap?: boolean;
-  /** Optional accent bar color (e.g. "blue", "emerald", "violet") */
-  accent?: "blue" | "emerald" | "violet" | "amber" | "indigo";
   id?: string;
   className?: string;
 }
@@ -23,14 +21,6 @@ interface HomeCardProps {
  * Approvals-style card for home page consistency.
  * Bold title, subtitle, icon, and structured inner content.
  */
-const accentColors: Record<string, string> = {
-  blue: "bg-[var(--uscis-blue)]/30",
-  emerald: "bg-emerald-500/30",
-  violet: "bg-violet-500/30",
-  amber: "bg-amber-500/30",
-  indigo: "bg-indigo-500/30",
-};
-
 export default function HomeCard({
   icon,
   title,
@@ -39,17 +29,14 @@ export default function HomeCard({
   gridCols,
   badge,
   noInnerWrap,
-  accent,
   id,
   className = "",
 }: HomeCardProps) {
-  const accentBar = accent ? accentColors[accent] ?? accentColors.blue : null;
   return (
     <section
       id={id}
       className={`relative rounded-xl border border-[var(--border-color)]/60 bg-[var(--bg-surface)] p-4 sm:p-6 shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden w-full min-w-0 ${id === "key-dates" ? "scroll-mt-24" : ""} ${className}`}
     >
-      {accentBar && <div className={`absolute top-0 left-0 w-1 h-full rounded-l-xl ${accentBar}`} aria-hidden />}
       {/* Header: icon + title + subtitle + badge */}
       <div className="flex items-start gap-3 mb-4">
         <div className="flex h-11 w-11 shrink-0 items-center justify-center">

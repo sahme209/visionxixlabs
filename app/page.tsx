@@ -560,7 +560,6 @@ export default function Home() {
           {/* USCIS-style Task-Focused Section */}
           <div className="mb-6 grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="rounded-2xl bg-[var(--bg-surface)] border border-[var(--border-color)]/60 shadow-sm hover:shadow-md transition-shadow p-4 relative overflow-hidden">
-              <div className="absolute top-0 left-0 w-1 h-full bg-[var(--uscis-blue)]/30 rounded-l-2xl" aria-hidden />
               <h3 className="text-sm font-bold text-[var(--text-primary)] mb-2 flex items-center gap-2">
                 <svg className="w-5 h-5 text-[var(--text-primary)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -579,7 +578,6 @@ export default function Home() {
           </div>
 
             <div className="rounded-2xl bg-[var(--bg-surface)] border border-[var(--border-color)]/60 shadow-sm hover:shadow-md transition-shadow p-4 relative overflow-hidden">
-              <div className="absolute top-0 left-0 w-1 h-full bg-emerald-500/30 rounded-l-2xl" aria-hidden />
               <h3 className="text-sm font-bold text-[var(--text-primary)] mb-2 flex items-center gap-2">
                 <svg className="w-5 h-5 text-[var(--text-primary)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
@@ -770,7 +768,6 @@ export default function Home() {
                     title="Case Overview"
                     subtitle="Your full case timeline, current stage, and what’s coming next in one place."
                     noInnerWrap
-                    accent="blue"
                   >
                     <div className="space-y-3 sm:space-y-5">
                       <p className="text-[11px] sm:text-sm text-[var(--text-secondary)]">
@@ -896,7 +893,6 @@ export default function Home() {
                       title="Key dates"
                       subtitle="Important milestones—filings, biometrics, interviews, and more—in one simple calendar."
                       noInnerWrap
-                      accent="emerald"
                     >
                       <div className="mb-2">
                         <p className="text-[11px] sm:text-sm text-[var(--text-secondary)]">
@@ -913,7 +909,6 @@ export default function Home() {
                     icon={<GradientIconBadge icon={BoltIcon} color="amber" size="md" />}
                     title="Quick actions"
                     subtitle="Daily briefing, shortcuts, and official USCIS links tailored to your case."
-                    accent="violet"
                   >
                     <div className="space-y-2 sm:space-y-3">
                       <p className="text-[11px] sm:text-sm text-[var(--text-secondary)]">
@@ -959,7 +954,6 @@ export default function Home() {
                 <HomeCard
                   icon={<GradientIconBadge icon={CheckCircleIcon} color="emerald" size="md" />}
                   title="Approvals this week"
-                  accent="emerald"
                   subtitle={
                     <>
                       <strong className="text-[var(--text-primary)]">{recentApprovalsCount}</strong> {profile.formType} cases
@@ -1037,7 +1031,6 @@ export default function Home() {
                       title="Latest processing & pace"
                       subtitle={`${profile.formType} case movement right now, how fast the queue is clearing, and how long cases are taking.`}
                       gridCols={3}
-                      accent="amber"
                     >
                       <HomeCardInner className="sm:col-span-3 mb-1">
                         <p className="text-[11px] sm:text-sm text-[var(--text-secondary)]">
@@ -1124,7 +1117,6 @@ export default function Home() {
                       icon={<GradientIconBadge icon={NewspaperIcon} color="indigo" size="md" />}
                       title="Latest update"
                       subtitle="High-signal immigration news that actually affects family and fiancé visa timelines."
-                      accent="indigo"
                     >
                       <p className="text-[11px] sm:text-sm text-[var(--text-secondary)] mb-2">
                         We surface only the news that might move your timeline—no noise, just the updates that matter.

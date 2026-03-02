@@ -49,16 +49,15 @@ export default function StatsPage() {
         <section className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 pt-6 sm:pt-8 relative z-10">
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
             {[
-              { label: "Today", value: "142", sub: "approvals", accent: "blue", accentCls: "bg-blue-500" },
-              { label: "This Week", value: "998", sub: "total", accent: "emerald", accentCls: "bg-emerald-500" },
-              { label: "Avg Days", value: "422", sub: "processing", accent: "violet", accentCls: "bg-violet-500" },
-              { label: "Centers", value: "4", sub: "active", accent: "blue", accentCls: "bg-blue-500" },
+              { label: "Today", value: "142", sub: "approvals" },
+              { label: "This Week", value: "998", sub: "total" },
+              { label: "Avg Days", value: "422", sub: "processing" },
+              { label: "Centers", value: "4", sub: "active" },
             ].map((stat, i) => (
               <div
                 key={i}
                 className="rounded-2xl bg-[var(--bg-surface)] border border-[var(--border-color)]/60 shadow-lg shadow-black/5 p-5 sm:p-6 backdrop-blur-xl relative overflow-hidden group hover:shadow-xl hover:shadow-black/6 transition-shadow"
               >
-                <div className={`absolute top-0 left-0 w-1 h-full ${stat.accentCls} opacity-40 group-hover:opacity-60 transition-opacity`} aria-hidden />
                 <p className="text-[10px] font-semibold text-[var(--text-tertiary)] uppercase tracking-widest mb-1">
                   {stat.label}
                 </p>
@@ -278,7 +277,6 @@ export default function StatsPage() {
           {/* Where you stand - cleaner card like home */}
           <div className="w-full min-w-0">
             <div className="rounded-2xl card-see-through border border-[var(--border-color)]/50 bg-[var(--bg-surface)]/98 backdrop-blur-sm p-4 sm:p-6 w-full min-w-0 overflow-hidden shadow-sm hover:shadow-md transition-shadow relative">
-              <div className="absolute top-0 left-0 w-1 h-full rounded-l-xl bg-[var(--uscis-blue)]/30" aria-hidden />
               <div className="pl-1">
                 <p className="text-[9px] sm:text-[10px] font-semibold text-[var(--text-tertiary)] uppercase tracking-wide mb-0.5">
                   Personal overview
@@ -315,7 +313,6 @@ export default function StatsPage() {
             <div className="space-y-3 sm:space-y-5 min-w-0">
               {/* 2. Your Progress */}
               <div className="rounded-2xl card-see-through border border-[var(--border-color)]/50 bg-[var(--bg-surface)]/98 backdrop-blur-sm p-4 sm:p-6 w-full min-w-0 overflow-hidden shadow-sm hover:shadow-md transition-shadow relative">
-                <div className="absolute top-0 left-0 w-1 h-full rounded-l-xl bg-emerald-500/30" aria-hidden />
                 <div className="pl-1">
                   <p className="text-[9px] sm:text-[10px] font-semibold text-[var(--text-tertiary)] uppercase tracking-wide mb-0.5">
                     Timeline guidance
@@ -338,7 +335,6 @@ export default function StatsPage() {
 
               {/* 2b. Cases like yours — moved up for better visibility */}
               <div className="rounded-2xl card-see-through border border-[var(--border-color)]/50 bg-[var(--bg-surface)]/98 backdrop-blur-sm p-4 sm:p-6 w-full min-w-0 overflow-hidden shadow-sm hover:shadow-md transition-shadow relative">
-                <div className="absolute top-0 left-0 w-1 h-full rounded-l-xl bg-indigo-500/30" aria-hidden />
                 <div className="pl-1">
                   <p className="text-[9px] sm:text-[10px] font-semibold text-[var(--text-tertiary)] uppercase tracking-wide mb-0.5">
                     Similar cases
@@ -364,7 +360,6 @@ export default function StatsPage() {
 
               {/* 3. System Activity */}
               <div className="rounded-2xl card-see-through border border-[var(--border-color)]/50 bg-[var(--bg-surface)]/98 backdrop-blur-sm p-4 sm:p-6 w-full min-w-0 overflow-hidden shadow-sm hover:shadow-md transition-shadow relative">
-                <div className="absolute top-0 left-0 w-1 h-full rounded-l-xl bg-violet-500/30" aria-hidden />
                 <div className="pl-1">
                   <p className="text-[9px] sm:text-[10px] font-semibold text-[var(--text-tertiary)] uppercase tracking-wide mb-0.5">
                     System patterns
@@ -391,7 +386,6 @@ export default function StatsPage() {
 
               {/* 4. Recent activity */}
               <div className="rounded-2xl card-see-through border border-[var(--border-color)]/50 bg-[var(--bg-surface)]/98 backdrop-blur-sm p-4 sm:p-6 w-full min-w-0 overflow-hidden shadow-sm hover:shadow-md transition-shadow relative">
-                <div className="absolute top-0 left-0 w-1 h-full rounded-l-xl bg-amber-500/30" aria-hidden />
                 <div className="pl-1">
                   <p className="text-[9px] sm:text-[10px] font-semibold text-[var(--text-tertiary)] uppercase tracking-wide mb-0.5">
                     Recent approvals
@@ -457,7 +451,7 @@ export default function StatsPage() {
                       </div>
 
                       {/* Trend Indicator */}
-                      <div className="p-2.5 sm:p-3 rounded-lg bg-[var(--bg-surface-alt)]/50 border-l-4 border-emerald-500">
+                      <div className="p-2.5 sm:p-3 rounded-lg bg-[var(--bg-surface-alt)]/50">
                         <div className="flex items-center gap-2">
                           <svg className="w-4 h-4 text-emerald-600 dark:text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
@@ -620,7 +614,6 @@ export default function StatsPage() {
             {/* Processing Times (merged — includes Processing Time Trend by Month) */}
             <div className="space-y-3 sm:space-y-5 min-w-0">
               <div className="rounded-2xl card-see-through border border-[var(--border-color)]/50 bg-[var(--bg-surface)]/98 backdrop-blur-sm p-4 sm:p-6 w-full min-w-0 overflow-hidden shadow-sm hover:shadow-md transition-shadow relative">
-                <div className="absolute top-0 left-0 w-1 h-full rounded-l-xl bg-blue-500/30" aria-hidden />
                 <div className="pl-1">
                   <p className="text-[9px] sm:text-[10px] font-semibold text-[var(--text-tertiary)] uppercase tracking-wide mb-0.5">
                     Historical timing
