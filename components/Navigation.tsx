@@ -71,7 +71,7 @@ export function Navigation() {
           <div ref={navRef} className="hidden md:flex items-center gap-2">
             <Link
               href="/axiom"
-              className="px-4 py-2 text-slate-700 dark:text-slate-300 hover:text-violet-600 dark:hover:text-violet-400 hover:bg-violet-50 dark:hover:bg-violet-900/20 rounded-xl transition-all text-sm font-medium"
+              className="nav-link-underline relative px-4 py-2 text-slate-700 dark:text-slate-300 hover:text-violet-600 dark:hover:text-violet-400 hover:bg-violet-50 dark:hover:bg-violet-900/20 rounded-xl transition-colors text-sm font-medium"
             >
               Axiom
             </Link>
@@ -87,7 +87,7 @@ export function Navigation() {
               <button
                 type="button"
                 onClick={() => setSolutionsOpen(!solutionsOpen)}
-                className="inline-flex items-center px-4 py-2 text-slate-700 dark:text-slate-300 hover:text-violet-600 dark:hover:text-violet-400 hover:bg-violet-50 dark:hover:bg-violet-900/20 rounded-xl transition-all text-sm font-medium"
+                className="nav-link-underline relative inline-flex items-center px-4 py-2 text-slate-700 dark:text-slate-300 hover:text-violet-600 dark:hover:text-violet-400 hover:bg-violet-50 dark:hover:bg-violet-900/20 rounded-xl transition-colors text-sm font-medium"
               >
                 Solutions
                 <ChevronDownIcon className={`ml-1 h-4 w-4 transition-transform ${solutionsOpen ? "rotate-180" : ""}`} />
@@ -113,13 +113,13 @@ export function Navigation() {
             </div>
             <Link
               href="/products"
-              className="px-4 py-2 text-slate-700 dark:text-slate-300 hover:text-violet-600 dark:hover:text-violet-400 hover:bg-violet-50 dark:hover:bg-violet-900/20 rounded-xl transition-all text-sm font-medium"
+              className="nav-link-underline relative px-4 py-2 text-slate-700 dark:text-slate-300 hover:text-violet-600 dark:hover:text-violet-400 hover:bg-violet-50 dark:hover:bg-violet-900/20 rounded-xl transition-colors text-sm font-medium"
             >
               Pricing
             </Link>
             <Link
               href="/insights"
-              className="px-4 py-2 text-slate-700 dark:text-slate-300 hover:text-violet-600 dark:hover:text-violet-400 hover:bg-violet-50 dark:hover:bg-violet-900/20 rounded-xl transition-all text-sm font-medium"
+              className="nav-link-underline relative px-4 py-2 text-slate-700 dark:text-slate-300 hover:text-violet-600 dark:hover:text-violet-400 hover:bg-violet-50 dark:hover:bg-violet-900/20 rounded-xl transition-colors text-sm font-medium"
             >
               Insights
             </Link>

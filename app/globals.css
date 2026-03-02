@@ -535,3 +535,20 @@ html {
   background-clip: text;
   -webkit-text-fill-color: transparent;
 }
+
+/* Nav link — subtle hover underline animation */
+.nav-link-underline::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: 4px;
+  width: 0;
+  height: 2px;
+  background: linear-gradient(90deg, rgb(124 58 237), rgb(217 70 239));
+  transform: translateX(-50%);
+  transition: width 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.nav-link-underline:hover::after {
+  width: calc(100% - 32px);
+}

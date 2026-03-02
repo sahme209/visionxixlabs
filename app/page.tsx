@@ -23,6 +23,9 @@ import { Reveal } from "@/components/motion/Reveal";
 import { Stagger } from "@/components/motion/Stagger";
 import { HoverCard } from "@/components/ui/HoverCard";
 import { AnimatedButton } from "@/components/ui/AnimatedButton";
+import { SectionBackground } from "@/components/ui/SectionBackground";
+import { AccentMarker } from "@/components/ui/AccentMarker";
+import { MiniChart } from "@/components/ui/MiniChart";
 
 export default function Home() {
 
@@ -91,9 +94,15 @@ export default function Home() {
 
       {/* Hero Section */}
       <section className="pt-32 pb-16 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+        <SectionBackground variant="hero-light" />
         <HeroLightBeam />
         <div className="max-w-4xl mx-auto text-center relative">
           <Reveal direction="up" blur>
+            <span className="inline-flex items-center px-4 py-1.5 rounded-full bg-violet-100 dark:bg-violet-900/40 text-violet-700 dark:text-violet-300 text-sm font-semibold mb-6">
+              Cloud &amp; AI Engineering
+            </span>
+          </Reveal>
+          <Reveal direction="up" blur delay={0.04}>
             <HeroHeadlineGlow />
           </Reveal>
           <Reveal direction="up" delay={0.06}>
@@ -174,8 +183,14 @@ export default function Home() {
         <div className="max-w-6xl mx-auto">
           <div className="grid md:grid-cols-3 gap-6">
             <Reveal direction="up">
-              <HoverCard className="p-6">
-                <h3 className="text-lg font-bold text-slate-900 dark:text-slate-100 mb-2">Reliability (SLO-first)</h3>
+              <HoverCard className="p-6 shadow-xl shadow-slate-200/30 dark:shadow-slate-900/30 border-slate-200/80 dark:border-slate-700/80 hover:border-violet-300/80 dark:hover:border-violet-600/50 transition-colors">
+                <div className="flex items-start justify-between gap-3 mb-3">
+                  <div className="flex items-center gap-2">
+                    <AccentMarker color="violet" />
+                    <h3 className="text-lg font-bold text-slate-900 dark:text-slate-100">Reliability (SLO-first)</h3>
+                  </div>
+                  <MiniChart type="line" color="violet" />
+                </div>
                 <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">
                   We build for uptime targets and observability, not wishful thinking.
                 </p>
@@ -187,8 +202,14 @@ export default function Home() {
               </HoverCard>
             </Reveal>
             <Reveal direction="up" delay={0.06}>
-              <HoverCard className="p-6">
-                <h3 className="text-lg font-bold text-slate-900 dark:text-slate-100 mb-2">Security &amp; Governance</h3>
+              <HoverCard className="p-6 shadow-xl shadow-slate-200/30 dark:shadow-slate-900/30 border-slate-200/80 dark:border-slate-700/80 hover:border-violet-300/80 dark:hover:border-violet-600/50 transition-colors">
+                <div className="flex items-start justify-between gap-3 mb-3">
+                  <div className="flex items-center gap-2">
+                    <AccentMarker color="fuchsia" />
+                    <h3 className="text-lg font-bold text-slate-900 dark:text-slate-100">Security &amp; Governance</h3>
+                  </div>
+                  <MiniChart type="bars" color="fuchsia" />
+                </div>
                 <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">
                   Access control, baselines, and hardening focused on real risk reduction.
                 </p>
@@ -200,8 +221,14 @@ export default function Home() {
               </HoverCard>
             </Reveal>
             <Reveal direction="up" delay={0.12}>
-              <HoverCard className="p-6">
-                <h3 className="text-lg font-bold text-slate-900 dark:text-slate-100 mb-2">Cost Efficiency (FinOps)</h3>
+              <HoverCard className="p-6 shadow-xl shadow-slate-200/30 dark:shadow-slate-900/30 border-slate-200/80 dark:border-slate-700/80 hover:border-violet-300/80 dark:hover:border-violet-600/50 transition-colors">
+                <div className="flex items-start justify-between gap-3 mb-3">
+                  <div className="flex items-center gap-2">
+                    <AccentMarker color="emerald" />
+                    <h3 className="text-lg font-bold text-slate-900 dark:text-slate-100">Cost Efficiency (FinOps)</h3>
+                  </div>
+                  <MiniChart type="area" color="emerald" />
+                </div>
                 <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">
                   Right-sized resources, reserved capacity, and cost allocation you can act on.
                 </p>
@@ -243,30 +270,22 @@ export default function Home() {
             </p>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 text-center mb-10">
-            <div className="card-hover rounded-2xl p-4 bg-white/80 dark:bg-slate-800/60 backdrop-blur border-2 border-slate-200/80 dark:border-slate-700/80 shadow-sm">
-              <div className="text-lg font-bold text-slate-900 dark:text-slate-100">Internal AI</div>
-              <div className="text-xs text-slate-600 dark:text-slate-400">Knowledge copilots</div>
-            </div>
-            <div className="card-hover rounded-2xl p-4 bg-white/80 dark:bg-slate-800/60 backdrop-blur border-2 border-slate-200/80 dark:border-slate-700/80 shadow-sm">
-              <div className="text-lg font-bold text-slate-900 dark:text-slate-100">RAG</div>
-              <div className="text-xs text-slate-600 dark:text-slate-400">Vector search & retrieval</div>
-            </div>
-            <div className="card-hover rounded-2xl p-4 bg-white/80 dark:bg-slate-800/60 backdrop-blur border-2 border-slate-200/80 dark:border-slate-700/80 shadow-sm">
-              <div className="text-lg font-bold text-slate-900 dark:text-slate-100">Automation</div>
-              <div className="text-xs text-slate-600 dark:text-slate-400">Workflow & classification</div>
-            </div>
-            <div className="card-hover rounded-2xl p-4 bg-white/80 dark:bg-slate-800/60 backdrop-blur border-2 border-slate-200/80 dark:border-slate-700/80 shadow-sm">
-              <div className="text-lg font-bold text-slate-900 dark:text-slate-100">Extraction</div>
-              <div className="text-xs text-slate-600 dark:text-slate-400">Docs, forms, invoices</div>
-            </div>
-            <div className="card-hover rounded-2xl p-4 bg-white/80 dark:bg-slate-800/60 backdrop-blur border-2 border-slate-200/80 dark:border-slate-700/80 shadow-sm">
-              <div className="text-lg font-bold text-slate-900 dark:text-slate-100">Governance</div>
-              <div className="text-xs text-slate-600 dark:text-slate-400">Security & cost controls</div>
-            </div>
-            <div className="card-hover rounded-2xl p-4 bg-white/80 dark:bg-slate-800/60 backdrop-blur border-2 border-slate-200/80 dark:border-slate-700/80 shadow-sm">
-              <div className="text-lg font-bold text-slate-900 dark:text-slate-100">AWS · Azure · GCP</div>
-              <div className="text-xs text-slate-600 dark:text-slate-400">Your cloud, your data</div>
-            </div>
+            {[
+              { title: "Internal AI", sub: "Knowledge copilots", color: "violet" as const },
+              { title: "RAG", sub: "Vector search & retrieval", color: "fuchsia" as const },
+              { title: "Automation", sub: "Workflow & classification", color: "indigo" as const },
+              { title: "Extraction", sub: "Docs, forms, invoices", color: "emerald" as const },
+              { title: "Governance", sub: "Security & cost controls", color: "orange" as const },
+              { title: "AWS · Azure · GCP", sub: "Your cloud, your data", color: "violet" as const },
+            ].map((item, idx) => (
+              <Reveal key={item.title} direction="up" delay={idx * 0.05}>
+                <HoverCard className="p-4 bg-white/80 dark:bg-slate-800/60 backdrop-blur border-2 border-slate-200/80 dark:border-slate-700/80 shadow-sm hover:border-violet-300/80 dark:hover:border-violet-600/50 transition-colors">
+                  <AccentMarker color={item.color} className="mx-auto mb-2" />
+                  <div className="text-lg font-bold text-slate-900 dark:text-slate-100">{item.title}</div>
+                  <div className="text-xs text-slate-600 dark:text-slate-400">{item.sub}</div>
+                </HoverCard>
+              </Reveal>
+            ))}
           </div>
           <div className="text-center">
             <Link
@@ -316,18 +335,26 @@ export default function Home() {
       >
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-12">
-            <h2 id="solutions-heading" className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-slate-100 mb-4">
-              Multi-cloud engineering solutions
-            </h2>
+            <div className="flex items-center justify-center gap-2 mb-4">
+              <AccentMarker color="violet" size="md" />
+              <h2 id="solutions-heading" className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-slate-100">
+                Multi-cloud engineering solutions
+              </h2>
+            </div>
             <p className="text-lg text-slate-600 dark:text-slate-400 max-w-3xl mx-auto">
               We design, automate, and operate cloud platforms across AWS, Azure, and Google Cloud with a focus on reliability, security, and cost efficiency.
             </p>
           </div>
           <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-            <div className="card-hover rounded-3xl border-2 border-slate-200/80 dark:border-slate-700/80 bg-white/80 dark:bg-slate-800/80 backdrop-blur p-6 shadow-lg shadow-slate-200/30 dark:shadow-none">
+            <Reveal direction="up" delay={0}>
+              <HoverCard minimal>
+            <div className="rounded-3xl border-2 border-slate-200/80 dark:border-slate-700/80 bg-white/80 dark:bg-slate-800/80 backdrop-blur p-6 shadow-lg shadow-slate-200/30 dark:shadow-none hover:border-orange-300/80 dark:hover:border-orange-600/50 transition-colors">
               <div>
-                <div className="inline-flex items-center px-3 py-1 rounded-full bg-orange-200 dark:bg-orange-900/50 text-orange-800 dark:text-orange-300 text-xs font-bold mb-4">
+                <div className="flex items-center gap-2 mb-4">
+                  <AccentMarker color="orange" />
+                <div className="inline-flex items-center px-3 py-1 rounded-full bg-orange-200 dark:bg-orange-900/50 text-orange-800 dark:text-orange-300 text-xs font-bold">
                   AWS
+                </div>
                 </div>
                 <h3 className="text-xl md:text-2xl font-bold mb-3 text-slate-900 dark:text-slate-100">
                   AWS Cloud Engineering
@@ -361,10 +388,17 @@ export default function Home() {
                 </Link>
               </div>
             </div>
-            <div className="card-hover rounded-3xl border-2 border-slate-200/80 dark:border-slate-700/80 bg-white/80 dark:bg-slate-800/80 backdrop-blur p-6 shadow-lg shadow-slate-200/30 dark:shadow-none">
+              </HoverCard>
+            </Reveal>
+            <Reveal direction="up" delay={0.06}>
+              <HoverCard minimal>
+            <div className="rounded-3xl border-2 border-slate-200/80 dark:border-slate-700/80 bg-white/80 dark:bg-slate-800/80 backdrop-blur p-6 shadow-lg shadow-slate-200/30 dark:shadow-none hover:border-blue-300/80 dark:hover:border-blue-600/50 transition-colors">
               <div>
-                <div className="inline-flex items-center px-3 py-1 rounded-full bg-blue-200 dark:bg-blue-900/50 text-blue-800 dark:text-blue-300 text-xs font-bold mb-4">
+                <div className="flex items-center gap-2 mb-4">
+                  <AccentMarker color="indigo" />
+                <div className="inline-flex items-center px-3 py-1 rounded-full bg-blue-200 dark:bg-blue-900/50 text-blue-800 dark:text-blue-300 text-xs font-bold">
                   AZURE
+                </div>
                 </div>
                 <h3 className="text-xl md:text-2xl font-bold mb-3 text-slate-900 dark:text-slate-100">
                   Azure Cloud Engineering
@@ -398,10 +432,17 @@ export default function Home() {
                 </Link>
               </div>
             </div>
-            <div className="card-hover rounded-3xl border-2 border-slate-200/80 dark:border-slate-700/80 bg-white/80 dark:bg-slate-800/80 backdrop-blur p-6 shadow-lg shadow-slate-200/30 dark:shadow-none">
+              </HoverCard>
+            </Reveal>
+            <Reveal direction="up" delay={0.12}>
+              <HoverCard minimal>
+            <div className="rounded-3xl border-2 border-slate-200/80 dark:border-slate-700/80 bg-white/80 dark:bg-slate-800/80 backdrop-blur p-6 shadow-lg shadow-slate-200/30 dark:shadow-none hover:border-red-300/80 dark:hover:border-red-600/50 transition-colors">
               <div>
-                <div className="inline-flex items-center px-3 py-1 rounded-full bg-red-200 dark:bg-red-900/50 text-red-800 dark:text-red-300 text-xs font-bold mb-4">
+                <div className="flex items-center gap-2 mb-4">
+                  <AccentMarker color="red" />
+                <div className="inline-flex items-center px-3 py-1 rounded-full bg-red-200 dark:bg-red-900/50 text-red-800 dark:text-red-300 text-xs font-bold">
                   GCP
+                </div>
                 </div>
                 <h3 className="text-xl md:text-2xl font-bold mb-3 text-slate-900 dark:text-slate-100">
                   Google Cloud Platform
@@ -435,6 +476,8 @@ export default function Home() {
                 </Link>
               </div>
             </div>
+              </HoverCard>
+            </Reveal>
           </div>
 
           {/* AI Solutions Section */}
@@ -536,30 +579,23 @@ export default function Home() {
             </p>
           </div>
           <div className="flex flex-wrap justify-center gap-4 mb-6">
-            <Link
-              href="/insights/production-ai-vs-demos"
-              className="card-hover rounded-2xl border-2 border-slate-200/80 dark:border-slate-700/80 bg-white/80 dark:bg-slate-800/80 backdrop-blur px-5 py-3 text-sm font-medium text-slate-700 dark:text-slate-300 hover:border-violet-300 dark:hover:border-violet-600"
-            >
-              Production AI vs. demos
-            </Link>
-            <Link
-              href="/insights/rag-vs-fine-tuning-when-to-use-which"
-              className="card-hover rounded-2xl border-2 border-slate-200/80 dark:border-slate-700/80 bg-white/80 dark:bg-slate-800/80 backdrop-blur px-5 py-3 text-sm font-medium text-slate-700 dark:text-slate-300 hover:border-violet-300 dark:hover:border-violet-600"
-            >
-              RAG vs. fine-tuning
-            </Link>
-            <Link
-              href="/insights/ai-cost-management-in-production"
-              className="card-hover rounded-2xl border-2 border-slate-200/80 dark:border-slate-700/80 bg-white/80 dark:bg-slate-800/80 backdrop-blur px-5 py-3 text-sm font-medium text-slate-700 dark:text-slate-300 hover:border-violet-300 dark:hover:border-violet-600"
-            >
-              AI cost management
-            </Link>
-            <Link
-              href="/insights/choosing-ai-models-for-production"
-              className="card-hover rounded-2xl border-2 border-slate-200/80 dark:border-slate-700/80 bg-white/80 dark:bg-slate-800/80 backdrop-blur px-5 py-3 text-sm font-medium text-slate-700 dark:text-slate-300 hover:border-violet-300 dark:hover:border-violet-600"
-            >
-              Choosing AI models
-            </Link>
+            {[
+              { href: "/insights/production-ai-vs-demos", label: "Production AI vs. demos" },
+              { href: "/insights/rag-vs-fine-tuning-when-to-use-which", label: "RAG vs. fine-tuning" },
+              { href: "/insights/ai-cost-management-in-production", label: "AI cost management" },
+              { href: "/insights/choosing-ai-models-for-production", label: "Choosing AI models" },
+            ].map((item, idx) => (
+              <Reveal key={item.href} direction="up" delay={idx * 0.05}>
+                <HoverCard className="min-w-0" minimal>
+                  <Link
+                    href={item.href}
+                    className="block rounded-2xl border-2 border-slate-200/80 dark:border-slate-700/80 bg-white/80 dark:bg-slate-800/80 backdrop-blur px-5 py-3 text-sm font-medium text-slate-700 dark:text-slate-300 hover:border-violet-300 dark:hover:border-violet-600 transition-colors"
+                  >
+                    {item.label}
+                  </Link>
+                </HoverCard>
+              </Reveal>
+            ))}
           </div>
           <div className="text-center">
             <Link
