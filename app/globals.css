@@ -375,6 +375,13 @@ footer a[class*="background"] {
   font-family: Georgia, "Times New Roman", Times, serif;
 }
 
+/* Microsoft-style nav: menu links never underlined */
+.nav-no-underline a,
+.nav-no-underline a:hover,
+.nav-no-underline a:focus-visible {
+  text-decoration: none !important;
+}
+
 /* Apple-style page wrapper - clean solid background, no grid */
 .gov-page-bg {
   background-image: none;

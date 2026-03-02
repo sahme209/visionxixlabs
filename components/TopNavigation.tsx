@@ -9,11 +9,9 @@ import { HomeIcon } from "@heroicons/react/24/solid";
 import { BookOpenIcon } from "@heroicons/react/24/solid";
 import { ChartBarIcon } from "@heroicons/react/24/solid";
 import { QuestionMarkCircleIcon } from "@heroicons/react/24/solid";
-import { NewspaperIcon, Bars3Icon, XMarkIcon, ArrowRightOnRectangleIcon, Squares2X2Icon, WrenchScrewdriverIcon } from "@heroicons/react/24/outline";
+import { NewspaperIcon, Bars3Icon, XMarkIcon, ArrowRightOnRectangleIcon, Squares2X2Icon, WrenchScrewdriverIcon, ChevronDownIcon, MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import { LockClosedIcon as LockClosedIconOutline } from "@heroicons/react/24/outline";
 import Link from "next/link";
-import Image from "next/image";
-import { HERO_IMAGES } from "@/lib/images";
 import SubscriptionStatusBanner from "./SubscriptionStatusBanner";
 import PastDueBanner from "./PastDueBanner";
 import TrialReminderBanner from "./TrialReminderBanner";
@@ -34,6 +32,7 @@ export default function TopNavigation({ children }: { children: React.ReactNode 
   const { t } = useLanguage();
   const { isSubscribed, loading: subscriptionLoading, status: subscriptionStatus, hasUsedTrial } = useSubscription();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [allVisaNovaOpen, setAllVisaNovaOpen] = useState(false);
   
   // Hide navigation on login and onboarding pages
   const shouldShowNav = pathname !== "/login" && pathname !== "/onboarding";
@@ -116,118 +115,100 @@ export default function TopNavigation({ children }: { children: React.ReactNode 
       )}
       
       {shouldShowNav && (
-        <header className="gov-travel-state-nav surface-dark">
-          {/* Top secondary bar - Travel.State.Gov style: links left, Find Embassies right */}
-          <div className="hidden md:block bg-[var(--state-top-bar)] border-b border-white/[0.08]">
-            <div className="max-w-7xl mx-auto flex items-center justify-between gap-6 px-4 py-2 text-[11px] sm:text-xs text-white">
-              <div className="flex items-center gap-0.5 flex-wrap">
-                <Link href="/" className="text-white/90 hover:text-white px-2 py-1 rounded transition-colors">Home</Link>
-                <span className="text-white/40">|</span>
-                <Link href="/travel-safety" className="text-white/90 hover:text-white px-2 py-1 rounded transition-colors">Travel Safety</Link>
-                <span className="text-white/40">|</span>
-                <Link href="/travel-advisories" className="text-white/90 hover:text-white px-2 py-1 rounded transition-colors">Travel Advisories</Link>
-                <span className="text-white/40">|</span>
-                <Link href="/news" className="text-white/90 hover:text-white px-2 py-1 rounded transition-colors">Newsroom</Link>
-                <span className="text-white/40">|</span>
-                <Link href="/resources" className="text-white/90 hover:text-white px-2 py-1 rounded transition-colors">Resources</Link>
-                <span className="text-white/40">|</span>
-                <Link href="/guides" className="text-white/90 hover:text-white px-2 py-1 rounded transition-colors">Guides</Link>
-                <span className="text-white/40">|</span>
-                <Link href="/tools/case-tools" className="text-white/90 hover:text-white px-2 py-1 rounded transition-colors">Tools</Link>
-                <span className="text-white/40">|</span>
-                <Link href="/stats" className="!text-yellow-400 hover:!text-yellow-300 px-2 py-1 rounded transition-colors">Statistics Pro</Link>
-                <span className="text-white/40">|</span>
-                <Link href="/about" className="text-white/90 hover:text-white px-2 py-1 rounded transition-colors">About Us</Link>
-                <span className="text-white/40">|</span>
-                <Link href="/help" className="text-white/90 hover:text-white px-2 py-1 rounded transition-colors">Help Center</Link>
-              </div>
-              <Link href="/embassy" className="text-white/90 hover:text-white px-2 py-1 flex items-center gap-2 rounded transition-colors shrink-0">
-                <img src="/logo.svg" alt="" className="w-3.5 h-3.5 object-contain opacity-90" />
-                Find U.S. Embassies &amp; Consulates
-              </Link>
-            </div>
-          </div>
-
-          {/* Main nav - darker blue with world map overlay */}
-          <nav className="relative overflow-hidden bg-[var(--state-main-nav)]">
-            <div className="absolute inset-0 w-full opacity-[0.12]">
-              <Image
-                src={HERO_IMAGES.passport}
-                alt=""
-                fill
-                className="object-cover object-center w-full"
-                sizes="100vw"
-                loading="lazy"
-              />
-            </div>
-            <div className="absolute inset-0 bg-[var(--state-main-nav)]/85" />
-            <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-              {/* Branding row - Travel.State.Gov style: logo + serif title + subtitle, search right */}
-              <div className="flex items-center justify-between py-3 sm:py-4 gap-4">
-                <Link href="/" className="flex items-center gap-2.5 sm:gap-3 group min-w-0">
-                  <div className="w-10 h-10 sm:w-12 sm:h-12 bg-white/10 rounded-xl flex items-center justify-center border border-white/15 p-1.5 sm:p-2 flex-shrink-0">
-                    <img src="/logo.svg" alt="VisaNova" className="w-full h-full object-contain" />
+        <header className="gov-travel-state-nav">
+          {/* Microsoft-style main nav: white bar, no underline on menu links */}
+          <nav className="hidden md:block bg-white border-b border-[var(--border-color)] nav-no-underline">
+            <div className="max-w-7xl mx-auto flex items-center justify-between gap-4 px-4 sm:px-6 lg:px-8 py-3">
+              {/* Left: Logo + VisaNova + Menu items */}
+              <div className="flex items-center gap-6 flex-1 min-w-0">
+                <Link href="/" className="flex items-center gap-2 shrink-0 no-underline hover:no-underline">
+                  <div className="w-8 h-8 flex items-center justify-center">
+                    <img src="/logo.svg" alt="" className="w-full h-full object-contain" />
                   </div>
-                  <div className="min-w-0">
-                    <h1 className="text-xl sm:text-2xl lg:text-[1.75rem] font-bold text-white tracking-tight leading-tight">
-                      VisaNova
-                    </h1>
-                    <p className="text-[10px] sm:text-xs text-white/90 uppercase tracking-wider mt-0.5">
-                      Immigration Case Tracking
-                    </p>
-                  </div>
+                  <span className="text-[var(--text-primary)] font-semibold text-base">VisaNova</span>
                 </Link>
-                <div className="flex items-center gap-2 sm:gap-3">
-                  {/* Search - site-wide search */}
-                  <form action="/search" method="get" className="hidden lg:flex h-10 rounded-xl border border-white/15 bg-white/8 overflow-hidden flex-shrink-0 backdrop-blur-sm">
-                    <input
-                      type="search"
-                      name="q"
-                      placeholder="Search site..."
-                      className="w-[7.5rem] xl:w-[10rem] min-w-0 px-3 text-sm text-white placeholder:text-white/60 bg-transparent border-0 focus:outline-none focus:ring-0"
-                    />
-                    <button
-                      type="submit"
-                      className="w-10 h-full flex items-center justify-center bg-[var(--state-red-accent)] hover:bg-[#b01c22] text-white shrink-0 border-l border-white/10"
-                      aria-label="Search"
-                    >
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
-                    </button>
-                  </form>
-                  {!subscriptionLoading && !isSubscribed && (
-                    <Link
-                      href="/subscribe"
-                      className="hidden sm:flex items-center gap-1.5 px-4 py-2 bg-[var(--state-red-accent)] hover:opacity-90 text-white text-xs font-semibold rounded-lg transition-all duration-200"
-                    >
-                      Subscribe
-                    </Link>
-                  )}
-                  {user ? (
-                    <Link
-                      href="/settings"
-                      className="hidden md:flex w-10 h-10 rounded-lg bg-white/15 text-white items-center justify-center font-bold text-sm hover:bg-white/25 transition-colors border border-white/20"
-                      title={user.displayName || user.email || "User"}
-                    >
-                      {user.displayName?.charAt(0).toUpperCase() || user.email?.charAt(0).toUpperCase() || "U"}
-                    </Link>
-                  ) : (
-                    <Link
-                      href="/login"
-                      className="hidden sm:inline-flex items-center justify-center px-4 py-2 bg-[var(--uscis-blue)] hover:bg-[var(--uscis-blue-dark)] text-white text-xs font-semibold rounded-lg transition-colors"
-                      style={{ color: "#ffffff" }}
-                    >
-                      {t("login")}
-                    </Link>
-                  )}
-                  <button
-                    onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                    className="md:hidden min-w-[44px] min-h-[44px] w-11 h-11 rounded bg-white/10 text-white flex items-center justify-center hover:bg-white/20 border border-white/20"
-                    aria-label="Toggle Menu"
-                  >
-                    {mobileMenuOpen ? <XMarkIcon className="w-6 h-6" /> : <Bars3Icon className="w-6 h-6" />}
-                  </button>
+                <div className="flex items-center gap-1 flex-wrap">
+                  <Link href="/" className="px-3 py-2 text-[var(--text-primary)] text-sm hover:bg-[var(--bg-surface-alt)] rounded no-underline hover:no-underline transition-colors">{t("home")}</Link>
+                  <Link href="/resources" className="px-3 py-2 text-[var(--text-primary)] text-sm hover:bg-[var(--bg-surface-alt)] rounded no-underline hover:no-underline transition-colors">Resources</Link>
+                  <Link href="/guides" className="px-3 py-2 text-[var(--text-primary)] text-sm hover:bg-[var(--bg-surface-alt)] rounded no-underline hover:no-underline transition-colors">{t("guides")}</Link>
+                  <Link href="/tools/case-tools" className="px-3 py-2 text-[var(--text-primary)] text-sm hover:bg-[var(--bg-surface-alt)] rounded no-underline hover:no-underline transition-colors">Tools</Link>
+                  <Link href="/stats" className="px-3 py-2 text-[var(--uscis-blue)] font-medium text-sm hover:bg-[var(--uscis-blue)]/5 rounded no-underline hover:no-underline transition-colors">Statistics Pro</Link>
+                  <Link href="/news" className="px-3 py-2 text-[var(--text-primary)] text-sm hover:bg-[var(--bg-surface-alt)] rounded no-underline hover:no-underline transition-colors">{t("news")}</Link>
+                  <Link href="/processing-times" className="px-3 py-2 text-[var(--text-primary)] text-sm hover:bg-[var(--bg-surface-alt)] rounded no-underline hover:no-underline transition-colors">Processing Times</Link>
+                  <Link href="/fees" className="px-3 py-2 text-[var(--text-primary)] text-sm hover:bg-[var(--bg-surface-alt)] rounded no-underline hover:no-underline transition-colors">Fees</Link>
+                  <Link href="/status-decoder" className="px-3 py-2 text-[var(--text-primary)] text-sm hover:bg-[var(--bg-surface-alt)] rounded no-underline hover:no-underline transition-colors">Status Decoder</Link>
+                  <Link href="/official-links" className="px-3 py-2 text-[var(--text-primary)] text-sm hover:bg-[var(--bg-surface-alt)] rounded no-underline hover:no-underline transition-colors">Official Links</Link>
+                  <Link href="/travel-safety" className="px-3 py-2 text-[var(--text-primary)] text-sm hover:bg-[var(--bg-surface-alt)] rounded no-underline hover:no-underline transition-colors">Travel Safety</Link>
+                  <Link href="/travel-advisories" className="px-3 py-2 text-[var(--text-primary)] text-sm hover:bg-[var(--bg-surface-alt)] rounded no-underline hover:no-underline transition-colors">Travel Advisories</Link>
+                  <Link href="/embassy" className="px-3 py-2 text-[var(--text-primary)] text-sm hover:bg-[var(--bg-surface-alt)] rounded no-underline hover:no-underline transition-colors">Embassy</Link>
+                  <Link href="/about" className="px-3 py-2 text-[var(--text-primary)] text-sm hover:bg-[var(--bg-surface-alt)] rounded no-underline hover:no-underline transition-colors">About</Link>
+                  <Link href="/help" className="px-3 py-2 text-[var(--text-primary)] text-sm hover:bg-[var(--bg-surface-alt)] rounded no-underline hover:no-underline transition-colors">Help</Link>
                 </div>
               </div>
+              {/* Right: All VisaNova dropdown + Search + Subscribe + User */}
+              <div className="flex items-center gap-2 shrink-0">
+                <div className="relative">
+                  <button
+                    onClick={() => setAllVisaNovaOpen(!allVisaNovaOpen)}
+                    onBlur={() => setTimeout(() => setAllVisaNovaOpen(false), 150)}
+                    className="flex items-center gap-1 px-3 py-2 text-[var(--text-primary)] text-sm hover:bg-[var(--bg-surface-alt)] rounded no-underline transition-colors"
+                  >
+                    All VisaNova
+                    <ChevronDownIcon className={`w-4 h-4 transition-transform ${allVisaNovaOpen ? "rotate-180" : ""}`} />
+                  </button>
+                  {allVisaNovaOpen && (
+                    <div className="absolute top-full left-0 mt-1 py-2 w-56 bg-white border border-[var(--border-color)] rounded-lg shadow-lg z-50">
+                      <Link href="/" className="block px-4 py-2 text-sm text-[var(--text-primary)] hover:bg-[var(--bg-surface-alt)] no-underline" onMouseDown={(e) => e.preventDefault()}>{t("home")}</Link>
+                      <Link href="/resources" className="block px-4 py-2 text-sm text-[var(--text-primary)] hover:bg-[var(--bg-surface-alt)] no-underline" onMouseDown={(e) => e.preventDefault()}>Resources</Link>
+                      <Link href="/guides" className="block px-4 py-2 text-sm text-[var(--text-primary)] hover:bg-[var(--bg-surface-alt)] no-underline" onMouseDown={(e) => e.preventDefault()}>{t("guides")}</Link>
+                      <Link href="/tools/case-tools" className="block px-4 py-2 text-sm text-[var(--text-primary)] hover:bg-[var(--bg-surface-alt)] no-underline" onMouseDown={(e) => e.preventDefault()}>Tools</Link>
+                      <Link href="/stats" className="block px-4 py-2 text-sm text-[var(--uscis-blue)] font-medium hover:bg-[var(--bg-surface-alt)] no-underline" onMouseDown={(e) => e.preventDefault()}>Statistics Pro</Link>
+                      <Link href="/news" className="block px-4 py-2 text-sm text-[var(--text-primary)] hover:bg-[var(--bg-surface-alt)] no-underline" onMouseDown={(e) => e.preventDefault()}>{t("news")}</Link>
+                      <Link href="/travel-safety" className="block px-4 py-2 text-sm text-[var(--text-primary)] hover:bg-[var(--bg-surface-alt)] no-underline" onMouseDown={(e) => e.preventDefault()}>Travel Safety</Link>
+                      <Link href="/subscribe" className="block px-4 py-2 text-sm text-[var(--uscis-blue)] font-medium hover:bg-[var(--bg-surface-alt)] no-underline border-t border-[var(--border-color)] mt-1 pt-2" onMouseDown={(e) => e.preventDefault()}>Subscribe</Link>
+                    </div>
+                  )}
+                </div>
+                <Link href="/search" className="flex h-9 w-9 items-center justify-center text-[var(--text-primary)] hover:bg-[var(--bg-surface-alt)] rounded transition-colors no-underline hover:no-underline" aria-label="Search">
+                  <MagnifyingGlassIcon className="w-5 h-5" />
+                </Link>
+                {!subscriptionLoading && !isSubscribed && (
+                  <Link href="/subscribe" className="px-4 py-2 bg-[var(--uscis-blue)] hover:bg-[var(--uscis-blue-dark)] text-white text-sm font-medium rounded no-underline hover:no-underline transition-colors">
+                    Subscribe
+                  </Link>
+                )}
+                {user ? (
+                  <Link href="/settings" className="flex items-center gap-2 px-3 py-2 text-[var(--text-primary)] text-sm hover:bg-[var(--bg-surface-alt)] rounded no-underline hover:no-underline transition-colors" title={user.displayName || user.email || "User"}>
+                    <span className="hidden lg:inline">{user.displayName?.split(" ")[0] || user.email?.split("@")[0] || "User"}</span>
+                    <div className="w-8 h-8 rounded-full bg-[var(--uscis-blue)]/20 flex items-center justify-center font-semibold text-[var(--uscis-blue)]">
+                      {user.displayName?.charAt(0).toUpperCase() || user.email?.charAt(0).toUpperCase() || "U"}
+                    </div>
+                  </Link>
+                ) : (
+                  <Link href="/login" className="px-4 py-2 text-[var(--text-primary)] text-sm hover:bg-[var(--bg-surface-alt)] rounded no-underline hover:no-underline transition-colors">
+                    {t("login")}
+                  </Link>
+                )}
+              </div>
+            </div>
+          </nav>
+
+          {/* Mobile: compact dark bar + hamburger */}
+          <nav className="md:hidden surface-dark relative overflow-hidden bg-[var(--state-main-nav)]">
+            <div className="relative max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+              <Link href="/" className="flex items-center gap-2 min-w-0">
+                <div className="w-9 h-9 bg-white/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <img src="/logo.svg" alt="VisaNova" className="w-full h-full object-contain" />
+                </div>
+                <span className="font-bold text-white truncate">VisaNova</span>
+              </Link>
+              <button
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                className="min-w-[44px] min-h-[44px] w-11 h-11 rounded bg-white/10 text-white flex items-center justify-center hover:bg-white/20"
+                aria-label="Toggle Menu"
+              >
+                {mobileMenuOpen ? <XMarkIcon className="w-6 h-6" /> : <Bars3Icon className="w-6 h-6" />}
+              </button>
             </div>
           </nav>
 
