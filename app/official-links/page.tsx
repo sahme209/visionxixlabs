@@ -15,7 +15,7 @@ import {
 } from "@heroicons/react/24/outline";
 import { travelStateResources } from "@/lib/data/travelStateLinks";
 import TravelStateEmergencyBanner from "@/components/TravelStateEmergencyBanner";
-import { HERO_IMAGES, SECTION_IMAGES, EMPTY_STATE_IMAGES, ICON_IMAGES } from "@/lib/images";
+import { SECTION_IMAGES, EMPTY_STATE_IMAGES, ICON_IMAGES } from "@/lib/images";
 
 const CATEGORIES = [
   { id: "all", label: "All", icon: GlobeAltIcon },
@@ -49,43 +49,6 @@ export default function OfficialLinksPage() {
 
   return (
     <div className="min-h-screen bg-[var(--bg-primary)]">
-      <div className="relative overflow-hidden bg-gradient-to-br from-[var(--hero-dark)] via-[var(--hero-dark-soft)] to-[var(--hero-dark)] border-b-2 border-[var(--uscis-blue)]">
-        <div
-          className="absolute inset-0 opacity-15"
-          style={{
-            backgroundImage:
-              "radial-gradient(circle at 30% 60%, rgba(34, 197, 94, 0.3) 0%, transparent 40%)",
-          }}
-        />
-        <div className="absolute inset-0 w-full">
-          <Image
-            src={HERO_IMAGES.passport}
-            alt=""
-            fill
-            className="object-cover object-center opacity-20 w-full"
-            sizes="100vw"
-            priority
-          />
-          <div className="absolute inset-0 bg-[var(--hero-dark)]/70" />
-        </div>
-        <div className="h-0.5 bg-gradient-to-r from-[var(--uscis-blue)] via-[var(--uscis-blue-light)] to-[var(--uscis-blue)]" />
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-xl overflow-hidden border border-white/25 shadow-lg flex-shrink-0 ring-2 ring-white/20">
-              <Image src={ICON_IMAGES.globe} alt="" width={48} height={48} className="w-full h-full object-cover" />
-            </div>
-            <div className="hero-text-white" style={{ color: "#ffffff" }}>
-              <h1 className="text-xl sm:text-2xl font-bold !text-white" style={{ color: "#ffffff" }}>
-                All Official Links—In One Place
-              </h1>
-              <p className="text-sm !text-white mt-0.5" style={{ color: "#ffffff" }}>
-                USCIS, Travel.State.Gov, CEAC, visa bulletin, embassies, NVC—searchable and organized. No more hunting through government menus.
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-
       <main className="max-w-7xl mx-auto px-2 min-[380px]:px-3 sm:px-6 lg:px-8 py-6 sm:py-8 w-full min-w-0">
         <div className="mb-6">
           <TravelStateEmergencyBanner />

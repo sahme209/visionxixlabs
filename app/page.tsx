@@ -3,10 +3,9 @@
 // Force dynamic rendering to prevent SSG issues with Firestore
 export const dynamic = "force-dynamic";
 
-import { useEffect, useState, useMemo, useRef } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { doc, getDoc, collection, query, orderBy, limit, getDocs, where } from "firebase/firestore";
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip, Cell } from "recharts";
-import { HERO_IMAGES } from "@/lib/images";
 import {
   ClipboardDocumentListIcon,
   CalendarDaysIcon,
@@ -21,13 +20,11 @@ import { db } from "@/lib/firebase";
 import { useAuth } from "@/contexts/AuthContext";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import Image from "next/image";
 import { useProfile } from "@/hooks/useProfile";
 import { useSubscription } from "@/hooks/useSubscription";
 import { generateTimeline } from "@/lib/services/timelineService";
 import { mapUSCISStatusToCurrentStage } from "@/lib/services/uscisStatusService";
 import { CaseTimeline } from "@/lib/types";
-import USCISStatusAPIDebug from "@/components/USCISStatusAPIDebug";
 import USCISCaseStatus from "@/components/USCISCaseStatus";
 import TimelineView from "@/components/TimelineView";
 import USCISAlertBanner from "@/components/USCISAlertBanner";
@@ -83,49 +80,6 @@ export default function Home() {
   const [recentApprovalsByDay, setRecentApprovalsByDay] = useState<{ date: string; label: string; count: number }[] | null>(null);
   const [approvalsWeekComparison, setApprovalsWeekComparison] = useState<{ thisWeek: number; lastWeek: number } | null>(null);
   const [approvalsByWeekday, setApprovalsByWeekday] = useState<{ day: string; count: number }[] | null>(null);
-
-  // Secret 7-tap USCIS debug trigger on home header icon
-  const [homeSecretTapCount, setHomeSecretTapCount] = useState(0);
-  const [showHomeUSCISDebug, setShowHomeUSCISDebug] = useState(false);
-  const homeTapTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const HOME_SECRET_TAP_THRESHOLD = 7;
-  const HOME_TAP_TIMEOUT_MS = 3000;
-
-  const handleHomeHeaderSecretTap = () => {
-    setHomeSecretTapCount((prev) => {
-      const next = prev + 1;
-      console.log(`[HOME] Secret tap on header icon: ${next}/${HOME_SECRET_TAP_THRESHOLD}`);
-
-      if (next >= HOME_SECRET_TAP_THRESHOLD) {
-        console.log("[HOME] ✅ Showing USCISStatusAPIDebug from header secret taps");
-        setShowHomeUSCISDebug(true);
-        if (homeTapTimeoutRef.current) {
-          clearTimeout(homeTapTimeoutRef.current);
-          homeTapTimeoutRef.current = null;
-        }
-        return 0;
-      }
-
-      if (homeTapTimeoutRef.current) {
-        clearTimeout(homeTapTimeoutRef.current);
-      }
-
-      homeTapTimeoutRef.current = setTimeout(() => {
-        setHomeSecretTapCount(0);
-        console.log("[HOME] ⏱️ Secret tap count reset (timeout)");
-      }, HOME_TAP_TIMEOUT_MS);
-
-      return next;
-    });
-  };
-
-  useEffect(() => {
-    return () => {
-      if (homeTapTimeoutRef.current) {
-        clearTimeout(homeTapTimeoutRef.current);
-      }
-    };
-  }, []);
 
   // Close modal on ESC key
   useEffect(() => {
@@ -395,9 +349,6 @@ export default function Home() {
         <div className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(0,113,227,0.02)_0%,transparent_40%)]" />
         <div className="absolute inset-0 opacity-[0.35] dark:opacity-[0.12]" style={{ backgroundImage: "radial-gradient(circle at 1px 1px, rgba(0,113,227,0.06) 1px, transparent 0)", backgroundSize: "40px 40px" }} />
       </div>
-      {showHomeUSCISDebug && (
-        <USCISStatusAPIDebug onClose={() => setShowHomeUSCISDebug(false)} />
-      )}
 
       {/* Premium Benefits Modal */}
       {showPremiumBenefitsModal && (
@@ -594,65 +545,6 @@ export default function Home() {
           </div>
         </div>
       )}
-      {/* Official Header - Desktop: Full Dashboard, Mobile: Compact - shown to all users */}
-      {!authLoading && !profileLoading && (
-        <>
-          {/* Desktop Header - Apple-style refined navy gradient */}
-          <div className="hidden md:block surface-dark relative overflow-hidden bg-gradient-to-b from-[var(--hero-dark)] via-[var(--hero-dark-soft)] to-[var(--hero-dark)] border-b border-white/5 shadow-lg">
-            <div className="absolute inset-0 hidden md:block w-full">
-              <Image
-                src={HERO_IMAGES.office}
-                alt=""
-                fill
-                className="object-cover object-center opacity-15 w-full"
-                sizes="100vw"
-              />
-              <div className="absolute inset-0 bg-gradient-to-b from-[var(--hero-dark)]/95 via-[var(--hero-dark-soft)]/90 to-[var(--hero-dark)]/95" />
-            </div>
-            <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[var(--uscis-blue)]/50 to-transparent" aria-hidden="true" />
-            <div className="pointer-events-none absolute inset-0 opacity-[0.04] hidden md:block" aria-hidden="true" style={{ backgroundImage: "linear-gradient(rgba(255,255,255,0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.08) 1px, transparent 1px)", backgroundSize: "16px 16px" }} />
-            <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-              <div className="grid grid-cols-12 gap-4 items-start">
-                {/* Left Section - Icon & Title */}
-                <div className="col-span-12 lg:col-span-8">
-                  <div className="flex items-start gap-3">
-                    <button
-                      type="button"
-                      onClick={handleHomeHeaderSecretTap}
-                      className="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center border border-white/20 flex-shrink-0 cursor-pointer hover:bg-white/15 transition-colors"
-                      aria-label="Your dashboard"
-                    >
-                      <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                      </svg>
-                    </button>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-3 mb-1">
-                        <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight text-white" style={{ letterSpacing: '0.02em' }}>
-                          Case Status Dashboard
-                        </h1>
-                        <div className="flex items-center gap-2">
-                          <span className="px-2 py-0.5 bg-emerald-500/30 rounded text-[10px] font-bold uppercase tracking-widest border border-emerald-400/40 text-white">
-                            Active
-                          </span>
-                          <span className="px-2 py-0.5 bg-white/10 rounded text-[10px] font-bold uppercase tracking-widest border border-white/25 text-white">
-                            US-Based Data
-                          </span>
-                        </div>
-                      </div>
-                      <p className="text-xs text-white mb-0 leading-relaxed max-w-2xl">
-                        Know where you stand. Real-time tracking powered by USCIS data and community-reported approvals.
-                      </p>
-                    </div>
-                  </div>
-                </div>
-                      </div>
-                      </div>
-                    </div>
-
-        </>
-      )}
-
       {/* Trial Status Banner - Home Page */}
       {!authLoading && !profileLoading && !subscriptionLoading && user && isTrialing && subscriptionStatus.trialEnd && (
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6">

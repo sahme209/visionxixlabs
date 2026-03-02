@@ -1,8 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
-import { HERO_IMAGES } from "@/lib/images";
 import {
   ExclamationTriangleIcon,
   GlobeAltIcon,
@@ -16,43 +14,6 @@ import TravelStateEmergencyBanner from "@/components/TravelStateEmergencyBanner"
 export default function TravelAdvisoriesPage() {
   return (
     <div className="min-h-screen bg-[var(--bg-primary)]">
-      <div className="relative overflow-hidden bg-gradient-to-br from-[var(--hero-dark)] via-[var(--hero-dark-soft)] to-[var(--hero-dark)] border-b-2 border-[var(--uscis-blue)]">
-        <div
-          className="absolute inset-0 opacity-15"
-          style={{
-            backgroundImage:
-              "radial-gradient(circle at 50% 50%, rgba(245, 158, 11, 0.3) 0%, transparent 40%)",
-          }}
-        />
-        <div className="absolute inset-0 w-full">
-          <Image
-            src={HERO_IMAGES.airplane}
-            alt=""
-            fill
-            className="object-cover object-center opacity-20 w-full"
-            sizes="100vw"
-            priority
-          />
-          <div className="absolute inset-0 bg-[var(--hero-dark)]/70" />
-        </div>
-        <div className="h-0.5 bg-gradient-to-r from-[var(--uscis-blue)] via-[var(--uscis-blue-light)] to-[var(--uscis-blue)]" />
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-xl bg-white/15 backdrop-blur border border-white/25 flex items-center justify-center shadow-lg">
-              <ExclamationTriangleIcon className="w-6 h-6 text-white" />
-            </div>
-            <div className="hero-text-white" style={{ color: "#ffffff" }}>
-              <h1 className="text-xl sm:text-2xl font-bold !text-white" style={{ color: "#ffffff" }}>
-                Travel Advisories
-              </h1>
-              <p className="text-sm !text-white mt-0.5" style={{ color: "#ffffff" }}>
-                Country safety before your visa trip. Fast links to official advisories—check before you travel.
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-
       <main className="max-w-7xl mx-auto px-2 min-[380px]:px-3 sm:px-6 lg:px-8 py-6 sm:py-8 w-full min-w-0">
         <div className="mb-6">
           <TravelStateEmergencyBanner />

@@ -9,7 +9,7 @@ import Image from "next/image";
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import { ChevronRightIcon } from "@heroicons/react/24/solid";
 import { analytics } from "@/lib/analytics";
-import { HERO_IMAGES, SECTION_IMAGES, EMPTY_STATE_IMAGES, ICON_IMAGES } from "@/lib/images";
+import { SECTION_IMAGES, EMPTY_STATE_IMAGES, ICON_IMAGES } from "@/lib/images";
 import USCISFormCategoryBadge, { getFormCategory, FormCategory } from "@/components/USCISFormCategoryBadge";
 import FormIcon from "@/components/FormIcon";
 import USCISAlertBanner from "@/components/USCISAlertBanner";
@@ -92,65 +92,29 @@ export default function GuidesPage() {
 
   return (
     <div className="min-h-screen bg-[var(--bg-primary)] gov-page-bg">
-      {/* Government-style Page Header */}
-      <div className="surface-dark relative overflow-hidden bg-[var(--hero-dark)] border-b-2 border-[var(--uscis-blue)] shadow-md">
-        <div className="absolute inset-0 w-full">
-          <Image
-            src={HERO_IMAGES.office}
-            alt=""
-            fill
-            className="object-cover object-center opacity-20 w-full"
-            sizes="100vw"
-            priority
-          />
-          <div className="absolute inset-0 bg-[var(--hero-dark)]/70" />
-          <div className="absolute inset-0 opacity-15" style={{ backgroundImage: "radial-gradient(circle at 50% 50%, rgba(0, 113, 227, 0.2) 0%, transparent 50%)" }} />
-        </div>
-        <div className="h-0.5 bg-gradient-to-r from-[var(--uscis-blue)] via-[var(--uscis-blue-light)] to-[var(--uscis-blue)]" aria-hidden="true" />
-        <div className="pointer-events-none absolute inset-0 opacity-[0.04]" aria-hidden="true" style={{ backgroundImage: "linear-gradient(rgba(255,255,255,0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.08) 1px, transparent 1px)", backgroundSize: "24px 24px" }} />
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex flex-wrap items-center gap-2 mb-3">
-            <div className="w-9 h-9 rounded-lg overflow-hidden border border-white/25 flex-shrink-0 ring-2 ring-white/30">
-              <Image src={ICON_IMAGES.documents} alt="" width={36} height={36} className="w-full h-full object-cover" />
-            </div>
-            <div className="min-w-0 flex-1 antialiased">
-              <h1 className="text-base sm:text-lg font-semibold" style={{ color: "#ffffff" }}>Form Guides</h1>
-              <p className="text-xs leading-snug" style={{ color: "#ffffff" }}>
-                Step-by-step form guides. Pick one, check off as you go.
-              </p>
-            </div>
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-white/20 border border-white/25 text-xs font-medium antialiased" style={{ color: "#ffffff" }}>
-              Based on official government forms
-            </span>
-          </div>
-
-          {/* Search - Compact */}
-          <div className="relative">
-            <MagnifyingGlassIcon className="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white" />
-            <input
-              type="text"
-              placeholder="Search forms..."
-              value={searchText}
-              onChange={(e) => setSearchText(e.target.value)}
-              className="w-full pl-9 pr-9 py-3 min-h-[44px] rounded-lg bg-white/15 border border-white/20 focus:outline-none focus:ring-2 focus:ring-white/40 text-sm sm:text-xs touch-manipulation text-white placeholder:text-white antialiased"
-            />
-            {searchText && (
-              <button
-                onClick={() => setSearchText("")}
-                className="absolute right-2.5 top-1/2 -translate-y-1/2 w-10 h-10 -mr-2 flex items-center justify-center text-white hover:text-white/90 transition-colors touch-manipulation"
-                aria-label="Clear search"
-              >
-                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
-            )}
-          </div>
-        </div>
-      </div>
-
-      {/* Guides List */}
       <main className="max-w-7xl mx-auto px-2 min-[380px]:px-3 sm:px-6 lg:px-8 py-4 sm:py-6 w-full min-w-0">
+        {/* Search */}
+        <div className="relative mb-4">
+          <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--text-tertiary)]" />
+          <input
+            type="text"
+            placeholder="Search forms..."
+            value={searchText}
+            onChange={(e) => setSearchText(e.target.value)}
+            className="w-full pl-10 pr-10 py-3 rounded-xl border border-[var(--border-color)] bg-[var(--bg-surface)] text-sm text-[var(--text-primary)] placeholder-[var(--text-tertiary)] focus:outline-none focus:ring-2 focus:ring-[var(--uscis-blue)]"
+          />
+          {searchText && (
+            <button
+              onClick={() => setSearchText("")}
+              className="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center text-[var(--text-tertiary)] hover:text-[var(--text-primary)] transition-colors"
+              aria-label="Clear search"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          )}
+        </div>
         {/* USCIS Alert Banner */}
         <USCISAlertBanner
           type="info"
