@@ -1,13 +1,3 @@
-"use client";
-
-import {
-  CloudIcon,
-  ArrowPathIcon,
-  BanknotesIcon,
-  ChartBarIcon,
-  ShieldCheckIcon,
-  SparklesIcon,
-} from "@heroicons/react/24/outline";
 import { Reveal } from "@/components/motion/Reveal";
 import { HoverCard } from "@/components/ui/HoverCard";
 
