@@ -26,25 +26,42 @@ export function SectionBackground({
   if (variant === "hero-light") {
     return (
       <div className={`${base} ${className}`} aria-hidden>
+        {/* Diagonal spotlight — strong, visible */}
         <div
-          className="absolute -top-20 -right-20 w-[min(60vw,500px)] h-[min(80vh,600px)] opacity-50 dark:opacity-40"
+          className="absolute inset-0 opacity-100"
           style={{
             background:
-              "radial-gradient(ellipse 70% 70% at 80% 20%, rgb(124 58 237 / 0.12), rgb(217 70 239 / 0.06), transparent 55%)",
+              "linear-gradient(135deg, rgb(124 58 237 / 0.08) 0%, transparent 35%, rgb(217 70 239 / 0.1) 55%, transparent 80%)",
           }}
         />
         <div
-          className="absolute -bottom-20 -left-20 w-[min(50vw,400px)] h-[min(50vh,400px)] opacity-40 dark:opacity-35"
+          className="absolute -top-20 -right-10 w-[min(70vw,600px)] h-[min(85vh,700px)] opacity-90 dark:opacity-80"
           style={{
             background:
-              "radial-gradient(ellipse 60% 60% at 20% 80%, rgb(217 70 239 / 0.08), transparent 55%)",
+              "radial-gradient(ellipse 60% 70% at 85% 15%, rgb(124 58 237 / 0.25), rgb(217 70 239 / 0.12), transparent 60%)",
           }}
         />
+        <div
+          className="absolute -bottom-32 -left-20 w-[min(60vw,500px)] h-[min(60vh,500px)] opacity-80 dark:opacity-70"
+          style={{
+            background:
+              "radial-gradient(ellipse 55% 55% at 15% 85%, rgb(217 70 239 / 0.2), rgb(124 58 237 / 0.08), transparent 60%)",
+          }}
+        />
+        {/* Center glow behind content */}
+        <div
+          className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[min(90vw,800px)] h-[min(70vh,500px)] opacity-60"
+          style={{
+            background:
+              "radial-gradient(ellipse 80% 80% at 50% 50%, rgb(124 58 237 / 0.12), transparent 70%)",
+          }}
+        />
+        {/* Vignette — stronger */}
         <div
           className={vignette}
           style={{
             background:
-              "radial-gradient(ellipse 100% 100% at 50% 50%, transparent 50%, rgb(0 0 0 / 0.04) 100%)",
+              "radial-gradient(ellipse 100% 100% at 50% 50%, transparent 35%, rgb(0 0 0 / 0.08) 80%, rgb(0 0 0 / 0.12) 100%)",
           }}
         />
         {children}

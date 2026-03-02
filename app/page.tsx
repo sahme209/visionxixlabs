@@ -26,6 +26,11 @@ import { AnimatedButton } from "@/components/ui/AnimatedButton";
 import { SectionBackground } from "@/components/ui/SectionBackground";
 import { AccentMarker } from "@/components/ui/AccentMarker";
 import { MiniChart } from "@/components/ui/MiniChart";
+import { MetricPill } from "@/components/ui/MetricPill";
+import { GridBackdrop } from "@/components/ui/GridBackdrop";
+import { TestimonialsCarousel } from "@/components/TestimonialsCarousel";
+import { FAQAccordion } from "@/components/FAQAccordion";
+import { cloudFAQ } from "@/lib/cloudContent";
 
 export default function Home() {
 
@@ -135,29 +140,31 @@ export default function Home() {
               No obligation · Read-only by default · No changes without your approval
             </p>
           </Reveal>
+          <Reveal direction="up" delay={0.18}>
           <div className="flex flex-wrap justify-center gap-3 mb-4">
             <Link
               href="/cloud-solutions/aws"
-              className="inline-flex items-center px-4 py-2 rounded-2xl text-sm font-medium bg-white/80 dark:bg-slate-800/80 backdrop-blur border-2 border-slate-200/80 dark:border-slate-700/80 text-slate-700 dark:text-slate-300 hover:border-orange-300 dark:hover:border-orange-600 transition-all"
+              className="inline-flex items-center px-4 py-2 rounded-2xl text-sm font-medium bg-white/80 dark:bg-slate-800/80 backdrop-blur border-2 border-slate-200/80 dark:border-slate-700/80 text-slate-700 dark:text-slate-300 hover:border-orange-300 dark:hover:border-orange-600 hover:scale-105 hover:shadow-lg transition-all duration-200"
             >
               <span className="text-orange-600 dark:text-orange-400 font-semibold mr-1">AWS</span>
               Cloud
             </Link>
             <Link
               href="/cloud-solutions/azure"
-              className="inline-flex items-center px-4 py-2 rounded-2xl text-sm font-medium bg-white/80 dark:bg-slate-800/80 backdrop-blur border-2 border-slate-200/80 dark:border-slate-700/80 text-slate-700 dark:text-slate-300 hover:border-blue-300 dark:hover:border-blue-600 transition-all"
+              className="inline-flex items-center px-4 py-2 rounded-2xl text-sm font-medium bg-white/80 dark:bg-slate-800/80 backdrop-blur border-2 border-slate-200/80 dark:border-slate-700/80 text-slate-700 dark:text-slate-300 hover:border-blue-300 dark:hover:border-blue-600 hover:scale-105 hover:shadow-lg transition-all duration-200"
             >
               <span className="text-blue-600 dark:text-blue-400 font-semibold mr-1">Azure</span>
               Cloud
             </Link>
             <Link
               href="/cloud-solutions/gcp"
-              className="inline-flex items-center px-4 py-2 rounded-2xl text-sm font-medium bg-white/80 dark:bg-slate-800/80 backdrop-blur border-2 border-slate-200/80 dark:border-slate-700/80 text-slate-700 dark:text-slate-300 hover:border-red-300 dark:hover:border-red-600 transition-all"
+              className="inline-flex items-center px-4 py-2 rounded-2xl text-sm font-medium bg-white/80 dark:bg-slate-800/80 backdrop-blur border-2 border-slate-200/80 dark:border-slate-700/80 text-slate-700 dark:text-slate-300 hover:border-red-300 dark:hover:border-red-600 hover:scale-105 hover:shadow-lg transition-all duration-200"
             >
               <span className="text-red-600 dark:text-red-400 font-semibold mr-1">GCP</span>
               Cloud
             </Link>
           </div>
+          </Reveal>
           <Reveal direction="up" delay={0.24}>
             <p className="text-sm text-slate-500 dark:text-slate-400 max-w-2xl mx-auto">
               Foundations · CI/CD · FinOps · Observability · Security · IaC
@@ -249,9 +256,12 @@ export default function Home() {
       <AnimateOnScroll>
         <section className="py-12 px-4 sm:px-6 lg:px-8 border-t border-slate-200/80 dark:border-slate-700/80">
           <div className="max-w-5xl mx-auto">
-            <h2 className="text-center text-lg font-semibold text-slate-700 dark:text-slate-300 mb-6">
-              Everything connected in one flow
-            </h2>
+            <div className="flex items-center justify-center gap-2 mb-6">
+              <AccentMarker color="fuchsia" />
+              <h2 className="text-center text-lg font-semibold text-slate-700 dark:text-slate-300">
+                Everything connected in one flow
+              </h2>
+            </div>
             <ServicePipeline />
           </div>
         </section>
@@ -262,27 +272,35 @@ export default function Home() {
         <section className="py-16 px-4 sm:px-6 lg:px-8 bg-white/60 dark:bg-slate-900/80 backdrop-blur border-t border-slate-200/80 dark:border-slate-700/80">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-12">
-            <h2 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-slate-100 mb-3">
-              Production systems, not demos
-            </h2>
+            <div className="flex items-center justify-center gap-2 mb-3">
+              <AccentMarker color="indigo" size="md" />
+              <h2 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-slate-100">
+                Production systems, not demos
+              </h2>
+            </div>
             <p className="text-sm text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
               We build internal assistants, automation, and extraction workflows that run safely inside your cloud.
             </p>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 text-center mb-10">
             {[
-              { title: "Internal AI", sub: "Knowledge copilots", color: "violet" as const },
-              { title: "RAG", sub: "Vector search & retrieval", color: "fuchsia" as const },
-              { title: "Automation", sub: "Workflow & classification", color: "indigo" as const },
-              { title: "Extraction", sub: "Docs, forms, invoices", color: "emerald" as const },
-              { title: "Governance", sub: "Security & cost controls", color: "orange" as const },
-              { title: "AWS · Azure · GCP", sub: "Your cloud, your data", color: "violet" as const },
+              { title: "Internal AI", sub: "Knowledge copilots", color: "violet" as const, metric: "80%", chart: "line" as const },
+              { title: "RAG", sub: "Vector search & retrieval", color: "fuchsia" as const, metric: "95%", chart: "area" as const },
+              { title: "Automation", sub: "Workflow & classification", color: "indigo" as const, metric: "3x", chart: "bars" as const },
+              { title: "Extraction", sub: "Docs, forms, invoices", color: "emerald" as const, metric: "10x", chart: "line" as const },
+              { title: "Governance", sub: "Security & cost controls", color: "orange" as const, metric: "SOC2", chart: null },
+              { title: "AWS · Azure · GCP", sub: "Your cloud, your data", color: "violet" as const, metric: "3", chart: null },
             ].map((item, idx) => (
               <Reveal key={item.title} direction="up" delay={idx * 0.05}>
-                <HoverCard className="p-4 bg-white/80 dark:bg-slate-800/60 backdrop-blur border-2 border-slate-200/80 dark:border-slate-700/80 shadow-sm hover:border-violet-300/80 dark:hover:border-violet-600/50 transition-colors">
-                  <AccentMarker color={item.color} className="mx-auto mb-2" />
-                  <div className="text-lg font-bold text-slate-900 dark:text-slate-100">{item.title}</div>
-                  <div className="text-xs text-slate-600 dark:text-slate-400">{item.sub}</div>
+                <HoverCard className="relative overflow-hidden p-4 bg-white/80 dark:bg-slate-800/60 backdrop-blur border-2 border-slate-200/80 dark:border-slate-700/80 shadow-sm hover:border-violet-300/80 dark:hover:border-violet-600/50 transition-colors">
+                  <GridBackdrop opacity={0.5} />
+                  <div className="relative flex items-start justify-between gap-2 mb-2">
+                    <AccentMarker color={item.color} />
+                    {item.chart && <MiniChart type={item.chart} color={item.color} />}
+                    {item.metric && !item.chart && <MetricPill value={item.metric} color={item.color} />}
+                  </div>
+                  <div className="relative text-lg font-bold text-slate-900 dark:text-slate-100">{item.title}</div>
+                  <div className="relative text-xs text-slate-600 dark:text-slate-400">{item.sub}</div>
                 </HoverCard>
               </Reveal>
             ))}
@@ -304,6 +322,10 @@ export default function Home() {
       <AnimateOnScroll>
       <section className="py-12 px-4 sm:px-6 lg:px-8 border-t border-slate-200 dark:border-slate-700">
         <div className="max-w-5xl mx-auto">
+          <div className="flex items-center justify-center gap-2 mb-8">
+            <AccentMarker color="violet" size="md" />
+            <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100">Cloud platforms</h2>
+          </div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
             <div>
               <div className="text-2xl font-bold text-slate-900 dark:text-slate-100 mb-1">AWS</div>
@@ -571,27 +593,36 @@ export default function Home() {
       <section className="py-16 px-4 sm:px-6 lg:px-8 border-t border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-10">
-            <h2 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-slate-100 mb-3">
-              Insights from real projects
-            </h2>
+            <div className="flex items-center justify-center gap-2 mb-3">
+              <AccentMarker color="emerald" size="md" />
+              <h2 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-slate-100">
+                Insights from real projects
+              </h2>
+            </div>
             <p className="text-sm text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
               Short, practical notes on production AI, cost, and cloud engineering.
             </p>
           </div>
-          <div className="flex flex-wrap justify-center gap-4 mb-6">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
             {[
-              { href: "/insights/production-ai-vs-demos", label: "Production AI vs. demos" },
-              { href: "/insights/rag-vs-fine-tuning-when-to-use-which", label: "RAG vs. fine-tuning" },
-              { href: "/insights/ai-cost-management-in-production", label: "AI cost management" },
-              { href: "/insights/choosing-ai-models-for-production", label: "Choosing AI models" },
+              { href: "/insights/production-ai-vs-demos", label: "Production AI vs. demos", color: "violet" as const },
+              { href: "/insights/rag-vs-fine-tuning-when-to-use-which", label: "RAG vs. fine-tuning", color: "fuchsia" as const },
+              { href: "/insights/ai-cost-management-in-production", label: "AI cost management", color: "emerald" as const },
+              { href: "/insights/choosing-ai-models-for-production", label: "Choosing AI models", color: "orange" as const },
             ].map((item, idx) => (
               <Reveal key={item.href} direction="up" delay={idx * 0.05}>
-                <HoverCard className="min-w-0" minimal>
+                <HoverCard className="h-full" minimal>
                   <Link
                     href={item.href}
-                    className="block rounded-2xl border-2 border-slate-200/80 dark:border-slate-700/80 bg-white/80 dark:bg-slate-800/80 backdrop-blur px-5 py-3 text-sm font-medium text-slate-700 dark:text-slate-300 hover:border-violet-300 dark:hover:border-violet-600 transition-colors"
+                    className="block h-full rounded-2xl border-2 border-slate-200/80 dark:border-slate-700/80 bg-white dark:bg-slate-800 overflow-hidden shadow-lg shadow-slate-200/20 dark:shadow-none hover:border-violet-300 dark:hover:border-violet-600 transition-colors group"
                   >
-                    {item.label}
+                    <div className={`h-2 ${item.color === "violet" ? "bg-violet-500" : item.color === "fuchsia" ? "bg-fuchsia-500" : item.color === "emerald" ? "bg-emerald-500" : "bg-orange-500"}`} />
+                    <div className="p-4">
+                      <AccentMarker color={item.color} className="mb-2" />
+                      <span className="text-sm font-semibold text-slate-900 dark:text-slate-100 group-hover:text-violet-600 dark:group-hover:text-violet-400 transition-colors">
+                        {item.label}
+                      </span>
+                    </div>
                   </Link>
                 </HoverCard>
               </Reveal>
@@ -620,9 +651,12 @@ export default function Home() {
         <div className="max-w-6xl mx-auto">
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div>
-              <h2 id="about-heading" className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-slate-100 mb-4">
-                Engineering-first cloud consulting
-              </h2>
+              <div className="flex items-center gap-2 mb-4">
+                <AccentMarker color="orange" size="md" />
+                <h2 id="about-heading" className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-slate-100">
+                  Engineering-first cloud consulting
+                </h2>
+              </div>
               <p className="text-sm text-slate-600 dark:text-slate-400 mb-6 leading-relaxed">
                 We help teams design, automate, and operate platforms with IaC, CI/CD, and clear handover.
               </p>
@@ -649,27 +683,58 @@ export default function Home() {
               </div>
             </div>
             <div className="grid grid-cols-2 gap-4">
-              <div className="card-hover group rounded-3xl border-2 border-slate-200/80 dark:border-slate-700/80 bg-white/80 dark:bg-slate-800/80 backdrop-blur p-6 shadow-lg shadow-slate-200/30 dark:shadow-none">
-                <SparklesIcon className="h-7 w-7 text-violet-600 dark:text-violet-400 mb-3 icon-bounce" />
-                <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100 mb-1">Proven patterns</h3>
-                <p className="text-sm text-slate-600 dark:text-slate-400">We use established practices, not unproven trends.</p>
-              </div>
-              <div className="card-hover group rounded-3xl border-2 border-slate-200/80 dark:border-slate-700/80 bg-white/80 dark:bg-slate-800/80 backdrop-blur p-6 shadow-lg shadow-slate-200/30 dark:shadow-none">
-                <CheckBadgeIcon className="h-7 w-7 text-slate-600 dark:text-slate-400 mb-3 icon-bounce" />
-                <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100 mb-1">Production-ready</h3>
-                <p className="text-sm text-slate-600 dark:text-slate-400">Code and infrastructure built to run in production.</p>
-              </div>
-              <div className="card-hover group rounded-3xl border-2 border-slate-200/80 dark:border-slate-700/80 bg-white/80 dark:bg-slate-800/80 backdrop-blur p-6 shadow-lg shadow-slate-200/30 dark:shadow-none">
-                <RocketLaunchIcon className="h-7 w-7 text-slate-600 dark:text-slate-400 mb-3 icon-bounce" />
-                <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100 mb-1">Automation</h3>
-                <p className="text-sm text-slate-600 dark:text-slate-400">Pipelines and IaC to ship faster and safer.</p>
-              </div>
-              <div className="card-hover group rounded-3xl border-2 border-slate-200/80 dark:border-slate-700/80 bg-white/80 dark:bg-slate-800/80 backdrop-blur p-6 shadow-lg shadow-slate-200/30 dark:shadow-none">
-                <ShieldCheckIcon className="h-7 w-7 text-slate-600 dark:text-slate-400 mb-3 icon-bounce" />
-                <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100 mb-1">Security by design</h3>
-                <p className="text-sm text-slate-600 dark:text-slate-400">Access control and governance built in from the start.</p>
-              </div>
+              {[
+                { Icon: SparklesIcon, title: "Proven patterns", desc: "We use established practices, not unproven trends.", color: "violet" as const },
+                { Icon: CheckBadgeIcon, title: "Production-ready", desc: "Code and infrastructure built to run in production.", color: "emerald" as const },
+                { Icon: RocketLaunchIcon, title: "Automation", desc: "Pipelines and IaC to ship faster and safer.", color: "orange" as const },
+                { Icon: ShieldCheckIcon, title: "Security by design", desc: "Access control and governance built in from the start.", color: "fuchsia" as const },
+              ].map((card, idx) => {
+                const Icon = card.Icon;
+                return (
+                <Reveal key={card.title} direction="up" delay={idx * 0.06}>
+                  <HoverCard className="relative overflow-hidden group rounded-3xl border-2 border-slate-200/80 dark:border-slate-700/80 bg-white/80 dark:bg-slate-800/80 backdrop-blur p-6 shadow-lg shadow-slate-200/30 dark:shadow-none hover:border-violet-300/80 dark:hover:border-violet-600/50">
+                    <GridBackdrop opacity={0.4} />
+                    <div className="relative flex items-start justify-between gap-3 mb-3">
+                      <div className="flex items-center gap-2">
+                        <AccentMarker color={card.color} />
+                        <Icon className="h-7 w-7 text-slate-600 dark:text-slate-400 icon-bounce group-hover:text-violet-600 dark:group-hover:text-violet-400" />
+                      </div>
+                      <MiniChart type="line" color={card.color} />
+                    </div>
+                    <h3 className="relative text-lg font-semibold text-slate-900 dark:text-slate-100 mb-1">{card.title}</h3>
+                    <p className="relative text-sm text-slate-600 dark:text-slate-400">{card.desc}</p>
+                  </HoverCard>
+                </Reveal>
+              );})}
             </div>
+          </div>
+        </div>
+      </section>
+      </AnimateOnScroll>
+
+      {/* Testimonials — carousel with split panels */}
+      <Reveal direction="up">
+        <TestimonialsCarousel />
+      </Reveal>
+
+      {/* FAQ Section */}
+      <AnimateOnScroll>
+      <section id="faq" className="py-20 px-4 sm:px-6 lg:px-8 border-t border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30" aria-labelledby="faq-heading">
+        <div className="max-w-3xl mx-auto">
+          <div className="flex items-center justify-center gap-2 mb-8">
+            <AccentMarker color="violet" size="md" />
+            <h2 id="faq-heading" className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-slate-100">
+              Frequently asked questions
+            </h2>
+          </div>
+          <FAQAccordion items={cloudFAQ.slice(0, 6)} />
+          <div className="mt-6 text-center">
+            <Link
+              href="/services#faq-heading"
+              className="text-sm font-semibold text-violet-600 dark:text-violet-400 hover:underline"
+            >
+              View all FAQs →
+            </Link>
           </div>
         </div>
       </section>

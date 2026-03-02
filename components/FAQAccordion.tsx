@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { motionConfig } from "@/lib/motion/tokens";
+import { motionConfig, prefersReducedMotionQuery } from "@/lib/motion/tokens";
 
 type FAQItem = { question: string; answer: string };
 
@@ -12,6 +12,18 @@ type FAQAccordionProps = {
 
 export function FAQAccordion({ items }: FAQAccordionProps) {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
+  const [reduceMotion, setReduceMotion] = useState(false);
+
+  useEffect(() => {
+    if (typeof window === "undefined" || !window.matchMedia) return;
+    const mq = window.matchMedia(prefersReducedMotionQuery);
+    setReduceMotion(mq.matches);
+    const listener = (e: MediaQueryListEvent) => setReduceMotion(e.matches);
+    mq.addEventListener("change", listener);
+    return () => mq.removeEventListener("change", listener);
+  }, []);
+
+  const duration = reduceMotion ? 0 : motionConfig.duration;
 
   return (
     <div className="space-y-3">
@@ -48,7 +60,7 @@ export function FAQAccordion({ items }: FAQAccordionProps) {
                   initial={{ height: 0, opacity: 0 }}
                   animate={{ height: "auto", opacity: 1 }}
                   exit={{ height: 0, opacity: 0 }}
-                  transition={{ duration: motionConfig.duration, ease: motionConfig.ease }}
+                  transition={{ duration, ease: motionConfig.ease }}
                   className="overflow-hidden px-4 md:px-5 pb-4"
                 >
                   <div className="mt-1 text-sm text-slate-600 dark:text-slate-400">
