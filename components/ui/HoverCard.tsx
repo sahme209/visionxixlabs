@@ -8,9 +8,11 @@ import { useEffect, useState } from "react";
 type HoverCardProps = {
   children: ReactNode;
   className?: string;
+  /** When true, only adds hover motion—no card styling (use to wrap existing cards) */
+  minimal?: boolean;
 };
 
-export function HoverCard({ children, className = "" }: HoverCardProps) {
+export function HoverCard({ children, className = "", minimal }: HoverCardProps) {
   const [reduceMotion, setReduceMotion] = useState(false);
 
   useEffect(() => {
@@ -22,16 +24,17 @@ export function HoverCard({ children, className = "" }: HoverCardProps) {
     return () => mq.removeEventListener("change", onChange);
   }, []);
 
-  const base =
-    "rounded-2xl border border-slate-200/80 dark:border-slate-700/80 bg-white/80 dark:bg-slate-900/70 backdrop-blur shadow-sm transition-colors";
+  const base = minimal
+    ? ""
+    : "rounded-2xl border border-slate-200/80 dark:border-slate-700/80 bg-white/80 dark:bg-slate-900/70 backdrop-blur shadow-sm transition-colors";
 
   if (reduceMotion) {
-    return <div className={`${base} ${className}`}>{children}</div>;
+    return <div className={`${base} ${className}`.trim()}>{children}</div>;
   }
 
   return (
     <motion.div
-      className={`${base} ${className}`}
+      className={`${base} ${className}`.trim() || undefined}
       whileHover={{
         y: -4,
         boxShadow: "0 18px 45px rgba(15,23,42,0.28)",

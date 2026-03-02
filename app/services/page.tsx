@@ -32,6 +32,8 @@ import { SecurityAccessSection } from "@/components/SecurityAccessSection";
 import { HowWeWorkSection } from "@/components/HowWeWorkSection";
 import { FAQAccordion } from "@/components/FAQAccordion";
 import { PackageCard } from "@/components/PackageCard";
+import { ServicesGrid } from "@/components/ServicesGrid";
+import { AnimatedButton } from "@/components/ui/AnimatedButton";
 
 export const metadata: Metadata = {
   title: "Cloud & AI Engineering Services",
@@ -40,68 +42,6 @@ export const metadata: Metadata = {
   openGraph: { url: "https://visionxixlabs.com/services" },
   alternates: { canonical: "https://visionxixlabs.com/services" },
 };
-
-type ServiceCardProps = {
-  icon: React.ElementType;
-  title: string;
-  description: string;
-  items: string[];
-  outcomes: string[];
-};
-
-function ServiceCard({
-  icon: Icon,
-  title,
-  description,
-  items,
-  outcomes,
-}: ServiceCardProps) {
-  return (
-    <div className="card-hover bg-white dark:bg-slate-800 rounded-2xl p-8 shadow-xl border border-slate-200 dark:border-slate-700 flex flex-col h-full">
-      <div className="flex items-start gap-4 mb-4">
-        <div className="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-indigo-100 dark:bg-indigo-900/40 text-indigo-700 dark:text-indigo-300">
-          <Icon className="h-6 w-6" />
-        </div>
-        <div>
-          <h3 className="text-xl font-bold text-slate-900 dark:text-slate-100">
-            {title}
-          </h3>
-          <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">
-            {description}
-          </p>
-        </div>
-      </div>
-      <div className="mt-4 space-y-4 text-sm text-slate-600 dark:text-slate-400 flex-1">
-        <div>
-          <p className="font-semibold text-slate-900 dark:text-slate-100 mb-2">
-            What we deliver
-          </p>
-          <ul className="space-y-1">
-            {items.map((item) => (
-              <li key={item} className="flex gap-2">
-                <span className="mt-1 h-1.5 w-1.5 rounded-full bg-indigo-500" />
-                <span>{item}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
-        <div>
-          <p className="font-semibold text-slate-900 dark:text-slate-100 mb-2">
-            Outcomes
-          </p>
-          <ul className="space-y-1">
-            {outcomes.map((outcome) => (
-              <li key={outcome} className="flex gap-2">
-                <span className="mt-1 h-1.5 w-1.5 rounded-full bg-emerald-500" />
-                <span>{outcome}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </div>
-    </div>
-  );
-}
 
 function CTASection() {
   return (
@@ -114,18 +54,16 @@ function CTASection() {
           For infrastructure, CI/CD, cost optimization, or security—we work with technical leads to define scope and delivery.
         </p>
         <div className="flex flex-wrap justify-center gap-3">
-          <Link
-            href="/contact"
-            className="inline-flex items-center px-6 py-2.5 bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 rounded-lg font-semibold text-sm hover:opacity-90 transition-opacity"
-          >
+          <AnimatedButton href="/contact" variant="secondary">
             Contact
-          </Link>
-          <a
+          </AnimatedButton>
+          <AnimatedButton
             href="mailto:support@visionxixlabs.com"
-            className="inline-flex items-center px-6 py-2.5 border border-slate-200 dark:border-slate-600 text-slate-700 dark:text-slate-300 rounded-lg font-semibold text-sm hover:border-slate-300 dark:hover:border-slate-500 transition-colors"
+            variant="ghost"
+            className="border border-slate-200 dark:border-slate-600"
           >
             Email
-          </a>
+          </AnimatedButton>
         </div>
       </div>
     </section>
@@ -280,11 +218,7 @@ export default function ServicesPage() {
             <p className="text-slate-600 dark:text-slate-400 mb-8 max-w-3xl">
               Outcome-focused workstreams: infrastructure, CI/CD, FinOps, observability, security, and production AI integration. Each with defined deliverables and outcomes.
             </p>
-            <div className="grid gap-6 md:grid-cols-2">
-              {services.map((service) => (
-                <ServiceCard key={service.id} {...service} />
-              ))}
-            </div>
+            <ServicesGrid services={services} />
           </section>
 
           {/* AI-focused services overview */}
@@ -298,18 +232,20 @@ export default function ServicesPage() {
                 secure, observable, and cost-aware AI workloads that live alongside your existing services.
               </p>
               <div className="flex flex-wrap gap-4 text-sm">
-                <Link
+                <AnimatedButton
                   href="/ai-engineering"
-                  className="inline-flex items-center px-4 py-2 rounded-lg bg-white text-slate-900 font-semibold hover:bg-slate-100 transition-colors"
+                  variant="secondary"
+                  className="bg-white text-slate-900 hover:bg-slate-100"
                 >
                   AI Engineering &amp; LLM Systems
-                </Link>
-                <Link
+                </AnimatedButton>
+                <AnimatedButton
                   href="/ai-solutions"
-                  className="inline-flex items-center px-4 py-2 rounded-lg border border-slate-500 text-slate-100 font-semibold hover:border-slate-300 transition-colors"
+                  variant="ghost"
+                  className="border border-slate-500 text-slate-100 hover:border-slate-300"
                 >
                   Explore AI Solutions
-                </Link>
+                </AnimatedButton>
               </div>
             </div>
           </section>

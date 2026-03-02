@@ -22,6 +22,7 @@ import { HeroHeadlineGlow } from "@/components/HeroHeadlineGlow";
 import { Reveal } from "@/components/motion/Reveal";
 import { Stagger } from "@/components/motion/Stagger";
 import { HoverCard } from "@/components/ui/HoverCard";
+import { AnimatedButton } from "@/components/ui/AnimatedButton";
 
 export default function Home() {
 
@@ -102,20 +103,22 @@ export default function Home() {
           </Reveal>
           <Stagger delay={0.12}>
             <div className="flex flex-wrap justify-center gap-4 mb-6">
-              <Link
+              <AnimatedButton
                 href="/cloud-operator"
-                className="btn-huly cta-glow inline-flex items-center px-6 py-3 bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white rounded-2xl font-semibold shadow-lg shadow-violet-500/30 hover:shadow-violet-500/40"
+                variant="primary"
+                className="btn-huly cta-glow shadow-lg shadow-violet-500/30 hover:shadow-violet-500/40"
               >
                 Run Axiom
                 <ArrowRightIcon className="ml-2 h-5 w-5" />
-              </Link>
-              <Link
+              </AnimatedButton>
+              <AnimatedButton
                 href="/axiom"
-                className="btn-huly inline-flex items-center px-6 py-3 bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 rounded-2xl font-semibold shadow-lg hover:bg-slate-800 dark:hover:bg-slate-200"
+                variant="secondary"
+                className="btn-huly shadow-lg"
               >
                 See how it works
                 <ArrowRightIcon className="ml-2 h-5 w-5" />
-              </Link>
+              </AnimatedButton>
             </div>
           </Stagger>
           <Reveal direction="up" delay={0.2}>

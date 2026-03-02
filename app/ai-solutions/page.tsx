@@ -36,6 +36,10 @@ import {
   clientCollaborationItems,
 } from "@/lib/engineeringContent";
 import { AISolutionCard } from "@/components/AISolutionCard";
+import { AIDifferentiatorsGrid } from "@/components/AIDifferentiatorsGrid";
+import { AIUseCasesExpandedGrid } from "@/components/AIUseCasesExpandedGrid";
+import { AIWhatWeBuildGrid } from "@/components/AIWhatWeBuildGrid";
+import { AIHeroCTAs } from "@/components/AIHeroCTAs";
 import { AIProcessStep } from "@/components/AIProcessStep";
 import { AIPackageCard } from "@/components/AIPackageCard";
 import { FAQAccordion } from "@/components/FAQAccordion";
@@ -116,20 +120,12 @@ export default function AISolutionsPage() {
               <p className="text-lg md:text-xl text-slate-600 dark:text-slate-400 mb-10">
                 {aiHero.subtitle}
               </p>
-              <div className="flex flex-wrap justify-center gap-4">
-                <Link
-                  href="/contact"
-                  className="inline-flex items-center px-6 py-3 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 text-white text-sm font-semibold shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all"
-                >
-                  {aiHero.ctaPrimary}
-                </Link>
-                <a
-                  href="#what-we-build"
-                  className="inline-flex items-center px-6 py-3 rounded-xl bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 text-sm font-semibold shadow-lg hover:shadow-xl border border-slate-200 dark:border-slate-700 hover:-translate-y-0.5 transition-all"
-                >
-                  {aiHero.ctaSecondary}
-                </a>
-              </div>
+              <AIHeroCTAs
+                primaryLabel={aiHero.ctaPrimary}
+                primaryHref="/contact"
+                secondaryLabel={aiHero.ctaSecondary}
+                secondaryHref="#what-we-build"
+              />
             </div>
           </section>
 
@@ -143,17 +139,7 @@ export default function AISolutionsPage() {
                 Production-first, cloud-native, and built for operations. We close the gap between AI demos and real business value.
               </p>
             </div>
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {aiDifferentiators.map((d) => (
-                <div
-                  key={d.title}
-                  className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-6"
-                >
-                  <h3 className="font-semibold text-slate-900 dark:text-slate-100 mb-2">{d.title}</h3>
-                  <p className="text-sm text-slate-600 dark:text-slate-400">{d.description}</p>
-                </div>
-              ))}
-            </div>
+            <AIDifferentiatorsGrid differentiators={aiDifferentiators} />
           </section>
 
           {/* AI use cases expanded */}
@@ -166,21 +152,7 @@ export default function AISolutionsPage() {
                 From customer support to DevOps—we deliver production-grade AI across workflows.
               </p>
             </div>
-            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {aiUseCasesExpanded.map((uc) => (
-                <div
-                  key={uc.category}
-                  className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-6"
-                >
-                  <h3 className="font-semibold text-slate-900 dark:text-slate-100 mb-3">{uc.category}</h3>
-                  <ul className="space-y-1 text-sm text-slate-600 dark:text-slate-400">
-                    {uc.items.map((item) => (
-                      <li key={item}>• {item}</li>
-                    ))}
-                  </ul>
-                </div>
-              ))}
-            </div>
+            <AIUseCasesExpandedGrid useCases={aiUseCasesExpanded} />
           </section>
 
           {/* Where companies need AI */}
@@ -209,11 +181,7 @@ export default function AISolutionsPage() {
                 Practical AI solutions deployed inside your cloud, with security and governance built in.
               </p>
             </div>
-            <div className="grid gap-6 md:grid-cols-2">
-              {aiWhatWeBuild.map((card) => (
-                <AISolutionCard key={card.id} {...card} />
-              ))}
-            </div>
+            <AIWhatWeBuildGrid cards={aiWhatWeBuild} />
           </section>
 
           {/* Production AI Systems — structured offerings */}

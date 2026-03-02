@@ -32,7 +32,12 @@ import {
   securityAccessBlocks,
   clientCollaborationItems,
 } from "@/lib/engineeringContent";
-import { SolutionCard } from "@/components/SolutionCard";
+import { CloudSolutionsAnimatedGrid } from "@/components/CloudSolutionsAnimatedGrid";
+import { CloudHeroCTAs } from "@/components/CloudHeroCTAs";
+import { CloudMethodologyGrid } from "@/components/CloudMethodologyGrid";
+import { CloudUseCasesGrid } from "@/components/CloudUseCasesGrid";
+import { CloudIndustriesGrid } from "@/components/CloudIndustriesGrid";
+import { CloudTrustGrid } from "@/components/CloudTrustGrid";
 import { PackageCard } from "@/components/PackageCard";
 import { FAQAccordion } from "@/components/FAQAccordion";
 import { CloudProviderTabs } from "@/components/CloudProviderTabs";
@@ -112,20 +117,7 @@ export default function CloudSolutionsPage() {
               <p className="text-lg md:text-xl text-slate-600 dark:text-slate-400 max-w-3xl">
                 {cloudSolutionsHero.subtitle}
               </p>
-              <div className="mt-8 flex flex-wrap gap-4">
-                <Link
-                  href="/contact"
-                  className="cta-glow inline-flex items-center px-6 py-3 rounded-2xl bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white text-sm font-semibold shadow-lg shadow-violet-500/30 hover:shadow-violet-500/40 hover:-translate-y-0.5 transition-all"
-                >
-                  Book a Call
-                </Link>
-                <a
-                  href="#solutions-grid"
-                  className="inline-flex items-center px-6 py-3 rounded-2xl bg-white/80 dark:bg-slate-900/80 backdrop-blur text-slate-800 dark:text-slate-100 text-sm font-semibold shadow-lg border-2 border-slate-200/80 dark:border-slate-700/80 hover:border-violet-300 dark:hover:border-violet-600 hover:-translate-y-0.5 transition-all"
-                >
-                  View Solutions
-                </a>
-              </div>
+              <CloudHeroCTAs />
               <div className="mt-8 flex flex-wrap gap-2">
                 {cloudSolutionsHero.capabilities.map((capability) => (
                   <span
@@ -182,11 +174,7 @@ export default function CloudSolutionsPage() {
                 </p>
               </div>
             </div>
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-              {cloudSolutionCards.map((solution) => (
-                <SolutionCard key={solution.id} {...solution} />
-              ))}
-            </div>
+            <CloudSolutionsAnimatedGrid solutions={cloudSolutionCards} />
           </section>
 
           {/* Technical Scope */}
@@ -258,57 +246,7 @@ export default function CloudSolutionsPage() {
                 predictable while giving you clear visibility at every step.
               </p>
             </div>
-            <div className="grid gap-6 md:grid-cols-3">
-              {[
-                {
-                  title: "Discovery",
-                  description:
-                    "Understand your products, teams, constraints, and current AWS/Azure landscape.",
-                },
-                {
-                  title: "Architecture & Roadmap",
-                  description:
-                    "Define target architectures and a prioritized roadmap that balances risk and impact.",
-                },
-                {
-                  title: "Implementation",
-                  description:
-                    "Deliver changes in small, safe increments with your teams involved throughout.",
-                },
-                {
-                  title: "Hardening & Automation",
-                  description:
-                    "Bake reliability, security, and automation into the platform and pipelines.",
-                },
-                {
-                  title: "Handover & Documentation",
-                  description:
-                    "Document decisions, patterns, and runbooks so your teams can own the platform.",
-                },
-                {
-                  title: "Optimization & Support",
-                  description:
-                    "Refine cost, performance, and processes based on real usage and business feedback.",
-                },
-              ].map((step, index) => (
-                <div
-                  key={step.title}
-                  className="card-hover bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-xl border border-slate-200 dark:border-slate-700"
-                >
-                  <div className="flex items-center justify-between mb-3">
-                    <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100">
-                      {step.title}
-                    </h3>
-                    <span className="text-xs font-semibold text-slate-400">
-                      {String(index + 1).padStart(2, "0")}
-                    </span>
-                  </div>
-                  <p className="text-sm text-slate-600 dark:text-slate-400">
-                    {step.description}
-                  </p>
-                </div>
-              ))}
-            </div>
+            <CloudMethodologyGrid />
           </section>
 
           {/* How We Work */}
@@ -378,11 +316,7 @@ export default function CloudSolutionsPage() {
             <p className="text-slate-600 dark:text-slate-400 mb-8 max-w-3xl">
               Problem → approach → outcome. Representative scenarios we are set up to address.
             </p>
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-              {useCases.map((uc) => (
-                <UseCaseCard key={uc.title} {...uc} />
-              ))}
-            </div>
+            <CloudUseCasesGrid useCases={useCases} />
           </section>
 
           {/* Provider Comparison */}
@@ -402,16 +336,7 @@ export default function CloudSolutionsPage() {
                 representative, not exhaustive.
               </p>
             </div>
-            <div className="grid gap-4 md:grid-cols-3">
-              {industries.map((industry) => (
-                <div
-                  key={industry}
-                  className="card-hover bg-white dark:bg-slate-800 rounded-2xl p-4 shadow-lg border border-slate-200 dark:border-slate-700 text-sm text-slate-700 dark:text-slate-300 text-center"
-                >
-                  {industry}
-                </div>
-              ))}
-            </div>
+            <CloudIndustriesGrid industries={industries} />
           </section>
 
           {/* Trust & Compliance */}
@@ -427,14 +352,7 @@ export default function CloudSolutionsPage() {
             </div>
             <div className="grid gap-6 md:grid-cols-2">
               <div className="space-y-3">
-                {trustPrinciples.map((principle) => (
-                  <div
-                    key={principle}
-                    className="card-hover bg-white dark:bg-slate-800 rounded-xl p-4 shadow-lg border border-slate-200 dark:border-slate-700 text-sm text-slate-700 dark:text-slate-300"
-                  >
-                    {principle}
-                  </div>
-                ))}
+                <CloudTrustGrid principles={trustPrinciples} />
               </div>
               <div className="card-hover bg-slate-900 text-slate-100 rounded-2xl p-6 shadow-xl border border-slate-700 flex flex-col justify-between">
                 <div>
