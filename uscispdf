@@ -1,0 +1,55 @@
+U.S. Department of Homeland Security
+U.S. Citizenship and Immigration Services
+Office of Information Technology
+Camp Springs, MD 20588-0099
+Jan 16, 2026
+Hello
+Vision XIX Labs,
+We are writing to inform you of the result of your recent application demonstration with the
+USCIS API Program. Below are the details of your completed demonstration session:
+January 14, 2026
+Date of Demo
+Time
+1:00 PM EST
+Demo Observed By
+Jerick Perez
+API Used in Demo
+Case Status API
+Name of Organization
+Vision XIX Labs
+Name of Application
+Vision XIX Labs
+Result of Demo
+FAIL
+Below are the key requirements we observed, determining your demonstration session:
+Demo Requirement Result
+Whether a user can easily enter the required information in your application throughout the
+user interface
+PASS
+Whether a user was able to successfully upload an encoded file as outlined in the
+documentation
+Not Applicable
+Whether the user’s completed application successfully converts to a JSON payload.
+PASS
+Whether the application successfully authenticated to our API using OAuth 2.0
+FAIL
+Whether the USCIS API HTTPS response was successfully sent back and presented in the
+application
+FAIL
+Whether your application tracks case status from your application
+FAIL
+Based on the results of your demonstration, we are unable to approve your application for
+production access at this time. We acknowledge that you may find these results
+frustrating and want to provide you with guidance to support the recommended changes
+listed in the table above.
+• Prepare an explanation on your back end architecture for both desktop and mobile. We need to confirm that all
+request to the case status API come from your service and not directly from the client application.
+• Please also explain how the client application is authenticated to access your services.
+• Additionally, your desktop application failed to render the results of the JSON body when a 200 OK is passed.
+Please update your front end to handle the data from USCIS.
+Please conduct a series of API tests after you make these changes. When you are ready to re-
+demo, please schedule your Demo Appointment following the link provided via email. If you
+have any questions, please reply to this email or contact us at
+developersupport@uscis.dhs.gov.
+Regards,
+USCIS Torch API Developer Support

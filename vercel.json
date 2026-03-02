@@ -1,3 +1,6 @@
 {
-  "installCommand": "npm install --legacy-peer-deps=false"
+  "crons": [
+    { "path": "/api/cron/weekly-summary", "schedule": "0 9 * * 1" },
+    { "path": "/api/cron/trial-reminder", "schedule": "0 10 * * *" }
+  ]
 }
