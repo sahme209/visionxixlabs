@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import "../styles/axiom-theme.css";
+import { Analytics } from "@vercel/analytics/next";
 import { OrganizationJsonLd, WebSiteJsonLd } from "@/components/JsonLd";
 import AIChatWidget from "@/components/AIChatWidget";
 import { Providers } from "@/components/Providers";
@@ -74,6 +75,7 @@ export default function RootLayout({
           <div className="pb-20 md:pb-0">{children}</div>
           <StickyMobileCTA />
           <AIChatWidget />
+          <Analytics />
         </Providers>
       </body>
     </html>
