@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Image from "next/image";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useSubscription } from "@/hooks/useSubscription";
@@ -31,7 +30,6 @@ import {
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import AccountActivityChart from "@/components/charts/AccountActivityChart";
-import { HERO_IMAGES } from "@/lib/images";
 import SubscriptionUsageChart from "@/components/charts/SubscriptionUsageChart";
 
 export default function SettingsPage() {
@@ -294,20 +292,6 @@ export default function SettingsPage() {
 
   return (
     <div className="min-h-screen bg-[var(--bg-primary)] pb-8 md:pb-12">
-      {/* Header — Apple-style clean */}
-      <div className="surface-dark relative overflow-hidden bg-[var(--hero-dark)] border-b border-white/10">
-        <div className="absolute inset-0 w-full">
-          <Image src={HERO_IMAGES.office} alt="" fill className="object-cover object-center opacity-15 w-full" sizes="100vw" />
-          <div className="absolute inset-0 bg-[var(--hero-dark)]/85" />
-        </div>
-        <div className="relative z-10 w-full mx-auto px-4 sm:px-6 lg:px-8 py-5 sm:py-6">
-          <h1 className="text-2xl sm:text-3xl font-semibold text-white tracking-tight">Settings</h1>
-          <p className="text-sm sm:text-base text-white/75 mt-1 max-w-xl">
-            Manage your account, preferences, and subscription. Your data stays private and secure.
-          </p>
-        </div>
-      </div>
-
       {/* Main Content - responsive padding, two-col on desktop */}
       <main className="w-full mx-auto px-2 min-[380px]:px-3 sm:px-6 lg:px-8 py-3 md:py-10 w-full min-w-0">
         {/* Success Message Banner */}

@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { HERO_IMAGES, SECTION_IMAGES, EMPTY_STATE_IMAGES, ICON_IMAGES } from "@/lib/images";
+import { SECTION_IMAGES, EMPTY_STATE_IMAGES, ICON_IMAGES } from "@/lib/images";
 import { analytics } from "@/lib/analytics";
 import { MagnifyingGlassIcon, ExclamationCircleIcon } from "@heroicons/react/24/outline";
 
@@ -165,79 +165,37 @@ export default function HelpPage() {
 
   return (
     <div className="min-h-screen bg-[var(--bg-primary)]">
-      {/* Enhanced Header */}
-      <div className="surface-dark relative overflow-hidden bg-[var(--hero-dark)] border-b-2 border-[var(--uscis-blue)]">
-        <div className="absolute inset-0 w-full">
-          <Image
-            src={HERO_IMAGES.documents}
-            alt=""
-            fill
-            className="object-cover object-center opacity-20 w-full"
-            sizes="100vw"
-            priority
+      <main className="w-full mx-auto px-2 min-[380px]:px-3 sm:px-6 lg:px-8 py-6 space-y-8 w-full min-w-0">
+        {/* Search */}
+        <div className="relative mb-4">
+          <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-[var(--text-tertiary)]" />
+          <input
+            type="text"
+            placeholder="Search help topics..."
+            value={searchText}
+            onChange={(e) => handleSearchChange(e.target.value)}
+            className="w-full pl-10 pr-10 py-3 rounded-xl border border-[var(--border-color)] bg-[var(--bg-surface)] text-sm text-[var(--text-primary)] placeholder-[var(--text-tertiary)] focus:outline-none focus:ring-2 focus:ring-[var(--uscis-blue)]"
           />
-          <div className="absolute inset-0 bg-[var(--hero-dark)]/70" />
-          <div className="absolute inset-0 opacity-15" style={{ backgroundImage: "radial-gradient(circle at 50% 50%, rgba(0, 113, 227, 0.2) 0%, transparent 50%)" }} />
-        </div>
-        <div className="h-0.5 bg-gradient-to-r from-[var(--uscis-blue)] via-[var(--uscis-blue-light)] to-[var(--uscis-blue)]" aria-hidden="true" />
-        <div className="pointer-events-none absolute inset-0 opacity-[0.04]" aria-hidden="true" style={{ backgroundImage: "linear-gradient(rgba(255,255,255,0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.08) 1px, transparent 1px)", backgroundSize: "24px 24px" }} />
-        <div className="w-full mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="w-10 h-10 rounded-lg overflow-hidden border border-white/30 flex-shrink-0 ring-2 ring-white/20">
-              <Image src={ICON_IMAGES.checklist} alt="" width={40} height={40} className="w-full h-full object-cover" />
-            </div>
-            <div className="min-w-0 flex-1">
-              <h1
-                className="text-base sm:text-lg font-semibold mb-0.5 text-white !text-white"
-                style={{ color: "white" }}
-              >
-                Help Center
-              </h1>
-              <p className="text-gray-100 text-xs line-clamp-2">
-                Find answers without digging through multiple sites—FAQs, documents, timelines, interview prep
-              </p>
-            </div>
-          </div>
-
-          {/* Search */}
-          <div className="relative">
-            <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-white/70" />
-            <input
-              type="text"
-              placeholder="Search help topics..."
-              value={searchText}
-              onChange={(e) => handleSearchChange(e.target.value)}
-              className="w-full pl-10 pr-4 py-3 rounded-xl bg-white/10 backdrop-blur-sm border border-white/20 text-white placeholder-white/70 focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-white/40"
-            />
-            {searchText && (
-              <button
-                onClick={() => {
-                  setSearchText("");
-                  setSuggestedAction(null);
-                }}
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-white/70 hover:text-white"
-              >
-                ✕
-              </button>
-            )}
-          </div>
-          
-          {/* Suggested Action */}
-          {suggestedAction && (
-            <div className="mt-3">
-              <Link
-                href={suggestedAction === "FAQs" ? "/help/faq" : "/help/documents"}
-                className="inline-flex items-center gap-2 px-4 py-2 bg-white/20 backdrop-blur-sm border border-white/30 text-white rounded-lg hover:bg-white/30 transition-colors text-sm font-medium"
-              >
-                {suggestedAction === "FAQs" ? "Open FAQs →" : "Open Documents & Sponsors →"}
-              </Link>
-            </div>
+          {searchText && (
+            <button
+              onClick={() => { setSearchText(""); setSuggestedAction(null); }}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--text-tertiary)] hover:text-[var(--text-primary)]"
+              aria-label="Clear search"
+            >
+              ✕
+            </button>
           )}
         </div>
-      </div>
-
-      {/* Main Content */}
-      <main className="w-full mx-auto px-2 min-[380px]:px-3 sm:px-6 lg:px-8 py-6 space-y-8 w-full min-w-0">
+        {suggestedAction && (
+          <div className="mb-4">
+            <Link
+              href={suggestedAction === "FAQs" ? "/help/faq" : "/help/documents"}
+              className="inline-flex items-center gap-2 px-4 py-2 bg-[var(--uscis-blue)]/10 border border-[var(--uscis-blue)]/30 text-[var(--text-primary)] rounded-lg hover:bg-[var(--uscis-blue)]/20 text-sm font-medium"
+            >
+              {suggestedAction === "FAQs" ? "Open FAQs →" : "Open Documents & Sponsors →"}
+            </Link>
+          </div>
+        )}
         {filteredSections.length === 0 ? (
           <div className="text-center py-12 relative overflow-hidden rounded-2xl bg-[var(--bg-surface)] border border-[var(--border-color)]">
             <div className="absolute inset-0 opacity-[0.05]">

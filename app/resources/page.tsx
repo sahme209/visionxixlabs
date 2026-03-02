@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { HERO_IMAGES, RESOURCE_IMAGES, ICON_IMAGES } from "@/lib/images";
+import { RESOURCE_IMAGES } from "@/lib/images";
 import {
   ArrowRightIcon,
   GlobeAltIcon,
@@ -75,27 +75,6 @@ const tools = [
 export default function ResourcesPage() {
   return (
     <div className="min-h-screen bg-[var(--bg-primary)]">
-      {/* Compact header */}
-      <header className="relative overflow-hidden bg-[var(--header-dark)]">
-        <div className="absolute inset-0 opacity-[0.06]">
-          <Image src={HERO_IMAGES.documents} alt="" fill className="object-cover" sizes="100vw" />
-        </div>
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl overflow-hidden border border-white/15 flex-shrink-0 flex items-center justify-center bg-white/5 text-white">
-              <GlobeAltIcon className="w-5 h-5 text-white" />
-            </div>
-            <div>
-              <p className="text-[10px] font-semibold uppercase tracking-widest mb-0.5" style={{ color: "#ffffff" }}>Resources</p>
-              <h1 className="text-xl sm:text-2xl font-semibold tracking-tight" style={{ color: "#ffffff" }}>Resources Hub</h1>
-              <p className="text-xs sm:text-sm mt-1 max-w-xl" style={{ color: "#ffffff" }}>
-                Passports, visas, travel, documents. Organized and easy to find.
-              </p>
-            </div>
-          </div>
-        </div>
-      </header>
-
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 w-full min-w-0">
         {/* U.S. Citizen Emergency — Travel.State.Gov prominent callout, Apple-style */}
         <section className="mb-10">

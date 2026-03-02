@@ -22,22 +22,6 @@ export default function CaseToolsPage() {
   if (!isSubscribed) {
     return (
       <div className="min-h-screen bg-[var(--bg-primary)]">
-        <div className="surface-dark relative overflow-hidden bg-[var(--hero-dark)] border-b-2 border-[var(--uscis-blue)]">
-          <div className="absolute inset-0 w-full">
-            <Image src={HERO_IMAGES.documents} alt="" fill className="object-cover object-center opacity-20 w-full" sizes="100vw" />
-            <div className="absolute inset-0 bg-[var(--hero-dark)]/80" />
-          </div>
-          <div className="h-0.5 bg-gradient-to-r from-[var(--uscis-blue)] via-[var(--uscis-blue-light)] to-[var(--uscis-blue)]" aria-hidden="true" />
-          <div className="relative max-w-7xl mx-auto px-2 min-[380px]:px-3 sm:px-6 lg:px-8 py-5 sm:py-6 w-full min-w-0">
-            <div className="flex items-center gap-3">
-              <GradientIconBadge icon={BriefcaseIcon} color="blue" size="xs" />
-              <div>
-                <h1 className="text-lg sm:text-xl font-semibold text-white">Case Tools</h1>
-                <p className="text-sm text-white/90 mt-0.5">RFE responses, document packs, alerts, and checklists</p>
-              </div>
-            </div>
-          </div>
-        </div>
         <div className="max-w-7xl mx-auto px-2 min-[380px]:px-3 sm:px-6 lg:px-8 py-8 w-full min-w-0">
           <div className="rounded-xl border border-[var(--border-color)] bg-[var(--bg-surface)] shadow-sm overflow-hidden">
             <div className="p-8 sm:p-10 text-center">
@@ -85,22 +69,6 @@ export default function CaseToolsPage() {
 
   return (
     <div className="min-h-screen bg-[var(--bg-primary)]">
-      <div className="surface-dark relative overflow-hidden bg-[var(--hero-dark)] border-b-2 border-[var(--uscis-blue)]">
-        <div className="absolute inset-0 w-full">
-          <Image src={HERO_IMAGES.documents} alt="" fill className="object-cover object-center opacity-20 w-full" sizes="100vw" />
-          <div className="absolute inset-0 bg-[var(--hero-dark)]/80" />
-        </div>
-        <div className="h-0.5 bg-gradient-to-r from-[var(--uscis-blue)] via-[var(--uscis-blue-light)] to-[var(--uscis-blue)]" aria-hidden="true" />
-        <div className="relative max-w-7xl mx-auto px-2 min-[380px]:px-3 sm:px-6 lg:px-8 py-5 sm:py-6 w-full min-w-0">
-          <div className="flex items-center gap-3">
-            <GradientIconBadge icon={BriefcaseIcon} color="blue" size="xs" />
-            <div>
-              <h1 className="text-lg sm:text-xl font-semibold text-white">Case Tools</h1>
-              <p className="text-sm text-white/90 mt-0.5">RFE responses, document packs, alerts, and checklists—so you stay on track</p>
-            </div>
-          </div>
-        </div>
-      </div>
       <div className="max-w-7xl mx-auto px-2 min-[380px]:px-3 sm:px-6 lg:px-8 py-6 sm:py-8 w-full min-w-0">
         <div className="rounded-xl border border-[var(--border-color)] bg-[var(--bg-surface)] shadow-sm overflow-hidden relative">
           <div className="absolute inset-0 opacity-[0.04]">

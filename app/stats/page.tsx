@@ -4,7 +4,6 @@ import React, { useEffect } from "react";
 import { ChartBarIcon } from "@heroicons/react/24/outline";
 import { LockClosedIcon } from "@heroicons/react/24/solid";
 import Link from "next/link";
-import Image from "next/image";
 import { useSubscription } from "@/hooks/useSubscription";
 import { analytics } from "@/lib/analytics";
 import TodaysUpdateSection from "@/components/stats/TodaysUpdateSection";
@@ -34,8 +33,6 @@ import ApprovalsByPriorityDateChartSection from "@/components/stats/ApprovalsByP
 import SkeletonLoader from "@/components/SkeletonLoader";
 import ContextualHelp from "@/components/ContextualHelp";
 import CardContainer from "@/components/CardContainer";
-import { HERO_IMAGES } from "@/lib/images";
-import ProHeader from "@/components/ProHeader";
 
 export default function StatsPage() {
   const { isSubscribed, loading: subscriptionLoading } = useSubscription();
@@ -48,33 +45,8 @@ export default function StatsPage() {
   if (!subscriptionLoading && !isSubscribed) {
     return (
       <div className="min-h-screen bg-[var(--bg-surface-alt)] overflow-x-hidden min-w-0">
-        {/* Hero Header — Apple product-page style */}
-        <header className="relative w-full overflow-hidden bg-[var(--hero-dark)] border-b border-white/5">
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(0,113,227,0.12),transparent_50%)]" aria-hidden />
-          {HERO_IMAGES.documents && (
-            <div className="absolute inset-0 opacity-[0.06]">
-              <Image src={HERO_IMAGES.documents} alt="" fill className="object-cover" sizes="100vw" />
-            </div>
-          )}
-          <div className="relative max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 py-8 sm:py-12 text-center">
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/15 mb-3 shadow-sm">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" aria-hidden />
-              <span className="text-[10px] font-semibold uppercase tracking-widest" style={{ color: "#ffffff" }}>Live Data</span>
-            </div>
-            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-tight mb-1.5" style={{ color: "#ffffff" }}>
-              Statistics & Insights
-            </h1>
-            <p className="text-[11px] sm:text-xs font-semibold tracking-wide uppercase text-white/70 mb-1.5">
-              USCIS processing statistics for I-130 &amp; I-129F
-            </p>
-            <p className="text-sm sm:text-base max-w-2xl mx-auto leading-relaxed" style={{ color: "#ffffff" }}>
-              See how the system is moving and where your case fits. Real USCIS data—updated daily.
-            </p>
-          </div>
-        </header>
-
         {/* Stats strip — Apple-style refined metrics */}
-        <section className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 -mt-8 sm:-mt-10 relative z-10">
+        <section className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 pt-6 sm:pt-8 relative z-10">
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
             {[
               { label: "Today", value: "142", sub: "approvals", accent: "blue", accentCls: "bg-blue-500" },
@@ -301,36 +273,6 @@ export default function StatsPage() {
 
   return (
     <div className="min-h-screen bg-[var(--bg-primary)] overflow-x-hidden min-w-0">
-      <ProHeader backgroundImage={HERO_IMAGES.documents}>
-        <CardContainer className="relative py-3 sm:py-4">
-          <div className="flex flex-col sm:flex-row sm:items-start gap-3">
-            <div className="flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-lg bg-[var(--uscis-blue)] shadow-md flex-shrink-0">
-              <ChartBarIcon className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
-            </div>
-            <div className="min-w-0 flex-1">
-              <h1 className="text-lg sm:text-xl font-bold mb-1 text-white break-words">
-                Statistics & Insights
-              </h1>
-              <p className="text-[11px] sm:text-xs font-semibold tracking-wide uppercase text-white/80 mb-1.5">
-                USCIS processing statistics for I-130 &amp; I-129F
-              </p>
-              <p className="text-xs sm:text-sm text-white/90 mb-2 leading-relaxed">
-                Processing stats and trends from real data—so you see how the system is moving and where your case fits.
-              </p>
-              <div className="flex flex-wrap items-center gap-2">
-                <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-[var(--uscis-blue)]/30 border border-[var(--uscis-blue)]/50">
-                  <div className="h-1.5 w-1.5 rounded-full bg-green-300 animate-pulse" aria-hidden />
-                  <span className="text-[10px] font-semibold text-white">Live Data</span>
-                </div>
-                <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-[var(--uscis-blue)]/25 border border-[var(--uscis-blue)]/40">
-                  <span className="text-[10px] font-semibold text-white">Official Data</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </CardContainer>
-      </ProHeader>
-
       <CardContainer className="py-3 sm:py-6 lg:py-8 overflow-x-hidden w-full min-w-0">
         <div className="space-y-3 sm:space-y-5 w-full min-w-0 text-[11px] sm:text-sm">
           {/* Where you stand - cleaner card like home */}

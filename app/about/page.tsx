@@ -1,41 +1,8 @@
 import Link from "next/link";
-import Image from "next/image";
-import { UserGroupIcon } from "@heroicons/react/24/outline";
-import { HERO_IMAGES } from "@/lib/images";
 
 export default function AboutPage() {
   return (
     <div className="min-h-screen bg-[var(--bg-primary)] text-[var(--text-primary)]">
-      {/* Hero - Apple-style dark gradient header */}
-      <header className="relative w-full overflow-hidden bg-[var(--hero-dark)] border-b border-white/5">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(0,113,227,0.12),transparent_50%)]" aria-hidden />
-        {HERO_IMAGES.familyTravel && (
-          <div className="absolute inset-0 opacity-[0.12]">
-            <Image src={HERO_IMAGES.familyTravel} alt="" fill className="object-cover" sizes="100vw" />
-          </div>
-        )}
-        <div className="h-0.5 bg-gradient-to-r from-[var(--uscis-blue)] via-[var(--uscis-blue)]/60 to-[var(--uscis-blue)]" />
-        <div className="relative w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
-          <div className="flex flex-col sm:flex-row sm:items-start gap-4">
-            <div className="w-12 h-12 rounded-xl bg-white/10 backdrop-blur border border-white/20 flex items-center justify-center flex-shrink-0">
-              <UserGroupIcon className="w-6 h-6 !text-white" />
-            </div>
-            <div>
-              <div className="inline-flex items-center gap-2 rounded-full bg-white/10 backdrop-blur-sm border border-white/15 px-3 py-1.5 text-[10px] font-medium !text-white tracking-wide mb-3">
-                <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
-                Independent · Data-driven
-              </div>
-              <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight !text-white leading-[1.2]">
-                About VisaNova
-              </h1>
-              <p className="mt-3 text-[15px] !text-white leading-relaxed max-w-2xl">
-                We help you know where you stand. Real timelines and estimates from public USCIS data—so you can plan with confidence.
-              </p>
-            </div>
-          </div>
-        </div>
-      </header>
-
       {/* Content */}
       <div className="w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
         {/* Disclaimer - Soft callout */}
