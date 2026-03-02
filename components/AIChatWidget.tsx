@@ -124,13 +124,19 @@ export default function AIChatWidget() {
 
   return (
     <>
-      {/* Floating bubble */}
+      {/* Microsoft-style floating chat bubble */}
       <button
         onClick={() => setOpen(true)}
-        aria-label="Open Vision XIX Labs AI Assistant"
-        className="fixed bottom-4 right-4 z-[9998] flex h-14 w-14 items-center justify-center rounded-full bg-teal-600 text-white shadow-lg hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 transition-all hover:scale-105"
+        aria-label="Need help? Let's chat"
+        className="fixed bottom-20 right-4 z-[9998] flex items-center gap-2 rounded-2xl bg-[#0078D4] text-white px-4 py-3 shadow-md hover:shadow-lg hover:bg-[#106ebe] focus:outline-none focus:ring-2 focus:ring-[#0078D4] focus:ring-offset-2 transition-all"
       >
-        <SparklesIconSolid className="h-7 w-7 text-teal-200" />
+        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white/20">
+          <ChatBubbleLeftRightIcon className="h-5 w-5" />
+        </div>
+        <div className="text-left">
+          <p className="text-sm font-medium leading-tight">Need help?</p>
+          <p className="text-xs text-white/90 leading-tight">Let&apos;s chat</p>
+        </div>
       </button>
 
       {/* Expanded chat panel - teal/stone palette */}

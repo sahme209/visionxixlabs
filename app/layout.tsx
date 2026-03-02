@@ -5,6 +5,7 @@ import { LanguageProvider } from "@/contexts/LanguageContext";
 import OnboardingWrapper from "@/components/OnboardingWrapper";
 import VisaPauseBanner from "@/components/VisaPauseBanner";
 import AIChatWidget from "@/components/AIChatWidget";
+import BackToTop from "@/components/BackToTop";
 import { Analytics } from "@vercel/analytics/next";
 import {
   SITE_URL,
@@ -160,6 +161,7 @@ export default function RootLayout({
           </AuthProvider>
         </LanguageProvider>
         <AIChatWidget />
+        <BackToTop />
         <Analytics />
       </body>
     </html>
