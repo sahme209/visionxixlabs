@@ -5,6 +5,7 @@ import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import {
   ArrowLeftIcon,
+  ArrowPathIcon,
   ArrowRightIcon,
   BoltIcon,
   ChartBarIcon,
@@ -1503,10 +1504,28 @@ function CloudOperatorPageInner() {
                   Autopilot Mode: Generates step-by-step playbooks and validated configs. Execution
                   requires your approval.
                 </p>
-                <AxiomButton type="submit" disabled={submitting}>
-                  <BoltIcon className="h-4 w-4" />
-                  {submitting ? "Sending to Operator..." : "Run AI Cloud Operator"}
-                  <ArrowRightIcon className="h-4 w-4" />
+                <AxiomButton
+                  type="submit"
+                  disabled={submitting}
+                  className={submitting ? "animate-pulse cursor-wait" : ""}
+                >
+                  {submitting ? (
+                    <>
+                      <ArrowPathIcon className="h-4 w-4 shrink-0 animate-spin" aria-hidden />
+                      <span>Please wait, loading…</span>
+                      <span className="inline-flex gap-1">
+                        <span className="h-1.5 w-1.5 rounded-full bg-white/90 animate-bounce [animation-delay:0ms]" />
+                        <span className="h-1.5 w-1.5 rounded-full bg-white/90 animate-bounce [animation-delay:120ms]" />
+                        <span className="h-1.5 w-1.5 rounded-full bg-white/90 animate-bounce [animation-delay:240ms]" />
+                      </span>
+                    </>
+                  ) : (
+                    <>
+                      <BoltIcon className="h-4 w-4" />
+                      Run AI Cloud Operator
+                      <ArrowRightIcon className="h-4 w-4" />
+                    </>
+                  )}
                 </AxiomButton>
               </div>
               </AxiomSection>
