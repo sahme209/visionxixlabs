@@ -1,31 +1,28 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { cn } from "@/lib/utils";
 
 interface RealisticFogBackgroundProps {
-  className?: string;
   backgroundColor?: string;
 }
 
-/**
- * Mist/Fog Background — CSS fog (always visible) + WebGL enhancement
- */
 export function RealisticFogBackground({
-  className,
   backgroundColor = "#09090b",
 }: RealisticFogBackgroundProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const [webglReady, setWebglReady] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (!mounted) return;
     const canvas = canvasRef.current;
     if (!canvas) return;
 
     const gl = canvas.getContext("webgl");
-    if (!gl) {
-      return;
-    }
+    if (!gl) return;
 
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
@@ -89,7 +86,6 @@ gl_FragColor=vec4(pow(c,vec3(.95))*1.8,1.);
       gl.uniform2f(uRes, canvas.width, canvas.height);
       gl.uniform2f(uMouse, mouse.x, mouse.y);
       gl.drawArrays(gl.TRIANGLES, 0, 6);
-      setWebglReady(true);
       raf = requestAnimationFrame(render);
     };
     raf = requestAnimationFrame(render);
@@ -97,67 +93,110 @@ gl_FragColor=vec4(pow(c,vec3(.95))*1.8,1.);
       window.removeEventListener("mousemove", onMove);
       cancelAnimationFrame(raf);
     };
-  }, []);
+  }, [mounted]);
+
+  if (!mounted) {
+    return (
+      <div
+        style={{
+          position: "fixed",
+          inset: 0,
+          backgroundColor,
+          zIndex: 0,
+        }}
+      />
+    );
+  }
 
   return (
     <div
-      className={cn("fixed inset-0 w-full h-full overflow-hidden z-0", className)}
-      style={{ background: backgroundColor }}
+      style={{
+        position: "fixed",
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        width: "100vw",
+        height: "100vh",
+        backgroundColor,
+        zIndex: 0,
+        overflow: "hidden",
+        pointerEvents: "none",
+      }}
     >
-      {/* CSS fog — always visible */}
-      <div className="fog-layer">
+      {/* CSS fog blobs — inline styles, no Tailwind */}
+      <div
+        style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          overflow: "hidden",
+        }}
+      >
         <div
-          className="fog-blob bg-slate-400/50"
           style={{
-            width: "120%",
-            height: "80%",
-            left: "-10%",
-            top: "-20%",
-            animationName: "fog-drift-1",
-          }}
-        />
-        <div
-          className="fog-blob bg-slate-500/40"
-          style={{
-            width: "100%",
+            position: "absolute",
+            width: "140%",
             height: "100%",
+            left: "-20%",
+            top: "-20%",
+            borderRadius: "50%",
+            background: "rgba(148, 163, 184, 0.55)",
+            filter: "blur(120px)",
+            animation: "fog-drift-1 16s ease-in-out infinite",
+          }}
+        />
+        <div
+          style={{
+            position: "absolute",
+            width: "120%",
+            height: "110%",
+            left: "-10%",
+            top: "-15%",
+            borderRadius: "50%",
+            background: "rgba(100, 116, 139, 0.5)",
+            filter: "blur(130px)",
+            animation: "fog-drift-2 20s ease-in-out infinite 3s",
+          }}
+        />
+        <div
+          style={{
+            position: "absolute",
+            width: "110%",
+            height: "105%",
             left: "-5%",
-            top: "-10%",
-            animationName: "fog-drift-2",
-            animationDelay: "-5s",
+            top: "-5%",
+            borderRadius: "50%",
+            background: "rgba(129, 140, 248, 0.45)",
+            filter: "blur(100px)",
+            animation: "fog-drift-3 18s ease-in-out infinite 6s",
           }}
         />
         <div
-          className="fog-blob bg-indigo-400/35"
           style={{
-            width: "90%",
+            position: "absolute",
+            width: "100%",
             height: "90%",
-            left: "5%",
+            left: "0%",
             top: "5%",
-            animationName: "fog-drift-3",
-            animationDelay: "-10s",
-          }}
-        />
-        <div
-          className="fog-blob bg-slate-500/35"
-          style={{
-            width: "80%",
-            height: "70%",
-            left: "10%",
-            top: "15%",
-            animationName: "fog-drift-1",
-            animationDelay: "-15s",
-            animationDuration: "25s",
+            borderRadius: "50%",
+            background: "rgba(71, 85, 105, 0.4)",
+            filter: "blur(140px)",
+            animation: "fog-drift-1 24s ease-in-out infinite 12s",
           }}
         />
       </div>
-      {/* WebGL layer — on top when ready */}
       <canvas
         ref={canvasRef}
-        className={cn(
-          "absolute inset-0 w-full h-full pointer-events-none transition-opacity duration-1000",
-          webglReady ? "opacity-100" : "opacity-0"
-        )}
+        style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          width: "100%",
+          height: "100%",
+        }}
       />
     </div>
   );
