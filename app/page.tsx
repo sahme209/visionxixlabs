@@ -95,13 +95,13 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-violet-50/40 to-fuchsia-50/30 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 relative">
-      <RealisticFogBackground backgroundColor="transparent" opacity={0.45} darken />
       <BackgroundBlobs />
       <div className="relative z-10">
       <Navigation />
 
       {/* Hero Section */}
       <section className="pt-32 pb-16 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+        <RealisticFogBackground backgroundColor="transparent" opacity={0.45} darken contained />
         <SectionBackground variant="hero-light" />
         <HeroLightBeam />
         <div className="max-w-4xl mx-auto text-center relative">

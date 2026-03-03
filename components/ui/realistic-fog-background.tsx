@@ -8,6 +8,8 @@ interface RealisticFogBackgroundProps {
   opacity?: number;
   /** Use darker fog tones. Default false. */
   darken?: boolean;
+  /** Fill only the parent container (position: absolute). Default false = full viewport. */
+  contained?: boolean;
 }
 
 const FOG_BLOBS = {
@@ -29,9 +31,11 @@ export function RealisticFogBackground({
   backgroundColor = "#09090b",
   opacity = 1,
   darken = false,
+  contained = false,
 }: RealisticFogBackgroundProps) {
   const blobs = FOG_BLOBS[darken ? "dark" : "default"];
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const containerRef = useRef<HTMLDivElement | null>(null);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -94,14 +98,31 @@ gl_FragColor=vec4(pow(c,vec3(.95))*1.8,1.);
     const uRes = gl.getUniformLocation(prog, "u_resolution");
     const uMouse = gl.getUniformLocation(prog, "u_mouse");
     let mouse = { x: 0, y: 0 };
-    const onMove = (e: MouseEvent) => { mouse.x = e.clientX; mouse.y = window.innerHeight - e.clientY; };
+    const onMove = (e: MouseEvent) => {
+      if (contained && containerRef.current) {
+        const r = containerRef.current.getBoundingClientRect();
+        mouse.x = e.clientX - r.left;
+        mouse.y = r.height - (e.clientY - r.top);
+      } else {
+        mouse.x = e.clientX;
+        mouse.y = window.innerHeight - e.clientY;
+      }
+    };
     window.addEventListener("mousemove", onMove);
 
     let raf: number;
+    const getSize = () => {
+      if (contained && containerRef.current) {
+        const r = containerRef.current.getBoundingClientRect();
+        return { w: Math.round(r.width), h: Math.round(r.height) };
+      }
+      return { w: window.innerWidth, h: window.innerHeight };
+    };
     const render = (t: number) => {
-      if (canvas.width !== window.innerWidth || canvas.height !== window.innerHeight) {
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
+      const { w, h } = getSize();
+      if (w > 0 && h > 0 && (canvas.width !== w || canvas.height !== h)) {
+        canvas.width = w;
+        canvas.height = h;
         gl.viewport(0, 0, canvas.width, canvas.height);
       }
       gl.uniform1f(uTime, t * 0.001);
@@ -115,24 +136,24 @@ gl_FragColor=vec4(pow(c,vec3(.95))*1.8,1.);
       window.removeEventListener("mousemove", onMove);
       cancelAnimationFrame(raf);
     };
-  }, [mounted]);
+  }, [mounted, contained]);
 
-  if (!mounted) {
-    return (
-      <div
-        style={{
-          position: "fixed",
-          inset: 0,
-          backgroundColor,
-          zIndex: 0,
-        }}
-      />
-    );
-  }
-
-  return (
-    <div
-      style={{
+  const wrapperStyle: React.CSSProperties = contained
+    ? {
+        position: "absolute",
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        width: "100%",
+        height: "100%",
+        backgroundColor,
+        opacity,
+        zIndex: 0,
+        overflow: "hidden",
+        pointerEvents: "none",
+      }
+    : {
         position: "fixed",
         top: 0,
         left: 0,
@@ -145,8 +166,14 @@ gl_FragColor=vec4(pow(c,vec3(.95))*1.8,1.);
         zIndex: 0,
         overflow: "hidden",
         pointerEvents: "none",
-      }}
-    >
+      };
+
+  if (!mounted) {
+    return <div ref={containerRef} style={wrapperStyle} />;
+  }
+
+  return (
+    <div ref={containerRef} style={wrapperStyle}>
       {/* CSS fog blobs — inline styles, no Tailwind */}
       <div
         style={{
