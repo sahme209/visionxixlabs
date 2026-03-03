@@ -1204,46 +1204,53 @@ function CloudOperatorPageInner() {
               onInput={checkFormValidity}
               className="lg:col-span-2"
             >
-              <div className="rounded-2xl border border-slate-200/80 dark:border-slate-700/80 bg-white/95 dark:bg-slate-900/95 shadow-xl shadow-slate-200/50 dark:shadow-slate-950/50 backdrop-blur-sm overflow-hidden">
-                {/* Premium header */}
-                <div className="border-b border-slate-200/80 dark:border-slate-700/80 bg-gradient-to-br from-slate-50 to-indigo-50/30 dark:from-slate-900/50 dark:to-indigo-950/20 px-6 md:px-8 py-6">
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className="inline-flex items-center gap-1.5 rounded-full bg-indigo-100 dark:bg-indigo-900/50 px-3 py-0.5 text-[11px] font-semibold uppercase tracking-wider text-indigo-700 dark:text-indigo-300">
-                      <SparklesIcon className="h-3 w-3" />
-                      AI Analysis
+              {/* Glassmorphism dark card with gradient border */}
+              <div className="relative rounded-3xl overflow-hidden">
+                <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-violet-500/20 via-fuchsia-500/10 to-cyan-500/20 blur-xl" />
+                <div className="absolute inset-[1px] rounded-3xl bg-gradient-to-br from-slate-900 via-slate-900 to-slate-950" />
+                <div className="relative rounded-3xl border border-white/10 bg-slate-900/90 backdrop-blur-xl overflow-hidden shadow-2xl shadow-black/30 ring-1 ring-white/5">
+                  {/* Hero header with glow */}
+                  <div className="relative px-6 md:px-10 pt-8 pb-8 border-b border-white/5">
+                    <div className="absolute inset-0 bg-gradient-to-br from-violet-600/10 via-transparent to-fuchsia-600/10" />
+                    <div className="relative">
+                      <span className="inline-flex items-center gap-2 rounded-full border border-violet-500/30 bg-violet-500/10 px-4 py-1.5 text-xs font-semibold text-violet-300">
+                        <SparklesIcon className="h-3.5 w-3.5" />
+                        AI Cloud Operator
+                      </span>
+                      <h2 className="mt-4 text-2xl md:text-3xl font-extrabold tracking-tight">
+                        <span className="bg-gradient-to-r from-white via-slate-200 to-slate-400 bg-clip-text text-transparent">
+                          Configure your infrastructure
+                        </span>
+                      </h2>
+                      <p className="mt-2 text-sm text-slate-400 max-w-xl">
+                        Answer a few questions. Get a tailored 30-day roadmap, playbooks, and automation signals.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="p-6 md:p-10 space-y-8">
+                  {error && (
+                    <div className="rounded-2xl bg-rose-500/10 border border-rose-500/30 px-5 py-4 text-sm text-rose-300">
+                      {error}
+                    </div>
+                  )}
+
+                  <div className="space-y-7">
+                  <div className="flex items-center gap-3">
+                    <div className="h-px flex-1 bg-gradient-to-r from-transparent via-violet-500/40 to-transparent" />
+                    <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-violet-400/80">
+                      Project
                     </span>
+                    <div className="h-px flex-1 bg-gradient-to-r from-transparent via-violet-500/40 to-transparent" />
                   </div>
-                  <h2 className="text-xl md:text-2xl font-bold text-slate-900 dark:text-slate-100 mb-2 tracking-tight">
-                    Tell the Operator what you&apos;re running
-                  </h2>
-                  <p className="text-sm text-slate-600 dark:text-slate-400 max-w-xl leading-relaxed">
-                    These questions stay the same for every organization. The Operator turns them
-                    into architecture, CI/CD, cost, and security plans.
-                  </p>
-                </div>
-
-                <div className="p-6 md:p-8 space-y-8">
-                {error && (
-                  <div className="rounded-xl bg-rose-50 dark:bg-rose-900/20 px-4 py-3 text-sm text-rose-700 dark:text-rose-200 border border-rose-200/80 dark:border-rose-800/80">
-                    {error}
-                  </div>
-                )}
-
-                {/* Form inputs - premium styling */}
-                <div className="space-y-6">
-                <div className="pb-2 border-b border-slate-100 dark:border-slate-800">
-                  <span className="text-[11px] font-semibold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">
-                    Project & environment
-                  </span>
-                </div>
                 <div>
-                  <label className="block text-sm font-semibold text-slate-800 dark:text-slate-200 mb-2">
+                  <label className="block text-sm font-medium text-slate-400 mb-2">
                     What are you building?
                   </label>
                   <select
                     name="projectType"
                     required
-                    className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 px-4 py-3 text-sm text-slate-900 dark:text-slate-100 transition-all duration-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 focus:outline-none hover:border-slate-300 dark:hover:border-slate-600"
+                    className="w-full rounded-2xl border border-white/10 bg-white/5 px-5 py-3.5 text-sm text-white placeholder:text-slate-500 transition-all duration-200 focus:border-violet-500/50 focus:ring-2 focus:ring-violet-500/20 focus:outline-none hover:bg-white/[0.07] hover:border-white/20"
                   >
                     <option value="">Select a type</option>
                     <option value="SaaS">SaaS</option>
@@ -1256,14 +1263,14 @@ function CloudOperatorPageInner() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-semibold text-slate-800 dark:text-slate-200 mb-2">
+                  <label className="block text-sm font-medium text-slate-400 mb-3">
                     Where is it hosted?
                   </label>
-                  <div className="grid sm:grid-cols-3 gap-3">
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                     {HOSTING_PROVIDERS.map((p) => (
                       <label
                         key={p}
-                        className="flex items-center justify-center gap-2 rounded-xl border-2 border-slate-200 dark:border-slate-700 bg-slate-50/80 dark:bg-slate-900/50 px-4 py-3 text-sm font-medium cursor-pointer transition-all duration-200 hover:border-indigo-300 hover:bg-indigo-50/50 dark:hover:border-indigo-700 dark:hover:bg-indigo-950/30 has-[:checked]:border-indigo-500 has-[:checked]:bg-indigo-50 dark:has-[:checked]:bg-indigo-950/40 has-[:checked]:ring-2 has-[:checked]:ring-indigo-500/30 has-[:checked]:shadow-sm"
+                        className="group flex items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-4 py-3.5 text-sm font-medium text-slate-300 cursor-pointer transition-all duration-300 hover:border-violet-500/40 hover:bg-violet-500/10 hover:text-white has-[:checked]:border-violet-500 has-[:checked]:bg-violet-500/20 has-[:checked]:text-white has-[:checked]:shadow-[0_0_20px_rgba(139,92,246,0.3)]"
                       >
                         <input
                           type="radio"
@@ -1272,7 +1279,7 @@ function CloudOperatorPageInner() {
                           className="sr-only"
                           required
                         />
-                        <span className="text-slate-800 dark:text-slate-100">{p}</span>
+                        <span>{p}</span>
                       </label>
                     ))}
                   </div>
@@ -1280,7 +1287,7 @@ function CloudOperatorPageInner() {
 
                 <div className="grid sm:grid-cols-2 gap-6">
                   <div>
-                    <label className="block text-sm font-semibold text-slate-800 dark:text-slate-200 mb-2">
+                    <label className="block text-sm font-medium text-slate-400 mb-2">
                       Monthly cloud spend (approx.)
                     </label>
                     <input
@@ -1288,18 +1295,18 @@ function CloudOperatorPageInner() {
                       type="number"
                       min={0}
                       placeholder="e.g. 5000"
-                      className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 px-4 py-3 text-sm text-slate-900 dark:text-slate-100 transition-all duration-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 focus:outline-none hover:border-slate-300 dark:hover:border-slate-600 placeholder:text-slate-400"
+                      className="w-full rounded-2xl border border-white/10 bg-white/5 px-5 py-3.5 text-sm text-white placeholder:text-slate-500 transition-all duration-200 focus:border-violet-500/50 focus:ring-2 focus:ring-violet-500/20 focus:outline-none hover:bg-white/[0.07]"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-semibold text-slate-800 dark:text-slate-200 mb-2">
+                    <label className="block text-sm font-medium text-slate-400 mb-2">
                       Expected traffic level
                     </label>
                     <div className="flex gap-2">
                       {TRAFFIC_LEVELS.map((level) => (
                         <label
                           key={level}
-                          className="flex-1 flex items-center justify-center rounded-xl border-2 border-slate-200 dark:border-slate-700 bg-slate-50/80 dark:bg-slate-900/50 px-3 py-2.5 text-xs sm:text-sm font-medium cursor-pointer transition-all duration-200 hover:border-indigo-300 hover:bg-indigo-50/50 dark:hover:border-indigo-700 dark:hover:bg-indigo-950/30 has-[:checked]:border-indigo-500 has-[:checked]:bg-indigo-50 dark:has-[:checked]:bg-indigo-950/40 has-[:checked]:ring-2 has-[:checked]:ring-indigo-500/30"
+                          className="flex-1 flex items-center justify-center rounded-2xl border border-white/10 bg-white/5 px-3 py-2.5 text-xs sm:text-sm font-medium text-slate-300 cursor-pointer transition-all duration-300 hover:border-violet-500/40 hover:bg-violet-500/10 hover:text-white has-[:checked]:border-violet-500 has-[:checked]:bg-violet-500/20 has-[:checked]:text-white has-[:checked]:shadow-[0_0_15px_rgba(139,92,246,0.25)]"
                         >
                           <input
                             type="radio"
@@ -1308,7 +1315,7 @@ function CloudOperatorPageInner() {
                             className="sr-only"
                             required
                           />
-                          <span className="text-slate-800 dark:text-slate-100">{level}</span>
+                          <span>{level}</span>
                         </label>
                       ))}
                     </div>
@@ -1317,29 +1324,29 @@ function CloudOperatorPageInner() {
 
                 <div className="grid sm:grid-cols-2 gap-6">
                   <div>
-                    <label className="block text-sm font-semibold text-slate-800 dark:text-slate-200 mb-2">
+                    <label className="block text-sm font-medium text-slate-400 mb-2">
                       Do you have CI/CD?
                     </label>
                     <div className="flex gap-2">
-                      <label className="flex-1 flex items-center justify-center rounded-xl border-2 border-slate-200 dark:border-slate-700 bg-slate-50/80 dark:bg-slate-900/50 px-3 py-2.5 text-xs sm:text-sm font-medium cursor-pointer transition-all duration-200 hover:border-indigo-300 has-[:checked]:border-indigo-500 has-[:checked]:bg-indigo-50 dark:has-[:checked]:bg-indigo-950/40 has-[:checked]:ring-2 has-[:checked]:ring-indigo-500/30">
+                      <label className="flex-1 flex items-center justify-center rounded-2xl border border-white/10 bg-white/5 px-3 py-2.5 text-sm font-medium text-slate-300 cursor-pointer transition-all duration-300 hover:border-violet-500/40 hover:bg-violet-500/10 hover:text-white has-[:checked]:border-violet-500 has-[:checked]:bg-violet-500/20 has-[:checked]:text-white has-[:checked]:shadow-[0_0_15px_rgba(139,92,246,0.25)]">
                         <input type="radio" name="hasCiCd" value="yes" className="sr-only" required />
-                        <span className="text-slate-800 dark:text-slate-100">Yes</span>
+                        <span>Yes</span>
                       </label>
-                      <label className="flex-1 flex items-center justify-center rounded-xl border-2 border-slate-200 dark:border-slate-700 bg-slate-50/80 dark:bg-slate-900/50 px-3 py-2.5 text-xs sm:text-sm font-medium cursor-pointer transition-all duration-200 hover:border-slate-300 has-[:checked]:border-indigo-500 has-[:checked]:bg-indigo-50 dark:has-[:checked]:bg-indigo-950/40 has-[:checked]:ring-2 has-[:checked]:ring-indigo-500/30">
+                      <label className="flex-1 flex items-center justify-center rounded-2xl border border-white/10 bg-white/5 px-3 py-2.5 text-sm font-medium text-slate-300 cursor-pointer transition-all duration-300 hover:border-violet-500/40 hover:bg-violet-500/10 hover:text-white has-[:checked]:border-violet-500 has-[:checked]:bg-violet-500/20 has-[:checked]:text-white has-[:checked]:shadow-[0_0_15px_rgba(139,92,246,0.25)]">
                         <input type="radio" name="hasCiCd" value="no" className="sr-only" />
-                        <span className="text-slate-800 dark:text-slate-100">No</span>
+                        <span>No</span>
                       </label>
                     </div>
                   </div>
                   <div>
-                    <label className="block text-sm font-semibold text-slate-800 dark:text-slate-200 mb-2">
+                    <label className="block text-sm font-medium text-slate-400 mb-2">
                       Public exposure
                     </label>
                     <div className="flex gap-2">
                       {PUBLIC_EXPOSURE.map((opt) => (
                         <label
                           key={opt}
-                          className="flex-1 flex items-center justify-center rounded-xl border-2 border-slate-200 dark:border-slate-700 bg-slate-50/80 dark:bg-slate-900/50 px-3 py-2.5 text-xs sm:text-sm font-medium cursor-pointer transition-all duration-200 hover:border-indigo-300 has-[:checked]:border-indigo-500 has-[:checked]:bg-indigo-50 dark:has-[:checked]:bg-indigo-950/40 has-[:checked]:ring-2 has-[:checked]:ring-indigo-500/30"
+                          className="flex-1 flex items-center justify-center rounded-2xl border border-white/10 bg-white/5 px-3 py-2.5 text-xs sm:text-sm font-medium text-slate-300 cursor-pointer transition-all duration-300 hover:border-violet-500/40 hover:bg-violet-500/10 hover:text-white has-[:checked]:border-violet-500 has-[:checked]:bg-violet-500/20 has-[:checked]:text-white has-[:checked]:shadow-[0_0_15px_rgba(139,92,246,0.25)]"
                         >
                           <input
                             type="radio"
@@ -1348,7 +1355,7 @@ function CloudOperatorPageInner() {
                             className="sr-only"
                             required
                           />
-                          <span className="text-slate-800 dark:text-slate-100">{opt}</span>
+                          <span>{opt}</span>
                         </label>
                       ))}
                     </div>
@@ -1357,12 +1364,12 @@ function CloudOperatorPageInner() {
 
                 <div className="grid sm:grid-cols-2 gap-6">
                   <div>
-                    <label className="block text-sm font-semibold text-slate-800 dark:text-slate-200 mb-2">
+                    <label className="block text-sm font-medium text-slate-400 mb-2">
                       Compliance needs
                     </label>
                     <select
                       name="complianceNeeds"
-                      className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 px-4 py-3 text-sm text-slate-900 dark:text-slate-100 transition-all duration-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 focus:outline-none hover:border-slate-300 dark:hover:border-slate-600"
+                      className="w-full rounded-2xl border border-white/10 bg-white/5 px-5 py-3.5 text-sm text-white transition-all duration-200 focus:border-violet-500/50 focus:ring-2 focus:ring-violet-500/20 focus:outline-none hover:bg-white/[0.07]"
                     >
                       {COMPLIANCE_OPTIONS.map((c) => (
                         <option key={c} value={c}>
@@ -1372,12 +1379,12 @@ function CloudOperatorPageInner() {
                     </select>
                   </div>
                   <div>
-                    <label className="block text-sm font-semibold text-slate-800 dark:text-slate-200 mb-2">
+                    <label className="block text-sm font-medium text-slate-400 mb-2">
                       Git provider
                     </label>
                     <select
                       name="gitProvider"
-                      className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 px-4 py-3 text-sm text-slate-900 dark:text-slate-100 transition-all duration-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 focus:outline-none hover:border-slate-300 dark:hover:border-slate-600"
+                      className="w-full rounded-2xl border border-white/10 bg-white/5 px-5 py-3.5 text-sm text-white transition-all duration-200 focus:border-violet-500/50 focus:ring-2 focus:ring-violet-500/20 focus:outline-none hover:bg-white/[0.07]"
                     >
                       {GIT_PROVIDERS.map((g) => (
                         <option key={g} value={g}>
@@ -1388,20 +1395,22 @@ function CloudOperatorPageInner() {
                   </div>
                 </div>
 
-                <div className="pt-2 pb-2 border-b border-slate-100 dark:border-slate-800 mt-2">
-                  <span className="text-[11px] font-semibold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">
+                <div className="flex items-center gap-3 pt-4">
+                  <div className="h-px flex-1 bg-gradient-to-r from-transparent via-fuchsia-500/40 to-transparent" />
+                  <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-fuchsia-400/80">
                     Goals & stack
                   </span>
+                  <div className="h-px flex-1 bg-gradient-to-r from-transparent via-fuchsia-500/40 to-transparent" />
                 </div>
                 <div>
-                  <label className="block text-sm font-semibold text-slate-800 dark:text-slate-200 mb-2">
+                  <label className="block text-sm font-medium text-slate-400 mb-2">
                     Primary goal
                   </label>
                   <div className="grid sm:grid-cols-2 gap-3">
                     {PRIMARY_GOALS.map((g) => (
                       <label
                         key={g}
-                        className="flex items-center gap-3 rounded-xl border-2 border-slate-200 dark:border-slate-700 bg-slate-50/80 dark:bg-slate-900/50 px-4 py-3 text-sm font-medium cursor-pointer transition-all duration-200 hover:border-indigo-300 hover:bg-indigo-50/50 dark:hover:border-indigo-700 dark:hover:bg-indigo-950/30 has-[:checked]:border-indigo-500 has-[:checked]:bg-indigo-50 dark:has-[:checked]:bg-indigo-950/40 has-[:checked]:ring-2 has-[:checked]:ring-indigo-500/30"
+                        className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-medium text-slate-300 cursor-pointer transition-all duration-300 hover:border-fuchsia-500/40 hover:bg-fuchsia-500/10 hover:text-white has-[:checked]:border-fuchsia-500 has-[:checked]:bg-fuchsia-500/20 has-[:checked]:text-white has-[:checked]:shadow-[0_0_15px_rgba(217,70,239,0.25)]"
                       >
                         <input
                           type="radio"
@@ -1410,7 +1419,7 @@ function CloudOperatorPageInner() {
                           className="sr-only"
                           required
                         />
-                        <span className="text-slate-800 dark:text-slate-100">{g}</span>
+                        <span>{g}</span>
                       </label>
                     ))}
                   </div>
@@ -1418,27 +1427,27 @@ function CloudOperatorPageInner() {
 
                 <div className="grid sm:grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-sm font-semibold text-slate-800 dark:text-slate-200 mb-2">
+                  <label className="block text-sm font-medium text-slate-400 mb-2">
                     Primary workload type
-                    </label>
-                    <select
-                      name="workloadType"
-                      defaultValue="Container (Docker/K8s)"
-                      className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 px-4 py-3 text-sm text-slate-900 dark:text-slate-100 transition-all duration-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 focus:outline-none hover:border-slate-300 dark:hover:border-slate-600"
-                    >
+                  </label>
+                  <select
+                    name="workloadType"
+                    defaultValue="Container (Docker/K8s)"
+                    className="w-full rounded-2xl border border-white/10 bg-white/5 px-5 py-3.5 text-sm text-white transition-all duration-200 focus:border-violet-500/50 focus:ring-2 focus:ring-violet-500/20 focus:outline-none hover:bg-white/[0.07]"
+                  >
                       {WORKLOAD_TYPES.map((w) => (
                         <option key={w} value={w}>{w}</option>
                       ))}
                     </select>
                   </div>
                   <div>
-                    <label className="block text-sm font-semibold text-slate-800 dark:text-slate-200 mb-2">
+                    <label className="block text-sm font-medium text-slate-400 mb-2">
                       Database setup
                     </label>
                     <select
                       name="databaseType"
                       defaultValue="RDS/Managed SQL"
-                      className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 px-4 py-3 text-sm text-slate-900 dark:text-slate-100 transition-all duration-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 focus:outline-none hover:border-slate-300 dark:hover:border-slate-600"
+                      className="w-full rounded-2xl border border-white/10 bg-white/5 px-5 py-3.5 text-sm text-white transition-all duration-200 focus:border-violet-500/50 focus:ring-2 focus:ring-violet-500/20 focus:outline-none hover:bg-white/[0.07]"
                     >
                       {DATABASE_TYPES.map((d) => (
                         <option key={d} value={d}>{d}</option>
@@ -1448,71 +1457,72 @@ function CloudOperatorPageInner() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-semibold text-slate-800 dark:text-slate-200 mb-2">
+                  <label className="block text-sm font-medium text-slate-400 mb-2">
                     Kubernetes usage
                   </label>
                   <div className="flex flex-wrap gap-2">
                     {KUBERNETES_OPTIONS.map((k) => (
                       <label
                         key={k}
-                        className="flex items-center gap-2 rounded-xl border-2 border-slate-200 dark:border-slate-700 bg-slate-50/80 dark:bg-slate-900/50 px-4 py-2.5 text-xs sm:text-sm font-medium cursor-pointer transition-all duration-200 hover:border-indigo-300 hover:bg-indigo-50/50 dark:hover:border-indigo-700 dark:hover:bg-indigo-950/30 has-[:checked]:border-indigo-500 has-[:checked]:bg-indigo-50 dark:has-[:checked]:bg-indigo-950/40 has-[:checked]:ring-2 has-[:checked]:ring-indigo-500/30"
+                        className="flex items-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-4 py-2.5 text-xs sm:text-sm font-medium text-slate-300 cursor-pointer transition-all duration-300 hover:border-cyan-500/40 hover:bg-cyan-500/10 hover:text-white has-[:checked]:border-cyan-500 has-[:checked]:bg-cyan-500/20 has-[:checked]:text-white has-[:checked]:shadow-[0_0_15px_rgba(6,182,212,0.25)]"
                       >
                         <input type="radio" name="kubernetesUsage" value={k} defaultChecked={k === "Evaluating"} className="sr-only" />
-                        <span className="text-slate-800 dark:text-slate-100">{k}</span>
+                        <span>{k}</span>
                       </label>
                     ))}
                   </div>
                 </div>
               </div>
 
-                {/* Premium tier selection */}
-                <div className="pt-6 mt-6 border-t border-slate-200/80 dark:border-slate-700/80 space-y-4">
-                <div className="flex items-center gap-2 mb-1">
-                  <span className="inline-flex items-center gap-1 rounded-lg bg-indigo-100/80 dark:bg-indigo-900/40 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-indigo-700 dark:text-indigo-300">
-                    Tier
+                <div className="flex items-center gap-3 pt-6">
+                  <div className="h-px flex-1 bg-gradient-to-r from-transparent via-cyan-500/40 to-transparent" />
+                  <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-cyan-400/80">
+                    Operator tier
                   </span>
+                  <div className="h-px flex-1 bg-gradient-to-r from-transparent via-cyan-500/40 to-transparent" />
                 </div>
-                <h3 className="text-base font-bold text-slate-900 dark:text-slate-100">
+                <div className="space-y-3">
+                <h3 className="text-base font-bold text-white">
                   Choose your Operator tier
                 </h3>
-                <p className="text-xs text-slate-500 dark:text-slate-400">
+                <p className="text-xs text-slate-400">
                   Included with membership: Starter ($35)→Analysis · Growth ($75)→Roadmap · Scale ($249)→Automation Signals · Enterprise→Strategic Advisory.{" "}
-                  <Link href="/axiom/pricing" className="text-indigo-600 hover:underline font-medium">View plans</Link>
+                  <Link href="/axiom/pricing" className="text-cyan-400 hover:text-cyan-300 font-medium transition-colors">View plans</Link>
                 </p>
                 <div className="grid sm:grid-cols-2 gap-3">
                   {OPERATOR_TIERS.map((t) => (
                     <label
                       key={t.id}
-                      className="flex items-start gap-4 rounded-xl border-2 border-slate-200 dark:border-slate-700 bg-slate-50/80 dark:bg-slate-900/50 p-4 cursor-pointer transition-all duration-200 hover:border-indigo-300 hover:bg-indigo-50/50 dark:hover:border-indigo-700 dark:hover:bg-indigo-950/30 has-[:checked]:border-indigo-500 has-[:checked]:bg-indigo-50/80 dark:has-[:checked]:bg-indigo-950/50 has-[:checked]:ring-2 has-[:checked]:ring-indigo-500/30 has-[:checked]:shadow-sm"
+                      className="flex items-start gap-4 rounded-2xl border border-white/10 bg-white/5 p-4 cursor-pointer transition-all duration-300 hover:border-cyan-500/50 hover:bg-cyan-500/10 has-[:checked]:border-cyan-500 has-[:checked]:bg-cyan-500/20 has-[:checked]:shadow-[0_0_25px_rgba(6,182,212,0.3)] has-[:checked]:scale-[1.02]"
                     >
                       <input
                         type="radio"
                         name="tier"
                         value={t.id}
                         defaultChecked={t.id === "free"}
-                        className="mt-1 h-4 w-4 shrink-0 text-indigo-600 border-slate-300 dark:border-slate-600 focus:ring-indigo-500"
+                        className="mt-1 h-4 w-4 shrink-0 text-cyan-500 border-white/30 focus:ring-cyan-500"
                       />
                       <div>
-                        <p className="font-semibold text-slate-900 dark:text-slate-100">
+                        <p className="font-semibold text-white">
                           {t.label}
                         </p>
                         {t.id === "free" && (
-                          <p className="text-[11px] text-slate-600 dark:text-slate-400">
+                          <p className="text-[11px] text-slate-400 mt-0.5">
                             Infrastructure scores and summary dashboard. No configs.
                           </p>
                         )}
                         {t.id === "pro" && (
-                          <p className="text-[11px] text-slate-600 dark:text-slate-400">
+                          <p className="text-[11px] text-slate-400 mt-0.5">
                             Full technical outputs, YAML, Dockerfile, and downloads.
                           </p>
                         )}
                         {t.id === "growth" && (
-                          <p className="text-[11px] text-slate-600 dark:text-slate-400">
+                          <p className="text-[11px] text-slate-400 mt-0.5">
                             Adds continuous reassessment and advanced optimization logic.
                           </p>
                         )}
                         {t.id === "enterprise" && (
-                          <p className="text-[11px] text-slate-600 dark:text-slate-400">
+                          <p className="text-[11px] text-slate-400 mt-0.5">
                             Strategic engagement and dedicated automation implementation.
                           </p>
                         )}
@@ -1522,33 +1532,33 @@ function CloudOperatorPageInner() {
                 </div>
                 </div>
 
-                <div className="pt-6 mt-6 border-t border-slate-200/80 dark:border-slate-700/80 grid sm:grid-cols-2 gap-6">
+                <div className="pt-6 grid sm:grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-sm font-semibold text-slate-800 dark:text-slate-200 mb-2">
-                    Work email <span className="font-normal text-slate-500">(optional)</span>
+                  <label className="block text-sm font-medium text-slate-400 mb-2">
+                    Work email <span className="text-slate-500">(optional)</span>
                   </label>
                   <input
                     name="email"
                     type="email"
                     placeholder="you@company.com"
-                    className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 px-4 py-3 text-sm text-slate-900 dark:text-slate-100 transition-all duration-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 focus:outline-none hover:border-slate-300 dark:hover:border-slate-600 placeholder:text-slate-400"
+                    className="w-full rounded-2xl border border-white/10 bg-white/5 px-5 py-3.5 text-sm text-white placeholder:text-slate-500 transition-all duration-200 focus:border-violet-500/50 focus:ring-2 focus:ring-violet-500/20 focus:outline-none hover:bg-white/[0.07]"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-semibold text-slate-800 dark:text-slate-200 mb-2">
-                    Name <span className="font-normal text-slate-500">(optional)</span>
+                  <label className="block text-sm font-medium text-slate-400 mb-2">
+                    Name <span className="text-slate-500">(optional)</span>
                   </label>
                   <input
                     name="name"
                     type="text"
                     placeholder="Your name"
-                    className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 px-4 py-3 text-sm text-slate-900 dark:text-slate-100 transition-all duration-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 focus:outline-none hover:border-slate-300 dark:hover:border-slate-600 placeholder:text-slate-400"
+                    className="w-full rounded-2xl border border-white/10 bg-white/5 px-5 py-3.5 text-sm text-white placeholder:text-slate-500 transition-all duration-200 focus:border-violet-500/50 focus:ring-2 focus:ring-violet-500/20 focus:outline-none hover:bg-white/[0.07]"
                   />
                 </div>
               </div>
 
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pt-6 border-t border-slate-200/80 dark:border-slate-700/80 mt-6">
-                <p className="text-xs text-slate-500 dark:text-slate-400 max-w-sm order-2 sm:order-1 leading-relaxed">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pt-6 border-t border-white/5 mt-6">
+                <p className="text-xs text-slate-500 max-w-sm order-2 sm:order-1 leading-relaxed">
                   Autopilot Mode: Generates step-by-step playbooks and validated configs. Execution
                   requires your approval.
                 </p>
@@ -1558,10 +1568,10 @@ function CloudOperatorPageInner() {
                   disabled={submitting || !formValid}
                   className={
                     submitting
-                      ? "animate-pulse cursor-wait"
+                      ? "animate-pulse cursor-wait bg-gradient-to-r from-violet-600 to-fuchsia-600"
                       : formValid
-                        ? "opacity-100 shadow-lg shadow-indigo-400/30 ring-2 ring-indigo-400/50 hover:shadow-indigo-400/40 transition-all duration-300"
-                        : "opacity-50 cursor-not-allowed"
+                        ? "opacity-100 bg-gradient-to-r from-violet-600 via-fuchsia-600 to-violet-600 shadow-lg shadow-violet-500/30 hover:shadow-violet-500/50 hover:shadow-xl ring-2 ring-white/20 hover:scale-[1.02] transition-all duration-300"
+                        : "opacity-50 cursor-not-allowed bg-slate-700"
                   }
                 >
                   {submitting ? (
