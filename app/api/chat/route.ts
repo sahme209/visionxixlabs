@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { orchestrateChat } from "@/lib/ai/orchestrator";
 import { getPlanLimits } from "@/lib/planLimits";
+import { checkRateLimit } from "@/lib/rateLimit";
 
 export const runtime = "nodejs";
 
@@ -16,6 +17,13 @@ function buildBotContext(content: string): string {
 }
 
 export async function POST(req: NextRequest): Promise<Response> {
+  const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || req.headers.get("x-real-ip") || "anon";
+  if (!checkRateLimit(`chat:${ip}`)) {
+    return NextResponse.json(
+      { error: "Too many requests. Please try again in a minute." },
+      { status: 429 }
+    );
+  }
   try {
     if (!process.env.OPENAI_API_KEY?.trim() && !process.env.GEMINI_API_KEY?.trim()) {
       return NextResponse.json({ error: "AI service unavailable." }, { status: 503 });

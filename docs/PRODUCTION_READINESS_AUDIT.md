@@ -169,7 +169,7 @@
 | Plugin | File | Real API/SDK | Notes |
 |--------|------|--------------|-------|
 | aws | `lib/plugins/aws.ts` | No | Placeholder remediate |
-| aws:iam-readonly-scan | `lib/plugins/aws/iam-readonly-scan.ts` | No | Mock or placeholder |
+| aws:iam-exposure-scan | `lib/plugins/aws/iam-readonly-scan.ts` | No | Mock or placeholder |
 | aws:cost-explorer-summary | `lib/plugins/aws/cost-explorer-summary.ts` | No | Mock or placeholder |
 | GitHub PR | `lib/connectors/githubWrite.ts` | **Yes** | Creates real PR via GitHub API |
 

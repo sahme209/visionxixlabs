@@ -5,6 +5,7 @@
 
 import { prisma } from "@/lib/db";
 import { executePlugin } from "@/lib/execution/pluginEngine";
+import { updateEnvironmentAfterDiscovery } from "@/lib/cloudOperator/updateEnvironmentAfterDiscovery";
 import { isCloudConnectorEnabled } from "@/lib/featureFlags";
 import { runCloudOperatorAnalysis } from "@/lib/cloudOperator/triggerCore";
 import { buildExportPack } from "@/lib/cloudOperator/buildExportPack";
@@ -138,7 +139,7 @@ export async function runExecutionPlugin(
       : null;
 
     let dryRun = options.dryRun ?? true;
-    if (pluginId === "aws:iam-exposure-scan" || pluginId === "aws:iam-readonly-scan") {
+    if (pluginId === "aws:iam-exposure-scan") {
       dryRun = true; // always read-only
     } else if (pluginId === "aws:infra-discovery") {
       dryRun = true; // always read-only
@@ -159,6 +160,23 @@ export async function runExecutionPlugin(
       },
     });
 
+    // Update environment summary and architecture graph after infra-discovery
+    if (
+      pluginId === "aws:infra-discovery" &&
+      result.status === "success" &&
+      result.data &&
+      typeof result.data === "object"
+    ) {
+      const d = result.data as {
+        ec2Count?: number;
+        s3Count?: number;
+        rdsCount?: number;
+        vpcCount?: number;
+        region?: string;
+      };
+      await updateEnvironmentAfterDiscovery(ctx.leadId, d);
+    }
+
     return {
       ok: result.status === "success",
       data: {
@@ -167,6 +185,8 @@ export async function runExecutionPlugin(
         resultSummary: result.resultSummary,
         error: result.error,
         dryRun,
+        // Include structured result for chat display (findings, counts, etc.)
+        ...(result.data && typeof result.data === "object" ? (result.data as Record<string, unknown>) : {}),
       },
     };
   } catch (e) {

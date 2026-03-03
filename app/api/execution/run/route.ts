@@ -14,8 +14,7 @@ import { executePlugin } from "@/lib/execution/pluginEngine";
 import { getExecutionPlugin } from "@/lib/plugins/executionRegistry";
 import { getEntitlementsFromPlan } from "@/lib/entitlements";
 import { logAudit } from "@/lib/security/auditLog";
-import { generateEnvironmentSummary } from "@/lib/axiom/environmentSummaryGenerator";
-import { buildArchitectureGraph } from "@/lib/cloud/architectureGraph";
+import { updateEnvironmentAfterDiscovery } from "@/lib/cloudOperator/updateEnvironmentAfterDiscovery";
 
 // Register AWS execution plugins
 import "@/lib/plugins/aws";
@@ -78,7 +77,7 @@ export async function POST(req: NextRequest) {
     const input = (body?.input && typeof body.input === "object") ? body.input : {};
     // IAM scan is read-only: always dryRun. Remediation: default dryRun, require apply=true to execute.
     let dryRun = body?.dryRun !== false;
-    if (pluginId === "aws:iam-exposure-scan" || pluginId === "aws:iam-readonly-scan") {
+    if (pluginId === "aws:iam-exposure-scan") {
       dryRun = true;
     } else if (pluginId === "aws:infra-discovery") {
       dryRun = true;
@@ -107,7 +106,7 @@ export async function POST(req: NextRequest) {
     }
 
     // AWS plugins require linked connector with verified account
-    const awsPlugins = ["aws:iam-exposure-scan", "aws:iam-readonly-scan", "aws:disable-unused-access-key", "aws:infra-discovery"];
+    const awsPlugins = ["aws:iam-exposure-scan", "aws:disable-unused-access-key", "aws:infra-discovery"];
     if (awsPlugins.includes(pluginId) && leadId) {
       const lead = await prisma.lead.findUnique({
         where: { id: leadId },
@@ -157,91 +156,14 @@ export async function POST(req: NextRequest) {
 
     // Generate and store environment summary after aws:infra-discovery succeeds
     if (pluginId === "aws:infra-discovery" && leadId && result.status === "success" && result.data) {
-      try {
-        const lead = await prisma.lead.findUnique({
-          where: { id: leadId },
-          select: { fullPayload: true, userId: true },
-        });
-        if (lead) {
-          const payload = (lead.fullPayload as Record<string, unknown>) || {};
-          const connectorsRaw = (payload.connectors as Record<string, Record<string, unknown>>) || {};
-          const connectors: Record<string, boolean> = {};
-          let awsAccountId: string | undefined;
-          for (const [k, v] of Object.entries(connectorsRaw)) {
-            const status = (v?.status as string) || "pending";
-            connectors[k] = status === "linked";
-            if (k === "aws" && status === "linked" && v?.verifiedAccountId) {
-              awsAccountId = String(v.verifiedAccountId);
-            }
-          }
-
-          const execWhere = lead.userId
-            ? { OR: [{ leadId }, { userId: lead.userId }] }
-            : { leadId };
-          const iamLogs = await prisma.executionLog.findMany({
-            where: {
-              ...execWhere,
-              pluginId: { in: ["aws:iam-exposure-scan", "aws:iam-readonly-scan"] },
-              status: "success",
-            },
-            orderBy: { executedAt: "desc" },
-            take: 1,
-            select: { result: true },
-          });
-          const iamResult = iamLogs[0]?.result as Record<string, unknown> | undefined;
-          const iamFindings = (iamResult?.findings as Array<Record<string, unknown>>) ?? [];
-
-          const d = result.data as {
-            ec2Count?: number;
-            s3Count?: number;
-            rdsCount?: number;
-            vpcCount?: number;
-            region?: string;
-          };
-          const graph = buildArchitectureGraph({
-            ec2Count: d.ec2Count ?? 0,
-            s3Count: d.s3Count ?? 0,
-            rdsCount: d.rdsCount ?? 0,
-            vpcCount: d.vpcCount ?? 0,
-            region: d.region,
-          });
-
-          const summary = await generateEnvironmentSummary({
-            discovery: {
-              ec2Count: d.ec2Count ?? 0,
-              s3Count: d.s3Count ?? 0,
-              rdsCount: d.rdsCount ?? 0,
-              vpcCount: d.vpcCount ?? 0,
-              region: d.region,
-            },
-            iamFindings: iamFindings.map((f) => ({
-              type: f.type as string | undefined,
-              severity: f.severity as string | undefined,
-              principal: f.principal as string | undefined,
-              detail: f.detail as string | undefined,
-              summary: (f as { summary?: string }).summary,
-            })),
-            connectorStatus: {
-              ...connectors,
-              awsAccountId,
-            },
-            userId: lead.userId,
-          });
-
-          const updatedPayload = {
-            ...payload,
-            environmentSummary: summary,
-            architectureGraph: graph,
-          };
-          await prisma.lead.update({
-            where: { id: leadId },
-            data: { fullPayload: updatedPayload as object },
-          });
-        }
-      } catch (summaryErr) {
-        console.error("[execution run] environment summary generation failed:", summaryErr);
-        // Non-fatal: plugin succeeded; summary can be retried
-      }
+      const d = result.data as {
+        ec2Count?: number;
+        s3Count?: number;
+        rdsCount?: number;
+        vpcCount?: number;
+        region?: string;
+      };
+      await updateEnvironmentAfterDiscovery(leadId, d);
     }
 
     return NextResponse.json({

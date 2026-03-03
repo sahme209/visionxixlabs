@@ -67,7 +67,7 @@ export async function GET(req: NextRequest) {
     const connectorsLinked = Object.values(ctx.connectors).some(Boolean);
     const hasInfraDiscovery = ctx.lastExecutions.some((e) => e.pluginId === "aws:infra-discovery");
     const hasIamScan = ctx.lastExecutions.some((e) =>
-      ["aws:iam-exposure-scan", "aws:iam-readonly-scan"].includes(e.pluginId)
+      e.pluginId === "aws:iam-exposure-scan"
     );
     const hasRemediation = ctx.lastExecutions.some(
       (e) => e.pluginId === "aws:disable-unused-access-key" && e.status === "success"

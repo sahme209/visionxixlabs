@@ -72,14 +72,14 @@ export async function GET(req: NextRequest) {
     const ctx = await buildAxiomEnvironmentContext({ leadId, userId });
 
     const hasIamScan = ctx.lastExecutions.some((e) =>
-      ["aws:iam-exposure-scan", "aws:iam-readonly-scan"].includes(e.pluginId)
+      e.pluginId === "aws:iam-exposure-scan"
     );
     const hasInfraDiscovery = ctx.lastExecutions.some((e) => e.pluginId === "aws:infra-discovery");
 
     const lastIamExec = ctx.lastExecutions.find((e) =>
-      ["aws:iam-exposure-scan", "aws:iam-readonly-scan"].includes(e.pluginId)
+      e.pluginId === "aws:iam-exposure-scan"
     );
-    const lastAxiomExec = ctx.lastExecutions.find((e) => e.pluginId !== "aws:iam-exposure-scan" && e.pluginId !== "aws:iam-readonly-scan");
+    const lastAxiomExec = ctx.lastExecutions.find((e) => e.pluginId !== "aws:iam-exposure-scan");
     const lastScanTimestamp =
       lastIamExec?.executedAt?.toISOString() ?? lastAxiomExec?.executedAt?.toISOString() ?? null;
 

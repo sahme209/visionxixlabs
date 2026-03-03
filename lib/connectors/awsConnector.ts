@@ -16,7 +16,7 @@ import { validateAWSConnection, type AWSAssumeRoleInput } from "./aws";
 import { executePlugin } from "@/lib/execution/pluginEngine";
 
 const INFRA_DISCOVERY_PLUGIN = "aws:infra-discovery";
-const SECURITY_SCAN_PLUGIN = "aws:iam-readonly-scan";
+const SECURITY_SCAN_PLUGIN = "aws:iam-exposure-scan";
 const APPLY_FIX_PLUGIN = "aws:disable-unused-access-key";
 
 export class AWSConnector implements CloudConnectorInterface {

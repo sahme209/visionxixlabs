@@ -9,13 +9,14 @@ import { verifyStarterToken } from "@/lib/starterToken";
 import type { DevOpsPlan, DevOpsPlanStep } from "@/lib/agents/axiomAssistantAgent";
 import { executePlugin } from "@/lib/execution/pluginEngine";
 import { runCloudOperatorAnalysis } from "@/lib/cloudOperator/triggerCore";
+import { updateEnvironmentAfterDiscovery } from "@/lib/cloudOperator/updateEnvironmentAfterDiscovery";
 import { generateAndSendReport } from "@/lib/agents/axiomAssistantTools";
 import { buildExportPack } from "@/lib/cloudOperator/buildExportPack";
 import { createStarterToken } from "@/lib/starterToken";
 
 import "@/lib/plugins/aws";
 
-const VALID_PLUGIN_IDS = ["aws:iam-exposure-scan", "aws:iam-readonly-scan", "aws:disable-unused-access-key", "aws:infra-discovery"];
+const VALID_PLUGIN_IDS = ["aws:iam-exposure-scan", "aws:disable-unused-access-key", "aws:infra-discovery"];
 const SYSTEM_USER_ID = process.env.CONTACT_AGENT_USER_ID || "system-axiom-assistant";
 
 function isValidPlan(plan: unknown): plan is DevOpsPlan {
@@ -35,12 +36,13 @@ function isValidPlan(plan: unknown): plan is DevOpsPlan {
 }
 
 export async function POST(req: NextRequest) {
-  let body: { token?: string; plan?: unknown };
+  let body: { token?: string; plan?: unknown; confirmation?: string };
   try {
     body = await req.json();
   } catch {
     return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
   }
+  const hasConfirmApply = String(body.confirmation ?? "").toUpperCase().includes("CONFIRM APPLY");
 
   const token = typeof body.token === "string" ? body.token.trim() : null;
   if (!token) {
@@ -82,6 +84,8 @@ export async function POST(req: NextRequest) {
     const stepNum = i + 1;
 
     if (step.action === "run_plugin") {
+      const isDestructivePlugin = step.pluginId === "aws:disable-unused-access-key";
+      const dryRun = isDestructivePlugin && !hasConfirmApply;
       try {
         const pluginResult = await executePlugin({
           pluginId: step.pluginId,
@@ -89,11 +93,27 @@ export async function POST(req: NextRequest) {
           ctx: {
             userId,
             leadId,
-            dryRun: true,
+            dryRun,
             userPlan,
             credentialsKey: leadId,
+            userConfirmedApply: isDestructivePlugin && hasConfirmApply ? true : undefined,
           },
         });
+        if (
+          step.pluginId === "aws:infra-discovery" &&
+          pluginResult.status === "success" &&
+          pluginResult.data &&
+          typeof pluginResult.data === "object"
+        ) {
+          const d = pluginResult.data as {
+            ec2Count?: number;
+            s3Count?: number;
+            rdsCount?: number;
+            vpcCount?: number;
+            region?: string;
+          };
+          await updateEnvironmentAfterDiscovery(leadId, d);
+        }
         results.push({
           step: stepNum,
           action: "run_plugin",

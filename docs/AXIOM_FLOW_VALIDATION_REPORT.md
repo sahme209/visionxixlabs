@@ -39,7 +39,7 @@
 
 | Component | Issue | File(s) | Fix |
 |-----------|-------|---------|-----|
-| **Plugin ID Mismatch** | `aws:iam-readonly-scan` is accepted in VALID_PLUGIN_IDS but the plugin registers as `aws:iam-exposure-scan`. `getExecutionPlugin("aws:iam-readonly-scan")` returns `undefined` → "Plugin not found". | `lib/plugins/aws/iam-readonly-scan.ts:414` (registers as `aws:iam-exposure-scan`), `app/api/cloud-operator/execute-plan/route.ts:18` (allows `aws:iam-readonly-scan`), `lib/agents/axiomAssistantAgent.ts:220` | Remove `aws:iam-readonly-scan` from execute-plan VALID_PLUGIN_IDS and agent validPluginIds, or add alias in registry. |
+| ~~Plugin ID Mismatch~~ | **FIXED.** Canonical ID `aws:iam-exposure-scan` used everywhere. `aws:iam-readonly-scan` removed. | — | — |
 | **Execution Run — lead.userId Required** | Token auth path requires `lead.userId` (linked account). Unlinked leads get 403 "Sign in to run scans. Link your account first." | `app/api/execution/run/route.ts:51-56` | Documented; ensures scans run only for linked users. Not a bug for intended flow. |
 | **AWS Connector — Feature Flag** | When `ENABLE_CLOUD_CONNECTORS_AWS=false`, connector link returns 503 "AWS connector not yet available." | `lib/featureFlags.ts:7-8` | Env: `ENABLE_CLOUD_CONNECTORS_AWS=true` for AWS connector. |
 | **AWS Connector — Broker Credentials** | Real validation requires `AWS_CONNECTOR_BROKER_ACCESS_KEY_ID` and `AWS_CONNECTOR_BROKER_SECRET_ACCESS_KEY` (or `AWS_ACCESS_KEY_ID` / `AWS_SECRET_ACCESS_KEY`). Missing → "BROKER_NOT_CONFIGURED". | `lib/connectors/aws.ts:36-41` | Required env vars per `docs/AWS_CONNECTOR_SETUP.md`. |
@@ -77,6 +77,6 @@
 |----------|-------|
 | VERIFIED | 14 |
 | PARTIAL | 4 |
-| FAILING | 4 (1 plugin ID mismatch, 2 env/flag, 1 documented behavior) |
+| FAILING | 3 (2 env/flag, 1 documented behavior) |
 
-**Primary fix:** Resolve `aws:iam-readonly-scan` vs `aws:iam-exposure-scan` inconsistency in `app/api/cloud-operator/execute-plan/route.ts` and `lib/agents/axiomAssistantAgent.ts` so plans using the canonical plugin ID execute correctly.
+**Plugin ID:** Standardized on `aws:iam-exposure-scan`; all references updated.

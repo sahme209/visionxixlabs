@@ -119,7 +119,7 @@ export async function buildAxiomEnvironmentContext(opts: {
 
   const recentFindings: string[] = [];
   const lastIamLog = logs.find((l) =>
-    ["aws:iam-exposure-scan", "aws:iam-readonly-scan"].includes(l.pluginId)
+    l.pluginId === "aws:iam-exposure-scan"
   );
   if (lastIamLog?.result && typeof lastIamLog.result === "object") {
     const r = lastIamLog.result as Record<string, unknown>;

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { SUPPORT_EMAIL } from "@/lib/constants/company";
 import { getVisionXIXKnowledgeContext } from "@/lib/data/visionxix-knowledge";
 import { orchestrateChat } from "@/lib/ai/orchestrator";
+import { checkRateLimit } from "@/lib/rateLimit";
 
 export const runtime = "nodejs";
 
@@ -34,6 +35,13 @@ interface Message {
 }
 
 export async function POST(req: NextRequest): Promise<Response> {
+  const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || req.headers.get("x-real-ip") || "anon";
+  if (!checkRateLimit(`visionxix-chat:${ip}`)) {
+    return NextResponse.json(
+      { error: "Too many requests. Please try again in a minute." },
+      { status: 429 }
+    );
+  }
   try {
     if (!process.env.OPENAI_API_KEY?.trim() && !process.env.GEMINI_API_KEY?.trim()) {
       console.error("[VisionXIX AI Chat] Missing OPENAI_API_KEY and GEMINI_API_KEY.");

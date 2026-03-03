@@ -37,7 +37,7 @@
 | Component | File | Gated | Notes |
 |-----------|------|-------|-------|
 | **Plugins list** | `lib/plugins/registry.ts` | ✓ | `listPlugins()` / `listPluginsForTrack()` filter via `ENABLE_PLACEHOLDER_PLUGINS`. Placeholder IDs: analytics, domain-dns, deployment, aws, azure, gcp. |
-| **Execution plugins** | `lib/plugins/executionRegistry.ts` | ✓ | `getExecutionPlugin` / `listExecutionPlugins` filter via `ENABLE_PLACEHOLDER_PLUGINS`. Placeholder: aws:iam-readonly-scan, aws:cost-explorer-summary. |
+| **Execution plugins** | `lib/plugins/executionRegistry.ts` | ✓ | `getExecutionPlugin` / `listExecutionPlugins` filter via `ENABLE_PLACEHOLDER_PLUGINS`. Placeholder: aws:iam-exposure-scan, aws:cost-explorer-summary. |
 | **API plugins list** | `app/api/plugins/list/route.ts` | ✓ | Uses `listPluginsForTrack` → placeholder plugins excluded when flag off. |
 | **Connector link** | `app/api/connectors/link/route.ts:87–91` | ✓ | `isCloudConnectorEnabled(connector)` blocks AWS/Azure/GCP with 503 when flag off. |
 | **Connector status** | `app/api/connectors/status/route.ts:37–39` | ✓ | Returns `status: "unavailable"` for AWS/Azure/GCP when flag off. |

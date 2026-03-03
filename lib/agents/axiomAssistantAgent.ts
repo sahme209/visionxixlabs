@@ -7,6 +7,7 @@ import { generate } from "@/lib/ai/orchestrator";
 import { appendMessage, getConversation } from "@/lib/axiomChat/storage";
 import { buildAxiomEnvironmentContext, type AxiomEnvironmentContext } from "@/lib/axiom/contextBuilder";
 import { AXIOM_ASSISTANT_TOOLS, type ToolContext } from "./axiomAssistantTools";
+import { mapIntentToPlugin, getMultiStepIntent } from "./intentToPluginMap";
 
 const CONFIRM_APPLY_PHRASE = "CONFIRM APPLY";
 
@@ -123,19 +124,23 @@ RULES:
 4. assistantMessage: Your reply in markdown. You MUST follow this structure:
    ${RESPONSE_TEMPLATE}
 5. toolCalls: Array of tools to run. Use ONLY the allowed tools listed below. Omit if none needed. When plan is present, omit toolCalls — plan requires approval first.
-6. Destructive actions (apply=true, infrastructure changes) require the user's last message to include "CONFIRM APPLY". Otherwise the system forces dryRun=true — no infrastructure changes are made.
-6. GUARDRAIL — Never claim an action was executed or completed. You do not see tool results before writing. Only state what you intend to do or propose. Execution success is reported separately.
-7. GUARDRAIL — If the user requests a capability that does NOT exist in the available tools (e.g. custom scripts, unsupported clouds, arbitrary APIs), respond with exactly: "I cannot execute that yet."
-8. If you're not sure, ask clarifying questions instead of guessing.
-9. You receive ENVIRONMENT CONTEXT below. Reference it when proposing actions (e.g. "AWS is linked" vs "Link AWS first", "IAM scan ran with N findings" vs "Run IAM scan to see findings").
-10. PROACTIVE SUGGESTIONS — When recentFindings, lastExecutions, or axiomScore exist in the environment context, proactively populate the actions array with relevant suggestions (e.g. run_plugin with aws:iam-exposure-scan, view_execution_history, run_analysis, export_report, generate_report) so the user sees actionable buttons in the UI.
+6. INTENT MAPPING — For simple read-only requests, ALWAYS output toolCalls immediately (do NOT output a plan):
+   - "scan environment", "discover infra", "show infrastructure", "what do I have" → runExecutionPlugin(pluginId: "aws:infra-discovery")
+   - "check IAM security", "analyze security posture", "scan for issues", "IAM audit" → runExecutionPlugin(pluginId: "aws:iam-exposure-scan")
+   - "disable unused keys", "cleanup keys" → runExecutionPlugin(pluginId: "aws:disable-unused-access-key") with dryRun: true first; destructive runs require CONFIRM APPLY
+7. MULTI-STEP PLANS — For "secure my AWS", "audit and fix IAM", "full security check", output a plan with steps in order: (1) aws:infra-discovery, (2) aws:iam-exposure-scan, (3) aws:disable-unused-access-key (dryRun), (4) generate_report, (5) user approves then execute fixes.
+8. Destructive actions (apply=true) require "CONFIRM APPLY" in the user's message. Otherwise the system forces dryRun=true.
+9. GUARDRAIL — If the user requests a capability that does NOT exist in the available tools (e.g. custom scripts, unsupported clouds, arbitrary APIs), respond with exactly: "I cannot execute that yet."
+10. If you're not sure, ask clarifying questions instead of guessing.
+11. You receive ENVIRONMENT CONTEXT below. Reference it when proposing actions (e.g. "AWS is linked" vs "Link AWS first", "IAM scan ran with N findings" vs "Run IAM scan to see findings").
+12. PROACTIVE SUGGESTIONS — When recentFindings, lastExecutions, or axiomScore exist, populate the actions array with relevant suggestions (run_plugin, view_execution_history, run_analysis, export_report, generate_report).
 
 Available tools:
 - getConnectorStatus: Get AWS/Azure/GCP/GitHub connector status. No args.
 - linkConnectorHint: Get instructions for linking a connector. args: { connectorType?: "github"|"aws"|"azure"|"gcp" }
 - runAxiomAnalysis: Run Cloud Operator analysis. No args.
 - runExecutionPlugin: Run a plugin. args: { pluginId, input?, dryRun?, apply? }
-  - pluginId: "aws:iam-exposure-scan" | "aws:iam-readonly-scan" | "aws:disable-unused-access-key" | "aws:infra-discovery" | "aws:infra-discovery"
+  - pluginId: "aws:iam-exposure-scan" | "aws:disable-unused-access-key" | "aws:infra-discovery"
   - dryRun: true (default) for read-only. apply: true to execute (requires CONFIRM APPLY).
 - fetchExecutionHistory: Get past scan/execution results. No args.
 - generateAndSendReport: Send executive summary email to lead. No args.
@@ -217,7 +222,7 @@ Respond with JSON only. Format assistantMessage using the required structure (Un
   const assistantMessage = parsed.assistantMessage ?? "I'm not sure how to help with that.";
   const rawPlan = parsed.plan;
 
-  const VALID_PLUGIN_IDS = ["aws:iam-exposure-scan", "aws:iam-readonly-scan", "aws:disable-unused-access-key", "aws:infra-discovery"];
+  const VALID_PLUGIN_IDS = ["aws:iam-exposure-scan", "aws:disable-unused-access-key", "aws:infra-discovery"];
   const VALID_STEP_ACTIONS = new Set(["run_plugin", "generate_report", "run_analysis", "view_execution_history", "export_report"]);
 
   let plan: DevOpsPlan | undefined;
@@ -246,11 +251,34 @@ Respond with JSON only. Format assistantMessage using the required structure (Un
     }
   }
 
-  const toolCalls = plan ? [] : (parsed.toolCalls ?? []);
+  // Intent fallback: if LLM returned no toolCalls and no plan, try intent mapping
+  let resolvedToolCalls = plan ? [] : (parsed.toolCalls ?? []);
+  if (resolvedToolCalls.length === 0 && !plan) {
+    const multiStep = getMultiStepIntent(message);
+    if (multiStep && multiStep.length > 0) {
+      const steps: DevOpsPlanStep[] = multiStep
+        .filter((id) => VALID_PLUGIN_IDS.includes(id))
+        .map((pluginId) => ({ action: "run_plugin" as const, pluginId }));
+      if (steps.length > 0) {
+        steps.push({ action: "generate_report" });
+        plan = { goal: "Secure and analyze AWS environment", steps };
+        requiresApproval = true;
+      }
+    }
+    if (!plan) {
+      const intent = mapIntentToPlugin(message);
+      if (intent && intent.readOnly && intent.confidence === "high" && VALID_PLUGIN_IDS.includes(intent.pluginId)) {
+        resolvedToolCalls = [
+          { name: "runExecutionPlugin", arguments: { pluginId: intent.pluginId, dryRun: true } },
+        ];
+      }
+    }
+  }
+  const toolCalls = resolvedToolCalls;
 
   const rawActions = parsed.actions ?? [];
   const actions: AxiomSuggestedAction[] = [];
-  const validPluginIds = ["aws:iam-exposure-scan", "aws:iam-readonly-scan", "aws:disable-unused-access-key", "aws:infra-discovery"];
+  const validPluginIds = ["aws:iam-exposure-scan", "aws:disable-unused-access-key", "aws:infra-discovery"];
   for (const a of rawActions) {
     const t = String(a?.type ?? "").trim();
     if (t === "run_plugin" && a?.pluginId && validPluginIds.includes(String(a.pluginId))) {
@@ -299,6 +327,33 @@ Respond with JSON only. Format assistantMessage using the required structure (Un
     return `${r.name}: ${r.error ?? "failed"}`;
   });
 
+  /** Format structured result for chat display when runExecutionPlugin succeeds. */
+  function formatPluginResultForChat(r: { name: string; ok: boolean; data?: unknown }): string | null {
+    if (r.name !== "runExecutionPlugin" || !r.ok || !r.data || typeof r.data !== "object") return null;
+    const d = r.data as Record<string, unknown>;
+    const summary = d.resultSummary as string | undefined;
+    if (summary) return summary;
+    const findings = d.findings as Array<unknown> | undefined;
+    const ec2Count = d.ec2Count as number | undefined;
+    const s3Count = d.s3Count as number | undefined;
+    if (Array.isArray(findings) && findings.length > 0) {
+      return `Found ${findings.length} IAM finding(s). Review the Timeline for details.`;
+    }
+    if (typeof ec2Count === "number" || typeof s3Count === "number") {
+      const parts: string[] = [];
+      if (ec2Count != null) parts.push(`${ec2Count} EC2`);
+      if (s3Count != null) parts.push(`${s3Count} S3`);
+      if (d.rdsCount != null) parts.push(`${d.rdsCount} RDS`);
+      if (d.vpcCount != null) parts.push(`${d.vpcCount} VPC`);
+      return `Discovery complete: ${parts.join(", ")}. Architecture graph updated.`;
+    }
+    return null;
+  }
+
+  const structuredResultParts = toolResults
+    .map(formatPluginResultForChat)
+    .filter((s): s is string => Boolean(s));
+
   const anyToolSucceeded = toolResults.some((r) => r.ok);
   const allRejectedAsUnknown =
     toolCalls.length > 0 &&
@@ -307,6 +362,11 @@ Respond with JSON only. Format assistantMessage using the required structure (Un
   let finalMessage = assistantMessage;
   if (allRejectedAsUnknown) {
     finalMessage = "I cannot execute that yet.";
+  } else if (toolCalls.length > 0 && anyToolSucceeded && structuredResultParts.length > 0) {
+    finalMessage =
+      assistantMessage +
+      "\n\n---\n**Results**\n" +
+      structuredResultParts.map((p) => `- ${p}`).join("\n");
   } else if (toolCalls.length > 0 && !anyToolSucceeded) {
     // Tools were attempted but all failed — do not let message claim success
     if (

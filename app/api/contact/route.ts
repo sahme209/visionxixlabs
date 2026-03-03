@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { redactSecrets } from "@/lib/security/secretRedaction";
+import { checkRateLimit } from "@/lib/rateLimit";
 
 function escapeHtml(s: string): string {
   return String(s)
@@ -11,6 +12,13 @@ function escapeHtml(s: string): string {
 }
 
 export async function POST(request: NextRequest) {
+  const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || request.headers.get("x-real-ip") || "anon";
+  if (!checkRateLimit(`contact:${ip}`)) {
+    return NextResponse.json(
+      { error: "Too many requests. Please try again in a minute." },
+      { status: 429 }
+    );
+  }
   try {
     const body = await request.json();
     const {

@@ -261,7 +261,7 @@ type SuggestedAction =
 function actionLabel(a: SuggestedAction): string {
   switch (a.type) {
     case "run_plugin":
-      return a.pluginId === "aws:iam-exposure-scan" ? "Run IAM scan" : a.pluginId === "aws:iam-readonly-scan" ? "Run IAM read-only scan" : a.pluginId === "aws:infra-discovery" ? "Discover Infrastructure" : a.pluginId;
+      return a.pluginId === "aws:iam-exposure-scan" ? "Run IAM scan" : a.pluginId === "aws:infra-discovery" ? "Discover Infrastructure" : a.pluginId;
     case "view_execution_history":
       return "View execution history";
     case "export_report":
@@ -523,10 +523,17 @@ function AskAxiomPanel({ token }: { token: string | null }) {
       setPlanExecuting(messageId);
       setError(null);
       try {
+        const hasDestructiveStep = plan.steps.some(
+          (s) => s.action === "run_plugin" && s.pluginId === "aws:disable-unused-access-key"
+        );
         const res = await fetch("/api/cloud-operator/execute-plan", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ token, plan }),
+          body: JSON.stringify({
+            token,
+            plan,
+            ...(hasDestructiveStep ? { confirmation: "CONFIRM APPLY" } : {}),
+          }),
         });
         const data = await res.json();
         if (res.ok) {

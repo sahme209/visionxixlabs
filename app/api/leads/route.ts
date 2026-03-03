@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { createStarterToken } from "@/lib/starterToken";
 import { resolveTier } from "@/lib/websiteBuildPricing";
+import { checkRateLimit } from "@/lib/rateLimit";
 
 /**
  * POST /api/leads — Create new website request lead.
@@ -9,6 +10,13 @@ import { resolveTier } from "@/lib/websiteBuildPricing";
  * Returns { leadId, token } — use token for thank-you page and status polling.
  */
 export async function POST(req: NextRequest) {
+  const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || req.headers.get("x-real-ip") || "anon";
+  if (!checkRateLimit(`leads-create:${ip}`)) {
+    return NextResponse.json(
+      { error: "Too many requests. Please try again in a minute." },
+      { status: 429 }
+    );
+  }
   try {
     const body = await req.json();
     const {
