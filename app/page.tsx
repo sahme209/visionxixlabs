@@ -289,7 +289,7 @@ export default function Home() {
               { title: "Automation", sub: "Workflow & classification", color: "indigo" as const, metric: "3x", chart: "bars" as const },
               { title: "Extraction", sub: "Docs, forms, invoices", color: "emerald" as const, metric: "10x", chart: "line" as const },
               { title: "Governance", sub: "Security & cost controls", color: "orange" as const, metric: "SOC2", chart: null },
-              { title: "AWS · Azure · GCP", sub: "Your cloud, your data", color: "violet" as const, metric: "3", chart: null },
+              { title: "AWS · Azure · GCP", sub: "Your cloud, your data", color: "violet" as const, metric: "", chart: null },
             ].map((item, idx) => (
               <Reveal key={item.title} direction="up" delay={idx * 0.05}>
                 <HoverCard className="relative overflow-hidden p-4 bg-white/80 dark:bg-slate-800/60 backdrop-blur border-2 border-slate-200/80 dark:border-slate-700/80 shadow-sm hover:border-violet-300/80 dark:hover:border-violet-600/50 transition-colors">
