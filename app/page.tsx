@@ -28,6 +28,7 @@ import { AccentMarker } from "@/components/ui/AccentMarker";
 import { MiniChart } from "@/components/ui/MiniChart";
 import { MetricPill } from "@/components/ui/MetricPill";
 import { GridBackdrop } from "@/components/ui/GridBackdrop";
+import { RealisticFogBackground } from "@/components/ui/realistic-fog-background";
 import { TestimonialsCarousel } from "@/components/TestimonialsCarousel";
 import { FAQAccordion } from "@/components/FAQAccordion";
 import { cloudFAQ } from "@/lib/cloudContent";
@@ -94,7 +95,9 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-violet-50/40 to-fuchsia-50/30 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 relative">
+      <RealisticFogBackground backgroundColor="transparent" />
       <BackgroundBlobs />
+      <div className="relative z-10">
       <Navigation />
 
       {/* Hero Section */}
@@ -918,6 +921,7 @@ export default function Home() {
           </div>
         </div>
       </footer>
+      </div>
     </div>
   );
 }
