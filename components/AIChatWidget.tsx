@@ -138,14 +138,17 @@ export default function AIChatWidget() {
       <button
         onClick={() => setOpen(true)}
         aria-label="Open Vision XIX Labs AI Assistant"
-        className="fixed bottom-4 right-4 z-[9998] flex h-14 w-14 items-center justify-center rounded-full bg-indigo-600 text-white shadow-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-all hover:scale-105"
+        className="fixed right-4 z-[9998] flex items-center gap-2 rounded-full bg-white dark:bg-slate-800 px-4 py-3 text-slate-900 dark:text-slate-100 shadow-lg border-2 border-slate-200 dark:border-slate-600 hover:border-violet-400 dark:hover:border-violet-500 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-violet-500 focus:ring-offset-2 transition-all hover:scale-[1.02] active:scale-[0.98] bottom-[5.5rem] md:bottom-6"
       >
-        <SparklesIcon className="h-7 w-7" />
+        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-violet-100 dark:bg-violet-900/50">
+          <ChatBubbleLeftRightIcon className="h-4 w-4 text-violet-600 dark:text-violet-400" />
+        </div>
+        <span className="text-sm font-semibold pr-1">Let&apos;s chat</span>
       </button>
 
       {open && (
         <div
-          className="fixed bottom-4 right-4 z-[9999] flex w-[calc(100vw-2rem)] max-w-[420px] flex-col overflow-hidden rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 shadow-xl"
+          className="fixed right-4 left-4 md:right-6 md:left-auto md:w-[420px] z-[9999] flex flex-col overflow-hidden rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 shadow-xl bottom-[5.5rem] md:bottom-6 max-h-[calc(100vh-8rem)]"
           role="dialog"
           aria-label="Vision XIX Labs AI chat"
         >
