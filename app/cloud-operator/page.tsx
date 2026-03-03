@@ -18,6 +18,8 @@ import {
   VariableIcon,
 } from "@heroicons/react/24/outline";
 import { Navigation } from "@/components/Navigation";
+import { Reveal } from "@/components/motion/Reveal";
+import { AxiomLoadingState } from "@/components/axiom-ui/AxiomLoadingState";
 import { AxiomMetricCard } from "@/components/axiom-ui/AxiomMetricCard";
 import { AxiomSection } from "@/components/axiom-ui/AxiomSection";
 import { AxiomCard } from "@/components/axiom-ui/AxiomCard";
@@ -873,6 +875,7 @@ function CloudOperatorPageInner() {
           )}
         </div>
 
+        <Reveal>
         <section className="mb-10">
           <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 tracking-wide uppercase mb-1">
             Infrastructure Advantage Model™
@@ -919,21 +922,14 @@ function CloudOperatorPageInner() {
             </span>
           </div>
         </section>
+        </Reveal>
 
         {inDashboard && !status && (
+          <Reveal delay={0.1}>
           <section className="mb-8 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 p-8">
-            <div className="animate-pulse space-y-4">
-              <div className="h-4 w-48 rounded-full bg-slate-200 dark:bg-slate-700" />
-              <div className="grid md:grid-cols-5 gap-3 mt-6">
-                {[1, 2, 3, 4, 5].map((i) => (
-                  <div key={i} className="h-24 rounded-xl bg-slate-200 dark:bg-slate-700" />
-                ))}
-              </div>
-              <p className="text-sm text-slate-500 dark:text-slate-400 mt-4">
-                Generating your Operator plan…
-              </p>
-            </div>
+            <AxiomLoadingState variant="inline" showCloudIcons={false} />
           </section>
+          </Reveal>
         )}
 
         {inDashboard && status && (
@@ -944,21 +940,24 @@ function CloudOperatorPageInner() {
           >
             <div className="grid md:grid-cols-5 gap-3">
               {status.outputStatus !== "ready" ? (
-                <>
-                  {[..."12345"].map((key) => (
-                    <AxiomMetricCard
-                      // biome-ignore lint/suspicious/noArrayIndexKey: simple skeleton
-                      key={key}
-                      label=""
-                      value={
-                        <div className="space-y-2 animate-pulse">
-                          <div className="mx-auto h-5 w-12 rounded-full bg-slate-200 dark:bg-slate-700" />
-                          <div className="mx-auto h-2 w-16 rounded-full bg-slate-100 dark:bg-slate-800" />
-                        </div>
-                      }
-                    />
-                  ))}
-                </>
+                <div className="col-span-full flex flex-col gap-4 w-full">
+                  <AxiomLoadingState variant="compact" message="Calculating metrics…" showCloudIcons={false} />
+                  <div className="grid md:grid-cols-5 gap-3">
+                    {[..."12345"].map((key) => (
+                      <AxiomMetricCard
+                        // biome-ignore lint/suspicious/noArrayIndexKey: simple skeleton
+                        key={key}
+                        label=""
+                        value={
+                          <div className="space-y-2 animate-pulse">
+                            <div className="mx-auto h-5 w-12 rounded-full bg-slate-200 dark:bg-slate-700" />
+                            <div className="mx-auto h-2 w-16 rounded-full bg-slate-100 dark:bg-slate-800" />
+                          </div>
+                        }
+                      />
+                    ))}
+                  </div>
+                </div>
               ) : (
                 <>
                   <AxiomMetricCard
@@ -2066,17 +2065,8 @@ export default function CloudOperatorPage() {
       fallback={
         <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
           <Navigation />
-          <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-20">
-            <div className="space-y-4">
-              <p className="text-sm text-slate-600 dark:text-slate-400">
-                Loading Axiom AI cloud analysis…
-              </p>
-              <div className="flex gap-2">
-                <span className="rounded-full bg-slate-200 dark:bg-slate-700 px-3 py-1 text-xs">AWS</span>
-                <span className="rounded-full bg-slate-200 dark:bg-slate-700 px-3 py-1 text-xs">Azure</span>
-                <span className="rounded-full bg-slate-200 dark:bg-slate-700 px-3 py-1 text-xs">GCP</span>
-              </div>
-            </div>
+          <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-20 flex items-center justify-center min-h-[60vh]">
+            <AxiomLoadingState message="Loading Axiom AI cloud analysis…" variant="full" />
           </main>
         </div>
       }
