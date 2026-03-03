@@ -215,6 +215,15 @@ html {
   }
 }
 
+/* Cloud Operator form — dark dropdowns (native select) */
+.operator-form select {
+  color-scheme: dark;
+}
+.operator-form select option {
+  background: #0f172a;
+  color: #f1f5f9;
+}
+
 @keyframes pulse-glow {
   0%, 100% {
     box-shadow: 0 0 20px rgba(124, 58, 237, 0.25);

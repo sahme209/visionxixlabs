@@ -1202,7 +1202,7 @@ function CloudOperatorPageInner() {
               onSubmit={handleSubmit}
               onChange={checkFormValidity}
               onInput={checkFormValidity}
-              className="lg:col-span-2"
+              className="operator-form lg:col-span-2"
             >
               {/* Glassmorphism dark card with gradient border */}
               <div className="relative rounded-3xl overflow-hidden">
@@ -1563,35 +1563,36 @@ function CloudOperatorPageInner() {
                   requires your approval.
                 </p>
                 <div className="order-1 sm:order-2 shrink-0">
-                <AxiomButton
+                <button
                   type="submit"
                   disabled={submitting || !formValid}
                   className={
-                    submitting
-                      ? "animate-pulse cursor-wait bg-gradient-to-r from-violet-600 to-fuchsia-600"
+                    "inline-flex items-center justify-center gap-2 rounded-2xl px-6 py-3.5 text-sm font-bold transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900 " +
+                    (submitting
+                      ? "cursor-wait bg-gradient-to-r from-violet-500 to-fuchsia-500 text-white shadow-lg shadow-violet-500/40 animate-pulse"
                       : formValid
-                        ? "opacity-100 bg-gradient-to-r from-violet-600 via-fuchsia-600 to-violet-600 shadow-lg shadow-violet-500/30 hover:shadow-violet-500/50 hover:shadow-xl ring-2 ring-white/20 hover:scale-[1.02] transition-all duration-300"
-                        : "opacity-50 cursor-not-allowed bg-slate-700"
+                        ? "cursor-pointer bg-gradient-to-r from-violet-500 via-fuchsia-500 to-violet-600 text-white shadow-xl shadow-violet-500/40 hover:shadow-violet-500/60 hover:scale-[1.03] hover:shadow-2xl active:scale-[0.98] border border-white/20 hover:from-violet-400 hover:via-fuchsia-400 hover:to-violet-500"
+                        : "cursor-not-allowed bg-slate-700/80 text-slate-400 border border-slate-600/50")
                   }
                 >
                   {submitting ? (
                     <>
-                      <ArrowPathIcon className="h-4 w-4 shrink-0 animate-spin" aria-hidden />
+                      <ArrowPathIcon className="h-5 w-5 shrink-0 animate-spin" aria-hidden />
                       <span>Please wait, loading…</span>
                       <span className="inline-flex gap-1">
-                        <span className="h-1.5 w-1.5 rounded-full bg-white/90 animate-bounce [animation-delay:0ms]" />
-                        <span className="h-1.5 w-1.5 rounded-full bg-white/90 animate-bounce [animation-delay:120ms]" />
-                        <span className="h-1.5 w-1.5 rounded-full bg-white/90 animate-bounce [animation-delay:240ms]" />
+                        <span className="h-1.5 w-1.5 rounded-full bg-white animate-bounce [animation-delay:0ms]" />
+                        <span className="h-1.5 w-1.5 rounded-full bg-white animate-bounce [animation-delay:120ms]" />
+                        <span className="h-1.5 w-1.5 rounded-full bg-white animate-bounce [animation-delay:240ms]" />
                       </span>
                     </>
                   ) : (
                     <>
-                      <BoltIcon className="h-4 w-4" />
-                      Run AI Cloud Operator
-                      <ArrowRightIcon className="h-4 w-4" />
+                      <BoltIcon className="h-5 w-5" />
+                      <span>Run AI Cloud Operator</span>
+                      <ArrowRightIcon className="h-5 w-5" />
                     </>
                   )}
-                </AxiomButton>
+                </button>
                 </div>
               </div>
                   </div>
