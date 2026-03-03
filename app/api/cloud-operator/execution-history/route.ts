@@ -24,7 +24,7 @@ export async function GET(req: NextRequest) {
   try {
     const lead = await prisma.lead.findUnique({
       where: { id: result.leadId },
-      select: { id: true, userId: true },
+      select: { id: true, userId: true, source: true },
     });
 
     if (!lead || lead.source !== "cloud-operator") {
