@@ -37,7 +37,7 @@ export async function GET(req: NextRequest) {
     await logAudit({ leadId: result.leadId, action: "export_downloaded", actor: "user" });
     eventExportDownloaded({ leadId: result.leadId });
 
-    return new NextResponse(buildResult.buffer, {
+    return new NextResponse(new Uint8Array(buildResult.buffer), {
       headers: {
         "Content-Type": "application/zip",
         "Content-Disposition": 'attachment; filename="axiom-export-pack.zip"',
