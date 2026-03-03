@@ -7,8 +7,10 @@ import { RealisticFogBackground } from "@/components/ui/realistic-fog-background
 
 export default function RealisticFogDemoPage() {
   return (
-    <div className="relative min-h-screen">
-      <RealisticFogBackground />
+    <div className="relative min-h-screen overflow-hidden bg-zinc-950">
+      <div className="absolute inset-0 z-0">
+        <RealisticFogBackground backgroundColor="#09090b" />
+      </div>
       <div className="relative z-10">
         <Navigation />
         <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-20">

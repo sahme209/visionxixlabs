@@ -27,6 +27,11 @@ export function RealisticFogBackground({
     const gl = canvas.getContext("webgl");
     if (!gl) return;
 
+    // Set initial size so WebGL renders immediately
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    gl.viewport(0, 0, canvas.width, canvas.height);
+
     const vsSource = `
       attribute vec2 position;
       void main() {
@@ -86,20 +91,20 @@ export function RealisticFogBackground({
 
           float f = fbm(uv + r);
 
-          // Deep zinc palette with misty highlights
-          vec3 baseColor = vec3(0.03, 0.03, 0.05);
-          vec3 mistColor = vec3(0.18, 0.20, 0.25);
-          vec3 accentColor = vec3(0.3, 0.35, 0.45);
+          // Visible fog palette — lighter mist, higher contrast
+          vec3 baseColor = vec3(0.08, 0.09, 0.12);
+          vec3 mistColor = vec3(0.35, 0.38, 0.48);
+          vec3 accentColor = vec3(0.5, 0.55, 0.7);
 
-          vec3 color = mix(baseColor, mistColor, f);
-          color = mix(color, accentColor, dot(q, r) * 0.5);
+          vec3 color = mix(baseColor, mistColor, f * 1.2);
+          color = mix(color, accentColor, dot(q, r) * 0.6);
           
-          // Subtle mouse glow
-          float mouseGlow = smoothstep(0.35, 0.0, dist);
-          color += mouseGlow * 0.05 * vec3(0.6, 0.7, 1.0);
+          // Mouse glow — more visible
+          float mouseGlow = smoothstep(0.4, 0.0, dist);
+          color += mouseGlow * 0.15 * vec3(0.6, 0.75, 1.0);
 
-          // Post-processing
-          color = pow(color, vec3(1.1)) * 1.4;
+          // Post-processing — brighter output
+          color = pow(color, vec3(0.95)) * 1.8;
           gl_FragColor = vec4(color, 1.0);
       }
     `;
@@ -165,7 +170,7 @@ export function RealisticFogBackground({
   return (
     <canvas
       ref={canvasRef}
-      className={cn("fixed inset-0 w-full h-full pointer-events-none z-[-1]", className)}
+      className={cn("fixed inset-0 w-full h-full pointer-events-none z-0", className)}
       style={{ background: backgroundColor }}
     />
   );
