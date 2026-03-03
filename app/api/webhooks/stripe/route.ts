@@ -1,20 +1,32 @@
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
 import { prisma } from "@/lib/db";
+import { logAudit } from "@/lib/security/auditLog";
 
 export const runtime = "nodejs";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY ?? "");
 
-function priceToPlan(priceId: string | null): "starter" | "growth" | "scale" | null {
+function priceToPlan(priceId: string | null): "starter" | "growth" | "scale" | "enterprise" | null {
   if (!priceId) return null;
   const starter = (process.env.STRIPE_PRICES_STARTER ?? "").split(",").map((s) => s.trim()).filter(Boolean);
   const growth = (process.env.STRIPE_PRICES_GROWTH ?? "").split(",").map((s) => s.trim()).filter(Boolean);
   const scale = (process.env.STRIPE_PRICES_SCALE ?? "").split(",").map((s) => s.trim()).filter(Boolean);
+  const enterprise = (process.env.STRIPE_PRICES_ENTERPRISE ?? "").split(",").map((s) => s.trim()).filter(Boolean);
   if (starter.includes(priceId)) return "starter";
   if (growth.includes(priceId)) return "growth";
   if (scale.includes(priceId)) return "scale";
+  if (enterprise.includes(priceId)) return "enterprise";
   return null;
+}
+
+async function recordStripeWebhookEvent(eventId: string, eventType: string): Promise<void> {
+  await logAudit({
+    leadId: null,
+    action: "stripe_webhook_processed",
+    actor: "system",
+    metadata: { stripeEventId: eventId, stripeEventType: eventType },
+  });
 }
 
 export async function POST(req: NextRequest): Promise<Response> {
@@ -40,9 +52,11 @@ export async function POST(req: NextRequest): Promise<Response> {
   try {
     event = stripe.webhooks.constructEvent(body, sig, secret);
   } catch (err) {
-    console.error("[Stripe Webhook] Signature verification failed:", err);
+    console.error("[Stripe Webhook] Signature verification failed");
     return NextResponse.json({ error: "Invalid signature" }, { status: 400 });
   }
+
+  await recordStripeWebhookEvent(event.id, event.type).catch(() => {});
 
   if (event.type === "checkout.session.completed") {
     const session = event.data.object as Stripe.Checkout.Session;
@@ -56,7 +70,6 @@ export async function POST(req: NextRequest): Promise<Response> {
 
     const email = session.customer_email ?? session.customer_details?.email;
     if (!email) {
-      console.warn("[Stripe Webhook] No email in session:", session.id);
       return NextResponse.json({ received: true });
     }
 
@@ -70,7 +83,6 @@ export async function POST(req: NextRequest): Promise<Response> {
             stripeSubscriptionId: session.subscription as string ?? undefined,
           },
         });
-        console.log("[Stripe Webhook] Updated plan for", email, "to", plan);
       } catch (e) {
         console.error("[Stripe Webhook] Failed to update user:", e);
       }

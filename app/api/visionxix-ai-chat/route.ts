@@ -75,11 +75,7 @@ export async function POST(req: NextRequest): Promise<Response> {
     return NextResponse.json({ message: text });
   } catch (e) {
     const err = e as Error & { status?: number; code?: string };
-    console.error("[VisionXIX AI Chat] Full error:", err);
-    console.error("[VisionXIX AI Chat] Error message:", err?.message ?? String(e));
-    console.error("[VisionXIX AI Chat] Error stack:", err?.stack);
-    if ("status" in err) console.error("[VisionXIX AI Chat] Error status:", (err as { status?: number }).status);
-    if ("code" in err) console.error("[VisionXIX AI Chat] Error code:", (err as { code?: string }).code);
+    console.error("[VisionXIX AI Chat]", err?.message ?? String(e));
 
     let errorMessage = "AI service temporarily unavailable. Please try again later.";
     let statusCode = 500;

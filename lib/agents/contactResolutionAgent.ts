@@ -14,6 +14,7 @@ import {
   generateReportAndSend,
   scheduleOrEscalate,
   sendResolutionEmail,
+  findCloudOperatorLeadByEmail,
 } from "./contactResolutionTools";
 import { logAudit } from "@/lib/security/auditLog";
 
@@ -66,16 +67,26 @@ export async function runContactResolutionAgent(input: ContactResolutionInput): 
 
   const systemPrompt = `You are the Contact Resolution Agent for Vision XIX Labs. Your job is to autonomously resolve contact form submissions.
 
+First, classify the request:
+- AXIOM: cloud review, infrastructure analysis, Axiom, IAM scan, AWS/Azure/GCP connector, cloud-operator
+- BILLING_SUPPORT: pricing, plans, billing, refund, upgrade, downgrade, invoice
+- GENERAL_SUPPORT: other questions
+
+Flow by classification:
+- AXIOM: 1) If missing fields (Role ARN, External ID, account details) → askFollowupQuestions. 2) If AWS connector possible (they have cloud-operator) → runExecutionPlugin(pluginId: "aws:iam-exposure-scan"). 3) If cloud-operator output ready → generateReportAndSend. 4) Email results with userReplyEmail.
+- BILLING_SUPPORT: Generate helpful answer (pricing tiers, upgrade paths, contact sales) and send via userReplyEmail. Use sendResolutionEmail implicitly through userReplyEmail.
+- GENERAL_SUPPORT: Answer or escalate as needed.
+
 Rules:
-- RESOLVED: you took real actions, verified results, and can send a complete reply.
-- NEEDS_INFO: you need specific info (roleArn, externalId, etc.) before you can proceed. Ask concise questions.
-- ESCALATE only when: missing permissions after 2 follow-ups, enterprise custom pricing, repeated execution failure, or truly ambiguous.
+- RESOLVED: you took real actions and can send a complete reply.
+- NEEDS_INFO: you need specific info. Ask concise questions (max 3).
+- ESCALATE only when: missing permissions after 2 follow-ups, enterprise custom pricing, repeated failure, or truly ambiguous.
 
 Available tools (output in toolCalls; we execute them):
 - createLeadTicket(leadId, summary, category, priority): log internal ticket
 - askFollowupQuestions(leadId, questions[], context?): email user asking for missing info
 - runAxiomScan(leadId): trigger cloud-operator analysis (requires cloud-operator lead)
-- runExecutionPlugin(leadId, pluginId, input, dryRun): run e.g. aws:iam-readonly-scan (requires linked AWS)
+- runExecutionPlugin(leadId, pluginId, input?, dryRun): run aws:iam-exposure-scan (requires linked AWS; for contact leads we auto-find cloud-operator lead by email)
 - generateReportAndSend(leadId, "executive"): send Axiom executive summary (requires cloud-operator lead with axiomResult)
 - scheduleOrEscalate(leadId, reason): escalate to human
 
@@ -170,9 +181,15 @@ Decide status, toolCalls to execute, and userReplyEmail. Be truthful: do not cla
           if (r.ok) output.actionsTaken.push("Triggered Axiom scan");
           else output.actionsTaken.push(`Axiom scan: ${r.message}`);
         } else if (t === "runExecutionPlugin") {
+          let targetLeadId = leadId;
+          const pluginId = String(params.pluginId ?? "aws:iam-exposure-scan");
+          if (pluginId === "aws:iam-exposure-scan" && lead.source === "contact") {
+            const coLeadId = await findCloudOperatorLeadByEmail(email);
+            if (coLeadId) targetLeadId = coLeadId;
+          }
           const r = await runExecutionPlugin(
-            leadId,
-            String(params.pluginId ?? "aws:iam-readonly-scan"),
+            targetLeadId,
+            pluginId,
             (params.input as Record<string, unknown>) || {},
             params.dryRun !== false
           );

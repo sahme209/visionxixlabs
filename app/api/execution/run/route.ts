@@ -12,6 +12,7 @@ import { prisma } from "@/lib/db";
 import { verifyStarterToken } from "@/lib/starterToken";
 import { executePlugin } from "@/lib/execution/pluginEngine";
 import { getEntitlementsFromPlan } from "@/lib/entitlements";
+import { logAudit } from "@/lib/security/auditLog";
 
 // Register AWS execution plugins
 import "@/lib/plugins/aws";
@@ -72,14 +73,21 @@ export async function POST(req: NextRequest) {
 
     const pluginId = String(body?.pluginId ?? "").trim();
     const input = (body?.input && typeof body.input === "object") ? body.input : {};
-    const dryRun = body?.dryRun !== false;
+    // IAM scan is read-only: always dryRun. Remediation: default dryRun, require apply=true to execute.
+    let dryRun = body?.dryRun !== false;
+    if (pluginId === "aws:iam-exposure-scan" || pluginId === "aws:iam-readonly-scan") {
+      dryRun = true;
+    } else if (pluginId === "aws:disable-unused-access-key" && body?.apply === true) {
+      dryRun = false;
+    }
 
     if (!pluginId) {
       return NextResponse.json({ error: "pluginId required" }, { status: 400 });
     }
 
-    // AWS IAM scan requires linked AWS connector
-    if (pluginId === "aws:iam-readonly-scan" && leadId) {
+    // AWS plugins require linked connector with verified account
+    const awsPlugins = ["aws:iam-exposure-scan", "aws:iam-readonly-scan", "aws:disable-unused-access-key"];
+    if (awsPlugins.includes(pluginId) && leadId) {
       const lead = await prisma.lead.findUnique({
         where: { id: leadId },
         select: { fullPayload: true },
@@ -88,9 +96,10 @@ export async function POST(req: NextRequest) {
       const connectors = (payload.connectors as Record<string, Record<string, unknown>>) || {};
       const aws = connectors.aws;
       const awsStatus = (aws?.status as string) ?? "pending";
-      if (awsStatus !== "linked") {
+      const verifiedAccountId = (aws?.verifiedAccountId as string) ?? "";
+      if (awsStatus !== "linked" || !verifiedAccountId?.trim()) {
         return NextResponse.json(
-          { error: "AWS connector not linked or validated. Connect your AWS account in Connectors first." },
+          { error: "AWS not connected. Link and verify your AWS account in Connectors first." },
           { status: 400 }
         );
       }
@@ -107,6 +116,17 @@ export async function POST(req: NextRequest) {
         credentialsKey: leadId ?? undefined,
       },
     });
+
+    // Audit log for AWS plugins
+    if (awsPlugins.includes(pluginId) && leadId && result.status === "success" && result.executionId) {
+      const action = pluginId === "aws:disable-unused-access-key" ? "aws_remediation_disable_key" : "aws_scan_run";
+      await logAudit({
+        leadId,
+        action,
+        actor: "user",
+        metadata: { executionLogId: result.executionId },
+      });
+    }
 
     return NextResponse.json({
       executionId: result.executionId,

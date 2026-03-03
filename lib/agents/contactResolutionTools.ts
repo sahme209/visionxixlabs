@@ -79,6 +79,20 @@ export async function askFollowupQuestions(
   }
 }
 
+export async function findCloudOperatorLeadByEmail(email: string): Promise<string | null> {
+  const trimmed = email?.trim();
+  if (!trimmed) return null;
+  const lead = await prisma.lead.findFirst({
+    where: {
+      email: { equals: trimmed, mode: "insensitive" },
+      source: "cloud-operator",
+    },
+    orderBy: { createdAt: "desc" },
+    select: { id: true },
+  });
+  return lead?.id ?? null;
+}
+
 export async function runAxiomScan(leadId: string, _scanType?: string): Promise<ToolResult> {
   try {
     const lead = await prisma.lead.findUnique({ where: { id: leadId } });
@@ -147,9 +161,14 @@ export async function generateReportAndSend(leadId: string, templateType: string
     return { ok: false, message: "Only executive template supported" };
   }
   try {
-    const lead = await prisma.lead.findUnique({ where: { id: leadId } });
+    let lead = await prisma.lead.findUnique({ where: { id: leadId } });
+    if (!lead) return { ok: false, message: "Lead not found" };
+    if (lead.source === "contact") {
+      const coLeadId = await findCloudOperatorLeadByEmail(lead.email);
+      if (coLeadId) lead = await prisma.lead.findUnique({ where: { id: coLeadId } });
+    }
     if (!lead || lead.source !== "cloud-operator") {
-      return { ok: false, message: "Report requires cloud-operator lead" };
+      return { ok: false, message: "Report requires cloud-operator lead. Direct user to /cloud-operator." };
     }
     const apiKey = process.env.RESEND_API_KEY;
     if (!apiKey) return { ok: false, message: "Email not configured" };

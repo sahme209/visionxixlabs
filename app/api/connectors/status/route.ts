@@ -29,7 +29,10 @@ export async function GET(req: NextRequest) {
     const payload = (lead.fullPayload as Record<string, unknown>) || {};
     const connectors = (payload.connectors as Record<string, unknown>) || {};
 
-    const status: Record<string, { status: string; linkedAt?: string }> = {};
+    const status: Record<
+      string,
+      { status: string; linkedAt?: string; verifiedAccountId?: string; verifiedCallerArn?: string }
+    > = {};
     for (const [k, v] of Object.entries(connectors)) {
       const meta = v as Record<string, unknown>;
       let s = (meta.status as string) || "pending";
@@ -38,10 +41,15 @@ export async function GET(req: NextRequest) {
           s = "unavailable";
         }
       }
-      status[k] = {
+      const entry: { status: string; linkedAt?: string; verifiedAccountId?: string; verifiedCallerArn?: string } = {
         status: s,
         linkedAt: meta.linkedAt as string | undefined,
       };
+      if (k === "aws" && s === "linked" && meta.verifiedAccountId) {
+        entry.verifiedAccountId = String(meta.verifiedAccountId);
+        entry.verifiedCallerArn = meta.verifiedCallerArn ? String(meta.verifiedCallerArn) : undefined;
+      }
+      status[k] = entry;
     }
 
     return NextResponse.json({ success: true, connectors: status });

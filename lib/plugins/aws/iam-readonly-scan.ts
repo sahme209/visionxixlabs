@@ -164,6 +164,26 @@ async function run(input: Record<string, unknown>, ctx: ExecutionPluginContext):
           polMarker = polRes.Marker;
         } while (polMarker);
 
+        // Inline user policies
+        let inlineUserPolMarker: string | undefined;
+        let hasInlineUserPolicies = false;
+        do {
+          const inlineRes = await client.send(
+            new ListUserPoliciesCommand({ UserName: u.UserName, Marker: inlineUserPolMarker, MaxItems: 100 })
+          );
+          if ((inlineRes.PolicyNames?.length ?? 0) > 0) hasInlineUserPolicies = true;
+          inlineUserPolMarker = inlineRes.Marker;
+        } while (inlineUserPolMarker);
+        if (hasInlineUserPolicies) {
+          findings.push({
+            type: "InlinePolicy",
+            severity: "low",
+            principal: u.UserName,
+            principalType: "user",
+            detail: "IAM user has inline policies attached",
+          });
+        }
+
         const accessKeys: typeof users[0]["accessKeys"] = [];
         let keyMarker: string | undefined;
         do {
@@ -254,6 +274,26 @@ async function run(input: Record<string, unknown>, ctx: ExecutionPluginContext):
           }
           polMarker = polRes.Marker;
         } while (polMarker);
+
+        // Inline role policies
+        let inlineRolePolMarker: string | undefined;
+        let hasInlineRolePolicies = false;
+        do {
+          const inlineRes = await client.send(
+            new ListRolePoliciesCommand({ RoleName: r.RoleName, Marker: inlineRolePolMarker, MaxItems: 100 })
+          );
+          if ((inlineRes.PolicyNames?.length ?? 0) > 0) hasInlineRolePolicies = true;
+          inlineRolePolMarker = inlineRes.Marker;
+        } while (inlineRolePolMarker);
+        if (hasInlineRolePolicies) {
+          findings.push({
+            type: "InlinePolicy",
+            severity: "low",
+            principal: r.RoleName,
+            principalType: "role",
+            detail: "IAM role has inline policies attached",
+          });
+        }
 
         roles.push({
           roleName: r.RoleName,
@@ -371,7 +411,7 @@ async function run(input: Record<string, unknown>, ctx: ExecutionPluginContext):
 }
 
 registerExecutionPlugin({
-  id: "aws:iam-readonly-scan",
+  id: "aws:iam-exposure-scan",
   name: "IAM Exposure Scan",
   description: "Scan IAM users, roles, policies. Detect AdministratorAccess, wildcards, unused access keys. Read-only.",
   scopesRequired: ["cloud:aws", "cloud:read"],

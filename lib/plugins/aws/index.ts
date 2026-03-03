@@ -3,4 +3,5 @@
  */
 
 import "./iam-readonly-scan";
+import "./disable-unused-access-key";
 import "./cost-explorer-summary";

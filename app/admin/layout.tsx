@@ -39,6 +39,12 @@ export default async function AdminLayout({
             >
               Enterprise Dashboard
             </Link>
+            <Link
+              href="/admin/plan-debug"
+              className="text-sm text-indigo-600 dark:text-indigo-400 hover:underline"
+            >
+              Plan Debug
+            </Link>
           </div>
           <div className="flex items-center gap-4">
             <span className="text-sm text-slate-600 dark:text-slate-400 flex items-center gap-2">

@@ -1,0 +1,49 @@
+/**
+ * GET /api/admin/aws-broker-test — Admin only.
+ * Tests broker credentials with STS GetCallerIdentity (no assume-role).
+ * Do not proceed to assume-role until broker identity works.
+ */
+
+import { NextRequest, NextResponse } from "next/server";
+import { requireAdmin } from "@/lib/admin/auth";
+import { testBrokerIdentity, type TestBrokerResult } from "@/lib/connectors/aws";
+
+const LOG_PREFIX = "[admin aws-broker-test]";
+
+export async function GET(req: NextRequest) {
+  const auth = await requireAdmin(req);
+  if ("error" in auth) return auth.error;
+
+  const accessKeySet = !!(process.env.AWS_CONNECTOR_BROKER_ACCESS_KEY_ID ?? "").trim();
+  const secretKeySet = !!(process.env.AWS_CONNECTOR_BROKER_SECRET_ACCESS_KEY ?? "").trim();
+  const regionSet = (process.env.AWS_CONNECTOR_BROKER_REGION ?? "").trim() || "(default)";
+  console.log(`${LOG_PREFIX} Env detected: AWS_CONNECTOR_BROKER_ACCESS_KEY_ID=${!!accessKeySet}, AWS_CONNECTOR_BROKER_SECRET_ACCESS_KEY=${!!secretKeySet}, AWS_CONNECTOR_BROKER_REGION=${regionSet}`);
+
+  let result: TestBrokerResult;
+  try {
+    result = await testBrokerIdentity();
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : String(e);
+    const redacted = msg.replace(/\b(AKIA[A-Z0-9]{16}|[A-Za-z0-9/+=]{40})\b/g, "[REDACTED]");
+    console.error(`${LOG_PREFIX} Unexpected error:`, redacted);
+    return NextResponse.json({
+      brokerValid: false,
+      brokerAccountId: "",
+      brokerArn: "",
+      failureReason: `UNEXPECTED: ${redacted}`,
+    });
+  }
+
+  if (result.brokerValid) {
+    console.log(`${LOG_PREFIX} Broker OK: accountId=${result.brokerAccountId}, arn=${result.brokerArn}`);
+  } else {
+    console.warn(`${LOG_PREFIX} Broker FAILED: ${result.failureReason}`);
+  }
+
+  return NextResponse.json({
+    brokerValid: result.brokerValid,
+    brokerAccountId: result.brokerAccountId,
+    brokerArn: result.brokerArn,
+    ...(result.failureReason && { failureReason: result.failureReason }),
+  });
+}

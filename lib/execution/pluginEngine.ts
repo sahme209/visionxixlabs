@@ -6,7 +6,7 @@
 import { prisma } from "@/lib/db";
 import { getExecutionPlugin } from "@/lib/plugins/executionRegistry";
 import { getEntitlementsFromPlan } from "@/lib/entitlements";
-import type { ExecutionPluginContext, PluginEntitlements } from "@/lib/plugins/types";
+import type { ExecutionPluginContext, PluginEntitlements, PluginResult } from "@/lib/plugins/types";
 
 const PLUGIN_TIMEOUT_MS = Number(process.env.PLUGIN_TIMEOUT_MS) || 60_000;
 
@@ -107,7 +107,7 @@ export async function executePlugin(opts: ExecutePluginOptions): Promise<Execute
     purchasedPlugins: [], // plan-based; scale+ gets all plugins
   };
 
-  const userScopes = ["cloud:read", "cloud:aws"];
+  const userScopes = ["cloud:read", "cloud:aws", "cloud:write"];
   const scopeCheck = validateScopes(userScopes, plugin.scopesRequired);
   if (!scopeCheck.ok) throw new Error(scopeCheck.error);
 
@@ -154,6 +154,7 @@ export async function executePlugin(opts: ExecutePluginOptions): Promise<Execute
     ]);
 
     const finishedAt = new Date();
+    const rollbackSteps = (result as PluginResult).rollbackHints ?? [];
     if (result.ok) {
       await prisma.executionLog.update({
         where: { id: executionId },
@@ -161,6 +162,7 @@ export async function executePlugin(opts: ExecutePluginOptions): Promise<Execute
           status: "success",
           result: result.data as object,
           outputJson: result.data as object,
+          rollbackSteps,
           finishedAt,
         },
       });

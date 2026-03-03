@@ -1,7 +1,8 @@
 /**
  * POST /api/agents/run
- * Worker endpoint — processes pending AgentJobs.
- * Protected by CRON_SECRET or admin auth.
+ * Worker endpoint — processes pending AgentJobs (Contact Resolution).
+ * Protected by CRON_SECRET (Authorization: Bearer CRON_SECRET) or admin session.
+ * Cron: curl -X POST -H "Authorization: Bearer $CRON_SECRET" /api/agents/run
  */
 
 import { NextRequest, NextResponse } from "next/server";
@@ -96,6 +97,7 @@ export async function POST(req: NextRequest) {
           data: {
             fullPayload: {
               ...payload,
+              agentStatus: output.status,
               agentResolution: {
                 status: output.status,
                 actionsTaken: output.actionsTaken,

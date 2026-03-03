@@ -253,8 +253,12 @@ type IAMScanData = {
 function RunScanCard({ token, connectorStatus }: { token: string | null; connectorStatus: Record<string, ConnectorStatusEntry> | null }) {
   const [running, setRunning] = useState(false);
   const [result, setResult] = useState<{ status: string; resultSummary?: string; error?: string; data?: IAMScanData } | null>(null);
+  const [confirmDisable, setConfirmDisable] = useState<IAMFinding | null>(null);
+  const [disabling, setDisabling] = useState(false);
+  const [disableResult, setDisableResult] = useState<{ success: boolean; error?: string } | null>(null);
 
-  const awsLinked = connectorStatus?.aws?.status === "linked";
+  const aws = connectorStatus?.aws;
+  const awsLinked = aws?.status === "linked" && !!aws?.verifiedAccountId;
 
   const runScan = async () => {
     if (!token) return;
@@ -265,7 +269,7 @@ function RunScanCard({ token, connectorStatus }: { token: string | null; connect
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          pluginId: "aws:iam-readonly-scan",
+          pluginId: "aws:iam-exposure-scan",
           dryRun: true,
           input: {},
           token,
@@ -289,6 +293,44 @@ function RunScanCard({ token, connectorStatus }: { token: string | null; connect
     }
   };
 
+  const runDisableKey = async (f: IAMFinding) => {
+    if (!token || !f.accessKeyId || !f.principal || f.type !== "UnusedAccessKey") return;
+    setDisabling(true);
+    setDisableResult(null);
+    try {
+      const res = await fetch("/api/execution/run", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          pluginId: "aws:disable-unused-access-key",
+          input: { accessKeyId: f.accessKeyId, userName: f.principal },
+          apply: true,
+          token,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error ?? "Failed to disable key");
+      setDisableResult({ success: true });
+      setConfirmDisable(null);
+      if (result?.data?.findings) {
+        setResult({
+          ...result,
+          data: {
+            ...result.data,
+            findings: result.data.findings.filter((x) => !(x.type === "UnusedAccessKey" && x.accessKeyId === f.accessKeyId)),
+            summary: result.data.summary
+              ? { ...result.data.summary, findingsCount: Math.max(0, result.data.summary.findingsCount - 1) }
+              : undefined,
+          },
+        });
+      }
+    } catch (e) {
+      setDisableResult({ success: false, error: e instanceof Error ? e.message : "Failed" });
+    } finally {
+      setDisabling(false);
+    }
+  };
+
   return (
     <AxiomCard className="p-5 border-l-4 border-l-amber-500">
       <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-2 flex items-center gap-2">
@@ -300,16 +342,19 @@ function RunScanCard({ token, connectorStatus }: { token: string | null; connect
       </p>
       {!awsLinked && (
         <p className="text-xs text-amber-600 dark:text-amber-400 mb-2">
-          Link your AWS account in Connectors to run the scan.
+          AWS not connected. Link and verify your AWS account in Connectors to run the scan.
         </p>
       )}
+      <p className="text-xs text-slate-500 dark:text-slate-400 mb-2 italic">
+        Read-only by default. No changes are made.
+      </p>
       <button
         type="button"
         onClick={runScan}
         disabled={running || !token || !awsLinked}
         className="inline-flex items-center gap-2 rounded-lg border border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-900/30 px-3 py-1.5 text-xs font-medium text-amber-700 dark:text-amber-300 hover:bg-amber-100 dark:hover:bg-amber-900/50 disabled:opacity-50"
       >
-        {running ? "Running…" : "Run IAM Scan"}
+        {running ? "Running…" : "Run IAM Scan (Read-only)"}
         <MagnifyingGlassIcon className="h-3.5 w-3.5" />
       </button>
       {result && (
@@ -339,21 +384,63 @@ function RunScanCard({ token, connectorStatus }: { token: string | null; connect
               )}
               {result.data.findings && result.data.findings.length > 0 && (
                 <div>
-                  <p className="font-medium text-slate-700 dark:text-slate-300 mb-1">Findings</p>
+                  <p className="font-medium text-slate-700 dark:text-slate-300 mb-1">Findings ({result.data.findings.length})</p>
+                  {confirmDisable && (
+                    <div className="mb-2 rounded-lg border border-amber-300 dark:border-amber-700 bg-amber-50 dark:bg-amber-900/30 p-2">
+                      <p className="text-xs text-slate-700 dark:text-slate-300 mb-2">
+                        Disable unused key {confirmDisable.accessKeyId?.slice(0, 8)}**** for user {confirmDisable.principal}?
+                      </p>
+                      <div className="flex gap-2">
+                        <button
+                          type="button"
+                          onClick={() => runDisableKey(confirmDisable)}
+                          disabled={disabling}
+                          className="rounded px-2 py-1 text-xs font-medium bg-rose-600 text-white hover:bg-rose-700 disabled:opacity-50"
+                        >
+                          {disabling ? "Disabling…" : "Confirm Disable"}
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => { setConfirmDisable(null); setDisableResult(null); }}
+                          disabled={disabling}
+                          className="rounded px-2 py-1 text-xs font-medium bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-slate-200 hover:bg-slate-300 dark:hover:bg-slate-600"
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                      {disableResult && (
+                        <p className={`mt-2 text-xs ${disableResult.success ? "text-emerald-600 dark:text-emerald-400" : "text-rose-600 dark:text-rose-400"}`}>
+                          {disableResult.success ? "Key disabled." : disableResult.error}
+                        </p>
+                      )}
+                    </div>
+                  )}
                   <ul className="space-y-1 max-h-48 overflow-y-auto">
                     {result.data.findings.map((f, i) => (
                       <li
                         key={i}
-                        className={`flex flex-wrap gap-1 rounded px-2 py-1 ${
+                        className={`flex flex-wrap items-center gap-1 rounded px-2 py-1 ${
                           f.severity === "high"
                             ? "bg-rose-100 dark:bg-rose-900/30 text-rose-800 dark:text-rose-200"
-                            : "bg-amber-100 dark:bg-amber-900/30 text-amber-800 dark:text-amber-200"
+                            : f.severity === "medium"
+                              ? "bg-amber-100 dark:bg-amber-900/30 text-amber-800 dark:text-amber-200"
+                              : "bg-slate-100 dark:bg-slate-800/80 text-slate-700 dark:text-slate-300"
                         }`}
                       >
                         <span className="font-medium">{f.type}</span>
+                        <span className="text-[10px] uppercase font-semibold opacity-80">({f.severity})</span>
                         {f.principal && <span>— {f.principal}</span>}
                         <span>{f.detail}</span>
                         {f.daysUnused != null && <span>({f.daysUnused}d unused)</span>}
+                        {f.type === "UnusedAccessKey" && f.accessKeyId && f.principal && (
+                          <button
+                            type="button"
+                            onClick={() => setConfirmDisable(f)}
+                            className="ml-auto rounded px-2 py-0.5 text-[10px] font-medium bg-slate-700 dark:bg-slate-600 text-white hover:bg-slate-800 dark:hover:bg-slate-500"
+                          >
+                            Disable Key
+                          </button>
+                        )}
                       </li>
                     ))}
                   </ul>
@@ -379,6 +466,77 @@ function RunScanCard({ token, connectorStatus }: { token: string | null; connect
         </div>
       )}
     </AxiomCard>
+  );
+}
+
+type ExecutionLogEntry = {
+  id: string;
+  pluginId: string;
+  status: string;
+  dryRun: boolean;
+  executedAt: string;
+  summary: string;
+};
+
+function ExecutionHistoryPanel({ token }: { token: string | null }) {
+  const [entries, setEntries] = useState<ExecutionLogEntry[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (!token) return;
+    setLoading(true);
+    fetch(`/api/cloud-operator/execution-history?token=${encodeURIComponent(token)}`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.entries) setEntries(data.entries);
+      })
+      .catch(() => setEntries([]))
+      .finally(() => setLoading(false));
+  }, [token]);
+
+  return (
+    <AxiomSection className="space-y-4">
+      <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">Execution History</h2>
+      <p className="text-sm text-slate-600 dark:text-slate-400">
+        Read-only log of plugin runs (IAM scan, disable key, etc.). Most recent first.
+      </p>
+      {loading ? (
+        <p className="text-sm text-slate-500 dark:text-slate-400">Loading…</p>
+      ) : entries.length === 0 ? (
+        <p className="text-sm text-slate-500 dark:text-slate-400">No execution history yet.</p>
+      ) : (
+        <ul className="space-y-2">
+          {entries.map((e) => (
+            <li
+              key={e.id}
+              className="flex flex-wrap items-center gap-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900/50 px-3 py-2 text-sm"
+            >
+              <code className="text-xs font-mono text-slate-600 dark:text-slate-400">{e.pluginId}</code>
+              <span
+                className={`rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase ${
+                  e.status === "success"
+                    ? "bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300"
+                    : e.status === "failed"
+                      ? "bg-rose-100 dark:bg-rose-900/40 text-rose-700 dark:text-rose-300"
+                      : "bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-400"
+                }`}
+              >
+                {e.status}
+              </span>
+              {e.dryRun && (
+                <span className="rounded-full px-2 py-0.5 text-[10px] font-medium bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300">
+                  dry-run
+                </span>
+              )}
+              <span className="text-xs text-slate-500 dark:text-slate-400">
+                {new Date(e.executedAt).toLocaleString()}
+              </span>
+              <span className="text-slate-600 dark:text-slate-300 truncate flex-1 min-w-0">{e.summary}</span>
+            </li>
+          ))}
+        </ul>
+      )}
+    </AxiomSection>
   );
 }
 
@@ -680,7 +838,7 @@ function CloudOperatorPageInner() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isReady, setIsReady] = useState(false);
-  const [activeTab, setActiveTab] = useState<"overview" | "roadmap" | "playbooks" | "strategic" | "trends" | "export" | "connectors">("overview");
+  const [activeTab, setActiveTab] = useState<"overview" | "roadmap" | "playbooks" | "strategic" | "trends" | "export" | "connectors" | "execution-history">("overview");
   const [applyFixSelected, setApplyFixSelected] = useState<Set<number>>(new Set());
   const [applyFixSubmitting, setApplyFixSubmitting] = useState(false);
   const [applyFixResult, setApplyFixResult] = useState<{ success?: boolean; message?: string } | null>(null);
@@ -1426,6 +1584,7 @@ function CloudOperatorPageInner() {
                 { id: "trends" as const, label: "Trends", proOnly: true },
                 { id: "export" as const, label: "Export" },
                 { id: "connectors" as const, label: "Connectors", proOnly: true },
+                { id: "execution-history" as const, label: "Execution History" },
               ].map((t) => {
                 const proOnly = "proOnly" in t && t.proOnly;
                 const visible = !proOnly || status.canViewTechnicalOutputs;
@@ -1847,6 +2006,10 @@ function CloudOperatorPageInner() {
                   </p>
                 </AxiomCard>
               </AxiomSection>
+            )}
+
+            {activeTab === "execution-history" && (
+              <ExecutionHistoryPanel token={token} />
             )}
 
             {activeTab === "overview" && (

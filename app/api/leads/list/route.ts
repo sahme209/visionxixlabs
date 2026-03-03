@@ -49,7 +49,7 @@ export async function GET(req: NextRequest) {
           createdAt: l.createdAt,
           updatedAt: l.updatedAt,
           ...(l.source === "contact" && {
-            agentStatus: resolution?.status ?? job?.status ?? "pending",
+            agentStatus: (payload.agentStatus as string) ?? resolution?.status ?? job?.status ?? "pending",
             actionsTaken: resolution?.actionsTaken ?? [],
             lastEmailSent: lastEmail ? { subject: lastEmail.subject, sentAt: lastEmail.sentAt } : null,
             executionLogIds: (job?.result as { executionLogIds?: string[] })?.executionLogIds ?? [],

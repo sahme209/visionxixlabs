@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { verifyStarterToken } from "@/lib/starterToken";
+import { checkRateLimit } from "@/lib/rateLimit";
 import { checkTieredRateLimit } from "@/lib/rateLimitTiered";
 import {
   canViewTechnicalOutputs,
@@ -10,7 +11,7 @@ import {
 import { isCloudConnectorEnabled } from "@/lib/featureFlags";
 import type { ConnectorType, ConnectorAuthMethod } from "@/lib/connectors/types";
 import { validateGithubConnection } from "@/lib/connectors/github";
-import { validateAwsConnection } from "@/lib/connectors/aws";
+import { validateAWSConnection } from "@/lib/connectors/aws";
 import { validateAzureConnection } from "@/lib/connectors/azure";
 import { validateGcpConnection } from "@/lib/connectors/gcp";
 import { encryptCredential } from "@/lib/security/credentialVault";
@@ -63,6 +64,10 @@ export async function POST(req: NextRequest) {
       accessKeyId?: string;
       secretAccessKey?: string;
       region?: string;
+      roleArn?: string;
+      roleName?: string;
+      awsAccountId?: string;
+      externalId?: string;
       tenantId?: string;
       clientId?: string;
       clientSecret?: string;
@@ -92,6 +97,14 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    // Rate limit connector link attempts per connector type and IP
+    if (!checkRateLimit(`connector-link:${connectorType}:${ip}`)) {
+      return NextResponse.json(
+        { error: "Too many connector link attempts. Please try again later." },
+        { status: 429 }
+      );
+    }
+
     const authMethod = (body.authMethod as ConnectorAuthMethod) || "token";
     let encryptedCredRef: string | undefined;
 
@@ -104,17 +117,77 @@ export async function POST(req: NextRequest) {
       }
       encryptedCredRef = encryptCredential(cred);
     } else if (connectorType === "aws") {
-      const validation = validateAwsConnection({
-        accessKeyId: body.accessKeyId,
-        secretAccessKey: body.secretAccessKey,
-        region: body.region,
-      });
-      if (!validation.valid) {
-        return NextResponse.json({ error: validation.error || "Validation failed" }, { status: 400 });
+      let roleArn = (body.roleArn ?? "").trim();
+      const awsAccountId = String(body.awsAccountId ?? "").trim();
+      const roleName = (body.roleName ?? "").trim();
+      if (!roleArn && roleName && awsAccountId) {
+        roleArn = `arn:aws:iam::${awsAccountId}:role/${roleName}`;
       }
+      if (!roleArn || !awsAccountId) {
+        return NextResponse.json(
+          { error: "roleArn (or roleName + awsAccountId) and awsAccountId required for AWS" },
+          { status: 400 }
+        );
+      }
+      const awsInput = {
+        roleArn,
+        externalId: body.externalId?.trim() || null,
+        region: body.region?.trim() || null,
+        awsAccountId,
+      };
+      const validation = await validateAWSConnection(awsInput, {
+        userId: lead.userId ?? undefined,
+        leadId: lead.id,
+      });
       encryptedCredRef = encryptCredential(
-        JSON.stringify({ accessKeyId: body.accessKeyId, secretAccessKey: body.secretAccessKey, region: body.region })
+        JSON.stringify({
+          roleArn,
+          externalId: awsInput.externalId || undefined,
+          region: awsInput.region || undefined,
+          awsAccountId,
+        })
       );
+
+      if (!validation.valid) {
+        if (validation.status === "unavailable") {
+          return NextResponse.json(
+            { error: "AWS connector is not enabled in this environment" },
+            { status: 503 }
+          );
+        }
+        const connectors = (payload.connectors as Record<string, unknown>) || {};
+        connectors.aws = {
+          status: "invalid",
+          linkedAt: new Date().toISOString(),
+          authMethod: "assume-role",
+          encryptedCredRef,
+        };
+        await prisma.lead.update({
+          where: { id: lead.id },
+          data: { fullPayload: { ...payload, connectors } as object },
+        });
+        return NextResponse.json(
+          { error: "AWS connection could not be verified. Check Role ARN / External ID." },
+          { status: 400 }
+        );
+      }
+
+      const connectorsForAws = (payload.connectors as Record<string, unknown>) || {};
+      connectorsForAws.aws = {
+        status: "linked",
+        linkedAt: new Date().toISOString(),
+        authMethod: "assume-role",
+        encryptedCredRef,
+        verifiedAccountId: validation.account,
+        verifiedCallerArn: validation.arn,
+      };
+      await prisma.lead.update({
+        where: { id: lead.id },
+        data: { fullPayload: { ...payload, connectors: connectorsForAws } as object },
+      });
+      await logAudit({ leadId: lead.id, action: "connector_linked", actor: "user", metadata: { connectorType } });
+      eventConnectorLinked({ leadId: lead.id, connectorType });
+      return NextResponse.json({ success: true, connectorType, status: "linked", account: validation.account });
     } else if (connectorType === "azure") {
       const validation = validateAzureConnection({
         tenantId: body.tenantId,
@@ -164,7 +237,13 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ success: true, connectorType, status: "linked" });
   } catch (e) {
-    console.error("[connectors link]", e);
+    const raw = e instanceof Error ? e.message : String(e);
+    const redacted = raw
+      .replace(/\bAKIA[A-Z0-9]{16}\b/g, "[REDACTED]")
+      .replace(/\b[A-Za-z0-9/+=]{40}\b/g, "[REDACTED]")
+      .replace(/roleArn[=:]\s*[^\s,}]+/gi, "roleArn=[REDACTED]")
+      .replace(/externalId[=:]\s*[^\s,}]+/gi, "externalId=[REDACTED]");
+    console.error("[connectors link]", redacted);
     return NextResponse.json({ error: "Failed to link connector" }, { status: 500 });
   }
 }

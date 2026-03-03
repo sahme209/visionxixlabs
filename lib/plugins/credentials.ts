@@ -2,14 +2,17 @@
  * Credential retrieval — per-tenant only.
  * NEVER uses process.env for user workloads. Looks up encrypted creds from lead connectors.
  * credentialsKey is interpreted as leadId for lookup.
+ * Supports assume-role format (roleArn, externalId) — uses broker to assume, returns temp creds.
  */
 
 import { prisma } from "@/lib/db";
 import { decryptCredential } from "@/lib/security/credentialVault";
+import { assumeRoleForCredentials } from "@/lib/connectors/aws";
 
 export interface AWSCredentials {
   accessKeyId: string;
   secretAccessKey: string;
+  sessionToken?: string;
   region?: string;
 }
 
@@ -18,7 +21,7 @@ export interface CredentialProvider {
 }
 
 async function getAWSCredentialsFromVault(
-  _userId: string,
+  userId: string,
   credentialsKey?: string
 ): Promise<AWSCredentials | null> {
   if (!credentialsKey?.trim()) return null;
@@ -36,7 +39,34 @@ async function getAWSCredentialsFromVault(
 
   try {
     const plain = decryptCredential(aws.encryptedCredRef);
-    const parsed = JSON.parse(plain) as { accessKeyId?: string; secretAccessKey?: string; region?: string };
+    const parsed = JSON.parse(plain) as {
+      accessKeyId?: string;
+      secretAccessKey?: string;
+      region?: string;
+      roleArn?: string;
+      externalId?: string;
+      awsAccountId?: string;
+    };
+
+    if (parsed.roleArn && parsed.awsAccountId) {
+      const temp = await assumeRoleForCredentials(
+        {
+          roleArn: parsed.roleArn,
+          externalId: parsed.externalId ?? null,
+          region: parsed.region ?? null,
+          awsAccountId: parsed.awsAccountId,
+        },
+        { userId, leadId: credentialsKey }
+      );
+      if (!temp) return null;
+      return {
+        accessKeyId: temp.accessKeyId,
+        secretAccessKey: temp.secretAccessKey,
+        sessionToken: temp.sessionToken,
+        region: temp.region,
+      };
+    }
+
     if (!parsed.accessKeyId || !parsed.secretAccessKey) return null;
     return {
       accessKeyId: String(parsed.accessKeyId),
