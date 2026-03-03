@@ -95,7 +95,7 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-violet-50/40 to-fuchsia-50/30 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 relative">
-      <RealisticFogBackground backgroundColor="transparent" />
+      <RealisticFogBackground backgroundColor="transparent" opacity={0.45} />
       <BackgroundBlobs />
       <div className="relative z-10">
       <Navigation />

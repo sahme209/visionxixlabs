@@ -4,10 +4,13 @@ import { useEffect, useRef, useState } from "react";
 
 interface RealisticFogBackgroundProps {
   backgroundColor?: string;
+  /** 0-1. Lower values improve text readability over the fog. Default 1. */
+  opacity?: number;
 }
 
 export function RealisticFogBackground({
   backgroundColor = "#09090b",
+  opacity = 1,
 }: RealisticFogBackgroundProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const [mounted, setMounted] = useState(false);
@@ -119,6 +122,7 @@ gl_FragColor=vec4(pow(c,vec3(.95))*1.8,1.);
         width: "100vw",
         height: "100vh",
         backgroundColor,
+        opacity,
         zIndex: 0,
         overflow: "hidden",
         pointerEvents: "none",
