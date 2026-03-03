@@ -39,10 +39,14 @@ export interface ExecutePluginOptions {
     dryRun: boolean;
     userPlan?: string | null;
     credentialsKey?: string;
+    /** Required when plugin.modifiesInfrastructure and dryRun=false. Must be true if user said "CONFIRM APPLY". */
+    userConfirmedApply?: boolean;
   };
   /** When true, skip entitlement check (trusted agent context only) */
   skipEntitlementCheck?: boolean;
 }
+
+const CONFIRM_APPLY_PHRASE = "CONFIRM APPLY";
 
 export interface ExecutePluginResult {
   executionId: string;
@@ -113,6 +117,14 @@ export async function executePlugin(opts: ExecutePluginOptions): Promise<Execute
 
   if (plugin.readOnly && !ctx.dryRun) {
     throw new Error(`${plugin.name} is read-only and must run with dryRun=true`);
+  }
+
+  if (plugin.modifiesInfrastructure && !ctx.dryRun) {
+    if (!ctx.userConfirmedApply) {
+      throw new Error(
+        `Infrastructure-modifying actions require explicit confirmation. Run in dry-run mode first to see the plan, then type "${CONFIRM_APPLY_PHRASE}" to apply.`
+      );
+    }
   }
 
   const inputHash = hashInput(input);

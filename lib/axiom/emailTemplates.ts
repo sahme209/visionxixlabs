@@ -50,3 +50,54 @@ export function executiveSummaryEmail(params: ExecutiveSummaryEmailParams): {
 
   return { subject, html, text };
 }
+
+export type CriticalFindingsEmailParams = {
+  leadName?: string;
+  findingsCount: number;
+  criticalCount: number;
+  highCount: number;
+  topFindings: Array<{ type: string; severity: string; detail: string }>;
+};
+
+export function criticalFindingsEmail(params: CriticalFindingsEmailParams): {
+  subject: string;
+  html: string;
+  text: string;
+} {
+  const { leadName, findingsCount, criticalCount, highCount, topFindings } = params;
+
+  const subject =
+    criticalCount > 0 ? "Axiom: Critical Security Findings Detected" : "Axiom: Security Findings Require Review";
+
+  const findingsList = topFindings
+    .slice(0, 10)
+    .map((f) => `<li><strong>${f.type}</strong> (${f.severity}): ${f.detail}</li>`)
+    .join("\n");
+
+  const html = [
+    "<h2>Axiom Security Alert</h2>",
+    leadName ? `<p>Hi ${leadName},</p>` : "",
+    "<p>Your scheduled environment scan found security findings that require your attention.</p>",
+    `<p><strong>Total findings:</strong> ${findingsCount} (Critical: ${criticalCount}, High: ${highCount})</p>`,
+    topFindings.length > 0
+      ? `<p><strong>Top findings:</strong></p><ul>${findingsList}</ul>`
+      : "",
+    "<p>Log in to your Axiom Cloud Operator dashboard to review and remediate.</p>",
+    "<p><em>Axiom Environment Monitoring</em></p>",
+  ]
+    .filter(Boolean)
+    .join("\n");
+
+  const textLines = [
+    "Axiom Security Alert",
+    "",
+    "Your scheduled environment scan found security findings.",
+    `Total: ${findingsCount} (Critical: ${criticalCount}, High: ${highCount})`,
+    "",
+    ...topFindings.slice(0, 5).map((f) => `- ${f.type} (${f.severity}): ${f.detail}`),
+    "",
+    "Log in to your Axiom dashboard to review.",
+  ];
+
+  return { subject, html, text: textLines.join("\n") };
+}

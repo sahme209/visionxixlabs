@@ -39,6 +39,7 @@ export async function GET(req: NextRequest) {
       take: 100,
       select: {
         id: true,
+        action: true,
         pluginId: true,
         status: true,
         dryRun: true,
@@ -68,6 +69,7 @@ export async function GET(req: NextRequest) {
       }
       return {
         id: log.id,
+        action: log.action,
         pluginId: log.pluginId,
         status: log.status,
         dryRun: log.dryRun,

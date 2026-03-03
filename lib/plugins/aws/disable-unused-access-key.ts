@@ -117,5 +117,6 @@ registerExecutionPlugin({
   description: "Disable IAM access key detected as unused >90 days. Requires explicit confirmation.",
   scopesRequired: ["cloud:aws", "cloud:read", "cloud:write"],
   readOnly: false,
+  modifiesInfrastructure: true,
   run,
 });

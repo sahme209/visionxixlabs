@@ -11,9 +11,7 @@ import {
 import { isCloudConnectorEnabled } from "@/lib/featureFlags";
 import type { ConnectorType, ConnectorAuthMethod } from "@/lib/connectors/types";
 import { validateGithubConnection } from "@/lib/connectors/github";
-import { validateAWSConnection } from "@/lib/connectors/aws";
-import { validateAzureConnection } from "@/lib/connectors/azure";
-import { validateGcpConnection } from "@/lib/connectors/gcp";
+import { getConnector } from "@/lib/connectors/registry";
 import { encryptCredential } from "@/lib/security/credentialVault";
 import { logAudit } from "@/lib/security/auditLog";
 import { eventConnectorLinked } from "@/lib/observability/events";
@@ -135,8 +133,9 @@ export async function POST(req: NextRequest) {
         region: body.region?.trim() || null,
         awsAccountId,
       };
-      const validation = await validateAWSConnection(awsInput, {
-        userId: lead.userId ?? undefined,
+      const connector = getConnector("aws");
+      const validation = await connector.validateConnection(awsInput, {
+        userId: lead.userId ?? lead.id,
         leadId: lead.id,
       });
       encryptedCredRef = encryptCredential(
@@ -189,12 +188,16 @@ export async function POST(req: NextRequest) {
       eventConnectorLinked({ leadId: lead.id, connectorType });
       return NextResponse.json({ success: true, connectorType, status: "linked", account: validation.account });
     } else if (connectorType === "azure") {
-      const validation = validateAzureConnection({
-        tenantId: body.tenantId,
-        clientId: body.clientId,
-        clientSecret: body.clientSecret,
-        subscriptionId: body.subscriptionId,
-      });
+      const connector = getConnector("azure");
+      const validation = await connector.validateConnection(
+        {
+          tenantId: body.tenantId,
+          clientId: body.clientId,
+          clientSecret: body.clientSecret,
+          subscriptionId: body.subscriptionId,
+        },
+        { userId: lead.userId ?? lead.id, leadId: lead.id }
+      );
       if (!validation.valid) {
         return NextResponse.json({ error: validation.error || "Validation failed" }, { status: 400 });
       }
@@ -207,16 +210,24 @@ export async function POST(req: NextRequest) {
         })
       );
     } else if (connectorType === "gcp") {
-      const validation = validateGcpConnection({
-        projectId: body.projectId,
-        serviceAccountJson: body.serviceAccountJson,
-      });
+      const connector = getConnector("gcp");
+      const validation = await connector.validateConnection(
+        {
+          projectId: body.projectId,
+          serviceAccountJson: body.serviceAccountJson,
+        },
+        { userId: lead.userId ?? lead.id, leadId: lead.id }
+      );
       if (!validation.valid) {
         return NextResponse.json({ error: validation.error || "Validation failed" }, { status: 400 });
       }
       encryptedCredRef = encryptCredential(
         JSON.stringify({ projectId: body.projectId, serviceAccountJson: body.serviceAccountJson })
       );
+    }
+
+    if (!encryptedCredRef) {
+      return NextResponse.json({ error: "Invalid state" }, { status: 500 });
     }
 
     const connectors = (payload.connectors as Record<string, unknown>) || {};

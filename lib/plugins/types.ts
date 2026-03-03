@@ -46,6 +46,8 @@ export interface ExecutionPlugin {
   planRequired?: string;
   /** Read-only plugins may only run in dryRun */
   readOnly?: boolean;
+  /** When true, apply execution requires explicit user confirmation (CONFIRM APPLY) */
+  modifiesInfrastructure?: boolean;
   run(input: Record<string, unknown>, ctx: ExecutionPluginContext): Promise<PluginResult>;
 }
 

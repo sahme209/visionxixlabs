@@ -247,6 +247,20 @@ export async function GET(req: NextRequest) {
       response.policyPackPreview = "IAM, network segmentation, logging, incident response templates available in Enterprise.";
     }
 
+    // Environment summary (from aws:infra-discovery + PLAN_STRONG)
+    const environmentSummary = payload.environmentSummary as string | undefined;
+    if (environmentSummary && typeof environmentSummary === "string") {
+      response.environmentSummary = environmentSummary;
+    }
+
+    // Architecture graph (from aws:infra-discovery)
+    const architectureGraph = payload.architectureGraph as
+      | { nodes: Array<{ id: string; type: string }>; edges: Array<{ from: string; to: string }>; region?: string }
+      | undefined;
+    if (architectureGraph && Array.isArray(architectureGraph.nodes) && Array.isArray(architectureGraph.edges)) {
+      response.architectureGraph = architectureGraph;
+    }
+
     // Phase 6: Enterprise Readiness Brief — Enterprise full; Free/Pro/Growth preview
     const axiomScoresObj = axiomScores as { infrastructureScore?: number; riskExposureLevel?: string; estimatedAnnualSavings?: number | null; deploymentFrictionIndex?: number; complexityTier?: string } | null | undefined;
     const trendObj = (base as Record<string, unknown>).trend as { scoreDelta?: number | null; savingsDelta?: number | null } | null | undefined;

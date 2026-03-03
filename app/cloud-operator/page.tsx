@@ -9,14 +9,17 @@ import {
   ArrowRightIcon,
   BoltIcon,
   ChartBarIcon,
+  ChatBubbleLeftRightIcon,
   CheckCircleIcon,
   CloudIcon,
   CpuChipIcon,
   DocumentArrowDownIcon,
   MagnifyingGlassIcon,
+  PaperAirplaneIcon,
   SparklesIcon,
   ShieldCheckIcon,
   VariableIcon,
+  XMarkIcon,
 } from "@heroicons/react/24/outline";
 import { Navigation } from "@/components/Navigation";
 import { Reveal } from "@/components/motion/Reveal";
@@ -45,6 +48,12 @@ type OperatorStatus = {
   complexityTier?: string | null;
   automationReadinessScore?: number | null;
   recommendedImprovements?: string[];
+  environmentSummary?: string;
+  architectureGraph?: {
+    nodes: Array<{ id: string; type: string; label?: string }>;
+    edges: Array<{ from: string; to: string }>;
+    region?: string;
+  };
   operatorProfile?: { hostingProvider?: string };
   businessImpactSummary?: string;
   recommendedNextAction?: string;
@@ -221,6 +230,607 @@ function ConnectorStatusDisplay({
   return null;
 }
 
+const AXIOM_CHAT_CONVERSATION_KEY = (t: string) => `axiom-chat-conversation:${t}`;
+const AXIOM_CHAT_MESSAGES_KEY = (t: string) => `axiom-chat-messages:${t}`;
+
+type DevOpsPlanStep =
+  | { action: "run_plugin"; pluginId: string; input?: Record<string, unknown> }
+  | { action: "generate_report" }
+  | { action: "run_analysis" }
+  | { action: "view_execution_history" }
+  | { action: "export_report" };
+type DevOpsPlan = { goal: string; steps: DevOpsPlanStep[] };
+const MAX_DISPLAY_MESSAGES = 20;
+
+const QUICK_ACTIONS = [
+  { label: "Secure AWS account", message: "Secure my AWS account." },
+  { label: "Run analysis", message: "Run the Cloud Operator analysis." },
+  { label: "Run IAM scan", message: "Run an IAM exposure scan." },
+  { label: "Discover Infrastructure", message: "Discover my AWS infrastructure (EC2, S3, RDS, VPC)." },
+  { label: "Show execution history", message: "Show execution history." },
+  { label: "Export pack", message: "Export the Axiom pack." },
+] as const;
+
+type SuggestedAction =
+  | { type: "run_plugin"; pluginId: string }
+  | { type: "view_execution_history" }
+  | { type: "export_report" }
+  | { type: "run_analysis" }
+  | { type: "generate_report" };
+
+function actionLabel(a: SuggestedAction): string {
+  switch (a.type) {
+    case "run_plugin":
+      return a.pluginId === "aws:iam-exposure-scan" ? "Run IAM scan" : a.pluginId === "aws:iam-readonly-scan" ? "Run IAM read-only scan" : a.pluginId === "aws:infra-discovery" ? "Discover Infrastructure" : a.pluginId;
+    case "view_execution_history":
+      return "View execution history";
+    case "export_report":
+      return "Export pack";
+    case "run_analysis":
+      return "Run analysis";
+    case "generate_report":
+      return "Send report";
+    default:
+      return "Action";
+  }
+}
+
+type WorkflowStep = {
+  id: number;
+  label: string;
+  status: "NOT_STARTED" | "IN_PROGRESS" | "COMPLETE";
+  action?: { label: string; tab?: string; message?: string };
+};
+
+function WorkflowProgressPanel({
+  token,
+  steps,
+  onTabChange,
+  onSendToAskAxiom,
+}: {
+  token: string | null;
+  steps: WorkflowStep[];
+  onTabChange: (tab: string) => void;
+  onSendToAskAxiom?: (message: string) => void;
+}) {
+  if (!token || steps.length === 0) return null;
+
+  const handleAction = (s: WorkflowStep) => {
+    if (!s.action) return;
+    if (s.action.message && onSendToAskAxiom) {
+      onSendToAskAxiom(s.action.message);
+    } else if (s.action.tab) {
+      onTabChange(s.action.tab);
+    }
+  };
+
+  return (
+    <AxiomCard className="p-4 mb-6 border-l-4 border-l-violet-500">
+      <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-3">
+        Axiom Workflow
+      </h3>
+      <div className="flex flex-wrap items-center gap-2 sm:gap-0">
+        {steps.map((s, i) => (
+          <div key={s.id} className="flex items-center">
+            <div className="flex flex-col items-center">
+              <div
+                className={`flex items-center justify-center w-9 h-9 rounded-full text-sm font-semibold transition-colors ${
+                  s.status === "COMPLETE"
+                    ? "bg-emerald-500 text-white"
+                    : s.status === "IN_PROGRESS"
+                      ? "bg-violet-500 text-white ring-2 ring-violet-300 dark:ring-violet-700"
+                      : "bg-slate-200 dark:bg-slate-700 text-slate-500 dark:text-slate-400"
+                }`}
+              >
+                {s.status === "COMPLETE" ? (
+                  <CheckCircleIcon className="h-5 w-5" />
+                ) : (
+                  s.id
+                )}
+              </div>
+              <span
+                className={`mt-1.5 text-[11px] font-medium max-w-[72px] text-center leading-tight ${
+                  s.status === "COMPLETE"
+                    ? "text-emerald-600 dark:text-emerald-400"
+                    : s.status === "IN_PROGRESS"
+                      ? "text-violet-600 dark:text-violet-400"
+                      : "text-slate-500 dark:text-slate-400"
+                }`}
+              >
+                {s.label}
+              </span>
+              {s.action && (
+                <button
+                  type="button"
+                  onClick={() => handleAction(s)}
+                  className="mt-1 text-[10px] font-medium text-violet-600 dark:text-violet-400 hover:text-violet-800 dark:hover:text-violet-300 hover:underline"
+                >
+                  {s.action.label}
+                </button>
+              )}
+            </div>
+            {i < steps.length - 1 && (
+              <div
+                className={`hidden sm:block w-8 sm:w-12 lg:w-16 h-0.5 mx-1 ${
+                  s.status === "COMPLETE" ? "bg-emerald-300 dark:bg-emerald-700" : "bg-slate-200 dark:bg-slate-700"
+                }`}
+                aria-hidden
+              />
+            )}
+          </div>
+        ))}
+      </div>
+    </AxiomCard>
+  );
+}
+
+type EnvironmentStatus = {
+  connectors: { aws?: boolean; github?: boolean };
+  lastScanTimestamp: string | null;
+  hasIamScan: boolean;
+  axiomScore: { infrastructureScore?: number | null; riskExposureLevel?: string | null } | null;
+  suggestedActions: Array<{
+    id: string;
+    label: string;
+    type: "run_plugin" | "view_execution_history" | "run_analysis";
+    pluginId?: string;
+  }>;
+};
+
+function AskAxiomPanel({ token }: { token: string | null }) {
+  const [open, setOpen] = useState(false);
+  const [envStatus, setEnvStatus] = useState<EnvironmentStatus | null>(null);
+  const [messages, setMessages] = useState<
+    Array<{
+      id: string;
+      role: "user" | "assistant";
+      content: string;
+      actions?: SuggestedAction[];
+      plan?: DevOpsPlan;
+      requiresApproval?: boolean;
+    }>
+  >([]);
+  const [conversationId, setConversationId] = useState<string | null>(null);
+  const conversationIdRef = useRef<string | null>(null);
+  const [input, setInput] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  conversationIdRef.current = conversationId;
+
+  useEffect(() => {
+    if (!token) return;
+    fetch(`/api/cloud-operator/environment-status?token=${encodeURIComponent(token)}`)
+      .then((res) => res.ok ? res.json() : null)
+      .then((data) => data && setEnvStatus(data))
+      .catch(() => {});
+  }, [token]);
+
+  useEffect(() => {
+    if (typeof window === "undefined" || !token) return;
+    try {
+      const cid = localStorage.getItem(AXIOM_CHAT_CONVERSATION_KEY(token));
+      conversationIdRef.current = cid || null;
+      setConversationId(cid || null);
+      const raw = localStorage.getItem(AXIOM_CHAT_MESSAGES_KEY(token));
+      if (raw) {
+        const parsed = JSON.parse(raw) as Array<{
+          id: string;
+          role: "user" | "assistant";
+          content: string;
+          actions?: SuggestedAction[];
+          plan?: DevOpsPlan;
+          requiresApproval?: boolean;
+        }>;
+        setMessages(parsed.slice(-MAX_DISPLAY_MESSAGES));
+      } else {
+        setMessages([]);
+      }
+    } catch {
+      // ignore
+    }
+  }, [token]);
+
+  useEffect(() => {
+    if (typeof window === "undefined" || !token || messages.length === 0) return;
+    try {
+      const toSave = messages.slice(-MAX_DISPLAY_MESSAGES).map((m) => ({
+        id: m.id,
+        role: m.role,
+        content: m.content,
+        ...(m.actions?.length ? { actions: m.actions } : {}),
+        ...(m.plan ? { plan: m.plan, requiresApproval: m.requiresApproval } : {}),
+      }));
+      localStorage.setItem(AXIOM_CHAT_MESSAGES_KEY(token), JSON.stringify(toSave));
+    } catch {
+      // ignore
+    }
+  }, [token, messages]);
+
+  useEffect(() => {
+    scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
+  }, [messages, loading]);
+
+  const sendMessage = useCallback(
+    async (text: string) => {
+      if (!text.trim() || !token || loading) return;
+      const msg = text.trim();
+      setInput("");
+      setError(null);
+      const userMsg = { id: crypto.randomUUID(), role: "user" as const, content: msg };
+      setMessages((prev) => [...prev.slice(-MAX_DISPLAY_MESSAGES - 1), userMsg]);
+      setLoading(true);
+
+      try {
+        const res = await fetch("/api/cloud-operator/chat", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ conversationId: conversationIdRef.current || undefined, message: msg, token }),
+        });
+        const data = await res.json();
+
+        if (!res.ok) {
+          setError(data?.error ?? "Something went wrong. Please try again.");
+          setMessages((prev) => prev.slice(0, -1));
+          return;
+        }
+
+        if (data.conversationId) {
+          conversationIdRef.current = data.conversationId;
+          setConversationId(data.conversationId);
+          localStorage.setItem(AXIOM_CHAT_CONVERSATION_KEY(token), data.conversationId);
+        }
+
+        const assistantContent = [
+          data.assistantMessage ?? "",
+          data.toolResultsSummary?.length ? `\n\n${data.toolResultsSummary.join("\n")}` : "",
+        ]
+          .filter(Boolean)
+          .join("");
+        const assistantMsg = {
+          id: crypto.randomUUID(),
+          role: "assistant" as const,
+          content: assistantContent,
+          actions: data.actions as SuggestedAction[] | undefined,
+          plan: data.plan as DevOpsPlan | undefined,
+          requiresApproval: data.requiresApproval,
+        };
+        setMessages((prev) => [...prev.slice(-MAX_DISPLAY_MESSAGES - 1), assistantMsg]);
+      } catch {
+        setError("Network error. Please try again.");
+        setMessages((prev) => prev.slice(0, -1));
+      } finally {
+        setLoading(false);
+      }
+    },
+    [token, loading]
+  );
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      sendMessage(input);
+    }
+  };
+
+  const [actionLoading, setActionLoading] = useState<string | null>(null);
+  const [planExecuting, setPlanExecuting] = useState<string | null>(null);
+
+  const executePlan = useCallback(
+    async (plan: DevOpsPlan, messageId: string) => {
+      if (!token || planExecuting) return;
+      setPlanExecuting(messageId);
+      setError(null);
+      try {
+        const res = await fetch("/api/cloud-operator/execute-plan", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ token, plan }),
+        });
+        const data = await res.json();
+        if (res.ok) {
+          const summary = data.summary ?? "Plan completed.";
+          const details = data.results
+            ?.map((r: { step: number; action: string; pluginId?: string; ok: boolean; summary?: string }) =>
+              `• Step ${r.step}: ${r.action}${r.pluginId ? ` (${r.pluginId})` : ""} — ${r.ok ? r.summary ?? "OK" : "failed"}`
+            )
+            .join("\n");
+          setMessages((prev) =>
+            prev.map((m) =>
+              m.id === messageId && m.plan
+                ? { ...m, plan: undefined, requiresApproval: false, content: `${m.content}\n\n**Execution results:**\n${summary}\n${details ?? ""}` }
+                : m
+            )
+          );
+        } else {
+          setError(data?.error ?? "Plan execution failed");
+        }
+      } catch {
+        setError("Plan execution failed");
+      } finally {
+        setPlanExecuting(null);
+      }
+    },
+    [token, planExecuting]
+  );
+
+  const executeAction = useCallback(
+    async (action: SuggestedAction) => {
+      if (!token) return;
+      const key = action.type === "run_plugin" ? `${action.type}:${action.pluginId}` : action.type;
+      setActionLoading(key);
+      setError(null);
+      try {
+        if (action.type === "run_plugin") {
+          const res = await fetch("/api/execution/run", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ pluginId: action.pluginId, token, dryRun: true }),
+          });
+          const data = await res.json();
+          if (res.ok) {
+            const summary = data.resultSummary ?? "Done";
+            setMessages((prev) => [...prev.slice(-MAX_DISPLAY_MESSAGES - 1), { id: crypto.randomUUID(), role: "assistant", content: `${action.pluginId} completed. ${summary}` }]);
+          } else {
+            setError(data?.error ?? "Execution failed");
+          }
+        } else if (action.type === "view_execution_history") {
+          const res = await fetch(`/api/cloud-operator/execution-history?token=${encodeURIComponent(token)}`);
+          const data = await res.json();
+          if (res.ok && data.entries?.length) {
+            const lines = data.entries.slice(0, 5).map((e: { pluginId: string; status: string; summary?: string }) =>
+              `• ${e.pluginId} (${e.status}): ${e.summary ?? ""}`
+            );
+            const reply = `Execution history (${data.entries.length} entries):\n${lines.join("\n")}`;
+            setMessages((prev) => [...prev.slice(-MAX_DISPLAY_MESSAGES - 1), { id: crypto.randomUUID(), role: "assistant", content: reply }]);
+          } else if (res.ok) {
+            setMessages((prev) => [...prev.slice(-MAX_DISPLAY_MESSAGES - 1), { id: crypto.randomUUID(), role: "assistant", content: "No execution history yet. Run a scan to create entries." }]);
+          } else {
+            setError(data?.error ?? "Failed to fetch history");
+          }
+        } else if (action.type === "export_report") {
+          const res = await fetch(`/api/cloud-operator/export?token=${encodeURIComponent(token)}`);
+          if (res.ok) {
+            const blob = await res.blob();
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = "axiom-export-pack.zip";
+            a.click();
+            URL.revokeObjectURL(url);
+            setMessages((prev) => [...prev.slice(-MAX_DISPLAY_MESSAGES - 1), { id: crypto.randomUUID(), role: "assistant", content: "Export pack downloaded. Check your downloads folder." }]);
+          } else {
+            const data = await res.json();
+            setError(data?.error ?? "Export failed");
+          }
+        } else if (action.type === "run_analysis") {
+          const res = await fetch(`/api/cloud-operator/trigger?token=${encodeURIComponent(token)}`, {
+            method: "POST",
+          });
+          const data = await res.json();
+          if (res.ok) {
+            setMessages((prev) => [...prev.slice(-MAX_DISPLAY_MESSAGES - 1), { id: crypto.randomUUID(), role: "assistant", content: "Analysis triggered. Refresh the page or wait a moment for it to complete." }]);
+          } else {
+            setError(data?.error ?? "Trigger failed");
+          }
+        } else if (action.type === "generate_report") {
+          const res = await fetch(`/api/cloud-operator/send-report?token=${encodeURIComponent(token)}`, {
+            method: "POST",
+          });
+          const data = await res.json();
+          if (res.ok) {
+            setMessages((prev) => [...prev.slice(-MAX_DISPLAY_MESSAGES - 1), { id: crypto.randomUUID(), role: "assistant", content: "Report sent to your email." }]);
+          } else {
+            setError(data?.error ?? "Failed to send report");
+          }
+        }
+      } catch {
+        setError("Request failed");
+      } finally {
+        setActionLoading(null);
+      }
+    },
+    [token]
+  );
+
+  if (!token) return null;
+
+  return (
+    <>
+      <button
+        onClick={() => setOpen(true)}
+        aria-label="Open Ask Axiom"
+        className="fixed right-4 bottom-6 z-[9998] flex items-center gap-2 rounded-full bg-white dark:bg-slate-800 px-4 py-3 text-slate-900 dark:text-slate-100 shadow-lg border-2 border-slate-200 dark:border-slate-600 hover:border-violet-400 dark:hover:border-violet-500 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-violet-500 transition-all hover:scale-[1.02] active:scale-[0.98]"
+      >
+        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-violet-100 dark:bg-violet-900/50">
+          <ChatBubbleLeftRightIcon className="h-4 w-4 text-violet-600 dark:text-violet-400" />
+        </div>
+        <span className="text-sm font-semibold pr-1">Ask Axiom</span>
+      </button>
+
+      {open && (
+        <div
+          className="fixed right-0 top-0 bottom-0 w-full max-w-md z-[9999] flex flex-col overflow-hidden bg-white dark:bg-slate-900 border-l border-slate-200 dark:border-slate-700 shadow-2xl"
+          role="dialog"
+          aria-label="Ask Axiom chat"
+        >
+          <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-700 bg-violet-600 px-4 py-3">
+            <div className="flex items-center gap-2">
+              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-white/20">
+                <ChatBubbleLeftRightIcon className="h-5 w-5 text-white" />
+              </div>
+              <h2 className="text-sm font-semibold text-white">Ask Axiom</h2>
+            </div>
+            <button
+              onClick={() => setOpen(false)}
+              aria-label="Close"
+              className="rounded-lg p-1.5 text-white/80 hover:bg-white/20 hover:text-white"
+            >
+              <XMarkIcon className="h-6 w-6" />
+            </button>
+          </div>
+
+          <p className="px-4 py-2 text-[11px] text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/40 border-b border-amber-200 dark:border-amber-800/50">
+            Read-only by default. To apply changes, type: <strong>CONFIRM APPLY</strong>
+          </p>
+
+          {envStatus?.suggestedActions && envStatus.suggestedActions.length > 0 && (
+            <div className="px-4 py-3 border-b border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900">
+              <p className="text-[11px] font-medium text-slate-500 dark:text-slate-400 mb-2">Suggested for you</p>
+              <div className="flex flex-wrap gap-2">
+                {envStatus.suggestedActions.map((s) => {
+                  const action: SuggestedAction =
+                    s.type === "run_plugin" && s.pluginId
+                      ? { type: "run_plugin", pluginId: s.pluginId }
+                      : s.type === "run_analysis"
+                        ? { type: "run_analysis" }
+                        : { type: "view_execution_history" };
+                  const key = action.type === "run_plugin" ? `${action.type}:${action.pluginId}` : action.type;
+                  const loading = actionLoading === (action.type === "run_plugin" ? `${action.type}:${action.pluginId}` : action.type);
+                  return (
+                    <button
+                      key={s.id}
+                      onClick={() => executeAction(action)}
+                      disabled={!!actionLoading}
+                      className="flex items-center gap-2 rounded-lg border border-violet-200 dark:border-violet-700 bg-violet-50 dark:bg-violet-900/30 px-3 py-2 text-left text-xs font-medium text-violet-800 dark:text-violet-200 hover:bg-violet-100 dark:hover:bg-violet-900/50 disabled:opacity-50 transition-colors"
+                    >
+                      {loading ? "..." : s.label}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          <div
+            ref={scrollRef}
+            className="flex-1 min-h-0 overflow-y-auto p-4 space-y-3 bg-slate-50 dark:bg-slate-800/50"
+          >
+            {messages.length === 0 && !loading ? (
+              <div className="flex flex-col items-center justify-center text-center py-8">
+                <ChatBubbleLeftRightIcon className="h-10 w-10 text-slate-400 dark:text-slate-500 mb-3" />
+                <p className="text-sm font-medium text-slate-700 dark:text-slate-300">Ask about your infrastructure</p>
+                <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">Run scans, export, or get help.</p>
+                <div className="mt-4 flex flex-wrap justify-center gap-2">
+                  {QUICK_ACTIONS.map((a) => (
+                    <button
+                      key={a.label}
+                      onClick={() => sendMessage(a.message)}
+                      className="rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 px-3 py-1.5 text-left text-xs text-slate-600 dark:text-slate-400 hover:border-violet-400 hover:text-violet-600 dark:hover:text-violet-400"
+                    >
+                      {a.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            ) : (
+              <>
+                {messages.map((m) => (
+                  <div key={m.id} className={`flex flex-col ${m.role === "user" ? "items-end" : "items-start"}`}>
+                    <div
+                      className={`max-w-[85%] rounded-2xl px-3 py-2 text-sm ${
+                        m.role === "user"
+                          ? "bg-violet-600 text-white rounded-br-md"
+                          : "bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-slate-100 rounded-bl-md"
+                      }`}
+                    >
+                      <p className="whitespace-pre-wrap leading-relaxed">{m.content}</p>
+                    </div>
+                    {m.role === "assistant" && m.plan && m.requiresApproval && (
+                      <div className="mt-3 rounded-lg border border-amber-200 dark:border-amber-700 bg-amber-50 dark:bg-amber-950/40 p-3">
+                        <p className="text-xs font-semibold text-amber-800 dark:text-amber-200 mb-2">
+                          Execution Plan — {m.plan.goal}
+                        </p>
+                        <ol className="list-decimal list-inside space-y-1 text-xs text-slate-700 dark:text-slate-300 mb-3">
+                          {m.plan.steps.map((s, i) => (
+                            <li key={i}>
+                              {s.action === "run_plugin" ? `Run ${s.pluginId}` : s.action.replace(/_/g, " ")}
+                            </li>
+                          ))}
+                        </ol>
+                        <button
+                          onClick={() => executePlan(m.plan!, m.id)}
+                          disabled={!!planExecuting}
+                          className="rounded-lg bg-amber-600 hover:bg-amber-700 px-3 py-1.5 text-xs font-medium text-white disabled:opacity-50"
+                        >
+                          {planExecuting === m.id ? "Executing…" : "Approve & Execute"}
+                        </button>
+                      </div>
+                    )}
+                    {m.role === "assistant" && m.actions && m.actions.length > 0 && !m.plan && (
+                      <div className="mt-2 flex flex-wrap gap-1.5">
+                        {m.actions.map((a, i) => {
+                          const key = `${a.type}${a.type === "run_plugin" ? `-${a.pluginId}` : ""}-${i}`;
+                          const loading = actionLoading === (a.type === "run_plugin" ? `${a.type}:${a.pluginId}` : a.type);
+                          return (
+                            <button
+                              key={key}
+                              onClick={() => executeAction(a)}
+                              disabled={!!actionLoading}
+                              className="rounded-lg border border-violet-300 dark:border-violet-600 bg-violet-50 dark:bg-violet-900/30 px-2.5 py-1 text-xs font-medium text-violet-700 dark:text-violet-300 hover:bg-violet-100 dark:hover:bg-violet-900/50 disabled:opacity-50"
+                            >
+                              {loading ? "..." : actionLabel(a)}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
+                ))}
+                {loading && (
+                  <div className="flex justify-start">
+                    <div className="flex gap-1 rounded-2xl rounded-bl-md border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2">
+                      <span className="h-2 w-2 animate-pulse rounded-full bg-violet-600" />
+                      <span className="h-2 w-2 animate-pulse rounded-full bg-violet-600 [animation-delay:0.2s]" />
+                      <span className="h-2 w-2 animate-pulse rounded-full bg-violet-600 [animation-delay:0.4s]" />
+                    </div>
+                  </div>
+                )}
+              </>
+            )}
+          </div>
+
+          <div className="border-t border-slate-200 dark:border-slate-700 p-3 bg-white dark:bg-slate-900">
+            <div className="mb-2 flex flex-wrap gap-1.5">
+              {QUICK_ACTIONS.map((a) => (
+                <button
+                  key={a.label}
+                  onClick={() => sendMessage(a.message)}
+                  disabled={loading}
+                  className="rounded-full bg-slate-100 dark:bg-slate-800 px-2.5 py-1 text-[11px] font-medium text-slate-600 dark:text-slate-400 hover:bg-violet-100 dark:hover:bg-violet-900/40 hover:text-violet-700 dark:hover:text-violet-300 disabled:opacity-50"
+                >
+                  {a.label}
+                </button>
+              ))}
+            </div>
+            {error && <p className="mb-2 text-xs text-red-600 dark:text-red-400">{error}</p>}
+            <div className="flex gap-2">
+              <input
+                type="text"
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                onKeyDown={handleKeyDown}
+                placeholder="Ask Axiom..."
+                disabled={loading}
+                className="flex-1 rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-800 px-3 py-2.5 text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-violet-500 disabled:opacity-60"
+              />
+              <button
+                onClick={() => sendMessage(input)}
+                disabled={!input.trim() || loading}
+                className="rounded-xl bg-violet-600 px-3 py-2.5 text-white hover:bg-violet-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                aria-label="Send"
+              >
+                <PaperAirplaneIcon className="h-5 w-5" />
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
+  );
+}
+
 type IAMFinding = {
   type: string;
   severity: string;
@@ -251,7 +861,15 @@ type IAMScanData = {
   };
 };
 
-function RunScanCard({ token, connectorStatus }: { token: string | null; connectorStatus: Record<string, ConnectorStatusEntry> | null }) {
+function RunScanCard({
+  token,
+  connectorStatus,
+  onSuccess,
+}: {
+  token: string | null;
+  connectorStatus: Record<string, ConnectorStatusEntry> | null;
+  onSuccess?: () => void;
+}) {
   const [running, setRunning] = useState(false);
   const [result, setResult] = useState<{ status: string; resultSummary?: string; error?: string; data?: IAMScanData } | null>(null);
   const [confirmDisable, setConfirmDisable] = useState<IAMFinding | null>(null);
@@ -284,6 +902,7 @@ function RunScanCard({ token, connectorStatus }: { token: string | null; connect
         error: data.error,
         data: data.data as IAMScanData | undefined,
       });
+      if (data.status === "success") onSuccess?.();
     } catch (e) {
       setResult({
         status: "failed",
@@ -306,6 +925,7 @@ function RunScanCard({ token, connectorStatus }: { token: string | null; connect
           pluginId: "aws:disable-unused-access-key",
           input: { accessKeyId: f.accessKeyId, userName: f.principal },
           apply: true,
+          confirmation: "CONFIRM APPLY",
           token,
         }),
       });
@@ -313,6 +933,7 @@ function RunScanCard({ token, connectorStatus }: { token: string | null; connect
       if (!res.ok) throw new Error(data.error ?? "Failed to disable key");
       setDisableResult({ success: true });
       setConfirmDisable(null);
+      onSuccess?.();
       if (result?.data?.findings) {
         setResult({
           ...result,
@@ -470,8 +1091,205 @@ function RunScanCard({ token, connectorStatus }: { token: string | null; connect
   );
 }
 
+type InfraDiscoveryData = {
+  ec2Count?: number;
+  s3Count?: number;
+  rdsCount?: number;
+  vpcCount?: number;
+  summary?: string;
+  region?: string;
+};
+
+function InfraDiscoveryCard({
+  token,
+  connectorStatus,
+  onSuccess,
+}: {
+  token: string | null;
+  connectorStatus: Record<string, ConnectorStatusEntry> | null;
+  onSuccess?: () => void;
+}) {
+  const [running, setRunning] = useState(false);
+  const [result, setResult] = useState<{ status: string; resultSummary?: string; error?: string; data?: InfraDiscoveryData } | null>(null);
+
+  const aws = connectorStatus?.aws;
+  const awsLinked = aws?.status === "linked" && !!aws?.verifiedAccountId;
+
+  const runDiscovery = async () => {
+    if (!token) return;
+    setRunning(true);
+    setResult(null);
+    try {
+      const res = await fetch("/api/execution/run", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          pluginId: "aws:infra-discovery",
+          dryRun: true,
+          input: {},
+          token,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error ?? "Discovery failed");
+      setResult({
+        status: data.status ?? "unknown",
+        resultSummary: data.resultSummary,
+        error: data.error,
+        data: data.data as InfraDiscoveryData | undefined,
+      });
+      if (data.status === "success") onSuccess?.();
+    } catch (e) {
+      setResult({
+        status: "failed",
+        error: e instanceof Error ? e.message : "Discovery failed",
+      });
+    } finally {
+      setRunning(false);
+    }
+  };
+
+  return (
+    <AxiomCard className="p-5 border-l-4 border-l-indigo-500">
+      <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-2 flex items-center gap-2">
+        <CloudIcon className="h-4 w-4 text-indigo-500" />
+        Infrastructure Discovery
+      </h3>
+      <p className="text-xs text-slate-600 dark:text-slate-400 mb-3">
+        Discover EC2 instances, S3 buckets, RDS databases, and VPCs in your AWS account. Read-only.
+      </p>
+      {!awsLinked && (
+        <p className="text-xs text-amber-600 dark:text-amber-400 mb-2">
+          AWS not connected. Link and verify your AWS account in Connectors to run discovery.
+        </p>
+      )}
+      <AxiomButton
+        onClick={runDiscovery}
+        disabled={running || !token || !awsLinked}
+        className="bg-indigo-600 hover:bg-indigo-700 text-white"
+      >
+        {running ? "Discovering…" : "Discover Infrastructure"}
+      </AxiomButton>
+      {result && (
+        <div className="mt-3 p-3 rounded-lg bg-slate-50 dark:bg-slate-900/50">
+          {result.status === "success" && result.data ? (
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
+              <div>
+                <span className="text-slate-500 dark:text-slate-400">EC2</span>
+                <p className="font-semibold text-slate-900 dark:text-slate-100">{result.data.ec2Count ?? 0}</p>
+              </div>
+              <div>
+                <span className="text-slate-500 dark:text-slate-400">S3</span>
+                <p className="font-semibold text-slate-900 dark:text-slate-100">{result.data.s3Count ?? 0}</p>
+              </div>
+              <div>
+                <span className="text-slate-500 dark:text-slate-400">RDS</span>
+                <p className="font-semibold text-slate-900 dark:text-slate-100">{result.data.rdsCount ?? 0}</p>
+              </div>
+              <div>
+                <span className="text-slate-500 dark:text-slate-400">VPC</span>
+                <p className="font-semibold text-slate-900 dark:text-slate-100">{result.data.vpcCount ?? 0}</p>
+              </div>
+            </div>
+          ) : (
+            <p className="text-xs text-rose-600 dark:text-rose-400">{result.error ?? "Discovery failed"}</p>
+          )}
+        </div>
+      )}
+    </AxiomCard>
+  );
+}
+
+type ArchitectureGraphData = {
+  nodes: Array<{ id: string; type: string; label?: string }>;
+  edges: Array<{ from: string; to: string }>;
+  region?: string;
+};
+
+function ArchitectureGraphView({ graph }: { graph: ArchitectureGraphData }) {
+  const { nodes, edges, region } = graph;
+  if (!nodes.length) return null;
+
+  const nodeMap = new Map(nodes.map((n) => [n.id, n]));
+  const typeColors: Record<string, string> = {
+    VPC: "bg-violet-100 dark:bg-violet-900/40 border-violet-300 dark:border-violet-700 text-violet-800 dark:text-violet-200",
+    EC2: "bg-amber-100 dark:bg-amber-900/40 border-amber-300 dark:border-amber-700 text-amber-800 dark:text-amber-200",
+    RDS: "bg-emerald-100 dark:bg-emerald-900/40 border-emerald-300 dark:border-emerald-700 text-emerald-800 dark:text-emerald-200",
+    S3: "bg-sky-100 dark:bg-sky-900/40 border-sky-300 dark:border-sky-700 text-sky-800 dark:text-sky-200",
+  };
+
+  // Simple layout: VPCs with their children (EC2/RDS), S3 standalone
+  const vpcNodes = nodes.filter((n) => n.type === "VPC");
+  const s3Nodes = nodes.filter((n) => n.type === "S3");
+
+  return (
+    <AxiomCard className="p-5 border-l-4 border-l-violet-500">
+      <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-3 flex items-center gap-2">
+        <ChartBarIcon className="h-4 w-4 text-violet-500" />
+        Architecture Overview
+        {region && (
+          <span className="text-xs font-normal text-slate-500 dark:text-slate-400">({region})</span>
+        )}
+      </h3>
+      <div className="space-y-4">
+        {/* VPCs and their children */}
+        <div className="space-y-3">
+          {vpcNodes.map((vpc) => {
+            const children = edges
+              .filter((e) => e.from === vpc.id)
+              .map((e) => nodeMap.get(e.to))
+              .filter(Boolean) as typeof nodes;
+            return (
+              <div key={vpc.id} className="rounded-lg border border-slate-200 dark:border-slate-700 overflow-hidden">
+                <div
+                  className={`px-3 py-2 border-b border-slate-200 dark:border-slate-700 font-medium text-xs ${typeColors["VPC"] ?? "bg-slate-100 dark:bg-slate-800"}`}
+                >
+                  {vpc.label ?? vpc.type}
+                </div>
+                <div className="p-2 flex flex-wrap gap-2">
+                  {children.map((c) => (
+                    <span
+                      key={c.id}
+                      className={`inline-flex px-2 py-1 rounded text-xs font-medium border ${typeColors[c.type] ?? "bg-slate-100 dark:bg-slate-800"}`}
+                    >
+                      {c.label ?? c.type}
+                    </span>
+                  ))}
+                  {children.length === 0 && (
+                    <span className="text-xs text-slate-500 dark:text-slate-400">Empty VPC</span>
+                  )}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+        {/* S3 buckets (standalone) */}
+        {s3Nodes.length > 0 && (
+          <div className="rounded-lg border border-slate-200 dark:border-slate-700 p-2">
+            <span className="text-xs font-medium text-slate-600 dark:text-slate-400 block mb-2">Storage (S3)</span>
+            <div className="flex flex-wrap gap-2">
+              {s3Nodes.map((n) => (
+                <span
+                  key={n.id}
+                  className={`inline-flex px-2 py-1 rounded text-xs font-medium border ${typeColors["S3"] ?? "bg-slate-100 dark:bg-slate-800"}`}
+                >
+                  {n.label ?? n.type}
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+      <p className="mt-2 text-[11px] text-slate-500 dark:text-slate-400">
+        Generated from infrastructure discovery. Run &quot;Discover Infrastructure&quot; in Connectors to refresh.
+      </p>
+    </AxiomCard>
+  );
+}
+
 type ExecutionLogEntry = {
   id: string;
+  action?: string;
   pluginId: string;
   status: string;
   dryRun: boolean;
@@ -479,7 +1297,7 @@ type ExecutionLogEntry = {
   summary: string;
 };
 
-function ExecutionHistoryPanel({ token }: { token: string | null }) {
+function CloudTimelinePanel({ token }: { token: string | null }) {
   const [entries, setEntries] = useState<ExecutionLogEntry[]>([]);
   const [loading, setLoading] = useState(false);
 
@@ -497,45 +1315,64 @@ function ExecutionHistoryPanel({ token }: { token: string | null }) {
 
   return (
     <AxiomSection className="space-y-4">
-      <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">Execution History</h2>
+      <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">Cloud Timeline</h2>
       <p className="text-sm text-slate-600 dark:text-slate-400">
-        Read-only log of plugin runs (IAM scan, disable key, etc.). Most recent first.
+        Execution logs, scans, and fixes applied. Sorted by time (most recent first).
       </p>
       {loading ? (
         <p className="text-sm text-slate-500 dark:text-slate-400">Loading…</p>
       ) : entries.length === 0 ? (
-        <p className="text-sm text-slate-500 dark:text-slate-400">No execution history yet.</p>
+        <p className="text-sm text-slate-500 dark:text-slate-400">No timeline entries yet. Run a scan or apply a fix.</p>
       ) : (
-        <ul className="space-y-2">
-          {entries.map((e) => (
-            <li
-              key={e.id}
-              className="flex flex-wrap items-center gap-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900/50 px-3 py-2 text-sm"
-            >
-              <code className="text-xs font-mono text-slate-600 dark:text-slate-400">{e.pluginId}</code>
-              <span
-                className={`rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase ${
-                  e.status === "success"
-                    ? "bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300"
-                    : e.status === "failed"
-                      ? "bg-rose-100 dark:bg-rose-900/40 text-rose-700 dark:text-rose-300"
-                      : "bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-400"
-                }`}
-              >
-                {e.status}
-              </span>
-              {e.dryRun && (
-                <span className="rounded-full px-2 py-0.5 text-[10px] font-medium bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300">
-                  dry-run
-                </span>
-              )}
-              <span className="text-xs text-slate-500 dark:text-slate-400">
-                {new Date(e.executedAt).toLocaleString()}
-              </span>
-              <span className="text-slate-600 dark:text-slate-300 truncate flex-1 min-w-0">{e.summary}</span>
-            </li>
-          ))}
-        </ul>
+        <div className="relative">
+          <div className="absolute left-3 top-0 bottom-0 w-px bg-slate-200 dark:bg-slate-700" aria-hidden />
+          <ul className="space-y-0">
+            {entries.map((e) => (
+              <li key={e.id} className="relative flex gap-4 pl-10 pb-4 last:pb-0">
+                <div
+                  className={`absolute left-0 w-3 h-3 rounded-full mt-1.5 -translate-x-[5px] ${
+                    e.status === "success"
+                      ? "bg-emerald-500"
+                      : e.status === "failed"
+                        ? "bg-rose-500"
+                        : "bg-slate-400 dark:bg-slate-500"
+                  }`}
+                  aria-hidden
+                />
+                <div className="flex-1 min-w-0 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900/50 px-3 py-2">
+                  <div className="flex flex-wrap items-center gap-2 text-sm">
+                    <span className="font-medium text-slate-900 dark:text-slate-100">
+                      {e.action ?? "plugin_run"}
+                    </span>
+                    <code className="text-xs font-mono text-slate-600 dark:text-slate-400">{e.pluginId}</code>
+                    <span
+                      className={`rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase ${
+                        e.status === "success"
+                          ? "bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300"
+                          : e.status === "failed"
+                            ? "bg-rose-100 dark:bg-rose-900/40 text-rose-700 dark:text-rose-300"
+                            : "bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-400"
+                      }`}
+                    >
+                      {e.status}
+                    </span>
+                    {e.dryRun && (
+                      <span className="rounded-full px-2 py-0.5 text-[10px] font-medium bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300">
+                        dry-run
+                      </span>
+                    )}
+                  </div>
+                  <div className="mt-1 flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
+                    <span>{new Date(e.executedAt).toLocaleString()}</span>
+                  </div>
+                  {e.summary && (
+                    <p className="mt-1 text-xs text-slate-600 dark:text-slate-300 truncate">{e.summary}</p>
+                  )}
+                </div>
+              </li>
+            ))}
+          </ul>
+        </div>
       )}
     </AxiomSection>
   );
@@ -839,11 +1676,12 @@ function CloudOperatorPageInner() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isReady, setIsReady] = useState(false);
-  const [activeTab, setActiveTab] = useState<"overview" | "roadmap" | "playbooks" | "strategic" | "trends" | "export" | "connectors" | "execution-history">("overview");
+  const [activeTab, setActiveTab] = useState<"overview" | "roadmap" | "playbooks" | "strategic" | "trends" | "export" | "connectors" | "timeline">("overview");
   const [applyFixSelected, setApplyFixSelected] = useState<Set<number>>(new Set());
   const [applyFixSubmitting, setApplyFixSubmitting] = useState(false);
   const [applyFixResult, setApplyFixResult] = useState<{ success?: boolean; message?: string } | null>(null);
   const [connectorStatus, setConnectorStatus] = useState<Record<string, ConnectorStatusEntry> | null>(null);
+  const [workflowSteps, setWorkflowSteps] = useState<WorkflowStep[]>([]);
   const [formValid, setFormValid] = useState(false);
   const formRef = useRef<HTMLFormElement | null>(null);
 
@@ -908,11 +1746,29 @@ function CloudOperatorPageInner() {
     return () => clearInterval(interval);
   }, [token, fetchStatus]);
 
+  const fetchWorkflowStatus = useCallback(async () => {
+    if (!token) return;
+    try {
+      const res = await fetch(`/api/cloud-operator/workflow-status?token=${encodeURIComponent(token)}`);
+      const data = await res.json();
+      if (res.ok && data.steps) setWorkflowSteps(data.steps);
+    } catch {
+      setWorkflowSteps([]);
+    }
+  }, [token]);
+
   useEffect(() => {
     if (token && activeTab === "connectors") {
-      fetchConnectorStatus().then((c) => c && setConnectorStatus(c));
+      fetchConnectorStatus().then((c) => {
+        if (c) setConnectorStatus(c);
+        fetchWorkflowStatus();
+      });
     }
-  }, [token, activeTab, fetchConnectorStatus]);
+  }, [token, activeTab, fetchConnectorStatus, fetchWorkflowStatus]);
+
+  useEffect(() => {
+    if (token && isReady) fetchWorkflowStatus();
+  }, [token, isReady, fetchWorkflowStatus]);
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -1662,6 +2518,11 @@ function CloudOperatorPageInner() {
               isReady ? "opacity-100 translate-y-0" : "opacity-0 translate-y-2"
             }`}
           >
+            <WorkflowProgressPanel
+              token={token}
+              steps={workflowSteps}
+              onTabChange={(tab) => setActiveTab(tab as typeof activeTab)}
+            />
             {/* Phase 5: Top tabs */}
             <div className="flex flex-wrap gap-2 border-b border-slate-200 dark:border-slate-700 pb-2">
               {[
@@ -1672,7 +2533,7 @@ function CloudOperatorPageInner() {
                 { id: "trends" as const, label: "Trends", proOnly: true },
                 { id: "export" as const, label: "Export" },
                 { id: "connectors" as const, label: "Connectors", proOnly: true },
-                { id: "execution-history" as const, label: "Execution History" },
+                { id: "timeline" as const, label: "Cloud Timeline" },
               ].map((t) => {
                 const proOnly = "proOnly" in t && t.proOnly;
                 const visible = !proOnly || status.canViewTechnicalOutputs;
@@ -2087,7 +2948,19 @@ function CloudOperatorPageInner() {
                     <p className="text-xs text-slate-600 dark:text-slate-400">Repos, CI/CD workflows, deployment patterns</p>
                   </AxiomCard>
                 </div>
-                <RunScanCard token={token} connectorStatus={connectorStatus} />
+                <RunScanCard
+                  token={token}
+                  connectorStatus={connectorStatus}
+                  onSuccess={fetchWorkflowStatus}
+                />
+                <InfraDiscoveryCard
+                  token={token}
+                  connectorStatus={connectorStatus}
+                  onSuccess={() => {
+                    fetchStatus().then((d) => d && setStatus(d));
+                    fetchWorkflowStatus();
+                  }}
+                />
                 <AxiomCard className="p-5 bg-slate-50 dark:bg-slate-900/50">
                   <p className="text-xs text-slate-600 dark:text-slate-400">
                     API: POST /api/connectors/link to link. GET /api/connectors/status for status. All connectors are read-only.
@@ -2096,13 +2969,30 @@ function CloudOperatorPageInner() {
               </AxiomSection>
             )}
 
-            {activeTab === "execution-history" && (
-              <ExecutionHistoryPanel token={token} />
+            {activeTab === "timeline" && (
+              <CloudTimelinePanel token={token} />
             )}
 
             {activeTab === "overview" && (
             <div className="grid lg:grid-cols-3 gap-6">
               <div className="lg:col-span-2 space-y-4">
+                {status?.environmentSummary && (
+                  <AxiomCard className="p-5 border-l-4 border-l-indigo-500">
+                    <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-3 flex items-center gap-2">
+                      <CloudIcon className="h-4 w-4 text-indigo-500" />
+                      Environment Summary
+                    </h3>
+                    <div className="text-sm text-slate-700 dark:text-slate-300 whitespace-pre-wrap leading-relaxed">
+                      {status.environmentSummary}
+                    </div>
+                    <p className="mt-2 text-[11px] text-slate-500 dark:text-slate-400">
+                      Generated from infrastructure discovery and IAM scan. Run &quot;Discover Infrastructure&quot; in Connectors to refresh.
+                    </p>
+                  </AxiomCard>
+                )}
+                {status?.architectureGraph && status.architectureGraph.nodes.length > 0 && (
+                  <ArchitectureGraphView graph={status.architectureGraph} />
+                )}
                 <AxiomCard className="p-5">
                   <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-2">
                     Download Export Pack
@@ -2306,6 +3196,7 @@ function CloudOperatorPageInner() {
           </section>
         )}
       </main>
+      <AskAxiomPanel token={token} />
     </div>
   );
 }

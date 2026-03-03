@@ -1,3 +1,9 @@
 {
-  "installCommand": "npm install --legacy-peer-deps=false"
+  "installCommand": "npm install --legacy-peer-deps=false",
+  "crons": [
+    {
+      "path": "/api/cloud-operator/run-recurring",
+      "schedule": "0 6 * * *"
+    }
+  ]
 }
