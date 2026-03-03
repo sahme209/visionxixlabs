@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, Suspense, useCallback, useEffect, useState } from "react";
+import { FormEvent, Suspense, useCallback, useEffect, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import {
@@ -844,6 +844,12 @@ function CloudOperatorPageInner() {
   const [applyFixSubmitting, setApplyFixSubmitting] = useState(false);
   const [applyFixResult, setApplyFixResult] = useState<{ success?: boolean; message?: string } | null>(null);
   const [connectorStatus, setConnectorStatus] = useState<Record<string, ConnectorStatusEntry> | null>(null);
+  const [formValid, setFormValid] = useState(false);
+  const formRef = useRef<HTMLFormElement | null>(null);
+
+  const checkFormValidity = useCallback(() => {
+    if (formRef.current) setFormValid(formRef.current.checkValidity());
+  }, []);
 
   const fetchConnectorStatus = useCallback(async () => {
     if (!token) return null;
@@ -1085,8 +1091,15 @@ function CloudOperatorPageInner() {
 
         {inDashboard && !status && (
           <Reveal delay={0.1}>
-          <section className="mb-8 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 p-8">
-            <AxiomLoadingState variant="inline" showCloudIcons={false} />
+          <section className="mb-8 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 p-10">
+            <AxiomLoadingState
+              variant="inline"
+              showCloudIcons={false}
+              message="Loading your Operator analysis…"
+            />
+            <p className="mt-4 text-center text-sm text-slate-500 dark:text-slate-400">
+              Preparing Roadmap, Playbooks, and insights…
+            </p>
           </section>
           </Reveal>
         )}
@@ -1100,7 +1113,16 @@ function CloudOperatorPageInner() {
             <div className="grid md:grid-cols-5 gap-3">
               {status.outputStatus !== "ready" ? (
                 <div className="col-span-full flex flex-col gap-4 w-full">
-                  <AxiomLoadingState variant="compact" message="Calculating metrics…" showCloudIcons={false} />
+                  <div className="rounded-xl border border-indigo-200 dark:border-indigo-800 bg-indigo-50/50 dark:bg-indigo-950/30 p-6">
+                    <AxiomLoadingState
+                      variant="compact"
+                      message="Generating your Operator plan…"
+                      showCloudIcons={false}
+                    />
+                    <p className="text-center text-xs text-slate-500 dark:text-slate-400 mt-3">
+                      Loading Roadmap, Playbooks, Strategic brief & more…
+                    </p>
+                  </div>
                   <div className="grid md:grid-cols-5 gap-3">
                     {[..."12345"].map((key) => (
                       <AxiomMetricCard
@@ -1175,7 +1197,13 @@ function CloudOperatorPageInner() {
 
         {!inDashboard && (
           <section className="grid lg:grid-cols-3 gap-8 items-start">
-            <form onSubmit={handleSubmit} className="lg:col-span-2 space-y-6">
+            <form
+              ref={formRef}
+              onSubmit={handleSubmit}
+              onChange={checkFormValidity}
+              onInput={checkFormValidity}
+              className="lg:col-span-2 space-y-6"
+            >
               <AxiomSection className="space-y-6">
                 <header>
                   <h2 className="text-lg md:text-xl font-semibold text-slate-900 dark:text-slate-100 mb-1">
@@ -1506,8 +1534,14 @@ function CloudOperatorPageInner() {
                 </p>
                 <AxiomButton
                   type="submit"
-                  disabled={submitting}
-                  className={submitting ? "animate-pulse cursor-wait" : ""}
+                  disabled={submitting || !formValid}
+                  className={
+                    submitting
+                      ? "animate-pulse cursor-wait"
+                      : formValid
+                        ? "opacity-100 shadow-lg shadow-indigo-400/30 ring-2 ring-indigo-400/50 hover:shadow-indigo-400/40 transition-all duration-300"
+                        : "opacity-50 cursor-not-allowed"
+                  }
                 >
                   {submitting ? (
                     <>
