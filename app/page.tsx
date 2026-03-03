@@ -15,7 +15,6 @@ import { EnterpriseTrustSignals } from "@/components/EnterpriseTrustSignals";
 import { AnimateOnScroll } from "@/components/AnimateOnScroll";
 import { ProductDemoShowcase } from "@/components/ProductDemoShowcase";
 import { BackgroundBlobs } from "@/components/BackgroundBlobs";
-import { HeroLightBeam } from "@/components/HeroLightBeam";
 import { ServicePipeline } from "@/components/ServicePipeline";
 import { CloudHealthSnapshotForm } from "@/components/CloudHealthSnapshotForm";
 import { HeroHeadlineGlow } from "@/components/HeroHeadlineGlow";
@@ -103,7 +102,6 @@ export default function Home() {
       <section className="pt-32 pb-16 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
         <RealisticFogBackground backgroundColor="transparent" opacity={0.45} darken contained />
         <SectionBackground variant="hero-light" />
-        <HeroLightBeam />
         <div className="max-w-4xl mx-auto text-center relative">
           <Reveal direction="up" blur>
             <span className="inline-flex items-center px-4 py-1.5 rounded-full bg-violet-100 dark:bg-violet-900/40 text-violet-700 dark:text-violet-300 text-sm font-semibold mb-6">
