@@ -6,12 +6,31 @@ interface RealisticFogBackgroundProps {
   backgroundColor?: string;
   /** 0-1. Lower values improve text readability over the fog. Default 1. */
   opacity?: number;
+  /** Use darker fog tones. Default false. */
+  darken?: boolean;
 }
+
+const FOG_BLOBS = {
+  default: [
+    { background: "rgba(148, 163, 184, 0.55)" },
+    { background: "rgba(100, 116, 139, 0.5)" },
+    { background: "rgba(129, 140, 248, 0.45)" },
+    { background: "rgba(71, 85, 105, 0.4)" },
+  ],
+  dark: [
+    { background: "rgba(51, 65, 85, 0.6)" },
+    { background: "rgba(30, 41, 59, 0.55)" },
+    { background: "rgba(71, 85, 105, 0.5)" },
+    { background: "rgba(30, 41, 59, 0.5)" },
+  ],
+};
 
 export function RealisticFogBackground({
   backgroundColor = "#09090b",
   opacity = 1,
+  darken = false,
 }: RealisticFogBackgroundProps) {
+  const blobs = FOG_BLOBS[darken ? "dark" : "default"];
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const [mounted, setMounted] = useState(false);
 
@@ -147,7 +166,7 @@ gl_FragColor=vec4(pow(c,vec3(.95))*1.8,1.);
             left: "-20%",
             top: "-20%",
             borderRadius: "50%",
-            background: "rgba(148, 163, 184, 0.55)",
+            background: blobs[0].background,
             filter: "blur(120px)",
             animation: "fog-drift-1 16s ease-in-out infinite",
           }}
@@ -160,7 +179,7 @@ gl_FragColor=vec4(pow(c,vec3(.95))*1.8,1.);
             left: "-10%",
             top: "-15%",
             borderRadius: "50%",
-            background: "rgba(100, 116, 139, 0.5)",
+            background: blobs[1].background,
             filter: "blur(130px)",
             animation: "fog-drift-2 20s ease-in-out infinite 3s",
           }}
@@ -173,7 +192,7 @@ gl_FragColor=vec4(pow(c,vec3(.95))*1.8,1.);
             left: "-5%",
             top: "-5%",
             borderRadius: "50%",
-            background: "rgba(129, 140, 248, 0.45)",
+            background: blobs[2].background,
             filter: "blur(100px)",
             animation: "fog-drift-3 18s ease-in-out infinite 6s",
           }}
@@ -186,7 +205,7 @@ gl_FragColor=vec4(pow(c,vec3(.95))*1.8,1.);
             left: "0%",
             top: "5%",
             borderRadius: "50%",
-            background: "rgba(71, 85, 105, 0.4)",
+            background: blobs[3].background,
             filter: "blur(140px)",
             animation: "fog-drift-1 24s ease-in-out infinite 12s",
           }}
@@ -202,6 +221,16 @@ gl_FragColor=vec4(pow(c,vec3(.95))*1.8,1.);
           height: "100%",
         }}
       />
+      {darken && (
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            background: "linear-gradient(180deg, rgba(15,23,42,0.4) 0%, rgba(30,41,59,0.35) 100%)",
+            pointerEvents: "none",
+          }}
+        />
+      )}
     </div>
   );
 }
