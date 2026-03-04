@@ -1916,10 +1916,17 @@ function CloudOperatorPageInner() {
             <span className="font-semibold">AI Cloud Operator</span>
           </div>
           {inDashboard && (
-            <span className="inline-flex items-center gap-2 rounded-full bg-emerald-100 dark:bg-emerald-900/30 px-3 py-1 text-xs font-semibold text-emerald-700 dark:text-emerald-300">
-              <CheckCircleIcon className="h-4 w-4" />
-              Analysis ready
-            </span>
+            status && status.outputStatus === "ready" ? (
+              <span className="inline-flex items-center gap-2 rounded-full bg-emerald-100 dark:bg-emerald-900/30 px-3 py-1 text-xs font-semibold text-emerald-700 dark:text-emerald-300">
+                <CheckCircleIcon className="h-4 w-4" />
+                Analysis ready
+              </span>
+            ) : (
+              <span className="inline-flex items-center gap-2 rounded-full bg-amber-100 dark:bg-amber-900/30 px-3 py-1 text-xs font-semibold text-amber-700 dark:text-amber-300">
+                <ArrowPathIcon className="h-4 w-4 animate-spin" />
+                Loading analysis…
+              </span>
+            )
           )}
         </div>
 
@@ -1974,25 +1981,20 @@ function CloudOperatorPageInner() {
 
         {inDashboard && !status && (
           <Reveal delay={0.1}>
-          <section className="mb-8 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 p-10">
+          <section className="mb-8 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm shadow-lg p-12">
             <AxiomLoadingState
-              variant="inline"
-              showCloudIcons={false}
+              variant="full"
               message="Loading your Operator analysis…"
             />
-            <p className="mt-4 text-center text-sm text-slate-500 dark:text-slate-400">
-              Preparing Roadmap, Playbooks, and insights…
+            <p className="mt-6 text-center text-sm text-slate-500 dark:text-slate-400">
+              Connecting to your cloud profile, preparing Roadmap, Playbooks, and insights…
             </p>
           </section>
           </Reveal>
         )}
 
         {inDashboard && status && (
-          <section
-            className={`mb-8 transition-all duration-200 ease-in-out ${
-              isReady ? "opacity-100 translate-y-0" : "opacity-0 translate-y-2"
-            }`}
-          >
+          <section className="mb-8">
             <div className="grid md:grid-cols-5 gap-3">
               {status.outputStatus !== "ready" ? (
                 <div className="col-span-full flex flex-col gap-4 w-full">
@@ -2540,11 +2542,7 @@ function CloudOperatorPageInner() {
         )}
 
         {inDashboard && status && (
-          <section
-            className={`space-y-8 transition-all duration-200 ease-in-out ${
-              isReady ? "opacity-100 translate-y-0" : "opacity-0 translate-y-2"
-            }`}
-          >
+          <section className="space-y-8">
             <WorkflowProgressPanel
               token={token}
               steps={workflowSteps}
