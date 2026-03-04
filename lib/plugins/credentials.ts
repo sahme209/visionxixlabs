@@ -91,3 +91,24 @@ export function setCredentialProvider(p: CredentialProvider): void {
 export function getCredentialProvider(): CredentialProvider {
   return provider;
 }
+
+/**
+ * Get GitHub token from lead's connector. credentialsKey = leadId.
+ */
+export async function getGitHubToken(credentialsKey?: string): Promise<string | null> {
+  if (!credentialsKey?.trim()) return null;
+  const lead = await prisma.lead.findUnique({
+    where: { id: credentialsKey.trim() },
+    select: { fullPayload: true },
+  });
+  if (!lead) return null;
+  const payload = (lead.fullPayload as Record<string, unknown>) || {};
+  const connectors = (payload.connectors as Record<string, Record<string, unknown>>) || {};
+  const github = connectors.github;
+  if (!github || typeof github.encryptedCredRef !== "string") return null;
+  try {
+    return decryptCredential(github.encryptedCredRef);
+  } catch {
+    return null;
+  }
+}

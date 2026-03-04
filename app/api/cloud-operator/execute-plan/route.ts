@@ -15,8 +15,9 @@ import { buildExportPack } from "@/lib/cloudOperator/buildExportPack";
 import { createStarterToken } from "@/lib/starterToken";
 
 import "@/lib/plugins/aws";
+import "@/lib/plugins/github";
 
-const VALID_PLUGIN_IDS = ["aws:iam-exposure-scan", "aws:disable-unused-access-key", "aws:infra-discovery"];
+const VALID_PLUGIN_IDS = ["aws:iam-exposure-scan", "aws:disable-unused-access-key", "aws:infra-discovery", "aws:cost-explorer-summary", "aws:s3-public-bucket-scan", "github:create-cicd-pipeline"];
 const SYSTEM_USER_ID = process.env.CONTACT_AGENT_USER_ID || "system-axiom-assistant";
 
 function isValidPlan(plan: unknown): plan is DevOpsPlan {

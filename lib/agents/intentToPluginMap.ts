@@ -6,6 +6,8 @@
 export const READ_ONLY_PLUGINS = new Set([
   "aws:infra-discovery",
   "aws:iam-exposure-scan",
+  "aws:cost-explorer-summary",
+  "aws:s3-public-bucket-scan",
 ]);
 
 export const DESTRUCTIVE_PLUGINS = new Set(["aws:disable-unused-access-key"]);
@@ -52,6 +54,33 @@ const INTENT_PATTERNS: Array<{
       /security\s+(scan|audit|check|posture)/i,
       /exposure\s+scan/i,
       /audit\s+(my\s+)?(iam|security)/i,
+    ],
+    readOnly: true,
+  },
+  {
+    pluginId: "github:create-cicd-pipeline",
+    patterns: [
+      /create\s+cicd/i,
+      /build\s+pipeline/i,
+      /\bgithub\s+actions\b/i,
+    ],
+    readOnly: false,
+  },
+  {
+    pluginId: "aws:s3-public-bucket-scan",
+    patterns: [
+      /check\s+s3\s+security/i,
+      /\bpublic\s+s3\b/i,
+      /s3\s+buckets\s+public/i,
+    ],
+    readOnly: true,
+  },
+  {
+    pluginId: "aws:cost-explorer-summary",
+    patterns: [
+      /analyze\s+(my\s+)?aws\s+costs/i,
+      /\baws\s+spend\b/i,
+      /\baws\s+billing\b/i,
     ],
     readOnly: true,
   },

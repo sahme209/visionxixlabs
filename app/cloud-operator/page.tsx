@@ -1,6 +1,7 @@
 "use client";
 
 import { FormEvent, Suspense, useCallback, useEffect, useRef, useState } from "react";
+import { useAxiomPanel } from "@/lib/contexts/AxiomPanelContext";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import {
@@ -256,12 +257,15 @@ type SuggestedAction =
   | { type: "view_execution_history" }
   | { type: "export_report" }
   | { type: "run_analysis" }
-  | { type: "generate_report" };
+  | { type: "generate_report" }
+  | { type: "open_connectors" }
+  | { type: "connect_aws" }
+  | { type: "learn_connect_aws" };
 
 function actionLabel(a: SuggestedAction): string {
   switch (a.type) {
     case "run_plugin":
-      return a.pluginId === "aws:iam-exposure-scan" ? "Run IAM scan" : a.pluginId === "aws:infra-discovery" ? "Discover Infrastructure" : a.pluginId;
+      return a.pluginId === "aws:iam-exposure-scan" ? "Run IAM scan" : a.pluginId === "aws:infra-discovery" ? "Discover Infrastructure" : a.pluginId === "aws:cost-explorer-summary" ? "View cost summary" : a.pluginId === "aws:s3-public-bucket-scan" ? "Scan S3 public buckets" : a.pluginId === "github:create-cicd-pipeline" ? "Create CI/CD pipeline" : a.pluginId;
     case "view_execution_history":
       return "View execution history";
     case "export_report":
@@ -270,6 +274,12 @@ function actionLabel(a: SuggestedAction): string {
       return "Run analysis";
     case "generate_report":
       return "Send report";
+    case "open_connectors":
+      return "Open Connectors";
+    case "connect_aws":
+      return "Connect AWS";
+    case "learn_connect_aws":
+      return "Learn how to connect AWS";
     default:
       return "Action";
   }
@@ -377,8 +387,13 @@ type EnvironmentStatus = {
   }>;
 };
 
-function AskAxiomPanel({ token }: { token: string | null }) {
+function AskAxiomPanel({ token, onTabChange }: { token: string | null; onTabChange?: (tab: string) => void }) {
+  const axiomPanel = useAxiomPanel();
   const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    axiomPanel?.setIsAxiomOpen(open);
+  }, [open, axiomPanel]);
   const [envStatus, setEnvStatus] = useState<EnvironmentStatus | null>(null);
   const [messages, setMessages] = useState<
     Array<{
@@ -631,6 +646,11 @@ function AskAxiomPanel({ token }: { token: string | null }) {
           } else {
             setError(data?.error ?? "Failed to send report");
           }
+        } else if (
+          (action.type === "open_connectors" || action.type === "connect_aws" || action.type === "learn_connect_aws") &&
+          onTabChange
+        ) {
+          onTabChange("connectors");
         }
       } catch {
         setError("Request failed");
@@ -638,7 +658,7 @@ function AskAxiomPanel({ token }: { token: string | null }) {
         setActionLoading(null);
       }
     },
-    [token]
+    [token, onTabChange]
   );
 
   if (!token) return null;
@@ -3203,7 +3223,7 @@ function CloudOperatorPageInner() {
           </section>
         )}
       </main>
-      <AskAxiomPanel token={token} />
+      <AskAxiomPanel token={token} onTabChange={(tab) => setActiveTab(tab as typeof activeTab)} />
     </div>
   );
 }

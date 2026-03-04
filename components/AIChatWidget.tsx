@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import { usePathname } from "next/navigation";
+import { useAxiomPanel } from "@/lib/contexts/AxiomPanelContext";
 import Link from "next/link";
 import {
   PaperAirplaneIcon,
@@ -51,10 +52,14 @@ const SUGGESTIONS = [
 
 export default function AIChatWidget() {
   const pathname = usePathname();
+  const axiomPanel = useAxiomPanel();
   const [open, setOpen] = useState(false);
 
   // Don't show Vision XIX Labs widget inside embed iframe — only show the customer's bot
   if (pathname?.startsWith("/embed/")) return null;
+
+  // Hide "Let's Chat" bubble when Ask Axiom panel is open on cloud-operator page
+  if (pathname?.startsWith("/cloud-operator") && axiomPanel?.isAxiomOpen) return null;
   const [messages, setMessages] = useState<Message[]>([]);
   const [mounted, setMounted] = useState(false);
   const [input, setInput] = useState("");

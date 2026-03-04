@@ -8,6 +8,7 @@ import { appendMessage, getConversation } from "@/lib/axiomChat/storage";
 import { buildAxiomEnvironmentContext, type AxiomEnvironmentContext } from "@/lib/axiom/contextBuilder";
 import { AXIOM_ASSISTANT_TOOLS, type ToolContext } from "./axiomAssistantTools";
 import { mapIntentToPlugin, getMultiStepIntent } from "./intentToPluginMap";
+import { executeWorkflow } from "./axiomWorkflowExecutor";
 
 const CONFIRM_APPLY_PHRASE = "CONFIRM APPLY";
 
@@ -61,7 +62,10 @@ export type AxiomSuggestedAction =
   | { type: "view_execution_history" }
   | { type: "export_report" }
   | { type: "run_analysis" }
-  | { type: "generate_report" };
+  | { type: "generate_report" }
+  | { type: "open_connectors" }
+  | { type: "connect_aws" }
+  | { type: "learn_connect_aws" };
 
 /** DevOps execution plan — structured steps requiring user approval before execution. */
 export type DevOpsPlanStep =
@@ -140,7 +144,7 @@ Available tools:
 - linkConnectorHint: Get instructions for linking a connector. args: { connectorType?: "github"|"aws"|"azure"|"gcp" }
 - runAxiomAnalysis: Run Cloud Operator analysis. No args.
 - runExecutionPlugin: Run a plugin. args: { pluginId, input?, dryRun?, apply? }
-  - pluginId: "aws:iam-exposure-scan" | "aws:disable-unused-access-key" | "aws:infra-discovery"
+  - pluginId: "aws:iam-exposure-scan" | "aws:disable-unused-access-key" | "aws:infra-discovery" | "aws:cost-explorer-summary" | "aws:s3-public-bucket-scan" | "github:create-cicd-pipeline"
   - dryRun: true (default) for read-only. apply: true to execute (requires CONFIRM APPLY).
 - fetchExecutionHistory: Get past scan/execution results. No args.
 - generateAndSendReport: Send executive summary email to lead. No args.
@@ -222,7 +226,7 @@ Respond with JSON only. Format assistantMessage using the required structure (Un
   const assistantMessage = parsed.assistantMessage ?? "I'm not sure how to help with that.";
   const rawPlan = parsed.plan;
 
-  const VALID_PLUGIN_IDS = ["aws:iam-exposure-scan", "aws:disable-unused-access-key", "aws:infra-discovery"];
+  const VALID_PLUGIN_IDS = ["aws:iam-exposure-scan", "aws:disable-unused-access-key", "aws:infra-discovery", "aws:cost-explorer-summary", "aws:s3-public-bucket-scan", "github:create-cicd-pipeline"];
   const VALID_STEP_ACTIONS = new Set(["run_plugin", "generate_report", "run_analysis", "view_execution_history", "export_report"]);
 
   let plan: DevOpsPlan | undefined;
@@ -276,9 +280,25 @@ Respond with JSON only. Format assistantMessage using the required structure (Un
   }
   const toolCalls = resolvedToolCalls;
 
+  // Auto-execute read-only workflow steps when plan has run_plugin steps
+  let workflowResult: Awaited<ReturnType<typeof executeWorkflow>> | null = null;
+  if (plan && leadId && plan.steps.some((s) => s.action === "run_plugin")) {
+    try {
+      workflowResult = await executeWorkflow(plan, { leadId, userId: userId ?? undefined, userConfirmedApply: hasConfirmApply });
+      if (workflowResult.executedSteps.length > 0 && workflowResult.remainingPlan) {
+        plan = workflowResult.remainingPlan;
+      } else if (workflowResult.executedSteps.length > 0 && !workflowResult.remainingPlan) {
+        plan = undefined;
+        requiresApproval = false;
+      }
+    } catch {
+      workflowResult = null;
+    }
+  }
+
   const rawActions = parsed.actions ?? [];
   const actions: AxiomSuggestedAction[] = [];
-  const validPluginIds = ["aws:iam-exposure-scan", "aws:disable-unused-access-key", "aws:infra-discovery"];
+  const validPluginIds = ["aws:iam-exposure-scan", "aws:disable-unused-access-key", "aws:infra-discovery", "aws:cost-explorer-summary", "aws:s3-public-bucket-scan", "github:create-cicd-pipeline"];
   for (const a of rawActions) {
     const t = String(a?.type ?? "").trim();
     if (t === "run_plugin" && a?.pluginId && validPluginIds.includes(String(a.pluginId))) {
@@ -360,7 +380,20 @@ Respond with JSON only. Format assistantMessage using the required structure (Un
     toolResults.every((r) => !r.ok && r.error === "I cannot execute that yet.");
 
   let finalMessage = assistantMessage;
-  if (allRejectedAsUnknown) {
+  if (workflowResult && workflowResult.executedSteps.length > 0) {
+    const wr = workflowResult;
+    const resultLines = wr.executedSteps
+      .filter((s) => s.ok && s.summary)
+      .map((s) => `- ${s.pluginId ?? s.action}: ${s.summary}`)
+      .join("\n");
+    const failedLine = wr.executedSteps.find((s) => !s.ok);
+    const workflowBlock =
+      "\n\n---\n**Workflow results**\n" +
+      (resultLines || "No results yet.") +
+      (failedLine ? `\n- ${failedLine.pluginId ?? failedLine.action}: ${failedLine.error ?? "failed"}` : "") +
+      (wr.confirmationPrompt ? `\n\n${wr.confirmationPrompt}` : "");
+    finalMessage = assistantMessage + workflowBlock;
+  } else if (allRejectedAsUnknown) {
     finalMessage = "I cannot execute that yet.";
   } else if (toolCalls.length > 0 && anyToolSucceeded && structuredResultParts.length > 0) {
     finalMessage =
@@ -380,6 +413,36 @@ Respond with JSON only. Format assistantMessage using the required structure (Un
     }
   }
 
+  const AWS_PLUGIN_IDS = new Set(["aws:iam-exposure-scan", "aws:disable-unused-access-key", "aws:infra-discovery", "aws:cost-explorer-summary", "aws:s3-public-bucket-scan"]);
+  function requestRequiresAws(): boolean {
+    const intent = mapIntentToPlugin(message);
+    if (intent?.pluginId && AWS_PLUGIN_IDS.has(intent.pluginId)) return true;
+    const steps = plan?.steps ?? [];
+    if (steps.some((s) => s.action === "run_plugin" && s.pluginId && AWS_PLUGIN_IDS.has(s.pluginId))) return true;
+    const multiStep = getMultiStepIntent(message);
+    if (multiStep?.some((id) => AWS_PLUGIN_IDS.has(id))) return true;
+    for (const tc of toolCalls) {
+      if (tc.name === "runExecutionPlugin") {
+        const pluginId = String((tc.arguments ?? {}).pluginId ?? "").trim();
+        if (AWS_PLUGIN_IDS.has(pluginId)) return true;
+      }
+    }
+    return false;
+  }
+
+  let finalActions = actions;
+  if (!axiomContext.connectors.aws && requestRequiresAws() && actions.length === 0) {
+    finalMessage = finalMessage.replace(
+      /(\*\*4\)\s*Actions I can run now\*\*)[\s\S]*?(?=\n\*\*5\)|$)/i,
+      "$1\n\nI cannot run AWS analysis yet because your AWS account is not connected."
+    );
+    finalActions = [
+      { type: "connect_aws" as const },
+      { type: "open_connectors" as const },
+      { type: "learn_connect_aws" as const },
+    ];
+  }
+
   await appendMessage(conversationId, {
     role: "assistant",
     content: finalMessage,
@@ -390,7 +453,7 @@ Respond with JSON only. Format assistantMessage using the required structure (Un
   return {
     assistantMessage: finalMessage,
     toolResultsSummary: toolResultsSummary.length > 0 ? toolResultsSummary : undefined,
-    actions: actions.length > 0 ? actions : undefined,
+    actions: finalActions.length > 0 ? finalActions : undefined,
     plan: plan ?? undefined,
     requiresApproval: plan ? true : undefined,
   };

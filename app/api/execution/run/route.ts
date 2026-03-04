@@ -18,6 +18,7 @@ import { updateEnvironmentAfterDiscovery } from "@/lib/cloudOperator/updateEnvir
 
 // Register AWS execution plugins
 import "@/lib/plugins/aws";
+import "@/lib/plugins/github";
 
 export async function POST(req: NextRequest) {
   try {
@@ -77,9 +78,7 @@ export async function POST(req: NextRequest) {
     const input = (body?.input && typeof body.input === "object") ? body.input : {};
     // IAM scan is read-only: always dryRun. Remediation: default dryRun, require apply=true to execute.
     let dryRun = body?.dryRun !== false;
-    if (pluginId === "aws:iam-exposure-scan") {
-      dryRun = true;
-    } else if (pluginId === "aws:infra-discovery") {
+    if (pluginId === "aws:iam-exposure-scan" || pluginId === "aws:infra-discovery" || pluginId === "aws:cost-explorer-summary" || pluginId === "aws:s3-public-bucket-scan") {
       dryRun = true;
     } else if (pluginId === "aws:disable-unused-access-key" && body?.apply === true) {
       dryRun = false;
@@ -106,7 +105,7 @@ export async function POST(req: NextRequest) {
     }
 
     // AWS plugins require linked connector with verified account
-    const awsPlugins = ["aws:iam-exposure-scan", "aws:disable-unused-access-key", "aws:infra-discovery"];
+    const awsPlugins = ["aws:iam-exposure-scan", "aws:disable-unused-access-key", "aws:infra-discovery", "aws:cost-explorer-summary", "aws:s3-public-bucket-scan"];
     if (awsPlugins.includes(pluginId) && leadId) {
       const lead = await prisma.lead.findUnique({
         where: { id: leadId },

@@ -7,9 +7,7 @@
 import type { ExecutionPlugin } from "./types";
 import { ENABLE_PLACEHOLDER_PLUGINS } from "@/lib/featureFlags";
 
-const PLACEHOLDER_EXECUTION_PLUGIN_IDS = new Set([
-  "aws:cost-explorer-summary",
-]);
+const PLACEHOLDER_EXECUTION_PLUGIN_IDS = new Set<string>([]);
 
 const executionPlugins = new Map<string, ExecutionPlugin>();
 

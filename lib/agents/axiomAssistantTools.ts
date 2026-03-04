@@ -16,6 +16,7 @@ import { logAudit } from "@/lib/security/auditLog";
 
 // Register AWS execution plugins
 import "@/lib/plugins/aws";
+import "@/lib/plugins/github";
 
 export type ToolContext = {
   leadId: string;
@@ -139,9 +140,7 @@ export async function runExecutionPlugin(
       : null;
 
     let dryRun = options.dryRun ?? true;
-    if (pluginId === "aws:iam-exposure-scan") {
-      dryRun = true; // always read-only
-    } else if (pluginId === "aws:infra-discovery") {
+    if (pluginId === "aws:iam-exposure-scan" || pluginId === "aws:infra-discovery" || pluginId === "aws:cost-explorer-summary" || pluginId === "aws:s3-public-bucket-scan") {
       dryRun = true; // always read-only
     } else if (pluginId === "aws:disable-unused-access-key" && options.apply === true) {
       dryRun = false;

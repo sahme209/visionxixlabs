@@ -5,6 +5,7 @@ import "../styles/axiom-theme.css";
 import { Analytics } from "@vercel/analytics/next";
 import { OrganizationJsonLd, WebSiteJsonLd } from "@/components/JsonLd";
 import AIChatWidget from "@/components/AIChatWidget";
+import { AxiomPanelProvider } from "@/lib/contexts/AxiomPanelContext";
 import { Providers } from "@/components/Providers";
 import { StickyMobileCTA } from "@/components/StickyMobileCTA";
 import { SITE_URL, defaultOgImage, primaryKeywords, secondaryKeywords } from "@/lib/seo";
@@ -70,12 +71,14 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className={inter.className}>
         <Providers>
-          <OrganizationJsonLd />
-          <WebSiteJsonLd />
-          <div className="pb-20 md:pb-0">{children}</div>
-          <StickyMobileCTA />
-          <AIChatWidget />
-          <Analytics />
+          <AxiomPanelProvider>
+            <OrganizationJsonLd />
+            <WebSiteJsonLd />
+            <div className="pb-20 md:pb-0">{children}</div>
+            <StickyMobileCTA />
+            <AIChatWidget />
+            <Analytics />
+          </AxiomPanelProvider>
         </Providers>
       </body>
     </html>
