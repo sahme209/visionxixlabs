@@ -5,7 +5,10 @@
 
 import { prisma } from "@/lib/db";
 import { executePlugin } from "@/lib/execution/pluginEngine";
-import { updateEnvironmentAfterDiscovery } from "@/lib/cloudOperator/updateEnvironmentAfterDiscovery";
+import {
+  updateEnvironmentAfterDiscovery,
+  updateEnvironmentAfterIamScan,
+} from "@/lib/cloudOperator/updateEnvironmentAfterDiscovery";
 import { isCloudConnectorEnabled } from "@/lib/featureFlags";
 import { runCloudOperatorAnalysis } from "@/lib/cloudOperator/triggerCore";
 import { buildExportPack } from "@/lib/cloudOperator/buildExportPack";
@@ -174,6 +177,17 @@ export async function runExecutionPlugin(
         region?: string;
       };
       await updateEnvironmentAfterDiscovery(ctx.leadId, d);
+    }
+
+    // Refresh architecture graph with latest IAM findings after IAM scan
+    if (
+      pluginId === "aws:iam-exposure-scan" &&
+      result.status === "success"
+    ) {
+      await updateEnvironmentAfterIamScan({
+        leadId: ctx.leadId,
+        userId: ctx.userId ?? lead?.userId,
+      });
     }
 
     return {

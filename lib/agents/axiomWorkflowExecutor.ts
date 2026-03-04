@@ -1,12 +1,41 @@
 /**
  * Axiom Workflow Executor — automatically runs safe (read-only) plan steps in sequence.
  * Pauses at destructive steps for user confirmation.
+ * Validates prerequisites (e.g. AWS connector) before execution — no ExecutionLog for blocked steps.
  */
 
 import { READ_ONLY_PLUGINS, DESTRUCTIVE_PLUGINS } from "./intentToPluginMap";
 import { runExecutionPlugin } from "./axiomAssistantTools";
 import type { ToolContext } from "./axiomAssistantTools";
 import type { DevOpsPlan, DevOpsPlanStep } from "./axiomAssistantAgent";
+
+export type PluginPrerequisiteContext = {
+  connectors?: { aws?: boolean; github?: boolean };
+};
+
+export type PrerequisiteValidationResult =
+  | { blocked: false }
+  | { blocked: true; reason: string };
+
+/**
+ * Validate prerequisites before running a plugin. AWS plugins require AWS connector linked.
+ */
+export function validatePluginPrerequisites(
+  pluginId: string,
+  context: PluginPrerequisiteContext
+): PrerequisiteValidationResult {
+  if (pluginId.startsWith("aws:")) {
+    if (!context.connectors?.aws) {
+      return { blocked: true, reason: "AWS connector not linked" };
+    }
+  }
+  if (pluginId.startsWith("github:")) {
+    if (!context.connectors?.github) {
+      return { blocked: true, reason: "GitHub connector not linked" };
+    }
+  }
+  return { blocked: false };
+}
 
 export type WorkflowStepResult = {
   stepIndex: number;
@@ -31,6 +60,10 @@ export type WorkflowExecutionResult = {
   awaitsConfirmation: boolean;
   /** Suggested confirmation message when awaitsConfirmation is true */
   confirmationPrompt?: string;
+  /** True when workflow was blocked by missing prerequisites (e.g. AWS not connected) */
+  blockedByPrerequisites?: boolean;
+  /** Reason when blockedByPrerequisites is true */
+  blockedReason?: string;
 };
 
 const VALID_RUN_PLUGIN_IDS = new Set([
@@ -52,18 +85,22 @@ function isDestructivePlugin(pluginId: string): boolean {
 
 /**
  * Execute workflow: run read-only plugins automatically, stop at destructive steps.
- * ExecutionLog entries are created by runExecutionPlugin (via pluginEngine).
- * Architecture graph is updated after aws:infra-discovery (handled in axiomAssistantTools).
+ * Validates prerequisites before each plugin — blocked steps do NOT run (no ExecutionLog).
  */
 export async function executeWorkflow(
   plan: DevOpsPlan,
-  ctx: ToolContext
+  ctx: ToolContext,
+  prerequisiteContext?: PluginPrerequisiteContext
 ): Promise<WorkflowExecutionResult> {
   const executedSteps: WorkflowStepResult[] = [];
   let stoppedAtStepIndex: number | null = null;
   let remainingPlan: DevOpsPlan | null = null;
   let awaitsConfirmation = false;
   let confirmationPrompt: string | undefined;
+  let blockedByPrerequisites = false;
+  let blockedReason: string | undefined;
+
+  const connectors = prerequisiteContext?.connectors ?? {};
 
   for (let i = 0; i < plan.steps.length; i++) {
     const step = plan.steps[i] as DevOpsPlanStep;
@@ -103,6 +140,15 @@ export async function executeWorkflow(
         remainingPlan = { goal: plan.goal, steps: plan.steps.slice(i) };
         awaitsConfirmation = true;
         confirmationPrompt = `I need your confirmation to run: ${pluginId}. Type CONFIRM APPLY to proceed.`;
+        break;
+      }
+
+      const prereq = validatePluginPrerequisites(pluginId, { connectors });
+      if (prereq.blocked) {
+        stoppedAtStepIndex = i;
+        remainingPlan = { goal: plan.goal, steps: plan.steps.slice(i) };
+        blockedByPrerequisites = true;
+        blockedReason = prereq.reason;
         break;
       }
 
@@ -157,7 +203,12 @@ export async function executeWorkflow(
   const totalExecuted = executedSteps.length;
 
   let summary: string;
-  if (executedSteps.length === 0 && awaitsConfirmation) {
+  if (blockedByPrerequisites) {
+    summary =
+      blockedReason?.toLowerCase().includes("aws") || !blockedReason
+        ? "Your AWS account is not connected yet. Please connect AWS in the Connectors section to proceed."
+        : `${blockedReason}. Please connect the required connector in the Connectors section to proceed.`;
+  } else if (executedSteps.length === 0 && awaitsConfirmation) {
     summary = "No read-only steps to run. The first step requires confirmation.";
   } else if (awaitsConfirmation && successCount > 0) {
     summary = `Completed ${successCount} read-only step(s). ${confirmationPrompt ?? ""}`;
@@ -178,5 +229,7 @@ export async function executeWorkflow(
     summary,
     awaitsConfirmation,
     confirmationPrompt,
+    blockedByPrerequisites: blockedByPrerequisites || undefined,
+    blockedReason,
   };
 }

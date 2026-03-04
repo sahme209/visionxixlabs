@@ -284,7 +284,11 @@ Respond with JSON only. Format assistantMessage using the required structure (Un
   let workflowResult: Awaited<ReturnType<typeof executeWorkflow>> | null = null;
   if (plan && leadId && plan.steps.some((s) => s.action === "run_plugin")) {
     try {
-      workflowResult = await executeWorkflow(plan, { leadId, userId: userId ?? undefined, userConfirmedApply: hasConfirmApply });
+      workflowResult = await executeWorkflow(
+        plan,
+        { leadId, userId: userId ?? undefined, userConfirmedApply: hasConfirmApply },
+        { connectors: axiomContext.connectors }
+      );
       if (workflowResult.executedSteps.length > 0 && workflowResult.remainingPlan) {
         plan = workflowResult.remainingPlan;
       } else if (workflowResult.executedSteps.length > 0 && !workflowResult.remainingPlan) {
@@ -380,7 +384,13 @@ Respond with JSON only. Format assistantMessage using the required structure (Un
     toolResults.every((r) => !r.ok && r.error === "I cannot execute that yet.");
 
   let finalMessage = assistantMessage;
-  if (workflowResult && workflowResult.executedSteps.length > 0) {
+  if (workflowResult?.blockedByPrerequisites) {
+    finalMessage =
+      assistantMessage +
+      "\n\n---\n" +
+      workflowResult.summary +
+      "\n\n**Actions available:**\n- Connect AWS\n- Open Connectors";
+  } else if (workflowResult && workflowResult.executedSteps.length > 0) {
     const wr = workflowResult;
     const resultLines = wr.executedSteps
       .filter((s) => s.ok && s.summary)
@@ -431,7 +441,12 @@ Respond with JSON only. Format assistantMessage using the required structure (Un
   }
 
   let finalActions = actions;
-  if (!axiomContext.connectors.aws && requestRequiresAws() && actions.length === 0) {
+  if (workflowResult?.blockedByPrerequisites) {
+    finalActions = [
+      { type: "connect_aws" as const },
+      { type: "open_connectors" as const },
+    ];
+  } else if (!axiomContext.connectors.aws && requestRequiresAws() && actions.length === 0) {
     finalMessage = finalMessage.replace(
       /(\*\*4\)\s*Actions I can run now\*\*)[\s\S]*?(?=\n\*\*5\)|$)/i,
       "$1\n\nI cannot run AWS analysis yet because your AWS account is not connected."
