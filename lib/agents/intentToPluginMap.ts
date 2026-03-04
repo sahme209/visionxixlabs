@@ -25,6 +25,12 @@ const INTENT_PATTERNS: Array<{
   {
     pluginId: "aws:infra-discovery",
     patterns: [
+      /analyze\s+my\s+(aws\s+)?environment/i,
+      /\bscan\s+my\s+(aws\s+)?environment\b/i,
+      /\bcheck\s+my\s+(aws\s+)?environment\b/i,
+      /\bdiscover\s+(my\s+)?infrastructure\b/i,
+      /\bwhat\s+infrastructure\s+do\s+i\s+have\b/i,
+      /\bshow\s+me\s+my\s+(aws\s+)?infrastructure\b/i,
       /scan\s+(my\s+)?(environment|infra)/i,
       /discover\s+(my\s+)?(infra|infrastructure|resources)/i,
       /show\s+(me\s+)?(what\s+)?(infrastructure|infra|resources)\s+(i\s+)?have/i,
