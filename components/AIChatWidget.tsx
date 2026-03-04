@@ -52,12 +52,6 @@ const SUGGESTIONS = [
 export default function AIChatWidget() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
-
-  // Don't show Vision XIX Labs widget inside embed iframe — only show the customer's bot
-  if (pathname?.startsWith("/embed/")) return null;
-
-  // Hide "Let's Chat" on cloud-operator — Ask Axiom provides chat there; avoids overlap
-  if (pathname?.startsWith("/cloud-operator")) return null;
   const [messages, setMessages] = useState<Message[]>([]);
   const [mounted, setMounted] = useState(false);
   const [input, setInput] = useState("");
@@ -77,6 +71,11 @@ export default function AIChatWidget() {
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
   }, [messages]);
+
+  // Don't show Vision XIX Labs widget inside embed iframe — only show the customer's bot
+  if (pathname?.startsWith("/embed/")) return null;
+  // Hide "Let's Chat" on cloud-operator — Ask Axiom provides chat there; avoids overlap
+  if (pathname?.startsWith("/cloud-operator")) return null;
 
   const sendMessage = async () => {
     const text = input.trim();
