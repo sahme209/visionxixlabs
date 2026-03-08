@@ -1,0 +1,14 @@
+{
+  "appclips": {
+    "apps": ["FG5N98FE6W.vision19.RecallEase.Clip"]
+  },
+  "applinks": {
+    "apps": [],
+    "details": [
+      {
+        "appID": "FG5N98FE6W.vision19.RecallEase",
+        "paths": ["*"]
+      }
+    ]
+  }
+}
