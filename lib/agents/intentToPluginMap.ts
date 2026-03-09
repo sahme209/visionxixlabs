@@ -69,9 +69,12 @@ const INTENT_PATTERNS: Array<{
   {
     pluginId: "aws:s3-public-bucket-scan",
     patterns: [
-      /check\s+s3\s+security/i,
+      /check\s+(if\s+)?my\s+s3\s+buckets\s+are\s+public/i,
       /\bpublic\s+s3\b/i,
+      /s3\s+security/i,
       /s3\s+buckets\s+public/i,
+      /scan\s+s3/i,
+      /find\s+(public\s+)?s3\s+buckets/i,
     ],
     readOnly: true,
   },

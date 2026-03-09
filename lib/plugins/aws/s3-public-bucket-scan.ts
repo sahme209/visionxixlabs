@@ -1,56 +1,62 @@
 /**
  * AWS S3 Public Bucket Scan — read-only.
- * Lists all S3 buckets, checks public access block, ACLs, and policies.
- * Identifies buckets that allow public access.
+ * For each bucket: checks ACL grants, policy public status (GetBucketPolicyStatusCommand),
+ * and Public Access Block configuration.
+ * Returns a risk-rated result per flagged bucket.
+ * Always requires dryRun=true.
  */
 
 import {
   S3Client,
   ListBucketsCommand,
-  GetPublicAccessBlockCommand,
   GetBucketAclCommand,
-  GetBucketPolicyCommand,
+  GetBucketPolicyStatusCommand,
+  GetPublicAccessBlockCommand,
 } from "@aws-sdk/client-s3";
 import { registerExecutionPlugin } from "../executionRegistry";
 import { getCredentialProvider } from "../credentials";
 import type { ExecutionPluginContext, PluginResult } from "../types";
 
-function hasPublicAcl(grants: Array<{ Grantee?: { Type?: string; URI?: string }; Permission?: string }>): boolean {
-  if (!Array.isArray(grants)) return false;
-  const publicUris = [
-    "http://acs.amazonaws.com/groups/global/AllUsers",
-    "http://acs.amazonaws.com/groups/global/AuthenticatedUsers",
-  ];
-  for (const g of grants) {
-    const uri = g.Grantee?.URI?.toLowerCase?.();
-    if (uri && publicUris.some((u) => uri.includes("allusers") || uri.includes("authenticatedusers"))) {
-      return true;
-    }
-  }
-  return false;
+type PublicBucketResult = {
+  name: string;
+  aclPublic: boolean;
+  policyPublic: boolean;
+  publicAccessBlockEnabled: boolean;
+  riskLevel: "low" | "medium" | "high";
+  notes: string[];
+};
+
+const PUBLIC_ACL_URIS = [
+  "http://acs.amazonaws.com/groups/global/allusers",
+  "http://acs.amazonaws.com/groups/global/authenticatedusers",
+];
+
+function isAclPublic(
+  grants: Array<{ Grantee?: { Type?: string; URI?: string }; Permission?: string }>
+): boolean {
+  return grants.some((g) => {
+    const uri = g.Grantee?.URI?.toLowerCase();
+    return uri ? PUBLIC_ACL_URIS.includes(uri) : false;
+  });
 }
 
-function policyAllowsPublicAccess(policyJson: string | undefined): boolean {
-  if (!policyJson || typeof policyJson !== "string") return false;
-  try {
-    const policy = JSON.parse(policyJson) as { Statement?: Array<{ Principal?: unknown }> };
-    const statements = Array.isArray(policy.Statement) ? policy.Statement : [policy.Statement];
-    for (const stmt of statements) {
-      if (!stmt?.Principal) continue;
-      const p = stmt.Principal;
-      if (p === "*") return true;
-      if (typeof p === "object" && p !== null) {
-        const obj = p as Record<string, unknown>;
-        if (obj.AWS === "*" || (Array.isArray(obj.AWS) && obj.AWS.includes("*"))) return true;
-      }
-    }
-  } catch {
-    // invalid JSON
-  }
-  return false;
+function computeRiskLevel(
+  aclPublic: boolean,
+  policyPublic: boolean,
+  publicAccessBlockEnabled: boolean
+): "low" | "medium" | "high" {
+  // High: actively exposed via policy or ACL without block protection
+  if (policyPublic || (aclPublic && !publicAccessBlockEnabled)) return "high";
+  // Medium: no block config — latently risky even without direct exposure
+  if (!publicAccessBlockEnabled) return "medium";
+  // Low: ACL technically public but Block Public Access is shielding it
+  return "low";
 }
 
-async function run(input: Record<string, unknown>, ctx: ExecutionPluginContext): Promise<PluginResult> {
+async function run(
+  _input: Record<string, unknown>,
+  ctx: ExecutionPluginContext
+): Promise<PluginResult> {
   const logger = ctx.logger;
   logger.info("s3-public-bucket-scan started", { dryRun: ctx.dryRun });
 
@@ -85,69 +91,110 @@ async function run(input: Record<string, unknown>, ctx: ExecutionPluginContext):
     const listRes = await client.send(new ListBucketsCommand({}));
     const buckets = listRes.Buckets ?? [];
     const bucketsScanned = buckets.length;
-    const publicBuckets: Array<{ name: string; reason: string }> = [];
-    const recommendations: string[] = [];
+    const publicBuckets: PublicBucketResult[] = [];
 
     for (const b of buckets) {
       const name = b.Name;
       if (!name) continue;
 
-      let blockPublicAcls = true;
-      let blockPublicPolicy = true;
       let aclPublic = false;
       let policyPublic = false;
+      let publicAccessBlockEnabled = false;
+      const notes: string[] = [];
 
-      // GetPublicAccessBlock — may not be configured
+      // 1. Check Public Access Block configuration
       try {
         const blockRes = await client.send(new GetPublicAccessBlockCommand({ Bucket: name }));
-        const config = blockRes.PublicAccessBlockConfiguration;
-        blockPublicAcls = config?.BlockPublicAcls ?? true;
-        blockPublicPolicy = config?.BlockPublicPolicy ?? true;
+        const c = blockRes.PublicAccessBlockConfiguration;
+        publicAccessBlockEnabled =
+          (c?.BlockPublicAcls ?? false) &&
+          (c?.IgnorePublicAcls ?? false) &&
+          (c?.BlockPublicPolicy ?? false) &&
+          (c?.RestrictPublicBuckets ?? false);
+
+        if (!publicAccessBlockEnabled) {
+          const disabled = [
+            !c?.BlockPublicAcls && "BlockPublicAcls",
+            !c?.IgnorePublicAcls && "IgnorePublicAcls",
+            !c?.BlockPublicPolicy && "BlockPublicPolicy",
+            !c?.RestrictPublicBuckets && "RestrictPublicBuckets",
+          ].filter(Boolean) as string[];
+          notes.push(`Public Access Block incomplete — disabled settings: ${disabled.join(", ")}.`);
+        }
       } catch {
-        // NoSuchPublicAccessBlockConfiguration — bucket has no block, treat as potentially public
-        blockPublicAcls = false;
-        blockPublicPolicy = false;
+        // NoSuchPublicAccessBlockConfiguration — no block config at all
+        publicAccessBlockEnabled = false;
+        notes.push("No Public Access Block configuration found on this bucket.");
       }
 
-      // GetBucketAcl
+      // 2. Check ACL grants
       try {
         const aclRes = await client.send(new GetBucketAclCommand({ Bucket: name }));
-        aclPublic = hasPublicAcl(aclRes.Grants ?? []);
+        aclPublic = isAclPublic(aclRes.Grants ?? []);
+        if (aclPublic) {
+          notes.push("ACL grants access to AllUsers or AuthenticatedUsers (public group).");
+        }
       } catch {
-        // Access denied or other error — skip ACL check
+        // Access denied or unsupported — skip ACL check for this bucket
       }
 
-      // GetBucketPolicy
+      // 3. Check bucket policy public status via AWS-native determination
       try {
-        const policyRes = await client.send(new GetBucketPolicyCommand({ Bucket: name }));
-        policyPublic = policyAllowsPublicAccess(policyRes.Policy);
+        const policyStatusRes = await client.send(
+          new GetBucketPolicyStatusCommand({ Bucket: name })
+        );
+        policyPublic = policyStatusRes.PolicyStatus?.IsPublic ?? false;
+        if (policyPublic) {
+          notes.push("Bucket policy is determined to be public by AWS.");
+        }
       } catch {
-        // No policy or access denied
+        // NoSuchBucketPolicy or access denied — no policy exists or inaccessible
       }
 
-      const isPublic =
-        (!blockPublicAcls && aclPublic) || (!blockPublicPolicy && policyPublic);
-      if (isPublic) {
-        const reasons: string[] = [];
-        if (!blockPublicAcls && aclPublic) reasons.push("public ACL");
-        if (!blockPublicPolicy && policyPublic) reasons.push("public policy");
-        publicBuckets.push({ name, reason: reasons.join(", ") });
+      // Flag bucket if any risk signal is present
+      const flagged = policyPublic || aclPublic || !publicAccessBlockEnabled;
+      if (flagged) {
+        publicBuckets.push({
+          name,
+          aclPublic,
+          policyPublic,
+          publicAccessBlockEnabled,
+          riskLevel: computeRiskLevel(aclPublic, policyPublic, publicAccessBlockEnabled),
+          notes,
+        });
       }
     }
 
-    if (publicBuckets.length > 0) {
-      recommendations.push(`Enable Block Public Access on ${publicBuckets.length} bucket(s) with public access.`);
-      recommendations.push("Review bucket ACLs and policies to remove AllUsers/AuthenticatedUsers grants.");
-    } else if (bucketsScanned > 0) {
-      recommendations.push("All scanned buckets have public access blocked. Keep Block Public Access enabled.");
-    }
+    // Recommendations
+    const highCount = publicBuckets.filter((b) => b.riskLevel === "high").length;
+    const recommendations: string[] = [];
 
+    if (highCount > 0) {
+      recommendations.push(
+        `Immediately enable S3 Block Public Access on ${highCount} high-risk bucket(s) that are actively exposed.`
+      );
+    }
+    recommendations.push(
+      "Enable S3 Block Public Access at the account level to prevent future public exposure across all buckets."
+    );
+    recommendations.push(
+      "Review bucket ACLs and remove AllUsers or AuthenticatedUsers grants unless the bucket is intentionally public."
+    );
+    recommendations.push(
+      "Restrict anonymous access in bucket policies — only allow public access if the bucket serves a public website or static assets."
+    );
+
+    const flaggedCount = publicBuckets.length;
     const summary =
-      publicBuckets.length > 0
-        ? `Scanned ${bucketsScanned} buckets. Found ${publicBuckets.length} with public access.`
-        : `Scanned ${bucketsScanned} buckets. No public buckets found.`;
+      flaggedCount > 0
+        ? `Scanned ${bucketsScanned} bucket(s). ${flaggedCount} flagged (${highCount} high risk).`
+        : `Scanned ${bucketsScanned} bucket(s). No public or risky buckets found.`;
 
-    logger.info("s3-public-bucket-scan completed", { bucketsScanned, publicCount: publicBuckets.length });
+    logger.info("s3-public-bucket-scan completed", {
+      bucketsScanned,
+      flaggedCount,
+      highCount,
+    });
 
     return {
       ok: true,
@@ -165,7 +212,7 @@ async function run(input: Record<string, unknown>, ctx: ExecutionPluginContext):
     return {
       ok: false,
       error: msg,
-      summary: "S3 public bucket scan failed",
+      summary: "S3 public bucket scan failed.",
     };
   }
 }
@@ -173,8 +220,10 @@ async function run(input: Record<string, unknown>, ctx: ExecutionPluginContext):
 registerExecutionPlugin({
   id: "aws:s3-public-bucket-scan",
   name: "AWS S3 Public Bucket Scan",
-  description: "List S3 buckets, check public access block, ACLs, and policies. Identify buckets allowing public access. Read-only.",
+  description:
+    "List S3 buckets and check each for public ACLs, public bucket policy status, and Public Access Block configuration. Returns risk-rated results per bucket. Read-only.",
   scopesRequired: ["cloud:aws", "cloud:read"],
   readOnly: true,
+  modifiesInfrastructure: false,
   run,
 });

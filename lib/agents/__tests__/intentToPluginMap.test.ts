@@ -40,8 +40,30 @@ describe("mapIntentToPlugin", () => {
     expect(result!.pluginId).toBe("aws:cost-explorer-summary");
   });
 
+  it('maps "Check if my S3 buckets are public" to aws:s3-public-bucket-scan', () => {
+    const result = mapIntentToPlugin("Check if my S3 buckets are public");
+    expect(result).not.toBeNull();
+    expect(result!.pluginId).toBe("aws:s3-public-bucket-scan");
+    expect(result!.readOnly).toBe(true);
+    expect(result!.confidence).toBe("high");
+  });
+
   it('maps "check S3 security" to aws:s3-public-bucket-scan', () => {
     const result = mapIntentToPlugin("check S3 security");
+    expect(result).not.toBeNull();
+    expect(result!.pluginId).toBe("aws:s3-public-bucket-scan");
+    expect(result!.readOnly).toBe(true);
+  });
+
+  it('maps "Scan S3 security" to aws:s3-public-bucket-scan', () => {
+    const result = mapIntentToPlugin("Scan S3 security");
+    expect(result).not.toBeNull();
+    expect(result!.pluginId).toBe("aws:s3-public-bucket-scan");
+    expect(result!.readOnly).toBe(true);
+  });
+
+  it('maps "Find public S3 buckets" to aws:s3-public-bucket-scan', () => {
+    const result = mapIntentToPlugin("Find public S3 buckets");
     expect(result).not.toBeNull();
     expect(result!.pluginId).toBe("aws:s3-public-bucket-scan");
     expect(result!.readOnly).toBe(true);
