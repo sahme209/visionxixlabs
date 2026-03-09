@@ -144,7 +144,7 @@ Available tools:
 - linkConnectorHint: Get instructions for linking a connector. args: { connectorType?: "github"|"aws"|"azure"|"gcp" }
 - runAxiomAnalysis: Run Cloud Operator analysis. No args.
 - runExecutionPlugin: Run a plugin. args: { pluginId, input?, dryRun?, apply? }
-  - pluginId: "aws:iam-exposure-scan" | "aws:disable-unused-access-key" | "aws:infra-discovery" | "aws:cost-explorer-summary" | "aws:s3-public-bucket-scan" | "github:create-cicd-pipeline"
+  - pluginId: "aws:iam-exposure-scan" | "aws:disable-unused-access-key" | "aws:infra-discovery" | "aws:cost-explorer-summary" | "aws:s3-public-bucket-scan" | "aws:security-group-exposure-scan" | "github:create-cicd-pipeline"
   - dryRun: true (default) for read-only. apply: true to execute (requires CONFIRM APPLY).
 - fetchExecutionHistory: Get past scan/execution results. No args.
 - generateAndSendReport: Send executive summary email to lead. No args.
@@ -226,7 +226,7 @@ Respond with JSON only. Format assistantMessage using the required structure (Un
   const assistantMessage = parsed.assistantMessage ?? "I'm not sure how to help with that.";
   const rawPlan = parsed.plan;
 
-  const VALID_PLUGIN_IDS = ["aws:iam-exposure-scan", "aws:disable-unused-access-key", "aws:infra-discovery", "aws:cost-explorer-summary", "aws:s3-public-bucket-scan", "github:create-cicd-pipeline"];
+  const VALID_PLUGIN_IDS = ["aws:iam-exposure-scan", "aws:disable-unused-access-key", "aws:infra-discovery", "aws:cost-explorer-summary", "aws:s3-public-bucket-scan", "aws:security-group-exposure-scan", "github:create-cicd-pipeline"];
   const VALID_STEP_ACTIONS = new Set(["run_plugin", "generate_report", "run_analysis", "view_execution_history", "export_report"]);
 
   let plan: DevOpsPlan | undefined;
@@ -302,7 +302,7 @@ Respond with JSON only. Format assistantMessage using the required structure (Un
 
   const rawActions = parsed.actions ?? [];
   const actions: AxiomSuggestedAction[] = [];
-  const validPluginIds = ["aws:iam-exposure-scan", "aws:disable-unused-access-key", "aws:infra-discovery", "aws:cost-explorer-summary", "aws:s3-public-bucket-scan", "github:create-cicd-pipeline"];
+  const validPluginIds = ["aws:iam-exposure-scan", "aws:disable-unused-access-key", "aws:infra-discovery", "aws:cost-explorer-summary", "aws:s3-public-bucket-scan", "aws:security-group-exposure-scan", "github:create-cicd-pipeline"];
   for (const a of rawActions) {
     const t = String(a?.type ?? "").trim();
     if (t === "run_plugin" && a?.pluginId && validPluginIds.includes(String(a.pluginId))) {
@@ -423,7 +423,7 @@ Respond with JSON only. Format assistantMessage using the required structure (Un
     }
   }
 
-  const AWS_PLUGIN_IDS = new Set(["aws:iam-exposure-scan", "aws:disable-unused-access-key", "aws:infra-discovery", "aws:cost-explorer-summary", "aws:s3-public-bucket-scan"]);
+  const AWS_PLUGIN_IDS = new Set(["aws:iam-exposure-scan", "aws:disable-unused-access-key", "aws:infra-discovery", "aws:cost-explorer-summary", "aws:s3-public-bucket-scan", "aws:security-group-exposure-scan"]);
   function requestRequiresAws(): boolean {
     const intent = mapIntentToPlugin(message);
     if (intent?.pluginId && AWS_PLUGIN_IDS.has(intent.pluginId)) return true;

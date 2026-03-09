@@ -102,4 +102,38 @@ describe("mapIntentToPlugin", () => {
     expect(result).not.toBeNull();
     expect(result!.pluginId).toBe("github:create-cicd-pipeline");
   });
+
+  it('maps "Check my security groups" to aws:security-group-exposure-scan', () => {
+    const result = mapIntentToPlugin("Check my security groups");
+    expect(result).not.toBeNull();
+    expect(result!.pluginId).toBe("aws:security-group-exposure-scan");
+    expect(result!.readOnly).toBe(true);
+    expect(result!.confidence).toBe("high");
+  });
+
+  it('maps "Scan my security groups" to aws:security-group-exposure-scan', () => {
+    const result = mapIntentToPlugin("Scan my security groups");
+    expect(result).not.toBeNull();
+    expect(result!.pluginId).toBe("aws:security-group-exposure-scan");
+    expect(result!.readOnly).toBe(true);
+  });
+
+  it('maps "open security groups" to aws:security-group-exposure-scan', () => {
+    const result = mapIntentToPlugin("open security groups");
+    expect(result).not.toBeNull();
+    expect(result!.pluginId).toBe("aws:security-group-exposure-scan");
+  });
+
+  it('maps "Check for open ports" to aws:security-group-exposure-scan', () => {
+    const result = mapIntentToPlugin("Check for open ports");
+    expect(result).not.toBeNull();
+    expect(result!.pluginId).toBe("aws:security-group-exposure-scan");
+    expect(result!.readOnly).toBe(true);
+  });
+
+  it('maps "network exposure scan" to aws:security-group-exposure-scan', () => {
+    const result = mapIntentToPlugin("network exposure scan");
+    expect(result).not.toBeNull();
+    expect(result!.pluginId).toBe("aws:security-group-exposure-scan");
+  });
 });

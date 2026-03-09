@@ -72,6 +72,7 @@ const VALID_RUN_PLUGIN_IDS = new Set([
   "aws:infra-discovery",
   "aws:cost-explorer-summary",
   "aws:s3-public-bucket-scan",
+  "aws:security-group-exposure-scan",
   "github:create-cicd-pipeline",
 ]);
 

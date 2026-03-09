@@ -8,6 +8,7 @@ export const READ_ONLY_PLUGINS = new Set([
   "aws:iam-exposure-scan",
   "aws:cost-explorer-summary",
   "aws:s3-public-bucket-scan",
+  "aws:security-group-exposure-scan",
 ]);
 
 export const DESTRUCTIVE_PLUGINS = new Set(["aws:disable-unused-access-key"]);
@@ -40,6 +41,22 @@ const INTENT_PATTERNS: Array<{
       /list\s+(my\s+)?(infra|infrastructure|resources)/i,
       /inventory\s+(my\s+)?(aws|infra)/i,
       /analyze\s+my\s+(aws\s+)?(infrastructure|infra)/i,
+    ],
+    readOnly: true,
+  },
+  {
+    // Must come before iam-exposure-scan — patterns are more specific (include "security groups")
+    pluginId: "aws:security-group-exposure-scan",
+    patterns: [
+      /check\s+(my\s+)?security\s+groups/i,
+      /scan\s+(my\s+)?security\s+groups/i,
+      /open\s+security\s+groups/i,
+      /network\s+exposure/i,
+      /\bpublic\s+ports\b/i,
+      /\bopen\s+ports\b/i,
+      /security\s+group\s+(exposure|scan|audit|check)/i,
+      /expose[d]?\s+(ports|ingress)/i,
+      /ingress\s+(rules?|exposure|scan)/i,
     ],
     readOnly: true,
   },
