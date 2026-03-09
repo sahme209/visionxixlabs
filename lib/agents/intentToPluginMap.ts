@@ -60,7 +60,9 @@ const INTENT_PATTERNS: Array<{
   {
     pluginId: "github:create-cicd-pipeline",
     patterns: [
-      /create\s+cicd/i,
+      /create\s+(a\s+)?ci\/?cd/i,
+      /set\s+up\s+github\s+actions/i,
+      /add\s+ci\b/i,
       /build\s+pipeline/i,
       /\bgithub\s+actions\b/i,
     ],

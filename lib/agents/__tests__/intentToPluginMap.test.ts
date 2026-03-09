@@ -76,6 +76,27 @@ describe("mapIntentToPlugin", () => {
     expect(result!.readOnly).toBe(false);
   });
 
+  it('maps "Create a CI/CD pipeline for my repo" to github:create-cicd-pipeline', () => {
+    const result = mapIntentToPlugin("Create a CI/CD pipeline for my repo");
+    expect(result).not.toBeNull();
+    expect(result!.pluginId).toBe("github:create-cicd-pipeline");
+    expect(result!.readOnly).toBe(false);
+  });
+
+  it('maps "Set up GitHub Actions" to github:create-cicd-pipeline', () => {
+    const result = mapIntentToPlugin("Set up GitHub Actions");
+    expect(result).not.toBeNull();
+    expect(result!.pluginId).toBe("github:create-cicd-pipeline");
+    expect(result!.readOnly).toBe(false);
+  });
+
+  it('maps "Add CI for my project" to github:create-cicd-pipeline', () => {
+    const result = mapIntentToPlugin("Add CI for my project");
+    expect(result).not.toBeNull();
+    expect(result!.pluginId).toBe("github:create-cicd-pipeline");
+    expect(result!.readOnly).toBe(false);
+  });
+
   it('maps "GitHub actions" to github:create-cicd-pipeline', () => {
     const result = mapIntentToPlugin("Set up GitHub actions");
     expect(result).not.toBeNull();
