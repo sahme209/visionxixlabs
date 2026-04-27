@@ -16,9 +16,12 @@ import { createStarterToken } from "@/lib/starterToken";
 import { executiveSummaryEmail } from "@/lib/axiom/emailTemplates";
 import { Resend } from "resend";
 import { logAudit } from "@/lib/security/auditLog";
+import { analyzeArchitecture } from "@/lib/multicloud/architectureAnalyzer";
 
-// Register AWS execution plugins
+// Register execution plugins
 import "@/lib/plugins/aws";
+import "@/lib/plugins/azure/index";
+import "@/lib/plugins/gcp/index";
 import "@/lib/plugins/github";
 
 export type ToolContext = {
@@ -357,6 +360,78 @@ export async function exportPack(ctx: ToolContext): Promise<ToolResult> {
   }
 }
 
+/**
+ * Run multi-cloud resilience analysis. Scans all connected clouds,
+ * computes resilience score, generates AI architecture recommendation.
+ */
+export async function analyzeCloudDependency(ctx: ToolContext): Promise<ToolResult> {
+  try {
+    const lead = await prisma.lead.findUnique({ where: { id: ctx.leadId }, select: { userId: true } });
+    const userId = ctx.userId ?? lead?.userId ?? SYSTEM_USER_ID;
+    const result = await analyzeArchitecture(ctx.leadId, userId);
+    return {
+      ok: true,
+      data: {
+        reportId: result.reportId,
+        resilienceScore: result.resilienceScore.total,
+        grade: result.resilienceScore.grade,
+        scoreSummary: result.resilienceScore.summary,
+        categories: {
+          cloudDependency: result.resilienceScore.categories.cloudDependency.score,
+          regionalRedundancy: result.resilienceScore.categories.regionalRedundancy.score,
+          backupAndReplication: result.resilienceScore.categories.backupAndReplication.score,
+          securityExposure: result.resilienceScore.categories.securityExposure.score,
+          monitoringAndRecovery: result.resilienceScore.categories.monitoringAndRecovery.score,
+        },
+        primaryProvider: result.currentStateSummary.primaryProvider,
+        riskCount: result.risks.length,
+        topRisks: result.risks.slice(0, 5).map((r) => `[${r.severity}] ${r.description}`),
+        recommendedPattern: result.recommendedArchitecture.pattern,
+        secondaryProvider: result.recommendedArchitecture.secondaryProvider,
+        rto: result.rto,
+        rpo: result.rpo,
+        additionalMonthlyCost: result.estimatedCostImpact.additionalMonthlyCost,
+        nextSteps: result.nextSteps,
+        aiAnalysis: result.aiAnalysis,
+      },
+    };
+  } catch (e) {
+    return { ok: false, error: e instanceof Error ? e.message : "Analysis failed" };
+  }
+}
+
+/**
+ * Fetch the latest multi-cloud readiness report for a lead.
+ */
+export async function getReadinessReport(ctx: ToolContext): Promise<ToolResult> {
+  try {
+    const report = await prisma.multiCloudReadinessReport.findFirst({
+      where: { leadId: ctx.leadId },
+      orderBy: { createdAt: "desc" },
+    });
+    if (!report) {
+      return { ok: false, error: "No readiness report found. Run 'Analyze Cloud Dependency' first." };
+    }
+    return {
+      ok: true,
+      data: {
+        reportId: report.id,
+        score: report.score,
+        rto: report.rto,
+        rpo: report.rpo,
+        providerSummary: report.providerSummary,
+        risks: report.risks,
+        recommendations: report.recommendations,
+        estimatedCostImpact: report.estimatedCostImpact,
+        createdAt: report.createdAt.toISOString(),
+        aiAnalysis: report.aiAnalysis,
+      },
+    };
+  } catch (e) {
+    return { ok: false, error: e instanceof Error ? e.message : "Failed to fetch report" };
+  }
+}
+
 /** Map of tool names to executors. */
 export const AXIOM_ASSISTANT_TOOLS: Record<
   string,
@@ -373,4 +448,6 @@ export const AXIOM_ASSISTANT_TOOLS: Record<
   fetchExecutionHistory: (ctx) => fetchExecutionHistory(ctx),
   generateAndSendReport: (ctx) => generateAndSendReport(ctx),
   exportPack: (ctx) => exportPack(ctx),
+  analyzeCloudDependency: (ctx) => analyzeCloudDependency(ctx),
+  getReadinessReport: (ctx) => getReadinessReport(ctx),
 };

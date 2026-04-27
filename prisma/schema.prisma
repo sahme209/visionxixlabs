@@ -209,6 +209,54 @@ model AuditLog {
   @@index([createdAt])
 }
 
+// Multi-Cloud Readiness Report — Phase 3 Magic Moment
+model MultiCloudReadinessReport {
+  id                String   @id @default(cuid())
+  leadId            String
+  userId            String?
+  score             Int      // 0-100 resilience score
+  providerSummary   Json     // { primary: "aws", regions: [...], resourceCounts: {...} }
+  risks             Json     // [{ category, severity, description }]
+  recommendations   Json     // { architecture, secondaryProvider, components, nextSteps }
+  estimatedCostImpact Json   // { currentMonthlyCost, additionalCost, percentIncrease }
+  rto               String   // e.g. "5 minutes"
+  rpo               String   // e.g. "5 minutes"
+  rawScanData       Json?    // normalized scan results from all plugins
+  aiAnalysis        String?  // raw AI-generated analysis text
+  createdAt         DateTime @default(now())
+
+  @@index([leadId])
+  @@index([userId])
+  @@index([createdAt])
+}
+
+// Phase 4: Terraform Controlled Execution
+model TerraformExecutionJob {
+  id                  String    @id @default(cuid())
+  leadId              String
+  userId              String?
+  readinessReportId   String?
+  status              String    @default("queued") // queued | generating | validating | planned | awaiting_approval | applying | succeeded | failed | cancelled
+  mode                String    @default("active_passive") // active_passive
+  primaryCloud        String    @default("aws")
+  secondaryCloud      String    @default("azure")
+  workingDirectory    String?
+  generatedFiles      Json?     // { "main.tf": "...", "variables.tf": "...", ... }
+  planSummary         Json?     // { add: N, change: N, destroy: N, resources: [...] }
+  planOutput          String?   @db.Text
+  applyOutput         String?   @db.Text
+  errorMessage        String?
+  approvedAt          DateTime?
+  approvedBy          String?
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+
+  @@index([leadId])
+  @@index([userId])
+  @@index([status])
+  @@index([createdAt])
+}
+
 // Cloud Operator "Ask Axiom" chat persistence
 model AxiomConversation {
   id        String   @id @default(cuid())

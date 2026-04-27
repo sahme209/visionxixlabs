@@ -1,52 +1,38 @@
-# Vision XIX Labs Website
+# AI Cloud Operator
 
-Professional company website for Vision XIX Labs LLC showcasing our mobile applications.
+AI-powered multi-cloud platform that analyzes, designs, and manages infrastructure across AWS, Azure, and GCP.
 
-## Features
+## What it does
 
-- 🎨 Modern, professional design
-- 📱 Responsive layout for all devices
-- 🌙 Dark mode support
-- ⚡ Fast and optimized with Next.js
-- ♿ Accessible and SEO-friendly
+* Connect your cloud accounts (AWS, Azure, GCP)
+* Discover and analyze your infrastructure
+* Identify security risks and inefficiencies
+* Generate multi-cloud architecture
+* Execute infrastructure changes safely
 
-## Getting Started
+## Core Concept
 
-### Install Dependencies
+Stop relying on a single cloud provider.
 
-```bash
-npm install
-```
+We help you:
 
-### Run Development Server
+* avoid downtime
+* reduce risk
+* improve infrastructure reliability
 
-```bash
-npm run dev
-```
+## Product Flow
 
-Open [http://localhost:3000](http://localhost:3000) in your browser.
+1. Connect cloud
+2. Scan infrastructure
+3. View insights
+4. Generate architecture
+5. Execute changes
 
-### Build for Production
+## Tech Stack
 
-```bash
-npm run build
-npm start
-```
-
-## Deployment
-
-This website can be deployed to:
-- Vercel (recommended for Next.js)
-- Netlify
-- Any static hosting service
-
-## Apps Showcased
-
-- **VisaNova**: USCIS Case Tracker & Forecast
-- **RecallEase**: Health, Routine & Reminder
-- **Android Apps**: Coming Soon
-
-## Contact
-
-- Support: support@visionxixlabs.com
-- Privacy Policy: https://sahme209.github.io/vision19-privacy-policy/
+* Next.js 16
+* Prisma
+* NextAuth
+* Stripe
+* Multi-cloud connectors (AWS, Azure, GCP)
+* AI orchestration

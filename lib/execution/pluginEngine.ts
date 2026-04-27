@@ -111,7 +111,7 @@ export async function executePlugin(opts: ExecutePluginOptions): Promise<Execute
     purchasedPlugins: [], // plan-based; scale+ gets all plugins
   };
 
-  const userScopes = ["cloud:read", "cloud:aws", "cloud:write"];
+  const userScopes = ["cloud:read", "cloud:aws", "cloud:azure", "cloud:gcp", "cloud:write"];
   const scopeCheck = validateScopes(userScopes, plugin.scopesRequired);
   if (!scopeCheck.ok) throw new Error(scopeCheck.error);
 

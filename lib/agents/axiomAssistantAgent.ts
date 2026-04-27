@@ -144,11 +144,30 @@ Available tools:
 - linkConnectorHint: Get instructions for linking a connector. args: { connectorType?: "github"|"aws"|"azure"|"gcp" }
 - runAxiomAnalysis: Run Cloud Operator analysis. No args.
 - runExecutionPlugin: Run a plugin. args: { pluginId, input?, dryRun?, apply? }
-  - pluginId: "aws:iam-exposure-scan" | "aws:disable-unused-access-key" | "aws:infra-discovery" | "aws:cost-explorer-summary" | "aws:s3-public-bucket-scan" | "aws:security-group-exposure-scan" | "github:create-cicd-pipeline"
+  - pluginId: "aws:iam-exposure-scan" | "aws:disable-unused-access-key" | "aws:infra-discovery" | "aws:cost-explorer-summary" | "aws:s3-public-bucket-scan" | "aws:security-group-exposure-scan" | "azure:infra-discovery" | "azure:security-scan" | "gcp:infra-discovery" | "gcp:security-scan" | "github:create-cicd-pipeline"
   - dryRun: true (default) for read-only. apply: true to execute (requires CONFIRM APPLY).
 - fetchExecutionHistory: Get past scan/execution results. No args.
 - generateAndSendReport: Send executive summary email to lead. No args.
-- exportPack: Build and get download URL for export ZIP. No args.`;
+- exportPack: Build and get download URL for export ZIP. No args.
+- analyzeCloudDependency: Run multi-cloud resilience analysis across all connected providers. Scans infrastructure, computes resilience score (0-100), generates AI architecture recommendation. No args. Use when user asks about cloud risk, dependency, resilience, failover, multi-cloud, or "what if my cloud goes down".
+- getReadinessReport: Fetch the latest multi-cloud readiness report. No args. Use when user asks about their resilience score, previous analysis, or wants to review the report.
+
+13. MULTI-CLOUD ANALYSIS — When user asks about cloud risk, dependency, resilience, what happens if a provider goes down, or how to reduce single-cloud risk:
+   - Call analyzeCloudDependency to run the full analysis
+   - Present the resilience score, top risks, and recommended architecture
+   - Reference specific findings from the scan data
+   - Explain WHY the secondary provider was recommended
+   - Be specific about RTO/RPO and cost impact
+14. READINESS REPORT — When user asks "what's my score", "show my report", "what did the analysis find":
+   - Call getReadinessReport to fetch the latest report
+   - Present the score breakdown by category
+   - Highlight the lowest-scoring categories as improvement areas
+15. TERRAFORM SAFETY — You may explain Terraform plans and help users understand what will be created. You may NOT auto-apply Terraform. Terraform apply ALWAYS requires explicit user approval via "CONFIRM APPLY" typed in the dashboard UI. If the user asks you to apply Terraform, tell them to use the dashboard Terraform execution panel with "CONFIRM APPLY".
+16. TERRAFORM GUIDANCE — When users ask about deploying standby infrastructure, multi-cloud setup, or Terraform:
+   - Explain what the generated Terraform will create (resource group, VNet, storage account on Azure)
+   - Explain the Active-Passive pattern and its benefits
+   - Direct them to the resilience dashboard to generate, plan, and approve
+   - Never bypass the approval flow`;
 
 export async function runAxiomAssistantAgent(input: AxiomAssistantInput): Promise<AxiomAssistantOutput> {
   const { conversationId, userId, leadId, message, contextSummary } = input;
@@ -226,7 +245,7 @@ Respond with JSON only. Format assistantMessage using the required structure (Un
   const assistantMessage = parsed.assistantMessage ?? "I'm not sure how to help with that.";
   const rawPlan = parsed.plan;
 
-  const VALID_PLUGIN_IDS = ["aws:iam-exposure-scan", "aws:disable-unused-access-key", "aws:infra-discovery", "aws:cost-explorer-summary", "aws:s3-public-bucket-scan", "aws:security-group-exposure-scan", "github:create-cicd-pipeline"];
+  const VALID_PLUGIN_IDS = ["aws:iam-exposure-scan", "aws:disable-unused-access-key", "aws:infra-discovery", "aws:cost-explorer-summary", "aws:s3-public-bucket-scan", "aws:security-group-exposure-scan", "azure:infra-discovery", "azure:security-scan", "gcp:infra-discovery", "gcp:security-scan", "github:create-cicd-pipeline"];
   const VALID_STEP_ACTIONS = new Set(["run_plugin", "generate_report", "run_analysis", "view_execution_history", "export_report"]);
 
   let plan: DevOpsPlan | undefined;
@@ -302,7 +321,7 @@ Respond with JSON only. Format assistantMessage using the required structure (Un
 
   const rawActions = parsed.actions ?? [];
   const actions: AxiomSuggestedAction[] = [];
-  const validPluginIds = ["aws:iam-exposure-scan", "aws:disable-unused-access-key", "aws:infra-discovery", "aws:cost-explorer-summary", "aws:s3-public-bucket-scan", "aws:security-group-exposure-scan", "github:create-cicd-pipeline"];
+  const validPluginIds = ["aws:iam-exposure-scan", "aws:disable-unused-access-key", "aws:infra-discovery", "aws:cost-explorer-summary", "aws:s3-public-bucket-scan", "aws:security-group-exposure-scan", "azure:infra-discovery", "azure:security-scan", "gcp:infra-discovery", "gcp:security-scan", "github:create-cicd-pipeline"];
   for (const a of rawActions) {
     const t = String(a?.type ?? "").trim();
     if (t === "run_plugin" && a?.pluginId && validPluginIds.includes(String(a.pluginId))) {
