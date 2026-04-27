@@ -308,18 +308,20 @@ export default function OperatorLandingPage() {
               </p>
             </div>
           </Reveal>
-          <Stagger className="grid md:grid-cols-3 gap-8">
-            {steps.map((step) => (
-              <div key={step.number} className="relative rounded-2xl border border-slate-800 bg-slate-900/50 p-8 hover:border-slate-700 transition-colors">
-                <div className={`inline-flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-br ${step.color} mb-6`}>
-                  <step.icon className="h-6 w-6 text-white" />
+          <div className="grid md:grid-cols-3 gap-8">
+            <Stagger>
+              {steps.map((step) => (
+                <div key={step.number} className="relative rounded-2xl border border-slate-800 bg-slate-900/50 p-8 hover:border-slate-700 transition-colors">
+                  <div className={`inline-flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-br ${step.color} mb-6`}>
+                    <step.icon className="h-6 w-6 text-white" />
+                  </div>
+                  <span className="absolute top-8 right-8 text-5xl font-bold text-slate-800/50">{step.number}</span>
+                  <h3 className="text-xl font-semibold mb-3">{step.title}</h3>
+                  <p className="text-slate-400 leading-relaxed text-sm">{step.description}</p>
                 </div>
-                <span className="absolute top-8 right-8 text-5xl font-bold text-slate-800/50">{step.number}</span>
-                <h3 className="text-xl font-semibold mb-3">{step.title}</h3>
-                <p className="text-slate-400 leading-relaxed text-sm">{step.description}</p>
-              </div>
-            ))}
-          </Stagger>
+              ))}
+            </Stagger>
+          </div>
         </div>
       </section>
 
@@ -334,15 +336,17 @@ export default function OperatorLandingPage() {
               </p>
             </div>
           </Reveal>
-          <Stagger className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {features.map((f) => (
-              <div key={f.title} className="rounded-xl border border-slate-800 bg-slate-900/50 p-6 hover:border-slate-700 transition-colors">
-                <f.icon className="h-6 w-6 text-violet-400 mb-4" />
-                <h3 className="font-semibold mb-2">{f.title}</h3>
-                <p className="text-sm text-slate-400 leading-relaxed">{f.description}</p>
-              </div>
-            ))}
-          </Stagger>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <Stagger>
+              {features.map((f) => (
+                <div key={f.title} className="rounded-xl border border-slate-800 bg-slate-900/50 p-6 hover:border-slate-700 transition-colors">
+                  <f.icon className="h-6 w-6 text-violet-400 mb-4" />
+                  <h3 className="font-semibold mb-2">{f.title}</h3>
+                  <p className="text-sm text-slate-400 leading-relaxed">{f.description}</p>
+                </div>
+              ))}
+            </Stagger>
+          </div>
         </div>
       </section>
 
@@ -379,9 +383,10 @@ export default function OperatorLandingPage() {
               </p>
             </div>
           </Reveal>
-          <Stagger className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
-            {plans.map((plan) => (
-              <div
+          <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+            <Stagger>
+              {plans.map((plan) => (
+                <div
                 key={plan.name}
                 className={`rounded-2xl border p-8 flex flex-col ${
                   plan.highlighted
@@ -416,8 +421,9 @@ export default function OperatorLandingPage() {
                   {plan.cta}
                 </AnimatedButton>
               </div>
-            ))}
-          </Stagger>
+              ))}
+            </Stagger>
+          </div>
         </div>
       </section>
 

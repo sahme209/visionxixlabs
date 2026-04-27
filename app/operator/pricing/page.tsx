@@ -117,7 +117,8 @@ export default function PricingPage() {
 
       {/* Plan Cards */}
       <section className="pb-20 px-4">
-        <Stagger className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+        <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+          <Stagger>
           {plans.map((plan) => (
             <div
               key={plan.name}
@@ -156,7 +157,8 @@ export default function PricingPage() {
               </AnimatedButton>
             </div>
           ))}
-        </Stagger>
+          </Stagger>
+        </div>
       </section>
 
       {/* Comparison Table */}
