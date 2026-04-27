@@ -119,6 +119,11 @@ export function canViewTechnicalOutputs(tier: OperatorTier): boolean {
   return tier === "pro" || tier === "growth" || tier === "enterprise";
 }
 
+/** Free tier can connect 1 cloud + validate + run analysis. Paid tiers unlock execution. */
+export function canConnectCloud(tier: OperatorTier): boolean {
+  return true;
+}
+
 export function canDownloadConfigs(tier: OperatorTier): boolean {
   return tier === "pro" || tier === "growth" || tier === "enterprise";
 }

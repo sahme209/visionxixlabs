@@ -5,6 +5,7 @@ import { checkRateLimit } from "@/lib/rateLimit";
 import { checkTieredRateLimit } from "@/lib/rateLimitTiered";
 import {
   canViewTechnicalOutputs,
+  canConnectCloud,
   hasEnterpriseEngagement,
   resolveEffectiveOperatorTier,
 } from "@/lib/entitlements";
@@ -84,8 +85,8 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Invalid connectorType" }, { status: 400 });
     }
 
-    if (connectorType !== "github" && !canPro) {
-      return NextResponse.json({ error: "Cloud connectors (AWS, Azure, GCP) require Growth or higher membership. Upgrade at /visionxix-ai/pricing" }, { status: 403 });
+    if (connectorType !== "github" && !canConnectCloud(tier)) {
+      return NextResponse.json({ error: "Cloud connectors are not available for your plan." }, { status: 403 });
     }
 
     if (connectorType !== "github" && !isCloudConnectorEnabled(connectorType as "aws" | "azure" | "gcp")) {

@@ -3,9 +3,9 @@
  * Defaults are conservative: hide stub/placeholder features until real implementation exists.
  */
 
-/** AWS connector — stub returns always valid. Enable when real STS validation is implemented. */
+/** AWS connector — real STS AssumeRole validation. Disable with ENABLE_CLOUD_CONNECTORS_AWS=false. */
 export const ENABLE_CLOUD_CONNECTORS_AWS =
-  process.env.ENABLE_CLOUD_CONNECTORS_AWS === "true";
+  process.env.ENABLE_CLOUD_CONNECTORS_AWS !== "false";
 
 /** Azure connector — stub returns always valid. Enable when real validation is implemented. */
 export const ENABLE_CLOUD_CONNECTORS_AZURE =

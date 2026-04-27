@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import {
@@ -12,6 +12,9 @@ import {
   CpuChipIcon,
   ShieldCheckIcon,
   ExclamationTriangleIcon,
+  ClipboardDocumentIcon,
+  ArrowTopRightOnSquareIcon,
+  LockClosedIcon,
 } from "@heroicons/react/24/outline";
 import { Reveal } from "@/components/motion/Reveal";
 import { AnimatedButton } from "@/components/ui/AnimatedButton";
@@ -20,11 +23,59 @@ type OnboardingStep = 1 | 2 | 3 | 4;
 
 type CloudProvider = "aws" | "azure" | "gcp";
 
+type ConnectionPhase = "select" | "setup" | "validate";
+
 const providerConfig: Record<CloudProvider, { name: string; color: string; description: string }> = {
-  aws: { name: "Amazon Web Services", color: "from-orange-500 to-amber-500", description: "Most popular. Connect via IAM Role." },
+  aws: { name: "Amazon Web Services", color: "from-orange-500 to-amber-500", description: "Connect via read-only IAM Role (recommended)." },
   azure: { name: "Microsoft Azure", color: "from-blue-500 to-cyan-500", description: "Connect via Service Principal." },
   gcp: { name: "Google Cloud Platform", color: "from-red-500 to-pink-500", description: "Connect via Service Account." },
 };
+
+const BROKER_ACCOUNT_ID = "590183704419";
+const EXTERNAL_ID_PREFIX = "cloudoperator";
+
+function generateExternalId(): string {
+  const random = Math.random().toString(36).slice(2, 10);
+  return `${EXTERNAL_ID_PREFIX}-${random}`;
+}
+
+const IAM_TRUST_POLICY = (externalId: string) => JSON.stringify({
+  Version: "2012-10-17",
+  Statement: [{
+    Effect: "Allow",
+    Principal: { AWS: `arn:aws:iam::${BROKER_ACCOUNT_ID}:root` },
+    Action: "sts:AssumeRole",
+    Condition: { StringEquals: { "sts:ExternalId": externalId } },
+  }],
+}, null, 2);
+
+const IAM_PERMISSIONS_POLICY = JSON.stringify({
+  Version: "2012-10-17",
+  Statement: [{
+    Sid: "CloudOperatorReadOnly",
+    Effect: "Allow",
+    Action: [
+      "ec2:Describe*",
+      "rds:Describe*",
+      "s3:ListAllMyBuckets",
+      "s3:GetBucketLocation",
+      "s3:GetBucketPolicy",
+      "s3:GetBucketAcl",
+      "s3:GetEncryptionConfiguration",
+      "elasticloadbalancing:Describe*",
+      "autoscaling:Describe*",
+      "cloudwatch:GetMetricData",
+      "cloudwatch:ListMetrics",
+      "iam:GetAccountSummary",
+      "iam:ListRoles",
+      "iam:ListUsers",
+      "iam:GetRole",
+      "tag:GetResources",
+      "sts:GetCallerIdentity",
+    ],
+    Resource: "*",
+  }],
+}, null, 2);
 
 function StepIndicator({ current }: { current: OnboardingStep }) {
   const labels = ["Account", "Connect Cloud", "Analyze", "Your Report"];
@@ -58,45 +109,270 @@ function StepIndicator({ current }: { current: OnboardingStep }) {
   );
 }
 
+function CopyBlock({ label, value }: { label: string; value: string }) {
+  const [copied, setCopied] = useState(false);
+  const handleCopy = useCallback(() => {
+    navigator.clipboard.writeText(value);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  }, [value]);
+
+  return (
+    <div>
+      <div className="flex items-center justify-between mb-1.5">
+        <span className="text-xs font-medium text-slate-400">{label}</span>
+        <button onClick={handleCopy} className="flex items-center gap-1 text-xs text-slate-500 hover:text-violet-400 transition-colors">
+          <ClipboardDocumentIcon className="h-3.5 w-3.5" />
+          {copied ? "Copied!" : "Copy"}
+        </button>
+      </div>
+      <pre className="bg-slate-950 border border-slate-800 rounded-lg px-4 py-3 text-xs text-slate-300 overflow-x-auto font-mono whitespace-pre-wrap break-all">
+        {value}
+      </pre>
+    </div>
+  );
+}
+
+function AWSSetupInstructions({ externalId }: { externalId: string }) {
+  const [showPolicy, setShowPolicy] = useState<"trust" | "permissions" | null>(null);
+
+  return (
+    <div className="space-y-6">
+      <div className="rounded-xl border border-slate-800 bg-slate-900/50 p-6">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="w-8 h-8 rounded-lg bg-violet-500/10 flex items-center justify-center">
+            <LockClosedIcon className="h-4 w-4 text-violet-400" />
+          </div>
+          <div>
+            <h3 className="text-sm font-semibold text-slate-200">How it works</h3>
+            <p className="text-xs text-slate-500">Read-only access via IAM Role</p>
+          </div>
+        </div>
+        <p className="text-sm text-slate-400 mb-4">
+          We use an IAM Role with <strong className="text-slate-300">read-only permissions</strong> in your AWS account.
+          Our broker account assumes this role to scan your infrastructure. We never store your AWS access keys.
+        </p>
+        <div className="flex items-center gap-2 text-xs text-emerald-400 bg-emerald-500/5 border border-emerald-500/10 rounded-lg px-3 py-2">
+          <ShieldCheckIcon className="h-4 w-4 flex-shrink-0" />
+          No write access. No credentials stored. Revoke anytime from your AWS console.
+        </div>
+      </div>
+
+      <div className="rounded-xl border border-slate-800 bg-slate-900/50 p-6">
+        <h3 className="text-sm font-semibold text-slate-200 mb-4">Create the IAM Role in your AWS account</h3>
+        <ol className="space-y-4 text-sm text-slate-400">
+          <li className="flex gap-3">
+            <span className="w-6 h-6 rounded-full bg-slate-800 flex items-center justify-center text-xs font-bold text-slate-400 flex-shrink-0 mt-0.5">1</span>
+            <div className="flex-1">
+              <p>Go to <strong className="text-slate-300">IAM → Roles → Create Role</strong> in the AWS Console.</p>
+              <a
+                href="https://console.aws.amazon.com/iam/home#/roles$new?step=type&roleType=crossAccount"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1 text-xs text-violet-400 hover:text-violet-300 mt-1"
+              >
+                Open AWS IAM Console <ArrowTopRightOnSquareIcon className="h-3 w-3" />
+              </a>
+            </div>
+          </li>
+          <li className="flex gap-3">
+            <span className="w-6 h-6 rounded-full bg-slate-800 flex items-center justify-center text-xs font-bold text-slate-400 flex-shrink-0 mt-0.5">2</span>
+            <div className="flex-1">
+              <p className="mb-2">Select <strong className="text-slate-300">&quot;Another AWS account&quot;</strong> and enter:</p>
+              <CopyBlock label="Account ID" value={BROKER_ACCOUNT_ID} />
+              <div className="mt-2">
+                <CopyBlock label="External ID (required)" value={externalId} />
+              </div>
+            </div>
+          </li>
+          <li className="flex gap-3">
+            <span className="w-6 h-6 rounded-full bg-slate-800 flex items-center justify-center text-xs font-bold text-slate-400 flex-shrink-0 mt-0.5">3</span>
+            <div className="flex-1">
+              <p>
+                Attach the <strong className="text-slate-300">ReadOnlyAccess</strong> AWS managed policy, or use our custom minimal policy below.
+              </p>
+              <button
+                onClick={() => setShowPolicy(showPolicy === "permissions" ? null : "permissions")}
+                className="text-xs text-violet-400 hover:text-violet-300 mt-1"
+              >
+                {showPolicy === "permissions" ? "Hide" : "Show"} custom permissions policy
+              </button>
+              {showPolicy === "permissions" && (
+                <div className="mt-2">
+                  <CopyBlock label="Permissions Policy JSON" value={IAM_PERMISSIONS_POLICY} />
+                </div>
+              )}
+            </div>
+          </li>
+          <li className="flex gap-3">
+            <span className="w-6 h-6 rounded-full bg-slate-800 flex items-center justify-center text-xs font-bold text-slate-400 flex-shrink-0 mt-0.5">4</span>
+            <div className="flex-1">
+              <p>
+                Name the role <strong className="text-slate-300">CloudOperatorReadOnly</strong> (or any name you prefer) and create it.
+              </p>
+            </div>
+          </li>
+          <li className="flex gap-3">
+            <span className="w-6 h-6 rounded-full bg-slate-800 flex items-center justify-center text-xs font-bold text-slate-400 flex-shrink-0 mt-0.5">5</span>
+            <div className="flex-1">
+              <p>Copy the <strong className="text-slate-300">Role ARN</strong> from the role summary page and paste it below.</p>
+            </div>
+          </li>
+        </ol>
+
+        <div className="mt-4 pt-4 border-t border-slate-800">
+          <button
+            onClick={() => setShowPolicy(showPolicy === "trust" ? null : "trust")}
+            className="text-xs text-slate-500 hover:text-slate-300"
+          >
+            {showPolicy === "trust" ? "Hide" : "View"} trust policy JSON (for reference)
+          </button>
+          {showPolicy === "trust" && (
+            <div className="mt-2">
+              <CopyBlock label="Trust Policy JSON" value={IAM_TRUST_POLICY(externalId)} />
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function OnboardingPage() {
   const router = useRouter();
   const [step, setStep] = useState<OnboardingStep>(1);
   const [selectedProvider, setSelectedProvider] = useState<CloudProvider | null>(null);
-  const [connecting, setConnecting] = useState(false);
+  const [connectionPhase, setConnectionPhase] = useState<ConnectionPhase>("select");
+
+  const [roleArn, setRoleArn] = useState("");
+  const [awsAccountId, setAwsAccountId] = useState("");
+  const [externalId] = useState(() => generateExternalId());
+
+  const [validating, setValidating] = useState(false);
   const [connected, setConnected] = useState(false);
   const [analyzing, setAnalyzing] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [validationDetail, setValidationDetail] = useState<string | null>(null);
+  const [verifiedAccount, setVerifiedAccount] = useState<string | null>(null);
 
   const [token, setToken] = useState<string | null>(null);
 
-  const handleConnect = async () => {
+  const arnRegex = /^arn:aws(?:-cn|-us-gov)?:iam::\d{12}:role\/[\w+=,.@-]+$/;
+  const accountIdRegex = /^\d{12}$/;
+
+  const arnAccountId = roleArn.match(/:(\d{12}):/)?.[1] ?? "";
+
+  const [checkingAvailability, setCheckingAvailability] = useState(false);
+
+  const handleProviderNext = async () => {
     if (!selectedProvider) return;
-    setConnecting(true);
     setError(null);
+
+    if (selectedProvider !== "aws") {
+      setError(`${providerConfig[selectedProvider].name} connection coming soon. Choose AWS to continue.`);
+      return;
+    }
+
+    setCheckingAvailability(true);
     try {
-      const res = await fetch("/api/cloud-operator/start", {
+      const res = await fetch("/api/connectors/availability");
+      if (res.ok) {
+        const data = await res.json();
+        if (!data.aws) {
+          setError("AWS connection is temporarily unavailable. Please try again later or contact support.");
+          return;
+        }
+      }
+      setConnectionPhase("setup");
+    } catch {
+      setConnectionPhase("setup");
+    } finally {
+      setCheckingAvailability(false);
+    }
+  };
+
+  const handleValidateConnection = async () => {
+    setError(null);
+    setValidationDetail(null);
+
+    const trimmedArn = roleArn.trim();
+    const trimmedAccountId = (awsAccountId.trim() || arnAccountId).trim();
+
+    if (!trimmedArn) {
+      setError("Role ARN is required.");
+      return;
+    }
+    if (!arnRegex.test(trimmedArn)) {
+      setError("Invalid Role ARN format. Expected: arn:aws:iam::123456789012:role/RoleName");
+      return;
+    }
+    if (!trimmedAccountId || !accountIdRegex.test(trimmedAccountId)) {
+      setError("AWS Account ID is required (12 digits). We auto-detect it from the ARN — verify it's correct.");
+      return;
+    }
+
+    setValidating(true);
+
+    try {
+      let currentToken = token;
+
+      if (!currentToken) {
+        const startRes = await fetch("/api/cloud-operator/start", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ provider: selectedProvider }),
+        });
+        const startData = await startRes.json();
+        if (!startRes.ok) {
+          setError(startData.error ?? "Failed to initialize session.");
+          return;
+        }
+        currentToken = startData.token;
+        setToken(currentToken);
+      }
+
+      const linkRes = await fetch(`/api/connectors/link?token=${currentToken}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ provider: selectedProvider }),
+        body: JSON.stringify({
+          connectorType: "aws",
+          authMethod: "assume-role",
+          roleArn: trimmedArn,
+          awsAccountId: trimmedAccountId,
+          externalId,
+        }),
       });
-      const data = await res.json();
-      if (!res.ok) {
-        setError(data.error ?? "Connection failed");
+      const linkData = await linkRes.json();
+
+      if (!linkRes.ok) {
+        const msg = linkData.error ?? "Connection validation failed.";
+        setError(msg);
+        if (linkRes.status === 403) {
+          setValidationDetail("Cloud connectors require a Growth plan or higher. You can still explore with a free analysis.");
+        } else if (linkRes.status === 503) {
+          setValidationDetail("AWS connector is being set up. Please try again shortly.");
+        } else if (msg.includes("Role ARN") || msg.includes("External ID")) {
+          setValidationDetail("Double-check that the Role ARN matches the role you created, and the External ID matches what's shown above.");
+        } else if (msg.includes("Broker") || msg.includes("BROKER")) {
+          setValidationDetail("Our validation service is temporarily unavailable. Please try again in a moment.");
+        }
         return;
       }
-      setToken(data.token ?? null);
+
       setConnected(true);
-      setStep(3);
+      setVerifiedAccount(linkData.account ?? trimmedAccountId);
+      setConnectionPhase("validate");
+      setTimeout(() => setStep(3), 1500);
     } catch {
-      setError("Network error. Please try again.");
+      setError("Network error. Please check your connection and try again.");
     } finally {
-      setConnecting(false);
+      setValidating(false);
     }
   };
 
   const handleAnalyze = async () => {
     if (!token) {
-      setError("No session token. Please reconnect.");
+      setError("No session token. Please go back and reconnect.");
       return;
     }
     setAnalyzing(true);
@@ -121,7 +397,6 @@ export default function OnboardingPage() {
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100">
-      {/* Header */}
       <nav className="border-b border-slate-800/50">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
           <Link href="/operator" className="flex items-center gap-2">
@@ -148,7 +423,7 @@ export default function OnboardingPage() {
               </p>
               <div className="space-y-3 text-left max-w-sm mx-auto mb-8">
                 {[
-                  "Connect your cloud account (read-only)",
+                  "Connect your cloud account (read-only IAM Role)",
                   "AI analyzes your infrastructure",
                   "Get your resilience score and action plan",
                 ].map((item, i) => (
@@ -170,64 +445,180 @@ export default function OnboardingPage() {
         {step === 2 && (
           <Reveal>
             <div>
-              <button onClick={() => setStep(1)} className="flex items-center gap-1 text-sm text-slate-500 hover:text-slate-300 mb-6">
+              <button
+                onClick={() => {
+                  if (connectionPhase === "setup") {
+                    setConnectionPhase("select");
+                    setError(null);
+                  } else {
+                    setStep(1);
+                  }
+                }}
+                className="flex items-center gap-1 text-sm text-slate-500 hover:text-slate-300 mb-6"
+              >
                 <ArrowLeftIcon className="h-3.5 w-3.5" /> Back
               </button>
-              <h1 className="text-2xl font-bold mb-2">Connect your cloud</h1>
-              <p className="text-slate-400 mb-8">
-                Choose your primary cloud provider. We use read-only access to scan your infrastructure safely.
-              </p>
 
-              <div className="space-y-3 mb-8">
-                {(Object.keys(providerConfig) as CloudProvider[]).map((p) => {
-                  const config = providerConfig[p];
-                  const isSelected = selectedProvider === p;
-                  return (
-                    <button
-                      key={p}
-                      onClick={() => setSelectedProvider(p)}
-                      className={`w-full text-left rounded-xl border p-5 transition-all ${
-                        isSelected
-                          ? "border-violet-500/50 bg-violet-950/20"
-                          : "border-slate-800 bg-slate-900/50 hover:border-slate-700"
-                      }`}
-                    >
-                      <div className="flex items-center gap-4">
-                        <div className={`w-10 h-10 rounded-lg bg-gradient-to-br ${config.color} flex items-center justify-center`}>
-                          <CloudIcon className="h-5 w-5 text-white" />
-                        </div>
-                        <div className="flex-1">
-                          <div className="font-semibold text-sm">{config.name}</div>
-                          <div className="text-xs text-slate-500">{config.description}</div>
-                        </div>
-                        {isSelected && <CheckCircleIcon className="h-5 w-5 text-violet-400" />}
-                      </div>
-                    </button>
-                  );
-                })}
-              </div>
+              {/* Phase: Select provider */}
+              {connectionPhase === "select" && (
+                <>
+                  <h1 className="text-2xl font-bold mb-2">Connect your cloud</h1>
+                  <p className="text-slate-400 mb-8">
+                    Choose your primary cloud provider. We use read-only access to scan your infrastructure safely.
+                  </p>
 
-              {error && (
-                <div className="flex items-center gap-2 text-sm text-red-400 bg-red-500/10 border border-red-500/20 rounded-lg px-4 py-3 mb-4">
-                  <ExclamationTriangleIcon className="h-4 w-4 flex-shrink-0" />
-                  {error}
-                </div>
+                  <div className="space-y-3 mb-8">
+                    {(Object.keys(providerConfig) as CloudProvider[]).map((p) => {
+                      const config = providerConfig[p];
+                      const isSelected = selectedProvider === p;
+                      return (
+                        <button
+                          key={p}
+                          onClick={() => { setSelectedProvider(p); setError(null); }}
+                          className={`w-full text-left rounded-xl border p-5 transition-all ${
+                            isSelected
+                              ? "border-violet-500/50 bg-violet-950/20"
+                              : "border-slate-800 bg-slate-900/50 hover:border-slate-700"
+                          }`}
+                        >
+                          <div className="flex items-center gap-4">
+                            <div className={`w-10 h-10 rounded-lg bg-gradient-to-br ${config.color} flex items-center justify-center`}>
+                              <CloudIcon className="h-5 w-5 text-white" />
+                            </div>
+                            <div className="flex-1">
+                              <div className="font-semibold text-sm">{config.name}</div>
+                              <div className="text-xs text-slate-500">{config.description}</div>
+                            </div>
+                            {isSelected && <CheckCircleIcon className="h-5 w-5 text-violet-400" />}
+                          </div>
+                        </button>
+                      );
+                    })}
+                  </div>
+
+                  {error && (
+                    <div className="flex items-center gap-2 text-sm text-red-400 bg-red-500/10 border border-red-500/20 rounded-lg px-4 py-3 mb-4">
+                      <ExclamationTriangleIcon className="h-4 w-4 flex-shrink-0" />
+                      {error}
+                    </div>
+                  )}
+
+                  <AnimatedButton
+                    onClick={handleProviderNext}
+                    disabled={!selectedProvider || checkingAvailability}
+                    variant="primary"
+                    className="w-full justify-center py-3"
+                  >
+                    {checkingAvailability ? "Checking..." : "Continue"}
+                    <ArrowRightIcon className="h-4 w-4" />
+                  </AnimatedButton>
+                </>
               )}
 
-              <div className="flex items-center gap-3 text-xs text-slate-600 mb-6">
-                <ShieldCheckIcon className="h-4 w-4" />
-                Read-only access. We never modify your infrastructure without approval.
-              </div>
+              {/* Phase: AWS IAM Role Setup */}
+              {connectionPhase === "setup" && selectedProvider === "aws" && (
+                <>
+                  <h1 className="text-2xl font-bold mb-2">Set up AWS connection</h1>
+                  <p className="text-slate-400 mb-6">
+                    Create a read-only IAM Role in your AWS account, then paste the Role ARN below.
+                  </p>
 
-              <AnimatedButton
-                onClick={handleConnect}
-                disabled={!selectedProvider || connecting}
-                variant="primary"
-                className="w-full justify-center py-3"
-              >
-                {connecting ? "Connecting..." : "Connect & Continue"}
-                <ArrowRightIcon className="h-4 w-4" />
-              </AnimatedButton>
+                  <AWSSetupInstructions externalId={externalId} />
+
+                  <div className="mt-8 space-y-4">
+                    <div className="rounded-xl border border-slate-800 bg-slate-900/50 p-6">
+                      <h3 className="text-sm font-semibold text-slate-200 mb-4">Validate your connection</h3>
+
+                      <div className="space-y-4">
+                        <div>
+                          <label className="block text-sm font-medium text-slate-400 mb-1.5">
+                            Role ARN <span className="text-red-400">*</span>
+                          </label>
+                          <input
+                            type="text"
+                            value={roleArn}
+                            onChange={(e) => {
+                              setRoleArn(e.target.value);
+                              setError(null);
+                              const match = e.target.value.match(/:(\d{12}):/);
+                              if (match) setAwsAccountId(match[1]);
+                            }}
+                            placeholder="arn:aws:iam::123456789012:role/CloudOperatorReadOnly"
+                            className="w-full rounded-lg border border-slate-700 bg-slate-950 px-4 py-3 text-slate-100 placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-violet-500/50 focus:border-violet-500/50 text-sm font-mono"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-sm font-medium text-slate-400 mb-1.5">
+                            AWS Account ID <span className="text-red-400">*</span>
+                          </label>
+                          <input
+                            type="text"
+                            value={awsAccountId}
+                            onChange={(e) => {
+                              const val = e.target.value.replace(/\D/g, "").slice(0, 12);
+                              setAwsAccountId(val);
+                              setError(null);
+                            }}
+                            placeholder="123456789012"
+                            className="w-full rounded-lg border border-slate-700 bg-slate-950 px-4 py-3 text-slate-100 placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-violet-500/50 focus:border-violet-500/50 text-sm font-mono"
+                          />
+                          {arnAccountId && awsAccountId && arnAccountId !== awsAccountId && (
+                            <p className="text-xs text-amber-400 mt-1">
+                              Account ID in ARN ({arnAccountId}) doesn&apos;t match the field above. We&apos;ll use the field value.
+                            </p>
+                          )}
+                        </div>
+                      </div>
+
+                      {error && (
+                        <div className="mt-4 text-sm text-red-400 bg-red-500/10 border border-red-500/20 rounded-lg px-4 py-3">
+                          <div className="flex items-center gap-2">
+                            <ExclamationTriangleIcon className="h-4 w-4 flex-shrink-0" />
+                            {error}
+                          </div>
+                          {validationDetail && (
+                            <p className="text-xs text-red-300/70 mt-2 ml-6">{validationDetail}</p>
+                          )}
+                        </div>
+                      )}
+
+                      {connected && verifiedAccount && (
+                        <div className="mt-4 flex items-center gap-2 text-sm text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 rounded-lg px-4 py-3">
+                          <CheckCircleIcon className="h-4 w-4 flex-shrink-0" />
+                          Connection verified — AWS Account {verifiedAccount}
+                        </div>
+                      )}
+
+                      <div className="mt-6">
+                        <AnimatedButton
+                          onClick={handleValidateConnection}
+                          disabled={validating || connected || !roleArn.trim()}
+                          variant="primary"
+                          className="w-full justify-center py-3"
+                        >
+                          {validating ? (
+                            <>
+                              <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                              Validating connection...
+                            </>
+                          ) : connected ? (
+                            <>
+                              <CheckCircleIcon className="h-4 w-4" />
+                              Connected — proceeding...
+                            </>
+                          ) : (
+                            <>
+                              <ShieldCheckIcon className="h-4 w-4" />
+                              Validate Connection
+                            </>
+                          )}
+                        </AnimatedButton>
+                      </div>
+                    </div>
+                  </div>
+                </>
+              )}
             </div>
           </Reveal>
         )}
@@ -240,8 +631,11 @@ export default function OnboardingPage() {
                 <CheckCircleIcon className="h-8 w-8 text-white" />
               </div>
               <h1 className="text-2xl font-bold mb-2">Cloud connected</h1>
-              <p className="text-slate-400 mb-8">
-                Your {selectedProvider?.toUpperCase()} account is linked. Now let&apos;s scan your infrastructure and generate your resilience report.
+              <p className="text-slate-400 mb-2">
+                Your AWS account {verifiedAccount ? `(${verifiedAccount})` : ""} is verified and linked.
+              </p>
+              <p className="text-slate-500 text-sm mb-8">
+                Now let&apos;s scan your infrastructure and generate your resilience report.
               </p>
 
               <div className="rounded-xl border border-slate-800 bg-slate-900/50 p-6 mb-8 text-left">
