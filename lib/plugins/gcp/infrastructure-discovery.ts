@@ -4,7 +4,7 @@
  * Collects counts and service summaries.
  */
 
-import { InstancesClient, ZoneOperationsClient } from "@google-cloud/compute";
+import { InstancesClient } from "@google-cloud/compute";
 import { Storage } from "@google-cloud/storage";
 import { registerExecutionPlugin } from "../executionRegistry";
 import { getCredentialProvider } from "../credentials";
@@ -38,17 +38,12 @@ async function run(_input: Record<string, unknown>, ctx: ExecutionPluginContext)
     const storage = new Storage({ credentials, projectId });
 
     let instanceCount = 0;
-    let bucketCount = 0;
-
-    const [aggregatedList] = await instancesClient.aggregatedList({ project: projectId });
-    if (aggregatedList) {
-      for (const [, scopedList] of aggregatedList) {
-        instanceCount += scopedList.instances?.length ?? 0;
-      }
+    for await (const [, scopedList] of instancesClient.aggregatedListAsync({ project: projectId })) {
+      instanceCount += scopedList.instances?.length ?? 0;
     }
 
     const [buckets] = await storage.getBuckets({ project: projectId });
-    bucketCount = buckets?.length ?? 0;
+    const bucketCount = buckets?.length ?? 0;
 
     const services = [
       { type: "compute_instance" as const, count: instanceCount },
