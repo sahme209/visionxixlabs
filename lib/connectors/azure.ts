@@ -1,11 +1,10 @@
 /**
  * Azure connector — real Service Principal validation via @azure/identity.
  * Multi-tenant safe: uses customer-provided tenantId/clientId/clientSecret.
- * Validates by acquiring a token and listing subscriptions.
+ * Validates by acquiring a token. If subscriptionId provided, verifies access via ARM REST API.
  */
 
 import { ClientSecretCredential } from "@azure/identity";
-import { SubscriptionClient } from "@azure/arm-subscriptions";
 import type { ConnectorStatus } from "./types";
 import { ENABLE_CLOUD_CONNECTORS_AZURE } from "@/lib/featureFlags";
 
@@ -25,21 +24,21 @@ export type ValidateAzureConnectionResult = {
   errorCode?: string;
 };
 
-const TENANT_ID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-const CLIENT_ID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 function validateInput(input: AzureServicePrincipalInput): string | null {
   if (!input.tenantId?.trim()) return "Tenant ID is required";
-  if (!TENANT_ID_REGEX.test(input.tenantId.trim())) return "Invalid Tenant ID format (expected UUID)";
+  if (!UUID_REGEX.test(input.tenantId.trim())) return "Invalid Tenant ID format (expected UUID)";
   if (!input.clientId?.trim()) return "Client ID is required";
-  if (!CLIENT_ID_REGEX.test(input.clientId.trim())) return "Invalid Client ID format (expected UUID)";
+  if (!UUID_REGEX.test(input.clientId.trim())) return "Invalid Client ID format (expected UUID)";
   if (!input.clientSecret?.trim()) return "Client Secret is required";
   return null;
 }
 
 /**
  * Validate Azure connection via Service Principal authentication.
- * Acquires a token and lists subscriptions to confirm access.
+ * Acquires a management token to confirm credentials work.
+ * If subscriptionId is provided, verifies the SP has access to it via ARM REST.
  */
 export async function validateAzureConnection(
   input: AzureServicePrincipalInput,
@@ -61,10 +60,20 @@ export async function validateAzureConnection(
 
   try {
     const credential = new ClientSecretCredential(tenantId, clientId, clientSecret);
-    const subscriptionClient = new SubscriptionClient(credential);
+    const token = await credential.getToken("https://management.azure.com/.default");
+    if (!token) {
+      return { valid: false, status: "invalid", errorCode: "TOKEN_ACQUISITION_FAILED" };
+    }
 
     if (targetSubscriptionId) {
-      const sub = await subscriptionClient.subscriptions.get(targetSubscriptionId);
+      const res = await fetch(
+        `https://management.azure.com/subscriptions/${targetSubscriptionId}?api-version=2022-12-01`,
+        { headers: { Authorization: `Bearer ${token.token}` } }
+      );
+      if (!res.ok) {
+        return { valid: false, status: "invalid", errorCode: "SUBSCRIPTION_ACCESS_DENIED" };
+      }
+      const sub = await res.json();
       return {
         valid: true,
         status: "linked",
@@ -74,14 +83,22 @@ export async function validateAzureConnection(
       };
     }
 
-    for await (const sub of subscriptionClient.subscriptions.list()) {
-      return {
-        valid: true,
-        status: "linked",
-        subscriptionId: sub.subscriptionId ?? undefined,
-        subscriptionName: sub.displayName ?? undefined,
-        tenantId,
-      };
+    const listRes = await fetch(
+      "https://management.azure.com/subscriptions?api-version=2022-12-01",
+      { headers: { Authorization: `Bearer ${token.token}` } }
+    );
+    if (listRes.ok) {
+      const data = await listRes.json();
+      const subs = data.value as Array<{ subscriptionId?: string; displayName?: string }>;
+      if (subs && subs.length > 0) {
+        return {
+          valid: true,
+          status: "linked",
+          subscriptionId: subs[0].subscriptionId ?? undefined,
+          subscriptionName: subs[0].displayName ?? undefined,
+          tenantId,
+        };
+      }
     }
 
     return { valid: false, status: "invalid", errorCode: "NO_SUBSCRIPTIONS" };
