@@ -197,7 +197,13 @@ type OperatorStatus = {
     ec2?: { success: boolean; count: number; error?: string };
     s3?: { success: boolean; count: number; error?: string };
     flags: { singleRegion: boolean; noBackupsDetected: boolean };
-    insights: Array<{ title: string; message: string; severity: "low" | "medium" | "high"; impact: string; actions: string[] }>;
+    insights: Array<{ title: string; message: string; severity: "low" | "medium" | "high"; impact: string; actions: string[]; explanation?: string }>;
+    scannedAt: string;
+  } | null;
+  previousAwsSnapshot?: {
+    ec2InstanceCount: number;
+    s3BucketCount: number;
+    insights: Array<{ severity: "low" | "medium" | "high" }>;
     scannedAt: string;
   } | null;
 };
@@ -3329,6 +3335,53 @@ function CloudOperatorPageInner() {
                         )}
                       </div>
                     </div>
+                    {status?.previousAwsSnapshot && (() => {
+                      const prev = status.previousAwsSnapshot;
+                      const ec2Delta = awsSnapshot.ec2InstanceCount - prev.ec2InstanceCount;
+                      const s3Delta = awsSnapshot.s3BucketCount - prev.s3BucketCount;
+                      const prevHighRisks = prev.insights.filter(i => i.severity === "high").length;
+                      const currHighRisks = (awsSnapshot.insights ?? []).filter(i => i.severity === "high").length;
+                      const riskDelta = currHighRisks - prevHighRisks;
+                      const hasChanges = ec2Delta !== 0 || s3Delta !== 0 || riskDelta !== 0;
+                      if (!hasChanges) return null;
+                      const formatDelta = (d: number, label: string) => {
+                        if (d === 0) return null;
+                        const sign = d > 0 ? "+" : "";
+                        return `${sign}${d} ${label}`;
+                      };
+                      const items = [
+                        formatDelta(ec2Delta, ec2Delta === 1 || ec2Delta === -1 ? "instance" : "instances"),
+                        formatDelta(s3Delta, s3Delta === 1 || s3Delta === -1 ? "bucket" : "buckets"),
+                        riskDelta < 0 ? `${Math.abs(riskDelta)} fewer high-risk issue${Math.abs(riskDelta) !== 1 ? "s" : ""}` : riskDelta > 0 ? `${riskDelta} new high-risk issue${riskDelta !== 1 ? "s" : ""}` : null,
+                      ].filter(Boolean) as string[];
+                      return (
+                        <div className="mb-4 rounded-lg border border-slate-200 dark:border-slate-700/60 bg-slate-50/50 dark:bg-slate-900/40 p-3">
+                          <p className="text-[10px] font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400 mb-1.5">
+                            Since last scan <span className="font-normal normal-case">({new Date(prev.scannedAt).toLocaleDateString()})</span>
+                          </p>
+                          <div className="flex flex-wrap gap-2">
+                            {items.map((item) => {
+                              const isPositiveRisk = item.includes("new high-risk");
+                              const isNegativeRisk = item.includes("fewer high-risk");
+                              return (
+                                <span
+                                  key={item}
+                                  className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-[11px] font-medium ${
+                                    isPositiveRisk
+                                      ? "bg-red-100 dark:bg-red-950/40 text-red-700 dark:text-red-300"
+                                      : isNegativeRisk
+                                        ? "bg-emerald-100 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300"
+                                        : "bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300"
+                                  }`}
+                                >
+                                  {item}
+                                </span>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      );
+                    })()}
                     {awsSnapshot.insights && awsSnapshot.insights.length > 0 && (
                       <div className="space-y-2 mb-3">
                         <p className="text-[10px] font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Key Risks</p>
@@ -3363,6 +3416,12 @@ function CloudOperatorPageInner() {
                                   }`}>{insight.severity}</span>
                                 </div>
                                 <p className="text-xs text-slate-600 dark:text-slate-400 mt-0.5 leading-relaxed">{insight.message}</p>
+                                {insight.explanation && (
+                                  <div className="mt-1.5 flex items-start gap-1.5">
+                                    <SparklesIcon className="h-3 w-3 mt-0.5 flex-shrink-0 text-violet-500" />
+                                    <p className="text-xs text-violet-700 dark:text-violet-300 leading-relaxed italic">{insight.explanation}</p>
+                                  </div>
+                                )}
                                 {insight.impact && (
                                   <p className={`text-xs font-medium mt-1.5 ${
                                     insight.severity === "high"

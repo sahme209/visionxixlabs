@@ -12,6 +12,7 @@ export interface AWSInsight {
   severity: "low" | "medium" | "high";
   impact: string;
   actions: string[];
+  explanation: string;
 }
 
 export interface ServiceScanResult {
@@ -43,6 +44,8 @@ function deriveInsights(snapshot: {
 }): AWSInsight[] {
   const insights: AWSInsight[] = [];
 
+  const regionName = snapshot.regions[0] ?? "us-east-1";
+
   if (snapshot.regions.length <= 1) {
     insights.push({
       title: "Single-Region Risk",
@@ -54,6 +57,7 @@ function deriveInsights(snapshot: {
         "Launch a copy of your critical workloads in a second region (e.g. us-west-2)",
         "Set up Route 53 health checks with DNS failover between regions",
       ],
+      explanation: `Your ${snapshot.ec2InstanceCount} instance${snapshot.ec2InstanceCount !== 1 ? "s" : ""} and ${snapshot.s3BucketCount} bucket${snapshot.s3BucketCount !== 1 ? "s" : ""} all live in ${regionName}. If ${regionName} goes down, there is no secondary region to take over.`,
     });
   } else if (snapshot.regions.length >= 2 && snapshot.ec2InstanceCount > 0) {
     insights.push({
@@ -65,6 +69,7 @@ function deriveInsights(snapshot: {
         "Test that traffic actually shifts if one region goes down",
         "Confirm your load balancer or DNS is configured for automatic failover",
       ],
+      explanation: `We see ${snapshot.regions.length} enabled regions (${snapshot.regions.slice(0, 3).join(", ")}${snapshot.regions.length > 3 ? "…" : ""}), but your ${snapshot.ec2InstanceCount} instance${snapshot.ec2InstanceCount !== 1 ? "s" : ""} were scanned in ${regionName} only. Having regions enabled doesn't mean workloads are replicated across them.`,
     });
   }
 
@@ -79,6 +84,7 @@ function deriveInsights(snapshot: {
         "Create an S3 bucket and set up automated backups for your instances",
         "Enable EBS snapshots on a daily schedule for each volume",
       ],
+      explanation: `We found ${snapshot.ec2InstanceCount} EC2 instance${snapshot.ec2InstanceCount !== 1 ? "s" : ""} but zero S3 buckets in your account. Without S3 or EBS snapshots, any data on those instances exists only on local disk.`,
     });
   }
 
@@ -92,6 +98,7 @@ function deriveInsights(snapshot: {
       actions: [
         "Check other regions in the AWS console to see if resources exist there",
       ],
+      explanation: `We scanned ${regionName} and found no EC2 instances or S3 buckets. If your workloads run in a different region, they won't appear in this scan.`,
     });
   }
 
@@ -105,6 +112,7 @@ function deriveInsights(snapshot: {
         "Spread instances across at least two regions using an Auto Scaling group per region",
         "Put a Global Accelerator or Route 53 failover in front of both regions",
       ],
+      explanation: `All ${snapshot.ec2InstanceCount} instances are concentrated in ${regionName}. At this fleet size, a single region failure creates a recovery effort that scales with the number of instances — not a quick restart.`,
     });
   }
 
@@ -118,6 +126,7 @@ function deriveInsights(snapshot: {
         "Audit buckets and delete any that are empty or no longer used",
         "Enable S3 Intelligent-Tiering on remaining buckets to cut storage costs",
       ],
+      explanation: `Your account has ${snapshot.s3BucketCount} S3 buckets. Most production accounts use 5–20. At ${snapshot.s3BucketCount}, it's likely some are unused, orphaned from old projects, or duplicated across environments.`,
     });
   }
 
@@ -245,8 +254,17 @@ export async function GET(req: NextRequest) {
       scannedAt: new Date().toISOString(),
     };
 
-    // 6. Store snapshot on the lead
-    const updatedPayload = { ...payload, awsSnapshot: snapshot } as Record<string, unknown>;
+    // 6. Store snapshot on the lead (push previous into history, cap at 5)
+    const prevSnapshot = payload.awsSnapshot as Record<string, unknown> | undefined;
+    const history = (payload.awsSnapshotHistory as Record<string, unknown>[] | undefined) ?? [];
+    if (prevSnapshot && prevSnapshot.scannedAt) {
+      history.unshift(prevSnapshot);
+    }
+    const updatedPayload = {
+      ...payload,
+      awsSnapshot: snapshot,
+      awsSnapshotHistory: history.slice(0, 5),
+    } as Record<string, unknown>;
     await prisma.lead.update({
       where: { id: result.leadId },
       data: { fullPayload: updatedPayload as Parameters<typeof prisma.lead.update>[0]["data"]["fullPayload"] },

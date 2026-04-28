@@ -267,6 +267,12 @@ export async function GET(req: NextRequest) {
       response.awsSnapshot = awsSnapshot;
     }
 
+    // Previous snapshot for comparison (most recent history entry)
+    const snapshotHistory = payload.awsSnapshotHistory as Record<string, unknown>[] | undefined;
+    if (snapshotHistory && snapshotHistory.length > 0 && snapshotHistory[0].accountId) {
+      response.previousAwsSnapshot = snapshotHistory[0];
+    }
+
     // Phase 6: Enterprise Readiness Brief — Enterprise full; Free/Pro/Growth preview
     const axiomScoresObj = axiomScores as { infrastructureScore?: number; riskExposureLevel?: string; estimatedAnnualSavings?: number | null; deploymentFrictionIndex?: number; complexityTier?: string } | null | undefined;
     const trendObj = (base as Record<string, unknown>).trend as { scoreDelta?: number | null; savingsDelta?: number | null } | null | undefined;
