@@ -348,7 +348,7 @@ export default function OnboardingPage() {
         const msg = linkData.error ?? "Connection validation failed.";
         setError(msg);
         if (linkRes.status === 403) {
-          setValidationDetail("Cloud connectors require a Growth plan or higher. You can still explore with a free analysis.");
+          setValidationDetail("Your session could not be verified. Please refresh and try again.");
         } else if (linkRes.status === 503) {
           setValidationDetail("AWS connector is being set up. Please try again shortly.");
         } else if (msg.includes("Role ARN") || msg.includes("External ID")) {

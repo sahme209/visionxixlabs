@@ -21,6 +21,10 @@ import {
   ShieldCheckIcon,
   VariableIcon,
   XMarkIcon,
+  ClipboardDocumentIcon,
+  ExclamationTriangleIcon,
+  LockClosedIcon,
+  ArrowTopRightOnSquareIcon,
 } from "@heroicons/react/24/outline";
 import { Navigation } from "@/components/Navigation";
 import { Reveal } from "@/components/motion/Reveal";
@@ -229,6 +233,226 @@ function ConnectorStatusDisplay({
     );
   }
   return null;
+}
+
+const AWS_BROKER_ACCOUNT_ID = "590183704419";
+const AWS_EXTERNAL_ID_PREFIX = "cloudoperator";
+
+function generateAwsExternalId(): string {
+  return `${AWS_EXTERNAL_ID_PREFIX}-${Math.random().toString(36).slice(2, 10)}`;
+}
+
+function CopyField({ label, value }: { label: string; value: string }) {
+  const [copied, setCopied] = useState(false);
+  return (
+    <div>
+      <div className="flex items-center justify-between mb-1">
+        <span className="text-xs font-medium text-slate-500 dark:text-slate-400">{label}</span>
+        <button
+          onClick={() => { navigator.clipboard.writeText(value); setCopied(true); setTimeout(() => setCopied(false), 2000); }}
+          className="flex items-center gap-1 text-xs text-slate-500 hover:text-violet-500 transition-colors"
+        >
+          <ClipboardDocumentIcon className="h-3.5 w-3.5" />
+          {copied ? "Copied!" : "Copy"}
+        </button>
+      </div>
+      <pre className="bg-slate-100 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-700 dark:text-slate-300 font-mono break-all whitespace-pre-wrap">
+        {value}
+      </pre>
+    </div>
+  );
+}
+
+function AWSConnectorForm({
+  token,
+  onConnected,
+}: {
+  token: string | null;
+  onConnected: () => void;
+}) {
+  const [phase, setPhase] = useState<"instructions" | "validate">("instructions");
+  const [externalId] = useState(generateAwsExternalId);
+  const [roleArn, setRoleArn] = useState("");
+  const [awsAccountId, setAwsAccountId] = useState("");
+  const [validating, setValidating] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [connected, setConnected] = useState(false);
+  const [verifiedAccount, setVerifiedAccount] = useState<string | null>(null);
+
+  const arnRegex = /^arn:aws(?:-cn|-us-gov)?:iam::\d{12}:role\/[\w+=,.@-]+$/;
+  const arnAccountId = roleArn.match(/:(\d{12}):/)?.[1] ?? "";
+
+  const handleValidate = async () => {
+    setError(null);
+    const trimmedArn = roleArn.trim();
+    const trimmedAccountId = (awsAccountId.trim() || arnAccountId).trim();
+
+    if (!trimmedArn) { setError("Role ARN is required."); return; }
+    if (!arnRegex.test(trimmedArn)) { setError("Invalid Role ARN format. Expected: arn:aws:iam::123456789012:role/RoleName"); return; }
+    if (!trimmedAccountId || !/^\d{12}$/.test(trimmedAccountId)) { setError("AWS Account ID is required (12 digits)."); return; }
+
+    setValidating(true);
+    try {
+      const linkRes = await fetch(`/api/connectors/link?token=${token}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          connectorType: "aws",
+          authMethod: "assume-role",
+          roleArn: trimmedArn,
+          awsAccountId: trimmedAccountId,
+          externalId,
+        }),
+      });
+      const linkData = await linkRes.json();
+      if (!linkRes.ok) {
+        setError(linkData.error ?? "Connection validation failed.");
+        return;
+      }
+      setConnected(true);
+      setVerifiedAccount(linkData.account ?? trimmedAccountId);
+      onConnected();
+    } catch {
+      setError("Network error. Please check your connection and try again.");
+    } finally {
+      setValidating(false);
+    }
+  };
+
+  if (connected) {
+    return (
+      <AxiomCard className="p-5 border-l-4 border-l-emerald-500">
+        <div className="flex items-center gap-2 text-sm text-emerald-700 dark:text-emerald-400">
+          <CheckCircleIcon className="h-5 w-5" />
+          AWS connected — Account {verifiedAccount}
+        </div>
+      </AxiomCard>
+    );
+  }
+
+  return (
+    <AxiomCard className="p-6 space-y-5">
+      <div className="flex items-center gap-3 mb-1">
+        <div className="w-8 h-8 rounded-lg bg-orange-500/10 flex items-center justify-center">
+          <LockClosedIcon className="h-4 w-4 text-orange-500" />
+        </div>
+        <div>
+          <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">Connect AWS via IAM Role</h3>
+          <p className="text-xs text-slate-500 dark:text-slate-400">Read-only access. No credentials stored. Revoke anytime.</p>
+        </div>
+      </div>
+
+      {phase === "instructions" && (
+        <div className="space-y-4">
+          <div className="text-xs text-slate-600 dark:text-slate-400 space-y-3">
+            <p>Create a cross-account IAM Role in your AWS console:</p>
+            <ol className="list-decimal list-inside space-y-2 ml-1">
+              <li>Go to <strong className="text-slate-800 dark:text-slate-200">IAM → Roles → Create Role</strong></li>
+              <li>Select <strong className="text-slate-800 dark:text-slate-200">&quot;Another AWS account&quot;</strong> and enter:</li>
+            </ol>
+            <div className="space-y-2 ml-4">
+              <CopyField label="Account ID" value={AWS_BROKER_ACCOUNT_ID} />
+              <CopyField label="External ID (required)" value={externalId} />
+            </div>
+            <ol className="list-decimal list-inside space-y-2 ml-1" start={3}>
+              <li>Attach <strong className="text-slate-800 dark:text-slate-200">ReadOnlyAccess</strong> managed policy</li>
+              <li>Name it <strong className="text-slate-800 dark:text-slate-200">CloudOperatorReadOnly</strong> and create it</li>
+              <li>Copy the <strong className="text-slate-800 dark:text-slate-200">Role ARN</strong> from the summary page</li>
+            </ol>
+          </div>
+          <a
+            href="https://console.aws.amazon.com/iam/home#/roles$new?step=type&roleType=crossAccount"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1 text-xs text-violet-600 dark:text-violet-400 hover:underline"
+          >
+            Open AWS IAM Console <ArrowTopRightOnSquareIcon className="h-3 w-3" />
+          </a>
+          <div className="flex items-center gap-2 text-xs text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800/50 rounded-lg px-3 py-2">
+            <ShieldCheckIcon className="h-4 w-4 flex-shrink-0" />
+            No write access. No credentials stored. Revoke anytime from your AWS console.
+          </div>
+          <button
+            onClick={() => setPhase("validate")}
+            className="inline-flex items-center gap-2 rounded-xl bg-violet-600 hover:bg-violet-700 text-white px-4 py-2 text-sm font-semibold transition-colors"
+          >
+            I&apos;ve created the role — enter ARN
+            <ArrowRightIcon className="h-4 w-4" />
+          </button>
+        </div>
+      )}
+
+      {phase === "validate" && (
+        <div className="space-y-4">
+          <div>
+            <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">
+              Role ARN <span className="text-red-500">*</span>
+            </label>
+            <input
+              type="text"
+              value={roleArn}
+              onChange={(e) => {
+                setRoleArn(e.target.value);
+                setError(null);
+                const match = e.target.value.match(/:(\d{12}):/);
+                if (match) setAwsAccountId(match[1]);
+              }}
+              placeholder="arn:aws:iam::123456789012:role/CloudOperatorReadOnly"
+              className="w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 px-3 py-2.5 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-violet-500/50 text-sm font-mono"
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">
+              AWS Account ID <span className="text-red-500">*</span>
+            </label>
+            <input
+              type="text"
+              value={awsAccountId}
+              onChange={(e) => { setAwsAccountId(e.target.value.replace(/\D/g, "").slice(0, 12)); setError(null); }}
+              placeholder="123456789012"
+              className="w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 px-3 py-2.5 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-violet-500/50 text-sm font-mono"
+            />
+            {arnAccountId && awsAccountId && arnAccountId !== awsAccountId && (
+              <p className="text-xs text-amber-600 dark:text-amber-400 mt-1">Account ID in ARN ({arnAccountId}) doesn&apos;t match the field above.</p>
+            )}
+          </div>
+
+          {error && (
+            <div className="flex items-center gap-2 text-sm text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-800/50 rounded-lg px-3 py-2">
+              <ExclamationTriangleIcon className="h-4 w-4 flex-shrink-0" />
+              {error}
+            </div>
+          )}
+
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => setPhase("instructions")}
+              className="text-xs text-slate-500 hover:text-slate-700 dark:hover:text-slate-300"
+            >
+              ← Back to setup
+            </button>
+            <button
+              onClick={handleValidate}
+              disabled={validating || !roleArn.trim() || !token}
+              className="inline-flex items-center gap-2 rounded-xl bg-violet-600 hover:bg-violet-700 disabled:opacity-50 disabled:cursor-not-allowed text-white px-4 py-2 text-sm font-semibold transition-colors"
+            >
+              {validating ? (
+                <>
+                  <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                  Validating...
+                </>
+              ) : (
+                <>
+                  <ShieldCheckIcon className="h-4 w-4" />
+                  Validate Connection
+                </>
+              )}
+            </button>
+          </div>
+        </div>
+      )}
+    </AxiomCard>
+  );
 }
 
 const AXIOM_CHAT_CONVERSATION_KEY = (t: string) => `axiom-chat-conversation:${t}`;
@@ -2557,7 +2781,7 @@ function CloudOperatorPageInner() {
                 { id: "strategic" as const, label: "Strategic", proOnly: true },
                 { id: "trends" as const, label: "Trends", proOnly: true },
                 { id: "export" as const, label: "Export" },
-                { id: "connectors" as const, label: "Connectors", proOnly: true },
+                { id: "connectors" as const, label: "Connectors" },
                 { id: "timeline" as const, label: "Cloud Timeline" },
               ].map((t) => {
                 const proOnly = "proOnly" in t && t.proOnly;
@@ -2942,17 +3166,19 @@ function CloudOperatorPageInner() {
               <AxiomSection className="space-y-6">
                 <div className="rounded-2xl border-2 border-violet-200/80 dark:border-violet-700/50 bg-gradient-to-br from-violet-50/60 to-indigo-50/40 dark:from-violet-950/30 dark:to-indigo-950/20 p-6 mb-6">
                   <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100 mb-2">Connect your environment via APIs</h2>
-                  <p className="text-sm text-slate-600 dark:text-slate-400 max-w-2xl mb-4">
-                    Link AWS, Azure, GCP, or GitHub with read-only credentials. Axiom fetches real inventory, cost data, and config—so AI analyzes your actual environment, not just forms. More accurate scores, tailored recommendations, drift detection.
+                  <p className="text-sm text-slate-600 dark:text-slate-400 max-w-2xl">
+                    Link AWS, Azure, GCP, or GitHub with read-only credentials. Axiom fetches real inventory, cost data, and config—so AI analyzes your actual environment, not just forms.
                   </p>
-                  <Link
-                    href="/contact?subject=Connect+Cloud+APIs+%28Axiom%29"
-                    className="inline-flex items-center gap-2 rounded-xl bg-violet-600 hover:bg-violet-700 text-white px-4 py-2 text-sm font-semibold transition-colors"
-                  >
-                    Get connector access (Growth+)
-                    <ArrowRightIcon className="h-4 w-4" />
-                  </Link>
                 </div>
+                <AWSConnectorForm
+                  token={token}
+                  onConnected={() => {
+                    fetchConnectorStatus().then((c) => {
+                      if (c) setConnectorStatus(c);
+                    });
+                    fetchWorkflowStatus();
+                  }}
+                />
                 <h2 className="text-base font-semibold text-slate-900 dark:text-slate-100">Supported connectors</h2>
                 <div className="grid sm:grid-cols-2 gap-4">
                   <AxiomCard className="p-5 border-l-4 border-l-orange-500">
