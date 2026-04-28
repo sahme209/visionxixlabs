@@ -6,6 +6,12 @@ import { EC2Client, DescribeInstancesCommand, DescribeRegionsCommand } from "@aw
 import { S3Client, ListBucketsCommand } from "@aws-sdk/client-s3";
 import { STSClient, GetCallerIdentityCommand } from "@aws-sdk/client-sts";
 
+export interface AWSInsight {
+  title: string;
+  message: string;
+  severity: "low" | "medium" | "high";
+}
+
 export interface AWSSnapshot {
   accountId: string;
   callerArn: string;
@@ -16,7 +22,67 @@ export interface AWSSnapshot {
     singleRegion: boolean;
     noBackupsDetected: boolean;
   };
+  insights: AWSInsight[];
   scannedAt: string;
+}
+
+function deriveInsights(snapshot: {
+  regions: string[];
+  ec2InstanceCount: number;
+  s3BucketCount: number;
+}): AWSInsight[] {
+  const insights: AWSInsight[] = [];
+
+  if (snapshot.regions.length <= 1) {
+    insights.push({
+      title: "Single-Region Risk",
+      message:
+        "All your infrastructure runs in one AWS region. If that region has an outage, your entire application goes down. Deploy critical workloads across at least two regions.",
+      severity: "high",
+    });
+  } else if (snapshot.regions.length >= 2 && snapshot.ec2InstanceCount > 0) {
+    insights.push({
+      title: "Multi-Region — Verify Failover",
+      message: `You have ${snapshot.regions.length} regions enabled, but that alone doesn't mean failover works. Confirm you have load balancing or DNS failover configured between regions.`,
+      severity: "medium",
+    });
+  }
+
+  if (snapshot.ec2InstanceCount > 0 && snapshot.s3BucketCount === 0) {
+    insights.push({
+      title: "No Backup Storage Detected",
+      message:
+        "You have EC2 instances but no S3 buckets. This often means no off-instance backups. If an instance fails, data on its local disk is gone. Set up S3 or EBS snapshots.",
+      severity: "high",
+    });
+  }
+
+  if (snapshot.ec2InstanceCount === 0 && snapshot.s3BucketCount === 0) {
+    insights.push({
+      title: "Empty Account",
+      message:
+        "No EC2 instances or S3 buckets found in the home region. This account may be new, unused, or resources may live in a different region.",
+      severity: "low",
+    });
+  }
+
+  if (snapshot.ec2InstanceCount >= 20 && snapshot.regions.length <= 1) {
+    insights.push({
+      title: "Large Fleet, No Redundancy",
+      message: `You have ${snapshot.ec2InstanceCount} instances in a single region. At this scale, a regional outage has significant blast radius. Distribute workloads across regions.`,
+      severity: "high",
+    });
+  }
+
+  if (snapshot.s3BucketCount >= 50) {
+    insights.push({
+      title: "S3 Bucket Sprawl",
+      message: `${snapshot.s3BucketCount} buckets detected. Review whether all are still needed — unused buckets can accumulate cost and increase attack surface.`,
+      severity: "medium",
+    });
+  }
+
+  return insights.slice(0, 3);
 }
 
 /**
@@ -109,10 +175,12 @@ export async function GET(req: NextRequest) {
       // May fail if S3 permissions missing
     }
 
-    // 5. Compute simple risk flags
+    // 5. Compute simple risk flags + insights
     const usedRegions = regionNames.length > 0 ? regionNames : [region];
     const singleRegion = usedRegions.length <= 1;
     const noBackupsDetected = ec2InstanceCount > 0 && s3BucketCount === 0;
+
+    const insights = deriveInsights({ regions: usedRegions, ec2InstanceCount, s3BucketCount });
 
     const snapshot: AWSSnapshot = {
       accountId,
@@ -124,6 +192,7 @@ export async function GET(req: NextRequest) {
         singleRegion,
         noBackupsDetected,
       },
+      insights,
       scannedAt: new Date().toISOString(),
     };
 

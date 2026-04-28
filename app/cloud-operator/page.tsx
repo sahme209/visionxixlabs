@@ -193,6 +193,7 @@ type OperatorStatus = {
     ec2InstanceCount: number;
     s3BucketCount: number;
     flags: { singleRegion: boolean; noBackupsDetected: boolean };
+    insights: Array<{ title: string; message: string; severity: "low" | "medium" | "high" }>;
     scannedAt: string;
   } | null;
 };
@@ -3307,20 +3308,44 @@ function CloudOperatorPageInner() {
                         <p className="mt-0.5 text-sm font-semibold text-slate-900 dark:text-slate-100">{awsSnapshot.s3BucketCount}</p>
                       </div>
                     </div>
-                    {(awsSnapshot.flags.singleRegion || awsSnapshot.flags.noBackupsDetected) && (
-                      <div className="space-y-1.5 mb-3">
-                        {awsSnapshot.flags.singleRegion && (
-                          <div className="flex items-center gap-2 text-xs text-amber-600 dark:text-amber-400">
-                            <ExclamationTriangleIcon className="h-3.5 w-3.5 flex-shrink-0" />
-                            Single-region deployment detected — no cross-region redundancy
+                    {awsSnapshot.insights && awsSnapshot.insights.length > 0 && (
+                      <div className="space-y-2 mb-3">
+                        <p className="text-[10px] font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Key Risks</p>
+                        {awsSnapshot.insights.map((insight, i) => (
+                          <div
+                            key={i}
+                            className={`rounded-lg border p-3 ${
+                              insight.severity === "high"
+                                ? "border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-950/30"
+                                : insight.severity === "medium"
+                                  ? "border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-950/30"
+                                  : "border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/40"
+                            }`}
+                          >
+                            <div className="flex items-start gap-2">
+                              <ExclamationTriangleIcon className={`h-4 w-4 mt-0.5 flex-shrink-0 ${
+                                insight.severity === "high"
+                                  ? "text-red-500"
+                                  : insight.severity === "medium"
+                                    ? "text-amber-500"
+                                    : "text-slate-400"
+                              }`} />
+                              <div>
+                                <div className="flex items-center gap-2">
+                                  <span className="text-xs font-semibold text-slate-900 dark:text-slate-100">{insight.title}</span>
+                                  <span className={`text-[10px] font-bold uppercase ${
+                                    insight.severity === "high"
+                                      ? "text-red-600 dark:text-red-400"
+                                      : insight.severity === "medium"
+                                        ? "text-amber-600 dark:text-amber-400"
+                                        : "text-slate-500"
+                                  }`}>{insight.severity}</span>
+                                </div>
+                                <p className="text-xs text-slate-600 dark:text-slate-400 mt-0.5 leading-relaxed">{insight.message}</p>
+                              </div>
+                            </div>
                           </div>
-                        )}
-                        {awsSnapshot.flags.noBackupsDetected && (
-                          <div className="flex items-center gap-2 text-xs text-amber-600 dark:text-amber-400">
-                            <ExclamationTriangleIcon className="h-3.5 w-3.5 flex-shrink-0" />
-                            EC2 instances found with no S3 buckets — backup strategy unclear
-                          </div>
-                        )}
+                        ))}
                       </div>
                     )}
                     <p className="text-[10px] text-slate-500 dark:text-slate-400">
