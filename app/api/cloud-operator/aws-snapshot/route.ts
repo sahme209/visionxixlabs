@@ -10,6 +10,7 @@ export interface AWSInsight {
   title: string;
   message: string;
   severity: "low" | "medium" | "high";
+  actions: string[];
 }
 
 export interface AWSSnapshot {
@@ -37,14 +38,22 @@ function deriveInsights(snapshot: {
     insights.push({
       title: "Single-Region Risk",
       message:
-        "All your infrastructure runs in one AWS region. If that region has an outage, your entire application goes down. Deploy critical workloads across at least two regions.",
+        "All your infrastructure runs in one AWS region. If that region has an outage, your entire application goes down.",
       severity: "high",
+      actions: [
+        "Launch a copy of your critical workloads in a second region (e.g. us-west-2)",
+        "Set up Route 53 health checks with DNS failover between regions",
+      ],
     });
   } else if (snapshot.regions.length >= 2 && snapshot.ec2InstanceCount > 0) {
     insights.push({
       title: "Multi-Region — Verify Failover",
-      message: `You have ${snapshot.regions.length} regions enabled, but that alone doesn't mean failover works. Confirm you have load balancing or DNS failover configured between regions.`,
+      message: `You have ${snapshot.regions.length} regions enabled, but that alone doesn't mean failover works.`,
       severity: "medium",
+      actions: [
+        "Test that traffic actually shifts if one region goes down",
+        "Confirm your load balancer or DNS is configured for automatic failover",
+      ],
     });
   }
 
@@ -52,8 +61,12 @@ function deriveInsights(snapshot: {
     insights.push({
       title: "No Backup Storage Detected",
       message:
-        "You have EC2 instances but no S3 buckets. This often means no off-instance backups. If an instance fails, data on its local disk is gone. Set up S3 or EBS snapshots.",
+        "You have EC2 instances but no S3 buckets. If an instance fails, data on its local disk is gone.",
       severity: "high",
+      actions: [
+        "Create an S3 bucket and set up automated backups for your instances",
+        "Enable EBS snapshots on a daily schedule for each volume",
+      ],
     });
   }
 
@@ -61,24 +74,35 @@ function deriveInsights(snapshot: {
     insights.push({
       title: "Empty Account",
       message:
-        "No EC2 instances or S3 buckets found in the home region. This account may be new, unused, or resources may live in a different region.",
+        "No EC2 instances or S3 buckets found in the home region. This account may be new or resources may live in a different region.",
       severity: "low",
+      actions: [
+        "Check other regions in the AWS console to see if resources exist there",
+      ],
     });
   }
 
   if (snapshot.ec2InstanceCount >= 20 && snapshot.regions.length <= 1) {
     insights.push({
       title: "Large Fleet, No Redundancy",
-      message: `You have ${snapshot.ec2InstanceCount} instances in a single region. At this scale, a regional outage has significant blast radius. Distribute workloads across regions.`,
+      message: `You have ${snapshot.ec2InstanceCount} instances in a single region. A regional outage takes everything down.`,
       severity: "high",
+      actions: [
+        "Spread instances across at least two regions using an Auto Scaling group per region",
+        "Put a Global Accelerator or Route 53 failover in front of both regions",
+      ],
     });
   }
 
   if (snapshot.s3BucketCount >= 50) {
     insights.push({
       title: "S3 Bucket Sprawl",
-      message: `${snapshot.s3BucketCount} buckets detected. Review whether all are still needed — unused buckets can accumulate cost and increase attack surface.`,
+      message: `${snapshot.s3BucketCount} buckets detected. Unused buckets add cost and increase attack surface.`,
       severity: "medium",
+      actions: [
+        "Audit buckets and delete any that are empty or no longer used",
+        "Enable S3 Intelligent-Tiering on remaining buckets to cut storage costs",
+      ],
     });
   }
 

@@ -193,7 +193,7 @@ type OperatorStatus = {
     ec2InstanceCount: number;
     s3BucketCount: number;
     flags: { singleRegion: boolean; noBackupsDetected: boolean };
-    insights: Array<{ title: string; message: string; severity: "low" | "medium" | "high" }>;
+    insights: Array<{ title: string; message: string; severity: "low" | "medium" | "high"; actions: string[] }>;
     scannedAt: string;
   } | null;
 };
@@ -3342,6 +3342,19 @@ function CloudOperatorPageInner() {
                                   }`}>{insight.severity}</span>
                                 </div>
                                 <p className="text-xs text-slate-600 dark:text-slate-400 mt-0.5 leading-relaxed">{insight.message}</p>
+                                {insight.actions && insight.actions.length > 0 && (
+                                  <div className="mt-2">
+                                    <p className="text-[10px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide mb-1">Next steps</p>
+                                    <ul className="space-y-1">
+                                      {insight.actions.map((action, j) => (
+                                        <li key={j} className="flex items-start gap-1.5 text-xs text-slate-700 dark:text-slate-300">
+                                          <ArrowRightIcon className="h-3 w-3 mt-0.5 flex-shrink-0 text-violet-500" />
+                                          {action}
+                                        </li>
+                                      ))}
+                                    </ul>
+                                  </div>
+                                )}
                               </div>
                             </div>
                           </div>
