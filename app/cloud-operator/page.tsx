@@ -186,6 +186,15 @@ type OperatorStatus = {
       };
     };
   } | null;
+  awsSnapshot?: {
+    accountId: string;
+    callerArn: string;
+    regions: string[];
+    ec2InstanceCount: number;
+    s3BucketCount: number;
+    flags: { singleRegion: boolean; noBackupsDetected: boolean };
+    scannedAt: string;
+  } | null;
 };
 
 type ConnectorStatusEntry = {
@@ -1933,8 +1942,26 @@ function CloudOperatorPageInner() {
   const [applyFixResult, setApplyFixResult] = useState<{ success?: boolean; message?: string } | null>(null);
   const [connectorStatus, setConnectorStatus] = useState<Record<string, ConnectorStatusEntry> | null>(null);
   const [workflowSteps, setWorkflowSteps] = useState<WorkflowStep[]>([]);
+  const [awsSnapshot, setAwsSnapshot] = useState<OperatorStatus["awsSnapshot"]>(null);
+  const [snapshotLoading, setSnapshotLoading] = useState(false);
   const [formValid, setFormValid] = useState(false);
   const formRef = useRef<HTMLFormElement | null>(null);
+
+  const fetchAwsSnapshot = useCallback(async () => {
+    if (!token) return;
+    setSnapshotLoading(true);
+    try {
+      const res = await fetch(`/api/cloud-operator/aws-snapshot?token=${encodeURIComponent(token)}`);
+      if (res.ok) {
+        const data = await res.json();
+        setAwsSnapshot(data);
+      }
+    } catch {
+      // ignore — snapshot is optional
+    } finally {
+      setSnapshotLoading(false);
+    }
+  }, [token]);
 
   const checkFormValidity = useCallback(() => {
     if (formRef.current) setFormValid(formRef.current.checkValidity());
@@ -2020,6 +2047,19 @@ function CloudOperatorPageInner() {
   useEffect(() => {
     if (token && isReady) fetchWorkflowStatus();
   }, [token, isReady, fetchWorkflowStatus]);
+
+  // Load cached snapshot from status payload, fetch live on overview tab
+  useEffect(() => {
+    if (status?.awsSnapshot && !awsSnapshot) {
+      setAwsSnapshot(status.awsSnapshot);
+    }
+  }, [status?.awsSnapshot, awsSnapshot]);
+
+  useEffect(() => {
+    if (token && isReady && activeTab === "overview" && !awsSnapshot && !snapshotLoading) {
+      fetchAwsSnapshot();
+    }
+  }, [token, isReady, activeTab, awsSnapshot, snapshotLoading, fetchAwsSnapshot]);
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -3227,6 +3267,75 @@ function CloudOperatorPageInner() {
             {activeTab === "overview" && (
             <div className="grid lg:grid-cols-3 gap-6">
               <div className="lg:col-span-2 space-y-4">
+                {/* Live AWS Snapshot — real data from the user's account */}
+                {awsSnapshot && (
+                  <AxiomCard className="p-5 border-l-4 border-l-orange-500">
+                    <div className="flex items-center justify-between mb-4">
+                      <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100 flex items-center gap-2">
+                        <CloudIcon className="h-4 w-4 text-orange-500" />
+                        Live AWS Snapshot
+                      </h3>
+                      <div className="flex items-center gap-2">
+                        <span className="text-[10px] text-slate-500 dark:text-slate-400">
+                          {new Date(awsSnapshot.scannedAt).toLocaleString()}
+                        </span>
+                        <button
+                          onClick={fetchAwsSnapshot}
+                          disabled={snapshotLoading}
+                          className="p-1 rounded hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 transition-colors"
+                          title="Refresh snapshot"
+                        >
+                          <ArrowPathIcon className={`h-3.5 w-3.5 ${snapshotLoading ? "animate-spin" : ""}`} />
+                        </button>
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
+                      <div className="rounded-lg bg-slate-50 dark:bg-slate-900/60 p-3 text-center">
+                        <p className="text-[10px] font-medium text-slate-500 uppercase">Account</p>
+                        <p className="mt-0.5 text-sm font-mono font-semibold text-slate-900 dark:text-slate-100">{awsSnapshot.accountId}</p>
+                      </div>
+                      <div className="rounded-lg bg-slate-50 dark:bg-slate-900/60 p-3 text-center">
+                        <p className="text-[10px] font-medium text-slate-500 uppercase">Regions</p>
+                        <p className="mt-0.5 text-sm font-semibold text-slate-900 dark:text-slate-100">{awsSnapshot.regions.length}</p>
+                      </div>
+                      <div className="rounded-lg bg-slate-50 dark:bg-slate-900/60 p-3 text-center">
+                        <p className="text-[10px] font-medium text-slate-500 uppercase">EC2 Instances</p>
+                        <p className="mt-0.5 text-sm font-semibold text-slate-900 dark:text-slate-100">{awsSnapshot.ec2InstanceCount}</p>
+                      </div>
+                      <div className="rounded-lg bg-slate-50 dark:bg-slate-900/60 p-3 text-center">
+                        <p className="text-[10px] font-medium text-slate-500 uppercase">S3 Buckets</p>
+                        <p className="mt-0.5 text-sm font-semibold text-slate-900 dark:text-slate-100">{awsSnapshot.s3BucketCount}</p>
+                      </div>
+                    </div>
+                    {(awsSnapshot.flags.singleRegion || awsSnapshot.flags.noBackupsDetected) && (
+                      <div className="space-y-1.5 mb-3">
+                        {awsSnapshot.flags.singleRegion && (
+                          <div className="flex items-center gap-2 text-xs text-amber-600 dark:text-amber-400">
+                            <ExclamationTriangleIcon className="h-3.5 w-3.5 flex-shrink-0" />
+                            Single-region deployment detected — no cross-region redundancy
+                          </div>
+                        )}
+                        {awsSnapshot.flags.noBackupsDetected && (
+                          <div className="flex items-center gap-2 text-xs text-amber-600 dark:text-amber-400">
+                            <ExclamationTriangleIcon className="h-3.5 w-3.5 flex-shrink-0" />
+                            EC2 instances found with no S3 buckets — backup strategy unclear
+                          </div>
+                        )}
+                      </div>
+                    )}
+                    <p className="text-[10px] text-slate-500 dark:text-slate-400">
+                      Real data from your AWS account via read-only AssumeRole. No credentials stored.
+                    </p>
+                  </AxiomCard>
+                )}
+                {!awsSnapshot && snapshotLoading && (
+                  <AxiomCard className="p-5 border-l-4 border-l-orange-500">
+                    <div className="flex items-center gap-3">
+                      <ArrowPathIcon className="h-4 w-4 text-orange-500 animate-spin" />
+                      <span className="text-sm text-slate-600 dark:text-slate-400">Scanning your AWS infrastructure...</span>
+                    </div>
+                  </AxiomCard>
+                )}
                 {status?.environmentSummary && (
                   <AxiomCard className="p-5 border-l-4 border-l-indigo-500">
                     <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-3 flex items-center gap-2">

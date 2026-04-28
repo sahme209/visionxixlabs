@@ -261,6 +261,12 @@ export async function GET(req: NextRequest) {
       response.architectureGraph = architectureGraph;
     }
 
+    // Live AWS snapshot (from aws-snapshot scan)
+    const awsSnapshot = payload.awsSnapshot as Record<string, unknown> | undefined;
+    if (awsSnapshot && awsSnapshot.accountId) {
+      response.awsSnapshot = awsSnapshot;
+    }
+
     // Phase 6: Enterprise Readiness Brief — Enterprise full; Free/Pro/Growth preview
     const axiomScoresObj = axiomScores as { infrastructureScore?: number; riskExposureLevel?: string; estimatedAnnualSavings?: number | null; deploymentFrictionIndex?: number; complexityTier?: string } | null | undefined;
     const trendObj = (base as Record<string, unknown>).trend as { scoreDelta?: number | null; savingsDelta?: number | null } | null | undefined;

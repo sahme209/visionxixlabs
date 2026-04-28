@@ -241,7 +241,7 @@ export default function Home() {
             >
               <RocketLaunchIcon className="h-8 w-8 text-white dark:text-slate-900 mb-3 icon-bounce" />
               <h3 className="text-lg font-semibold mb-1">Run Axiom</h3>
-              <p className="text-slate-300 dark:text-slate-600 text-sm">Connect your cloud and get instant analysis</p>
+              <p className="text-slate-300 dark:text-slate-600 text-sm">Scan your AWS infrastructure in minutes</p>
             </Link>
             <a
               href="mailto:support@visionxixlabs.com"

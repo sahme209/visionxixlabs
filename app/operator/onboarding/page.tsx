@@ -78,7 +78,7 @@ const IAM_PERMISSIONS_POLICY = JSON.stringify({
 }, null, 2);
 
 function StepIndicator({ current }: { current: OnboardingStep }) {
-  const labels = ["Account", "Connect Cloud", "Analyze", "Your Report"];
+  const labels = ["Account", "Connect Cloud", "Scan", "Your Report"];
   return (
     <div className="flex items-center justify-center gap-2 mb-12">
       {labels.map((label, i) => {
@@ -680,7 +680,7 @@ export default function OnboardingPage() {
                   </>
                 ) : (
                   <>
-                    Run Analysis
+                    Scan AWS Infrastructure
                     <ChartBarIcon className="h-4 w-4" />
                   </>
                 )}
