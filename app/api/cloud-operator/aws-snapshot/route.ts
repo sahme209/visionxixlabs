@@ -10,6 +10,7 @@ export interface AWSInsight {
   title: string;
   message: string;
   severity: "low" | "medium" | "high";
+  impact: string;
   actions: string[];
 }
 
@@ -40,6 +41,7 @@ function deriveInsights(snapshot: {
       message:
         "All your infrastructure runs in one AWS region. If that region has an outage, your entire application goes down.",
       severity: "high",
+      impact: "A single AWS region outage means complete downtime for all your users until the region recovers.",
       actions: [
         "Launch a copy of your critical workloads in a second region (e.g. us-west-2)",
         "Set up Route 53 health checks with DNS failover between regions",
@@ -50,6 +52,7 @@ function deriveInsights(snapshot: {
       title: "Multi-Region — Verify Failover",
       message: `You have ${snapshot.regions.length} regions enabled, but that alone doesn't mean failover works.`,
       severity: "medium",
+      impact: "If failover isn't tested, you'll discover it doesn't work during the actual outage — when it's too late.",
       actions: [
         "Test that traffic actually shifts if one region goes down",
         "Confirm your load balancer or DNS is configured for automatic failover",
@@ -63,6 +66,7 @@ function deriveInsights(snapshot: {
       message:
         "You have EC2 instances but no S3 buckets. If an instance fails, data on its local disk is gone.",
       severity: "high",
+      impact: "A terminated or failed instance means permanent data loss with no way to recover.",
       actions: [
         "Create an S3 bucket and set up automated backups for your instances",
         "Enable EBS snapshots on a daily schedule for each volume",
@@ -76,6 +80,7 @@ function deriveInsights(snapshot: {
       message:
         "No EC2 instances or S3 buckets found in the home region. This account may be new or resources may live in a different region.",
       severity: "low",
+      impact: "No immediate risk — but if resources exist in other regions, they aren't being monitored here.",
       actions: [
         "Check other regions in the AWS console to see if resources exist there",
       ],
@@ -87,6 +92,7 @@ function deriveInsights(snapshot: {
       title: "Large Fleet, No Redundancy",
       message: `You have ${snapshot.ec2InstanceCount} instances in a single region. A regional outage takes everything down.`,
       severity: "high",
+      impact: `All ${snapshot.ec2InstanceCount} instances go offline at once — at this scale, recovery takes hours, not minutes.`,
       actions: [
         "Spread instances across at least two regions using an Auto Scaling group per region",
         "Put a Global Accelerator or Route 53 failover in front of both regions",
@@ -99,6 +105,7 @@ function deriveInsights(snapshot: {
       title: "S3 Bucket Sprawl",
       message: `${snapshot.s3BucketCount} buckets detected. Unused buckets add cost and increase attack surface.`,
       severity: "medium",
+      impact: "Forgotten buckets with public access or stale data are a common source of security incidents and surprise bills.",
       actions: [
         "Audit buckets and delete any that are empty or no longer used",
         "Enable S3 Intelligent-Tiering on remaining buckets to cut storage costs",
