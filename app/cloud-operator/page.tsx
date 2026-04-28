@@ -33,6 +33,8 @@ import { AxiomMetricCard } from "@/components/axiom-ui/AxiomMetricCard";
 import { AxiomSection } from "@/components/axiom-ui/AxiomSection";
 import { AxiomCard } from "@/components/axiom-ui/AxiomCard";
 import { AxiomButton } from "@/components/axiom-ui/AxiomButton";
+import { AxiomUpgradeModal } from "@/components/axiom-ui/AxiomUpgradeModal";
+import type { UpgradeTrigger } from "@/components/axiom-ui/AxiomUpgradeModal";
 import { AxiomAIVision } from "@/components/AxiomAIVision";
 
 type OperatorStatus = {
@@ -192,6 +194,8 @@ type OperatorStatus = {
     regions: string[];
     ec2InstanceCount: number;
     s3BucketCount: number;
+    ec2?: { success: boolean; count: number; error?: string };
+    s3?: { success: boolean; count: number; error?: string };
     flags: { singleRegion: boolean; noBackupsDetected: boolean };
     insights: Array<{ title: string; message: string; severity: "low" | "medium" | "high"; impact: string; actions: string[] }>;
     scannedAt: string;
@@ -1947,6 +1951,15 @@ function CloudOperatorPageInner() {
   const [snapshotLoading, setSnapshotLoading] = useState(false);
   const [formValid, setFormValid] = useState(false);
   const formRef = useRef<HTMLFormElement | null>(null);
+  const [upgradeModalOpen, setUpgradeModalOpen] = useState(false);
+  const [upgradeTrigger, setUpgradeTrigger] = useState<UpgradeTrigger>("fix-automatically");
+  const [upgradeInsightTitle, setUpgradeInsightTitle] = useState<string | undefined>();
+
+  const openUpgradeModal = useCallback((trigger: UpgradeTrigger, insightTitle?: string) => {
+    setUpgradeTrigger(trigger);
+    setUpgradeInsightTitle(insightTitle);
+    setUpgradeModalOpen(true);
+  }, []);
 
   const fetchAwsSnapshot = useCallback(async () => {
     if (!token) return;
@@ -3299,13 +3312,21 @@ function CloudOperatorPageInner() {
                         <p className="text-[10px] font-medium text-slate-500 uppercase">Regions</p>
                         <p className="mt-0.5 text-sm font-semibold text-slate-900 dark:text-slate-100">{awsSnapshot.regions.length}</p>
                       </div>
-                      <div className="rounded-lg bg-slate-50 dark:bg-slate-900/60 p-3 text-center">
+                      <div className={`rounded-lg p-3 text-center ${awsSnapshot.ec2?.success === false ? "bg-red-50 dark:bg-red-950/30" : "bg-slate-50 dark:bg-slate-900/60"}`}>
                         <p className="text-[10px] font-medium text-slate-500 uppercase">EC2 Instances</p>
-                        <p className="mt-0.5 text-sm font-semibold text-slate-900 dark:text-slate-100">{awsSnapshot.ec2InstanceCount}</p>
+                        {awsSnapshot.ec2?.success === false ? (
+                          <p className="mt-0.5 text-[10px] text-red-600 dark:text-red-400" title={awsSnapshot.ec2.error}>Could not read (missing permission)</p>
+                        ) : (
+                          <p className="mt-0.5 text-sm font-semibold text-slate-900 dark:text-slate-100">{awsSnapshot.ec2InstanceCount}</p>
+                        )}
                       </div>
-                      <div className="rounded-lg bg-slate-50 dark:bg-slate-900/60 p-3 text-center">
+                      <div className={`rounded-lg p-3 text-center ${awsSnapshot.s3?.success === false ? "bg-red-50 dark:bg-red-950/30" : "bg-slate-50 dark:bg-slate-900/60"}`}>
                         <p className="text-[10px] font-medium text-slate-500 uppercase">S3 Buckets</p>
-                        <p className="mt-0.5 text-sm font-semibold text-slate-900 dark:text-slate-100">{awsSnapshot.s3BucketCount}</p>
+                        {awsSnapshot.s3?.success === false ? (
+                          <p className="mt-0.5 text-[10px] text-red-600 dark:text-red-400" title={awsSnapshot.s3.error}>Could not read (missing permission)</p>
+                        ) : (
+                          <p className="mt-0.5 text-sm font-semibold text-slate-900 dark:text-slate-100">{awsSnapshot.s3BucketCount}</p>
+                        )}
                       </div>
                     </div>
                     {awsSnapshot.insights && awsSnapshot.insights.length > 0 && (
@@ -3366,6 +3387,24 @@ function CloudOperatorPageInner() {
                                     </ul>
                                   </div>
                                 )}
+                                {insight.severity === "high" && !status?.canViewTechnicalOutputs && (
+                                  <button
+                                    onClick={() => openUpgradeModal("fix-automatically", insight.title)}
+                                    className="mt-3 inline-flex items-center gap-1.5 text-xs font-medium text-violet-600 dark:text-violet-400 hover:text-violet-800 dark:hover:text-violet-300 transition-colors group"
+                                  >
+                                    <BoltIcon className="h-3.5 w-3.5 group-hover:scale-110 transition-transform" />
+                                    Get step-by-step fix guide
+                                  </button>
+                                )}
+                                {insight.severity === "medium" && !status?.canViewTechnicalOutputs && (
+                                  <button
+                                    onClick={() => openUpgradeModal("deeper-analysis", insight.title)}
+                                    className="mt-3 inline-flex items-center gap-1.5 text-xs font-medium text-violet-600 dark:text-violet-400 hover:text-violet-800 dark:hover:text-violet-300 transition-colors group"
+                                  >
+                                    <MagnifyingGlassIcon className="h-3.5 w-3.5 group-hover:scale-110 transition-transform" />
+                                    Get deeper analysis
+                                  </button>
+                                )}
                               </div>
                             </div>
                           </div>
@@ -3375,6 +3414,17 @@ function CloudOperatorPageInner() {
                     <p className="text-[10px] text-slate-500 dark:text-slate-400">
                       Real data from your AWS account via read-only AssumeRole. No credentials stored.
                     </p>
+                    {awsSnapshot.insights && awsSnapshot.insights.length > 0 && !status?.canViewTechnicalOutputs && (
+                      <div className="mt-4 pt-3 border-t border-slate-200 dark:border-slate-700/60">
+                        <button
+                          onClick={() => openUpgradeModal("continuous-monitoring")}
+                          className="flex items-center gap-2 text-xs text-slate-600 dark:text-slate-400 hover:text-violet-600 dark:hover:text-violet-400 transition-colors group"
+                        >
+                          <ArrowPathIcon className="h-3.5 w-3.5 group-hover:text-violet-500 transition-colors" />
+                          <span>Want us to monitor this and alert you if it gets worse?</span>
+                        </button>
+                      </div>
+                    )}
                   </AxiomCard>
                 )}
                 {!awsSnapshot && snapshotLoading && (
@@ -3606,6 +3656,13 @@ function CloudOperatorPageInner() {
         )}
       </main>
       <AskAxiomPanel token={token} onTabChange={(tab) => setActiveTab(tab as typeof activeTab)} />
+      <AxiomUpgradeModal
+        open={upgradeModalOpen}
+        onClose={() => setUpgradeModalOpen(false)}
+        trigger={upgradeTrigger}
+        leadId={status?.leadId}
+        insightTitle={upgradeInsightTitle}
+      />
     </div>
   );
 }

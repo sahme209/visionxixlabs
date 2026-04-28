@@ -278,7 +278,7 @@ export default function Home() {
               <ArrowRightIcon className="ml-2 h-5 w-5" />
             </Link>
             <Link
-              href="/products"
+              href="/pricing"
               className="inline-flex items-center px-6 py-3 border-2 border-white/30 text-white rounded-2xl font-semibold hover:bg-white/10 hover:border-white/50 transition-all"
             >
               View plans
@@ -313,7 +313,7 @@ export default function Home() {
               <h4 className="text-white font-semibold mb-4 text-sm">Product</h4>
               <ul className="space-y-2 text-sm">
                 <li><Link href="/cloud-operator" className="hover:text-white transition-colors">Run Axiom</Link></li>
-                <li><Link href="/products" className="hover:text-white transition-colors">Pricing</Link></li>
+                <li><Link href="/pricing" className="hover:text-white transition-colors">Pricing</Link></li>
                 <li><Link href="/insights" className="hover:text-white transition-colors">Insights</Link></li>
                 <li><Link href="/dashboard" className="hover:text-white transition-colors">Dashboard</Link></li>
               </ul>

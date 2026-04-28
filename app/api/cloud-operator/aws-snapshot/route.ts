@@ -14,12 +14,20 @@ export interface AWSInsight {
   actions: string[];
 }
 
+export interface ServiceScanResult {
+  success: boolean;
+  count: number;
+  error?: string;
+}
+
 export interface AWSSnapshot {
   accountId: string;
   callerArn: string;
   regions: string[];
   ec2InstanceCount: number;
   s3BucketCount: number;
+  ec2: ServiceScanResult;
+  s3: ServiceScanResult;
   flags: {
     singleRegion: boolean;
     noBackupsDetected: boolean;
@@ -187,23 +195,31 @@ export async function GET(req: NextRequest) {
 
     // 3. EC2: DescribeInstances — count running/stopped instances in home region
     let ec2InstanceCount = 0;
+    let ec2Result: ServiceScanResult = { success: false, count: 0, error: "Not attempted" };
     try {
       const instances = await ec2.send(new DescribeInstancesCommand({ MaxResults: 500 }));
       for (const reservation of instances.Reservations ?? []) {
         ec2InstanceCount += (reservation.Instances ?? []).length;
       }
-    } catch {
-      // ReadOnlyAccess may not include ec2:DescribeInstances in some cases
+      ec2Result = { success: true, count: ec2InstanceCount };
+    } catch (e) {
+      const err = e as { name?: string; message?: string };
+      console.warn("[aws-snapshot] DescribeInstances failed:", err.name);
+      ec2Result = { success: false, count: 0, error: `Missing permission: ec2:DescribeInstances (${err.name ?? "unknown"})` };
     }
 
     // 4. S3: ListBuckets — count buckets (global, not regional)
     let s3BucketCount = 0;
+    let s3Result: ServiceScanResult = { success: false, count: 0, error: "Not attempted" };
     try {
       const s3 = new S3Client({ region, credentials: credConfig });
       const buckets = await s3.send(new ListBucketsCommand({}));
       s3BucketCount = (buckets.Buckets ?? []).length;
-    } catch {
-      // May fail if S3 permissions missing
+      s3Result = { success: true, count: s3BucketCount };
+    } catch (e) {
+      const err = e as { name?: string; message?: string };
+      console.warn("[aws-snapshot] ListBuckets failed:", err.name);
+      s3Result = { success: false, count: 0, error: `Missing permission: s3:ListAllMyBuckets (${err.name ?? "unknown"})` };
     }
 
     // 5. Compute simple risk flags + insights
@@ -219,6 +235,8 @@ export async function GET(req: NextRequest) {
       regions: usedRegions,
       ec2InstanceCount,
       s3BucketCount,
+      ec2: ec2Result,
+      s3: s3Result,
       flags: {
         singleRegion,
         noBackupsDetected,
