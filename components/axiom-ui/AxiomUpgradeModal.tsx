@@ -30,6 +30,7 @@ const TRIGGER_CONTENT: Record<
     headline: string;
     description: string;
     features: { icon: typeof ShieldCheckIcon; label: string }[];
+    example: { heading: string; content: string };
     cta: string;
   }
 > = {
@@ -42,6 +43,10 @@ const TRIGGER_CONTENT: Record<
       { icon: ShieldCheckIcon, label: "Step-by-step implementation guide" },
       { icon: ArrowPathIcon, label: "Weekly re-scan to confirm the fix held" },
     ],
+    example: {
+      heading: "Example: Single-region fix",
+      content: 'resource "aws_instance" "app_west" {\n  ami           = data.aws_ami.app.id\n  instance_type = "t3.micro"\n  availability_zone = "us-west-2a"\n  # Mirror of your us-east-1 setup\n}',
+    },
     cta: "Unlock detailed fix guide",
   },
   "continuous-monitoring": {
@@ -53,6 +58,10 @@ const TRIGGER_CONTENT: Record<
       { icon: ChartBarIcon, label: "Trend tracking over time" },
       { icon: ShieldCheckIcon, label: "Alerts on new high-severity risks" },
     ],
+    example: {
+      heading: "Example: Weekly trend report",
+      content: "Week 1: Score 42 → Week 2: Score 48 (+6)\nRisk: High → Medium (after IAM fix)\nNew finding: S3 bucket public since Tuesday",
+    },
     cta: "Enable continuous monitoring",
   },
   "deeper-analysis": {
@@ -64,6 +73,10 @@ const TRIGGER_CONTENT: Record<
       { icon: ShieldCheckIcon, label: "IAM & network security audit" },
       { icon: BoltIcon, label: "Cost optimization recommendations" },
     ],
+    example: {
+      heading: "Example: IAM audit finding",
+      content: "3 roles with AdministratorAccess attached.\nRecommendation: Scope to least-privilege\nusing IAM Access Analyzer + boundary policies.\nEst. risk reduction: 40%.",
+    },
     cta: "Unlock full analysis",
   },
   "deploy-fix": {
@@ -75,6 +88,10 @@ const TRIGGER_CONTENT: Record<
       { icon: ShieldCheckIcon, label: "Architecture review and diagrams" },
       { icon: ArrowPathIcon, label: "Prioritized implementation roadmap" },
     ],
+    example: {
+      heading: "Example: 30-day roadmap excerpt",
+      content: "Days 1-3: Lock down public exposure, enforce\nleast-privilege IAM (critical)\nDays 4-10: Right-size instances, enable\nreserved capacity (saves ~$4k/yr)",
+    },
     cta: "Unlock full recommendations",
   },
 };
@@ -169,7 +186,7 @@ export function AxiomUpgradeModal({
           {content.description}
         </p>
 
-        <div className="space-y-3 mb-6">
+        <div className="space-y-3 mb-5">
           {content.features.map((feat) => (
             <div key={feat.label} className="flex items-center gap-3">
               <div className="flex-shrink-0 h-8 w-8 rounded-lg bg-violet-50 dark:bg-violet-950/40 flex items-center justify-center">
@@ -180,6 +197,18 @@ export function AxiomUpgradeModal({
               </span>
             </div>
           ))}
+        </div>
+
+        <div className="mb-5 rounded-lg border border-violet-200 dark:border-violet-800/50 bg-violet-50/50 dark:bg-violet-950/20 p-3">
+          <p className="text-[10px] font-bold text-violet-600 dark:text-violet-400 uppercase tracking-wide mb-1.5">
+            {content.example.heading}
+          </p>
+          <pre className="text-[11px] text-slate-700 dark:text-slate-300 font-mono leading-relaxed whitespace-pre-wrap">
+            {content.example.content}
+          </pre>
+          <p className="mt-1.5 text-[10px] text-slate-500 dark:text-slate-400">
+            Your output will be generated from your actual scan data.
+          </p>
         </div>
 
         {error && (

@@ -113,6 +113,27 @@ export default function PrivacyPolicyPage() {
               </p>
             </div>
 
+            {/* Cloud Operator (Axiom) */}
+            <div className="mb-6">
+              <h3 className="text-xl font-semibold mb-3 text-slate-800 dark:text-slate-200">
+                Cloud Operator (Axiom) — AWS Credential Handling
+              </h3>
+              <p className="text-slate-700 dark:text-slate-300 leading-relaxed mb-3">
+                When you connect your AWS account through our Cloud Operator product, we use the following approach:
+              </p>
+              <ul className="list-disc list-inside space-y-2 text-slate-700 dark:text-slate-300 ml-4">
+                <li><strong>Cross-Account AssumeRole:</strong> You create an IAM role in your account that trusts our broker account. We assume this role using AWS STS with a unique External ID to prevent confused-deputy attacks.</li>
+                <li><strong>Read-Only Permissions:</strong> The IAM role is scoped to three permissions: <code className="bg-slate-100 dark:bg-slate-700 px-1 rounded text-xs">ec2:Describe*</code>, <code className="bg-slate-100 dark:bg-slate-700 px-1 rounded text-xs">s3:ListAllMyBuckets</code>, and <code className="bg-slate-100 dark:bg-slate-700 px-1 rounded text-xs">sts:GetCallerIdentity</code>. We cannot modify, delete, or write to any resource in your account.</li>
+                <li><strong>Temporary Credentials Only:</strong> STS session tokens are valid for 15 minutes and are used in-memory only. We do not store AWS access keys, secret keys, or session tokens.</li>
+                <li><strong>Encrypted Connector Storage:</strong> Your IAM Role ARN and External ID are encrypted at rest using AES-256-GCM. These are deleted immediately when you disconnect.</li>
+                <li><strong>Scan Results:</strong> We store aggregate data only — instance counts, bucket counts, region lists, and generated insights. No raw AWS API responses or resource-level details are persisted.</li>
+                <li><strong>Scan History:</strong> Up to 5 previous scan snapshots are retained for trend comparison. Older snapshots are automatically dropped.</li>
+              </ul>
+              <p className="text-slate-600 dark:text-slate-400 text-sm mt-3 italic bg-slate-50 dark:bg-slate-900 p-3 rounded-lg">
+                <strong>Revocation:</strong> You can revoke our access at any time by deleting the IAM role from your AWS console. For full technical details, see our <a href="/security" className="text-indigo-600 dark:text-indigo-400 hover:underline">Security page</a>.
+              </p>
+            </div>
+
             {/* Website Usage */}
             <div className="mb-6">
               <h3 className="text-xl font-semibold mb-3 text-slate-800 dark:text-slate-200">

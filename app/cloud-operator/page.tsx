@@ -2317,6 +2317,11 @@ function CloudOperatorPageInner() {
                         {status.infrastructureScore ?? status.infrastructureReadinessScore ?? "—"}
                       </span>
                     }
+                    footer={
+                      <span className="text-slate-400 dark:text-slate-500">
+                        Readiness 40% · Cost 20% · CI/CD 20% · Risk 20%
+                      </span>
+                    }
                   />
                   <AxiomMetricCard
                     label="Estimated Annual Savings"
@@ -2329,12 +2334,22 @@ function CloudOperatorPageInner() {
                           : "—"}
                       </span>
                     }
+                    footer={
+                      <span className="text-slate-400 dark:text-slate-500">
+                        Based on right-sizing, reserved capacity, storage tiering
+                      </span>
+                    }
                   />
                   <AxiomMetricCard
                     label="Risk Level"
                     value={
                       <span className="text-base font-semibold text-slate-900 dark:text-slate-100">
                         {status.riskExposureLevel ?? status.securityRiskLevel ?? "—"}
+                      </span>
+                    }
+                    footer={
+                      <span className="text-slate-400 dark:text-slate-500">
+                        IAM policy, network exposure, encryption, access controls
                       </span>
                     }
                   />
@@ -2347,6 +2362,11 @@ function CloudOperatorPageInner() {
                           : "—"}
                       </span>
                     }
+                    footer={
+                      <span className="text-slate-400 dark:text-slate-500">
+                        Lower is better · CI/CD maturity + complexity
+                      </span>
+                    }
                   />
                   <AxiomMetricCard
                     label="Automation Readiness Score"
@@ -2355,6 +2375,11 @@ function CloudOperatorPageInner() {
                         {status.automationReadinessScore != null
                           ? `${status.automationReadinessScore}/100`
                           : "—"}
+                      </span>
+                    }
+                    footer={
+                      <span className="text-slate-400 dark:text-slate-500">
+                        Pipeline automation, Git integration, environment parity
                       </span>
                     }
                   />
@@ -2936,41 +2961,57 @@ function CloudOperatorPageInner() {
               {status?.explainability && (
                 <AxiomCard className="p-4 bg-slate-50 dark:bg-slate-900/50 mb-6">
                   <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-2">
-                    Score Breakdown
+                    Why you got this score
                   </h3>
                   <p className="text-xs text-slate-500 dark:text-slate-400 mb-3">
-                    Scoring version: {status.scoringVersion ?? "—"}
+                    Your Infrastructure Score is a weighted composite. Here&apos;s what went into it:
                   </p>
-                  <div className="grid sm:grid-cols-2 gap-4 mb-4">
-                    {status.explainability.infrastructureScoreBreakdown.map((item) => (
-                      <div key={item.factor} className="flex justify-between text-xs">
-                        <span className="text-slate-600 dark:text-slate-400">{item.factor}</span>
-                        <span className="font-medium text-slate-900 dark:text-slate-100">
-                          {item.value} × {item.weight}% = {item.contribution.toFixed(1)}
-                        </span>
-                      </div>
-                    ))}
+                  <div className="space-y-2.5 mb-4">
+                    {status.explainability.infrastructureScoreBreakdown.map((item) => {
+                      const impact = item.value >= 70 ? "strong" : item.value >= 40 ? "moderate" : "weak";
+                      const impactColor = impact === "strong" ? "text-emerald-600 dark:text-emerald-400" : impact === "moderate" ? "text-amber-600 dark:text-amber-400" : "text-red-600 dark:text-red-400";
+                      return (
+                        <div key={item.factor}>
+                          <div className="flex items-center justify-between text-xs">
+                            <span className="text-slate-700 dark:text-slate-300 font-medium">{item.factor} <span className="text-slate-400 dark:text-slate-500">({item.weight}% weight)</span></span>
+                            <div className="flex items-center gap-2">
+                              <span className="font-semibold text-slate-900 dark:text-slate-100">{item.value}/100</span>
+                              <span className={`text-[10px] font-bold uppercase ${impactColor}`}>{impact}</span>
+                            </div>
+                          </div>
+                          <div className="mt-1 h-1.5 rounded-full bg-slate-200 dark:bg-slate-700 overflow-hidden">
+                            <div
+                              className={`h-full rounded-full transition-all ${impact === "strong" ? "bg-emerald-500" : impact === "moderate" ? "bg-amber-500" : "bg-red-500"}`}
+                              style={{ width: `${Math.min(item.value, 100)}%` }}
+                            />
+                          </div>
+                        </div>
+                      );
+                    })}
                   </div>
-                  {status.explainability.keyDrivers.length > 0 && (
-                    <div className="mb-2">
-                      <p className="text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Key drivers</p>
-                      <ul className="text-xs text-slate-700 dark:text-slate-300 space-y-0.5">
-                        {status.explainability.keyDrivers.map((d, i) => (
-                          <li key={i}>• {d}</li>
+                  {status.explainability.penalties.length > 0 && (
+                    <div className="mb-3 rounded-lg bg-red-50 dark:bg-red-950/20 border border-red-100 dark:border-red-900/30 p-2.5">
+                      <p className="text-[10px] font-bold text-red-700 dark:text-red-400 uppercase tracking-wide mb-1">Dragging your score down</p>
+                      <ul className="text-xs text-red-700 dark:text-red-300 space-y-0.5">
+                        {status.explainability.penalties.map((p, i) => (
+                          <li key={i}>• {p}</li>
                         ))}
                       </ul>
                     </div>
                   )}
                   {status.explainability.improvementLevers.length > 0 && (
-                    <div>
-                      <p className="text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Improvement levers</p>
-                      <ul className="text-xs text-slate-700 dark:text-slate-300 space-y-0.5">
+                    <div className="rounded-lg bg-emerald-50 dark:bg-emerald-950/20 border border-emerald-100 dark:border-emerald-900/30 p-2.5">
+                      <p className="text-[10px] font-bold text-emerald-700 dark:text-emerald-400 uppercase tracking-wide mb-1">To improve this score</p>
+                      <ul className="text-xs text-emerald-700 dark:text-emerald-300 space-y-0.5">
                         {status.explainability.improvementLevers.map((l, i) => (
-                          <li key={i}>• {l}</li>
+                          <li key={i}>→ {l}</li>
                         ))}
                       </ul>
                     </div>
                   )}
+                  <p className="mt-3 text-[10px] text-slate-400 dark:text-slate-500">
+                    Scoring v{status.scoringVersion ?? "—"} · Deterministic — no AI randomness
+                  </p>
                 </AxiomCard>
               )}
 
@@ -3632,11 +3673,60 @@ function CloudOperatorPageInner() {
                 {!status?.canViewTechnicalOutputs && status?.outputStatus === "ready" && (
                   <AxiomCard className="p-5 bg-slate-50 dark:bg-slate-900/50">
                     <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-2">
-                      Impact Forecast
+                      Preview of Pro insights
                     </h3>
-                    <p className="text-xs text-slate-600 dark:text-slate-400">
-                      Upgrade to Pro+ to see simulation of expected score, savings, and risk impact.
+                    <p className="text-xs text-slate-600 dark:text-slate-400 mb-4">
+                      This is the kind of output you get on Pro — real examples, not marketing copy.
                     </p>
+
+                    <div className="space-y-4">
+                      <div className="rounded-lg border border-slate-200 dark:border-slate-700/60 p-3">
+                        <p className="text-[10px] font-bold text-violet-600 dark:text-violet-400 uppercase tracking-wide mb-1.5">Terraform Config (sample)</p>
+                        <pre className="text-[11px] text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 rounded p-2 overflow-x-auto font-mono leading-relaxed">{`resource "aws_s3_bucket" "backups" {
+  bucket = "myapp-backups-\${var.env}"
+  versioning { enabled = true }
+  server_side_encryption_configuration {
+    rule {
+      apply_server_side_encryption_by_default {
+        sse_algorithm = "aws:kms"
+      }
+    }
+  }
+}`}</pre>
+                        <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-1.5">Pro generates configs tailored to your actual provider, region, and architecture.</p>
+                      </div>
+
+                      <div className="rounded-lg border border-slate-200 dark:border-slate-700/60 p-3">
+                        <p className="text-[10px] font-bold text-violet-600 dark:text-violet-400 uppercase tracking-wide mb-1.5">Deeper Analysis (sample)</p>
+                        <div className="text-xs text-slate-700 dark:text-slate-300 space-y-1.5">
+                          <p><span className="font-medium">IAM audit:</span> 3 roles with AdministratorAccess — recommend scoping to least-privilege with boundary policies.</p>
+                          <p><span className="font-medium">Network:</span> Default VPC in use with 0.0.0.0/0 ingress on port 22. Move to private subnets with bastion or SSM.</p>
+                          <p><span className="font-medium">Cost:</span> 4 instances running t2.micro — switch to t3.micro for 10% better price-performance.</p>
+                        </div>
+                      </div>
+
+                      <div className="rounded-lg border border-slate-200 dark:border-slate-700/60 p-3">
+                        <p className="text-[10px] font-bold text-violet-600 dark:text-violet-400 uppercase tracking-wide mb-1.5">Impact Forecast (sample)</p>
+                        <div className="grid grid-cols-2 gap-2 text-xs">
+                          <div><span className="text-slate-500 dark:text-slate-400">Score lift:</span> <span className="font-medium text-slate-900 dark:text-slate-100">+12–18 pts</span></div>
+                          <div><span className="text-slate-500 dark:text-slate-400">Annual savings:</span> <span className="font-medium text-slate-900 dark:text-slate-100">$4,200–$8,500</span></div>
+                          <div><span className="text-slate-500 dark:text-slate-400">Risk reduction:</span> <span className="font-medium text-slate-900 dark:text-slate-100">35–50%</span></div>
+                          <div><span className="text-slate-500 dark:text-slate-400">Friction reduction:</span> <span className="font-medium text-slate-900 dark:text-slate-100">15–25 pts</span></div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="mt-4 pt-3 border-t border-slate-200 dark:border-slate-700/60 flex items-center justify-between">
+                      <p className="text-[10px] text-slate-500 dark:text-slate-400">
+                        Pro outputs are generated from your actual scan data — not generic templates.
+                      </p>
+                      <button
+                        onClick={() => openUpgradeModal("deeper-analysis")}
+                        className="text-xs font-medium text-violet-600 dark:text-violet-400 hover:text-violet-800 dark:hover:text-violet-300 transition-colors whitespace-nowrap ml-3"
+                      >
+                        Unlock for your account →
+                      </button>
+                    </div>
                   </AxiomCard>
                 )}
 
@@ -3681,31 +3771,31 @@ function CloudOperatorPageInner() {
                 <AxiomAIVision />
                 <AxiomCard className="p-5">
                   <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-2">
-                    Upgrade plan
+                    What each plan includes
                   </h3>
-                  <ul className="text-xs text-slate-600 dark:text-slate-400 space-y-1.5 mb-3">
-                    <li>
-                      <strong>Analysis</strong> (free): Summary dashboard only.
-                    </li>
-                    <li>
-                      <strong>Roadmap</strong> (pro): Full technical outputs, configs, savings breakdown.
-                    </li>
-                    <li>
-                      <strong>Automation Signals</strong> (growth): Drift detection, trend history.
-                    </li>
-                    <li>
-                      <strong>Strategic Advisory</strong> (enterprise): Policy packs, enterprise brief.
-                    </li>
-                  </ul>
+                  <div className="text-xs space-y-3 mb-4">
+                    <div className="rounded-lg bg-slate-100 dark:bg-slate-800/60 p-2.5">
+                      <p className="font-semibold text-slate-900 dark:text-slate-100 mb-0.5">Free <span className="text-slate-400 font-normal">$0</span></p>
+                      <p className="text-slate-500 dark:text-slate-400">Resilience score, risk flags, AI recommendation, security scan (read-only), 1 analysis/month</p>
+                    </div>
+                    <div className="rounded-lg bg-violet-50 dark:bg-violet-950/30 border border-violet-200 dark:border-violet-800/40 p-2.5">
+                      <p className="font-semibold text-violet-700 dark:text-violet-300 mb-0.5">Pro <span className="text-violet-400 font-normal">$149/mo</span></p>
+                      <p className="text-slate-600 dark:text-slate-400">Everything in Free + Terraform generation &amp; execution, weekly scans, cost analysis, Axiom AI assistant, Slack alerts</p>
+                    </div>
+                    <div className="rounded-lg bg-slate-100 dark:bg-slate-800/60 p-2.5">
+                      <p className="font-semibold text-slate-900 dark:text-slate-100 mb-0.5">Enterprise <span className="text-slate-400 font-normal">Custom</span></p>
+                      <p className="text-slate-500 dark:text-slate-400">Everything in Pro + unlimited connections, daily compliance scans, SSO, audit logging, dedicated manager, SLA</p>
+                    </div>
+                  </div>
                   <Link
-                    href="/auth/signin?callbackUrl=/cloud-operator"
+                    href="/pricing"
                     className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-xs font-semibold text-white hover:bg-indigo-700"
                   >
-                    Upgrade
+                    View pricing
                     <ArrowRightIcon className="h-3 w-3" />
                   </Link>
                   <p className="mt-2 text-[11px] text-slate-500 dark:text-slate-400">
-                    Or <Link href="/contact?intent=axiom-upgrade" className="underline">Contact Sales</Link>
+                    Or <Link href="/contact?intent=operator-upgrade" className="underline">Contact Sales</Link>
                   </p>
                 </AxiomCard>
               </div>

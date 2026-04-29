@@ -6,6 +6,8 @@ const nextConfig: NextConfig = {
     return [
       { source: "/visionxix-ai/pricing", destination: "/products", permanent: true },
       { source: "/pricing", destination: "/products", permanent: false },
+      { source: "/axiom/pricing", destination: "/products", permanent: true },
+      { source: "/operator/pricing", destination: "/products", permanent: true },
       { source: "/operator", destination: "/cloud-operator", permanent: true },
       { source: "/request", destination: "/contact", permanent: true },
       { source: "/builder", destination: "/", permanent: true },

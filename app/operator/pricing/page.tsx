@@ -215,6 +215,7 @@ export default function PricingPage() {
           <div className="flex items-center gap-6 text-sm text-slate-500">
             <Link href="/privacy" className="hover:text-slate-300">Privacy</Link>
             <Link href="/terms" className="hover:text-slate-300">Terms</Link>
+            <Link href="/security" className="hover:text-slate-300">Security</Link>
             <Link href="/contact" className="hover:text-slate-300">Contact</Link>
           </div>
         </div>
