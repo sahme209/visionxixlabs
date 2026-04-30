@@ -53,7 +53,7 @@ export default function Home() {
           <Stagger delay={0.12}>
             <div className="flex flex-wrap justify-center gap-4 mb-6">
               <AnimatedButton
-                href="/cloud-operator"
+                href="/operator/onboarding"
                 variant="primary"
                 className="btn-huly cta-glow shadow-lg shadow-violet-500/30 hover:shadow-violet-500/40"
               >
@@ -236,7 +236,7 @@ export default function Home() {
           </p>
           <div className="grid md:grid-cols-2 gap-6 mb-10">
             <Link
-              href="/cloud-operator"
+              href="/operator/onboarding"
               className="card-hover btn-huly group rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 p-6 shadow-sm hover:shadow-lg hover:shadow-violet-500/10 transition-all"
             >
               <RocketLaunchIcon className="h-8 w-8 text-white dark:text-slate-900 mb-3 icon-bounce" />
@@ -271,7 +271,7 @@ export default function Home() {
           </p>
           <div className="flex flex-wrap justify-center gap-4">
             <Link
-              href="/cloud-operator"
+              href="/operator/onboarding"
               className="cta-glow inline-flex items-center px-6 py-3 bg-white text-slate-900 rounded-2xl font-semibold shadow-lg hover:bg-slate-100 transition-colors"
             >
               Run Axiom
@@ -312,7 +312,7 @@ export default function Home() {
             <div>
               <h4 className="text-white font-semibold mb-4 text-sm">Product</h4>
               <ul className="space-y-2 text-sm">
-                <li><Link href="/cloud-operator" className="hover:text-white transition-colors">Run Axiom</Link></li>
+                <li><Link href="/operator/onboarding" className="hover:text-white transition-colors">Run Axiom</Link></li>
                 <li><Link href="/pricing" className="hover:text-white transition-colors">Pricing</Link></li>
                 <li><Link href="/insights" className="hover:text-white transition-colors">Insights</Link></li>
                 <li><Link href="/dashboard" className="hover:text-white transition-colors">Dashboard</Link></li>

@@ -29,7 +29,7 @@ const plans = [
       { text: "Automated monitoring", included: false },
     ],
     cta: "Start Free",
-    ctaHref: "/cloud-operator",
+    ctaHref: "/operator/onboarding",
     highlighted: false,
   },
   {
@@ -49,7 +49,7 @@ const plans = [
       { text: "Priority support", included: true },
     ],
     cta: "Start 14-day free trial",
-    ctaHref: "/auth/signup?plan=pro&redirect=/cloud-operator",
+    ctaHref: "/auth/signup?plan=pro&redirect=/operator/onboarding",
     highlighted: true,
   },
   {
@@ -188,7 +188,7 @@ export default function PricingPage() {
         <Reveal>
           <h2 className="text-2xl font-bold mb-4">Ready to find out your score?</h2>
           <p className="text-slate-400 mb-8">No credit card required. Free forever plan includes full analysis.</p>
-          <AnimatedButton href="/cloud-operator" variant="primary" className="px-8 py-3">
+          <AnimatedButton href="/operator/onboarding" variant="primary" className="px-8 py-3">
             Start Free
             <ArrowRightIcon className="h-4 w-4" />
           </AnimatedButton>

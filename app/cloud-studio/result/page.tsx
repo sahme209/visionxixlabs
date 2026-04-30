@@ -101,7 +101,7 @@ export default function CloudStudioResultPage() {
             Run Axiom for Infrastructure Advantage Model™ scoring, 30-day roadmap, playbooks, and deployment hardening.
           </p>
           <Link
-            href="/cloud-operator"
+            href="/operator/onboarding"
             className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-indigo-700"
           >
             Run Axiom Analysis

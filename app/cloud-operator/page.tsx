@@ -2,7 +2,7 @@
 
 import { FormEvent, Suspense, useCallback, useEffect, useRef, useState } from "react";
 import { useAxiomPanel } from "@/lib/contexts/AxiomPanelContext";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import {
   ArrowLeftIcon,
@@ -1939,7 +1939,14 @@ const OPERATOR_TIERS = [
 
 function CloudOperatorPageInner() {
   const searchParams = useSearchParams();
+  const router = useRouter();
   const tokenFromUrl = searchParams.get("token");
+
+  useEffect(() => {
+    if (!tokenFromUrl) {
+      router.replace("/operator/onboarding");
+    }
+  }, [tokenFromUrl, router]);
 
   const [token, setToken] = useState<string | null>(null);
   const [status, setStatus] = useState<OperatorStatus | null>(null);

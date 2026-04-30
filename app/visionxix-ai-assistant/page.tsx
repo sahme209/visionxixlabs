@@ -182,7 +182,7 @@ export default function VisionXIXAIAssistantPage() {
               })}
             </div>
             <a
-              href="/cloud-operator"
+              href="/operator/onboarding"
               className="inline-flex items-center justify-center rounded-full bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700"
             >
               Run Infrastructure Analysis with Axiom

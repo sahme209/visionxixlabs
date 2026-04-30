@@ -68,7 +68,7 @@ export function Navigation() {
               Sign in
             </Link>
             <Link
-              href="/auth/signup?redirect=/dashboard/onboarding"
+              href="/operator/onboarding"
               className="btn-huly cta-glow inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white rounded-2xl text-sm font-semibold shadow-lg shadow-violet-500/30 hover:shadow-violet-500/40 transition-all"
             >
               Start Free
@@ -89,7 +89,7 @@ export function Navigation() {
         {mobileMenuOpen && (
           <div className="md:hidden py-4 border-t border-slate-200 dark:border-slate-800 mt-2">
             <div className="flex flex-col space-y-2">
-              <Link href="/auth/signup?redirect=/dashboard/onboarding" onClick={() => setMobileMenuOpen(false)} className="mx-4 inline-flex items-center justify-center gap-2 px-4 py-3 text-white bg-gradient-to-r from-violet-600 to-fuchsia-600 rounded-2xl text-sm font-semibold shadow-lg shadow-violet-500/30 cta-glow">
+              <Link href="/operator/onboarding" onClick={() => setMobileMenuOpen(false)} className="mx-4 inline-flex items-center justify-center gap-2 px-4 py-3 text-white bg-gradient-to-r from-violet-600 to-fuchsia-600 rounded-2xl text-sm font-semibold shadow-lg shadow-violet-500/30 cta-glow">
                 Start Free
                 <ArrowRightIcon className="h-4 w-4" />
               </Link>

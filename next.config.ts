@@ -8,7 +8,7 @@ const nextConfig: NextConfig = {
       { source: "/pricing", destination: "/products", permanent: false },
       { source: "/axiom/pricing", destination: "/products", permanent: true },
       { source: "/operator/pricing", destination: "/products", permanent: true },
-      { source: "/operator", destination: "/cloud-operator", permanent: true },
+      { source: "/operator", destination: "/operator/onboarding", permanent: true },
       { source: "/request", destination: "/contact", permanent: true },
       { source: "/builder", destination: "/", permanent: true },
       { source: "/builder/:path*", destination: "/", permanent: true },

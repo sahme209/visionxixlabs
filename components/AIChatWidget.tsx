@@ -74,8 +74,8 @@ export default function AIChatWidget() {
 
   // Don't show Vision XIX Labs widget inside embed iframe — only show the customer's bot
   if (pathname?.startsWith("/embed/")) return null;
-  // Hide "Let's Chat" on cloud-operator — Ask Axiom provides chat there; avoids overlap
   if (pathname?.startsWith("/cloud-operator")) return null;
+  if (pathname?.startsWith("/operator/onboarding")) return null;
 
   const sendMessage = async () => {
     const text = input.trim();

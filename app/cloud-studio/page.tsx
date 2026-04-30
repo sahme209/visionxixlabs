@@ -113,7 +113,7 @@ export default function CloudStudioPage() {
             <p className="text-xs text-indigo-900/80 dark:text-indigo-200 mb-3">
               For full scoring and a 30-day roadmap, run Axiom first.
             </p>
-            <AxiomButton href="/cloud-operator" variant="primary" className="text-xs px-3 py-1.5">
+            <AxiomButton href="/operator/onboarding" variant="primary" className="text-xs px-3 py-1.5">
               Run Axiom
               <ArrowLeftIcon className="h-3 w-3 rotate-180" />
             </AxiomButton>
