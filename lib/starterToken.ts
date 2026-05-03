@@ -58,7 +58,11 @@ export function verifyStarterToken(token: string): VerifyResult {
   const payload = parts.join(SEP);
   const toSign = `${payload}${SEP}${timestamp}`;
   const expected = createHmac("sha256", SECRET).update(toSign).digest("base64url");
-  if (sig !== expected) return { error: "invalid" };
+  const sigBuf = Buffer.from(sig, "base64url");
+  const expectedBuf = Buffer.from(expected, "base64url");
+  if (sigBuf.length !== expectedBuf.length || !timingSafeEqual(sigBuf, expectedBuf)) {
+    return { error: "invalid" };
+  }
   const ts = parseInt(timestamp, 36);
   if (Number.isNaN(ts) || ts < 0) return { error: "invalid" };
   const expiryMs = EXPIRY_DAYS * 24 * 60 * 60 * 1000;

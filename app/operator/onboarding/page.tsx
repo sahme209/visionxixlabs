@@ -238,15 +238,47 @@ function AWSSetupInstructions({ externalId }: { externalId: string }) {
   );
 }
 
+const STORAGE_KEY = "co-onboarding";
+
+function loadOnboardingState(): { externalId: string; step: OnboardingStep; provider: CloudProvider | null } {
+  if (typeof window === "undefined") return { externalId: generateExternalId(), step: 1, provider: null };
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (parsed.externalId && typeof parsed.externalId === "string") {
+        return {
+          externalId: parsed.externalId,
+          step: ([1, 2, 3, 4] as number[]).includes(parsed.step) ? parsed.step : 1,
+          provider: parsed.provider ?? null,
+        };
+      }
+    }
+  } catch {}
+  const id = generateExternalId();
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify({ externalId: id, step: 1, provider: null })); } catch {}
+  return { externalId: id, step: 1, provider: null };
+}
+
 export default function OnboardingPage() {
   const router = useRouter();
-  const [step, setStep] = useState<OnboardingStep>(1);
-  const [selectedProvider, setSelectedProvider] = useState<CloudProvider | null>(null);
+  const [saved] = useState(loadOnboardingState);
+  const [step, setStepRaw] = useState<OnboardingStep>(saved.step);
+  const [selectedProvider, setSelectedProvider] = useState<CloudProvider | null>(saved.provider);
   const [connectionPhase, setConnectionPhase] = useState<ConnectionPhase>("select");
 
   const [roleArn, setRoleArn] = useState("");
   const [awsAccountId, setAwsAccountId] = useState("");
-  const [externalId] = useState(() => generateExternalId());
+  const [externalId] = useState(saved.externalId);
+
+  const setStep = useCallback((s: OnboardingStep) => {
+    setStepRaw(s);
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      const current = raw ? JSON.parse(raw) : {};
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({ ...current, step: s, provider: selectedProvider }));
+    } catch {}
+  }, [selectedProvider]);
 
   const [validating, setValidating] = useState(false);
   const [connected, setConnected] = useState(false);
@@ -362,6 +394,7 @@ export default function OnboardingPage() {
       setConnected(true);
       setVerifiedAccount(linkData.account ?? trimmedAccountId);
       setConnectionPhase("validate");
+      try { localStorage.removeItem(STORAGE_KEY); } catch {}
       setTimeout(() => setStep(3), 1500);
     } catch {
       setError("Network error. Please check your connection and try again.");
@@ -474,7 +507,11 @@ export default function OnboardingPage() {
                       return (
                         <button
                           key={p}
-                          onClick={() => { setSelectedProvider(p); setError(null); }}
+                          onClick={() => {
+                            setSelectedProvider(p);
+                            setError(null);
+                            try { const raw = localStorage.getItem(STORAGE_KEY); const c = raw ? JSON.parse(raw) : {}; localStorage.setItem(STORAGE_KEY, JSON.stringify({ ...c, provider: p })); } catch {}
+                          }}
                           className={`w-full text-left rounded-xl border p-5 transition-all ${
                             isSelected
                               ? "border-violet-500/50 bg-violet-950/20"
