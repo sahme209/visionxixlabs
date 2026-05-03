@@ -1,6 +1,7 @@
 "use client";
 
-import { FormEvent, Suspense, useCallback, useEffect, useRef, useState } from "react";
+import { FormEvent, Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { deriveCostSignals } from "@/lib/axiom/costSignals";
 import { useAxiomPanel } from "@/lib/contexts/AxiomPanelContext";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
@@ -1962,6 +1963,13 @@ function CloudOperatorPageInner() {
   const [workflowSteps, setWorkflowSteps] = useState<WorkflowStep[]>([]);
   const [awsSnapshot, setAwsSnapshot] = useState<OperatorStatus["awsSnapshot"]>(null);
   const [snapshotLoading, setSnapshotLoading] = useState(false);
+
+  const costSignals = useMemo(() => {
+    if (!awsSnapshot) return null;
+    const monthlySpend = (status?.operatorProfile as { monthlySpend?: string })?.monthlySpend;
+    const spend = monthlySpend ? Number(monthlySpend) : null;
+    return deriveCostSignals(awsSnapshot, spend && !Number.isNaN(spend) ? spend : null);
+  }, [awsSnapshot, status?.operatorProfile]);
   const [formValid, setFormValid] = useState(false);
   const formRef = useRef<HTMLFormElement | null>(null);
   const [upgradeModalOpen, setUpgradeModalOpen] = useState(false);
@@ -2333,8 +2341,10 @@ function CloudOperatorPageInner() {
                   <AxiomMetricCard
                     label="Estimated Annual Savings"
                     value={
-                      <span className="text-xl font-semibold text-slate-900 dark:text-slate-100">
-                        {status.axiomEstimatedAnnualSavings != null
+                      <span className="text-xl font-semibold text-emerald-700 dark:text-emerald-400">
+                        {costSignals && costSignals.totalAnnualSavings.high > 0
+                          ? `$${costSignals.totalAnnualSavings.low.toLocaleString()} – $${costSignals.totalAnnualSavings.high.toLocaleString()}`
+                          : status.axiomEstimatedAnnualSavings != null
                           ? `$${status.axiomEstimatedAnnualSavings.toLocaleString()}`
                           : status.estimatedAnnualSavings != null
                           ? `$${status.estimatedAnnualSavings.toLocaleString()}`
@@ -2343,7 +2353,9 @@ function CloudOperatorPageInner() {
                     }
                     footer={
                       <span className="text-slate-400 dark:text-slate-500">
-                        Based on right-sizing, reserved capacity, storage tiering
+                        {costSignals && costSignals.signals.length > 0
+                          ? `${costSignals.signals.length} saving${costSignals.signals.length !== 1 ? "s" : ""} identified · scroll down for breakdown`
+                          : "Based on right-sizing, reserved capacity, storage tiering"}
                       </span>
                     }
                   />
@@ -3532,6 +3544,61 @@ function CloudOperatorPageInner() {
                         </button>
                       </div>
                     )}
+                  </AxiomCard>
+                )}
+                {costSignals && costSignals.signals.length > 0 && (
+                  <AxiomCard className="p-5 border-l-4 border-l-emerald-500">
+                    <div className="flex items-center justify-between mb-4">
+                      <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100 flex items-center gap-2">
+                        <ChartBarIcon className="h-4 w-4 text-emerald-500" />
+                        Potential Annual Savings
+                      </h3>
+                      <span className="text-lg font-bold text-emerald-600 dark:text-emerald-400">
+                        ${costSignals.totalAnnualSavings.low.toLocaleString()} – ${costSignals.totalAnnualSavings.high.toLocaleString()}
+                      </span>
+                    </div>
+                    <div className="space-y-3">
+                      {costSignals.signals.map((signal, i) => (
+                        <div key={i} className="rounded-lg border border-slate-200 dark:border-slate-700/60 bg-slate-50/50 dark:bg-slate-900/40 p-3">
+                          <div className="flex items-start justify-between gap-3">
+                            <div className="flex-1 min-w-0">
+                              <p className="text-xs font-semibold text-slate-900 dark:text-slate-100">{signal.resource}</p>
+                              <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{signal.issue}</p>
+                            </div>
+                            <div className="text-right flex-shrink-0">
+                              <p className="text-xs font-bold text-emerald-600 dark:text-emerald-400">
+                                ${signal.annualSavingsEstimate.low.toLocaleString()} – ${signal.annualSavingsEstimate.high.toLocaleString()}/yr
+                              </p>
+                              {signal.monthlyCostEstimate.high > 0 && (
+                                <p className="text-[10px] text-slate-500 dark:text-slate-500">
+                                  ~${signal.monthlyCostEstimate.low.toLocaleString()} – ${signal.monthlyCostEstimate.high.toLocaleString()}/mo current
+                                </p>
+                              )}
+                            </div>
+                          </div>
+                          {signal.proOutputPreview && (
+                            <div className="mt-2 rounded-md border border-violet-500/20 bg-violet-500/5 dark:bg-violet-950/30 px-3 py-2">
+                              <p className="text-[10px] font-semibold text-violet-600 dark:text-violet-400 uppercase tracking-wide mb-1">Pro output preview</p>
+                              {signal.proOutputPreview.map((line, j) => (
+                                <p key={j} className="text-xs text-slate-700 dark:text-slate-300 font-mono leading-relaxed">{line}</p>
+                              ))}
+                            </div>
+                          )}
+                          {!status?.canViewTechnicalOutputs && (
+                            <button
+                              onClick={() => openUpgradeModal("fix-automatically", signal.resource)}
+                              className="mt-2 inline-flex items-center gap-1.5 text-[11px] font-medium text-violet-600 dark:text-violet-400 hover:text-violet-800 dark:hover:text-violet-300 transition-colors group"
+                            >
+                              <BoltIcon className="h-3 w-3 group-hover:scale-110 transition-transform" />
+                              {signal.proFix}
+                            </button>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                    <p className="mt-3 text-[10px] text-slate-400 dark:text-slate-500">
+                      {costSignals.signals.some(s => s.confidence === "measured") ? "Based on your reported spend." : "Conservative estimates based on industry averages."} Ranges reflect typical variance. Pro tier provides account-specific analysis.
+                    </p>
                   </AxiomCard>
                 )}
                 {!awsSnapshot && snapshotLoading && (
