@@ -4,3 +4,4 @@
 
 import "./infrastructure-discovery";
 import "./security-scan";
+import "./snapshot-generator";
