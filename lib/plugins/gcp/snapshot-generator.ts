@@ -277,7 +277,9 @@ export async function generateGCPSnapshot(
       memoryGb: lookup.memoryGb,
       state,
       monthlyCostEstimate: state === "stopped" ? 0 : lookup.monthlyCost,
-      tags: inst.labels ?? undefined,
+      tags: inst.labels
+        ? Object.fromEntries(Object.entries(inst.labels).filter((e): e is [string, string] => e[1] != null))
+        : undefined,
     };
   });
 
@@ -291,7 +293,9 @@ export async function generateGCPSnapshot(
       region: (meta.location ?? "us").toLowerCase(),
       storageClass: mapStorageClass(meta.storageClass),
       monthlyCostEstimate: AVG_BUCKET_MONTHLY,
-      tags: meta.labels ?? undefined,
+      tags: meta.labels
+        ? Object.fromEntries(Object.entries(meta.labels).filter((e): e is [string, string] => e[1] != null))
+        : undefined,
     };
   });
 
