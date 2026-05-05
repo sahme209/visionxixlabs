@@ -361,7 +361,7 @@ function defaultInstanceType(provider: CloudProvider): string {
   }
 }
 
-function suggestDownsize(current: string, provider: CloudProvider): string {
+export function suggestDownsize(current: string, provider: CloudProvider): string {
   switch (provider) {
     case "aws": {
       const m = current.match(/^(\w+)\.(\d*)x?large$/);
