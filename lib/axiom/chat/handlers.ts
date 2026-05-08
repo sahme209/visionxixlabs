@@ -425,7 +425,7 @@ async function handleChangesSince(ctx: ChatContext): Promise<ChatResponse> {
   const prevSavingsHigh = previous.findings.reduce((s, f) => s + (f.yearlyHigh ?? 0), 0);
   const savingsDelta = currentSavingsHigh - prevSavingsHigh;
 
-  lines.push(`Comparing scan from **${fmtDate(current.startedAt)}** to **${fmtDate(previous.startedAt)}**:\n`);
+  lines.push(`Comparing scan from **${fmtDate(current.startedAt ?? current.createdAt)}** to **${fmtDate(previous.startedAt ?? previous.createdAt)}**:\n`);
 
   lines.push(`• Findings: ${current.findings.length} (${delta(findingsDelta)})`);
   lines.push(`• Recommendations: ${current.recommendations.length} (${delta(recsDelta)})`);
@@ -707,7 +707,7 @@ async function handleRunStatus(ctx: ChatContext): Promise<ChatResponse> {
 
   const parts: string[] = [];
   parts.push(`Your latest scan is **${statusLabel[run.status] ?? run.status}**.`);
-  parts.push(`Started: ${fmtDate(run.startedAt)}`);
+  parts.push(`Started: ${fmtDate(run.startedAt ?? run.createdAt)}`);
 
   if (run.completedAt) {
     parts.push(`Completed: ${fmtDate(run.completedAt)}`);
