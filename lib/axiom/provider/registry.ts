@@ -51,7 +51,7 @@ const IMPLEMENTATION_STATUS: Record<string, Record<string, boolean>> = {
     rollbackAction: true,
   },
   azure: {
-    validateConnection: false,
+    validateConnection: true,
     collectSnapshot: true,
     estimateCosts: true,
     generateExecutionPlan: true,

@@ -3,15 +3,22 @@
  * Uses existing credential system and Azure SDK packages already installed.
  *
  * Required RBAC roles (minimum):
- *   - Reader on the subscription (Microsoft.Compute/virtualMachines/read,
- *     Microsoft.Storage/storageAccounts/read, Microsoft.RecoveryServices/vaults/read)
- *   - Monitoring Reader for CPU/memory metrics (Microsoft.Insights/metrics/read)
+ *   - Reader on the subscription:
+ *       Microsoft.Compute/virtualMachines/read
+ *       Microsoft.Storage/storageAccounts/read
+ *       Microsoft.Resources/subscriptions/resourceGroups/read
+ *       Microsoft.RecoveryServices/vaults/read
+ *   - Monitoring Reader for CPU/memory metrics:
+ *       Microsoft.Insights/metrics/read
+ *   - Storage Blob Data Reader (optional, for blob container enumeration):
+ *       Microsoft.Storage/storageAccounts/blobServices/containers/read
  *
  * No billing integration needed — uses static cost map for estimates.
  */
 
 import { ComputeManagementClient } from "@azure/arm-compute";
 import { StorageManagementClient } from "@azure/arm-storage";
+import { ResourceManagementClient } from "@azure/arm-resources";
 import type { VirtualMachine } from "@azure/arm-compute";
 import type { StorageAccount } from "@azure/arm-storage";
 import type { TokenCredential } from "@azure/identity";
@@ -193,6 +200,104 @@ async function fetchCpuMetrics(
 }
 
 // ---------------------------------------------------------------------------
+// List subscriptions — validates credentials and returns accessible subs
+// ---------------------------------------------------------------------------
+
+export type AzureSubscriptionInfo = {
+  subscriptionId: string;
+  displayName: string;
+  state: string;
+};
+
+export async function listSubscriptions(
+  credential: TokenCredential,
+): Promise<AzureSubscriptionInfo[]> {
+  const { SubscriptionClient } = await import("@azure/arm-subscriptions");
+  const client = new SubscriptionClient(credential);
+  const subs: AzureSubscriptionInfo[] = [];
+
+  for await (const sub of client.subscriptions.list()) {
+    subs.push({
+      subscriptionId: sub.subscriptionId ?? "",
+      displayName: sub.displayName ?? "",
+      state: sub.state ?? "unknown",
+    });
+  }
+
+  return subs;
+}
+
+// ---------------------------------------------------------------------------
+// List resource groups
+// ---------------------------------------------------------------------------
+
+export type AzureResourceGroupInfo = {
+  name: string;
+  location: string;
+  provisioningState: string;
+  tags: Record<string, string>;
+};
+
+export async function listResourceGroups(
+  credential: TokenCredential,
+  subscriptionId: string,
+): Promise<AzureResourceGroupInfo[]> {
+  const client = new ResourceManagementClient(credential, subscriptionId);
+  const groups: AzureResourceGroupInfo[] = [];
+
+  for await (const rg of client.resourceGroups.list()) {
+    const tags: Record<string, string> = {};
+    if (rg.tags) {
+      for (const [k, v] of Object.entries(rg.tags)) {
+        if (v != null) tags[k] = v;
+      }
+    }
+    groups.push({
+      name: rg.name ?? "unknown",
+      location: extractRegion(rg.location),
+      provisioningState: rg.properties?.provisioningState ?? "unknown",
+      tags,
+    });
+  }
+
+  return groups;
+}
+
+// ---------------------------------------------------------------------------
+// List blob containers for a storage account (best-effort)
+// ---------------------------------------------------------------------------
+
+export type AzureBlobContainerInfo = {
+  name: string;
+  publicAccess: string;
+  lastModified: string | null;
+  leaseState: string;
+};
+
+async function listBlobContainers(
+  storageClient: StorageManagementClient,
+  resourceGroupName: string,
+  accountName: string,
+): Promise<AzureBlobContainerInfo[]> {
+  const containers: AzureBlobContainerInfo[] = [];
+
+  try {
+    for await (const c of storageClient.blobContainers.list(resourceGroupName, accountName)) {
+      containers.push({
+        name: c.name ?? "unknown",
+        publicAccess: c.publicAccess ?? "None",
+        lastModified: c.lastModifiedTime?.toISOString() ?? null,
+        leaseState: c.leaseState ?? "unknown",
+      });
+    }
+  } catch {
+    // Storage Blob Data Reader may not be assigned — skip silently
+  }
+
+  return containers;
+}
+
+// ---------------------------------------------------------------------------
 // Check for Recovery Services vaults (backup detection)
 // ---------------------------------------------------------------------------
 
@@ -216,37 +321,97 @@ async function hasRecoveryVaults(
 }
 
 // ---------------------------------------------------------------------------
+// Extended result — includes resource groups and blob containers alongside
+// the standard CloudSnapshot for richer Axiom analysis.
+// ---------------------------------------------------------------------------
+
+export type AzureSnapshotExtended = CloudSnapshot & {
+  resourceGroups: AzureResourceGroupInfo[];
+  blobContainers: Record<string, AzureBlobContainerInfo[]>;
+  partialErrors: string[];
+};
+
+// ---------------------------------------------------------------------------
 // Main: generate CloudSnapshot
 // ---------------------------------------------------------------------------
 
 export async function generateAzureSnapshot(
   credential: TokenCredential,
   subscriptionId: string,
-): Promise<CloudSnapshot> {
+): Promise<AzureSnapshotExtended> {
   const computeClient = new ComputeManagementClient(credential, subscriptionId);
   const storageClient = new StorageManagementClient(credential, subscriptionId);
 
-  const [vms, storageAccounts] = await Promise.all([
+  const partialErrors: string[] = [];
+
+  // Phase 1: Collect core resources in parallel
+  const [vmsResult, storageResult, resourceGroupsResult] = await Promise.allSettled([
     collectAll(computeClient.virtualMachines.listAll({ expand: "instanceView" })),
     collectAll(storageClient.storageAccounts.list()),
+    listResourceGroups(credential, subscriptionId),
   ]);
+
+  const vms = vmsResult.status === "fulfilled" ? vmsResult.value : [];
+  if (vmsResult.status === "rejected") {
+    partialErrors.push(`VM enumeration failed: ${(vmsResult.reason as Error)?.message ?? "unknown error"}. Check Microsoft.Compute/virtualMachines/read permission.`);
+  }
+
+  const storageAccounts = storageResult.status === "fulfilled" ? storageResult.value : [];
+  if (storageResult.status === "rejected") {
+    partialErrors.push(`Storage account enumeration failed: ${(storageResult.reason as Error)?.message ?? "unknown error"}. Check Microsoft.Storage/storageAccounts/read permission.`);
+  }
+
+  const resourceGroups = resourceGroupsResult.status === "fulfilled" ? resourceGroupsResult.value : [];
+  if (resourceGroupsResult.status === "rejected") {
+    partialErrors.push(`Resource group enumeration failed: ${(resourceGroupsResult.reason as Error)?.message ?? "unknown error"}.`);
+  }
 
   const computeResources = vms.map(vmToComputeResource);
   const storageResources = storageAccounts.map(storageAccountToResource);
 
-  const vmResourceIds = vms
-    .filter((vm) => vm.id)
-    .map((vm) => vm.id!);
+  // Phase 2: Enrich with metrics, backup detection, and blob containers
+  const vmResourceIds = vms.filter((vm) => vm.id).map((vm) => vm.id!);
 
-  const [cpuMetrics, hasBackups] = await Promise.all([
+  const storageAccountsWithRg = storageAccounts
+    .filter((sa) => sa.id && sa.name)
+    .map((sa) => {
+      const parts = (sa.id ?? "").split("/");
+      const rgIdx = parts.indexOf("resourceGroups");
+      return {
+        name: sa.name!,
+        resourceGroup: rgIdx >= 0 ? parts[rgIdx + 1] : "",
+      };
+    })
+    .filter((sa) => sa.resourceGroup);
+
+  const [cpuMetrics, hasBackups, ...blobResults] = await Promise.allSettled([
     fetchCpuMetrics(credential, subscriptionId, vmResourceIds),
     hasRecoveryVaults(credential, subscriptionId),
+    ...storageAccountsWithRg.slice(0, 20).map((sa) =>
+      listBlobContainers(storageClient, sa.resourceGroup, sa.name).then(
+        (containers) => ({ accountName: sa.name, containers }),
+      ),
+    ),
   ]);
 
+  const cpuMap = cpuMetrics.status === "fulfilled" ? cpuMetrics.value : new Map<string, number>();
+  const backupsDetected = hasBackups.status === "fulfilled" ? hasBackups.value : false;
+
   for (const cr of computeResources) {
-    const cpu = cpuMetrics.get(cr.resourceId);
+    const cpu = cpuMap.get(cr.resourceId);
     if (cpu !== undefined) {
       cr.usage = { cpuAvgPct: cpu, sampleWindowHours: 168 };
+    }
+  }
+
+  // Collect blob containers per storage account
+  const blobContainers: Record<string, AzureBlobContainerInfo[]> = {};
+  for (const result of blobResults) {
+    if (result.status === "fulfilled") {
+      const val = result.value as { accountName: string; containers: AzureBlobContainerInfo[] };
+      if (val.containers.length > 0) {
+        blobContainers[val.accountName] = val.containers;
+      }
     }
   }
 
@@ -264,9 +429,12 @@ export async function generateAzureSnapshot(
     monthlySpend: Math.round(totalMonthly),
     flags: {
       singleRegion: regions.length <= 1 && runningCompute.length > 0,
-      noBackupsDetected: !hasBackups,
+      noBackupsDetected: !backupsDetected,
     },
-    insights: buildInsights(computeResources, storageResources, cpuMetrics, hasBackups),
+    insights: buildInsights(computeResources, storageResources, cpuMap, backupsDetected),
+    resourceGroups,
+    blobContainers,
+    partialErrors,
   };
 }
 

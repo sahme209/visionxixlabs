@@ -17,15 +17,15 @@ import type {
 import { notImplemented, adapterError } from "./types";
 
 // ---------------------------------------------------------------------------
-// Azure Adapter
+// Azure Adapter — production-ready for read operations
 //
 // Status:
-//   collectSnapshot  — IMPLEMENTED (calls existing Azure snapshot generator)
-//   estimateCosts    — IMPLEMENTED (shared cost signal engine)
-//   generatePlan     — IMPLEMENTED (shared execution plan engine)
-//   verifyAction     — IMPLEMENTED (shared verification engine, read-only)
-//   validateConnection — TODO: implement Azure Resource Manager health check
-//   applyAction        — TODO: implement Azure Compute/Storage Management mutations
+//   validateConnection — IMPLEMENTED (lists subscriptions + resource groups)
+//   collectSnapshot    — IMPLEMENTED (VMs + Storage + Resource Groups + Blobs)
+//   estimateCosts      — IMPLEMENTED (shared cost signal engine)
+//   generatePlan       — IMPLEMENTED (shared execution plan engine)
+//   verifyAction       — IMPLEMENTED (shared verification engine, read-only)
+//   applyAction        — TODO: implement Azure Compute/Storage mutations
 //   rollbackAction     — TODO: implement Azure rollback execution
 // ---------------------------------------------------------------------------
 
@@ -33,14 +33,66 @@ export class AzureAdapter implements CloudProviderAdapter {
   readonly provider = "azure" as const;
 
   async validateConnection(
-    _userId: string,
-    _credentialRef: string,
+    userId: string,
+    credentialRef: string,
   ): Promise<AdapterResult<ConnectionValidation>> {
-    // TODO: Call Azure Resource Manager to validate credentials:
-    //   1. Use @azure/identity DefaultAzureCredential or ClientSecretCredential
-    //   2. Call subscriptions.list() to verify access
-    //   3. Return subscription ID and available regions
-    return notImplemented("Azure", "validateConnection");
+    try {
+      const creds = await getCredentialProvider().getAzureCredentials(userId, credentialRef);
+      if (!creds) {
+        return { ok: false, error: "Azure credentials not found in vault.", code: "invalid_credentials" };
+      }
+
+      const mod = await import("@/lib/plugins/azure/snapshot-generator");
+
+      // List subscriptions to validate credentials and enumerate access
+      const subs = await mod.listSubscriptions(creds.credential);
+      if (subs.length === 0) {
+        return {
+          ok: false,
+          error: "No Azure subscriptions accessible. Verify the Service Principal has Reader role on at least one subscription.",
+          code: "permission_denied",
+        };
+      }
+
+      // List resource groups in the target subscription for region discovery
+      const resourceGroups = await mod.listResourceGroups(creds.credential, creds.subscriptionId);
+      const regions = [...new Set(resourceGroups.map((rg) => rg.location))].filter(Boolean);
+
+      const permissions = [
+        "Microsoft.Resources/subscriptions/read",
+        "Microsoft.Resources/subscriptions/resourceGroups/read",
+      ];
+
+      // Probe VM read access (best-effort)
+      try {
+        const { ComputeManagementClient } = await import("@azure/arm-compute");
+        const compute = new ComputeManagementClient(creds.credential, creds.subscriptionId);
+        const iter = compute.virtualMachines.listAll({ statusOnly: "true" });
+        await iter.next();
+        permissions.push("Microsoft.Compute/virtualMachines/read");
+      } catch { /* VM read not available */ }
+
+      // Probe storage read access (best-effort)
+      try {
+        const { StorageManagementClient } = await import("@azure/arm-storage");
+        const storage = new StorageManagementClient(creds.credential, creds.subscriptionId);
+        const iter = storage.storageAccounts.list();
+        await iter.next();
+        permissions.push("Microsoft.Storage/storageAccounts/read");
+      } catch { /* Storage read not available */ }
+
+      return {
+        ok: true,
+        data: {
+          connected: true,
+          accountId: creds.subscriptionId,
+          regions: regions.length > 0 ? regions : ["unknown"],
+          permissions,
+        },
+      };
+    } catch (e) {
+      return adapterError("connection_failed", e);
+    }
   }
 
   async collectSnapshot(

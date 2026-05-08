@@ -2,7 +2,7 @@ import { prisma } from "@/lib/db";
 import type { CloudProvider } from "../cloudSnapshot";
 import type { ConfidenceScore } from "../costSignals";
 import type { ExecutionPlanItem, RiskLevel } from "../executionPlan";
-import type {
+import {
   RiskTolerance,
   ApprovalPolicy,
   OutputFormat,
@@ -29,11 +29,11 @@ export type OrgPreferences = {
 
 const DEFAULTS: Omit<OrgPreferences, "organizationId"> = {
   preferredProviders: [],
-  riskTolerance: "conservative",
-  approvalPolicy: "require_all",
+  riskTolerance: RiskTolerance.Conservative,
+  approvalPolicy: ApprovalPolicy.RequireAll,
   autoApplyEnabled: false,
-  outputFormat: "terraform",
-  businessContext: "other",
+  outputFormat: OutputFormat.Terraform,
+  businessContext: BusinessContext.Other,
   ignoredFindingTitles: new Set(),
   priorityCategories: [],
   notes: null,
