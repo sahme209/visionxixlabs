@@ -69,7 +69,7 @@ const RULES: IntentRule[] = [
     intent: "why_risky",
     extractParams: (text) => {
       const m = text.match(/\b(plan-\d+|rec-\d+|item-\d+)\b/i);
-      return m ? { itemRef: m[1] } : {};
+      return m ? { itemRef: m[1] } : ({} as Record<string, string>);
     },
   },
   {
@@ -120,7 +120,7 @@ const RULES: IntentRule[] = [
     intent: "explain_finding",
     extractParams: (text) => {
       const m = text.match(/\b(finding-\d+|rec-\d+)\b/i);
-      return m ? { ref: m[1] } : {};
+      return m ? { ref: m[1] } : ({} as Record<string, string>);
     },
   },
   {
