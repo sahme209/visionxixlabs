@@ -17,6 +17,7 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { getEntitlementsFromPlan } from "@/lib/entitlements";
 import { getAdapter } from "@/lib/axiom/provider/registry";
+import { normalizeSnapshot } from "@/lib/axiom/normalizer";
 
 const VALID_PROVIDERS = new Set(["aws", "azure", "gcp"]);
 
@@ -59,16 +60,19 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const snapshot = result.data;
-    const costResult = adapter.estimateCosts(snapshot);
+    const rawSnapshot = result.data;
+    const normalized = normalizeSnapshot(rawSnapshot);
+    const costResult = adapter.estimateCosts(rawSnapshot);
 
     return NextResponse.json({
-      snapshot,
+      snapshot: normalized,
       costSignals: costResult.ok ? costResult.data : null,
-      computeCount: snapshot.resources.filter((r) => r.resourceType === "compute").length,
-      storageCount: snapshot.resources.filter((r) => r.resourceType === "storage").length,
-      regionCount: snapshot.regions.length,
-      estimatedMonthlySpend: snapshot.monthlySpend ?? 0,
+      dataQuality: normalized.dataQuality,
+      providerEvidence: normalized.providerEvidence,
+      computeCount: normalized.resources.filter((r) => r.resourceType === "compute").length,
+      storageCount: normalized.resources.filter((r) => r.resourceType === "storage").length,
+      regionCount: normalized.regions.length,
+      estimatedMonthlySpend: normalized.monthlySpend,
     });
   } catch (e) {
     console.error(`[axiom cloud/snapshot ${provider}]`, e);

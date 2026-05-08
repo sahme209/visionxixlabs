@@ -10,6 +10,7 @@ import { prisma } from "@/lib/db";
 import { getEntitlementsFromPlan } from "@/lib/entitlements";
 import { loadPreferences, savePreferences } from "@/lib/axiom/agent/preferences";
 import type { PreferenceUpdates } from "@/lib/axiom/agent/preferences";
+import type { RiskTolerance, ApprovalPolicy, OutputFormat, BusinessContext } from "@/lib/axiom/enums";
 
 const VALID_RISK_TOLERANCE = new Set(["conservative", "moderate", "aggressive"]);
 const VALID_APPROVAL_POLICY = new Set(["require_all", "auto_low_risk", "auto_safe"]);
@@ -75,7 +76,7 @@ export async function PUT(req: NextRequest) {
     if (!VALID_RISK_TOLERANCE.has(rawUpdates.riskTolerance)) {
       errors.push("riskTolerance must be conservative, moderate, or aggressive");
     } else {
-      updates.riskTolerance = rawUpdates.riskTolerance;
+      updates.riskTolerance = rawUpdates.riskTolerance as RiskTolerance;
     }
   }
 
@@ -83,7 +84,7 @@ export async function PUT(req: NextRequest) {
     if (!VALID_APPROVAL_POLICY.has(rawUpdates.approvalPolicy)) {
       errors.push("approvalPolicy must be require_all, auto_low_risk, or auto_safe");
     } else {
-      updates.approvalPolicy = rawUpdates.approvalPolicy;
+      updates.approvalPolicy = rawUpdates.approvalPolicy as ApprovalPolicy;
     }
   }
 
@@ -91,7 +92,7 @@ export async function PUT(req: NextRequest) {
     if (!VALID_OUTPUT_FORMAT.has(rawUpdates.outputFormat)) {
       errors.push("outputFormat must be terraform, cli, or json");
     } else {
-      updates.outputFormat = rawUpdates.outputFormat;
+      updates.outputFormat = rawUpdates.outputFormat as OutputFormat;
     }
   }
 
@@ -99,7 +100,7 @@ export async function PUT(req: NextRequest) {
     if (!VALID_BUSINESS_CONTEXT.has(rawUpdates.businessContext)) {
       errors.push("Invalid businessContext");
     } else {
-      updates.businessContext = rawUpdates.businessContext;
+      updates.businessContext = rawUpdates.businessContext as BusinessContext;
     }
   }
 

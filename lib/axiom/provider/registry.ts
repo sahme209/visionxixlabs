@@ -60,7 +60,7 @@ const IMPLEMENTATION_STATUS: Record<string, Record<string, boolean>> = {
     rollbackAction: false,
   },
   gcp: {
-    validateConnection: false,
+    validateConnection: true,
     collectSnapshot: true,
     estimateCosts: true,
     generateExecutionPlan: true,

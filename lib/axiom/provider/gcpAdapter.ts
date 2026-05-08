@@ -17,14 +17,14 @@ import type {
 import { notImplemented, adapterError } from "./types";
 
 // ---------------------------------------------------------------------------
-// GCP Adapter
+// GCP Adapter — production-ready for read operations
 //
 // Status:
-//   collectSnapshot  — IMPLEMENTED (calls existing GCP snapshot generator)
-//   estimateCosts    — IMPLEMENTED (shared cost signal engine)
-//   generatePlan     — IMPLEMENTED (shared execution plan engine)
-//   verifyAction     — IMPLEMENTED (shared verification engine, read-only)
-//   validateConnection — TODO: implement GCP service account health check
+//   validateConnection — IMPLEMENTED (lists projects + regions, probes Compute & Storage)
+//   collectSnapshot    — IMPLEMENTED (Compute Engine + Cloud Storage + metrics)
+//   estimateCosts      — IMPLEMENTED (shared cost signal engine)
+//   generatePlan       — IMPLEMENTED (shared execution plan engine)
+//   verifyAction       — IMPLEMENTED (shared verification engine, read-only)
 //   applyAction        — TODO: implement Compute Engine / Cloud Storage mutations
 //   rollbackAction     — TODO: implement GCP rollback execution
 // ---------------------------------------------------------------------------
@@ -33,14 +33,65 @@ export class GCPAdapter implements CloudProviderAdapter {
   readonly provider = "gcp" as const;
 
   async validateConnection(
-    _userId: string,
-    _credentialRef: string,
+    userId: string,
+    credentialRef: string,
   ): Promise<AdapterResult<ConnectionValidation>> {
-    // TODO: Validate GCP service account credentials:
-    //   1. Use google-auth-library to create JWT client
-    //   2. Call projects.get(projectId) to verify access
-    //   3. List compute.regions to confirm permissions
-    return notImplemented("GCP", "validateConnection");
+    try {
+      const creds = await getCredentialProvider().getGCPCredentials(userId, credentialRef);
+      if (!creds) {
+        return { ok: false, error: "GCP credentials not found in vault.", code: "invalid_credentials" };
+      }
+
+      const mod = await import("@/lib/plugins/gcp/snapshot-generator");
+
+      const projects = await mod.listProjects(creds.credentials);
+      if (projects.length === 0) {
+        return {
+          ok: false,
+          error: "No GCP projects accessible. Verify the service account has resourcemanager.projects.list permission or roles/browser on the organization.",
+          code: "permission_denied",
+        };
+      }
+
+      const regions = await mod.listRegions(creds.credentials, creds.projectId);
+
+      const permissions = [
+        "resourcemanager.projects.list",
+      ];
+
+      if (regions.length > 0) {
+        permissions.push("compute.regions.list");
+      }
+
+      // Probe Compute Engine read access (best-effort)
+      try {
+        const { InstancesClient } = await import("@google-cloud/compute");
+        const client = new InstancesClient({ credentials: creds.credentials });
+        const iter = client.aggregatedListAsync({ project: creds.projectId, maxResults: 1 });
+        await iter[Symbol.asyncIterator]().next();
+        permissions.push("compute.instances.list");
+      } catch { /* Compute read not available */ }
+
+      // Probe Cloud Storage read access (best-effort)
+      try {
+        const { Storage } = await import("@google-cloud/storage");
+        const storage = new Storage({ credentials: creds.credentials, projectId: creds.projectId });
+        await storage.getBuckets({ project: creds.projectId, maxResults: 1 });
+        permissions.push("storage.buckets.list");
+      } catch { /* Storage read not available */ }
+
+      return {
+        ok: true,
+        data: {
+          connected: true,
+          accountId: creds.projectId,
+          regions: regions.length > 0 ? regions : ["unknown"],
+          permissions,
+        },
+      };
+    } catch (e) {
+      return adapterError("connection_failed", e);
+    }
   }
 
   async collectSnapshot(

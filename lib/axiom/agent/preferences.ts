@@ -72,11 +72,11 @@ export async function loadPreferences(organizationId: string): Promise<OrgPrefer
 
 export type PreferenceUpdates = {
   preferredProviders?: string[];
-  riskTolerance?: string;
-  approvalPolicy?: string;
+  riskTolerance?: RiskTolerance;
+  approvalPolicy?: ApprovalPolicy;
   autoApplyEnabled?: boolean;
-  outputFormat?: string;
-  businessContext?: string;
+  outputFormat?: OutputFormat;
+  businessContext?: BusinessContext;
   ignoredFindingTitles?: string[];
   priorityCategories?: string[];
   notes?: string | null;

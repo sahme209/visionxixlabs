@@ -1,5 +1,6 @@
 import { getCredentialProvider } from "@/lib/plugins/credentials";
 import type { CloudProvider, CloudSnapshot } from "../cloudSnapshot";
+import { normalizeSnapshot, type NormalizedSnapshot } from "../normalizer";
 
 // ---------------------------------------------------------------------------
 // Provider snapshot adapters — dynamic imports to avoid loading all SDKs
@@ -35,16 +36,17 @@ const ADAPTERS: Record<CloudProvider, () => Promise<SnapshotAdapter>> = {
 };
 
 // ---------------------------------------------------------------------------
-// Public API
+// Public API — all snapshots are normalized before reaching agent core
 // ---------------------------------------------------------------------------
 
 export async function generateSnapshot(
   provider: CloudProvider,
   userId: string,
   credentialRef: string,
-): Promise<CloudSnapshot> {
+): Promise<NormalizedSnapshot> {
   const adapter = await ADAPTERS[provider]();
-  return adapter(userId, credentialRef);
+  const rawSnapshot = await adapter(userId, credentialRef);
+  return normalizeSnapshot(rawSnapshot);
 }
 
 export type { SnapshotAdapter as SnapshotGenerator };

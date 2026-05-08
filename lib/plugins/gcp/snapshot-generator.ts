@@ -3,15 +3,21 @@
  * Uses existing credential system and @google-cloud packages already installed.
  *
  * Required IAM roles (minimum):
- *   - roles/compute.viewer      (compute.instances.list, compute.zones.list)
- *   - roles/storage.objectViewer (storage.buckets.list, storage.buckets.get)
+ *   - roles/compute.viewer      (compute.instances.list, compute.zones.list,
+ *                                 compute.regions.list)
+ *   - roles/storage.admin       (storage.buckets.list, storage.buckets.get,
+ *                                 storage.objects.list — for object count)
+ *     OR roles/storage.objectViewer for read-only bucket enumeration
  *   - roles/monitoring.viewer    (monitoring.timeSeries.list — for CPU metrics)
+ *   - roles/resourcemanager.projectIamAdmin OR roles/browser
+ *     (resourcemanager.projects.get — for project validation)
  *
  * No BigQuery billing export needed — uses static machine type pricing map.
  */
 
-import { InstancesClient } from "@google-cloud/compute";
+import { InstancesClient, RegionsClient } from "@google-cloud/compute";
 import { Storage } from "@google-cloud/storage";
+import { ProjectsClient } from "@google-cloud/resource-manager";
 import { registerExecutionPlugin } from "../executionRegistry";
 import { getCredentialProvider } from "../credentials";
 import type { ExecutionPluginContext, PluginResult } from "../types";
@@ -132,6 +138,114 @@ function mapStorageClass(storageClass: string | undefined): StorageClass {
 }
 
 // ---------------------------------------------------------------------------
+// List accessible projects — validates credentials
+// ---------------------------------------------------------------------------
+
+export type GCPProjectInfo = {
+  projectId: string;
+  displayName: string;
+  state: string;
+};
+
+export async function listProjects(
+  credentials: { client_email: string; private_key: string },
+): Promise<GCPProjectInfo[]> {
+  const client = new ProjectsClient({ credentials });
+  const projects: GCPProjectInfo[] = [];
+
+  try {
+    const [projectList] = await client.searchProjects();
+    for (const p of projectList ?? []) {
+      projects.push({
+        projectId: p.projectId ?? "",
+        displayName: p.displayName ?? "",
+        state: p.state ?? "unknown",
+      });
+    }
+  } catch {
+    // searchProjects requires resourcemanager.projects.list — fall back to empty
+  }
+
+  return projects;
+}
+
+// ---------------------------------------------------------------------------
+// List regions for a project
+// ---------------------------------------------------------------------------
+
+export async function listRegions(
+  credentials: { client_email: string; private_key: string },
+  projectId: string,
+): Promise<string[]> {
+  const client = new RegionsClient({ credentials });
+  const regions: string[] = [];
+
+  try {
+    const [regionList] = await client.list({ project: projectId });
+    for (const r of regionList ?? []) {
+      if (r.name) regions.push(r.name);
+    }
+  } catch {
+    // compute.regions.list may not be available
+  }
+
+  return regions;
+}
+
+// ---------------------------------------------------------------------------
+// Bucket metadata — object count and size (best-effort)
+// ---------------------------------------------------------------------------
+
+export type GCPBucketMetadata = {
+  name: string;
+  location: string;
+  storageClass: string;
+  objectCount: number | null;
+  totalSizeBytes: number | null;
+  lifecycleRules: number;
+  publicAccessPrevention: string;
+  versioningEnabled: boolean;
+};
+
+async function collectBucketMetadata(
+  storage: Storage,
+  bucketName: string,
+): Promise<GCPBucketMetadata> {
+  const bucket = storage.bucket(bucketName);
+  const [meta] = await bucket.getMetadata();
+
+  let objectCount: number | null = null;
+  let totalSizeBytes: number | null = null;
+
+  // Try to get object count via a quick prefix list (cap at 1000 for speed)
+  try {
+    const [files] = await bucket.getFiles({ maxResults: 1001, autoPaginate: false });
+    objectCount = files.length;
+    if (objectCount <= 1000) {
+      totalSizeBytes = files.reduce(
+        (sum, f) => sum + parseInt(String(f.metadata?.size ?? "0"), 10),
+        0,
+      );
+    } else {
+      objectCount = null; // too many to count quickly
+    }
+  } catch {
+    // storage.objects.list may not be available
+  }
+
+  return {
+    name: bucketName,
+    location: (meta.location ?? "us").toLowerCase(),
+    storageClass: meta.storageClass ?? "STANDARD",
+    objectCount,
+    totalSizeBytes,
+    lifecycleRules: (meta.lifecycle?.rule ?? []).length,
+    publicAccessPrevention: meta.iamConfiguration?.publicAccessPrevention ?? "unknown",
+    versioningEnabled: meta.versioning?.enabled === true,
+  };
+}
+
+// ---------------------------------------------------------------------------
 // CPU metrics via Cloud Monitoring REST (avoids @google-cloud/monitoring dep)
 // ---------------------------------------------------------------------------
 
@@ -227,6 +341,15 @@ async function hasSnapshots(
 }
 
 // ---------------------------------------------------------------------------
+// Extended result — includes bucket metadata and partial errors
+// ---------------------------------------------------------------------------
+
+export type GCPSnapshotExtended = CloudSnapshot & {
+  bucketMetadata: GCPBucketMetadata[];
+  partialErrors: string[];
+};
+
+// ---------------------------------------------------------------------------
 // Main: generate CloudSnapshot
 // ---------------------------------------------------------------------------
 
@@ -242,21 +365,26 @@ type GCPInstance = {
 export async function generateGCPSnapshot(
   credentials: { client_email: string; private_key: string },
   projectId: string,
-): Promise<CloudSnapshot> {
+): Promise<GCPSnapshotExtended> {
   const instancesClient = new InstancesClient({ credentials });
   const storage = new Storage({ credentials, projectId });
+  const partialErrors: string[] = [];
 
-  // Collect all instances across zones
-  const instances: GCPInstance[] = [];
-  for await (const [, scopedList] of instancesClient.aggregatedListAsync({ project: projectId })) {
-    if (scopedList.instances) {
-      for (const inst of scopedList.instances) {
-        instances.push(inst as GCPInstance);
-      }
-    }
+  // Phase 1: Collect core resources in parallel
+  const [instancesResult, bucketsResult] = await Promise.allSettled([
+    collectInstances(instancesClient, projectId),
+    collectBuckets(storage, projectId),
+  ]);
+
+  const instances = instancesResult.status === "fulfilled" ? instancesResult.value : [];
+  if (instancesResult.status === "rejected") {
+    partialErrors.push(`Compute Engine enumeration failed: ${(instancesResult.reason as Error)?.message ?? "unknown error"}. Check roles/compute.viewer.`);
   }
 
-  const [buckets] = await storage.getBuckets({ project: projectId });
+  const buckets = bucketsResult.status === "fulfilled" ? bucketsResult.value : [];
+  if (bucketsResult.status === "rejected") {
+    partialErrors.push(`Cloud Storage enumeration failed: ${(bucketsResult.reason as Error)?.message ?? "unknown error"}. Check roles/storage.objectViewer.`);
+  }
 
   // Map instances to ComputeResource
   const computeResources: ComputeResource[] = instances.map((inst) => {
@@ -284,7 +412,7 @@ export async function generateGCPSnapshot(
   });
 
   // Map buckets to StorageResource
-  const storageResources: StorageResource[] = (buckets ?? []).map((bucket) => {
+  const storageResources: StorageResource[] = buckets.map((bucket) => {
     const meta = bucket.metadata;
     return {
       resourceType: "storage" as const,
@@ -299,14 +427,19 @@ export async function generateGCPSnapshot(
     };
   });
 
-  // Fetch CPU metrics + backup status in parallel
-  const [cpuMetrics, backupsExist] = await Promise.all([
+  // Phase 2: Enrich with metrics, backup detection, and bucket metadata
+  const bucketNames = buckets.slice(0, 20).map((b) => b.name);
+
+  const [cpuMetricsResult, backupsResult, ...bucketMetaResults] = await Promise.allSettled([
     fetchCpuMetrics(credentials, projectId),
     hasSnapshots(credentials, projectId),
+    ...bucketNames.map((name) => collectBucketMetadata(storage, name)),
   ]);
 
+  const cpuMetrics = cpuMetricsResult.status === "fulfilled" ? cpuMetricsResult.value : new Map<string, number>();
+  const backupsExist = backupsResult.status === "fulfilled" ? backupsResult.value : false;
+
   // Enrich compute resources with CPU data
-  // Monitoring API uses instance ID (numeric), match by iterating
   for (const cr of computeResources) {
     const inst = instances.find((i) => (i.name ?? "") === cr.resourceId);
     const instanceId = inst?.id?.toString();
@@ -314,6 +447,23 @@ export async function generateGCPSnapshot(
       const cpu = cpuMetrics.get(instanceId);
       if (cpu !== undefined) {
         cr.usage = { cpuAvgPct: cpu, sampleWindowHours: 168 };
+      }
+    }
+  }
+
+  // Enrich storage resources with object counts where available
+  const bucketMetadata: GCPBucketMetadata[] = [];
+  for (const result of bucketMetaResults) {
+    if (result.status === "fulfilled") {
+      const meta = result.value as GCPBucketMetadata;
+      bucketMetadata.push(meta);
+
+      const sr = storageResources.find((s) => s.resourceId === meta.name);
+      if (sr && meta.objectCount !== null) {
+        sr.objectCount = meta.objectCount;
+      }
+      if (sr && meta.totalSizeBytes !== null) {
+        sr.sizeGb = Math.round(meta.totalSizeBytes / (1024 * 1024 * 1024) * 100) / 100;
       }
     }
   }
@@ -335,7 +485,32 @@ export async function generateGCPSnapshot(
       noBackupsDetected: !backupsExist,
     },
     insights: buildInsights(computeResources, storageResources, cpuMetrics, backupsExist),
+    bucketMetadata,
+    partialErrors,
   };
+}
+
+async function collectInstances(
+  client: InstancesClient,
+  projectId: string,
+): Promise<GCPInstance[]> {
+  const instances: GCPInstance[] = [];
+  for await (const [, scopedList] of client.aggregatedListAsync({ project: projectId })) {
+    if (scopedList.instances) {
+      for (const inst of scopedList.instances) {
+        instances.push(inst as GCPInstance);
+      }
+    }
+  }
+  return instances;
+}
+
+async function collectBuckets(
+  storage: Storage,
+  projectId: string,
+): Promise<Array<{ name: string; metadata: Record<string, any> }>> {
+  const [buckets] = await storage.getBuckets({ project: projectId });
+  return (buckets ?? []).map((b) => ({ name: b.name, metadata: b.metadata }));
 }
 
 function buildInsights(
