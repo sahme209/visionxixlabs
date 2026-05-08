@@ -42,3 +42,5 @@ export {
 export type { AutopilotMode, AutopilotPolicy, AutopilotDecision, AutopilotModeCopy } from "./autopilot";
 export { buildMultiCloudSummary } from "./multiCloudSummary";
 export type { MultiCloudSummary, ProviderRunInput } from "./multiCloudSummary";
+export { prioritizeMultiCloudRecommendations, runPrioritizerTests, SCORING_RULES } from "./multiCloudPrioritizer";
+export type { PrioritizedRecommendation, MultiCloudRecommendationInput, ScoreBreakdown } from "./multiCloudPrioritizer";
