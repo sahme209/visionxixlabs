@@ -460,6 +460,14 @@ function buildRollbackPlan(item: ExecutionPlanItem): RollbackPlan {
       base.automated = false;
       base.estimatedDurationMin = 30;
       break;
+    case "restrict_public_access":
+      base.automated = true;
+      base.estimatedDurationMin = 5;
+      break;
+    case "enable_backup":
+      base.automated = true;
+      base.estimatedDurationMin = 10;
+      break;
   }
 
   return base;

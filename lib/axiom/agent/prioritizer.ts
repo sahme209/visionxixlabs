@@ -94,6 +94,8 @@ function effortFromAction(actionType: ActionType): "none" | "low" | "medium" | "
     case "resize_compute": return "medium";
     case "purchase_commitment": return "low";
     case "decommission_compute": return "high";
+    case "restrict_public_access": return "medium";
+    case "enable_backup": return "low";
   }
 }
 
