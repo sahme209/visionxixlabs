@@ -318,6 +318,8 @@ const ACTION_LABELS: Record<ActionType, string> = {
   apply_storage_policy: "Storage lifecycle tiering",
   purchase_commitment: "Commitment plan (manual)",
   decommission_compute: "Decommission stopped instances",
+  restrict_public_access: "Restrict public storage access",
+  enable_backup: "Enable automated backup",
 };
 
 function buildActionBreakdown(plan: ExecutionPlan): ActionBreakdown[] {

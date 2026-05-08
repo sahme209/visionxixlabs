@@ -103,6 +103,8 @@ const ASSESSORS: Record<string, Assessor> = {
   apply_storage_policy: assessStoragePolicy,
   purchase_commitment: assessCommitment,
   decommission_compute: assessDecommission,
+  restrict_public_access: assessRestrictPublicAccess,
+  enable_backup: assessEnableBackup,
 };
 
 // ---- 1. Compute resize ----
@@ -299,6 +301,72 @@ function assessDecommission(item: ExecutionPlanItem): AssessorResult {
       downtime: "No downtime — instances are already stopped/deallocated",
       rollback: "Restore from snapshot → re-create instance (complex, requires manual steps)",
       risk: "high",
+    },
+  };
+}
+
+// ---- 5. Restrict public access ----
+
+function assessRestrictPublicAccess(item: ExecutionPlanItem): AssessorResult {
+  const risks: RiskEntry[] = [];
+
+  risks.push({
+    itemId: item.id,
+    actionType: item.actionType,
+    severity: "medium",
+    message: `Restricting public access on ${item.resourceIds.length} storage resource(s). If any are intentionally public (e.g., CDN origin), this will break access.`,
+    mitigation: "Verify which buckets are intentionally public before applying. Check for CDN origins or public website hosting.",
+  });
+
+  return {
+    risks,
+    affected: {
+      resourceIds: item.resourceIds,
+      region: item.region,
+      provider: item.provider,
+      actionType: item.actionType,
+      impact: `${item.resourceIds.length} storage resource(s) will have public access removed`,
+    },
+    breakdown: {
+      itemId: item.id,
+      actionType: item.actionType,
+      provider: item.provider,
+      downtime: "No downtime — policy change only",
+      rollback: "Re-enable public access on affected buckets if intentionally public",
+      risk: item.riskLevel,
+    },
+  };
+}
+
+// ---- 6. Enable backup ----
+
+function assessEnableBackup(item: ExecutionPlanItem): AssessorResult {
+  const risks: RiskEntry[] = [];
+
+  risks.push({
+    itemId: item.id,
+    actionType: item.actionType,
+    severity: "low",
+    message: `Enabling backup for ${item.resourceIds.length} resource(s). This adds ongoing storage costs (typically 5–15% of protected resource cost).`,
+    mitigation: "Review backup retention policy and cross-region replication settings. Adjust retention period to control costs.",
+  });
+
+  return {
+    risks,
+    affected: {
+      resourceIds: item.resourceIds,
+      region: item.region,
+      provider: item.provider,
+      actionType: item.actionType,
+      impact: `${item.resourceIds.length} resource(s) will have automated backup enabled — daily snapshots with 30-day retention`,
+    },
+    breakdown: {
+      itemId: item.id,
+      actionType: item.actionType,
+      provider: item.provider,
+      downtime: "No downtime — backup runs in the background",
+      rollback: "Disable backup schedule and delete snapshot vault if no longer needed",
+      risk: "low",
     },
   };
 }

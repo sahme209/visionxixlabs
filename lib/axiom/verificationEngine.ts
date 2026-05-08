@@ -92,6 +92,8 @@ const VERIFIERS: Record<string, Verifier> = {
   apply_storage_policy: verifyStoragePolicy,
   purchase_commitment: verifyCommitment,
   decommission_compute: verifyDecommission,
+  restrict_public_access: verifyRestrictPublicAccess,
+  enable_backup: verifyEnableBackup,
 };
 
 // ---------------------------------------------------------------------------
@@ -410,6 +412,66 @@ function checkDependenciesUnbroken(item: ExecutionPlanItem): VerificationCheck {
 }
 
 // ---------------------------------------------------------------------------
+// 5. Restrict public access verification
+// ---------------------------------------------------------------------------
+
+function verifyRestrictPublicAccess(item: ExecutionPlanItem): VerificationCheck[] {
+  const queries: Record<CloudProvider, string> = {
+    aws: `aws s3api get-public-access-block --bucket ${item.resourceIds[0]} → expect all Block* settings to be true`,
+    azure: `az storage account show --name ${item.resourceIds[0]} --query "allowBlobPublicAccess" → expect "false"`,
+    gcp: `gsutil pap get gs://${item.resourceIds[0]} → expect "enforced"`,
+  };
+
+  return [
+    {
+      name: "public_access_blocked",
+      passed: true,
+      message: `Verify public access is restricted: ${queries[item.provider]}`,
+      severity: "critical",
+    },
+    {
+      name: "no_broken_access",
+      passed: true,
+      message: "Verify no legitimate public-facing services are broken (CDN distributions, static website hosting, public datasets). Monitor 403 error rates for 24 hours.",
+      severity: "warning",
+    },
+  ];
+}
+
+// ---------------------------------------------------------------------------
+// 6. Enable backup verification
+// ---------------------------------------------------------------------------
+
+function verifyEnableBackup(item: ExecutionPlanItem): VerificationCheck[] {
+  const queries: Record<CloudProvider, string> = {
+    aws: `aws backup list-backup-jobs --by-resource-arn <resource-arn> → expect at least 1 completed backup within 24h`,
+    azure: `az backup item list --vault-name <vault> --resource-group <rg> → expect protected items matching resource IDs`,
+    gcp: `gcloud compute snapshots list --filter="sourceDisk~${item.resourceIds[0]}" → expect at least 1 snapshot`,
+  };
+
+  return [
+    {
+      name: "backup_schedule_active",
+      passed: true,
+      message: `Verify backup schedule is active: ${queries[item.provider]}`,
+      severity: "critical",
+    },
+    {
+      name: "first_backup_completed",
+      passed: true,
+      message: "Verify the first backup job has completed successfully. Check again after 24 hours to confirm the daily schedule is running.",
+      severity: "warning",
+    },
+    {
+      name: "retention_policy_correct",
+      passed: true,
+      message: "Verify retention policy is set to 30 days and cross-region replication is enabled if configured.",
+      severity: "info",
+    },
+  ];
+}
+
+// ---------------------------------------------------------------------------
 // CLI command generators (read-only commands for external execution)
 // ---------------------------------------------------------------------------
 
@@ -420,6 +482,8 @@ const COMMAND_GENERATORS: Record<string, CommandGenerator> = {
   apply_storage_policy: genStorageVerificationCommands,
   purchase_commitment: genCommitmentVerificationCommands,
   decommission_compute: genDecommissionVerificationCommands,
+  restrict_public_access: genRestrictPublicAccessVerificationCommands,
+  enable_backup: genEnableBackupVerificationCommands,
 };
 
 function genResizeVerificationCommands(item: ExecutionPlanItem): VerificationCommand[] {
@@ -529,6 +593,54 @@ function genDecommissionVerificationCommands(item: ExecutionPlanItem): Verificat
         description: "Check for orphaned disks",
         command: `gcloud compute disks list --filter="NOT users:*" --zones="${item.region}-a" --format="table(name,sizeGb,status)"`,
         parseHint: "Review disks with no users — they may be orphaned from deleted instances",
+      },
+    ],
+  };
+  return commands[item.provider];
+}
+
+function genRestrictPublicAccessVerificationCommands(item: ExecutionPlanItem): VerificationCommand[] {
+  const commands: Record<CloudProvider, VerificationCommand[]> = {
+    aws: item.resourceIds.map((id) => ({
+      description: `Verify public access is blocked on ${id}`,
+      command: `aws s3api get-public-access-block --bucket "${id}" --output json`,
+      parseHint: "All Block* settings should be true",
+    })),
+    azure: item.resourceIds.map((id) => ({
+      description: `Verify public access is disabled on ${id}`,
+      command: `az storage account show --name "${id}" --query "allowBlobPublicAccess" --output tsv`,
+      parseHint: `Should return "false"`,
+    })),
+    gcp: item.resourceIds.map((id) => ({
+      description: `Verify public access prevention on ${id}`,
+      command: `gsutil pap get gs://${id}`,
+      parseHint: `Should show "enforced"`,
+    })),
+  };
+  return commands[item.provider];
+}
+
+function genEnableBackupVerificationCommands(item: ExecutionPlanItem): VerificationCommand[] {
+  const commands: Record<CloudProvider, VerificationCommand[]> = {
+    aws: [
+      {
+        description: "List recent backup jobs",
+        command: `aws backup list-backup-jobs --by-state COMPLETED --region "${item.region}" --max-results 10 --output table`,
+        parseHint: "Should show at least 1 completed backup job for the protected resources",
+      },
+    ],
+    azure: [
+      {
+        description: "List backup-protected items",
+        command: `az backup item list --vault-name "<vault-name>" --resource-group "<resource-group>" --output table`,
+        parseHint: "Should list all protected resource IDs with status 'Healthy'",
+      },
+    ],
+    gcp: [
+      {
+        description: "List recent snapshots",
+        command: `gcloud compute snapshots list --filter="creationTimestamp>$(date -d '-24 hours' +%Y-%m-%dT%H:%M:%S)" --format="table(name,sourceDisk,status,creationTimestamp)"`,
+        parseHint: "Should show at least 1 recent snapshot for the protected resources",
       },
     ],
   };

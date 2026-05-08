@@ -81,6 +81,8 @@ const CHECKERS: Record<string, Checker> = {
   apply_storage_policy: checkStoragePolicy,
   purchase_commitment: checkCommitment,
   decommission_compute: checkDecommission,
+  restrict_public_access: checkRestrictPublicAccess,
+  enable_backup: checkEnableBackup,
 };
 
 // ---------------------------------------------------------------------------
@@ -472,6 +474,60 @@ function checkDecommission(item: ExecutionPlanItem): PrecheckDetail[] {
     passed: true,
     message: `Deleting ${item.resourceIds.length} instance(s) is irreversible. Recovery requires restoring from snapshot and re-creating the instance.`,
     severity: "warning",
+  });
+
+  return checks;
+}
+
+// ---------------------------------------------------------------------------
+// 5. Restrict public access prechecks
+// ---------------------------------------------------------------------------
+
+function checkRestrictPublicAccess(item: ExecutionPlanItem): PrecheckDetail[] {
+  const checks: PrecheckDetail[] = [];
+
+  checks.push(checkResourceIds(item));
+  checks.push(checkRegionPresent(item));
+
+  checks.push({
+    name: "intentional_public_check",
+    passed: true,
+    message: "Verify none of these storage resources are intentionally public (e.g., CDN origins, public website hosting, open dataset sharing).",
+    severity: "warning",
+  });
+
+  checks.push({
+    name: "cdn_dependency_check",
+    passed: true,
+    message: "Check for CDN distributions or static website configurations that depend on public access. Restricting access will break these.",
+    severity: "warning",
+  });
+
+  return checks;
+}
+
+// ---------------------------------------------------------------------------
+// 6. Enable backup prechecks
+// ---------------------------------------------------------------------------
+
+function checkEnableBackup(item: ExecutionPlanItem): PrecheckDetail[] {
+  const checks: PrecheckDetail[] = [];
+
+  checks.push(checkResourceIds(item));
+  checks.push(checkRegionPresent(item));
+
+  checks.push({
+    name: "backup_cost_acknowledged",
+    passed: true,
+    message: "Enabling backup will add ongoing storage costs (typically 5–15% of protected resource cost). Review retention policy to control costs.",
+    severity: "info",
+  });
+
+  checks.push({
+    name: "cross_region_replication",
+    passed: true,
+    message: "Consider enabling cross-region replication for disaster recovery. This doubles backup storage costs but protects against regional outages.",
+    severity: "info",
   });
 
   return checks;

@@ -100,6 +100,8 @@ const GENERATORS: Record<string, Generator> = {
   apply_storage_policy: genStoragePolicyRollback,
   purchase_commitment: genCommitmentRollback,
   decommission_compute: genDecommissionRollback,
+  restrict_public_access: genRestrictPublicAccessRollback,
+  enable_backup: genEnableBackupRollback,
 };
 
 // ---------------------------------------------------------------------------
@@ -566,6 +568,98 @@ const DECOMMISSION_MANUAL_FALLBACK: Record<CloudProvider, string[]> = {
     "6. Verify application is working",
   ],
 };
+
+// ---------------------------------------------------------------------------
+// 5. Restrict public access rollback
+// ---------------------------------------------------------------------------
+
+function genRestrictPublicAccessRollback(item: ExecutionPlanItem): RollbackPlan {
+  const steps: RollbackStep[] = item.resourceIds.map((id, i) => ({
+    order: i + 1,
+    description: `Re-enable public access on ${id} if it was intentionally public`,
+    command: null,
+    provider: item.provider,
+    requiresManualAction: true,
+    estimatedDurationMin: 2,
+  }));
+
+  return {
+    itemId: item.id,
+    actionType: item.actionType,
+    provider: item.provider,
+    region: item.region,
+    originalState: item.resourceIds.map((id) => ({
+      capturedAt: new Date().toISOString(),
+      provider: item.provider,
+      region: item.region,
+      resourceId: id,
+      resourceType: "storage" as const,
+      properties: { publicAccess: "enabled" },
+    })),
+    rollbackSteps: steps,
+    rollbackRisk: "low",
+    rollbackRiskExplanation: "Re-enabling public access is a simple policy change with no data risk.",
+    estimatedTotalDurationMin: steps.length * 2,
+    automated: false,
+    manualFallbackSteps: [
+      "1. Open cloud console → Storage / Buckets",
+      "2. Select the affected bucket(s)",
+      "3. Re-enable public access via bucket policy or ACL settings",
+    ],
+    cliScript: buildCLIScript(item, steps),
+  };
+}
+
+// ---------------------------------------------------------------------------
+// 6. Enable backup rollback
+// ---------------------------------------------------------------------------
+
+function genEnableBackupRollback(item: ExecutionPlanItem): RollbackPlan {
+  const steps: RollbackStep[] = [
+    {
+      order: 1,
+      description: "Disable the backup schedule / policy",
+      command: null,
+      provider: item.provider,
+      requiresManualAction: true,
+      estimatedDurationMin: 5,
+    },
+    {
+      order: 2,
+      description: "Delete the backup vault / snapshot schedule if no longer needed",
+      command: null,
+      provider: item.provider,
+      requiresManualAction: true,
+      estimatedDurationMin: 5,
+    },
+  ];
+
+  return {
+    itemId: item.id,
+    actionType: item.actionType,
+    provider: item.provider,
+    region: item.region,
+    originalState: item.resourceIds.map((id) => ({
+      capturedAt: new Date().toISOString(),
+      provider: item.provider,
+      region: item.region,
+      resourceId: id,
+      resourceType: "compute" as const,
+      properties: { backupEnabled: "false" },
+    })),
+    rollbackSteps: steps,
+    rollbackRisk: "none",
+    rollbackRiskExplanation: "Disabling backup has no impact on running resources. Existing snapshots remain until manually deleted.",
+    estimatedTotalDurationMin: 10,
+    automated: false,
+    manualFallbackSteps: [
+      "1. Open cloud console → Backup service",
+      "2. Find and disable the backup schedule",
+      "3. Optionally delete the vault and existing snapshots",
+    ],
+    cliScript: buildCLIScript(item, steps),
+  };
+}
 
 // ---------------------------------------------------------------------------
 // Helpers
