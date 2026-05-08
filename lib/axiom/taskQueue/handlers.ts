@@ -164,7 +164,7 @@ async function handleAnalyzeSnapshot(ctx: TaskContext): Promise<TaskHandlerResul
           monthlyHigh: signal.monthlyCostEstimate.high,
           yearlyLow: signal.annualSavingsEstimate.low,
           yearlyHigh: signal.annualSavingsEstimate.high,
-          data: f.data,
+          data: f.data as object,
         },
       });
     }),
