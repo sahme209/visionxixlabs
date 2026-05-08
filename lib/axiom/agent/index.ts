@@ -40,3 +40,5 @@ export {
   MODE_ORDER,
 } from "./autopilot";
 export type { AutopilotMode, AutopilotPolicy, AutopilotDecision, AutopilotModeCopy } from "./autopilot";
+export { buildMultiCloudSummary } from "./multiCloudSummary";
+export type { MultiCloudSummary, ProviderRunInput } from "./multiCloudSummary";
