@@ -159,7 +159,7 @@ export async function listProjects(
       projects.push({
         projectId: p.projectId ?? "",
         displayName: p.displayName ?? "",
-        state: p.state ?? "unknown",
+        state: String(p.state ?? "unknown"),
       });
     }
   } catch {
