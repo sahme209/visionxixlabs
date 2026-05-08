@@ -294,6 +294,8 @@ const ACTION_LABEL: Record<ActionType, string> = {
   apply_storage_policy: "storage tiering",
   purchase_commitment: "commitment purchase",
   decommission_compute: "instance decommission",
+  restrict_public_access: "public access restriction",
+  enable_backup: "backup enablement",
 };
 
 const METRICS_SOURCE: Record<CloudProvider, string> = {
