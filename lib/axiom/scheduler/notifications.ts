@@ -1,6 +1,6 @@
 import type { AgentRunResult } from "../agent/types";
 import type { ScanDiff, ScheduledRunNotification } from "./types";
-import { CLOUD_PROVIDER_LABELS } from "../enums";
+import { CLOUD_PROVIDER_LABELS, NotificationType } from "../enums";
 import type { CloudProvider } from "../cloudSnapshot";
 
 // ---------------------------------------------------------------------------
@@ -39,7 +39,7 @@ export const buildNotifications = {
     if (!diff) {
       if (run.findingCount > 0) {
         notifications.push({
-          type: "scan_diff",
+          type: NotificationType.ScanDiff,
           organizationId: schedule.organizationId,
           userId: null,
           runId: run.runId,
@@ -61,7 +61,7 @@ export const buildNotifications = {
 
     // Always emit a summary notification for significant changes
     notifications.push({
-      type: "scan_diff",
+      type: NotificationType.ScanDiff,
       organizationId: schedule.organizationId,
       userId: null,
       runId: run.runId,
@@ -79,7 +79,7 @@ export const buildNotifications = {
     // High-risk alert — separate notification for urgency
     if (diff.newHighRiskCount > 0) {
       notifications.push({
-        type: "new_high_risk",
+        type: NotificationType.NewHighRisk,
         organizationId: schedule.organizationId,
         userId: null,
         runId: run.runId,
@@ -98,7 +98,7 @@ export const buildNotifications = {
     // Savings increase notification
     if (diff.savingsDelta.high > 100) {
       notifications.push({
-        type: "savings_increased",
+        type: NotificationType.SavingsIncreased,
         organizationId: schedule.organizationId,
         userId: null,
         runId: run.runId,
@@ -121,7 +121,7 @@ export const buildNotifications = {
       );
       if (highResolved.length > 0) {
         notifications.push({
-          type: "risk_resolved",
+          type: NotificationType.RiskResolved,
           organizationId: schedule.organizationId,
           userId: null,
           runId: run.runId,
@@ -148,7 +148,7 @@ export const buildNotifications = {
   ): ScheduledRunNotification {
     const provider = providerLabel(schedule.cloudAccount.provider);
     return {
-      type: "scan_failed",
+      type: NotificationType.ScanFailed,
       organizationId: schedule.organizationId,
       userId: null,
       runId: run.runId,
