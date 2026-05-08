@@ -216,7 +216,7 @@ export async function listSubscriptions(
   const client = new SubscriptionClient(credential);
   const subs: AzureSubscriptionInfo[] = [];
 
-  for await (const sub of client.subscriptions.list()) {
+  for await (const sub of client.subscription.list()) {
     subs.push({
       subscriptionId: sub.subscriptionId ?? "",
       displayName: sub.displayName ?? "",
