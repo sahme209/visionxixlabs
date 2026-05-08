@@ -44,3 +44,14 @@ export { buildMultiCloudSummary } from "./multiCloudSummary";
 export type { MultiCloudSummary, ProviderRunInput } from "./multiCloudSummary";
 export { prioritizeMultiCloudRecommendations, runPrioritizerTests, SCORING_RULES } from "./multiCloudPrioritizer";
 export type { PrioritizedRecommendation, MultiCloudRecommendationInput, ScoreBreakdown } from "./multiCloudPrioritizer";
+export { runReasoningEngine, runReasoningTests, PROMPT_TEMPLATES } from "./reasoningEngine";
+export type {
+  ReasoningContext,
+  PreviousRunSummary,
+  Theme,
+  ThemeTag,
+  ThemeDisposition,
+  Tradeoff,
+  ReasonedOutput,
+  TrendAnalysis,
+} from "./reasoningEngine";
