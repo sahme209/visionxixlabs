@@ -132,7 +132,7 @@ export async function runAgent(input: RunAgentInput): Promise<AgentRunResult> {
             monthlyHigh: signal.monthlyCostEstimate.high,
             yearlyLow: signal.annualSavingsEstimate.low,
             yearlyHigh: signal.annualSavingsEstimate.high,
-            data: f.data,
+            data: f.data as object,
           },
         });
       }),
