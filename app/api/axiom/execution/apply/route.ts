@@ -356,7 +356,7 @@ async function resolveAuth(
 
     const entitlements = getEntitlementsFromPlan(user?.plan ?? null);
     if (!entitlements.axiomExecution) {
-      return { error: "Scale or Enterprise plan required for execution. Upgrade at /visionxix-ai/pricing", status: 403 };
+      return { error: "Applying changes requires a Scale plan. Let the agent apply approved changes with prechecks, dry-run simulation, and automatic rollback. See /pricing?ref=axiom-apply", status: 403 };
     }
 
     const credentialsKey = leadId ?? userId;
@@ -386,7 +386,7 @@ async function resolveAuth(
 
     const entitlements = getEntitlementsFromPlan(user?.plan ?? null);
     if (!entitlements.axiomExecution) {
-      return { error: "Scale or Enterprise plan required for execution. Upgrade at /visionxix-ai/pricing", status: 403 };
+      return { error: "Applying changes requires a Scale plan. Let the agent apply approved changes with prechecks, dry-run simulation, and automatic rollback. See /pricing?ref=axiom-apply", status: 403 };
     }
 
     return { userId: lead.userId, organizationId: lead.userId, credentialsKey: lead.id };

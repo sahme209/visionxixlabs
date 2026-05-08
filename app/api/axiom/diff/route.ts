@@ -26,7 +26,9 @@ export async function GET(req: NextRequest) {
 
   const entitlements = getEntitlementsFromPlan(user?.plan ?? null);
   if (!entitlements.axiomExecution) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
+    return NextResponse.json({
+      error: "Scan comparison requires a Scale plan. Compare any two agent scans to see what changed — new resources, resolved findings, cost drift, and risk trends. See /pricing?ref=axiom-diff",
+    }, { status: 403 });
   }
 
   const previousRunId = req.nextUrl.searchParams.get("previousRunId");
