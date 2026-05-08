@@ -212,19 +212,27 @@ export type AzureSubscriptionInfo = {
 export async function listSubscriptions(
   credential: TokenCredential,
 ): Promise<AzureSubscriptionInfo[]> {
-  const { SubscriptionClient } = await import("@azure/arm-subscriptions");
-  const client = new SubscriptionClient(credential);
-  const subs: AzureSubscriptionInfo[] = [];
+  const token = await credential.getToken("https://management.azure.com/.default");
+  if (!token) throw new Error("Failed to acquire Azure management token");
 
-  for await (const sub of client.subscription.list()) {
-    subs.push({
-      subscriptionId: sub.subscriptionId ?? "",
-      displayName: sub.displayName ?? "",
-      state: sub.state ?? "unknown",
-    });
+  const res = await fetch(
+    "https://management.azure.com/subscriptions?api-version=2022-12-01",
+    { headers: { Authorization: `Bearer ${token.token}` } },
+  );
+
+  if (!res.ok) {
+    throw new Error(`Azure subscriptions list failed: ${res.status} ${res.statusText}`);
   }
 
-  return subs;
+  const body = (await res.json()) as {
+    value: Array<{ subscriptionId: string; displayName: string; state: string }>;
+  };
+
+  return (body.value ?? []).map((sub) => ({
+    subscriptionId: sub.subscriptionId ?? "",
+    displayName: sub.displayName ?? "",
+    state: sub.state ?? "unknown",
+  }));
 }
 
 // ---------------------------------------------------------------------------
