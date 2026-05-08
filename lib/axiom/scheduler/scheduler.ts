@@ -207,6 +207,7 @@ function frequencyToCron(frequency: ScheduleFrequency): string {
   switch (frequency) {
     case "daily":  return "0 9 * * *";
     case "weekly": return "0 9 * * 1";
+    default: return "0 9 * * *";
   }
 }
 
@@ -217,6 +218,8 @@ function computeNextRun(frequency: ScheduleFrequency): Date {
       return new Date(now.getTime() + 24 * 60 * 60 * 1000);
     case "weekly":
       return new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
+    default:
+      return new Date(now.getTime() + 24 * 60 * 60 * 1000);
   }
 }
 
