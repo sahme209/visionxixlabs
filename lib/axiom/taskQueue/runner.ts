@@ -93,7 +93,7 @@ export async function enqueueTasks(input: EnqueueTasksInput): Promise<string[]> 
       sortOrder: i,
       maxAttempts: def.maxAttempts,
       dependsOn: def.dependsOn,
-      inputJson: inputOverrides?.[taskType] ?? null,
+      inputJson: (inputOverrides?.[taskType] ?? null) as object | undefined,
       idempotencyKey: `${agentRunId}:${taskType}`,
     };
   });
