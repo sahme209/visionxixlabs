@@ -153,8 +153,8 @@ export async function runAgent(input: RunAgentInput): Promise<AgentRunResult> {
 
     const executionPlan = generateExecutionPlan(snapshot);
     const computeResources = snapshot.resources.filter(
-      (r): r is ComputeResource => r.resourceType === "compute",
-    );
+      (r) => r.resourceType === "compute",
+    ) as ComputeResource[];
     const confidence = computeConfidence(!!snapshot.monthlySpend, computeResources);
 
     const rawRecs = findings.map((f, i) => {
