@@ -52,19 +52,24 @@ export type AuditLogEntry = {
 export async function createAuditLog(input: CreateAuditLogInput): Promise<AuditLogEntry> {
   const { userId, organizationId, item, beforeState, metadata } = input;
 
-  const entry = await prisma.axiomAuditLog.create({
+  const savings = item.estimatedSavings as { monthly?: number; yearly?: number } | null;
+
+  const entry = await prisma.axiomAuditEvent.create({
     data: {
       userId,
       organizationId,
       planItemId: item.id,
-      provider: item.provider,
-      actionType: item.actionType,
-      resourceIds: item.resourceIds,
+      provider: item.provider as any,
+      actionType: item.actionType as any,
+      resourceIds: item.resourceIds as object,
       region: item.region,
       beforeState: beforeState as object,
       status: "pending",
-      riskLevel: item.riskLevel,
-      estimatedSavings: item.estimatedSavings,
+      riskLevel: item.riskLevel as any,
+      monthlyLow: savings?.monthly ?? 0,
+      monthlyHigh: savings?.monthly ?? 0,
+      yearlyLow: savings?.yearly ?? 0,
+      yearlyHigh: savings?.yearly ?? 0,
       metadata: (metadata as object) ?? undefined,
     },
   });
@@ -108,7 +113,7 @@ export async function markRolledBack(
   id: string,
   metadata?: Record<string, unknown>,
 ): Promise<AuditLogEntry> {
-  const existing = await prisma.axiomAuditLog.findUniqueOrThrow({ where: { id } });
+  const existing = await prisma.axiomAuditEvent.findUniqueOrThrow({ where: { id } });
   const merged = { ...(existing.metadata as object ?? {}), rollback: metadata };
 
   return updateStatus(id, "rolled_back", {
@@ -140,7 +145,7 @@ export async function updateAuditLogStatus(
   if (status === "verified") data.verifiedAt = new Date();
   if (status === "rolled_back") data.rolledBackAt = new Date();
 
-  const entry = await prisma.axiomAuditLog.update({
+  const entry = await prisma.axiomAuditEvent.update({
     where: { id },
     data,
   });
@@ -153,7 +158,7 @@ export async function updateAuditLogStatus(
 // ---------------------------------------------------------------------------
 
 export async function getAuditLog(id: string): Promise<AuditLogEntry | null> {
-  const entry = await prisma.axiomAuditLog.findUnique({ where: { id } });
+  const entry = await prisma.axiomAuditEvent.findUnique({ where: { id } });
   return entry ? toEntry(entry) : null;
 }
 
@@ -165,7 +170,7 @@ export async function getAuditLogsByOrganization(
   if (opts?.status) where.status = opts.status;
   if (opts?.provider) where.provider = opts.provider;
 
-  const entries = await prisma.axiomAuditLog.findMany({
+  const entries = await prisma.axiomAuditEvent.findMany({
     where,
     orderBy: { createdAt: "desc" },
     take: opts?.limit ?? 50,
@@ -179,7 +184,7 @@ export async function getAuditLogsByUser(
   userId: string,
   opts?: { limit?: number },
 ): Promise<AuditLogEntry[]> {
-  const entries = await prisma.axiomAuditLog.findMany({
+  const entries = await prisma.axiomAuditEvent.findMany({
     where: { userId },
     orderBy: { createdAt: "desc" },
     take: opts?.limit ?? 50,
@@ -189,7 +194,7 @@ export async function getAuditLogsByUser(
 }
 
 export async function getAuditLogsByPlanItem(planItemId: string): Promise<AuditLogEntry[]> {
-  const entries = await prisma.axiomAuditLog.findMany({
+  const entries = await prisma.axiomAuditEvent.findMany({
     where: { planItemId },
     orderBy: { createdAt: "desc" },
   });
@@ -210,7 +215,7 @@ export type AuditSummary = {
 };
 
 export async function getAuditSummary(organizationId: string): Promise<AuditSummary> {
-  const entries = await prisma.axiomAuditLog.findMany({
+  const entries = await prisma.axiomAuditEvent.findMany({
     where: { organizationId },
     orderBy: { createdAt: "desc" },
   });
@@ -224,8 +229,7 @@ export async function getAuditSummary(organizationId: string): Promise<AuditSumm
     byProvider[entry.provider] = (byProvider[entry.provider] ?? 0) + 1;
 
     if (entry.status === "verified" || entry.status === "applied") {
-      const savings = entry.estimatedSavings as { monthly?: number } | null;
-      totalSavings += savings?.monthly ?? 0;
+      totalSavings += entry.monthlyLow ?? 0;
     }
   }
 
@@ -252,7 +256,7 @@ async function updateStatus(
   status: AuditLogStatus,
   data: Record<string, unknown>,
 ): Promise<AuditLogEntry> {
-  const entry = await prisma.axiomAuditLog.update({
+  const entry = await prisma.axiomAuditEvent.update({
     where: { id },
     data: { status, ...data },
   });
@@ -274,7 +278,10 @@ function toEntry(raw: Record<string, unknown>): AuditLogEntry {
     status: raw.status as AuditLogStatus,
     errorMessage: (raw.errorMessage as string) ?? null,
     riskLevel: raw.riskLevel as RiskLevel,
-    estimatedSavings: raw.estimatedSavings as { monthly: number; yearly: number } | null,
+    estimatedSavings: {
+      monthly: (raw.monthlyLow as number) ?? 0,
+      yearly: (raw.yearlyLow as number) ?? 0,
+    },
     metadata: (raw.metadata as Record<string, unknown>) ?? null,
     createdAt: raw.createdAt as Date,
     appliedAt: (raw.appliedAt as Date) ?? null,

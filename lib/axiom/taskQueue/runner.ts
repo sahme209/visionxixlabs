@@ -87,9 +87,9 @@ export async function enqueueTasks(input: EnqueueTasksInput): Promise<string[]> 
     const def = TASK_DEFINITIONS[taskType];
     return {
       agentRunId,
-      taskType: taskType as string,
+      taskType,
       status: "pending" as const,
-      provider: provider as string,
+      provider,
       sortOrder: i,
       maxAttempts: def.maxAttempts,
       dependsOn: def.dependsOn,
