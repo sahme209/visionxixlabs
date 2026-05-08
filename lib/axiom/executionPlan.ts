@@ -15,7 +15,9 @@ export type ActionType =
   | "resize_compute"
   | "apply_storage_policy"
   | "purchase_commitment"
-  | "decommission_compute";
+  | "decommission_compute"
+  | "restrict_public_access"
+  | "enable_backup";
 
 export type RiskLevel = "low" | "medium" | "high";
 
@@ -194,6 +196,61 @@ export function generateExecutionPlan(snapshot: CloudSnapshot): ExecutionPlan {
         rollbackSteps: ["Commitment expires at term end — no rollback needed", "Do not auto-renew if workload changes"],
       });
     }
+  }
+
+  // ---- 5. Restrict public access on storage ----
+  const publicStorage = storage.filter((s) => {
+    const tags = s.tags ?? {};
+    return (
+      tags["public_access"] === "true" ||
+      tags["publicAccess"] === "true" ||
+      tags["public-access-prevention"] === "inherited"
+    );
+  });
+
+  if (publicStorage.length > 0) {
+    const storageGroups = groupBy(publicStorage, (r) => r.region);
+    for (const [region, buckets] of storageGroups) {
+      items.push({
+        id: `plan-${++planIdx}`,
+        provider: snapshot.provider,
+        actionType: "restrict_public_access",
+        resourceIds: buckets.map((b) => b.resourceId),
+        region,
+        currentState: `${buckets.length}x ${buckets.length === 1 ? "bucket" : "buckets"} with public access enabled`,
+        recommendedState: "Enforce private access via bucket policy / ACL update",
+        estimatedSavings: { monthly: 0, yearly: 0 },
+        riskLevel: "medium",
+        requiresDowntime: false,
+        rollbackSteps: ["Re-enable public access on affected buckets if intentionally public"],
+      });
+    }
+  }
+
+  // ---- 6. Enable backup/replication ----
+  if (snapshot.flags.noBackupsDetected && (running.length > 0 || storage.length > 0)) {
+    const BACKUP_LABEL: Record<CloudProvider, string> = {
+      aws: "AWS Backup with daily EBS snapshots",
+      azure: "Azure Backup via Recovery Services Vault",
+      gcp: "Persistent Disk Snapshots with schedule",
+    };
+    const allResourceIds = [
+      ...running.map((r) => r.resourceId),
+      ...storage.map((s) => s.resourceId),
+    ];
+    items.push({
+      id: `plan-${++planIdx}`,
+      provider: snapshot.provider,
+      actionType: "enable_backup",
+      resourceIds: allResourceIds,
+      region: snapshot.regions[0] ?? "global",
+      currentState: `${allResourceIds.length} resources with no backup strategy`,
+      recommendedState: `Enable ${BACKUP_LABEL[snapshot.provider]} — daily, 30-day retention`,
+      estimatedSavings: { monthly: 0, yearly: 0 },
+      riskLevel: "low",
+      requiresDowntime: false,
+      rollbackSteps: ["Disable backup schedule", "Delete snapshot vault if no longer needed"],
+    });
   }
 
   // Sort: highest yearly savings first (deterministic)

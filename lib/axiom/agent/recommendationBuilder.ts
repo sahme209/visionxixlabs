@@ -85,9 +85,27 @@ type SignalKind =
   | "commitment_plan"
   | "storage_tiering"
   | "single_region_risk"
-  | "multi_region_sprawl";
+  | "multi_region_sprawl"
+  | "idle_compute"
+  | "public_storage"
+  | "backup_warning";
+
+const SIGNAL_TYPE_TO_KIND: Record<string, SignalKind> = {
+  compute_rightsizing: "compute_rightsize",
+  commitment_discount: "commitment_plan",
+  storage_tiering: "storage_tiering",
+  single_region_risk: "single_region_risk",
+  multi_region_sprawl: "multi_region_sprawl",
+  idle_compute: "idle_compute",
+  public_storage: "public_storage",
+  backup_warning: "backup_warning",
+};
 
 function classifySignal(signal: CostSignal): SignalKind {
+  if (signal.signalType) {
+    const mapped = SIGNAL_TYPE_TO_KIND[signal.signalType];
+    if (mapped) return mapped;
+  }
   const text = `${signal.resource} ${signal.issue}`.toLowerCase();
   if (text.includes("oversized") || text.includes("under-utilized")) return "compute_rightsize";
   if (text.includes("on-demand") || (text.includes("no ") && text.includes("detected"))) return "commitment_plan";
@@ -285,6 +303,100 @@ const buildMultiRegionSprawl: BuilderFn = (signal, index, L, ctx) => {
   };
 };
 
+// ---- Idle/unused compute ----
+
+const buildIdleCompute: BuilderFn = (signal, index, L, ctx) => {
+  const count = extractCount(signal.resource) || 1;
+  const savings = toSavings(signal);
+
+  return {
+    id: `rec-${index + 1}`,
+    title: `Decommission ${count} idle/unused ${plural(count, L.compute, L.computePlural)}`,
+    plainEnglishSummary:
+      `I found ${count} ${plural(count, L.compute, L.computePlural)} that are either running with near-zero utilization ` +
+      `or stopped with disks still billing. Cleaning these up eliminates pure waste.`,
+    technicalReason:
+      `${L.metricsSource} data shows sustained CPU below 5% over 7+ days, and/or instances in stopped/deallocated state ` +
+      `with attached volumes still incurring storage charges.`,
+    impact:
+      `Estimated ${fmtRange(savings.yearlyLow, savings.yearlyHigh)}/year in savings. ` +
+      `These resources are not serving traffic and can be safely decommissioned.`,
+    estimatedSavings: savings,
+    confidence: signal.confidenceScore,
+    safetyLevel: "approval_required",
+    recommendedAction:
+      `Snapshot disks and decommission ${count} idle ${plural(count, L.compute, L.computePlural)}`,
+    requiresApproval: true,
+    executionPreview: signal.proOutputPreview ?? [
+      `Identify all idle and stopped ${L.computePlural}`,
+      `Snapshot attached disks for recovery`,
+      `Generate ${L.terraformOrIac} to terminate instances and delete volumes`,
+    ],
+  };
+};
+
+// ---- Public storage exposure ----
+
+const buildPublicStorage: BuilderFn = (signal, index, L, ctx) => {
+  const count = extractCount(signal.resource) || 1;
+
+  return {
+    id: `rec-${index + 1}`,
+    title: `Restrict public access on ${count} ${plural(count, L.storage, L.storagePlural)}`,
+    plainEnglishSummary:
+      `${count} ${plural(count, L.storage, L.storagePlural)} ${count === 1 ? "has" : "have"} public access enabled. ` +
+      `This is a data exposure risk — unless intentionally public, access should be restricted immediately.`,
+    technicalReason:
+      `Public access tags or policies detected on ${count} ${plural(count, L.storage, L.storagePlural)}. ` +
+      `Public buckets are a common vector for data breaches and compliance violations.`,
+    impact:
+      `No direct cost savings — this is a security and compliance improvement. ` +
+      `Public storage is flagged by every major compliance framework (SOC 2, ISO 27001, HIPAA).`,
+    estimatedSavings: toSavings(signal),
+    confidence: signal.confidenceScore,
+    safetyLevel: "approval_required",
+    recommendedAction:
+      `Audit ACLs/policies and restrict public access on ${count} ${plural(count, L.storage, L.storagePlural)}`,
+    requiresApproval: true,
+    executionPreview: signal.proOutputPreview ?? [
+      `Audit current ACL and bucket policy configuration`,
+      `Generate ${L.terraformOrIac} to enforce private access`,
+      `Apply least-privilege access policies`,
+    ],
+  };
+};
+
+// ---- Backup/replication warning ----
+
+const buildBackupWarning: BuilderFn = (signal, index, L, ctx) => {
+  const count = extractCount(signal.resource) || (ctx.computeCount + ctx.storageCount);
+
+  return {
+    id: `rec-${index + 1}`,
+    title: `Enable ${L.backupService} for ${count} unprotected resources`,
+    plainEnglishSummary:
+      `No backup or replication strategy was detected for ${count} resources. ` +
+      `A single disk failure or accidental deletion could cause permanent data loss.`,
+    technicalReason:
+      `No ${L.backupService} configuration detected. Resources lack automated snapshots, ` +
+      `cross-region replication, or any recovery mechanism.`,
+    impact:
+      `No direct cost savings — this is a resilience and disaster recovery improvement. ` +
+      `Estimated backup cost: 5–15% of current storage spend for daily snapshots with 30-day retention.`,
+    estimatedSavings: toSavings(signal),
+    confidence: signal.confidenceScore,
+    safetyLevel: "report_only",
+    recommendedAction:
+      `Generate ${L.backupService} configuration with daily snapshots and cross-region replication`,
+    requiresApproval: false,
+    executionPreview: signal.proOutputPreview ?? [
+      `Configure ${L.backupService} with daily automated snapshots`,
+      `Set 30-day retention with cross-region replication`,
+      `Generate ${L.terraformOrIac} for full backup infrastructure`,
+    ],
+  };
+};
+
 // ---------------------------------------------------------------------------
 // Builder registry
 // ---------------------------------------------------------------------------
@@ -295,4 +407,7 @@ const BUILDERS: Record<SignalKind, BuilderFn> = {
   storage_tiering: buildStorageTiering,
   single_region_risk: buildSingleRegionRisk,
   multi_region_sprawl: buildMultiRegionSprawl,
+  idle_compute: buildIdleCompute,
+  public_storage: buildPublicStorage,
+  backup_warning: buildBackupWarning,
 };

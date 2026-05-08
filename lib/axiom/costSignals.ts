@@ -5,6 +5,7 @@ export type ConfidenceScore = "low" | "medium" | "high";
 export type CostSignal = {
   resource: string;
   issue: string;
+  signalType: SignalType;
   monthlyCostEstimate: { low: number; high: number };
   annualSavingsEstimate: { low: number; high: number };
   confidence: "measured" | "estimated";
@@ -12,6 +13,16 @@ export type CostSignal = {
   proFix: string;
   proOutputPreview?: string[];
 };
+
+export type SignalType =
+  | "compute_rightsizing"
+  | "commitment_discount"
+  | "storage_tiering"
+  | "single_region_risk"
+  | "multi_region_sprawl"
+  | "idle_compute"
+  | "public_storage"
+  | "backup_warning";
 
 export type CostSummary = {
   signals: CostSignal[];
@@ -36,16 +47,18 @@ type SnapshotInput = {
 // ---------------------------------------------------------------------------
 
 export type ProviderLabels = {
-  compute: string;       // "EC2 instance" / "VM" / "Compute Engine instance"
+  compute: string;
   computePlural: string;
-  storage: string;       // "S3 bucket" / "Storage Account" / "GCS bucket"
+  storage: string;
   storagePlural: string;
-  commitmentPlan: string; // "RI/Savings Plan" / "Azure Reserved VM" / "CUD"
+  commitmentPlan: string;
   commitmentPlanFull: string;
-  tieringAction: string;  // "Intelligent-Tiering" / "Cool/Archive" / "Nearline/Autoclass"
-  terraformOrIac: string; // "Terraform" / "Bicep" / "Terraform"
-  metricsSource: string;  // "CloudWatch" / "Azure Monitor" / "Cloud Monitoring"
-  failoverTool: string;   // "Route 53" / "Traffic Manager" / "Cloud DNS"
+  tieringAction: string;
+  terraformOrIac: string;
+  metricsSource: string;
+  failoverTool: string;
+  backupService: string;
+  lifecyclePolicy: string;
 };
 
 export const LABELS: Record<CloudProvider, ProviderLabels> = {
@@ -60,6 +73,8 @@ export const LABELS: Record<CloudProvider, ProviderLabels> = {
     terraformOrIac: "Terraform",
     metricsSource: "CloudWatch CPU/mem",
     failoverTool: "Route 53",
+    backupService: "AWS Backup / EBS Snapshots",
+    lifecyclePolicy: "S3 Lifecycle Configuration",
   },
   azure: {
     compute: "VM",
@@ -72,6 +87,8 @@ export const LABELS: Record<CloudProvider, ProviderLabels> = {
     terraformOrIac: "Bicep/Terraform",
     metricsSource: "Azure Monitor CPU/mem",
     failoverTool: "Traffic Manager",
+    backupService: "Azure Backup / Recovery Services Vault",
+    lifecyclePolicy: "Blob Lifecycle Management Policy",
   },
   gcp: {
     compute: "instance",
@@ -84,22 +101,36 @@ export const LABELS: Record<CloudProvider, ProviderLabels> = {
     terraformOrIac: "Terraform",
     metricsSource: "Cloud Monitoring CPU",
     failoverTool: "Cloud DNS",
+    backupService: "Persistent Disk Snapshots",
+    lifecyclePolicy: "Object Lifecycle Management",
   },
 };
 
 // ---------------------------------------------------------------------------
-// Cost constants (provider-independent — same conservative approach)
+// Provider-specific cost constants
 // ---------------------------------------------------------------------------
 
-const AVG_COMPUTE_MONTHLY = 85;
+const PROVIDER_COMPUTE_AVG_MONTHLY: Record<CloudProvider, number> = {
+  aws: 85,
+  azure: 95,
+  gcp: 80,
+};
+
+const PROVIDER_STORAGE_AVG_MONTHLY: Record<CloudProvider, number> = {
+  aws: 23,
+  azure: 18,
+  gcp: 20,
+};
+
 const RIGHTSIZING_SAVINGS_PCT = 0.25;
 const COMMITMENT_SAVINGS_PCT = 0.35;
-
-const AVG_STORAGE_MONTHLY_PER_UNIT = 23;
 const TIERING_SAVINGS_PCT = 0.30;
 
 const MULTI_REGION_OVERHEAD_PER_INSTANCE = 12;
 const SINGLE_REGION_DOWNTIME_COST_PER_INSTANCE = 45;
+
+const IDLE_CPU_THRESHOLD = 5;
+const IDLE_WINDOW_HOURS = 168; // 7 days
 
 // ---------------------------------------------------------------------------
 // Main entry — supports both legacy SnapshotInput and new CloudSnapshot
@@ -122,6 +153,7 @@ type ResolvedInput = {
   flags: { singleRegion: boolean; noBackupsDetected: boolean };
   topComputeResource?: ComputeResource;
   computeResources: ComputeResource[];
+  allComputeResources: ComputeResource[];
   storageResources: StorageResource[];
   monthlySpendOverride?: number | null;
 };
@@ -129,8 +161,11 @@ type ResolvedInput = {
 function resolveInput(snapshot: SnapshotInput | CloudSnapshot): ResolvedInput {
   if ("provider" in snapshot && "resources" in snapshot) {
     const cs = snapshot as CloudSnapshot;
-    const running = cs.resources.filter(
-      (r): r is ComputeResource => r.resourceType === "compute" && r.state !== "stopped" && r.state !== "deallocated",
+    const allCompute = cs.resources.filter(
+      (r): r is ComputeResource => r.resourceType === "compute",
+    );
+    const running = allCompute.filter(
+      (r) => r.state !== "stopped" && r.state !== "deallocated",
     );
     const storage = cs.resources.filter(
       (r): r is StorageResource => r.resourceType === "storage",
@@ -145,6 +180,7 @@ function resolveInput(snapshot: SnapshotInput | CloudSnapshot): ResolvedInput {
       flags: cs.flags,
       topComputeResource: sorted[0],
       computeResources: running,
+      allComputeResources: allCompute,
       storageResources: storage,
       monthlySpendOverride: cs.monthlySpend,
     };
@@ -159,6 +195,7 @@ function resolveInput(snapshot: SnapshotInput | CloudSnapshot): ResolvedInput {
     primaryRegion: legacy.regions[0] ?? "us-east-1",
     flags: legacy.flags,
     computeResources: [],
+    allComputeResources: [],
     storageResources: [],
   };
 }
@@ -166,12 +203,6 @@ function resolveInput(snapshot: SnapshotInput | CloudSnapshot): ResolvedInput {
 // ---------------------------------------------------------------------------
 // Confidence scoring — grades signal quality based on available data
 // ---------------------------------------------------------------------------
-//
-// Scoring logic (deterministic, provider-independent):
-//   high:   real spend data + CPU metrics with 7+ day window on >50% of instances
-//   medium: real spend data OR CPU metrics present (but not both / sparse coverage)
-//   low:    no spend data, no usage metrics — pure count-based estimation
-//
 
 export function computeConfidence(
   hasSpendData: boolean,
@@ -199,7 +230,7 @@ function scoreStorageConfidence(storageResources: StorageResource[]): Confidence
 }
 
 // ---------------------------------------------------------------------------
-// Signal derivation — provider-aware labels, identical math
+// Signal derivation — 8 signal types, provider-aware
 // ---------------------------------------------------------------------------
 
 function deriveSignals(input: ResolvedInput, monthlySpend: number | null): CostSummary {
@@ -208,6 +239,8 @@ function deriveSignals(input: ResolvedInput, monthlySpend: number | null): CostS
   const compute = input.computeCount;
   const storage = input.storageCount;
   const spend = input.monthlySpendOverride ?? monthlySpend;
+  const avgComputeMonthly = PROVIDER_COMPUTE_AVG_MONTHLY[input.provider];
+  const avgStorageMonthly = PROVIDER_STORAGE_AVG_MONTHLY[input.provider];
   const computeScore = computeConfidence(!!spend, input.computeResources);
   const storageScore = scoreStorageConfidence(input.storageResources);
 
@@ -215,7 +248,7 @@ function deriveSignals(input: ResolvedInput, monthlySpend: number | null): CostS
   if (compute > 0) {
     const baseMonthlyCost = spend
       ? (spend * 0.6)
-      : (compute * AVG_COMPUTE_MONTHLY);
+      : (compute * avgComputeMonthly);
 
     const rightsizeLow = Math.round(baseMonthlyCost * RIGHTSIZING_SAVINGS_PCT * 0.6);
     const rightsizeHigh = Math.round(baseMonthlyCost * RIGHTSIZING_SAVINGS_PCT * 1.2);
@@ -233,6 +266,7 @@ function deriveSignals(input: ResolvedInput, monthlySpend: number | null): CostS
     signals.push({
       resource: `${compute} ${compute !== 1 ? L.computePlural : L.compute}`,
       issue: "Likely oversized or under-utilized instances",
+      signalType: "compute_rightsizing",
       monthlyCostEstimate: { low: Math.round(baseMonthlyCost * 0.8), high: Math.round(baseMonthlyCost * 1.2) },
       annualSavingsEstimate: { low: rightsizeLow * 12, high: rightsizeHigh * 12 },
       confidence: spend ? "measured" : "estimated",
@@ -257,6 +291,7 @@ function deriveSignals(input: ResolvedInput, monthlySpend: number | null): CostS
       signals.push({
         resource: "On-Demand pricing",
         issue: `No ${L.commitmentPlan} detected`,
+        signalType: "commitment_discount",
         monthlyCostEstimate: { low: Math.round(baseMonthlyCost), high: Math.round(baseMonthlyCost * 1.2) },
         annualSavingsEstimate: { low: reservedLow * 12, high: reservedHigh * 12 },
         confidence: "estimated",
@@ -275,15 +310,16 @@ function deriveSignals(input: ResolvedInput, monthlySpend: number | null): CostS
 
   // ---- 3. Storage tiering ----
   if (storage > 5) {
-    const storageMonthlyCost = storage * AVG_STORAGE_MONTHLY_PER_UNIT;
+    const storageMonthlyCost = storage * avgStorageMonthly;
     const tierLow = Math.round(storageMonthlyCost * TIERING_SAVINGS_PCT * 0.5);
     const tierHigh = Math.round(storageMonthlyCost * TIERING_SAVINGS_PCT);
-    const perUnitSavingsLow = Math.round(AVG_STORAGE_MONTHLY_PER_UNIT * TIERING_SAVINGS_PCT * 0.5 * 12);
-    const perUnitSavingsHigh = Math.round(AVG_STORAGE_MONTHLY_PER_UNIT * TIERING_SAVINGS_PCT * 12);
+    const perUnitSavingsLow = Math.round(avgStorageMonthly * TIERING_SAVINGS_PCT * 0.5 * 12);
+    const perUnitSavingsHigh = Math.round(avgStorageMonthly * TIERING_SAVINGS_PCT * 12);
 
     signals.push({
       resource: `${storage} ${storage !== 1 ? L.storagePlural : L.storage}`,
       issue: `Storage tiering not verified — likely using Standard for cold data`,
+      signalType: "storage_tiering",
       monthlyCostEstimate: { low: Math.round(storageMonthlyCost * 0.7), high: Math.round(storageMonthlyCost * 1.3) },
       annualSavingsEstimate: { low: tierLow * 12, high: tierHigh * 12 },
       confidence: "estimated",
@@ -291,7 +327,7 @@ function deriveSignals(input: ResolvedInput, monthlySpend: number | null): CostS
       proFix: `Scan access patterns and apply ${L.tieringAction}`,
       proOutputPreview: [
         `Example: ${defaultStorageName(input.provider)} → ~80% objects unaccessed 30+ days`,
-        `Recommendation: Enable ${L.tieringAction}`,
+        `Recommendation: Enable ${L.tieringAction} via ${L.lifecyclePolicy}`,
         `Per-${L.storage} savings: ~$${perUnitSavingsLow}–$${perUnitSavingsHigh}/yr`,
         `Pro scans access patterns across all ${storage} ${storage !== 1 ? L.storagePlural : L.storage} and generates lifecycle policies`,
         `→ Applies policies automatically — no manual bucket-by-bucket config`,
@@ -305,6 +341,7 @@ function deriveSignals(input: ResolvedInput, monthlySpend: number | null): CostS
     signals.push({
       resource: "Single-region deployment",
       issue: `All ${compute} ${compute !== 1 ? L.computePlural : L.compute} in one region — outage risk with no failover`,
+      signalType: "single_region_risk",
       monthlyCostEstimate: { low: 0, high: 0 },
       annualSavingsEstimate: { low: Math.round(downtimeCost * 6), high: Math.round(downtimeCost * 18) },
       confidence: "estimated",
@@ -319,11 +356,114 @@ function deriveSignals(input: ResolvedInput, monthlySpend: number | null): CostS
     signals.push({
       resource: `${input.regions.length} active regions`,
       issue: "Multi-region spread may include unnecessary redundancy",
+      signalType: "multi_region_sprawl",
       monthlyCostEstimate: { low: Math.round(overheadMonthly * 0.5), high: overheadMonthly },
       annualSavingsEstimate: { low: Math.round(overheadMonthly * 0.3) * 12, high: Math.round(overheadMonthly * 0.6) * 12 },
       confidence: "estimated",
       confidenceScore: "medium",
       proFix: "Analyze region utilization and consolidate workloads",
+    });
+  }
+
+  // ---- 6. Idle/unused compute ----
+  const idleInstances = input.computeResources.filter((r) => {
+    const cpu = r.usage?.cpuAvgPct;
+    const window = r.usage?.sampleWindowHours ?? 0;
+    return cpu !== undefined && cpu < IDLE_CPU_THRESHOLD && window >= IDLE_WINDOW_HOURS;
+  });
+
+  const stoppedInstances = input.allComputeResources.filter(
+    (r) => r.state === "stopped" || r.state === "deallocated",
+  );
+
+  if (idleInstances.length > 0 || stoppedInstances.length > 0) {
+    const idleCount = idleInstances.length;
+    const stoppedCount = stoppedInstances.length;
+    const totalIdle = idleCount + stoppedCount;
+
+    const idleMonthlyCost = idleInstances.reduce((s, r) => s + (r.monthlyCostEstimate ?? avgComputeMonthly), 0);
+    const stoppedDiskCost = stoppedCount * 8;
+    const totalWaste = idleMonthlyCost + stoppedDiskCost;
+
+    const parts: string[] = [];
+    if (idleCount > 0) parts.push(`${idleCount} running with <${IDLE_CPU_THRESHOLD}% avg CPU`);
+    if (stoppedCount > 0) parts.push(`${stoppedCount} stopped (disks still billing)`);
+
+    const preview: string[] = [];
+    if (idleCount > 0) {
+      const topIdle = idleInstances[0];
+      preview.push(
+        `Idle: ${maskResourceId(topIdle.resourceId)} — ${topIdle.instanceType}, ${topIdle.usage?.cpuAvgPct?.toFixed(1)}% avg CPU over ${Math.round((topIdle.usage?.sampleWindowHours ?? 0) / 24)}d`,
+        `Action: Stop or terminate → saves ~$${Math.round(topIdle.monthlyCostEstimate ?? avgComputeMonthly)}/mo`,
+      );
+    }
+    if (stoppedCount > 0) {
+      preview.push(
+        `Stopped: ${stoppedCount} ${stoppedCount !== 1 ? L.computePlural : L.compute} with attached disks (~$${stoppedDiskCost}/mo)`,
+        `Action: Snapshot disks → delete instances and volumes`,
+      );
+    }
+    preview.push(`→ Pro identifies all ${totalIdle} candidates and generates ${L.terraformOrIac} cleanup plan`);
+
+    signals.push({
+      resource: `${totalIdle} idle/unused ${totalIdle !== 1 ? L.computePlural : L.compute}`,
+      issue: parts.join("; "),
+      signalType: "idle_compute",
+      monthlyCostEstimate: { low: Math.round(totalWaste * 0.8), high: Math.round(totalWaste * 1.2) },
+      annualSavingsEstimate: { low: Math.round(totalWaste * 0.8) * 12, high: Math.round(totalWaste * 1.2) * 12 },
+      confidence: idleCount > 0 ? "measured" : "estimated",
+      confidenceScore: idleCount > 0 ? "high" : "medium",
+      proFix: `Generate decommission plan for idle ${L.computePlural}`,
+      proOutputPreview: preview,
+    });
+  }
+
+  // ---- 7. Public storage exposure warning ----
+  const publicBuckets = input.storageResources.filter((r) => {
+    const tags = r.tags ?? {};
+    const hasPublicTag =
+      tags["public_access"] === "true" ||
+      tags["publicAccess"] === "true" ||
+      tags["public-access-prevention"] === "inherited";
+    return hasPublicTag;
+  });
+
+  if (publicBuckets.length > 0) {
+    signals.push({
+      resource: `${publicBuckets.length} ${publicBuckets.length !== 1 ? L.storagePlural : L.storage}`,
+      issue: `Public access detected — potential data exposure risk`,
+      signalType: "public_storage",
+      monthlyCostEstimate: { low: 0, high: 0 },
+      annualSavingsEstimate: { low: 0, high: 0 },
+      confidence: "measured",
+      confidenceScore: "high",
+      proFix: `Audit public access and generate ${L.terraformOrIac} to restrict`,
+      proOutputPreview: [
+        `${publicBuckets.length} ${publicBuckets.length !== 1 ? L.storagePlural : L.storage} with public access enabled`,
+        `Affected: ${publicBuckets.slice(0, 3).map((b) => maskResourceId(b.resourceId)).join(", ")}${publicBuckets.length > 3 ? ` +${publicBuckets.length - 3} more` : ""}`,
+        `→ Pro audits ACLs/policies and generates least-privilege ${L.terraformOrIac}`,
+      ],
+    });
+  }
+
+  // ---- 8. Backup/replication warning ----
+  if (input.flags.noBackupsDetected && (compute > 0 || storage > 0)) {
+    const atRiskCount = compute + storage;
+    signals.push({
+      resource: `${atRiskCount} resources without backup`,
+      issue: `No ${L.backupService} detected — data loss risk`,
+      signalType: "backup_warning",
+      monthlyCostEstimate: { low: 0, high: 0 },
+      annualSavingsEstimate: { low: 0, high: 0 },
+      confidence: "estimated",
+      confidenceScore: compute > 0 ? computeScore : storageScore,
+      proFix: `Generate ${L.backupService} configuration via ${L.terraformOrIac}`,
+      proOutputPreview: [
+        `No backup or replication strategy detected for ${atRiskCount} resources`,
+        `At risk: ${compute} ${compute !== 1 ? L.computePlural : L.compute}, ${storage} ${storage !== 1 ? L.storagePlural : L.storage}`,
+        `Recommended: Enable ${L.backupService} with daily snapshots + 30-day retention`,
+        `→ Pro generates full backup ${L.terraformOrIac} with cross-region replication`,
+      ],
     });
   }
 
