@@ -35,7 +35,7 @@ type SnapshotInput = {
 // Provider-aware labels
 // ---------------------------------------------------------------------------
 
-type ProviderLabels = {
+export type ProviderLabels = {
   compute: string;       // "EC2 instance" / "VM" / "Compute Engine instance"
   computePlural: string;
   storage: string;       // "S3 bucket" / "Storage Account" / "GCS bucket"
@@ -48,7 +48,7 @@ type ProviderLabels = {
   failoverTool: string;   // "Route 53" / "Traffic Manager" / "Cloud DNS"
 };
 
-const LABELS: Record<CloudProvider, ProviderLabels> = {
+export const LABELS: Record<CloudProvider, ProviderLabels> = {
   aws: {
     compute: "EC2 instance",
     computePlural: "EC2 instances",

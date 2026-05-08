@@ -8,6 +8,162 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// ---------------------------------------------------------------------------
+// Axiom Platform Enums
+// ---------------------------------------------------------------------------
+
+enum CloudProvider {
+  aws
+  azure
+  gcp
+}
+
+enum AgentRunStatus {
+  pending
+  running
+  completed
+  failed
+  partially_completed
+}
+
+enum AgentTrigger {
+  manual
+  scheduled
+  drift
+  onboarding
+  webhook
+}
+
+enum FindingCategory {
+  cost
+  resilience
+  security
+  performance
+  compliance
+}
+
+enum FindingSeverity {
+  info
+  low
+  medium
+  high
+  critical
+}
+
+enum ActionDisposition {
+  auto_fix_candidate
+  approval_required
+  report_only
+  blocked
+}
+
+enum ActionType {
+  resize_compute
+  apply_storage_policy
+  purchase_commitment
+  decommission_compute
+}
+
+enum RiskLevel {
+  low
+  medium
+  high
+}
+
+enum ApprovalDecision {
+  approve_all
+  approve_partial
+  reject_all
+}
+
+enum AuditEventStatus {
+  pending
+  precheck_failed
+  applied
+  verified
+  failed
+  rolled_back
+}
+
+enum ScheduleFrequency {
+  daily
+  weekly
+}
+
+enum NotificationType {
+  scan_diff
+  new_high_risk
+  savings_increased
+  risk_resolved
+  scan_failed
+}
+
+enum RiskTolerance {
+  conservative     // never auto-apply, approval for everything
+  moderate         // auto-apply low-risk, approve medium+
+  aggressive       // auto-apply low+medium, approve high only
+}
+
+enum ApprovalPolicy {
+  require_all      // every action needs human sign-off
+  auto_low_risk    // auto-apply low-risk, approve medium+
+  auto_safe        // auto-apply auto_fix_candidates, approve the rest
+}
+
+enum OutputFormat {
+  terraform
+  cli
+  json
+}
+
+enum BusinessContext {
+  startup
+  agency
+  enterprise
+  ecommerce
+  healthcare
+  fintech
+  saas
+  other
+}
+
+enum AutopilotMode {
+  observe_only         // scan + report, no plans or actions
+  recommend            // scan + plan + recommendations, no apply
+  assisted_apply       // apply approved low/medium-risk fixes
+  full_guarded         // auto-apply pre-approved low-risk fixes, approve medium
+}
+
+enum ApprovalItemStatus {
+  pending
+  approved
+  rejected
+  snoozed
+  applied
+  failed
+  expired
+}
+
+enum AgentTaskType {
+  scan_cloud
+  analyze_snapshot
+  generate_execution_plan
+  generate_terraform
+  request_approval
+  apply_action
+  verify_action
+  rollback_action
+  schedule_next_scan
+}
+
+enum AgentTaskStatus {
+  pending
+  running
+  completed
+  failed
+  skipped
+}
+
 model User {
   id            String    @id @default(cuid())
   email         String    @unique
@@ -282,4 +438,423 @@ model AxiomMessage {
 
   conversation AxiomConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
   @@index([conversationId])
+}
+
+// ---------------------------------------------------------------------------
+// Axiom — Connected Cloud Accounts (one org → many accounts)
+// credentialRef is a vault pointer — raw secrets are NEVER stored here
+// ---------------------------------------------------------------------------
+
+model CloudAccount {
+  id                String        @id @default(cuid())
+  organizationId    String
+  provider          CloudProvider
+  externalAccountId String        // AWS account ID, Azure subscription ID, GCP project ID
+  alias             String?
+  credentialRef     String?       // pointer to encrypted credential vault entry
+  regions           String[]      @default([])
+  autopilotMode     AutopilotMode @default(observe_only)
+  connectedAt       DateTime      @default(now())
+  lastScannedAt     DateTime?
+  enabled           Boolean       @default(true)
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+
+  runs            AxiomAgentRun[]
+  scheduledRuns   AxiomScheduledRun[]
+  autopilotEvents AxiomAutopilotEvent[]
+
+  @@unique([organizationId, provider, externalAccountId])
+  @@index([organizationId])
+  @@index([provider])
+}
+
+// ---------------------------------------------------------------------------
+// Axiom Agent — run lifecycle
+// ---------------------------------------------------------------------------
+
+model AxiomAgentRun {
+  id              String         @id @default(cuid())
+  userId          String
+  organizationId  String
+  cloudAccountId  String
+  cloudAccount    CloudAccount   @relation(fields: [cloudAccountId], references: [id])
+  trigger         AgentTrigger
+  status          AgentRunStatus @default(pending)
+  snapshotData    Json?
+  summary         String?        @db.Text
+  errorMessage    String?
+  startedAt       DateTime?
+  completedAt     DateTime?
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+
+  findings        AxiomFinding[]
+  recommendations AxiomRecommendation[]
+  executionPlan   AxiomExecutionPlan?
+  approvals       AxiomApprovalRequest[]
+  auditEvents     AxiomAuditEvent[]
+  tasks           AxiomAgentTask[]
+
+  @@index([userId])
+  @@index([organizationId])
+  @@index([cloudAccountId])
+  @@index([status])
+  @@index([trigger])
+  @@index([createdAt])
+}
+
+// ---------------------------------------------------------------------------
+// Findings — what the agent discovered
+// ---------------------------------------------------------------------------
+
+model AxiomFinding {
+  id                String          @id @default(cuid())
+  runId             String
+  run               AxiomAgentRun   @relation(fields: [runId], references: [id], onDelete: Cascade)
+  category          FindingCategory
+  severity          FindingSeverity
+  title             String
+  description       String          @db.Text
+  affectedResources Json            // string[]
+  region            String
+  provider          CloudProvider
+  confidence        String          // "low" | "medium" | "high"
+  monthlyLow        Float           @default(0)
+  monthlyHigh       Float           @default(0)
+  yearlyLow         Float           @default(0)
+  yearlyHigh        Float           @default(0)
+  data              Json?
+  createdAt         DateTime        @default(now())
+
+  recommendations AxiomRecommendation[]
+
+  @@index([runId])
+  @@index([category])
+  @@index([severity])
+}
+
+// ---------------------------------------------------------------------------
+// Recommendations — what the agent suggests
+// ---------------------------------------------------------------------------
+
+model AxiomRecommendation {
+  id                String            @id @default(cuid())
+  runId             String
+  run               AxiomAgentRun     @relation(fields: [runId], references: [id], onDelete: Cascade)
+  findingId         String
+  finding           AxiomFinding      @relation(fields: [findingId], references: [id], onDelete: Cascade)
+  title             String
+  rationale         String            @db.Text
+  disposition       ActionDisposition
+  dispositionReason String
+  actionType        ActionType?
+  riskLevel         RiskLevel?
+  effort            String            @default("none") // "none" | "low" | "medium" | "high"
+  actionable        Boolean           @default(false)
+  monthlyLow        Float             @default(0)
+  monthlyHigh       Float             @default(0)
+  yearlyLow         Float             @default(0)
+  yearlyHigh        Float             @default(0)
+  createdAt         DateTime          @default(now())
+
+  planItems AxiomExecutionPlanItem[]
+
+  @@index([runId])
+  @@index([disposition])
+  @@index([actionType])
+}
+
+// ---------------------------------------------------------------------------
+// Execution Plans — the agent's proposed actions
+// ---------------------------------------------------------------------------
+
+model AxiomExecutionPlan {
+  id                 String         @id @default(cuid())
+  runId              String         @unique
+  run                AxiomAgentRun  @relation(fields: [runId], references: [id], onDelete: Cascade)
+  totalItems         Int            @default(0)
+  safeToApply        Boolean        @default(false)
+  downtimeEstimate   String?
+  rollbackComplexity String?        // "trivial" | "moderate" | "complex"
+  dryRunResult       Json?
+  createdAt          DateTime       @default(now())
+
+  items AxiomExecutionPlanItem[]
+
+  @@index([runId])
+}
+
+model AxiomExecutionPlanItem {
+  id               String               @id @default(cuid())
+  planId           String
+  plan             AxiomExecutionPlan    @relation(fields: [planId], references: [id], onDelete: Cascade)
+  recommendationId String?
+  recommendation   AxiomRecommendation?  @relation(fields: [recommendationId], references: [id])
+  actionType       ActionType
+  provider         CloudProvider
+  region           String
+  resourceIds      Json                  // string[]
+  currentState     String
+  recommendedState String
+  riskLevel        RiskLevel
+  disposition      ActionDisposition
+  monthlyLow       Float                 @default(0)
+  monthlyHigh      Float                 @default(0)
+  yearlyLow        Float                 @default(0)
+  yearlyHigh       Float                 @default(0)
+  rollbackPlan     Json?
+  precheckResult   Json?
+  sortOrder        Int                   @default(0)
+  createdAt        DateTime              @default(now())
+
+  @@index([planId])
+  @@index([disposition])
+}
+
+// ---------------------------------------------------------------------------
+// Approval Requests — user decisions on agent proposals
+// ---------------------------------------------------------------------------
+
+model AxiomApprovalRequest {
+  id              String           @id @default(cuid())
+  runId           String
+  run             AxiomAgentRun    @relation(fields: [runId], references: [id], onDelete: Cascade)
+  userId          String
+  decision        ApprovalDecision
+  approvedItemIds Json             // string[]
+  rejectedItemIds Json?            // string[]
+  note            String?          @db.Text
+  decidedAt       DateTime         @default(now())
+
+  @@index([runId])
+  @@index([userId])
+}
+
+// ---------------------------------------------------------------------------
+// Approval Items — per-action approval tracking for the Approval Center
+//
+// Each execution plan item that needs approval gets its own row here.
+// Supports approve / reject / snooze at the individual action level.
+// Status transitions:
+//   pending → approved → applied
+//   pending → rejected
+//   pending → snoozed → pending (auto-resurfaces after snoozedUntil)
+//   pending → expired  (run is stale or account disconnected)
+//   approved → failed  (apply encountered an error)
+// ---------------------------------------------------------------------------
+
+model AxiomApprovalItem {
+  id              String             @id @default(cuid())
+  organizationId  String
+  runId           String
+  planItemId      String
+  status          ApprovalItemStatus @default(pending)
+  title           String
+  actionType      ActionType
+  provider        CloudProvider
+  region          String
+  resourceIds     Json               // string[]
+  currentState    String
+  recommendedState String
+  riskLevel       RiskLevel
+  disposition     ActionDisposition
+  dispositionReason String
+  monthlyLow      Float              @default(0)
+  monthlyHigh     Float              @default(0)
+  yearlyLow       Float              @default(0)
+  yearlyHigh      Float              @default(0)
+  rollbackAvailable Boolean          @default(false)
+  rollbackComplexity String?         // "trivial" | "moderate" | "complex"
+  precheckPassed  Boolean            @default(true)
+  decidedBy       String?
+  decidedAt       DateTime?
+  note            String?            @db.Text
+  snoozedUntil    DateTime?
+  errorMessage    String?
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+
+  @@unique([runId, planItemId])
+  @@index([organizationId, status])
+  @@index([status])
+  @@index([runId])
+  @@index([snoozedUntil])
+}
+
+// ---------------------------------------------------------------------------
+// Audit Events — immutable trail of every cloud mutation
+// ---------------------------------------------------------------------------
+
+model AxiomAuditEvent {
+  id             String           @id @default(cuid())
+  runId          String?
+  run            AxiomAgentRun?   @relation(fields: [runId], references: [id])
+  userId         String
+  organizationId String
+  planItemId     String?
+  provider       CloudProvider
+  actionType     ActionType
+  resourceIds    Json             // string[]
+  region         String
+  beforeState    Json
+  afterState     Json?
+  status         AuditEventStatus @default(pending)
+  errorMessage   String?
+  riskLevel      RiskLevel
+  monthlyLow     Float            @default(0)
+  monthlyHigh    Float            @default(0)
+  yearlyLow      Float            @default(0)
+  yearlyHigh     Float            @default(0)
+  metadata       Json?
+  createdAt      DateTime         @default(now())
+  appliedAt      DateTime?
+  verifiedAt     DateTime?
+  rolledBackAt   DateTime?
+  updatedAt      DateTime         @updatedAt
+
+  @@index([runId])
+  @@index([userId])
+  @@index([organizationId])
+  @@index([provider, status])
+  @@index([createdAt])
+}
+
+// ---------------------------------------------------------------------------
+// Scheduled Runs — future and recurring agent executions
+// ---------------------------------------------------------------------------
+
+model AxiomScheduledRun {
+  id             String            @id @default(cuid())
+  organizationId String
+  cloudAccountId String
+  cloudAccount   CloudAccount      @relation(fields: [cloudAccountId], references: [id])
+  trigger        AgentTrigger      @default(scheduled)
+  frequency      ScheduleFrequency @default(daily)
+  cronExpression String            // e.g. "0 9 * * 1" (Monday 9am UTC)
+  timezone       String            @default("UTC")
+  nextRunAt      DateTime
+  lastRunId      String?
+  lastDiffSummary String?
+  consecutiveFailures Int          @default(0)
+  enabled        Boolean           @default(true)
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
+
+  @@index([organizationId])
+  @@index([cloudAccountId])
+  @@index([nextRunAt, enabled])
+}
+
+// ---------------------------------------------------------------------------
+// Axiom — Notifications (scheduled scan results, drift alerts)
+// ---------------------------------------------------------------------------
+
+model AxiomNotification {
+  id             String           @id @default(cuid())
+  organizationId String
+  userId         String?
+  runId          String?
+  scheduledRunId String?
+  type           NotificationType
+  title          String
+  body           String           @db.Text
+  data           Json?
+  read           Boolean          @default(false)
+  createdAt      DateTime         @default(now())
+
+  @@index([organizationId])
+  @@index([userId, read])
+  @@index([createdAt])
+}
+
+// ---------------------------------------------------------------------------
+// Axiom — Organization Preferences (persistent agent context)
+//
+// One row per organization. Controls how the agent prioritizes findings,
+// classifies dispositions, and formats output. Preferences NEVER bypass
+// the approval gate — they only influence ordering and defaults.
+// ---------------------------------------------------------------------------
+
+model AxiomOrgPreferences {
+  id                String          @id @default(cuid())
+  organizationId    String          @unique
+  preferredProviders String[]       @default([])          // empty = all
+  riskTolerance     RiskTolerance   @default(conservative)
+  approvalPolicy    ApprovalPolicy  @default(require_all)
+  autoApplyEnabled  Boolean         @default(false)
+  outputFormat      OutputFormat    @default(terraform)
+  businessContext   BusinessContext @default(other)
+  ignoredFindingTitles String[]    @default([])
+  priorityCategories String[]      @default([])           // empty = default ordering
+  notes             String?        @db.Text               // freeform context from user
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+}
+
+// ---------------------------------------------------------------------------
+// Axiom — Agent Task Queue
+//
+// Decomposes an agent run into discrete, retry-safe tasks. Each task is
+// idempotent: re-running a completed task is a no-op, re-running a failed
+// task picks up where it left off. Failed tasks never break the whole run —
+// downstream tasks are skipped instead.
+// ---------------------------------------------------------------------------
+
+model AxiomAgentTask {
+  id             String          @id @default(cuid())
+  agentRunId     String
+  run            AxiomAgentRun   @relation(fields: [agentRunId], references: [id], onDelete: Cascade)
+  taskType       AgentTaskType
+  status         AgentTaskStatus @default(pending)
+  provider       CloudProvider
+  sortOrder      Int             @default(0)
+  attempts       Int             @default(0)
+  maxAttempts    Int             @default(3)
+  inputJson      Json?
+  outputJson     Json?
+  errorMessage   String?
+  dependsOn      String[]        @default([])   // task type names that must complete first
+  idempotencyKey String?         @unique
+  startedAt      DateTime?
+  completedAt    DateTime?
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+
+  @@index([agentRunId])
+  @@index([status])
+  @@index([taskType])
+  @@index([agentRunId, sortOrder])
+}
+
+// ---------------------------------------------------------------------------
+// Axiom — Autopilot Audit Trail
+//
+// Immutable log of every autopilot mode change and every action the agent
+// takes autonomously. Required for enterprise compliance — proves what
+// happened, who authorized it, and under which policy.
+// ---------------------------------------------------------------------------
+
+model AxiomAutopilotEvent {
+  id             String        @id @default(cuid())
+  cloudAccountId String
+  cloudAccount   CloudAccount  @relation(fields: [cloudAccountId], references: [id])
+  organizationId String
+  userId         String
+  eventType      String        // "mode_change" | "auto_applied" | "auto_blocked"
+  previousMode   AutopilotMode?
+  newMode        AutopilotMode?
+  runId          String?
+  actionType     ActionType?
+  riskLevel      RiskLevel?
+  disposition    ActionDisposition?
+  resourceIds    Json?         // string[]
+  reason         String        @db.Text
+  metadata       Json?
+  createdAt      DateTime      @default(now())
+
+  @@index([cloudAccountId])
+  @@index([organizationId])
+  @@index([eventType])
+  @@index([createdAt])
 }

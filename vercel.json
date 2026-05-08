@@ -4,6 +4,10 @@
     {
       "path": "/api/cloud-operator/run-recurring",
       "schedule": "0 6 * * *"
+    },
+    {
+      "path": "/api/axiom/scheduler/run",
+      "schedule": "0 9 * * *"
     }
   ]
 }
