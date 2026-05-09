@@ -162,8 +162,7 @@ export default function PricingPage() {
 
       {/* Plan Cards */}
       <section className="pb-20 px-4">
-        <div className="grid md:grid-cols-2 xl:grid-cols-4 gap-6 max-w-6xl mx-auto">
-          <Stagger>
+        <Stagger className="grid md:grid-cols-2 xl:grid-cols-4 gap-6 max-w-6xl mx-auto">
             {PLAN_ORDER.map((planId) => {
               const plan = MEMBERSHIP_PLANS[planId];
               const axiom = AXIOM_FEATURES[planId];
@@ -254,8 +253,7 @@ export default function PricingPage() {
                 </div>
               );
             })}
-          </Stagger>
-        </div>
+        </Stagger>
       </section>
 
       {/* Comparison Table */}

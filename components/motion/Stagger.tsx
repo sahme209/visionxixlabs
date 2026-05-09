@@ -8,9 +8,10 @@ type StaggerProps = {
   children: React.ReactNode;
   delay?: number;
   interval?: number;
+  className?: string;
 };
 
-export function Stagger({ children, delay = 0, interval = 0.06 }: StaggerProps) {
+export function Stagger({ children, delay = 0, interval = 0.06, className }: StaggerProps) {
   const [reduceMotion, setReduceMotion] = useState(false);
 
   useEffect(() => {
@@ -23,7 +24,7 @@ export function Stagger({ children, delay = 0, interval = 0.06 }: StaggerProps) 
   }, []);
 
   if (reduceMotion) {
-    return <div>{children}</div>;
+    return <div className={className}>{children}</div>;
   }
 
   const variants: Variants = {
@@ -40,6 +41,7 @@ export function Stagger({ children, delay = 0, interval = 0.06 }: StaggerProps) 
 
   return (
     <motion.div
+      className={className}
       initial="hidden"
       whileInView="visible"
       viewport={motionViewport}
