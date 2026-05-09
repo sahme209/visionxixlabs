@@ -1147,7 +1147,7 @@ function fmt(n: number): string {
 
 export type WorkflowTestResult = { name: string; passed: boolean; detail: string };
 
-export function runWorkflowTests(): WorkflowTestResult[] {
+export async function runWorkflowTests(): Promise<WorkflowTestResult[]> {
   const results: WorkflowTestResult[] = [];
   const orgId = "test-workflow-org";
   const userId = "test-user";
