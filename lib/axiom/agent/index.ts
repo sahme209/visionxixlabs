@@ -386,7 +386,7 @@ export type {
   GovernanceApprovalContext,
   PolicyValidationResult,
   PolicyPresetName,
-  PolicyPreset,
+  PolicyPreset as GovernancePolicyPreset,
   GovernanceTestResult,
 } from "./governanceEngine";
 export {
