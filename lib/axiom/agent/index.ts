@@ -55,3 +55,31 @@ export type {
   ReasonedOutput,
   TrendAnalysis,
 } from "./reasoningEngine";
+export {
+  generateAgentPlan,
+  buildDependencyGraph,
+  topologicalSort,
+  detectCycles,
+  getReadyPhases,
+  runPlanningTests,
+  EXAMPLE_PLANS,
+} from "./planningEngine";
+export type {
+  AgentPlan,
+  PlanPhase,
+  PlanStatus,
+  PhaseStatus,
+  RolloutArchetype,
+  PhasingStrategy,
+  PhaseType,
+  PhaseImpact,
+  PhasePrecondition,
+  SuccessCriterion,
+  RollbackTrigger,
+  DependencyEdge,
+  DependencyGraph,
+  ApprovalCheckpoint,
+  PlanImpact,
+  PlanRollbackSummary,
+  PlanGenerationInput,
+} from "./planningEngine";
