@@ -1068,7 +1068,8 @@ async function handleMonitorAlerts(
   }>;
 
   try {
-    alerts = await prisma.axiomMonitorAlert.findMany({
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- model pending Prisma migration
+    alerts = await (prisma as any).axiomMonitorAlert.findMany({
       where,
       orderBy: { createdAt: "desc" },
       take: 20,
