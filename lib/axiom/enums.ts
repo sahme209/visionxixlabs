@@ -156,6 +156,24 @@ export enum AgentTaskStatus {
   Skipped = "skipped",
 }
 
+export enum OrgRole {
+  Owner = "owner",
+  Admin = "admin",
+  Operator = "operator",
+  SecurityReviewer = "security_reviewer",
+  FinanceViewer = "finance_viewer",
+  ReadOnly = "read_only",
+}
+
+export enum ApprovalChainStatus {
+  PendingApprovals = "pending_approvals",
+  Approved = "approved",
+  Rejected = "rejected",
+  Escalated = "escalated",
+  Expired = "expired",
+  Bypassed = "bypassed",
+}
+
 // ---------------------------------------------------------------------------
 // Savings range — used wherever estimated savings appear
 // ---------------------------------------------------------------------------

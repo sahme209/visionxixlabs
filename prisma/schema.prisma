@@ -164,6 +164,24 @@ enum AgentTaskStatus {
   skipped
 }
 
+enum OrgRole {
+  owner
+  admin
+  operator
+  security_reviewer
+  finance_viewer
+  read_only
+}
+
+enum ApprovalChainStatus {
+  pending_approvals
+  approved
+  rejected
+  escalated
+  expired
+  bypassed
+}
+
 model User {
   id            String    @id @default(cuid())
   email         String    @unique
@@ -857,4 +875,111 @@ model AxiomAutopilotEvent {
   @@index([organizationId])
   @@index([eventType])
   @@index([createdAt])
+}
+
+// ---------------------------------------------------------------------------
+// Enterprise RBAC — Organization membership, approval policies, approval chains
+// ---------------------------------------------------------------------------
+
+model OrgMembership {
+  id             String    @id @default(cuid())
+  userId         String
+  organizationId String
+  role           OrgRole   @default(read_only)
+  providerScopes String[]  @default([])            // empty = all providers; ["aws","gcp"] = restricted
+  invitedBy      String?
+  acceptedAt     DateTime?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  @@unique([userId, organizationId])
+  @@index([organizationId])
+  @@index([userId])
+}
+
+model AxiomApprovalPolicy {
+  id                  String    @id @default(cuid())
+  organizationId      String
+  name                String
+  description         String?   @db.Text
+  enabled             Boolean   @default(true)
+  priority            Int       @default(0)         // higher = evaluated first
+
+  // Matching criteria — which actions this policy applies to
+  matchRiskLevels     String[]  @default([])        // empty = all
+  matchActionTypes    String[]  @default([])        // empty = all
+  matchProviders      String[]  @default([])        // empty = all
+  matchCategories     String[]  @default([])        // empty = all
+  matchMinSavings     Float?                        // only match if yearly savings >= this
+
+  // Approval requirements
+  requiredApprovals   Int       @default(1)         // how many approvals needed
+  requiredRoles       String[]  @default([])        // which roles can approve (empty = any with permission)
+  escalateAfterHours  Int?                          // auto-escalate if no decision in N hours
+  escalateToRoles     String[]  @default([])        // who gets the escalation
+  autoExpireHours     Int?                          // auto-expire if no decision in N hours
+  blockAction         Boolean   @default(false)     // true = hard-block, no approval path
+
+  createdBy           String
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+
+  @@index([organizationId, enabled])
+  @@index([priority])
+}
+
+model AxiomApprovalChain {
+  id               String              @id @default(cuid())
+  organizationId   String
+  approvalItemId   String
+  policyId         String              // which policy triggered this chain
+  status           ApprovalChainStatus @default(pending_approvals)
+  requiredCount    Int                 // how many approvals needed
+  currentCount     Int                 @default(0)  // how many received
+  escalatedAt      DateTime?
+  expiresAt        DateTime?
+  resolvedAt       DateTime?
+  createdAt        DateTime            @default(now())
+  updatedAt        DateTime            @updatedAt
+
+  votes            AxiomApprovalVote[]
+
+  @@unique([approvalItemId, policyId])
+  @@index([organizationId, status])
+  @@index([approvalItemId])
+  @@index([expiresAt])
+}
+
+model AxiomApprovalVote {
+  id          String   @id @default(cuid())
+  chainId     String
+  userId      String
+  role        OrgRole
+  decision    String                               // "approve" | "reject" | "escalate"
+  reason      String?  @db.Text
+  createdAt   DateTime @default(now())
+
+  chain       AxiomApprovalChain @relation(fields: [chainId], references: [id], onDelete: Cascade)
+
+  @@unique([chainId, userId])                      // one vote per user per chain
+  @@index([chainId])
+  @@index([userId])
+}
+
+model AxiomRbacAuditEvent {
+  id             String   @id @default(cuid())
+  organizationId String
+  actorId        String
+  actorRole      OrgRole
+  action         String                            // "role_assigned", "policy_created", "approval_voted", etc.
+  targetType     String                            // "membership", "policy", "chain", "item"
+  targetId       String
+  before         Json?
+  after          Json?
+  metadata       Json?
+  createdAt      DateTime @default(now())
+
+  @@index([organizationId, createdAt])
+  @@index([actorId])
+  @@index([targetId])
 }
