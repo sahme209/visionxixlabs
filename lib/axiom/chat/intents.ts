@@ -1,10 +1,14 @@
 import type { ChatIntent } from "./types";
+import { extractEntities } from "./conversationContext";
 
 // ---------------------------------------------------------------------------
 // Intent classification — keyword/pattern matching, no LLM call needed
 //
 // Each rule is: [patterns to match, intent, optional entity extractor].
 // First match wins. Order matters — more specific patterns go first.
+//
+// Global entity extraction (provider, time, category, item refs) runs on
+// every message and is merged into params automatically.
 // ---------------------------------------------------------------------------
 
 type IntentRule = {
@@ -14,6 +18,45 @@ type IntentRule = {
 };
 
 const RULES: IntentRule[] = [
+  // --- New intents (must be above generic patterns to win first-match) ---
+
+  {
+    patterns: [
+      /\b(biggest|largest|top|best|highest)\s*(savings?|opportunities|wins)/i,
+      /\bshow\s*(me\s*)?(my\s*)?(biggest|top|largest)\s*(savings?|opportunities)/i,
+      /\bwhere\s*(can|could)\s*(i|we)\s*save\s*(the\s*)?most/i,
+    ],
+    intent: "biggest_savings",
+  },
+  {
+    patterns: [
+      /\bwhat('?s| is)\s*safe\s*to\s*(automate|auto.?apply|auto.?fix)/i,
+      /\bwhat\s*(can|could)\s*(i|we|you)\s*automate/i,
+      /\bautomation\s*(assessment|summary|overview|status)/i,
+      /\bautopilot\s*(status|summary|what|options)/i,
+      /\bwhat\s*(actions?|fixes?)\s*(are|is)\s*safe\s*to\s*automate/i,
+    ],
+    intent: "automation_assessment",
+  },
+  {
+    patterns: [
+      /\b(summarize|summary|show|overview)\s*(of\s*)?(for\s*)?(aws|azure|gcp|amazon|google\s*cloud)\b/i,
+      /\b(aws|azure|gcp|amazon|google\s*cloud)\s*(only|summary|overview|findings?|status)\b/i,
+      /\bcan\s*you\s*summarize\s*(aws|azure|gcp|amazon|google\s*cloud)\s*only\b/i,
+    ],
+    intent: "provider_summary",
+  },
+  {
+    patterns: [
+      /\b(monitor|monitoring)\s*(alerts?|status|notifications?)/i,
+      /\bany\s*(new\s*)?(alerts?|warnings?|notifications?)/i,
+      /\bshow\s*(me\s*)?(recent\s*)?(alerts?|warnings?)/i,
+    ],
+    intent: "monitor_alerts",
+  },
+
+  // --- Original intents ---
+
   {
     patterns: [
       /\b(scan|rescan|re-scan|analyze|check)\s*(my|the|this)?\s*(account|infra|cloud|environment)/i,
@@ -74,10 +117,11 @@ const RULES: IntentRule[] = [
   },
   {
     patterns: [
-      /\bwhat\s*(has\s*)?(changed|different|new)\s*(since|from|between)/i,
-      /\bchanges?\s*since\s*(last|previous)/i,
+      /\bwhat\s*(has\s*)?(changed|different|new)\s*(since|from|between|this|last|today|yesterday)/i,
+      /\bchanges?\s*(since|this|from)\s*(last|previous|week|month|today|yesterday)/i,
       /\bdiff\b/i,
       /\bcompare\s*(to|with)\s*(last|previous)/i,
+      /\bwhat\s*changed\b/i,
     ],
     intent: "changes_since",
   },
@@ -141,7 +185,7 @@ const RULES: IntentRule[] = [
 ];
 
 // ---------------------------------------------------------------------------
-// Classify — returns intent + extracted params
+// Classify — returns intent + extracted params (including global entities)
 // ---------------------------------------------------------------------------
 
 export function classifyIntent(
@@ -149,14 +193,23 @@ export function classifyIntent(
 ): { intent: ChatIntent; params: Record<string, string> } {
   const normalized = text.trim();
 
+  // Global entity extraction — runs on every message
+  const entities = extractEntities(normalized);
+  const globalParams: Record<string, string> = {};
+  if (entities.provider) globalParams.provider = entities.provider;
+  if (entities.timeRange) globalParams.timeLabel = entities.timeRange.label;
+  if (entities.timeRange) globalParams.timeSince = entities.timeRange.since.toISOString();
+  if (entities.itemRef) globalParams.itemRef = entities.itemRef;
+  if (entities.category) globalParams.category = entities.category;
+
   for (const rule of RULES) {
     for (const pattern of rule.patterns) {
       if (pattern.test(normalized)) {
-        const params = rule.extractParams?.(normalized) ?? {};
-        return { intent: rule.intent, params };
+        const ruleParams = rule.extractParams?.(normalized) ?? {};
+        return { intent: rule.intent, params: { ...globalParams, ...ruleParams } };
       }
     }
   }
 
-  return { intent: "unknown", params: {} };
+  return { intent: "unknown", params: globalParams };
 }

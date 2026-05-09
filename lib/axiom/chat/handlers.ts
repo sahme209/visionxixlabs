@@ -21,6 +21,10 @@ export const HANDLERS: Record<string, ChatHandler> = {
   explain_finding: handleExplainFinding,
   run_status: handleRunStatus,
   list_accounts: handleListAccounts,
+  biggest_savings: handleBiggestSavings,
+  automation_assessment: handleAutomationAssessment,
+  provider_summary: handleProviderSummary,
+  monitor_alerts: handleMonitorAlerts,
   unknown: handleUnknown,
 };
 
@@ -73,7 +77,10 @@ function providerLabel(p: string): string {
 // 1. what_found — "What did you find?"
 // ---------------------------------------------------------------------------
 
-async function handleWhatFound(ctx: ChatContext): Promise<ChatResponse> {
+async function handleWhatFound(
+  ctx: ChatContext,
+  params: Record<string, string>,
+): Promise<ChatResponse> {
   const run = await getLatestRun(ctx);
   if (!run) return noScanResponse();
 
@@ -90,10 +97,18 @@ async function handleWhatFound(ctx: ChatContext): Promise<ChatResponse> {
     };
   }
 
-  const findings = run.findings;
+  let findings = run.findings;
+  const providerFilter = params.provider as CloudProvider | undefined;
+  const categoryFilter = params.category;
+
+  if (providerFilter) findings = findings.filter((f) => f.provider === providerFilter);
+  if (categoryFilter) findings = findings.filter((f) => f.category === categoryFilter);
+
   if (findings.length === 0) {
+    const scope = providerFilter ? ` for ${providerLabel(providerFilter)}` : "";
+    const catScope = categoryFilter ? ` in ${categoryFilter}` : "";
     return {
-      message: "Your infrastructure looks healthy — I didn't find any issues or savings opportunities in this scan.",
+      message: `No issues found${scope}${catScope}. Your infrastructure looks healthy in this area.`,
     };
   }
 
@@ -104,8 +119,9 @@ async function handleWhatFound(ctx: ChatContext): Promise<ChatResponse> {
   const totalYearlyLow = findings.reduce((s, f) => s + (f.yearlyLow ?? 0), 0);
   const totalYearlyHigh = findings.reduce((s, f) => s + (f.yearlyHigh ?? 0), 0);
 
+  const scope = providerFilter ? providerLabel(providerFilter) : providerLabel(run.cloudAccount?.provider ?? "aws");
   const parts: string[] = [];
-  parts.push(`I found **${findings.length} issue${findings.length !== 1 ? "s" : ""}** across your ${providerLabel(run.cloudAccount?.provider ?? "aws")} account.`);
+  parts.push(`I found **${findings.length} issue${findings.length !== 1 ? "s" : ""}** across your ${scope} account.`);
 
   if (costCount > 0) parts.push(`**${costCount}** cost optimization${costCount !== 1 ? "s" : ""}`);
   if (resilienceCount > 0) parts.push(`**${resilienceCount}** resilience concern${resilienceCount !== 1 ? "s" : ""}`);
@@ -390,24 +406,46 @@ async function handleWhyRisky(
 // 7. changes_since — "What changed since last scan?"
 // ---------------------------------------------------------------------------
 
-async function handleChangesSince(ctx: ChatContext): Promise<ChatResponse> {
+async function handleChangesSince(
+  ctx: ChatContext,
+  params: Record<string, string>,
+): Promise<ChatResponse> {
+  const timeSince = params.timeSince ? new Date(params.timeSince) : undefined;
+  const timeLabel = params.timeLabel ?? "last scan";
+
+  const where: Record<string, unknown> = {
+    organizationId: ctx.organizationId,
+    userId: ctx.userId,
+    status: "completed",
+  };
+
+  if (timeSince) {
+    where.startedAt = { gte: timeSince };
+  }
+
   const runs = await prisma.axiomAgentRun.findMany({
-    where: {
-      organizationId: ctx.organizationId,
-      userId: ctx.userId,
-      status: "completed",
-    },
+    where,
     orderBy: { startedAt: "desc" },
-    take: 2,
+    take: timeSince ? 10 : 2,
     include: {
       findings: true,
       recommendations: true,
     },
   });
 
-  if (runs.length === 0) return noScanResponse();
+  if (runs.length === 0) {
+    if (timeSince) {
+      return { message: `No completed scans found ${timeLabel}. Try a broader time range or run a new scan.` };
+    }
+    return noScanResponse();
+  }
 
   if (runs.length < 2) {
+    if (timeSince) {
+      return {
+        message: `Only one scan found ${timeLabel} — I need at least two to show changes. Run another scan to compare.`,
+      };
+    }
     return {
       message:
         "This is your first completed scan — I don't have a previous one to compare against. " +
@@ -415,7 +453,8 @@ async function handleChangesSince(ctx: ChatContext): Promise<ChatResponse> {
     };
   }
 
-  const [current, previous] = runs;
+  const current = runs[0];
+  const previous = runs[runs.length - 1];
   const lines: string[] = [];
 
   const findingsDelta = current.findings.length - previous.findings.length;
@@ -425,7 +464,11 @@ async function handleChangesSince(ctx: ChatContext): Promise<ChatResponse> {
   const prevSavingsHigh = previous.findings.reduce((s, f) => s + (f.yearlyHigh ?? 0), 0);
   const savingsDelta = currentSavingsHigh - prevSavingsHigh;
 
-  lines.push(`Comparing scan from **${fmtDate(current.startedAt ?? current.createdAt)}** to **${fmtDate(previous.startedAt ?? previous.createdAt)}**:\n`);
+  const scopeLabel = timeSince
+    ? `Changes **${timeLabel}** (${runs.length} scans, ${fmtDate(previous.startedAt ?? previous.createdAt)} → ${fmtDate(current.startedAt ?? current.createdAt)}):\n`
+    : `Comparing scan from **${fmtDate(current.startedAt ?? current.createdAt)}** to **${fmtDate(previous.startedAt ?? previous.createdAt)}**:\n`;
+
+  lines.push(scopeLabel);
 
   lines.push(`• Findings: ${current.findings.length} (${delta(findingsDelta)})`);
   lines.push(`• Recommendations: ${current.recommendations.length} (${delta(recsDelta)})`);
@@ -443,13 +486,15 @@ async function handleChangesSince(ctx: ChatContext): Promise<ChatResponse> {
     for (const f of newFindings.slice(0, 5)) {
       lines.push(`• ${f.title} (${f.severity})`);
     }
+    if (newFindings.length > 5) lines.push(`• _…and ${newFindings.length - 5} more_`);
   }
 
   if (resolvedFindings.length > 0) {
-    lines.push(`\n**Resolved since last scan:**`);
+    lines.push(`\n**Resolved ${timeLabel}:**`);
     for (const f of resolvedFindings.slice(0, 5)) {
       lines.push(`• ${f.title}`);
     }
+    if (resolvedFindings.length > 5) lines.push(`• _…and ${resolvedFindings.length - 5} more_`);
   }
 
   if (newFindings.length === 0 && resolvedFindings.length === 0) {
@@ -765,7 +810,326 @@ async function handleListAccounts(ctx: ChatContext): Promise<ChatResponse> {
 }
 
 // ---------------------------------------------------------------------------
-// 14. unknown — fallback
+// 14. biggest_savings — "Show my biggest savings opportunities"
+// ---------------------------------------------------------------------------
+
+async function handleBiggestSavings(
+  ctx: ChatContext,
+  params: Record<string, string>,
+): Promise<ChatResponse> {
+  const run = await getLatestRun(ctx);
+  if (!run) return noScanResponse();
+
+  let findings = run.findings.filter((f) => (f.yearlyHigh ?? 0) > 0);
+  const providerFilter = params.provider as CloudProvider | undefined;
+  if (providerFilter) findings = findings.filter((f) => f.provider === providerFilter);
+
+  if (findings.length === 0) {
+    const scope = providerFilter ? ` in ${providerLabel(providerFilter)}` : "";
+    return { message: `No savings opportunities found${scope} in the latest scan.` };
+  }
+
+  findings.sort((a, b) => (b.yearlyHigh ?? 0) - (a.yearlyHigh ?? 0));
+
+  const top = findings.slice(0, 7);
+  const totalYearly = findings.reduce((s, f) => s + (f.yearlyHigh ?? 0), 0);
+
+  const scope = providerFilter ? ` (${providerLabel(providerFilter)})` : "";
+  const lines: string[] = [
+    `**Top savings opportunities${scope}** — ${fmtSavings(0, totalYearly)}/yr total across ${findings.length} finding${findings.length !== 1 ? "s" : ""}:\n`,
+  ];
+
+  for (let i = 0; i < top.length; i++) {
+    const f = top[i];
+    const rec = run.recommendations.find((r) => r.findingId === f.id);
+    const dispositionTag = rec?.disposition === "auto_fix_candidate"
+      ? " · ✦ safe to auto-apply"
+      : rec?.disposition === "approval_required"
+        ? " · needs approval"
+        : "";
+    const riskTag = rec?.riskLevel ? ` · ${rec.riskLevel} risk` : "";
+
+    lines.push(
+      `**${i + 1}. ${f.title}** — ${fmtSavings(f.yearlyLow ?? 0, f.yearlyHigh ?? 0)}/yr${riskTag}${dispositionTag}`,
+    );
+    lines.push(`   ${f.category} · ${f.severity} severity · ${f.region}\n`);
+  }
+
+  if (findings.length > 7) {
+    lines.push(`_…plus ${findings.length - 7} more totaling ${fmtSavings(0, findings.slice(7).reduce((s, f) => s + (f.yearlyHigh ?? 0), 0))}/yr._`);
+  }
+
+  const autoFixSavings = run.recommendations
+    .filter((r) => r.disposition === "auto_fix_candidate")
+    .reduce((s, r) => s + (r.yearlyHigh ?? 0), 0);
+
+  const actions: ChatAction[] = [];
+  if (autoFixSavings > 0) {
+    actions.push({ type: "apply_safe", label: `Capture ${fmtSavings(0, autoFixSavings)}/yr safely`, payload: { runId: run.id } });
+  }
+  actions.push({ type: "export_terraform", label: "Export Terraform", payload: { runId: run.id } });
+
+  return {
+    message: lines.join("\n"),
+    actions,
+    followUp: "Ask \"What's safe to automate?\" to see which of these I can handle automatically.",
+  };
+}
+
+// ---------------------------------------------------------------------------
+// 15. automation_assessment — "What's safe to automate?"
+// ---------------------------------------------------------------------------
+
+async function handleAutomationAssessment(ctx: ChatContext): Promise<ChatResponse> {
+  const run = await getLatestRun(ctx);
+  if (!run) return noScanResponse();
+
+  if (run.status !== "completed") {
+    return { message: `I need a completed scan to assess automation safety. Current status: **${run.status}**.` };
+  }
+
+  const recs = run.recommendations;
+  const autoFix = recs.filter((r) => r.disposition === "auto_fix_candidate");
+  const approvalReq = recs.filter((r) => r.disposition === "approval_required");
+  const reportOnly = recs.filter((r) => r.disposition === "report_only");
+  const blocked = recs.filter((r) => r.disposition === "blocked");
+
+  if (recs.length === 0) {
+    return { message: "No recommendations in the latest scan — nothing to automate." };
+  }
+
+  const lines: string[] = [];
+
+  // Safe to automate
+  if (autoFix.length > 0) {
+    const savings = autoFix.reduce((s, r) => s + (r.yearlyHigh ?? 0), 0);
+    lines.push(`**✦ Safe to auto-apply (${autoFix.length})** — ${fmtSavings(0, savings)}/yr\n`);
+    lines.push("These are low-risk, non-disruptive, and fully reversible:\n");
+    for (const r of autoFix.slice(0, 5)) {
+      lines.push(`• ${r.title} (${r.riskLevel ?? "low"} risk)`);
+    }
+    if (autoFix.length > 5) lines.push(`• _…plus ${autoFix.length - 5} more_`);
+    lines.push("");
+  }
+
+  // Needs approval
+  if (approvalReq.length > 0) {
+    const savings = approvalReq.reduce((s, r) => s + (r.yearlyHigh ?? 0), 0);
+    lines.push(`**⚠ Needs your approval (${approvalReq.length})** — ${fmtSavings(0, savings)}/yr\n`);
+    lines.push("Higher impact — I'll prepare them but won't apply without your say-so:\n");
+    for (const r of approvalReq.slice(0, 3)) {
+      lines.push(`• ${r.title} (${r.riskLevel ?? "medium"} risk) — ${r.dispositionReason ?? ""}`);
+    }
+    if (approvalReq.length > 3) lines.push(`• _…plus ${approvalReq.length - 3} more_`);
+    lines.push("");
+  }
+
+  // Report only
+  if (reportOnly.length > 0) {
+    lines.push(`**📋 Report only (${reportOnly.length})** — manual action recommended\n`);
+    lines.push("These require human judgment or have irreversible side effects:\n");
+    for (const r of reportOnly.slice(0, 3)) {
+      lines.push(`• ${r.title} — ${r.dispositionReason ?? "requires manual review"}`);
+    }
+    if (reportOnly.length > 3) lines.push(`• _…plus ${reportOnly.length - 3} more_`);
+    lines.push("");
+  }
+
+  // Blocked
+  if (blocked.length > 0) {
+    lines.push(`**🚫 Blocked (${blocked.length})** — cannot proceed\n`);
+    for (const r of blocked.slice(0, 2)) {
+      lines.push(`• ${r.title} — ${r.dispositionReason ?? "blocked by policy"}`);
+    }
+    lines.push("");
+  }
+
+  const actions: ChatAction[] = [];
+  if (autoFix.length > 0) {
+    actions.push({
+      type: "apply_safe",
+      label: `Apply ${autoFix.length} safe fix${autoFix.length !== 1 ? "es" : ""}`,
+      payload: { runId: run.id },
+    });
+  }
+  if (approvalReq.length > 0) {
+    actions.push({
+      type: "approve_all",
+      label: `Review ${approvalReq.length} for approval`,
+      payload: { runId: run.id, itemIds: approvalReq.map((r) => r.id) },
+    });
+  }
+
+  return { message: lines.join("\n"), actions };
+}
+
+// ---------------------------------------------------------------------------
+// 16. provider_summary — "Can you summarize AWS only?"
+// ---------------------------------------------------------------------------
+
+async function handleProviderSummary(
+  ctx: ChatContext,
+  params: Record<string, string>,
+): Promise<ChatResponse> {
+  const provider = params.provider as CloudProvider | undefined;
+  if (!provider) {
+    return {
+      message: "Which cloud provider? I can summarize **AWS**, **Azure**, or **GCP**.",
+    };
+  }
+
+  const run = await getLatestRun(ctx);
+  if (!run) return noScanResponse();
+
+  const findings = run.findings.filter((f) => f.provider === provider);
+  const recs = run.recommendations.filter((r) => {
+    const finding = run.findings.find((f) => f.id === r.findingId);
+    return finding?.provider === provider;
+  });
+
+  if (findings.length === 0) {
+    return {
+      message: `No findings for ${providerLabel(provider)} in the latest scan. ` +
+        (run.cloudAccount?.provider === provider
+          ? "Your infrastructure looks healthy."
+          : `The scan may not have included a ${providerLabel(provider)} account.`),
+    };
+  }
+
+  const costCount = findings.filter((f) => f.category === "cost").length;
+  const securityCount = findings.filter((f) => f.category === "security").length;
+  const resilienceCount = findings.filter((f) => f.category === "resilience").length;
+  const highSeverity = findings.filter((f) => f.severity === "high" || f.severity === "critical").length;
+
+  const totalYearlyLow = findings.reduce((s, f) => s + (f.yearlyLow ?? 0), 0);
+  const totalYearlyHigh = findings.reduce((s, f) => s + (f.yearlyHigh ?? 0), 0);
+
+  const autoFixCount = recs.filter((r) => r.disposition === "auto_fix_candidate").length;
+  const approvalCount = recs.filter((r) => r.disposition === "approval_required").length;
+
+  const regions = Array.from(new Set(findings.map((f) => f.region).filter(Boolean)));
+
+  const lines: string[] = [
+    `**${providerLabel(provider)} Summary**\n`,
+    `**${findings.length} finding${findings.length !== 1 ? "s" : ""}** across ${regions.length} region${regions.length !== 1 ? "s" : ""} (${regions.join(", ")})\n`,
+  ];
+
+  const breakdown: string[] = [];
+  if (costCount > 0) breakdown.push(`${costCount} cost`);
+  if (securityCount > 0) breakdown.push(`${securityCount} security`);
+  if (resilienceCount > 0) breakdown.push(`${resilienceCount} resilience`);
+  if (breakdown.length > 0) lines.push(`Categories: ${breakdown.join(", ")}`);
+  if (highSeverity > 0) lines.push(`**${highSeverity}** high/critical severity`);
+  if (totalYearlyHigh > 0) lines.push(`Estimated savings: **${fmtSavings(totalYearlyLow, totalYearlyHigh)}/year**`);
+
+  lines.push("");
+  if (autoFixCount > 0) lines.push(`✦ ${autoFixCount} safe to auto-apply`);
+  if (approvalCount > 0) lines.push(`⚠ ${approvalCount} need${approvalCount === 1 ? "s" : ""} approval`);
+
+  const actions: ChatAction[] = [];
+  if (autoFixCount > 0) {
+    actions.push({ type: "apply_safe", label: `Apply safe ${providerLabel(provider)} fixes`, payload: { runId: run.id, provider } });
+  }
+  actions.push({ type: "export_terraform", label: `Export ${providerLabel(provider)} Terraform`, payload: { runId: run.id, provider } });
+
+  return {
+    message: lines.join("\n"),
+    actions,
+    followUp: `Ask "Show my biggest savings for ${providerLabel(provider)}" to see the top opportunities.`,
+  };
+}
+
+// ---------------------------------------------------------------------------
+// 17. monitor_alerts — "Any new alerts?"
+// ---------------------------------------------------------------------------
+
+async function handleMonitorAlerts(
+  ctx: ChatContext,
+  params: Record<string, string>,
+): Promise<ChatResponse> {
+  const timeSince = params.timeSince ? new Date(params.timeSince) : undefined;
+  const timeLabel = params.timeLabel ?? "recently";
+
+  const where: Record<string, unknown> = {
+    organizationId: ctx.organizationId,
+  };
+  if (timeSince) {
+    where.createdAt = { gte: timeSince };
+  } else {
+    where.createdAt = { gte: new Date(Date.now() - 7 * 24 * 3600 * 1000) };
+  }
+
+  let alerts: Array<{
+    id: string;
+    category: string;
+    severity: string;
+    title: string;
+    createdAt: Date;
+  }>;
+
+  try {
+    alerts = await prisma.axiomMonitorAlert.findMany({
+      where,
+      orderBy: { createdAt: "desc" },
+      take: 20,
+      select: { id: true, category: true, severity: true, title: true, createdAt: true },
+    });
+  } catch {
+    return {
+      message: "Monitor alerts aren't available yet. Run a scan first to establish a baseline, then monitoring will detect changes automatically.",
+      actions: [{ type: "start_scan", label: "Start scan", payload: {} }],
+    };
+  }
+
+  if (alerts.length === 0) {
+    return {
+      message: `No alerts ${timeLabel}. Your infrastructure is stable.`,
+      followUp: "Ask \"What changed this week?\" to compare scan results over time.",
+    };
+  }
+
+  const critical = alerts.filter((a) => a.severity === "critical");
+  const warning = alerts.filter((a) => a.severity === "warning");
+  const info = alerts.filter((a) => a.severity === "info");
+
+  const lines: string[] = [
+    `**${alerts.length} alert${alerts.length !== 1 ? "s" : ""} ${timeLabel}:**\n`,
+  ];
+
+  if (critical.length > 0) {
+    lines.push(`**🔴 Critical (${critical.length}):**`);
+    for (const a of critical.slice(0, 3)) {
+      lines.push(`• ${a.title} — ${fmtDate(a.createdAt)}`);
+    }
+    lines.push("");
+  }
+
+  if (warning.length > 0) {
+    lines.push(`**🟡 Warning (${warning.length}):**`);
+    for (const a of warning.slice(0, 3)) {
+      lines.push(`• ${a.title} — ${fmtDate(a.createdAt)}`);
+    }
+    lines.push("");
+  }
+
+  if (info.length > 0) {
+    lines.push(`**ℹ Info (${info.length}):**`);
+    for (const a of info.slice(0, 2)) {
+      lines.push(`• ${a.title}`);
+    }
+    if (info.length > 2) lines.push(`• _…plus ${info.length - 2} more_`);
+  }
+
+  const actions: ChatAction[] = [];
+  if (critical.length > 0) {
+    actions.push({ type: "view_alerts", label: "View critical alerts", payload: { severity: "critical" } });
+  }
+
+  return { message: lines.join("\n"), actions };
+}
+
+// ---------------------------------------------------------------------------
+// 18. unknown — fallback
 // ---------------------------------------------------------------------------
 
 async function handleUnknown(): Promise<ChatResponse> {
@@ -774,11 +1138,14 @@ async function handleUnknown(): Promise<ChatResponse> {
       "I can help with your cloud infrastructure. Try asking me:\n\n" +
       "• \"What did you find?\"\n" +
       "• \"What should I fix first?\"\n" +
-      "• \"How much can I save?\"\n" +
+      "• \"Show my biggest savings opportunities\"\n" +
+      "• \"What's safe to automate?\"\n" +
       "• \"Apply the safe fixes\"\n" +
-      "• \"Show me the Terraform\"\n" +
+      "• \"Generate Terraform for Azure\"\n" +
       "• \"Why is this risky?\"\n" +
-      "• \"What changed since last scan?\"\n" +
+      "• \"What changed this week?\"\n" +
+      "• \"Can you summarize AWS only?\"\n" +
+      "• \"Any new alerts?\"\n" +
       "• \"Scan my account\"",
   };
 }

@@ -31,6 +31,10 @@ export type ChatIntent =
   | "explain_finding"
   | "run_status"
   | "list_accounts"
+  | "biggest_savings"
+  | "automation_assessment"
+  | "provider_summary"
+  | "monitor_alerts"
   | "unknown";
 
 // ---------------------------------------------------------------------------
@@ -54,7 +58,9 @@ export type ChatAction = {
     | "export_cli"
     | "apply_safe"
     | "view_details"
-    | "view_finding";
+    | "view_finding"
+    | "configure_autopilot"
+    | "view_alerts";
   label: string;
   payload: Record<string, unknown>;
 };
