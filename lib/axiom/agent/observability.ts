@@ -503,11 +503,9 @@ function evaluateConditionValue(rule: AlertRule): number | null {
       return getCounter(rule.metric, tags) || getGauge(rule.metric, tags) || 0;
 
     case "rate_above": {
-      const entries = getLogBuffer(500).filter(
-        (e) => e.ts > new Date(Date.now() - rule.condition.type === "rate_above"
-          ? (rule.condition as { windowMinutes: number }).windowMinutes * 60 * 1000
-          : 0).toISOString(),
-      );
+      const windowMs = (rule.condition as { windowMinutes: number }).windowMinutes * 60 * 1000;
+      const cutoff = new Date(Date.now() - windowMs).toISOString();
+      const entries = getLogBuffer(500).filter((e) => e.ts > cutoff);
       return entries.length;
     }
 
