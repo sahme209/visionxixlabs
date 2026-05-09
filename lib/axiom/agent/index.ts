@@ -153,6 +153,35 @@ export type {
   AdaptiveTestResult,
 } from "./adaptiveBehavior";
 export {
+  detectDrift,
+  runDriftTests,
+  ALL_DRIFT_RULES,
+  DEFAULT_RESILIENCE_BASELINE,
+} from "./driftEngine";
+export type {
+  DriftSeverity,
+  DriftCategory,
+  DriftSource,
+  DriftItem,
+  DriftFieldChange,
+  DriftImpact,
+  DriftRemediation,
+  RemediationAction,
+  DriftReport,
+  DriftSummary,
+  DriftNotification,
+  DriftNotificationSection,
+  TerraformPlanState,
+  TerraformResourceState,
+  ExecutionPlanState,
+  ApprovedPlanItem,
+  ResilienceBaseline,
+  DriftRule,
+  DriftEvalContext,
+  DetectDriftInput,
+  DriftTestResult,
+} from "./driftEngine";
+export {
   registerWorkflow,
   getWorkflow,
   listWorkflows,
