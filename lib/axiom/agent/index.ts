@@ -547,7 +547,7 @@ export type {
   ReflectionDomain,
   InsightEvidence,
   ReflectionAdjustment,
-  AdjustmentType,
+  AdjustmentType as ReflectionAdjustmentType,
   CalibrationReport,
   CalibrationBucket,
   NoiseAnalysis,
