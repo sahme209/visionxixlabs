@@ -720,3 +720,30 @@ export type {
   EvaluationSummary,
   WorkflowIntelligenceTestResult,
 } from "./workflowIntelligence";
+export {
+  getRoadmapByPhase,
+  getRoadmapByCategory,
+  getRoadmapProgress,
+  getBlockingBottlenecks,
+  getMilestoneById,
+  getDependencyChain,
+  runRoadmapTests,
+  FULL_ROADMAP,
+  NEVER_FULLY_AUTONOMOUS,
+  BOTTLENECKS,
+  CAPABILITY_MATRIX,
+} from "./roadmap";
+export type {
+  RoadmapPhase,
+  MilestoneStatus,
+  MilestoneCategory,
+  Milestone,
+  AutonomyGate,
+  SuccessMetric,
+  BottleneckCategory,
+  Bottleneck,
+  NeverAutomate,
+  CapabilityLevel,
+  CapabilityProgression,
+  RoadmapTestResult,
+} from "./roadmap";
