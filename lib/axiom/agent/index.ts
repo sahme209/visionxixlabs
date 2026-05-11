@@ -2351,3 +2351,79 @@ export {
   type SecurityIntelligenceTestResult,
   runSecurityIntelligenceTests,
 } from "./securityIntelligence";
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Capacity Planning & Auto-Scaling Intelligence
+// Predictive capacity management with forecasting, scaling rules, and right-sizing
+// ─────────────────────────────────────────────────────────────────────────────
+export {
+  // §1 — Capacity Architecture
+  type ResourceDimension,
+  type CapacityStatus,
+  type ScalingDirection,
+  type CapacityMetric,
+  type CapacityThresholds,
+  DEFAULT_CAPACITY_THRESHOLDS,
+
+  // §2 — Demand Forecasting
+  type ForecastModel as CapacityForecastModel,
+  type ForecastHorizon,
+  type DemandForecast,
+  type ForecastPoint,
+  type SeasonalPattern,
+  type CapacityBreachPrediction,
+  type ForecastConfig,
+  FORECAST_CONFIGS,
+
+  // §3 — Scaling Rules & Policies
+  type ScalingTrigger,
+  type ScalingRule,
+  type ScalingCondition,
+  SCALING_RULES,
+
+  // §4 — Right-Sizing
+  type RightSizingRecommendation,
+  type ResourceSpec,
+  type RightSizingPolicy,
+  DEFAULT_RIGHTSIZING_POLICY,
+
+  // §5 — Capacity Pipeline
+  type CapacityPipelineStageId,
+  type CapacityPipelineStage,
+  CAPACITY_PIPELINE,
+
+  // §6 — Provider Capacity Profiles
+  type ProviderCapacityProfile,
+  type CapacityMetricSource,
+  PROVIDER_CAPACITY_PROFILES,
+
+  // §7 — Alerts & SLAs
+  type CapacityAlert,
+  type CapacitySLA,
+  DEFAULT_CAPACITY_SLAS,
+
+  // §8 — Integration Contracts
+  type CapacityIntegrationTarget,
+  type CapacityIntegrationContract,
+  CAPACITY_INTEGRATION_CONTRACTS,
+
+  // §9 — Query Functions
+  getCapacityThreshold,
+  getForecastConfig,
+  getScalingRule,
+  getScalingRulesByProvider,
+  getScalingRulesByTrigger,
+  getAutomatableScalingRules,
+  getApprovalRequiredScalingRules,
+  getProviderCapacityProfile,
+  getCapacitySLA,
+  getCapacityPipelineStage,
+  getCapacityPipelineOrder,
+  getCapacityIntegration,
+  evaluateCapacityStatus,
+  estimateScalingLatency,
+
+  // §10 — Tests
+  type CapacityPlanningTestResult,
+  runCapacityPlanningTests,
+} from "./capacityPlanning";
