@@ -2192,3 +2192,82 @@ export {
   type NotificationEngineTestResult,
   runNotificationEngineTests,
 } from "./notificationEngine";
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Cloud Event Stream Engine
+// Real-time event ingestion from AWS/Azure/GCP with normalization, classification, and correlation
+// ─────────────────────────────────────────────────────────────────────────────
+export {
+  // §1 — Event Stream Architecture
+  type CloudEventProvider,
+  type CloudEventSourceType,
+  type CloudEventSeverity,
+  type CloudEventCategory,
+  type CloudEvent,
+  type EventUserIdentity,
+
+  // §2 — Event Source Definitions
+  type EventSourceConfig,
+  type EventFilterPattern,
+  type EventRetryPolicy,
+  EVENT_SOURCE_CONFIGS,
+
+  // §3 — Normalization Rules
+  type EventNormalizationRule,
+  type FieldExtractor,
+  EVENT_NORMALIZATION_RULES,
+
+  // §4 — Classification & Threat Intelligence
+  type ThreatIndicatorType,
+  type EventClassificationRule,
+  type ClassificationCondition as EventClassificationCondition,
+  EVENT_CLASSIFICATION_RULES,
+
+  // §5 — Event Processing Pipeline
+  type EventPipelineStageId,
+  type EventPipelineStage,
+  EVENT_PIPELINE,
+
+  // §6 — Deduplication & Windowing
+  type DeduplicationConfig,
+  DEFAULT_DEDUP_CONFIG,
+  type EventWindow,
+
+  // §7 — Event Correlation
+  type CorrelationStrategyType,
+  type EventCorrelationRule,
+  type CorrelationCondition as EventCorrelationCondition,
+  EVENT_CORRELATION_RULES,
+
+  // §8 — Stream Health & Backpressure
+  type StreamHealthConfig,
+  DEFAULT_STREAM_HEALTH_CONFIG,
+  type StreamHealthSnapshot,
+  type SourceHealthStatus,
+
+  // §9 — Integration Contracts
+  type EventStreamIntegrationTarget,
+  type EventStreamIntegrationContract,
+  EVENT_STREAM_INTEGRATION_CONTRACTS,
+
+  // §10 — Query Functions
+  getEventSourceConfig,
+  getEventSourcesByProvider,
+  getEnabledEventSources,
+  getPollingEventSources,
+  getWebhookEventSources,
+  getNormalizationRule,
+  getClassificationRule as getEventClassificationRule,
+  getAutoEscalatingRules,
+  getRulesWithMitreMapping,
+  getClassificationRulesByProvider,
+  getCorrelationRule as getEventCorrelationRule,
+  getEventPipelineStage,
+  getEventPipelineOrder,
+  getEventStreamIntegration,
+  computeEventPriority,
+
+  // §11 — Tests
+  type CloudEventStreamTestResult,
+  runCloudEventStreamTests,
+} from "./cloudEventStream";
