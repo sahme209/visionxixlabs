@@ -8,6 +8,7 @@ import {
   ArrowRightIcon,
   CpuChipIcon,
 } from "@heroicons/react/24/outline";
+import { Navigation } from "@/components/Navigation";
 import { Reveal } from "@/components/motion/Reveal";
 import { Stagger } from "@/components/motion/Stagger";
 import { AnimatedButton } from "@/components/ui/AnimatedButton";
@@ -101,7 +102,7 @@ const AXIOM_FEATURES: Record<MembershipPlanId, { included: string[]; excluded: s
 const comparisonRows = [
   { feature: "Cloud accounts", starter: "1", growth: "3", scale: "8", enterprise: "Unlimited" },
   { feature: "Infrastructure scans", starter: "1/month", growth: "Unlimited", scale: "Unlimited", enterprise: "Unlimited" },
-  { feature: "Cognitive reasoning", starter: "—", growth: "Full 9-phase loop", scale: "Full 9-phase loop", enterprise: "Full 9-phase loop" },
+  { feature: "Cognitive reasoning", starter: "—", growth: "Full 12-step loop", scale: "Full 12-step loop", enterprise: "Full 12-step loop" },
   { feature: "Execution plans", starter: "—", growth: "Generate + apply", scale: "Generate + apply", enterprise: "Custom modules" },
   { feature: "Governance & safety", starter: "—", growth: "Approval gates", scale: "Approval + compliance", enterprise: "Trust ladder + policies" },
   { feature: "Automated monitoring", starter: "—", growth: "Weekly", scale: "Daily", enterprise: "Daily" },
@@ -117,24 +118,10 @@ export default function OperatorPricingPage() {
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100">
-      {/* Nav */}
-      <nav className="border-b border-slate-800/50">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
-          <Link href="/operator" className="flex items-center gap-2">
-            <CpuChipIcon className="h-7 w-7 text-violet-400" />
-            <span className="font-bold text-lg">Cloud Operator</span>
-          </Link>
-          <div className="flex items-center gap-3">
-            <Link href="/auth/signin" className="text-sm text-slate-400 hover:text-white">Sign in</Link>
-            <AnimatedButton href="/auth/signup?redirect=/operator/onboarding" variant="primary" className="text-sm px-4 py-2">
-              Start Free Trial
-            </AnimatedButton>
-          </div>
-        </div>
-      </nav>
+      <Navigation />
 
       {/* Header */}
-      <section className="pt-20 pb-12 text-center px-4">
+      <section className="pt-32 pb-12 text-center px-4">
         <Reveal>
           <h1 className="text-3xl sm:text-4xl font-bold mb-4">Simple, transparent pricing</h1>
           <p className="text-slate-400 text-lg max-w-xl mx-auto">
@@ -225,7 +212,7 @@ export default function OperatorPricingPage() {
                   </ul>
                   {isEnterprise ? (
                     <a
-                      href={`mailto:${SUPPORT_EMAIL}?subject=Cloud Operator - Enterprise`}
+                      href={`mailto:${SUPPORT_EMAIL}?subject=Axiom - Enterprise`}
                       className="mt-8 w-full inline-flex items-center justify-center gap-2 rounded-xl border border-violet-500/30 px-4 py-3 text-sm font-semibold text-violet-300 hover:bg-violet-900/20 transition-colors"
                     >
                       Contact sales
@@ -337,7 +324,7 @@ export default function OperatorPricingPage() {
         <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
             <CpuChipIcon className="h-5 w-5 text-violet-400" />
-            <span className="font-semibold text-sm">Cloud Operator</span>
+            <span className="font-semibold text-sm">Axiom</span>
             <span className="text-xs text-slate-600 ml-2">by Vision XIX Labs</span>
           </div>
           <div className="flex items-center gap-6 text-sm text-slate-500">
