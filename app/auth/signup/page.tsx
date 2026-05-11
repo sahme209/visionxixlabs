@@ -67,7 +67,7 @@ function SignUpForm() {
           <h1 className="text-2xl font-bold text-slate-100 mb-1">Create your account</h1>
           <p className="text-slate-500 mb-8 text-sm">
             {isOperatorFlow
-              ? "Get your resilience score in under 5 minutes."
+              ? "Scan your cloud and get findings in under 5 minutes."
               : "Start managing your cloud infrastructure."}
           </p>
 
@@ -136,11 +136,11 @@ function SignUpForm() {
             <h2 className="text-lg font-semibold text-slate-200 mb-6">What you get — free:</h2>
             <div className="space-y-5">
               {[
-                { icon: ShieldCheckIcon, text: "Connect your cloud with read-only access" },
-                { icon: CheckCircleIcon, text: "AI-powered resilience score (0-100)" },
-                { icon: CheckCircleIcon, text: "Security scan with risk identification" },
-                { icon: CheckCircleIcon, text: "Architecture recommendation report" },
-                { icon: CheckCircleIcon, text: "Cost impact analysis" },
+                { icon: ShieldCheckIcon, text: "Connect your AWS account with read-only access" },
+                { icon: CheckCircleIcon, text: "AI-powered infrastructure analysis" },
+                { icon: CheckCircleIcon, text: "Cost, security, and drift findings" },
+                { icon: CheckCircleIcon, text: "Prioritized recommendations report" },
+                { icon: CheckCircleIcon, text: "Phased execution plans (on upgrade)" },
               ].map((item, i) => (
                 <div key={i} className="flex items-center gap-3 text-sm text-slate-400">
                   <item.icon className="h-4 w-4 text-emerald-400 flex-shrink-0" />

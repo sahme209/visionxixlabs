@@ -16,9 +16,9 @@ export interface AxiomPlan {
   description: string;
   popular?: boolean;
   features: string[];
-  /** Has auto-fix execution */
+  /** Has autonomous execution (plan + apply) */
   autoFix: boolean;
-  /** Has AI Ops Assistant (chatbot module) */
+  /** Has optional chat interface for the agent */
   aiOpsAssistant: boolean;
 }
 

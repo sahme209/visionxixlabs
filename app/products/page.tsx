@@ -43,27 +43,27 @@ const PLAN_ORDER: MembershipPlanId[] = ["starter", "growth", "scale", "enterpris
 const AXIOM_FEATURES: Record<MembershipPlanId, { included: string[]; excluded: string[] }> = {
   starter: {
     included: [
-      "1 cloud connection",
-      "Resilience score (0–100)",
-      "AI architecture recommendation",
-      "Security scan (read-only)",
-      "Single analysis per month",
+      "1 AWS account",
+      "Read-only infrastructure scan",
+      "Cost, security, and drift findings",
+      "Prioritized recommendations",
+      "Single scan per month",
       "Community support",
     ],
     excluded: [
-      "Terraform generation",
-      "Automated monitoring",
-      "Cloud connectors (AWS/Azure/GCP)",
+      "Cognitive reasoning engine",
+      "Execution plans + Terraform",
+      "Governance policies",
     ],
   },
   growth: {
     included: [
-      "3 cloud connections",
-      "Unlimited analyses",
-      "Terraform generation + execution",
-      "Weekly automated scans",
-      "Cost impact analysis",
-      "Axiom AI assistant",
+      "3 cloud accounts",
+      "Unlimited scans",
+      "Cognitive reasoning engine",
+      "Phased execution plans + Terraform",
+      "Governance policies + approval gates",
+      "Verified rollback on every change",
       "Slack + email alerts",
       "GitHub connector",
       "Priority support",
@@ -72,12 +72,12 @@ const AXIOM_FEATURES: Record<MembershipPlanId, { included: string[]; excluded: s
   },
   scale: {
     included: [
-      "8 cloud connections",
-      "Unlimited analyses",
-      "Terraform generation + execution",
-      "Daily automated scans",
-      "Cost impact analysis + drift detection",
-      "Axiom AI assistant",
+      "8 cloud accounts",
+      "Unlimited scans",
+      "Cognitive reasoning engine",
+      "Daily automated scans + drift detection",
+      "Execution plans + Terraform generation",
+      "Governance + compliance policies",
       "AWS, Azure, GCP connectors",
       "Slack + email alerts + webhooks",
       "Priority support",
@@ -86,26 +86,26 @@ const AXIOM_FEATURES: Record<MembershipPlanId, { included: string[]; excluded: s
   },
   enterprise: {
     included: [
-      "Unlimited cloud connections",
-      "Active-Active architecture support",
-      "Daily compliance scans",
+      "Unlimited cloud accounts",
+      "Autonomous operations with trust ladder",
+      "Daily compliance scans (SOC 2, ISO 27001)",
       "Custom Terraform modules",
       "SSO + audit logging",
       "Dedicated account manager",
       "SLA guarantee (99.9%)",
-      "On-call architecture review",
+      "Compliance frameworks + policy packs",
     ],
     excluded: [],
   },
 };
 
 const comparisonRows = [
-  { feature: "Cloud connections", starter: "1", growth: "3", scale: "8", enterprise: "Unlimited" },
-  { feature: "Resilience analyses", starter: "1/month", growth: "Unlimited", scale: "Unlimited", enterprise: "Unlimited" },
-  { feature: "Security scans", starter: "Read-only", growth: "Read + alerts", scale: "Compliance-grade", enterprise: "Compliance-grade" },
-  { feature: "Terraform execution", starter: "—", growth: "Generate + apply", scale: "Generate + apply", enterprise: "Custom modules" },
+  { feature: "Cloud accounts", starter: "1", growth: "3", scale: "8", enterprise: "Unlimited" },
+  { feature: "Infrastructure scans", starter: "1/month", growth: "Unlimited", scale: "Unlimited", enterprise: "Unlimited" },
+  { feature: "Cognitive reasoning", starter: "—", growth: "Full 9-phase loop", scale: "Full 9-phase loop", enterprise: "Full 9-phase loop" },
+  { feature: "Execution plans", starter: "—", growth: "Generate + apply", scale: "Generate + apply", enterprise: "Custom modules" },
+  { feature: "Governance & safety", starter: "—", growth: "Approval gates", scale: "Approval + compliance", enterprise: "Trust ladder + policies" },
   { feature: "Automated monitoring", starter: "—", growth: "Weekly", scale: "Daily", enterprise: "Daily" },
-  { feature: "AI assistant (Axiom)", starter: "—", growth: "Full access", scale: "Full access", enterprise: "Full access" },
   { feature: "Cloud connectors", starter: "—", growth: "GitHub", scale: "AWS, Azure, GCP", enterprise: "Unlimited" },
   { feature: "Alerts", starter: "—", growth: "Slack + email", scale: "Slack + email + webhooks", enterprise: "Slack + email + PagerDuty" },
   { feature: "Support", starter: "Community", growth: "Priority email", scale: "Priority", enterprise: "Dedicated manager" },
@@ -125,7 +125,7 @@ export default function PricingPage() {
         <Reveal>
           <div className="flex items-center justify-center gap-2 mb-6">
             <CpuChipIcon className="h-7 w-7 text-violet-400" />
-            <span className="font-bold text-lg">AI Cloud Operator</span>
+            <span className="font-bold text-lg">Axiom Cloud Operations</span>
           </div>
           <h1 className="text-3xl sm:text-4xl font-bold mb-4">Simple, transparent pricing</h1>
           <p className="text-slate-400 text-lg max-w-xl mx-auto">
@@ -333,7 +333,7 @@ export default function PricingPage() {
       {/* CTA */}
       <section className="py-20 border-t border-slate-800/50 text-center px-4">
         <Reveal>
-          <h2 className="text-2xl font-bold mb-4">Ready to find out your score?</h2>
+          <h2 className="text-2xl font-bold mb-4">Ready to scan your cloud?</h2>
           <p className="text-slate-400 mb-8">7 days free on any paid plan. Cancel anytime.</p>
           <AnimatedButton href="/operator/onboarding" variant="primary" className="px-8 py-3">
             Start Free Trial

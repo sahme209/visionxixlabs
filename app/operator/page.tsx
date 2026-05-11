@@ -21,21 +21,21 @@ const steps = [
   {
     number: "01",
     title: "Connect your cloud",
-    description: "Link your AWS, Azure, or GCP account in under 2 minutes. Read-only access — we never modify your infrastructure without explicit approval.",
+    description: "Link your AWS account via a read-only IAM role in under 2 minutes. No stored credentials — we assume a role and scan. Revoke access anytime.",
     icon: CloudIcon,
     color: "from-blue-500 to-cyan-500",
   },
   {
     number: "02",
-    title: "See your risk score",
-    description: "Our AI scans your infrastructure, identifies single points of failure, and scores your resilience from 0 to 100. Most single-cloud setups score below 30.",
+    title: "Axiom scans and reasons",
+    description: "The cognitive engine analyzes your infrastructure — cost waste, security gaps, drift, and misconfigurations — then prioritizes what matters most.",
     icon: ChartBarIcon,
     color: "from-violet-500 to-purple-500",
   },
   {
     number: "03",
-    title: "Deploy standby infrastructure",
-    description: "Review the AI-generated Terraform plan, approve it with one confirmation, and deploy standby infrastructure on a second cloud. Full control, zero surprises.",
+    title: "Review and approve",
+    description: "Get a prioritized findings report with phased execution plans, Terraform code, and rollback strategies. Nothing changes without your explicit approval.",
     icon: BoltIcon,
     color: "from-emerald-500 to-green-500",
   },
@@ -44,47 +44,47 @@ const steps = [
 const features = [
   {
     icon: ShieldCheckIcon,
-    title: "Read-only scanning",
-    description: "Discovery and security scans never modify your resources. Every action is logged.",
+    title: "Read-only by default",
+    description: "Scans never modify your resources. Every action is logged with a full audit trail.",
   },
   {
     icon: LockClosedIcon,
-    title: "Approval required",
-    description: "No infrastructure changes without your explicit typed confirmation: CONFIRM APPLY.",
+    title: "Approval gates",
+    description: "No infrastructure changes without your explicit approval. High-risk changes require additional confirmation.",
   },
   {
     icon: CpuChipIcon,
-    title: "AI-powered analysis",
-    description: "Senior cloud architect AI analyzes your setup and recommends the simplest, safest path to resilience.",
+    title: "Cognitive reasoning",
+    description: "A 9-phase AI loop — observe, interpret, reason, prioritize, plan, execute, verify, reflect, learn — that thinks like a senior cloud engineer.",
   },
   {
     icon: CurrencyDollarIcon,
-    title: "Cost transparency",
-    description: "Know exactly how much standby infrastructure costs before you commit. Typically 20-35% of your current bill.",
+    title: "Cost optimization",
+    description: "Identifies waste, rightsizing opportunities, and savings — with cost estimates before any change is applied.",
   },
   {
     icon: ClockIcon,
-    title: "5-minute RTO",
-    description: "Active-Passive architecture means your standby is always warm. If your primary goes down, failover takes minutes, not hours.",
+    title: "Verified rollback",
+    description: "Every execution plan includes a pre-verified rollback strategy. If something goes wrong, changes are reversed automatically.",
   },
   {
     icon: CloudIcon,
-    title: "Multi-cloud ready",
-    description: "AWS, Azure, and GCP supported. Start with one, add more as you grow. No vendor lock-in.",
+    title: "Governance & compliance",
+    description: "Trust levels, blast radius limits, and compliance policies (SOC 2, ISO 27001, GDPR) ensure safe operations at every step.",
   },
 ];
 
 const plans = [
   {
-    name: "Free",
+    name: "Scan",
     price: "$0",
     period: "forever",
-    description: "See your risk. No credit card.",
+    description: "Read-only analysis. No credit card.",
     features: [
-      "1 cloud connection",
-      "Resilience score + report",
-      "AI architecture recommendation",
-      "Security scan (read-only)",
+      "1 AWS account",
+      "Infrastructure findings report",
+      "Cost, security, and drift analysis",
+      "Prioritized recommendations",
       "Community support",
     ],
     cta: "Start Free",
@@ -92,16 +92,16 @@ const plans = [
     highlighted: false,
   },
   {
-    name: "Pro",
+    name: "Agent",
     price: "$149",
     period: "/month",
-    description: "Deploy and monitor multi-cloud.",
+    description: "Full autonomous agent with execution.",
     features: [
-      "3 cloud connections",
-      "Terraform generation + execution",
-      "Weekly automated scans",
-      "Cost impact analysis",
-      "Axiom AI assistant",
+      "3 cloud accounts",
+      "Cognitive reasoning engine",
+      "Phased execution plans + Terraform",
+      "Governance policies and approval gates",
+      "Verified rollback on every change",
       "Slack + email alerts",
       "Priority support",
     ],
@@ -115,14 +115,14 @@ const plans = [
     period: "",
     description: "For teams managing critical infrastructure.",
     features: [
-      "Unlimited cloud connections",
-      "Active-Active architecture",
+      "Unlimited cloud accounts",
+      "Autonomous operations with trust ladder",
       "Daily compliance scans",
       "Custom Terraform modules",
       "SSO + audit logging",
       "Dedicated account manager",
       "SLA guarantee",
-      "On-call architecture review",
+      "Compliance frameworks (SOC 2, ISO 27001)",
     ],
     cta: "Talk to us",
     ctaHref: "/contact?ref=operator-enterprise",
@@ -132,24 +132,24 @@ const plans = [
 
 const faqs = [
   {
-    q: "What if AWS goes down?",
-    a: "That's exactly what we solve. Our AI detects your single-cloud dependency, recommends a standby setup on Azure or GCP, and generates the Terraform to deploy it. If AWS goes down, your standby is already running.",
+    q: "What does Axiom actually do?",
+    a: "Axiom is an autonomous cloud operations agent. It connects to your AWS account via a read-only IAM role, scans your infrastructure, uses a 9-phase cognitive reasoning loop to identify and prioritize issues, then generates phased execution plans with Terraform code. Nothing changes without your approval.",
   },
   {
     q: "Do you modify my infrastructure?",
-    a: "Never without your approval. Scans are read-only. Terraform changes require you to type 'CONFIRM APPLY' before anything is deployed. Every action is logged and auditable.",
+    a: "Never without your approval. Scans are read-only. Execution plans require your explicit approval before anything is applied. Every change includes a pre-verified rollback strategy, and every action is logged with a full audit trail.",
   },
   {
     q: "How long does setup take?",
-    a: "About 5 minutes. Connect your cloud account, run the analysis, review the plan. Deploying standby infrastructure takes another 2-3 minutes after you approve.",
+    a: "About 5 minutes. Create a read-only IAM role in AWS, paste the ARN, and Axiom starts scanning. Your first findings report is ready in under a minute.",
   },
   {
-    q: "What does it cost to run standby infrastructure?",
-    a: "Typically 20-35% of your current cloud bill. For Active-Passive, you're running minimal resources on the secondary cloud — just enough to failover quickly. We show you the exact cost before you approve.",
+    q: "What clouds are supported?",
+    a: "AWS has full support — scan, plan, and execution. Azure and GCP currently support scan-only analysis, with plan and execution on the roadmap.",
   },
   {
-    q: "Can I use this for compliance?",
-    a: "Yes. Multi-cloud resilience is a common requirement for SOC 2, ISO 27001, and FedRAMP. The resilience report and audit logs help demonstrate compliance.",
+    q: "How does Axiom keep my infrastructure safe?",
+    a: "Axiom uses a governance framework with trust levels, blast radius limits, approval gates, and compliance policies. The agent can never self-escalate its own autonomy level. High-risk changes always require human approval.",
   },
 ];
 
@@ -193,17 +193,17 @@ export default function OperatorLandingPage() {
           </Reveal>
           <Reveal delay={0.1}>
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight leading-tight">
-              Stop depending on
+              Your cloud, operated by
               <br />
               <span className="bg-gradient-to-r from-violet-400 via-fuchsia-400 to-violet-400 bg-clip-text text-transparent">
-                a single cloud
+                an AI agent
               </span>
             </h1>
           </Reveal>
           <Reveal delay={0.2}>
             <p className="mt-6 text-lg sm:text-xl text-slate-400 max-w-2xl mx-auto leading-relaxed">
-              AI Cloud Operator scans your infrastructure, scores your resilience, and deploys
-              standby infrastructure on a second cloud — so one outage never takes you down.
+              Axiom scans your AWS infrastructure, reasons about what to fix, generates
+              phased execution plans, and applies approved changes — with full governance and audit trail.
             </p>
           </Reveal>
           <Reveal delay={0.3}>
@@ -248,49 +248,44 @@ export default function OperatorLandingPage() {
                       <circle cx="64" cy="64" r="54" fill="none" stroke="#1e293b" strokeWidth="8" />
                       <circle
                         cx="64" cy="64" r="54" fill="none"
-                        stroke="#ef4444" strokeWidth="8" strokeLinecap="round"
+                        stroke="#f59e0b" strokeWidth="8" strokeLinecap="round"
                         strokeDasharray={`${2 * Math.PI * 54}`}
-                        strokeDashoffset={`${2 * Math.PI * 54 * (1 - 0.23)}`}
+                        strokeDashoffset={`${2 * Math.PI * 54 * (1 - 0.42)}`}
                         transform="rotate(-90 64 64)"
                       />
                     </svg>
                     <div className="absolute inset-0 flex flex-col items-center justify-center">
-                      <span className="text-3xl font-bold text-red-400">23</span>
-                      <span className="text-xs text-slate-500">Grade F</span>
+                      <span className="text-3xl font-bold text-amber-400">14</span>
+                      <span className="text-xs text-slate-500">Findings</span>
                     </div>
                   </div>
-                  <p className="text-xs text-slate-500 mt-3 text-center">Typical single-cloud score</p>
+                  <p className="text-xs text-slate-500 mt-3 text-center">Typical first scan</p>
                 </div>
                 <div className="sm:col-span-2 space-y-3">
                   <div className="flex items-center justify-between text-sm">
-                    <span className="text-slate-400">Cloud Dependency</span>
-                    <span className="text-red-400 font-medium">4/20</span>
+                    <span className="text-slate-400">Cost Optimization</span>
+                    <span className="text-red-400 font-medium">5 critical</span>
                   </div>
-                  <div className="h-1.5 bg-slate-800 rounded-full"><div className="h-1.5 bg-red-500 rounded-full" style={{ width: "20%" }} /></div>
+                  <div className="h-1.5 bg-slate-800 rounded-full"><div className="h-1.5 bg-red-500 rounded-full" style={{ width: "70%" }} /></div>
                   <div className="flex items-center justify-between text-sm">
-                    <span className="text-slate-400">Regional Redundancy</span>
-                    <span className="text-red-400 font-medium">3/20</span>
+                    <span className="text-slate-400">Security Gaps</span>
+                    <span className="text-red-400 font-medium">3 high</span>
                   </div>
-                  <div className="h-1.5 bg-slate-800 rounded-full"><div className="h-1.5 bg-red-500 rounded-full" style={{ width: "15%" }} /></div>
+                  <div className="h-1.5 bg-slate-800 rounded-full"><div className="h-1.5 bg-red-500 rounded-full" style={{ width: "55%" }} /></div>
                   <div className="flex items-center justify-between text-sm">
-                    <span className="text-slate-400">Backup & Replication</span>
-                    <span className="text-yellow-400 font-medium">8/20</span>
+                    <span className="text-slate-400">Configuration Drift</span>
+                    <span className="text-yellow-400 font-medium">4 medium</span>
                   </div>
                   <div className="h-1.5 bg-slate-800 rounded-full"><div className="h-1.5 bg-yellow-500 rounded-full" style={{ width: "40%" }} /></div>
                   <div className="flex items-center justify-between text-sm">
-                    <span className="text-slate-400">Security Exposure</span>
-                    <span className="text-yellow-400 font-medium">8/20</span>
+                    <span className="text-slate-400">Resource Utilization</span>
+                    <span className="text-yellow-400 font-medium">2 low</span>
                   </div>
-                  <div className="h-1.5 bg-slate-800 rounded-full"><div className="h-1.5 bg-yellow-500 rounded-full" style={{ width: "40%" }} /></div>
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="text-slate-400">Monitoring & Recovery</span>
-                    <span className="text-red-400 font-medium">0/20</span>
-                  </div>
-                  <div className="h-1.5 bg-slate-800 rounded-full"><div className="h-1.5 bg-red-500 rounded-full" style={{ width: "0%" }} /></div>
+                  <div className="h-1.5 bg-slate-800 rounded-full"><div className="h-1.5 bg-yellow-500 rounded-full" style={{ width: "25%" }} /></div>
                 </div>
               </div>
               <p className="text-center text-slate-500 text-sm mt-8 border-t border-slate-800 pt-6">
-                This is what most single-cloud companies look like. <strong className="text-slate-300">What&apos;s your score?</strong>
+                Axiom finds what matters and prioritizes it. <strong className="text-slate-300">What&apos;s hiding in your cloud?</strong>
               </p>
             </div>
           </Reveal>
@@ -302,9 +297,9 @@ export default function OperatorLandingPage() {
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <Reveal>
             <div className="text-center mb-16">
-              <h2 className="text-3xl sm:text-4xl font-bold">Three steps to multi-cloud resilience</h2>
+              <h2 className="text-3xl sm:text-4xl font-bold">How Axiom works</h2>
               <p className="mt-4 text-slate-400 text-lg max-w-2xl mx-auto">
-                From single point of failure to production-grade redundancy in under 10 minutes.
+                From first scan to approved execution plan in under 5 minutes.
               </p>
             </div>
           </Reveal>
@@ -356,16 +351,16 @@ export default function OperatorLandingPage() {
           <Reveal>
             <div className="grid grid-cols-3 gap-8">
               <div>
-                <div className="text-3xl sm:text-4xl font-bold text-violet-400">500+</div>
-                <p className="text-sm text-slate-500 mt-1">Scans completed</p>
+                <div className="text-3xl sm:text-4xl font-bold text-violet-400">9</div>
+                <p className="text-sm text-slate-500 mt-1">Cognitive phases</p>
               </div>
               <div>
-                <div className="text-3xl sm:text-4xl font-bold text-emerald-400">99.9%</div>
-                <p className="text-sm text-slate-500 mt-1">Uptime achieved</p>
+                <div className="text-3xl sm:text-4xl font-bold text-emerald-400">14</div>
+                <p className="text-sm text-slate-500 mt-1">Workflow stages</p>
               </div>
               <div>
-                <div className="text-3xl sm:text-4xl font-bold text-fuchsia-400">5 min</div>
-                <p className="text-sm text-slate-500 mt-1">Average RTO</p>
+                <div className="text-3xl sm:text-4xl font-bold text-fuchsia-400">0</div>
+                <p className="text-sm text-slate-500 mt-1">Changes without approval</p>
               </div>
             </div>
           </Reveal>
@@ -379,7 +374,7 @@ export default function OperatorLandingPage() {
             <div className="text-center mb-16">
               <h2 className="text-3xl sm:text-4xl font-bold">Simple pricing</h2>
               <p className="mt-4 text-slate-400 text-lg">
-                Start free. Upgrade when you need Terraform execution and monitoring.
+                Start with a free scan. Upgrade to the full autonomous agent when you&apos;re ready.
               </p>
             </div>
           </Reveal>
@@ -454,10 +449,10 @@ export default function OperatorLandingPage() {
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <Reveal>
             <h2 className="text-3xl sm:text-4xl font-bold mb-4">
-              What&apos;s your resilience score?
+              What&apos;s hiding in your cloud?
             </h2>
             <p className="text-lg text-slate-400 mb-10 max-w-xl mx-auto">
-              Connect your cloud, get your score, and see exactly what it takes to stop depending on a single provider.
+              Connect your AWS account, let Axiom scan and reason, and see exactly what needs fixing — prioritized and ready to act on.
             </p>
             <AnimatedButton href="/auth/signup?redirect=/operator/onboarding" variant="primary" className="px-10 py-4 text-base">
               Start Free — No Credit Card

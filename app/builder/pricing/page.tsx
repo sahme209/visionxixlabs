@@ -96,7 +96,7 @@ export default function BuilderPricingPage() {
           })}
         </div>
         <p className="mt-8 text-center text-sm text-slate-500 dark:text-slate-400">
-          One account. Shared authentication. <Link href="/axiom/pricing" className="text-violet-600 dark:text-violet-400 hover:underline">See Axiom pricing</Link> for cloud automation.
+          One account. Shared authentication. <Link href="/axiom/pricing" className="text-violet-600 dark:text-violet-400 hover:underline">See Axiom pricing</Link> for autonomous cloud operations.
         </p>
       </main>
     </div>

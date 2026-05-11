@@ -177,12 +177,12 @@ function CloudSolutionsVisual() {
 const DEMOS = [
   {
     id: "axiom",
-    title: "Axiom — Enterprise Cloud Automation",
-    tagline: "Infra scores, roadmap, cost optimization. Real connectors, safe execution.",
+    title: "Axiom — Autonomous Cloud Operations",
+    tagline: "Scan, reason, plan, execute. AI agent for your cloud with full governance.",
     href: "/operator/onboarding",
     icon: ChartBarIcon,
     gradient: "from-blue-500 to-indigo-600",
-    steps: ["Connect your cloud", "AI analyzes infra", "Get scores & roadmap"],
+    steps: ["Connect your cloud", "Axiom scans & reasons", "Review findings & plans"],
     visual: <AxiomVisual />,
   },
   {

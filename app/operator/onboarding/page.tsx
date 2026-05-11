@@ -450,15 +450,15 @@ export default function OnboardingPage() {
               <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-violet-500 to-fuchsia-500 flex items-center justify-center mx-auto mb-6">
                 <ShieldCheckIcon className="h-8 w-8 text-white" />
               </div>
-              <h1 className="text-2xl sm:text-3xl font-bold mb-3">Welcome to Cloud Operator</h1>
+              <h1 className="text-2xl sm:text-3xl font-bold mb-3">Welcome to Axiom</h1>
               <p className="text-slate-400 mb-8 max-w-md mx-auto">
-                In the next few minutes, we&apos;ll scan your cloud, score your resilience, and show you exactly how to protect against provider outages.
+                In the next few minutes, we&apos;ll scan your AWS infrastructure, analyze what needs fixing, and give you a prioritized findings report.
               </p>
               <div className="space-y-3 text-left max-w-sm mx-auto mb-8">
                 {[
-                  "Connect your cloud account (read-only IAM Role)",
-                  "AI analyzes your infrastructure",
-                  "Get your resilience score and action plan",
+                  "Connect your AWS account (read-only IAM Role)",
+                  "Axiom scans and reasons about your infrastructure",
+                  "Get your prioritized findings and action plan",
                 ].map((item, i) => (
                   <div key={i} className="flex items-center gap-3 text-sm text-slate-300">
                     <span className="w-6 h-6 rounded-full bg-slate-800 flex items-center justify-center text-xs font-bold text-slate-400">{i + 1}</span>
@@ -672,7 +672,7 @@ export default function OnboardingPage() {
                 Your AWS account {verifiedAccount ? `(${verifiedAccount})` : ""} is verified and linked.
               </p>
               <p className="text-slate-500 text-sm mb-8">
-                Now let&apos;s scan your infrastructure and generate your resilience report.
+                Now let&apos;s scan your infrastructure and generate your findings report.
               </p>
 
               <div className="rounded-xl border border-slate-800 bg-slate-900/50 p-6 mb-8 text-left">
@@ -688,11 +688,11 @@ export default function OnboardingPage() {
                   </div>
                   <div className="flex items-center gap-2">
                     <span className="w-1.5 h-1.5 rounded-full bg-violet-400" />
-                    AI generates architecture recommendation
+                    Cognitive engine reasons about findings and prioritizes
                   </div>
                   <div className="flex items-center gap-2">
                     <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-                    Calculate resilience score (0-100)
+                    Generate prioritized findings with recommendations
                   </div>
                 </div>
               </div>
@@ -741,7 +741,7 @@ export default function OnboardingPage() {
               </div>
               <h1 className="text-2xl font-bold mb-2">Your report is ready</h1>
               <p className="text-slate-400 mb-8">
-                Redirecting you to your resilience dashboard...
+                Redirecting you to your findings dashboard...
               </p>
               <div className="w-8 h-8 border-2 border-violet-500/30 border-t-violet-500 rounded-full animate-spin mx-auto" />
             </div>

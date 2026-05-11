@@ -3850,15 +3850,15 @@ function CloudOperatorPageInner() {
                   <div className="text-xs space-y-3 mb-4">
                     <div className="rounded-lg bg-slate-100 dark:bg-slate-800/60 p-2.5">
                       <p className="font-semibold text-slate-900 dark:text-slate-100 mb-0.5">Free <span className="text-slate-400 font-normal">$0</span></p>
-                      <p className="text-slate-500 dark:text-slate-400">Resilience score, risk flags, AI recommendation, security scan (read-only), 1 analysis/month</p>
+                      <p className="text-slate-500 dark:text-slate-400">Read-only infrastructure scan, cost/security/drift findings, prioritized recommendations, 1 scan/month</p>
                     </div>
                     <div className="rounded-lg bg-violet-50 dark:bg-violet-950/30 border border-violet-200 dark:border-violet-800/40 p-2.5">
-                      <p className="font-semibold text-violet-700 dark:text-violet-300 mb-0.5">Pro <span className="text-violet-400 font-normal">$149/mo</span></p>
-                      <p className="text-slate-600 dark:text-slate-400">Everything in Free + Terraform generation &amp; execution, weekly scans, cost analysis, Axiom AI assistant, Slack alerts</p>
+                      <p className="font-semibold text-violet-700 dark:text-violet-300 mb-0.5">Agent <span className="text-violet-400 font-normal">$149/mo</span></p>
+                      <p className="text-slate-600 dark:text-slate-400">Everything in Free + cognitive reasoning, phased execution plans, Terraform generation, governance &amp; approval gates, Slack alerts</p>
                     </div>
                     <div className="rounded-lg bg-slate-100 dark:bg-slate-800/60 p-2.5">
                       <p className="font-semibold text-slate-900 dark:text-slate-100 mb-0.5">Enterprise <span className="text-slate-400 font-normal">Custom</span></p>
-                      <p className="text-slate-500 dark:text-slate-400">Everything in Pro + unlimited connections, daily compliance scans, SSO, audit logging, dedicated manager, SLA</p>
+                      <p className="text-slate-500 dark:text-slate-400">Everything in Agent + autonomous operations, trust ladder, compliance frameworks, SSO, audit logging, dedicated manager, SLA</p>
                     </div>
                   </div>
                   <Link

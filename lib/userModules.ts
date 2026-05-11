@@ -2,7 +2,7 @@
  * User modules — tracks which product add-ons are enabled.
  * Chatbot is an add-on flag, not standalone.
  * - Builder track + chatbot → chatbot attaches to website
- * - Axiom track + chatbot → AI Ops Assistant
+ * - Axiom track + chatbot → optional chat interface for the Axiom agent
  * Plugins: feature-flag controlled, paid add-ons, linked to subscription tier.
  */
 

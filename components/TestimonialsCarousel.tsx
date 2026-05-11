@@ -9,30 +9,30 @@ import { motionConfig, prefersReducedMotionQuery } from "@/lib/motion/tokens";
 const TESTIMONIALS = [
   {
     quote:
-      "The AI assistant handles 80% of our support tickets. Our team can focus on complex cases.",
-    author: "Head of Support",
+      "Axiom found cost savings we'd been missing for months and generated the Terraform to fix it. The approval workflow gave us confidence to actually apply it.",
+    author: "Head of Infrastructure",
     company: "SaaS",
     color: "violet" as const,
   },
   {
     quote:
-      "Lead capture and escalation to human are game-changers. We convert more visitors.",
-    author: "Product Lead",
-    company: "B2B",
+      "The cognitive reasoning is what sets it apart — it doesn't just list findings, it prioritizes them and explains why. Like having a senior cloud engineer on call 24/7.",
+    author: "VP Engineering",
+    company: "Scale-up",
     color: "fuchsia" as const,
   },
   {
     quote:
-      "Enterprise security and API access — exactly what we needed to integrate with our stack.",
+      "Read-only by default, approval gates on every change, full audit trail. It's the only AI tool our security team approved without a fight.",
     author: "CTO",
     company: "Enterprise",
     color: "indigo" as const,
   },
   {
     quote:
-      "Production-ready infrastructure and clear handover. We own the platform from day one.",
-    author: "VP Engineering",
-    company: "Scale-up",
+      "We connected our AWS account and had a prioritized findings report in under a minute. The execution plans with rollback strategies are exactly what we needed.",
+    author: "Cloud Architect",
+    company: "B2B",
     color: "emerald" as const,
   },
 ];
@@ -58,11 +58,11 @@ export function TestimonialsCarousel() {
         <div className="flex items-center justify-center gap-2 mb-4">
           <AccentMarker color="violet" size="md" />
           <h2 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-slate-100">
-            Trusted by teams shipping production systems
+            Trusted by teams running production infrastructure
           </h2>
         </div>
         <p className="text-center text-slate-600 dark:text-slate-400 mb-12 max-w-2xl mx-auto">
-          Engineering-led engagements with clear outcomes and handover.
+          Engineers who let Axiom operate their cloud with confidence.
         </p>
 
         {/* Split two-tone panel */}

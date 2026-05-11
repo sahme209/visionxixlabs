@@ -71,11 +71,11 @@ export const MEMBERSHIP_PLANS: Record<MembershipPlanId, MembershipPlan> = {
     refresh: "manual",
     axiom: {
       tier: "free",
-      label: "Analysis",
+      label: "Scan",
       includes: [
-        "Infrastructure scores and summary dashboard",
-        "Executive summary",
-        "No configs or technical outputs (upgrade for Roadmap)",
+        "Read-only infrastructure scan and findings report",
+        "Cost, security, and drift analysis",
+        "Prioritized recommendations (upgrade for execution plans)",
       ],
     },
     cloudStudio: {
@@ -98,7 +98,7 @@ export const MEMBERSHIP_PLANS: Record<MembershipPlanId, MembershipPlan> = {
       "White-label branding included",
       "95+ languages",
       "Lead capture & embed",
-      "Axiom analysis + Website Builder",
+      "Axiom scan + Website Builder",
     ],
   },
   growth: {
@@ -115,12 +115,12 @@ export const MEMBERSHIP_PLANS: Record<MembershipPlanId, MembershipPlan> = {
     refresh: "monthly",
     axiom: {
       tier: "pro",
-      label: "Roadmap",
+      label: "Agent",
       includes: [
-        "Full 30-day optimization plan",
-        "CI/CD YAML, Dockerfile, Terraform templates",
-        "Cost breakdown, savings estimates",
-        "Security hardening recommendations",
+        "Cognitive reasoning engine (9-phase loop)",
+        "Phased execution plans with Terraform generation",
+        "Governance policies and approval gates",
+        "Verified rollback on every change",
         "GitHub connector",
       ],
     },
@@ -144,7 +144,7 @@ export const MEMBERSHIP_PLANS: Record<MembershipPlanId, MembershipPlan> = {
       "White-label branding included",
       "Integrations (Zendesk, Intercom, Crisp)",
       "Full API access",
-      "Axiom Roadmap + CI/CD configs",
+      "Axiom agent + execution plans",
       "95+ languages",
       "Lead capture + human escalation",
       "Usage analytics & insights",
@@ -165,9 +165,9 @@ export const MEMBERSHIP_PLANS: Record<MembershipPlanId, MembershipPlan> = {
     autoScan: true,
     axiom: {
       tier: "growth",
-      label: "Automation Signals",
+      label: "Agent + Monitoring",
       includes: [
-        "Everything in Roadmap",
+        "Everything in Agent",
         "Drift detection and trend history",
         "Continuous reassessment (weekly)",
         "AWS, Azure, GCP connectors",
@@ -193,7 +193,7 @@ export const MEMBERSHIP_PLANS: Record<MembershipPlanId, MembershipPlan> = {
       "Up to 15 team members",
       "White-label branding included",
       "Integrations + API + Webhooks",
-      "Axiom drift detection + cloud connectors",
+      "Axiom agent + monitoring + cloud connectors",
       "Priority support",
       "95+ languages",
       "Lead capture + human escalation",
@@ -215,11 +215,11 @@ export const MEMBERSHIP_PLANS: Record<MembershipPlanId, MembershipPlan> = {
     autoScan: true,
     axiom: {
       tier: "enterprise",
-      label: "Strategic Advisory",
+      label: "Autonomous Operations",
       includes: [
-        "Everything in Automation Signals",
-        "Policy packs, enterprise brief",
-        "Strategic engagement and implementation support",
+        "Everything in Agent + Monitoring",
+        "Autonomous operations with trust ladder",
+        "Compliance frameworks (SOC 2, ISO 27001, GDPR)",
         "Unlimited connectors",
       ],
     },
@@ -252,7 +252,7 @@ export const MEMBERSHIP_PLANS: Record<MembershipPlanId, MembershipPlan> = {
 /** Included in every plan (from website) */
 export const INCLUDED_IN_EVERY_PLAN = [
   "AI assistants & chatbots (white-label)",
-  "Axiom Cloud Operator (infra scoring & roadmaps)",
+  "Axiom Cloud Operations Agent (scan, reason, plan)",
   "AI Website Builder (prompt-driven sites)",
   "Cloud Studio (cloud project setup)",
   "Cloud solutions guidance (AWS, Azure, GCP)",

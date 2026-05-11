@@ -6,7 +6,7 @@ import Link from "next/link";
  * Huly MetaBrain-style: glowing pipeline connecting services — visual metaphor for unified membership
  */
 const SERVICES = [
-  { name: "Axiom", href: "/operator/onboarding", short: "Infra scores" },
+  { name: "Axiom", href: "/operator/onboarding", short: "Cloud operations agent" },
   { name: "AI Chatbots", href: "/visionxix-ai", short: "White-label" },
   { name: "Website Builder", href: "/builder", short: "Prompt-first" },
   { name: "Cloud Studio", href: "/cloud-studio", short: "Cloud setup" },

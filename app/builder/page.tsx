@@ -371,7 +371,7 @@ export default function WebsiteBuilderPage() {
                       href="/axiom"
                       className="mt-3 inline-flex items-center gap-2 text-sm font-semibold text-violet-600 dark:text-violet-400 hover:text-violet-700 dark:hover:text-violet-300"
                     >
-                      Try Axiom (Cloud Automation)
+                      Try Axiom (Cloud Operations Agent)
                       <ArrowRightIcon className="h-4 w-4" />
                     </Link>
                   </div>
