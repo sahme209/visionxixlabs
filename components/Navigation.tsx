@@ -49,7 +49,7 @@ export function Navigation() {
               How it works
             </Link>
             <Link
-              href="/pricing"
+              href="/operator/pricing"
               className="nav-link-underline relative px-4 py-2 text-slate-700 dark:text-slate-300 hover:text-violet-600 dark:hover:text-violet-400 hover:bg-violet-50 dark:hover:bg-violet-900/20 rounded-xl transition-colors text-sm font-medium"
             >
               Pricing
@@ -96,7 +96,7 @@ export function Navigation() {
               <Link href="/#how-it-works" onClick={() => setMobileMenuOpen(false)} className="px-4 py-2 text-slate-700 dark:text-slate-300 font-medium hover:bg-violet-50 dark:hover:bg-violet-900/20 rounded-lg text-sm">
                 How it works
               </Link>
-              <Link href="/pricing" onClick={() => setMobileMenuOpen(false)} className="px-4 py-2 text-slate-700 dark:text-slate-300 font-medium hover:bg-violet-50 dark:hover:bg-violet-900/20 rounded-lg text-sm">
+              <Link href="/operator/pricing" onClick={() => setMobileMenuOpen(false)} className="px-4 py-2 text-slate-700 dark:text-slate-300 font-medium hover:bg-violet-50 dark:hover:bg-violet-900/20 rounded-lg text-sm">
                 Pricing
               </Link>
               <Link href="/contact" onClick={() => setMobileMenuOpen(false)} className="px-4 py-2 text-slate-700 dark:text-slate-300 font-medium hover:bg-violet-50 dark:hover:bg-violet-900/20 rounded-lg text-sm">

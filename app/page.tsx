@@ -23,7 +23,39 @@ import { MiniChart } from "@/components/ui/MiniChart";
 import { RealisticFogBackground } from "@/components/ui/realistic-fog-background";
 import { TestimonialsCarousel } from "@/components/TestimonialsCarousel";
 import { FAQAccordion } from "@/components/FAQAccordion";
-import { cloudFAQ } from "@/lib/cloudContent";
+
+const axiomFAQ = [
+  {
+    question: "What does Axiom actually do?",
+    answer:
+      "Axiom is an autonomous cloud operations agent. It connects to your AWS account via a read-only IAM role, scans your infrastructure, uses a 9-phase cognitive reasoning loop to identify and prioritize issues (cost waste, security gaps, drift, misconfigurations), then generates phased execution plans with Terraform code. Nothing changes without your explicit approval.",
+  },
+  {
+    question: "Does Axiom modify my infrastructure?",
+    answer:
+      "Never without your approval. Scans are always read-only. When you upgrade to the Agent tier, Axiom generates execution plans — but every change requires your explicit approval, includes a pre-verified rollback strategy, and is logged with a full audit trail.",
+  },
+  {
+    question: "What clouds are supported?",
+    answer:
+      "AWS has full support — scan, plan, and execution. Azure and GCP currently support scan-only analysis, with plan and execution capabilities on the roadmap.",
+  },
+  {
+    question: "How does Axiom keep my infrastructure safe?",
+    answer:
+      "Axiom uses a governance framework with trust levels, blast radius limits, approval gates, and compliance policies. The agent can never self-escalate its own autonomy level. High-risk changes always require human approval.",
+  },
+  {
+    question: "How long does setup take?",
+    answer:
+      "About 5 minutes. Create a read-only IAM role in AWS, paste the Role ARN, and Axiom starts scanning. Your first findings report is ready in under a minute.",
+  },
+  {
+    question: "What access does Axiom need?",
+    answer:
+      "Axiom uses an assume-role model — you create a read-only IAM role in your AWS account and we assume it to scan. No access keys are stored. You can revoke access anytime from your AWS console.",
+  },
+];
 
 export default function Home() {
   return (
@@ -159,14 +191,14 @@ export default function Home() {
 
       <EnterpriseTrustSignals />
 
-      {/* How it works — connected service pipeline */}
+      {/* How it works — Axiom's workflow */}
       <AnimateOnScroll>
         <section id="how-it-works" className="py-12 px-4 sm:px-6 lg:px-8 border-t border-slate-200/80 dark:border-slate-700/80">
           <div className="max-w-5xl mx-auto">
             <div className="flex items-center justify-center gap-2 mb-6">
               <AccentMarker color="fuchsia" />
               <h2 className="text-center text-lg font-semibold text-slate-700 dark:text-slate-300">
-                Everything connected in one flow
+                How Axiom operates your cloud
               </h2>
             </div>
             <ServicePipeline />
@@ -219,7 +251,7 @@ export default function Home() {
               Frequently asked questions
             </h2>
           </div>
-          <FAQAccordion items={cloudFAQ.slice(0, 6)} />
+          <FAQAccordion items={axiomFAQ} />
         </div>
       </section>
       </AnimateOnScroll>
@@ -278,7 +310,7 @@ export default function Home() {
               <ArrowRightIcon className="ml-2 h-5 w-5" />
             </Link>
             <Link
-              href="/pricing"
+              href="/operator/pricing"
               className="inline-flex items-center px-6 py-3 border-2 border-white/30 text-white rounded-2xl font-semibold hover:bg-white/10 hover:border-white/50 transition-all"
             >
               View plans
@@ -313,9 +345,9 @@ export default function Home() {
               <h4 className="text-white font-semibold mb-4 text-sm">Product</h4>
               <ul className="space-y-2 text-sm">
                 <li><Link href="/operator/onboarding" className="hover:text-white transition-colors">Run Axiom</Link></li>
-                <li><Link href="/pricing" className="hover:text-white transition-colors">Pricing</Link></li>
-                <li><Link href="/insights" className="hover:text-white transition-colors">Insights</Link></li>
-                <li><Link href="/dashboard" className="hover:text-white transition-colors">Dashboard</Link></li>
+                <li><Link href="/operator/pricing" className="hover:text-white transition-colors">Pricing</Link></li>
+                <li><Link href="/axiom" className="hover:text-white transition-colors">About Axiom</Link></li>
+                <li><Link href="/dashboard/resilience" className="hover:text-white transition-colors">Dashboard</Link></li>
               </ul>
             </div>
             <div>

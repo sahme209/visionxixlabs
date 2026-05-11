@@ -103,7 +103,7 @@ export default function AxiomPricingPage() {
           })}
         </div>
         <p className="mt-8 text-center text-sm text-slate-500 dark:text-slate-400">
-          One account. Shared authentication. <Link href="/builder/pricing" className="text-violet-600 dark:text-violet-400 hover:underline">See Builder pricing</Link> for website generation.
+          All plans include read-only scanning. Agent and Enterprise add cognitive reasoning, execution, and governance.
         </p>
       </main>
     </div>

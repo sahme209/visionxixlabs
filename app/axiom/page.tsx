@@ -95,7 +95,7 @@ export default function AxiomPage() {
         </section>
         <div className="mt-16 text-center">
           <p className="text-slate-600 dark:text-slate-400 mb-4">
-            One account. Shared authentication. <Link href="/builder" className="text-violet-600 dark:text-violet-400 hover:underline">Build websites</Link> with our separate Builder product.
+            AWS fully supported. Azure and GCP scan-only — with apply capabilities on the roadmap.
           </p>
         </div>
       </main>

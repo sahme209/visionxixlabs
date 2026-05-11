@@ -45,7 +45,7 @@ function SignInForm() {
           ← Vision XIX Labs
         </Link>
         <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100 mb-2">Sign in</h1>
-        <p className="text-slate-600 dark:text-slate-400 mb-6">Sign in to manage your chatbots.</p>
+        <p className="text-slate-600 dark:text-slate-400 mb-6">Sign in to your Axiom account.</p>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Email</label>
