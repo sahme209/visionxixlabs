@@ -2574,3 +2574,68 @@ export {
   type ChangeManagementTestResult,
   runChangeManagementTests,
 } from "./changeManagement";
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Disaster Recovery & Business Continuity
+// Backup verification, failover management, DR testing, and RTO/RPO tracking
+// ─────────────────────────────────────────────────────────────────────────────
+export {
+  // §1 — DR Architecture
+  type DRTier,
+  type DRStrategy,
+  type FailoverType,
+  type DRTestStatus,
+  type DRPlan,
+  type DRServiceConfig,
+
+  // §2 — Backup Policies
+  type BackupType,
+  type BackupStatus,
+  type BackupPolicy,
+  DEFAULT_BACKUP_POLICIES,
+  type BackupVerificationResult,
+
+  // §3 — RTO/RPO
+  type RTORPOTarget,
+  RTO_RPO_TARGETS,
+
+  // §4 — Failover Runbooks
+  type FailoverRunbookStep,
+  type FailoverExecution,
+  type FailoverStepResult,
+
+  // §5 — DR Testing
+  type DRTestType,
+  type DRTest,
+  type DRTestResult,
+  type DRTestFinding,
+  DR_TEST_SCHEDULE,
+
+  // §6 — DR Pipeline
+  type DRPipelineStageId,
+  type DRPipelineStage,
+  DR_PIPELINE,
+
+  // §7 — Integration Contracts
+  type DRIntegrationTarget,
+  type DRIntegrationContract,
+  DR_INTEGRATION_CONTRACTS,
+
+  // §8 — Query Functions
+  getRTORPOTarget,
+  getBackupPolicy,
+  getBackupPoliciesByProvider,
+  getBackupPoliciesByResourceType,
+  getCrossRegionBackupPolicies,
+  getDRTestSchedule,
+  getDRPipelineStage,
+  getDRPipelineOrder,
+  getDRIntegration,
+  isRTOCompliant,
+  isRPOCompliant,
+  computeDRReadinessScore,
+
+  // §9 — Tests
+  type DisasterRecoveryTestResult,
+  runDisasterRecoveryTests,
+} from "./disasterRecovery";
