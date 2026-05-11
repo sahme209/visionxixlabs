@@ -1683,3 +1683,111 @@ export {
   TerraformGenerationTestResult,
   runTerraformGenerationTests,
 } from "./terraformGeneration";
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Execution Safety Engine
+// Safe infrastructure apply with pre-checks, progressive rollout, auto-rollback
+// ─────────────────────────────────────────────────────────────────────────────
+export {
+  // §1 — Execution Architecture
+  ExecutionStrategy,
+  ExecutionPhase,
+  ExecutionOutcome,
+  ExecutionContext,
+  AutonomyLevel,
+  AUTONOMY_LEVEL_PERMISSIONS,
+  AutonomyPermissions,
+
+  // §2 — Pre-Execution Checks
+  PreCheckId,
+  PreExecutionCheck,
+  PreCheckResult,
+  PRE_EXECUTION_CHECKS,
+
+  // §3 — Safety Configuration
+  SafetyConfig,
+  DEFAULT_SAFETY_CONFIG,
+  CONSERVATIVE_SAFETY_CONFIG,
+
+  // §4 — Health Check Framework
+  HealthCheckType,
+  HealthCheckConfig,
+  HealthCheckDefinition,
+  HealthCheckTarget,
+  ExpectedHealthState,
+  HealthCheckResult,
+  HealthBaseline,
+  BaselineMetric,
+  DEFAULT_HEALTH_CONFIG,
+
+  // §5 — Auto-Rollback Configuration
+  AutoRollbackTrigger,
+  AutoRollbackConfig,
+  AutoRollbackTriggerConfig,
+  DEFAULT_ROLLBACK_CONFIG,
+
+  // §6 — Circuit Breaker
+  CircuitBreakerState,
+  CircuitBreaker,
+  CircuitBreakerEvent,
+  computeCircuitBreakerState,
+
+  // §7 — Execution Progress Tracking
+  ExecutionProgress,
+  ExecutionStepProgress,
+  ExecutionStepStatus,
+  ExecutionStepError,
+
+  // §8 — Progressive Rollout
+  CanaryConfig as ExecutionCanaryConfig,
+  BlueGreenConfig,
+  RollingConfig,
+  PromotionCriterion,
+  DEFAULT_CANARY_CONFIG,
+  DEFAULT_BLUE_GREEN_CONFIG,
+  DEFAULT_ROLLING_CONFIG,
+
+  // §9 — Kill Switch
+  KillSwitchScope,
+  KillSwitch,
+  KillSwitchPolicy,
+  DEFAULT_KILL_SWITCH_POLICY,
+
+  // §10 — Execution Audit Trail
+  ExecutionAuditAction,
+  ExecutionAuditEntry,
+
+  // §11 — Provider Execution Profiles
+  ProviderExecutionProfile,
+  ApplyMechanism,
+  ProviderRollbackCapability,
+  PROVIDER_EXECUTION_PROFILES,
+
+  // §12 — Execution Invariants
+  ExecutionInvariant,
+  EXECUTION_INVARIANTS,
+
+  // §13 — Integration Contracts
+  ExecutionIntegrationTarget,
+  ExecutionIntegrationContract,
+  EXECUTION_INTEGRATION_CONTRACTS,
+
+  // §14 — Query Functions
+  getPreExecutionCheck,
+  getRequiredPreChecks,
+  getPreChecksForStrategy,
+  getAutonomyPermissions,
+  canAutonomouslyApply,
+  getProviderExecutionProfile,
+  getTypicalApplyLatency,
+  getRollbackCapability,
+  isStrategySupported,
+  getExecutionInvariant,
+  getNonOverridableInvariants,
+  getExecutionIntegration,
+  estimateTotalApplyDuration,
+
+  // §15 — Tests
+  ExecutionSafetyTestResult,
+  runExecutionSafetyTests,
+} from "./executionSafety";
