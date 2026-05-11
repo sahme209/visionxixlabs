@@ -23,10 +23,10 @@ export default function AxiomPricingPage() {
         </Link>
         <div className="text-center mb-12">
           <h1 className="text-4xl font-bold text-slate-900 dark:text-slate-100">
-            Axiom Cloud Automation Pricing
+            Axiom Pricing
           </h1>
           <p className="mt-4 text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
-            Cloud scan, cost optimization, security analysis. Add auto-fix and AI Ops Assistant as you scale.
+            Start with read-only scanning. Upgrade to the full autonomous agent with cognitive reasoning, execution plans, and governance as you scale.
           </p>
           <div className="mt-6 flex justify-center gap-3">
             <button

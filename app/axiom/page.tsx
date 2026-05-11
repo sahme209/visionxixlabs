@@ -15,28 +15,28 @@ import { BackgroundBlobs } from "@/components/BackgroundBlobs";
 const FEATURES = [
   {
     icon: CloudIcon,
-    title: "Cloud scan",
-    desc: "Full infrastructure analysis across AWS, Azure, GCP. Cost, security, and drift detection.",
-  },
-  {
-    icon: ChartBarIcon,
-    title: "Cost optimization",
-    desc: "Identify waste, rightsizing opportunities, and savings estimates with actionable playbooks.",
-  },
-  {
-    icon: ShieldCheckIcon,
-    title: "Security analysis",
-    desc: "Security findings, hardening recommendations, and compliance-ready baselines.",
-  },
-  {
-    icon: BoltIcon,
-    title: "Apply Fix execution",
-    desc: "Execute changes via cloud APIs or generated scripts. Toggle per issue, confirm before destructive actions. Logs and rollback.",
+    title: "Intelligent scanning",
+    desc: "Deep infrastructure analysis across AWS (Azure and GCP on the roadmap). Cost waste, security gaps, drift detection, and resource inventory.",
   },
   {
     icon: CpuChipIcon,
-    title: "AI Ops Assistant",
-    desc: "Optional chatbot add-on. Internal AI ops assistant for your cloud—questions, runbooks, alerts.",
+    title: "Cognitive reasoning engine",
+    desc: "A 9-phase AI reasoning loop — observe, interpret, reason, prioritize, plan, execute, verify, reflect, learn — that thinks through your infrastructure like a senior engineer.",
+  },
+  {
+    icon: ChartBarIcon,
+    title: "Phased execution plans",
+    desc: "Auto-generated Terraform and CLI plans with dependency graphs, blast radius estimates, and rollback strategies — reviewed before any change is applied.",
+  },
+  {
+    icon: ShieldCheckIcon,
+    title: "Governance & safety",
+    desc: "Trust levels, approval gates, blast radius limits, and compliance policies ensure no change happens without verified safety. The agent never self-escalates its own autonomy.",
+  },
+  {
+    icon: BoltIcon,
+    title: "Safe execution with rollback",
+    desc: "Apply approved changes with pre-verified rollback, full audit trail, and post-apply verification. Read-only by default — nothing changes without your explicit approval.",
   },
 ];
 
@@ -51,14 +51,14 @@ export default function AxiomPage() {
         </Link>
         <header className="text-center mb-16">
           <div className="inline-flex items-center gap-2 rounded-full bg-blue-100 dark:bg-blue-900/40 px-4 py-2 text-sm font-semibold text-blue-700 dark:text-blue-300 mb-6">
-            <CloudIcon className="h-4 w-4" />
-            Axiom — Cloud Automation Platform
+            <CpuChipIcon className="h-4 w-4" />
+            Axiom — Autonomous Cloud Operations Agent
           </div>
           <h1 className="text-4xl sm:text-5xl font-bold text-slate-900 dark:text-slate-100 mb-4">
-            Cloud automation platform
+            Your autonomous cloud operations agent
           </h1>
           <p className="text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto mb-8">
-            Not just assessment—real execution. Scan your cloud, get an actionable plan, and apply fixes via API. Secure integrations with AWS, Azure, GCP. Execution logs and rollback capability.
+            Axiom scans your AWS infrastructure, reasons about what to fix, generates phased execution plans, and applies approved changes — with governance policies, rollback coordination, and a full audit trail.
           </p>
           <div className="flex flex-wrap justify-center gap-4">
             <Link

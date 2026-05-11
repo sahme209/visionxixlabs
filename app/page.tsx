@@ -47,7 +47,7 @@ export default function Home() {
           </Reveal>
           <Reveal direction="up" delay={0.06}>
             <p className="text-lg md:text-xl text-slate-600 dark:text-slate-400 mb-4 max-w-3xl mx-auto">
-              Securely connect your cloud. Run real analysis. Approve safe fixes. No changes without your permission.
+              An AI agent that scans your cloud, reasons about what to fix, generates execution plans, and applies approved changes — with full rollback and audit trail.
             </p>
           </Reveal>
           <Stagger delay={0.12}>
@@ -77,7 +77,7 @@ export default function Home() {
           </Reveal>
           <Reveal direction="up" delay={0.24}>
             <p className="text-sm text-slate-500 dark:text-slate-400 max-w-2xl mx-auto">
-              Foundations · CI/CD · FinOps · Observability · Security · IaC
+              Scan · Reason · Plan · Execute · Verify · Learn
             </p>
           </Reveal>
           <Reveal direction="up" delay={0.3}>
@@ -101,17 +101,17 @@ export default function Home() {
                 <div className="flex items-start justify-between gap-3 mb-3">
                   <div className="flex items-center gap-2">
                     <AccentMarker color="violet" />
-                    <h3 className="text-lg font-bold text-slate-900 dark:text-slate-100">Reliability (SLO-first)</h3>
+                    <h3 className="text-lg font-bold text-slate-900 dark:text-slate-100">Intelligent Scanning</h3>
                   </div>
                   <MiniChart type="line" color="violet" />
                 </div>
                 <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">
-                  We build for uptime targets and observability, not wishful thinking.
+                  Deep infrastructure analysis that finds cost waste, security gaps, and drift across your cloud.
                 </p>
                 <ul className="text-sm text-slate-700 dark:text-slate-300 space-y-2">
-                  <li className="flex items-start"><span className="text-violet-500 mr-2">✓</span>SLO/SLI definitions and dashboards</li>
-                  <li className="flex items-start"><span className="text-violet-500 mr-2">✓</span>Alerting and incident response patterns</li>
-                  <li className="flex items-start"><span className="text-violet-500 mr-2">✓</span>Runbooks and operational handover</li>
+                  <li className="flex items-start"><span className="text-violet-500 mr-2">✓</span>Cost optimization and rightsizing analysis</li>
+                  <li className="flex items-start"><span className="text-violet-500 mr-2">✓</span>Security findings with severity scoring</li>
+                  <li className="flex items-start"><span className="text-violet-500 mr-2">✓</span>Drift detection against desired state</li>
                 </ul>
               </HoverCard>
             </Reveal>
@@ -120,17 +120,17 @@ export default function Home() {
                 <div className="flex items-start justify-between gap-3 mb-3">
                   <div className="flex items-center gap-2">
                     <AccentMarker color="fuchsia" />
-                    <h3 className="text-lg font-bold text-slate-900 dark:text-slate-100">Security &amp; Governance</h3>
+                    <h3 className="text-lg font-bold text-slate-900 dark:text-slate-100">Autonomous Reasoning</h3>
                   </div>
                   <MiniChart type="bars" color="fuchsia" />
                 </div>
                 <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">
-                  Access control, baselines, and hardening focused on real risk reduction.
+                  AI-powered reasoning that prioritizes findings, generates execution plans, and learns from your infrastructure over time.
                 </p>
                 <ul className="text-sm text-slate-700 dark:text-slate-300 space-y-2">
-                  <li className="flex items-start"><span className="text-violet-500 mr-2">✓</span>IAM, landing zones, network segmentation</li>
-                  <li className="flex items-start"><span className="text-violet-500 mr-2">✓</span>Compliance-ready patterns (SOC2, HIPAA)</li>
-                  <li className="flex items-start"><span className="text-violet-500 mr-2">✓</span>Visibility and audit logging</li>
+                  <li className="flex items-start"><span className="text-violet-500 mr-2">✓</span>Multi-phase cognitive reasoning engine</li>
+                  <li className="flex items-start"><span className="text-violet-500 mr-2">✓</span>Phased execution plans with dependency graphs</li>
+                  <li className="flex items-start"><span className="text-violet-500 mr-2">✓</span>Terraform and CLI code generation</li>
                 </ul>
               </HoverCard>
             </Reveal>
@@ -139,17 +139,17 @@ export default function Home() {
                 <div className="flex items-start justify-between gap-3 mb-3">
                   <div className="flex items-center gap-2">
                     <AccentMarker color="emerald" />
-                    <h3 className="text-lg font-bold text-slate-900 dark:text-slate-100">Cost Efficiency (FinOps)</h3>
+                    <h3 className="text-lg font-bold text-slate-900 dark:text-slate-100">Safe Execution</h3>
                   </div>
                   <MiniChart type="area" color="emerald" />
                 </div>
                 <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">
-                  Right-sized resources, reserved capacity, and cost allocation you can act on.
+                  Enterprise-grade safety with approval gates, blast radius limits, rollback coordination, and full audit trail.
                 </p>
                 <ul className="text-sm text-slate-700 dark:text-slate-300 space-y-2">
-                  <li className="flex items-start"><span className="text-violet-500 mr-2">✓</span>Cost attribution and tagging strategy</li>
-                  <li className="flex items-start"><span className="text-violet-500 mr-2">✓</span>Savings plans and committed use</li>
-                  <li className="flex items-start"><span className="text-violet-500 mr-2">✓</span>Anomaly detection and guardrails</li>
+                  <li className="flex items-start"><span className="text-violet-500 mr-2">✓</span>Human approval required for high-risk changes</li>
+                  <li className="flex items-start"><span className="text-violet-500 mr-2">✓</span>Verified rollback before every apply</li>
+                  <li className="flex items-start"><span className="text-violet-500 mr-2">✓</span>Governance policies and compliance checks</li>
                 </ul>
               </HoverCard>
             </Reveal>
@@ -185,19 +185,19 @@ export default function Home() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
             <div>
               <div className="text-2xl font-bold text-slate-900 dark:text-slate-100 mb-1">AWS</div>
-              <div className="text-xs text-slate-600 dark:text-slate-400">Full support</div>
+              <div className="text-xs text-slate-600 dark:text-slate-400">Full scan, plan, and execution</div>
             </div>
             <div>
               <div className="text-2xl font-bold text-slate-900 dark:text-slate-100 mb-1">Azure</div>
-              <div className="text-xs text-slate-600 dark:text-slate-400">Coming soon</div>
+              <div className="text-xs text-slate-600 dark:text-slate-400">Scan-only (apply on roadmap)</div>
             </div>
             <div>
               <div className="text-2xl font-bold text-slate-900 dark:text-slate-100 mb-1">GCP</div>
-              <div className="text-xs text-slate-600 dark:text-slate-400">Coming soon</div>
+              <div className="text-xs text-slate-600 dark:text-slate-400">Scan-only (apply on roadmap)</div>
             </div>
             <div>
-              <div className="text-2xl font-bold text-slate-900 dark:text-slate-100 mb-1">AI + IaC</div>
-              <div className="text-xs text-slate-600 dark:text-slate-400">Intelligent automation</div>
+              <div className="text-2xl font-bold text-slate-900 dark:text-slate-100 mb-1">Terraform</div>
+              <div className="text-xs text-slate-600 dark:text-slate-400">Auto-generated IaC plans</div>
             </div>
           </div>
         </div>
@@ -229,10 +229,10 @@ export default function Home() {
       <section id="contact" className="py-20 px-4 sm:px-6 lg:px-8 border-t border-slate-200 dark:border-slate-700" aria-labelledby="contact-heading">
         <div className="max-w-3xl mx-auto text-center">
           <h2 id="contact-heading" className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-slate-100 mb-4">
-            Ready to optimize your cloud?
+            Ready to let Axiom operate your cloud?
           </h2>
           <p className="text-slate-600 dark:text-slate-400 mb-10">
-            Connect your AWS account in minutes. Axiom runs a read-only analysis and shows you exactly what to fix — no changes without your approval.
+            Connect your AWS account in minutes. Axiom runs a read-only scan, reasons about what to fix, and shows you a prioritized plan — no changes without your approval.
           </p>
           <div className="grid md:grid-cols-2 gap-6 mb-10">
             <Link
@@ -264,10 +264,10 @@ export default function Home() {
         <div className="absolute -bottom-40 -left-40 w-80 h-80 rounded-full bg-fuchsia-500/10 blur-3xl" aria-hidden />
         <div className="relative max-w-3xl mx-auto text-center">
           <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-            Your cloud, fully understood
+            Your cloud, operated by an agent you control
           </h2>
           <p className="text-slate-300 text-lg mb-8">
-            Axiom connects to your AWS account, runs real analysis, and gives you clear recommendations — all read-only until you approve a change.
+            Axiom connects to your AWS account, scans your infrastructure, reasons about what to fix, and generates phased plans — nothing changes until you approve.
           </p>
           <div className="flex flex-wrap justify-center gap-4">
             <Link
@@ -306,7 +306,7 @@ export default function Home() {
                 </span>
               </div>
               <p className="text-slate-400 text-sm mb-4 leading-relaxed">
-                AI-powered cloud operations for AWS, Azure, and GCP. Connect, analyze, and optimize — with full control.
+                Axiom is an autonomous cloud operations agent. It scans, reasons, plans, and executes — with governance, rollback, and full audit trail. You stay in control.
               </p>
             </div>
             <div>
