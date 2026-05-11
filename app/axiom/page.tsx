@@ -153,14 +153,14 @@ export default function AxiomPage() {
           </p>
           <div className="flex flex-wrap justify-center gap-4">
             <Link
-              href="/cloud-operator"
+              href="/operator/onboarding"
               className="inline-flex items-center gap-2 px-7 py-3.5 bg-slate-900 dark:bg-slate-50 text-white dark:text-slate-900 rounded-xl font-semibold text-sm hover:bg-slate-800 dark:hover:bg-slate-200 transition-colors shadow-sm"
             >
               Run Axiom
               <ArrowRightIcon className="h-4 w-4" />
             </Link>
             <Link
-              href="/axiom/pricing"
+              href="/operator/pricing"
               className="inline-flex items-center gap-2 px-7 py-3.5 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 rounded-xl font-semibold text-sm hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors"
             >
               View pricing
@@ -363,14 +363,14 @@ export default function AxiomPage() {
           </p>
           <div className="flex flex-wrap justify-center gap-4">
             <Link
-              href="/cloud-operator"
+              href="/operator/onboarding"
               className="inline-flex items-center gap-2 px-7 py-3.5 bg-slate-900 dark:bg-slate-50 text-white dark:text-slate-900 rounded-xl font-semibold text-sm hover:bg-slate-800 dark:hover:bg-slate-200 transition-colors shadow-sm"
             >
               Run Axiom
               <ArrowRightIcon className="h-4 w-4" />
             </Link>
             <Link
-              href="/axiom/pricing"
+              href="/operator/pricing"
               className="inline-flex items-center gap-2 px-7 py-3.5 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 rounded-xl font-semibold text-sm hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors"
             >
               View pricing

@@ -261,7 +261,7 @@ export default function OperationsPage() {
           </div>
           <div className="flex items-center gap-3">
             <Link
-              href="/cloud-operator"
+              href="/operator/onboarding"
               className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 text-xs font-semibold hover:bg-slate-800 dark:hover:bg-slate-200 transition-colors"
             >
               <BoltIcon className="h-3.5 w-3.5" />
@@ -376,7 +376,7 @@ export default function OperationsPage() {
                 ) : (
                   <div className="text-center py-4">
                     <p className="text-xs text-slate-500 dark:text-slate-400 mb-2">No accounts connected</p>
-                    <Link href="/cloud-operator" className="text-xs font-medium text-violet-600 dark:text-violet-400 hover:text-violet-700">
+                    <Link href="/operator/onboarding" className="text-xs font-medium text-violet-600 dark:text-violet-400 hover:text-violet-700">
                       Connect AWS
                     </Link>
                   </div>
