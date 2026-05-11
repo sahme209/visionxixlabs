@@ -182,6 +182,19 @@ export type {
   DriftTestResult,
 } from "./driftEngine";
 export {
+  recordScanOutcome,
+  recordActionOutcomes,
+  loadOutcomeHistory,
+  hasResourceFailureHistory,
+  getOutcomeSuccessRate,
+  getOutcomeSummaryText,
+} from "./outcomeMemory";
+export type {
+  OutcomeRecord,
+  ResourceOutcomeHistory,
+  OutcomeHistory,
+} from "./outcomeMemory";
+export {
   registerWorkflow,
   getWorkflow,
   listWorkflows,

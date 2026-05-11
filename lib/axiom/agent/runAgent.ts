@@ -33,6 +33,8 @@ import type { AutopilotMode } from "./autopilot";
 import * as msg from "./messageBuilder";
 import { detectDrift } from "./driftEngine";
 import type { DriftReport, DriftItem } from "./driftEngine";
+import { recordScanOutcome, recordActionOutcomes, loadOutcomeHistory, hasResourceFailureHistory } from "./outcomeMemory";
+import type { OutcomeHistory } from "./outcomeMemory";
 
 // ---------------------------------------------------------------------------
 // runAgent — 10-step orchestrator
@@ -87,6 +89,7 @@ export async function runAgent(input: RunAgentInput): Promise<AgentRunResult> {
     const prefs = await loadPreferences(organizationId);
     const autopilotMode = await loadAutopilotMode(connectedAccountId);
     const autopilotPolicy = resolvePolicy(autopilotMode);
+    const outcomeHistory = await loadOutcomeHistory(organizationId, connectedAccountId);
 
     // ── Step 3: Generate cloud snapshot ─────────────────────────────────
 
@@ -238,10 +241,29 @@ export async function runAgent(input: RunAgentInput): Promise<AgentRunResult> {
       return findingToRecommendationWithPrefs(f, matched, confidence, i, prefs);
     });
 
-    // ── Step 7b: Apply autopilot gate to recommendations ───────────────
+    // ── Step 7b: Outcome-aware safety gate ──────────────────────────────
+    //    Downgrade auto-fix → approval_required for resources with prior failures
+    const outcomeAdjustedRecs = rawRecs.map((rec) => {
+      if (rec.disposition !== "auto_fix_candidate" || !rec.actionType) return rec;
+      const finding = findings.find((f) => f.id === rec.findingId);
+      if (!finding) return rec;
+      const hasPriorFailure = finding.affectedResources.some((rid) =>
+        hasResourceFailureHistory(outcomeHistory, rid, rec.actionType!),
+      );
+      if (hasPriorFailure) {
+        return {
+          ...rec,
+          disposition: "approval_required" as ActionDisposition,
+          dispositionReason: `Downgraded from auto-fix: prior failure recorded for this resource and action type.`,
+        };
+      }
+      return rec;
+    });
+
+    // ── Step 7c: Apply autopilot gate to recommendations ───────────────
     const domainRecs = autopilotPolicy.canGeneratePlan
-      ? applyAutopilotToRecommendations(rawRecs, autopilotMode)
-      : rawRecs.map((r) => ({ ...r, disposition: "report_only" as ActionDisposition, actionable: false, autopilotDecision: undefined }));
+      ? applyAutopilotToRecommendations(outcomeAdjustedRecs, autopilotMode)
+      : outcomeAdjustedRecs.map((r) => ({ ...r, disposition: "report_only" as ActionDisposition, actionable: false, autopilotDecision: undefined }));
 
     const dbRecs = await prisma.$transaction(
       domainRecs.map((rec, i) =>
@@ -396,7 +418,7 @@ export async function runAgent(input: RunAgentInput): Promise<AgentRunResult> {
       reportOnlyCount,
     });
 
-    // ── Step 10: Return user-facing summary ─────────────────────────────
+    // ── Step 9b: Record scan outcome for future memory ─────────────────
 
     const savingsIdentified: SavingsEstimate = {
       monthlyLow: costSummary.totalAnnualSavings.low / 12,
@@ -404,6 +426,17 @@ export async function runAgent(input: RunAgentInput): Promise<AgentRunResult> {
       yearlyLow: costSummary.totalAnnualSavings.low,
       yearlyHigh: costSummary.totalAnnualSavings.high,
     };
+
+    await recordScanOutcome({
+      organizationId,
+      cloudAccountId: connectedAccountId,
+      runId,
+      findingCount: findings.length,
+      driftCount: driftFindings.length,
+      savingsIdentified: { monthly: savingsIdentified.monthlyHigh, yearly: savingsIdentified.yearlyHigh },
+    });
+
+    // ── Step 10: Return user-facing summary ─────────────────────────────
 
     return {
       runId,
@@ -514,6 +547,19 @@ export async function handleApproval(input: ApprovalInput): Promise<AgentRunResu
     decision,
     appliedCount: verified,
     failedCount: results.filter((r) => r.status === "failed").length,
+  });
+
+  await recordActionOutcomes({
+    organizationId: run.organizationId,
+    cloudAccountId: run.cloudAccountId,
+    runId,
+    actions: results.map((r, i) => ({
+      actionType: approvedDbItems[i].actionType,
+      resourceIds: (approvedDbItems[i].resourceIds as string[]) ?? [],
+      status: r.status,
+      savingsRealized: r.status === "verified" || r.status === "applied" ? approvedDbItems[i].monthlyHigh : 0,
+      failureReason: r.status === "failed" ? r.message : undefined,
+    })),
   });
 
   return loadRunResult(runId, run.cloudAccountId);
