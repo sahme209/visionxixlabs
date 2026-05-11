@@ -1872,3 +1872,99 @@ export {
   SignalDetectionTestResult,
   runSignalDetectionTests,
 } from "./signalDetection";
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Incident Response Engine
+// Automated incident lifecycle: detect → contain → remediate → verify → learn
+// ─────────────────────────────────────────────────────────────────────────────
+export {
+  // §1 — Incident Architecture
+  IncidentSeverityLevel,
+  IncidentCategory,
+  IncidentPhase,
+  Incident,
+  AffectedResource,
+  ImpactAssessment,
+  UserImpactLevel,
+  ServiceImpactLevel,
+  DataImpactLevel,
+  FinancialImpactEstimate,
+  IncidentBlastRadius,
+
+  // §2 — Incident Classification
+  ClassificationRule,
+  ClassificationCondition,
+  CLASSIFICATION_RULES,
+
+  // §3 — Severity Definitions & SLA
+  SeverityDefinition,
+  SEVERITY_DEFINITIONS,
+
+  // §4 — Containment Strategies
+  ContainmentStrategy,
+  ContainmentAction,
+  ContainmentPlaybook,
+  ContainmentStep,
+  CONTAINMENT_PLAYBOOKS,
+
+  // §5 — Remediation Plans
+  RemediationPlan,
+  RemediationStrategy,
+  RemediationStatus,
+  RemediationStep,
+
+  // §6 — Incident Timeline
+  IncidentTimelineEventType,
+  IncidentTimelineEntry,
+
+  // §7 — Assignment & Escalation
+  IncidentAssignment,
+  EscalationPolicy as IncidentEscalationPolicy,
+  EscalationLevel,
+  DEFAULT_ESCALATION_POLICY,
+
+  // §8 — Verification & Recovery
+  VerificationCheck,
+  RecoveryValidation,
+
+  // §9 — Post-Incident Review
+  PostIncidentReview,
+  RootCauseAnalysis,
+  PostIncidentActionItem,
+  LessonLearned,
+  PreventionRecommendation,
+
+  // §10 — Incident Response Pipeline
+  IncidentPipelineStageId,
+  IncidentPipelineStage,
+  INCIDENT_PIPELINE,
+
+  // §11 — Incident Invariants
+  IncidentInvariant,
+  INCIDENT_INVARIANTS,
+
+  // §12 — Integration Contracts
+  IncidentIntegrationTarget,
+  IncidentIntegrationContract,
+  INCIDENT_INTEGRATION_CONTRACTS,
+
+  // §13 — Query Functions
+  getSeverityDefinition,
+  getClassificationRule,
+  getAutoClassifiableRules,
+  getClassificationRulesBySeverity,
+  getContainmentPlaybook,
+  getPlaybooksForCategory,
+  getAutonomousPlaybooks,
+  getIncidentPipelineStage,
+  getIncidentPipelineOrder,
+  getIncidentInvariant,
+  getBlockingInvariants,
+  canAutonomouslyRemediate,
+  getResponseSla,
+  getIncidentIntegration,
+
+  // §14 — Tests
+  IncidentResponseTestResult,
+  runIncidentResponseTests,
+} from "./incidentResponse";
