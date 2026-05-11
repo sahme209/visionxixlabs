@@ -14,10 +14,8 @@ import { BackgroundBlobs } from "@/components/BackgroundBlobs";
 import { ServicePipeline } from "@/components/ServicePipeline";
 import { Reveal } from "@/components/motion/Reveal";
 import { Stagger } from "@/components/motion/Stagger";
-import { HoverCard } from "@/components/ui/HoverCard";
 import { AnimatedButton } from "@/components/ui/AnimatedButton";
 import { AccentMarker } from "@/components/ui/AccentMarker";
-import { MiniChart } from "@/components/ui/MiniChart";
 import { TestimonialsCarousel } from "@/components/TestimonialsCarousel";
 import { FAQAccordion } from "@/components/FAQAccordion";
 
@@ -129,66 +127,67 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Outcome cards — what Axiom delivers */}
-      <section className="py-12 px-4 sm:px-6 lg:px-8 border-t border-slate-200/80 dark:border-slate-700/80">
+      {/* Capabilities — what Axiom delivers */}
+      <section className="py-16 px-4 sm:px-6 lg:px-8 border-t border-slate-200/80 dark:border-slate-700/80">
         <div className="max-w-6xl mx-auto">
+          <Reveal direction="up">
+            <div className="text-center mb-10">
+              <h2 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-slate-100 mb-3">
+                Operational intelligence, not dashboards
+              </h2>
+              <p className="text-slate-500 dark:text-slate-400 max-w-xl mx-auto">
+                Axiom doesn&apos;t show you charts. It scans, reasons, and acts — then reports what it did and why.
+              </p>
+            </div>
+          </Reveal>
           <div className="grid md:grid-cols-3 gap-6">
             <Reveal direction="up">
-              <HoverCard className="p-6 shadow-xl shadow-slate-200/30 dark:shadow-slate-900/30 border-slate-200/80 dark:border-slate-700/80 hover:border-violet-300/80 dark:hover:border-violet-600/50 transition-colors">
-                <div className="flex items-start justify-between gap-3 mb-3">
-                  <div className="flex items-center gap-2">
-                    <AccentMarker color="violet" />
-                    <h3 className="text-lg font-bold text-slate-900 dark:text-slate-100">Intelligent Scanning</h3>
-                  </div>
-                  <MiniChart type="line" color="violet" />
+              <div className="rounded-xl border border-slate-200 dark:border-slate-700/80 bg-white dark:bg-slate-800/80 p-6 h-full">
+                <div className="flex items-center gap-2 mb-3">
+                  <span className="w-2 h-2 rounded-full bg-violet-500" />
+                  <h3 className="text-base font-semibold text-slate-900 dark:text-slate-100">Deep Scanning</h3>
                 </div>
                 <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">
-                  Deep infrastructure analysis that finds cost waste, security gaps, and drift across your cloud.
+                  Full infrastructure snapshot — cost waste, security gaps, misconfigurations, and drift from desired state.
                 </p>
-                <ul className="text-sm text-slate-700 dark:text-slate-300 space-y-2">
-                  <li className="flex items-start"><span className="text-violet-500 mr-2">✓</span>Cost optimization and rightsizing analysis</li>
-                  <li className="flex items-start"><span className="text-violet-500 mr-2">✓</span>Security findings with severity scoring</li>
-                  <li className="flex items-start"><span className="text-violet-500 mr-2">✓</span>Drift detection against desired state</li>
+                <ul className="text-sm text-slate-600 dark:text-slate-400 space-y-1.5">
+                  <li className="flex items-center gap-2"><span className="w-1 h-1 rounded-full bg-violet-400" />Cost optimization and rightsizing</li>
+                  <li className="flex items-center gap-2"><span className="w-1 h-1 rounded-full bg-violet-400" />Security findings with severity scoring</li>
+                  <li className="flex items-center gap-2"><span className="w-1 h-1 rounded-full bg-violet-400" />Continuous drift detection</li>
                 </ul>
-              </HoverCard>
+              </div>
             </Reveal>
             <Reveal direction="up" delay={0.06}>
-              <HoverCard className="p-6 shadow-xl shadow-slate-200/30 dark:shadow-slate-900/30 border-slate-200/80 dark:border-slate-700/80 hover:border-violet-300/80 dark:hover:border-violet-600/50 transition-colors">
-                <div className="flex items-start justify-between gap-3 mb-3">
-                  <div className="flex items-center gap-2">
-                    <AccentMarker color="fuchsia" />
-                    <h3 className="text-lg font-bold text-slate-900 dark:text-slate-100">Autonomous Reasoning</h3>
-                  </div>
-                  <MiniChart type="bars" color="fuchsia" />
+              <div className="rounded-xl border border-slate-200 dark:border-slate-700/80 bg-white dark:bg-slate-800/80 p-6 h-full">
+                <div className="flex items-center gap-2 mb-3">
+                  <span className="w-2 h-2 rounded-full bg-fuchsia-500" />
+                  <h3 className="text-base font-semibold text-slate-900 dark:text-slate-100">Autonomous Reasoning</h3>
                 </div>
                 <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">
-                  AI-powered reasoning that prioritizes findings, generates execution plans, and learns from your infrastructure over time.
+                  AI reasoning engine that prioritizes findings, builds dependency-aware execution plans, and generates Terraform code.
                 </p>
-                <ul className="text-sm text-slate-700 dark:text-slate-300 space-y-2">
-                  <li className="flex items-start"><span className="text-violet-500 mr-2">✓</span>Multi-phase cognitive reasoning engine</li>
-                  <li className="flex items-start"><span className="text-violet-500 mr-2">✓</span>Phased execution plans with dependency graphs</li>
-                  <li className="flex items-start"><span className="text-violet-500 mr-2">✓</span>Terraform and CLI code generation</li>
+                <ul className="text-sm text-slate-600 dark:text-slate-400 space-y-1.5">
+                  <li className="flex items-center gap-2"><span className="w-1 h-1 rounded-full bg-fuchsia-400" />Multi-phase cognitive reasoning</li>
+                  <li className="flex items-center gap-2"><span className="w-1 h-1 rounded-full bg-fuchsia-400" />Phased plans with dependency graphs</li>
+                  <li className="flex items-center gap-2"><span className="w-1 h-1 rounded-full bg-fuchsia-400" />Terraform and CLI code generation</li>
                 </ul>
-              </HoverCard>
+              </div>
             </Reveal>
             <Reveal direction="up" delay={0.12}>
-              <HoverCard className="p-6 shadow-xl shadow-slate-200/30 dark:shadow-slate-900/30 border-slate-200/80 dark:border-slate-700/80 hover:border-violet-300/80 dark:hover:border-violet-600/50 transition-colors">
-                <div className="flex items-start justify-between gap-3 mb-3">
-                  <div className="flex items-center gap-2">
-                    <AccentMarker color="emerald" />
-                    <h3 className="text-lg font-bold text-slate-900 dark:text-slate-100">Safe Execution</h3>
-                  </div>
-                  <MiniChart type="area" color="emerald" />
+              <div className="rounded-xl border border-slate-200 dark:border-slate-700/80 bg-white dark:bg-slate-800/80 p-6 h-full">
+                <div className="flex items-center gap-2 mb-3">
+                  <span className="w-2 h-2 rounded-full bg-emerald-500" />
+                  <h3 className="text-base font-semibold text-slate-900 dark:text-slate-100">Governed Execution</h3>
                 </div>
                 <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">
-                  Enterprise-grade safety with approval gates, blast radius limits, rollback coordination, and full audit trail.
+                  Enterprise-grade safety — approval gates, blast radius limits, verified rollback, and immutable audit trail.
                 </p>
-                <ul className="text-sm text-slate-700 dark:text-slate-300 space-y-2">
-                  <li className="flex items-start"><span className="text-violet-500 mr-2">✓</span>Human approval required for high-risk changes</li>
-                  <li className="flex items-start"><span className="text-violet-500 mr-2">✓</span>Verified rollback before every apply</li>
-                  <li className="flex items-start"><span className="text-violet-500 mr-2">✓</span>Governance policies and compliance checks</li>
+                <ul className="text-sm text-slate-600 dark:text-slate-400 space-y-1.5">
+                  <li className="flex items-center gap-2"><span className="w-1 h-1 rounded-full bg-emerald-400" />Human approval for high-risk changes</li>
+                  <li className="flex items-center gap-2"><span className="w-1 h-1 rounded-full bg-emerald-400" />Pre-verified rollback strategies</li>
+                  <li className="flex items-center gap-2"><span className="w-1 h-1 rounded-full bg-emerald-400" />Outcome learning and safety gates</li>
                 </ul>
-              </HoverCard>
+              </div>
             </Reveal>
           </div>
         </div>
@@ -352,7 +351,7 @@ export default function Home() {
                 <li><Link href="/operator/onboarding" className="hover:text-white transition-colors">Run Axiom</Link></li>
                 <li><Link href="/operator/pricing" className="hover:text-white transition-colors">Pricing</Link></li>
                 <li><Link href="/axiom" className="hover:text-white transition-colors">About Axiom</Link></li>
-                <li><Link href="/dashboard/resilience" className="hover:text-white transition-colors">Dashboard</Link></li>
+                <li><Link href="/axiom/operations" className="hover:text-white transition-colors">Operations</Link></li>
               </ul>
             </div>
             <div>
