@@ -1968,3 +1968,88 @@ export {
   IncidentResponseTestResult,
   runIncidentResponseTests,
 } from "./incidentResponse";
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Cost Intelligence Engine
+// Deep cost analysis, forecasting, optimization, and FinOps governance
+// ─────────────────────────────────────────────────────────────────────────────
+export {
+  // §1 — Cost Architecture
+  CostGranularity,
+  CostDimension,
+  CostTrendDirection,
+  CostSnapshot,
+  CostBreakdownEntry,
+  MultiCloudCostSummary,
+  BudgetStatus,
+
+  // §2 — Cost Anomaly Detection
+  AnomalyType,
+  CostAnomaly,
+  AnomalyDetectionConfig,
+  AnomalySuppressionRule,
+  DEFAULT_ANOMALY_CONFIG,
+
+  // §3 — Cost Optimization
+  OptimizationCategory,
+  OptimizationRisk,
+  CostOptimizationRecommendation,
+  OptimizationStatus,
+  OptimizationRule,
+  OptimizationCondition,
+  SavingsEstimationMethod,
+  OPTIMIZATION_RULES,
+
+  // §4 — Cost Forecasting
+  ForecastModel,
+  CostForecast,
+  ForecastDataPoint,
+  ConfidenceInterval,
+  ForecastAccuracy,
+
+  // §5 — FinOps Governance
+  CostPolicy,
+  CostPolicyType,
+  CostPolicyScope,
+  CostPolicyThreshold,
+  CostPolicyAction,
+  DEFAULT_COST_POLICIES,
+
+  // §6 — Cost Attribution & Showback
+  CostAttributionModel,
+  SharedCostAllocationMethod,
+  CostShowbackReport,
+  TeamCostReport,
+
+  // §7 — Provider Cost APIs
+  ProviderCostProfile,
+  TagRequirement,
+  PROVIDER_COST_PROFILES,
+
+  // §8 — Cost Intelligence Pipeline
+  CostPipelineStageId,
+  CostPipelineStage,
+  COST_PIPELINE,
+
+  // §9 — Integration Contracts
+  CostIntegrationTarget,
+  CostIntegrationContract,
+  COST_INTEGRATION_CONTRACTS,
+
+  // §10 — Query Functions
+  getOptimizationRule,
+  getOptimizationRulesByCategory,
+  getOptimizationRulesByProvider,
+  getAutoImplementableRules,
+  getEnabledOptimizationRules,
+  getCostPolicy,
+  getProviderCostProfile,
+  getCostPipelineStage,
+  getCostPipelineOrder,
+  getCostIntegration,
+  estimateOptimizationSavings,
+
+  // §11 — Tests
+  CostIntelligenceTestResult,
+  runCostIntelligenceTests,
+} from "./costIntelligence";
