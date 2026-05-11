@@ -2427,3 +2427,73 @@ export {
   type CapacityPlanningTestResult,
   runCapacityPlanningTests,
 } from "./capacityPlanning";
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Multi-Tenant API Gateway
+// Enterprise SaaS layer with tenant isolation, rate limiting, and usage metering
+// ─────────────────────────────────────────────────────────────────────────────
+export {
+  // §1 — Gateway Architecture
+  type APIVersion,
+  type AuthMethod as GatewayAuthMethod,
+  type TenantTier,
+  type RequestStatus,
+  type APIRequest,
+  type TenantContext,
+  type TenantCloudAccount,
+  type TenantAPIKey,
+  type APIScope,
+
+  // §2 — Rate Limiting & Quotas
+  type RateLimitConfig,
+  type TenantQuotas,
+  TIER_QUOTAS,
+  RATE_LIMIT_CONFIGS,
+
+  // §3 — Feature Flags
+  type TenantFeatureFlags,
+  TIER_FEATURES,
+
+  // §4 — API Endpoints
+  type APIEndpoint,
+  API_ENDPOINTS,
+
+  // §5 — Tenant Isolation
+  type TenantIsolationPolicy,
+  TIER_ISOLATION,
+
+  // §6 — Usage Metering
+  type UsageMetricType,
+  type UsageMeter,
+  type UsageSnapshot,
+
+  // §7 — Gateway Pipeline
+  type GatewayPipelineStageId,
+  type GatewayPipelineStage,
+  GATEWAY_PIPELINE,
+
+  // §8 — Integration Contracts
+  type GatewayIntegrationTarget,
+  type GatewayIntegrationContract,
+  GATEWAY_INTEGRATION_CONTRACTS,
+
+  // §9 — Query Functions
+  getTierQuotas,
+  getTierFeatures,
+  getTierRateLimit,
+  getTierIsolation,
+  getAPIEndpoint,
+  getEndpointsByMethod,
+  getEndpointsRequiringScope,
+  getEndpointsForTier,
+  getCacheableEndpoints,
+  getGatewayPipelineStage,
+  getGatewayPipelineOrder,
+  getGatewayIntegration,
+  isFeatureEnabled,
+  isWithinQuota,
+
+  // §10 — Tests
+  type APIGatewayTestResult,
+  runAPIGatewayTests,
+} from "./apiGateway";
