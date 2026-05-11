@@ -2497,3 +2497,80 @@ export {
   type APIGatewayTestResult,
   runAPIGatewayTests,
 } from "./apiGateway";
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Change Management & Approval Workflow
+// ITIL-aligned change governance with risk scoring, approval chains, and change windows
+// ─────────────────────────────────────────────────────────────────────────────
+export {
+  // §1 — Change Request Architecture
+  type ChangeCategory,
+  type ChangeRiskLevel,
+  type ChangeStatus,
+  type ChangeImpactScope,
+  type ChangeRequest,
+  type ChangeRequestor,
+  type AffectedChangeResource,
+  type ChangeRiskAssessment,
+  type RiskFactor as ChangeRiskFactor,
+  type RiskMitigation as ChangeRiskMitigation,
+
+  // §2 — Approval Chains
+  type ApprovalAction,
+  type ApprovalChainStep,
+  type ApprovalPolicy,
+  type ApprovalRequirement,
+  type AutoApproveCondition as ChangeAutoApproveCondition,
+  APPROVAL_POLICIES,
+
+  // §3 — Change Windows
+  type ChangeWindowType,
+  type ChangeWindow,
+  type ChangeWindowSchedule,
+  DEFAULT_CHANGE_WINDOWS,
+
+  // §4 — Rollback Planning
+  type ChangeRollbackPlan,
+  type ChangeRollbackStep,
+  type ChangeWindowRef,
+  type VerificationCriterion as ChangeVerificationCriterion,
+
+  // §5 — External Integrations
+  type TicketingSystem,
+  type ExternalTicketRef,
+  type TicketingIntegrationConfig,
+  TICKETING_INTEGRATIONS,
+
+  // §6 — Risk Scoring
+  type RiskScoringRule,
+  RISK_SCORING_RULES,
+  computeChangeRiskScore,
+
+  // §7 — Change Pipeline
+  type ChangePipelineStageId,
+  type ChangePipelineStage,
+  CHANGE_PIPELINE,
+
+  // §8 — Integration Contracts
+  type ChangeIntegrationTarget,
+  type ChangeIntegrationContract,
+  CHANGE_INTEGRATION_CONTRACTS,
+
+  // §9 — Query Functions
+  getApprovalPolicy,
+  getApprovalPolicyForRisk,
+  getChangeWindow,
+  getAvailableChangeWindows,
+  getBlackoutWindows,
+  getRiskScoringRule,
+  getTicketingConfig,
+  getChangePipelineStage,
+  getChangePipelineOrder,
+  getChangeIntegration,
+  getRequiredApprovalsCount,
+  isChangeWindowOpen,
+
+  // §10 — Tests
+  type ChangeManagementTestResult,
+  runChangeManagementTests,
+} from "./changeManagement";
