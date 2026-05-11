@@ -166,9 +166,17 @@ export default function AxiomPage() {
               View pricing
             </Link>
           </div>
-          <p className="mt-6 text-xs text-slate-500 dark:text-slate-500">
+          <p className="mt-4 text-xs text-slate-500 dark:text-slate-500">
             AWS fully supported. Azure and GCP scan-only.
           </p>
+          <div className="mt-3">
+            <Link
+              href="/axiom/operations"
+              className="text-xs font-medium text-violet-600 dark:text-violet-400 hover:text-violet-700 dark:hover:text-violet-300 transition-colors"
+            >
+              View operations dashboard &rarr;
+            </Link>
+          </div>
         </div>
       </section>
 

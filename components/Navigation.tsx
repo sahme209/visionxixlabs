@@ -43,10 +43,16 @@ export function Navigation() {
           </Link>
           <div className="hidden md:flex items-center gap-2">
             <Link
-              href="/#how-it-works"
+              href="/axiom"
               className="nav-link-underline relative px-4 py-2 text-slate-700 dark:text-slate-300 hover:text-violet-600 dark:hover:text-violet-400 hover:bg-violet-50 dark:hover:bg-violet-900/20 rounded-xl transition-colors text-sm font-medium"
             >
-              How it works
+              Product
+            </Link>
+            <Link
+              href="/axiom/operations"
+              className="nav-link-underline relative px-4 py-2 text-slate-700 dark:text-slate-300 hover:text-violet-600 dark:hover:text-violet-400 hover:bg-violet-50 dark:hover:bg-violet-900/20 rounded-xl transition-colors text-sm font-medium"
+            >
+              Operations
             </Link>
             <Link
               href="/operator/pricing"
@@ -93,8 +99,11 @@ export function Navigation() {
                 Start Free
                 <ArrowRightIcon className="h-4 w-4" />
               </Link>
-              <Link href="/#how-it-works" onClick={() => setMobileMenuOpen(false)} className="px-4 py-2 text-slate-700 dark:text-slate-300 font-medium hover:bg-violet-50 dark:hover:bg-violet-900/20 rounded-lg text-sm">
-                How it works
+              <Link href="/axiom" onClick={() => setMobileMenuOpen(false)} className="px-4 py-2 text-slate-700 dark:text-slate-300 font-medium hover:bg-violet-50 dark:hover:bg-violet-900/20 rounded-lg text-sm">
+                Product
+              </Link>
+              <Link href="/axiom/operations" onClick={() => setMobileMenuOpen(false)} className="px-4 py-2 text-slate-700 dark:text-slate-300 font-medium hover:bg-violet-50 dark:hover:bg-violet-900/20 rounded-lg text-sm">
+                Operations
               </Link>
               <Link href="/operator/pricing" onClick={() => setMobileMenuOpen(false)} className="px-4 py-2 text-slate-700 dark:text-slate-300 font-medium hover:bg-violet-50 dark:hover:bg-violet-900/20 rounded-lg text-sm">
                 Pricing
