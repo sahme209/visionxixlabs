@@ -1379,7 +1379,7 @@ export type {
   ApprovalTemporalPattern,
   ApproverProfile,
   RejectionReasonFrequency,
-  EscalationPattern,
+  EscalationPattern as OrgEscalationPattern,
   OrgRiskPosture,
   RiskToleranceLevel,
   DomainRiskTolerance,
@@ -1448,82 +1448,82 @@ export type {
 // ─────────────────────────────────────────────────────────────────────────────
 export {
   // §1 — Coordination Architecture
-  CoordinatedOperationType,
-  OperationPriority,
-  OperationIsolationLevel,
-  CoordinatedOperation,
-  ResourceClaim,
-  ApprovalDependency,
+  type CoordinatedOperationType,
+  type OperationPriority,
+  type OperationIsolationLevel,
+  type CoordinatedOperation,
+  type ResourceClaim,
+  type ApprovalDependency,
 
   // §2 — Operation State Machine
-  OperationStateMachineState,
-  OperationStateTransition,
-  TransitionTrigger,
+  type OperationStateMachineState,
+  type OperationStateTransition,
+  type TransitionTrigger,
   OPERATION_STATE_TRANSITIONS,
 
   // §3 — Concurrency Strategy
-  ConcurrencyPolicy,
-  FairnessPolicy,
+  type ConcurrencyPolicy,
+  type FairnessPolicy,
   DEFAULT_CONCURRENCY_POLICY,
-  OperationSlot,
-  ConcurrencySnapshot,
+  type OperationSlot,
+  type ConcurrencySnapshot,
 
   // §4 — Conflict Detection
-  ConflictCategory,
-  OperationConflict,
-  ConflictResolutionStrategy,
-  ConflictResolutionMethod,
-  ConflictDetectionRule,
+  type ConflictCategory,
+  type OperationConflict,
+  type ConflictResolutionStrategy,
+  type ConflictResolutionMethod,
+  type ConflictDetectionRule,
   CONFLICT_DETECTION_RULES,
 
   // §5 — Scheduling & Priority
-  OperationScheduler,
-  ScheduledOperation,
-  ScheduleTarget,
-  SchedulePrecondition,
-  RecurringSchedule,
-  MaintenanceWindow as CoordinationMaintenanceWindow,
-  BlackoutPeriod,
-  PriorityCalculation,
+  type OperationScheduler,
+  type ScheduledOperation,
+  type ScheduleTarget,
+  type SchedulePrecondition,
+  type RecurringSchedule,
+  type MaintenanceWindow as CoordinationMaintenanceWindow,
+  type BlackoutPeriod,
+  type PriorityCalculation,
   PRIORITY_SCORES,
   OPERATION_DEFAULT_PRIORITIES,
   OPERATION_ISOLATION_DEFAULTS,
 
   // §6 — Interruption & Resumption
-  InterruptionRequest,
-  InterruptionReason,
-  ResumptionRequest,
-  OperationCheckpointData,
-  ResumptionValidation,
+  type InterruptionRequest,
+  type InterruptionReason,
+  type ResumptionRequest,
+  type OperationCheckpointData,
+  type ResumptionValidation,
 
   // §7 — Rollback Coordination
-  CoordinatedRollbackRequest,
-  CoordinatedRollbackReason,
-  CoordinatedRollbackStrategy,
-  CascadePolicy,
-  RollbackSafetyValidation,
-  CoordinatedRollbackPlan,
-  RollbackPhase,
+  type CoordinatedRollbackRequest,
+  type CoordinatedRollbackReason,
+  type CoordinatedRollbackStrategy,
+  type CascadePolicy,
+  type RollbackSafetyValidation,
+  type CoordinatedRollbackPlan,
+  type RollbackPhase,
 
   // §8 — Dependency Graph
-  OperationDependencyGraph,
-  OperationDependencyNode,
-  OperationDependencyEdge,
-  OperationDependencyType,
+  type OperationDependencyGraph,
+  type OperationDependencyNode,
+  type OperationDependencyEdge,
+  type OperationDependencyType,
 
   // §9 — Recovery Strategy
-  RecoveryScenario,
-  RecoveryPlaybook,
-  RecoveryStep,
+  type RecoveryScenario,
+  type RecoveryPlaybook,
+  type RecoveryStep,
   RECOVERY_PLAYBOOKS,
 
   // §10 — Provider Coordination
-  ProviderCoordinationProfile,
+  type ProviderCoordinationProfile,
   PROVIDER_COORDINATION_PROFILES,
 
   // §11 — Audit Trail
-  CoordinationAuditAction,
-  CoordinationAuditEntry,
+  type CoordinationAuditAction,
+  type CoordinationAuditEntry,
 
   // §12 — Query Functions
   getOperationDefaultPriority,
@@ -1542,7 +1542,7 @@ export {
   isWaitingState,
 
   // §13 — Tests
-  CoordinationTestResult,
+  type CoordinationTestResult,
   runAutonomousCoordinationTests,
 } from "./autonomousCoordination";
 
@@ -1552,112 +1552,112 @@ export {
 // ─────────────────────────────────────────────────────────────────────────────
 export {
   // §1 — Generation Architecture
-  IaCBackend,
-  GenerationMode,
-  ChangeAction,
-  ResourceLifecycleAction,
-  TerraformGenerationContext,
-  StateBackendConfig,
-  VariableSourceConfig,
+  type IaCBackend,
+  type GenerationMode,
+  type ChangeAction,
+  type ResourceLifecycleAction,
+  type TerraformGenerationContext,
+  type StateBackendConfig,
+  type VariableSourceConfig,
 
   // §2 — Infrastructure Change Model
-  InfrastructureChangeSet,
-  ChangeSetStatus,
-  ResourceChange as TerraformResourceChange,
-  AttributeChange,
-  ChangeDependency,
-  DurationEstimate,
+  type InfrastructureChangeSet,
+  type ChangeSetStatus,
+  type ResourceChange as TerraformResourceChange,
+  type AttributeChange,
+  type ChangeDependency,
+  type DurationEstimate,
 
   // §3 — Blast Radius Computation
-  BlastRadiusSeverity,
-  BlastRadiusThreshold,
-  ChangeBlastRadius,
-  ComputedBlastRadius,
-  DownstreamImpact,
-  CostImpact as TerraformCostImpact,
-  DataLossRisk,
-  ThresholdViolation,
-  BlastRadiusRiskFactor,
+  type BlastRadiusSeverity,
+  type BlastRadiusThreshold,
+  type ChangeBlastRadius,
+  type ComputedBlastRadius,
+  type DownstreamImpact,
+  type CostImpact as TerraformCostImpact,
+  type DataLossRisk,
+  type ThresholdViolation,
+  type BlastRadiusRiskFactor,
   BLAST_RADIUS_WEIGHTS,
   BLAST_RADIUS_THRESHOLDS,
   computeBlastRadiusSeverity,
 
   // §4 — Terraform HCL Builder
-  HCLBlockType,
-  HCLBlock,
-  HCLAttribute,
-  HCLValue,
-  HCLNestedBlock,
-  HCLLifecycle,
-  TerraformModule,
-  TerraformVariable,
-  VariableValidation,
-  TerraformOutput,
-  RequiredProvider,
+  type HCLBlockType,
+  type HCLBlock,
+  type HCLAttribute,
+  type HCLValue,
+  type HCLNestedBlock,
+  type HCLLifecycle,
+  type TerraformModule,
+  type TerraformVariable,
+  type VariableValidation,
+  type TerraformOutput,
+  type RequiredProvider,
 
   // §5 — Generation Templates
-  TemplateCategory,
-  GenerationTemplate,
-  TemplateParameter,
-  TemplateSafetyCheck,
+  type TemplateCategory,
+  type GenerationTemplate,
+  type TemplateParameter,
+  type TemplateSafetyCheck,
   GENERATION_TEMPLATES,
 
   // §6 — Generation Constraints & Safety
-  ConstraintSeverity,
-  GenerationConstraint,
-  ConstraintScope,
-  ConstraintCondition,
-  TimeWindow,
+  type ConstraintSeverity,
+  type GenerationConstraint,
+  type ConstraintScope,
+  type ConstraintCondition,
+  type TimeWindow,
   SAFETY_CONSTRAINTS,
 
   // §7 — Rollback Plan Generation
-  RollbackStrategy as TerraformRollbackStrategy,
-  RollbackPlan,
-  RollbackStep as TerraformRollbackStep,
-  RollbackAction as TerraformRollbackAction,
-  RollbackTrigger as TerraformRollbackTrigger,
-  RollbackPreCheck,
-  StateSnapshotRef,
-  ResourceSnapshotRef,
+  type RollbackStrategy as TerraformRollbackStrategy,
+  type RollbackPlan,
+  type RollbackStep as TerraformRollbackStep,
+  type RollbackAction as TerraformRollbackAction,
+  type RollbackTrigger as TerraformRollbackTrigger,
+  type RollbackPreCheck,
+  type StateSnapshotRef,
+  type ResourceSnapshotRef,
 
   // §8 — Dry-Run & Validation
-  ValidationSeverity,
-  ChangeSetValidation,
-  DryRunResult,
-  TerraformPlanSummary,
-  ConstraintViolationResult,
-  ValidatorId,
-  ValidationPipeline,
-  ValidatorDefinition,
+  type ValidationSeverity,
+  type ChangeSetValidation,
+  type DryRunResult,
+  type TerraformPlanSummary,
+  type ConstraintViolationResult,
+  type ValidatorId,
+  type ValidationPipeline,
+  type ValidatorDefinition,
   VALIDATION_PIPELINE,
 
   // §9 — Governance Approval State
-  GovernanceApprovalStatus,
-  GovernanceApprovalState,
-  ApproverRequirement,
-  ApprovalRecord as TerraformApprovalRecord,
-  RejectionRecord,
+  type GovernanceApprovalStatus,
+  type GovernanceApprovalState,
+  type ApproverRequirement,
+  type ApprovalRecord as TerraformApprovalRecord,
+  type RejectionRecord,
 
   // §10 — Provider-Specific Generation Profiles
-  ProviderGenerationProfile,
-  NamingConvention,
-  ProviderStateManagement,
-  ProviderRateLimits,
+  type ProviderGenerationProfile,
+  type NamingConvention,
+  type ProviderStateManagement,
+  type ProviderRateLimits,
   PROVIDER_GENERATION_PROFILES,
 
   // §11 — Generation Pipeline
-  GenerationStageId,
-  GenerationStageDefinition,
+  type GenerationStageId,
+  type GenerationStageDefinition,
   GENERATION_PIPELINE,
 
   // §12 — Security Anti-Pattern Detection
-  SecurityAntiPatternId,
-  SecurityAntiPattern,
+  type SecurityAntiPatternId,
+  type SecurityAntiPattern,
   SECURITY_ANTI_PATTERNS,
 
   // §13 — Integration Contracts
-  TerraformIntegrationTarget,
-  TerraformIntegrationContract,
+  type TerraformIntegrationTarget,
+  type TerraformIntegrationContract,
   TERRAFORM_INTEGRATION_CONTRACTS,
 
   // §14 — Query Functions
@@ -1680,7 +1680,7 @@ export {
   mapUnifiedResourceToProvider,
 
   // §15 — Tests
-  TerraformGenerationTestResult,
+  type TerraformGenerationTestResult,
   runTerraformGenerationTests,
 } from "./terraformGeneration";
 
@@ -1690,86 +1690,86 @@ export {
 // ─────────────────────────────────────────────────────────────────────────────
 export {
   // §1 — Execution Architecture
-  ExecutionStrategy,
-  ExecutionPhase,
-  ExecutionOutcome,
-  ExecutionContext,
-  AutonomyLevel,
+  type ExecutionStrategy as SafetyExecutionStrategy,
+  type ExecutionPhase,
+  type ExecutionOutcome as SafetyExecutionOutcome,
+  type ExecutionContext,
+  type AutonomyLevel as SafetyAutonomyLevel,
   AUTONOMY_LEVEL_PERMISSIONS,
-  AutonomyPermissions,
+  type AutonomyPermissions,
 
   // §2 — Pre-Execution Checks
-  PreCheckId,
-  PreExecutionCheck,
-  PreCheckResult,
+  type PreCheckId,
+  type PreExecutionCheck,
+  type PreCheckResult,
   PRE_EXECUTION_CHECKS,
 
   // §3 — Safety Configuration
-  SafetyConfig,
+  type SafetyConfig,
   DEFAULT_SAFETY_CONFIG,
   CONSERVATIVE_SAFETY_CONFIG,
 
   // §4 — Health Check Framework
-  HealthCheckType,
-  HealthCheckConfig,
-  HealthCheckDefinition,
-  HealthCheckTarget,
-  ExpectedHealthState,
-  HealthCheckResult,
-  HealthBaseline,
-  BaselineMetric,
+  type HealthCheckType,
+  type HealthCheckConfig,
+  type HealthCheckDefinition,
+  type HealthCheckTarget,
+  type ExpectedHealthState,
+  type HealthCheckResult,
+  type HealthBaseline,
+  type BaselineMetric,
   DEFAULT_HEALTH_CONFIG,
 
   // §5 — Auto-Rollback Configuration
-  AutoRollbackTrigger,
-  AutoRollbackConfig,
-  AutoRollbackTriggerConfig,
+  type AutoRollbackTrigger,
+  type AutoRollbackConfig,
+  type AutoRollbackTriggerConfig,
   DEFAULT_ROLLBACK_CONFIG,
 
   // §6 — Circuit Breaker
-  CircuitBreakerState,
-  CircuitBreaker,
-  CircuitBreakerEvent,
+  type CircuitBreakerState,
+  type CircuitBreaker,
+  type CircuitBreakerEvent,
   computeCircuitBreakerState,
 
   // §7 — Execution Progress Tracking
-  ExecutionProgress,
-  ExecutionStepProgress,
-  ExecutionStepStatus,
-  ExecutionStepError,
+  type ExecutionProgress,
+  type ExecutionStepProgress,
+  type ExecutionStepStatus,
+  type ExecutionStepError,
 
   // §8 — Progressive Rollout
-  CanaryConfig as ExecutionCanaryConfig,
-  BlueGreenConfig,
-  RollingConfig,
-  PromotionCriterion,
+  type CanaryConfig as ExecutionCanaryConfig,
+  type BlueGreenConfig,
+  type RollingConfig,
+  type PromotionCriterion,
   DEFAULT_CANARY_CONFIG,
   DEFAULT_BLUE_GREEN_CONFIG,
   DEFAULT_ROLLING_CONFIG,
 
   // §9 — Kill Switch
-  KillSwitchScope,
-  KillSwitch,
-  KillSwitchPolicy,
+  type KillSwitchScope,
+  type KillSwitch,
+  type KillSwitchPolicy,
   DEFAULT_KILL_SWITCH_POLICY,
 
   // §10 — Execution Audit Trail
-  ExecutionAuditAction,
-  ExecutionAuditEntry,
+  type ExecutionAuditAction,
+  type ExecutionAuditEntry,
 
   // §11 — Provider Execution Profiles
-  ProviderExecutionProfile,
-  ApplyMechanism,
-  ProviderRollbackCapability,
+  type ProviderExecutionProfile,
+  type ApplyMechanism,
+  type ProviderRollbackCapability,
   PROVIDER_EXECUTION_PROFILES,
 
   // §12 — Execution Invariants
-  ExecutionInvariant,
+  type ExecutionInvariant,
   EXECUTION_INVARIANTS,
 
   // §13 — Integration Contracts
-  ExecutionIntegrationTarget,
-  ExecutionIntegrationContract,
+  type ExecutionIntegrationTarget,
+  type ExecutionIntegrationContract,
   EXECUTION_INTEGRATION_CONTRACTS,
 
   // §14 — Query Functions
@@ -1788,7 +1788,7 @@ export {
   estimateTotalApplyDuration,
 
   // §15 — Tests
-  ExecutionSafetyTestResult,
+  type ExecutionSafetyTestResult,
   runExecutionSafetyTests,
 } from "./executionSafety";
 
@@ -1798,57 +1798,57 @@ export {
 // ─────────────────────────────────────────────────────────────────────────────
 export {
   // §1 — Signal Architecture
-  SignalDomain,
-  SignalSeverity,
-  SignalConfidence,
-  SignalSource,
-  OperationalSignal,
-  SignalState,
-  SignalEvidence,
-  SignalProcessingEvent,
+  type SignalDomain,
+  type SignalSeverity,
+  type SignalConfidence,
+  type SignalSource,
+  type OperationalSignal,
+  type SignalState,
+  type SignalEvidence,
+  type SignalProcessingEvent,
 
   // §2 — Signal Detection Rules
-  DetectionRuleType,
-  DetectionRule,
-  DetectionCondition,
+  type DetectionRuleType,
+  type DetectionRule,
+  type DetectionCondition,
   DETECTION_RULES,
 
   // §3 — Signal Enrichment
-  EnrichmentType,
-  EnrichmentResult,
-  EnrichmentPipeline,
-  EnrichmentStage,
+  type EnrichmentType,
+  type EnrichmentResult,
+  type EnrichmentPipeline,
+  type EnrichmentStage,
   ENRICHMENT_PIPELINE,
 
   // §4 — Signal Correlation
-  CorrelationStrategy,
-  CorrelationRule,
-  CorrelationGroup,
+  type CorrelationStrategy,
+  type CorrelationRule,
+  type CorrelationGroup,
   CORRELATION_RULES,
 
   // §5 — Signal Triage & Routing
-  TriageDisposition,
-  TriagePolicy,
-  TriageCondition,
-  RoutingDecision,
-  RoutingTarget,
+  type TriageDisposition,
+  type TriagePolicy,
+  type TriageCondition,
+  type RoutingDecision,
+  type RoutingTarget,
   TRIAGE_POLICIES,
 
   // §6 — Signal Processing Pipeline
-  SignalPipelineStageId,
-  SignalPipelineStage,
+  type SignalPipelineStageId,
+  type SignalPipelineStage,
   SIGNAL_PIPELINE,
 
   // §7 — Signal Suppression
-  SuppressionRule,
-  SuppressionDuration,
+  type SuppressionRule,
+  type SuppressionDuration,
 
   // §8 — Signal Metrics & Analytics
-  SignalAnalytics,
+  type SignalAnalytics,
 
   // §9 — Integration Contracts
-  SignalIntegrationTarget,
-  SignalIntegrationContract,
+  type SignalIntegrationTarget,
+  type SignalIntegrationContract,
   SIGNAL_INTEGRATION_CONTRACTS,
 
   // §10 — Query Functions
@@ -1869,7 +1869,7 @@ export {
   computeSignalPriority,
 
   // §11 — Tests
-  SignalDetectionTestResult,
+  type SignalDetectionTestResult,
   runSignalDetectionTests,
 } from "./signalDetection";
 
@@ -1879,73 +1879,73 @@ export {
 // ─────────────────────────────────────────────────────────────────────────────
 export {
   // §1 — Incident Architecture
-  IncidentSeverityLevel,
-  IncidentCategory,
-  IncidentPhase,
-  Incident,
-  AffectedResource,
-  ImpactAssessment,
-  UserImpactLevel,
-  ServiceImpactLevel,
-  DataImpactLevel,
-  FinancialImpactEstimate,
-  IncidentBlastRadius,
+  type IncidentSeverityLevel,
+  type IncidentCategory,
+  type IncidentPhase,
+  type Incident as IncidentRecord,
+  type AffectedResource,
+  type ImpactAssessment,
+  type UserImpactLevel,
+  type ServiceImpactLevel,
+  type DataImpactLevel,
+  type FinancialImpactEstimate,
+  type IncidentBlastRadius,
 
   // §2 — Incident Classification
-  ClassificationRule,
-  ClassificationCondition,
+  type ClassificationRule,
+  type ClassificationCondition,
   CLASSIFICATION_RULES,
 
   // §3 — Severity Definitions & SLA
-  SeverityDefinition,
+  type SeverityDefinition,
   SEVERITY_DEFINITIONS,
 
   // §4 — Containment Strategies
-  ContainmentStrategy,
-  ContainmentAction,
-  ContainmentPlaybook,
-  ContainmentStep,
+  type ContainmentStrategy,
+  type ContainmentAction,
+  type ContainmentPlaybook,
+  type ContainmentStep,
   CONTAINMENT_PLAYBOOKS,
 
   // §5 — Remediation Plans
-  RemediationPlan,
-  RemediationStrategy,
-  RemediationStatus,
-  RemediationStep,
+  type RemediationPlan,
+  type RemediationStrategy,
+  type RemediationStatus,
+  type RemediationStep,
 
   // §6 — Incident Timeline
-  IncidentTimelineEventType,
-  IncidentTimelineEntry,
+  type IncidentTimelineEventType,
+  type IncidentTimelineEntry,
 
   // §7 — Assignment & Escalation
-  IncidentAssignment,
-  EscalationPolicy as IncidentEscalationPolicy,
-  EscalationLevel,
+  type IncidentAssignment,
+  type EscalationPolicy as IncidentEscalationPolicy,
+  type EscalationLevel,
   DEFAULT_ESCALATION_POLICY,
 
   // §8 — Verification & Recovery
-  VerificationCheck,
-  RecoveryValidation,
+  type VerificationCheck,
+  type RecoveryValidation,
 
   // §9 — Post-Incident Review
-  PostIncidentReview,
-  RootCauseAnalysis,
-  PostIncidentActionItem,
-  LessonLearned,
-  PreventionRecommendation,
+  type PostIncidentReview,
+  type RootCauseAnalysis,
+  type PostIncidentActionItem,
+  type LessonLearned,
+  type PreventionRecommendation,
 
   // §10 — Incident Response Pipeline
-  IncidentPipelineStageId,
-  IncidentPipelineStage,
+  type IncidentPipelineStageId,
+  type IncidentPipelineStage,
   INCIDENT_PIPELINE,
 
   // §11 — Incident Invariants
-  IncidentInvariant,
+  type IncidentInvariant,
   INCIDENT_INVARIANTS,
 
   // §12 — Integration Contracts
-  IncidentIntegrationTarget,
-  IncidentIntegrationContract,
+  type IncidentIntegrationTarget,
+  type IncidentIntegrationContract,
   INCIDENT_INTEGRATION_CONTRACTS,
 
   // §13 — Query Functions
@@ -1965,7 +1965,7 @@ export {
   getIncidentIntegration,
 
   // §14 — Tests
-  IncidentResponseTestResult,
+  type IncidentResponseTestResult,
   runIncidentResponseTests,
 } from "./incidentResponse";
 
@@ -1975,65 +1975,65 @@ export {
 // ─────────────────────────────────────────────────────────────────────────────
 export {
   // §1 — Cost Architecture
-  CostGranularity,
-  CostDimension,
-  CostTrendDirection,
-  CostSnapshot,
-  CostBreakdownEntry,
-  MultiCloudCostSummary,
-  BudgetStatus,
+  type CostGranularity,
+  type CostDimension as CostAnalysisDimension,
+  type CostTrendDirection,
+  type CostSnapshot,
+  type CostBreakdownEntry,
+  type MultiCloudCostSummary,
+  type BudgetStatus,
 
   // §2 — Cost Anomaly Detection
-  AnomalyType,
-  CostAnomaly,
-  AnomalyDetectionConfig,
-  AnomalySuppressionRule,
+  type AnomalyType,
+  type CostAnomaly,
+  type AnomalyDetectionConfig,
+  type AnomalySuppressionRule,
   DEFAULT_ANOMALY_CONFIG,
 
   // §3 — Cost Optimization
-  OptimizationCategory,
-  OptimizationRisk,
-  CostOptimizationRecommendation,
-  OptimizationStatus,
-  OptimizationRule,
-  OptimizationCondition,
-  SavingsEstimationMethod,
+  type OptimizationCategory,
+  type OptimizationRisk,
+  type CostOptimizationRecommendation,
+  type OptimizationStatus,
+  type OptimizationRule,
+  type OptimizationCondition,
+  type SavingsEstimationMethod,
   OPTIMIZATION_RULES,
 
   // §4 — Cost Forecasting
-  ForecastModel,
-  CostForecast,
-  ForecastDataPoint,
-  ConfidenceInterval,
-  ForecastAccuracy,
+  type ForecastModel,
+  type CostForecast,
+  type ForecastDataPoint,
+  type ConfidenceInterval,
+  type ForecastAccuracy,
 
   // §5 — FinOps Governance
-  CostPolicy,
-  CostPolicyType,
-  CostPolicyScope,
-  CostPolicyThreshold,
-  CostPolicyAction,
+  type CostPolicy,
+  type CostPolicyType,
+  type CostPolicyScope,
+  type CostPolicyThreshold,
+  type CostPolicyAction,
   DEFAULT_COST_POLICIES,
 
   // §6 — Cost Attribution & Showback
-  CostAttributionModel,
-  SharedCostAllocationMethod,
-  CostShowbackReport,
-  TeamCostReport,
+  type CostAttributionModel,
+  type SharedCostAllocationMethod,
+  type CostShowbackReport,
+  type TeamCostReport,
 
   // §7 — Provider Cost APIs
-  ProviderCostProfile,
-  TagRequirement,
+  type ProviderCostProfile,
+  type TagRequirement,
   PROVIDER_COST_PROFILES,
 
   // §8 — Cost Intelligence Pipeline
-  CostPipelineStageId,
-  CostPipelineStage,
+  type CostPipelineStageId,
+  type CostPipelineStage,
   COST_PIPELINE,
 
   // §9 — Integration Contracts
-  CostIntegrationTarget,
-  CostIntegrationContract,
+  type CostIntegrationTarget,
+  type CostIntegrationContract,
   COST_INTEGRATION_CONTRACTS,
 
   // §10 — Query Functions
@@ -2050,7 +2050,7 @@ export {
   estimateOptimizationSavings,
 
   // §11 — Tests
-  CostIntelligenceTestResult,
+  type CostIntelligenceTestResult,
   runCostIntelligenceTests,
 } from "./costIntelligence";
 
@@ -2060,49 +2060,49 @@ export {
 // ─────────────────────────────────────────────────────────────────────────────
 export {
   // §1 — Compliance Architecture
-  ComplianceFrameworkId,
-  ComplianceStatus,
-  ControlSeverity,
-  ComplianceFramework,
-  ControlFamily,
-  COMPLIANCE_FRAMEWORKS,
+  type ComplianceFrameworkId,
+  type ComplianceStatus,
+  type ControlSeverity,
+  type ComplianceFramework,
+  type ControlFamily,
+  COMPLIANCE_FRAMEWORKS as COMPLIANCE_ENGINE_FRAMEWORKS,
 
   // §2 — Control Definitions
-  ComplianceControl,
-  EvidenceType,
-  CrossFrameworkMapping,
+  type ComplianceControl,
+  type EvidenceType as ComplianceAuditEvidenceType,
+  type CrossFrameworkMapping,
   COMPLIANCE_CONTROLS,
 
   // §3 — Assessment Model
-  ComplianceAssessment,
-  ComplianceScore,
-  FamilyScore,
-  SeverityScore,
-  ControlAssessmentResult,
-  ComplianceFinding,
-  FindingStatus,
-  EvidenceRecord,
+  type ComplianceAssessment,
+  type ComplianceScore,
+  type FamilyScore,
+  type SeverityScore,
+  type ControlAssessmentResult,
+  type ComplianceFinding,
+  type FindingStatus,
+  type EvidenceRecord,
 
   // §4 — Continuous Monitoring
-  ComplianceMonitorConfig,
-  ContinuousScanFrequency,
-  ComplianceDriftEvent,
+  type ComplianceMonitorConfig,
+  type ContinuousScanFrequency,
+  type ComplianceDriftEvent,
 
   // §5 — Audit Readiness
-  AuditReadinessReport,
-  AuditGap,
-  EvidenceCompleteness,
-  RemediationBacklogSummary,
-  AuditRecommendation,
+  type AuditReadinessReport,
+  type AuditGap,
+  type EvidenceCompleteness,
+  type RemediationBacklogSummary,
+  type AuditRecommendation,
 
   // §6 — Compliance Pipeline
-  CompliancePipelineStageId,
-  CompliancePipelineStage,
+  type CompliancePipelineStageId,
+  type CompliancePipelineStage,
   COMPLIANCE_PIPELINE,
 
   // §7 — Integration Contracts
-  ComplianceIntegrationTarget,
-  ComplianceIntegrationContract,
+  type ComplianceIntegrationTarget,
+  type ComplianceIntegrationContract,
   COMPLIANCE_INTEGRATION_CONTRACTS,
 
   // §8 — Query Functions
@@ -2122,6 +2122,73 @@ export {
   computeComplianceScore,
 
   // §9 — Tests
-  ComplianceEngineTestResult,
+  type ComplianceEngineTestResult,
   runComplianceEngineTests,
 } from "./complianceEngine";
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Notification & Communication Engine
+// Multi-channel notification delivery with templates, routing, and digest aggregation
+// ─────────────────────────────────────────────────────────────────────────────
+export {
+  // §1 — Notification Architecture
+  type NotificationChannel,
+  type NotificationPriority,
+  type NotificationCategory,
+  type NotificationStatus,
+  type Notification,
+  type NotificationAction,
+  type NotificationSourceEvent,
+
+  // §2 — Templates
+  type NotificationTemplate as NotificationChannelTemplate,
+  type TemplateVariable,
+  NOTIFICATION_TEMPLATES,
+
+  // §3 — Channel Configuration
+  type ChannelConfig,
+  type RetryPolicy as NotificationRetryPolicy,
+  CHANNEL_CONFIGS,
+
+  // §4 — Routing Rules
+  type NotificationRoutingRule,
+  type RoutingCondition,
+  DEFAULT_ROUTING_RULES,
+
+  // §5 — Digest & Aggregation
+  type DigestConfig,
+  type DigestSection,
+  DEFAULT_DIGEST_CONFIG,
+
+  // §6 — User Preferences
+  type UserNotificationPreferences,
+  type QuietHoursConfig,
+  type CategoryPreference,
+
+  // §7 — Notification Pipeline
+  type NotificationPipelineStageId,
+  type NotificationPipelineStage,
+  NOTIFICATION_PIPELINE,
+
+  // §8 — Integration Contracts
+  type NotificationIntegrationTarget,
+  type NotificationIntegrationContract,
+  NOTIFICATION_INTEGRATION_CONTRACTS,
+
+  // §9 — Query Functions
+  getNotificationTemplate,
+  getTemplatesByCategory as getNotificationTemplatesByCategory,
+  getTemplatesByChannel,
+  getChannelConfig,
+  getEnabledChannels,
+  getChannelsForPriority,
+  getRoutingRule,
+  getEnabledRoutingRules,
+  getNotificationPipelineStage,
+  getNotificationPipelineOrder,
+  getNotificationIntegration,
+
+  // §10 — Tests
+  type NotificationEngineTestResult,
+  runNotificationEngineTests,
+} from "./notificationEngine";
