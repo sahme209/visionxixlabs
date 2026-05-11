@@ -15,7 +15,6 @@ import { ServicePipeline } from "@/components/ServicePipeline";
 import { Reveal } from "@/components/motion/Reveal";
 import { Stagger } from "@/components/motion/Stagger";
 import { AnimatedButton } from "@/components/ui/AnimatedButton";
-import { AccentMarker } from "@/components/ui/AccentMarker";
 import { TestimonialsCarousel } from "@/components/TestimonialsCarousel";
 import { FAQAccordion } from "@/components/FAQAccordion";
 
@@ -197,13 +196,15 @@ export default function Home() {
 
       {/* How it works — Axiom's workflow */}
       <AnimateOnScroll>
-        <section id="how-it-works" className="py-12 px-4 sm:px-6 lg:px-8 border-t border-slate-200/80 dark:border-slate-700/80">
+        <section id="how-it-works" className="py-16 px-4 sm:px-6 lg:px-8 border-t border-slate-200/80 dark:border-slate-700/80">
           <div className="max-w-5xl mx-auto">
-            <div className="flex items-center justify-center gap-2 mb-6">
-              <AccentMarker color="fuchsia" />
-              <h2 className="text-center text-lg font-semibold text-slate-700 dark:text-slate-300">
-                How Axiom operates your cloud
+            <div className="text-center mb-8">
+              <h2 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-slate-100 mb-3">
+                The autonomous loop
               </h2>
+              <p className="text-slate-500 dark:text-slate-400 max-w-lg mx-auto">
+                12 steps from connection to continuous operation. Every step is auditable.
+              </p>
             </div>
             <ServicePipeline />
           </div>
@@ -212,29 +213,27 @@ export default function Home() {
 
       {/* Supported cloud platforms */}
       <AnimateOnScroll>
-      <section className="py-12 px-4 sm:px-6 lg:px-8 border-t border-slate-200 dark:border-slate-700">
+      <section className="py-16 px-4 sm:px-6 lg:px-8 border-t border-slate-200 dark:border-slate-700">
         <div className="max-w-5xl mx-auto">
-          <div className="flex items-center justify-center gap-2 mb-8">
-            <AccentMarker color="violet" size="md" />
-            <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100">Supported cloud platforms</h2>
-          </div>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
-            <div>
-              <div className="text-2xl font-bold text-slate-900 dark:text-slate-100 mb-1">AWS</div>
-              <div className="text-xs text-slate-600 dark:text-slate-400">Full scan, plan, and execution</div>
-            </div>
-            <div>
-              <div className="text-2xl font-bold text-slate-900 dark:text-slate-100 mb-1">Azure</div>
-              <div className="text-xs text-slate-600 dark:text-slate-400">Scan-only (apply on roadmap)</div>
-            </div>
-            <div>
-              <div className="text-2xl font-bold text-slate-900 dark:text-slate-100 mb-1">GCP</div>
-              <div className="text-xs text-slate-600 dark:text-slate-400">Scan-only (apply on roadmap)</div>
-            </div>
-            <div>
-              <div className="text-2xl font-bold text-slate-900 dark:text-slate-100 mb-1">Terraform</div>
-              <div className="text-xs text-slate-600 dark:text-slate-400">Auto-generated IaC plans</div>
-            </div>
+          <h2 className="text-center text-2xl md:text-3xl font-bold text-slate-900 dark:text-slate-100 mb-8">
+            Multi-cloud support
+          </h2>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {[
+              { name: "AWS", status: "Full support", statusColor: "bg-emerald-500", desc: "Scan, plan, and execute" },
+              { name: "Azure", status: "Scan only", statusColor: "bg-amber-500", desc: "Plan and execute on roadmap" },
+              { name: "GCP", status: "Scan only", statusColor: "bg-amber-500", desc: "Plan and execute on roadmap" },
+              { name: "Terraform", status: "Auto-generated", statusColor: "bg-violet-500", desc: "IaC plans with rollback" },
+            ].map((p) => (
+              <div key={p.name} className="rounded-xl border border-slate-200 dark:border-slate-700/80 bg-white dark:bg-slate-800/80 p-4 text-center">
+                <div className="text-xl font-bold text-slate-900 dark:text-slate-100 mb-1">{p.name}</div>
+                <div className="flex items-center justify-center gap-1.5 mb-1">
+                  <span className={`w-1.5 h-1.5 rounded-full ${p.statusColor}`} />
+                  <span className="text-xs font-medium text-slate-600 dark:text-slate-400">{p.status}</span>
+                </div>
+                <div className="text-xs text-slate-500 dark:text-slate-500">{p.desc}</div>
+              </div>
+            ))}
           </div>
         </div>
       </section>
@@ -249,12 +248,9 @@ export default function Home() {
       <AnimateOnScroll>
       <section id="faq" className="py-20 px-4 sm:px-6 lg:px-8 border-t border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30" aria-labelledby="faq-heading">
         <div className="max-w-3xl mx-auto">
-          <div className="flex items-center justify-center gap-2 mb-8">
-            <AccentMarker color="violet" size="md" />
-            <h2 id="faq-heading" className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-slate-100">
-              Frequently asked questions
-            </h2>
-          </div>
+          <h2 id="faq-heading" className="text-center text-2xl md:text-3xl font-bold text-slate-900 dark:text-slate-100 mb-8">
+            Frequently asked questions
+          </h2>
           <FAQAccordion items={axiomFAQ} />
         </div>
       </section>
