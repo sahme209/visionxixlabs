@@ -1545,3 +1545,141 @@ export {
   CoordinationTestResult,
   runAutonomousCoordinationTests,
 } from "./autonomousCoordination";
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Terraform Generation Engine
+// Translates execution plans into safe, reviewable infrastructure-as-code
+// ─────────────────────────────────────────────────────────────────────────────
+export {
+  // §1 — Generation Architecture
+  IaCBackend,
+  GenerationMode,
+  ChangeAction,
+  ResourceLifecycleAction,
+  TerraformGenerationContext,
+  StateBackendConfig,
+  VariableSourceConfig,
+
+  // §2 — Infrastructure Change Model
+  InfrastructureChangeSet,
+  ChangeSetStatus,
+  ResourceChange as TerraformResourceChange,
+  AttributeChange,
+  ChangeDependency,
+  DurationEstimate,
+
+  // §3 — Blast Radius Computation
+  BlastRadiusSeverity,
+  BlastRadiusThreshold,
+  ChangeBlastRadius,
+  ComputedBlastRadius,
+  DownstreamImpact,
+  CostImpact as TerraformCostImpact,
+  DataLossRisk,
+  ThresholdViolation,
+  BlastRadiusRiskFactor,
+  BLAST_RADIUS_WEIGHTS,
+  BLAST_RADIUS_THRESHOLDS,
+  computeBlastRadiusSeverity,
+
+  // §4 — Terraform HCL Builder
+  HCLBlockType,
+  HCLBlock,
+  HCLAttribute,
+  HCLValue,
+  HCLNestedBlock,
+  HCLLifecycle,
+  TerraformModule,
+  TerraformVariable,
+  VariableValidation,
+  TerraformOutput,
+  RequiredProvider,
+
+  // §5 — Generation Templates
+  TemplateCategory,
+  GenerationTemplate,
+  TemplateParameter,
+  TemplateSafetyCheck,
+  GENERATION_TEMPLATES,
+
+  // §6 — Generation Constraints & Safety
+  ConstraintSeverity,
+  GenerationConstraint,
+  ConstraintScope,
+  ConstraintCondition,
+  TimeWindow,
+  SAFETY_CONSTRAINTS,
+
+  // §7 — Rollback Plan Generation
+  RollbackStrategy as TerraformRollbackStrategy,
+  RollbackPlan,
+  RollbackStep as TerraformRollbackStep,
+  RollbackAction as TerraformRollbackAction,
+  RollbackTrigger as TerraformRollbackTrigger,
+  RollbackPreCheck,
+  StateSnapshotRef,
+  ResourceSnapshotRef,
+
+  // §8 — Dry-Run & Validation
+  ValidationSeverity,
+  ChangeSetValidation,
+  DryRunResult,
+  TerraformPlanSummary,
+  ConstraintViolationResult,
+  ValidatorId,
+  ValidationPipeline,
+  ValidatorDefinition,
+  VALIDATION_PIPELINE,
+
+  // §9 — Governance Approval State
+  GovernanceApprovalStatus,
+  GovernanceApprovalState,
+  ApproverRequirement,
+  ApprovalRecord as TerraformApprovalRecord,
+  RejectionRecord,
+
+  // §10 — Provider-Specific Generation Profiles
+  ProviderGenerationProfile,
+  NamingConvention,
+  ProviderStateManagement,
+  ProviderRateLimits,
+  PROVIDER_GENERATION_PROFILES,
+
+  // §11 — Generation Pipeline
+  GenerationStageId,
+  GenerationStageDefinition,
+  GENERATION_PIPELINE,
+
+  // §12 — Security Anti-Pattern Detection
+  SecurityAntiPatternId,
+  SecurityAntiPattern,
+  SECURITY_ANTI_PATTERNS,
+
+  // §13 — Integration Contracts
+  TerraformIntegrationTarget,
+  TerraformIntegrationContract,
+  TERRAFORM_INTEGRATION_CONTRACTS,
+
+  // §14 — Query Functions
+  getGenerationTemplate,
+  getTemplatesByCategory,
+  getTemplatesByProvider,
+  getTemplateForAction,
+  getSafetyConstraint,
+  getBlockingConstraints,
+  getAbsoluteConstraints,
+  getSecurityAntiPattern,
+  getCriticalAntiPatterns,
+  getAntiPatternsByCompliance,
+  getProviderGenerationProfile,
+  getGenerationPipelineStage,
+  getGenerationPipelineOrder,
+  getValidatorDefinition,
+  getRequiredValidators,
+  getTerraformIntegration,
+  mapUnifiedResourceToProvider,
+
+  // §15 — Tests
+  TerraformGenerationTestResult,
+  runTerraformGenerationTests,
+} from "./terraformGeneration";
