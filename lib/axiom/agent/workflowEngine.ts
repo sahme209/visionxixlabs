@@ -1175,6 +1175,7 @@ export async function runWorkflowTests(): Promise<WorkflowTestResult[]> {
       status: "completed" as const,
       provider: "aws",
       findingCount: 5,
+      driftCount: 0,
       recommendationCount: 3,
       autoFixCount: 2,
       approvalRequiredCount: 1,

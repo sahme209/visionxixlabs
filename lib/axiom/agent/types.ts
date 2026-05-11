@@ -34,6 +34,7 @@ export type AgentRunResult = {
   status: AgentRunStatus;
   provider: string;
   findingCount: number;
+  driftCount: number;
   recommendationCount: number;
   autoFixCount: number;
   approvalRequiredCount: number;
@@ -153,6 +154,7 @@ export type AgentApplyResult = {
 export type AgentMessageType =
   | "scan_started"
   | "scan_complete"
+  | "drift_detected"
   | "findings_summary"
   | "approval_request"
   | "applying"

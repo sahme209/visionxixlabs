@@ -175,3 +175,28 @@ export function agentError(error: string): AgentMessage {
     body: `I ran into an issue: ${error}. Your infrastructure was not modified. Check your cloud connector credentials and try again.`,
   };
 }
+
+export function driftDetected(report: {
+  summary: { totalDrifts: number; highestSeverity: string; requiresAction: number; automatable: number };
+}): AgentMessage {
+  const { summary } = report;
+  const parts: string[] = [];
+  parts.push(`Detected ${summary.totalDrifts} infrastructure drift${summary.totalDrifts === 1 ? "" : "s"} since the last scan.`);
+  if (summary.requiresAction > 0) {
+    parts.push(`${summary.requiresAction} require${summary.requiresAction === 1 ? "s" : ""} action.`);
+  }
+  if (summary.automatable > 0) {
+    parts.push(`${summary.automatable} can be remediated automatically.`);
+  }
+  return {
+    type: "drift_detected",
+    title: `${summary.totalDrifts} drift${summary.totalDrifts === 1 ? "" : "s"} detected`,
+    body: parts.join(" "),
+    data: {
+      totalDrifts: summary.totalDrifts,
+      highestSeverity: summary.highestSeverity,
+      requiresAction: summary.requiresAction,
+      automatable: summary.automatable,
+    },
+  };
+}

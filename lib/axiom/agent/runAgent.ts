@@ -31,6 +31,8 @@ import { loadAutopilotMode, resolvePolicy, applyAutopilotToRecommendations, logA
 import { createApprovalItems } from "../approvalCenter";
 import type { AutopilotMode } from "./autopilot";
 import * as msg from "./messageBuilder";
+import { detectDrift } from "./driftEngine";
+import type { DriftReport, DriftItem } from "./driftEngine";
 
 // ---------------------------------------------------------------------------
 // runAgent — 10-step orchestrator
@@ -102,11 +104,78 @@ export async function runAgent(input: RunAgentInput): Promise<AgentRunResult> {
 
     emit(msg.scanComplete(provider, snapshot.resources.length, snapshot.regions.length));
 
+    // ── Step 3b: Drift detection — compare against previous snapshot ────
+
+    const previousRun = await prisma.axiomAgentRun.findFirst({
+      where: {
+        cloudAccountId: connectedAccountId,
+        status: "completed",
+        id: { not: runId },
+      },
+      orderBy: { completedAt: "desc" },
+      select: { id: true, snapshotData: true },
+    });
+
+    let driftReport: DriftReport | null = null;
+    const driftFindings: AgentFinding[] = [];
+
+    if (previousRun?.snapshotData) {
+      const previousSnapshot = previousRun.snapshotData as unknown as CloudSnapshot;
+      driftReport = detectDrift({
+        organizationId,
+        cloudAccountId: connectedAccountId,
+        currentSnapshot: snapshot,
+        previousSnapshot,
+      });
+
+      if (driftReport.items.length > 0) {
+        emit(msg.driftDetected(driftReport));
+
+        const driftDbFindings = await prisma.$transaction(
+          driftReport.items.map((driftItem) => {
+            const finding = driftItemToFinding(driftItem, snapshot);
+            return prisma.axiomFinding.create({
+              data: {
+                runId,
+                category: finding.category,
+                severity: finding.severity,
+                title: finding.title,
+                description: finding.description,
+                affectedResources: finding.affectedResources,
+                region: finding.region,
+                provider: finding.provider as any,
+                confidence: finding.confidence,
+                monthlyLow: driftItem.impact.costImpactMonthly ?? 0,
+                monthlyHigh: driftItem.impact.costImpactMonthly ?? 0,
+                yearlyLow: (driftItem.impact.costImpactMonthly ?? 0) * 12,
+                yearlyHigh: (driftItem.impact.costImpactMonthly ?? 0) * 12,
+                data: finding.data as object,
+              },
+            });
+          }),
+        );
+
+        for (let i = 0; i < driftReport.items.length; i++) {
+          driftFindings.push({
+            ...driftItemToFinding(driftReport.items[i], snapshot),
+            id: driftDbFindings[i].id,
+          });
+        }
+
+        await auditEvent(runId, organizationId, userId, "drift_detected", {
+          provider,
+          totalDrifts: driftReport.summary.totalDrifts,
+          highestSeverity: driftReport.summary.highestSeverity,
+          requiresAction: driftReport.summary.requiresAction,
+        });
+      }
+    }
+
     // ── Step 4: Run signal engine ───────────────────────────────────────
 
     const costSummary = deriveCostSignals(snapshot);
 
-    if (costSummary.signals.length === 0) {
+    if (costSummary.signals.length === 0 && driftFindings.length === 0) {
       emit(msg.noActionNeeded());
       return completeRun(runId, provider, "No issues found. Your infrastructure is well-optimized.");
     }
@@ -143,7 +212,7 @@ export async function runAgent(input: RunAgentInput): Promise<AgentRunResult> {
       ...f,
       id: dbFindings[i].id,
     }));
-    const findings = filterIgnoredFindings(allFindings, prefs);
+    const findings = [...filterIgnoredFindings(allFindings, prefs), ...driftFindings];
 
     // ── Step 6: Prioritize findings (preference-aware) ─────────────────
 
@@ -226,6 +295,7 @@ export async function runAgent(input: RunAgentInput): Promise<AgentRunResult> {
         status: "completed",
         provider,
         findingCount: findings.length,
+        driftCount: driftFindings.length,
         recommendationCount: recommendations.length,
         autoFixCount: 0,
         approvalRequiredCount: 0,
@@ -340,6 +410,7 @@ export async function runAgent(input: RunAgentInput): Promise<AgentRunResult> {
       status: "completed",
       provider,
       findingCount: findings.length,
+      driftCount: driftFindings.length,
       recommendationCount: recommendations.length,
       autoFixCount,
       approvalRequiredCount,
@@ -666,6 +737,40 @@ function dbItemToExecItem(dbItem: {
   };
 }
 
+function driftItemToFinding(item: DriftItem, snapshot: CloudSnapshot): AgentFinding {
+  const categoryMap: Record<string, AgentFinding["category"]> = {
+    config_mutation: "security",
+    security_regression: "security",
+    resilience_regression: "resilience",
+    cost_deviation: "cost",
+    resource_lifecycle: "security",
+    compliance_violation: "compliance",
+    plan_drift: "compliance",
+  };
+
+  return {
+    id: item.id,
+    category: categoryMap[item.category] ?? "security",
+    severity: item.severity as AgentFinding["severity"],
+    title: `[Drift] ${item.title}`,
+    description: item.description,
+    affectedResources: [item.resourceId],
+    region: item.region,
+    provider: snapshot.provider,
+    confidence: "high",
+    estimatedSavings: item.impact.costImpactMonthly
+      ? { monthly: item.impact.costImpactMonthly, yearly: item.impact.costImpactMonthly * 12 }
+      : null,
+    data: {
+      driftCategory: item.category,
+      driftSource: item.source,
+      fieldChanges: item.fieldChanges,
+      impact: item.impact,
+      remediation: item.remediation,
+    },
+  };
+}
+
 // ---------------------------------------------------------------------------
 // DB helpers
 // ---------------------------------------------------------------------------
@@ -717,6 +822,7 @@ async function failRun(
     status: "failed",
     provider: "",
     findingCount: 0,
+    driftCount: 0,
     recommendationCount: 0,
     autoFixCount: 0,
     approvalRequiredCount: 0,
@@ -742,6 +848,7 @@ async function completeRun(
     status: "completed",
     provider,
     findingCount: 0,
+    driftCount: 0,
     recommendationCount: 0,
     autoFixCount: 0,
     approvalRequiredCount: 0,
@@ -766,6 +873,10 @@ async function loadRunResult(runId: string, cloudAccountId: string): Promise<Age
   const autoFixCount = run.recommendations.filter((r) => r.disposition === "auto_fix_candidate").length;
   const approvalRequiredCount = run.recommendations.filter((r) => r.disposition === "approval_required").length;
   const reportOnlyCount = run.recommendations.filter((r) => r.disposition === "report_only").length;
+  const driftCount = run.findings.filter((f) => {
+    const data = f.data as Record<string, unknown> | null;
+    return data?.driftCategory != null;
+  }).length;
 
   const account = await prisma.cloudAccount.findUnique({ where: { id: cloudAccountId } });
   const provider = account?.provider ?? "aws";
@@ -780,6 +891,7 @@ async function loadRunResult(runId: string, cloudAccountId: string): Promise<Age
     status: run.status as AgentRunStatus,
     provider: provider as string,
     findingCount: run.findings.length,
+    driftCount,
     recommendationCount: run.recommendations.length,
     autoFixCount,
     approvalRequiredCount,
