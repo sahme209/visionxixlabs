@@ -12,15 +12,12 @@ import { EnterpriseTrustSignals } from "@/components/EnterpriseTrustSignals";
 import { AnimateOnScroll } from "@/components/AnimateOnScroll";
 import { BackgroundBlobs } from "@/components/BackgroundBlobs";
 import { ServicePipeline } from "@/components/ServicePipeline";
-import { HeroHeadlineGlow } from "@/components/HeroHeadlineGlow";
 import { Reveal } from "@/components/motion/Reveal";
 import { Stagger } from "@/components/motion/Stagger";
 import { HoverCard } from "@/components/ui/HoverCard";
 import { AnimatedButton } from "@/components/ui/AnimatedButton";
-import { SectionBackground } from "@/components/ui/SectionBackground";
 import { AccentMarker } from "@/components/ui/AccentMarker";
 import { MiniChart } from "@/components/ui/MiniChart";
-import { RealisticFogBackground } from "@/components/ui/realistic-fog-background";
 import { TestimonialsCarousel } from "@/components/TestimonialsCarousel";
 import { FAQAccordion } from "@/components/FAQAccordion";
 
@@ -65,61 +62,69 @@ export default function Home() {
       <Navigation />
 
       {/* Hero Section */}
-      <section className="pt-32 pb-16 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
-        <RealisticFogBackground backgroundColor="transparent" opacity={0.45} darken contained />
-        <SectionBackground variant="hero-light" />
+      <section className="pt-32 pb-20 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(124,58,237,0.06),transparent_50%)] dark:bg-[radial-gradient(ellipse_at_top,rgba(124,58,237,0.12),transparent_50%)]" />
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(148,163,184,0.04)_1px,transparent_1px),linear-gradient(to_bottom,rgba(148,163,184,0.04)_1px,transparent_1px)] bg-[size:64px_64px] dark:bg-[linear-gradient(to_right,rgba(148,163,184,0.02)_1px,transparent_1px),linear-gradient(to_bottom,rgba(148,163,184,0.02)_1px,transparent_1px)]" />
         <div className="max-w-4xl mx-auto text-center relative">
           <Reveal direction="up" blur>
-            <span className="inline-flex items-center px-4 py-1.5 rounded-full bg-violet-100 dark:bg-violet-900/40 text-violet-700 dark:text-violet-300 text-sm font-semibold mb-6">
-              AI Cloud Operator
+            <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-violet-50 dark:bg-violet-950/50 border border-violet-200 dark:border-violet-800 text-violet-700 dark:text-violet-300 text-sm font-medium mb-8">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+              Autonomous Cloud Operations
             </span>
           </Reveal>
           <Reveal direction="up" blur delay={0.04}>
-            <HeroHeadlineGlow />
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-[1.1] tracking-tight text-slate-900 dark:text-slate-50">
+              Infrastructure intelligence<br className="hidden sm:block" />
+              that operates autonomously.
+            </h1>
           </Reveal>
           <Reveal direction="up" delay={0.06}>
-            <p className="text-lg md:text-xl text-slate-600 dark:text-slate-400 mb-4 max-w-3xl mx-auto">
-              An AI agent that scans your cloud, reasons about what to fix, generates execution plans, and applies approved changes — with full rollback and audit trail.
+            <p className="text-lg md:text-xl text-slate-600 dark:text-slate-400 mb-8 max-w-2xl mx-auto leading-relaxed">
+              Axiom scans your cloud, identifies issues, reasons about priority and risk, generates execution plans, and applies approved changes — with continuous drift monitoring and outcome learning.
             </p>
           </Reveal>
           <Stagger delay={0.12}>
-            <div className="flex flex-wrap justify-center gap-4 mb-6">
+            <div className="flex flex-wrap justify-center gap-4 mb-8">
               <AnimatedButton
                 href="/operator/onboarding"
                 variant="primary"
-                className="btn-huly cta-glow shadow-lg shadow-violet-500/30 hover:shadow-violet-500/40"
+                className="shadow-sm"
               >
                 Run Axiom
-                <ArrowRightIcon className="ml-2 h-5 w-5" />
+                <ArrowRightIcon className="ml-2 h-4 w-4" />
               </AnimatedButton>
               <AnimatedButton
-                href="/#how-it-works"
+                href="/axiom"
                 variant="secondary"
-                className="btn-huly shadow-lg"
               >
-                See how it works
-                <ArrowRightIcon className="ml-2 h-5 w-5" />
+                How it works
               </AnimatedButton>
             </div>
           </Stagger>
           <Reveal direction="up" delay={0.2}>
-            <p className="text-sm text-slate-500 dark:text-slate-400 mb-2">
-              No obligation · Read-only by default · No changes without your approval
-            </p>
-          </Reveal>
-          <Reveal direction="up" delay={0.24}>
-            <p className="text-sm text-slate-500 dark:text-slate-400 max-w-2xl mx-auto">
-              Scan · Reason · Plan · Execute · Verify · Learn
+            <p className="text-sm text-slate-500 dark:text-slate-400">
+              Read-only by default · No changes without your approval · Full audit trail
             </p>
           </Reveal>
           <Reveal direction="up" delay={0.3}>
-            <ul className="mt-8 flex flex-wrap justify-center gap-x-6 gap-y-2 text-xs text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
-              <li className="flex items-center gap-1.5">✓ Assume-role model (no stored access keys)</li>
-              <li className="flex items-center gap-1.5">✓ AES-256-GCM encrypted credentials</li>
-              <li className="flex items-center gap-1.5">✓ Explicit approval required before execution</li>
-              <li className="flex items-center gap-1.5">✓ Execution logs &amp; audit trail</li>
-              <li className="flex items-center gap-1.5">✓ Read-only by default</li>
-            </ul>
+            <div className="mt-8 flex flex-wrap justify-center gap-x-8 gap-y-2 text-xs text-slate-500 dark:text-slate-400">
+              <span className="flex items-center gap-1.5">
+                <span className="w-1 h-1 rounded-full bg-emerald-500" />
+                Assume-role model
+              </span>
+              <span className="flex items-center gap-1.5">
+                <span className="w-1 h-1 rounded-full bg-emerald-500" />
+                Approval enforcement
+              </span>
+              <span className="flex items-center gap-1.5">
+                <span className="w-1 h-1 rounded-full bg-emerald-500" />
+                Rollback capability
+              </span>
+              <span className="flex items-center gap-1.5">
+                <span className="w-1 h-1 rounded-full bg-emerald-500" />
+                Immutable audit trail
+              </span>
+            </div>
           </Reveal>
         </div>
       </section>
