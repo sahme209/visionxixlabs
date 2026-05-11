@@ -1791,3 +1791,84 @@ export {
   ExecutionSafetyTestResult,
   runExecutionSafetyTests,
 } from "./executionSafety";
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Signal Detection & Processing Pipeline
+// Unified operational signal intake feeding the cognitive reasoning loop
+// ─────────────────────────────────────────────────────────────────────────────
+export {
+  // §1 — Signal Architecture
+  SignalDomain,
+  SignalSeverity,
+  SignalConfidence,
+  SignalSource,
+  OperationalSignal,
+  SignalState,
+  SignalEvidence,
+  SignalProcessingEvent,
+
+  // §2 — Signal Detection Rules
+  DetectionRuleType,
+  DetectionRule,
+  DetectionCondition,
+  DETECTION_RULES,
+
+  // §3 — Signal Enrichment
+  EnrichmentType,
+  EnrichmentResult,
+  EnrichmentPipeline,
+  EnrichmentStage,
+  ENRICHMENT_PIPELINE,
+
+  // §4 — Signal Correlation
+  CorrelationStrategy,
+  CorrelationRule,
+  CorrelationGroup,
+  CORRELATION_RULES,
+
+  // §5 — Signal Triage & Routing
+  TriageDisposition,
+  TriagePolicy,
+  TriageCondition,
+  RoutingDecision,
+  RoutingTarget,
+  TRIAGE_POLICIES,
+
+  // §6 — Signal Processing Pipeline
+  SignalPipelineStageId,
+  SignalPipelineStage,
+  SIGNAL_PIPELINE,
+
+  // §7 — Signal Suppression
+  SuppressionRule,
+  SuppressionDuration,
+
+  // §8 — Signal Metrics & Analytics
+  SignalAnalytics,
+
+  // §9 — Integration Contracts
+  SignalIntegrationTarget,
+  SignalIntegrationContract,
+  SIGNAL_INTEGRATION_CONTRACTS,
+
+  // §10 — Query Functions
+  getDetectionRule,
+  getDetectionRulesByDomain,
+  getDetectionRulesByProvider,
+  getEnabledDetectionRules,
+  getCriticalDetectionRules,
+  getTriagePolicy,
+  getTriagePoliciesByDisposition,
+  getAutoRemediablePolicies,
+  getCorrelationRule,
+  getCorrelationRulesByStrategy,
+  getEnrichmentStage,
+  getSignalPipelineStage,
+  getSignalPipelineOrder,
+  getSignalIntegration,
+  computeSignalPriority,
+
+  // §11 — Tests
+  SignalDetectionTestResult,
+  runSignalDetectionTests,
+} from "./signalDetection";
