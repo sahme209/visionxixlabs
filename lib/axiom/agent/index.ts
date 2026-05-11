@@ -2053,3 +2053,75 @@ export {
   CostIntelligenceTestResult,
   runCostIntelligenceTests,
 } from "./costIntelligence";
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Compliance Engine
+// Continuous compliance assessment against SOC2, HIPAA, PCI-DSS, CIS, NIST, GDPR
+// ─────────────────────────────────────────────────────────────────────────────
+export {
+  // §1 — Compliance Architecture
+  ComplianceFrameworkId,
+  ComplianceStatus,
+  ControlSeverity,
+  ComplianceFramework,
+  ControlFamily,
+  COMPLIANCE_FRAMEWORKS,
+
+  // §2 — Control Definitions
+  ComplianceControl,
+  EvidenceType,
+  CrossFrameworkMapping,
+  COMPLIANCE_CONTROLS,
+
+  // §3 — Assessment Model
+  ComplianceAssessment,
+  ComplianceScore,
+  FamilyScore,
+  SeverityScore,
+  ControlAssessmentResult,
+  ComplianceFinding,
+  FindingStatus,
+  EvidenceRecord,
+
+  // §4 — Continuous Monitoring
+  ComplianceMonitorConfig,
+  ContinuousScanFrequency,
+  ComplianceDriftEvent,
+
+  // §5 — Audit Readiness
+  AuditReadinessReport,
+  AuditGap,
+  EvidenceCompleteness,
+  RemediationBacklogSummary,
+  AuditRecommendation,
+
+  // §6 — Compliance Pipeline
+  CompliancePipelineStageId,
+  CompliancePipelineStage,
+  COMPLIANCE_PIPELINE,
+
+  // §7 — Integration Contracts
+  ComplianceIntegrationTarget,
+  ComplianceIntegrationContract,
+  COMPLIANCE_INTEGRATION_CONTRACTS,
+
+  // §8 — Query Functions
+  getComplianceFramework,
+  getFrameworksByProvider,
+  getCertificationRequiredFrameworks,
+  getComplianceControl,
+  getControlsByFramework,
+  getControlsByFamily,
+  getAutomatableControls,
+  getCriticalControls,
+  getControlsByProvider,
+  getCrossFrameworkMappings,
+  getCompliancePipelineStage,
+  getCompliancePipelineOrder,
+  getComplianceIntegration,
+  computeComplianceScore,
+
+  // §9 — Tests
+  ComplianceEngineTestResult,
+  runComplianceEngineTests,
+} from "./complianceEngine";
