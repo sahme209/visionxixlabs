@@ -1441,3 +1441,107 @@ export type {
   OrgLearningStageDefinition,
   OrgIntelligenceTestResult,
 } from "./organizationalIntelligence";
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Autonomous Coordination Framework
+// Multi-workflow orchestration with safety, isolation, and auditability
+// ─────────────────────────────────────────────────────────────────────────────
+export {
+  // §1 — Coordination Architecture
+  CoordinatedOperationType,
+  OperationPriority,
+  OperationIsolationLevel,
+  CoordinatedOperation,
+  ResourceClaim,
+  ApprovalDependency,
+
+  // §2 — Operation State Machine
+  OperationStateMachineState,
+  OperationStateTransition,
+  TransitionTrigger,
+  OPERATION_STATE_TRANSITIONS,
+
+  // §3 — Concurrency Strategy
+  ConcurrencyPolicy,
+  FairnessPolicy,
+  DEFAULT_CONCURRENCY_POLICY,
+  OperationSlot,
+  ConcurrencySnapshot,
+
+  // §4 — Conflict Detection
+  ConflictCategory,
+  OperationConflict,
+  ConflictResolutionStrategy,
+  ConflictResolutionMethod,
+  ConflictDetectionRule,
+  CONFLICT_DETECTION_RULES,
+
+  // §5 — Scheduling & Priority
+  OperationScheduler,
+  ScheduledOperation,
+  ScheduleTarget,
+  SchedulePrecondition,
+  RecurringSchedule,
+  MaintenanceWindow as CoordinationMaintenanceWindow,
+  BlackoutPeriod,
+  PriorityCalculation,
+  PRIORITY_SCORES,
+  OPERATION_DEFAULT_PRIORITIES,
+  OPERATION_ISOLATION_DEFAULTS,
+
+  // §6 — Interruption & Resumption
+  InterruptionRequest,
+  InterruptionReason,
+  ResumptionRequest,
+  OperationCheckpointData,
+  ResumptionValidation,
+
+  // §7 — Rollback Coordination
+  CoordinatedRollbackRequest,
+  CoordinatedRollbackReason,
+  CoordinatedRollbackStrategy,
+  CascadePolicy,
+  RollbackSafetyValidation,
+  CoordinatedRollbackPlan,
+  RollbackPhase,
+
+  // §8 — Dependency Graph
+  OperationDependencyGraph,
+  OperationDependencyNode,
+  OperationDependencyEdge,
+  OperationDependencyType,
+
+  // §9 — Recovery Strategy
+  RecoveryScenario,
+  RecoveryPlaybook,
+  RecoveryStep,
+  RECOVERY_PLAYBOOKS,
+
+  // §10 — Provider Coordination
+  ProviderCoordinationProfile,
+  PROVIDER_COORDINATION_PROFILES,
+
+  // §11 — Audit Trail
+  CoordinationAuditAction,
+  CoordinationAuditEntry,
+
+  // §12 — Query Functions
+  getOperationDefaultPriority,
+  getOperationIsolationDefault,
+  getConflictDetectionRule,
+  getAutoResolvableConflicts,
+  getRecoveryPlaybook,
+  getAutomaticRecoveryPlaybooks,
+  getCriticalRecoveryPlaybooks,
+  getProviderCoordinationProfile,
+  computeEffectivePriority,
+  getValidTransitions,
+  canTransition,
+  isTerminalState,
+  isActiveState,
+  isWaitingState,
+
+  // §13 — Tests
+  CoordinationTestResult,
+  runAutonomousCoordinationTests,
+} from "./autonomousCoordination";
