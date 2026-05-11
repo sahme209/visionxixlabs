@@ -2271,3 +2271,83 @@ export {
   type CloudEventStreamTestResult,
   runCloudEventStreamTests,
 } from "./cloudEventStream";
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Security Intelligence Engine
+// Deep security posture analysis, IAM analysis, MITRE ATT&CK, vulnerability management
+// ─────────────────────────────────────────────────────────────────────────────
+export {
+  // §1 — Security Posture Architecture
+  type SecurityDomain,
+  type SecurityPostureRating,
+  type SecurityFindingSeverity,
+  type SecurityFindingStatus,
+  type SecurityPosture,
+  type DomainSecurityScore,
+  type FindingSummary,
+
+  // §2 — Security Controls & Checks
+  type SecurityControl as SecurityCheckControl,
+  SECURITY_CONTROLS,
+
+  // §3 — MITRE ATT&CK Integration
+  type MitreTactic,
+  type MitreTechniqueMapping,
+  MITRE_CLOUD_TECHNIQUES,
+
+  // §4 — Vulnerability Management
+  type VulnerabilitySource,
+  type VulnerabilityStatus,
+  type VulnerabilityRecord,
+  type VulnerabilityPolicy,
+  DEFAULT_VULNERABILITY_POLICY,
+
+  // §5 — IAM Analysis & Least Privilege
+  type IAMRiskLevel,
+  type IAMAnalysisRule,
+  IAM_ANALYSIS_RULES,
+
+  // §6 — Attack Surface Mapping
+  type AttackSurfaceCategory,
+  type AttackSurfaceComponent,
+  type AttackSurfaceFactor,
+  type AttackSurfaceSnapshot,
+  type CategorySurfaceMetrics,
+
+  // §7 — Security Recommendations
+  type SecurityRecommendationPriority,
+  type SecurityRecommendation,
+
+  // §8 — Security Intelligence Pipeline
+  type SecurityPipelineStageId,
+  type SecurityPipelineStage,
+  SECURITY_PIPELINE,
+
+  // §9 — Integration Contracts
+  type SecurityIntegrationTarget,
+  type SecurityIntegrationContract,
+  SECURITY_INTEGRATION_CONTRACTS,
+
+  // §10 — Query Functions
+  getSecurityControl,
+  getControlsByDomain,
+  getControlsByProvider as getSecurityControlsByProvider,
+  getCriticalSecurityControls,
+  getAutomatableSecurityControls,
+  getMitreTechnique,
+  getMitreTechniquesByTactic,
+  getHighRelevanceTechniques,
+  getIAMRule,
+  getCriticalIAMRules,
+  getIAMRulesByProvider,
+  getSecurityPipelineStage,
+  getSecurityPipelineOrder,
+  getParallelizableSecurityStages,
+  getSecurityIntegration,
+  computePostureRating,
+  computeVulnerabilitySLADeadline,
+
+  // §11 — Tests
+  type SecurityIntelligenceTestResult,
+  runSecurityIntelligenceTests,
+} from "./securityIntelligence";
