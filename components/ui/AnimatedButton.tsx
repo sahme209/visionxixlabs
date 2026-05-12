@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { motion } from "framer-motion";
-import type { ComponentProps, ReactNode } from "react";
+import type { ReactNode, MouseEventHandler } from "react";
 import { motionConfig, prefersReducedMotionQuery } from "@/lib/motion/tokens";
 import { useEffect, useState } from "react";
 
@@ -13,7 +13,9 @@ type BaseProps = {
   children: ReactNode;
   href?: string;
   className?: string;
-} & Omit<ComponentProps<"button">, "type">;
+  onClick?: MouseEventHandler<HTMLButtonElement>;
+  disabled?: boolean;
+};
 
 const baseClasses =
   "btn-shimmer focus-ring-animated inline-flex items-center justify-center gap-2 rounded-2xl text-sm font-semibold transition-all";
@@ -27,7 +29,7 @@ const variantClasses: Record<Variant, string> = {
     "px-4 py-2 border border-white/[0.08] text-zinc-300 bg-white/[0.02] hover:bg-white/[0.05] hover:shadow-[inset_0_0_20px_rgba(124,58,237,0.06)]",
 };
 
-export function AnimatedButton({ variant = "primary", href, className = "", children, ...rest }: BaseProps) {
+export function AnimatedButton({ variant = "primary", href, className = "", children, onClick, disabled }: BaseProps) {
   const [reduceMotion, setReduceMotion] = useState(false);
 
   useEffect(() => {
@@ -39,25 +41,45 @@ export function AnimatedButton({ variant = "primary", href, className = "", chil
     return () => mq.removeEventListener("change", onChange);
   }, []);
 
-  const Component = href ? Link : "button";
-  const MotionComp = reduceMotion ? Component : motion(Component as any);
+  const cls = `${baseClasses} ${variantClasses[variant]} ${className}`;
 
-  const motionProps = reduceMotion
-    ? {}
-    : {
-        whileHover: { scale: 1.02 },
-        whileTap: { scale: 0.97 },
-        transition: { duration: motionConfig.duration, ease: motionConfig.ease },
-      };
+  if (href) {
+    return (
+      <Link href={href} className={cls}>
+        {reduceMotion ? (
+          children
+        ) : (
+          <motion.span
+            className="inline-flex items-center justify-center gap-2"
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.97 }}
+            transition={{ duration: motionConfig.duration, ease: motionConfig.ease }}
+          >
+            {children}
+          </motion.span>
+        )}
+      </Link>
+    );
+  }
+
+  if (reduceMotion) {
+    return (
+      <button className={cls} onClick={onClick} disabled={disabled}>
+        {children}
+      </button>
+    );
+  }
 
   return (
-    <MotionComp
-      {...(href ? { href } : {})}
-      {...(motionProps as any)}
-      className={`${baseClasses} ${variantClasses[variant]} ${className}`}
-      {...rest}
+    <motion.button
+      whileHover={{ scale: 1.02 }}
+      whileTap={{ scale: 0.97 }}
+      transition={{ duration: motionConfig.duration, ease: motionConfig.ease }}
+      className={cls}
+      onClick={onClick as any}
+      disabled={disabled}
     >
       {children}
-    </MotionComp>
+    </motion.button>
   );
 }

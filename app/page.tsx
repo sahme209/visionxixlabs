@@ -156,7 +156,7 @@ export default function Home() {
           <Stagger delay={0.12}>
             {/* Beam sweep effect behind CTA buttons */}
             <div className="relative flex flex-wrap justify-center gap-4 mb-10">
-              <div className="absolute inset-0 beam-sweep rounded-2xl" aria-hidden />
+              <div className="absolute inset-0 beam-sweep rounded-2xl pointer-events-none" aria-hidden />
               <AnimatedButton
                 href="/operator/onboarding"
                 variant="primary"

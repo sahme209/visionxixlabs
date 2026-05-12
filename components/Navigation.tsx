@@ -22,9 +22,9 @@ import { AnimatePresence, motion } from "framer-motion";
 /* ── Dropdown items ──────────────────────────────────────────── */
 const productDropdown = [
   { href: "/axiom", label: "Axiom", desc: "Autonomous cloud agent", icon: CpuChipIcon },
-  { href: "/axiom/operations", label: "Operations", desc: "Infrastructure workflows", icon: CogIcon },
-  { href: "/operator/onboarding", label: "Cloud Operator", desc: "Multi-cloud control plane", icon: CloudIcon },
+  { href: "/operator/onboarding", label: "Cloud Operator", desc: "Connect and scan your cloud", icon: CloudIcon },
   { href: "/builder", label: "Website Builder", desc: "AI-powered site engine", icon: SparklesIcon },
+  { href: "/services", label: "Services", desc: "Cloud and AI consulting", icon: CogIcon },
 ];
 
 const resourcesDropdown = [
