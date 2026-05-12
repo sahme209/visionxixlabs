@@ -22,7 +22,7 @@ const axiomFAQ = [
   {
     question: "What does Axiom actually do?",
     answer:
-      "Axiom is an autonomous cloud operations agent. It connects to your AWS account via a read-only IAM role, scans your infrastructure, uses a 9-phase cognitive reasoning loop to identify and prioritize issues (cost waste, security gaps, drift, misconfigurations), then generates phased execution plans with Terraform code. Nothing changes without your explicit approval.",
+      "Axiom is an autonomous cloud operations agent. It connects to your AWS account via a read-only IAM role, scans your infrastructure, runs a 12-step autonomous loop to identify and prioritize issues (cost waste, security gaps, drift, misconfigurations), generates phased execution plans with Terraform code, and learns from outcomes. Nothing changes without your explicit approval.",
   },
   {
     question: "Does Axiom modify my infrastructure?",
@@ -48,6 +48,11 @@ const axiomFAQ = [
     question: "What access does Axiom need?",
     answer:
       "Axiom uses an assume-role model — you create a read-only IAM role in your AWS account and we assume it to scan. No access keys are stored. You can revoke access anytime from your AWS console.",
+  },
+  {
+    question: "Does Axiom learn from past actions?",
+    answer:
+      "Yes. Axiom records the outcome of every action — whether it succeeded or failed, for which resource and action type. If a resource has a prior failure, it automatically downgrades future recommendations from auto-fix to human review. This outcome memory makes the agent safer over time.",
   },
 ];
 
