@@ -3,16 +3,22 @@
 import { Suspense, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import {
   ArrowRightIcon,
   CheckCircleIcon,
-  CpuChipIcon,
   ShieldCheckIcon,
 } from "@heroicons/react/24/outline";
 
 export default function SignUpPage() {
   return (
-    <Suspense>
+    <Suspense
+      fallback={
+        <div className="min-h-screen flex items-center justify-center bg-white dark:bg-slate-950">
+          <div className="h-6 w-6 animate-spin rounded-full border-2 border-violet-600 border-t-transparent" />
+        </div>
+      }
+    >
       <SignUpForm />
     </Suspense>
   );
@@ -55,103 +61,123 @@ function SignUpForm() {
   const isOperatorFlow = redirect.includes("operator");
 
   return (
-    <div className="min-h-screen flex bg-slate-950">
-      {/* Left panel — form */}
+    <div className="min-h-screen flex bg-white dark:bg-slate-950">
       <div className="flex-1 flex items-center justify-center px-4 sm:px-8">
-        <div className="w-full max-w-md">
-          <Link href={isOperatorFlow ? "/operator" : "/"} className="inline-flex items-center gap-2 text-slate-400 hover:text-violet-400 mb-8 transition-colors">
-            <CpuChipIcon className="h-5 w-5" />
-            <span className="font-semibold text-sm">Cloud Operator</span>
+        <div className="w-full max-w-sm">
+          <Link href="/" className="flex items-center gap-2.5 mb-10">
+            <Image
+              src="/vision-xix-logo.png"
+              alt="Vision XIX Labs"
+              width={28}
+              height={28}
+              className="rounded-lg"
+            />
+            <span className="text-sm font-semibold text-slate-900 dark:text-slate-100">
+              Vision XIX Labs
+            </span>
           </Link>
 
-          <h1 className="text-2xl font-bold text-slate-100 mb-1">Create your account</h1>
-          <p className="text-slate-500 mb-8 text-sm">
+          <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-50 mb-1">Create your account</h1>
+          <p className="text-sm text-slate-500 dark:text-slate-400 mb-8">
             {isOperatorFlow
               ? "Scan your cloud and get findings in under 5 minutes."
-              : "Start managing your cloud infrastructure."}
+              : "Get started with Axiom."}
           </p>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-slate-400 mb-1.5">Name</label>
+              <label htmlFor="name" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+                Name
+              </label>
               <input
+                id="name"
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                placeholder="Your name"
-                className="w-full rounded-lg border border-slate-700 bg-slate-900 px-4 py-3 text-slate-100 placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-violet-500/50 focus:border-violet-500/50 text-sm"
+                autoComplete="name"
+                className="w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3.5 py-2.5 text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-400 mb-1.5">Email</label>
+              <label htmlFor="signup-email" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+                Work email
+              </label>
               <input
+                id="signup-email"
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                placeholder="you@company.com"
-                className="w-full rounded-lg border border-slate-700 bg-slate-900 px-4 py-3 text-slate-100 placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-violet-500/50 focus:border-violet-500/50 text-sm"
+                autoComplete="email"
+                className="w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3.5 py-2.5 text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-400 mb-1.5">Password</label>
+              <label htmlFor="signup-password" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+                Password
+              </label>
               <input
+                id="signup-password"
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 minLength={8}
                 placeholder="8+ characters"
-                className="w-full rounded-lg border border-slate-700 bg-slate-900 px-4 py-3 text-slate-100 placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-violet-500/50 focus:border-violet-500/50 text-sm"
+                autoComplete="new-password"
+                className="w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3.5 py-2.5 text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-600 focus:outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20"
               />
             </div>
             {error && (
-              <div className="text-sm text-red-400 bg-red-500/10 border border-red-500/20 rounded-lg px-4 py-3">
+              <div className="rounded-lg border border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-950/30 px-3.5 py-2.5 text-sm text-red-700 dark:text-red-400">
                 {error}
               </div>
             )}
             <button
               type="submit"
               disabled={loading}
-              className="w-full rounded-lg bg-gradient-to-r from-violet-600 to-fuchsia-600 py-3 font-semibold text-white hover:shadow-lg hover:shadow-violet-500/20 disabled:opacity-60 flex items-center justify-center gap-2 text-sm transition-all"
+              className="w-full rounded-lg bg-slate-900 dark:bg-slate-100 py-2.5 text-sm font-semibold text-white dark:text-slate-900 hover:bg-slate-800 dark:hover:bg-slate-200 disabled:opacity-50 flex items-center justify-center gap-2 transition-colors"
             >
               {loading ? "Creating account..." : "Create account"}
-              <ArrowRightIcon className="h-4 w-4" />
+              {!loading && <ArrowRightIcon className="h-4 w-4" />}
             </button>
           </form>
 
-          <p className="mt-6 text-sm text-slate-600 text-center">
+          <p className="mt-6 text-sm text-slate-500 dark:text-slate-400 text-center">
             Already have an account?{" "}
-            <Link href={`/auth/signin?callbackUrl=${encodeURIComponent(redirect)}`} className="text-violet-400 hover:underline">
+            <Link
+              href={`/auth/signin?callbackUrl=${encodeURIComponent(redirect)}`}
+              className="font-medium text-violet-600 dark:text-violet-400 hover:text-violet-700 dark:hover:text-violet-300"
+            >
               Sign in
             </Link>
+          </p>
+
+          <p className="mt-4 text-xs text-slate-400 dark:text-slate-500 text-center">
+            No credit card required. Free plan includes 1 cloud account.
           </p>
         </div>
       </div>
 
-      {/* Right panel — trust signals (hidden on mobile) */}
       {isOperatorFlow && (
-        <div className="hidden lg:flex flex-1 items-center justify-center bg-slate-900/50 border-l border-slate-800/50 px-12">
-          <div className="max-w-sm">
-            <h2 className="text-lg font-semibold text-slate-200 mb-6">What you get — free:</h2>
-            <div className="space-y-5">
+        <div className="hidden lg:flex flex-1 items-center justify-center bg-slate-50 dark:bg-slate-900/50 border-l border-slate-100 dark:border-slate-800/50 px-12">
+          <div className="max-w-xs">
+            <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-200 mb-5">
+              What you get — free
+            </h2>
+            <div className="space-y-4">
               {[
-                { icon: ShieldCheckIcon, text: "Connect your AWS account with read-only access" },
-                { icon: CheckCircleIcon, text: "AI-powered infrastructure analysis" },
+                { icon: ShieldCheckIcon, text: "Read-only AWS access via assume-role" },
+                { icon: CheckCircleIcon, text: "Full infrastructure scan and analysis" },
                 { icon: CheckCircleIcon, text: "Cost, security, and drift findings" },
-                { icon: CheckCircleIcon, text: "Prioritized recommendations report" },
-                { icon: CheckCircleIcon, text: "Phased execution plans (on upgrade)" },
+                { icon: CheckCircleIcon, text: "Prioritized recommendations" },
+                { icon: CheckCircleIcon, text: "Execution plans on upgrade" },
               ].map((item, i) => (
-                <div key={i} className="flex items-center gap-3 text-sm text-slate-400">
-                  <item.icon className="h-4 w-4 text-emerald-400 flex-shrink-0" />
+                <div key={i} className="flex items-center gap-2.5 text-sm text-slate-600 dark:text-slate-400">
+                  <item.icon className="h-4 w-4 text-emerald-500 flex-shrink-0" />
                   {item.text}
                 </div>
               ))}
-            </div>
-            <div className="mt-8 pt-6 border-t border-slate-800">
-              <p className="text-xs text-slate-600">
-                No credit card required. Free plan includes 1 cloud connection and full analysis.
-              </p>
             </div>
           </div>
         </div>
