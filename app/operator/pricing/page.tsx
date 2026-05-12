@@ -117,11 +117,13 @@ export default function OperatorPricingPage() {
   const [billing, setBilling] = useState<BillingCycle>("monthly");
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100">
+    <div className="min-h-screen bg-slate-950 text-slate-100 relative">
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[500px] spotlight-orb opacity-40" aria-hidden />
+      <div className="absolute inset-0 bg-dots opacity-10" aria-hidden />
       <Navigation />
 
       {/* Header */}
-      <section className="pt-32 pb-12 text-center px-4">
+      <section className="pt-32 pb-12 text-center px-4 relative">
         <Reveal>
           <h1 className="text-3xl sm:text-4xl font-bold mb-4">Simple, transparent pricing</h1>
           <p className="text-slate-400 text-lg max-w-xl mx-auto">
@@ -171,7 +173,7 @@ export default function OperatorPricingPage() {
                   key={planId}
                   className={`card-hover rounded-2xl border p-8 flex flex-col transition-colors ${
                     highlighted
-                      ? "border-violet-500/40 bg-violet-950/10 ring-1 ring-violet-500/20 relative hover:border-violet-500/60"
+                      ? "glow-border-card border-violet-500/40 bg-violet-950/10 ring-1 ring-violet-500/20 relative hover:border-violet-500/60"
                       : "border-slate-800 bg-slate-900/50 hover:border-slate-700"
                   }`}
                 >
@@ -291,7 +293,7 @@ export default function OperatorPricingPage() {
           <Reveal>
             <h2 className="text-2xl font-bold text-center mb-8">Add-ons</h2>
           </Reveal>
-          <div className="rounded-xl border border-slate-800 bg-slate-900/50 p-6">
+          <div className="rounded-xl border border-slate-800 bg-slate-900/50 p-6 glass-dark backdrop-blur-sm">
             <div className="space-y-4">
               {ADDONS.map((addon) => (
                 <div key={addon.name} className="flex items-center justify-between py-2 border-b border-slate-800 last:border-0">

@@ -315,10 +315,10 @@ export default function OperationsPage() {
         <div className="grid lg:grid-cols-3 gap-6">
           {/* ── Agent Activity ────────────────────────────────────── */}
           <section className="lg:col-span-2">
-            <div className="rounded-2xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 overflow-hidden">
+            <div className="glow-border-card rounded-2xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 overflow-hidden">
               <div className="px-5 py-4 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <SignalIcon className="h-4 w-4 text-slate-400" />
+                  <SignalIcon className="h-4 w-4 text-slate-400 icon-luminous" />
                   <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-100">Agent Activity</h2>
                 </div>
                 <span className="text-xs text-slate-400 dark:text-slate-500">
@@ -464,9 +464,9 @@ export default function OperationsPage() {
         </div>
 
         {/* ── Operational Intelligence Footer ─────────────────────── */}
-        <section className="rounded-2xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 p-6">
+        <section className="glow-border-card rounded-2xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 p-6">
           <div className="flex items-center gap-3 mb-4">
-            <CpuChipIcon className="h-5 w-5 text-violet-600 dark:text-violet-400" />
+            <CpuChipIcon className="h-5 w-5 icon-luminous" />
             <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-100">Autonomous Loop Status</h2>
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-4">

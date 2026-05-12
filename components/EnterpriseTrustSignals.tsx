@@ -30,10 +30,11 @@ const GOVERNANCE = [
 export function EnterpriseTrustSignals() {
   return (
     <section
-      className="py-16 px-4 sm:px-6 lg:px-8 border-t border-slate-200/80 dark:border-slate-700/80"
+      className="py-16 px-4 sm:px-6 lg:px-8 border-t border-slate-200/80 dark:border-slate-700/80 relative overflow-hidden"
       aria-labelledby="trust-signals-heading"
     >
-      <div className="max-w-5xl mx-auto">
+      <div className="absolute inset-0 bg-dots opacity-30 dark:opacity-20" aria-hidden />
+      <div className="max-w-5xl mx-auto relative">
         <div className="text-center mb-10">
           <h2
             id="trust-signals-heading"
@@ -49,7 +50,7 @@ export function EnterpriseTrustSignals() {
           {GOVERNANCE.map((block) => (
             <div
               key={block.title}
-              className="card-hover rounded-xl border border-slate-200 dark:border-slate-700/80 bg-white dark:bg-slate-800/80 p-5 hover:border-violet-300 dark:hover:border-violet-700 transition-colors"
+              className="glow-border-card card-hover rounded-xl border border-slate-200 dark:border-slate-700/80 bg-white dark:bg-slate-800/80 p-5 hover:border-violet-300 dark:hover:border-violet-700 transition-colors"
             >
               <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-3">
                 {block.title}

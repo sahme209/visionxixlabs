@@ -77,7 +77,10 @@ export function ServicePipeline() {
 
   return (
     <div className="relative">
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="hidden lg:block absolute top-1/2 left-0 right-0 h-0.5 -translate-y-1/2 z-0">
+        <div className="pipeline-glow h-full rounded-full opacity-40" />
+      </div>
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 relative z-10">
         {PHASES.map((phase, pi) => {
           const colors = ACCENT_COLORS[phase.accent];
           const isExpanded = expandedPhase === pi;
@@ -101,7 +104,7 @@ export function ServicePipeline() {
               <div className="space-y-2">
                 {phase.steps.map((step) => (
                   <div key={step.num} className="flex items-start gap-2.5">
-                    <span className={`shrink-0 w-5 h-5 rounded-md flex items-center justify-center text-[10px] font-bold ${colors.num}`}>
+                    <span className={`icon-bounce shrink-0 w-5 h-5 rounded-md flex items-center justify-center text-[10px] font-bold ${colors.num}`}>
                       {step.num}
                     </span>
                     <div className="min-w-0">

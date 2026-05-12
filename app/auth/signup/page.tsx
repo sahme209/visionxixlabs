@@ -9,6 +9,7 @@ import {
   CheckCircleIcon,
   ShieldCheckIcon,
 } from "@heroicons/react/24/outline";
+import { RealisticFogBackground } from "@/components/ui/realistic-fog-background";
 
 export default function SignUpPage() {
   return (
@@ -61,8 +62,11 @@ function SignUpForm() {
   const isOperatorFlow = redirect.includes("operator");
 
   return (
-    <div className="min-h-screen flex bg-white dark:bg-slate-950">
-      <div className="flex-1 flex items-center justify-center px-4 sm:px-8">
+    <div className="min-h-screen flex bg-white dark:bg-slate-950 relative overflow-hidden">
+      <RealisticFogBackground backgroundColor="transparent" opacity={0.2} darken contained />
+      <div className="absolute -top-40 -right-40 w-96 h-96 rounded-full bg-violet-500/5 dark:bg-violet-500/10 blur-3xl" aria-hidden />
+      <div className="absolute -bottom-40 -left-40 w-96 h-96 rounded-full bg-fuchsia-500/5 dark:bg-fuchsia-500/10 blur-3xl" aria-hidden />
+      <div className="flex-1 flex items-center justify-center px-4 sm:px-8 relative z-10">
         <div className="w-full max-w-sm">
           <Link href="/" className="flex items-center gap-2.5 mb-10">
             <Image
@@ -136,7 +140,7 @@ function SignUpForm() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full rounded-lg bg-slate-900 dark:bg-slate-100 py-2.5 text-sm font-semibold text-white dark:text-slate-900 hover:bg-slate-800 dark:hover:bg-slate-200 disabled:opacity-50 flex items-center justify-center gap-2 transition-colors"
+              className="btn-huly w-full rounded-lg bg-slate-900 dark:bg-slate-100 py-2.5 text-sm font-semibold text-white dark:text-slate-900 hover:bg-slate-800 dark:hover:bg-slate-200 disabled:opacity-50 flex items-center justify-center gap-2 transition-colors shadow-sm"
             >
               {loading ? "Creating account..." : "Create account"}
               {!loading && <ArrowRightIcon className="h-4 w-4" />}
@@ -160,7 +164,7 @@ function SignUpForm() {
       </div>
 
       {isOperatorFlow && (
-        <div className="hidden lg:flex flex-1 items-center justify-center bg-slate-50 dark:bg-slate-900/50 border-l border-slate-100 dark:border-slate-800/50 px-12">
+        <div className="hidden lg:flex flex-1 items-center justify-center bg-slate-50/80 dark:bg-slate-900/50 border-l border-slate-100 dark:border-slate-800/50 px-12 relative z-10 backdrop-blur-sm">
           <div className="max-w-xs">
             <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-200 mb-5">
               What you get — free

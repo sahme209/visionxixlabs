@@ -6,6 +6,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { ArrowRightIcon } from "@heroicons/react/24/outline";
+import { RealisticFogBackground } from "@/components/ui/realistic-fog-background";
 
 function SignInForm() {
   const [email, setEmail] = useState("");
@@ -40,8 +41,11 @@ function SignInForm() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-white dark:bg-slate-950 px-4">
-      <div className="w-full max-w-sm">
+    <div className="min-h-screen flex items-center justify-center bg-white dark:bg-slate-950 px-4 relative overflow-hidden">
+      <RealisticFogBackground backgroundColor="transparent" opacity={0.25} darken contained />
+      <div className="absolute -top-40 -right-40 w-96 h-96 rounded-full bg-violet-500/5 dark:bg-violet-500/10 blur-3xl" aria-hidden />
+      <div className="absolute -bottom-40 -left-40 w-96 h-96 rounded-full bg-fuchsia-500/5 dark:bg-fuchsia-500/10 blur-3xl" aria-hidden />
+      <div className="w-full max-w-sm relative z-10">
         <Link href="/" className="flex items-center gap-2.5 mb-10">
           <Image
             src="/vision-xix-logo.png"
@@ -95,7 +99,7 @@ function SignInForm() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full rounded-lg bg-slate-900 dark:bg-slate-100 py-2.5 text-sm font-semibold text-white dark:text-slate-900 hover:bg-slate-800 dark:hover:bg-slate-200 disabled:opacity-50 flex items-center justify-center gap-2 transition-colors"
+            className="btn-huly w-full rounded-lg bg-slate-900 dark:bg-slate-100 py-2.5 text-sm font-semibold text-white dark:text-slate-900 hover:bg-slate-800 dark:hover:bg-slate-200 disabled:opacity-50 flex items-center justify-center gap-2 transition-colors shadow-sm"
           >
             {loading ? "Signing in..." : "Sign in"}
             {!loading && <ArrowRightIcon className="h-4 w-4" />}

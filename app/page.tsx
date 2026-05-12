@@ -74,7 +74,7 @@ export default function Home() {
           <Reveal direction="up" blur delay={0.04}>
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-[1.1] tracking-tight text-slate-900 dark:text-slate-50">
               Infrastructure intelligence<br className="hidden sm:block" />
-              that operates autonomously.
+              that operates <span className="text-gradient">autonomously.</span>
             </h1>
           </Reveal>
           <Reveal direction="up" delay={0.06}>
@@ -143,9 +143,9 @@ export default function Home() {
           </Reveal>
           <div className="grid md:grid-cols-3 gap-6">
             <Reveal direction="up">
-              <div className="card-hover rounded-xl border border-slate-200 dark:border-slate-700/80 bg-white dark:bg-slate-800/80 p-6 h-full hover:border-violet-300 dark:hover:border-violet-700 transition-colors">
+              <div className="glow-border-card card-hover rounded-xl border border-slate-200 dark:border-slate-700/80 bg-white dark:bg-slate-800/80 p-6 h-full hover:border-violet-300 dark:hover:border-violet-700 transition-colors">
                 <div className="flex items-center gap-2 mb-3">
-                  <span className="w-2 h-2 rounded-full bg-violet-500" />
+                  <span className="w-2 h-2 rounded-full bg-violet-500 animate-pulse-glow" />
                   <h3 className="text-base font-semibold text-slate-900 dark:text-slate-100">Deep Scanning</h3>
                 </div>
                 <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">
@@ -159,9 +159,9 @@ export default function Home() {
               </div>
             </Reveal>
             <Reveal direction="up" delay={0.06}>
-              <div className="card-hover rounded-xl border border-slate-200 dark:border-slate-700/80 bg-white dark:bg-slate-800/80 p-6 h-full hover:border-violet-300 dark:hover:border-violet-700 transition-colors">
+              <div className="glow-border-card card-hover rounded-xl border border-slate-200 dark:border-slate-700/80 bg-white dark:bg-slate-800/80 p-6 h-full hover:border-violet-300 dark:hover:border-violet-700 transition-colors">
                 <div className="flex items-center gap-2 mb-3">
-                  <span className="w-2 h-2 rounded-full bg-fuchsia-500" />
+                  <span className="w-2 h-2 rounded-full bg-fuchsia-500 animate-pulse-glow" />
                   <h3 className="text-base font-semibold text-slate-900 dark:text-slate-100">Autonomous Reasoning</h3>
                 </div>
                 <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">
@@ -175,9 +175,9 @@ export default function Home() {
               </div>
             </Reveal>
             <Reveal direction="up" delay={0.12}>
-              <div className="card-hover rounded-xl border border-slate-200 dark:border-slate-700/80 bg-white dark:bg-slate-800/80 p-6 h-full hover:border-violet-300 dark:hover:border-violet-700 transition-colors">
+              <div className="glow-border-card card-hover rounded-xl border border-slate-200 dark:border-slate-700/80 bg-white dark:bg-slate-800/80 p-6 h-full hover:border-violet-300 dark:hover:border-violet-700 transition-colors">
                 <div className="flex items-center gap-2 mb-3">
-                  <span className="w-2 h-2 rounded-full bg-emerald-500" />
+                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse-glow" />
                   <h3 className="text-base font-semibold text-slate-900 dark:text-slate-100">Governed Execution</h3>
                 </div>
                 <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">
@@ -227,7 +227,7 @@ export default function Home() {
               { name: "GCP", status: "Scan only", statusColor: "bg-amber-500", desc: "Plan and execute on roadmap" },
               { name: "Terraform", status: "Auto-generated", statusColor: "bg-violet-500", desc: "IaC plans with rollback" },
             ].map((p) => (
-              <div key={p.name} className="rounded-xl border border-slate-200 dark:border-slate-700/80 bg-white dark:bg-slate-800/80 p-4 text-center">
+              <div key={p.name} className="card-hover rounded-xl border border-slate-200 dark:border-slate-700/80 bg-white dark:bg-slate-800/80 p-4 text-center hover:border-violet-300 dark:hover:border-violet-700 transition-colors">
                 <div className="text-xl font-bold text-slate-900 dark:text-slate-100 mb-1">{p.name}</div>
                 <div className="flex items-center justify-center gap-1.5 mb-1">
                   <span className={`w-1.5 h-1.5 rounded-full ${p.statusColor}`} />
@@ -295,7 +295,7 @@ export default function Home() {
       </section>
 
       {/* Footer */}
-      <footer className="bg-slate-900 text-slate-300 py-12 px-4 sm:px-6 lg:px-8 border-t border-slate-800">
+      <footer className="bg-slate-900 text-slate-300 py-12 px-4 sm:px-6 lg:px-8 border-t border-slate-800 relative overflow-hidden">
         <div className="max-w-6xl mx-auto">
           <div className="grid md:grid-cols-4 gap-8 mb-8">
             <div className="md:col-span-2">
@@ -307,7 +307,7 @@ export default function Home() {
                   height={32}
                   className="rounded-lg"
                 />
-                <span className="text-lg font-bold text-white">
+                <span className="text-lg font-bold text-gradient">
                   Vision XIX Labs
                 </span>
               </div>

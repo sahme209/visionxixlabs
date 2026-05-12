@@ -139,6 +139,7 @@ export default function AxiomPage() {
       <section className="relative overflow-hidden">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(124,58,237,0.08),transparent_50%)] dark:bg-[radial-gradient(ellipse_at_top,rgba(124,58,237,0.15),transparent_50%)]" />
         <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(148,163,184,0.05)_1px,transparent_1px),linear-gradient(to_bottom,rgba(148,163,184,0.05)_1px,transparent_1px)] bg-[size:64px_64px] dark:bg-[linear-gradient(to_right,rgba(148,163,184,0.03)_1px,transparent_1px),linear-gradient(to_bottom,rgba(148,163,184,0.03)_1px,transparent_1px)]" />
+        <div className="absolute top-20 left-1/2 -translate-x-1/2 w-[600px] h-[400px] spotlight-orb opacity-30 dark:opacity-50" aria-hidden />
         <div className="relative max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-20 text-center">
           <div className="inline-flex items-center gap-2 rounded-full bg-violet-50 dark:bg-violet-950/50 border border-violet-200 dark:border-violet-800 px-4 py-1.5 text-sm font-medium text-violet-700 dark:text-violet-300 mb-8">
             <CpuChipIcon className="h-4 w-4" />
@@ -146,7 +147,7 @@ export default function AxiomPage() {
           </div>
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-slate-900 dark:text-slate-50 mb-6 leading-[1.1]">
             Infrastructure intelligence<br className="hidden sm:block" />
-            that operates autonomously.
+            that operates <span className="text-gradient">autonomously.</span>
           </h1>
           <p className="text-lg sm:text-xl text-slate-600 dark:text-slate-400 max-w-2xl mx-auto mb-10 leading-relaxed">
             Axiom scans your cloud infrastructure, identifies what to fix, reasons about priority and risk, generates execution plans, and applies approved changes — with full audit trail, rollback capability, and continuous drift monitoring.
@@ -245,11 +246,11 @@ export default function AxiomPage() {
               return (
                 <div
                   key={cap.title}
-                  className="card-hover rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-8 hover:border-violet-200 dark:hover:border-violet-800 transition-colors"
+                  className="glow-border-card card-hover rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-8 hover:border-violet-200 dark:hover:border-violet-800 transition-colors"
                 >
                   <div className="flex items-start gap-4 mb-4">
                     <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-violet-100 dark:bg-violet-900/50 flex items-center justify-center">
-                      <Icon className="h-5 w-5 text-violet-600 dark:text-violet-400" />
+                      <Icon className="h-5 w-5 icon-luminous" />
                     </div>
                     <div>
                       <h3 className="text-lg font-bold text-slate-900 dark:text-slate-100">{cap.title}</h3>

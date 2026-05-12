@@ -49,10 +49,13 @@ export default function ContactPage() {
   };
 
   return (
-    <div className="min-h-screen bg-white dark:bg-slate-950">
+    <div className="min-h-screen bg-white dark:bg-slate-950 relative overflow-hidden">
+      <div className="absolute inset-0 bg-dots opacity-20 dark:opacity-10" aria-hidden />
+      <div className="absolute -top-40 right-0 w-96 h-96 rounded-full bg-violet-500/5 dark:bg-violet-500/8 blur-3xl" aria-hidden />
+      <div className="absolute bottom-0 -left-40 w-96 h-96 rounded-full bg-fuchsia-500/5 dark:bg-fuchsia-500/8 blur-3xl" aria-hidden />
       <Navigation />
 
-      <main className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-20">
+      <main className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-20 relative">
         <div className="mb-10">
           <h1 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-slate-50 mb-3">
             Get in touch
