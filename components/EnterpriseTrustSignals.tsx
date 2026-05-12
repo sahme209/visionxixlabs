@@ -11,9 +11,9 @@ const GOVERNANCE = [
       </svg>
     ),
     items: [
-      "Assume-role — no stored credentials",
-      "Read-only by default, write requires explicit opt-in",
-      "Revoke access from your console at any time",
+      "Assume-role model — zero stored credentials, zero shared passwords",
+      "Read-only by default — write access scoped, temporary, and approval-gated",
+      "Revoke instantly — active sessions self-terminate within 60 seconds",
     ],
   },
   {
@@ -24,10 +24,10 @@ const GOVERNANCE = [
       </svg>
     ),
     items: [
-      "Human approval required for all high-risk changes",
-      "Blast radius limits enforced per action",
-      "Pre-verified rollback strategy before every apply",
-      "Outcome memory — prior failures block auto-fix",
+      "Human approval required for cost, network, IAM, and past-failure changes",
+      "Blast radius limits — instance changes capped, network changes staged to non-prod first",
+      "Pre-verified rollback — rollback plan validated before execution, not after failure",
+      "Outcome memory — prior failures on resource X require manual approval on retry",
     ],
   },
   {
@@ -38,10 +38,10 @@ const GOVERNANCE = [
       </svg>
     ),
     items: [
-      "Immutable audit trail for every action",
-      "Full reasoning chain visible per decision",
-      "Trust levels prevent agent self-escalation",
-      "Governance policies configurable per organization",
+      "Immutable audit trail — what changed, who approved, cost impact, rollback status",
+      "Full reasoning chain — every decision logged with rationale and confidence score",
+      "Hard trust boundaries — the agent can never self-escalate its own autonomy level",
+      "Governance policies per team — cost budgets, approval thresholds, change windows",
     ],
   },
 ];
@@ -66,10 +66,11 @@ export function EnterpriseTrustSignals() {
               id="trust-signals-heading"
               className="text-3xl md:text-4xl font-bold mb-4"
             >
-              Enterprise governance built in
+              Autonomous operations.<br className="hidden sm:block" />
+              <span className="text-zinc-500">Zero autonomous risk.</span>
             </h2>
             <p className="text-zinc-400 max-w-lg mx-auto">
-              Axiom can never self-escalate. Every action is scoped, approved, auditable, and reversible.
+              The agent enforces governance at every step — approval gates for blast-radius changes, cost visibility per decision, and immutable audit trails that prove compliance.
             </p>
           </div>
         </AnimateOnScroll>

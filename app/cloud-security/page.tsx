@@ -20,10 +20,10 @@ import {
 export const metadata: Metadata = {
   title: "Cloud Security & Infrastructure Hardening",
   description:
-    "Secure-by-design cloud engineering. Security baseline, DevOps hardening, AI security review, visibility and monitoring — practical hardening without exaggerated claims.",
+    "Secure-by-design cloud engineering. Security baseline enforcement, DevOps hardening, AI security review, zero-trust deployment, and measurable risk reduction.",
   openGraph: {
     title: "Cloud Security & Infrastructure Hardening | Vision XIX Labs",
-    description: "Practical cloud security hardening and deployment discipline. Role-based access, no shared credentials, auditable changes.",
+    description: "Zero-trust cloud security: immutable audit trails, role-based access with auto-revocation, and cost tracking per team.",
     url: "https://visionxixlabs.com/cloud-security",
   },
   alternates: { canonical: "https://visionxixlabs.com/cloud-security" },
@@ -80,7 +80,7 @@ export default function CloudSecurityPage() {
                 Security <span className="text-gradient">offerings</span>
               </h2>
               <p className="text-zinc-400 mb-8 max-w-2xl">
-                Structured services to harden your cloud environment and deployment process. No fear-based marketing — clear scope and deliverables.
+                Lock down your platform: hardened CI/CD, zero-trust deployment, security baseline enforcement. Clear scope, auditable outcomes, measurable risk reduction.
               </p>
               <Stagger className="grid gap-6 sm:grid-cols-2">
                 {cloudSecurityServices.map((service) => (
@@ -132,16 +132,16 @@ export default function CloudSecurityPage() {
           <Reveal direction="up" delay={0.1}>
             <div className="mt-16 text-center">
               <p className="text-zinc-400 mb-3">
-                Book a cloud review call to walk through your environment, risks, and improvement options.
+                90-minute cloud security audit: governance maturity scorecard, compliance readiness assessment, and quantified risk reduction roadmap.
               </p>
               <p className="text-xs text-zinc-500 mb-4">
-                Includes a free 30-minute cloud health assessment for qualified teams.
+                Includes a structured 30-minute cloud health assessment with findings report.
               </p>
               <Link
                 href="/contact"
                 className="btn-huly cta-glow inline-flex items-center px-6 py-3 bg-white text-zinc-900 rounded-xl font-semibold hover:opacity-90 transition-opacity"
               >
-                Book a Cloud Review Call
+                Book a Security Audit
               </Link>
             </div>
           </Reveal>

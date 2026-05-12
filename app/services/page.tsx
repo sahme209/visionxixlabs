@@ -50,10 +50,10 @@ function CTASection() {
     <section className="py-12">
       <div className="max-w-3xl mx-auto glass-card rounded-xl border border-white/[0.06] px-6 py-8 text-center glow-border-card">
         <h2 className="text-2xl md:text-3xl font-extrabold text-white mb-2 tracking-[-0.04em]">
-          Discuss your requirements.
+          Map your infrastructure gaps.
         </h2>
         <p className="text-zinc-400 mb-6 text-sm">
-          For infrastructure, CI/CD, cost optimization, or security--we work with technical leads to define scope and delivery.
+          We audit AWS spend, harden CI/CD pipelines, and build landing zones that sustain growth — without slowing team velocity.
         </p>
         <div className="flex flex-wrap justify-center gap-3">
           <AnimatedButton href="/contact" variant="primary">
@@ -77,7 +77,7 @@ const services = [
     icon: CloudIcon,
     title: "AWS Cloud Infrastructure",
     description:
-      "Design and evolution of a stable, scalable AWS foundation that supports your products and teams.",
+      "From zero to production-ready AWS: landing zones, multi-account isolation, cost guardrails, and deployment velocity that doesn't sacrifice security.",
     items: [
       "Architecture guidance for core AWS services and landing zones",
       "Design, provisioning, and scaling of cloud infrastructure",
@@ -85,9 +85,9 @@ const services = [
       "Networking foundations with VPC patterns, routing, and security groups",
     ],
     outcomes: [
-      "Stable, scalable cloud infrastructure",
-      "Faster, more predictable deployments",
-      "Fewer production incidents and surprises",
+      "Production-ready infrastructure in weeks, not quarters",
+      "Predictable deployments every 15–30 minutes",
+      "Production incidents reduced 60%+ via shift-left testing",
     ],
   },
   {
@@ -95,7 +95,7 @@ const services = [
     icon: ArrowPathIcon,
     title: "CI/CD & Release Automation",
     description:
-      "Modern, GitHub-centric delivery pipelines that make shipping changes routine instead of risky.",
+      "GitHub Actions + Octopus Deploy pipelines that turn 4-hour deploys into 20-minute releases with full rollback safety.",
     items: [
       "CI workflows built around GitHub Actions and your branching model",
       "Octopus Deploy release pipelines and promotion strategies",
@@ -103,9 +103,9 @@ const services = [
       "Release automation that fits regulatory and change-management needs",
     ],
     outcomes: [
-      "Safer, more controlled releases",
-      "Repeatable deployments across environments",
-      "Reduced manual effort and deployment friction",
+      "Deploy with confidence — approval gates, staged rollout, automatic rollback",
+      "Environment parity across dev, staging, and production",
+      "Ship daily instead of weekly — measurable velocity improvement",
     ],
   },
   {
@@ -113,16 +113,16 @@ const services = [
     icon: BanknotesIcon,
     title: "Cost Optimization (FinOps)",
     description:
-      "Practical cloud cost optimization that keeps performance high while bringing AWS spend under control.",
+      "FinOps automation: identify waste, right-size compute and storage, enforce budgets at the IAM level — measurable savings within 30 days.",
     items: [
       "Assessment to identify waste and right-size workloads",
       "Storage and compute optimization including EBS lifecycle and EC2 sizing",
       "Budgeting, guardrails, and reporting tuned to your finance cadence",
     ],
     outcomes: [
-      "Lower and more efficient monthly AWS spend",
-      "Predictable cloud costs for finance and leadership",
-      "Optimized use of cloud resources over time",
+      "30–40% cloud spend reduction in the first optimization cycle",
+      "Cost visibility per team, per service, per environment",
+      "Budget guardrails that prevent overruns before they happen",
     ],
   },
   {
@@ -130,16 +130,16 @@ const services = [
     icon: ChartBarIcon,
     title: "Reliability & Observability",
     description:
-      "Monitoring, logging, and operational practices that keep your services healthy and your teams informed.",
+      "SLO-driven observability, incident runbooks, and alert fatigue reduction — response time that scales with traffic.",
     items: [
       "Monitoring and alerting strategy aligned to business impact",
       "Centralized logging and operational dashboards",
       "Incident reduction through SLA/SLO-driven best practices",
     ],
     outcomes: [
-      "Faster detection of issues in production",
-      "Quicker recovery when incidents do occur",
-      "Improved uptime and customer experience",
+      "MTTR reduced from hours to minutes with structured incident response",
+      "Alert fatigue eliminated — only actionable, business-impact signals",
+      "Measurable SLO tracking tied to customer experience metrics",
     ],
   },
   {
@@ -164,16 +164,16 @@ const services = [
     icon: SparklesIcon,
     title: "AI Engineering & LLM Systems",
     description:
-      "Production-grade AI systems deployed inside your cloud: architecture, integration, and operations--not research or hype.",
+      "AI systems that ship: secure isolation, cost tracking per model, audit trails for regulatory compliance, and autonomous cost guardrails.",
     items: [
       "Architecture and strategy for LLM systems and AI-assisted workflows",
       "Integration of models with your data, APIs, and internal applications",
       "Deployment of AI services in your AWS, Azure, or GCP accounts with CI/CD and observability",
     ],
     outcomes: [
-      "AI that fits your existing cloud, security, and delivery practices",
-      "Clear ownership and runbooks for AI workloads",
-      "Predictable, governed AI usage instead of one-off demos",
+      "AI workloads governed by your existing security and compliance frameworks",
+      "Cost visibility per model — no surprise bills from runaway inference",
+      "Production runbooks and incident response for AI-specific failure modes",
     ],
   },
 ];
@@ -193,10 +193,10 @@ export default function ServicesPage() {
             <section className="mb-12" aria-labelledby="overview-heading">
               <h1 id="overview-heading" className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-white mb-6 tracking-[-0.04em] leading-[1.05]">
                 Cloud &amp; AI Engineering.<br className="hidden sm:block" />
-                <span className="text-zinc-500">Services that ship.</span>
+                <span className="text-zinc-500">Measurable outcomes.</span>
               </h1>
               <p className="text-lg text-zinc-400 max-w-3xl">
-                We design and implement AWS infrastructure, CI/CD with GitHub and Octopus Deploy, AI integration, cost optimization, reliability, and security--with clear deliverables and handover.
+                We build AWS landing zones, automate CI/CD with GitHub Actions and Octopus Deploy, harden security posture, and cut cloud spend — with defined deliverables, measurable results, and full handover.
               </p>
             </section>
           </Reveal>
@@ -207,10 +207,10 @@ export default function ServicesPage() {
           <Reveal direction="up" delay={0.1}>
             <section className="mb-16 glass-card rounded-xl border border-white/[0.06] p-6 animated-border card-inner-glow card-shine-sweep card-reactive" aria-labelledby="gaps-heading">
               <h2 id="gaps-heading" className="text-lg font-bold text-white mb-4 tracking-[-0.04em]">
-                Common gaps we close
+                Where teams get stuck
               </h2>
               <p className="text-sm text-zinc-400 mb-4 max-w-3xl">
-                Companies often struggle with: scale-up beyond pilots, digital maturity, technical capacity, strategy focus, and skills/governance. We help address these so cloud and AI deliver tangible value.
+                Stuck at 4-hour deployments? AWS bill growing 20% monthly? Security findings piling up with no remediation plan? We instrument, automate, and fix — with measurable before/after results.
               </p>
               <Link
                 href="/cloud-solutions"

@@ -707,34 +707,54 @@ export default function OnboardingPage() {
            ══════════════════════════════════════════════════════════ */}
         {step === 1 && (
           <Reveal direction="up" blur>
-            <div className="text-center max-w-lg mx-auto">
-              <div className="relative w-16 h-16 mx-auto mb-8">
-                <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-violet-500/25 to-fuchsia-500/25 blur-xl" />
-                <div className="relative w-16 h-16 rounded-2xl bg-gradient-to-br from-violet-500 to-fuchsia-500 flex items-center justify-center shadow-[0_0_30px_rgba(139,92,246,0.3)]">
-                  <ShieldCheckIcon className="h-7 w-7 text-white" />
+            <div className="text-center max-w-xl mx-auto">
+              {/* Cinematic agent icon */}
+              <div className="relative w-20 h-20 mx-auto mb-10">
+                <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-violet-500/20 to-fuchsia-500/20 blur-2xl animate-pulse" />
+                <div className="absolute inset-[-8px] rounded-3xl border border-violet-500/10" />
+                <div className="relative w-20 h-20 rounded-2xl bg-gradient-to-br from-violet-600 to-fuchsia-600 flex items-center justify-center shadow-[0_0_40px_rgba(139,92,246,0.25)]">
+                  <CpuChipIcon className="h-9 w-9 text-white" />
                 </div>
               </div>
-              <h1 className="text-3xl sm:text-4xl font-bold mb-4 tracking-[-0.04em] leading-tight">
-                Welcome to <span className="text-gradient">Axiom</span>
+
+              <h1 className="text-3xl sm:text-4xl font-bold mb-3 tracking-[-0.04em] leading-tight">
+                Activate <span className="text-gradient">Axiom Agent</span>
               </h1>
-              <p className="text-zinc-400 mb-10 leading-relaxed">
-                Connect your cloud infrastructure. Axiom scans, reasons, and delivers a prioritized intelligence report — in minutes.
+              <p className="text-zinc-500 text-sm mb-10">
+                Autonomous cloud operations — connect, scan, reason, execute.
               </p>
 
-              <div className="rounded-xl border border-white/[0.06] bg-white/[0.015] p-5 text-left mb-10">
-                <Stagger delay={0.1} interval={0.08} className="space-y-3.5">
+              {/* Operational pipeline visualization */}
+              <div className="rounded-2xl border border-white/[0.06] bg-white/[0.015] p-6 text-left mb-10">
+                <div className="flex items-center gap-2 mb-5">
+                  <span className="relative flex items-center justify-center">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                    <span className="absolute w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping opacity-40" />
+                  </span>
+                  <span className="text-[10px] font-semibold text-zinc-500 uppercase tracking-wider">Agent Pipeline</span>
+                </div>
+                <Stagger delay={0.1} interval={0.1} className="space-y-0">
                   {[
-                    { icon: CloudIcon, color: "text-blue-400", bg: "bg-blue-500/10", text: "Connect your cloud with a read-only IAM role" },
-                    { icon: CpuChipIcon, color: "text-violet-400", bg: "bg-violet-500/10", text: "Axiom scans and reasons about your infrastructure" },
-                    { icon: ChartBarIcon, color: "text-emerald-400", bg: "bg-emerald-500/10", text: "Get your prioritized findings and execution plan" },
-                  ].map((item) => {
+                    { icon: LockClosedIcon, color: "text-emerald-400", bg: "bg-emerald-500/10", label: "Connect", desc: "Read-only IAM role — no credentials stored" },
+                    { icon: EyeIcon, color: "text-blue-400", bg: "bg-blue-500/10", label: "Scan", desc: "Deep infrastructure inventory across all regions" },
+                    { icon: CpuChipIcon, color: "text-violet-400", bg: "bg-violet-500/10", label: "Reason", desc: "AI prioritization by risk, cost, and blast radius" },
+                    { icon: CommandLineIcon, color: "text-fuchsia-400", bg: "bg-fuchsia-500/10", label: "Execute", desc: "Terraform plans with approval gates and rollback" },
+                    { icon: DocumentCheckIcon, color: "text-amber-400", bg: "bg-amber-500/10", label: "Audit", desc: "Immutable trail — every action logged and verifiable" },
+                  ].map((item, i) => {
                     const Icon = item.icon;
                     return (
-                      <div key={item.text} className="flex items-center gap-3">
-                        <div className={`w-8 h-8 rounded-lg ${item.bg} flex items-center justify-center flex-shrink-0`}>
-                          <Icon className={`h-4 w-4 ${item.color}`} />
+                      <div key={item.label} className="flex items-stretch gap-4">
+                        {/* Vertical connector */}
+                        <div className="flex flex-col items-center">
+                          <div className={`w-9 h-9 rounded-lg ${item.bg} flex items-center justify-center flex-shrink-0 z-10`}>
+                            <Icon className={`h-4 w-4 ${item.color}`} />
+                          </div>
+                          {i < 4 && <div className="w-px flex-1 bg-gradient-to-b from-white/[0.08] to-white/[0.02] min-h-[16px]" />}
                         </div>
-                        <span className="text-sm text-zinc-300">{item.text}</span>
+                        <div className="pb-4 pt-1.5 flex-1 min-w-0">
+                          <span className="text-xs font-semibold text-white">{item.label}</span>
+                          <p className="text-xs text-zinc-500 mt-0.5">{item.desc}</p>
+                        </div>
                       </div>
                     );
                   })}
@@ -742,10 +762,10 @@ export default function OnboardingPage() {
               </div>
 
               <AnimatedButton onClick={() => setStep(2)} variant="primary" className="px-10 py-3.5">
-                Get Started
+                Begin Activation
                 <ArrowRightIcon className="h-4 w-4" />
               </AnimatedButton>
-              <p className="text-xs text-zinc-600 mt-4">Setup takes about 5 minutes · No credit card required</p>
+              <p className="text-xs text-zinc-600 mt-4">5-minute setup · No credit card · Revoke access anytime</p>
             </div>
           </Reveal>
         )}
@@ -770,11 +790,18 @@ export default function OnboardingPage() {
               {connectionPhase === "select" && (
                 <>
                   <div className="mb-8">
+                    <div className="flex items-center gap-2 mb-3">
+                      <span className="relative flex items-center justify-center">
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                        <span className="absolute w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping opacity-40" />
+                      </span>
+                      <span className="text-[10px] font-semibold text-zinc-500 uppercase tracking-wider">Provider Intelligence</span>
+                    </div>
                     <h1 className="text-2xl sm:text-3xl font-bold mb-2 tracking-[-0.04em]">
-                      Connect your <span className="text-gradient">cloud</span>
+                      Select <span className="text-gradient">cloud target</span>
                     </h1>
                     <p className="text-zinc-500 text-sm">
-                      Select your cloud provider. Axiom uses read-only access to scan your infrastructure.
+                      Choose your infrastructure provider. Axiom connects via read-only access and begins autonomous scanning.
                     </p>
                   </div>
 
@@ -989,39 +1016,53 @@ export default function OnboardingPage() {
            ══════════════════════════════════════════════════════════ */}
         {step === 3 && (
           <Reveal direction="up" blur>
-            <div className="text-center max-w-lg mx-auto">
+            <div className="text-center max-w-xl mx-auto">
               <div className="relative w-16 h-16 mx-auto mb-8">
-                <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-emerald-500/25 to-green-500/25 blur-xl" />
-                <div className="relative w-16 h-16 rounded-2xl bg-gradient-to-br from-emerald-500 to-green-500 flex items-center justify-center shadow-[0_0_30px_rgba(16,185,129,0.3)]">
+                <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-emerald-500/20 to-green-500/20 blur-2xl animate-pulse" />
+                <div className="absolute inset-[-8px] rounded-3xl border border-emerald-500/10" />
+                <div className="relative w-16 h-16 rounded-2xl bg-gradient-to-br from-emerald-500 to-green-500 flex items-center justify-center shadow-[0_0_30px_rgba(16,185,129,0.25)]">
                   <CheckCircleIcon className="h-7 w-7 text-white" />
                 </div>
               </div>
               <h1 className="text-2xl sm:text-3xl font-bold mb-2 tracking-[-0.04em]">
                 Cloud <span className="text-gradient">connected</span>
               </h1>
-              <p className="text-zinc-400 mb-2">
-                Your AWS account {verifiedAccount ? `(${verifiedAccount})` : ""} is verified and linked.
+              <p className="text-zinc-400 mb-1">
+                AWS account {verifiedAccount ? `(${verifiedAccount})` : ""} verified and linked.
               </p>
               <p className="text-zinc-600 text-sm mb-8">
-                Now let&apos;s scan your infrastructure and generate your intelligence report.
+                Axiom is ready to scan your infrastructure and generate your intelligence report.
               </p>
 
-              <div className="rounded-xl border border-white/[0.06] bg-white/[0.015] p-5 mb-8 text-left">
-                <h3 className="text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-4">Agent scan pipeline</h3>
-                <Stagger delay={0.1} interval={0.06} className="space-y-3">
+              {/* Terminal-style scan preview */}
+              <div className="rounded-2xl border border-white/[0.06] bg-[#0c0c0e] p-5 mb-8 text-left">
+                <div className="flex items-center gap-2 mb-4">
+                  <span className="relative flex items-center justify-center">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                    <span className="absolute w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping opacity-40" />
+                  </span>
+                  <span className="text-[10px] font-semibold text-zinc-500 uppercase tracking-wider">Agent Scan Pipeline</span>
+                </div>
+                <Stagger delay={0.1} interval={0.1} className="space-y-0">
                   {[
-                    { color: "bg-blue-400", icon: ServerStackIcon, iconColor: "text-blue-400", text: "Discover all resources — compute, storage, networking, databases" },
-                    { color: "bg-amber-400", icon: ShieldCheckIcon, iconColor: "text-amber-400", text: "Security scan — public access, encryption, IAM exposure" },
-                    { color: "bg-violet-400", icon: CpuChipIcon, iconColor: "text-violet-400", text: "AI reasoning engine prioritizes findings by risk and impact" },
-                    { color: "bg-emerald-400", icon: DocumentCheckIcon, iconColor: "text-emerald-400", text: "Generate intelligence report with execution recommendations" },
-                  ].map((item) => {
+                    { icon: ServerStackIcon, color: "text-blue-400", bg: "bg-blue-500/10", label: "Discover", desc: "Full resource inventory — compute, storage, networking, databases across all regions" },
+                    { icon: ShieldCheckIcon, color: "text-amber-400", bg: "bg-amber-500/10", label: "Security", desc: "Public access, encryption gaps, IAM exposure, compliance posture" },
+                    { icon: CpuChipIcon, color: "text-violet-400", bg: "bg-violet-500/10", label: "Reason", desc: "AI engine prioritizes findings by blast radius, cost, and risk" },
+                    { icon: DocumentCheckIcon, color: "text-emerald-400", bg: "bg-emerald-500/10", label: "Report", desc: "Intelligence report with Terraform execution recommendations" },
+                  ].map((item, i) => {
                     const Icon = item.icon;
                     return (
-                      <div key={item.text} className="flex items-start gap-3">
-                        <div className={`w-7 h-7 rounded-lg ${item.color}/10 flex items-center justify-center flex-shrink-0 mt-0.5`}>
-                          <Icon className={`h-3.5 w-3.5 ${item.iconColor}`} />
+                      <div key={item.label} className="flex items-stretch gap-3">
+                        <div className="flex flex-col items-center">
+                          <div className={`w-8 h-8 rounded-lg ${item.bg} flex items-center justify-center flex-shrink-0 z-10`}>
+                            <Icon className={`h-4 w-4 ${item.color}`} />
+                          </div>
+                          {i < 3 && <div className="w-px flex-1 bg-gradient-to-b from-white/[0.08] to-white/[0.02] min-h-[12px]" />}
                         </div>
-                        <span className="text-sm text-zinc-400">{item.text}</span>
+                        <div className="pb-3.5 pt-1 flex-1 min-w-0">
+                          <span className="text-xs font-semibold text-white">{item.label}</span>
+                          <p className="text-xs text-zinc-600 mt-0.5">{item.desc}</p>
+                        </div>
                       </div>
                     );
                   })}

@@ -6,36 +6,36 @@ const PHASES = [
   {
     phase: "Observe",
     steps: [
-      { num: 1, name: "Connect", desc: "Assume-role into your cloud account" },
-      { num: 2, name: "Snapshot", desc: "Full infrastructure state capture" },
-      { num: 3, name: "Drift", desc: "Detect changes since last scan" },
+      { num: 1, name: "Connect", desc: "Role-based access, zero stored credentials — revoke anytime" },
+      { num: 2, name: "Snapshot", desc: "Full state capture — resources, cost tags, IAM policies, security groups" },
+      { num: 3, name: "Drift", desc: "Flag untracked changes — manual edits, out-of-band deployments" },
     ],
     accent: "violet",
   },
   {
     phase: "Reason",
     steps: [
-      { num: 4, name: "Analyze", desc: "Cost, security, and config findings" },
-      { num: 5, name: "Prioritize", desc: "Risk-weighted severity scoring" },
-      { num: 6, name: "Plan", desc: "Phased execution with dependencies" },
+      { num: 4, name: "Analyze", desc: "Quantify findings — $X waste here, compliance gap there" },
+      { num: 5, name: "Prioritize", desc: "Rank by blast radius, cost impact, and compliance urgency" },
+      { num: 6, name: "Plan", desc: "Auto-detect resource dependencies, stage rollout with approval gates" },
     ],
     accent: "fuchsia",
   },
   {
     phase: "Act",
     steps: [
-      { num: 7, name: "Approve", desc: "Human gate for high-risk changes" },
-      { num: 8, name: "Execute", desc: "Terraform apply with rollback ready" },
-      { num: 9, name: "Verify", desc: "Post-apply validation checks" },
+      { num: 7, name: "Approve", desc: "Human gate for cost, network, IAM, and past-failure changes" },
+      { num: 8, name: "Execute", desc: "Terraform apply with pre-verified rollback — validated before execution" },
+      { num: 9, name: "Verify", desc: "State matches expected, costs match budget, no drift introduced" },
     ],
     accent: "emerald",
   },
   {
     phase: "Learn",
     steps: [
-      { num: 10, name: "Audit", desc: "Immutable action trail" },
-      { num: 11, name: "Outcome", desc: "Success/failure memory per resource" },
-      { num: 12, name: "Schedule", desc: "Continuous autonomous loop" },
+      { num: 10, name: "Audit", desc: "What changed, who approved, cost impact, rollback status — immutable" },
+      { num: 11, name: "Outcome", desc: "Prior failures flag resources for manual approval on retry" },
+      { num: 12, name: "Schedule", desc: "Run the loop hourly or daily — cost optimization and compliance 24/7" },
     ],
     accent: "amber",
   },
