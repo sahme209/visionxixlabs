@@ -53,15 +53,14 @@ export default function EnterpriseReadinessPage() {
           <Reveal direction="up" blur>
             <header className="mb-12 text-center">
               <div className="huly-badge inline-flex items-center justify-center rounded-full px-4 py-1.5 text-xs font-semibold text-violet-400 mb-3">
-                Cloud &amp; AI Engineering for Modern Infrastructure
+                Enterprise Trust Architecture
               </div>
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-white mb-4 tracking-[-0.04em] leading-[1.05]">
-                Enterprise readiness.<br className="hidden sm:block" />
-                <span className="text-zinc-500">Built for your governance.</span>
+                Powerful, but<br className="hidden sm:block" />
+                <span className="text-gradient">controlled.</span>
               </h1>
               <p className="text-sm md:text-base text-zinc-400 max-w-2xl mx-auto">
-                How we handle access, governance, delivery, and support when working with larger teams.
-                No certifications or metrics claimed that you do not have&mdash;just clear engineering practices.
+                Axiom is designed so autonomous operations never compromise governance, auditability, or human oversight. Every action is approval-gated, fully audited, and reversible.
               </p>
             </header>
           </Reveal>
@@ -193,21 +192,45 @@ export default function EnterpriseReadinessPage() {
 
           <div className="section-divider my-12" />
 
-          {/* Working with larger organizations */}
+          {/* Axiom Trust Architecture */}
           <Reveal direction="up" delay={0.1}>
             <section className="mb-12">
               <h2 className="text-3xl md:text-4xl font-extrabold text-white mb-3 tracking-[-0.04em]">
-                Working with larger organizations.
+                Axiom trust architecture.
               </h2>
               <p className="text-zinc-400 mb-4 max-w-3xl">
-                We adapt to your procurement, security review, and change-management processes instead of
-                asking you to work around ours.
+                Built-in governance at every layer — the agent can never self-escalate, bypass approval, or execute without verified safety.
               </p>
-              <ul className="space-y-2 text-sm text-zinc-300">
-                <li>• Willing to participate in security and architecture reviews with your internal teams</li>
-                <li>• Happy to work within existing ticketing and change-control processes</li>
-                <li>• Clear points of contact and escalation paths for each engagement</li>
-              </ul>
+              <Stagger className="grid gap-3 md:grid-cols-2 text-sm text-zinc-300">
+                <div className="flex items-start gap-3 rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 mt-1.5 flex-shrink-0" />
+                  <div>
+                    <p className="font-semibold text-white mb-0.5">Read-only by default</p>
+                    <p className="text-zinc-500 text-xs">Scans use IAM assume-role with least-privilege policies. No credentials stored.</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3 rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 mt-1.5 flex-shrink-0" />
+                  <div>
+                    <p className="font-semibold text-white mb-0.5">Approval-gated execution</p>
+                    <p className="text-zinc-500 text-xs">Every infrastructure change requires explicit human approval. The agent never auto-applies.</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3 rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 mt-1.5 flex-shrink-0" />
+                  <div>
+                    <p className="font-semibold text-white mb-0.5">Pre-verified rollback</p>
+                    <p className="text-zinc-500 text-xs">State captured before execution. Rollback plans validated. Recovery instructions in audit log.</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3 rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 mt-1.5 flex-shrink-0" />
+                  <div>
+                    <p className="font-semibold text-white mb-0.5">Outcome memory</p>
+                    <p className="text-zinc-500 text-xs">Failed actions auto-downgrade future recommendations from auto-fix to human review.</p>
+                  </div>
+                </div>
+              </Stagger>
             </section>
           </Reveal>
 
@@ -217,10 +240,10 @@ export default function EnterpriseReadinessPage() {
               <div className="glass-card rounded-2xl border border-white/[0.06] p-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4 glow-border-card">
                 <div>
                   <h2 className="text-2xl md:text-3xl font-extrabold text-white mb-1 tracking-[-0.04em]">
-                    Ready to review your environment?
+                    See your infrastructure clearly.
                   </h2>
                   <p className="text-sm text-zinc-400">
-                    Connect your cloud with Axiom Agent or share your requirements directly.
+                    Connect a read-only IAM role. Get your intelligence report — cost savings, security findings, and execution plan — in minutes.
                   </p>
                 </div>
                 <div className="flex flex-wrap gap-3">

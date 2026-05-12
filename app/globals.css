@@ -2004,3 +2004,84 @@ h1, h2, h3, h4, h5, h6 {
   background: linear-gradient(90deg, transparent, rgba(124, 58, 237, 0.6), rgba(59, 130, 246, 0.4), transparent);
   border-radius: 1px;
 }
+
+/* ── Perspective Tilt Card ──────────────────────────────────────── */
+.perspective-card {
+  perspective: 800px;
+}
+
+.perspective-card-inner {
+  transition: transform 0.4s cubic-bezier(0.21, 0.47, 0.32, 0.98);
+  transform-style: preserve-3d;
+}
+
+.perspective-card:hover .perspective-card-inner {
+  transform: rotateX(2deg) rotateY(-2deg) scale(1.01);
+}
+
+/* ── Capability Status Glow ─────────────────────────────────────── */
+@keyframes capability-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.4); }
+  50% { box-shadow: 0 0 0 4px rgba(52, 211, 153, 0); }
+}
+
+.capability-active {
+  animation: capability-pulse 2s ease-in-out infinite;
+}
+
+/* ── Desktop Teaser Card Glow ──────────────────────────────────── */
+@keyframes desktop-glow {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 0.6; }
+}
+
+.desktop-teaser-glow {
+  animation: desktop-glow 4s ease-in-out infinite;
+}
+
+/* ── Trust Architecture Accent ─────────────────────────────────── */
+.trust-card {
+  position: relative;
+}
+
+.trust-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 3px;
+  height: 100%;
+  background: linear-gradient(180deg, rgba(52, 211, 153, 0.4), rgba(52, 211, 153, 0));
+  border-radius: 2px 0 0 2px;
+}
+
+/* ── Smooth Number Counter ─────────────────────────────────────── */
+@keyframes count-up {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.count-up {
+  animation: count-up 0.6s cubic-bezier(0.21, 0.47, 0.32, 0.98) forwards;
+}
+
+/* ── Marquee Enhancement ───────────────────────────────────────── */
+.marquee-track {
+  display: flex;
+  gap: 3rem;
+  animation: marquee-scroll 40s linear infinite;
+  width: max-content;
+}
+
+@keyframes marquee-scroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+/* ── Chat Bubble Glow ──────────────────────────────────────────── */
+.chat-bubble-glow {
+  transition: box-shadow 0.3s ease;
+}
+.chat-bubble-glow:hover {
+  box-shadow: 0 0 20px rgba(139, 92, 246, 0.15), 0 4px 12px rgba(0, 0, 0, 0.3);
+}

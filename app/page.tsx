@@ -69,8 +69,9 @@ const axiomFAQ = [
 ];
 
 const TRUST_LOGOS = [
-  "AWS Partner", "SOC 2 Type II", "ISO 27001", "GDPR", "Terraform",
-  "Read-only IAM", "Approval Gates", "Immutable Audit", "Rollback Ready", "Outcome Memory",
+  "Read-only IAM roles", "Zero stored credentials", "Approval-gated execution", "Immutable audit trail",
+  "Pre-verified rollback", "Blast radius limits", "Terraform-native IaC", "Outcome memory engine",
+  "Continuous drift monitoring", "Compliance-aware scanning",
 ];
 
 /* ── Floating ambient particles ──────────────────────────────── */
@@ -138,19 +139,19 @@ export default function Home() {
           </Reveal>
           <Reveal direction="up" blur delay={0.04}>
             <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold mb-6 leading-[1.05] tracking-[-0.04em]">
-              {["Infrastructure", "intelligence"].map((word, i) => (
+              {["Your", "cloud"].map((word, i) => (
                 <span key={word} className={`hero-word hero-word-${i}`}>{word} </span>
               ))}
               <br className="hidden sm:block" />
-              {["that", "operates"].map((word, i) => (
+              {["runs", "itself"].map((word, i) => (
                 <span key={word} className={`hero-word hero-word-${i + 2}`}>{word} </span>
               ))}
-              <span className="hero-word hero-word-4 text-gradient">autonomously.</span>
+              <span className="hero-word hero-word-4 text-gradient">now.</span>
             </h1>
           </Reveal>
           <Reveal direction="up" delay={0.06}>
             <p className="text-lg md:text-xl text-zinc-400 mb-10 max-w-2xl mx-auto leading-relaxed">
-              Axiom scans your cloud, identifies issues, reasons about priority and risk, generates execution plans, and applies approved changes — with continuous drift monitoring and outcome learning.
+              Axiom is an autonomous agent that scans your AWS infrastructure, reasons about cost and security, generates Terraform execution plans, and applies approved changes — cutting cloud spend by 30–40% while hardening your security posture.
             </p>
           </Reveal>
           <Stagger delay={0.12}>
@@ -247,14 +248,14 @@ export default function Home() {
           <Reveal direction="up">
             <div className="text-center mb-16">
               <p className="text-sm font-semibold text-violet-400 mb-4 tracking-wide uppercase">
-                What Axiom Delivers
+                Operational Intelligence
               </p>
               <h2 className="text-4xl md:text-5xl font-bold mb-5 tracking-[-0.04em]">
-                Operational intelligence.<br className="hidden sm:block" />
-                <span className="text-zinc-500">Not dashboards.</span>
+                It doesn&apos;t alert.<br className="hidden sm:block" />
+                <span className="text-zinc-500">It operates.</span>
               </h2>
               <p className="text-zinc-400 text-lg max-w-xl mx-auto">
-                Axiom doesn&apos;t show you charts. It scans, reasons, and acts — then reports what it did and why.
+                Axiom scans your infrastructure, reasons about what matters, builds execution plans, and applies approved changes — then learns from outcomes.
               </p>
             </div>
           </Reveal>
@@ -373,29 +374,83 @@ export default function Home() {
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-12">
             <p className="text-sm font-semibold text-violet-400 mb-4 tracking-wide uppercase">
-              Platform Support
+              Multi-Cloud Intelligence
             </p>
             <h2 className="text-4xl md:text-5xl font-bold mb-4 tracking-[-0.04em]">
-              Multi-cloud.<br className="hidden sm:block" />
-              <span className="text-zinc-500">One agent.</span>
+              One agent.<br className="hidden sm:block" />
+              <span className="text-zinc-500">Every cloud.</span>
             </h2>
+            <p className="text-zinc-400 text-lg max-w-xl mx-auto">
+              Axiom&apos;s provider-abstraction layer normalizes infrastructure across AWS, Azure, and GCP into a unified operational model.
+            </p>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="grid md:grid-cols-3 gap-5 mb-5">
             {[
-              { name: "AWS", status: "Full support", statusColor: "bg-emerald-500", textAccent: "text-amber-500", desc: "Scan, plan, and execute" },
-              { name: "Azure", status: "Scan only", statusColor: "bg-amber-500", textAccent: "text-blue-400", desc: "Plan and execute on roadmap" },
-              { name: "GCP", status: "Scan only", statusColor: "bg-amber-500", textAccent: "text-red-400", desc: "Plan and execute on roadmap" },
-              { name: "Terraform", status: "Auto-generated", statusColor: "bg-violet-500", textAccent: "text-violet-400", desc: "IaC plans with rollback" },
+              {
+                name: "AWS", shortName: "AWS", statusLabel: "Full Operations", statusColor: "bg-emerald-400",
+                textAccent: "text-amber-400", bgAccent: "bg-amber-500/10", borderAccent: "border-amber-500/20",
+                desc: "Complete autonomous loop — scan, reason, plan, execute, monitor, and learn.",
+                capabilities: ["Scan", "Snapshot", "Signals", "Reasoning", "Execution", "Terraform", "Audit", "Monitoring"],
+                allActive: true,
+              },
+              {
+                name: "Microsoft Azure", shortName: "Azure", statusLabel: "Expanding", statusColor: "bg-blue-400",
+                textAccent: "text-blue-400", bgAccent: "bg-blue-500/10", borderAccent: "border-blue-500/20",
+                desc: "Scan and analysis active. Signal derivation and reasoning in development.",
+                capabilities: ["Scan", "Snapshot", "Signals", "Reasoning", "Execution", "Terraform", "Audit", "Monitoring"],
+                allActive: false,
+              },
+              {
+                name: "Google Cloud", shortName: "GCP", statusLabel: "Expanding", statusColor: "bg-red-400",
+                textAccent: "text-red-400", bgAccent: "bg-red-500/10", borderAccent: "border-red-500/20",
+                desc: "Scan and analysis active. Signal derivation and reasoning in development.",
+                capabilities: ["Scan", "Snapshot", "Signals", "Reasoning", "Execution", "Terraform", "Audit", "Monitoring"],
+                allActive: false,
+              },
             ].map((p) => (
-              <div key={p.name} className="animated-border card-inner-glow card-hover card-shine-sweep card-reactive rounded-xl border border-white/[0.06] bg-white/[0.02] p-5 text-center hover:border-white/[0.12] transition-colors">
-                <div className={`text-xl font-bold mb-2 ${p.textAccent}`}>{p.name}</div>
-                <div className="flex items-center justify-center gap-1.5 mb-1.5">
-                  <span className={`w-1.5 h-1.5 rounded-full ${p.statusColor}`} />
-                  <span className="text-xs font-medium text-zinc-400">{p.status}</span>
+              <div key={p.shortName} className="animated-border card-inner-glow card-hover card-shine-sweep rounded-xl border border-white/[0.06] bg-white/[0.02] p-6 hover:border-white/[0.12] transition-colors">
+                <div className="flex items-center gap-3 mb-3">
+                  <div className={`w-10 h-10 rounded-xl ${p.bgAccent} border ${p.borderAccent} flex items-center justify-center`}>
+                    <span className={`text-sm font-bold ${p.textAccent}`}>{p.shortName}</span>
+                  </div>
+                  <div>
+                    <div className={`text-sm font-semibold text-white`}>{p.name}</div>
+                    <div className="flex items-center gap-1.5">
+                      <span className={`w-1.5 h-1.5 rounded-full ${p.statusColor} ${p.allActive ? "" : "animate-pulse"}`} />
+                      <span className={`text-[10px] font-semibold uppercase tracking-wider ${p.allActive ? "text-emerald-400/80" : "text-zinc-500"}`}>{p.statusLabel}</span>
+                    </div>
+                  </div>
                 </div>
-                <div className="text-xs text-zinc-500">{p.desc}</div>
+                <p className="text-xs text-zinc-500 mb-4 leading-relaxed">{p.desc}</p>
+                <div className="flex flex-wrap gap-1.5">
+                  {p.capabilities.map((cap, i) => {
+                    const isActive = p.allActive || i < 2 || i === 6;
+                    const isBuilding = !p.allActive && (i === 2 || i === 3);
+                    return (
+                      <span key={cap} className="inline-flex items-center gap-1 text-[10px] text-zinc-500 bg-white/[0.03] border border-white/[0.04] rounded-full px-2 py-0.5">
+                        <span className={`w-1.5 h-1.5 rounded-full ${isActive ? "bg-emerald-400" : isBuilding ? "bg-amber-400/80" : "bg-zinc-700"}`} />
+                        {cap}
+                      </span>
+                    );
+                  })}
+                </div>
               </div>
             ))}
+          </div>
+          <div className="animated-border card-inner-glow rounded-xl border border-white/[0.06] bg-white/[0.02] p-5 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-violet-500/10 border border-violet-500/20 flex items-center justify-center">
+                <span className="text-sm font-bold text-violet-400">TF</span>
+              </div>
+              <div>
+                <div className="text-sm font-semibold text-white">Terraform Native</div>
+                <p className="text-xs text-zinc-500">Every execution plan generates validated IaC with dependency graphs and rollback strategies.</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-violet-400" />
+              <span className="text-[10px] font-semibold text-violet-400/80 uppercase tracking-wider">Auto-generated</span>
+            </div>
           </div>
         </div>
       </section>
@@ -575,7 +630,75 @@ export default function Home() {
       {/* ── Section Divider ────────────────────────────────────────── */}
       <SectionDivider />
 
-      {/* ── CTA — Huly "Join the Movement" style ────────────────── */}
+      {/* ── Desktop App Teaser ──────────────────────────────────── */}
+      <section className="py-24 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-violet-600/[0.02] to-transparent pointer-events-none" aria-hidden />
+        <div className="max-w-5xl mx-auto">
+          <Reveal direction="up" blur>
+            <div className="text-center mb-12">
+              <span className="huly-badge text-violet-400 border-violet-500/20 mb-4 inline-block text-xs px-3 py-1">
+                Coming Soon
+              </span>
+              <h2 className="text-4xl md:text-5xl font-bold mb-4 tracking-[-0.04em]">
+                Axiom on your<br className="hidden sm:block" />
+                <span className="text-gradient">desktop.</span>
+              </h2>
+              <p className="text-zinc-400 text-lg max-w-xl mx-auto leading-relaxed">
+                A native command center for autonomous cloud operations. Secure local execution, real-time monitoring, and approval workflows — without opening a browser.
+              </p>
+            </div>
+          </Reveal>
+          <Stagger delay={0.1} interval={0.08} className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
+            {[
+              { icon: CommandLineIcon, title: "Local Execution", desc: "Run Terraform and CLI operations from a secure local agent." },
+              { icon: ShieldCheckIcon, title: "Approval Center", desc: "Review and approve execution plans with full audit context." },
+              { icon: ChartBarIcon, title: "Live Monitoring", desc: "Real-time infrastructure health, drift alerts, and cost tracking." },
+              { icon: BoltIcon, title: "Instant Notifications", desc: "Native alerts for scan results, findings, and approval requests." },
+            ].map((item) => {
+              const Icon = item.icon;
+              return (
+                <div key={item.title} className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-5 hover:border-white/[0.12] transition-colors">
+                  <div className="w-9 h-9 rounded-lg bg-violet-500/10 flex items-center justify-center mb-3">
+                    <Icon className="h-4.5 w-4.5 text-violet-400" />
+                  </div>
+                  <h3 className="text-sm font-semibold text-white mb-1">{item.title}</h3>
+                  <p className="text-xs text-zinc-500 leading-relaxed">{item.desc}</p>
+                </div>
+              );
+            })}
+          </Stagger>
+          <Reveal direction="up" delay={0.2}>
+            <div className="rounded-2xl border border-white/[0.06] bg-white/[0.015] p-8 text-center relative overflow-hidden">
+              <div className="absolute inset-0 bg-gradient-to-br from-violet-600/[0.03] via-transparent to-fuchsia-600/[0.03] pointer-events-none" aria-hidden />
+              <div className="relative">
+                <div className="flex items-center justify-center gap-6 mb-6">
+                  {["macOS", "Windows", "Linux"].map((os) => (
+                    <span key={os} className="text-sm font-medium text-zinc-400 flex items-center gap-2">
+                      <span className="w-1.5 h-1.5 rounded-full bg-violet-500/40" />
+                      {os}
+                    </span>
+                  ))}
+                </div>
+                <p className="text-zinc-500 text-sm mb-5 max-w-md mx-auto">
+                  Built with Tauri for minimal footprint, native performance, and enterprise-grade security. Your infrastructure data never leaves your machine.
+                </p>
+                <Link
+                  href="/contact"
+                  className="inline-flex items-center gap-2 px-6 py-2.5 border border-violet-500/25 text-violet-300 rounded-full text-sm font-medium hover:bg-violet-500/10 transition-all duration-200"
+                >
+                  Request early access
+                  <ArrowRightIcon className="h-3.5 w-3.5" />
+                </Link>
+              </div>
+            </div>
+          </Reveal>
+        </div>
+      </section>
+
+      {/* ── Section Divider ────────────────────────────────────────── */}
+      <SectionDivider />
+
+      {/* ── CTA ────────────────────────────────────────────────────── */}
       <section className="py-32 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
         <div className="absolute inset-0 diagonal-streak opacity-40 pointer-events-none" aria-hidden />
         <div className="absolute -top-20 -right-20 w-[500px] h-[500px] rounded-full bg-violet-600/12 blur-[150px] pointer-events-none" aria-hidden />
@@ -598,27 +721,31 @@ export default function Home() {
           {/* Content */}
           <div className="text-center md:text-left">
             <h2 className="text-4xl md:text-5xl font-bold mb-5 tracking-[-0.04em]">
-              Join the<br />Movement
+              Your first scan<br />takes <span className="text-gradient">5 minutes.</span>
             </h2>
-            <p className="text-zinc-400 text-lg mb-8 max-w-md leading-relaxed">
-              Connect your AWS account. Axiom scans, reasons, plans, and executes — nothing changes until you approve.
+            <p className="text-zinc-400 text-lg mb-4 max-w-md leading-relaxed">
+              Connect a read-only IAM role. Axiom delivers your infrastructure intelligence report — cost savings, security findings, and execution plan — before your coffee gets cold.
             </p>
+            <div className="flex flex-wrap gap-x-6 gap-y-1.5 text-sm text-zinc-500 mb-8 justify-center md:justify-start">
+              <span className="flex items-center gap-1.5"><span className="w-1 h-1 rounded-full bg-emerald-500" />No credit card</span>
+              <span className="flex items-center gap-1.5"><span className="w-1 h-1 rounded-full bg-emerald-500" />Read-only access</span>
+              <span className="flex items-center gap-1.5"><span className="w-1 h-1 rounded-full bg-emerald-500" />Revoke anytime</span>
+            </div>
             <div className="flex flex-wrap justify-center md:justify-start gap-4">
               <Link
                 href="/operator/onboarding"
                 className="btn-amber-shimmer inline-flex items-center gap-2 px-7 py-3.5 bg-white text-zinc-900 rounded-full font-semibold text-sm shadow-[0_0_20px_rgba(255,255,255,0.1)] hover:bg-zinc-100 transition-colors"
               >
-                Run Axiom
+                Start free scan
                 <ArrowRightIcon className="h-4 w-4" />
               </Link>
               <Link
-                href="/operator/pricing"
+                href="/axiom"
                 className="inline-flex items-center gap-2 px-7 py-3.5 border border-white/[0.12] text-zinc-300 rounded-full font-semibold text-sm hover:bg-white/5 hover:border-white/20 transition-colors"
               >
-                View plans
+                See how it works
               </Link>
             </div>
-            <p className="text-xs text-zinc-600 mt-4">No credit card required</p>
           </div>
         </div>
       </section>

@@ -155,14 +155,24 @@ export default function AxiomPage() {
           </Reveal>
           <Reveal direction="up" blur delay={0.1}>
             <h1 className="text-4xl sm:text-5xl lg:text-7xl font-extrabold tracking-[-0.04em] text-white mb-6 leading-[1.05]">
-              Infrastructure intelligence.<br className="hidden sm:block" />
-              <span className="text-zinc-500">That operates autonomously.</span>
+              The agent that<br className="hidden sm:block" />
+              <span className="text-gradient">runs your cloud.</span>
             </h1>
           </Reveal>
           <Reveal direction="up" blur delay={0.2}>
-            <p className="text-lg sm:text-xl text-zinc-400 max-w-2xl mx-auto mb-10 leading-relaxed">
-              Axiom scans your cloud infrastructure, identifies what to fix, reasons about priority and risk, generates execution plans, and applies approved changes — with full audit trail, rollback capability, and continuous drift monitoring.
+            <p className="text-lg sm:text-xl text-zinc-400 max-w-2xl mx-auto mb-6 leading-relaxed">
+              Axiom scans your AWS infrastructure, identifies $12K+/mo in savings, hardens security, and generates Terraform execution plans — with approval gates, rollback strategies, and an immutable audit trail.
             </p>
+          </Reveal>
+          <Reveal direction="up" blur delay={0.25}>
+            <div className="flex flex-wrap justify-center gap-x-8 gap-y-2 text-sm text-zinc-500 mb-10">
+              {["30–40% cost reduction", "Security hardening in minutes", "5-minute setup"].map((item) => (
+                <span key={item} className="flex items-center gap-1.5">
+                  <span className="w-1 h-1 rounded-full bg-emerald-500" />
+                  {item}
+                </span>
+              ))}
+            </div>
           </Reveal>
           <Reveal direction="up" blur delay={0.3}>
             <div className="flex flex-wrap justify-center gap-4">
@@ -170,7 +180,7 @@ export default function AxiomPage() {
                 href="/operator/onboarding"
                 className="btn-huly inline-flex items-center gap-2 px-8 py-3.5 bg-white text-zinc-900 rounded-full font-semibold text-sm uppercase tracking-wide hover:bg-zinc-100 transition-all shadow-lg shadow-white/10"
               >
-                Run Axiom
+                Start free scan
                 <ArrowRightIcon className="h-4 w-4" />
               </Link>
               <Link
@@ -181,17 +191,18 @@ export default function AxiomPage() {
               </Link>
             </div>
           </Reveal>
-          <p className="mt-4 text-xs text-zinc-500">
-            AWS fully supported. Azure and GCP scan-only.
-          </p>
-          <div className="mt-3">
-            <Link
-              href="/axiom/operations"
-              className="text-xs font-medium text-violet-400 hover:text-violet-300 transition-colors"
-            >
-              View operations dashboard &rarr;
-            </Link>
-          </div>
+          <Reveal direction="up" blur delay={0.35}>
+            <div className="mt-6 flex items-center justify-center gap-4">
+              <Link
+                href="/axiom/operations"
+                className="text-xs font-medium text-violet-400 hover:text-violet-300 transition-colors"
+              >
+                Operations dashboard &rarr;
+              </Link>
+              <span className="text-zinc-700">·</span>
+              <span className="text-xs text-zinc-600">AWS full ops · Azure &amp; GCP expanding</span>
+            </div>
+          </Reveal>
         </div>
       </section>
 
@@ -255,11 +266,11 @@ export default function AxiomPage() {
                 Capabilities
               </span>
               <h2 className="text-4xl md:text-5xl font-extrabold tracking-[-0.04em] text-white mb-4 mt-4">
-                Built for real operations.<br className="hidden sm:block" />
-                <span className="text-zinc-500">Not impressive demos.</span>
+                Deep operational<br className="hidden sm:block" />
+                <span className="text-zinc-500">intelligence.</span>
               </h2>
               <p className="text-zinc-400 max-w-xl mx-auto">
-                Every feature in Axiom exists because it solves a real operational problem — not because it looks impressive in a demo.
+                Every capability is built on real cloud SDK data — scanning, reasoning, and executing against live infrastructure with full safety guarantees.
               </p>
             </div>
           </Reveal>
@@ -353,30 +364,48 @@ export default function AxiomPage() {
           </Reveal>
           <Stagger delay={0.1} interval={0.06} className="grid sm:grid-cols-3 gap-6">
             <div className="animated-border card-inner-glow card-hover card-shine-sweep card-reactive rounded-xl border border-white/[0.06] bg-white/[0.02] p-6 hover:border-white/[0.12] transition-all">
-              <div className="w-8 h-8 rounded-lg bg-orange-500/10 flex items-center justify-center mb-4">
-                <span className="text-sm font-bold text-orange-400">AWS</span>
+              <div className="flex items-center gap-2 mb-4">
+                <div className="w-8 h-8 rounded-lg bg-amber-500/10 border border-amber-500/20 flex items-center justify-center">
+                  <span className="text-xs font-bold text-amber-400">AWS</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                  <span className="text-[10px] font-semibold text-emerald-400/80 uppercase tracking-wider">Full Ops</span>
+                </div>
               </div>
-              <h3 className="font-bold text-white mb-1">Full stack</h3>
+              <h3 className="font-bold text-white mb-1">Complete autonomous loop</h3>
               <p className="text-sm text-zinc-400">
-                Scan, analyze, plan, apply, and verify. Complete autonomous operations with real AWS SDK execution.
+                Scan, reason, plan, execute, verify, audit, monitor, and learn. Real SDK execution with rollback.
               </p>
             </div>
             <div className="animated-border card-inner-glow card-hover card-shine-sweep card-reactive rounded-xl border border-white/[0.06] bg-white/[0.02] p-6 hover:border-white/[0.12] transition-all">
-              <div className="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center mb-4">
-                <span className="text-xs font-bold text-blue-400">Azure</span>
+              <div className="flex items-center gap-2 mb-4">
+                <div className="w-8 h-8 rounded-lg bg-blue-500/10 border border-blue-500/20 flex items-center justify-center">
+                  <span className="text-xs font-bold text-blue-400">Azure</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse" />
+                  <span className="text-[10px] font-semibold text-zinc-500 uppercase tracking-wider">Expanding</span>
+                </div>
               </div>
-              <h3 className="font-bold text-white mb-1">Scan + analyze</h3>
+              <h3 className="font-bold text-white mb-1">Scan + analysis active</h3>
               <p className="text-sm text-zinc-400">
-                Full infrastructure scanning and analysis. Execution capabilities on the roadmap.
+                Infrastructure scanning and snapshot analysis live. Signal derivation and AI reasoning in development.
               </p>
             </div>
             <div className="animated-border card-inner-glow card-hover card-shine-sweep card-reactive rounded-xl border border-white/[0.06] bg-white/[0.02] p-6 hover:border-white/[0.12] transition-all">
-              <div className="w-8 h-8 rounded-lg bg-emerald-500/10 flex items-center justify-center mb-4">
-                <span className="text-xs font-bold text-emerald-400">GCP</span>
+              <div className="flex items-center gap-2 mb-4">
+                <div className="w-8 h-8 rounded-lg bg-red-500/10 border border-red-500/20 flex items-center justify-center">
+                  <span className="text-xs font-bold text-red-400">GCP</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-red-400 animate-pulse" />
+                  <span className="text-[10px] font-semibold text-zinc-500 uppercase tracking-wider">Expanding</span>
+                </div>
               </div>
-              <h3 className="font-bold text-white mb-1">Scan + analyze</h3>
+              <h3 className="font-bold text-white mb-1">Scan + analysis active</h3>
               <p className="text-sm text-zinc-400">
-                Full infrastructure scanning and analysis. Execution capabilities on the roadmap.
+                Infrastructure scanning and snapshot analysis live. Signal derivation and AI reasoning in development.
               </p>
             </div>
           </Stagger>
@@ -465,18 +494,26 @@ export default function AxiomPage() {
         <div className="relative max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <Reveal direction="up" blur>
             <h2 className="text-4xl md:text-5xl font-extrabold tracking-[-0.04em] text-white mb-4">
-              Start operating autonomously.<br className="hidden sm:block" />
-              <span className="text-zinc-500">Your first scan takes 60 seconds.</span>
+              Your first intelligence<br className="hidden sm:block" />
+              report in <span className="text-gradient">5 minutes.</span>
             </h2>
-            <p className="text-zinc-400 mb-10 max-w-lg mx-auto">
-              Connect your AWS account with a read-only IAM role. No credentials stored. Full audit trail from day one.
+            <p className="text-zinc-400 mb-6 max-w-lg mx-auto">
+              Connect a read-only IAM role. Axiom scans, reasons, and delivers cost savings, security findings, and an execution plan — before your coffee gets cold.
             </p>
+            <div className="flex flex-wrap justify-center gap-x-6 gap-y-1.5 text-sm text-zinc-500 mb-10">
+              {["No credit card", "Read-only access", "Revoke anytime"].map((item) => (
+                <span key={item} className="flex items-center gap-1.5">
+                  <span className="w-1 h-1 rounded-full bg-emerald-500" />
+                  {item}
+                </span>
+              ))}
+            </div>
             <div className="flex flex-wrap justify-center gap-4">
               <Link
                 href="/operator/onboarding"
                 className="btn-huly inline-flex items-center gap-2 px-8 py-3.5 bg-white text-zinc-900 rounded-full font-semibold text-sm uppercase tracking-wide hover:bg-zinc-100 transition-all shadow-lg shadow-white/10"
               >
-                Run Axiom
+                Start free scan
                 <ArrowRightIcon className="h-4 w-4" />
               </Link>
               <Link
