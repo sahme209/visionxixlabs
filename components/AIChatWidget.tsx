@@ -140,7 +140,7 @@ export default function AIChatWidget() {
       <button
         onClick={() => setOpen(true)}
         aria-label="Open Vision XIX Labs AI Assistant"
-        className="fixed right-4 z-[9998] flex items-center gap-2 rounded-full bg-white/[0.02] px-4 py-3 text-white shadow-lg border-2 border-white/[0.06] hover:border-violet-400 hover:border-white/[0.08] hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-violet-500 focus:ring-offset-2 transition-all hover:scale-[1.02] active:scale-[0.98] bottom-[5.5rem] md:bottom-6"
+        className="fixed right-4 z-[9998] flex items-center gap-2 rounded-full bg-white/[0.02] px-4 py-3 text-white shadow-lg border-2 border-white/[0.06] hover:border-violet-400 hover:border-white/[0.08] hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-violet-500 focus:ring-offset-2 transition-all hover:scale-[1.02] active:scale-[0.98] bottom-[5.5rem] md:bottom-6 chat-bubble-glow"
       >
         <div className="flex h-8 w-8 items-center justify-center rounded-full bg-violet-500/10">
           <ChatBubbleLeftRightIcon className="h-4 w-4 text-violet-400" />
@@ -150,7 +150,7 @@ export default function AIChatWidget() {
 
       {open && (
         <div
-          className="fixed right-4 left-4 md:right-6 md:left-auto md:w-[420px] z-[9999] flex flex-col overflow-hidden rounded-2xl border border-white/[0.06] bg-white/[0.02] shadow-xl bottom-[5.5rem] md:bottom-6 max-h-[calc(100vh-8rem)]"
+          className="fixed right-4 left-4 md:right-6 md:left-auto md:w-[420px] z-[9999] flex flex-col overflow-hidden rounded-2xl glass-dark shadow-xl bottom-[5.5rem] md:bottom-6 max-h-[calc(100vh-8rem)]"
           role="dialog"
           aria-label="Vision XIX Labs AI chat"
         >
@@ -201,7 +201,7 @@ export default function AIChatWidget() {
                 {messages.map((m) => (
                   <div
                     key={m.id}
-                    className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}
+                    className={`flex chat-msg-enter ${m.role === "user" ? "justify-end" : "justify-start"}`}
                   >
                     <div
                       className={`max-w-[85%] rounded-2xl px-3 py-2 text-sm ${
@@ -259,12 +259,12 @@ export default function AIChatWidget() {
                 onKeyDown={handleKeyDown}
                 placeholder="Ask about cloud, AI..."
                 disabled={loading}
-                className="flex-1 rounded-xl border border-white/[0.06] bg-white/[0.03] px-3 py-2.5 text-sm text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:opacity-60"
+                className="flex-1 rounded-xl border border-white/[0.06] bg-white/[0.03] px-3 py-2.5 text-sm text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-violet-500/40 focus:border-violet-500/50 transition-all duration-300 disabled:opacity-60"
               />
               <button
                 onClick={sendMessage}
                 disabled={!input.trim() || loading}
-                className="rounded-xl bg-indigo-600 px-3 py-2.5 text-white hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-50"
+                className="rounded-xl bg-violet-600 px-3 py-2.5 text-white hover:bg-violet-700 disabled:cursor-not-allowed disabled:opacity-50 transition-colors"
                 aria-label="Send"
               >
                 <PaperAirplaneIcon className="h-5 w-5" />

@@ -7,6 +7,7 @@ import {
 } from "@/lib/insightsContent";
 import { Navigation } from "@/components/Navigation";
 import { ArrowLeftIcon, ArrowRightIcon } from "@heroicons/react/24/outline";
+import { Reveal } from "@/components/motion/Reveal";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -45,67 +46,81 @@ export default async function InsightArticlePage({ params }: Props) {
   const nextArticle = nextSlug ? getInsightBySlug(nextSlug) : null;
 
   return (
-    <div className="min-h-screen bg-[#09090b]">
+    <div className="min-h-screen bg-[#09090b] relative overflow-hidden">
+      {/* Background effects */}
+      <div className="spotlight-orb absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-[400px] opacity-20 pointer-events-none" />
+      <div className="bg-dots absolute inset-0 pointer-events-none" />
+
       <Navigation />
-      <article className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-16">
-        <nav className="mb-8" aria-label="Breadcrumb">
-          <Link
-            href="/insights"
-            className="inline-flex items-center text-sm text-zinc-400 hover:text-violet-400"
-          >
-            <ArrowLeftIcon className="h-4 w-4 mr-1" />
-            Insights
-          </Link>
-        </nav>
+      <article className="relative z-10 max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-16">
+        <Reveal direction="up" blur delay={0.05}>
+          <nav className="mb-8" aria-label="Breadcrumb">
+            <Link
+              href="/insights"
+              className="inline-flex items-center text-sm text-zinc-400 hover:text-violet-400 transition-colors"
+            >
+              <ArrowLeftIcon className="h-4 w-4 mr-1" />
+              Insights
+            </Link>
+          </nav>
+        </Reveal>
 
-        <header className="mb-8">
-          <h1 className="text-2xl md:text-3xl font-bold text-white mb-2">
-            {article.title}
-          </h1>
-          <p className="text-zinc-400 text-sm">
-            <time dateTime={article.date}>
-              {new Date(article.date).toLocaleDateString("en-US", {
-                year: "numeric",
-                month: "long",
-                day: "numeric",
-              })}
-            </time>
-            {" · "}
-            {article.readTime} read
-          </p>
-        </header>
-
-        <div className="prose prose-invert max-w-none">
-          {article.body.map((paragraph, i) => (
-            <p key={i} className="mb-4 text-zinc-300 leading-relaxed">
-              {paragraph}
+        <Reveal direction="up" blur delay={0.1}>
+          <header className="mb-8">
+            <h1 className="text-2xl md:text-3xl font-bold text-white mb-2 tracking-[-0.04em]">
+              {article.title}
+            </h1>
+            <p className="text-zinc-400 text-sm">
+              <time dateTime={article.date}>
+                {new Date(article.date).toLocaleDateString("en-US", {
+                  year: "numeric",
+                  month: "long",
+                  day: "numeric",
+                })}
+              </time>
+              {" · "}
+              {article.readTime} read
             </p>
-          ))}
-        </div>
+          </header>
+        </Reveal>
 
-        <section className="mt-12 rounded-2xl border border-indigo-200 border-violet-500/20 bg-indigo-50 bg-violet-500/10 p-6 text-center">
-          <h2 className="text-lg font-bold text-white mb-2">
-            Free Cloud &amp; AI Review
-          </h2>
-          <p className="text-zinc-400 text-sm mb-4">
-            Get a focused 30-minute review of your cloud and AI setup. No obligation.
-          </p>
-          <Link
-            href="/free-review"
-            className="inline-flex items-center px-5 py-2.5 rounded-xl bg-indigo-600 text-white text-sm font-semibold hover:bg-indigo-700 transition-colors"
-          >
-            Request your free review
-            <ArrowRightIcon className="ml-2 h-4 w-4" />
-          </Link>
-        </section>
+        <Reveal direction="up" blur delay={0.15}>
+          <div className="prose prose-invert max-w-none">
+            {article.body.map((paragraph, i) => (
+              <p key={i} className="mb-4 text-zinc-300 leading-relaxed">
+                {paragraph}
+              </p>
+            ))}
+          </div>
+        </Reveal>
+
+        <div className="section-divider my-10" />
+
+        <Reveal direction="up" blur delay={0.2}>
+          <section className="glass-card glow-border-card rounded-2xl p-6 text-center">
+            <h2 className="text-lg font-bold text-white mb-2 tracking-[-0.04em]">
+              Free Cloud &amp; AI <span className="text-gradient">Review</span>
+            </h2>
+            <p className="text-zinc-400 text-sm mb-4">
+              Get a focused 30-minute review of your cloud and AI setup. No obligation.
+            </p>
+            <Link
+              href="/free-review"
+              className="btn-huly cta-glow inline-flex items-center px-5 py-2.5 rounded-xl bg-violet-600 text-white text-sm font-semibold hover:bg-violet-700 transition-colors"
+            >
+              Request your free review
+              <ArrowRightIcon className="ml-2 h-4 w-4" />
+            </Link>
+          </section>
+        </Reveal>
 
         <nav className="mt-12 pt-8 border-t border-white/[0.06] flex flex-col sm:flex-row justify-between gap-4">
           {prevArticle ? (
             <Link
               href={`/insights/${prevArticle.slug}`}
-              className="text-sm font-medium text-violet-400 hover:underline"
+              className="text-sm font-medium text-violet-400 hover:underline hover-lift transition-all inline-block"
             >
-              ← {prevArticle.title}
+              &larr; {prevArticle.title}
             </Link>
           ) : (
             <span />
@@ -113,9 +128,9 @@ export default async function InsightArticlePage({ params }: Props) {
           {nextArticle ? (
             <Link
               href={`/insights/${nextArticle.slug}`}
-              className="text-sm font-medium text-violet-400 hover:underline sm:text-right"
+              className="text-sm font-medium text-violet-400 hover:underline sm:text-right hover-lift transition-all inline-block"
             >
-              {nextArticle.title} →
+              {nextArticle.title} &rarr;
             </Link>
           ) : null}
         </nav>

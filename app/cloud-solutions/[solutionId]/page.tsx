@@ -7,6 +7,8 @@ import {
 } from "../../../lib/cloudContent";
 import { CTASection } from "../../../components/CTASection";
 import { Navigation } from "../../../components/Navigation";
+import { Reveal } from "@/components/motion/Reveal";
+import { Stagger } from "@/components/motion/Stagger";
 
 type Params = {
   solutionId: string;
@@ -64,7 +66,7 @@ export default async function SolutionDetailPage({
       <div className="min-h-screen bg-[#09090b]">
         <main className="pt-24 pb-24 px-4 sm:px-6 lg:px-8">
           <div className="max-w-3xl mx-auto text-center">
-            <h1 className="text-2xl font-bold text-white mb-4">
+            <h1 className="text-2xl font-bold text-white mb-4 tracking-[-0.04em]">
               Solution not found
             </h1>
             <p className="text-sm text-zinc-400 mb-6">
@@ -108,123 +110,142 @@ export default async function SolutionDetailPage({
   });
 
   return (
-    <div className="min-h-screen bg-[#09090b]">
+    <div className="min-h-screen bg-[#09090b] relative overflow-hidden">
+      {/* Background effects */}
+      <div className="spotlight-orb absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[500px] opacity-30 pointer-events-none" />
+      <div className="bg-dots absolute inset-0 pointer-events-none" />
+
       <Navigation />
-      <main className="pt-24 pb-24 px-4 sm:px-6 lg:px-8">
+      <main className="relative z-10 pt-24 pb-24 px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto">
           {/* Breadcrumb */}
-          <nav
-            aria-label="Breadcrumb"
-            className="mb-6 text-xs text-zinc-500"
-          >
-            <ol className="flex items-center space-x-2">
-              <li>
-                <Link
-                  href="/"
-                  className="hover:text-violet-400"
-                >
-                  Home
-                </Link>
-              </li>
-              <li aria-hidden="true">/</li>
-              <li>
-                <Link
-                  href="/cloud-solutions"
-                  className="hover:text-violet-400"
-                >
-                  Cloud Solutions
-                </Link>
-              </li>
-              <li aria-hidden="true">/</li>
-              <li aria-current="page" className="font-semibold">
-                {detail.title}
-              </li>
-            </ol>
-          </nav>
+          <Reveal direction="up" blur delay={0.05}>
+            <nav
+              aria-label="Breadcrumb"
+              className="mb-6 text-xs text-zinc-500"
+            >
+              <ol className="flex items-center space-x-2">
+                <li>
+                  <Link
+                    href="/"
+                    className="hover:text-violet-400 transition-colors"
+                  >
+                    Home
+                  </Link>
+                </li>
+                <li aria-hidden="true">/</li>
+                <li>
+                  <Link
+                    href="/cloud-solutions"
+                    className="hover:text-violet-400 transition-colors"
+                  >
+                    Cloud Solutions
+                  </Link>
+                </li>
+                <li aria-hidden="true">/</li>
+                <li aria-current="page" className="font-semibold">
+                  {detail.title}
+                </li>
+              </ol>
+            </nav>
+          </Reveal>
 
           {/* Hero */}
-          <section className="mb-10">
-            <p className="text-xs font-semibold uppercase tracking-wide text-violet-400 mb-3">
-              Cloud solution
-            </p>
-            <h1 className="text-3xl md:text-4xl font-extrabold mb-3 bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
-              {detail.title}
-            </h1>
-            <p className="text-sm md:text-base text-zinc-400 max-w-3xl mb-3">
-              {detail.intro}
-            </p>
-            <p className="text-xs text-zinc-500">
-              <span className="font-semibold">Best for:</span> {cardMeta.bestFor}
-            </p>
-            {detail.idealFor.length > 0 && (
-              <div className="mt-4 flex flex-wrap gap-2">
-                {detail.idealFor.map((item) => (
-                  <span
-                    key={item}
-                    className="inline-flex items-center rounded-full bg-white/[0.04] px-3 py-1 text-xs text-zinc-300"
-                  >
-                    {item}
-                  </span>
-                ))}
-              </div>
-            )}
-          </section>
+          <Reveal direction="up" blur delay={0.1}>
+            <section className="mb-10">
+              <span className="huly-badge text-violet-400 mb-3">
+                Cloud solution
+              </span>
+              <h1 className="text-3xl md:text-4xl font-extrabold mb-3 text-gradient tracking-[-0.04em]">
+                {detail.title}
+              </h1>
+              <p className="text-sm md:text-base text-zinc-400 max-w-3xl mb-3">
+                {detail.intro}
+              </p>
+              <p className="text-xs text-zinc-500">
+                <span className="font-semibold">Best for:</span> {cardMeta.bestFor}
+              </p>
+              {detail.idealFor.length > 0 && (
+                <div className="mt-4 flex flex-wrap gap-2">
+                  {detail.idealFor.map((item) => (
+                    <span
+                      key={item}
+                      className="huly-badge"
+                    >
+                      {item}
+                    </span>
+                  ))}
+                </div>
+              )}
+            </section>
+          </Reveal>
+
+          <div className="section-divider my-8" />
 
           {/* Sections */}
           <section className="space-y-8 mb-10">
-            {detail.sections.map((section) => (
-              <div
-                key={section.heading}
-                className="card-hover bg-white/[0.02] rounded-2xl p-6 shadow-xl border border-white/[0.06]"
-              >
-                <h2 className="text-lg md:text-xl font-bold text-white mb-2">
-                  {section.heading}
-                </h2>
-                <p className="text-sm md:text-base text-zinc-400 mb-3">
-                  {section.body}
-                </p>
-                {section.bullets && (
-                  <ul className="list-disc list-inside text-sm text-zinc-400 space-y-1">
-                    {section.bullets.map((bullet) => (
-                      <li key={bullet}>{bullet}</li>
-                    ))}
-                  </ul>
-                )}
-              </div>
-            ))}
+            <Stagger delay={0.15} interval={0.08}>
+              {detail.sections.map((section) => (
+                <div
+                  key={section.heading}
+                  className="glass-card card-hover animated-border card-inner-glow rounded-2xl p-6"
+                >
+                  <h2 className="text-lg md:text-xl font-bold text-white mb-2 tracking-[-0.04em]">
+                    {section.heading}
+                  </h2>
+                  <p className="text-sm md:text-base text-zinc-400 mb-3">
+                    {section.body}
+                  </p>
+                  {section.bullets && (
+                    <ul className="list-disc list-inside text-sm text-zinc-400 space-y-1">
+                      {section.bullets.map((bullet) => (
+                        <li key={bullet}>{bullet}</li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+              ))}
+            </Stagger>
           </section>
+
+          <div className="section-divider my-8" />
 
           {/* Related providers */}
-          <section className="mb-12">
-            <h2 className="text-sm font-semibold text-white mb-3">
-              Related cloud provider offerings
-            </h2>
-            <div className="flex flex-wrap gap-3 text-xs">
-              {providerLinks.map((link) => (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  className="inline-flex items-center px-3 py-1.5 rounded-full bg-white/[0.04] text-zinc-300 hover:text-violet-400 transition-colors"
-                >
-                  {link.label}
-                </Link>
-              ))}
-            </div>
-          </section>
+          <Reveal direction="up" blur delay={0.1}>
+            <section className="mb-12">
+              <h2 className="text-sm font-semibold text-white mb-3 tracking-[-0.04em]">
+                Related cloud provider offerings
+              </h2>
+              <div className="flex flex-wrap gap-3 text-xs">
+                {providerLinks.map((link) => (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    className="huly-badge hover:text-violet-400 transition-colors"
+                  >
+                    {link.label}
+                  </Link>
+                ))}
+              </div>
+            </section>
+          </Reveal>
+
+          <div className="section-divider my-8" />
 
           {/* CTA */}
-          <CTASection
-            title="Discuss this solution with an engineer."
-            subtitle="If this area matches a pain point you’re seeing today, we can walk through what it would look like in your environment and define clear next steps."
-            primaryLabel="Talk to an Engineer"
-            primaryHref="/contact"
-            secondaryLabel="Email Us"
-            secondaryHref="mailto:support@visionxixlabs.com"
-            plansHref="/visionxix-ai/pricing"
-          />
+          <Reveal direction="up" blur delay={0.15}>
+            <CTASection
+              title="Discuss this solution with an engineer."
+              subtitle="If this area matches a pain point you're seeing today, we can walk through what it would look like in your environment and define clear next steps."
+              primaryLabel="Talk to an Engineer"
+              primaryHref="/contact"
+              secondaryLabel="Email Us"
+              secondaryHref="mailto:support@visionxixlabs.com"
+              plansHref="/visionxix-ai/pricing"
+            />
+          </Reveal>
         </div>
       </main>
     </div>
   );
 }
-

@@ -20,41 +20,46 @@ export default async function AdminLayout({
   }
 
   return (
-    <div className="min-h-screen bg-white/[0.02]">
-      <header className="border-b border-white/[0.06] bg-white/[0.02]">
+    <div className="min-h-screen bg-[#09090b] relative overflow-hidden">
+      {/* Background pattern */}
+      <div className="bg-grid-mesh absolute inset-0 pointer-events-none" />
+
+      <header className="relative z-10 border-b border-white/[0.06] bg-white/[0.02] backdrop-blur-sm">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
           <div className="flex items-center gap-6">
-            <Link href="/admin/leads" className="flex items-center gap-2 font-bold text-white">
+            <Link href="/admin/leads" className="flex items-center gap-2 font-bold text-white tracking-[-0.04em]">
               Admin
             </Link>
-            <Link
-              href="/admin/leads"
-              className="text-sm text-violet-400 hover:underline"
-            >
-              Leads
-            </Link>
-            <Link
-              href="/admin/enterprise-dashboard"
-              className="text-sm text-violet-400 hover:underline"
-            >
-              Enterprise Dashboard
-            </Link>
-            <Link
-              href="/admin/plan-debug"
-              className="text-sm text-violet-400 hover:underline"
-            >
-              Plan Debug
-            </Link>
+            <nav className="flex items-center gap-4">
+              <Link
+                href="/admin/leads"
+                className="text-sm text-zinc-400 hover:text-violet-400 transition-colors"
+              >
+                Leads
+              </Link>
+              <Link
+                href="/admin/enterprise-dashboard"
+                className="text-sm text-zinc-400 hover:text-violet-400 transition-colors"
+              >
+                Enterprise Dashboard
+              </Link>
+              <Link
+                href="/admin/plan-debug"
+                className="text-sm text-zinc-400 hover:text-violet-400 transition-colors"
+              >
+                Plan Debug
+              </Link>
+            </nav>
           </div>
           <div className="flex items-center gap-4">
-            <span className="text-sm text-zinc-400 flex items-center gap-2">
-              <UserCircleIcon className="h-5 w-5" />
+            <span className="huly-badge flex items-center gap-2">
+              <UserCircleIcon className="h-4 w-4" />
               {session.user.email}
             </span>
             <SignOutButton />
             <Link
               href="/dashboard"
-              className="inline-flex items-center gap-2 text-sm text-zinc-400 hover:text-indigo-600"
+              className="inline-flex items-center gap-2 text-sm text-zinc-400 hover:text-violet-400 transition-colors"
             >
               <ArrowLeftIcon className="h-4 w-4" />
               Dashboard
@@ -62,7 +67,7 @@ export default async function AdminLayout({
           </div>
         </div>
       </header>
-      <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">{children}</main>
+      <main className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">{children}</main>
     </div>
   );
 }

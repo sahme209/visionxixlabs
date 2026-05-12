@@ -5,7 +5,11 @@ import { logAudit } from "@/lib/security/auditLog";
 
 export const runtime = "nodejs";
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY ?? "");
+function getStripe() {
+  const key = process.env.STRIPE_SECRET_KEY;
+  if (!key) throw new Error("STRIPE_SECRET_KEY not set");
+  return new Stripe(key);
+}
 
 function priceToPlan(priceId: string | null): "starter" | "growth" | "scale" | "enterprise" | null {
   if (!priceId) return null;
@@ -50,7 +54,7 @@ export async function POST(req: NextRequest): Promise<Response> {
 
   let event: Stripe.Event;
   try {
-    event = stripe.webhooks.constructEvent(body, sig, secret);
+    event = getStripe().webhooks.constructEvent(body, sig, secret);
   } catch (err) {
     console.error("[Stripe Webhook] Signature verification failed");
     return NextResponse.json({ error: "Invalid signature" }, { status: 400 });
@@ -60,7 +64,7 @@ export async function POST(req: NextRequest): Promise<Response> {
 
   if (event.type === "checkout.session.completed") {
     const session = event.data.object as Stripe.Checkout.Session;
-    const sessionWithItems = await stripe.checkout.sessions.retrieve(session.id, {
+    const sessionWithItems = await getStripe().checkout.sessions.retrieve(session.id, {
       expand: ["line_items", "line_items.data.price"],
     });
 

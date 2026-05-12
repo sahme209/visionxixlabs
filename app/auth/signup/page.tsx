@@ -8,6 +8,8 @@ import {
   ArrowRightIcon,
   CheckCircleIcon,
   ShieldCheckIcon,
+  EyeIcon,
+  EyeSlashIcon,
 } from "@heroicons/react/24/outline";
 import { RealisticFogBackground } from "@/components/ui/realistic-fog-background";
 import { Reveal } from "@/components/motion/Reveal";
@@ -30,6 +32,7 @@ export default function SignUpPage() {
 function SignUpForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [name, setName] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -71,12 +74,12 @@ function SignUpForm() {
       {/* Floating blur orbs */}
       <div className="absolute -top-40 right-0 w-80 h-80 rounded-full bg-violet-600/10 blur-[120px] pointer-events-none" aria-hidden />
       <div className="absolute bottom-20 -left-20 w-60 h-60 rounded-full bg-fuchsia-600/8 blur-[90px] pointer-events-none" aria-hidden />
-      {/* Dot pattern background */}
-      <div className="absolute inset-0 bg-dots opacity-25 pointer-events-none" aria-hidden />
+      {/* Grid mesh background */}
+      <div className="absolute inset-0 bg-grid-mesh opacity-30 pointer-events-none" aria-hidden />
 
       <div className="flex-1 flex items-center justify-center px-4 sm:px-8 relative z-10">
         <Reveal direction="up" blur delay={0.05}>
-          <div className="w-full max-w-sm glass-card rounded-2xl border border-white/[0.06] p-8">
+          <div className="w-full max-w-sm glass-card auth-gradient-border rounded-2xl border border-white/[0.06] p-8">
             <Link href="/" className="flex items-center gap-2.5 mb-10">
               <Image
                 src="/vision-xix-logo.png"
@@ -108,7 +111,7 @@ function SignUpForm() {
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   autoComplete="name"
-                  className="w-full rounded-lg border border-white/[0.08] bg-white/[0.03] px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-violet-500/50 focus:ring-2 focus:ring-violet-500/20 transition-colors placeholder:text-zinc-600"
+                  className="auth-input w-full rounded-lg border border-white/[0.06] bg-white/[0.03] px-3.5 py-2.5 text-sm text-white transition-all duration-300 placeholder:text-zinc-600"
                 />
               </div>
               <div>
@@ -122,24 +125,34 @@ function SignUpForm() {
                   onChange={(e) => setEmail(e.target.value)}
                   required
                   autoComplete="email"
-                  className="w-full rounded-lg border border-white/[0.08] bg-white/[0.03] px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-violet-500/50 focus:ring-2 focus:ring-violet-500/20 transition-colors placeholder:text-zinc-600"
+                  className="auth-input w-full rounded-lg border border-white/[0.06] bg-white/[0.03] px-3.5 py-2.5 text-sm text-white transition-all duration-300 placeholder:text-zinc-600"
                 />
               </div>
               <div>
                 <label htmlFor="signup-password" className="block text-sm font-medium text-zinc-300 mb-1.5">
                   Password
                 </label>
-                <input
-                  id="signup-password"
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                  minLength={8}
-                  placeholder="8+ characters"
-                  autoComplete="new-password"
-                  className="w-full rounded-lg border border-white/[0.08] bg-white/[0.03] px-3.5 py-2.5 text-sm text-white placeholder:text-zinc-600 focus:outline-none focus:border-violet-500/50 focus:ring-2 focus:ring-violet-500/20 transition-colors"
-                />
+                <div className="relative">
+                  <input
+                    id="signup-password"
+                    type={showPassword ? "text" : "password"}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                    minLength={8}
+                    placeholder="8+ characters"
+                    autoComplete="new-password"
+                    className="auth-input w-full rounded-lg border border-white/[0.06] bg-white/[0.03] px-3.5 py-2.5 pr-10 text-sm text-white placeholder:text-zinc-600 transition-all duration-300"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="password-toggle-btn"
+                    aria-label={showPassword ? "Hide password" : "Show password"}
+                  >
+                    {showPassword ? <EyeSlashIcon className="h-4 w-4" /> : <EyeIcon className="h-4 w-4" />}
+                  </button>
+                </div>
               </div>
               {error && (
                 <div className="rounded-lg border border-red-500/20 bg-red-500/[0.06] px-3.5 py-2.5 text-sm text-red-400">
@@ -149,7 +162,7 @@ function SignUpForm() {
               <button
                 type="submit"
                 disabled={loading}
-                className="btn-huly cta-glow w-full rounded-lg bg-white py-2.5 text-sm font-semibold text-zinc-900 hover:bg-zinc-100 disabled:opacity-50 flex items-center justify-center gap-2 transition-colors shadow-sm"
+                className="btn-huly btn-shimmer cta-glow w-full rounded-lg bg-white py-2.5 text-sm font-semibold text-zinc-900 hover:bg-zinc-100 disabled:opacity-50 flex items-center justify-center gap-2 transition-colors shadow-sm"
               >
                 {loading ? "Creating account..." : "Create account"}
                 {!loading && <ArrowRightIcon className="h-4 w-4" />}

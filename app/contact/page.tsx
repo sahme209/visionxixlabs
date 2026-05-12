@@ -90,7 +90,7 @@ export default function ContactPage() {
           <Reveal direction="up" blur delay={0.15}>
             <form ref={formRef} onSubmit={handleSubmit} className="glass-card rounded-2xl border border-white/[0.06] bg-white/[0.02] p-6 sm:p-8 space-y-5">
               <div className="grid gap-5 sm:grid-cols-2">
-                <div>
+                <div className="floating-label-group">
                   <label htmlFor="name" className="block text-sm font-medium text-zinc-300 mb-1.5">
                     Name
                   </label>
@@ -99,10 +99,10 @@ export default function ContactPage() {
                     name="name"
                     type="text"
                     required
-                    className="w-full rounded-lg border border-white/[0.08] bg-white/[0.03] px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-violet-500/50 focus:ring-2 focus:ring-violet-500/20 transition-colors placeholder:text-zinc-600"
+                    className="w-full rounded-lg border border-white/[0.06] bg-white/[0.03] px-3.5 py-2.5 text-sm text-white focus:outline-none transition-all duration-300 placeholder:text-zinc-600"
                   />
                 </div>
-                <div>
+                <div className="floating-label-group">
                   <label htmlFor="email" className="block text-sm font-medium text-zinc-300 mb-1.5">
                     Work email
                   </label>
@@ -111,11 +111,11 @@ export default function ContactPage() {
                     name="email"
                     type="email"
                     required
-                    className="w-full rounded-lg border border-white/[0.08] bg-white/[0.03] px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-violet-500/50 focus:ring-2 focus:ring-violet-500/20 transition-colors placeholder:text-zinc-600"
+                    className="w-full rounded-lg border border-white/[0.06] bg-white/[0.03] px-3.5 py-2.5 text-sm text-white focus:outline-none transition-all duration-300 placeholder:text-zinc-600"
                   />
                 </div>
               </div>
-              <div>
+              <div className="floating-label-group">
                 <label htmlFor="company" className="block text-sm font-medium text-zinc-300 mb-1.5">
                   Company
                 </label>
@@ -123,10 +123,10 @@ export default function ContactPage() {
                   id="company"
                   name="company"
                   type="text"
-                  className="w-full rounded-lg border border-white/[0.08] bg-white/[0.03] px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-violet-500/50 focus:ring-2 focus:ring-violet-500/20 transition-colors placeholder:text-zinc-600"
+                  className="w-full rounded-lg border border-white/[0.06] bg-white/[0.03] px-3.5 py-2.5 text-sm text-white focus:outline-none transition-all duration-300 placeholder:text-zinc-600"
                 />
               </div>
-              <div>
+              <div className="floating-label-group">
                 <label htmlFor="message" className="block text-sm font-medium text-zinc-300 mb-1.5">
                   How can we help?
                 </label>
@@ -135,7 +135,7 @@ export default function ContactPage() {
                   name="message"
                   rows={4}
                   required
-                  className="w-full rounded-lg border border-white/[0.08] bg-white/[0.03] px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-violet-500/50 focus:ring-2 focus:ring-violet-500/20 transition-colors resize-none placeholder:text-zinc-600"
+                  className="w-full rounded-lg border border-white/[0.06] bg-white/[0.03] px-3.5 py-2.5 text-sm text-white focus:outline-none transition-all duration-300 resize-none placeholder:text-zinc-600"
                   placeholder="Tell us about your cloud environment and what you're looking for."
                 />
               </div>
@@ -146,21 +146,19 @@ export default function ContactPage() {
                 </div>
               )}
 
-              <div className="flex items-center justify-between gap-4">
+              <div className="flex items-center justify-between gap-4 flex-wrap">
                 <button
                   type="submit"
                   disabled={loading}
-                  className="btn-huly cta-glow inline-flex items-center gap-2 rounded-lg bg-white px-5 py-2.5 text-sm font-semibold text-zinc-900 hover:bg-zinc-100 transition-colors disabled:opacity-50 shadow-sm"
+                  className="btn-huly btn-shimmer cta-glow inline-flex items-center gap-2 rounded-lg bg-white px-5 py-2.5 text-sm font-semibold text-zinc-900 hover:bg-zinc-100 transition-colors disabled:opacity-50 shadow-sm"
                 >
                   {loading ? "Sending..." : "Send message"}
                   {!loading && <ArrowRightIcon className="h-4 w-4" />}
                 </button>
-                <a
-                  href="mailto:support@visionxixlabs.com"
-                  className="text-sm text-zinc-500 hover:text-violet-400 transition-colors"
-                >
-                  support@visionxixlabs.com
-                </a>
+                <span className="response-time-badge">
+                  <span className="response-dot" />
+                  Usually responds within 2 hours
+                </span>
               </div>
             </form>
           </Reveal>

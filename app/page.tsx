@@ -18,6 +18,11 @@ import { AnimatedButton } from "@/components/ui/AnimatedButton";
 import { RealisticFogBackground } from "@/components/ui/realistic-fog-background";
 import { TestimonialsCarousel } from "@/components/TestimonialsCarousel";
 import { FAQAccordion } from "@/components/FAQAccordion";
+import {
+  CurrencyDollarIcon,
+  LockClosedIcon,
+  ArrowPathIcon,
+} from "@heroicons/react/24/outline";
 
 const axiomFAQ = [
   {
@@ -139,17 +144,26 @@ export default function Home() {
         {/* Floating ambient particles */}
         <AmbientParticles />
 
+        {/* Hero noise grain overlay */}
+        <div className="hero-noise-grain" aria-hidden />
+
         <div className="max-w-4xl mx-auto text-center relative">
           <Reveal direction="up" blur>
-            <span className="badge-shimmer inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.08] text-zinc-300 text-sm font-medium mb-8 backdrop-blur-sm cursor-default">
+            <span className="badge-shimmer badge-shimmer-border inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.08] text-zinc-300 text-sm font-medium mb-8 backdrop-blur-sm cursor-default">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
               Autonomous Cloud Operations
             </span>
           </Reveal>
           <Reveal direction="up" blur delay={0.04}>
             <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold mb-6 leading-[1.05] tracking-[-0.04em]">
-              Infrastructure intelligence<br className="hidden sm:block" />
-              that operates <span className="text-gradient">autonomously.</span>
+              {["Infrastructure", "intelligence"].map((word, i) => (
+                <span key={word} className={`hero-word hero-word-${i}`}>{word} </span>
+              ))}
+              <br className="hidden sm:block" />
+              {["that", "operates"].map((word, i) => (
+                <span key={word} className={`hero-word hero-word-${i + 2}`}>{word} </span>
+              ))}
+              <span className="hero-word hero-word-4 text-gradient">autonomously.</span>
             </h1>
           </Reveal>
           <Reveal direction="up" delay={0.06}>
@@ -216,6 +230,35 @@ export default function Home() {
       {/* ── Section Divider ────────────────────────────────────────── */}
       <SectionDivider />
 
+      {/* ── Built For ─────────────────────────────────────────────── */}
+      <section className="py-10 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-4xl mx-auto">
+          <Reveal direction="up" blur delay={0.05}>
+            <p className="text-center text-xs font-semibold text-zinc-500 uppercase tracking-widest mb-5">
+              Built for
+            </p>
+          </Reveal>
+          <Stagger delay={0.1} interval={0.06} className="flex flex-wrap justify-center gap-3">
+            {[
+              "YC-backed startups",
+              "Series A–C teams",
+              "Platform engineering",
+              "FinOps teams",
+            ].map((label) => (
+              <span
+                key={label}
+                className="huly-badge hover-lift text-zinc-400 border-white/[0.06] text-xs px-4 py-1.5 cursor-default"
+              >
+                {label}
+              </span>
+            ))}
+          </Stagger>
+        </div>
+      </section>
+
+      {/* ── Section Divider ────────────────────────────────────────── */}
+      <SectionDivider />
+
       {/* ── Capabilities ───────────────────────────────────────────── */}
       <section className="py-24 px-4 sm:px-6 lg:px-8">
         <div className="max-w-6xl mx-auto">
@@ -239,6 +282,7 @@ export default function Home() {
                 accentClass: "card-accent-violet",
                 title: "Deep Scanning",
                 icon: MagnifyingGlassIcon,
+                metric: "3 clouds",
                 desc: "Full infrastructure snapshot — cost waste, security gaps, misconfigurations, and drift from desired state.",
                 items: [
                   { dot: "bg-violet-400/60", text: "Cost optimization and rightsizing" },
@@ -251,6 +295,7 @@ export default function Home() {
                 accentClass: "card-accent-fuchsia",
                 title: "Autonomous Reasoning",
                 icon: CpuChipIcon,
+                metric: "12-step loop",
                 desc: "AI reasoning engine that prioritizes findings, builds dependency-aware execution plans, and generates Terraform code.",
                 items: [
                   { dot: "bg-fuchsia-400/60", text: "Multi-phase cognitive reasoning" },
@@ -263,6 +308,7 @@ export default function Home() {
                 accentClass: "card-accent-emerald",
                 title: "Governed Execution",
                 icon: ShieldCheckIcon,
+                metric: "99.9% SLA",
                 desc: "Enterprise-grade safety — approval gates, blast radius limits, verified rollback, and immutable audit trail.",
                 items: [
                   { dot: "bg-emerald-400/60", text: "Human approval for high-risk changes" },
@@ -274,12 +320,17 @@ export default function Home() {
               const Icon = card.icon;
               return (
                 <Reveal key={card.title} direction="up" delay={i * 0.06}>
-                  <div className={`glow-border-card animated-border card-inner-glow card-hover ${card.accentClass} rounded-xl border border-white/[0.06] bg-white/[0.02] p-6 h-full backdrop-blur-sm hover:border-white/[0.12] transition-colors relative`}>
+                  <div className={`group glow-border-card animated-border card-inner-glow card-hover ${card.accentClass} rounded-xl border border-white/[0.06] bg-white/[0.02] p-6 h-full backdrop-blur-sm hover:border-white/[0.12] transition-colors relative`}>
                     <div className="card-accent-overlay" />
                     <div className="relative z-10">
                       <div className="flex items-center gap-2.5 mb-4">
-                        <Icon className={`h-5 w-5 ${card.dot === "bg-violet-500" ? "text-violet-400" : card.dot === "bg-fuchsia-500" ? "text-fuchsia-400" : "text-emerald-400"}`} />
+                        <span className="relative flex items-center justify-center">
+                          <span className={`w-2 h-2 rounded-full ${card.dot} group-hover:status-dot-pulse`} />
+                          <span className={`absolute inset-[-3px] rounded-full ${card.dot} opacity-0 group-hover:opacity-40 group-hover:animate-ping`} />
+                        </span>
+                        <Icon className={`h-5 w-5 icon-bounce ${card.dot === "bg-violet-500" ? "text-violet-400" : card.dot === "bg-fuchsia-500" ? "text-fuchsia-400" : "text-emerald-400"}`} />
                         <h3 className="text-base font-semibold">{card.title}</h3>
+                        <span className="metric-counter ml-auto">{card.metric}</span>
                       </div>
                       <p className="text-sm text-zinc-400 mb-5 leading-relaxed">{card.desc}</p>
                       <ul className="text-sm text-zinc-500 space-y-2">
@@ -373,6 +424,108 @@ export default function Home() {
       <Reveal direction="up">
         <TestimonialsCarousel />
       </Reveal>
+
+      {/* ── Section Divider ────────────────────────────────────────── */}
+      <SectionDivider />
+
+      {/* ── How Customers Use Axiom ──────────────────────────────── */}
+      <section className="py-24 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-6xl mx-auto">
+          <Reveal direction="up" blur>
+            <div className="text-center mb-16">
+              <p className="text-sm font-semibold text-violet-400 mb-3 tracking-wide uppercase">
+                Use Cases
+              </p>
+              <h2 className="text-3xl md:text-4xl font-bold mb-4">
+                How customers use Axiom
+              </h2>
+              <p className="text-zinc-400 max-w-xl mx-auto">
+                From cutting cloud spend to hardening security posture and preventing drift — Axiom operates across the full stack.
+              </p>
+            </div>
+          </Reveal>
+          <Stagger delay={0.1} interval={0.08} className="grid md:grid-cols-3 gap-5">
+            {/* Cost Optimization */}
+            <div className="glass-card animated-border card-accent-emerald rounded-xl border border-white/[0.06] bg-white/[0.02] p-6 hover:border-emerald-500/20 transition-colors relative group">
+              <div className="card-accent-overlay" />
+              <div className="relative z-10">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-9 h-9 rounded-lg bg-emerald-500/10 flex items-center justify-center">
+                    <CurrencyDollarIcon className="h-5 w-5 text-emerald-400 icon-bounce" />
+                  </div>
+                  <h3 className="text-base font-semibold">Cost Optimization</h3>
+                </div>
+                <ul className="text-sm text-zinc-400 space-y-2.5">
+                  <li className="flex items-start gap-2">
+                    <span className="w-1 h-1 rounded-full bg-emerald-400/60 mt-2 flex-shrink-0" />
+                    Identify idle resources, oversized instances, and unused volumes
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="w-1 h-1 rounded-full bg-emerald-400/60 mt-2 flex-shrink-0" />
+                    Generate rightsizing plans with estimated monthly savings
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="w-1 h-1 rounded-full bg-emerald-400/60 mt-2 flex-shrink-0" />
+                    Continuous cost drift monitoring after changes
+                  </li>
+                </ul>
+              </div>
+            </div>
+            {/* Security Hardening */}
+            <div className="glass-card animated-border card-accent-red rounded-xl border border-white/[0.06] bg-white/[0.02] p-6 hover:border-red-500/20 transition-colors relative group">
+              <div className="card-accent-overlay" />
+              <div className="relative z-10">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-9 h-9 rounded-lg bg-red-500/10 flex items-center justify-center">
+                    <LockClosedIcon className="h-5 w-5 text-red-400 icon-bounce" />
+                  </div>
+                  <h3 className="text-base font-semibold">Security Hardening</h3>
+                </div>
+                <ul className="text-sm text-zinc-400 space-y-2.5">
+                  <li className="flex items-start gap-2">
+                    <span className="w-1 h-1 rounded-full bg-red-400/60 mt-2 flex-shrink-0" />
+                    Detect open security groups, public buckets, and IAM misconfigs
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="w-1 h-1 rounded-full bg-red-400/60 mt-2 flex-shrink-0" />
+                    Severity-scored findings with remediation Terraform code
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="w-1 h-1 rounded-full bg-red-400/60 mt-2 flex-shrink-0" />
+                    Compliance-aware scanning for SOC 2 and ISO 27001
+                  </li>
+                </ul>
+              </div>
+            </div>
+            {/* Drift Prevention */}
+            <div className="glass-card animated-border card-accent-violet rounded-xl border border-white/[0.06] bg-white/[0.02] p-6 hover:border-violet-500/20 transition-colors relative group">
+              <div className="card-accent-overlay" />
+              <div className="relative z-10">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-9 h-9 rounded-lg bg-violet-500/10 flex items-center justify-center">
+                    <ArrowPathIcon className="h-5 w-5 text-violet-400 icon-bounce" />
+                  </div>
+                  <h3 className="text-base font-semibold">Drift Prevention</h3>
+                </div>
+                <ul className="text-sm text-zinc-400 space-y-2.5">
+                  <li className="flex items-start gap-2">
+                    <span className="w-1 h-1 rounded-full bg-violet-400/60 mt-2 flex-shrink-0" />
+                    Baseline snapshots compared on every scheduled scan
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="w-1 h-1 rounded-full bg-violet-400/60 mt-2 flex-shrink-0" />
+                    Field-level diff with classification by category
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="w-1 h-1 rounded-full bg-violet-400/60 mt-2 flex-shrink-0" />
+                    Auto-generate remediation plans to restore desired state
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </Stagger>
+        </div>
+      </section>
 
       {/* ── Section Divider ────────────────────────────────────────── */}
       <SectionDivider />

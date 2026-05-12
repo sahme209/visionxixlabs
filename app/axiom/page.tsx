@@ -261,27 +261,34 @@ export default function AxiomPage() {
             </div>
           </Reveal>
           <Stagger delay={0.1} interval={0.08} className="space-y-8">
-            {CAPABILITIES.map((cap) => {
+            {CAPABILITIES.map((cap, idx) => {
               const Icon = cap.icon;
+              const accentColors = [
+                { bg: "bg-violet-500/10", text: "text-violet-400", check: "text-emerald-400" },
+                { bg: "bg-fuchsia-500/10", text: "text-fuchsia-400", check: "text-violet-400" },
+                { bg: "bg-cyan-500/10", text: "text-cyan-400", check: "text-cyan-400" },
+                { bg: "bg-emerald-500/10", text: "text-emerald-400", check: "text-emerald-400" },
+              ];
+              const accent = accentColors[idx % accentColors.length];
               return (
                 <div
                   key={cap.title}
-                  className="animated-border card-inner-glow glow-border-card card-hover rounded-2xl border border-white/[0.06] bg-white/[0.02] p-8 hover:border-white/[0.12] transition-all"
+                  className="axiom-cap-row animated-border card-inner-glow glow-border-card card-hover rounded-2xl border border-white/[0.06] bg-white/[0.02] p-8 hover:border-white/[0.12] transition-all group"
                 >
                   <div className="flex items-start gap-4 mb-4">
-                    <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-violet-500/10 flex items-center justify-center">
-                      <Icon className="h-5 w-5 text-violet-400 icon-bounce" />
+                    <div className={`axiom-cap-icon-wrap flex-shrink-0 w-10 h-10 rounded-xl ${accent.bg} flex items-center justify-center`}>
+                      <Icon className={`h-5 w-5 ${accent.text} icon-bounce`} />
                     </div>
                     <div>
                       <h3 className="text-lg font-bold text-white">{cap.title}</h3>
-                      <p className="text-sm text-violet-400 font-medium">{cap.subtitle}</p>
+                      <p className={`text-sm ${accent.text} font-medium`}>{cap.subtitle}</p>
                     </div>
                   </div>
                   <p className="text-zinc-400 mb-5 leading-relaxed">{cap.desc}</p>
                   <ul className="grid sm:grid-cols-2 gap-2">
                     {cap.points.map((point) => (
                       <li key={point} className="flex items-start gap-2 text-sm text-zinc-300">
-                        <CheckCircleIcon className="h-4 w-4 text-emerald-400 flex-shrink-0 mt-0.5" />
+                        <CheckCircleIcon className={`h-4 w-4 ${accent.check} flex-shrink-0 mt-0.5`} />
                         {point}
                       </li>
                     ))}
@@ -377,6 +384,67 @@ export default function AxiomPage() {
               <p className="text-sm text-zinc-400 leading-relaxed">
                 Configure daily or weekly scans per cloud account. The scheduler processes due runs, diffs against previous baselines, detects drift, generates notifications, and creates approval requests — fully autonomous, fully audited, and never auto-applying without explicit human approval.
               </p>
+            </div>
+          </Reveal>
+        </div>
+      </section>
+
+      {/* ── See It In Action ─────────────────────────────────────────── */}
+      <div className="section-divider" />
+      <section className="py-24 relative">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+          <Reveal direction="up" blur>
+            <div className="text-center mb-16">
+              <span className="huly-badge text-xs font-semibold text-violet-400 mb-3 tracking-wide uppercase px-3 py-1">
+                Live Preview
+              </span>
+              <h2 className="text-3xl sm:text-4xl font-bold tracking-[-0.04em] text-white mb-4 mt-4">
+                See it in <span className="text-gradient">action.</span>
+              </h2>
+              <p className="text-zinc-400 max-w-xl mx-auto">
+                Watch Axiom scan an AWS account and surface findings in real time.
+              </p>
+            </div>
+          </Reveal>
+          <Reveal direction="up" blur delay={0.15}>
+            <div className="animated-border card-inner-glow rounded-2xl border border-white/[0.06] bg-white/[0.02] p-1 relative">
+              {/* Simulated terminal/demo view */}
+              <div className="rounded-xl bg-[#0c0c0e] p-6 relative overflow-hidden">
+                {/* Decorative live indicator */}
+                <div className="flex items-center gap-2 mb-5">
+                  <span className="relative flex items-center justify-center w-3 h-3">
+                    <span className="w-2 h-2 rounded-full bg-emerald-400" />
+                    <span className="demo-live-ring" />
+                  </span>
+                  <span className="text-xs font-medium text-emerald-400">Live scan simulation</span>
+                </div>
+                {/* Terminal lines */}
+                <div className="space-y-2 font-mono text-xs">
+                  <div className="flex items-center gap-2">
+                    <span className="text-violet-400">$</span>
+                    <span className="text-zinc-300">axiom scan --account prod-aws --regions us-east-1,eu-west-1</span>
+                  </div>
+                  <div className="text-zinc-500 pl-4">Connecting via assume-role... <span className="text-emerald-400">authenticated</span></div>
+                  <div className="text-zinc-500 pl-4">Scanning 12 services across 2 regions...</div>
+                  <div className="text-zinc-500 pl-4">
+                    Discovered <span className="text-white font-semibold">847</span> resources |{" "}
+                    <span className="text-amber-400">23 findings</span> |{" "}
+                    <span className="text-red-400">4 critical</span> |{" "}
+                    <span className="text-emerald-400">$12,400/mo savings identified</span>
+                  </div>
+                  <div className="text-zinc-500 pl-4">Generating execution plans...</div>
+                  <div className="text-zinc-500 pl-4">
+                    Phase 1: <span className="text-violet-400">Cost optimization</span> (8 actions) |{" "}
+                    Phase 2: <span className="text-red-400">Security hardening</span> (11 actions)
+                  </div>
+                  <div className="flex items-center gap-2 pt-1">
+                    <span className="text-emerald-400">Ready</span>
+                    <span className="text-zinc-600">|</span>
+                    <span className="text-zinc-400">Awaiting approval to proceed</span>
+                    <span className="w-1.5 h-4 bg-violet-400/80 animate-cursor-blink ml-1" />
+                  </div>
+                </div>
+              </div>
             </div>
           </Reveal>
         </div>
