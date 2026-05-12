@@ -1,367 +1,260 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
 import {
-  CheckCircleIcon,
-  XCircleIcon,
   ArrowRightIcon,
   CpuChipIcon,
+  CodeBracketIcon,
+  ChatBubbleLeftRightIcon,
+  CloudIcon,
+  SparklesIcon,
+  ShieldCheckIcon,
+  BoltIcon,
 } from "@heroicons/react/24/outline";
 import { Navigation } from "@/components/Navigation";
 import { Reveal } from "@/components/motion/Reveal";
 import { Stagger } from "@/components/motion/Stagger";
-import { AnimatedButton } from "@/components/ui/AnimatedButton";
-import { MEMBERSHIP_PLANS, INCLUDED_IN_EVERY_PLAN, ADDONS, type MembershipPlanId } from "@/lib/pricing/membership";
-import { SUPPORT_EMAIL } from "@/lib/constants/company";
 import { Footer } from "@/components/Footer";
 
-type BillingCycle = "monthly" | "yearly";
-
-const STRIPE_LINKS = {
-  starter: {
-    monthly: process.env.NEXT_PUBLIC_STRIPE_STARTER_MONTHLY || "https://buy.stripe.com/8x25kE1ARe7gbGrcNX6c000",
-    yearly: process.env.NEXT_PUBLIC_STRIPE_STARTER_YEARLY || "https://buy.stripe.com/bJe14o0wNgfofWH8xH6c003",
-  },
-  growth: {
-    monthly: process.env.NEXT_PUBLIC_STRIPE_GROWTH_MONTHLY || "https://buy.stripe.com/bJe28s3IZ7ISbGr29j6c001",
-    yearly: process.env.NEXT_PUBLIC_STRIPE_GROWTH_YEARLY || "https://buy.stripe.com/cNidRa4N3fbk5i301b6c004",
-  },
-  scale: {
-    monthly: process.env.NEXT_PUBLIC_STRIPE_SCALE_MONTHLY || "https://buy.stripe.com/aFa28scfv9R0cKv9BL6c002",
-    yearly: process.env.NEXT_PUBLIC_STRIPE_SCALE_YEARLY || "https://buy.stripe.com/bJeaEY5R77IS8uf5lv6c005",
-  },
-} as const;
-
-function getStripeLink(planId: string, billing: BillingCycle): string | null {
-  const plan = STRIPE_LINKS[planId as keyof typeof STRIPE_LINKS];
-  if (!plan) return null;
-  return plan[billing];
-}
-
-const PLAN_ORDER: MembershipPlanId[] = ["starter", "growth", "scale", "enterprise"];
-
-const AXIOM_FEATURES: Record<MembershipPlanId, { included: string[]; excluded: string[] }> = {
-  starter: {
-    included: [
-      "1 AWS account",
-      "Read-only infrastructure scan",
-      "Cost, security, and drift findings",
-      "Prioritized recommendations",
-      "Single scan per month",
-      "Community support",
+const PRODUCTS = [
+  {
+    id: "axiom",
+    name: "Axiom",
+    tagline: "Autonomous Cloud Operations",
+    description:
+      "AI-powered cloud operations agent that scans your infrastructure, reasons about issues, generates execution plans, and applies approved changes — with continuous drift monitoring and outcome learning.",
+    icon: CpuChipIcon,
+    href: "/axiom",
+    pricingHref: "/operator/pricing",
+    features: [
+      "12-step autonomous reasoning loop",
+      "Cost, security, and drift analysis",
+      "Terraform code generation",
+      "Governance with approval gates",
+      "Multi-cloud: AWS, Azure, GCP",
+      "Immutable audit trail",
     ],
-    excluded: [
-      "Cognitive reasoning engine",
-      "Execution plans + Terraform",
-      "Governance policies",
-    ],
+    accentColor: "indigo",
+    borderClass: "border-indigo-500/30 hover:border-indigo-500/50",
+    glowClass: "bg-indigo-500/[0.04]",
+    iconBg: "bg-indigo-500/10",
+    iconColor: "text-indigo-400",
+    dotColor: "bg-indigo-400",
   },
-  growth: {
-    included: [
-      "3 cloud accounts",
-      "Unlimited scans",
-      "Cognitive reasoning engine",
-      "Phased execution plans + Terraform",
-      "Governance policies + approval gates",
-      "Verified rollback on every change",
-      "Slack + email alerts",
-      "GitHub connector",
-      "Priority support",
+  {
+    id: "builder",
+    name: "Website Builder",
+    tagline: "AI-Powered Web Development",
+    description:
+      "Describe what you want, get a production-ready website. AI generates responsive, accessible code with hosting, CDN, and CI/CD — deploy in minutes, not weeks.",
+    icon: CodeBracketIcon,
+    href: "/builder",
+    pricingHref: "/builder/pricing",
+    features: [
+      "AI code generation from prompts",
+      "Production-ready React/Next.js output",
+      "Built-in hosting and CDN",
+      "CI/CD pipeline included",
+      "White-label branding",
+      "Responsive by default",
     ],
-    excluded: [],
+    accentColor: "cyan",
+    borderClass: "border-cyan-500/30 hover:border-cyan-500/50",
+    glowClass: "bg-cyan-500/[0.04]",
+    iconBg: "bg-cyan-500/10",
+    iconColor: "text-cyan-400",
+    dotColor: "bg-cyan-400",
   },
-  scale: {
-    included: [
-      "8 cloud accounts",
-      "Unlimited scans",
-      "Cognitive reasoning engine",
-      "Daily automated scans + drift detection",
-      "Execution plans + Terraform generation",
-      "Governance + compliance policies",
-      "AWS, Azure, GCP connectors",
-      "Slack + email alerts + webhooks",
-      "Priority support",
+  {
+    id: "ai-assistant",
+    name: "AI Assistant",
+    tagline: "Intelligent Cloud Guidance",
+    description:
+      "Chat-based AI assistant trained on cloud architecture, DevOps, and infrastructure best practices. Get answers, generate configs, and troubleshoot issues in real time.",
+    icon: ChatBubbleLeftRightIcon,
+    href: "/visionxix-ai-assistant",
+    pricingHref: "/visionxix-ai/pricing",
+    features: [
+      "Cloud architecture guidance",
+      "Real-time troubleshooting",
+      "Config generation",
+      "Security best practices",
+      "Cost optimization advice",
+      "Embeddable widget",
     ],
-    excluded: [],
+    accentColor: "violet",
+    borderClass: "border-violet-500/30 hover:border-violet-500/50",
+    glowClass: "bg-violet-500/[0.04]",
+    iconBg: "bg-violet-500/10",
+    iconColor: "text-violet-400",
+    dotColor: "bg-violet-400",
   },
-  enterprise: {
-    included: [
-      "Unlimited cloud accounts",
-      "Autonomous operations with trust ladder",
-      "Daily compliance scans (SOC 2, ISO 27001)",
-      "Custom Terraform modules",
-      "SSO + audit logging",
-      "Dedicated account manager",
-      "SLA guarantee (99.9%)",
-      "Compliance frameworks + policy packs",
+  {
+    id: "cloud-studio",
+    name: "Cloud Studio",
+    tagline: "Infrastructure Analysis Platform",
+    description:
+      "Upload your cloud config or connect your account. Get a comprehensive analysis of cost optimization opportunities, security gaps, and architecture recommendations.",
+    icon: CloudIcon,
+    href: "/cloud-studio",
+    pricingHref: "/operator/pricing",
+    features: [
+      "One-click cloud analysis",
+      "Cost optimization report",
+      "Security posture assessment",
+      "Architecture recommendations",
+      "Exportable reports",
+      "Team collaboration",
     ],
-    excluded: [],
+    accentColor: "emerald",
+    borderClass: "border-emerald-500/30 hover:border-emerald-500/50",
+    glowClass: "bg-emerald-500/[0.04]",
+    iconBg: "bg-emerald-500/10",
+    iconColor: "text-emerald-400",
+    dotColor: "bg-emerald-400",
   },
-};
-
-const comparisonRows = [
-  { feature: "Cloud accounts", starter: "1", growth: "3", scale: "8", enterprise: "Unlimited" },
-  { feature: "Infrastructure scans", starter: "1/month", growth: "Unlimited", scale: "Unlimited", enterprise: "Unlimited" },
-  { feature: "Cognitive reasoning", starter: "—", growth: "Full 9-phase loop", scale: "Full 9-phase loop", enterprise: "Full 9-phase loop" },
-  { feature: "Execution plans", starter: "—", growth: "Generate + apply", scale: "Generate + apply", enterprise: "Custom modules" },
-  { feature: "Governance & safety", starter: "—", growth: "Approval gates", scale: "Approval + compliance", enterprise: "Trust ladder + policies" },
-  { feature: "Automated monitoring", starter: "—", growth: "Weekly", scale: "Daily", enterprise: "Daily" },
-  { feature: "Cloud connectors", starter: "—", growth: "GitHub", scale: "AWS, Azure, GCP", enterprise: "Unlimited" },
-  { feature: "Alerts", starter: "—", growth: "Slack + email", scale: "Slack + email + webhooks", enterprise: "Slack + email + PagerDuty" },
-  { feature: "Support", starter: "Community", growth: "Priority email", scale: "Priority", enterprise: "Dedicated manager" },
-  { feature: "Audit logging", starter: "—", growth: "30 days", scale: "90 days", enterprise: "Unlimited" },
-  { feature: "SSO", starter: "—", growth: "—", scale: "—", enterprise: "SAML + OIDC" },
 ];
 
-export default function PricingPage() {
-  const [billing, setBilling] = useState<BillingCycle>("monthly");
-
+export default function ProductsPage() {
   return (
-    <div className="min-h-screen bg-[#09090b] text-slate-100 relative overflow-hidden">
-      {/* Background effects */}
-      <div className="spotlight-orb absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[600px] pointer-events-none" />
-      <div className="bg-grid-mesh absolute inset-0 pointer-events-none" />
+    <div className="min-h-screen bg-[#09090b] text-white relative overflow-hidden">
+      <div className="absolute inset-0 bg-dots opacity-20" aria-hidden />
+      <div className="absolute -top-60 left-1/4 w-[500px] h-[500px] rounded-full bg-indigo-600/[0.04] blur-[120px]" aria-hidden />
+      <div className="absolute top-1/3 -right-40 w-[400px] h-[400px] rounded-full bg-blue-600/[0.04] blur-[100px]" aria-hidden />
+      <div className="absolute bottom-40 left-10 w-72 h-72 rounded-full bg-cyan-600/[0.04] blur-[100px]" aria-hidden />
+
       <Navigation />
 
-      {/* Header */}
-      <section className="pt-28 pb-12 text-center px-4 relative">
+      {/* Hero */}
+      <section className="pt-36 pb-16 text-center px-4 relative">
+        <div className="beam-sweep absolute inset-0" aria-hidden />
         <Reveal>
-          <div className="flex items-center justify-center gap-2 mb-6">
-            <CpuChipIcon className="h-7 w-7 text-violet-400" />
-            <span className="font-bold text-lg">Axiom Cloud Operations</span>
-          </div>
-          <h1 className="text-3xl sm:text-4xl font-bold mb-4 tracking-[-0.04em]">
-            Simple, <span className="text-gradient">transparent pricing</span>
+          <p className="text-sm font-semibold text-blue-400 mb-4 tracking-wide uppercase">Products</p>
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-6 tracking-tight">
+            Everything you need to<br className="hidden sm:block" />
+            operate your cloud
           </h1>
-          <p className="text-zinc-400 text-lg max-w-xl mx-auto">
-            Start with a full resilience analysis. Upgrade when you&apos;re ready to deploy and monitor.
+          <p className="text-zinc-400 text-lg max-w-2xl mx-auto leading-relaxed">
+            From autonomous infrastructure operations to AI-powered development — a unified platform
+            built for modern engineering teams.
           </p>
-          <div className="mt-8 flex items-center justify-center gap-3">
-            <button
-              onClick={() => setBilling("monthly")}
-              className={`btn-huly px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                billing === "monthly"
-                  ? "bg-violet-600 text-white"
-                  : "text-zinc-400 hover:bg-white/[0.03]"
-              }`}
-            >
-              Pay monthly
-            </button>
-            <button
-              onClick={() => setBilling("yearly")}
-              className={`btn-huly px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2 ${
-                billing === "yearly"
-                  ? "bg-violet-600 text-white"
-                  : "text-zinc-400 hover:bg-white/[0.03]"
-              }`}
-            >
-              Pay yearly
-              <span className="huly-badge text-xs bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded-full">
-                Save 40%
-              </span>
-            </button>
-          </div>
-          <p className="mt-2 text-sm text-zinc-500">7 days free, then charged. Cancel anytime before trial ends.</p>
         </Reveal>
       </section>
 
-      <div className="section-divider max-w-6xl mx-auto my-4" />
-
-      {/* Plan Cards */}
-      <section className="pb-20 px-4 relative">
-        <Stagger className="grid md:grid-cols-2 xl:grid-cols-4 gap-6 max-w-6xl mx-auto">
-            {PLAN_ORDER.map((planId) => {
-              const plan = MEMBERSHIP_PLANS[planId];
-              const axiom = AXIOM_FEATURES[planId];
-              const isEnterprise = planId === "enterprise";
-              const monthlyPrice = plan.monthlyPrice;
-              const yearlyTotal = plan.yearlyPrice;
-              const yearlyMonthly = yearlyTotal != null ? Math.round(yearlyTotal / 12) : null;
-              const price = billing === "monthly" ? monthlyPrice : yearlyMonthly;
-              const highlighted = plan.popular ?? false;
-
+      {/* Products Grid */}
+      <section className="pb-28 px-4">
+        <div className="max-w-6xl mx-auto">
+          <Stagger className="grid md:grid-cols-2 gap-8" interval={0.1}>
+            {PRODUCTS.map((product) => {
+              const Icon = product.icon;
               return (
                 <div
-                  key={planId}
-                  className={`rounded-2xl border p-8 flex flex-col glass-card animated-border card-inner-glow card-shine-sweep card-reactive ${
-                    highlighted
-                      ? "border-violet-500/40 ring-1 ring-violet-500/20 relative"
-                      : "border-white/[0.06]"
-                  }`}
+                  key={product.id}
+                  className={`group electric-card card-shine-sweep relative flex flex-col transition-all duration-500 ${product.borderClass}`}
                 >
-                  {highlighted && (
-                    <span className="huly-badge absolute -top-3 left-6 text-xs font-semibold text-violet-300 px-3 py-1 rounded-full bg-violet-600/20">
-                      Most popular
-                    </span>
-                  )}
-                  <h3 className="text-xl font-bold mt-1">{plan.name}</h3>
-                  <p className="text-xs text-violet-400 font-medium mt-1">{plan.axiom.label}</p>
-                  <div className="mt-4 flex items-baseline gap-1">
-                    {isEnterprise ? (
-                      <span className="text-4xl font-bold">Custom</span>
-                    ) : (
-                      <>
-                        <span className="text-4xl font-bold">${price}</span>
-                        <span className="text-zinc-500 text-sm">/mo</span>
-                        {billing === "yearly" && yearlyTotal != null && (
-                          <span className="text-xs text-zinc-600 ml-2">${yearlyTotal}/yr</span>
-                        )}
-                      </>
-                    )}
+                  <div className={`absolute inset-0 ${product.glowClass} rounded-[1.25rem] opacity-0 group-hover:opacity-100 transition-opacity duration-700`} aria-hidden />
+
+                  <div className="relative p-8 flex flex-col flex-1 z-10">
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className={`w-10 h-10 rounded-xl ${product.iconBg} flex items-center justify-center`}>
+                        <Icon className={`h-5 w-5 ${product.iconColor}`} />
+                      </div>
+                      <div>
+                        <h3 className="text-xl font-bold">{product.name}</h3>
+                        <p className={`text-xs font-medium ${product.iconColor}`}>{product.tagline}</p>
+                      </div>
+                    </div>
+
+                    <p className="text-sm text-zinc-400 leading-relaxed mb-6">{product.description}</p>
+
+                    <ul className="space-y-2.5 flex-1 mb-8">
+                      {product.features.map((f) => (
+                        <li key={f} className="flex items-center gap-2.5 text-sm text-zinc-300">
+                          <span className={`w-1.5 h-1.5 rounded-full ${product.dotColor}`} />
+                          {f}
+                        </li>
+                      ))}
+                    </ul>
+
+                    <div className="flex items-center gap-3">
+                      <Link
+                        href={product.href}
+                        className="inline-flex items-center gap-2 rounded-full bg-white px-5 py-2.5 text-sm font-semibold text-zinc-900 hover:bg-zinc-100 transition-colors shadow-[0_0_15px_rgba(255,255,255,0.06)]"
+                      >
+                        Learn more
+                        <ArrowRightIcon className="h-3.5 w-3.5" />
+                      </Link>
+                      <Link
+                        href={product.pricingHref}
+                        className="inline-flex items-center gap-2 text-sm font-medium text-zinc-400 hover:text-white transition-colors"
+                      >
+                        Pricing
+                        <ArrowRightIcon className="h-3 w-3" />
+                      </Link>
+                    </div>
                   </div>
-                  <p className="text-sm text-zinc-400 mt-3 mb-6">{plan.description}</p>
-                  <ul className="feature-list-animated space-y-3 flex-1">
-                    {axiom.included.map((f) => (
-                      <li key={f} className="flex items-start gap-2.5 text-sm">
-                        <CheckCircleIcon className="h-4 w-4 mt-0.5 flex-shrink-0 text-emerald-400" />
-                        <span className="text-zinc-300">{f}</span>
-                      </li>
-                    ))}
-                    {axiom.excluded.map((f) => (
-                      <li key={f} className="flex items-start gap-2.5 text-sm">
-                        <XCircleIcon className="h-4 w-4 mt-0.5 flex-shrink-0 text-zinc-700" />
-                        <span className="text-zinc-600 line-through">{f}</span>
-                      </li>
-                    ))}
-                  </ul>
-                  {isEnterprise ? (
-                    <a
-                      href={`mailto:${SUPPORT_EMAIL}?subject=Cloud Operator - Enterprise`}
-                      className="btn-huly mt-8 w-full inline-flex items-center justify-center gap-2 rounded-xl border border-violet-500/30 px-4 py-3 text-sm font-semibold text-violet-300 hover:bg-violet-900/20 transition-colors"
-                    >
-                      Contact sales
-                      <ArrowRightIcon className="h-3.5 w-3.5" />
-                    </a>
-                  ) : (
-                    (() => {
-                      const stripeLink = getStripeLink(planId, billing);
-                      return stripeLink ? (
-                        <a
-                          href={stripeLink}
-                          rel="noopener noreferrer"
-                          className={`btn-huly mt-8 w-full inline-flex items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold transition-colors ${
-                            highlighted
-                              ? "bg-violet-600 text-white hover:bg-violet-700 cta-glow"
-                              : "bg-white/[0.03] text-slate-200 hover:bg-white/[0.06]"
-                          }`}
-                        >
-                          Start free trial
-                          <ArrowRightIcon className="h-3.5 w-3.5" />
-                        </a>
-                      ) : (
-                        <AnimatedButton
-                          href="/auth/signup"
-                          variant={highlighted ? "primary" : "secondary"}
-                          className="mt-8 w-full justify-center"
-                        >
-                          Start free trial
-                          <ArrowRightIcon className="h-3.5 w-3.5" />
-                        </AnimatedButton>
-                      );
-                    })()
-                  )}
                 </div>
               );
             })}
-        </Stagger>
-      </section>
-
-      <div className="section-divider max-w-6xl mx-auto my-4" />
-
-      {/* Comparison Table */}
-      <section className="pb-20 px-4 relative">
-        <div className="max-w-6xl mx-auto">
-          <Reveal>
-            <h2 className="text-2xl font-bold text-center mb-10 tracking-[-0.04em]">Compare <span className="text-gradient">plans</span></h2>
-          </Reveal>
-          <div className="rounded-xl border border-white/[0.06] overflow-x-auto glass-card">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="bg-white/[0.02]">
-                  <th className="text-left px-6 py-4 font-semibold text-zinc-300">Feature</th>
-                  <th className="text-center px-4 py-4 font-semibold text-zinc-300">Starter</th>
-                  <th className="text-center px-4 py-4 font-semibold text-violet-300">Growth</th>
-                  <th className="text-center px-4 py-4 font-semibold text-zinc-300">Scale</th>
-                  <th className="text-center px-4 py-4 font-semibold text-zinc-300">Enterprise</th>
-                </tr>
-              </thead>
-              <tbody>
-                {comparisonRows.map((row, i) => (
-                  <tr key={row.feature} className={i % 2 === 0 ? "bg-[#09090b]" : "bg-white/[0.02]"}>
-                    <td className="px-6 py-3 text-zinc-400">{row.feature}</td>
-                    <td className="px-4 py-3 text-center text-zinc-500">{row.starter}</td>
-                    <td className="px-4 py-3 text-center text-zinc-300 font-medium">{row.growth}</td>
-                    <td className="px-4 py-3 text-center text-zinc-300">{row.scale}</td>
-                    <td className="px-4 py-3 text-center text-zinc-400">{row.enterprise}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          </Stagger>
         </div>
       </section>
 
-      {/* Add-ons */}
-      <section className="pb-20 px-4 relative">
-        <div className="max-w-3xl mx-auto">
+      {/* Platform Benefits */}
+      <section className="pb-24 px-4">
+        <div className="max-w-5xl mx-auto">
           <Reveal>
-            <h2 className="text-2xl font-bold text-center mb-8 tracking-[-0.04em]">Add-ons</h2>
+            <div className="text-center mb-12">
+              <h2 className="text-2xl sm:text-3xl font-bold mb-4">One platform, unified experience</h2>
+              <p className="text-zinc-400 max-w-xl mx-auto">
+                All products share authentication, billing, and data — no integration overhead.
+              </p>
+            </div>
           </Reveal>
-          <div className="rounded-xl border border-white/[0.06] glass-card p-6">
-            <div className="space-y-4">
-              {ADDONS.map((addon) => (
-                <div key={addon.name} className="flex items-center justify-between py-2 border-b border-white/[0.06] last:border-0">
-                  <span className="text-zinc-300">{addon.name}</span>
-                  <span className="font-semibold text-slate-100">
-                    +${billing === "monthly" ? addon.monthly : addon.yearly}
-                    <span className="text-zinc-500 text-sm font-normal">/mo</span>
-                  </span>
+          <Stagger className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5" interval={0.06}>
+            {[
+              { icon: SparklesIcon, title: "Unified billing", desc: "One membership, all products." },
+              { icon: ShieldCheckIcon, title: "Enterprise-grade", desc: "SOC 2, SSO, audit logging." },
+              { icon: BoltIcon, title: "White-label ready", desc: "Your brand, no extra cost." },
+              { icon: CloudIcon, title: "Multi-cloud", desc: "AWS, Azure, GCP support." },
+            ].map((item) => (
+              <div key={item.title} className="electric-card card-shine-sweep p-5 text-center">
+                <div className="relative z-10">
+                  <item.icon className="h-7 w-7 text-blue-400 mx-auto mb-3" />
+                  <p className="font-semibold text-white text-sm mb-1">{item.title}</p>
+                  <p className="text-xs text-zinc-500">{item.desc}</p>
                 </div>
-              ))}
-            </div>
-          </div>
+              </div>
+            ))}
+          </Stagger>
         </div>
       </section>
-
-      {/* Included in every plan */}
-      <section className="pb-20 px-4 relative">
-        <div className="max-w-3xl mx-auto">
-          <Reveal>
-            <div className="rounded-2xl border border-white/[0.06] glass-card p-8">
-              <h2 className="text-sm font-bold uppercase tracking-wider text-zinc-500 mb-4">Included in every plan</h2>
-              <ul className="feature-list-animated grid sm:grid-cols-2 gap-3 text-sm text-zinc-300">
-                {INCLUDED_IN_EVERY_PLAN.map((item) => (
-                  <li key={item} className="flex items-center gap-2">
-                    <CheckCircleIcon className="h-5 w-5 text-emerald-400 shrink-0" />
-                    {item}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </Reveal>
-        </div>
-      </section>
-
-      <div className="section-divider max-w-6xl mx-auto my-4" />
 
       {/* CTA */}
-      <section className="py-20 border-t border-white/[0.06] text-center px-4 relative">
+      <section className="py-20 border-t border-white/[0.04] text-center px-4 relative overflow-hidden">
+        <div className="absolute -top-40 -right-40 w-80 h-80 rounded-full bg-indigo-500/5 blur-[100px]" aria-hidden />
         <Reveal>
-          <h2 className="text-2xl font-bold mb-4 tracking-[-0.04em]">Ready to <span className="text-gradient">scan your cloud</span>?</h2>
-          <p className="text-zinc-400 mb-8">7 days free on any paid plan. Cancel anytime.</p>
-          <AnimatedButton href="/operator/onboarding" variant="primary" className="px-8 py-3 cta-glow">
-            Start Free Trial
-            <ArrowRightIcon className="h-4 w-4" />
-          </AnimatedButton>
+          <h2 className="text-3xl font-bold mb-5">Ready to get started?</h2>
+          <p className="text-zinc-400 mb-8 max-w-md mx-auto">7 days free on any paid plan. No credit card required.</p>
+          <div className="flex flex-wrap justify-center gap-4">
+            <Link
+              href="/operator/onboarding"
+              className="btn-amber-shimmer inline-flex items-center gap-2 rounded-full px-8 py-3.5 text-sm font-semibold text-zinc-900 shadow-[0_0_20px_rgba(255,255,255,0.08)]"
+            >
+              Run Axiom
+              <ArrowRightIcon className="h-4 w-4" />
+            </Link>
+            <Link
+              href="/operator/pricing"
+              className="inline-flex items-center gap-2 rounded-full border border-white/[0.1] px-8 py-3.5 text-sm font-semibold text-zinc-400 hover:text-white hover:border-white/[0.2] transition-colors"
+            >
+              View pricing
+            </Link>
+          </div>
         </Reveal>
       </section>
 
       <Footer />
-
-      {/* Floating blur orbs */}
-      <div className="absolute bottom-1/4 left-10 w-72 h-72 bg-indigo-600/10 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute top-1/3 right-0 w-96 h-96 bg-blue-600/8 rounded-full blur-3xl pointer-events-none" />
     </div>
   );
 }

@@ -1413,36 +1413,38 @@ h1, h2, h3, h4, h5, h6 {
 @keyframes electric-pulse {
   0%, 100% {
     box-shadow:
-      0 0 15px rgba(59, 130, 246, 0.1),
-      0 0 30px rgba(6, 182, 212, 0.06),
-      0 0 2px rgba(59, 130, 246, 0.3),
-      inset 0 0 20px rgba(59, 130, 246, 0.02);
+      0 0 15px rgba(59, 130, 246, 0.25),
+      0 0 30px rgba(6, 182, 212, 0.15),
+      0 0 60px rgba(59, 130, 246, 0.08),
+      0 0 2px rgba(59, 130, 246, 0.6),
+      inset 0 0 20px rgba(59, 130, 246, 0.03);
   }
   50% {
     box-shadow:
-      0 0 20px rgba(59, 130, 246, 0.18),
-      0 0 40px rgba(6, 182, 212, 0.1),
-      0 0 4px rgba(59, 130, 246, 0.4),
-      inset 0 0 30px rgba(59, 130, 246, 0.03);
+      0 0 25px rgba(59, 130, 246, 0.35),
+      0 0 50px rgba(6, 182, 212, 0.2),
+      0 0 80px rgba(59, 130, 246, 0.1),
+      0 0 4px rgba(59, 130, 246, 0.7),
+      inset 0 0 30px rgba(59, 130, 246, 0.05);
   }
 }
 
 @keyframes electric-pulse-featured {
   0%, 100% {
     box-shadow:
-      0 0 20px rgba(99, 102, 241, 0.25),
-      0 0 40px rgba(124, 58, 237, 0.15),
-      0 0 80px rgba(59, 130, 246, 0.08),
-      0 0 4px rgba(139, 92, 246, 0.5),
-      inset 0 0 30px rgba(99, 102, 241, 0.04);
+      0 0 30px rgba(99, 102, 241, 0.45),
+      0 0 60px rgba(124, 58, 237, 0.3),
+      0 0 100px rgba(59, 130, 246, 0.15),
+      0 0 4px rgba(139, 92, 246, 0.8),
+      inset 0 0 40px rgba(99, 102, 241, 0.06);
   }
   50% {
     box-shadow:
-      0 0 30px rgba(99, 102, 241, 0.35),
-      0 0 60px rgba(124, 58, 237, 0.22),
-      0 0 100px rgba(59, 130, 246, 0.12),
-      0 0 6px rgba(139, 92, 246, 0.6),
-      inset 0 0 40px rgba(99, 102, 241, 0.06);
+      0 0 40px rgba(99, 102, 241, 0.55),
+      0 0 80px rgba(124, 58, 237, 0.4),
+      0 0 120px rgba(59, 130, 246, 0.2),
+      0 0 6px rgba(139, 92, 246, 0.9),
+      inset 0 0 50px rgba(99, 102, 241, 0.08);
   }
 }
 
@@ -1456,7 +1458,7 @@ h1, h2, h3, h4, h5, h6 {
   position: relative;
   background: rgba(255, 255, 255, 0.015);
   backdrop-filter: blur(20px);
-  border: 1px solid rgba(59, 130, 246, 0.12);
+  border: 1.5px solid rgba(59, 130, 246, 0.25);
   border-radius: 1.25rem;
   overflow: hidden;
   transition: all 0.5s cubic-bezier(0.22, 1, 0.36, 1);
@@ -1468,14 +1470,14 @@ h1, h2, h3, h4, h5, h6 {
   position: absolute;
   inset: -1px;
   border-radius: inherit;
-  padding: 1px;
+  padding: 1.5px;
   background: linear-gradient(
     270deg,
-    rgba(59, 130, 246, 0.2),
-    rgba(6, 182, 212, 0.15),
-    rgba(99, 102, 241, 0.2),
-    rgba(6, 182, 212, 0.15),
-    rgba(59, 130, 246, 0.2)
+    rgba(59, 130, 246, 0.5),
+    rgba(6, 182, 212, 0.35),
+    rgba(99, 102, 241, 0.5),
+    rgba(6, 182, 212, 0.35),
+    rgba(59, 130, 246, 0.5)
   );
   background-size: 400% 100%;
   -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
@@ -1483,7 +1485,7 @@ h1, h2, h3, h4, h5, h6 {
   -webkit-mask-composite: xor;
   mask-composite: exclude;
   animation: electric-border-flow 6s ease infinite;
-  opacity: 0.6;
+  opacity: 0.8;
 }
 
 .electric-card::after {
@@ -1493,11 +1495,11 @@ h1, h2, h3, h4, h5, h6 {
   left: 0;
   right: 0;
   height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.4), rgba(6, 182, 212, 0.3), rgba(59, 130, 246, 0.4), transparent);
+  background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.6), rgba(6, 182, 212, 0.5), rgba(59, 130, 246, 0.6), transparent);
 }
 
 .electric-card:hover {
-  border-color: rgba(59, 130, 246, 0.25);
+  border-color: rgba(59, 130, 246, 0.4);
   transform: translateY(-4px);
 }
 
@@ -1508,29 +1510,30 @@ h1, h2, h3, h4, h5, h6 {
 /* Featured — intense plasma glow */
 .electric-card-featured {
   position: relative;
-  background: rgba(99, 102, 241, 0.03);
+  background: rgba(99, 102, 241, 0.04);
   backdrop-filter: blur(24px);
-  border: 1px solid rgba(99, 102, 241, 0.3);
+  border: 2px solid rgba(99, 102, 241, 0.5);
   border-radius: 1.25rem;
   overflow: hidden;
   transition: all 0.5s cubic-bezier(0.22, 1, 0.36, 1);
   animation: electric-pulse-featured 4s ease-in-out infinite;
-  transform: scale(1.03);
+  transform: scale(1.04);
+  z-index: 2;
 }
 
 .electric-card-featured::before {
   content: "";
   position: absolute;
-  inset: -1px;
+  inset: -2px;
   border-radius: inherit;
-  padding: 1.5px;
+  padding: 2px;
   background: linear-gradient(
     270deg,
-    rgba(99, 102, 241, 0.5),
-    rgba(124, 58, 237, 0.4),
-    rgba(59, 130, 246, 0.5),
-    rgba(139, 92, 246, 0.45),
-    rgba(99, 102, 241, 0.5)
+    rgba(99, 102, 241, 0.8),
+    rgba(124, 58, 237, 0.7),
+    rgba(59, 130, 246, 0.8),
+    rgba(139, 92, 246, 0.7),
+    rgba(99, 102, 241, 0.8)
   );
   background-size: 400% 100%;
   -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
@@ -1547,24 +1550,28 @@ h1, h2, h3, h4, h5, h6 {
   top: 0;
   left: 0;
   right: 0;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(99, 102, 241, 0.7), rgba(139, 92, 246, 0.6), rgba(99, 102, 241, 0.7), transparent);
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(99, 102, 241, 0.9), rgba(139, 92, 246, 0.8), rgba(99, 102, 241, 0.9), transparent);
 }
 
 .electric-card-featured:hover {
-  border-color: rgba(99, 102, 241, 0.45);
-  transform: scale(1.03) translateY(-4px);
+  border-color: rgba(99, 102, 241, 0.65);
+  transform: scale(1.04) translateY(-4px);
 }
 
 /* Enterprise — amber electric variant */
 .electric-card-enterprise {
   position: relative;
-  background: rgba(245, 158, 11, 0.015);
+  background: rgba(245, 158, 11, 0.02);
   backdrop-filter: blur(20px);
-  border: 1px solid rgba(245, 158, 11, 0.15);
+  border: 1.5px solid rgba(245, 158, 11, 0.3);
   border-radius: 1.25rem;
   overflow: hidden;
   transition: all 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  box-shadow:
+    0 0 15px rgba(245, 158, 11, 0.15),
+    0 0 30px rgba(251, 191, 36, 0.08),
+    0 0 2px rgba(245, 158, 11, 0.4);
 }
 
 .electric-card-enterprise::before {
@@ -1572,14 +1579,14 @@ h1, h2, h3, h4, h5, h6 {
   position: absolute;
   inset: -1px;
   border-radius: inherit;
-  padding: 1px;
+  padding: 1.5px;
   background: linear-gradient(
     270deg,
-    rgba(245, 158, 11, 0.3),
-    rgba(251, 191, 36, 0.2),
-    rgba(245, 158, 11, 0.3),
-    rgba(251, 191, 36, 0.2),
-    rgba(245, 158, 11, 0.3)
+    rgba(245, 158, 11, 0.6),
+    rgba(251, 191, 36, 0.4),
+    rgba(245, 158, 11, 0.6),
+    rgba(251, 191, 36, 0.4),
+    rgba(245, 158, 11, 0.6)
   );
   background-size: 400% 100%;
   -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
@@ -1587,7 +1594,7 @@ h1, h2, h3, h4, h5, h6 {
   -webkit-mask-composite: xor;
   mask-composite: exclude;
   animation: electric-border-flow 6s ease infinite;
-  opacity: 0.5;
+  opacity: 0.7;
 }
 
 .electric-card-enterprise::after {
@@ -1596,17 +1603,21 @@ h1, h2, h3, h4, h5, h6 {
   top: 0;
   left: 0;
   right: 0;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(245, 158, 11, 0.5), rgba(251, 191, 36, 0.4), rgba(245, 158, 11, 0.5), transparent);
+  height: 1.5px;
+  background: linear-gradient(90deg, transparent, rgba(245, 158, 11, 0.7), rgba(251, 191, 36, 0.6), rgba(245, 158, 11, 0.7), transparent);
 }
 
 .electric-card-enterprise:hover {
-  border-color: rgba(245, 158, 11, 0.3);
+  border-color: rgba(245, 158, 11, 0.45);
   transform: translateY(-4px);
+  box-shadow:
+    0 0 25px rgba(245, 158, 11, 0.25),
+    0 0 50px rgba(251, 191, 36, 0.12),
+    0 0 4px rgba(245, 158, 11, 0.5);
 }
 
 .electric-card-enterprise:hover::before {
-  opacity: 0.9;
+  opacity: 1;
 }
 
 /* ── Live demo section pulse ring ────────────────────────────── */
