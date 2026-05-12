@@ -2,11 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import {
-  EnvelopeIcon,
-  RocketLaunchIcon,
-  ArrowRightIcon,
-} from "@heroicons/react/24/outline";
+import { ArrowRightIcon } from "@heroicons/react/24/outline";
 import { Navigation } from "../components/Navigation";
 import { EnterpriseTrustSignals } from "@/components/EnterpriseTrustSignals";
 import { AnimateOnScroll } from "@/components/AnimateOnScroll";
@@ -261,69 +257,38 @@ export default function Home() {
       </section>
       </AnimateOnScroll>
 
-      {/* Contact Section */}
-      <AnimateOnScroll>
-      <section id="contact" className="py-20 px-4 sm:px-6 lg:px-8 border-t border-slate-200 dark:border-slate-700" aria-labelledby="contact-heading">
+      {/* CTA */}
+      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-slate-900 dark:bg-slate-950">
         <div className="max-w-3xl mx-auto text-center">
-          <h2 id="contact-heading" className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-slate-100 mb-4">
-            Ready to let Axiom operate your cloud?
-          </h2>
-          <p className="text-slate-600 dark:text-slate-400 mb-10">
-            Connect your AWS account in minutes. Axiom runs a read-only scan, reasons about what to fix, and shows you a prioritized plan — no changes without your approval.
-          </p>
-          <div className="grid md:grid-cols-2 gap-6 mb-10">
-            <Link
-              href="/operator/onboarding"
-              className="card-hover btn-huly group rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 p-6 shadow-sm hover:shadow-lg hover:shadow-violet-500/10 transition-all"
-            >
-              <RocketLaunchIcon className="h-8 w-8 text-white dark:text-slate-900 mb-3 icon-bounce" />
-              <h3 className="text-lg font-semibold mb-1">Run Axiom</h3>
-              <p className="text-slate-300 dark:text-slate-600 text-sm">Scan your AWS infrastructure in minutes</p>
-            </Link>
-            <a
-              href="mailto:support@visionxixlabs.com"
-              className="card-hover group rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-6 shadow-sm hover:border-violet-300 dark:hover:border-violet-600"
-            >
-              <EnvelopeIcon className="h-8 w-8 text-slate-600 dark:text-slate-400 mb-3 icon-bounce group-hover:text-violet-600 dark:group-hover:text-violet-400" />
-              <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100 mb-1">Email us</h3>
-              <p className="text-slate-600 dark:text-slate-400 text-sm">support@visionxixlabs.com</p>
-            </a>
-          </div>
-        </div>
-      </section>
-      </AnimateOnScroll>
-
-      {/* Dark CTA */}
-      <AnimateOnScroll>
-      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-slate-900 dark:bg-slate-950 relative overflow-hidden">
-        <div className="absolute inset-0 diagonal-streak opacity-30" aria-hidden />
-        <div className="absolute -top-40 -right-40 w-80 h-80 rounded-full bg-violet-500/10 blur-3xl" aria-hidden />
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 rounded-full bg-fuchsia-500/10 blur-3xl" aria-hidden />
-        <div className="relative max-w-3xl mx-auto text-center">
           <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
             Your cloud, operated by an agent you control
           </h2>
-          <p className="text-slate-300 text-lg mb-8">
-            Axiom connects to your AWS account, scans your infrastructure, reasons about what to fix, and generates phased plans — nothing changes until you approve.
+          <p className="text-slate-300 text-lg mb-8 max-w-lg mx-auto">
+            Connect your AWS account. Axiom scans, reasons, plans, and executes — nothing changes until you approve.
           </p>
-          <div className="flex flex-wrap justify-center gap-4">
+          <div className="flex flex-wrap justify-center gap-4 mb-6">
             <Link
               href="/operator/onboarding"
-              className="cta-glow inline-flex items-center px-6 py-3 bg-white text-slate-900 rounded-2xl font-semibold shadow-lg hover:bg-slate-100 transition-colors"
+              className="inline-flex items-center gap-2 px-7 py-3.5 bg-white text-slate-900 rounded-xl font-semibold text-sm hover:bg-slate-100 transition-colors"
             >
               Run Axiom
-              <ArrowRightIcon className="ml-2 h-5 w-5" />
+              <ArrowRightIcon className="h-4 w-4" />
             </Link>
             <Link
               href="/operator/pricing"
-              className="inline-flex items-center px-6 py-3 border-2 border-white/30 text-white rounded-2xl font-semibold hover:bg-white/10 hover:border-white/50 transition-all"
+              className="inline-flex items-center gap-2 px-7 py-3.5 border border-white/20 text-white rounded-xl font-semibold text-sm hover:bg-white/10 transition-colors"
             >
               View plans
             </Link>
           </div>
+          <a
+            href="mailto:support@visionxixlabs.com"
+            className="text-sm text-slate-400 hover:text-white transition-colors"
+          >
+            support@visionxixlabs.com
+          </a>
         </div>
       </section>
-      </AnimateOnScroll>
 
       {/* Footer */}
       <footer className="bg-slate-900 text-slate-300 py-12 px-4 sm:px-6 lg:px-8 border-t border-slate-800">
