@@ -169,10 +169,10 @@ export default function OperatorPricingPage() {
               return (
                 <div
                   key={planId}
-                  className={`rounded-2xl border p-8 flex flex-col ${
+                  className={`card-hover rounded-2xl border p-8 flex flex-col transition-colors ${
                     highlighted
-                      ? "border-violet-500/40 bg-violet-950/10 ring-1 ring-violet-500/20 relative"
-                      : "border-slate-800 bg-slate-900/50"
+                      ? "border-violet-500/40 bg-violet-950/10 ring-1 ring-violet-500/20 relative hover:border-violet-500/60"
+                      : "border-slate-800 bg-slate-900/50 hover:border-slate-700"
                   }`}
                 >
                   {highlighted && (
@@ -308,11 +308,14 @@ export default function OperatorPricingPage() {
       </section>
 
       {/* CTA */}
-      <section className="py-20 border-t border-slate-800/50 text-center px-4">
+      <section className="py-20 border-t border-slate-800/50 text-center px-4 relative overflow-hidden">
+        <div className="absolute inset-0 diagonal-streak opacity-15" aria-hidden />
+        <div className="absolute -top-40 -right-40 w-80 h-80 rounded-full bg-violet-500/5 blur-3xl" aria-hidden />
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 rounded-full bg-fuchsia-500/5 blur-3xl" aria-hidden />
         <Reveal>
-          <h2 className="text-2xl font-bold mb-4">Ready to scan your cloud?</h2>
-          <p className="text-slate-400 mb-8">7 days free on any paid plan. Cancel anytime.</p>
-          <AnimatedButton href="/auth/signup?redirect=/operator/onboarding" variant="primary" className="px-8 py-3">
+          <h2 className="text-2xl font-bold mb-4 relative">Ready to scan your cloud?</h2>
+          <p className="text-slate-400 mb-8 relative">7 days free on any paid plan. Cancel anytime.</p>
+          <AnimatedButton href="/auth/signup?redirect=/operator/onboarding" variant="primary" className="px-8 py-3 relative btn-huly cta-glow">
             Start Free Trial
             <ArrowRightIcon className="h-4 w-4" />
           </AnimatedButton>

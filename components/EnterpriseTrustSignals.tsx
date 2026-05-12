@@ -49,7 +49,7 @@ export function EnterpriseTrustSignals() {
           {GOVERNANCE.map((block) => (
             <div
               key={block.title}
-              className="rounded-xl border border-slate-200 dark:border-slate-700/80 bg-white dark:bg-slate-800/80 p-5"
+              className="card-hover rounded-xl border border-slate-200 dark:border-slate-700/80 bg-white dark:bg-slate-800/80 p-5 hover:border-violet-300 dark:hover:border-violet-700 transition-colors"
             >
               <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-3">
                 {block.title}

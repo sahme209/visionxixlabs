@@ -124,7 +124,7 @@ function MetricCard({ label, value, sub, icon: Icon, accent = "violet" }: {
   };
 
   return (
-    <div className="rounded-xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 p-5">
+    <div className="card-hover rounded-xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 hover:border-violet-200 dark:hover:border-violet-800 transition-colors">
       <div className="flex items-center gap-3 mb-3">
         <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${accents[accent]}`}>
           <Icon className="h-4 w-4" />
@@ -262,7 +262,7 @@ export default function OperationsPage() {
           <div className="flex items-center gap-3">
             <Link
               href="/operator/onboarding"
-              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 text-xs font-semibold hover:bg-slate-800 dark:hover:bg-slate-200 transition-colors"
+              className="btn-huly inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 text-xs font-semibold hover:bg-slate-800 dark:hover:bg-slate-200 transition-colors shadow-sm"
             >
               <BoltIcon className="h-3.5 w-3.5" />
               Run scan
@@ -334,7 +334,7 @@ export default function OperationsPage() {
                   <EmptyState
                     title="No agent runs yet"
                     desc="Run your first scan to see agent activity here."
-                    action={{ label: "Run Axiom", href: "/cloud-operator" }}
+                    action={{ label: "Run Axiom", href: "/operator/onboarding" }}
                   />
                 )}
               </div>
@@ -450,7 +450,7 @@ export default function OperationsPage() {
                         </p>
                       </div>
                       <Link
-                        href={`/cloud-operator?runId=${approval.runId}`}
+                        href={`/operator/onboarding?runId=${approval.runId}`}
                         className="text-xs font-medium text-violet-600 dark:text-violet-400 hover:text-violet-700"
                       >
                         Review

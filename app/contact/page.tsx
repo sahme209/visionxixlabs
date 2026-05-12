@@ -137,7 +137,7 @@ export default function ContactPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="inline-flex items-center gap-2 rounded-lg bg-slate-900 dark:bg-slate-100 px-5 py-2.5 text-sm font-semibold text-white dark:text-slate-900 hover:bg-slate-800 dark:hover:bg-slate-200 transition-colors disabled:opacity-50"
+                className="btn-huly inline-flex items-center gap-2 rounded-lg bg-slate-900 dark:bg-slate-100 px-5 py-2.5 text-sm font-semibold text-white dark:text-slate-900 hover:bg-slate-800 dark:hover:bg-slate-200 transition-colors disabled:opacity-50 shadow-sm"
               >
                 {loading ? "Sending..." : "Send message"}
                 {!loading && <ArrowRightIcon className="h-4 w-4" />}

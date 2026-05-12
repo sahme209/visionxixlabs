@@ -154,7 +154,7 @@ export default function AxiomPage() {
           <div className="flex flex-wrap justify-center gap-4">
             <Link
               href="/operator/onboarding"
-              className="inline-flex items-center gap-2 px-7 py-3.5 bg-slate-900 dark:bg-slate-50 text-white dark:text-slate-900 rounded-xl font-semibold text-sm hover:bg-slate-800 dark:hover:bg-slate-200 transition-colors shadow-sm"
+              className="btn-huly cta-glow inline-flex items-center gap-2 px-7 py-3.5 bg-slate-900 dark:bg-slate-50 text-white dark:text-slate-900 rounded-xl font-semibold text-sm hover:bg-slate-800 dark:hover:bg-slate-200 transition-colors shadow-lg shadow-violet-500/25 hover:shadow-violet-500/40"
             >
               Run Axiom
               <ArrowRightIcon className="h-4 w-4" />
@@ -200,7 +200,7 @@ export default function AxiomPage() {
               return (
                 <div
                   key={step.label}
-                  className="group relative rounded-xl border border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50 p-4 hover:border-violet-200 dark:hover:border-violet-800 transition-colors"
+                  className="card-hover group relative rounded-xl border border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50 p-4 hover:border-violet-200 dark:hover:border-violet-800 transition-colors"
                 >
                   <div className="flex items-start gap-3">
                     <span className="flex-shrink-0 w-6 h-6 rounded-md bg-violet-100 dark:bg-violet-900/50 flex items-center justify-center text-xs font-bold text-violet-600 dark:text-violet-400">
@@ -245,7 +245,7 @@ export default function AxiomPage() {
               return (
                 <div
                   key={cap.title}
-                  className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-8"
+                  className="card-hover rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-8 hover:border-violet-200 dark:hover:border-violet-800 transition-colors"
                 >
                   <div className="flex items-start gap-4 mb-4">
                     <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-violet-100 dark:bg-violet-900/50 flex items-center justify-center">
@@ -290,7 +290,7 @@ export default function AxiomPage() {
             {TRUST_SIGNALS.map((signal) => (
               <div
                 key={signal.title}
-                className="rounded-xl border border-slate-100 dark:border-slate-800 p-6 hover:border-violet-200 dark:hover:border-violet-800 transition-colors"
+                className="card-hover rounded-xl border border-slate-100 dark:border-slate-800 p-6 hover:border-violet-200 dark:hover:border-violet-800 transition-colors"
               >
                 <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100 mb-2">{signal.title}</h3>
                 <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">{signal.desc}</p>
@@ -312,7 +312,7 @@ export default function AxiomPage() {
             </h2>
           </div>
           <div className="grid sm:grid-cols-3 gap-6">
-            <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6">
+            <div className="card-hover rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 hover:border-violet-200 dark:hover:border-violet-800 transition-colors">
               <div className="w-8 h-8 rounded-lg bg-orange-100 dark:bg-orange-900/30 flex items-center justify-center mb-4">
                 <span className="text-sm font-bold text-orange-600 dark:text-orange-400">AWS</span>
               </div>
@@ -321,7 +321,7 @@ export default function AxiomPage() {
                 Scan, analyze, plan, apply, and verify. Complete autonomous operations with real AWS SDK execution.
               </p>
             </div>
-            <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6">
+            <div className="card-hover rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 hover:border-violet-200 dark:hover:border-violet-800 transition-colors">
               <div className="w-8 h-8 rounded-lg bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center mb-4">
                 <span className="text-xs font-bold text-blue-600 dark:text-blue-400">Azure</span>
               </div>
@@ -330,7 +330,7 @@ export default function AxiomPage() {
                 Full infrastructure scanning and analysis. Execution capabilities on the roadmap.
               </p>
             </div>
-            <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6">
+            <div className="card-hover rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 hover:border-violet-200 dark:hover:border-violet-800 transition-colors">
               <div className="w-8 h-8 rounded-lg bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center mb-4">
                 <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400">GCP</span>
               </div>
@@ -340,7 +340,7 @@ export default function AxiomPage() {
               </p>
             </div>
           </div>
-          <div className="mt-8 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6">
+          <div className="mt-8 card-hover rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 hover:border-violet-200 dark:hover:border-violet-800 transition-colors">
             <div className="flex items-center gap-3 mb-4">
               <ClockIcon className="h-5 w-5 text-slate-400" />
               <h3 className="font-bold text-slate-900 dark:text-slate-100">Scheduled operations</h3>
@@ -353,8 +353,11 @@ export default function AxiomPage() {
       </section>
 
       {/* ── CTA ───────────────────────────────────────────────────────── */}
-      <section className="py-24 border-t border-slate-100 dark:border-slate-900">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <section className="py-24 border-t border-slate-100 dark:border-slate-900 relative overflow-hidden">
+        <div className="absolute inset-0 diagonal-streak opacity-20" aria-hidden />
+        <div className="absolute -top-40 -right-40 w-80 h-80 rounded-full bg-violet-500/8 blur-3xl" aria-hidden />
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 rounded-full bg-fuchsia-500/8 blur-3xl" aria-hidden />
+        <div className="relative max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 dark:text-slate-50 mb-4">
             Start operating autonomously.
           </h2>
@@ -364,7 +367,7 @@ export default function AxiomPage() {
           <div className="flex flex-wrap justify-center gap-4">
             <Link
               href="/operator/onboarding"
-              className="inline-flex items-center gap-2 px-7 py-3.5 bg-slate-900 dark:bg-slate-50 text-white dark:text-slate-900 rounded-xl font-semibold text-sm hover:bg-slate-800 dark:hover:bg-slate-200 transition-colors shadow-sm"
+              className="btn-huly cta-glow inline-flex items-center gap-2 px-7 py-3.5 bg-slate-900 dark:bg-slate-50 text-white dark:text-slate-900 rounded-xl font-semibold text-sm hover:bg-slate-800 dark:hover:bg-slate-200 transition-colors shadow-lg shadow-violet-500/20 hover:shadow-violet-500/35"
             >
               Run Axiom
               <ArrowRightIcon className="h-4 w-4" />
