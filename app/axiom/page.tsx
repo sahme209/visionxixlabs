@@ -144,8 +144,8 @@ export default function AxiomPage() {
       {/* ── Hero ──────────────────────────────────────────────────────── */}
       <section className="relative overflow-hidden">
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[500px] spotlight-orb opacity-50" aria-hidden />
-        <div className="absolute -top-40 -left-60 w-[500px] h-[500px] rounded-full bg-violet-500/[0.07] blur-[120px]" aria-hidden />
-        <div className="absolute -top-20 -right-40 w-[400px] h-[400px] rounded-full bg-fuchsia-500/[0.05] blur-[100px]" aria-hidden />
+        <div className="absolute -top-40 -left-60 w-[500px] h-[500px] rounded-full bg-indigo-500/[0.07] blur-[120px]" aria-hidden />
+        <div className="absolute -top-20 -right-40 w-[400px] h-[400px] rounded-full bg-blue-500/[0.05] blur-[100px]" aria-hidden />
         <div className="relative max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-20 text-center">
           <Reveal direction="up" blur delay={0}>
             <div className="inline-flex items-center gap-2 huly-badge px-4 py-1.5 text-sm font-medium text-zinc-300 mb-8">
@@ -218,7 +218,7 @@ export default function AxiomPage() {
               return (
                 <div
                   key={step.label}
-                  className="animated-border card-inner-glow card-hover group relative rounded-xl border border-white/[0.06] bg-white/[0.02] p-4 hover:border-white/[0.12] transition-all"
+                  className="animated-border card-inner-glow card-hover card-shine-sweep card-reactive group relative rounded-xl border border-white/[0.06] bg-white/[0.02] p-4 hover:border-white/[0.12] transition-all"
                 >
                   <div className="flex items-start gap-3">
                     <span className="flex-shrink-0 w-6 h-6 rounded-md bg-violet-500/10 flex items-center justify-center text-xs font-bold text-violet-400">
@@ -246,7 +246,7 @@ export default function AxiomPage() {
       {/* ── Capabilities ──────────────────────────────────────────────── */}
       <div className="section-divider" />
       <section className="py-24 relative">
-        <div className="absolute top-1/2 left-0 -translate-y-1/2 w-[400px] h-[400px] rounded-full bg-violet-500/[0.04] blur-[120px]" aria-hidden />
+        <div className="absolute top-1/2 left-0 -translate-y-1/2 w-[400px] h-[400px] rounded-full bg-indigo-500/[0.04] blur-[120px]" aria-hidden />
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative">
           <Reveal direction="up" blur>
             <div className="text-center mb-16">
@@ -274,7 +274,7 @@ export default function AxiomPage() {
               return (
                 <div
                   key={cap.title}
-                  className="axiom-cap-row animated-border card-inner-glow glow-border-card card-hover rounded-2xl border border-white/[0.06] bg-white/[0.02] p-8 hover:border-white/[0.12] transition-all group"
+                  className="axiom-cap-row animated-border card-inner-glow glow-border-card card-hover card-shine-sweep card-reactive rounded-2xl border border-white/[0.06] bg-white/[0.02] p-8 hover:border-white/[0.12] transition-all group"
                 >
                   <div className="flex items-start gap-4 mb-4">
                     <div className={`axiom-cap-icon-wrap flex-shrink-0 w-10 h-10 rounded-xl ${accent.bg} flex items-center justify-center`}>
@@ -322,7 +322,7 @@ export default function AxiomPage() {
             {TRUST_SIGNALS.map((signal) => (
               <div
                 key={signal.title}
-                className="animated-border card-inner-glow card-hover rounded-xl border border-white/[0.06] bg-white/[0.02] p-6 hover:border-white/[0.12] transition-all"
+                className="animated-border card-inner-glow card-hover card-shine-sweep card-reactive rounded-xl border border-white/[0.06] bg-white/[0.02] p-6 hover:border-white/[0.12] transition-all"
               >
                 <h3 className="text-sm font-bold text-white mb-2">{signal.title}</h3>
                 <p className="text-sm text-zinc-400 leading-relaxed">{signal.desc}</p>
@@ -335,7 +335,7 @@ export default function AxiomPage() {
       {/* ── Architecture ──────────────────────────────────────────────── */}
       <div className="section-divider" />
       <section className="py-24 relative">
-        <div className="absolute -bottom-20 right-0 w-[350px] h-[350px] rounded-full bg-fuchsia-500/[0.04] blur-[100px]" aria-hidden />
+        <div className="absolute -bottom-20 right-0 w-[350px] h-[350px] rounded-full bg-blue-500/[0.04] blur-[100px]" aria-hidden />
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative">
           <Reveal direction="up" blur>
             <div className="text-center mb-12">
@@ -348,7 +348,7 @@ export default function AxiomPage() {
             </div>
           </Reveal>
           <Stagger delay={0.1} interval={0.06} className="grid sm:grid-cols-3 gap-6">
-            <div className="animated-border card-inner-glow card-hover rounded-xl border border-white/[0.06] bg-white/[0.02] p-6 hover:border-white/[0.12] transition-all">
+            <div className="animated-border card-inner-glow card-hover card-shine-sweep card-reactive rounded-xl border border-white/[0.06] bg-white/[0.02] p-6 hover:border-white/[0.12] transition-all">
               <div className="w-8 h-8 rounded-lg bg-orange-500/10 flex items-center justify-center mb-4">
                 <span className="text-sm font-bold text-orange-400">AWS</span>
               </div>
@@ -357,7 +357,7 @@ export default function AxiomPage() {
                 Scan, analyze, plan, apply, and verify. Complete autonomous operations with real AWS SDK execution.
               </p>
             </div>
-            <div className="animated-border card-inner-glow card-hover rounded-xl border border-white/[0.06] bg-white/[0.02] p-6 hover:border-white/[0.12] transition-all">
+            <div className="animated-border card-inner-glow card-hover card-shine-sweep card-reactive rounded-xl border border-white/[0.06] bg-white/[0.02] p-6 hover:border-white/[0.12] transition-all">
               <div className="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center mb-4">
                 <span className="text-xs font-bold text-blue-400">Azure</span>
               </div>
@@ -366,7 +366,7 @@ export default function AxiomPage() {
                 Full infrastructure scanning and analysis. Execution capabilities on the roadmap.
               </p>
             </div>
-            <div className="animated-border card-inner-glow card-hover rounded-xl border border-white/[0.06] bg-white/[0.02] p-6 hover:border-white/[0.12] transition-all">
+            <div className="animated-border card-inner-glow card-hover card-shine-sweep card-reactive rounded-xl border border-white/[0.06] bg-white/[0.02] p-6 hover:border-white/[0.12] transition-all">
               <div className="w-8 h-8 rounded-lg bg-emerald-500/10 flex items-center justify-center mb-4">
                 <span className="text-xs font-bold text-emerald-400">GCP</span>
               </div>
@@ -377,7 +377,7 @@ export default function AxiomPage() {
             </div>
           </Stagger>
           <Reveal direction="up" blur delay={0.2}>
-            <div className="mt-8 animated-border card-inner-glow card-hover rounded-xl border border-white/[0.06] bg-white/[0.02] p-6 hover:border-white/[0.12] transition-all">
+            <div className="mt-8 animated-border card-inner-glow card-hover card-shine-sweep card-reactive rounded-xl border border-white/[0.06] bg-white/[0.02] p-6 hover:border-white/[0.12] transition-all">
               <div className="flex items-center gap-3 mb-4">
                 <ClockIcon className="h-5 w-5 text-violet-400 icon-bounce" />
                 <h3 className="font-bold text-white">Scheduled operations</h3>
@@ -408,7 +408,7 @@ export default function AxiomPage() {
             </div>
           </Reveal>
           <Reveal direction="up" blur delay={0.15}>
-            <div className="animated-border card-inner-glow rounded-2xl border border-white/[0.06] bg-white/[0.02] p-1 relative">
+            <div className="animated-border card-inner-glow card-shine-sweep card-reactive rounded-2xl border border-white/[0.06] bg-white/[0.02] p-1 relative">
               {/* Simulated terminal/demo view */}
               <div className="rounded-xl bg-[#0c0c0e] p-6 relative overflow-hidden">
                 {/* Decorative live indicator */}
@@ -455,8 +455,8 @@ export default function AxiomPage() {
       <div className="section-divider" />
       <section className="py-24 relative overflow-hidden">
         <div className="absolute inset-0 beam-sweep opacity-20" aria-hidden />
-        <div className="absolute -top-40 -right-40 w-80 h-80 rounded-full bg-violet-500/[0.08] blur-[100px]" aria-hidden />
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 rounded-full bg-fuchsia-500/[0.08] blur-[100px]" aria-hidden />
+        <div className="absolute -top-40 -right-40 w-80 h-80 rounded-full bg-indigo-500/[0.08] blur-[100px]" aria-hidden />
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 rounded-full bg-blue-500/[0.08] blur-[100px]" aria-hidden />
         <div className="relative max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <Reveal direction="up" blur>
             <h2 className="text-3xl sm:text-4xl font-bold tracking-[-0.04em] text-white mb-4">

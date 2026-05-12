@@ -31,8 +31,8 @@ export default function SolutionsForGrowingTeamsPage() {
     <div className="min-h-screen bg-[#09090b] relative overflow-hidden">
       {/* Background effects */}
       <div className="absolute inset-0 bg-dots opacity-10 pointer-events-none" aria-hidden />
-      <div className="spotlight-orb absolute -top-40 right-1/4 w-[450px] h-[450px] rounded-full bg-violet-600/[0.06] blur-[140px] pointer-events-none" aria-hidden />
-      <div className="absolute bottom-40 -left-20 w-72 h-72 rounded-full bg-fuchsia-600/[0.04] blur-[100px] pointer-events-none" aria-hidden />
+      <div className="spotlight-orb absolute -top-40 right-1/4 w-[450px] h-[450px] rounded-full bg-indigo-600/[0.06] blur-[140px] pointer-events-none" aria-hidden />
+      <div className="absolute bottom-40 -left-20 w-72 h-72 rounded-full bg-blue-600/[0.04] blur-[100px] pointer-events-none" aria-hidden />
 
       <Navigation />
       <main className="pt-24 pb-24 px-4 sm:px-6 lg:px-8 relative">
@@ -83,7 +83,7 @@ export default function SolutionsForGrowingTeamsPage() {
             <Stagger delay={0.12} interval={0.08}>
               <div className="grid gap-6 sm:grid-cols-2">
                 {growingTeamsPackages.map((pkg) => (
-                  <div key={pkg.id} className="animated-border card-inner-glow card-hover rounded-xl">
+                  <div key={pkg.id} className="animated-border card-inner-glow card-hover card-shine-sweep card-reactive rounded-xl">
                     <PackageCard
                       name={pkg.name}
                       description={pkg.description}

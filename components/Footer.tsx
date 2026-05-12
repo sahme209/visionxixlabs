@@ -59,6 +59,8 @@ export function Footer() {
     <footer className="py-16 px-4 sm:px-6 lg:px-8">
       {/* Gradient line divider */}
       <div className="gradient-line mb-16" />
+      <div className="relative">
+        <div className="footer-amber-orb absolute -bottom-20 right-10 orb-drift" aria-hidden />
       <div className="max-w-6xl mx-auto">
         <div className="grid md:grid-cols-5 gap-10 mb-12">
           {/* Brand column */}
@@ -86,7 +88,7 @@ export function Footer() {
                 href="https://github.com/visionxixlabs"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="social-link"
+                className="social-link card-border-glow-hover"
                 aria-label="GitHub"
               >
                 <GitHubIcon className="h-4 w-4" />
@@ -95,7 +97,7 @@ export function Footer() {
                 href="https://linkedin.com/company/visionxixlabs"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="social-link"
+                className="social-link card-border-glow-hover"
                 aria-label="LinkedIn"
               >
                 <LinkedInIcon className="h-4 w-4" />
@@ -104,7 +106,7 @@ export function Footer() {
                 href="https://x.com/visionxixlabs"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="social-link"
+                className="social-link card-border-glow-hover"
                 aria-label="X (Twitter)"
               >
                 <XIcon className="h-4 w-4" />
@@ -120,7 +122,7 @@ export function Footer() {
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="hover:text-white transition-colors"
+                    className="hover:text-white nav-glow transition-colors"
                   >
                     {link.label}
                   </Link>
@@ -137,7 +139,7 @@ export function Footer() {
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="hover:text-white transition-colors"
+                    className="hover:text-white nav-glow transition-colors"
                   >
                     {link.label}
                   </Link>
@@ -154,7 +156,7 @@ export function Footer() {
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="hover:text-white transition-colors"
+                    className="hover:text-white nav-glow transition-colors"
                   >
                     {link.label}
                   </Link>
@@ -163,7 +165,7 @@ export function Footer() {
               <li>
                 <a
                   href="mailto:support@visionxixlabs.com"
-                  className="hover:text-white transition-colors"
+                  className="hover:text-white nav-glow transition-colors"
                 >
                   Support
                 </a>
@@ -172,9 +174,31 @@ export function Footer() {
           </div>
         </div>
 
+        {/* Huly-style CTA */}
+        <div className="text-center mb-16 relative">
+          <h2 className="text-3xl font-bold mb-3 tracking-[-0.04em]">Join the Movement</h2>
+          <p className="text-zinc-500 text-sm mb-6 max-w-md mx-auto">
+            Unlock the future of cloud operations with Axiom. This journey is just getting started.
+          </p>
+          <div className="flex items-center justify-center gap-4">
+            <Link
+              href="/operator/onboarding"
+              className="btn-amber-shimmer inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-semibold text-zinc-900 shadow-[0_0_20px_rgba(255,255,255,0.08)] transition-all hover:shadow-[0_0_30px_rgba(255,255,255,0.12)]"
+            >
+              Run Axiom
+            </Link>
+            <a
+              href="mailto:support@visionxixlabs.com"
+              className="inline-flex items-center gap-2 rounded-full border border-white/[0.1] px-6 py-3 text-sm font-semibold text-zinc-400 hover:text-white hover:border-white/[0.2] transition-all"
+            >
+              Contact us
+            </a>
+          </div>
+        </div>
+
         {/* Made with passion tagline */}
         <div className="text-center mb-8">
-          <p className="text-xs text-zinc-600">Made with passion in NYC</p>
+          <p className="text-xs text-zinc-600">Made with <span className="text-red-400">♥</span> and passion in NYC</p>
         </div>
 
         {/* Bottom bar with dot separators */}
@@ -187,23 +211,24 @@ export function Footer() {
           <div className="flex items-center gap-2 text-sm text-zinc-600">
             <Link
               href="/privacy"
-              className="hover:text-white transition-colors"
+              className="hover:text-white nav-glow transition-colors"
             >
               Privacy
             </Link>
             <span className="text-zinc-700">&middot;</span>
-            <Link href="/terms" className="hover:text-white transition-colors">
+            <Link href="/terms" className="hover:text-white nav-glow transition-colors">
               Terms
             </Link>
             <span className="text-zinc-700">&middot;</span>
             <Link
               href="/security"
-              className="hover:text-white transition-colors"
+              className="hover:text-white nav-glow transition-colors"
             >
               Security
             </Link>
           </div>
         </div>
+      </div>
       </div>
     </footer>
   );

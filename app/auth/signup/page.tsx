@@ -72,14 +72,19 @@ function SignUpForm() {
       {/* Spotlight orb */}
       <div className="absolute top-0 left-1/4 w-[600px] h-[400px] spotlight-orb opacity-30" aria-hidden />
       {/* Floating blur orbs */}
-      <div className="absolute -top-40 right-0 w-80 h-80 rounded-full bg-violet-600/10 blur-[120px] pointer-events-none" aria-hidden />
-      <div className="absolute bottom-20 -left-20 w-60 h-60 rounded-full bg-fuchsia-600/8 blur-[90px] pointer-events-none" aria-hidden />
+      <div className="absolute -top-40 right-0 w-80 h-80 rounded-full bg-indigo-600/10 blur-[120px] pointer-events-none" aria-hidden />
+      <div className="absolute bottom-20 -left-20 w-60 h-60 rounded-full bg-blue-600/8 blur-[90px] pointer-events-none" aria-hidden />
       {/* Grid mesh background */}
       <div className="absolute inset-0 bg-grid-mesh opacity-30 pointer-events-none" aria-hidden />
 
+      <Link href="/" className="absolute top-6 left-6 text-sm text-zinc-500 hover:text-white transition-colors z-20">
+        ← Home
+      </Link>
+
       <div className="flex-1 flex items-center justify-center px-4 sm:px-8 relative z-10">
         <Reveal direction="up" blur delay={0.05}>
-          <div className="w-full max-w-sm glass-card auth-gradient-border rounded-2xl border border-white/[0.06] p-8">
+          <div className="w-full max-w-sm glass-card auth-gradient-border auth-card-huly rounded-2xl border border-white/[0.06] p-8">
+            <div className="auth-gradient-corner" aria-hidden />
             <Link href="/" className="flex items-center gap-2.5 mb-10">
               <Image
                 src="/vision-xix-logo.png"
@@ -162,13 +167,26 @@ function SignUpForm() {
               <button
                 type="submit"
                 disabled={loading}
-                className="btn-huly btn-shimmer cta-glow w-full rounded-lg bg-white py-2.5 text-sm font-semibold text-zinc-900 hover:bg-zinc-100 disabled:opacity-50 flex items-center justify-center gap-2 transition-colors shadow-sm"
+                className="btn-huly btn-amber-shimmer w-full rounded-full bg-white py-3 text-sm font-semibold text-zinc-900 hover:bg-zinc-100 disabled:opacity-50 flex items-center justify-center gap-2 transition-colors shadow-[0_0_20px_rgba(255,255,255,0.08)]"
               >
                 {loading ? "Creating account..." : "Create account"}
                 {!loading && <ArrowRightIcon className="h-4 w-4" />}
               </button>
             </form>
 
+            <div className="flex items-center gap-3 my-6">
+              <div className="flex-1 h-px bg-white/[0.06]" />
+              <span className="text-xs text-zinc-600">Or</span>
+              <div className="flex-1 h-px bg-white/[0.06]" />
+            </div>
+            <div className="flex items-center justify-center gap-3">
+              <button type="button" className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-white/[0.08] bg-white/[0.02] text-sm text-zinc-400 hover:bg-white/[0.06] hover:text-white transition-all">
+                Sign up with Google
+              </button>
+              <button type="button" className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-white/[0.08] bg-white/[0.02] text-sm text-zinc-400 hover:bg-white/[0.06] hover:text-white transition-all">
+                Sign up with GitHub
+              </button>
+            </div>
             <p className="mt-6 text-sm text-zinc-500 text-center">
               Already have an account?{" "}
               <Link

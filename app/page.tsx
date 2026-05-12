@@ -72,7 +72,7 @@ function AmbientParticles() {
   return (
     <div className="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden>
       <div
-        className="ambient-particle w-1.5 h-1.5 bg-violet-400/40"
+        className="ambient-particle w-1.5 h-1.5 bg-blue-400/40"
         style={{ top: "15%", left: "20%", animationDelay: "0s", animationDuration: "14s" }}
       />
       <div
@@ -80,7 +80,7 @@ function AmbientParticles() {
         style={{ top: "30%", right: "25%", animationDelay: "-3s", animationDuration: "11s" }}
       />
       <div
-        className="ambient-particle w-2 h-2 bg-violet-300/20"
+        className="ambient-particle w-2 h-2 bg-indigo-300/20"
         style={{ top: "55%", left: "65%", animationDelay: "-6s", animationDuration: "16s" }}
       />
       <div
@@ -88,7 +88,7 @@ function AmbientParticles() {
         style={{ top: "70%", left: "35%", animationDelay: "-9s", animationDuration: "13s" }}
       />
       <div
-        className="ambient-particle w-1.5 h-1.5 bg-violet-500/25"
+        className="ambient-particle w-1.5 h-1.5 bg-cyan-500/25"
         style={{ top: "45%", right: "15%", animationDelay: "-4s", animationDuration: "15s" }}
       />
     </div>
@@ -115,6 +115,7 @@ export default function Home() {
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[500px] spotlight-orb opacity-60" aria-hidden />
         <div className="absolute top-40 -right-40 w-[500px] h-[500px] rounded-full bg-violet-600/5 blur-[120px]" aria-hidden />
         <div className="absolute top-60 -left-40 w-[400px] h-[400px] rounded-full bg-fuchsia-600/5 blur-[120px]" aria-hidden />
+        <div className="hero-beam-vertical" aria-hidden />
 
         {/* Floating ambient particles */}
         <AmbientParticles />
@@ -153,7 +154,7 @@ export default function Home() {
               <AnimatedButton
                 href="/operator/onboarding"
                 variant="primary"
-                className="btn-huly cta-glow shadow-lg shadow-violet-500/20 relative z-10"
+                className="btn-amber-shimmer cta-glow shadow-lg shadow-violet-500/20 relative z-10 rounded-full text-zinc-900 font-semibold"
               >
                 Run Axiom
                 <ArrowRightIcon className="ml-2 h-4 w-4" />
@@ -295,7 +296,7 @@ export default function Home() {
               const Icon = card.icon;
               return (
                 <Reveal key={card.title} direction="up" delay={i * 0.06}>
-                  <div className={`group glow-border-card animated-border card-inner-glow card-hover ${card.accentClass} rounded-xl border border-white/[0.06] bg-white/[0.02] p-6 h-full backdrop-blur-sm hover:border-white/[0.12] transition-colors relative`}>
+                  <div className={`group glow-border-card animated-border card-inner-glow card-hover card-shine-sweep card-reactive warm-bottom-glow ${card.accentClass} rounded-xl border border-white/[0.06] bg-white/[0.02] p-6 h-full backdrop-blur-sm hover:border-white/[0.12] transition-colors relative`}>
                     <div className="card-accent-overlay" />
                     <div className="relative z-10">
                       <div className="flex items-center gap-2.5 mb-4">
@@ -378,7 +379,7 @@ export default function Home() {
               { name: "GCP", status: "Scan only", statusColor: "bg-amber-500", textAccent: "text-red-400", desc: "Plan and execute on roadmap" },
               { name: "Terraform", status: "Auto-generated", statusColor: "bg-violet-500", textAccent: "text-violet-400", desc: "IaC plans with rollback" },
             ].map((p) => (
-              <div key={p.name} className="animated-border card-inner-glow card-hover rounded-xl border border-white/[0.06] bg-white/[0.02] p-5 text-center hover:border-white/[0.12] transition-colors">
+              <div key={p.name} className="animated-border card-inner-glow card-hover card-shine-sweep card-reactive rounded-xl border border-white/[0.06] bg-white/[0.02] p-5 text-center hover:border-white/[0.12] transition-colors">
                 <div className={`text-xl font-bold mb-2 ${p.textAccent}`}>{p.name}</div>
                 <div className="flex items-center justify-center gap-1.5 mb-1.5">
                   <span className={`w-1.5 h-1.5 rounded-full ${p.statusColor}`} />
@@ -421,7 +422,7 @@ export default function Home() {
           </Reveal>
           <Stagger delay={0.1} interval={0.08} className="grid md:grid-cols-3 gap-5">
             {/* Cost Optimization */}
-            <div className="glass-card animated-border card-accent-emerald rounded-xl border border-white/[0.06] bg-white/[0.02] p-6 hover:border-emerald-500/20 transition-colors relative group">
+            <div className="glass-card animated-border card-accent-emerald card-shine-sweep card-reactive warm-bottom-glow rounded-xl border border-white/[0.06] bg-white/[0.02] p-6 hover:border-emerald-500/20 transition-colors relative group">
               <div className="card-accent-overlay" />
               <div className="relative z-10">
                 <div className="flex items-center gap-3 mb-4">
@@ -447,7 +448,7 @@ export default function Home() {
               </div>
             </div>
             {/* Security Hardening */}
-            <div className="glass-card animated-border card-accent-red rounded-xl border border-white/[0.06] bg-white/[0.02] p-6 hover:border-red-500/20 transition-colors relative group">
+            <div className="glass-card animated-border card-accent-red card-shine-sweep card-reactive warm-bottom-glow rounded-xl border border-white/[0.06] bg-white/[0.02] p-6 hover:border-red-500/20 transition-colors relative group">
               <div className="card-accent-overlay" />
               <div className="relative z-10">
                 <div className="flex items-center gap-3 mb-4">
@@ -473,7 +474,7 @@ export default function Home() {
               </div>
             </div>
             {/* Drift Prevention */}
-            <div className="glass-card animated-border card-accent-violet rounded-xl border border-white/[0.06] bg-white/[0.02] p-6 hover:border-violet-500/20 transition-colors relative group">
+            <div className="glass-card animated-border card-accent-violet card-shine-sweep card-reactive warm-bottom-glow rounded-xl border border-white/[0.06] bg-white/[0.02] p-6 hover:border-violet-500/20 transition-colors relative group">
               <div className="card-accent-overlay" />
               <div className="relative z-10">
                 <div className="flex items-center gap-3 mb-4">
@@ -538,7 +539,7 @@ export default function Home() {
           <div className="flex flex-wrap justify-center gap-4 mb-4">
             <Link
               href="/operator/onboarding"
-              className="cta-white-glow inline-flex items-center gap-2 px-8 py-4 bg-white text-zinc-900 rounded-xl font-semibold text-sm shadow-lg hover:bg-zinc-100 transition-colors"
+              className="btn-amber-shimmer cta-white-glow inline-flex items-center gap-2 px-8 py-4 bg-white text-zinc-900 rounded-full font-semibold text-sm shadow-lg hover:bg-zinc-100 transition-colors"
             >
               Run Axiom
               <ArrowRightIcon className="h-4 w-4" />

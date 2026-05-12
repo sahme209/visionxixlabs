@@ -81,7 +81,7 @@ export default function EnterpriseReadinessPage() {
                 time-bound privileges. We do not ask for root credentials or shared passwords.
               </p>
               <Stagger className="grid gap-4 md:grid-cols-3">
-                <div className="glass-card rounded-xl p-4 text-sm text-zinc-300 border border-white/[0.06] animated-border card-inner-glow">
+                <div className="glass-card rounded-xl p-4 text-sm text-zinc-300 border border-white/[0.06] animated-border card-inner-glow card-shine-sweep card-reactive">
                   <p className="font-semibold mb-1">Identity &amp; roles</p>
                   <ul className="space-y-1">
                     <li>• Role-based access scoped to project or account</li>
@@ -89,7 +89,7 @@ export default function EnterpriseReadinessPage() {
                     <li>• Temporary elevation if needed, with approval</li>
                   </ul>
                 </div>
-                <div className="glass-card rounded-xl p-4 text-sm text-zinc-300 border border-white/[0.06] animated-border card-inner-glow">
+                <div className="glass-card rounded-xl p-4 text-sm text-zinc-300 border border-white/[0.06] animated-border card-inner-glow card-shine-sweep card-reactive">
                   <p className="font-semibold mb-1">Change &amp; deployment</p>
                   <ul className="space-y-1">
                     <li>• Infrastructure-as-code and CI/CD based changes</li>
@@ -97,7 +97,7 @@ export default function EnterpriseReadinessPage() {
                     <li>• No ad-hoc changes in production</li>
                   </ul>
                 </div>
-                <div className="glass-card rounded-xl p-4 text-sm text-zinc-300 border border-white/[0.06] animated-border card-inner-glow">
+                <div className="glass-card rounded-xl p-4 text-sm text-zinc-300 border border-white/[0.06] animated-border card-inner-glow card-shine-sweep card-reactive">
                   <p className="font-semibold mb-1">Audit &amp; logging</p>
                   <ul className="space-y-1">
                     <li>• Activity logged in your cloud accounts</li>
@@ -125,7 +125,7 @@ export default function EnterpriseReadinessPage() {
                 and explicit ownership. We do not bypass your existing risk and compliance processes.
               </p>
               <Stagger className="grid gap-4 md:grid-cols-2">
-                <div className="glass-card rounded-xl p-4 text-sm text-zinc-300 border border-white/[0.06] animated-border card-inner-glow">
+                <div className="glass-card rounded-xl p-4 text-sm text-zinc-300 border border-white/[0.06] animated-border card-inner-glow card-shine-sweep card-reactive">
                   <p className="font-semibold mb-1">Data &amp; access boundaries</p>
                   <ul className="space-y-1">
                     <li>• AI endpoints restricted to approved data sources</li>
@@ -133,7 +133,7 @@ export default function EnterpriseReadinessPage() {
                     <li>• Clear separation between environments (dev/test/prod)</li>
                   </ul>
                 </div>
-                <div className="glass-card rounded-xl p-4 text-sm text-zinc-300 border border-white/[0.06] animated-border card-inner-glow">
+                <div className="glass-card rounded-xl p-4 text-sm text-zinc-300 border border-white/[0.06] animated-border card-inner-glow card-shine-sweep card-reactive">
                   <p className="font-semibold mb-1">Monitoring &amp; incident process</p>
                   <ul className="space-y-1">
                     <li>• Request/response logging and usage metrics for AI workloads</li>
@@ -162,7 +162,7 @@ export default function EnterpriseReadinessPage() {
                 scoped, and documented.
               </p>
               <Stagger className="grid gap-4 md:grid-cols-3 text-sm text-zinc-300">
-                <div className="glass-card rounded-xl p-4 border border-white/[0.06] animated-border card-inner-glow">
+                <div className="glass-card rounded-xl p-4 border border-white/[0.06] animated-border card-inner-glow card-shine-sweep card-reactive">
                   <p className="font-semibold mb-1">Discovery &amp; scoping</p>
                   <ul className="space-y-1">
                     <li>• Use-case, constraints, and success criteria defined up front</li>
@@ -170,7 +170,7 @@ export default function EnterpriseReadinessPage() {
                     <li>• Alignment with your internal stakeholders</li>
                   </ul>
                 </div>
-                <div className="glass-card rounded-xl p-4 border border-white/[0.06] animated-border card-inner-glow">
+                <div className="glass-card rounded-xl p-4 border border-white/[0.06] animated-border card-inner-glow card-shine-sweep card-reactive">
                   <p className="font-semibold mb-1">Implementation</p>
                   <ul className="space-y-1">
                     <li>• Iterative delivery with visible milestones</li>
@@ -178,7 +178,7 @@ export default function EnterpriseReadinessPage() {
                     <li>• Regular touchpoints with technical leads</li>
                   </ul>
                 </div>
-                <div className="glass-card rounded-xl p-4 border border-white/[0.06] animated-border card-inner-glow">
+                <div className="glass-card rounded-xl p-4 border border-white/[0.06] animated-border card-inner-glow card-shine-sweep card-reactive">
                   <p className="font-semibold mb-1">Handover &amp; aftercare</p>
                   <ul className="space-y-1">
                     <li>• Documentation and runbooks delivered at the end of each engagement</li>
@@ -243,7 +243,7 @@ export default function EnterpriseReadinessPage() {
               <Stagger className="mt-8 grid gap-4 md:grid-cols-3 text-sm text-zinc-300">
                 <Link
                   href="/cloud-security"
-                  className="glass-card rounded-xl border border-white/[0.06] p-4 hover:border-white/[0.12] transition-colors card-hover"
+                  className="glass-card rounded-xl border border-white/[0.06] p-4 hover:border-white/[0.12] transition-colors card-hover card-shine-sweep card-reactive"
                 >
                   <p className="font-semibold mb-1">Cloud Security &amp; Access Model</p>
                   <p className="text-zinc-400 text-xs">
@@ -252,7 +252,7 @@ export default function EnterpriseReadinessPage() {
                 </Link>
                 <Link
                   href="/ai-engineering"
-                  className="glass-card rounded-xl border border-white/[0.06] p-4 hover:border-white/[0.12] transition-colors card-hover"
+                  className="glass-card rounded-xl border border-white/[0.06] p-4 hover:border-white/[0.12] transition-colors card-hover card-shine-sweep card-reactive"
                 >
                   <p className="font-semibold mb-1">AI Engineering &amp; LLM Systems</p>
                   <p className="text-zinc-400 text-xs">
@@ -261,7 +261,7 @@ export default function EnterpriseReadinessPage() {
                 </Link>
                 <Link
                   href="/case-studies"
-                  className="glass-card rounded-xl border border-white/[0.06] p-4 hover:border-white/[0.12] transition-colors card-hover"
+                  className="glass-card rounded-xl border border-white/[0.06] p-4 hover:border-white/[0.12] transition-colors card-hover card-shine-sweep card-reactive"
                 >
                   <p className="font-semibold mb-1">Representative Case Studies</p>
                   <p className="text-zinc-400 text-xs">
@@ -277,8 +277,8 @@ export default function EnterpriseReadinessPage() {
       <Footer />
 
       {/* Floating blur orbs */}
-      <div className="absolute bottom-1/4 left-10 w-72 h-72 bg-violet-600/10 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute top-1/2 right-0 w-80 h-80 bg-fuchsia-600/8 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute bottom-1/4 left-10 w-72 h-72 bg-indigo-600/10 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute top-1/2 right-0 w-80 h-80 bg-blue-600/8 rounded-full blur-3xl pointer-events-none" />
     </div>
   );
 }

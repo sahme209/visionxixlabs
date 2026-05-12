@@ -205,7 +205,7 @@ export default function ServicesPage() {
 
           {/* 1b. Common gaps we close */}
           <Reveal direction="up" delay={0.1}>
-            <section className="mb-16 glass-card rounded-xl border border-white/[0.06] p-6 animated-border card-inner-glow" aria-labelledby="gaps-heading">
+            <section className="mb-16 glass-card rounded-xl border border-white/[0.06] p-6 animated-border card-inner-glow card-shine-sweep card-reactive" aria-labelledby="gaps-heading">
               <h2 id="gaps-heading" className="text-lg font-bold text-white mb-4 tracking-[-0.04em]">
                 Common gaps we close
               </h2>
@@ -363,8 +363,8 @@ export default function ServicesPage() {
       <Footer />
 
       {/* Floating blur orbs */}
-      <div className="absolute bottom-1/4 left-10 w-72 h-72 bg-violet-600/10 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute top-1/2 right-0 w-96 h-96 bg-fuchsia-600/8 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute bottom-1/4 left-10 w-72 h-72 bg-indigo-600/10 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute top-1/2 right-0 w-96 h-96 bg-blue-600/8 rounded-full blur-3xl pointer-events-none" />
     </div>
   );
 }
