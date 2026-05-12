@@ -15,8 +15,8 @@ export default function SignUpPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen flex items-center justify-center bg-white dark:bg-slate-950">
-          <div className="h-6 w-6 animate-spin rounded-full border-2 border-violet-600 border-t-transparent" />
+        <div className="min-h-screen flex items-center justify-center bg-[#09090b]">
+          <div className="h-6 w-6 animate-spin rounded-full border-2 border-violet-500 border-t-transparent" />
         </div>
       }
     >
@@ -62,10 +62,9 @@ function SignUpForm() {
   const isOperatorFlow = redirect.includes("operator");
 
   return (
-    <div className="min-h-screen flex bg-white dark:bg-slate-950 relative overflow-hidden">
-      <RealisticFogBackground backgroundColor="transparent" opacity={0.2} darken contained />
-      <div className="absolute -top-40 -right-40 w-96 h-96 rounded-full bg-violet-500/5 dark:bg-violet-500/10 blur-3xl" aria-hidden />
-      <div className="absolute -bottom-40 -left-40 w-96 h-96 rounded-full bg-fuchsia-500/5 dark:bg-fuchsia-500/10 blur-3xl" aria-hidden />
+    <div className="min-h-screen flex bg-[#09090b] relative overflow-hidden">
+      <RealisticFogBackground backgroundColor="transparent" opacity={0.15} darken contained />
+      <div className="absolute top-0 left-1/4 w-[600px] h-[400px] spotlight-orb opacity-30" aria-hidden />
       <div className="flex-1 flex items-center justify-center px-4 sm:px-8 relative z-10">
         <div className="w-full max-w-sm">
           <Link href="/" className="flex items-center gap-2.5 mb-10">
@@ -76,13 +75,13 @@ function SignUpForm() {
               height={28}
               className="rounded-lg"
             />
-            <span className="text-sm font-semibold text-slate-900 dark:text-slate-100">
+            <span className="text-sm font-semibold text-gradient">
               Vision XIX Labs
             </span>
           </Link>
 
-          <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-50 mb-1">Create your account</h1>
-          <p className="text-sm text-slate-500 dark:text-slate-400 mb-8">
+          <h1 className="text-2xl font-bold mb-1">Create your account</h1>
+          <p className="text-sm text-zinc-500 mb-8">
             {isOperatorFlow
               ? "Scan your cloud and get findings in under 5 minutes."
               : "Get started with Axiom."}
@@ -90,7 +89,7 @@ function SignUpForm() {
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label htmlFor="name" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+              <label htmlFor="name" className="block text-sm font-medium text-zinc-300 mb-1.5">
                 Name
               </label>
               <input
@@ -99,11 +98,11 @@ function SignUpForm() {
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 autoComplete="name"
-                className="w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3.5 py-2.5 text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20"
+                className="w-full rounded-lg border border-white/[0.08] bg-white/[0.03] px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-violet-500/50 focus:ring-2 focus:ring-violet-500/20 transition-colors placeholder:text-zinc-600"
               />
             </div>
             <div>
-              <label htmlFor="signup-email" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+              <label htmlFor="signup-email" className="block text-sm font-medium text-zinc-300 mb-1.5">
                 Work email
               </label>
               <input
@@ -113,11 +112,11 @@ function SignUpForm() {
                 onChange={(e) => setEmail(e.target.value)}
                 required
                 autoComplete="email"
-                className="w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3.5 py-2.5 text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20"
+                className="w-full rounded-lg border border-white/[0.08] bg-white/[0.03] px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-violet-500/50 focus:ring-2 focus:ring-violet-500/20 transition-colors placeholder:text-zinc-600"
               />
             </div>
             <div>
-              <label htmlFor="signup-password" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+              <label htmlFor="signup-password" className="block text-sm font-medium text-zinc-300 mb-1.5">
                 Password
               </label>
               <input
@@ -129,44 +128,44 @@ function SignUpForm() {
                 minLength={8}
                 placeholder="8+ characters"
                 autoComplete="new-password"
-                className="w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3.5 py-2.5 text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-600 focus:outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20"
+                className="w-full rounded-lg border border-white/[0.08] bg-white/[0.03] px-3.5 py-2.5 text-sm text-white placeholder:text-zinc-600 focus:outline-none focus:border-violet-500/50 focus:ring-2 focus:ring-violet-500/20 transition-colors"
               />
             </div>
             {error && (
-              <div className="rounded-lg border border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-950/30 px-3.5 py-2.5 text-sm text-red-700 dark:text-red-400">
+              <div className="rounded-lg border border-red-500/20 bg-red-500/[0.06] px-3.5 py-2.5 text-sm text-red-400">
                 {error}
               </div>
             )}
             <button
               type="submit"
               disabled={loading}
-              className="btn-huly w-full rounded-lg bg-slate-900 dark:bg-slate-100 py-2.5 text-sm font-semibold text-white dark:text-slate-900 hover:bg-slate-800 dark:hover:bg-slate-200 disabled:opacity-50 flex items-center justify-center gap-2 transition-colors shadow-sm"
+              className="btn-huly w-full rounded-lg bg-white py-2.5 text-sm font-semibold text-zinc-900 hover:bg-zinc-100 disabled:opacity-50 flex items-center justify-center gap-2 transition-colors shadow-sm"
             >
               {loading ? "Creating account..." : "Create account"}
               {!loading && <ArrowRightIcon className="h-4 w-4" />}
             </button>
           </form>
 
-          <p className="mt-6 text-sm text-slate-500 dark:text-slate-400 text-center">
+          <p className="mt-6 text-sm text-zinc-500 text-center">
             Already have an account?{" "}
             <Link
               href={`/auth/signin?callbackUrl=${encodeURIComponent(redirect)}`}
-              className="font-medium text-violet-600 dark:text-violet-400 hover:text-violet-700 dark:hover:text-violet-300"
+              className="font-medium text-violet-400 hover:text-violet-300"
             >
               Sign in
             </Link>
           </p>
 
-          <p className="mt-4 text-xs text-slate-400 dark:text-slate-500 text-center">
+          <p className="mt-4 text-xs text-zinc-600 text-center">
             No credit card required. Free plan includes 1 cloud account.
           </p>
         </div>
       </div>
 
       {isOperatorFlow && (
-        <div className="hidden lg:flex flex-1 items-center justify-center bg-slate-50/80 dark:bg-slate-900/50 border-l border-slate-100 dark:border-slate-800/50 px-12 relative z-10 backdrop-blur-sm">
+        <div className="hidden lg:flex flex-1 items-center justify-center border-l border-white/[0.04] px-12 relative z-10">
           <div className="max-w-xs">
-            <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-200 mb-5">
+            <h2 className="text-sm font-semibold mb-6">
               What you get — free
             </h2>
             <div className="space-y-4">
@@ -177,7 +176,7 @@ function SignUpForm() {
                 { icon: CheckCircleIcon, text: "Prioritized recommendations" },
                 { icon: CheckCircleIcon, text: "Execution plans on upgrade" },
               ].map((item, i) => (
-                <div key={i} className="flex items-center gap-2.5 text-sm text-slate-600 dark:text-slate-400">
+                <div key={i} className="flex items-center gap-2.5 text-sm text-zinc-400">
                   <item.icon className="h-4 w-4 text-emerald-500 flex-shrink-0" />
                   {item.text}
                 </div>

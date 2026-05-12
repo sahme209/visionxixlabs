@@ -30,34 +30,37 @@ const GOVERNANCE = [
 export function EnterpriseTrustSignals() {
   return (
     <section
-      className="py-16 px-4 sm:px-6 lg:px-8 border-t border-slate-200/80 dark:border-slate-700/80 relative overflow-hidden"
+      className="py-24 px-4 sm:px-6 lg:px-8 border-t border-white/[0.04] relative overflow-hidden"
       aria-labelledby="trust-signals-heading"
     >
-      <div className="absolute inset-0 bg-dots opacity-30 dark:opacity-20" aria-hidden />
+      <div className="absolute inset-0 bg-dots opacity-20" aria-hidden />
       <div className="max-w-5xl mx-auto relative">
-        <div className="text-center mb-10">
+        <div className="text-center mb-12">
+          <p className="text-sm font-semibold text-violet-400 mb-3 tracking-wide uppercase">
+            Enterprise Governance
+          </p>
           <h2
             id="trust-signals-heading"
-            className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-slate-100 mb-3"
+            className="text-3xl md:text-4xl font-bold mb-4"
           >
             Enterprise governance built in
           </h2>
-          <p className="text-slate-500 dark:text-slate-400 max-w-lg mx-auto">
+          <p className="text-zinc-400 max-w-lg mx-auto">
             Axiom can never self-escalate. Every action is scoped, approved, auditable, and reversible.
           </p>
         </div>
-        <div className="grid gap-6 md:grid-cols-3">
+        <div className="grid gap-5 md:grid-cols-3">
           {GOVERNANCE.map((block) => (
             <div
               key={block.title}
-              className="glow-border-card card-hover rounded-xl border border-slate-200 dark:border-slate-700/80 bg-white dark:bg-slate-800/80 p-5 hover:border-violet-300 dark:hover:border-violet-700 transition-colors"
+              className="glow-border-card card-hover rounded-xl border border-white/[0.06] bg-white/[0.02] p-6 backdrop-blur-sm hover:border-white/[0.12] transition-colors"
             >
-              <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-3">
+              <h3 className="text-sm font-semibold mb-4">
                 {block.title}
               </h3>
-              <ul className="space-y-2 text-sm text-slate-600 dark:text-slate-400">
+              <ul className="space-y-2.5 text-sm text-zinc-400">
                 {block.items.map((item) => (
-                  <li key={item} className="flex items-start gap-2">
+                  <li key={item} className="flex items-start gap-2.5">
                     <span className="w-1 h-1 rounded-full bg-emerald-500 mt-2 shrink-0" />
                     <span>{item}</span>
                   </li>

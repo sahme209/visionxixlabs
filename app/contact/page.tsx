@@ -4,7 +4,6 @@ import { FormEvent, useState, useRef } from "react";
 import Link from "next/link";
 import {
   ArrowRightIcon,
-  EnvelopeIcon,
   CheckCircleIcon,
 } from "@heroicons/react/24/outline";
 import { Navigation } from "../../components/Navigation";
@@ -49,29 +48,32 @@ export default function ContactPage() {
   };
 
   return (
-    <div className="min-h-screen bg-white dark:bg-slate-950 relative overflow-hidden">
-      <div className="absolute inset-0 bg-dots opacity-20 dark:opacity-10" aria-hidden />
-      <div className="absolute -top-40 right-0 w-96 h-96 rounded-full bg-violet-500/5 dark:bg-violet-500/8 blur-3xl" aria-hidden />
-      <div className="absolute bottom-0 -left-40 w-96 h-96 rounded-full bg-fuchsia-500/5 dark:bg-fuchsia-500/8 blur-3xl" aria-hidden />
+    <div className="min-h-screen bg-[#09090b] relative overflow-hidden">
+      <div className="absolute inset-0 bg-dots opacity-15" aria-hidden />
+      <div className="absolute -top-40 right-0 w-96 h-96 rounded-full bg-violet-600/5 blur-[120px]" aria-hidden />
+      <div className="absolute bottom-0 -left-40 w-96 h-96 rounded-full bg-fuchsia-600/5 blur-[120px]" aria-hidden />
       <Navigation />
 
-      <main className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-20 relative">
-        <div className="mb-10">
-          <h1 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-slate-50 mb-3">
+      <main className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 pt-36 pb-24 relative">
+        <div className="mb-12">
+          <p className="text-sm font-semibold text-violet-400 mb-3 tracking-wide uppercase">
+            Contact
+          </p>
+          <h1 className="text-3xl md:text-4xl font-bold mb-4">
             Get in touch
           </h1>
-          <p className="text-slate-600 dark:text-slate-400 max-w-lg">
+          <p className="text-zinc-400 max-w-lg">
             Questions about Axiom, enterprise plans, or how autonomous cloud operations works for your infrastructure? We respond within one business day.
           </p>
         </div>
 
         {submitted ? (
-          <div className="rounded-xl border border-emerald-200 dark:border-emerald-800 bg-emerald-50 dark:bg-emerald-950/30 p-6">
+          <div className="rounded-xl border border-emerald-500/20 bg-emerald-500/[0.06] p-6">
             <div className="flex items-start gap-3">
-              <CheckCircleIcon className="h-5 w-5 text-emerald-600 dark:text-emerald-400 mt-0.5 flex-shrink-0" />
+              <CheckCircleIcon className="h-5 w-5 text-emerald-400 mt-0.5 flex-shrink-0" />
               <div>
-                <p className="font-semibold text-slate-900 dark:text-slate-100 mb-1">Message sent</p>
-                <p className="text-sm text-slate-600 dark:text-slate-400">
+                <p className="font-semibold mb-1">Message sent</p>
+                <p className="text-sm text-zinc-400">
                   We&apos;ve received your message and will get back to you soon.
                 </p>
               </div>
@@ -81,7 +83,7 @@ export default function ContactPage() {
           <form ref={formRef} onSubmit={handleSubmit} className="space-y-5">
             <div className="grid gap-5 sm:grid-cols-2">
               <div>
-                <label htmlFor="name" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+                <label htmlFor="name" className="block text-sm font-medium text-zinc-300 mb-1.5">
                   Name
                 </label>
                 <input
@@ -89,11 +91,11 @@ export default function ContactPage() {
                   name="name"
                   type="text"
                   required
-                  className="w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3.5 py-2.5 text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20"
+                  className="w-full rounded-lg border border-white/[0.08] bg-white/[0.03] px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-violet-500/50 focus:ring-2 focus:ring-violet-500/20 transition-colors placeholder:text-zinc-600"
                 />
               </div>
               <div>
-                <label htmlFor="email" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+                <label htmlFor="email" className="block text-sm font-medium text-zinc-300 mb-1.5">
                   Work email
                 </label>
                 <input
@@ -101,23 +103,23 @@ export default function ContactPage() {
                   name="email"
                   type="email"
                   required
-                  className="w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3.5 py-2.5 text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20"
+                  className="w-full rounded-lg border border-white/[0.08] bg-white/[0.03] px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-violet-500/50 focus:ring-2 focus:ring-violet-500/20 transition-colors placeholder:text-zinc-600"
                 />
               </div>
             </div>
             <div>
-              <label htmlFor="company" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+              <label htmlFor="company" className="block text-sm font-medium text-zinc-300 mb-1.5">
                 Company
               </label>
               <input
                 id="company"
                 name="company"
                 type="text"
-                className="w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3.5 py-2.5 text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20"
+                className="w-full rounded-lg border border-white/[0.08] bg-white/[0.03] px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-violet-500/50 focus:ring-2 focus:ring-violet-500/20 transition-colors placeholder:text-zinc-600"
               />
             </div>
             <div>
-              <label htmlFor="message" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+              <label htmlFor="message" className="block text-sm font-medium text-zinc-300 mb-1.5">
                 How can we help?
               </label>
               <textarea
@@ -125,13 +127,13 @@ export default function ContactPage() {
                 name="message"
                 rows={4}
                 required
-                className="w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3.5 py-2.5 text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20 resize-none"
+                className="w-full rounded-lg border border-white/[0.08] bg-white/[0.03] px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-violet-500/50 focus:ring-2 focus:ring-violet-500/20 transition-colors resize-none placeholder:text-zinc-600"
                 placeholder="Tell us about your cloud environment and what you're looking for."
               />
             </div>
 
             {error && (
-              <div className="rounded-lg border border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-950/30 px-4 py-3 text-sm text-red-700 dark:text-red-400">
+              <div className="rounded-lg border border-red-500/20 bg-red-500/[0.06] px-4 py-3 text-sm text-red-400">
                 {error}
               </div>
             )}
@@ -140,14 +142,14 @@ export default function ContactPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="btn-huly inline-flex items-center gap-2 rounded-lg bg-slate-900 dark:bg-slate-100 px-5 py-2.5 text-sm font-semibold text-white dark:text-slate-900 hover:bg-slate-800 dark:hover:bg-slate-200 transition-colors disabled:opacity-50 shadow-sm"
+                className="btn-huly inline-flex items-center gap-2 rounded-lg bg-white px-5 py-2.5 text-sm font-semibold text-zinc-900 hover:bg-zinc-100 transition-colors disabled:opacity-50 shadow-sm"
               >
                 {loading ? "Sending..." : "Send message"}
                 {!loading && <ArrowRightIcon className="h-4 w-4" />}
               </button>
               <a
                 href="mailto:support@visionxixlabs.com"
-                className="text-sm text-slate-500 dark:text-slate-400 hover:text-violet-600 dark:hover:text-violet-400 transition-colors"
+                className="text-sm text-zinc-500 hover:text-violet-400 transition-colors"
               >
                 support@visionxixlabs.com
               </a>
@@ -155,13 +157,13 @@ export default function ContactPage() {
           </form>
         )}
 
-        <div className="mt-16 pt-8 border-t border-slate-100 dark:border-slate-900">
-          <p className="text-sm text-slate-500 dark:text-slate-400 mb-4">
+        <div className="mt-16 pt-8 border-t border-white/[0.04]">
+          <p className="text-sm text-zinc-500 mb-4">
             Ready to scan your infrastructure now?
           </p>
           <Link
             href="/operator/onboarding"
-            className="inline-flex items-center gap-2 text-sm font-medium text-violet-600 dark:text-violet-400 hover:text-violet-700 dark:hover:text-violet-300"
+            className="inline-flex items-center gap-2 text-sm font-medium text-violet-400 hover:text-violet-300 transition-colors"
           >
             Run Axiom — connect your AWS account in 5 minutes
             <ArrowRightIcon className="h-3.5 w-3.5" />

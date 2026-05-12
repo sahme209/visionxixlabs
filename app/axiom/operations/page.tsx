@@ -116,7 +116,7 @@ function MetricCard({ label, value, sub, icon: Icon, accent = "violet" }: {
   accent?: "violet" | "emerald" | "amber" | "blue" | "red";
 }) {
   const accents: Record<string, string> = {
-    violet: "bg-violet-50 dark:bg-violet-950/40 text-violet-600 dark:text-violet-400",
+    violet: "bg-violet-50 dark:bg-violet-950/40 text-violet-400",
     emerald: "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400",
     amber: "bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400",
     blue: "bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400",
@@ -124,15 +124,15 @@ function MetricCard({ label, value, sub, icon: Icon, accent = "violet" }: {
   };
 
   return (
-    <div className="card-hover rounded-xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 hover:border-violet-200 dark:hover:border-violet-800 transition-colors">
+    <div className="card-hover rounded-xl border border-white/[0.06] bg-white/[0.02] p-5 hover:border-violet-200 dark:hover:border-violet-800 transition-colors">
       <div className="flex items-center gap-3 mb-3">
         <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${accents[accent]}`}>
           <Icon className="h-4 w-4" />
         </div>
-        <span className="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">{label}</span>
+        <span className="text-xs font-medium text-zinc-500 uppercase tracking-wider">{label}</span>
       </div>
-      <p className="text-2xl font-bold text-slate-900 dark:text-slate-50 tabular-nums">{value}</p>
-      {sub && <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">{sub}</p>}
+      <p className="text-2xl font-bold text-white tabular-nums">{value}</p>
+      {sub && <p className="text-xs text-zinc-500 mt-1">{sub}</p>}
     </div>
   );
 }
@@ -146,30 +146,30 @@ function RunRow({ run }: { run: OperationsData["recentRuns"][0] }) {
       <StatusIcon className={`h-4.5 w-4.5 flex-shrink-0 ${config.color}`} />
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-2">
-          <span className="text-sm font-medium text-slate-900 dark:text-slate-100 truncate">
+          <span className="text-sm font-medium text-white truncate">
             {run.summary ? run.summary.slice(0, 80) : config.label}
           </span>
           {run.trigger !== "manual" && (
-            <span className="text-[10px] font-medium text-slate-400 dark:text-slate-500 uppercase tracking-wider px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 flex-shrink-0">
+            <span className="text-[10px] font-medium text-zinc-500 uppercase tracking-wider px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 flex-shrink-0">
               {run.trigger}
             </span>
           )}
         </div>
         <div className="flex items-center gap-3 mt-0.5">
-          <span className="text-xs text-slate-500 dark:text-slate-400">{timeAgo(run.createdAt)}</span>
+          <span className="text-xs text-zinc-500">{timeAgo(run.createdAt)}</span>
           {run.findingCount > 0 && (
-            <span className="text-xs text-slate-500 dark:text-slate-400">
+            <span className="text-xs text-zinc-500">
               {run.findingCount} finding{run.findingCount === 1 ? "" : "s"}
             </span>
           )}
           {run.recommendationCount > 0 && (
-            <span className="text-xs text-slate-500 dark:text-slate-400">
+            <span className="text-xs text-zinc-500">
               {run.recommendationCount} rec{run.recommendationCount === 1 ? "" : "s"}
             </span>
           )}
         </div>
       </div>
-      <ChevronRightIcon className="h-4 w-4 text-slate-300 dark:text-slate-600 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0" />
+      <ChevronRightIcon className="h-4 w-4 text-zinc-600 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0" />
     </div>
   );
 }
@@ -177,11 +177,11 @@ function RunRow({ run }: { run: OperationsData["recentRuns"][0] }) {
 function EmptyState({ title, desc, action }: { title: string; desc: string; action?: { label: string; href: string } }) {
   return (
     <div className="text-center py-12">
-      <CpuChipIcon className="h-8 w-8 text-slate-300 dark:text-slate-600 mx-auto mb-3" />
-      <p className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">{title}</p>
-      <p className="text-xs text-slate-500 dark:text-slate-400 mb-4 max-w-xs mx-auto">{desc}</p>
+      <CpuChipIcon className="h-8 w-8 text-zinc-600 mx-auto mb-3" />
+      <p className="text-sm font-medium text-zinc-300 mb-1">{title}</p>
+      <p className="text-xs text-zinc-500 mb-4 max-w-xs mx-auto">{desc}</p>
       {action && (
-        <Link href={action.href} className="inline-flex items-center gap-1.5 text-sm font-medium text-violet-600 dark:text-violet-400 hover:text-violet-700 dark:hover:text-violet-300">
+        <Link href={action.href} className="inline-flex items-center gap-1.5 text-sm font-medium text-violet-400 hover:text-violet-700 dark:hover:text-violet-300">
           {action.label}
           <ChevronRightIcon className="h-3.5 w-3.5" />
         </Link>
@@ -222,7 +222,7 @@ export default function OperationsPage() {
   if (authStatus === "loading" || loading) {
     return (
       <div className="min-h-screen bg-white dark:bg-slate-950 flex items-center justify-center">
-        <div className="flex items-center gap-3 text-slate-500 dark:text-slate-400">
+        <div className="flex items-center gap-3 text-zinc-500">
           <ArrowPathIcon className="h-5 w-5 animate-spin" />
           <span className="text-sm">Loading operations...</span>
         </div>
@@ -247,13 +247,13 @@ export default function OperationsPage() {
   const s = data?.summary;
 
   return (
-    <div className="min-h-screen bg-slate-50/50 dark:bg-slate-950">
+    <div className="min-h-screen bg-[#09090b] text-white">
       {/* Header */}
-      <header className="bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 sticky top-0 z-30">
+      <header className="bg-white/[0.02] border-b border-white/[0.06] sticky top-0 z-30">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 h-14 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <Link href="/axiom" className="flex items-center gap-2 text-slate-900 dark:text-slate-100">
-              <CpuChipIcon className="h-5 w-5 text-violet-600 dark:text-violet-400" />
+            <Link href="/axiom" className="flex items-center gap-2 text-white">
+              <CpuChipIcon className="h-5 w-5 text-violet-400" />
               <span className="font-bold text-sm">Axiom</span>
             </Link>
             <span className="text-slate-300 dark:text-slate-700">/</span>
@@ -262,7 +262,7 @@ export default function OperationsPage() {
           <div className="flex items-center gap-3">
             <Link
               href="/operator/onboarding"
-              className="btn-huly inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 text-xs font-semibold hover:bg-slate-800 dark:hover:bg-slate-200 transition-colors shadow-sm"
+              className="btn-huly inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-slate-900 text-zinc-900 text-xs font-semibold hover:bg-zinc-100 transition-colors shadow-sm"
             >
               <BoltIcon className="h-3.5 w-3.5" />
               Run scan
@@ -315,13 +315,13 @@ export default function OperationsPage() {
         <div className="grid lg:grid-cols-3 gap-6">
           {/* ── Agent Activity ────────────────────────────────────── */}
           <section className="lg:col-span-2">
-            <div className="glow-border-card rounded-2xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 overflow-hidden">
-              <div className="px-5 py-4 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
+            <div className="glow-border-card rounded-2xl border border-white/[0.06] bg-white/[0.02] overflow-hidden">
+              <div className="px-5 py-4 border-b border-white/[0.06] flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <SignalIcon className="h-4 w-4 text-slate-400 icon-luminous" />
-                  <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-100">Agent Activity</h2>
+                  <h2 className="text-sm font-semibold text-white">Agent Activity</h2>
                 </div>
-                <span className="text-xs text-slate-400 dark:text-slate-500">
+                <span className="text-xs text-zinc-500">
                   {data?.recentRuns.length ?? 0} recent runs
                 </span>
               </div>
@@ -344,11 +344,11 @@ export default function OperationsPage() {
           {/* ── Sidebar ──────────────────────────────────────────── */}
           <aside className="space-y-6">
             {/* Connected Accounts */}
-            <div className="rounded-2xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 overflow-hidden">
-              <div className="px-5 py-4 border-b border-slate-100 dark:border-slate-800">
+            <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] overflow-hidden">
+              <div className="px-5 py-4 border-b border-white/[0.06]">
                 <div className="flex items-center gap-2">
                   <CloudIcon className="h-4 w-4 text-slate-400" />
-                  <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-100">Cloud Accounts</h2>
+                  <h2 className="text-sm font-semibold text-white">Cloud Accounts</h2>
                 </div>
               </div>
               <div className="p-4 space-y-3">
@@ -358,16 +358,16 @@ export default function OperationsPage() {
                       <div className="flex items-center gap-2.5">
                         <span className={`w-1.5 h-1.5 rounded-full ${account.enabled ? "bg-emerald-500" : "bg-slate-300 dark:bg-slate-600"}`} />
                         <div>
-                          <p className="text-sm font-medium text-slate-900 dark:text-slate-100">
+                          <p className="text-sm font-medium text-white">
                             {PROVIDER_LABELS[account.provider] ?? account.provider}
                           </p>
-                          <p className="text-xs text-slate-500 dark:text-slate-400 font-mono">
+                          <p className="text-xs text-zinc-500 font-mono">
                             {account.accountId}
                           </p>
                         </div>
                       </div>
                       {account.lastScannedAt && (
-                        <span className="text-[10px] text-slate-400 dark:text-slate-500">
+                        <span className="text-[10px] text-zinc-500">
                           {timeAgo(account.lastScannedAt)}
                         </span>
                       )}
@@ -375,8 +375,8 @@ export default function OperationsPage() {
                   ))
                 ) : (
                   <div className="text-center py-4">
-                    <p className="text-xs text-slate-500 dark:text-slate-400 mb-2">No accounts connected</p>
-                    <Link href="/operator/onboarding" className="text-xs font-medium text-violet-600 dark:text-violet-400 hover:text-violet-700">
+                    <p className="text-xs text-zinc-500 mb-2">No accounts connected</p>
+                    <Link href="/operator/onboarding" className="text-xs font-medium text-violet-400 hover:text-violet-700">
                       Connect AWS
                     </Link>
                   </div>
@@ -385,11 +385,11 @@ export default function OperationsPage() {
             </div>
 
             {/* Scheduled Scans */}
-            <div className="rounded-2xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 overflow-hidden">
-              <div className="px-5 py-4 border-b border-slate-100 dark:border-slate-800">
+            <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] overflow-hidden">
+              <div className="px-5 py-4 border-b border-white/[0.06]">
                 <div className="flex items-center gap-2">
                   <ClockIcon className="h-4 w-4 text-slate-400" />
-                  <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-100">Scheduled Scans</h2>
+                  <h2 className="text-sm font-semibold text-white">Scheduled Scans</h2>
                 </div>
               </div>
               <div className="p-4 space-y-3">
@@ -399,7 +399,7 @@ export default function OperationsPage() {
                       <div className="flex items-center gap-2.5">
                         <span className={`w-1.5 h-1.5 rounded-full ${sched.enabled ? "bg-emerald-500" : "bg-slate-300 dark:bg-slate-600"}`} />
                         <div>
-                          <p className="text-sm font-medium text-slate-900 dark:text-slate-100">
+                          <p className="text-sm font-medium text-white">
                             {PROVIDER_LABELS[sched.provider] ?? sched.provider} — {sched.frequency}
                           </p>
                           {sched.consecutiveFailures > 0 && (
@@ -410,7 +410,7 @@ export default function OperationsPage() {
                         </div>
                       </div>
                       {sched.nextRunAt && (
-                        <span className="text-[10px] text-slate-400 dark:text-slate-500">
+                        <span className="text-[10px] text-zinc-500">
                           next: {new Date(sched.nextRunAt).toLocaleDateString()}
                         </span>
                       )}
@@ -418,7 +418,7 @@ export default function OperationsPage() {
                   ))
                 ) : (
                   <div className="text-center py-4">
-                    <p className="text-xs text-slate-500 dark:text-slate-400">No scheduled scans</p>
+                    <p className="text-xs text-zinc-500">No scheduled scans</p>
                   </div>
                 )}
               </div>
@@ -442,16 +442,16 @@ export default function OperationsPage() {
                   {data.pendingApprovals.map((approval) => (
                     <div key={approval.id} className="flex items-center justify-between">
                       <div>
-                        <p className="text-sm font-medium text-slate-900 dark:text-slate-100">
+                        <p className="text-sm font-medium text-white">
                           {approval.itemCount} action{approval.itemCount === 1 ? "" : "s"} awaiting review
                         </p>
-                        <p className="text-xs text-slate-500 dark:text-slate-400">
+                        <p className="text-xs text-zinc-500">
                           {timeAgo(approval.createdAt)}
                         </p>
                       </div>
                       <Link
                         href={`/operator/onboarding?runId=${approval.runId}`}
-                        className="text-xs font-medium text-violet-600 dark:text-violet-400 hover:text-violet-700"
+                        className="text-xs font-medium text-violet-400 hover:text-violet-700"
                       >
                         Review
                       </Link>
@@ -464,10 +464,10 @@ export default function OperationsPage() {
         </div>
 
         {/* ── Operational Intelligence Footer ─────────────────────── */}
-        <section className="glow-border-card rounded-2xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 p-6">
+        <section className="glow-border-card rounded-2xl border border-white/[0.06] bg-white/[0.02] p-6">
           <div className="flex items-center gap-3 mb-4">
             <CpuChipIcon className="h-5 w-5 icon-luminous" />
-            <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-100">Autonomous Loop Status</h2>
+            <h2 className="text-sm font-semibold text-white">Autonomous Loop Status</h2>
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-4">
             {[
@@ -486,7 +486,7 @@ export default function OperationsPage() {
             ].map(({ step, active }) => (
               <div key={step} className="flex items-center gap-2">
                 <span className={`w-2 h-2 rounded-full flex-shrink-0 ${active ? "bg-emerald-500" : "bg-slate-200 dark:bg-slate-700"}`} />
-                <span className={`text-xs font-medium ${active ? "text-slate-900 dark:text-slate-100" : "text-slate-400 dark:text-slate-500"}`}>
+                <span className={`text-xs font-medium ${active ? "text-white" : "text-zinc-500"}`}>
                   {step}
                 </span>
               </div>

@@ -41,10 +41,9 @@ function SignInForm() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-white dark:bg-slate-950 px-4 relative overflow-hidden">
-      <RealisticFogBackground backgroundColor="transparent" opacity={0.25} darken contained />
-      <div className="absolute -top-40 -right-40 w-96 h-96 rounded-full bg-violet-500/5 dark:bg-violet-500/10 blur-3xl" aria-hidden />
-      <div className="absolute -bottom-40 -left-40 w-96 h-96 rounded-full bg-fuchsia-500/5 dark:bg-fuchsia-500/10 blur-3xl" aria-hidden />
+    <div className="min-h-screen flex items-center justify-center bg-[#09090b] px-4 relative overflow-hidden">
+      <RealisticFogBackground backgroundColor="transparent" opacity={0.2} darken contained />
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[400px] spotlight-orb opacity-40" aria-hidden />
       <div className="w-full max-w-sm relative z-10">
         <Link href="/" className="flex items-center gap-2.5 mb-10">
           <Image
@@ -54,17 +53,17 @@ function SignInForm() {
             height={28}
             className="rounded-lg"
           />
-          <span className="text-sm font-semibold text-slate-900 dark:text-slate-100">
+          <span className="text-sm font-semibold text-gradient">
             Vision XIX Labs
           </span>
         </Link>
-        <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-50 mb-1">Sign in</h1>
-        <p className="text-sm text-slate-500 dark:text-slate-400 mb-8">
+        <h1 className="text-2xl font-bold mb-1">Sign in</h1>
+        <p className="text-sm text-zinc-500 mb-8">
           Access your Axiom dashboard and operations.
         </p>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+            <label htmlFor="email" className="block text-sm font-medium text-zinc-300 mb-1.5">
               Email
             </label>
             <input
@@ -74,11 +73,11 @@ function SignInForm() {
               onChange={(e) => setEmail(e.target.value)}
               required
               autoComplete="email"
-              className="w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3.5 py-2.5 text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20"
+              className="w-full rounded-lg border border-white/[0.08] bg-white/[0.03] px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-violet-500/50 focus:ring-2 focus:ring-violet-500/20 transition-colors placeholder:text-zinc-600"
             />
           </div>
           <div>
-            <label htmlFor="password" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+            <label htmlFor="password" className="block text-sm font-medium text-zinc-300 mb-1.5">
               Password
             </label>
             <input
@@ -88,26 +87,26 @@ function SignInForm() {
               onChange={(e) => setPassword(e.target.value)}
               required
               autoComplete="current-password"
-              className="w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3.5 py-2.5 text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20"
+              className="w-full rounded-lg border border-white/[0.08] bg-white/[0.03] px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-violet-500/50 focus:ring-2 focus:ring-violet-500/20 transition-colors placeholder:text-zinc-600"
             />
           </div>
           {error && (
-            <div className="rounded-lg border border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-950/30 px-3.5 py-2.5 text-sm text-red-700 dark:text-red-400">
+            <div className="rounded-lg border border-red-500/20 bg-red-500/[0.06] px-3.5 py-2.5 text-sm text-red-400">
               {error}
             </div>
           )}
           <button
             type="submit"
             disabled={loading}
-            className="btn-huly w-full rounded-lg bg-slate-900 dark:bg-slate-100 py-2.5 text-sm font-semibold text-white dark:text-slate-900 hover:bg-slate-800 dark:hover:bg-slate-200 disabled:opacity-50 flex items-center justify-center gap-2 transition-colors shadow-sm"
+            className="btn-huly w-full rounded-lg bg-white py-2.5 text-sm font-semibold text-zinc-900 hover:bg-zinc-100 disabled:opacity-50 flex items-center justify-center gap-2 transition-colors shadow-sm"
           >
             {loading ? "Signing in..." : "Sign in"}
             {!loading && <ArrowRightIcon className="h-4 w-4" />}
           </button>
         </form>
-        <p className="mt-6 text-sm text-slate-500 dark:text-slate-400 text-center">
+        <p className="mt-6 text-sm text-zinc-500 text-center">
           Don&apos;t have an account?{" "}
-          <Link href="/auth/signup" className="font-medium text-violet-600 dark:text-violet-400 hover:text-violet-700 dark:hover:text-violet-300">
+          <Link href="/auth/signup" className="font-medium text-violet-400 hover:text-violet-300">
             Sign up
           </Link>
         </p>
@@ -120,8 +119,8 @@ export default function SignInPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen flex items-center justify-center bg-white dark:bg-slate-950">
-          <div className="h-6 w-6 animate-spin rounded-full border-2 border-violet-600 border-t-transparent" />
+        <div className="min-h-screen flex items-center justify-center bg-[#09090b]">
+          <div className="h-6 w-6 animate-spin rounded-full border-2 border-violet-500 border-t-transparent" />
         </div>
       }
     >
