@@ -4,6 +4,7 @@ import { ArrowRightIcon, ShieldCheckIcon, ClipboardDocumentCheckIcon } from "@he
 import { Navigation } from "@/components/Navigation";
 import { Reveal } from "@/components/motion/Reveal";
 import { Stagger } from "@/components/motion/Stagger";
+import { Footer } from "@/components/Footer";
 
 export const metadata: Metadata = {
   title: "Enterprise Readiness & Engagement Model",
@@ -272,6 +273,8 @@ export default function EnterpriseReadinessPage() {
           </Reveal>
         </div>
       </main>
+
+      <Footer />
 
       {/* Floating blur orbs */}
       <div className="absolute bottom-1/4 left-10 w-72 h-72 bg-violet-600/10 rounded-full blur-3xl pointer-events-none" />

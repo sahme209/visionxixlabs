@@ -14,6 +14,7 @@ import { Stagger } from "@/components/motion/Stagger";
 import { AnimatedButton } from "@/components/ui/AnimatedButton";
 import { MEMBERSHIP_PLANS, INCLUDED_IN_EVERY_PLAN, ADDONS, type MembershipPlanId } from "@/lib/pricing/membership";
 import { SUPPORT_EMAIL } from "@/lib/constants/company";
+import { Footer } from "@/components/Footer";
 
 type BillingCycle = "monthly" | "yearly";
 
@@ -156,7 +157,7 @@ export default function PricingPage() {
               }`}
             >
               Pay yearly
-              <span className="text-xs bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded-full">
+              <span className="huly-badge text-xs bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded-full">
                 Save 40%
               </span>
             </button>
@@ -174,7 +175,10 @@ export default function PricingPage() {
               const plan = MEMBERSHIP_PLANS[planId];
               const axiom = AXIOM_FEATURES[planId];
               const isEnterprise = planId === "enterprise";
-              const price = billing === "monthly" ? plan.monthlyPrice : plan.yearlyPrice;
+              const monthlyPrice = plan.monthlyPrice;
+              const yearlyTotal = plan.yearlyPrice;
+              const yearlyMonthly = yearlyTotal != null ? Math.round(yearlyTotal / 12) : null;
+              const price = billing === "monthly" ? monthlyPrice : yearlyMonthly;
               const highlighted = plan.popular ?? false;
 
               return (
@@ -187,7 +191,7 @@ export default function PricingPage() {
                   }`}
                 >
                   {highlighted && (
-                    <span className="huly-badge absolute -top-3 left-6 text-xs font-semibold text-violet-300 px-3 py-1 rounded-full">
+                    <span className="huly-badge absolute -top-3 left-6 text-xs font-semibold text-violet-300 px-3 py-1 rounded-full bg-violet-600/20">
                       Most popular
                     </span>
                   )}
@@ -199,15 +203,15 @@ export default function PricingPage() {
                     ) : (
                       <>
                         <span className="text-4xl font-bold">${price}</span>
-                        <span className="text-zinc-500 text-sm">
-                          /mo
-                          {billing === "yearly" && <span className="text-xs ml-0.5">(billed annually)</span>}
-                        </span>
+                        <span className="text-zinc-500 text-sm">/mo</span>
+                        {billing === "yearly" && yearlyTotal != null && (
+                          <span className="text-xs text-zinc-600 ml-2">${yearlyTotal}/yr</span>
+                        )}
                       </>
                     )}
                   </div>
                   <p className="text-sm text-zinc-400 mt-3 mb-6">{plan.description}</p>
-                  <ul className="space-y-3 flex-1">
+                  <ul className="feature-list-animated space-y-3 flex-1">
                     {axiom.included.map((f) => (
                       <li key={f} className="flex items-start gap-2.5 text-sm">
                         <CheckCircleIcon className="h-4 w-4 mt-0.5 flex-shrink-0 text-emerald-400" />
@@ -326,7 +330,7 @@ export default function PricingPage() {
           <Reveal>
             <div className="rounded-2xl border border-white/[0.06] glass-card p-8">
               <h2 className="text-sm font-bold uppercase tracking-wider text-zinc-500 mb-4">Included in every plan</h2>
-              <ul className="grid sm:grid-cols-2 gap-3 text-sm text-zinc-300">
+              <ul className="feature-list-animated grid sm:grid-cols-2 gap-3 text-sm text-zinc-300">
                 {INCLUDED_IN_EVERY_PLAN.map((item) => (
                   <li key={item} className="flex items-center gap-2">
                     <CheckCircleIcon className="h-5 w-5 text-emerald-400 shrink-0" />
@@ -353,22 +357,7 @@ export default function PricingPage() {
         </Reveal>
       </section>
 
-      {/* Footer */}
-      <footer className="border-t border-white/[0.06] py-10 px-4">
-        <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-2">
-            <CpuChipIcon className="h-5 w-5 text-violet-400" />
-            <span className="font-semibold text-sm">AI Cloud Operator</span>
-            <span className="text-xs text-zinc-600 ml-2">by Vision XIX Labs</span>
-          </div>
-          <div className="flex items-center gap-6 text-sm text-zinc-500">
-            <Link href="/privacy" className="hover:text-zinc-300">Privacy</Link>
-            <Link href="/terms" className="hover:text-zinc-300">Terms</Link>
-            <Link href="/security" className="hover:text-zinc-300">Security</Link>
-            <Link href="/contact" className="hover:text-zinc-300">Contact</Link>
-          </div>
-        </div>
-      </footer>
+      <Footer />
 
       {/* Floating blur orbs */}
       <div className="absolute bottom-1/4 left-10 w-72 h-72 bg-violet-600/10 rounded-full blur-3xl pointer-events-none" />

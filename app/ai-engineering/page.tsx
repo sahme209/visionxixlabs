@@ -7,6 +7,7 @@ import { aiDifferentiators } from "@/lib/aiCapabilitiesContent";
 import { Reveal } from "@/components/motion/Reveal";
 import { Stagger } from "@/components/motion/Stagger";
 import { AnimatedButton } from "@/components/ui/AnimatedButton";
+import { Footer } from "@/components/Footer";
 
 type AIPackage = {
   id: string;
@@ -572,6 +573,8 @@ export default function AIEngineeringPage() {
             </Reveal>
           </div>
         </main>
+
+        <Footer />
       </div>
     </div>
   );

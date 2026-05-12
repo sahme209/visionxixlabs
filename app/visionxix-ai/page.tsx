@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { Footer } from "@/components/Footer";
 import {
   SparklesIcon,
   ChatBubbleLeftRightIcon,
@@ -401,18 +402,7 @@ export default function VisionXIXAILandingPage() {
         </div>
       </section>
 
-      <footer className="border-t border-white/[0.06] py-8 px-4">
-        <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
-          <Link href="/" className="text-sm text-zinc-400 hover:text-violet-400">Vision XIX Labs</Link>
-          <div className="flex gap-6 text-sm text-zinc-400">
-            <Link href="/visionxix-ai-assistant" className="hover:text-violet-400">Try demo</Link>
-            <Link href="/visionxix-ai/pricing" className="hover:text-violet-400">Plans & Membership</Link>
-            <Link href="/visionxix-ai/features" className="hover:text-violet-400">Features</Link>
-            <a href={`mailto:${SUPPORT_EMAIL}`} className="hover:text-violet-400">Contact</a>
-            <Link href="/privacy" className="hover:text-violet-400">Privacy</Link>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }

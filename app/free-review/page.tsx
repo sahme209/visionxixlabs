@@ -11,6 +11,7 @@ import {
 } from "@heroicons/react/24/outline";
 import { Navigation } from "@/components/Navigation";
 import { Reveal } from "@/components/motion/Reveal";
+import { Footer } from "@/components/Footer";
 
 export default function FreeReviewPage() {
   const [submitted, setSubmitted] = useState(false);
@@ -282,6 +283,8 @@ export default function FreeReviewPage() {
           </div>
         </Reveal>
       </main>
+
+      <Footer />
     </div>
   );
 }

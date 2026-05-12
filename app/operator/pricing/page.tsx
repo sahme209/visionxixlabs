@@ -13,6 +13,7 @@ import {
 } from "@heroicons/react/24/outline";
 import { Navigation } from "@/components/Navigation";
 import { Reveal } from "@/components/motion/Reveal";
+import { Footer } from "@/components/Footer";
 import { Stagger } from "@/components/motion/Stagger";
 import { AnimatedButton } from "@/components/ui/AnimatedButton";
 import { MEMBERSHIP_PLANS, ADDONS, type MembershipPlanId } from "@/lib/pricing/membership";
@@ -195,7 +196,10 @@ export default function OperatorPricingPage() {
             const plan = MEMBERSHIP_PLANS[planId];
             const axiom = AXIOM_FEATURES[planId];
             const isEnterprise = planId === "enterprise";
-            const price = billing === "monthly" ? plan.monthlyPrice : plan.yearlyPrice;
+            const monthlyPrice = plan.monthlyPrice;
+            const yearlyTotal = plan.yearlyPrice;
+            const yearlyMonthly = yearlyTotal != null ? Math.round(yearlyTotal / 12) : null;
+            const price = billing === "monthly" ? monthlyPrice : yearlyMonthly;
             const highlighted = plan.popular ?? false;
 
             return (
@@ -244,8 +248,12 @@ export default function OperatorPricingPage() {
                         <span className="text-5xl font-bold tracking-tight">{price}</span>
                         <span className="text-sm text-zinc-500 ml-1">
                           /mo
-                          {billing === "yearly" && <span className="text-xs ml-0.5">(billed annually)</span>}
                         </span>
+                        {billing === "yearly" && yearlyTotal != null && (
+                          <span className="ml-2 text-xs text-zinc-600">
+                            ${yearlyTotal}/yr
+                          </span>
+                        )}
                       </>
                     )}
                   </div>
@@ -432,22 +440,7 @@ export default function OperatorPricingPage() {
         </Reveal>
       </section>
 
-      {/* Footer */}
-      <footer className="border-t border-white/[0.04] py-10 px-4">
-        <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-2">
-            <CpuChipIcon className="h-5 w-5 text-violet-400" />
-            <span className="font-semibold text-sm text-gradient">Axiom</span>
-            <span className="text-xs text-zinc-600 ml-2">by Vision XIX Labs</span>
-          </div>
-          <div className="flex items-center gap-6 text-sm text-zinc-500">
-            <Link href="/privacy" className="hover:text-white transition-colors">Privacy</Link>
-            <Link href="/terms" className="hover:text-white transition-colors">Terms</Link>
-            <Link href="/security" className="hover:text-white transition-colors">Security</Link>
-            <Link href="/contact" className="hover:text-white transition-colors">Contact</Link>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }

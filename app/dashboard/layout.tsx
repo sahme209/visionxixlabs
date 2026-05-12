@@ -16,12 +16,15 @@ export default async function DashboardLayout({
   }
 
   return (
-    <div className="min-h-screen bg-white/[0.02]">
-      <header className="border-b border-white/[0.06] bg-white/[0.02]">
+    <div className="min-h-screen bg-[#09090b] relative overflow-hidden">
+      {/* Background pattern */}
+      <div className="bg-grid-mesh absolute inset-0 pointer-events-none" />
+
+      <header className="relative z-10 glass-dark border-b border-white/[0.06] backdrop-blur-sm">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
-          <Link href="/dashboard" className="flex items-center gap-2">
-            <CpuChipIcon className="h-8 w-8 text-indigo-600" />
-            <span className="font-bold text-white">Vision XIX AI</span>
+          <Link href="/dashboard" className="flex items-center gap-2 nav-link-underline">
+            <CpuChipIcon className="h-8 w-8 text-violet-500" />
+            <span className="font-bold text-white tracking-[-0.04em]">Vision XIX AI</span>
           </Link>
           <div className="flex items-center gap-4">
             <span className="text-sm text-zinc-400">{session.user.email}</span>
@@ -29,7 +32,7 @@ export default async function DashboardLayout({
           </div>
         </div>
       </header>
-      <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">{children}</main>
+      <main className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">{children}</main>
     </div>
   );
 }

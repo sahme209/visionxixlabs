@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { ArrowRightIcon } from "@heroicons/react/24/outline";
+import { Footer } from "@/components/Footer";
 import {
   aiDifferentiators,
   aiUseCasesExpanded,
@@ -639,6 +640,8 @@ export default function AISolutionsPage() {
             </Reveal>
           </div>
         </main>
+
+        <Footer />
       </div>
     </div>
   );

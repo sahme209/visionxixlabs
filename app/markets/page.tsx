@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import Image from "next/image";
 import {
   ExclamationTriangleIcon,
   LightBulbIcon,
@@ -9,6 +8,7 @@ import {
   CheckCircleIcon,
 } from "@heroicons/react/24/outline";
 import { Navigation } from "@/components/Navigation";
+import { Footer } from "@/components/Footer";
 import { SITE_URL } from "@/lib/seo";
 import { adoptionGaps, whereCompaniesNeedAI, sectorNeeds, aiMarketContext } from "@/lib/needsContent";
 import {
@@ -280,77 +280,7 @@ export default function MarketsPage() {
         </div>
       </main>
 
-      {/* Footer */}
-      <footer className="bg-slate-900 text-slate-300 py-12 px-4 sm:px-6 lg:px-8 mt-24">
-        <div className="max-w-6xl mx-auto">
-          <div className="grid md:grid-cols-6 gap-8 mb-8">
-            <div className="md:col-span-2">
-              <div className="flex items-center space-x-3 mb-4">
-                <Image
-                  src="/vision-xix-logo.png"
-                  alt="Vision XIX Labs"
-                  width={32}
-                  height={32}
-                  className="rounded-lg"
-                />
-                <span className="text-lg font-bold text-white">Vision XIX Labs</span>
-              </div>
-              <p className="text-slate-400 text-sm mb-4 leading-relaxed">
-                Cloud &amp; AI engineering for modern infrastructure. AWS, Azure, GCP — design, automate, optimize, secure.
-              </p>
-              <div className="flex flex-wrap gap-2">
-                <span className="px-3 py-1 rounded-full bg-slate-800 text-xs font-semibold text-slate-300">AWS</span>
-                <span className="px-3 py-1 rounded-full bg-slate-800 text-xs font-semibold text-slate-300">Azure</span>
-                <span className="px-3 py-1 rounded-full bg-slate-800 text-xs font-semibold text-slate-300">GCP</span>
-                <span className="px-3 py-1 rounded-full bg-slate-800 text-xs font-semibold text-slate-300">AI/ML</span>
-              </div>
-            </div>
-            <div>
-              <h4 className="text-white font-semibold mb-4 text-sm">Cloud</h4>
-              <ul className="space-y-2 text-sm">
-                <li><Link href="/cloud-solutions" className="hover:text-white transition-colors">Cloud Solutions</Link></li>
-                <li><Link href="/cloud-solutions/aws" className="hover:text-white transition-colors">AWS</Link></li>
-                <li><Link href="/cloud-solutions/azure" className="hover:text-white transition-colors">Azure</Link></li>
-                <li><Link href="/cloud-solutions/gcp" className="hover:text-white transition-colors">GCP</Link></li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="text-white font-semibold mb-4 text-sm">Solutions</h4>
-              <ul className="space-y-2 text-sm">
-                <li><Link href="/ai-solutions" className="hover:text-white transition-colors">AI Solutions</Link></li>
-                <li><Link href="/ai-engineering" className="hover:text-white transition-colors">AI Engineering</Link></li>
-                <li><Link href="/markets" className="hover:text-white transition-colors">Where Companies Need AI</Link></li>
-                <li><Link href="/enterprise-readiness" className="hover:text-white transition-colors">Enterprise Readiness</Link></li>
-                <li><Link href="/solutions-for-growing-teams" className="hover:text-white transition-colors">Growing Teams</Link></li>
-                <li><Link href="/cloud-security" className="hover:text-white transition-colors">Cloud Security</Link></li>
-                <li><Link href="/case-studies" className="hover:text-white transition-colors">Case Studies</Link></li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="text-white font-semibold mb-4 text-sm">Company</h4>
-              <ul className="space-y-2 text-sm">
-                <li><Link href="/#about" className="hover:text-white transition-colors">About</Link></li>
-                <li><Link href="/apps" className="hover:text-white transition-colors">Products</Link></li>
-                <li><Link href="/press" className="hover:text-white transition-colors">Press &amp; Media</Link></li>
-                <li><Link href="/insights" className="hover:text-white transition-colors">Insights</Link></li>
-                <li><Link href="/privacy" className="hover:text-white transition-colors">Privacy</Link></li>
-                <li><Link href="/terms" className="hover:text-white transition-colors">Terms</Link></li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="text-white font-semibold mb-4 text-sm">Connect</h4>
-              <ul className="space-y-2 text-sm">
-                <li><Link href="/request" className="hover:text-white transition-colors">Website Request / Get a Quote</Link></li>
-                <li><Link href="/contact" className="hover:text-white transition-colors">Contact</Link></li>
-                <li><a href="mailto:support@visionxixlabs.com" className="hover:text-white transition-colors">support@visionxixlabs.com</a></li>
-              </ul>
-            </div>
-          </div>
-          <div className="border-t border-slate-800 pt-8">
-            <p className="text-slate-400 text-sm">© {new Date().getFullYear()} Vision XIX Labs LLC. All rights reserved.</p>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }

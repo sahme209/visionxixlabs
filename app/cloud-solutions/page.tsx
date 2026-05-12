@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { Footer } from "@/components/Footer";
 import {
   cloudSolutionsHero,
   cloudSolutionCards,
@@ -461,6 +462,8 @@ export default function CloudSolutionsPage() {
           />
         </div>
       </main>
+
+      <Footer />
 
       {/* Floating blur orbs */}
       <div className="absolute bottom-1/4 left-10 w-72 h-72 bg-violet-600/10 rounded-full blur-3xl pointer-events-none" />

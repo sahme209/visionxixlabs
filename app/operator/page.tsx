@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { Footer } from "@/components/Footer";
 import { Reveal } from "@/components/motion/Reveal";
 import { Stagger } from "@/components/motion/Stagger";
 import { AnimatedButton } from "@/components/ui/AnimatedButton";
@@ -486,24 +487,7 @@ export default function OperatorLandingPage() {
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="border-t border-white/[0.06] py-12">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div className="flex items-center gap-2">
-              <CpuChipIcon className="h-5 w-5 text-violet-400" />
-              <span className="font-semibold text-sm">Cloud Operator</span>
-              <span className="text-xs text-zinc-600 ml-2">by Vision XIX Labs</span>
-            </div>
-            <div className="flex items-center gap-6 text-sm text-zinc-500">
-              <Link href="/privacy" className="hover:text-zinc-300">Privacy</Link>
-              <Link href="/terms" className="hover:text-zinc-300">Terms</Link>
-              <Link href="/contact" className="hover:text-zinc-300">Contact</Link>
-              <span>support@visionxixlabs.com</span>
-            </div>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }

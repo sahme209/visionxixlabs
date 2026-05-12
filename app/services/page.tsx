@@ -6,7 +6,6 @@ import {
   BanknotesIcon,
   ChartBarIcon,
   ShieldCheckIcon,
-  EnvelopeIcon,
   SparklesIcon,
 } from "@heroicons/react/24/outline";
 import { Navigation } from "../../components/Navigation";
@@ -36,6 +35,7 @@ import { ServicesGrid } from "@/components/ServicesGrid";
 import { AnimatedButton } from "@/components/ui/AnimatedButton";
 import { Reveal } from "@/components/motion/Reveal";
 import { Stagger } from "@/components/motion/Stagger";
+import { Footer } from "@/components/Footer";
 
 export const metadata: Metadata = {
   title: "Cloud & AI Engineering Services",
@@ -360,76 +360,7 @@ export default function ServicesPage() {
         </div>
       </main>
 
-      {/* Footer */}
-      <footer className="bg-white/[0.02] border-t border-white/[0.06] text-zinc-300 py-12 px-4 sm:px-6 lg:px-8 mt-24">
-        <div className="max-w-7xl mx-auto">
-          <div className="grid md:grid-cols-5 gap-8 mb-8">
-            <div className="md:col-span-2">
-              <div className="flex items-center space-x-2 mb-4">
-                <SparklesIcon className="h-6 w-6 text-violet-400" />
-                <span className="text-lg font-bold text-white">
-                  Vision XIX Labs
-                </span>
-              </div>
-              <p className="text-zinc-500 text-sm">
-                Cloud &amp; AI engineering. AWS, Azure, GCP -- infrastructure, CI/CD, reliability, security.
-              </p>
-            </div>
-            <div>
-              <h4 className="text-white font-semibold mb-4 text-sm">Cloud</h4>
-              <ul className="space-y-2 text-sm">
-                <li><Link href="/cloud-solutions" className="hover:text-violet-400 transition-colors">Cloud Solutions</Link></li>
-                <li><Link href="/cloud-solutions/aws" className="hover:text-violet-400 transition-colors">AWS</Link></li>
-                <li><Link href="/cloud-solutions/azure" className="hover:text-violet-400 transition-colors">Azure</Link></li>
-                <li><Link href="/cloud-solutions/gcp" className="hover:text-violet-400 transition-colors">GCP</Link></li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="text-white font-semibold mb-4 text-sm">Solutions</h4>
-              <ul className="space-y-2 text-sm">
-                <li><Link href="/ai-solutions" className="hover:text-violet-400 transition-colors">AI Solutions</Link></li>
-                <li><Link href="/ai-engineering" className="hover:text-violet-400 transition-colors">AI Engineering</Link></li>
-                <li><Link href="/markets" className="hover:text-violet-400 transition-colors">Where Companies Need AI</Link></li>
-                <li><Link href="/enterprise-readiness" className="hover:text-violet-400 transition-colors">Enterprise Readiness</Link></li>
-                <li><Link href="/cloud-security" className="hover:text-violet-400 transition-colors">Cloud Security</Link></li>
-                <li><Link href="/free-review" className="hover:text-violet-400 transition-colors">Free Review</Link></li>
-                <li><Link href="/solutions-for-growing-teams" className="hover:text-violet-400 transition-colors">Growing Teams</Link></li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="text-white font-semibold mb-4 text-sm">Company</h4>
-              <ul className="space-y-2 text-sm">
-                <li><Link href="/" className="hover:text-violet-400 transition-colors">Home</Link></li>
-                <li><Link href="/services" className="hover:text-violet-400 transition-colors">Services</Link></li>
-                <li><Link href="/case-studies" className="hover:text-violet-400 transition-colors">Case Studies</Link></li>
-                <li><Link href="/press" className="hover:text-violet-400 transition-colors">Press &amp; Media</Link></li>
-                <li><Link href="/insights" className="hover:text-violet-400 transition-colors">Insights</Link></li>
-                <li><Link href="/privacy" className="hover:text-violet-400 transition-colors">Privacy</Link></li>
-                <li><Link href="/terms" className="hover:text-violet-400 transition-colors">Terms</Link></li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="text-white font-semibold mb-4 text-sm">Connect</h4>
-              <ul className="space-y-2 text-sm">
-                <li><Link href="/request" className="hover:text-violet-400 transition-colors">Website Request / Get a Quote</Link></li>
-                <li><Link href="/contact" className="hover:text-violet-400 transition-colors">Contact</Link></li>
-                <li>
-                  <a href="mailto:support@visionxixlabs.com" className="hover:text-violet-400 transition-colors inline-flex items-center">
-                    <EnvelopeIcon className="h-4 w-4 mr-2" />
-                    support@visionxixlabs.com
-                  </a>
-                </li>
-              </ul>
-            </div>
-          </div>
-          <div className="border-t border-white/[0.06] pt-8 text-center text-zinc-500">
-            <p>
-              © {new Date().getFullYear()} Vision XIX Labs LLC. All rights
-              reserved.
-            </p>
-          </div>
-        </div>
-      </footer>
+      <Footer />
 
       {/* Floating blur orbs */}
       <div className="absolute bottom-1/4 left-10 w-72 h-72 bg-violet-600/10 rounded-full blur-3xl pointer-events-none" />

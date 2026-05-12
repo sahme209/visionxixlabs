@@ -5,6 +5,7 @@ import { Navigation } from "@/components/Navigation";
 import { SITE_URL } from "@/lib/seo";
 import { Reveal } from "@/components/motion/Reveal";
 import { Stagger } from "@/components/motion/Stagger";
+import { Footer } from "@/components/Footer";
 
 export const metadata: Metadata = {
   title: "Press & Media – Vision XIX Labs",
@@ -140,14 +141,7 @@ export default function PressPage() {
         </div>
       </main>
 
-      {/* Minimal footer for this page */}
-      <footer className="border-t border-white/[0.06] py-6 px-4 text-center text-sm text-zinc-500">
-        <Link href="/" className="hover:text-violet-400">Vision XIX Labs</Link>
-        {" · "}
-        <Link href="/privacy" className="hover:text-violet-400">Privacy</Link>
-        {" · "}
-        <Link href="/terms" className="hover:text-violet-400">Terms</Link>
-      </footer>
+      <Footer />
     </div>
   );
 }

@@ -62,7 +62,10 @@ export default function BuilderPricingPage() {
         <Stagger delay={0.1} interval={0.08}>
           <div className="grid md:grid-cols-3 gap-6">
             {Object.values(BUILDER_PLANS).map((plan) => {
-              const price = billing === "monthly" ? plan.monthlyPrice : plan.yearlyPrice;
+              const monthlyPrice = plan.monthlyPrice;
+              const yearlyTotal = plan.yearlyPrice;
+              const yearlyMonthly = yearlyTotal != null ? Math.round(yearlyTotal / 12) : null;
+              const price = billing === "monthly" ? monthlyPrice : yearlyMonthly;
               return (
                 <div
                   key={plan.id}
@@ -81,9 +84,12 @@ export default function BuilderPricingPage() {
                   <p className="text-sm text-zinc-500 mt-1">{plan.description}</p>
                   <div className="mt-4 mb-6">
                     <span className="text-3xl font-bold text-white">${price}</span>
-                    <span className="text-zinc-500">/mo{billing === "yearly" && " (billed yearly)"}</span>
+                    <span className="text-zinc-500">/mo</span>
+                    {billing === "yearly" && yearlyTotal != null && (
+                      <span className="text-xs text-zinc-600 ml-2">${yearlyTotal}/yr</span>
+                    )}
                   </div>
-                  <ul className="space-y-3 flex-1">
+                  <ul className="feature-list-animated space-y-3 flex-1">
                     {plan.features.map((f) => (
                       <li key={f} className="flex items-start gap-2 text-sm text-zinc-400">
                         <CheckIcon className="h-5 w-5 text-emerald-500 shrink-0 mt-0.5" />
@@ -108,6 +114,8 @@ export default function BuilderPricingPage() {
             })}
           </div>
         </Stagger>
+
+        <div className="section-divider my-12" />
 
         <Reveal direction="up" blur delay={0.3}>
           <p className="mt-8 text-center text-sm text-zinc-500">

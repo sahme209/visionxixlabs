@@ -12,6 +12,7 @@ import {
   referenceArchitectures,
   caseStudiesDisclaimer,
 } from "@/lib/caseStudiesContent";
+import { Footer } from "@/components/Footer";
 
 export const metadata: Metadata = {
   title: "Engineering Case Studies & Reference Architectures",
@@ -154,6 +155,8 @@ export default function CaseStudiesPage() {
           </Reveal>
         </div>
       </main>
+
+      <Footer />
     </div>
   );
 }

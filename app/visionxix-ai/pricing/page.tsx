@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { Footer } from "@/components/Footer";
 
 // Stripe Payment Links — env vars override per plan/billing; fallback to plan defaults.
 const STRIPE_LINKS = {
@@ -58,7 +59,7 @@ export default function VisionXIXAIPricingPage() {
   const [billing, setBilling] = useState<BillingCycle>("monthly");
 
   return (
-    <div className="min-h-screen bg-[#09090b] relative">
+    <div className="min-h-screen bg-[#09090b] relative overflow-hidden">
       {/* Background layers */}
       <div className="fixed inset-0 bg-dots opacity-20 pointer-events-none" aria-hidden />
       <div className="fixed inset-0 noise-grain pointer-events-none" aria-hidden />
@@ -101,7 +102,7 @@ export default function VisionXIXAIPricingPage() {
                 }`}
               >
                 Pay yearly
-                <span className="text-xs bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded-full">
+                <span className="huly-badge text-xs bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded-full">
                   Save 40%
                 </span>
               </button>
@@ -111,7 +112,7 @@ export default function VisionXIXAIPricingPage() {
           <Reveal direction="up" blur delay={0.2}>
             <div className="mt-12 glass-card rounded-2xl border border-white/[0.06] p-6 text-left max-w-3xl mx-auto">
               <h2 className="text-sm font-bold uppercase tracking-wider text-zinc-500 mb-3">Included in every plan</h2>
-              <ul className="grid sm:grid-cols-2 gap-3 text-sm text-zinc-300">
+              <ul className="feature-list-animated grid sm:grid-cols-2 gap-3 text-sm text-zinc-300">
                 {INCLUDED_IN_EVERY_PLAN.map((item) => (
                   <li key={item} className="flex items-center gap-2">
                     <CheckIcon className="h-5 w-5 text-emerald-500 shrink-0" />
@@ -132,7 +133,10 @@ export default function VisionXIXAIPricingPage() {
           <div className="grid md:grid-cols-2 xl:grid-cols-4 gap-6">
             <Stagger delay={0.1} interval={0.06}>
               {PLANS.map((plan) => {
-                const price = billing === "monthly" ? plan.monthlyPrice : plan.yearlyPrice;
+                const monthlyPrice = plan.monthlyPrice;
+                const yearlyTotal = plan.yearlyPrice;
+                const yearlyMonthly = yearlyTotal != null ? Math.round(yearlyTotal / 12) : null;
+                const price = billing === "monthly" ? monthlyPrice : yearlyMonthly;
                 const isEnterprise = plan.id === "enterprise";
                 return (
                   <div
@@ -144,7 +148,7 @@ export default function VisionXIXAIPricingPage() {
                     }`}
                   >
                     {plan.popular && (
-                      <span className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full bg-gradient-to-r from-violet-600 to-fuchsia-600 text-xs font-semibold text-white">
+                      <span className="huly-badge absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full bg-gradient-to-r from-violet-600 to-fuchsia-600 text-xs font-semibold text-white">
                         Most popular
                       </span>
                     )}
@@ -158,14 +162,14 @@ export default function VisionXIXAIPricingPage() {
                       ) : (
                         <div className="flex items-baseline gap-1">
                           <span className="text-3xl font-bold text-gradient">${price}</span>
-                          <span className="text-zinc-500">
-                            /mo
-                            {billing === "yearly" && <span className="text-xs ml-0.5">(billed annually)</span>}
-                          </span>
+                          <span className="text-zinc-500">/mo</span>
+                          {billing === "yearly" && yearlyTotal != null && (
+                            <span className="text-xs text-zinc-600 ml-2">${yearlyTotal}/yr</span>
+                          )}
                         </div>
                       )}
                     </div>
-                    <ul className="space-y-2 flex-1">
+                    <ul className="feature-list-animated space-y-2 flex-1">
                       {plan.features.map((f) => (
                         <li key={f} className="flex items-start gap-2 text-sm text-zinc-400">
                           <CheckIcon className="h-5 w-5 text-emerald-500 shrink-0 mt-0.5" />
@@ -347,30 +351,11 @@ export default function VisionXIXAIPricingPage() {
         </div>
       </section>
 
-      <footer className="border-t border-white/[0.06] py-8 px-4">
-        <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
-          <Link href="/" className="text-sm text-zinc-400 hover:text-violet-400">
-            Vision XIX Labs
-          </Link>
-          <div className="flex gap-6 text-sm text-zinc-400">
-            <Link href="/visionxix-ai/pricing#plans" className="font-semibold text-violet-400">
-              Plans & Membership
-            </Link>
-            <Link href="/visionxix-ai" className="hover:text-violet-400">
-              Product
-            </Link>
-            <Link href="/visionxix-ai/features" className="hover:text-violet-400">
-              Features
-            </Link>
-            <Link href="/visionxix-ai-assistant" className="hover:text-violet-400">
-              Demo
-            </Link>
-            <a href={`mailto:${SUPPORT_EMAIL}`} className="hover:text-violet-400">
-              Contact
-            </a>
-          </div>
-        </div>
-      </footer>
+      {/* Floating blur orbs */}
+      <div className="absolute bottom-1/4 left-10 w-72 h-72 bg-violet-600/10 rounded-full blur-3xl pointer-events-none" aria-hidden />
+      <div className="absolute bottom-1/3 right-0 w-96 h-96 bg-fuchsia-600/[0.06] rounded-full blur-3xl pointer-events-none" aria-hidden />
+
+      <Footer />
     </div>
   );
 }

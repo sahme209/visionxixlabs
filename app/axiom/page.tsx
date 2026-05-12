@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { Footer } from "@/components/Footer";
 import {
   CloudIcon,
   ChartBarIcon,
@@ -484,14 +485,7 @@ export default function AxiomPage() {
       </section>
 
       {/* ── Footer ────────────────────────────────────────────────────── */}
-      <div className="gradient-line" />
-      <footer className="py-12">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <p className="text-xs text-zinc-600">
-            Axiom is a product of Vision XIX Labs. All infrastructure operations are scoped, audited, and reversible.
-          </p>
-        </div>
-      </footer>
+      <Footer />
       </div>
     </div>
   );

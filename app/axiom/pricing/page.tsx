@@ -15,12 +15,13 @@ export default function AxiomPricingPage() {
   const [billing, setBilling] = useState<BillingCycle>("monthly");
 
   return (
-    <div className="min-h-screen bg-[#09090b] text-white relative">
+    <div className="min-h-screen bg-[#09090b] text-white relative overflow-hidden">
       <div className="absolute inset-0 bg-dots opacity-20" aria-hidden />
       <div className="absolute inset-0 noise-grain pointer-events-none" aria-hidden />
       {/* Floating blur orbs */}
       <div className="absolute -top-40 left-1/4 w-[500px] h-[500px] rounded-full bg-violet-500/[0.06] blur-[120px]" aria-hidden />
       <div className="absolute top-1/3 -right-40 w-[400px] h-[400px] rounded-full bg-fuchsia-500/[0.05] blur-[100px]" aria-hidden />
+      <div className="absolute bottom-20 left-10 w-72 h-72 rounded-full bg-violet-600/[0.06] blur-[100px] pointer-events-none" aria-hidden />
       <div className="relative z-10">
         <Navigation />
         <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 pb-20">
@@ -76,7 +77,10 @@ export default function AxiomPricingPage() {
           {/* Pricing cards */}
           <Stagger delay={0.1} interval={0.08} className="grid md:grid-cols-3 gap-6">
             {Object.values(AXIOM_PLANS).map((plan) => {
-              const price = billing === "monthly" ? plan.monthlyPrice : plan.yearlyPrice;
+              const monthlyPrice = plan.monthlyPrice;
+              const yearlyTotal = plan.yearlyPrice;
+              const yearlyMonthly = yearlyTotal != null ? Math.round(yearlyTotal / 12) : null;
+              const price = billing === "monthly" ? monthlyPrice : yearlyMonthly;
               const isEnterprise = plan.id === "enterprise";
               return (
                 <div
@@ -100,11 +104,14 @@ export default function AxiomPricingPage() {
                     ) : (
                       <>
                         <span className="text-3xl font-bold text-gradient">${price}</span>
-                        <span className="text-zinc-500">/mo{billing === "yearly" && " (billed yearly)"}</span>
+                        <span className="text-zinc-500">/mo</span>
+                        {billing === "yearly" && yearlyTotal != null && (
+                          <span className="text-xs text-zinc-600 ml-2">${yearlyTotal}/yr</span>
+                        )}
                       </>
                     )}
                   </div>
-                  <ul className="space-y-3 flex-1">
+                  <ul className="feature-list-animated space-y-3 flex-1">
                     {plan.features.map((f) => (
                       <li key={f} className="flex items-start gap-2 text-sm text-zinc-400">
                         <CheckIcon className="h-5 w-5 text-emerald-400 shrink-0 mt-0.5" />

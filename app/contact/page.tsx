@@ -8,6 +8,7 @@ import {
 } from "@heroicons/react/24/outline";
 import { Navigation } from "../../components/Navigation";
 import { Reveal } from "@/components/motion/Reveal";
+import { Footer } from "@/components/Footer";
 
 export default function ContactPage() {
   const [submitted, setSubmitted] = useState(false);
@@ -181,6 +182,8 @@ export default function ContactPage() {
           </div>
         </Reveal>
       </main>
+
+      <Footer />
     </div>
   );
 }
