@@ -45,13 +45,13 @@ export default async function InsightArticlePage({ params }: Props) {
   const nextArticle = nextSlug ? getInsightBySlug(nextSlug) : null;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
+    <div className="min-h-screen bg-[#09090b]">
       <Navigation />
       <article className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-16">
         <nav className="mb-8" aria-label="Breadcrumb">
           <Link
             href="/insights"
-            className="inline-flex items-center text-sm text-slate-600 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400"
+            className="inline-flex items-center text-sm text-zinc-400 hover:text-violet-400"
           >
             <ArrowLeftIcon className="h-4 w-4 mr-1" />
             Insights
@@ -59,10 +59,10 @@ export default async function InsightArticlePage({ params }: Props) {
         </nav>
 
         <header className="mb-8">
-          <h1 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-slate-100 mb-2">
+          <h1 className="text-2xl md:text-3xl font-bold text-white mb-2">
             {article.title}
           </h1>
-          <p className="text-slate-600 dark:text-slate-400 text-sm">
+          <p className="text-zinc-400 text-sm">
             <time dateTime={article.date}>
               {new Date(article.date).toLocaleDateString("en-US", {
                 year: "numeric",
@@ -75,19 +75,19 @@ export default async function InsightArticlePage({ params }: Props) {
           </p>
         </header>
 
-        <div className="prose prose-slate dark:prose-invert max-w-none">
+        <div className="prose prose-invert max-w-none">
           {article.body.map((paragraph, i) => (
-            <p key={i} className="mb-4 text-slate-700 dark:text-slate-300 leading-relaxed">
+            <p key={i} className="mb-4 text-zinc-300 leading-relaxed">
               {paragraph}
             </p>
           ))}
         </div>
 
-        <section className="mt-12 rounded-2xl border border-indigo-200 dark:border-indigo-800 bg-indigo-50 dark:bg-indigo-950/40 p-6 text-center">
-          <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100 mb-2">
+        <section className="mt-12 rounded-2xl border border-indigo-200 border-violet-500/20 bg-indigo-50 bg-violet-500/10 p-6 text-center">
+          <h2 className="text-lg font-bold text-white mb-2">
             Free Cloud &amp; AI Review
           </h2>
-          <p className="text-slate-600 dark:text-slate-400 text-sm mb-4">
+          <p className="text-zinc-400 text-sm mb-4">
             Get a focused 30-minute review of your cloud and AI setup. No obligation.
           </p>
           <Link
@@ -99,11 +99,11 @@ export default async function InsightArticlePage({ params }: Props) {
           </Link>
         </section>
 
-        <nav className="mt-12 pt-8 border-t border-slate-200 dark:border-slate-700 flex flex-col sm:flex-row justify-between gap-4">
+        <nav className="mt-12 pt-8 border-t border-white/[0.06] flex flex-col sm:flex-row justify-between gap-4">
           {prevArticle ? (
             <Link
               href={`/insights/${prevArticle.slug}`}
-              className="text-sm font-medium text-indigo-600 dark:text-indigo-400 hover:underline"
+              className="text-sm font-medium text-violet-400 hover:underline"
             >
               ← {prevArticle.title}
             </Link>
@@ -113,7 +113,7 @@ export default async function InsightArticlePage({ params }: Props) {
           {nextArticle ? (
             <Link
               href={`/insights/${nextArticle.slug}`}
-              className="text-sm font-medium text-indigo-600 dark:text-indigo-400 hover:underline sm:text-right"
+              className="text-sm font-medium text-violet-400 hover:underline sm:text-right"
             >
               {nextArticle.title} →
             </Link>

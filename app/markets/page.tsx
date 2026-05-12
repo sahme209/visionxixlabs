@@ -34,20 +34,20 @@ export const metadata: Metadata = {
 
 export default function MarketsPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
+    <div className="min-h-screen bg-[#09090b]">
       <Navigation />
       <main className="pt-28 pb-24 px-4 sm:px-6 lg:px-8">
         <div className="max-w-5xl mx-auto">
           {/* Breadcrumb */}
           <nav
             aria-label="Breadcrumb"
-            className="mb-8 text-xs text-slate-500 dark:text-slate-400"
+            className="mb-8 text-xs text-zinc-500"
           >
             <ol className="flex items-center space-x-2">
               <li>
                 <Link
                   href="/"
-                  className="hover:text-indigo-600 dark:hover:text-indigo-400"
+                  className="hover:text-violet-400"
                 >
                   Home
                 </Link>
@@ -61,20 +61,20 @@ export default function MarketsPage() {
 
           {/* Hero */}
           <header className="mb-16 text-center">
-            <h1 className="text-3xl md:text-4xl lg:text-5xl font-extrabold text-slate-900 dark:text-slate-100 mb-4">
+            <h1 className="text-3xl md:text-4xl lg:text-5xl font-extrabold text-white mb-4">
               Where companies need AI—and how we help
             </h1>
-            <p className="text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
+            <p className="text-lg text-zinc-400 max-w-2xl mx-auto">
               Research on adoption gaps and where AI delivers value. We help companies identify needs, choose the right use cases, and deploy practical, production-ready solutions.
             </p>
           </header>
 
           {/* Market context */}
-          <section className="mb-16 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 p-6">
-            <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100 mb-4">
+          <section className="mb-16 rounded-xl border border-white/[0.06] bg-white/[0.02] p-6">
+            <h2 className="text-lg font-bold text-white mb-4">
               Why this matters now
             </h2>
-            <ul className="space-y-2 text-sm text-slate-600 dark:text-slate-400">
+            <ul className="space-y-2 text-sm text-zinc-400">
               {aiMarketContext.map((point) => (
                 <li key={point} className="flex gap-2">
                   <span className="text-indigo-500 shrink-0">•</span>
@@ -87,13 +87,13 @@ export default function MarketsPage() {
           {/* Adoption gaps */}
           <section className="mb-20">
             <div className="flex items-center gap-3 mb-6">
-              <ExclamationTriangleIcon className="h-8 w-8 text-indigo-600 dark:text-indigo-400" />
-              <h2 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-slate-100">
+              <ExclamationTriangleIcon className="h-8 w-8 text-violet-400" />
+              <h2 className="text-2xl md:text-3xl font-bold text-white">
                 Common adoption gaps
               </h2>
             </div>
-            <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/50 p-6 mb-8">
-              <h3 className="text-sm font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide mb-3">
+            <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-6 mb-8">
+              <h3 className="text-sm font-semibold text-zinc-500 uppercase tracking-wide mb-3">
                 AI adoption journey
               </h3>
               <AIAdoptionFlowDiagram />
@@ -102,12 +102,12 @@ export default function MarketsPage() {
               {adoptionGaps.map((gap) => (
                 <div
                   key={gap.title}
-                  className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-5"
+                  className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-5"
                 >
-                  <h3 className="font-semibold text-slate-900 dark:text-slate-100 mb-2">
+                  <h3 className="font-semibold text-white mb-2">
                     {gap.title}
                   </h3>
-                  <p className="text-sm text-slate-600 dark:text-slate-400">
+                  <p className="text-sm text-zinc-400">
                     {gap.description}
                   </p>
                 </div>
@@ -117,24 +117,24 @@ export default function MarketsPage() {
 
           {/* Where companies need AI */}
           <section className="mb-20">
-            <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-100 mb-6">
+            <h2 className="text-2xl font-bold text-white mb-6">
               Where companies need AI
             </h2>
-            <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/50 p-6 mb-8">
-              <h3 className="text-sm font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide mb-3">
+            <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-6 mb-8">
+              <h3 className="text-sm font-semibold text-zinc-500 uppercase tracking-wide mb-3">
                 Use case decision flow
               </h3>
               <UseCaseDecisionFlow />
             </div>
-            <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-6">
+            <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-6">
               <div className="grid sm:grid-cols-2 gap-3">
                 {whereCompaniesNeedAI.map((need) => (
                   <div
                     key={need}
-                    className="flex gap-3 p-3 rounded-lg bg-slate-50 dark:bg-slate-800/50"
+                    className="flex gap-3 p-3 rounded-lg bg-white/[0.02]"
                   >
                     <CheckCircleIcon className="h-5 w-5 text-indigo-500 shrink-0 mt-0.5" />
-                    <span className="text-sm text-slate-600 dark:text-slate-400">
+                    <span className="text-sm text-zinc-400">
                       {need}
                     </span>
                   </div>
@@ -145,11 +145,11 @@ export default function MarketsPage() {
 
           {/* Sector needs */}
           <section className="mb-20">
-            <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-100 mb-6">
+            <h2 className="text-2xl font-bold text-white mb-6">
               Needs by sector
             </h2>
-            <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/50 p-6 mb-8">
-              <h3 className="text-sm font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide mb-3">
+            <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-6 mb-8">
+              <h3 className="text-sm font-semibold text-zinc-500 uppercase tracking-wide mb-3">
                 Sector × AI needs matrix
               </h3>
               <SectorMatrixDiagram />
@@ -158,12 +158,12 @@ export default function MarketsPage() {
               {sectorNeeds.map(({ sector, needs }) => (
                 <div
                   key={sector}
-                  className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-5"
+                  className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-5"
                 >
-                  <h3 className="font-semibold text-slate-900 dark:text-slate-100 mb-3">
+                  <h3 className="font-semibold text-white mb-3">
                     {sector}
                   </h3>
-                  <ul className="space-y-1 text-sm text-slate-600 dark:text-slate-400">
+                  <ul className="space-y-1 text-sm text-zinc-400">
                     {needs.map((n) => (
                       <li key={n}>• {n}</li>
                     ))}
@@ -174,47 +174,47 @@ export default function MarketsPage() {
           </section>
 
           {/* How we help */}
-          <section className="rounded-xl border-2 border-indigo-200 dark:border-indigo-800 bg-indigo-50/50 dark:bg-indigo-900/20 p-8 mb-16">
-            <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100 mb-4 flex items-center gap-2">
+          <section className="rounded-xl border-2 border-indigo-200 border-violet-500/20 bg-indigo-50/50 bg-violet-500/10 p-8 mb-16">
+            <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
               <LightBulbIcon className="h-6 w-6 text-indigo-600" />
               How we help
             </h2>
-            <div className="rounded-xl border border-indigo-200 dark:border-indigo-700 bg-white dark:bg-slate-800/50 p-6 mb-6">
-              <h3 className="text-sm font-semibold text-indigo-700 dark:text-indigo-300 uppercase tracking-wide mb-3">
+            <div className="rounded-xl border border-indigo-200 border-violet-500/20 bg-white/[0.02] p-6 mb-6">
+              <h3 className="text-sm font-semibold text-violet-400 uppercase tracking-wide mb-3">
                 Solution architecture
               </h3>
               <SolutionArchitectureDiagram />
             </div>
-            <div className="rounded-xl border border-indigo-200 dark:border-indigo-700 bg-white dark:bg-slate-800/50 p-6 mb-6">
-              <h3 className="text-sm font-semibold text-indigo-700 dark:text-indigo-300 uppercase tracking-wide mb-3">
+            <div className="rounded-xl border border-indigo-200 border-violet-500/20 bg-white/[0.02] p-6 mb-6">
+              <h3 className="text-sm font-semibold text-violet-400 uppercase tracking-wide mb-3">
                 Data flow pipeline
               </h3>
               <DataFlowDiagram />
             </div>
-            <div className="rounded-xl border border-indigo-200 dark:border-indigo-700 bg-white dark:bg-slate-800/50 p-6 mb-6">
-              <h3 className="text-sm font-semibold text-indigo-700 dark:text-indigo-300 uppercase tracking-wide mb-3">
+            <div className="rounded-xl border border-indigo-200 border-violet-500/20 bg-white/[0.02] p-6 mb-6">
+              <h3 className="text-sm font-semibold text-violet-400 uppercase tracking-wide mb-3">
                 Delivery process
               </h3>
               <DeliveryProcessFlowchart />
             </div>
-            <p className="text-slate-600 dark:text-slate-400 mb-4">
+            <p className="text-zinc-400 mb-4">
               We focus on practical AI that fits existing workflows. No data scientists or heavy infrastructure required. We start with a{" "}
-              <Link href="/free-review" className="text-indigo-600 dark:text-indigo-400 hover:underline">
+              <Link href="/free-review" className="text-violet-400 hover:underline">
                 free cloud and AI review
               </Link>
               , identify quick wins, and deliver fixed-scope packages for{" "}
-              <Link href="/solutions-for-growing-teams" className="text-indigo-600 dark:text-indigo-400 hover:underline">
+              <Link href="/solutions-for-growing-teams" className="text-violet-400 hover:underline">
                 growing teams
               </Link>
               . For larger organizations, we follow{" "}
-              <Link href="/enterprise-readiness" className="text-indigo-600 dark:text-indigo-400 hover:underline">
+              <Link href="/enterprise-readiness" className="text-violet-400 hover:underline">
                 enterprise-ready
               </Link>{" "}
               governance and delivery. We deploy cloud infrastructure (AWS, Azure, GCP), internal AI and LLM systems, automation, and security—so you move from pilots to production with clear deliverables.
             </p>
             <Link
               href="/contact"
-              className="inline-flex items-center gap-2 text-indigo-600 dark:text-indigo-400 font-semibold hover:underline"
+              className="inline-flex items-center gap-2 text-violet-400 font-semibold hover:underline"
             >
               Discuss your needs
               <ArrowRightIcon className="h-4 w-4" />
@@ -222,12 +222,12 @@ export default function MarketsPage() {
           </section>
 
           {/* CTA */}
-          <section className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-8 text-center">
-            <CpuChipIcon className="h-12 w-12 text-indigo-600 dark:text-indigo-400 mx-auto mb-4" />
-            <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100 mb-2">
+          <section className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-8 text-center">
+            <CpuChipIcon className="h-12 w-12 text-violet-400 mx-auto mb-4" />
+            <h2 className="text-xl font-bold text-white mb-2">
               Ready to close your AI gap?
             </h2>
-            <p className="text-slate-600 dark:text-slate-400 mb-6 max-w-xl mx-auto">
+            <p className="text-zinc-400 mb-6 max-w-xl mx-auto">
               We help companies identify where AI delivers value and implement it with clear deliverables.
             </p>
             <Link

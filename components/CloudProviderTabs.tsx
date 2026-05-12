@@ -16,16 +16,16 @@ export function CloudProviderTabs({
   const [active, setActive] = useState<"aws" | "azure" | "gcp">("aws");
 
   return (
-    <div className="card-hover bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-xl border border-slate-200 dark:border-slate-700">
+    <div className="card-hover bg-white/[0.02] rounded-2xl p-6 shadow-xl border border-white/[0.06]">
       <div className="flex justify-center mb-6">
-        <div className="inline-flex rounded-full bg-slate-100 dark:bg-slate-900 p-1">
+        <div className="inline-flex rounded-full bg-white/[0.04] p-1">
           <button
             type="button"
             onClick={() => setActive("aws")}
             className={`px-4 py-1.5 text-xs font-semibold rounded-full transition-colors ${
               active === "aws"
-                ? "bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 shadow-sm"
-                : "text-slate-500 dark:text-slate-400"
+                ? "bg-white/[0.06] text-white shadow-sm"
+                : "text-zinc-500"
             }`}
           >
             AWS
@@ -35,8 +35,8 @@ export function CloudProviderTabs({
             onClick={() => setActive("azure")}
             className={`px-4 py-1.5 text-xs font-semibold rounded-full transition-colors ${
               active === "azure"
-                ? "bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 shadow-sm"
-                : "text-slate-500 dark:text-slate-400"
+                ? "bg-white/[0.06] text-white shadow-sm"
+                : "text-zinc-500"
             }`}
           >
             Azure
@@ -46,8 +46,8 @@ export function CloudProviderTabs({
             onClick={() => setActive("gcp")}
             className={`px-4 py-1.5 text-xs font-semibold rounded-full transition-colors ${
               active === "gcp"
-                ? "bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 shadow-sm"
-                : "text-slate-500 dark:text-slate-400"
+                ? "bg-white/[0.06] text-white shadow-sm"
+                : "text-zinc-500"
             }`}
           >
             GCP
@@ -58,20 +58,20 @@ export function CloudProviderTabs({
         {active === "aws" && (
           <>
             <div>
-              <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-2">
+              <h3 className="text-sm font-semibold text-white mb-2">
                 What we do on AWS
               </h3>
-              <ul className="text-sm text-slate-600 dark:text-slate-400 space-y-1">
+              <ul className="text-sm text-zinc-400 space-y-1">
                 {awsBullets.map((item) => (
                   <li key={item}>• {item}</li>
                 ))}
               </ul>
             </div>
             <div>
-              <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-2">
+              <h3 className="text-sm font-semibold text-white mb-2">
                 Unified approach
               </h3>
-              <p className="text-sm text-slate-600 dark:text-slate-400">
+              <p className="text-sm text-zinc-400">
                 We apply consistent patterns across AWS, Azure, and GCP while respecting each provider&apos;s unique strengths and services.
               </p>
             </div>
@@ -80,20 +80,20 @@ export function CloudProviderTabs({
         {active === "azure" && (
           <>
             <div>
-              <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-2">
+              <h3 className="text-sm font-semibold text-white mb-2">
                 What we do on Azure
               </h3>
-              <ul className="text-sm text-slate-600 dark:text-slate-400 space-y-1">
+              <ul className="text-sm text-zinc-400 space-y-1">
                 {azureBullets.map((item) => (
                   <li key={item}>• {item}</li>
                 ))}
               </ul>
             </div>
             <div>
-              <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-2">
+              <h3 className="text-sm font-semibold text-white mb-2">
                 Unified approach
               </h3>
-              <p className="text-sm text-slate-600 dark:text-slate-400">
+              <p className="text-sm text-zinc-400">
                 We apply consistent patterns across AWS, Azure, and GCP while respecting each provider&apos;s unique strengths and services.
               </p>
             </div>
@@ -102,27 +102,27 @@ export function CloudProviderTabs({
         {active === "gcp" && (
           <>
             <div>
-              <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-2">
+              <h3 className="text-sm font-semibold text-white mb-2">
                 What we do on GCP
               </h3>
-              <ul className="text-sm text-slate-600 dark:text-slate-400 space-y-1">
+              <ul className="text-sm text-zinc-400 space-y-1">
                 {gcpBullets.map((item) => (
                   <li key={item}>• {item}</li>
                 ))}
               </ul>
             </div>
             <div>
-              <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-2">
+              <h3 className="text-sm font-semibold text-white mb-2">
                 Unified approach
               </h3>
-              <p className="text-sm text-slate-600 dark:text-slate-400">
+              <p className="text-sm text-zinc-400">
                 We apply consistent patterns across AWS, Azure, and GCP while respecting each provider&apos;s unique strengths and services.
               </p>
             </div>
           </>
         )}
       </div>
-      <p className="mt-4 text-xs text-slate-500 dark:text-slate-400 text-center">
+      <p className="mt-4 text-xs text-zinc-500 text-center">
         Use the tabs above to focus on AWS, Azure, or GCP details while keeping a
         consistent delivery approach.
       </p>

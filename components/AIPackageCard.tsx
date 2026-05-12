@@ -10,27 +10,27 @@ export function AIPackageCard({
   bestFor,
 }: AIPackage) {
   return (
-    <div className="card-hover bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-xl border border-slate-200 dark:border-slate-700 flex flex-col h-full">
+    <div className="card-hover bg-white/[0.02] rounded-2xl p-6 shadow-xl border border-white/[0.06] flex flex-col h-full">
       <div className="flex items-start justify-between mb-4">
-        <h3 className="text-xl font-semibold text-slate-900 dark:text-slate-100">
+        <h3 className="text-xl font-semibold text-white">
           {name}
         </h3>
-        <span className="px-3 py-1 rounded-full text-xs font-semibold bg-indigo-100 dark:bg-indigo-900/40 text-indigo-700 dark:text-indigo-300">
+        <span className="px-3 py-1 rounded-full text-xs font-semibold bg-violet-500/10 text-violet-400">
           {duration}
         </span>
       </div>
       <div className="mb-4">
-        <p className="text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">
+        <p className="text-xs font-medium text-zinc-500 mb-1">
           Includes
         </p>
-        <ul className="list-disc list-inside text-sm text-slate-600 dark:text-slate-400 space-y-1">
+        <ul className="list-disc list-inside text-sm text-zinc-400 space-y-1">
           {includes.map((item) => (
             <li key={item}>{item}</li>
           ))}
         </ul>
       </div>
-      <p className="mt-auto text-xs text-slate-500 dark:text-slate-400 mb-4">
-        <span className="font-semibold text-slate-600 dark:text-slate-300">
+      <p className="mt-auto text-xs text-zinc-500 mb-4">
+        <span className="font-semibold text-zinc-300">
           Best for:
         </span>{" "}
         {bestFor}

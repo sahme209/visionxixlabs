@@ -35,14 +35,14 @@ export function SectionBackground({
           }}
         />
         <div
-          className="absolute -top-20 -right-10 w-[min(70vw,600px)] h-[min(85vh,700px)] opacity-90 dark:opacity-80"
+          className="absolute -top-20 -right-10 w-[min(70vw,600px)] h-[min(85vh,700px)] opacity-90 opacity-80"
           style={{
             background:
               "radial-gradient(ellipse 60% 70% at 85% 15%, rgb(124 58 237 / 0.25), rgb(217 70 239 / 0.12), transparent 60%)",
           }}
         />
         <div
-          className="absolute -bottom-32 -left-20 w-[min(60vw,500px)] h-[min(60vh,500px)] opacity-80 dark:opacity-70"
+          className="absolute -bottom-32 -left-20 w-[min(60vw,500px)] h-[min(60vh,500px)] opacity-80 opacity-70"
           style={{
             background:
               "radial-gradient(ellipse 55% 55% at 15% 85%, rgb(217 70 239 / 0.2), rgb(124 58 237 / 0.08), transparent 60%)",

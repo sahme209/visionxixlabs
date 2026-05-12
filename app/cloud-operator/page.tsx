@@ -227,14 +227,14 @@ function ConnectorStatusDisplay({
   if (!aws) return null;
   if (aws.status === "unavailable") {
     return (
-      <p className="text-xs text-amber-600 dark:text-amber-400 mt-1">
+      <p className="text-xs text-amber-600 text-amber-400 mt-1">
         AWS connector is not enabled in this environment.
       </p>
     );
   }
   if (aws.status === "invalid") {
     return (
-      <p className="text-xs text-rose-600 dark:text-rose-400 mt-1">
+      <p className="text-xs text-rose-600 text-rose-400 mt-1">
         Could not verify AWS role. Check Role ARN / External ID.
       </p>
     );
@@ -243,10 +243,10 @@ function ConnectorStatusDisplay({
     return (
       <div className="mt-1 space-y-0.5">
         {aws.verifiedAccountId && (
-          <p className="text-xs text-emerald-600 dark:text-emerald-400">Account: {aws.verifiedAccountId}</p>
+          <p className="text-xs text-emerald-400">Account: {aws.verifiedAccountId}</p>
         )}
         {aws.verifiedCallerArn && (
-          <p className="text-xs text-slate-600 dark:text-slate-400 truncate" title={aws.verifiedCallerArn}>
+          <p className="text-xs text-zinc-400 truncate" title={aws.verifiedCallerArn}>
             {aws.verifiedCallerArn}
           </p>
         )}
@@ -268,7 +268,7 @@ function CopyField({ label, value }: { label: string; value: string }) {
   return (
     <div>
       <div className="flex items-center justify-between mb-1">
-        <span className="text-xs font-medium text-slate-500 dark:text-slate-400">{label}</span>
+        <span className="text-xs font-medium text-zinc-500">{label}</span>
         <button
           onClick={() => { navigator.clipboard.writeText(value); setCopied(true); setTimeout(() => setCopied(false), 2000); }}
           className="flex items-center gap-1 text-xs text-slate-500 hover:text-violet-500 transition-colors"
@@ -277,7 +277,7 @@ function CopyField({ label, value }: { label: string; value: string }) {
           {copied ? "Copied!" : "Copy"}
         </button>
       </div>
-      <pre className="bg-slate-100 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-700 dark:text-slate-300 font-mono break-all whitespace-pre-wrap">
+      <pre className="bg-[#09090b] border border-white/[0.06] rounded-lg px-3 py-2 text-xs text-zinc-300 font-mono break-all whitespace-pre-wrap">
         {value}
       </pre>
     </div>
@@ -343,7 +343,7 @@ function AWSConnectorForm({
   if (connected) {
     return (
       <AxiomCard className="p-5 border-l-4 border-l-emerald-500">
-        <div className="flex items-center gap-2 text-sm text-emerald-700 dark:text-emerald-400">
+        <div className="flex items-center gap-2 text-sm text-emerald-400">
           <CheckCircleIcon className="h-5 w-5" />
           AWS connected — Account {verifiedAccount}
         </div>
@@ -358,38 +358,38 @@ function AWSConnectorForm({
           <LockClosedIcon className="h-4 w-4 text-orange-500" />
         </div>
         <div>
-          <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">Connect AWS via IAM Role</h3>
-          <p className="text-xs text-slate-500 dark:text-slate-400">Read-only access. No credentials stored. Revoke anytime.</p>
+          <h3 className="text-sm font-semibold text-white">Connect AWS via IAM Role</h3>
+          <p className="text-xs text-zinc-500">Read-only access. No credentials stored. Revoke anytime.</p>
         </div>
       </div>
 
       {phase === "instructions" && (
         <div className="space-y-4">
-          <div className="text-xs text-slate-600 dark:text-slate-400 space-y-3">
+          <div className="text-xs text-zinc-400 space-y-3">
             <p>Create a cross-account IAM Role in your AWS console:</p>
             <ol className="list-decimal list-inside space-y-2 ml-1">
-              <li>Go to <strong className="text-slate-800 dark:text-slate-200">IAM → Roles → Create Role</strong></li>
-              <li>Select <strong className="text-slate-800 dark:text-slate-200">&quot;Another AWS account&quot;</strong> and enter:</li>
+              <li>Go to <strong className="text-zinc-200">IAM → Roles → Create Role</strong></li>
+              <li>Select <strong className="text-zinc-200">&quot;Another AWS account&quot;</strong> and enter:</li>
             </ol>
             <div className="space-y-2 ml-4">
               <CopyField label="Account ID" value={AWS_BROKER_ACCOUNT_ID} />
               <CopyField label="External ID (required)" value={externalId} />
             </div>
             <ol className="list-decimal list-inside space-y-2 ml-1" start={3}>
-              <li>Attach <strong className="text-slate-800 dark:text-slate-200">ReadOnlyAccess</strong> managed policy</li>
-              <li>Name it <strong className="text-slate-800 dark:text-slate-200">CloudOperatorReadOnly</strong> and create it</li>
-              <li>Copy the <strong className="text-slate-800 dark:text-slate-200">Role ARN</strong> from the summary page</li>
+              <li>Attach <strong className="text-zinc-200">ReadOnlyAccess</strong> managed policy</li>
+              <li>Name it <strong className="text-zinc-200">CloudOperatorReadOnly</strong> and create it</li>
+              <li>Copy the <strong className="text-zinc-200">Role ARN</strong> from the summary page</li>
             </ol>
           </div>
           <a
             href="https://console.aws.amazon.com/iam/home#/roles$new?step=type&roleType=crossAccount"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-1 text-xs text-violet-600 dark:text-violet-400 hover:underline"
+            className="inline-flex items-center gap-1 text-xs text-violet-400 hover:underline"
           >
             Open AWS IAM Console <ArrowTopRightOnSquareIcon className="h-3 w-3" />
           </a>
-          <div className="flex items-center gap-2 text-xs text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800/50 rounded-lg px-3 py-2">
+          <div className="flex items-center gap-2 text-xs text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 rounded-lg px-3 py-2">
             <ShieldCheckIcon className="h-4 w-4 flex-shrink-0" />
             No write access. No credentials stored. Revoke anytime from your AWS console.
           </div>
@@ -406,7 +406,7 @@ function AWSConnectorForm({
       {phase === "validate" && (
         <div className="space-y-4">
           <div>
-            <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">
+            <label className="block text-xs font-medium text-zinc-400 mb-1">
               Role ARN <span className="text-red-500">*</span>
             </label>
             <input
@@ -419,11 +419,11 @@ function AWSConnectorForm({
                 if (match) setAwsAccountId(match[1]);
               }}
               placeholder="arn:aws:iam::123456789012:role/CloudOperatorReadOnly"
-              className="w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 px-3 py-2.5 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-violet-500/50 text-sm font-mono"
+              className="w-full rounded-lg border border-white/[0.06] bg-[#09090b] px-3 py-2.5 text-white placeholder:text-slate-400 placeholder:text-zinc-600 focus:outline-none focus:ring-2 focus:ring-violet-500/50 text-sm font-mono"
             />
           </div>
           <div>
-            <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">
+            <label className="block text-xs font-medium text-zinc-400 mb-1">
               AWS Account ID <span className="text-red-500">*</span>
             </label>
             <input
@@ -431,15 +431,15 @@ function AWSConnectorForm({
               value={awsAccountId}
               onChange={(e) => { setAwsAccountId(e.target.value.replace(/\D/g, "").slice(0, 12)); setError(null); }}
               placeholder="123456789012"
-              className="w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 px-3 py-2.5 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-violet-500/50 text-sm font-mono"
+              className="w-full rounded-lg border border-white/[0.06] bg-[#09090b] px-3 py-2.5 text-white placeholder:text-slate-400 placeholder:text-zinc-600 focus:outline-none focus:ring-2 focus:ring-violet-500/50 text-sm font-mono"
             />
             {arnAccountId && awsAccountId && arnAccountId !== awsAccountId && (
-              <p className="text-xs text-amber-600 dark:text-amber-400 mt-1">Account ID in ARN ({arnAccountId}) doesn&apos;t match the field above.</p>
+              <p className="text-xs text-amber-600 text-amber-400 mt-1">Account ID in ARN ({arnAccountId}) doesn&apos;t match the field above.</p>
             )}
           </div>
 
           {error && (
-            <div className="flex items-center gap-2 text-sm text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-800/50 rounded-lg px-3 py-2">
+            <div className="flex items-center gap-2 text-sm text-red-400 bg-red-500/10 border border-red-500/20 rounded-lg px-3 py-2">
               <ExclamationTriangleIcon className="h-4 w-4 flex-shrink-0" />
               {error}
             </div>
@@ -448,7 +448,7 @@ function AWSConnectorForm({
           <div className="flex items-center gap-3">
             <button
               onClick={() => setPhase("instructions")}
-              className="text-xs text-slate-500 hover:text-slate-700 dark:hover:text-slate-300"
+              className="text-xs text-slate-500 hover:text-white"
             >
               ← Back to setup
             </button>
@@ -561,7 +561,7 @@ function WorkflowProgressPanel({
 
   return (
     <AxiomCard className="p-4 mb-6 border-l-4 border-l-violet-500">
-      <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-3">
+      <h3 className="text-sm font-semibold text-white mb-3">
         Axiom Workflow
       </h3>
       <div className="flex flex-wrap items-center gap-2 sm:gap-0">
@@ -573,8 +573,8 @@ function WorkflowProgressPanel({
                   s.status === "COMPLETE"
                     ? "bg-emerald-500 text-white"
                     : s.status === "IN_PROGRESS"
-                      ? "bg-violet-500 text-white ring-2 ring-violet-300 dark:ring-violet-700"
-                      : "bg-slate-200 dark:bg-slate-700 text-slate-500 dark:text-slate-400"
+                      ? "bg-violet-500 text-white ring-2 ring-violet-500/20"
+                      : "bg-zinc-700 text-zinc-500"
                 }`}
               >
                 {s.status === "COMPLETE" ? (
@@ -586,10 +586,10 @@ function WorkflowProgressPanel({
               <span
                 className={`mt-1.5 text-[11px] font-medium max-w-[72px] text-center leading-tight ${
                   s.status === "COMPLETE"
-                    ? "text-emerald-600 dark:text-emerald-400"
+                    ? "text-emerald-400"
                     : s.status === "IN_PROGRESS"
-                      ? "text-violet-600 dark:text-violet-400"
-                      : "text-slate-500 dark:text-slate-400"
+                      ? "text-violet-400"
+                      : "text-zinc-500"
                 }`}
               >
                 {s.label}
@@ -598,7 +598,7 @@ function WorkflowProgressPanel({
                 <button
                   type="button"
                   onClick={() => handleAction(s)}
-                  className="mt-1 text-[10px] font-medium text-violet-600 dark:text-violet-400 hover:text-violet-800 dark:hover:text-violet-300 hover:underline"
+                  className="mt-1 text-[10px] font-medium text-violet-400 hover:text-violet-300 hover:underline"
                 >
                   {s.action.label}
                 </button>
@@ -607,7 +607,7 @@ function WorkflowProgressPanel({
             {i < steps.length - 1 && (
               <div
                 className={`hidden sm:block w-8 sm:w-12 lg:w-16 h-0.5 mx-1 ${
-                  s.status === "COMPLETE" ? "bg-emerald-300 dark:bg-emerald-700" : "bg-slate-200 dark:bg-slate-700"
+                  s.status === "COMPLETE" ? "bg-emerald-500" : "bg-zinc-700"
                 }`}
                 aria-hidden
               />
@@ -913,21 +913,21 @@ function AskAxiomPanel({ token, onTabChange }: { token: string | null; onTabChan
       <button
         onClick={() => setOpen(true)}
         aria-label="Open Ask Axiom"
-        className="fixed right-4 bottom-6 z-[9998] flex items-center gap-2 rounded-full bg-white dark:bg-slate-800 px-4 py-3 text-slate-900 dark:text-slate-100 shadow-lg border-2 border-slate-200 dark:border-slate-600 hover:border-violet-400 dark:hover:border-violet-500 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-violet-500 transition-all hover:scale-[1.02] active:scale-[0.98]"
+        className="fixed right-4 bottom-6 z-[9998] flex items-center gap-2 rounded-full bg-white/[0.02] px-4 py-3 text-white shadow-lg border-2 border-white/[0.06] hover:border-violet-500/30 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-violet-500 transition-all hover:scale-[1.02] active:scale-[0.98]"
       >
-        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-violet-100 dark:bg-violet-900/50">
-          <ChatBubbleLeftRightIcon className="h-4 w-4 text-violet-600 dark:text-violet-400" />
+        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-violet-500/10">
+          <ChatBubbleLeftRightIcon className="h-4 w-4 text-violet-400" />
         </div>
         <span className="text-sm font-semibold pr-1">Ask Axiom</span>
       </button>
 
       {open && (
         <div
-          className="fixed right-0 top-0 bottom-0 w-full max-w-md z-[9999] flex flex-col overflow-hidden bg-white dark:bg-slate-900 border-l border-slate-200 dark:border-slate-700 shadow-2xl"
+          className="fixed right-0 top-0 bottom-0 w-full max-w-md z-[9999] flex flex-col overflow-hidden bg-white/[0.02] border-l border-white/[0.06] shadow-2xl"
           role="dialog"
           aria-label="Ask Axiom chat"
         >
-          <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-700 bg-violet-600 px-4 py-3">
+          <div className="flex items-center justify-between border-b border-white/[0.06] bg-violet-600 px-4 py-3">
             <div className="flex items-center gap-2">
               <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-white/20">
                 <ChatBubbleLeftRightIcon className="h-5 w-5 text-white" />
@@ -943,13 +943,13 @@ function AskAxiomPanel({ token, onTabChange }: { token: string | null; onTabChan
             </button>
           </div>
 
-          <p className="px-4 py-2 text-[11px] text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/40 border-b border-amber-200 dark:border-amber-800/50">
+          <p className="px-4 py-2 text-[11px] text-amber-300 bg-amber-500/10 border-b border-amber-500/20">
             Read-only by default. To apply changes, type: <strong>CONFIRM APPLY</strong>
           </p>
 
           {envStatus?.suggestedActions && envStatus.suggestedActions.length > 0 && (
-            <div className="px-4 py-3 border-b border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900">
-              <p className="text-[11px] font-medium text-slate-500 dark:text-slate-400 mb-2">Suggested for you</p>
+            <div className="px-4 py-3 border-b border-white/[0.06] bg-white/[0.02]">
+              <p className="text-[11px] font-medium text-zinc-500 mb-2">Suggested for you</p>
               <div className="flex flex-wrap gap-2">
                 {envStatus.suggestedActions.map((s) => {
                   const action: SuggestedAction =
@@ -965,7 +965,7 @@ function AskAxiomPanel({ token, onTabChange }: { token: string | null; onTabChan
                       key={s.id}
                       onClick={() => executeAction(action)}
                       disabled={!!actionLoading}
-                      className="flex items-center gap-2 rounded-lg border border-violet-200 dark:border-violet-700 bg-violet-50 dark:bg-violet-900/30 px-3 py-2 text-left text-xs font-medium text-violet-800 dark:text-violet-200 hover:bg-violet-100 dark:hover:bg-violet-900/50 disabled:opacity-50 transition-colors"
+                      className="flex items-center gap-2 rounded-lg border border-violet-700 bg-violet-900/30 px-3 py-2 text-left text-xs font-medium text-violet-400 hover:bg-violet-500/10 disabled:opacity-50 transition-colors"
                     >
                       {loading ? "..." : s.label}
                     </button>
@@ -977,19 +977,19 @@ function AskAxiomPanel({ token, onTabChange }: { token: string | null; onTabChan
 
           <div
             ref={scrollRef}
-            className="flex-1 min-h-0 overflow-y-auto p-4 space-y-3 bg-slate-50 dark:bg-slate-800/50"
+            className="flex-1 min-h-0 overflow-y-auto p-4 space-y-3 bg-white/[0.02]"
           >
             {messages.length === 0 && !loading ? (
               <div className="flex flex-col items-center justify-center text-center py-8">
-                <ChatBubbleLeftRightIcon className="h-10 w-10 text-slate-400 dark:text-slate-500 mb-3" />
-                <p className="text-sm font-medium text-slate-700 dark:text-slate-300">Ask about your infrastructure</p>
-                <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">Run scans, export, or get help.</p>
+                <ChatBubbleLeftRightIcon className="h-10 w-10 text-zinc-500 mb-3" />
+                <p className="text-sm font-medium text-zinc-300">Ask about your infrastructure</p>
+                <p className="mt-1 text-xs text-zinc-500">Run scans, export, or get help.</p>
                 <div className="mt-4 flex flex-wrap justify-center gap-2">
                   {QUICK_ACTIONS.map((a) => (
                     <button
                       key={a.label}
                       onClick={() => sendMessage(a.message)}
-                      className="rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 px-3 py-1.5 text-left text-xs text-slate-600 dark:text-slate-400 hover:border-violet-400 hover:text-violet-600 dark:hover:text-violet-400"
+                      className="rounded-lg border border-white/[0.06] bg-white/[0.02] px-3 py-1.5 text-left text-xs text-zinc-400 hover:border-violet-400 hover:text-violet-400"
                     >
                       {a.label}
                     </button>
@@ -1004,17 +1004,17 @@ function AskAxiomPanel({ token, onTabChange }: { token: string | null; onTabChan
                       className={`max-w-[85%] rounded-2xl px-3 py-2 text-sm ${
                         m.role === "user"
                           ? "bg-violet-600 text-white rounded-br-md"
-                          : "bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-slate-100 rounded-bl-md"
+                          : "bg-white/[0.02] border border-white/[0.06] text-white rounded-bl-md"
                       }`}
                     >
                       <p className="whitespace-pre-wrap leading-relaxed">{m.content}</p>
                     </div>
                     {m.role === "assistant" && m.plan && m.requiresApproval && (
-                      <div className="mt-3 rounded-lg border border-amber-200 dark:border-amber-700 bg-amber-50 dark:bg-amber-950/40 p-3">
-                        <p className="text-xs font-semibold text-amber-800 dark:text-amber-200 mb-2">
+                      <div className="mt-3 rounded-lg border border-amber-500/20 bg-amber-500/10 p-3">
+                        <p className="text-xs font-semibold text-amber-400 mb-2">
                           Execution Plan — {m.plan.goal}
                         </p>
-                        <ol className="list-decimal list-inside space-y-1 text-xs text-slate-700 dark:text-slate-300 mb-3">
+                        <ol className="list-decimal list-inside space-y-1 text-xs text-zinc-300 mb-3">
                           {m.plan.steps.map((s, i) => (
                             <li key={i}>
                               {s.action === "run_plugin" ? `Run ${s.pluginId}` : s.action.replace(/_/g, " ")}
@@ -1040,7 +1040,7 @@ function AskAxiomPanel({ token, onTabChange }: { token: string | null; onTabChan
                               key={key}
                               onClick={() => executeAction(a)}
                               disabled={!!actionLoading}
-                              className="rounded-lg border border-violet-300 dark:border-violet-600 bg-violet-50 dark:bg-violet-900/30 px-2.5 py-1 text-xs font-medium text-violet-700 dark:text-violet-300 hover:bg-violet-100 dark:hover:bg-violet-900/50 disabled:opacity-50"
+                              className="rounded-lg border border-violet-500/20 bg-violet-900/30 px-2.5 py-1 text-xs font-medium text-violet-300 hover:bg-violet-500/10 disabled:opacity-50"
                             >
                               {loading ? "..." : actionLabel(a)}
                             </button>
@@ -1052,7 +1052,7 @@ function AskAxiomPanel({ token, onTabChange }: { token: string | null; onTabChan
                 ))}
                 {loading && (
                   <div className="flex justify-start">
-                    <div className="flex gap-1 rounded-2xl rounded-bl-md border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2">
+                    <div className="flex gap-1 rounded-2xl rounded-bl-md border border-white/[0.06] bg-white/[0.02] px-3 py-2">
                       <span className="h-2 w-2 animate-pulse rounded-full bg-violet-600" />
                       <span className="h-2 w-2 animate-pulse rounded-full bg-violet-600 [animation-delay:0.2s]" />
                       <span className="h-2 w-2 animate-pulse rounded-full bg-violet-600 [animation-delay:0.4s]" />
@@ -1063,20 +1063,20 @@ function AskAxiomPanel({ token, onTabChange }: { token: string | null; onTabChan
             )}
           </div>
 
-          <div className="border-t border-slate-200 dark:border-slate-700 p-3 bg-white dark:bg-slate-900">
+          <div className="border-t border-white/[0.06] p-3 bg-white/[0.02]">
             <div className="mb-2 flex flex-wrap gap-1.5">
               {QUICK_ACTIONS.map((a) => (
                 <button
                   key={a.label}
                   onClick={() => sendMessage(a.message)}
                   disabled={loading}
-                  className="rounded-full bg-slate-100 dark:bg-slate-800 px-2.5 py-1 text-[11px] font-medium text-slate-600 dark:text-slate-400 hover:bg-violet-100 dark:hover:bg-violet-900/40 hover:text-violet-700 dark:hover:text-violet-300 disabled:opacity-50"
+                  className="rounded-full bg-white/[0.04] px-2.5 py-1 text-[11px] font-medium text-zinc-400 hover:bg-violet-500/10 hover:text-violet-300 disabled:opacity-50"
                 >
                   {a.label}
                 </button>
               ))}
             </div>
-            {error && <p className="mb-2 text-xs text-red-600 dark:text-red-400">{error}</p>}
+            {error && <p className="mb-2 text-xs text-red-400">{error}</p>}
             <div className="flex gap-2">
               <input
                 type="text"
@@ -1085,7 +1085,7 @@ function AskAxiomPanel({ token, onTabChange }: { token: string | null; onTabChan
                 onKeyDown={handleKeyDown}
                 placeholder="Ask Axiom..."
                 disabled={loading}
-                className="flex-1 rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-800 px-3 py-2.5 text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-violet-500 disabled:opacity-60"
+                className="flex-1 rounded-xl border border-white/[0.06] bg-white/[0.03] px-3 py-2.5 text-sm text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-violet-500 disabled:opacity-60"
               />
               <button
                 onClick={() => sendMessage(input)}
@@ -1227,61 +1227,61 @@ function RunScanCard({
 
   return (
     <AxiomCard className="p-5 border-l-4 border-l-amber-500">
-      <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-2 flex items-center gap-2">
+      <h3 className="text-sm font-semibold text-white mb-2 flex items-center gap-2">
         <MagnifyingGlassIcon className="h-4 w-4 text-amber-500" />
         IAM Exposure Scan
       </h3>
-      <p className="text-xs text-slate-600 dark:text-slate-400 mb-3">
+      <p className="text-xs text-zinc-400 mb-3">
         Read-only scan of IAM users, roles, policies. Detects AdministratorAccess, wildcard policies, unused access keys (&gt;90 days).
       </p>
       {!awsLinked && (
-        <p className="text-xs text-amber-600 dark:text-amber-400 mb-2">
+        <p className="text-xs text-amber-600 text-amber-400 mb-2">
           AWS not connected. Link and verify your AWS account in Connectors to run the scan.
         </p>
       )}
-      <p className="text-xs text-slate-500 dark:text-slate-400 mb-2 italic">
+      <p className="text-xs text-zinc-500 mb-2 italic">
         Read-only by default. No changes are made.
       </p>
       <button
         type="button"
         onClick={runScan}
         disabled={running || !token || !awsLinked}
-        className="inline-flex items-center gap-2 rounded-lg border border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-900/30 px-3 py-1.5 text-xs font-medium text-amber-700 dark:text-amber-300 hover:bg-amber-100 dark:hover:bg-amber-900/50 disabled:opacity-50"
+        className="inline-flex items-center gap-2 rounded-lg border border-amber-500/20 bg-amber-900/30 px-3 py-1.5 text-xs font-medium text-amber-300 hover:bg-amber-500/10 disabled:opacity-50"
       >
         {running ? "Running…" : "Run IAM Scan (Read-only)"}
         <MagnifyingGlassIcon className="h-3.5 w-3.5" />
       </button>
       {result && (
-        <div className="mt-3 rounded-lg bg-slate-50 dark:bg-slate-900/50 p-3 text-xs space-y-3">
-          <p className={`font-medium ${result.status === "success" ? "text-emerald-600 dark:text-emerald-400" : "text-rose-600 dark:text-rose-400"}`}>
+        <div className="mt-3 rounded-lg bg-white/[0.02]/50 p-3 text-xs space-y-3">
+          <p className={`font-medium ${result.status === "success" ? "text-emerald-400" : "text-rose-600 text-rose-400"}`}>
             {result.status === "success" ? "Success" : "Failed"}
           </p>
-          {result.resultSummary && <p className="text-slate-600 dark:text-slate-400">{result.resultSummary}</p>}
-          {result.error && <p className="text-rose-600 dark:text-rose-400">{result.error}</p>}
+          {result.resultSummary && <p className="text-zinc-400">{result.resultSummary}</p>}
+          {result.error && <p className="text-rose-600 text-rose-400">{result.error}</p>}
           {result.status === "success" && result.data && (
-            <div className="space-y-3 pt-2 border-t border-slate-200 dark:border-slate-700">
+            <div className="space-y-3 pt-2 border-t border-white/[0.06]">
               {result.data.summary && (
                 <div className="grid grid-cols-3 gap-2">
-                  <div className="rounded bg-white dark:bg-slate-800/80 px-2 py-1">
-                    <span className="text-slate-500 dark:text-slate-400">Users</span>
-                    <p className="font-semibold text-slate-900 dark:text-slate-100">{result.data.summary.usersCount}</p>
+                  <div className="rounded bg-white/[0.02]/80 px-2 py-1">
+                    <span className="text-zinc-500">Users</span>
+                    <p className="font-semibold text-white">{result.data.summary.usersCount}</p>
                   </div>
-                  <div className="rounded bg-white dark:bg-slate-800/80 px-2 py-1">
-                    <span className="text-slate-500 dark:text-slate-400">Roles</span>
-                    <p className="font-semibold text-slate-900 dark:text-slate-100">{result.data.summary.rolesCount}</p>
+                  <div className="rounded bg-white/[0.02]/80 px-2 py-1">
+                    <span className="text-zinc-500">Roles</span>
+                    <p className="font-semibold text-white">{result.data.summary.rolesCount}</p>
                   </div>
-                  <div className="rounded bg-white dark:bg-slate-800/80 px-2 py-1">
-                    <span className="text-slate-500 dark:text-slate-400">Findings</span>
-                    <p className="font-semibold text-slate-900 dark:text-slate-100">{result.data.summary.findingsCount}</p>
+                  <div className="rounded bg-white/[0.02]/80 px-2 py-1">
+                    <span className="text-zinc-500">Findings</span>
+                    <p className="font-semibold text-white">{result.data.summary.findingsCount}</p>
                   </div>
                 </div>
               )}
               {result.data.findings && result.data.findings.length > 0 && (
                 <div>
-                  <p className="font-medium text-slate-700 dark:text-slate-300 mb-1">Findings ({result.data.findings.length})</p>
+                  <p className="font-medium text-zinc-300 mb-1">Findings ({result.data.findings.length})</p>
                   {confirmDisable && (
-                    <div className="mb-2 rounded-lg border border-amber-300 dark:border-amber-700 bg-amber-50 dark:bg-amber-900/30 p-2">
-                      <p className="text-xs text-slate-700 dark:text-slate-300 mb-2">
+                    <div className="mb-2 rounded-lg border border-amber-500/20 bg-amber-900/30 p-2">
+                      <p className="text-xs text-zinc-300 mb-2">
                         Disable unused key {confirmDisable.accessKeyId?.slice(0, 8)}**** for user {confirmDisable.principal}?
                       </p>
                       <div className="flex gap-2">
@@ -1297,13 +1297,13 @@ function RunScanCard({
                           type="button"
                           onClick={() => { setConfirmDisable(null); setDisableResult(null); }}
                           disabled={disabling}
-                          className="rounded px-2 py-1 text-xs font-medium bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-slate-200 hover:bg-slate-300 dark:hover:bg-slate-600"
+                          className="rounded px-2 py-1 text-xs font-medium bg-zinc-700 text-zinc-200 hover:bg-slate-300 hover:bg-white/[0.06]"
                         >
                           Cancel
                         </button>
                       </div>
                       {disableResult && (
-                        <p className={`mt-2 text-xs ${disableResult.success ? "text-emerald-600 dark:text-emerald-400" : "text-rose-600 dark:text-rose-400"}`}>
+                        <p className={`mt-2 text-xs ${disableResult.success ? "text-emerald-400" : "text-rose-600 text-rose-400"}`}>
                           {disableResult.success ? "Key disabled." : disableResult.error}
                         </p>
                       )}
@@ -1315,10 +1315,10 @@ function RunScanCard({
                         key={i}
                         className={`flex flex-wrap items-center gap-1 rounded px-2 py-1 ${
                           f.severity === "high"
-                            ? "bg-rose-100 dark:bg-rose-900/30 text-rose-800 dark:text-rose-200"
+                            ? "bg-rose-100 bg-rose-500/10 text-rose-800 text-rose-300"
                             : f.severity === "medium"
-                              ? "bg-amber-100 dark:bg-amber-900/30 text-amber-800 dark:text-amber-200"
-                              : "bg-slate-100 dark:bg-slate-800/80 text-slate-700 dark:text-slate-300"
+                              ? "bg-amber-900/30 text-amber-400"
+                              : "bg-white/[0.04]/80 text-zinc-300"
                         }`}
                       >
                         <span className="font-medium">{f.type}</span>
@@ -1330,7 +1330,7 @@ function RunScanCard({
                           <button
                             type="button"
                             onClick={() => setConfirmDisable(f)}
-                            className="ml-auto rounded px-2 py-0.5 text-[10px] font-medium bg-slate-700 dark:bg-slate-600 text-white hover:bg-slate-800 dark:hover:bg-slate-500"
+                            className="ml-auto rounded px-2 py-0.5 text-[10px] font-medium bg-zinc-700 text-white hover:bg-zinc-600"
                           >
                             Disable Key
                           </button>
@@ -1342,8 +1342,8 @@ function RunScanCard({
               )}
               {result.data.users && result.data.users.length > 0 && (
                 <details className="group">
-                  <summary className="cursor-pointer font-medium text-slate-700 dark:text-slate-300">Users ({result.data.users.length})</summary>
-                  <ul className="mt-1 space-y-0.5 pl-2 text-slate-600 dark:text-slate-400">
+                  <summary className="cursor-pointer font-medium text-zinc-300">Users ({result.data.users.length})</summary>
+                  <ul className="mt-1 space-y-0.5 pl-2 text-zinc-400">
                     {result.data.users.slice(0, 10).map((u) => (
                       <li key={u.userName}>
                         {u.userName} — {u.accessKeys?.length ?? 0} key(s), {u.attachedPolicies?.length ?? 0} policy(s)
@@ -1423,15 +1423,15 @@ function InfraDiscoveryCard({
 
   return (
     <AxiomCard className="p-5 border-l-4 border-l-indigo-500">
-      <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-2 flex items-center gap-2">
+      <h3 className="text-sm font-semibold text-white mb-2 flex items-center gap-2">
         <CloudIcon className="h-4 w-4 text-indigo-500" />
         Infrastructure Discovery
       </h3>
-      <p className="text-xs text-slate-600 dark:text-slate-400 mb-3">
+      <p className="text-xs text-zinc-400 mb-3">
         Discover EC2 instances, S3 buckets, RDS databases, and VPCs in your AWS account. Read-only.
       </p>
       {!awsLinked && (
-        <p className="text-xs text-amber-600 dark:text-amber-400 mb-2">
+        <p className="text-xs text-amber-600 text-amber-400 mb-2">
           AWS not connected. Link and verify your AWS account in Connectors to run discovery.
         </p>
       )}
@@ -1443,28 +1443,28 @@ function InfraDiscoveryCard({
         {running ? "Discovering…" : "Discover Infrastructure"}
       </AxiomButton>
       {result && (
-        <div className="mt-3 p-3 rounded-lg bg-slate-50 dark:bg-slate-900/50">
+        <div className="mt-3 p-3 rounded-lg bg-white/[0.02]/50">
           {result.status === "success" && result.data ? (
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
               <div>
-                <span className="text-slate-500 dark:text-slate-400">EC2</span>
-                <p className="font-semibold text-slate-900 dark:text-slate-100">{result.data.ec2Count ?? 0}</p>
+                <span className="text-zinc-500">EC2</span>
+                <p className="font-semibold text-white">{result.data.ec2Count ?? 0}</p>
               </div>
               <div>
-                <span className="text-slate-500 dark:text-slate-400">S3</span>
-                <p className="font-semibold text-slate-900 dark:text-slate-100">{result.data.s3Count ?? 0}</p>
+                <span className="text-zinc-500">S3</span>
+                <p className="font-semibold text-white">{result.data.s3Count ?? 0}</p>
               </div>
               <div>
-                <span className="text-slate-500 dark:text-slate-400">RDS</span>
-                <p className="font-semibold text-slate-900 dark:text-slate-100">{result.data.rdsCount ?? 0}</p>
+                <span className="text-zinc-500">RDS</span>
+                <p className="font-semibold text-white">{result.data.rdsCount ?? 0}</p>
               </div>
               <div>
-                <span className="text-slate-500 dark:text-slate-400">VPC</span>
-                <p className="font-semibold text-slate-900 dark:text-slate-100">{result.data.vpcCount ?? 0}</p>
+                <span className="text-zinc-500">VPC</span>
+                <p className="font-semibold text-white">{result.data.vpcCount ?? 0}</p>
               </div>
             </div>
           ) : (
-            <p className="text-xs text-rose-600 dark:text-rose-400">{result.error ?? "Discovery failed"}</p>
+            <p className="text-xs text-rose-600 text-rose-400">{result.error ?? "Discovery failed"}</p>
           )}
         </div>
       )}
@@ -1484,10 +1484,10 @@ function ArchitectureGraphView({ graph }: { graph: ArchitectureGraphData }) {
 
   const nodeMap = new Map(nodes.map((n) => [n.id, n]));
   const typeColors: Record<string, string> = {
-    VPC: "bg-violet-100 dark:bg-violet-900/40 border-violet-300 dark:border-violet-700 text-violet-800 dark:text-violet-200",
-    EC2: "bg-amber-100 dark:bg-amber-900/40 border-amber-300 dark:border-amber-700 text-amber-800 dark:text-amber-200",
-    RDS: "bg-emerald-100 dark:bg-emerald-900/40 border-emerald-300 dark:border-emerald-700 text-emerald-800 dark:text-emerald-200",
-    S3: "bg-sky-100 dark:bg-sky-900/40 border-sky-300 dark:border-sky-700 text-sky-800 dark:text-sky-200",
+    VPC: "bg-violet-900/40 border-violet-700 text-violet-400",
+    EC2: "bg-amber-900/40 border-amber-500/20 text-amber-400",
+    RDS: "bg-emerald-500/10 border-emerald-700 text-emerald-300",
+    S3: "bg-sky-500/10 border-sky-500/20 text-sky-300",
   };
 
   // Simple layout: VPCs with their children (EC2/RDS), S3 standalone
@@ -1496,11 +1496,11 @@ function ArchitectureGraphView({ graph }: { graph: ArchitectureGraphData }) {
 
   return (
     <AxiomCard className="p-5 border-l-4 border-l-violet-500">
-      <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-3 flex items-center gap-2">
+      <h3 className="text-sm font-semibold text-white mb-3 flex items-center gap-2">
         <ChartBarIcon className="h-4 w-4 text-violet-500" />
         Architecture Overview
         {region && (
-          <span className="text-xs font-normal text-slate-500 dark:text-slate-400">({region})</span>
+          <span className="text-xs font-normal text-zinc-500">({region})</span>
         )}
       </h3>
       <div className="space-y-4">
@@ -1512,9 +1512,9 @@ function ArchitectureGraphView({ graph }: { graph: ArchitectureGraphData }) {
               .map((e) => nodeMap.get(e.to))
               .filter(Boolean) as typeof nodes;
             return (
-              <div key={vpc.id} className="rounded-lg border border-slate-200 dark:border-slate-700 overflow-hidden">
+              <div key={vpc.id} className="rounded-lg border border-white/[0.06] overflow-hidden">
                 <div
-                  className={`px-3 py-2 border-b border-slate-200 dark:border-slate-700 font-medium text-xs ${typeColors["VPC"] ?? "bg-slate-100 dark:bg-slate-800"}`}
+                  className={`px-3 py-2 border-b border-white/[0.06] font-medium text-xs ${typeColors["VPC"] ?? "bg-white/[0.04]"}`}
                 >
                   {vpc.label ?? vpc.type}
                 </div>
@@ -1522,13 +1522,13 @@ function ArchitectureGraphView({ graph }: { graph: ArchitectureGraphData }) {
                   {children.map((c) => (
                     <span
                       key={c.id}
-                      className={`inline-flex px-2 py-1 rounded text-xs font-medium border ${typeColors[c.type] ?? "bg-slate-100 dark:bg-slate-800"}`}
+                      className={`inline-flex px-2 py-1 rounded text-xs font-medium border ${typeColors[c.type] ?? "bg-white/[0.04]"}`}
                     >
                       {c.label ?? c.type}
                     </span>
                   ))}
                   {children.length === 0 && (
-                    <span className="text-xs text-slate-500 dark:text-slate-400">Empty VPC</span>
+                    <span className="text-xs text-zinc-500">Empty VPC</span>
                   )}
                 </div>
               </div>
@@ -1537,13 +1537,13 @@ function ArchitectureGraphView({ graph }: { graph: ArchitectureGraphData }) {
         </div>
         {/* S3 buckets (standalone) */}
         {s3Nodes.length > 0 && (
-          <div className="rounded-lg border border-slate-200 dark:border-slate-700 p-2">
-            <span className="text-xs font-medium text-slate-600 dark:text-slate-400 block mb-2">Storage (S3)</span>
+          <div className="rounded-lg border border-white/[0.06] p-2">
+            <span className="text-xs font-medium text-zinc-400 block mb-2">Storage (S3)</span>
             <div className="flex flex-wrap gap-2">
               {s3Nodes.map((n) => (
                 <span
                   key={n.id}
-                  className={`inline-flex px-2 py-1 rounded text-xs font-medium border ${typeColors["S3"] ?? "bg-slate-100 dark:bg-slate-800"}`}
+                  className={`inline-flex px-2 py-1 rounded text-xs font-medium border ${typeColors["S3"] ?? "bg-white/[0.04]"}`}
                 >
                   {n.label ?? n.type}
                 </span>
@@ -1552,7 +1552,7 @@ function ArchitectureGraphView({ graph }: { graph: ArchitectureGraphData }) {
           </div>
         )}
       </div>
-      <p className="mt-2 text-[11px] text-slate-500 dark:text-slate-400">
+      <p className="mt-2 text-[11px] text-zinc-500">
         Generated from infrastructure discovery. Run &quot;Discover Infrastructure&quot; in Connectors to refresh.
       </p>
     </AxiomCard>
@@ -1587,17 +1587,17 @@ function CloudTimelinePanel({ token }: { token: string | null }) {
 
   return (
     <AxiomSection className="space-y-4">
-      <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">Cloud Timeline</h2>
-      <p className="text-sm text-slate-600 dark:text-slate-400">
+      <h2 className="text-lg font-semibold text-white">Cloud Timeline</h2>
+      <p className="text-sm text-zinc-400">
         Execution logs, scans, and fixes applied. Sorted by time (most recent first).
       </p>
       {loading ? (
-        <p className="text-sm text-slate-500 dark:text-slate-400">Loading…</p>
+        <p className="text-sm text-zinc-500">Loading…</p>
       ) : entries.length === 0 ? (
-        <p className="text-sm text-slate-500 dark:text-slate-400">No timeline entries yet. Run a scan or apply a fix.</p>
+        <p className="text-sm text-zinc-500">No timeline entries yet. Run a scan or apply a fix.</p>
       ) : (
         <div className="relative">
-          <div className="absolute left-3 top-0 bottom-0 w-px bg-slate-200 dark:bg-slate-700" aria-hidden />
+          <div className="absolute left-3 top-0 bottom-0 w-px bg-zinc-700" aria-hidden />
           <ul className="space-y-0">
             {entries.map((e) => (
               <li key={e.id} className="relative flex gap-4 pl-10 pb-4 last:pb-0">
@@ -1607,38 +1607,38 @@ function CloudTimelinePanel({ token }: { token: string | null }) {
                       ? "bg-emerald-500"
                       : e.status === "failed"
                         ? "bg-rose-500"
-                        : "bg-slate-400 dark:bg-slate-500"
+                        : "bg-zinc-500"
                   }`}
                   aria-hidden
                 />
-                <div className="flex-1 min-w-0 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900/50 px-3 py-2">
+                <div className="flex-1 min-w-0 rounded-lg border border-white/[0.06] bg-white/[0.02]/50 px-3 py-2">
                   <div className="flex flex-wrap items-center gap-2 text-sm">
-                    <span className="font-medium text-slate-900 dark:text-slate-100">
+                    <span className="font-medium text-white">
                       {e.action ?? "plugin_run"}
                     </span>
-                    <code className="text-xs font-mono text-slate-600 dark:text-slate-400">{e.pluginId}</code>
+                    <code className="text-xs font-mono text-zinc-400">{e.pluginId}</code>
                     <span
                       className={`rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase ${
                         e.status === "success"
-                          ? "bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300"
+                          ? "bg-emerald-500/10 text-emerald-300"
                           : e.status === "failed"
-                            ? "bg-rose-100 dark:bg-rose-900/40 text-rose-700 dark:text-rose-300"
-                            : "bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-400"
+                            ? "bg-rose-100 bg-rose-500/10 text-rose-700 text-rose-300"
+                            : "bg-zinc-700 text-zinc-400"
                       }`}
                     >
                       {e.status}
                     </span>
                     {e.dryRun && (
-                      <span className="rounded-full px-2 py-0.5 text-[10px] font-medium bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300">
+                      <span className="rounded-full px-2 py-0.5 text-[10px] font-medium bg-amber-900/40 text-amber-300">
                         dry-run
                       </span>
                     )}
                   </div>
-                  <div className="mt-1 flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
+                  <div className="mt-1 flex items-center gap-2 text-xs text-zinc-500">
                     <span>{new Date(e.executedAt).toLocaleString()}</span>
                   </div>
                   {e.summary && (
-                    <p className="mt-1 text-xs text-slate-600 dark:text-slate-300 truncate">{e.summary}</p>
+                    <p className="mt-1 text-xs text-zinc-300 truncate">{e.summary}</p>
                   )}
                 </div>
               </li>
@@ -1675,15 +1675,15 @@ function EmailReportButton({ token }: { token: string | null }) {
 
   return (
     <AxiomCard className="p-5">
-      <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-2">Email Report</h3>
-      <p className="text-xs text-slate-600 dark:text-slate-400 mb-2">Send executive summary to your registered email.</p>
-      {sent && <p className="text-xs text-emerald-600 dark:text-emerald-400 mb-2">Report sent.</p>}
-      {err && <p className="text-xs text-rose-600 dark:text-rose-400 mb-2">{err}</p>}
+      <h3 className="text-sm font-semibold text-white mb-2">Email Report</h3>
+      <p className="text-xs text-zinc-400 mb-2">Send executive summary to your registered email.</p>
+      {sent && <p className="text-xs text-emerald-400 mb-2">Report sent.</p>}
+      {err && <p className="text-xs text-rose-600 text-rose-400 mb-2">{err}</p>}
       <button
         type="button"
         onClick={send}
         disabled={sending || !token}
-        className="inline-flex items-center gap-2 rounded-lg border border-slate-200 dark:border-slate-700 px-3 py-1.5 text-xs font-medium hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-50"
+        className="inline-flex items-center gap-2 rounded-lg border border-white/[0.06] px-3 py-1.5 text-xs font-medium hover:bg-white/[0.04] disabled:opacity-50"
       >
         {sending ? "Sending…" : "Send Report"}
       </button>
@@ -1722,19 +1722,19 @@ function StrategicTab({ token, status }: { token: string | null; status: Operato
   if (!status?.canViewTechnicalOutputs) {
     return (
       <AxiomSection>
-        <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">Strategic</h2>
-        <p className="text-xs text-slate-600 dark:text-slate-400">Upgrade to Pro+ to view strategic brief, CFO model, and board deck.</p>
+        <h2 className="text-lg font-semibold text-white">Strategic</h2>
+        <p className="text-xs text-zinc-400">Upgrade to Pro+ to view strategic brief, CFO model, and board deck.</p>
       </AxiomSection>
     );
   }
 
   return (
     <AxiomSection className="space-y-6">
-      <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">Strategic</h2>
+      <h2 className="text-lg font-semibold text-white">Strategic</h2>
 
       {status.canViewTechnicalOutputs ? (
-        <AxiomCard className="p-5 bg-slate-50 dark:bg-slate-900/40">
-          <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-3">Business Impact & Expansion Signals</h3>
+        <AxiomCard className="p-5 bg-white/[0.02]/40">
+          <h3 className="text-sm font-semibold text-white mb-3">Business Impact & Expansion Signals</h3>
           <div className="grid grid-cols-2 gap-3 text-xs mb-3">
             {status.enterpriseReadinessIndex != null && (
               <div>
@@ -1758,10 +1758,10 @@ function StrategicTab({ token, status }: { token: string | null; status: Operato
             )}
           </div>
           {status.upgradeRecommendation?.urgencyMessage && (
-            <p className="text-sm text-slate-700 dark:text-slate-300 mb-2">{status.upgradeRecommendation.urgencyMessage}</p>
+            <p className="text-sm text-zinc-300 mb-2">{status.upgradeRecommendation.urgencyMessage}</p>
           )}
           {status.dealSignals?.recommendedSalesAngle && status.dealSignals.recommendedSalesAngle.length > 0 && (
-            <ul className="text-xs text-slate-600 dark:text-slate-400 space-y-0.5 mt-2">
+            <ul className="text-xs text-zinc-400 space-y-0.5 mt-2">
               {status.dealSignals.recommendedSalesAngle.slice(0, 3).map((a, i) => (
                 <li key={i}>• {a}</li>
               ))}
@@ -1769,29 +1769,29 @@ function StrategicTab({ token, status }: { token: string | null; status: Operato
           )}
         </AxiomCard>
       ) : (
-        <AxiomCard className="p-5 bg-slate-50 dark:bg-slate-900/40">
-          <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-2">Business Signal Preview</h3>
-          <p className="text-xs text-slate-600 dark:text-slate-400 mb-2">Upgrade to Pro+ to view Enterprise Readiness Index, Urgency Level, Expansion Probability, and Recommended Upgrade Tier.</p>
-          <p className="text-xs text-indigo-600 dark:text-indigo-400">Unlock deal acceleration signals and psychological upgrade framing.</p>
+        <AxiomCard className="p-5 bg-white/[0.02]/40">
+          <h3 className="text-sm font-semibold text-white mb-2">Business Signal Preview</h3>
+          <p className="text-xs text-zinc-400 mb-2">Upgrade to Pro+ to view Enterprise Readiness Index, Urgency Level, Expansion Probability, and Recommended Upgrade Tier.</p>
+          <p className="text-xs text-violet-400">Unlock deal acceleration signals and psychological upgrade framing.</p>
         </AxiomCard>
       )}
 
       {status.strategicReadinessScore != null && (
-        <AxiomCard className="p-5 bg-indigo-50 dark:bg-indigo-900/20">
-          <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-2">Strategic Readiness Score</h3>
-          <p className="text-4xl font-bold text-indigo-600 dark:text-indigo-400">{status.strategicReadinessScore}/100</p>
-          <p className="text-xs text-slate-600 dark:text-slate-400 mt-1">Board-level composite metric</p>
+        <AxiomCard className="p-5 bg-violet-900/20">
+          <h3 className="text-sm font-semibold text-white mb-2">Strategic Readiness Score</h3>
+          <p className="text-4xl font-bold text-violet-400">{status.strategicReadinessScore}/100</p>
+          <p className="text-xs text-zinc-400 mt-1">Board-level composite metric</p>
         </AxiomCard>
       )}
       {status.financialModel && (
         <AxiomCard className="p-5">
-          <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-2">CFO Model</h3>
+          <h3 className="text-sm font-semibold text-white mb-2">CFO Model</h3>
           <div className="grid grid-cols-2 gap-2 text-xs mb-3">
             <div><span className="text-slate-500">3-year savings:</span> ${status.financialModel.projectedSavings3Year.toLocaleString()}</div>
             <div><span className="text-slate-500">Risk avoidance:</span> ${status.financialModel.riskCostAvoidanceEstimate.toLocaleString()}</div>
             <div><span className="text-slate-500">Confidence:</span> {status.financialModel.confidenceBand}</div>
           </div>
-          <ul className="text-xs text-slate-700 dark:text-slate-300 space-y-1">
+          <ul className="text-xs text-zinc-300 space-y-1">
             {status.financialModel.reinvestmentOpportunity.map((r, i) => (
               <li key={i}>• {r}</li>
             ))}
@@ -1801,11 +1801,11 @@ function StrategicTab({ token, status }: { token: string | null; status: Operato
       {loading && <p className="text-xs text-slate-500">Generating strategic brief…</p>}
       {strategicBrief && !loading && (
         <AxiomCard className="p-5">
-          <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-2">Executive Brief</h3>
-          <p className="text-sm text-slate-700 dark:text-slate-300 mb-4">{strategicBrief.executiveSummary}</p>
-          <p className="text-xs text-slate-600 dark:text-slate-400 mb-2">{strategicBrief.financialRiskNarrative}</p>
+          <h3 className="text-sm font-semibold text-white mb-2">Executive Brief</h3>
+          <p className="text-sm text-zinc-300 mb-4">{strategicBrief.executiveSummary}</p>
+          <p className="text-xs text-zinc-400 mb-2">{strategicBrief.financialRiskNarrative}</p>
           {strategicBrief["90DayStrategicFocus"] && strategicBrief["90DayStrategicFocus"].length > 0 && (
-            <ul className="text-xs text-slate-700 dark:text-slate-300 space-y-1 mt-2">
+            <ul className="text-xs text-zinc-300 space-y-1 mt-2">
               {strategicBrief["90DayStrategicFocus"].map((f, i) => (
                 <li key={i}>• {f}</li>
               ))}
@@ -1815,10 +1815,10 @@ function StrategicTab({ token, status }: { token: string | null; status: Operato
       )}
       {status.hasEnterpriseEngagement && (
         <AxiomCard className="p-5">
-          <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-2">Board Deck</h3>
+          <h3 className="text-sm font-semibold text-white mb-2">Board Deck</h3>
           <a
             href={`/api/cloud-operator/board-deck?token=${encodeURIComponent(token ?? "")}`}
-            className="inline-flex items-center gap-2 rounded-lg border border-indigo-200 dark:border-indigo-800 bg-indigo-50 dark:bg-indigo-900/30 px-3 py-2 text-xs font-medium text-indigo-700 dark:text-indigo-300 hover:bg-indigo-100 dark:hover:bg-indigo-900/50"
+            className="inline-flex items-center gap-2 rounded-lg border border-violet-500/20 bg-violet-900/30 px-3 py-2 text-xs font-medium text-violet-400 hover:bg-violet-500/10"
           >
             <DocumentArrowDownIcon className="h-4 w-4" />
             Download Board Deck Outline
@@ -1863,14 +1863,14 @@ function RequestImplementationCard({ token }: { token: string }) {
 
   if (submitted) {
     return (
-      <AxiomCard className="p-5 bg-emerald-50 dark:bg-emerald-900/20">
-        <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-2">
+      <AxiomCard className="p-5 bg-emerald-500/[0.06]">
+        <h3 className="text-sm font-semibold text-white mb-2">
           Request submitted
         </h3>
-        <p className="text-xs text-slate-600 dark:text-slate-400 mb-2">
+        <p className="text-xs text-zinc-400 mb-2">
           Our team will reach out within 1–2 business days.
         </p>
-        <ul className="text-xs text-slate-600 dark:text-slate-400 space-y-0.5">
+        <ul className="text-xs text-zinc-400 space-y-0.5">
           <li>• Check your email for confirmation</li>
           <li>• Prepare cloud account details for the call</li>
         </ul>
@@ -1880,10 +1880,10 @@ function RequestImplementationCard({ token }: { token: string }) {
 
   return (
     <AxiomCard className="p-5">
-      <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-2">
+      <h3 className="text-sm font-semibold text-white mb-2">
         Request Implementation
       </h3>
-      <p className="text-xs text-slate-600 dark:text-slate-400 mb-3">
+      <p className="text-xs text-zinc-400 mb-3">
         Get help implementing your 30-day plan. We&apos;ll schedule a call to walk through your infrastructure.
       </p>
       <form onSubmit={handleSubmit} className="space-y-3">
@@ -1891,22 +1891,22 @@ function RequestImplementationCard({ token }: { token: string }) {
           name="email"
           type="email"
           placeholder="Work email"
-          className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 px-3 py-2 text-sm text-slate-900 dark:text-slate-100"
+          className="w-full rounded-xl border border-white/[0.06] bg-[#09090b] px-3 py-2 text-sm text-white"
         />
         <input
           name="preferredWindow"
           type="text"
           placeholder="Preferred time (e.g. mornings PST)"
-          className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 px-3 py-2 text-sm text-slate-900 dark:text-slate-100"
+          className="w-full rounded-xl border border-white/[0.06] bg-[#09090b] px-3 py-2 text-sm text-white"
         />
         <textarea
           name="notes"
           rows={2}
           placeholder="Notes or questions"
-          className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 px-3 py-2 text-sm text-slate-900 dark:text-slate-100"
+          className="w-full rounded-xl border border-white/[0.06] bg-[#09090b] px-3 py-2 text-sm text-white"
         />
         {error && (
-          <p className="text-xs text-rose-600 dark:text-rose-400">{error}</p>
+          <p className="text-xs text-rose-600 text-rose-400">{error}</p>
         )}
         <AxiomButton type="submit" disabled={submitting}>
           {submitting ? "Submitting…" : "Request Implementation"}
@@ -2199,14 +2199,14 @@ function CloudOperatorPageInner() {
   };
 
   return (
-    <div className="axiom-page min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
+    <div className="axiom-page min-h-screen bg-[#09090b]">
       <Navigation />
       <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-20">
         <div className="mb-6 flex items-center justify-between gap-4">
-          <div className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400">
+          <div className="flex items-center gap-2 text-sm text-zinc-400">
             <Link
               href="/"
-              className="inline-flex items-center gap-1 hover:text-indigo-600 dark:hover:text-indigo-400"
+              className="inline-flex items-center gap-1 hover:text-violet-400"
             >
               <ArrowLeftIcon className="h-4 w-4" />
               Home
@@ -2216,12 +2216,12 @@ function CloudOperatorPageInner() {
           </div>
           {inDashboard && (
             status && status.outputStatus === "ready" ? (
-              <span className="inline-flex items-center gap-2 rounded-full bg-emerald-100 dark:bg-emerald-900/30 px-3 py-1 text-xs font-semibold text-emerald-700 dark:text-emerald-300">
+              <span className="inline-flex items-center gap-2 rounded-full bg-emerald-900/30 px-3 py-1 text-xs font-semibold text-emerald-300">
                 <CheckCircleIcon className="h-4 w-4" />
                 Analysis ready
               </span>
             ) : (
-              <span className="inline-flex items-center gap-2 rounded-full bg-amber-100 dark:bg-amber-900/30 px-3 py-1 text-xs font-semibold text-amber-700 dark:text-amber-300">
+              <span className="inline-flex items-center gap-2 rounded-full bg-amber-900/30 px-3 py-1 text-xs font-semibold text-amber-300">
                 <ArrowPathIcon className="h-4 w-4 animate-spin" />
                 Loading analysis…
               </span>
@@ -2231,47 +2231,47 @@ function CloudOperatorPageInner() {
 
         <Reveal>
         <section className="mb-10">
-          <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 tracking-wide uppercase mb-1">
+          <p className="text-xs font-semibold text-zinc-500 tracking-wide uppercase mb-1">
             Infrastructure Advantage Model™
           </p>
           <div className="flex flex-wrap items-center gap-2 mb-3">
-            <div className="inline-flex items-center gap-2 rounded-full bg-indigo-100 dark:bg-indigo-900/40 px-4 py-1.5 text-xs font-semibold text-indigo-700 dark:text-indigo-300">
+            <div className="inline-flex items-center gap-2 rounded-full bg-violet-500/10 px-4 py-1.5 text-xs font-semibold text-violet-400">
               <CloudIcon className="h-4 w-4" />
               AI Cloud Operator™
             </div>
-            <div className="inline-flex items-center gap-2 rounded-full bg-violet-100 dark:bg-violet-900/40 px-3 py-1 text-[11px] font-semibold text-violet-700 dark:text-violet-300">
+            <div className="inline-flex items-center gap-2 rounded-full bg-violet-900/40 px-3 py-1 text-[11px] font-semibold text-violet-300">
               <SparklesIcon className="h-3.5 w-3.5" />
               AI-Powered Analysis
             </div>
-            <div className="inline-flex items-center gap-2 rounded-full bg-slate-200/80 dark:bg-slate-700/60 px-3 py-1 text-[11px] font-medium text-slate-700 dark:text-slate-300">
+            <div className="inline-flex items-center gap-2 rounded-full bg-zinc-700/60 px-3 py-1 text-[11px] font-medium text-zinc-300">
               AWS
             </div>
-            <div className="inline-flex items-center gap-2 rounded-full bg-slate-200/80 dark:bg-slate-700/60 px-3 py-1 text-[11px] font-medium text-slate-700 dark:text-slate-300">
+            <div className="inline-flex items-center gap-2 rounded-full bg-zinc-700/60 px-3 py-1 text-[11px] font-medium text-zinc-300">
               Azure
             </div>
-            <div className="inline-flex items-center gap-2 rounded-full bg-slate-200/80 dark:bg-slate-700/60 px-3 py-1 text-[11px] font-medium text-slate-700 dark:text-slate-300">
+            <div className="inline-flex items-center gap-2 rounded-full bg-zinc-700/60 px-3 py-1 text-[11px] font-medium text-zinc-300">
               GCP
             </div>
           </div>
-          <h1 className="axiom-heading-xl text-3xl md:text-4xl font-extrabold text-slate-900 dark:text-slate-100 mb-2">
+          <h1 className="axiom-heading-xl text-3xl md:text-4xl font-extrabold text-white mb-2">
             AI-powered cloud intelligence for AWS, Azure &amp; GCP.
           </h1>
-          <p className="text-sm text-slate-600 dark:text-slate-400 max-w-2xl mb-2">
+          <p className="text-sm text-zinc-400 max-w-2xl mb-2">
             Score, optimize, and secure your multi-cloud stack. Connect your environment via APIs for real-time analysis—AI turns your actual inventory, cost data, and config into roadmaps, playbooks, and automation. Beyond basic: AI recommendations today, approved execution tomorrow.
           </p>
           <div className="flex flex-wrap gap-2">
-            <span className="inline-flex items-center gap-1 rounded-full bg-slate-900/5 dark:bg-slate-100/5 px-3 py-1 text-[11px] font-medium text-slate-600 dark:text-slate-300">
+            <span className="inline-flex items-center gap-1 rounded-full bg-white/[0.04] px-3 py-1 text-[11px] font-medium text-zinc-300">
               <CpuChipIcon className="h-3 w-3" />
               Deterministic scoring
             </span>
-            <span className="inline-flex items-center gap-1 rounded-full bg-slate-900/5 dark:bg-slate-100/5 px-3 py-1 text-[11px] font-medium text-slate-600 dark:text-slate-300">
+            <span className="inline-flex items-center gap-1 rounded-full bg-white/[0.04] px-3 py-1 text-[11px] font-medium text-zinc-300">
               <VariableIcon className="h-3 w-3" />
               Structured 30-day roadmap
             </span>
-            <span className="inline-flex items-center gap-1 rounded-full bg-slate-900/5 dark:bg-slate-100/5 px-3 py-1 text-[11px] font-medium text-slate-600 dark:text-slate-300">
+            <span className="inline-flex items-center gap-1 rounded-full bg-white/[0.04] px-3 py-1 text-[11px] font-medium text-zinc-300">
               FinOps &amp; drift detection
             </span>
-            <span className="inline-flex items-center gap-1 rounded-full bg-violet-100 dark:bg-violet-900/30 px-3 py-1 text-[11px] font-medium text-violet-700 dark:text-violet-300">
+            <span className="inline-flex items-center gap-1 rounded-full bg-violet-900/30 px-3 py-1 text-[11px] font-medium text-violet-300">
               API access to your cloud
             </span>
           </div>
@@ -2280,12 +2280,12 @@ function CloudOperatorPageInner() {
 
         {inDashboard && !status && (
           <Reveal delay={0.1}>
-          <section className="mb-8 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm shadow-lg p-12">
+          <section className="mb-8 rounded-xl border border-white/[0.06] bg-white/[0.02] backdrop-blur-sm shadow-lg p-12">
             <AxiomLoadingState
               variant="full"
               message="Loading your Operator analysis…"
             />
-            <p className="mt-6 text-center text-sm text-slate-500 dark:text-slate-400">
+            <p className="mt-6 text-center text-sm text-zinc-500">
               Connecting to your cloud profile, preparing Roadmap, Playbooks, and insights…
             </p>
           </section>
@@ -2297,13 +2297,13 @@ function CloudOperatorPageInner() {
             <div className="grid md:grid-cols-5 gap-3">
               {status.outputStatus !== "ready" ? (
                 <div className="col-span-full flex flex-col gap-4 w-full">
-                  <div className="rounded-xl border border-indigo-200 dark:border-indigo-800 bg-indigo-50/50 dark:bg-indigo-950/30 p-6">
+                  <div className="rounded-xl border border-violet-500/20 bg-violet-500/10 p-6">
                     <AxiomLoadingState
                       variant="compact"
                       message="Generating your Operator plan…"
                       showCloudIcons={false}
                     />
-                    <p className="text-center text-xs text-slate-500 dark:text-slate-400 mt-3">
+                    <p className="text-center text-xs text-zinc-500 mt-3">
                       Loading Roadmap, Playbooks, Strategic brief & more…
                     </p>
                   </div>
@@ -2315,8 +2315,8 @@ function CloudOperatorPageInner() {
                         label=""
                         value={
                           <div className="space-y-2 animate-pulse">
-                            <div className="mx-auto h-5 w-12 rounded-full bg-slate-200 dark:bg-slate-700" />
-                            <div className="mx-auto h-2 w-16 rounded-full bg-slate-100 dark:bg-slate-800" />
+                            <div className="mx-auto h-5 w-12 rounded-full bg-zinc-700" />
+                            <div className="mx-auto h-2 w-16 rounded-full bg-white/[0.04]" />
                           </div>
                         }
                       />
@@ -2328,12 +2328,12 @@ function CloudOperatorPageInner() {
                   <AxiomMetricCard
                     label="Infrastructure Score"
                     value={
-                      <span className="text-3xl md:text-4xl font-extrabold text-slate-900 dark:text-slate-100">
+                      <span className="text-3xl md:text-4xl font-extrabold text-white">
                         {status.infrastructureScore ?? status.infrastructureReadinessScore ?? "—"}
                       </span>
                     }
                     footer={
-                      <span className="text-slate-400 dark:text-slate-500">
+                      <span className="text-zinc-500">
                         Readiness 40% · Cost 20% · CI/CD 20% · Risk 20%
                       </span>
                     }
@@ -2341,7 +2341,7 @@ function CloudOperatorPageInner() {
                   <AxiomMetricCard
                     label="Estimated Annual Savings"
                     value={
-                      <span className="text-xl font-semibold text-emerald-700 dark:text-emerald-400">
+                      <span className="text-xl font-semibold text-emerald-400">
                         {costSignals && costSignals.totalAnnualSavings.high > 0
                           ? `$${costSignals.totalAnnualSavings.low.toLocaleString()} – $${costSignals.totalAnnualSavings.high.toLocaleString()}`
                           : status.axiomEstimatedAnnualSavings != null
@@ -2352,7 +2352,7 @@ function CloudOperatorPageInner() {
                       </span>
                     }
                     footer={
-                      <span className="text-slate-400 dark:text-slate-500">
+                      <span className="text-zinc-500">
                         {costSignals && costSignals.signals.length > 0
                           ? `${costSignals.signals.length} saving${costSignals.signals.length !== 1 ? "s" : ""} identified · scroll down for breakdown`
                           : "Based on right-sizing, reserved capacity, storage tiering"}
@@ -2362,12 +2362,12 @@ function CloudOperatorPageInner() {
                   <AxiomMetricCard
                     label="Risk Level"
                     value={
-                      <span className="text-base font-semibold text-slate-900 dark:text-slate-100">
+                      <span className="text-base font-semibold text-white">
                         {status.riskExposureLevel ?? status.securityRiskLevel ?? "—"}
                       </span>
                     }
                     footer={
-                      <span className="text-slate-400 dark:text-slate-500">
+                      <span className="text-zinc-500">
                         IAM policy, network exposure, encryption, access controls
                       </span>
                     }
@@ -2375,14 +2375,14 @@ function CloudOperatorPageInner() {
                   <AxiomMetricCard
                     label="Deployment Friction Index"
                     value={
-                      <span className="text-base font-semibold text-slate-900 dark:text-slate-100">
+                      <span className="text-base font-semibold text-white">
                         {status.deploymentFrictionIndex != null
                           ? `${status.deploymentFrictionIndex}/100`
                           : "—"}
                       </span>
                     }
                     footer={
-                      <span className="text-slate-400 dark:text-slate-500">
+                      <span className="text-zinc-500">
                         Lower is better · CI/CD maturity + complexity
                       </span>
                     }
@@ -2390,14 +2390,14 @@ function CloudOperatorPageInner() {
                   <AxiomMetricCard
                     label="Automation Readiness Score"
                     value={
-                      <span className="text-base font-semibold text-slate-900 dark:text-slate-100">
+                      <span className="text-base font-semibold text-white">
                         {status.automationReadinessScore != null
                           ? `${status.automationReadinessScore}/100`
                           : "—"}
                       </span>
                     }
                     footer={
-                      <span className="text-slate-400 dark:text-slate-500">
+                      <span className="text-zinc-500">
                         Pipeline automation, Git integration, environment parity
                       </span>
                     }
@@ -2815,11 +2815,11 @@ function CloudOperatorPageInner() {
 
             <aside className="space-y-4">
               <AxiomCard className="p-5 border-l-4 border-l-violet-500">
-                <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-2 flex items-center gap-2">
+                <h3 className="text-sm font-semibold text-white mb-2 flex items-center gap-2">
                   <SparklesIcon className="h-4 w-4 text-violet-500" />
                   AI-Powered Analysis
                 </h3>
-                <ul className="text-xs text-slate-600 dark:text-slate-400 space-y-1.5">
+                <ul className="text-xs text-zinc-400 space-y-1.5">
                   <li>Explainable scoring with factor breakdown</li>
                   <li>Impact simulation (score, savings, risk)</li>
                   <li>Drift detection and trend history (Growth+)</li>
@@ -2827,11 +2827,11 @@ function CloudOperatorPageInner() {
                 </ul>
               </AxiomCard>
               <AxiomCard className="p-5">
-                <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-2 flex items-center gap-2">
+                <h3 className="text-sm font-semibold text-white mb-2 flex items-center gap-2">
                   <ChartBarIcon className="h-4 w-4 text-indigo-500" />
                   What the Operator returns
                 </h3>
-                <ul className="text-xs text-slate-600 dark:text-slate-400 space-y-1.5">
+                <ul className="text-xs text-zinc-400 space-y-1.5">
                   <li>Infrastructure readiness, cost, security, CI/CD scores</li>
                   <li>Architecture, CI/CD YAML, Dockerfile, Terraform</li>
                   <li>FinOps: cost breakdown, savings, Reserved Instance suggestions</li>
@@ -2839,12 +2839,12 @@ function CloudOperatorPageInner() {
                   <li>30-day roadmap and playbooks</li>
                 </ul>
               </AxiomCard>
-              <AxiomCard className="p-5 bg-indigo-50/80 dark:bg-indigo-950/30">
-                <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-2 flex items-center gap-2">
+              <AxiomCard className="p-5 bg-violet-500/10">
+                <h3 className="text-sm font-semibold text-white mb-2 flex items-center gap-2">
                   <CloudIcon className="h-4 w-4 text-indigo-600" />
                   Multi-cloud: AWS · Azure · GCP
                 </h3>
-                <p className="text-xs text-slate-600 dark:text-slate-400">
+                <p className="text-xs text-zinc-400">
                   Connectors for GitHub, AWS, Azure, GCP (Growth+). Read-only metadata for richer analysis.
                 </p>
               </AxiomCard>
@@ -2877,7 +2877,7 @@ function CloudOperatorPageInner() {
               onTabChange={(tab) => setActiveTab(tab as typeof activeTab)}
             />
             {/* Phase 5: Top tabs */}
-            <div className="flex flex-wrap gap-2 border-b border-slate-200 dark:border-slate-700 pb-2">
+            <div className="flex flex-wrap gap-2 border-b border-white/[0.06] pb-2">
               {[
                 { id: "overview" as const, label: "Overview" },
                 { id: "roadmap" as const, label: "Roadmap" },
@@ -2898,13 +2898,13 @@ function CloudOperatorPageInner() {
                     onClick={() => setActiveTab(t.id)}
                     className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                       activeTab === t.id
-                        ? "bg-indigo-100 dark:bg-indigo-900/50 text-indigo-700 dark:text-indigo-300"
-                        : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"
+                        ? "bg-violet-500/10 text-violet-400"
+                        : "text-zinc-400 hover:bg-white/[0.04]"
                     }`}
                   >
                     {t.label}
                     {proOnly && (
-                      <span className="ml-1 text-[10px] text-slate-400 dark:text-slate-500">Pro+</span>
+                      <span className="ml-1 text-[10px] text-zinc-500">Pro+</span>
                     )}
                   </button>
                 );
@@ -2915,90 +2915,90 @@ function CloudOperatorPageInner() {
             <AxiomSection>
               <div className="flex items-center justify-between gap-4 mb-6">
                 <div>
-                  <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">
+                  <h2 className="text-lg font-semibold text-white">
                     AI Cloud Operator Dashboard
                   </h2>
-                  <p className="text-xs text-slate-600 dark:text-slate-400">
+                  <p className="text-xs text-zinc-400">
                     Unified view of readiness, savings, security, CI/CD, and architecture
                     complexity.
                   </p>
                 </div>
                 {status?.outputStatus !== "ready" && (
-                  <div className="text-xs text-slate-600 dark:text-slate-400">
+                  <div className="text-xs text-zinc-400">
                     {polling ? "Generating Operator plan..." : "Queued"}
                   </div>
                 )}
               </div>
 
               <div className="grid md:grid-cols-5 gap-3 mb-6">
-                <div className="rounded-xl bg-slate-50 dark:bg-slate-900/60 p-4 text-center">
+                <div className="rounded-xl bg-white/[0.02] p-4 text-center">
                   <p className="text-xs font-medium text-slate-500 uppercase">
                     Infra Readiness
                   </p>
-                  <p className="mt-1 text-2xl font-bold text-indigo-600 dark:text-indigo-400">
+                  <p className="mt-1 text-2xl font-bold text-violet-400">
                     {status?.infrastructureReadinessScore ?? "—"}
                   </p>
                 </div>
-                <div className="rounded-xl bg-slate-50 dark:bg-slate-900/60 p-4 text-center">
+                <div className="rounded-xl bg-white/[0.02] p-4 text-center">
                   <p className="text-xs font-medium text-slate-500 uppercase">
                     Est. Annual Savings
                   </p>
-                  <p className="mt-1 text-lg font-semibold text-slate-900 dark:text-slate-100">
+                  <p className="mt-1 text-lg font-semibold text-white">
                     {status?.estimatedAnnualSavings != null
                       ? `$${status.estimatedAnnualSavings.toLocaleString()}`
                       : "—"}
                   </p>
                 </div>
-                <div className="rounded-xl bg-slate-50 dark:bg-slate-900/60 p-4 text-center">
+                <div className="rounded-xl bg-white/[0.02] p-4 text-center">
                   <p className="text-xs font-medium text-slate-500 uppercase">
                     Security Risk
                   </p>
-                  <p className="mt-1 text-sm font-semibold text-slate-900 dark:text-slate-100">
+                  <p className="mt-1 text-sm font-semibold text-white">
                     {status?.securityRiskLevel ?? "—"}
                   </p>
                 </div>
-                <div className="rounded-xl bg-slate-50 dark:bg-slate-900/60 p-4 text-center">
+                <div className="rounded-xl bg-white/[0.02] p-4 text-center">
                   <p className="text-xs font-medium text-slate-500 uppercase">
                     CI/CD Maturity
                   </p>
-                  <p className="mt-1 text-sm font-semibold text-slate-900 dark:text-slate-100">
+                  <p className="mt-1 text-sm font-semibold text-white">
                     {status?.ciCdMaturityScore != null
                       ? `${status.ciCdMaturityScore}/100`
                       : "—"}
                   </p>
                 </div>
-                <div className="rounded-xl bg-slate-50 dark:bg-slate-900/60 p-4 text-center">
+                <div className="rounded-xl bg-white/[0.02] p-4 text-center">
                   <p className="text-xs font-medium text-slate-500 uppercase">
                     Architecture Complexity
                   </p>
-                  <p className="mt-1 text-sm font-semibold text-slate-900 dark:text-slate-100">
+                  <p className="mt-1 text-sm font-semibold text-white">
                     {status?.architectureComplexity ?? "—"}
                   </p>
                 </div>
               </div>
 
               {status?.explainability && (
-                <AxiomCard className="p-4 bg-slate-50 dark:bg-slate-900/50 mb-6">
-                  <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-2">
+                <AxiomCard className="p-4 bg-white/[0.02]/50 mb-6">
+                  <h3 className="text-sm font-semibold text-white mb-2">
                     Why you got this score
                   </h3>
-                  <p className="text-xs text-slate-500 dark:text-slate-400 mb-3">
+                  <p className="text-xs text-zinc-500 mb-3">
                     Your Infrastructure Score is a weighted composite. Here&apos;s what went into it:
                   </p>
                   <div className="space-y-2.5 mb-4">
                     {status.explainability.infrastructureScoreBreakdown.map((item) => {
                       const impact = item.value >= 70 ? "strong" : item.value >= 40 ? "moderate" : "weak";
-                      const impactColor = impact === "strong" ? "text-emerald-600 dark:text-emerald-400" : impact === "moderate" ? "text-amber-600 dark:text-amber-400" : "text-red-600 dark:text-red-400";
+                      const impactColor = impact === "strong" ? "text-emerald-400" : impact === "moderate" ? "text-amber-600 text-amber-400" : "text-red-400";
                       return (
                         <div key={item.factor}>
                           <div className="flex items-center justify-between text-xs">
-                            <span className="text-slate-700 dark:text-slate-300 font-medium">{item.factor} <span className="text-slate-400 dark:text-slate-500">({item.weight}% weight)</span></span>
+                            <span className="text-zinc-300 font-medium">{item.factor} <span className="text-zinc-500">({item.weight}% weight)</span></span>
                             <div className="flex items-center gap-2">
-                              <span className="font-semibold text-slate-900 dark:text-slate-100">{item.value}/100</span>
+                              <span className="font-semibold text-white">{item.value}/100</span>
                               <span className={`text-[10px] font-bold uppercase ${impactColor}`}>{impact}</span>
                             </div>
                           </div>
-                          <div className="mt-1 h-1.5 rounded-full bg-slate-200 dark:bg-slate-700 overflow-hidden">
+                          <div className="mt-1 h-1.5 rounded-full bg-zinc-700 overflow-hidden">
                             <div
                               className={`h-full rounded-full transition-all ${impact === "strong" ? "bg-emerald-500" : impact === "moderate" ? "bg-amber-500" : "bg-red-500"}`}
                               style={{ width: `${Math.min(item.value, 100)}%` }}
@@ -3009,9 +3009,9 @@ function CloudOperatorPageInner() {
                     })}
                   </div>
                   {status.explainability.penalties.length > 0 && (
-                    <div className="mb-3 rounded-lg bg-red-50 dark:bg-red-950/20 border border-red-100 dark:border-red-900/30 p-2.5">
-                      <p className="text-[10px] font-bold text-red-700 dark:text-red-400 uppercase tracking-wide mb-1">Dragging your score down</p>
-                      <ul className="text-xs text-red-700 dark:text-red-300 space-y-0.5">
+                    <div className="mb-3 rounded-lg bg-red-500/[0.06] border border-red-500/20 p-2.5">
+                      <p className="text-[10px] font-bold text-red-400 uppercase tracking-wide mb-1">Dragging your score down</p>
+                      <ul className="text-xs text-red-300 space-y-0.5">
                         {status.explainability.penalties.map((p, i) => (
                           <li key={i}>• {p}</li>
                         ))}
@@ -3019,16 +3019,16 @@ function CloudOperatorPageInner() {
                     </div>
                   )}
                   {status.explainability.improvementLevers.length > 0 && (
-                    <div className="rounded-lg bg-emerald-50 dark:bg-emerald-950/20 border border-emerald-100 dark:border-emerald-900/30 p-2.5">
-                      <p className="text-[10px] font-bold text-emerald-700 dark:text-emerald-400 uppercase tracking-wide mb-1">To improve this score</p>
-                      <ul className="text-xs text-emerald-700 dark:text-emerald-300 space-y-0.5">
+                    <div className="rounded-lg bg-emerald-500/[0.06] border border-emerald-500/20 p-2.5">
+                      <p className="text-[10px] font-bold text-emerald-400 uppercase tracking-wide mb-1">To improve this score</p>
+                      <ul className="text-xs text-emerald-300 space-y-0.5">
                         {status.explainability.improvementLevers.map((l, i) => (
                           <li key={i}>→ {l}</li>
                         ))}
                       </ul>
                     </div>
                   )}
-                  <p className="mt-3 text-[10px] text-slate-400 dark:text-slate-500">
+                  <p className="mt-3 text-[10px] text-zinc-500">
                     Scoring v{status.scoringVersion ?? "—"} · Deterministic — no AI randomness
                   </p>
                 </AxiomCard>
@@ -3036,33 +3036,33 @@ function CloudOperatorPageInner() {
 
               <div className="grid md:grid-cols-2 gap-6">
                 <div className="space-y-4">
-                  <AxiomCard className="p-4 bg-slate-50 dark:bg-slate-900/50">
-                    <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-2">
+                  <AxiomCard className="p-4 bg-white/[0.02]/50">
+                    <h3 className="text-sm font-semibold text-white mb-2">
                       Business impact summary
                     </h3>
-                    <p className="text-sm text-slate-700 dark:text-slate-300 whitespace-pre-wrap">
+                    <p className="text-sm text-zinc-300 whitespace-pre-wrap">
                       {status?.businessImpactSummary || "Operator summary will appear here."}
                     </p>
                   </AxiomCard>
-                  <AxiomCard className="p-4 bg-slate-50 dark:bg-slate-900/50">
-                    <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-2">
+                  <AxiomCard className="p-4 bg-white/[0.02]/50">
+                    <h3 className="text-sm font-semibold text-white mb-2">
                       Recommended next action
                     </h3>
-                    <p className="text-sm text-slate-700 dark:text-slate-300">
+                    <p className="text-sm text-zinc-300">
                       {status?.recommendedNextAction || "Next actions will appear here."}
                     </p>
                   </AxiomCard>
                 </div>
 
-                <AxiomCard className="p-4 bg-slate-50 dark:bg-slate-900/50">
-                  <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-2 flex items-center gap-2">
+                <AxiomCard className="p-4 bg-white/[0.02]/50">
+                  <h3 className="text-sm font-semibold text-white mb-2 flex items-center gap-2">
                     <BoltIcon className="h-4 w-4 text-amber-500" />
                     Recommended improvements — Apply Fix
                   </h3>
-                  <p className="text-xs text-slate-500 dark:text-slate-400 mb-3">
+                  <p className="text-xs text-zinc-500 mb-3">
                     Select fixes to execute via cloud APIs. Requires sign-in. Destructive actions need your confirmation.
                   </p>
-                  <ul className="text-sm text-slate-700 dark:text-slate-300 space-y-2 mb-4">
+                  <ul className="text-sm text-zinc-300 space-y-2 mb-4">
                     {status?.recommendedImprovements && status.recommendedImprovements.length > 0 ? (
                       status.recommendedImprovements.map((item, idx) => (
                         <li key={`${item}-${idx}`} className="flex items-start gap-3">
@@ -3083,7 +3083,7 @@ function CloudOperatorPageInner() {
                         </li>
                       ))
                     ) : (
-                      <li className="text-slate-500 dark:text-slate-400">
+                      <li className="text-zinc-500">
                         Operator recommendations will appear here.
                       </li>
                     )}
@@ -3099,7 +3099,7 @@ function CloudOperatorPageInner() {
                         <BoltIcon className="h-4 w-4" />
                       </AxiomButton>
                       {applyFixResult && (
-                        <p className={`text-xs ${applyFixResult.success ? "text-emerald-600 dark:text-emerald-400" : "text-rose-600 dark:text-rose-400"}`}>
+                        <p className={`text-xs ${applyFixResult.success ? "text-emerald-400" : "text-rose-600 text-rose-400"}`}>
                           {applyFixResult.message}
                         </p>
                       )}
@@ -3113,10 +3113,10 @@ function CloudOperatorPageInner() {
             {activeTab === "roadmap" && status?.axiomPlan && (
               <AxiomSection className="space-y-6">
                 <div className="flex items-center justify-between mb-2">
-                  <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">
+                  <h2 className="text-lg font-semibold text-white">
                     30-Day Infrastructure Optimization Plan
                   </h2>
-                  <p className="text-xs text-slate-500 dark:text-slate-400">
+                  <p className="text-xs text-zinc-500">
                     Structured by Axiom — Autonomous Infrastructure Intelligence Platform
                   </p>
                 </div>
@@ -3130,30 +3130,30 @@ function CloudOperatorPageInner() {
                   ].map((phase) => (
                     <AxiomCard
                       key={phase.label}
-                      className="p-5 bg-slate-50 dark:bg-slate-900/40 text-left"
+                      className="p-5 bg-white/[0.02]/40 text-left"
                     >
                       <div className="flex items-baseline justify-between mb-1">
-                        <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">
+                        <h3 className="text-sm font-semibold text-white">
                           {phase.label}
                         </h3>
-                        <span className="text-[11px] text-slate-500 dark:text-slate-400">
+                        <span className="text-[11px] text-zinc-500">
                           Days {phase.dayRange}
                         </span>
                       </div>
-                      <p className="text-[11px] text-slate-500 dark:text-slate-400 mb-3">
+                      <p className="text-[11px] text-zinc-500 mb-3">
                         {phase.category}
                       </p>
-                      <div className="space-y-3 divide-y divide-slate-200/70 dark:divide-slate-700/70">
+                      <div className="space-y-3 divide-y divide-slate-200/70 divide-white/[0.06]/70">
                         {phase.tasks.map((task, idx) => (
                           <div
                             key={`${phase.label}-${idx}`}
-                            className="pt-3 first:pt-0 text-xs text-slate-700 dark:text-slate-300"
+                            className="pt-3 first:pt-0 text-xs text-zinc-300"
                           >
                             <p className="font-semibold mb-0.5">{task.technicalAction}</p>
-                            <p className="text-slate-600 dark:text-slate-400 mb-0.5">
+                            <p className="text-zinc-400 mb-0.5">
                               {task.businessImpact}
                             </p>
-                            <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                            <p className="text-[11px] text-zinc-500">
                               Effect: {task.estimatedImprovementEffect}
                             </p>
                           </div>
@@ -3167,25 +3167,25 @@ function CloudOperatorPageInner() {
 
             {activeTab === "playbooks" && (
               <AxiomSection className="space-y-6">
-                <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">
+                <h2 className="text-lg font-semibold text-white">
                   Playbooks
                 </h2>
                 {status.playbooks ? (
                   <>
                     {status.quality && (
-                      <div className={`inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-medium ${status.quality.pass ? "bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300" : "bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300"}`}>
+                      <div className={`inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-medium ${status.quality.pass ? "bg-emerald-900/30 text-emerald-300" : "bg-amber-900/30 text-amber-300"}`}>
                         {status.quality.pass ? "Quality Gate: Passed" : "Quality Gate: Needs review"}
                       </div>
                     )}
-                    <p className="text-xs text-slate-600 dark:text-slate-400">
+                    <p className="text-xs text-zinc-400">
                       Estimated effort: {status.playbooks.estimatedEffortHours} hours
                     </p>
                     <div className="space-y-4">
                       {status.playbooks.phasePlaybooks.map((pp) => (
-                        <AxiomCard key={pp.phaseName} className="p-5 bg-slate-50 dark:bg-slate-900/40">
-                          <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-2">{pp.phaseName}</h3>
-                          <p className="text-xs text-slate-600 dark:text-slate-400 mb-3">{pp.objective}</p>
-                          <ol className="list-decimal list-inside text-xs text-slate-700 dark:text-slate-300 space-y-1">
+                        <AxiomCard key={pp.phaseName} className="p-5 bg-white/[0.02]/40">
+                          <h3 className="text-sm font-semibold text-white mb-2">{pp.phaseName}</h3>
+                          <p className="text-xs text-zinc-400 mb-3">{pp.objective}</p>
+                          <ol className="list-decimal list-inside text-xs text-zinc-300 space-y-1">
                             {pp.stepByStep.map((s, i) => (
                               <li key={i}>{s.step}</li>
                             ))}
@@ -3198,8 +3198,8 @@ function CloudOperatorPageInner() {
                   <>
                     {status.playbookPreview && status.playbookPreview.length > 0 && (
                       <div className="space-y-2">
-                        <p className="text-xs text-slate-600 dark:text-slate-400">Preview (first 3 steps):</p>
-                        <ol className="list-decimal list-inside text-xs text-slate-700 dark:text-slate-300 space-y-1">
+                        <p className="text-xs text-zinc-400">Preview (first 3 steps):</p>
+                        <ol className="list-decimal list-inside text-xs text-zinc-300 space-y-1">
                           {status.playbookPreview.map((s, i) => (
                             <li key={i}>{s}</li>
                           ))}
@@ -3207,7 +3207,7 @@ function CloudOperatorPageInner() {
                       </div>
                     )}
                     {status.playbookUpsell && (
-                      <p className="text-xs text-slate-600 dark:text-slate-400">{status.playbookUpsell}</p>
+                      <p className="text-xs text-zinc-400">{status.playbookUpsell}</p>
                     )}
                   </>
                 )}
@@ -3220,61 +3220,61 @@ function CloudOperatorPageInner() {
 
             {activeTab === "trends" && (
               <AxiomSection className="space-y-6">
-                <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">Trends</h2>
+                <h2 className="text-lg font-semibold text-white">Trends</h2>
                 {status?.trendHistory && Array.isArray(status.trendHistory) && status.trendHistory.length > 0 ? (
                   <div className="space-y-3">
                     {status.trendHistory.map((t) => (
                       <AxiomCard key={t.id} className="p-4">
-                        <p className="text-xs text-slate-500 dark:text-slate-400">{t.createdAt}</p>
-                        <p className="text-sm text-slate-900 dark:text-slate-100">
+                        <p className="text-xs text-zinc-500">{t.createdAt}</p>
+                        <p className="text-sm text-white">
                           Score: {t.infrastructureScore ?? "—"} · Savings: {t.estimatedAnnualSavings != null ? `$${t.estimatedAnnualSavings.toLocaleString()}` : "—"}
                         </p>
                       </AxiomCard>
                     ))}
                   </div>
                 ) : (
-                  <p className="text-xs text-slate-600 dark:text-slate-400">Trend history available for Growth+ tier with reassessment data.</p>
+                  <p className="text-xs text-zinc-400">Trend history available for Growth+ tier with reassessment data.</p>
                 )}
               </AxiomSection>
             )}
 
             {activeTab === "export" && (
               <AxiomSection className="space-y-6">
-                <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">Export</h2>
+                <h2 className="text-lg font-semibold text-white">Export</h2>
                 <AxiomCard className="p-5">
-                  <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-2">Download Export Pack</h3>
+                  <h3 className="text-sm font-semibold text-white mb-2">Download Export Pack</h3>
                   {status?.canDownloadConfigs ? (
                     <a
                       href={`/api/cloud-operator/export?token=${encodeURIComponent(token ?? "")}`}
-                      className="inline-flex items-center gap-2 rounded-lg border border-indigo-200 dark:border-indigo-800 bg-indigo-50 dark:bg-indigo-900/30 px-3 py-2 text-xs font-medium text-indigo-700 dark:text-indigo-300 hover:bg-indigo-100 dark:hover:bg-indigo-900/50"
+                      className="inline-flex items-center gap-2 rounded-lg border border-violet-500/20 bg-violet-900/30 px-3 py-2 text-xs font-medium text-violet-400 hover:bg-violet-500/10"
                     >
                       <DocumentArrowDownIcon className="h-4 w-4" />
                       Download Export Pack
                     </a>
                   ) : (
-                    <p className="text-xs text-slate-600 dark:text-slate-400">Upgrade to Pro+ to download.</p>
+                    <p className="text-xs text-zinc-400">Upgrade to Pro+ to download.</p>
                   )}
                 </AxiomCard>
                 {status?.canDownloadConfigs && status.launch && (
                   <AxiomCard className="p-5">
-                    <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-2">Download configs</h3>
+                    <h3 className="text-sm font-semibold text-white mb-2">Download configs</h3>
                     <div className="flex flex-wrap gap-2">
                       {status.launch.ciCdYaml && (
-                        <a href={`data:text/plain;charset=utf-8,${encodeURIComponent(status.launch.ciCdYaml)}`} download="operator-ci-cd.yml" className="inline-flex items-center gap-2 rounded-lg border border-slate-200 dark:border-slate-700 px-3 py-1.5 text-xs">CI/CD YAML</a>
+                        <a href={`data:text/plain;charset=utf-8,${encodeURIComponent(status.launch.ciCdYaml)}`} download="operator-ci-cd.yml" className="inline-flex items-center gap-2 rounded-lg border border-white/[0.06] px-3 py-1.5 text-xs">CI/CD YAML</a>
                       )}
                       {status.launch.dockerfile && (
-                        <a href={`data:text/plain;charset=utf-8,${encodeURIComponent(status.launch.dockerfile)}`} download="Dockerfile" className="inline-flex items-center gap-2 rounded-lg border border-slate-200 dark:border-slate-700 px-3 py-1.5 text-xs">Dockerfile</a>
+                        <a href={`data:text/plain;charset=utf-8,${encodeURIComponent(status.launch.dockerfile)}`} download="Dockerfile" className="inline-flex items-center gap-2 rounded-lg border border-white/[0.06] px-3 py-1.5 text-xs">Dockerfile</a>
                       )}
                       {status.launch.terraformTemplates && status.launch.terraformTemplates.length > 0 && (
-                        <a href={`data:text/plain;charset=utf-8,${encodeURIComponent(status.launch.terraformTemplates.join("\n\n"))}`} download="operator-terraform.tf" className="inline-flex items-center gap-2 rounded-lg border border-slate-200 dark:border-slate-700 px-3 py-1.5 text-xs">Terraform</a>
+                        <a href={`data:text/plain;charset=utf-8,${encodeURIComponent(status.launch.terraformTemplates.join("\n\n"))}`} download="operator-terraform.tf" className="inline-flex items-center gap-2 rounded-lg border border-white/[0.06] px-3 py-1.5 text-xs">Terraform</a>
                       )}
                     </div>
                   </AxiomCard>
                 )}
                 {status?.simulation && status.canViewTechnicalOutputs && (
-                  <AxiomCard className="p-5 bg-slate-50 dark:bg-slate-900/50">
-                    <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-2">Impact Forecast</h3>
-                    <p className="text-xs text-slate-600 dark:text-slate-400">
+                  <AxiomCard className="p-5 bg-white/[0.02]/50">
+                    <h3 className="text-sm font-semibold text-white mb-2">Impact Forecast</h3>
+                    <p className="text-xs text-zinc-400">
                       Score lift: +{status.simulation.scoreLift.min}–{status.simulation.scoreLift.max} pts · Savings: ${status.simulation.savingsLift.min.toLocaleString()}–${status.simulation.savingsLift.max.toLocaleString()}
                     </p>
                   </AxiomCard>
@@ -3284,9 +3284,9 @@ function CloudOperatorPageInner() {
 
             {activeTab === "connectors" && (
               <AxiomSection className="space-y-6">
-                <div className="rounded-2xl border-2 border-violet-200/80 dark:border-violet-700/50 bg-gradient-to-br from-violet-50/60 to-indigo-50/40 dark:from-violet-950/30 dark:to-indigo-950/20 p-6 mb-6">
-                  <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100 mb-2">Connect your environment via APIs</h2>
-                  <p className="text-sm text-slate-600 dark:text-slate-400 max-w-2xl">
+                <div className="rounded-2xl border-2 border-violet-500/20 bg-gradient-to-br from-violet-50/60 to-indigo-50/40 from-violet-950/30  p-6 mb-6">
+                  <h2 className="text-lg font-bold text-white mb-2">Connect your environment via APIs</h2>
+                  <p className="text-sm text-zinc-400 max-w-2xl">
                     Link AWS, Azure, GCP, or GitHub with read-only credentials. Axiom fetches real inventory, cost data, and config—so AI analyzes your actual environment, not just forms.
                   </p>
                 </div>
@@ -3299,24 +3299,24 @@ function CloudOperatorPageInner() {
                     fetchWorkflowStatus();
                   }}
                 />
-                <h2 className="text-base font-semibold text-slate-900 dark:text-slate-100">Supported connectors</h2>
+                <h2 className="text-base font-semibold text-white">Supported connectors</h2>
                 <div className="grid sm:grid-cols-2 gap-4">
                   <AxiomCard className="p-5 border-l-4 border-l-orange-500">
-                    <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-1">AWS</h3>
-                    <p className="text-xs text-slate-600 dark:text-slate-400">Account metadata, resource inventory, cost data. Use assume-role (Role ARN + External ID).</p>
+                    <h3 className="text-sm font-semibold text-white mb-1">AWS</h3>
+                    <p className="text-xs text-zinc-400">Account metadata, resource inventory, cost data. Use assume-role (Role ARN + External ID).</p>
                     <ConnectorStatusDisplay token={token} connectors={connectorStatus} />
                   </AxiomCard>
                   <AxiomCard className="p-5 border-l-4 border-l-blue-500">
-                    <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-1">Azure</h3>
-                    <p className="text-xs text-slate-600 dark:text-slate-400">Subscription, resource groups, compliance posture</p>
+                    <h3 className="text-sm font-semibold text-white mb-1">Azure</h3>
+                    <p className="text-xs text-zinc-400">Subscription, resource groups, compliance posture</p>
                   </AxiomCard>
                   <AxiomCard className="p-5 border-l-4 border-l-red-500">
-                    <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-1">GCP</h3>
-                    <p className="text-xs text-slate-600 dark:text-slate-400">Project metadata, billing, asset inventory</p>
+                    <h3 className="text-sm font-semibold text-white mb-1">GCP</h3>
+                    <p className="text-xs text-zinc-400">Project metadata, billing, asset inventory</p>
                   </AxiomCard>
                   <AxiomCard className="p-5 border-l-4 border-l-slate-600">
-                    <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-1">GitHub</h3>
-                    <p className="text-xs text-slate-600 dark:text-slate-400">Repos, CI/CD workflows, deployment patterns</p>
+                    <h3 className="text-sm font-semibold text-white mb-1">GitHub</h3>
+                    <p className="text-xs text-zinc-400">Repos, CI/CD workflows, deployment patterns</p>
                   </AxiomCard>
                 </div>
                 <RunScanCard
@@ -3332,8 +3332,8 @@ function CloudOperatorPageInner() {
                     fetchWorkflowStatus();
                   }}
                 />
-                <AxiomCard className="p-5 bg-slate-50 dark:bg-slate-900/50">
-                  <p className="text-xs text-slate-600 dark:text-slate-400">
+                <AxiomCard className="p-5 bg-white/[0.02]/50">
+                  <p className="text-xs text-zinc-400">
                     API: POST /api/connectors/link to link. GET /api/connectors/status for status. All connectors are read-only.
                   </p>
                 </AxiomCard>
@@ -3351,18 +3351,18 @@ function CloudOperatorPageInner() {
                 {awsSnapshot && (
                   <AxiomCard className="p-5 border-l-4 border-l-orange-500">
                     <div className="flex items-center justify-between mb-4">
-                      <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100 flex items-center gap-2">
+                      <h3 className="text-sm font-semibold text-white flex items-center gap-2">
                         <CloudIcon className="h-4 w-4 text-orange-500" />
                         Live AWS Snapshot
                       </h3>
                       <div className="flex items-center gap-2">
-                        <span className="text-[10px] text-slate-500 dark:text-slate-400">
+                        <span className="text-[10px] text-zinc-500">
                           {new Date(awsSnapshot.scannedAt).toLocaleString()}
                         </span>
                         <button
                           onClick={fetchAwsSnapshot}
                           disabled={snapshotLoading}
-                          className="p-1 rounded hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 transition-colors"
+                          className="p-1 rounded hover:bg-white/[0.04] text-slate-500 hover:text-white transition-colors"
                           title="Refresh snapshot"
                         >
                           <ArrowPathIcon className={`h-3.5 w-3.5 ${snapshotLoading ? "animate-spin" : ""}`} />
@@ -3370,28 +3370,28 @@ function CloudOperatorPageInner() {
                       </div>
                     </div>
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
-                      <div className="rounded-lg bg-slate-50 dark:bg-slate-900/60 p-3 text-center">
+                      <div className="rounded-lg bg-white/[0.02] p-3 text-center">
                         <p className="text-[10px] font-medium text-slate-500 uppercase">Account</p>
-                        <p className="mt-0.5 text-sm font-mono font-semibold text-slate-900 dark:text-slate-100">{awsSnapshot.accountId}</p>
+                        <p className="mt-0.5 text-sm font-mono font-semibold text-white">{awsSnapshot.accountId}</p>
                       </div>
-                      <div className="rounded-lg bg-slate-50 dark:bg-slate-900/60 p-3 text-center">
+                      <div className="rounded-lg bg-white/[0.02] p-3 text-center">
                         <p className="text-[10px] font-medium text-slate-500 uppercase">Regions</p>
-                        <p className="mt-0.5 text-sm font-semibold text-slate-900 dark:text-slate-100">{awsSnapshot.regions.length}</p>
+                        <p className="mt-0.5 text-sm font-semibold text-white">{awsSnapshot.regions.length}</p>
                       </div>
-                      <div className={`rounded-lg p-3 text-center ${awsSnapshot.ec2?.success === false ? "bg-red-50 dark:bg-red-950/30" : "bg-slate-50 dark:bg-slate-900/60"}`}>
+                      <div className={`rounded-lg p-3 text-center ${awsSnapshot.ec2?.success === false ? "bg-red-500/[0.06]" : "bg-white/[0.02]"}`}>
                         <p className="text-[10px] font-medium text-slate-500 uppercase">EC2 Instances</p>
                         {awsSnapshot.ec2?.success === false ? (
-                          <p className="mt-0.5 text-[10px] text-red-600 dark:text-red-400" title={awsSnapshot.ec2.error}>Could not read (missing permission)</p>
+                          <p className="mt-0.5 text-[10px] text-red-400" title={awsSnapshot.ec2.error}>Could not read (missing permission)</p>
                         ) : (
-                          <p className="mt-0.5 text-sm font-semibold text-slate-900 dark:text-slate-100">{awsSnapshot.ec2InstanceCount}</p>
+                          <p className="mt-0.5 text-sm font-semibold text-white">{awsSnapshot.ec2InstanceCount}</p>
                         )}
                       </div>
-                      <div className={`rounded-lg p-3 text-center ${awsSnapshot.s3?.success === false ? "bg-red-50 dark:bg-red-950/30" : "bg-slate-50 dark:bg-slate-900/60"}`}>
+                      <div className={`rounded-lg p-3 text-center ${awsSnapshot.s3?.success === false ? "bg-red-500/[0.06]" : "bg-white/[0.02]"}`}>
                         <p className="text-[10px] font-medium text-slate-500 uppercase">S3 Buckets</p>
                         {awsSnapshot.s3?.success === false ? (
-                          <p className="mt-0.5 text-[10px] text-red-600 dark:text-red-400" title={awsSnapshot.s3.error}>Could not read (missing permission)</p>
+                          <p className="mt-0.5 text-[10px] text-red-400" title={awsSnapshot.s3.error}>Could not read (missing permission)</p>
                         ) : (
-                          <p className="mt-0.5 text-sm font-semibold text-slate-900 dark:text-slate-100">{awsSnapshot.s3BucketCount}</p>
+                          <p className="mt-0.5 text-sm font-semibold text-white">{awsSnapshot.s3BucketCount}</p>
                         )}
                       </div>
                     </div>
@@ -3415,8 +3415,8 @@ function CloudOperatorPageInner() {
                         riskDelta < 0 ? `${Math.abs(riskDelta)} fewer high-risk issue${Math.abs(riskDelta) !== 1 ? "s" : ""}` : riskDelta > 0 ? `${riskDelta} new high-risk issue${riskDelta !== 1 ? "s" : ""}` : null,
                       ].filter(Boolean) as string[];
                       return (
-                        <div className="mb-4 rounded-lg border border-slate-200 dark:border-slate-700/60 bg-slate-50/50 dark:bg-slate-900/40 p-3">
-                          <p className="text-[10px] font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400 mb-1.5">
+                        <div className="mb-4 rounded-lg border border-white/[0.06] bg-white/[0.02] p-3">
+                          <p className="text-[10px] font-semibold uppercase tracking-wide text-zinc-500 mb-1.5">
                             Since last scan <span className="font-normal normal-case">({new Date(prev.scannedAt).toLocaleDateString()})</span>
                           </p>
                           <div className="flex flex-wrap gap-2">
@@ -3428,10 +3428,10 @@ function CloudOperatorPageInner() {
                                   key={item}
                                   className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-[11px] font-medium ${
                                     isPositiveRisk
-                                      ? "bg-red-100 dark:bg-red-950/40 text-red-700 dark:text-red-300"
+                                      ? "bg-red-500/10 text-red-300"
                                       : isNegativeRisk
-                                        ? "bg-emerald-100 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300"
-                                        : "bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300"
+                                        ? "bg-emerald-500/10 text-emerald-300"
+                                        : "bg-zinc-700 text-zinc-300"
                                   }`}
                                 >
                                   {item}
@@ -3444,16 +3444,16 @@ function CloudOperatorPageInner() {
                     })()}
                     {awsSnapshot.insights && awsSnapshot.insights.length > 0 && (
                       <div className="space-y-2 mb-3">
-                        <p className="text-[10px] font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Key Risks</p>
+                        <p className="text-[10px] font-semibold uppercase tracking-wide text-zinc-500">Key Risks</p>
                         {awsSnapshot.insights.map((insight, i) => (
                           <div
                             key={i}
                             className={`rounded-lg border p-3 ${
                               insight.severity === "high"
-                                ? "border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-950/30"
+                                ? "border-red-500/20 bg-red-500/[0.06]"
                                 : insight.severity === "medium"
-                                  ? "border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-950/30"
-                                  : "border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/40"
+                                  ? "border-amber-500/20 bg-amber-500/[0.06]"
+                                  : "border-white/[0.06] bg-white/[0.02]"
                             }`}
                           >
                             <div className="flex items-start gap-2">
@@ -3466,39 +3466,39 @@ function CloudOperatorPageInner() {
                               }`} />
                               <div>
                                 <div className="flex items-center gap-2">
-                                  <span className="text-xs font-semibold text-slate-900 dark:text-slate-100">{insight.title}</span>
+                                  <span className="text-xs font-semibold text-white">{insight.title}</span>
                                   <span className={`text-[10px] font-bold uppercase ${
                                     insight.severity === "high"
-                                      ? "text-red-600 dark:text-red-400"
+                                      ? "text-red-400"
                                       : insight.severity === "medium"
-                                        ? "text-amber-600 dark:text-amber-400"
+                                        ? "text-amber-600 text-amber-400"
                                         : "text-slate-500"
                                   }`}>{insight.severity}</span>
                                 </div>
-                                <p className="text-xs text-slate-600 dark:text-slate-400 mt-0.5 leading-relaxed">{insight.message}</p>
+                                <p className="text-xs text-zinc-400 mt-0.5 leading-relaxed">{insight.message}</p>
                                 {insight.explanation && (
                                   <div className="mt-1.5 flex items-start gap-1.5">
                                     <SparklesIcon className="h-3 w-3 mt-0.5 flex-shrink-0 text-violet-500" />
-                                    <p className="text-xs text-violet-700 dark:text-violet-300 leading-relaxed italic">{insight.explanation}</p>
+                                    <p className="text-xs text-violet-300 leading-relaxed italic">{insight.explanation}</p>
                                   </div>
                                 )}
                                 {insight.impact && (
                                   <p className={`text-xs font-medium mt-1.5 ${
                                     insight.severity === "high"
-                                      ? "text-red-700 dark:text-red-300"
+                                      ? "text-red-300"
                                       : insight.severity === "medium"
-                                        ? "text-amber-700 dark:text-amber-300"
-                                        : "text-slate-600 dark:text-slate-400"
+                                        ? "text-amber-300"
+                                        : "text-zinc-400"
                                   }`}>
                                     Impact: {insight.impact}
                                   </p>
                                 )}
                                 {insight.actions && insight.actions.length > 0 && (
                                   <div className="mt-2">
-                                    <p className="text-[10px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide mb-1">Next steps</p>
+                                    <p className="text-[10px] font-semibold text-zinc-500 uppercase tracking-wide mb-1">Next steps</p>
                                     <ul className="space-y-1">
                                       {insight.actions.map((action, j) => (
-                                        <li key={j} className="flex items-start gap-1.5 text-xs text-slate-700 dark:text-slate-300">
+                                        <li key={j} className="flex items-start gap-1.5 text-xs text-zinc-300">
                                           <ArrowRightIcon className="h-3 w-3 mt-0.5 flex-shrink-0 text-violet-500" />
                                           {action}
                                         </li>
@@ -3509,7 +3509,7 @@ function CloudOperatorPageInner() {
                                 {insight.severity === "high" && !status?.canViewTechnicalOutputs && (
                                   <button
                                     onClick={() => openUpgradeModal("fix-automatically", insight.title)}
-                                    className="mt-3 inline-flex items-center gap-1.5 text-xs font-medium text-violet-600 dark:text-violet-400 hover:text-violet-800 dark:hover:text-violet-300 transition-colors group"
+                                    className="mt-3 inline-flex items-center gap-1.5 text-xs font-medium text-violet-400 hover:text-violet-300 transition-colors group"
                                   >
                                     <BoltIcon className="h-3.5 w-3.5 group-hover:scale-110 transition-transform" />
                                     Get step-by-step fix guide
@@ -3518,7 +3518,7 @@ function CloudOperatorPageInner() {
                                 {insight.severity === "medium" && !status?.canViewTechnicalOutputs && (
                                   <button
                                     onClick={() => openUpgradeModal("deeper-analysis", insight.title)}
-                                    className="mt-3 inline-flex items-center gap-1.5 text-xs font-medium text-violet-600 dark:text-violet-400 hover:text-violet-800 dark:hover:text-violet-300 transition-colors group"
+                                    className="mt-3 inline-flex items-center gap-1.5 text-xs font-medium text-violet-400 hover:text-violet-300 transition-colors group"
                                   >
                                     <MagnifyingGlassIcon className="h-3.5 w-3.5 group-hover:scale-110 transition-transform" />
                                     Get deeper analysis
@@ -3530,14 +3530,14 @@ function CloudOperatorPageInner() {
                         ))}
                       </div>
                     )}
-                    <p className="text-[10px] text-slate-500 dark:text-slate-400">
+                    <p className="text-[10px] text-zinc-500">
                       Real data from your AWS account via read-only AssumeRole. No credentials stored.
                     </p>
                     {awsSnapshot.insights && awsSnapshot.insights.length > 0 && !status?.canViewTechnicalOutputs && (
-                      <div className="mt-4 pt-3 border-t border-slate-200 dark:border-slate-700/60">
+                      <div className="mt-4 pt-3 border-t border-white/[0.06]/60">
                         <button
                           onClick={() => openUpgradeModal("continuous-monitoring")}
-                          className="flex items-center gap-2 text-xs text-slate-600 dark:text-slate-400 hover:text-violet-600 dark:hover:text-violet-400 transition-colors group"
+                          className="flex items-center gap-2 text-xs text-zinc-400 hover:text-violet-400 transition-colors group"
                         >
                           <ArrowPathIcon className="h-3.5 w-3.5 group-hover:text-violet-500 transition-colors" />
                           <span>Want us to monitor this and alert you if it gets worse?</span>
@@ -3549,45 +3549,45 @@ function CloudOperatorPageInner() {
                 {costSignals && costSignals.signals.length > 0 && (
                   <AxiomCard className="p-5 border-l-4 border-l-emerald-500">
                     <div className="flex items-center justify-between mb-4">
-                      <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100 flex items-center gap-2">
+                      <h3 className="text-sm font-semibold text-white flex items-center gap-2">
                         <ChartBarIcon className="h-4 w-4 text-emerald-500" />
                         Potential Annual Savings
                       </h3>
-                      <span className="text-lg font-bold text-emerald-600 dark:text-emerald-400">
+                      <span className="text-lg font-bold text-emerald-400">
                         ${costSignals.totalAnnualSavings.low.toLocaleString()} – ${costSignals.totalAnnualSavings.high.toLocaleString()}
                       </span>
                     </div>
                     <div className="space-y-3">
                       {costSignals.signals.map((signal, i) => (
-                        <div key={i} className="rounded-lg border border-slate-200 dark:border-slate-700/60 bg-slate-50/50 dark:bg-slate-900/40 p-3">
+                        <div key={i} className="rounded-lg border border-white/[0.06]/60 bg-white/[0.02] p-3">
                           <div className="flex items-start justify-between gap-3">
                             <div className="flex-1 min-w-0">
-                              <p className="text-xs font-semibold text-slate-900 dark:text-slate-100">{signal.resource}</p>
-                              <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{signal.issue}</p>
+                              <p className="text-xs font-semibold text-white">{signal.resource}</p>
+                              <p className="text-xs text-zinc-500 mt-0.5">{signal.issue}</p>
                             </div>
                             <div className="text-right flex-shrink-0">
-                              <p className="text-xs font-bold text-emerald-600 dark:text-emerald-400">
+                              <p className="text-xs font-bold text-emerald-400">
                                 ${signal.annualSavingsEstimate.low.toLocaleString()} – ${signal.annualSavingsEstimate.high.toLocaleString()}/yr
                               </p>
                               {signal.monthlyCostEstimate.high > 0 && (
-                                <p className="text-[10px] text-slate-500 dark:text-slate-500">
+                                <p className="text-[10px] text-zinc-500">
                                   ~${signal.monthlyCostEstimate.low.toLocaleString()} – ${signal.monthlyCostEstimate.high.toLocaleString()}/mo current
                                 </p>
                               )}
                             </div>
                           </div>
                           {signal.proOutputPreview && (
-                            <div className="mt-2 rounded-md border border-violet-500/20 bg-violet-500/5 dark:bg-violet-950/30 px-3 py-2">
-                              <p className="text-[10px] font-semibold text-violet-600 dark:text-violet-400 uppercase tracking-wide mb-1">Pro output preview</p>
+                            <div className="mt-2 rounded-md border border-violet-500/20 bg-violet-500/5 bg-violet-950/30 px-3 py-2">
+                              <p className="text-[10px] font-semibold text-violet-400 uppercase tracking-wide mb-1">Pro output preview</p>
                               {signal.proOutputPreview.map((line, j) => (
-                                <p key={j} className="text-xs text-slate-700 dark:text-slate-300 font-mono leading-relaxed">{line}</p>
+                                <p key={j} className="text-xs text-zinc-300 font-mono leading-relaxed">{line}</p>
                               ))}
                             </div>
                           )}
                           {!status?.canViewTechnicalOutputs && (
                             <button
                               onClick={() => openUpgradeModal("fix-automatically", signal.resource)}
-                              className="mt-2 inline-flex items-center gap-1.5 text-[11px] font-medium text-violet-600 dark:text-violet-400 hover:text-violet-800 dark:hover:text-violet-300 transition-colors group"
+                              className="mt-2 inline-flex items-center gap-1.5 text-[11px] font-medium text-violet-400 hover:text-violet-300 transition-colors group"
                             >
                               <BoltIcon className="h-3 w-3 group-hover:scale-110 transition-transform" />
                               {signal.proFix}
@@ -3596,7 +3596,7 @@ function CloudOperatorPageInner() {
                         </div>
                       ))}
                     </div>
-                    <p className="mt-3 text-[10px] text-slate-400 dark:text-slate-500">
+                    <p className="mt-3 text-[10px] text-zinc-500">
                       {costSignals.signals.some(s => s.confidence === "measured") ? "Based on your reported spend." : "Conservative estimates based on industry averages."} Ranges reflect typical variance. Pro tier provides account-specific analysis.
                     </p>
                   </AxiomCard>
@@ -3605,20 +3605,20 @@ function CloudOperatorPageInner() {
                   <AxiomCard className="p-5 border-l-4 border-l-orange-500">
                     <div className="flex items-center gap-3">
                       <ArrowPathIcon className="h-4 w-4 text-orange-500 animate-spin" />
-                      <span className="text-sm text-slate-600 dark:text-slate-400">Scanning your AWS infrastructure...</span>
+                      <span className="text-sm text-zinc-400">Scanning your AWS infrastructure...</span>
                     </div>
                   </AxiomCard>
                 )}
                 {status?.environmentSummary && (
                   <AxiomCard className="p-5 border-l-4 border-l-indigo-500">
-                    <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-3 flex items-center gap-2">
+                    <h3 className="text-sm font-semibold text-white mb-3 flex items-center gap-2">
                       <CloudIcon className="h-4 w-4 text-indigo-500" />
                       Environment Summary
                     </h3>
-                    <div className="text-sm text-slate-700 dark:text-slate-300 whitespace-pre-wrap leading-relaxed">
+                    <div className="text-sm text-zinc-300 whitespace-pre-wrap leading-relaxed">
                       {status.environmentSummary}
                     </div>
-                    <p className="mt-2 text-[11px] text-slate-500 dark:text-slate-400">
+                    <p className="mt-2 text-[11px] text-zinc-500">
                       Generated from infrastructure discovery and IAM scan. Run &quot;Discover Infrastructure&quot; in Connectors to refresh.
                     </p>
                   </AxiomCard>
@@ -3627,32 +3627,32 @@ function CloudOperatorPageInner() {
                   <ArchitectureGraphView graph={status.architectureGraph} />
                 )}
                 <AxiomCard className="p-5">
-                  <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-2">
+                  <h3 className="text-sm font-semibold text-white mb-2">
                     Download Export Pack
                   </h3>
                   {status?.canDownloadConfigs ? (
                     <a
                       href={`/api/cloud-operator/export?token=${encodeURIComponent(token ?? "")}`}
-                      className="inline-flex items-center gap-2 rounded-lg border border-indigo-200 dark:border-indigo-800 bg-indigo-50 dark:bg-indigo-900/30 px-3 py-2 text-xs font-medium text-indigo-700 dark:text-indigo-300 hover:bg-indigo-100 dark:hover:bg-indigo-900/50 transition-all duration-200"
+                      className="inline-flex items-center gap-2 rounded-lg border border-violet-500/20 bg-violet-900/30 px-3 py-2 text-xs font-medium text-violet-400 hover:bg-violet-500/10 transition-all duration-200"
                     >
                       <DocumentArrowDownIcon className="h-4 w-4" />
                       Download Export Pack
                     </a>
                   ) : (
                     <div className="space-y-2">
-                      <p className="text-xs text-slate-600 dark:text-slate-400">
+                      <p className="text-xs text-zinc-400">
                         Upgrade to Roadmap (Pro+) or unlock for this report:
                       </p>
                       <div className="flex flex-wrap gap-2">
                         <Link
                           href="/contact?intent=axiom-upgrade"
-                          className="inline-flex items-center gap-2 rounded-lg border border-indigo-200 dark:border-indigo-800 bg-indigo-50 dark:bg-indigo-900/30 px-3 py-1.5 text-xs font-medium text-indigo-700 dark:text-indigo-300 hover:bg-indigo-100 dark:hover:bg-indigo-900/50"
+                          className="inline-flex items-center gap-2 rounded-lg border border-violet-500/20 bg-violet-900/30 px-3 py-1.5 text-xs font-medium text-violet-400 hover:bg-violet-500/10"
                         >
                           Upgrade
                         </Link>
                         <a
                           href={`/contact?intent=roadmap-unlock&token=${encodeURIComponent(token ?? "")}`}
-                          className="inline-flex items-center gap-2 rounded-lg border border-emerald-200 dark:border-emerald-800 bg-emerald-50 dark:bg-emerald-900/30 px-3 py-1.5 text-xs font-medium text-emerald-700 dark:text-emerald-300 hover:bg-emerald-100 dark:hover:bg-emerald-900/50"
+                          className="inline-flex items-center gap-2 rounded-lg border border-emerald-500/20 bg-emerald-900/30 px-3 py-1.5 text-xs font-medium text-emerald-300 hover:bg-emerald-500/10"
                         >
                           $29 Full Roadmap Unlock
                         </a>
@@ -3662,7 +3662,7 @@ function CloudOperatorPageInner() {
                 </AxiomCard>
 
                 <AxiomCard className="p-5">
-                  <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-2">
+                  <h3 className="text-sm font-semibold text-white mb-2">
                     Download configurations
                   </h3>
                   {status?.canDownloadConfigs && status.launch ? (
@@ -3673,7 +3673,7 @@ function CloudOperatorPageInner() {
                             status.launch.ciCdYaml
                           )}`}
                           download="operator-ci-cd.yml"
-                          className="inline-flex items-center gap-2 rounded-lg border border-slate-200 dark:border-slate-700 px-3 py-1.5 text-xs text-slate-800 dark:text-slate-100 hover:bg-slate-50 dark:hover:bg-slate-800"
+                          className="inline-flex items-center gap-2 rounded-lg border border-white/[0.06] px-3 py-1.5 text-xs text-white hover:bg-white/[0.04]"
                         >
                           <DocumentArrowDownIcon className="h-4 w-4" />
                           CI/CD YAML
@@ -3685,7 +3685,7 @@ function CloudOperatorPageInner() {
                             status.launch.dockerfile
                           )}`}
                           download="Dockerfile"
-                          className="inline-flex items-center gap-2 rounded-lg border border-slate-200 dark:border-slate-700 px-3 py-1.5 text-xs text-slate-800 dark:text-slate-100 hover:bg-slate-50 dark:hover:bg-slate-800"
+                          className="inline-flex items-center gap-2 rounded-lg border border-white/[0.06] px-3 py-1.5 text-xs text-white hover:bg-white/[0.04]"
                         >
                           <DocumentArrowDownIcon className="h-4 w-4" />
                           Dockerfile
@@ -3698,7 +3698,7 @@ function CloudOperatorPageInner() {
                               status.launch.terraformTemplates.join("\n\n")
                             )}`}
                             download="operator-terraform.tf"
-                            className="inline-flex items-center gap-2 rounded-lg border border-slate-200 dark:border-slate-700 px-3 py-1.5 text-xs text-slate-800 dark:text-slate-100 hover:bg-slate-50 dark:hover:bg-slate-800"
+                            className="inline-flex items-center gap-2 rounded-lg border border-white/[0.06] px-3 py-1.5 text-xs text-white hover:bg-white/[0.04]"
                           >
                             <DocumentArrowDownIcon className="h-4 w-4" />
                             Terraform templates
@@ -3706,57 +3706,57 @@ function CloudOperatorPageInner() {
                         )}
                     </div>
                   ) : (
-                    <p className="text-xs text-slate-600 dark:text-slate-400">
+                    <p className="text-xs text-zinc-400">
                       Downloadable configs unlock on Pro, Growth, or Enterprise tiers.
                     </p>
                   )}
                 </AxiomCard>
 
                 {status?.simulation && status.canViewTechnicalOutputs && (
-                  <AxiomCard className="p-5 bg-slate-50 dark:bg-slate-900/50">
-                    <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-2">
+                  <AxiomCard className="p-5 bg-white/[0.02]/50">
+                    <h3 className="text-sm font-semibold text-white mb-2">
                       Impact Forecast
                     </h3>
-                    <p className="text-xs text-slate-600 dark:text-slate-400 mb-3">
+                    <p className="text-xs text-zinc-400 mb-3">
                       Estimated impact from executing the 30-day plan (deterministic simulation).
                     </p>
                     <div className="grid grid-cols-2 gap-2 text-xs mb-3">
                       <div>
-                        <span className="text-slate-500 dark:text-slate-400">Score lift:</span>{" "}
+                        <span className="text-zinc-500">Score lift:</span>{" "}
                         +{status.simulation.scoreLift.min}–{status.simulation.scoreLift.max} pts
                       </div>
                       <div>
-                        <span className="text-slate-500 dark:text-slate-400">Savings lift:</span>{" "}
+                        <span className="text-zinc-500">Savings lift:</span>{" "}
                         ${status.simulation.savingsLift.min.toLocaleString()}–$
                         {status.simulation.savingsLift.max.toLocaleString()}
                       </div>
                       <div>
-                        <span className="text-slate-500 dark:text-slate-400">Risk reduction:</span>{" "}
+                        <span className="text-zinc-500">Risk reduction:</span>{" "}
                         {status.simulation.riskReduction.min}–{status.simulation.riskReduction.max}%
                       </div>
                       <div>
-                        <span className="text-slate-500 dark:text-slate-400">Friction lift:</span>{" "}
+                        <span className="text-zinc-500">Friction lift:</span>{" "}
                         {status.simulation.frictionLift.min}–{status.simulation.frictionLift.max} pts
                       </div>
                     </div>
-                    <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                    <p className="text-[11px] text-zinc-500">
                       Confidence: {status.simulation.confidence}
                     </p>
                   </AxiomCard>
                 )}
                 {!status?.canViewTechnicalOutputs && status?.outputStatus === "ready" && (
-                  <AxiomCard className="p-5 bg-slate-50 dark:bg-slate-900/50">
-                    <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-2">
+                  <AxiomCard className="p-5 bg-white/[0.02]/50">
+                    <h3 className="text-sm font-semibold text-white mb-2">
                       Preview of Pro insights
                     </h3>
-                    <p className="text-xs text-slate-600 dark:text-slate-400 mb-4">
+                    <p className="text-xs text-zinc-400 mb-4">
                       This is the kind of output you get on Pro — real examples, not marketing copy.
                     </p>
 
                     <div className="space-y-4">
-                      <div className="rounded-lg border border-slate-200 dark:border-slate-700/60 p-3">
-                        <p className="text-[10px] font-bold text-violet-600 dark:text-violet-400 uppercase tracking-wide mb-1.5">Terraform Config (sample)</p>
-                        <pre className="text-[11px] text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 rounded p-2 overflow-x-auto font-mono leading-relaxed">{`resource "aws_s3_bucket" "backups" {
+                      <div className="rounded-lg border border-white/[0.06]/60 p-3">
+                        <p className="text-[10px] font-bold text-violet-400 uppercase tracking-wide mb-1.5">Terraform Config (sample)</p>
+                        <pre className="text-[11px] text-zinc-300 bg-white/[0.04] rounded p-2 overflow-x-auto font-mono leading-relaxed">{`resource "aws_s3_bucket" "backups" {
   bucket = "myapp-backups-\${var.env}"
   versioning { enabled = true }
   server_side_encryption_configuration {
@@ -3767,36 +3767,36 @@ function CloudOperatorPageInner() {
     }
   }
 }`}</pre>
-                        <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-1.5">Pro generates configs tailored to your actual provider, region, and architecture.</p>
+                        <p className="text-[10px] text-zinc-500 mt-1.5">Pro generates configs tailored to your actual provider, region, and architecture.</p>
                       </div>
 
-                      <div className="rounded-lg border border-slate-200 dark:border-slate-700/60 p-3">
-                        <p className="text-[10px] font-bold text-violet-600 dark:text-violet-400 uppercase tracking-wide mb-1.5">Deeper Analysis (sample)</p>
-                        <div className="text-xs text-slate-700 dark:text-slate-300 space-y-1.5">
+                      <div className="rounded-lg border border-white/[0.06]/60 p-3">
+                        <p className="text-[10px] font-bold text-violet-400 uppercase tracking-wide mb-1.5">Deeper Analysis (sample)</p>
+                        <div className="text-xs text-zinc-300 space-y-1.5">
                           <p><span className="font-medium">IAM audit:</span> 3 roles with AdministratorAccess — recommend scoping to least-privilege with boundary policies.</p>
                           <p><span className="font-medium">Network:</span> Default VPC in use with 0.0.0.0/0 ingress on port 22. Move to private subnets with bastion or SSM.</p>
                           <p><span className="font-medium">Cost:</span> 4 instances running t2.micro — switch to t3.micro for 10% better price-performance.</p>
                         </div>
                       </div>
 
-                      <div className="rounded-lg border border-slate-200 dark:border-slate-700/60 p-3">
-                        <p className="text-[10px] font-bold text-violet-600 dark:text-violet-400 uppercase tracking-wide mb-1.5">Impact Forecast (sample)</p>
+                      <div className="rounded-lg border border-white/[0.06]/60 p-3">
+                        <p className="text-[10px] font-bold text-violet-400 uppercase tracking-wide mb-1.5">Impact Forecast (sample)</p>
                         <div className="grid grid-cols-2 gap-2 text-xs">
-                          <div><span className="text-slate-500 dark:text-slate-400">Score lift:</span> <span className="font-medium text-slate-900 dark:text-slate-100">+12–18 pts</span></div>
-                          <div><span className="text-slate-500 dark:text-slate-400">Annual savings:</span> <span className="font-medium text-slate-900 dark:text-slate-100">$4,200–$8,500</span></div>
-                          <div><span className="text-slate-500 dark:text-slate-400">Risk reduction:</span> <span className="font-medium text-slate-900 dark:text-slate-100">35–50%</span></div>
-                          <div><span className="text-slate-500 dark:text-slate-400">Friction reduction:</span> <span className="font-medium text-slate-900 dark:text-slate-100">15–25 pts</span></div>
+                          <div><span className="text-zinc-500">Score lift:</span> <span className="font-medium text-white">+12–18 pts</span></div>
+                          <div><span className="text-zinc-500">Annual savings:</span> <span className="font-medium text-white">$4,200–$8,500</span></div>
+                          <div><span className="text-zinc-500">Risk reduction:</span> <span className="font-medium text-white">35–50%</span></div>
+                          <div><span className="text-zinc-500">Friction reduction:</span> <span className="font-medium text-white">15–25 pts</span></div>
                         </div>
                       </div>
                     </div>
 
-                    <div className="mt-4 pt-3 border-t border-slate-200 dark:border-slate-700/60 flex items-center justify-between">
-                      <p className="text-[10px] text-slate-500 dark:text-slate-400">
+                    <div className="mt-4 pt-3 border-t border-white/[0.06]/60 flex items-center justify-between">
+                      <p className="text-[10px] text-zinc-500">
                         Pro outputs are generated from your actual scan data — not generic templates.
                       </p>
                       <button
                         onClick={() => openUpgradeModal("deeper-analysis")}
-                        className="text-xs font-medium text-violet-600 dark:text-violet-400 hover:text-violet-800 dark:hover:text-violet-300 transition-colors whitespace-nowrap ml-3"
+                        className="text-xs font-medium text-violet-400 hover:text-violet-300 transition-colors whitespace-nowrap ml-3"
                       >
                         Unlock for your account →
                       </button>
@@ -3805,10 +3805,10 @@ function CloudOperatorPageInner() {
                 )}
 
                 <AxiomCard className="p-5">
-                  <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-2">
+                  <h3 className="text-sm font-semibold text-white mb-2">
                     Request automation
                   </h3>
-                  <p className="text-xs text-slate-600 dark:text-slate-400 mb-3">
+                  <p className="text-xs text-zinc-400 mb-3">
                     The Operator has prepared your automation. When you&apos;re ready, we can help
                     implement it in your cloud accounts.
                   </p>
@@ -3819,14 +3819,14 @@ function CloudOperatorPageInner() {
                 </AxiomCard>
 
                 {status?.enterpriseBriefPreview && !status?.hasEnterpriseEngagement && (
-                  <AxiomCard className="p-5 bg-slate-50 dark:bg-slate-900/50">
-                    <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-2">
+                  <AxiomCard className="p-5 bg-white/[0.02]/50">
+                    <h3 className="text-sm font-semibold text-white mb-2">
                       Enterprise Readiness Brief (Preview)
                     </h3>
-                    <p className="text-xs text-slate-600 dark:text-slate-400 mb-2">
+                    <p className="text-xs text-zinc-400 mb-2">
                       Top risks: {status.enterpriseBriefPreview.biggestRiskExposures.slice(0, 2).join("; ")}
                     </p>
-                    <p className="text-xs text-slate-600 dark:text-slate-400 mb-3">
+                    <p className="text-xs text-zinc-400 mb-3">
                       Top savings: {status.enterpriseBriefPreview.biggestSavingsLevers.slice(0, 2).join("; ")}
                     </p>
                     <Link
@@ -3844,21 +3844,21 @@ function CloudOperatorPageInner() {
               <div className="space-y-4">
                 <AxiomAIVision />
                 <AxiomCard className="p-5">
-                  <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-2">
+                  <h3 className="text-sm font-semibold text-white mb-2">
                     What each plan includes
                   </h3>
                   <div className="text-xs space-y-3 mb-4">
-                    <div className="rounded-lg bg-slate-100 dark:bg-slate-800/60 p-2.5">
-                      <p className="font-semibold text-slate-900 dark:text-slate-100 mb-0.5">Free <span className="text-slate-400 font-normal">$0</span></p>
-                      <p className="text-slate-500 dark:text-slate-400">Read-only infrastructure scan, cost/security/drift findings, prioritized recommendations, 1 scan/month</p>
+                    <div className="rounded-lg bg-white/[0.04]/60 p-2.5">
+                      <p className="font-semibold text-white mb-0.5">Free <span className="text-slate-400 font-normal">$0</span></p>
+                      <p className="text-zinc-500">Read-only infrastructure scan, cost/security/drift findings, prioritized recommendations, 1 scan/month</p>
                     </div>
-                    <div className="rounded-lg bg-violet-50 dark:bg-violet-950/30 border border-violet-200 dark:border-violet-800/40 p-2.5">
-                      <p className="font-semibold text-violet-700 dark:text-violet-300 mb-0.5">Agent <span className="text-violet-400 font-normal">$149/mo</span></p>
-                      <p className="text-slate-600 dark:text-slate-400">Everything in Free + cognitive reasoning, phased execution plans, Terraform generation, governance &amp; approval gates, Slack alerts</p>
+                    <div className="rounded-lg bg-violet-950/30 border border-violet-800/40 p-2.5">
+                      <p className="font-semibold text-violet-300 mb-0.5">Agent <span className="text-violet-400 font-normal">$149/mo</span></p>
+                      <p className="text-zinc-400">Everything in Free + cognitive reasoning, phased execution plans, Terraform generation, governance &amp; approval gates, Slack alerts</p>
                     </div>
-                    <div className="rounded-lg bg-slate-100 dark:bg-slate-800/60 p-2.5">
-                      <p className="font-semibold text-slate-900 dark:text-slate-100 mb-0.5">Enterprise <span className="text-slate-400 font-normal">Custom</span></p>
-                      <p className="text-slate-500 dark:text-slate-400">Everything in Agent + autonomous operations, trust ladder, compliance frameworks, SSO, audit logging, dedicated manager, SLA</p>
+                    <div className="rounded-lg bg-white/[0.04]/60 p-2.5">
+                      <p className="font-semibold text-white mb-0.5">Enterprise <span className="text-slate-400 font-normal">Custom</span></p>
+                      <p className="text-zinc-500">Everything in Agent + autonomous operations, trust ladder, compliance frameworks, SSO, audit logging, dedicated manager, SLA</p>
                     </div>
                   </div>
                   <Link
@@ -3868,7 +3868,7 @@ function CloudOperatorPageInner() {
                     View pricing
                     <ArrowRightIcon className="h-3 w-3" />
                   </Link>
-                  <p className="mt-2 text-[11px] text-slate-500 dark:text-slate-400">
+                  <p className="mt-2 text-[11px] text-zinc-500">
                     Or <Link href="/contact?intent=operator-upgrade" className="underline">Contact Sales</Link>
                   </p>
                 </AxiomCard>
@@ -3894,7 +3894,7 @@ export default function CloudOperatorPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
+        <div className="min-h-screen bg-[#09090b]">
           <Navigation />
           <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-20 flex items-center justify-center min-h-[60vh]">
             <AxiomLoadingState message="Loading Axiom AI cloud analysis…" variant="full" />

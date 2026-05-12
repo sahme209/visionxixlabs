@@ -21,19 +21,19 @@ export function AccessModelSection({
     <section className="mb-16" aria-labelledby="access-model-heading">
       <h2
         id="access-model-heading"
-        className="text-2xl font-bold text-slate-900 dark:text-slate-100 mb-2"
+        className="text-2xl font-bold text-white mb-2"
       >
         {title}
       </h2>
-      <p className="text-slate-600 dark:text-slate-400 mb-6 max-w-2xl">
+      <p className="text-zinc-400 mb-6 max-w-2xl">
         {intro}
       </p>
       <div className="grid gap-6 md:grid-cols-2 mb-8">
-        <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 p-5">
-          <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wide mb-3">
+        <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-5">
+          <h3 className="text-sm font-semibold text-zinc-300 uppercase tracking-wide mb-3">
             We operate using
           </h3>
-          <ul className="space-y-1.5 text-sm text-slate-600 dark:text-slate-400">
+          <ul className="space-y-1.5 text-sm text-zinc-400">
             {weOperateUsing.map((item) => (
               <li key={item} className="flex items-start">
                 <span className="text-indigo-500 mr-2 mt-0.5 shrink-0">•</span>
@@ -42,22 +42,22 @@ export function AccessModelSection({
             ))}
           </ul>
         </div>
-        <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-5">
-          <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wide mb-3">
+        <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-5">
+          <h3 className="text-sm font-semibold text-zinc-300 uppercase tracking-wide mb-3">
             {whatWeAreNotTitle}
           </h3>
-          <ul className="space-y-1.5 text-sm text-slate-600 dark:text-slate-400 mb-4">
+          <ul className="space-y-1.5 text-sm text-zinc-400 mb-4">
             {whatWeAreNot.map((item) => (
               <li key={item} className="flex items-start">
-                <span className="text-slate-400 dark:text-slate-500 mr-2 mt-0.5">×</span>
+                <span className="text-zinc-500 mr-2 mt-0.5">×</span>
                 {item}
               </li>
             ))}
           </ul>
-          <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wide mb-2">
+          <h3 className="text-sm font-semibold text-zinc-300 uppercase tracking-wide mb-2">
             {whatWeFocusOnTitle}
           </h3>
-          <ul className="space-y-1.5 text-sm text-slate-600 dark:text-slate-400">
+          <ul className="space-y-1.5 text-sm text-zinc-400">
             {whatWeFocusOn.map((item) => (
               <li key={item} className="flex items-start">
                 <span className="text-indigo-500 mr-2 mt-0.5 shrink-0">•</span>

@@ -112,11 +112,11 @@ export default function AdminLeadsPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100 mb-2">
+      <h1 className="text-2xl font-bold text-white mb-2">
         Leads
       </h1>
       <div className="flex flex-wrap items-center gap-4 mb-6">
-        <div className="flex rounded-lg border border-slate-200 dark:border-slate-700 p-1">
+        <div className="flex rounded-lg border border-white/[0.06] p-1">
           {(["website-request", "contact", "all"] as const).map((s) => (
             <button
               key={s}
@@ -124,8 +124,8 @@ export default function AdminLeadsPage() {
               onClick={() => setSourceFilter(s)}
               className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
                 sourceFilter === s
-                  ? "bg-indigo-100 dark:bg-indigo-900/50 text-indigo-700 dark:text-indigo-300"
-                  : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"
+                  ? "bg-violet-500/10 text-violet-400"
+                  : "text-zinc-400 hover:bg-white/[0.04]"
               }`}
             >
               {s === "website-request" ? "Website" : s === "contact" ? "Contact" : "All"}
@@ -134,7 +134,7 @@ export default function AdminLeadsPage() {
         </div>
       </div>
       <div className="flex flex-wrap items-center gap-4 mb-8">
-        <p className="text-slate-600 dark:text-slate-400">
+        <p className="text-zinc-400">
           {sourceFilter === "contact"
             ? "Contact form submissions. AI resolution agent runs via cron or manually below."
             : sourceFilter === "all"
@@ -155,9 +155,9 @@ export default function AdminLeadsPage() {
 
       <div className="space-y-4">
         {leads.length === 0 ? (
-          <div className="rounded-2xl border-2 border-dashed border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-12 text-center">
+          <div className="rounded-2xl border-2 border-dashed border-white/[0.06] bg-white/[0.02] p-12 text-center">
             <DocumentTextIcon className="h-12 w-12 text-slate-400 mx-auto mb-4" />
-            <p className="text-slate-600 dark:text-slate-400">
+            <p className="text-zinc-400">
               {sourceFilter === "contact" ? "No contact leads yet." : sourceFilter === "all" ? "No leads yet." : "No website request leads yet."}
             </p>
           </div>
@@ -175,15 +175,15 @@ export default function AdminLeadsPage() {
             return (
               <div
                 key={lead.id}
-                className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-6"
+                className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-6"
               >
                 <div className="flex flex-wrap items-start justify-between gap-4">
                   <div>
-                    <h2 className="font-semibold text-slate-900 dark:text-slate-100">
+                    <h2 className="font-semibold text-white">
                       {(form.name || contactPayload.name || lead.name) as string || "—"}
                     </h2>
-                    <p className="text-sm text-slate-600 dark:text-slate-400">{lead.email}</p>
-                    <p className="text-xs text-slate-500 dark:text-slate-500 mt-1">
+                    <p className="text-sm text-zinc-400">{lead.email}</p>
+                    <p className="text-xs text-zinc-500 mt-1">
                       {lead.source === "contact"
                         ? `${(contactPayload.company as string) || ""} · ${lead.agentStatus ?? "pending"} · ${new Date(lead.createdAt).toLocaleString()}`
                         : `${form.company as string || ""} · ${form.tier as string || "starter"} · ${lead.status} · ${new Date(lead.createdAt).toLocaleString()}`}
@@ -193,7 +193,7 @@ export default function AdminLeadsPage() {
                         href={previewUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-block mt-2 text-sm text-indigo-600 dark:text-indigo-400 hover:underline"
+                        className="inline-block mt-2 text-sm text-violet-400 hover:underline"
                       >
                         Preview: {previewUrl}
                       </a>
@@ -203,7 +203,7 @@ export default function AdminLeadsPage() {
                         href={productionUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-block mt-1 text-sm text-emerald-600 dark:text-emerald-400 hover:underline"
+                        className="inline-block mt-1 text-sm text-emerald-400 hover:underline"
                       >
                         Production: {productionUrl}
                       </a>
@@ -214,7 +214,7 @@ export default function AdminLeadsPage() {
                     <button
                       onClick={() => runAction(lead.id, "generate")}
                       disabled={isActioning}
-                      className="inline-flex items-center gap-1.5 rounded-lg bg-slate-100 dark:bg-slate-700 px-3 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600 disabled:opacity-50"
+                      className="inline-flex items-center gap-1.5 rounded-lg bg-white/[0.06] px-3 py-2 text-sm font-medium text-zinc-300 hover:bg-white/[0.06] disabled:opacity-50"
                     >
                       <DocumentTextIcon className="h-4 w-4" />
                       Regenerate package
@@ -222,7 +222,7 @@ export default function AdminLeadsPage() {
                     <button
                       onClick={() => runAction(lead.id, "deploy")}
                       disabled={isActioning}
-                      className="inline-flex items-center gap-1.5 rounded-lg bg-indigo-100 dark:bg-indigo-900/40 px-3 py-2 text-sm font-medium text-indigo-700 dark:text-indigo-300 hover:bg-indigo-200 dark:hover:bg-indigo-900/60 disabled:opacity-50"
+                      className="inline-flex items-center gap-1.5 rounded-lg bg-violet-500/10 px-3 py-2 text-sm font-medium text-violet-400 hover:bg-violet-500/10 disabled:opacity-50"
                     >
                       <CloudArrowUpIcon className="h-4 w-4" />
                       Regenerate preview
@@ -230,7 +230,7 @@ export default function AdminLeadsPage() {
                     <button
                       onClick={() => runAction(lead.id, "publish")}
                       disabled={isActioning}
-                      className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-100 dark:bg-emerald-900/40 px-3 py-2 text-sm font-medium text-emerald-700 dark:text-emerald-300 hover:bg-emerald-200 dark:hover:bg-emerald-900/60 disabled:opacity-50"
+                      className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-500/10 px-3 py-2 text-sm font-medium text-emerald-300 hover:bg-emerald-500/10 disabled:opacity-50"
                     >
                       <RocketLaunchIcon className="h-4 w-4" />
                       Publish
@@ -239,10 +239,10 @@ export default function AdminLeadsPage() {
                   )}
                 </div>
                 {lead.source !== "contact" && (
-                <div className="mt-4 pt-4 border-t border-slate-200 dark:border-slate-700 flex flex-wrap gap-2">
+                <div className="mt-4 pt-4 border-t border-white/[0.06] flex flex-wrap gap-2">
                   <button
                     onClick={() => setExpandedAi(showAiOutput ? null : lead.id)}
-                    className="inline-flex items-center gap-1.5 rounded-lg bg-slate-100 dark:bg-slate-700 px-3 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600"
+                    className="inline-flex items-center gap-1.5 rounded-lg bg-white/[0.06] px-3 py-2 text-sm font-medium text-zinc-300 hover:bg-white/[0.06]"
                   >
                     {showAiOutput ? <ChevronUpIcon className="h-4 w-4" /> : <ChevronDownIcon className="h-4 w-4" />}
                     View AI output
@@ -254,7 +254,7 @@ export default function AdminLeadsPage() {
                       if (v && v !== (form.tier as string)) upgradeTier(lead.id, v);
                     }}
                     disabled={upgrading === lead.id}
-                    className="rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-3 py-2 text-sm text-slate-700 dark:text-slate-300"
+                    className="rounded-lg border border-white/[0.08] bg-white/[0.02] px-3 py-2 text-sm text-zinc-300"
                   >
                     {Object.values(WEBSITE_BUILD_TIERS).map((t) => (
                       <option key={t.id} value={t.id}>{t.name}</option>
@@ -263,33 +263,33 @@ export default function AdminLeadsPage() {
                 </div>
                 )}
                 {showAiOutput && aiPackage && (
-                  <pre className="mt-2 p-4 rounded-lg bg-slate-100 dark:bg-slate-900 text-xs overflow-auto max-h-64">
+                  <pre className="mt-2 p-4 rounded-lg bg-white/[0.04] text-xs overflow-auto max-h-64">
                     {JSON.stringify(aiPackage, null, 2)}
                   </pre>
                 )}
                 {typeof form.message === "string" && form.message && (
-                  <div className="mt-4 pt-4 border-t border-slate-200 dark:border-slate-700">
-                    <p className="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase mb-1">Message</p>
-                    <p className="text-sm text-slate-600 dark:text-slate-400 whitespace-pre-wrap">{form.message}</p>
+                  <div className="mt-4 pt-4 border-t border-white/[0.06]">
+                    <p className="text-xs font-medium text-zinc-500 uppercase mb-1">Message</p>
+                    <p className="text-sm text-zinc-400 whitespace-pre-wrap">{form.message}</p>
                   </div>
                 )}
                 {lead.source === "contact" && (
-                  <div className="mt-4 pt-4 border-t border-slate-200 dark:border-slate-700 space-y-2">
+                  <div className="mt-4 pt-4 border-t border-white/[0.06] space-y-2">
                     <div className="flex items-center gap-2 text-xs">
-                      <span className="font-medium text-slate-500 dark:text-slate-400">Agent:</span>
+                      <span className="font-medium text-zinc-500">Agent:</span>
                       <span className={`font-semibold ${
-                        lead.agentStatus === "RESOLVED" ? "text-emerald-600 dark:text-emerald-400" :
-                        lead.agentStatus === "NEEDS_INFO" ? "text-amber-600 dark:text-amber-400" :
-                        lead.agentStatus === "ESCALATED" ? "text-rose-600 dark:text-rose-400" :
-                        "text-slate-600 dark:text-slate-400"
+                        lead.agentStatus === "RESOLVED" ? "text-emerald-400" :
+                        lead.agentStatus === "NEEDS_INFO" ? "text-amber-600 text-amber-400" :
+                        lead.agentStatus === "ESCALATED" ? "text-rose-600 text-rose-400" :
+                        "text-zinc-400"
                       }`}>
                         {lead.agentStatus ?? "pending"}
                       </span>
                     </div>
                     {lead.actionsTaken && lead.actionsTaken.length > 0 && (
                       <div>
-                        <p className="text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Actions taken</p>
-                        <ul className="text-xs text-slate-600 dark:text-slate-400 space-y-0.5">
+                        <p className="text-xs font-medium text-zinc-500 mb-1">Actions taken</p>
+                        <ul className="text-xs text-zinc-400 space-y-0.5">
                           {lead.actionsTaken.map((a, i) => (
                             <li key={i}>• {a}</li>
                           ))}
@@ -297,7 +297,7 @@ export default function AdminLeadsPage() {
                       </div>
                     )}
                     {lead.lastEmailSent && (
-                      <div className="flex items-center gap-2 text-xs text-slate-600 dark:text-slate-400">
+                      <div className="flex items-center gap-2 text-xs text-zinc-400">
                         <EnvelopeIcon className="h-4 w-4" />
                         <span>Last email: {lead.lastEmailSent.subject} ({new Date(lead.lastEmailSent.sentAt).toLocaleString()})</span>
                       </div>
@@ -310,8 +310,8 @@ export default function AdminLeadsPage() {
                     )}
                     {typeof contactPayload.message === "string" && (
                       <div>
-                        <p className="text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Message</p>
-                        <p className="text-sm text-slate-600 dark:text-slate-400 whitespace-pre-wrap">{contactPayload.message}</p>
+                        <p className="text-xs font-medium text-zinc-500 mb-1">Message</p>
+                        <p className="text-sm text-zinc-400 whitespace-pre-wrap">{contactPayload.message}</p>
                       </div>
                     )}
                   </div>

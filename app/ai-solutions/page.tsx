@@ -86,20 +86,20 @@ export const metadata: Metadata = {
 
 export default function AISolutionsPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
+    <div className="min-h-screen bg-[#09090b]">
       <Navigation />
       <main className="pt-24 pb-24 px-4 sm:px-6 lg:px-8">
         <div className="max-w-6xl mx-auto">
           {/* Breadcrumb */}
           <nav
             aria-label="Breadcrumb"
-            className="mb-6 text-xs text-slate-500 dark:text-slate-400"
+            className="mb-6 text-xs text-zinc-500"
           >
             <ol className="flex items-center space-x-2">
               <li>
                 <Link
                   href="/"
-                  className="hover:text-indigo-600 dark:hover:text-indigo-400"
+                  className="hover:text-violet-400"
                 >
                   Home
                 </Link>
@@ -117,7 +117,7 @@ export default function AISolutionsPage() {
               <h1 className="text-3xl md:text-5xl lg:text-6xl font-extrabold mb-6 bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
                 {aiHero.title}
               </h1>
-              <p className="text-lg md:text-xl text-slate-600 dark:text-slate-400 mb-10">
+              <p className="text-lg md:text-xl text-zinc-400 mb-10">
                 {aiHero.subtitle}
               </p>
               <AIHeroCTAs
@@ -132,10 +132,10 @@ export default function AISolutionsPage() {
           {/* Why Vision XIX for AI — differentiators */}
           <section className="mb-20">
             <div className="text-center mb-10">
-              <h2 className="text-2xl md:text-4xl font-bold text-slate-900 dark:text-slate-100 mb-3">
+              <h2 className="text-2xl md:text-4xl font-bold text-white mb-3">
                 Why Vision XIX for AI
               </h2>
-              <p className="text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
+              <p className="text-zinc-400 max-w-2xl mx-auto">
                 Production-first, cloud-native, and built for operations. We close the gap between AI demos and real business value.
               </p>
             </div>
@@ -145,10 +145,10 @@ export default function AISolutionsPage() {
           {/* AI use cases expanded */}
           <section className="mb-20">
             <div className="text-center mb-10">
-              <h2 className="text-2xl md:text-4xl font-bold text-slate-900 dark:text-slate-100 mb-3">
+              <h2 className="text-2xl md:text-4xl font-bold text-white mb-3">
                 AI use cases we build
               </h2>
-              <p className="text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
+              <p className="text-zinc-400 max-w-2xl mx-auto">
                 From customer support to DevOps—we deliver production-grade AI across workflows.
               </p>
             </div>
@@ -156,16 +156,16 @@ export default function AISolutionsPage() {
           </section>
 
           {/* Where companies need AI */}
-          <section className="mb-16 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-6" aria-labelledby="needs-heading">
-            <h2 id="needs-heading" className="text-lg font-bold text-slate-900 dark:text-slate-100 mb-3">
+          <section className="mb-16 rounded-xl border border-white/[0.06] bg-white/[0.02] p-6" aria-labelledby="needs-heading">
+            <h2 id="needs-heading" className="text-lg font-bold text-white mb-3">
               Where companies need AI
             </h2>
-            <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">
+            <p className="text-sm text-zinc-400 mb-4">
               Research shows companies need AI for: customer support, sales/marketing personalization, data extraction, internal knowledge bases, DevOps productivity, operational analytics, and sector-specific automation (agriculture, trade, manufacturing). We build production-grade solutions for these use cases.
             </p>
             <Link
               href="/markets"
-              className="text-sm font-semibold text-indigo-600 dark:text-indigo-400 hover:underline"
+              className="text-sm font-semibold text-violet-400 hover:underline"
             >
               Full list of needs and adoption gaps →
             </Link>
@@ -174,10 +174,10 @@ export default function AISolutionsPage() {
           {/* What We Actually Build (Overview continued) */}
           <section id="what-we-build" className="mb-20">
             <div className="text-center mb-12">
-              <h2 className="text-2xl md:text-4xl font-bold text-slate-900 dark:text-slate-100 mb-3">
+              <h2 className="text-2xl md:text-4xl font-bold text-white mb-3">
                 What we actually build
               </h2>
-              <p className="text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
+              <p className="text-zinc-400 max-w-2xl mx-auto">
                 Practical AI solutions deployed inside your cloud, with security and governance built in.
               </p>
             </div>
@@ -187,10 +187,10 @@ export default function AISolutionsPage() {
           {/* Production AI Systems — structured offerings */}
           <section id="production-ai" className="mb-20">
             <div className="text-center mb-12">
-              <h2 className="text-2xl md:text-4xl font-bold text-slate-900 dark:text-slate-100 mb-3">
+              <h2 className="text-2xl md:text-4xl font-bold text-white mb-3">
                 Production AI Systems, not AI demos
               </h2>
-              <p className="text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
+              <p className="text-zinc-400 max-w-2xl mx-auto">
                 High-end AI offerings with clear scope, security, and deliverables. Each is designed for production deployment inside your cloud.
               </p>
             </div>
@@ -198,34 +198,34 @@ export default function AISolutionsPage() {
               {aiOfferings.map((offering) => (
                 <div
                   key={offering.id}
-                  className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-6 md:p-8 shadow-sm"
+                  className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-6 md:p-8 shadow-sm"
                 >
-                  <h3 className="text-xl font-bold text-slate-900 dark:text-slate-100 mb-1">
+                  <h3 className="text-xl font-bold text-white mb-1">
                     {offering.title}
                   </h3>
-                  <p className="text-indigo-600 dark:text-indigo-400 text-sm font-medium mb-4">
+                  <p className="text-violet-400 text-sm font-medium mb-4">
                     {offering.tagline}
                   </p>
                   <dl className="grid gap-4 sm:grid-cols-1">
                     <div>
-                      <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400 mb-1">Problem</dt>
-                      <dd className="text-sm text-slate-700 dark:text-slate-300">{offering.problem}</dd>
+                      <dt className="text-xs font-semibold uppercase tracking-wide text-zinc-500 mb-1">Problem</dt>
+                      <dd className="text-sm text-zinc-300">{offering.problem}</dd>
                     </div>
                     <div>
-                      <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400 mb-1">Technical approach</dt>
-                      <dd className="text-sm text-slate-700 dark:text-slate-300">{offering.technicalApproach}</dd>
+                      <dt className="text-xs font-semibold uppercase tracking-wide text-zinc-500 mb-1">Technical approach</dt>
+                      <dd className="text-sm text-zinc-300">{offering.technicalApproach}</dd>
                     </div>
                     <div>
-                      <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400 mb-1">Deployment model</dt>
-                      <dd className="text-sm text-slate-700 dark:text-slate-300">{offering.deploymentModel}</dd>
+                      <dt className="text-xs font-semibold uppercase tracking-wide text-zinc-500 mb-1">Deployment model</dt>
+                      <dd className="text-sm text-zinc-300">{offering.deploymentModel}</dd>
                     </div>
                     <div>
-                      <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400 mb-1">Security model</dt>
-                      <dd className="text-sm text-slate-700 dark:text-slate-300">{offering.securityModel}</dd>
+                      <dt className="text-xs font-semibold uppercase tracking-wide text-zinc-500 mb-1">Security model</dt>
+                      <dd className="text-sm text-zinc-300">{offering.securityModel}</dd>
                     </div>
                     <div>
-                      <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400 mb-1">Deliverables</dt>
-                      <dd className="text-sm text-slate-700 dark:text-slate-300">
+                      <dt className="text-xs font-semibold uppercase tracking-wide text-zinc-500 mb-1">Deliverables</dt>
+                      <dd className="text-sm text-zinc-300">
                         <ul className="list-disc list-inside space-y-1">
                           {offering.deliverables.map((d) => (
                             <li key={d}>{d}</li>
@@ -234,8 +234,8 @@ export default function AISolutionsPage() {
                       </dd>
                     </div>
                     <div>
-                      <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400 mb-1">Ideal client</dt>
-                      <dd className="text-sm text-slate-700 dark:text-slate-300">{offering.idealClient}</dd>
+                      <dt className="text-xs font-semibold uppercase tracking-wide text-zinc-500 mb-1">Ideal client</dt>
+                      <dd className="text-sm text-zinc-300">{offering.idealClient}</dd>
                     </div>
                   </dl>
                 </div>
@@ -258,28 +258,28 @@ export default function AISolutionsPage() {
           {/* Technical diagrams — Visio-style flowcharts */}
           <section className="mb-20">
             <div className="text-center mb-10">
-              <h2 className="text-2xl md:text-4xl font-bold text-slate-900 dark:text-slate-100 mb-3">
+              <h2 className="text-2xl md:text-4xl font-bold text-white mb-3">
                 Technical architecture & flow
               </h2>
-              <p className="text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
+              <p className="text-zinc-400 max-w-2xl mx-auto">
                 From data ingestion to production—our delivery model in technical detail.
               </p>
             </div>
             <div className="space-y-8">
-              <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/50 p-6">
-                <h3 className="text-sm font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide mb-3">
+              <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-6">
+                <h3 className="text-sm font-semibold text-zinc-500 uppercase tracking-wide mb-3">
                   Solution architecture
                 </h3>
                 <SolutionArchitectureDiagram />
               </div>
-              <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/50 p-6">
-                <h3 className="text-sm font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide mb-3">
+              <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-6">
+                <h3 className="text-sm font-semibold text-zinc-500 uppercase tracking-wide mb-3">
                   Data flow pipeline
                 </h3>
                 <DataFlowDiagram />
               </div>
-              <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/50 p-6">
-                <h3 className="text-sm font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide mb-3">
+              <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-6">
+                <h3 className="text-sm font-semibold text-zinc-500 uppercase tracking-wide mb-3">
                   Delivery process
                 </h3>
                 <DeliveryProcessFlowchart />
@@ -290,10 +290,10 @@ export default function AISolutionsPage() {
           {/* AI methodology */}
           <section className="mb-20">
             <div className="text-center mb-10">
-              <h2 className="text-2xl md:text-4xl font-bold text-slate-900 dark:text-slate-100 mb-3">
+              <h2 className="text-2xl md:text-4xl font-bold text-white mb-3">
                 Our AI methodology
               </h2>
-              <p className="text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
+              <p className="text-zinc-400 max-w-2xl mx-auto">
                 Discovery, architecture, implementation, and operation—with clear handoffs at each phase.
               </p>
             </div>
@@ -301,31 +301,31 @@ export default function AISolutionsPage() {
               {aiMethodology.map((m, i) => (
                 <div
                   key={m.phase}
-                  className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-6"
+                  className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-6"
                 >
-                  <span className="text-xs font-bold text-indigo-600 dark:text-indigo-400 mb-2 block">
+                  <span className="text-xs font-bold text-violet-400 mb-2 block">
                     Phase {i + 1}
                   </span>
-                  <h3 className="font-semibold text-slate-900 dark:text-slate-100 mb-2">{m.phase}</h3>
-                  <p className="text-sm text-slate-600 dark:text-slate-400">{m.description}</p>
+                  <h3 className="font-semibold text-white mb-2">{m.phase}</h3>
+                  <p className="text-sm text-zinc-400">{m.description}</p>
                 </div>
               ))}
             </div>
           </section>
 
           {/* AI tech stack */}
-          <section className="mb-20 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 p-8">
-            <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100 mb-4">
+          <section className="mb-20 rounded-xl border border-white/[0.06] bg-white/[0.02] p-8">
+            <h2 className="text-xl font-bold text-white mb-4">
               AI tech stack we use
             </h2>
-            <p className="text-sm text-slate-600 dark:text-slate-400 mb-6">
+            <p className="text-sm text-zinc-400 mb-6">
               LLM APIs, vector stores, orchestration, model hosting, and observability—integrated with your cloud and CI/CD.
             </p>
             <div className="flex flex-wrap gap-3">
               {aiTechStack.map((tech) => (
                 <span
                   key={tech}
-                  className="px-4 py-2 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm text-slate-700 dark:text-slate-300"
+                  className="px-4 py-2 rounded-lg bg-white/[0.02] border border-white/[0.06] text-sm text-zinc-300"
                 >
                   {tech}
                 </span>
@@ -335,13 +335,13 @@ export default function AISolutionsPage() {
 
           {/* AI governance expanded */}
           <section className="mb-20">
-            <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-100 mb-4">
+            <h2 className="text-2xl font-bold text-white mb-4">
               Responsible AI and governance
             </h2>
-            <p className="text-slate-600 dark:text-slate-400 mb-6 max-w-3xl">
+            <p className="text-zinc-400 mb-6 max-w-3xl">
               We design for security, privacy, and compliance from the start. No shortcuts—production AI requires governance.
             </p>
-            <ul className="grid sm:grid-cols-2 gap-3 text-slate-600 dark:text-slate-400 text-sm">
+            <ul className="grid sm:grid-cols-2 gap-3 text-zinc-400 text-sm">
               {aiGovernanceExpanded.map((g) => (
                 <li key={g} className="flex gap-2">
                   <span className="text-indigo-500">✓</span>
@@ -354,10 +354,10 @@ export default function AISolutionsPage() {
           {/* How We Deploy AI */}
           <section className="mb-20">
             <div className="text-center mb-12">
-              <h2 className="text-2xl md:text-4xl font-bold text-slate-900 dark:text-slate-100 mb-3">
+              <h2 className="text-2xl md:text-4xl font-bold text-white mb-3">
                 How we deploy AI
               </h2>
-              <p className="text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
+              <p className="text-zinc-400 max-w-2xl mx-auto">
                 An outcome-driven process from discovery to monitoring and optimization.
               </p>
             </div>
@@ -383,10 +383,10 @@ export default function AISolutionsPage() {
 
           {/* Implementation Methodology */}
           <section className="mb-20">
-            <h2 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-slate-100 mb-4">
+            <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">
               Implementation methodology
             </h2>
-            <p className="text-slate-600 dark:text-slate-400 max-w-3xl">
+            <p className="text-zinc-400 max-w-3xl">
               {implementationMethodologyShort}
             </p>
           </section>
@@ -410,58 +410,58 @@ export default function AISolutionsPage() {
           {/* AI + Cloud Expertise */}
           <section className="mb-20">
             <div className="text-center mb-12">
-              <h2 className="text-2xl md:text-4xl font-bold text-slate-900 dark:text-slate-100 mb-3">
+              <h2 className="text-2xl md:text-4xl font-bold text-white mb-3">
                 AI + cloud expertise
               </h2>
-              <p className="text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
+              <p className="text-zinc-400 max-w-2xl mx-auto">
                 We deploy and integrate AI on the cloud provider you already use.
               </p>
             </div>
             <div className="grid gap-6 md:grid-cols-3">
-              <div className="card-hover bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-xl border border-slate-200 dark:border-slate-700">
-                <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100 mb-3">
+              <div className="card-hover bg-white/[0.02] rounded-2xl p-6 shadow-xl border border-white/[0.06]">
+                <h3 className="text-lg font-semibold text-white mb-3">
                   {aiCloudExpertise.aws.title}
                 </h3>
-                <ul className="space-y-2 text-sm text-slate-600 dark:text-slate-400">
+                <ul className="space-y-2 text-sm text-zinc-400">
                   {aiCloudExpertise.aws.bullets.map((b) => (
                     <li key={b}>• {b}</li>
                   ))}
                 </ul>
                 <Link
                   href="/cloud-solutions/aws"
-                  className="mt-4 inline-block text-sm font-semibold text-indigo-600 dark:text-indigo-400 hover:underline"
+                  className="mt-4 inline-block text-sm font-semibold text-violet-400 hover:underline"
                 >
                   Cloud Solutions on AWS →
                 </Link>
               </div>
-              <div className="card-hover bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-xl border border-slate-200 dark:border-slate-700">
-                <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100 mb-3">
+              <div className="card-hover bg-white/[0.02] rounded-2xl p-6 shadow-xl border border-white/[0.06]">
+                <h3 className="text-lg font-semibold text-white mb-3">
                   {aiCloudExpertise.azure.title}
                 </h3>
-                <ul className="space-y-2 text-sm text-slate-600 dark:text-slate-400">
+                <ul className="space-y-2 text-sm text-zinc-400">
                   {aiCloudExpertise.azure.bullets.map((b) => (
                     <li key={b}>• {b}</li>
                   ))}
                 </ul>
                 <Link
                   href="/cloud-solutions/azure"
-                  className="mt-4 inline-block text-sm font-semibold text-indigo-600 dark:text-indigo-400 hover:underline"
+                  className="mt-4 inline-block text-sm font-semibold text-violet-400 hover:underline"
                 >
                   Cloud Solutions on Azure →
                 </Link>
               </div>
-              <div className="card-hover bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-xl border border-slate-200 dark:border-slate-700">
-                <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100 mb-3">
+              <div className="card-hover bg-white/[0.02] rounded-2xl p-6 shadow-xl border border-white/[0.06]">
+                <h3 className="text-lg font-semibold text-white mb-3">
                   {aiCloudExpertise.gcp.title}
                 </h3>
-                <ul className="space-y-2 text-sm text-slate-600 dark:text-slate-400">
+                <ul className="space-y-2 text-sm text-zinc-400">
                   {aiCloudExpertise.gcp.bullets.map((b) => (
                     <li key={b}>• {b}</li>
                   ))}
                 </ul>
                 <Link
                   href="/cloud-solutions/gcp"
-                  className="mt-4 inline-block text-sm font-semibold text-indigo-600 dark:text-indigo-400 hover:underline"
+                  className="mt-4 inline-block text-sm font-semibold text-violet-400 hover:underline"
                 >
                   Cloud Solutions on GCP →
                 </Link>
@@ -471,14 +471,14 @@ export default function AISolutionsPage() {
 
           {/* Why Businesses Need This Now */}
           <section className="mb-20">
-            <div className="card-hover bg-white dark:bg-slate-800 rounded-2xl p-8 md:p-10 shadow-xl border border-slate-200 dark:border-slate-700">
-              <h2 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-slate-100 mb-4">
+            <div className="card-hover bg-white/[0.02] rounded-2xl p-8 md:p-10 shadow-xl border border-white/[0.06]">
+              <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">
                 {aiWhyNow.title}
               </h2>
-              <p className="text-slate-600 dark:text-slate-400 mb-6">
+              <p className="text-zinc-400 mb-6">
                 {aiWhyNow.intro}
               </p>
-              <ul className="space-y-2 text-slate-600 dark:text-slate-400">
+              <ul className="space-y-2 text-zinc-400">
                 {aiWhyNow.points.map((point) => (
                   <li key={point} className="flex items-start">
                     <span className="text-indigo-500 mr-2">•</span>
@@ -492,10 +492,10 @@ export default function AISolutionsPage() {
           {/* Governance & Security */}
           <section className="mb-20">
             <div className="text-center mb-8">
-              <h2 className="text-2xl md:text-4xl font-bold text-slate-900 dark:text-slate-100 mb-3">
+              <h2 className="text-2xl md:text-4xl font-bold text-white mb-3">
                 Governance & security
               </h2>
-              <p className="text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
+              <p className="text-zinc-400 max-w-2xl mx-auto">
                 Enterprise trust through responsible deployment and clear controls.
               </p>
             </div>
@@ -503,7 +503,7 @@ export default function AISolutionsPage() {
               {aiGovernance.map((item) => (
                 <div
                   key={item}
-                  className="card-hover bg-white dark:bg-slate-800 rounded-xl p-4 shadow-lg border border-slate-200 dark:border-slate-700 text-sm text-slate-700 dark:text-slate-300"
+                  className="card-hover bg-white/[0.02] rounded-xl p-4 shadow-lg border border-white/[0.06] text-sm text-zinc-300"
                 >
                   {item}
                 </div>
@@ -514,10 +514,10 @@ export default function AISolutionsPage() {
           {/* Engagement Model */}
           <section id="engagement" className="mb-20">
             <div className="text-center mb-12">
-              <h2 className="text-2xl md:text-4xl font-bold text-slate-900 dark:text-slate-100 mb-3">
+              <h2 className="text-2xl md:text-4xl font-bold text-white mb-3">
                 Engagement model
               </h2>
-              <p className="text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
+              <p className="text-zinc-400 max-w-2xl mx-auto">
                 From assessment to full platform build—structured ways to get started.
               </p>
             </div>
@@ -530,13 +530,13 @@ export default function AISolutionsPage() {
 
           {/* Ideal Clients */}
           <section className="mb-20">
-            <h2 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-slate-100 mb-4">
+            <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">
               Ideal clients
             </h2>
-            <p className="text-slate-600 dark:text-slate-400 mb-6 max-w-3xl">
+            <p className="text-zinc-400 mb-6 max-w-3xl">
               We work best with teams that have clear use cases and are ready to deploy AI in production.
             </p>
-            <ul className="space-y-2 text-slate-700 dark:text-slate-300">
+            <ul className="space-y-2 text-zinc-300">
               {idealClientsAI.map((item) => (
                 <li key={item} className="flex items-start">
                   <span className="text-indigo-500 mr-2 mt-0.5">•</span>
@@ -548,10 +548,10 @@ export default function AISolutionsPage() {
 
           {/* Use Cases */}
           <section className="mb-20">
-            <h2 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-slate-100 mb-4">
+            <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">
               Use cases
             </h2>
-            <p className="text-slate-600 dark:text-slate-400 mb-8 max-w-3xl">
+            <p className="text-zinc-400 mb-8 max-w-3xl">
               Problem → approach → outcome. Representative scenarios we are set up to address.
             </p>
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
@@ -567,10 +567,10 @@ export default function AISolutionsPage() {
           {/* FAQ */}
           <section className="mb-20">
             <div className="text-center mb-8">
-              <h2 className="text-2xl md:text-4xl font-bold text-slate-900 dark:text-slate-100 mb-3">
+              <h2 className="text-2xl md:text-4xl font-bold text-white mb-3">
                 Frequently asked questions
               </h2>
-              <p className="text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
+              <p className="text-zinc-400 max-w-2xl mx-auto">
                 Real-world questions we hear from teams exploring AI.
               </p>
             </div>
@@ -590,12 +590,12 @@ export default function AISolutionsPage() {
 
           {/* Internal link to Cloud Solutions */}
           <div className="mt-12 text-center">
-            <p className="text-sm text-slate-600 dark:text-slate-400 mb-2">
+            <p className="text-sm text-zinc-400 mb-2">
               Also explore our cloud infrastructure and DevOps practice.
             </p>
             <Link
               href="/cloud-solutions"
-              className="text-sm font-semibold text-indigo-600 dark:text-indigo-400 hover:underline"
+              className="text-sm font-semibold text-violet-400 hover:underline"
             >
               Cloud Solutions →
             </Link>
@@ -603,12 +603,12 @@ export default function AISolutionsPage() {
 
           {/* Internal link to Cloud Review Session */}
           <div className="mt-4 text-center">
-            <p className="text-sm text-slate-600 dark:text-slate-400 mb-2">
+            <p className="text-sm text-zinc-400 mb-2">
               If you prefer a live working session first, we can start with a short review.
             </p>
             <Link
               href="/cloud-review"
-              className="text-sm font-semibold text-indigo-600 dark:text-indigo-400 hover:underline"
+              className="text-sm font-semibold text-violet-400 hover:underline"
             >
               Cloud &amp; AI Infrastructure Review Session →
             </Link>

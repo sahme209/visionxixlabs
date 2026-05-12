@@ -85,18 +85,18 @@ export default function VisionXIXAILandingPage() {
   };
 
   return (
-    <div className="min-h-screen bg-white dark:bg-slate-900">
+    <div className="min-h-screen bg-white/[0.02]">
       <Navigation />
 
       <section className="pt-28 pb-16 px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto text-center">
-          <div className="inline-flex items-center justify-center rounded-full bg-indigo-50 dark:bg-indigo-900/30 px-4 py-1 text-xs font-semibold text-indigo-700 dark:text-indigo-200 mb-4">
+          <div className="inline-flex items-center justify-center rounded-full bg-indigo-50 bg-violet-500/10 px-4 py-1 text-xs font-semibold text-indigo-700 text-violet-400 mb-4">
             Vision XIX AI is part of the Axiom ecosystem.
           </div>
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-slate-900 dark:text-slate-100 tracking-tight">
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white tracking-tight">
             AI that knows your business
           </h1>
-          <p className="mt-6 text-xl text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
+          <p className="mt-6 text-xl text-zinc-400 max-w-2xl mx-auto">
             Production-ready chatbots trained on your site. 24/7 support, lead capture, email summaries, and enterprise security.
           </p>
           <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
@@ -109,7 +109,7 @@ export default function VisionXIXAILandingPage() {
             </Link>
             <Link
               href="/visionxix-ai/pricing"
-              className="inline-flex items-center gap-2 rounded-full border-2 border-indigo-600 px-6 py-3 text-base font-semibold text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-900/20"
+              className="inline-flex items-center gap-2 rounded-full border-2 border-indigo-600 px-6 py-3 text-base font-semibold text-indigo-600 hover:bg-indigo-50 hover:bg-violet-500/10"
             >
               View pricing
             </Link>
@@ -118,7 +118,7 @@ export default function VisionXIXAILandingPage() {
           <div className="mt-6">
             <Link
               href="/cloud-operator"
-              className="inline-flex items-center gap-2 rounded-full border border-slate-300 dark:border-slate-600 px-4 py-2 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:border-indigo-500 hover:text-indigo-600 dark:hover:text-indigo-300"
+              className="inline-flex items-center gap-2 rounded-full border border-white/[0.08] px-4 py-2 text-xs font-semibold text-zinc-200 hover:border-indigo-500 hover:text-white"
             >
               Run Infrastructure Analysis with Axiom
               <ArrowRightIcon className="h-4 w-4" />
@@ -127,22 +127,22 @@ export default function VisionXIXAILandingPage() {
         </div>
       </section>
 
-      <section className="py-16 px-4 sm:px-6 lg:px-8 bg-slate-50 dark:bg-slate-800/50">
+      <section className="py-16 px-4 sm:px-6 lg:px-8 bg-white/[0.02]">
         <div className="max-w-5xl mx-auto">
-          <h2 className="text-2xl sm:text-3xl font-bold text-center text-slate-900 dark:text-slate-100 mb-12">Before vs After</h2>
+          <h2 className="text-2xl sm:text-3xl font-bold text-center text-white mb-12">Before vs After</h2>
           <div className="grid md:grid-cols-2 gap-8">
-            <div className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-6">
-              <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100 mb-4">Before</h3>
-              <ul className="space-y-3 text-slate-600 dark:text-slate-400">
+            <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-6">
+              <h3 className="text-lg font-semibold text-white mb-4">Before</h3>
+              <ul className="space-y-3 text-zinc-400">
                 <li className="flex gap-2"><span className="text-red-600">×</span> Generic chatbots that frustrate visitors</li>
                 <li className="flex gap-2"><span className="text-red-600">×</span> Custom bots are brittle and hard to maintain</li>
                 <li className="flex gap-2"><span className="text-red-600">×</span> Support team buried in repetitive tickets</li>
                 <li className="flex gap-2"><span className="text-red-600">×</span> Leads slip away when no one&apos;s online</li>
               </ul>
             </div>
-            <div className="rounded-2xl border-2 border-indigo-500/30 bg-white dark:bg-slate-900 p-6 shadow-lg shadow-indigo-500/5">
-              <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100 mb-4">After</h3>
-              <ul className="space-y-3 text-slate-600 dark:text-slate-400">
+            <div className="rounded-2xl border-2 border-indigo-500/30 bg-white/[0.02] p-6 shadow-lg shadow-indigo-500/5">
+              <h3 className="text-lg font-semibold text-white mb-4">After</h3>
+              <ul className="space-y-3 text-zinc-400">
                 <li className="flex gap-2"><CheckCircleIcon className="h-5 w-5 text-emerald-500 shrink-0" /> AI trained on your content</li>
                 <li className="flex gap-2"><CheckCircleIcon className="h-5 w-5 text-emerald-500 shrink-0" /> Production-ready, reliable, scalable</li>
                 <li className="flex gap-2"><CheckCircleIcon className="h-5 w-5 text-emerald-500 shrink-0" /> 24/7 + lead capture + escalate to human</li>
@@ -155,8 +155,8 @@ export default function VisionXIXAILandingPage() {
 
       <section id="how-it-works" className="py-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-5xl mx-auto">
-          <h2 className="text-2xl sm:text-3xl font-bold text-center text-slate-900 dark:text-slate-100 mb-4">Three steps to your own AI assistant</h2>
-          <p className="text-center text-slate-600 dark:text-slate-400 mb-16 max-w-2xl mx-auto">
+          <h2 className="text-2xl sm:text-3xl font-bold text-center text-white mb-4">Three steps to your own AI assistant</h2>
+          <p className="text-center text-zinc-400 mb-16 max-w-2xl mx-auto">
             Built for production, with lead capture, analytics, and enterprise security.
           </p>
           <div className="grid md:grid-cols-3 gap-10">
@@ -164,12 +164,12 @@ export default function VisionXIXAILandingPage() {
               const Icon = step.icon;
               return (
                 <div key={step.title} className="relative">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 mb-4">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-indigo-100 bg-violet-500/10 text-indigo-600 mb-4">
                     <Icon className="h-6 w-6" />
                   </div>
                   <span className="absolute -top-1 -right-1 flex h-6 w-6 items-center justify-center rounded-full bg-indigo-600 text-xs font-bold text-white">{i + 1}</span>
-                  <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100 mb-2">{step.title}</h3>
-                  <p className="text-sm text-slate-600 dark:text-slate-400">{step.desc}</p>
+                  <h3 className="text-lg font-semibold text-white mb-2">{step.title}</h3>
+                  <p className="text-sm text-zinc-400">{step.desc}</p>
                 </div>
               );
             })}
@@ -179,23 +179,23 @@ export default function VisionXIXAILandingPage() {
 
       <section id="comparison" className="py-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto">
-          <h2 className="text-2xl sm:text-3xl font-bold text-center text-slate-900 dark:text-slate-100 mb-4">Why Vision XIX AI</h2>
-          <p className="text-center text-slate-600 dark:text-slate-400 mb-12">Production-grade. Your cloud. Enterprise security.</p>
-          <div className="rounded-2xl border border-slate-200 dark:border-slate-700 overflow-hidden bg-white dark:bg-slate-900 shadow-lg">
+          <h2 className="text-2xl sm:text-3xl font-bold text-center text-white mb-4">Why Vision XIX AI</h2>
+          <p className="text-center text-zinc-400 mb-12">Production-grade. Your cloud. Enterprise security.</p>
+          <div className="rounded-2xl border border-white/[0.06] overflow-hidden bg-white/[0.02] shadow-lg">
             <table className="w-full text-sm">
               <thead>
-                <tr className="bg-slate-50 dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700">
-                  <th className="text-left py-4 px-4 font-semibold text-slate-900 dark:text-slate-100">Feature</th>
+                <tr className="bg-white/[0.03] border-b border-white/[0.06]">
+                  <th className="text-left py-4 px-4 font-semibold text-white">Feature</th>
                   <th className="text-left py-4 px-4 font-semibold text-indigo-600">Vision XIX AI</th>
                   <th className="text-left py-4 px-4 font-semibold text-slate-500">Typical SaaS</th>
                 </tr>
               </thead>
               <tbody>
                 {COMPARISON.map((row, i) => (
-                  <tr key={row.feature} className={`${i % 2 === 0 ? "bg-white dark:bg-slate-900" : "bg-slate-50/50 dark:bg-slate-800/50"} ${i < COMPARISON.length - 1 ? "border-b border-slate-200 dark:border-slate-700" : ""}`}>
-                    <td className="py-3 px-4 font-medium text-slate-900 dark:text-slate-100">{row.feature}</td>
-                    <td className="py-3 px-4 text-emerald-600 dark:text-emerald-400">{row.us}</td>
-                    <td className="py-3 px-4 text-slate-500 dark:text-slate-400">{row.them}</td>
+                  <tr key={row.feature} className={`${i % 2 === 0 ? "bg-white/[0.02]" : "bg-white/[0.02]"} ${i < COMPARISON.length - 1 ? "border-b border-white/[0.06]" : ""}`}>
+                    <td className="py-3 px-4 font-medium text-white">{row.feature}</td>
+                    <td className="py-3 px-4 text-emerald-400">{row.us}</td>
+                    <td className="py-3 px-4 text-zinc-500">{row.them}</td>
                   </tr>
                 ))}
               </tbody>
@@ -206,48 +206,48 @@ export default function VisionXIXAILandingPage() {
 
       <section id="testimonials" className="py-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-5xl mx-auto">
-          <h2 className="text-2xl sm:text-3xl font-bold text-center text-slate-900 dark:text-slate-100 mb-4">Trusted by teams shipping AI</h2>
-          <p className="text-center text-slate-600 dark:text-slate-400 mb-12 max-w-2xl mx-auto">
+          <h2 className="text-2xl sm:text-3xl font-bold text-center text-white mb-4">Trusted by teams shipping AI</h2>
+          <p className="text-center text-zinc-400 mb-12 max-w-2xl mx-auto">
             Vision XIX AI is built for teams that need production-grade AI support — not demos.
           </p>
           <div className="grid md:grid-cols-3 gap-8">
-            <div className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-6">
-              <p className="text-slate-600 dark:text-slate-400 text-sm mb-4">&ldquo;The AI assistant handles 80% of our support tickets. Our team can focus on complex cases.&rdquo;</p>
-              <p className="text-sm font-semibold text-slate-900 dark:text-slate-100">— Head of Support, SaaS</p>
+            <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-6">
+              <p className="text-zinc-400 text-sm mb-4">&ldquo;The AI assistant handles 80% of our support tickets. Our team can focus on complex cases.&rdquo;</p>
+              <p className="text-sm font-semibold text-white">— Head of Support, SaaS</p>
             </div>
-            <div className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-6">
-              <p className="text-slate-600 dark:text-slate-400 text-sm mb-4">&ldquo;Lead capture and escalation to human are game-changers. We convert more visitors.&rdquo;</p>
-              <p className="text-sm font-semibold text-slate-900 dark:text-slate-100">— Product Lead, B2B</p>
+            <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-6">
+              <p className="text-zinc-400 text-sm mb-4">&ldquo;Lead capture and escalation to human are game-changers. We convert more visitors.&rdquo;</p>
+              <p className="text-sm font-semibold text-white">— Product Lead, B2B</p>
             </div>
-            <div className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-6">
-              <p className="text-slate-600 dark:text-slate-400 text-sm mb-4">&ldquo;Enterprise security and API access — exactly what we needed to integrate with our stack.&rdquo;</p>
-              <p className="text-sm font-semibold text-slate-900 dark:text-slate-100">— CTO, Enterprise</p>
+            <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-6">
+              <p className="text-zinc-400 text-sm mb-4">&ldquo;Enterprise security and API access — exactly what we needed to integrate with our stack.&rdquo;</p>
+              <p className="text-sm font-semibold text-white">— CTO, Enterprise</p>
             </div>
           </div>
         </div>
       </section>
 
-      <section id="integrations" className="py-20 px-4 sm:px-6 lg:px-8 bg-slate-50 dark:bg-slate-800/50">
+      <section id="integrations" className="py-20 px-4 sm:px-6 lg:px-8 bg-white/[0.02]">
         <div className="max-w-5xl mx-auto">
-          <h2 className="text-2xl sm:text-3xl font-bold text-center text-slate-900 dark:text-slate-100 mb-4">Integrates with your stack</h2>
-          <p className="text-center text-slate-600 dark:text-slate-400 mb-12 max-w-2xl mx-auto">
+          <h2 className="text-2xl sm:text-3xl font-bold text-center text-white mb-4">Integrates with your stack</h2>
+          <p className="text-center text-zinc-400 mb-12 max-w-2xl mx-auto">
             Connect Vision XIX AI to Zendesk, Intercom, Crisp, and more. Full API for custom integrations.
           </p>
           <div className="flex flex-wrap justify-center gap-8 items-center">
             <div className="flex flex-col items-center gap-2">
-              <div className="h-12 w-24 rounded-lg bg-slate-200 dark:bg-slate-700 flex items-center justify-center text-xs font-semibold text-slate-600 dark:text-slate-400">Zendesk</div>
+              <div className="h-12 w-24 rounded-lg bg-zinc-700 flex items-center justify-center text-xs font-semibold text-zinc-400">Zendesk</div>
               <span className="text-xs text-slate-500">Help Center sync</span>
             </div>
             <div className="flex flex-col items-center gap-2">
-              <div className="h-12 w-24 rounded-lg bg-slate-200 dark:bg-slate-700 flex items-center justify-center text-xs font-semibold text-slate-600 dark:text-slate-400">Intercom</div>
+              <div className="h-12 w-24 rounded-lg bg-zinc-700 flex items-center justify-center text-xs font-semibold text-zinc-400">Intercom</div>
               <span className="text-xs text-slate-500">Inbox + handoff</span>
             </div>
             <div className="flex flex-col items-center gap-2">
-              <div className="h-12 w-24 rounded-lg bg-slate-200 dark:bg-slate-700 flex items-center justify-center text-xs font-semibold text-slate-600 dark:text-slate-400">Crisp</div>
+              <div className="h-12 w-24 rounded-lg bg-zinc-700 flex items-center justify-center text-xs font-semibold text-zinc-400">Crisp</div>
               <span className="text-xs text-slate-500">Live chat</span>
             </div>
             <div className="flex flex-col items-center gap-2">
-              <div className="h-12 w-24 rounded-lg bg-slate-200 dark:bg-slate-700 flex items-center justify-center text-xs font-semibold text-slate-600 dark:text-slate-400">API</div>
+              <div className="h-12 w-24 rounded-lg bg-zinc-700 flex items-center justify-center text-xs font-semibold text-zinc-400">API</div>
               <span className="text-xs text-slate-500">Custom</span>
             </div>
           </div>
@@ -258,11 +258,11 @@ export default function VisionXIXAILandingPage() {
 
       <section id="embed" className="py-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto">
-          <h2 className="text-2xl sm:text-3xl font-bold text-center text-slate-900 dark:text-slate-100 mb-4">Embed on your site in one line</h2>
-          <p className="text-center text-slate-600 dark:text-slate-400 mb-8 max-w-2xl mx-auto">
+          <h2 className="text-2xl sm:text-3xl font-bold text-center text-white mb-4">Embed on your site in one line</h2>
+          <p className="text-center text-zinc-400 mb-8 max-w-2xl mx-auto">
             Each chatbot gets a unique URL and embed code. Add it to your marketing site, help center, or in-app.
           </p>
-          <div className="rounded-2xl border border-slate-200 dark:border-slate-700 overflow-hidden bg-slate-900">
+          <div className="rounded-2xl border border-white/[0.06] overflow-hidden bg-slate-900">
             <pre className="p-6 text-sm text-emerald-400 overflow-x-auto font-mono">
 {`<script src="https://visionxixlabs.com/widget.js" data-chat-id="YOUR_CHAT_ID"></script>`}
             </pre>
@@ -270,22 +270,22 @@ export default function VisionXIXAILandingPage() {
         </div>
       </section>
 
-      <section id="features" className="py-20 px-4 sm:px-6 lg:px-8 bg-slate-50 dark:bg-slate-800/50">
+      <section id="features" className="py-20 px-4 sm:px-6 lg:px-8 bg-white/[0.02]">
         <div className="max-w-5xl mx-auto">
-          <h2 className="text-2xl sm:text-3xl font-bold text-center text-slate-900 dark:text-slate-100 mb-4">Built for revenue & scale</h2>
-          <p className="text-center text-slate-600 dark:text-slate-400 mb-16 max-w-2xl mx-auto">
+          <h2 className="text-2xl sm:text-3xl font-bold text-center text-white mb-4">Built for revenue & scale</h2>
+          <p className="text-center text-zinc-400 mb-16 max-w-2xl mx-auto">
             Lead capture, analytics, 95+ languages, API access — plus production-grade security and your cloud.
           </p>
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {FEATURES.map((f) => {
               const Icon = f.icon;
               return (
-                <div key={f.title} className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-6 hover:border-indigo-400/50 transition-colors">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 mb-3">
+                <div key={f.title} className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-6 hover:border-indigo-400/50 transition-colors">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-indigo-100 bg-violet-500/10 text-indigo-600 mb-3">
                     <Icon className="h-5 w-5" />
                   </div>
-                  <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100 mb-2">{f.title}</h3>
-                  <p className="text-sm text-slate-600 dark:text-slate-400">{f.desc}</p>
+                  <h3 className="text-lg font-semibold text-white mb-2">{f.title}</h3>
+                  <p className="text-sm text-zinc-400">{f.desc}</p>
                 </div>
               );
             })}
@@ -295,28 +295,28 @@ export default function VisionXIXAILandingPage() {
 
       <section id="faq" className="py-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-3xl mx-auto">
-          <h2 className="text-2xl sm:text-3xl font-bold text-center text-slate-900 dark:text-slate-100 mb-4">FAQ</h2>
+          <h2 className="text-2xl sm:text-3xl font-bold text-center text-white mb-4">FAQ</h2>
           <div className="space-y-6">
             {FAQ.map((item) => (
-              <div key={item.q} className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-5">
-                <h3 className="font-semibold text-slate-900 dark:text-slate-100 mb-2">{item.q}</h3>
-                <p className="text-sm text-slate-600 dark:text-slate-400">{item.a}</p>
+              <div key={item.q} className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-5">
+                <h3 className="font-semibold text-white mb-2">{item.q}</h3>
+                <p className="text-sm text-zinc-400">{item.a}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-slate-50 dark:bg-slate-800/50">
+      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-white/[0.02]">
         <div className="max-w-2xl mx-auto">
-          <h2 className="text-2xl sm:text-3xl font-bold text-center text-slate-900 dark:text-slate-100 mb-4">Ready to convert more visitors?</h2>
-          <p className="text-center text-slate-600 dark:text-slate-400 mb-10">Request a demo or start a free trial. No obligation.</p>
+          <h2 className="text-2xl sm:text-3xl font-bold text-center text-white mb-4">Ready to convert more visitors?</h2>
+          <p className="text-center text-zinc-400 mb-10">Request a demo or start a free trial. No obligation.</p>
           <form onSubmit={submitLead} className="space-y-4">
             <div className="grid sm:grid-cols-2 gap-4">
-              <input type="text" placeholder="Name" value={leadName} onChange={(e) => setLeadName(e.target.value)} className="rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-900 px-4 py-3 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500" />
-              <input type="email" placeholder="Email *" required value={leadEmail} onChange={(e) => setLeadEmail(e.target.value)} className="rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-900 px-4 py-3 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+              <input type="text" placeholder="Name" value={leadName} onChange={(e) => setLeadName(e.target.value)} className="rounded-xl border border-white/[0.06] bg-white/[0.02] px-4 py-3 text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+              <input type="email" placeholder="Email *" required value={leadEmail} onChange={(e) => setLeadEmail(e.target.value)} className="rounded-xl border border-white/[0.06] bg-white/[0.02] px-4 py-3 text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500" />
             </div>
-            <textarea placeholder="Tell us about your site or use case..." value={leadMessage} onChange={(e) => setLeadMessage(e.target.value)} rows={3} className="w-full rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-900 px-4 py-3 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-none" />
+            <textarea placeholder="Tell us about your site or use case..." value={leadMessage} onChange={(e) => setLeadMessage(e.target.value)} rows={3} className="w-full rounded-xl border border-white/[0.06] bg-white/[0.02] px-4 py-3 text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-none" />
             <button type="submit" disabled={leadStatus === "loading"} className="w-full rounded-xl bg-indigo-600 py-3 font-semibold text-white hover:bg-indigo-700 disabled:opacity-60 disabled:cursor-not-allowed">
               {leadStatus === "loading" ? "Sending..." : leadStatus === "success" ? "Submitted ✓" : "Request demo"}
             </button>
@@ -326,10 +326,10 @@ export default function VisionXIXAILandingPage() {
         </div>
       </section>
 
-      <footer className="border-t border-slate-200 dark:border-slate-700 py-8 px-4">
+      <footer className="border-t border-white/[0.06] py-8 px-4">
         <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
-          <Link href="/" className="text-sm text-slate-600 dark:text-slate-400 hover:text-indigo-600">Vision XIX Labs</Link>
-          <div className="flex gap-6 text-sm text-slate-600 dark:text-slate-400">
+          <Link href="/" className="text-sm text-zinc-400 hover:text-indigo-600">Vision XIX Labs</Link>
+          <div className="flex gap-6 text-sm text-zinc-400">
             <Link href="/visionxix-ai-assistant" className="hover:text-indigo-600">Try demo</Link>
             <Link href="/visionxix-ai/pricing" className="hover:text-indigo-600">Plans & Membership</Link>
             <Link href="/visionxix-ai/features" className="hover:text-indigo-600">Features</Link>

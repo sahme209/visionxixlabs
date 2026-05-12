@@ -95,22 +95,22 @@ export default function CloudStudioPage() {
   };
 
   return (
-    <div className="axiom-page min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
+    <div className="axiom-page min-h-screen bg-[#09090b]">
       <Navigation />
       <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-20">
         <div className="max-w-3xl mx-auto">
           <Link
             href="/"
-            className="inline-flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 mb-8"
+            className="inline-flex items-center gap-2 text-sm text-zinc-400 hover:text-violet-400 mb-8"
           >
             <ArrowLeftIcon className="h-4 w-4" />
             Back to Home
           </Link>
-          <div className="mb-6 rounded-2xl border border-indigo-200 dark:border-indigo-800 bg-indigo-50/60 dark:bg-indigo-900/30 p-4">
-            <p className="text-xs font-semibold text-indigo-900 dark:text-indigo-100 mb-1">
+          <div className="mb-6 rounded-2xl border border-indigo-200 border-violet-500/20 bg-indigo-50/60 bg-violet-500/10 p-4">
+            <p className="text-xs font-semibold text-indigo-900 text-violet-400 mb-1">
               Cloud Studio is legacy, human-guided analysis.
             </p>
-            <p className="text-xs text-indigo-900/80 dark:text-indigo-200 mb-3">
+            <p className="text-xs text-indigo-900/80 text-violet-400 mb-3">
               For full scoring and a 30-day roadmap, run Axiom first.
             </p>
             <AxiomButton href="/operator/onboarding" variant="primary" className="text-xs px-3 py-1.5">
@@ -118,29 +118,29 @@ export default function CloudStudioPage() {
               <ArrowLeftIcon className="h-3 w-3 rotate-180" />
             </AxiomButton>
           </div>
-          <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-700 p-8">
+          <div className="bg-white/[0.02] rounded-2xl shadow-xl border border-white/[0.06] p-8">
             <header className="mb-8 text-center">
-              <div className="inline-flex items-center justify-center rounded-full bg-indigo-100 dark:bg-indigo-900/40 px-4 py-2 text-xs font-semibold text-indigo-700 dark:text-indigo-300 mb-4">
+              <div className="inline-flex items-center justify-center rounded-full bg-violet-500/10 px-4 py-2 text-xs font-semibold text-violet-400 mb-4">
                 AI Cloud Studio
               </div>
-              <h1 className="axiom-heading-xl text-3xl md:text-4xl font-extrabold text-slate-900 dark:text-slate-100 mb-2">
+              <h1 className="axiom-heading-xl text-3xl md:text-4xl font-extrabold text-white mb-2">
                 Cloud Studio
               </h1>
-              <p className="text-sm text-slate-600 dark:text-slate-400">
+              <p className="text-sm text-zinc-400">
                 One-off CI/CD, cost, security, architecture, or networking blueprints you review before any changes.
               </p>
             </header>
 
             <form onSubmit={handleSubmit} className="space-y-6">
             <div>
-              <label className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-2 block">
+              <label className="text-sm font-medium text-zinc-300 mb-2 block">
                 Service type
               </label>
               <div className="space-y-2">
                 {SERVICE_OPTIONS.map((opt) => (
                   <label
                     key={opt.id}
-                    className="flex items-center gap-3 p-3 rounded-xl border-2 border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-900 cursor-pointer hover:border-indigo-400 has-[:checked]:border-indigo-500 has-[:checked]:ring-2 has-[:checked]:ring-indigo-200"
+                    className="flex items-center gap-3 p-3 rounded-xl border-2 border-white/[0.06] bg-white/[0.02] cursor-pointer hover:border-indigo-400 has-[:checked]:border-indigo-500 has-[:checked]:ring-2 has-[:checked]:ring-indigo-200"
                   >
                     <input
                       type="radio"
@@ -151,124 +151,124 @@ export default function CloudStudioPage() {
                       className="sr-only"
                     />
                     <opt.icon className="h-5 w-5 text-indigo-600" />
-                    <span className="font-medium text-slate-900 dark:text-slate-100">{opt.label}</span>
+                    <span className="font-medium text-white">{opt.label}</span>
                   </label>
                 ))}
               </div>
             </div>
 
             {serviceType === "cicd" && (
-              <div className="space-y-4 rounded-xl border border-slate-200 dark:border-slate-700 p-4 bg-slate-50 dark:bg-slate-800/50">
-                <h3 className="font-semibold text-slate-900 dark:text-slate-100">CI/CD details</h3>
+              <div className="space-y-4 rounded-xl border border-white/[0.06] p-4 bg-white/[0.02]">
+                <h3 className="font-semibold text-white">CI/CD details</h3>
                 <div className="grid gap-4 sm:grid-cols-2">
                   <div>
-                    <label className="text-sm text-slate-600 dark:text-slate-400 mb-1 block">Git provider</label>
-                    <select name="gitProvider" required className="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 px-3 py-2 text-slate-900 dark:text-slate-100">
+                    <label className="text-sm text-zinc-400 mb-1 block">Git provider</label>
+                    <select name="gitProvider" required className="w-full rounded-lg border border-white/[0.08] bg-white/[0.02] px-3 py-2 text-white">
                       {GIT_PROVIDERS.map((p) => (
                         <option key={p} value={p}>{p}</option>
                       ))}
                     </select>
                   </div>
                   <div>
-                    <label className="text-sm text-slate-600 dark:text-slate-400 mb-1 block">Language / framework</label>
-                    <select name="languageFramework" required className="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 px-3 py-2 text-slate-900 dark:text-slate-100">
+                    <label className="text-sm text-zinc-400 mb-1 block">Language / framework</label>
+                    <select name="languageFramework" required className="w-full rounded-lg border border-white/[0.08] bg-white/[0.02] px-3 py-2 text-white">
                       {LANG_FRAMEWORKS.map((l) => (
                         <option key={l} value={l}>{l}</option>
                       ))}
                     </select>
                   </div>
                   <div>
-                    <label className="text-sm text-slate-600 dark:text-slate-400 mb-1 block">Deployment target</label>
-                    <select name="deploymentTarget" required className="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 px-3 py-2 text-slate-900 dark:text-slate-100">
+                    <label className="text-sm text-zinc-400 mb-1 block">Deployment target</label>
+                    <select name="deploymentTarget" required className="w-full rounded-lg border border-white/[0.08] bg-white/[0.02] px-3 py-2 text-white">
                       {DEPLOY_TARGETS.map((d) => (
                         <option key={d} value={d}>{d}</option>
                       ))}
                     </select>
                   </div>
                   <div>
-                    <label className="text-sm text-slate-600 dark:text-slate-400 mb-1 block">Repo URL (optional)</label>
-                    <input name="repoUrl" type="url" placeholder="https://github.com/..." className="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 px-3 py-2 text-slate-900 dark:text-slate-100" />
+                    <label className="text-sm text-zinc-400 mb-1 block">Repo URL (optional)</label>
+                    <input name="repoUrl" type="url" placeholder="https://github.com/..." className="w-full rounded-lg border border-white/[0.08] bg-white/[0.02] px-3 py-2 text-white" />
                   </div>
                 </div>
                 <div>
-                  <label className="text-sm text-slate-600 dark:text-slate-400 mb-1 block">Environment variables (optional, describe)</label>
-                  <textarea name="envVars" rows={2} placeholder="e.g. API_KEY, DATABASE_URL" className="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 px-3 py-2 text-slate-900 dark:text-slate-100" />
+                  <label className="text-sm text-zinc-400 mb-1 block">Environment variables (optional, describe)</label>
+                  <textarea name="envVars" rows={2} placeholder="e.g. API_KEY, DATABASE_URL" className="w-full rounded-lg border border-white/[0.08] bg-white/[0.02] px-3 py-2 text-white" />
                 </div>
               </div>
             )}
 
             {serviceType === "cost" && (
-              <div className="space-y-4 rounded-xl border border-slate-200 dark:border-slate-700 p-4 bg-slate-50 dark:bg-slate-800/50">
-                <h3 className="font-semibold text-slate-900 dark:text-slate-100">Cost optimization details</h3>
+              <div className="space-y-4 rounded-xl border border-white/[0.06] p-4 bg-white/[0.02]">
+                <h3 className="font-semibold text-white">Cost optimization details</h3>
                 <div className="grid gap-4 sm:grid-cols-2">
                   <div>
-                    <label className="text-sm text-slate-600 dark:text-slate-400 mb-1 block">Cloud provider</label>
-                    <select name="cloudProvider" required className="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 px-3 py-2 text-slate-900 dark:text-slate-100">
+                    <label className="text-sm text-zinc-400 mb-1 block">Cloud provider</label>
+                    <select name="cloudProvider" required className="w-full rounded-lg border border-white/[0.08] bg-white/[0.02] px-3 py-2 text-white">
                       {CLOUD_PROVIDERS.map((p) => (
                         <option key={p} value={p}>{p}</option>
                       ))}
                     </select>
                   </div>
                   <div>
-                    <label className="text-sm text-slate-600 dark:text-slate-400 mb-1 block">Region</label>
-                    <input name="region" type="text" required placeholder="e.g. us-east-1" className="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 px-3 py-2 text-slate-900 dark:text-slate-100" />
+                    <label className="text-sm text-zinc-400 mb-1 block">Region</label>
+                    <input name="region" type="text" required placeholder="e.g. us-east-1" className="w-full rounded-lg border border-white/[0.08] bg-white/[0.02] px-3 py-2 text-white" />
                   </div>
                   <div className="sm:col-span-2">
-                    <label className="text-sm text-slate-600 dark:text-slate-400 mb-1 block">Services used</label>
-                    <input name="servicesUsed" type="text" required placeholder="e.g. EC2, RDS, S3" className="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 px-3 py-2 text-slate-900 dark:text-slate-100" />
+                    <label className="text-sm text-zinc-400 mb-1 block">Services used</label>
+                    <input name="servicesUsed" type="text" required placeholder="e.g. EC2, RDS, S3" className="w-full rounded-lg border border-white/[0.08] bg-white/[0.02] px-3 py-2 text-white" />
                   </div>
                   <div>
-                    <label className="text-sm text-slate-600 dark:text-slate-400 mb-1 block">Estimated monthly spend ($)</label>
-                    <input name="estimatedMonthlySpend" type="text" required placeholder="e.g. 500" className="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 px-3 py-2 text-slate-900 dark:text-slate-100" />
+                    <label className="text-sm text-zinc-400 mb-1 block">Estimated monthly spend ($)</label>
+                    <input name="estimatedMonthlySpend" type="text" required placeholder="e.g. 500" className="w-full rounded-lg border border-white/[0.08] bg-white/[0.02] px-3 py-2 text-white" />
                   </div>
                   <div>
-                    <label className="text-sm text-slate-600 dark:text-slate-400 mb-1 block">Billing export (optional note)</label>
-                    <input name="billingExportNote" type="text" placeholder="e.g. CSV uploaded" className="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 px-3 py-2 text-slate-900 dark:text-slate-100" />
+                    <label className="text-sm text-zinc-400 mb-1 block">Billing export (optional note)</label>
+                    <input name="billingExportNote" type="text" placeholder="e.g. CSV uploaded" className="w-full rounded-lg border border-white/[0.08] bg-white/[0.02] px-3 py-2 text-white" />
                   </div>
                 </div>
               </div>
             )}
 
             {serviceType === "security" && (
-              <div className="space-y-4 rounded-xl border border-slate-200 dark:border-slate-700 p-4 bg-slate-50 dark:bg-slate-800/50">
-                <h3 className="font-semibold text-slate-900 dark:text-slate-100">Security hardening details</h3>
+              <div className="space-y-4 rounded-xl border border-white/[0.06] p-4 bg-white/[0.02]">
+                <h3 className="font-semibold text-white">Security hardening details</h3>
                 <div className="space-y-4">
                   <div>
-                    <label className="text-sm text-slate-600 dark:text-slate-400 mb-1 block">Cloud provider</label>
-                    <select name="cloudProvider" required className="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 px-3 py-2 text-slate-900 dark:text-slate-100">
+                    <label className="text-sm text-zinc-400 mb-1 block">Cloud provider</label>
+                    <select name="cloudProvider" required className="w-full rounded-lg border border-white/[0.08] bg-white/[0.02] px-3 py-2 text-white">
                       {CLOUD_PROVIDERS.map((p) => (
                         <option key={p} value={p}>{p}</option>
                       ))}
                     </select>
                   </div>
                   <div>
-                    <label className="text-sm text-slate-600 dark:text-slate-400 mb-1 block">Public-facing services</label>
-                    <input name="publicServices" type="text" required placeholder="e.g. API, web app" className="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 px-3 py-2 text-slate-900 dark:text-slate-100" />
+                    <label className="text-sm text-zinc-400 mb-1 block">Public-facing services</label>
+                    <input name="publicServices" type="text" required placeholder="e.g. API, web app" className="w-full rounded-lg border border-white/[0.08] bg-white/[0.02] px-3 py-2 text-white" />
                   </div>
                   <div>
-                    <label className="text-sm text-slate-600 dark:text-slate-400 mb-1 block">Compliance goal</label>
-                    <input name="complianceGoal" type="text" required placeholder="e.g. SOC 2, HIPAA" className="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 px-3 py-2 text-slate-900 dark:text-slate-100" />
+                    <label className="text-sm text-zinc-400 mb-1 block">Compliance goal</label>
+                    <input name="complianceGoal" type="text" required placeholder="e.g. SOC 2, HIPAA" className="w-full rounded-lg border border-white/[0.08] bg-white/[0.02] px-3 py-2 text-white" />
                   </div>
                 </div>
               </div>
             )}
 
             {serviceType === "architecture" && (
-              <div className="space-y-4 rounded-xl border border-slate-200 dark:border-slate-700 p-4 bg-slate-50 dark:bg-slate-800/50">
-                <h3 className="font-semibold text-slate-900 dark:text-slate-100">Architecture details</h3>
+              <div className="space-y-4 rounded-xl border border-white/[0.06] p-4 bg-white/[0.02]">
+                <h3 className="font-semibold text-white">Architecture details</h3>
                 <div className="space-y-4">
                   <div className="grid gap-4 sm:grid-cols-2">
                     <div>
-                      <label className="text-sm text-slate-600 dark:text-slate-400 mb-1 block">Cloud provider</label>
-                      <select name="cloudProvider" required className="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 px-3 py-2 text-slate-900 dark:text-slate-100">
+                      <label className="text-sm text-zinc-400 mb-1 block">Cloud provider</label>
+                      <select name="cloudProvider" required className="w-full rounded-lg border border-white/[0.08] bg-white/[0.02] px-3 py-2 text-white">
                         {CLOUD_PROVIDERS.map((p) => (
                           <option key={p} value={p}>{p}</option>
                         ))}
                       </select>
                     </div>
                     <div>
-                      <label className="text-sm text-slate-600 dark:text-slate-400 mb-1 block">App type</label>
-                      <select name="appType" required className="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 px-3 py-2 text-slate-900 dark:text-slate-100">
+                      <label className="text-sm text-zinc-400 mb-1 block">App type</label>
+                      <select name="appType" required className="w-full rounded-lg border border-white/[0.08] bg-white/[0.02] px-3 py-2 text-white">
                         {APP_TYPES.map((a) => (
                           <option key={a} value={a}>{a}</option>
                         ))}
@@ -276,42 +276,42 @@ export default function CloudStudioPage() {
                     </div>
                   </div>
                   <div>
-                    <label className="text-sm text-slate-600 dark:text-slate-400 mb-1 block">Traffic estimate</label>
-                    <input name="trafficEstimate" type="text" required placeholder="e.g. 10k req/day" className="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 px-3 py-2 text-slate-900 dark:text-slate-100" />
+                    <label className="text-sm text-zinc-400 mb-1 block">Traffic estimate</label>
+                    <input name="trafficEstimate" type="text" required placeholder="e.g. 10k req/day" className="w-full rounded-lg border border-white/[0.08] bg-white/[0.02] px-3 py-2 text-white" />
                   </div>
                   <div>
-                    <label className="text-sm text-slate-600 dark:text-slate-400 mb-1 block">Data storage needs</label>
-                    <textarea name="dataStorageNeeds" rows={2} required placeholder="e.g. PostgreSQL, S3 for assets" className="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 px-3 py-2 text-slate-900 dark:text-slate-100" />
+                    <label className="text-sm text-zinc-400 mb-1 block">Data storage needs</label>
+                    <textarea name="dataStorageNeeds" rows={2} required placeholder="e.g. PostgreSQL, S3 for assets" className="w-full rounded-lg border border-white/[0.08] bg-white/[0.02] px-3 py-2 text-white" />
                   </div>
                 </div>
               </div>
             )}
 
             {serviceType === "networking" && (
-              <div className="space-y-4 rounded-xl border border-slate-200 dark:border-slate-700 p-4 bg-slate-50 dark:bg-slate-800/50">
-                <h3 className="font-semibold text-slate-900 dark:text-slate-100">Networking details</h3>
+              <div className="space-y-4 rounded-xl border border-white/[0.06] p-4 bg-white/[0.02]">
+                <h3 className="font-semibold text-white">Networking details</h3>
                 <div className="space-y-4">
                   <div className="grid gap-4 sm:grid-cols-2">
                     <div>
-                      <label className="text-sm text-slate-600 dark:text-slate-400 mb-1 block">Cloud provider</label>
-                      <select name="cloudProvider" required className="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 px-3 py-2 text-slate-900 dark:text-slate-100">
+                      <label className="text-sm text-zinc-400 mb-1 block">Cloud provider</label>
+                      <select name="cloudProvider" required className="w-full rounded-lg border border-white/[0.08] bg-white/[0.02] px-3 py-2 text-white">
                         {CLOUD_PROVIDERS.map((p) => (
                           <option key={p} value={p}>{p}</option>
                         ))}
                       </select>
                     </div>
                     <div>
-                      <label className="text-sm text-slate-600 dark:text-slate-400 mb-1 block">Region</label>
-                      <input name="region" type="text" required placeholder="e.g. us-east-1" className="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 px-3 py-2 text-slate-900 dark:text-slate-100" />
+                      <label className="text-sm text-zinc-400 mb-1 block">Region</label>
+                      <input name="region" type="text" required placeholder="e.g. us-east-1" className="w-full rounded-lg border border-white/[0.08] bg-white/[0.02] px-3 py-2 text-white" />
                     </div>
                   </div>
                   <div>
-                    <label className="text-sm text-slate-600 dark:text-slate-400 mb-1 block">VPC requirements</label>
-                    <textarea name="vpcRequirements" rows={2} required placeholder="e.g. public/private subnets, NAT" className="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 px-3 py-2 text-slate-900 dark:text-slate-100" />
+                    <label className="text-sm text-zinc-400 mb-1 block">VPC requirements</label>
+                    <textarea name="vpcRequirements" rows={2} required placeholder="e.g. public/private subnets, NAT" className="w-full rounded-lg border border-white/[0.08] bg-white/[0.02] px-3 py-2 text-white" />
                   </div>
                   <div>
-                    <label className="text-sm text-slate-600 dark:text-slate-400 mb-1 block">Connectivity (peering, VPN)</label>
-                    <input name="connectivity" type="text" required placeholder="e.g. VPC peering to on-prem" className="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 px-3 py-2 text-slate-900 dark:text-slate-100" />
+                    <label className="text-sm text-zinc-400 mb-1 block">Connectivity (peering, VPN)</label>
+                    <input name="connectivity" type="text" required placeholder="e.g. VPC peering to on-prem" className="w-full rounded-lg border border-white/[0.08] bg-white/[0.02] px-3 py-2 text-white" />
                   </div>
                 </div>
               </div>
@@ -319,24 +319,24 @@ export default function CloudStudioPage() {
 
             <div className="grid gap-4 sm:grid-cols-2">
               <div>
-                <label className="flex items-center gap-2 text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+                <label className="flex items-center gap-2 text-sm font-medium text-zinc-300 mb-1">
                   <UserIcon className="h-4 w-4" /> Name (optional)
                 </label>
-                <input name="name" type="text" className="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 px-3 py-2 text-slate-900 dark:text-slate-100" />
+                <input name="name" type="text" className="w-full rounded-lg border border-white/[0.08] bg-white/[0.02] px-3 py-2 text-white" />
               </div>
               <div>
-                <label className="flex items-center gap-2 text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+                <label className="flex items-center gap-2 text-sm font-medium text-zinc-300 mb-1">
                   <EnvelopeIcon className="h-4 w-4" /> Email (optional)
                 </label>
-                <input name="email" type="email" className="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 px-3 py-2 text-slate-900 dark:text-slate-100" />
+                <input name="email" type="email" className="w-full rounded-lg border border-white/[0.08] bg-white/[0.02] px-3 py-2 text-white" />
               </div>
             </div>
 
             <div>
-              <label className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-2 block">Output tier</label>
+              <label className="text-sm font-medium text-zinc-300 mb-2 block">Output tier</label>
               <div className="space-y-2">
                 {Object.values(CLOUD_STUDIO_TIERS).map((t) => (
-                  <label key={t.id} className="flex items-start gap-3 p-3 rounded-xl border border-slate-200 dark:border-slate-600 cursor-pointer has-[:checked]:border-indigo-500 has-[:checked]:ring-2 has-[:checked]:ring-indigo-200">
+                  <label key={t.id} className="flex items-start gap-3 p-3 rounded-xl border border-white/[0.06] cursor-pointer has-[:checked]:border-indigo-500 has-[:checked]:ring-2 has-[:checked]:ring-indigo-200">
                     <input
                       type="radio"
                       name="tier"
@@ -346,16 +346,16 @@ export default function CloudStudioPage() {
                       className="mt-1"
                     />
                     <div>
-                      <span className="font-medium text-slate-900 dark:text-slate-100">{t.name}</span>
+                      <span className="font-medium text-white">{t.name}</span>
                       {t.id === "professional" && (
-                        <span className="ml-2 text-indigo-600 dark:text-indigo-400 text-sm">
+                        <span className="ml-2 text-violet-400 text-sm">
                           $99–$299 per service
                         </span>
                       )}
                       {t.id === "enterprise" && (
-                        <span className="ml-2 text-slate-500 dark:text-slate-400 text-sm">Custom</span>
+                        <span className="ml-2 text-zinc-500 text-sm">Custom</span>
                       )}
-                      <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{t.description}</p>
+                      <p className="text-xs text-zinc-500 mt-0.5">{t.description}</p>
                     </div>
                   </label>
                 ))}
@@ -363,7 +363,7 @@ export default function CloudStudioPage() {
             </div>
 
             {error && (
-              <div className="rounded-lg border border-red-300 bg-red-50 dark:border-red-700 dark:bg-red-900/30 px-4 py-3 text-sm text-red-800 dark:text-red-200">
+              <div className="rounded-lg border border-red-300 bg-red-50 border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-800 text-red-400">
                 {error}
               </div>
             )}

@@ -17,23 +17,23 @@ export function ServicesGrid({ services }: { services: Service[] }) {
         const Icon = service.icon;
         return (
           <Reveal key={service.id} direction="up" delay={idx * 0.06}>
-            <HoverCard className="p-8 flex flex-col h-full bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 shadow-xl">
+            <HoverCard className="p-8 flex flex-col h-full bg-white/[0.02] border-white/[0.06] shadow-xl">
               <div className="flex items-start gap-4 mb-4">
-                <div className="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-indigo-100 dark:bg-indigo-900/40 text-indigo-700 dark:text-indigo-300">
+                <div className="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-violet-500/10 text-violet-400">
                   <Icon className="h-6 w-6" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-bold text-slate-900 dark:text-slate-100">
+                  <h3 className="text-xl font-bold text-white">
                     {service.title}
                   </h3>
-                  <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">
+                  <p className="mt-2 text-sm text-zinc-400">
                     {service.description}
                   </p>
                 </div>
               </div>
-              <div className="mt-4 space-y-4 text-sm text-slate-600 dark:text-slate-400 flex-1">
+              <div className="mt-4 space-y-4 text-sm text-zinc-400 flex-1">
                 <div>
-                  <p className="font-semibold text-slate-900 dark:text-slate-100 mb-2">
+                  <p className="font-semibold text-white mb-2">
                     What we deliver
                   </p>
                   <ul className="space-y-1">
@@ -46,7 +46,7 @@ export function ServicesGrid({ services }: { services: Service[] }) {
                   </ul>
                 </div>
                 <div>
-                  <p className="font-semibold text-slate-900 dark:text-slate-100 mb-2">
+                  <p className="font-semibold text-white mb-2">
                     Outcomes
                   </p>
                   <ul className="space-y-1">

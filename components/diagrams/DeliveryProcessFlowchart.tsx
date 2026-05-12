@@ -17,7 +17,7 @@ export function DeliveryProcessFlowchart() {
     <div className="overflow-x-auto py-6">
       <svg
         viewBox="0 0 760 120"
-        className="w-full min-w-[620px] text-slate-700 dark:text-slate-300"
+        className="w-full min-w-[620px] text-zinc-300"
         role="img"
         aria-label="Delivery process flowchart"
       >
@@ -52,15 +52,15 @@ export function DeliveryProcessFlowchart() {
               fill="white"
               stroke="#6366f1"
               strokeWidth="2"
-              className="dark:fill-slate-800 dark:stroke-indigo-500"
+              className="fill-zinc-800 stroke-violet-500"
             />
             <rect x={s.x - 60} y="20" width="120" height="28" rx="6" fill="url(#dp-grad)" />
             <text x={s.x} y="38" textAnchor="middle" className="fill-white font-bold text-sm" fill="white">{s.label}</text>
-            <text x={s.x} y="68" textAnchor="middle" className="text-xs text-slate-600 dark:text-slate-400">{s.desc}</text>
+            <text x={s.x} y="68" textAnchor="middle" className="text-xs text-zinc-400">{s.desc}</text>
           </g>
         ))}
       </svg>
-      <p className="text-center text-sm text-slate-500 dark:text-slate-400 mt-2">
+      <p className="text-center text-sm text-zinc-500 mt-2">
         Phased delivery with clear milestones—assessment to ongoing operations.
       </p>
     </div>

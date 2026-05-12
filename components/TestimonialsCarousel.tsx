@@ -57,37 +57,36 @@ export function TestimonialsCarousel() {
       <div className="max-w-5xl mx-auto">
         <div className="flex items-center justify-center gap-2 mb-4">
           <AccentMarker color="violet" size="md" />
-          <h2 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-slate-100">
+          <h2 className="text-2xl md:text-3xl font-bold text-white">
             Trusted by teams running production infrastructure
           </h2>
         </div>
-        <p className="text-center text-slate-600 dark:text-slate-400 mb-12 max-w-2xl mx-auto">
+        <p className="text-center text-zinc-400 mb-12 max-w-2xl mx-auto">
           Engineers who let Axiom operate their cloud with confidence.
         </p>
 
-        {/* Split two-tone panel */}
-        <div className="rounded-3xl overflow-hidden border-2 border-slate-200/80 dark:border-slate-700/80 shadow-xl shadow-slate-200/30 dark:shadow-slate-900/50">
+        <div className="rounded-2xl overflow-hidden border border-white/[0.06]">
           <div className="grid md:grid-cols-2 min-h-[220px]">
             {/* Left: accent panel */}
             <div
               className={`p-8 flex flex-col justify-center ${
                 t.color === "violet"
-                  ? "bg-violet-50 dark:bg-violet-950/50"
+                  ? "bg-violet-500/[0.06]"
                   : t.color === "fuchsia"
-                    ? "bg-fuchsia-50 dark:bg-fuchsia-950/50"
+                    ? "bg-fuchsia-500/[0.06]"
                     : t.color === "indigo"
-                      ? "bg-indigo-50 dark:bg-indigo-950/50"
-                      : "bg-emerald-50 dark:bg-emerald-950/50"
+                      ? "bg-indigo-500/[0.06]"
+                      : "bg-emerald-500/[0.06]"
               }`}
             >
               <AccentMarker color={t.color} size="md" className="mb-4" />
-              <p className="text-sm font-semibold text-slate-700 dark:text-slate-300">
+              <p className="text-sm font-semibold text-zinc-200">
                 {t.author}
               </p>
-              <p className="text-xs text-slate-500 dark:text-slate-400">{t.company}</p>
+              <p className="text-xs text-zinc-500">{t.company}</p>
             </div>
             {/* Right: quote */}
-            <div className="p-8 flex flex-col justify-center bg-white dark:bg-slate-900">
+            <div className="p-8 flex flex-col justify-center bg-white/[0.02]">
               <AnimatePresence mode="wait">
                 <motion.blockquote
                   key={index}
@@ -95,7 +94,7 @@ export function TestimonialsCarousel() {
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: -12 }}
                   transition={{ duration: motionConfig.duration, ease: motionConfig.ease }}
-                  className="text-lg md:text-xl text-slate-700 dark:text-slate-300 italic leading-relaxed"
+                  className="text-lg md:text-xl text-zinc-300 italic leading-relaxed"
                 >
                   &ldquo;{t.quote}&rdquo;
                 </motion.blockquote>
@@ -104,11 +103,11 @@ export function TestimonialsCarousel() {
           </div>
 
           {/* Carousel controls */}
-          <div className="flex items-center justify-between px-6 py-4 bg-slate-50 dark:bg-slate-800/50 border-t border-slate-200 dark:border-slate-700">
+          <div className="flex items-center justify-between px-6 py-4 bg-white/[0.02] border-t border-white/[0.06]">
             <button
               type="button"
               onClick={() => setIndex((i) => (i === 0 ? TESTIMONIALS.length - 1 : i - 1))}
-              className="p-2 rounded-xl text-slate-600 dark:text-slate-400 hover:bg-white dark:hover:bg-slate-800 hover:text-violet-600 dark:hover:text-violet-400 transition-colors"
+              className="p-2 rounded-xl text-zinc-400 hover:bg-white/[0.04] hover:text-violet-400 transition-colors"
               aria-label="Previous testimonial"
             >
               <ChevronLeftIcon className="h-6 w-6" />
@@ -121,8 +120,8 @@ export function TestimonialsCarousel() {
                   onClick={() => setIndex(i)}
                   className={`h-2 rounded-full transition-all ${
                     i === index
-                      ? "w-6 bg-violet-600 dark:bg-violet-500"
-                      : "w-2 bg-slate-300 dark:bg-slate-600 hover:bg-slate-400"
+                      ? "w-6 bg-violet-500"
+                      : "w-2 bg-zinc-700 hover:bg-zinc-600"
                   }`}
                   aria-label={`Go to testimonial ${i + 1}`}
                 />
@@ -131,7 +130,7 @@ export function TestimonialsCarousel() {
             <button
               type="button"
               onClick={() => setIndex((i) => (i === TESTIMONIALS.length - 1 ? 0 : i + 1))}
-              className="p-2 rounded-xl text-slate-600 dark:text-slate-400 hover:bg-white dark:hover:bg-slate-800 hover:text-violet-600 dark:hover:text-violet-400 transition-colors"
+              className="p-2 rounded-xl text-zinc-400 hover:bg-white/[0.04] hover:text-violet-400 transition-colors"
               aria-label="Next testimonial"
             >
               <ChevronRightIcon className="h-6 w-6" />

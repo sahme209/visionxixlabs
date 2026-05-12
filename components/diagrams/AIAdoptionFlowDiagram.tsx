@@ -9,7 +9,7 @@ export function AIAdoptionFlowDiagram() {
     <div className="overflow-x-auto py-6">
       <svg
         viewBox="0 0 720 200"
-        className="w-full min-w-[600px] text-slate-700 dark:text-slate-300"
+        className="w-full min-w-[600px] text-zinc-300"
         role="img"
         aria-label="AI adoption flow from pilots to production"
       >
@@ -34,7 +34,7 @@ export function AIAdoptionFlowDiagram() {
             refY="3"
             orient="auto"
           >
-            <polygon points="0 0, 8 3, 0 6" fill="currentColor" className="text-slate-500 dark:text-slate-400" />
+            <polygon points="0 0, 8 3, 0 6" fill="currentColor" className="text-zinc-500" />
           </marker>
         </defs>
         {/* Stage boxes */}
@@ -46,7 +46,7 @@ export function AIAdoptionFlowDiagram() {
             height="80"
             rx="8"
             fill="url(#flow-start)"
-            className="dark:opacity-90"
+            className="opacity-90"
           />
           <text x="70" y="98" textAnchor="middle" className="fill-white font-semibold text-sm" fill="white">
             Intent
@@ -72,7 +72,7 @@ export function AIAdoptionFlowDiagram() {
             height="80"
             rx="8"
             fill="url(#flow-start)"
-            className="dark:opacity-90"
+            className="opacity-90"
           />
           <text x="240" y="98" textAnchor="middle" className="fill-white font-semibold text-sm" fill="white">
             Pilots
@@ -92,7 +92,7 @@ export function AIAdoptionFlowDiagram() {
           strokeDasharray="6 4"
           markerEnd="url(#arrowhead)"
         />
-        <rect x="325" y="75" width="80" height="50" rx="6" fill="rgb(254 249 195)" className="dark:fill-amber-900/40" stroke="rgb(245 158 11)" strokeWidth="1" />
+        <rect x="325" y="75" width="80" height="50" rx="6" fill="rgb(254 249 195)" className="fill-amber-900/40" stroke="rgb(245 158 11)" strokeWidth="1" />
         <text x="365" y="102" textAnchor="middle" className="text-xs font-semibold" fill="rgb(146 64 14)">
           GAP
         </text>
@@ -116,7 +116,7 @@ export function AIAdoptionFlowDiagram() {
             height="80"
             rx="8"
             fill="url(#flow-end)"
-            className="dark:opacity-90"
+            className="opacity-90"
           />
           <text x="520" y="98" textAnchor="middle" className="fill-white font-semibold text-sm" fill="white">
             Integration
@@ -142,7 +142,7 @@ export function AIAdoptionFlowDiagram() {
             height="80"
             rx="8"
             fill="url(#flow-end)"
-            className="dark:opacity-90"
+            className="opacity-90"
           />
           <text x="677" y="98" textAnchor="middle" className="fill-white font-semibold text-sm" fill="white">
             Production
@@ -152,7 +152,7 @@ export function AIAdoptionFlowDiagram() {
           </text>
         </g>
       </svg>
-      <p className="text-center text-sm text-slate-500 dark:text-slate-400 mt-2">
+      <p className="text-center text-sm text-zinc-500 mt-2">
         Most companies stall at pilots—we help you cross the gap to integration and production.
       </p>
     </div>

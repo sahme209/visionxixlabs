@@ -7,6 +7,7 @@ import {
   XCircleIcon,
   ArrowRightIcon,
   CpuChipIcon,
+  SparklesIcon,
 } from "@heroicons/react/24/outline";
 import { Navigation } from "@/components/Navigation";
 import { Reveal } from "@/components/motion/Reveal";
@@ -113,54 +114,77 @@ const comparisonRows = [
   { feature: "SSO", starter: "—", growth: "—", scale: "—", enterprise: "SAML + OIDC" },
 ];
 
+const TIER_ACCENTS: Record<MembershipPlanId, string> = {
+  starter: "from-zinc-500/20 to-zinc-600/5",
+  growth: "from-violet-500/20 to-fuchsia-500/5",
+  scale: "from-fuchsia-500/20 to-violet-500/5",
+  enterprise: "from-amber-500/20 to-orange-500/5",
+};
+
+const TIER_BORDER_GLOW: Record<MembershipPlanId, string> = {
+  starter: "hover:border-zinc-500/30",
+  growth: "hover:border-violet-500/40",
+  scale: "hover:border-fuchsia-500/30",
+  enterprise: "hover:border-amber-500/30",
+};
+
 export default function OperatorPricingPage() {
   const [billing, setBilling] = useState<BillingCycle>("monthly");
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 relative">
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[500px] spotlight-orb opacity-40" aria-hidden />
+    <div className="min-h-screen bg-[#09090b] text-white relative overflow-hidden">
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[500px] spotlight-orb opacity-30" aria-hidden />
       <div className="absolute inset-0 bg-dots opacity-10" aria-hidden />
+      <div className="absolute -top-60 -right-60 w-[500px] h-[500px] rounded-full bg-violet-600/5 blur-[120px]" aria-hidden />
+      <div className="absolute -bottom-60 -left-60 w-[500px] h-[500px] rounded-full bg-fuchsia-600/5 blur-[120px]" aria-hidden />
       <Navigation />
 
       {/* Header */}
-      <section className="pt-32 pb-12 text-center px-4 relative">
+      <section className="pt-36 pb-14 text-center px-4 relative">
         <Reveal>
-          <h1 className="text-3xl sm:text-4xl font-bold mb-4">Simple, transparent pricing</h1>
-          <p className="text-slate-400 text-lg max-w-xl mx-auto">
+          <p className="text-sm font-semibold text-violet-400 mb-4 tracking-wide uppercase">
+            Pricing
+          </p>
+          <h1 className="text-4xl sm:text-5xl font-bold mb-5 tracking-tight">
+            Simple, transparent pricing
+          </h1>
+          <p className="text-zinc-400 text-lg max-w-xl mx-auto leading-relaxed">
             Start with a free scan. Upgrade to the full autonomous agent with reasoning, execution, and governance.
           </p>
-          <div className="mt-8 flex items-center justify-center gap-3">
+
+          {/* Billing Toggle */}
+          <div className="mt-10 inline-flex items-center rounded-xl border border-white/[0.06] bg-white/[0.02] p-1 backdrop-blur-sm">
             <button
               onClick={() => setBilling("monthly")}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+              className={`px-5 py-2.5 rounded-lg text-sm font-medium transition-all duration-300 ${
                 billing === "monthly"
-                  ? "bg-violet-600 text-white"
-                  : "text-slate-400 hover:bg-slate-800"
+                  ? "bg-white text-zinc-900 shadow-sm"
+                  : "text-zinc-400 hover:text-white"
               }`}
             >
-              Pay monthly
+              Monthly
             </button>
             <button
               onClick={() => setBilling("yearly")}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2 ${
+              className={`px-5 py-2.5 rounded-lg text-sm font-medium transition-all duration-300 flex items-center gap-2 ${
                 billing === "yearly"
-                  ? "bg-violet-600 text-white"
-                  : "text-slate-400 hover:bg-slate-800"
+                  ? "bg-white text-zinc-900 shadow-sm"
+                  : "text-zinc-400 hover:text-white"
               }`}
             >
-              Pay yearly
-              <span className="text-xs bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded-full">
+              Yearly
+              <span className="text-xs bg-emerald-500/15 text-emerald-400 px-2 py-0.5 rounded-full border border-emerald-500/20">
                 Save 40%
               </span>
             </button>
           </div>
-          <p className="mt-2 text-sm text-slate-500">7 days free, then charged. Cancel anytime before trial ends.</p>
+          <p className="mt-3 text-sm text-zinc-600">7 days free, then charged. Cancel anytime before trial ends.</p>
         </Reveal>
       </section>
 
       {/* Plan Cards */}
-      <section className="pb-20 px-4">
-        <Stagger className="grid md:grid-cols-2 xl:grid-cols-4 gap-6 max-w-6xl mx-auto">
+      <section className="pb-24 px-4">
+        <Stagger className="grid md:grid-cols-2 xl:grid-cols-4 gap-6 max-w-6xl mx-auto" interval={0.08}>
             {PLAN_ORDER.map((planId) => {
               const plan = MEMBERSHIP_PLANS[planId];
               const axiom = AXIOM_FEATURES[planId];
@@ -171,83 +195,94 @@ export default function OperatorPricingPage() {
               return (
                 <div
                   key={planId}
-                  className={`card-hover rounded-2xl border p-8 flex flex-col transition-colors ${
+                  className={`group card-hover rounded-2xl border p-8 flex flex-col relative transition-all duration-500 ${
                     highlighted
-                      ? "glow-border-card border-violet-500/40 bg-violet-950/10 ring-1 ring-violet-500/20 relative hover:border-violet-500/60"
-                      : "border-slate-800 bg-slate-900/50 hover:border-slate-700"
+                      ? "glow-border-card border-violet-500/30 bg-white/[0.04] ring-1 ring-violet-500/15"
+                      : `border-white/[0.06] bg-white/[0.02] ${TIER_BORDER_GLOW[planId]}`
                   }`}
                 >
+                  {/* Tier accent glow */}
+                  <div className={`absolute inset-0 rounded-2xl bg-gradient-to-b ${TIER_ACCENTS[planId]} opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none`} aria-hidden />
+
                   {highlighted && (
-                    <span className="absolute -top-3 left-6 text-xs font-semibold text-violet-300 bg-violet-500/15 border border-violet-500/25 px-3 py-1 rounded-full">
+                    <span className="absolute -top-3 left-6 text-xs font-semibold text-violet-300 bg-violet-500/15 border border-violet-500/20 px-3 py-1 rounded-full flex items-center gap-1.5">
+                      <SparklesIcon className="h-3 w-3" />
                       Most popular
                     </span>
                   )}
-                  <h3 className="text-xl font-bold mt-1">{plan.name}</h3>
-                  <p className="text-xs text-violet-400 font-medium mt-1">{plan.axiom.label}</p>
-                  <div className="mt-4 flex items-baseline gap-1">
+
+                  <div className="relative">
+                    <h3 className="text-xl font-bold mt-1">{plan.name}</h3>
+                    <p className="text-xs text-violet-400 font-medium mt-1">{plan.axiom.label}</p>
+
+                    <div className="mt-5 flex items-baseline gap-1">
+                      {isEnterprise ? (
+                        <span className="text-4xl font-bold">Custom</span>
+                      ) : (
+                        <>
+                          <span className="text-4xl font-bold">${price}</span>
+                          <span className="text-zinc-500 text-sm">
+                            /mo
+                            {billing === "yearly" && <span className="text-xs ml-0.5">(billed annually)</span>}
+                          </span>
+                        </>
+                      )}
+                    </div>
+
+                    <p className="text-sm text-zinc-400 mt-3 mb-7 leading-relaxed">{plan.description}</p>
+
+                    <ul className="space-y-3 flex-1">
+                      {axiom.included.map((f) => (
+                        <li key={f} className="flex items-start gap-2.5 text-sm">
+                          <CheckCircleIcon className="h-4 w-4 mt-0.5 flex-shrink-0 text-emerald-400" />
+                          <span className="text-zinc-300">{f}</span>
+                        </li>
+                      ))}
+                      {axiom.excluded.map((f) => (
+                        <li key={f} className="flex items-start gap-2.5 text-sm">
+                          <XCircleIcon className="h-4 w-4 mt-0.5 flex-shrink-0 text-zinc-700" />
+                          <span className="text-zinc-600 line-through">{f}</span>
+                        </li>
+                      ))}
+                    </ul>
+
                     {isEnterprise ? (
-                      <span className="text-4xl font-bold">Custom</span>
+                      <a
+                        href={`mailto:${SUPPORT_EMAIL}?subject=Axiom - Enterprise`}
+                        className="mt-8 w-full inline-flex items-center justify-center gap-2 rounded-xl border border-white/[0.08] px-4 py-3 text-sm font-semibold text-white hover:bg-white/[0.04] transition-colors"
+                      >
+                        Contact sales
+                        <ArrowRightIcon className="h-3.5 w-3.5" />
+                      </a>
                     ) : (
-                      <>
-                        <span className="text-4xl font-bold">${price}</span>
-                        <span className="text-slate-500 text-sm">
-                          /mo
-                          {billing === "yearly" && <span className="text-xs ml-0.5">(billed annually)</span>}
-                        </span>
-                      </>
+                      (() => {
+                        const stripeLink = getStripeLink(planId, billing);
+                        return stripeLink ? (
+                          <a
+                            href={stripeLink}
+                            rel="noopener noreferrer"
+                            className={`mt-8 w-full inline-flex items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold transition-all duration-300 ${
+                              highlighted
+                                ? "btn-huly bg-white text-zinc-900 hover:bg-zinc-100 shadow-sm"
+                                : "bg-white/[0.06] text-white hover:bg-white/[0.10] border border-white/[0.06]"
+                            }`}
+                          >
+                            Start free trial
+                            <ArrowRightIcon className="h-3.5 w-3.5" />
+                          </a>
+                        ) : (
+                          <AnimatedButton
+                            href="/auth/signup?redirect=/operator/onboarding"
+                            variant={highlighted ? "primary" : "secondary"}
+                            className="mt-8 w-full justify-center"
+                          >
+                            Start free trial
+                            <ArrowRightIcon className="h-3.5 w-3.5" />
+                          </AnimatedButton>
+                        );
+                      })()
                     )}
                   </div>
-                  <p className="text-sm text-slate-400 mt-3 mb-6">{plan.description}</p>
-                  <ul className="space-y-3 flex-1">
-                    {axiom.included.map((f) => (
-                      <li key={f} className="flex items-start gap-2.5 text-sm">
-                        <CheckCircleIcon className="h-4 w-4 mt-0.5 flex-shrink-0 text-emerald-400" />
-                        <span className="text-slate-300">{f}</span>
-                      </li>
-                    ))}
-                    {axiom.excluded.map((f) => (
-                      <li key={f} className="flex items-start gap-2.5 text-sm">
-                        <XCircleIcon className="h-4 w-4 mt-0.5 flex-shrink-0 text-slate-700" />
-                        <span className="text-slate-600 line-through">{f}</span>
-                      </li>
-                    ))}
-                  </ul>
-                  {isEnterprise ? (
-                    <a
-                      href={`mailto:${SUPPORT_EMAIL}?subject=Axiom - Enterprise`}
-                      className="mt-8 w-full inline-flex items-center justify-center gap-2 rounded-xl border border-violet-500/30 px-4 py-3 text-sm font-semibold text-violet-300 hover:bg-violet-900/20 transition-colors"
-                    >
-                      Contact sales
-                      <ArrowRightIcon className="h-3.5 w-3.5" />
-                    </a>
-                  ) : (
-                    (() => {
-                      const stripeLink = getStripeLink(planId, billing);
-                      return stripeLink ? (
-                        <a
-                          href={stripeLink}
-                          rel="noopener noreferrer"
-                          className={`mt-8 w-full inline-flex items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold transition-colors ${
-                            highlighted
-                              ? "bg-violet-600 text-white hover:bg-violet-700"
-                              : "bg-slate-800 text-slate-200 hover:bg-slate-700"
-                          }`}
-                        >
-                          Start free trial
-                          <ArrowRightIcon className="h-3.5 w-3.5" />
-                        </a>
-                      ) : (
-                        <AnimatedButton
-                          href="/auth/signup?redirect=/operator/onboarding"
-                          variant={highlighted ? "primary" : "secondary"}
-                          className="mt-8 w-full justify-center"
-                        >
-                          Start free trial
-                          <ArrowRightIcon className="h-3.5 w-3.5" />
-                        </AnimatedButton>
-                      );
-                    })()
-                  )}
                 </div>
               );
             })}
@@ -255,88 +290,95 @@ export default function OperatorPricingPage() {
       </section>
 
       {/* Comparison Table */}
-      <section className="pb-20 px-4">
+      <section className="pb-24 px-4">
         <div className="max-w-6xl mx-auto">
           <Reveal>
-            <h2 className="text-2xl font-bold text-center mb-10">Compare plans</h2>
+            <h2 className="text-2xl font-bold text-center mb-12">Compare plans</h2>
           </Reveal>
-          <div className="rounded-xl border border-slate-800 overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="bg-slate-900/80">
-                  <th className="text-left px-6 py-4 font-semibold text-slate-300">Feature</th>
-                  <th className="text-center px-4 py-4 font-semibold text-slate-300">Starter</th>
-                  <th className="text-center px-4 py-4 font-semibold text-violet-300">Growth</th>
-                  <th className="text-center px-4 py-4 font-semibold text-slate-300">Scale</th>
-                  <th className="text-center px-4 py-4 font-semibold text-slate-300">Enterprise</th>
-                </tr>
-              </thead>
-              <tbody>
-                {comparisonRows.map((row, i) => (
-                  <tr key={row.feature} className={i % 2 === 0 ? "bg-slate-950" : "bg-slate-900/30"}>
-                    <td className="px-6 py-3 text-slate-400">{row.feature}</td>
-                    <td className="px-4 py-3 text-center text-slate-500">{row.starter}</td>
-                    <td className="px-4 py-3 text-center text-slate-300 font-medium">{row.growth}</td>
-                    <td className="px-4 py-3 text-center text-slate-300">{row.scale}</td>
-                    <td className="px-4 py-3 text-center text-slate-400">{row.enterprise}</td>
+          <Reveal delay={0.1}>
+            <div className="rounded-xl border border-white/[0.06] overflow-x-auto backdrop-blur-sm bg-white/[0.01]">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-white/[0.06]">
+                    <th className="text-left px-6 py-4 font-semibold text-zinc-300">Feature</th>
+                    <th className="text-center px-4 py-4 font-semibold text-zinc-400">Starter</th>
+                    <th className="text-center px-4 py-4 font-semibold text-violet-400">Growth</th>
+                    <th className="text-center px-4 py-4 font-semibold text-zinc-300">Scale</th>
+                    <th className="text-center px-4 py-4 font-semibold text-zinc-300">Enterprise</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody>
+                  {comparisonRows.map((row, i) => (
+                    <tr key={row.feature} className={`border-t border-white/[0.04] ${i % 2 === 0 ? "bg-white/[0.01]" : ""}`}>
+                      <td className="px-6 py-3.5 text-zinc-400">{row.feature}</td>
+                      <td className="px-4 py-3.5 text-center text-zinc-500">{row.starter}</td>
+                      <td className="px-4 py-3.5 text-center text-zinc-200 font-medium">{row.growth}</td>
+                      <td className="px-4 py-3.5 text-center text-zinc-300">{row.scale}</td>
+                      <td className="px-4 py-3.5 text-center text-zinc-400">{row.enterprise}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </Reveal>
         </div>
       </section>
 
       {/* Add-ons */}
-      <section className="pb-20 px-4">
+      <section className="pb-24 px-4">
         <div className="max-w-3xl mx-auto">
           <Reveal>
-            <h2 className="text-2xl font-bold text-center mb-8">Add-ons</h2>
+            <h2 className="text-2xl font-bold text-center mb-10">Add-ons</h2>
           </Reveal>
-          <div className="rounded-xl border border-slate-800 bg-slate-900/50 p-6 glass-dark backdrop-blur-sm">
-            <div className="space-y-4">
-              {ADDONS.map((addon) => (
-                <div key={addon.name} className="flex items-center justify-between py-2 border-b border-slate-800 last:border-0">
-                  <span className="text-slate-300">{addon.name}</span>
-                  <span className="font-semibold text-slate-100">
-                    +${billing === "monthly" ? addon.monthly : addon.yearly}
-                    <span className="text-slate-500 text-sm font-normal">/mo</span>
-                  </span>
-                </div>
-              ))}
+          <Reveal delay={0.1}>
+            <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-6 backdrop-blur-sm">
+              <div className="space-y-0">
+                {ADDONS.map((addon, i) => (
+                  <div key={addon.name} className={`flex items-center justify-between py-4 ${i < ADDONS.length - 1 ? "border-b border-white/[0.04]" : ""}`}>
+                    <span className="text-zinc-300">{addon.name}</span>
+                    <span className="font-semibold text-white">
+                      +${billing === "monthly" ? addon.monthly : addon.yearly}
+                      <span className="text-zinc-500 text-sm font-normal">/mo</span>
+                    </span>
+                  </div>
+                ))}
+              </div>
             </div>
-          </div>
+          </Reveal>
         </div>
       </section>
 
       {/* CTA */}
-      <section className="py-20 border-t border-slate-800/50 text-center px-4 relative overflow-hidden">
-        <div className="absolute inset-0 diagonal-streak opacity-15" aria-hidden />
-        <div className="absolute -top-40 -right-40 w-80 h-80 rounded-full bg-violet-500/5 blur-3xl" aria-hidden />
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 rounded-full bg-fuchsia-500/5 blur-3xl" aria-hidden />
+      <section className="py-24 border-t border-white/[0.04] text-center px-4 relative overflow-hidden">
+        <div className="absolute inset-0 diagonal-streak opacity-10" aria-hidden />
+        <div className="absolute -top-40 -right-40 w-80 h-80 rounded-full bg-violet-500/5 blur-[100px]" aria-hidden />
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 rounded-full bg-fuchsia-500/5 blur-[100px]" aria-hidden />
         <Reveal>
-          <h2 className="text-2xl font-bold mb-4 relative">Ready to scan your cloud?</h2>
-          <p className="text-slate-400 mb-8 relative">7 days free on any paid plan. Cancel anytime.</p>
-          <AnimatedButton href="/auth/signup?redirect=/operator/onboarding" variant="primary" className="px-8 py-3 relative btn-huly cta-glow">
+          <h2 className="text-3xl font-bold mb-5 relative">Ready to scan your cloud?</h2>
+          <p className="text-zinc-400 mb-10 relative max-w-md mx-auto">7 days free on any paid plan. Cancel anytime.</p>
+          <a
+            href="/auth/signup?redirect=/operator/onboarding"
+            className="btn-huly cta-glow inline-flex items-center gap-2 rounded-xl bg-white px-8 py-3.5 text-sm font-semibold text-zinc-900 hover:bg-zinc-100 transition-colors shadow-sm relative"
+          >
             Start Free Trial
             <ArrowRightIcon className="h-4 w-4" />
-          </AnimatedButton>
+          </a>
         </Reveal>
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-slate-800/50 py-10 px-4">
+      <footer className="border-t border-white/[0.04] py-10 px-4">
         <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
             <CpuChipIcon className="h-5 w-5 text-violet-400" />
-            <span className="font-semibold text-sm">Axiom</span>
-            <span className="text-xs text-slate-600 ml-2">by Vision XIX Labs</span>
+            <span className="font-semibold text-sm text-gradient">Axiom</span>
+            <span className="text-xs text-zinc-600 ml-2">by Vision XIX Labs</span>
           </div>
-          <div className="flex items-center gap-6 text-sm text-slate-500">
-            <Link href="/privacy" className="hover:text-slate-300">Privacy</Link>
-            <Link href="/terms" className="hover:text-slate-300">Terms</Link>
-            <Link href="/security" className="hover:text-slate-300">Security</Link>
-            <Link href="/contact" className="hover:text-slate-300">Contact</Link>
+          <div className="flex items-center gap-6 text-sm text-zinc-500">
+            <Link href="/privacy" className="hover:text-white transition-colors">Privacy</Link>
+            <Link href="/terms" className="hover:text-white transition-colors">Terms</Link>
+            <Link href="/security" className="hover:text-white transition-colors">Security</Link>
+            <Link href="/contact" className="hover:text-white transition-colors">Contact</Link>
           </div>
         </div>
       </footer>

@@ -18,40 +18,40 @@ export const metadata: Metadata = {
 
 export default function PressPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
+    <div className="min-h-screen bg-[#09090b]">
       <Navigation />
 
       <main className="pt-28 pb-16 px-4 sm:px-6 lg:px-8">
         <div className="max-w-3xl mx-auto">
-          <h1 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-slate-100 mb-4">
+          <h1 className="text-3xl md:text-4xl font-bold text-white mb-4">
             Press &amp; Media
           </h1>
-          <p className="text-lg text-slate-600 dark:text-slate-400 mb-8">
+          <p className="text-lg text-zinc-400 mb-8">
             We welcome links from partners, press, and resources pages. Use the information below to link to Vision XIX Labs and help others discover our work.
           </p>
 
           {/* Canonical URL for backlinks */}
-          <section className="mb-10 p-6 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm">
-            <h2 className="text-xl font-semibold text-slate-900 dark:text-slate-100 mb-3">
+          <section className="mb-10 p-6 rounded-xl bg-white/[0.02] border border-white/[0.06] shadow-sm">
+            <h2 className="text-xl font-semibold text-white mb-3">
               Preferred link (canonical URL)
             </h2>
-            <p className="text-sm text-slate-600 dark:text-slate-400 mb-3">
+            <p className="text-sm text-zinc-400 mb-3">
               For best SEO and consistency, please link to our main site:
             </p>
-            <code className="block p-4 rounded-lg bg-slate-100 dark:bg-slate-900 text-indigo-600 dark:text-indigo-400 font-mono text-sm break-all">
+            <code className="block p-4 rounded-lg bg-white/[0.04] text-violet-400 font-mono text-sm break-all">
               {SITE_URL}
             </code>
           </section>
 
           {/* Suggested anchor text */}
-          <section className="mb-10 p-6 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm">
-            <h2 className="text-xl font-semibold text-slate-900 dark:text-slate-100 mb-3">
+          <section className="mb-10 p-6 rounded-xl bg-white/[0.02] border border-white/[0.06] shadow-sm">
+            <h2 className="text-xl font-semibold text-white mb-3">
               Suggested anchor text for backlinks
             </h2>
-            <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">
+            <p className="text-sm text-zinc-400 mb-4">
               Using descriptive anchor text helps search engines and users. You can use any of these:
             </p>
-            <ul className="space-y-2 text-sm text-slate-700 dark:text-slate-300">
+            <ul className="space-y-2 text-sm text-zinc-300">
               <li><strong>Vision XIX Labs</strong> – company name</li>
               <li><strong>Vision XIX Labs – Cloud &amp; AI Engineering</strong> – with tagline</li>
               <li><strong>cloud and AI engineering</strong> – keyword-focused</li>
@@ -61,11 +61,11 @@ export default function PressPage() {
           </section>
 
           {/* Logo / badge */}
-          <section className="mb-10 p-6 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm">
-            <h2 className="text-xl font-semibold text-slate-900 dark:text-slate-100 mb-3">
+          <section className="mb-10 p-6 rounded-xl bg-white/[0.02] border border-white/[0.06] shadow-sm">
+            <h2 className="text-xl font-semibold text-white mb-3">
               Logo and branding
             </h2>
-            <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">
+            <p className="text-sm text-zinc-400 mb-4">
               You may use our logo when linking to us. Please link the image to {SITE_URL}.
             </p>
             <div className="flex items-center gap-4 flex-wrap">
@@ -76,54 +76,54 @@ export default function PressPage() {
                 height={80}
                 className="rounded-xl"
               />
-              <p className="text-xs text-slate-500 dark:text-slate-400">
-                Logo URL: <code className="bg-slate-100 dark:bg-slate-900 px-1 rounded">{SITE_URL}/vision-xix-logo.png</code>
+              <p className="text-xs text-zinc-500">
+                Logo URL: <code className="bg-white/[0.04] px-1 rounded">{SITE_URL}/vision-xix-logo.png</code>
               </p>
             </div>
           </section>
 
           {/* Short description for use elsewhere */}
-          <section className="mb-10 p-6 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm">
-            <h2 className="text-xl font-semibold text-slate-900 dark:text-slate-100 mb-3">
+          <section className="mb-10 p-6 rounded-xl bg-white/[0.02] border border-white/[0.06] shadow-sm">
+            <h2 className="text-xl font-semibold text-white mb-3">
               One-line description
             </h2>
-            <p className="text-sm text-slate-600 dark:text-slate-400 mb-3">
+            <p className="text-sm text-zinc-400 mb-3">
               For directories, partner pages, or author bios:
             </p>
-            <blockquote className="pl-4 border-l-4 border-indigo-500 text-slate-700 dark:text-slate-300 italic">
+            <blockquote className="pl-4 border-l-4 border-indigo-500 text-zinc-300 italic">
               Vision XIX Labs builds cloud and AI solutions for modern infrastructure—AWS, Azure, and GCP—and creates apps like VisaNova (USCIS case tracker) and RecallEase (health and reminders).
             </blockquote>
           </section>
 
           {/* Internal links for SEO */}
-          <section className="p-6 rounded-xl bg-slate-100 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700">
-            <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100 mb-3">
+          <section className="p-6 rounded-xl bg-white/[0.04]/50 border border-white/[0.06]">
+            <h2 className="text-lg font-semibold text-white mb-3">
               Explore our site
             </h2>
             <ul className="flex flex-wrap gap-3 text-sm">
-              <li><Link href="/" className="text-indigo-600 dark:text-indigo-400 hover:underline">Home</Link></li>
-              <li><Link href="/cloud-solutions" className="text-indigo-600 dark:text-indigo-400 hover:underline">Cloud Solutions</Link></li>
-              <li><Link href="/ai-solutions" className="text-indigo-600 dark:text-indigo-400 hover:underline">AI Solutions</Link></li>
-              <li><Link href="/apps" className="text-indigo-600 dark:text-indigo-400 hover:underline">Our Apps</Link></li>
-              <li><Link href="/contact" className="text-indigo-600 dark:text-indigo-400 hover:underline">Contact</Link></li>
-              <li><Link href="/case-studies" className="text-indigo-600 dark:text-indigo-400 hover:underline">Case Studies</Link></li>
-              <li><Link href="/insights" className="text-indigo-600 dark:text-indigo-400 hover:underline">Insights</Link></li>
+              <li><Link href="/" className="text-violet-400 hover:underline">Home</Link></li>
+              <li><Link href="/cloud-solutions" className="text-violet-400 hover:underline">Cloud Solutions</Link></li>
+              <li><Link href="/ai-solutions" className="text-violet-400 hover:underline">AI Solutions</Link></li>
+              <li><Link href="/apps" className="text-violet-400 hover:underline">Our Apps</Link></li>
+              <li><Link href="/contact" className="text-violet-400 hover:underline">Contact</Link></li>
+              <li><Link href="/case-studies" className="text-violet-400 hover:underline">Case Studies</Link></li>
+              <li><Link href="/insights" className="text-violet-400 hover:underline">Insights</Link></li>
             </ul>
           </section>
 
-          <p className="mt-8 text-sm text-slate-500 dark:text-slate-400">
-            Questions? <Link href="/contact" className="text-indigo-600 dark:text-indigo-400 hover:underline">Contact us</Link>.
+          <p className="mt-8 text-sm text-zinc-500">
+            Questions? <Link href="/contact" className="text-violet-400 hover:underline">Contact us</Link>.
           </p>
         </div>
       </main>
 
       {/* Minimal footer for this page */}
-      <footer className="border-t border-slate-200 dark:border-slate-800 py-6 px-4 text-center text-sm text-slate-500 dark:text-slate-400">
-        <Link href="/" className="hover:text-indigo-600 dark:hover:text-indigo-400">Vision XIX Labs</Link>
+      <footer className="border-t border-white/[0.06] py-6 px-4 text-center text-sm text-zinc-500">
+        <Link href="/" className="hover:text-violet-400">Vision XIX Labs</Link>
         {" · "}
-        <Link href="/privacy" className="hover:text-indigo-600 dark:hover:text-indigo-400">Privacy</Link>
+        <Link href="/privacy" className="hover:text-violet-400">Privacy</Link>
         {" · "}
-        <Link href="/terms" className="hover:text-indigo-600 dark:hover:text-indigo-400">Terms</Link>
+        <Link href="/terms" className="hover:text-violet-400">Terms</Link>
       </footer>
     </div>
   );

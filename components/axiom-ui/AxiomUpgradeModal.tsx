@@ -160,59 +160,59 @@ export function AxiomUpgradeModal({
   return (
     <dialog
       ref={dialogRef}
-      className="fixed inset-0 z-50 m-auto w-full max-w-md rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-0 shadow-2xl backdrop:bg-black/40 backdrop:backdrop-blur-sm"
+      className="fixed inset-0 z-50 m-auto w-full max-w-md rounded-2xl border border-white/[0.06] bg-white/[0.02] p-0 shadow-2xl backdrop:bg-black/40 backdrop:backdrop-blur-sm"
     >
       <div className="p-6">
         <div className="flex items-start justify-between mb-4">
           <div>
             {insightTitle && (
-              <p className="text-[10px] font-medium uppercase tracking-wide text-violet-600 dark:text-violet-400 mb-1">
+              <p className="text-[10px] font-medium uppercase tracking-wide text-violet-400 mb-1">
                 {insightTitle}
               </p>
             )}
-            <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">
+            <h2 className="text-lg font-semibold text-white">
               {content.headline}
             </h2>
           </div>
           <button
             onClick={onClose}
-            className="p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors"
+            className="p-1 rounded-lg hover:bg-white/[0.04] text-zinc-400 hover:text-zinc-200 transition-colors"
           >
             <XMarkIcon className="h-5 w-5" />
           </button>
         </div>
 
-        <p className="text-sm text-slate-600 dark:text-slate-400 mb-5 leading-relaxed">
+        <p className="text-sm text-zinc-400 mb-5 leading-relaxed">
           {content.description}
         </p>
 
         <div className="space-y-3 mb-5">
           {content.features.map((feat) => (
             <div key={feat.label} className="flex items-center gap-3">
-              <div className="flex-shrink-0 h-8 w-8 rounded-lg bg-violet-50 dark:bg-violet-950/40 flex items-center justify-center">
-                <feat.icon className="h-4 w-4 text-violet-600 dark:text-violet-400" />
+              <div className="flex-shrink-0 h-8 w-8 rounded-lg bg-violet-500/10 flex items-center justify-center">
+                <feat.icon className="h-4 w-4 text-violet-400" />
               </div>
-              <span className="text-sm text-slate-700 dark:text-slate-300">
+              <span className="text-sm text-zinc-300">
                 {feat.label}
               </span>
             </div>
           ))}
         </div>
 
-        <div className="mb-5 rounded-lg border border-violet-200 dark:border-violet-800/50 bg-violet-50/50 dark:bg-violet-950/20 p-3">
-          <p className="text-[10px] font-bold text-violet-600 dark:text-violet-400 uppercase tracking-wide mb-1.5">
+        <div className="mb-5 rounded-lg border border-violet-500/20 bg-violet-500/[0.06] p-3">
+          <p className="text-[10px] font-bold text-violet-400 uppercase tracking-wide mb-1.5">
             {content.example.heading}
           </p>
-          <pre className="text-[11px] text-slate-700 dark:text-slate-300 font-mono leading-relaxed whitespace-pre-wrap">
+          <pre className="text-[11px] text-zinc-300 font-mono leading-relaxed whitespace-pre-wrap">
             {content.example.content}
           </pre>
-          <p className="mt-1.5 text-[10px] text-slate-500 dark:text-slate-400">
+          <p className="mt-1.5 text-[10px] text-zinc-500">
             Your output will be generated from your actual scan data.
           </p>
         </div>
 
         {error && (
-          <p className="text-xs text-red-600 dark:text-red-400 mb-3">{error}</p>
+          <p className="text-xs text-red-400 mb-3">{error}</p>
         )}
 
         <div className="flex flex-col gap-2">
@@ -221,7 +221,7 @@ export function AxiomUpgradeModal({
           </AxiomButton>
           <button
             onClick={onClose}
-            className="text-xs text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 transition-colors py-1"
+            className="text-xs text-slate-500 hover:text-white transition-colors py-1"
           >
             Not now
           </button>

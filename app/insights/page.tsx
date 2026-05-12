@@ -18,14 +18,14 @@ export const metadata: Metadata = {
 
 export default function InsightsPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
+    <div className="min-h-screen bg-[#09090b]">
       <Navigation />
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-16">
         <header className="mb-12 text-center">
-          <h1 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-slate-100 mb-3">
+          <h1 className="text-3xl md:text-4xl font-bold text-white mb-3">
             Insights
           </h1>
-          <p className="text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
+          <p className="text-zinc-400 max-w-2xl mx-auto">
             Technical deep-dives on production AI, RAG vs. fine-tuning, AI cost management, internal assistants, cloud security, IAM, and DevOps. No hype — practical guidance for modern infrastructure.
           </p>
         </header>
@@ -35,20 +35,20 @@ export default function InsightsPage() {
             <li key={article.slug}>
               <Link
                 href={`/insights/${article.slug}`}
-                className="block rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-6 shadow-sm hover:border-indigo-300 dark:hover:border-indigo-600 hover:shadow-md transition-all group"
+                className="block rounded-xl border border-white/[0.06] bg-white/[0.02] p-6 shadow-sm hover:border-indigo-300 hover:border-white/[0.08] hover:shadow-md transition-all group"
               >
                 <div className="flex items-start gap-4">
-                  <div className="flex-shrink-0 rounded-lg bg-indigo-100 dark:bg-indigo-900/40 p-3">
-                    <DocumentTextIcon className="h-6 w-6 text-indigo-600 dark:text-indigo-400" />
+                  <div className="flex-shrink-0 rounded-lg bg-violet-500/10 p-3">
+                    <DocumentTextIcon className="h-6 w-6 text-violet-400" />
                   </div>
                   <div className="min-w-0 flex-1">
-                    <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
+                    <h2 className="text-lg font-semibold text-white group-hover:text-indigo-600 group-hover:text-violet-400 transition-colors">
                       {article.title}
                     </h2>
-                    <p className="mt-1 text-sm text-slate-600 dark:text-slate-400 line-clamp-2">
+                    <p className="mt-1 text-sm text-zinc-400 line-clamp-2">
                       {article.excerpt}
                     </p>
-                    <div className="mt-3 flex items-center gap-3 text-xs text-slate-500 dark:text-slate-400">
+                    <div className="mt-3 flex items-center gap-3 text-xs text-zinc-500">
                       <time dateTime={article.date}>
                         {new Date(article.date).toLocaleDateString("en-US", {
                           year: "numeric",
@@ -66,11 +66,11 @@ export default function InsightsPage() {
           ))}
         </ul>
 
-        <section className="mt-16 rounded-2xl border border-indigo-200 dark:border-indigo-800 bg-indigo-50 dark:bg-indigo-950/40 p-8 text-center">
-          <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100 mb-2">
+        <section className="mt-16 rounded-2xl border border-indigo-200 border-violet-500/20 bg-indigo-50 bg-violet-500/10 p-8 text-center">
+          <h2 className="text-xl font-bold text-white mb-2">
             Free Cloud &amp; AI Review
           </h2>
-          <p className="text-slate-600 dark:text-slate-400 text-sm mb-4 max-w-xl mx-auto">
+          <p className="text-zinc-400 text-sm mb-4 max-w-xl mx-auto">
             Get a focused 30-minute review of your cloud and AI setup. No obligation — we’ll share practical recommendations and next steps.
           </p>
           <Link

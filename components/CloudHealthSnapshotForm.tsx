@@ -55,7 +55,7 @@ export function CloudHealthSnapshotForm() {
 
   if (submitted) {
     return (
-      <div className="rounded-xl border border-emerald-300 dark:border-emerald-700 bg-emerald-50 dark:bg-emerald-900/30 px-4 py-3 text-emerald-800 dark:text-emerald-200 text-sm">
+      <div className="rounded-xl border border-emerald-500/20 bg-emerald-500/[0.06] px-4 py-3 text-emerald-300 text-sm">
         Thanks! We&apos;ll send your Cloud Health Snapshot soon. Check your inbox.
       </div>
     );
@@ -64,30 +64,30 @@ export function CloudHealthSnapshotForm() {
   return (
     <form onSubmit={handleSubmit} className="space-y-4 text-left max-w-md mx-auto">
       <div>
-        <label htmlFor="snapshot-email" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Work email *</label>
+        <label htmlFor="snapshot-email" className="block text-sm font-medium text-zinc-300 mb-1">Work email *</label>
         <input
           id="snapshot-email"
           name="email"
           type="email"
           required
-          className="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 px-3 py-2 text-sm"
+          className="w-full rounded-lg border border-white/[0.08] bg-white/[0.02] px-3 py-2 text-sm"
         />
       </div>
       <div>
-        <label htmlFor="snapshot-company" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Company</label>
+        <label htmlFor="snapshot-company" className="block text-sm font-medium text-zinc-300 mb-1">Company</label>
         <input
           id="snapshot-company"
           name="company"
           type="text"
-          className="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 px-3 py-2 text-sm"
+          className="w-full rounded-lg border border-white/[0.08] bg-white/[0.02] px-3 py-2 text-sm"
         />
       </div>
       <div>
-        <label htmlFor="snapshot-cloud" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Primary cloud provider</label>
+        <label htmlFor="snapshot-cloud" className="block text-sm font-medium text-zinc-300 mb-1">Primary cloud provider</label>
         <select
           id="snapshot-cloud"
           name="cloudProvider"
-          className="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 px-3 py-2 text-sm"
+          className="w-full rounded-lg border border-white/[0.08] bg-white/[0.02] px-3 py-2 text-sm"
         >
           <option value="">Select</option>
           <option value="AWS">AWS</option>
@@ -103,7 +103,7 @@ export function CloudHealthSnapshotForm() {
       >
         {loading ? "Sending..." : "Get my snapshot"}
       </button>
-      {error && <p className="text-sm text-red-600 dark:text-red-400">{error}</p>}
+      {error && <p className="text-sm text-red-400">{error}</p>}
     </form>
   );
 }

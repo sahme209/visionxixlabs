@@ -93,16 +93,16 @@ export function WebsiteBuilderJourney({
                   ? "bg-emerald-500 text-white"
                   : s.current
                     ? "bg-violet-500 text-white"
-                    : "bg-slate-200 dark:bg-slate-700 text-slate-500 dark:text-slate-400"
+                    : "bg-zinc-700 text-zinc-500"
               }`}
             >
               {s.done ? <CheckCircleIcon className="h-4 w-4" /> : i + 1}
             </span>
-            <span className="text-xs font-medium text-slate-600 dark:text-slate-400 hidden sm:inline">
+            <span className="text-xs font-medium text-zinc-400 hidden sm:inline">
               {s.shortLabel || s.label}
             </span>
             {i < steps.length - 1 && (
-              <ArrowRightIcon className="h-4 w-4 text-slate-300 dark:text-slate-600 shrink-0" />
+              <ArrowRightIcon className="h-4 w-4 text-zinc-400 shrink-0" />
             )}
           </div>
         ))}
@@ -111,12 +111,12 @@ export function WebsiteBuilderJourney({
   }
 
   return (
-    <div className="rounded-3xl border-2 border-violet-200/80 dark:border-violet-800/80 bg-gradient-to-br from-violet-50/80 to-fuchsia-50/60 dark:from-violet-900/20 dark:to-fuchsia-900/20 p-6 sm:p-8">
-      <h3 className="text-lg font-bold text-slate-900 dark:text-slate-100 mb-1 flex items-center gap-2">
+    <div className="rounded-3xl border-2 border-violet-500/20 bg-gradient-to-br from-violet-900/20 to-fuchsia-900/10 p-6 sm:p-8">
+      <h3 className="text-lg font-bold text-white mb-1 flex items-center gap-2">
         <SparklesIcon className="h-5 w-5 text-violet-500" />
         Your journey
       </h3>
-      <p className="text-sm text-slate-600 dark:text-slate-400 mb-6">
+      <p className="text-sm text-zinc-400 mb-6">
         From preview to production — and beyond with membership.
       </p>
       <div className="space-y-4">
@@ -125,10 +125,10 @@ export function WebsiteBuilderJourney({
             key={s.id}
             className={`flex items-center gap-4 rounded-2xl border-2 p-4 transition-all ${
               s.current
-                ? "border-violet-500 bg-white dark:bg-slate-800 shadow-lg shadow-violet-500/10"
+                ? "border-violet-500 bg-white/[0.02] shadow-lg shadow-violet-500/10"
                 : s.done
-                  ? "border-emerald-200 dark:border-emerald-800/50 bg-emerald-50/30 dark:bg-emerald-900/10"
-                  : "border-slate-200 dark:border-slate-700 bg-white/60 dark:bg-slate-800/60"
+                  ? "border-emerald-500/20 bg-emerald-500/[0.06]"
+                  : "border-white/[0.06] bg-white/[0.02]"
             }`}
           >
             <span
@@ -137,21 +137,21 @@ export function WebsiteBuilderJourney({
                   ? "bg-emerald-500 text-white"
                   : s.current
                     ? "bg-violet-500 text-white"
-                    : "bg-slate-200 dark:bg-slate-700 text-slate-500 dark:text-slate-400"
+                    : "bg-zinc-700 text-zinc-500"
               }`}
             >
               {s.done ? <CheckCircleIcon className="h-6 w-6" /> : i + 1}
             </span>
             <div className="flex-1 min-w-0">
-              <p className="font-semibold text-slate-900 dark:text-slate-100">{s.label}</p>
+              <p className="font-semibold text-white">{s.label}</p>
               {s.cta && !s.done && (
-                <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{s.cta}</p>
+                <p className="text-xs text-zinc-500 mt-0.5">{s.cta}</p>
               )}
             </div>
             {s.href && !s.done && (
               <Link
                 href={s.href}
-                className="shrink-0 inline-flex items-center gap-1 rounded-xl bg-slate-900 dark:bg-slate-100 px-4 py-2 text-sm font-semibold text-white dark:text-slate-900 hover:bg-slate-800 dark:hover:bg-slate-200 transition-colors"
+                className="shrink-0 inline-flex items-center gap-1 rounded-xl bg-white px-4 py-2 text-sm font-semibold text-zinc-900 hover:bg-zinc-100 transition-colors"
               >
                 {s.id === "membership" ? (
                   <>
@@ -169,8 +169,8 @@ export function WebsiteBuilderJourney({
           </div>
         ))}
       </div>
-      <div className="mt-6 pt-6 border-t border-violet-200/80 dark:border-violet-700/80">
-        <p className="text-xs text-slate-600 dark:text-slate-400">
+      <div className="mt-6 pt-6 border-t border-violet-500/20">
+        <p className="text-xs text-zinc-400">
           <strong>Membership</strong> unlocks Axiom, chatbots, priority support, and all products. One plan, full access.
         </p>
         <Link

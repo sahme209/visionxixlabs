@@ -23,7 +23,7 @@ export function AIHeroCTAs({
       <AnimatedButton
         href={secondaryHref}
         variant="secondary"
-        className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700"
+        className="bg-white/[0.02] border border-white/[0.06]"
       >
         {secondaryLabel}
       </AnimatedButton>

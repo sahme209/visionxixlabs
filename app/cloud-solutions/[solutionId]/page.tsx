@@ -61,18 +61,18 @@ export default async function SolutionDetailPage({
 
   if (!detail || !cardMeta) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
+      <div className="min-h-screen bg-[#09090b]">
         <main className="pt-24 pb-24 px-4 sm:px-6 lg:px-8">
           <div className="max-w-3xl mx-auto text-center">
-            <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100 mb-4">
+            <h1 className="text-2xl font-bold text-white mb-4">
               Solution not found
             </h1>
-            <p className="text-sm text-slate-600 dark:text-slate-400 mb-6">
+            <p className="text-sm text-zinc-400 mb-6">
               The cloud solution you were looking for could not be found.
             </p>
             <Link
               href="/cloud-solutions"
-              className="text-sm font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 underline underline-offset-4"
+              className="text-sm font-semibold text-violet-400 hover:text-violet-300 underline underline-offset-4"
             >
               Back to Cloud Solutions
             </Link>
@@ -108,20 +108,20 @@ export default async function SolutionDetailPage({
   });
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
+    <div className="min-h-screen bg-[#09090b]">
       <Navigation />
       <main className="pt-24 pb-24 px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto">
           {/* Breadcrumb */}
           <nav
             aria-label="Breadcrumb"
-            className="mb-6 text-xs text-slate-500 dark:text-slate-400"
+            className="mb-6 text-xs text-zinc-500"
           >
             <ol className="flex items-center space-x-2">
               <li>
                 <Link
                   href="/"
-                  className="hover:text-indigo-600 dark:hover:text-indigo-400"
+                  className="hover:text-violet-400"
                 >
                   Home
                 </Link>
@@ -130,7 +130,7 @@ export default async function SolutionDetailPage({
               <li>
                 <Link
                   href="/cloud-solutions"
-                  className="hover:text-indigo-600 dark:hover:text-indigo-400"
+                  className="hover:text-violet-400"
                 >
                   Cloud Solutions
                 </Link>
@@ -144,16 +144,16 @@ export default async function SolutionDetailPage({
 
           {/* Hero */}
           <section className="mb-10">
-            <p className="text-xs font-semibold uppercase tracking-wide text-indigo-600 dark:text-indigo-400 mb-3">
+            <p className="text-xs font-semibold uppercase tracking-wide text-violet-400 mb-3">
               Cloud solution
             </p>
             <h1 className="text-3xl md:text-4xl font-extrabold mb-3 bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
               {detail.title}
             </h1>
-            <p className="text-sm md:text-base text-slate-600 dark:text-slate-400 max-w-3xl mb-3">
+            <p className="text-sm md:text-base text-zinc-400 max-w-3xl mb-3">
               {detail.intro}
             </p>
-            <p className="text-xs text-slate-500 dark:text-slate-400">
+            <p className="text-xs text-zinc-500">
               <span className="font-semibold">Best for:</span> {cardMeta.bestFor}
             </p>
             {detail.idealFor.length > 0 && (
@@ -161,7 +161,7 @@ export default async function SolutionDetailPage({
                 {detail.idealFor.map((item) => (
                   <span
                     key={item}
-                    className="inline-flex items-center rounded-full bg-slate-100 dark:bg-slate-900 px-3 py-1 text-xs text-slate-700 dark:text-slate-300"
+                    className="inline-flex items-center rounded-full bg-white/[0.04] px-3 py-1 text-xs text-zinc-300"
                   >
                     {item}
                   </span>
@@ -175,16 +175,16 @@ export default async function SolutionDetailPage({
             {detail.sections.map((section) => (
               <div
                 key={section.heading}
-                className="card-hover bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-xl border border-slate-200 dark:border-slate-700"
+                className="card-hover bg-white/[0.02] rounded-2xl p-6 shadow-xl border border-white/[0.06]"
               >
-                <h2 className="text-lg md:text-xl font-bold text-slate-900 dark:text-slate-100 mb-2">
+                <h2 className="text-lg md:text-xl font-bold text-white mb-2">
                   {section.heading}
                 </h2>
-                <p className="text-sm md:text-base text-slate-600 dark:text-slate-400 mb-3">
+                <p className="text-sm md:text-base text-zinc-400 mb-3">
                   {section.body}
                 </p>
                 {section.bullets && (
-                  <ul className="list-disc list-inside text-sm text-slate-600 dark:text-slate-400 space-y-1">
+                  <ul className="list-disc list-inside text-sm text-zinc-400 space-y-1">
                     {section.bullets.map((bullet) => (
                       <li key={bullet}>{bullet}</li>
                     ))}
@@ -196,7 +196,7 @@ export default async function SolutionDetailPage({
 
           {/* Related providers */}
           <section className="mb-12">
-            <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-3">
+            <h2 className="text-sm font-semibold text-white mb-3">
               Related cloud provider offerings
             </h2>
             <div className="flex flex-wrap gap-3 text-xs">
@@ -204,7 +204,7 @@ export default async function SolutionDetailPage({
                 <Link
                   key={link.href}
                   href={link.href}
-                  className="inline-flex items-center px-3 py-1.5 rounded-full bg-slate-100 dark:bg-slate-900 text-slate-700 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
+                  className="inline-flex items-center px-3 py-1.5 rounded-full bg-white/[0.04] text-zinc-300 hover:text-violet-400 transition-colors"
                 >
                   {link.label}
                 </Link>

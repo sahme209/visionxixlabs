@@ -17,7 +17,7 @@ export function SectorMatrixDiagram() {
     <div className="overflow-x-auto py-6">
       <svg
         viewBox="0 0 620 320"
-        className="w-full min-w-[480px] text-slate-700 dark:text-slate-300"
+        className="w-full min-w-[480px] text-zinc-300"
         role="img"
         aria-label="Sector matrix: AI needs by industry"
       >
@@ -37,23 +37,23 @@ export function SectorMatrixDiagram() {
 
         {/* X-axis - horizontal */}
         <line x1="20" y1="260" x2="600" y2="260" stroke="currentColor" strokeWidth="1.5" markerEnd="url(#axis-arrow)" />
-        <rect x="90" y="268" width="120" height="24" rx="4" fill="#f1f5f9" stroke="#94a3b8" strokeWidth="1" className="dark:fill-slate-800 dark:stroke-slate-600" />
+        <rect x="90" y="268" width="120" height="24" rx="4" fill="#f1f5f9" stroke="#94a3b8" strokeWidth="1" className="fill-zinc-800 stroke-zinc-600" />
         <text x="150" y="284" textAnchor="middle" className="text-[11px] font-semibold uppercase" fill="currentColor">B2B / Services</text>
-        <rect x="410" y="268" width="140" height="24" rx="4" fill="#f1f5f9" stroke="#94a3b8" strokeWidth="1" className="dark:fill-slate-800 dark:stroke-slate-600" />
+        <rect x="410" y="268" width="140" height="24" rx="4" fill="#f1f5f9" stroke="#94a3b8" strokeWidth="1" className="fill-zinc-800 stroke-zinc-600" />
         <text x="480" y="284" textAnchor="middle" className="text-[11px] font-semibold uppercase" fill="currentColor">Physical / Operations</text>
 
         {/* Y-axis - vertical, arrow at top */}
         <line x1="50" y1="290" x2="50" y2="30" stroke="currentColor" strokeWidth="1.5" markerEnd="url(#axis-arrow)" />
-        <rect x="2" y="85" width="36" height="60" rx="4" fill="#f1f5f9" stroke="#94a3b8" strokeWidth="1" className="dark:fill-slate-800 dark:stroke-slate-600" />
+        <rect x="2" y="85" width="36" height="60" rx="4" fill="#f1f5f9" stroke="#94a3b8" strokeWidth="1" className="fill-zinc-800 stroke-zinc-600" />
         <text x="20" y="115" textAnchor="middle" transform="rotate(-90, 20, 115)" className="text-[10px] font-semibold uppercase" fill="currentColor">High automation</text>
-        <rect x="2" y="195" width="36" height="70" rx="4" fill="#f1f5f9" stroke="#94a3b8" strokeWidth="1" className="dark:fill-slate-800 dark:stroke-slate-600" />
+        <rect x="2" y="195" width="36" height="70" rx="4" fill="#f1f5f9" stroke="#94a3b8" strokeWidth="1" className="fill-zinc-800 stroke-zinc-600" />
         <text x="20" y="230" textAnchor="middle" transform="rotate(-90, 20, 230)" className="text-[10px] font-semibold uppercase" fill="currentColor">Domain-specific</text>
 
         {/* Quadrant labels - small annotation boxes */}
-        <text x="165" y="20" textAnchor="middle" className="text-[9px] font-medium uppercase tracking-wider text-slate-400 dark:text-slate-500">Q1</text>
-        <text x="465" y="20" textAnchor="middle" className="text-[9px] font-medium uppercase tracking-wider text-slate-400 dark:text-slate-500">Q2</text>
-        <text x="165" y="310" textAnchor="middle" className="text-[9px] font-medium uppercase tracking-wider text-slate-400 dark:text-slate-500">Q3</text>
-        <text x="465" y="310" textAnchor="middle" className="text-[9px] font-medium uppercase tracking-wider text-slate-400 dark:text-slate-500">Q4</text>
+        <text x="165" y="20" textAnchor="middle" className="text-[9px] font-medium uppercase tracking-wider text-zinc-500">Q1</text>
+        <text x="465" y="20" textAnchor="middle" className="text-[9px] font-medium uppercase tracking-wider text-zinc-500">Q2</text>
+        <text x="165" y="310" textAnchor="middle" className="text-[9px] font-medium uppercase tracking-wider text-zinc-500">Q3</text>
+        <text x="465" y="310" textAnchor="middle" className="text-[9px] font-medium uppercase tracking-wider text-zinc-500">Q4</text>
 
         {/* Sector cards - Visio-style process shapes */}
         {sectors.map(({ sector, x, y, color, needs }) => (
@@ -67,7 +67,7 @@ export function SectorMatrixDiagram() {
               fill="white"
               stroke={color}
               strokeWidth="2"
-              className="dark:fill-slate-800"
+              className="fill-zinc-800"
             />
             <rect x={x} y={y} width={240} height={30} rx="4" fill={color} />
             <rect x={x} y={y + 18} width={240} height={12} fill={color} />
@@ -85,7 +85,7 @@ export function SectorMatrixDiagram() {
           </g>
         ))}
       </svg>
-      <p className="text-center text-sm text-slate-500 dark:text-slate-400 mt-2">
+      <p className="text-center text-sm text-zinc-500 mt-2">
         AI use cases map differently by sector—we tailor solutions to your industry and workflows.
       </p>
     </div>

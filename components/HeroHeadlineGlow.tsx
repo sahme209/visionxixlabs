@@ -19,7 +19,7 @@ const HEADLINE_WORDS = [
 
 export function HeroHeadlineGlow() {
   return (
-    <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-4 leading-tight animate-hero-enter flex flex-wrap justify-center gap-x-[0.25em] gap-y-1 text-slate-900 dark:text-slate-100">
+    <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-4 leading-tight animate-hero-enter flex flex-wrap justify-center gap-x-[0.25em] gap-y-1 text-white">
       {HEADLINE_WORDS.map(({ text, color }, i) => (
         <span
           key={i}

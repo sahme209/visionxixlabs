@@ -42,7 +42,7 @@ export function SolutionArchitectureDiagram() {
         {layers.map((layer, i) => (
           <div
             key={layer.id}
-            className="relative flex flex-col min-h-[140px] rounded-xl border-2 overflow-hidden bg-white dark:bg-slate-800 shadow-sm"
+            className="relative flex flex-col min-h-[140px] rounded-xl border-2 overflow-hidden bg-white/[0.02] shadow-sm"
             style={{ borderColor: layer.color }}
           >
             <div
@@ -53,7 +53,7 @@ export function SolutionArchitectureDiagram() {
                 {layer.label}
               </h4>
             </div>
-            <ul className="flex-1 px-4 py-3 space-y-2 text-xs text-slate-600 dark:text-slate-300">
+            <ul className="flex-1 px-4 py-3 space-y-2 text-xs text-zinc-300">
               {layer.items.map((item) => (
                 <li key={item} className="leading-snug break-words">
                   {item}
@@ -63,7 +63,7 @@ export function SolutionArchitectureDiagram() {
           </div>
         ))}
       </div>
-      <p className="text-center text-sm text-slate-500 dark:text-slate-400 mt-4">
+      <p className="text-center text-sm text-zinc-500 mt-4">
         End-to-end delivery: from cloud and data to production AI with observability and cost controls.
       </p>
     </div>

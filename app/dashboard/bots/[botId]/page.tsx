@@ -93,7 +93,7 @@ export default function BotManagePage() {
   if (!bot) {
     return (
       <div className="text-center py-20">
-        <p className="text-slate-600 dark:text-slate-400">Bot not found.</p>
+        <p className="text-zinc-400">Bot not found.</p>
         <Link href="/dashboard" className="mt-4 inline-flex items-center gap-2 text-indigo-600 hover:underline">
           <ArrowLeftIcon className="h-4 w-4" />
           Back to dashboard
@@ -104,34 +104,34 @@ export default function BotManagePage() {
 
   return (
     <div className="space-y-8">
-      <Link href="/dashboard" className="inline-flex items-center gap-2 text-slate-600 dark:text-slate-400 hover:text-indigo-600">
+      <Link href="/dashboard" className="inline-flex items-center gap-2 text-zinc-400 hover:text-indigo-600">
         <ArrowLeftIcon className="h-4 w-4" />
         Back to dashboard
       </Link>
 
-      <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">{bot.name}</h1>
-      <p className="text-slate-600 dark:text-slate-400">
+      <h1 className="text-2xl font-bold text-white">{bot.name}</h1>
+      <p className="text-zinc-400">
         {(bot.sources ?? []).length} sources
         {usage && limits && (
           <> · {usage.messages} / {limits.messages} messages · {usage.pages} / {limits.pages} pages</>
         )}
       </p>
 
-      <div className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-6">
-        <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100 mb-4 flex items-center gap-2">
+      <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-6">
+        <h2 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
           <DocumentTextIcon className="h-5 w-5 text-indigo-600" />
           Add training content
         </h2>
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Website URL</label>
+            <label className="block text-sm font-medium text-zinc-300 mb-1">Website URL</label>
             <div className="flex gap-2">
               <input
                 type="url"
                 value={url}
                 onChange={(e) => setUrl(e.target.value)}
                 placeholder="https://example.com"
-                className="flex-1 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-900 px-4 py-3 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="flex-1 rounded-xl border border-white/[0.06] bg-white/[0.02] px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
               />
               <button
                 onClick={() => train("url")}
@@ -143,13 +143,13 @@ export default function BotManagePage() {
             </div>
           </div>
           <div>
-            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Raw text</label>
+            <label className="block text-sm font-medium text-zinc-300 mb-1">Raw text</label>
             <textarea
               value={text}
               onChange={(e) => setText(e.target.value)}
               placeholder="Paste text content..."
               rows={4}
-              className="w-full rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-900 px-4 py-3 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-none"
+              className="w-full rounded-xl border border-white/[0.06] bg-white/[0.02] px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-none"
             />
             <button
               onClick={() => train("text")}
@@ -161,9 +161,9 @@ export default function BotManagePage() {
           </div>
           {error && <p className="text-sm text-red-600">{error}</p>}
           {(bot.sources ?? []).length > 0 && (
-            <div className="mt-4 pt-4 border-t border-slate-200 dark:border-slate-700">
-              <p className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Sources</p>
-              <ul className="space-y-1 text-sm text-slate-600 dark:text-slate-400">
+            <div className="mt-4 pt-4 border-t border-white/[0.06]">
+              <p className="text-sm font-medium text-zinc-300 mb-2">Sources</p>
+              <ul className="space-y-1 text-sm text-zinc-400">
                 {(bot.sources ?? []).map((s) => (
                   <li key={s.id}>
                     {s.type === "url" ? s.url : `Text (${s.type})`}
@@ -175,12 +175,12 @@ export default function BotManagePage() {
         </div>
       </div>
 
-      <div className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-6">
-        <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100 mb-4 flex items-center gap-2">
+      <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-6">
+        <h2 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
           <CodeBracketIcon className="h-5 w-5 text-indigo-600" />
           Embed on your site
         </h2>
-        <p className="text-sm text-slate-600 dark:text-slate-400 mb-3">
+        <p className="text-sm text-zinc-400 mb-3">
           Add this code before the closing &lt;/body&gt; tag on your website.
         </p>
         <div className="relative rounded-xl bg-slate-900 p-4 overflow-x-auto">

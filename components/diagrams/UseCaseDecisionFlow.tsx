@@ -19,7 +19,7 @@ export function UseCaseDecisionFlow() {
     <div className="overflow-x-auto py-6">
       <svg
         viewBox="0 0 720 220"
-        className="w-full min-w-[560px] text-slate-700 dark:text-slate-300"
+        className="w-full min-w-[560px] text-zinc-300"
         role="img"
         aria-label="AI use case decision flowchart"
       >
@@ -70,13 +70,13 @@ export function UseCaseDecisionFlow() {
               fill="white"
               stroke={b.color}
               strokeWidth="2"
-              className="dark:fill-slate-800"
+              className="fill-zinc-800"
             />
             <text x={b.x} y={b.y + 4} textAnchor="middle" className="text-xs font-semibold" fill="currentColor">{b.label}</text>
           </g>
         ))}
       </svg>
-      <p className="text-center text-sm text-slate-500 dark:text-slate-400 mt-2">
+      <p className="text-center text-sm text-zinc-500 mt-2">
         Map your priority use case—we scope and deliver against clear outcomes.
       </p>
     </div>

@@ -46,11 +46,11 @@ export const metadata: Metadata = {
 function CTASection() {
   return (
     <section className="py-12">
-      <div className="max-w-3xl mx-auto rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 px-6 py-8 text-center">
-        <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100 mb-2">
+      <div className="max-w-3xl mx-auto rounded-xl border border-white/[0.06] bg-white/[0.02] px-6 py-8 text-center">
+        <h2 className="text-xl font-bold text-white mb-2">
           Discuss your AWS or DevOps requirements
         </h2>
-        <p className="text-slate-600 dark:text-slate-400 mb-6 text-sm">
+        <p className="text-zinc-400 mb-6 text-sm">
           For infrastructure, CI/CD, cost optimization, or security—we work with technical leads to define scope and delivery.
         </p>
         <div className="flex flex-wrap justify-center gap-3">
@@ -60,7 +60,7 @@ function CTASection() {
           <AnimatedButton
             href="mailto:support@visionxixlabs.com"
             variant="ghost"
-            className="border border-slate-200 dark:border-slate-600"
+            className="border border-white/[0.06]"
           >
             Email
           </AnimatedButton>
@@ -179,32 +179,32 @@ const services = [
 
 export default function ServicesPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
+    <div className="min-h-screen bg-[#09090b]">
       <Navigation />
 
       <main className="pt-20 pb-24 px-4 sm:px-6 lg:px-8">
         <div className="max-w-5xl mx-auto">
           {/* 1. Overview */}
           <section className="mb-12" aria-labelledby="overview-heading">
-            <h1 id="overview-heading" className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-slate-100 mb-4">
+            <h1 id="overview-heading" className="text-3xl md:text-4xl font-bold text-white mb-4">
               Cloud &amp; AI Engineering Services
             </h1>
-            <p className="text-lg text-slate-600 dark:text-slate-400 max-w-3xl">
+            <p className="text-lg text-zinc-400 max-w-3xl">
               We design and implement AWS infrastructure, CI/CD with GitHub and Octopus Deploy, AI integration, cost optimization, reliability, and security—with clear deliverables and handover.
             </p>
           </section>
 
           {/* 1b. Common gaps we close */}
-          <section className="mb-16 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 p-6" aria-labelledby="gaps-heading">
-            <h2 id="gaps-heading" className="text-lg font-bold text-slate-900 dark:text-slate-100 mb-4">
+          <section className="mb-16 rounded-xl border border-white/[0.06] bg-white/[0.02] p-6" aria-labelledby="gaps-heading">
+            <h2 id="gaps-heading" className="text-lg font-bold text-white mb-4">
               Common gaps we close
             </h2>
-            <p className="text-sm text-slate-600 dark:text-slate-400 mb-4 max-w-3xl">
+            <p className="text-sm text-zinc-400 mb-4 max-w-3xl">
               Companies often struggle with: scale-up beyond pilots, digital maturity, technical capacity, strategy focus, and skills/governance. We help address these so cloud and AI deliver tangible value.
             </p>
             <Link
               href="/markets"
-              className="text-sm font-semibold text-indigo-600 dark:text-indigo-400 hover:underline"
+              className="text-sm font-semibold text-violet-400 hover:underline"
             >
               See where companies need AI →
             </Link>
@@ -212,10 +212,10 @@ export default function ServicesPage() {
 
           {/* 2. Technical Scope — service areas */}
           <section aria-labelledby="services-heading" className="mb-16">
-            <h2 id="services-heading" className="text-2xl font-bold text-slate-900 dark:text-slate-100 mb-6">
+            <h2 id="services-heading" className="text-2xl font-bold text-white mb-6">
               Technical scope
             </h2>
-            <p className="text-slate-600 dark:text-slate-400 mb-8 max-w-3xl">
+            <p className="text-zinc-400 mb-8 max-w-3xl">
               Outcome-focused workstreams: infrastructure, CI/CD, FinOps, observability, security, and production AI integration. Each with defined deliverables and outcomes.
             </p>
             <ServicesGrid services={services} />
@@ -261,10 +261,10 @@ export default function ServicesPage() {
 
           {/* 5. Implementation Methodology */}
           <section className="mb-16" aria-labelledby="methodology-heading">
-            <h2 id="methodology-heading" className="text-2xl font-bold text-slate-900 dark:text-slate-100 mb-2">
+            <h2 id="methodology-heading" className="text-2xl font-bold text-white mb-2">
               Implementation methodology
             </h2>
-            <p className="text-slate-600 dark:text-slate-400 mb-8 max-w-3xl">
+            <p className="text-zinc-400 mb-8 max-w-3xl">
               {implementationMethodologyShort}
             </p>
             <HowWeWorkSection phases={howWeWorkPhases} />
@@ -282,10 +282,10 @@ export default function ServicesPage() {
 
           {/* 8. Engagement Model */}
           <section className="mb-16" aria-labelledby="engagement-heading">
-            <h2 id="engagement-heading" className="text-2xl font-bold text-slate-900 dark:text-slate-100 mb-6">
+            <h2 id="engagement-heading" className="text-2xl font-bold text-white mb-6">
               Engagement model
             </h2>
-            <p className="text-slate-600 dark:text-slate-400 mb-8 max-w-3xl">
+            <p className="text-zinc-400 mb-8 max-w-3xl">
               Project-based, retainer, or assessment and roadmap. We align to your timeline and team structure.
             </p>
             <div className="grid gap-6 md:grid-cols-3">
@@ -303,10 +303,10 @@ export default function ServicesPage() {
 
           {/* 9. Ideal Clients */}
           <section className="mb-16" aria-labelledby="ideal-clients-heading">
-            <h2 id="ideal-clients-heading" className="text-2xl font-bold text-slate-900 dark:text-slate-100 mb-4">
+            <h2 id="ideal-clients-heading" className="text-2xl font-bold text-white mb-4">
               Ideal clients
             </h2>
-            <ul className="space-y-2 text-slate-600 dark:text-slate-400">
+            <ul className="space-y-2 text-zinc-400">
               {idealClientsCloud.map((item) => (
                 <li key={item} className="flex items-start">
                   <span className="text-indigo-500 mr-2 mt-0.5">•</span>
@@ -318,7 +318,7 @@ export default function ServicesPage() {
 
           {/* 10. FAQ */}
           <section className="mb-16" aria-labelledby="faq-heading">
-            <h2 id="faq-heading" className="text-2xl font-bold text-slate-900 dark:text-slate-100 mb-6">
+            <h2 id="faq-heading" className="text-2xl font-bold text-white mb-6">
               Frequently asked questions
             </h2>
             <FAQAccordion items={cloudFAQ} />

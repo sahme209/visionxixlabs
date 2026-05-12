@@ -65,55 +65,55 @@ export default function RequestPage() {
   };
 
   return (
-    <div className="axiom-page min-h-screen bg-gradient-to-br from-slate-50 via-violet-50/40 to-fuchsia-50/30 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 relative">
+    <div className="axiom-page min-h-screen bg-gradient-to-br from-slate-50 via-violet-50/40 to-fuchsia-50/30    relative">
       <div className="pointer-events-none fixed inset-0 overflow-hidden -z-10">
-        <div className="absolute -top-40 -right-40 w-[400px] h-[400px] rounded-full bg-violet-300/20 dark:bg-violet-600/10 blur-3xl animate-blob" />
-        <div className="absolute -bottom-40 -left-40 w-[400px] h-[400px] rounded-full bg-fuchsia-300/15 dark:bg-fuchsia-600/10 blur-3xl animate-blob" style={{ animationDelay: "-4s" }} />
+        <div className="absolute -top-40 -right-40 w-[400px] h-[400px] rounded-full bg-violet-300/20 bg-violet-500/10 blur-3xl animate-blob" />
+        <div className="absolute -bottom-40 -left-40 w-[400px] h-[400px] rounded-full bg-fuchsia-300/15 bg-fuchsia-600/10 blur-3xl animate-blob" style={{ animationDelay: "-4s" }} />
       </div>
       <Navigation />
       <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-20">
         <div className="max-w-3xl mx-auto">
           <Link
             href="/"
-            className="inline-flex items-center gap-2 text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-violet-600 dark:hover:text-violet-400 transition-colors mb-8"
+            className="inline-flex items-center gap-2 text-sm font-medium text-zinc-400 hover:text-violet-400 transition-colors mb-8"
           >
             <ArrowLeftIcon className="h-4 w-4" />
             Back to Home
           </Link>
-          <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-3xl shadow-xl shadow-slate-200/50 dark:shadow-none border-2 border-slate-200/80 dark:border-slate-700/80 p-8 sm:p-10">
+          <div className="bg-white/[0.02] backdrop-blur-sm rounded-3xl  border-2 border-white/[0.06] p-8 sm:p-10">
             <header className="mb-8 text-center">
-              <div className="inline-flex items-center justify-center rounded-full bg-gradient-to-r from-violet-100 to-fuchsia-100 dark:from-violet-900/40 dark:to-fuchsia-900/40 px-4 py-2 text-xs font-semibold text-violet-700 dark:text-violet-300 mb-4">
+              <div className="inline-flex items-center justify-center rounded-full bg-gradient-to-r from-violet-100 to-fuchsia-100   px-4 py-2 text-xs font-semibold text-violet-300 mb-4">
                 Website Builder + Managed Cloud
               </div>
-              <h1 className="axiom-heading-xl text-3xl md:text-4xl font-extrabold text-slate-900 dark:text-slate-100 mb-2">
+              <h1 className="axiom-heading-xl text-3xl md:text-4xl font-extrabold text-white mb-2">
                 AI-built site, production-ready hosting
               </h1>
-              <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">
+              <p className="text-sm text-zinc-400 mb-4">
                 Generate a site and deploy to Managed Cloud, AWS, Azure, or GCP with CDN, SSL, and CI/CD.
               </p>
               <div className="flex flex-wrap gap-4 justify-center">
                 <Link
                   href="/builder"
-                  className="inline-flex items-center gap-2 text-sm font-semibold text-violet-600 dark:text-violet-400 hover:text-violet-700 dark:hover:text-violet-300"
+                  className="inline-flex items-center gap-2 text-sm font-semibold text-violet-400 hover:text-white"
                 >
                   Prefer a simple prompt? Try AI Website Builder →
                 </Link>
                 <Link
                   href="/builder/pricing"
-                  className="inline-flex items-center gap-2 text-sm font-semibold text-violet-600 dark:text-violet-400 hover:text-violet-700 dark:hover:text-violet-300"
+                  className="inline-flex items-center gap-2 text-sm font-semibold text-violet-400 hover:text-white"
                 >
                   View Plans &amp; Membership →
                 </Link>
               </div>
             </header>
 
-            <div className="mb-6 rounded-2xl border-2 border-violet-200/80 dark:border-violet-800/80 bg-gradient-to-br from-violet-50/80 to-fuchsia-50/60 dark:from-violet-900/20 dark:to-fuchsia-900/20 p-4 text-sm text-slate-900 dark:text-slate-100">
-              <p className="mb-1 font-semibold text-violet-900 dark:text-violet-100">
+            <div className="mb-6 rounded-2xl border-2 border-violet-500/20 bg-gradient-to-br from-violet-900/20 to-fuchsia-900/10 p-4 text-sm text-white">
+              <p className="mb-1 font-semibold text-violet-900 text-violet-400">
                 Need full cloud, security, and automation strategy?
               </p>
-              <p className="text-slate-700 dark:text-slate-300">
+              <p className="text-zinc-300">
                 Run{" "}
-                <Link href="/cloud-operator" className="font-semibold text-violet-600 dark:text-violet-400 underline hover:no-underline">
+                <Link href="/cloud-operator" className="font-semibold text-violet-400 underline hover:no-underline">
                   Axiom
                 </Link>{" "}
                 before building to get infrastructure scores and a 30-day optimization roadmap.
@@ -123,7 +123,7 @@ export default function RequestPage() {
             <form onSubmit={handleSubmit} className="space-y-6">
             <div className="grid gap-6 sm:grid-cols-2">
               <div>
-                <label htmlFor="name" className="flex items-center gap-2 text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+                <label htmlFor="name" className="flex items-center gap-2 text-sm font-medium text-zinc-300 mb-1">
                   <UserIcon className="h-4 w-4" />
                   Name
                 </label>
@@ -132,12 +132,12 @@ export default function RequestPage() {
                   name="name"
                   type="text"
                   required
-                  className="w-full rounded-xl border-2 border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-slate-900 dark:text-slate-100 focus:border-violet-500 focus:ring-2 focus:ring-violet-200 dark:focus:ring-violet-900/50"
+                  className="w-full rounded-xl border-2 border-white/[0.06] bg-white/[0.02] px-3 py-2 text-white focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20"
                   placeholder="Your name"
                 />
               </div>
               <div>
-                <label htmlFor="email" className="flex items-center gap-2 text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+                <label htmlFor="email" className="flex items-center gap-2 text-sm font-medium text-zinc-300 mb-1">
                   <EnvelopeIcon className="h-4 w-4" />
                   Email *
                 </label>
@@ -146,14 +146,14 @@ export default function RequestPage() {
                   name="email"
                   type="email"
                   required
-                  className="w-full rounded-xl border-2 border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-slate-900 dark:text-slate-100 focus:border-violet-500 focus:ring-2 focus:ring-violet-200 dark:focus:ring-violet-900/50"
+                  className="w-full rounded-xl border-2 border-white/[0.06] bg-white/[0.02] px-3 py-2 text-white focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20"
                   placeholder="you@company.com"
                 />
               </div>
             </div>
 
             <div>
-              <label htmlFor="company" className="flex items-center gap-2 text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+              <label htmlFor="company" className="flex items-center gap-2 text-sm font-medium text-zinc-300 mb-1">
                 <BuildingOfficeIcon className="h-4 w-4" />
                 Company / Business name
               </label>
@@ -161,19 +161,19 @@ export default function RequestPage() {
                 id="company"
                 name="company"
                 type="text"
-                className="w-full rounded-xl border-2 border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-slate-900 dark:text-slate-100 focus:border-violet-500 focus:ring-2 focus:ring-violet-200 dark:focus:ring-violet-900/50"
+                className="w-full rounded-xl border-2 border-white/[0.06] bg-white/[0.02] px-3 py-2 text-white focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20"
                 placeholder="Your company"
               />
             </div>
 
             <div>
-              <label htmlFor="industry" className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-1 block">
+              <label htmlFor="industry" className="text-sm font-medium text-zinc-300 mb-1 block">
                 Industry
               </label>
               <select
                 id="industry"
                 name="industry"
-                className="w-full rounded-xl border-2 border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-slate-900 dark:text-slate-100 focus:border-violet-500 focus:ring-2 focus:ring-violet-200 dark:focus:ring-violet-900/50"
+                className="w-full rounded-xl border-2 border-white/[0.06] bg-white/[0.02] px-3 py-2 text-white focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20"
               >
                 <option value="">Select</option>
                 <option>Professional services</option>
@@ -186,7 +186,7 @@ export default function RequestPage() {
             </div>
 
             <div>
-              <label htmlFor="message" className="flex items-center gap-2 text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+              <label htmlFor="message" className="flex items-center gap-2 text-sm font-medium text-zinc-300 mb-1">
                 <DocumentTextIcon className="h-4 w-4" />
                 Tell us about your website needs
               </label>
@@ -194,29 +194,29 @@ export default function RequestPage() {
                 id="message"
                 name="message"
                 rows={4}
-                className="w-full rounded-xl border-2 border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-slate-900 dark:text-slate-100 focus:border-violet-500 focus:ring-2 focus:ring-violet-200 dark:focus:ring-violet-900/50"
+                className="w-full rounded-xl border-2 border-white/[0.06] bg-white/[0.02] px-3 py-2 text-white focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20"
                 placeholder="Describe your business, target audience, and what you want your website to convey."
               />
             </div>
 
             <div>
-              <label className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-2 block">
+              <label className="text-sm font-medium text-zinc-300 mb-2 block">
                 Do you have a domain name?
               </label>
               <div className="flex gap-6">
                 <label className="flex items-center gap-2">
                   <input type="radio" name="hasDomain" value="yes" />
-                  <span className="text-sm text-slate-600 dark:text-slate-400">Yes</span>
+                  <span className="text-sm text-zinc-400">Yes</span>
                 </label>
                 <label className="flex items-center gap-2">
                   <input type="radio" name="hasDomain" value="no" defaultChecked />
-                  <span className="text-sm text-slate-600 dark:text-slate-400">No</span>
+                  <span className="text-sm text-zinc-400">No</span>
                 </label>
               </div>
             </div>
 
             <div>
-              <label htmlFor="domainName" className="flex items-center gap-2 text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+              <label htmlFor="domainName" className="flex items-center gap-2 text-sm font-medium text-zinc-300 mb-1">
                 <GlobeAltIcon className="h-4 w-4" />
                 Domain (if you have one)
               </label>
@@ -224,19 +224,19 @@ export default function RequestPage() {
                 id="domainName"
                 name="domainName"
                 type="text"
-                className="w-full rounded-xl border-2 border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-slate-900 dark:text-slate-100 focus:border-violet-500 focus:ring-2 focus:ring-violet-200 dark:focus:ring-violet-900/50"
+                className="w-full rounded-xl border-2 border-white/[0.06] bg-white/[0.02] px-3 py-2 text-white focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20"
                 placeholder="example.com"
               />
             </div>
 
             <div>
-              <label className="flex items-center gap-2 text-sm font-medium text-slate-700 dark:text-slate-300 mb-3">
+              <label className="flex items-center gap-2 text-sm font-medium text-zinc-300 mb-3">
                 <SparklesIcon className="h-4 w-4" />
                 Choose your plan
               </label>
-              <p className="text-xs text-slate-500 dark:text-slate-400 mb-3">
+              <p className="text-xs text-zinc-500 mb-3">
                 Choose Builder or Axiom plans. Separate products, one account.{" "}
-                <Link href="/products" className="font-semibold text-violet-600 dark:text-violet-400 hover:underline">
+                <Link href="/products" className="font-semibold text-violet-400 hover:underline">
                   View pricing →
                 </Link>
               </p>
@@ -246,22 +246,22 @@ export default function RequestPage() {
                     key={t.id}
                     className={`flex items-start gap-3 p-4 rounded-2xl border-2 cursor-pointer transition-all card-hover ${
                       t.popular
-                        ? "border-violet-500 bg-violet-50/50 dark:bg-violet-950/30 hover:border-violet-500"
-                        : "border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 hover:border-violet-400 dark:hover:border-violet-500"
-                    } has-[:checked]:border-violet-500 has-[:checked]:ring-2 has-[:checked]:ring-violet-200 dark:has-[:checked]:ring-violet-900/40`}
+                        ? "border-violet-500 bg-violet-50/50 bg-violet-500/10 hover:border-violet-500"
+                        : "border-white/[0.06] bg-white/[0.02] hover:border-violet-500/30"
+                    } has-[:checked]:border-violet-500 has-[:checked]:ring-2 has-[:checked]:ring-violet-200 has-[:checked]:ring-violet-500/20`}
                   >
                     <input type="radio" name="tier" value={t.id} defaultChecked={t.id === "growth"} onChange={() => setSelectedTier(t.id)} className="mt-1" />
                     <div className="flex-1">
                       <div className="flex items-center gap-2 flex-wrap">
-                        <span className="font-semibold text-slate-900 dark:text-slate-100">{t.name}</span>
+                        <span className="font-semibold text-white">{t.name}</span>
                         {t.popular && (
                           <span className="px-2 py-0.5 rounded-full bg-violet-600 text-[10px] font-semibold text-white">Most popular</span>
                         )}
-                        <span className="text-violet-600 dark:text-violet-400 font-medium">
+                        <span className="text-violet-400 font-medium">
                           {"priceRange" in t ? t.priceRange : t.priceLabel}
                         </span>
                       </div>
-                      <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{t.description}</p>
+                      <p className="text-xs text-zinc-500 mt-0.5">{t.description}</p>
                     </div>
                   </label>
                 ))}
@@ -269,7 +269,7 @@ export default function RequestPage() {
             </div>
 
             {error && (
-              <div className="rounded-2xl border-2 border-rose-200 dark:border-rose-800 bg-rose-50/80 dark:bg-rose-900/30 px-4 py-3 text-sm text-rose-800 dark:text-rose-200">
+              <div className="rounded-2xl border-2 border-rose-200 border-rose-500/20 bg-rose-50/80 bg-rose-500/10 px-4 py-3 text-sm text-rose-800 text-rose-300">
                 {error}
               </div>
             )}
@@ -309,7 +309,7 @@ export default function RequestPage() {
                 )}
               </button>
 
-              <p className="text-center text-xs text-slate-500 dark:text-slate-400">
+              <p className="text-center text-xs text-zinc-500">
                 Managed cloud preview in 1–3 minutes. Select AWS/Azure/GCP on the next page if needed.
               </p>
             </form>

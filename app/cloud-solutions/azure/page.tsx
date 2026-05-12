@@ -30,20 +30,20 @@ export const metadata: Metadata = {
 
 export default function AzureCloudSolutionsPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
+    <div className="min-h-screen bg-[#09090b]">
       <Navigation />
       <main className="pt-24 pb-24 px-4 sm:px-6 lg:px-8">
         <div className="max-w-5xl mx-auto">
           {/* Breadcrumb */}
           <nav
             aria-label="Breadcrumb"
-            className="mb-6 text-xs text-slate-500 dark:text-slate-400"
+            className="mb-6 text-xs text-zinc-500"
           >
             <ol className="flex items-center space-x-2">
               <li>
                 <Link
                   href="/"
-                  className="hover:text-indigo-600 dark:hover:text-indigo-400"
+                  className="hover:text-violet-400"
                 >
                   Home
                 </Link>
@@ -52,7 +52,7 @@ export default function AzureCloudSolutionsPage() {
               <li>
                 <Link
                   href="/cloud-solutions"
-                  className="hover:text-indigo-600 dark:hover:text-indigo-400"
+                  className="hover:text-violet-400"
                 >
                   Cloud Solutions
                 </Link>
@@ -69,11 +69,11 @@ export default function AzureCloudSolutionsPage() {
             <h1 id="overview-heading" className="text-3xl md:text-4xl font-extrabold mb-3 bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
               Azure Cloud Solutions
             </h1>
-            <p className="text-lg md:text-xl text-slate-600 dark:text-slate-400 max-w-3xl mb-4">
+            <p className="text-lg md:text-xl text-zinc-400 max-w-3xl mb-4">
               Design, automate, optimize, and operate on Azure with patterns
               that work in real engineering environments.
             </p>
-            <p className="text-sm text-slate-600 dark:text-slate-400 max-w-3xl">
+            <p className="text-sm text-zinc-400 max-w-3xl">
               We help structure subscriptions, networking, CI/CD, observability,
               identity, governance, and disaster recovery in a way that your
               teams can own and evolve.
@@ -82,20 +82,20 @@ export default function AzureCloudSolutionsPage() {
 
           <div className="space-y-10">
             {/* 2. Technical Scope */}
-            <h2 id="technical-scope" className="text-2xl font-bold text-slate-900 dark:text-slate-100 mb-4">
+            <h2 id="technical-scope" className="text-2xl font-bold text-white mb-4">
               Technical scope
             </h2>
             {/* Azure Landing Zone / subscription structure */}
             <section>
-              <h2 className="text-xl md:text-2xl font-bold text-slate-900 dark:text-slate-100 mb-2">
+              <h2 className="text-xl md:text-2xl font-bold text-white mb-2">
                 Azure landing zone &amp; subscription structure
               </h2>
-              <p className="text-sm md:text-base text-slate-600 dark:text-slate-400 mb-3">
+              <p className="text-sm md:text-base text-zinc-400 mb-3">
                 We design Azure landing zones and subscription structures that
                 give you clear boundaries for environments, teams, and
                 workloads.
               </p>
-              <ul className="list-disc list-inside text-sm text-slate-600 dark:text-slate-400 space-y-1">
+              <ul className="list-disc list-inside text-sm text-zinc-400 space-y-1">
                 <li>
                   High-level subscription and management group strategies aligned
                   to your organization.
@@ -113,14 +113,14 @@ export default function AzureCloudSolutionsPage() {
 
             {/* Azure Networking */}
             <section>
-              <h2 className="text-xl md:text-2xl font-bold text-slate-900 dark:text-slate-100 mb-2">
+              <h2 className="text-xl md:text-2xl font-bold text-white mb-2">
                 Azure networking
               </h2>
-              <p className="text-sm md:text-base text-slate-600 dark:text-slate-400 mb-3">
+              <p className="text-sm md:text-base text-zinc-400 mb-3">
                 We help define VNet, subnet, and routing concepts that keep
                 services connected and secure without unnecessary complexity.
               </p>
-              <ul className="list-disc list-inside text-sm text-slate-600 dark:text-slate-400 space-y-1">
+              <ul className="list-disc list-inside text-sm text-zinc-400 space-y-1">
                 <li>
                   High-level VNet and subnet patterns for your core environments.
                 </li>
@@ -137,14 +137,14 @@ export default function AzureCloudSolutionsPage() {
 
             {/* Compute & Storage */}
             <section>
-              <h2 className="text-xl md:text-2xl font-bold text-slate-900 dark:text-slate-100 mb-2">
+              <h2 className="text-xl md:text-2xl font-bold text-white mb-2">
                 Compute &amp; Storage
               </h2>
-              <p className="text-sm md:text-base text-slate-600 dark:text-slate-400 mb-3">
+              <p className="text-sm md:text-base text-zinc-400 mb-3">
                 We guide VM and managed disk usage so workloads have appropriate
                 performance, resilience, and cost characteristics.
               </p>
-              <ul className="list-disc list-inside text-sm text-slate-600 dark:text-slate-400 space-y-1">
+              <ul className="list-disc list-inside text-sm text-zinc-400 space-y-1">
                 <li>VM sizing and family guidance for representative workloads.</li>
                 <li>
                   Managed disk strategies for performance and lifecycle
@@ -159,14 +159,14 @@ export default function AzureCloudSolutionsPage() {
 
             {/* CI/CD */}
             <section>
-              <h2 className="text-xl md:text-2xl font-bold text-slate-900 dark:text-slate-100 mb-2">
+              <h2 className="text-xl md:text-2xl font-bold text-white mb-2">
                 CI/CD on Azure
               </h2>
-              <p className="text-sm md:text-base text-slate-600 dark:text-slate-400 mb-3">
+              <p className="text-sm md:text-base text-zinc-400 mb-3">
                 We implement CI/CD using GitHub Actions or Azure DevOps pipelines
                 and can integrate with Octopus Deploy where it makes sense.
               </p>
-              <ul className="list-disc list-inside text-sm text-slate-600 dark:text-slate-400 space-y-1">
+              <ul className="list-disc list-inside text-sm text-zinc-400 space-y-1">
                 <li>
                   CI workflows for build, test, and validation using GitHub
                   Actions or Azure DevOps.
@@ -184,14 +184,14 @@ export default function AzureCloudSolutionsPage() {
 
             {/* Cost Management */}
             <section>
-              <h2 className="text-xl md:text-2xl font-bold text-slate-900 dark:text-slate-100 mb-2">
+              <h2 className="text-xl md:text-2xl font-bold text-white mb-2">
                 Cost management &amp; optimization
               </h2>
-              <p className="text-sm md:text-base text-slate-600 dark:text-slate-400 mb-3">
+              <p className="text-sm md:text-base text-zinc-400 mb-3">
                 We make use of Azure Cost Management capabilities to analyze
                 spend and shape usage, budgets, and alerts.
               </p>
-              <ul className="list-disc list-inside text-sm text-slate-600 dark:text-slate-400 space-y-1">
+              <ul className="list-disc list-inside text-sm text-zinc-400 space-y-1">
                 <li>
                   Review of current Azure usage to identify optimization
                   opportunities.
@@ -207,15 +207,15 @@ export default function AzureCloudSolutionsPage() {
 
             {/* Observability */}
             <section>
-              <h2 className="text-xl md:text-2xl font-bold text-slate-900 dark:text-slate-100 mb-2">
+              <h2 className="text-xl md:text-2xl font-bold text-white mb-2">
                 Observability
               </h2>
-              <p className="text-sm md:text-base text-slate-600 dark:text-slate-400 mb-3">
+              <p className="text-sm md:text-base text-zinc-400 mb-3">
                 We help set up monitoring using Azure Monitor and Log Analytics
                 concepts at a high level, aligned to your existing tools where
                 appropriate.
               </p>
-              <ul className="list-disc list-inside text-sm text-slate-600 dark:text-slate-400 space-y-1">
+              <ul className="list-disc list-inside text-sm text-zinc-400 space-y-1">
                 <li>
                   Monitoring and alerting baselines using Azure Monitor or
                   compatible tools.
@@ -232,15 +232,15 @@ export default function AzureCloudSolutionsPage() {
 
             {/* Identity & Governance */}
             <section>
-              <h2 className="text-xl md:text-2xl font-bold text-slate-900 dark:text-slate-100 mb-2">
+              <h2 className="text-xl md:text-2xl font-bold text-white mb-2">
                 Identity &amp; Governance
               </h2>
-              <p className="text-sm md:text-base text-slate-600 dark:text-slate-400 mb-3">
+              <p className="text-sm md:text-base text-zinc-400 mb-3">
                 We apply Entra ID, RBAC, and policy concepts so access is
                 controlled and auditable while remaining workable for
                 engineering teams.
               </p>
-              <ul className="list-disc list-inside text-sm text-slate-600 dark:text-slate-400 space-y-1">
+              <ul className="list-disc list-inside text-sm text-zinc-400 space-y-1">
                 <li>
                   High-level identity and access patterns using Entra ID and
                   RBAC.
@@ -258,14 +258,14 @@ export default function AzureCloudSolutionsPage() {
 
             {/* DR */}
             <section>
-              <h2 className="text-xl md:text-2xl font-bold text-slate-900 dark:text-slate-100 mb-2">
+              <h2 className="text-xl md:text-2xl font-bold text-white mb-2">
                 DR &amp; resilience
               </h2>
-              <p className="text-sm md:text-base text-slate-600 dark:text-slate-400 mb-3">
+              <p className="text-sm md:text-base text-zinc-400 mb-3">
                 We help you use Azure Backup and site recovery concepts at a
                 high level to meet realistic recovery objectives.
               </p>
-              <ul className="list-disc list-inside text-sm text-slate-600 dark:text-slate-400 space-y-1">
+              <ul className="list-disc list-inside text-sm text-zinc-400 space-y-1">
                 <li>
                   Backup strategies for critical workloads, using Azure-native
                   options where appropriate.
@@ -287,10 +287,10 @@ export default function AzureCloudSolutionsPage() {
 
             {/* 5. Implementation Methodology */}
             <section id="implementation-methodology">
-              <h2 className="text-xl md:text-2xl font-bold text-slate-900 dark:text-slate-100 mb-2">
+              <h2 className="text-xl md:text-2xl font-bold text-white mb-2">
                 Implementation methodology
               </h2>
-              <p className="text-sm md:text-base text-slate-600 dark:text-slate-400">
+              <p className="text-sm md:text-base text-zinc-400">
                 {implementationMethodologyShort}
               </p>
             </section>
@@ -300,10 +300,10 @@ export default function AzureCloudSolutionsPage() {
 
             {/* 7. Engagement Model */}
             <section>
-              <h2 className="text-xl md:text-2xl font-bold text-slate-900 dark:text-slate-100 mb-4">
+              <h2 className="text-xl md:text-2xl font-bold text-white mb-4">
                 Engagement model
               </h2>
-              <p className="text-sm md:text-base text-slate-600 dark:text-slate-400 mb-6">
+              <p className="text-sm md:text-base text-zinc-400 mb-6">
                 Our engagement models apply equally to Azure-focused work and
                 hybrid cloud initiatives.
               </p>
@@ -322,10 +322,10 @@ export default function AzureCloudSolutionsPage() {
 
             {/* 8. Ideal Clients */}
             <section>
-              <h2 className="text-xl md:text-2xl font-bold text-slate-900 dark:text-slate-100 mb-4">
+              <h2 className="text-xl md:text-2xl font-bold text-white mb-4">
                 Ideal clients
               </h2>
-              <ul className="space-y-2 text-sm text-slate-700 dark:text-slate-300">
+              <ul className="space-y-2 text-sm text-zinc-300">
                 {idealClientsCloud.map((item) => (
                   <li key={item} className="flex items-start">
                     <span className="text-indigo-500 mr-2 mt-0.5">•</span>
@@ -339,7 +339,7 @@ export default function AzureCloudSolutionsPage() {
 
             {/* 9. FAQ */}
             <section>
-              <h2 className="text-xl md:text-2xl font-bold text-slate-900 dark:text-slate-100 mb-4">
+              <h2 className="text-xl md:text-2xl font-bold text-white mb-4">
                 FAQ
               </h2>
               <FAQAccordion items={cloudFAQ} />
@@ -358,22 +358,22 @@ export default function AzureCloudSolutionsPage() {
 
             {/* Navigation to related pages */}
             <section>
-              <div className="mt-8 text-xs text-slate-600 dark:text-slate-400 flex flex-wrap gap-4">
+              <div className="mt-8 text-xs text-zinc-400 flex flex-wrap gap-4">
                 <Link
                   href="/cloud-solutions"
-                  className="underline underline-offset-4 hover:text-indigo-600 dark:hover:text-indigo-400"
+                  className="underline underline-offset-4 hover:text-violet-400"
                 >
                   Back to Cloud Solutions overview
                 </Link>
                 <Link
                   href="/cloud-solutions/aws"
-                  className="underline underline-offset-4 hover:text-indigo-600 dark:hover:text-indigo-400"
+                  className="underline underline-offset-4 hover:text-violet-400"
                 >
                   View AWS Cloud Solutions
                 </Link>
                 <Link
                   href="/contact"
-                  className="underline underline-offset-4 hover:text-indigo-600 dark:hover:text-indigo-400"
+                  className="underline underline-offset-4 hover:text-violet-400"
                 >
                   Talk to us about Azure
                 </Link>

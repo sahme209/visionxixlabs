@@ -25,20 +25,20 @@ export const metadata: Metadata = {
 
 export default function CaseStudiesPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
+    <div className="min-h-screen bg-[#09090b]">
       <Navigation />
       <main className="pt-24 pb-24 px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto">
           {/* Breadcrumb */}
           <nav
             aria-label="Breadcrumb"
-            className="mb-8 text-xs text-slate-500 dark:text-slate-400"
+            className="mb-8 text-xs text-zinc-500"
           >
             <ol className="flex items-center space-x-2">
               <li>
                 <Link
                   href="/"
-                  className="hover:text-indigo-600 dark:hover:text-indigo-400"
+                  className="hover:text-violet-400"
                 >
                   Home
                 </Link>
@@ -52,13 +52,13 @@ export default function CaseStudiesPage() {
 
           {/* Hero */}
           <header className="mb-16 text-center">
-            <h1 className="text-3xl md:text-4xl lg:text-5xl font-extrabold text-slate-900 dark:text-slate-100 mb-4">
+            <h1 className="text-3xl md:text-4xl lg:text-5xl font-extrabold text-white mb-4">
               {caseStudiesHero.title}
             </h1>
-            <p className="text-lg md:text-xl text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
+            <p className="text-lg md:text-xl text-zinc-400 max-w-2xl mx-auto">
               {caseStudiesHero.subtitle}
             </p>
-            <p className="mt-3 text-xs md:text-sm text-slate-500 dark:text-slate-400 max-w-2xl mx-auto">
+            <p className="mt-3 text-xs md:text-sm text-zinc-500 max-w-2xl mx-auto">
               These are representative examples of Cloud &amp; AI Engineering work&mdash;architecture, integration,
               and operations. No client names, logos, or fabricated metrics.
             </p>
@@ -71,7 +71,7 @@ export default function CaseStudiesPage() {
           >
             <h2
               id="case-studies-heading"
-              className="text-2xl font-bold text-slate-900 dark:text-slate-100 mb-8"
+              className="text-2xl font-bold text-white mb-8"
             >
               Representative engagements
             </h2>
@@ -87,7 +87,7 @@ export default function CaseStudiesPage() {
           </section>
 
           {/* Section separator */}
-          <hr className="border-slate-200 dark:border-slate-700 mb-16" />
+          <hr className="border-white/[0.06] mb-16" />
 
           {/* Reference Architectures */}
           <section
@@ -96,11 +96,11 @@ export default function CaseStudiesPage() {
           >
             <h2
               id="reference-arch-heading"
-              className="text-2xl font-bold text-slate-900 dark:text-slate-100 mb-6"
+              className="text-2xl font-bold text-white mb-6"
             >
               Reference architecture models
             </h2>
-            <p className="text-slate-600 dark:text-slate-400 mb-8 max-w-2xl">
+            <p className="text-zinc-400 mb-8 max-w-2xl">
               High-level blueprints for common patterns. Core components, access model, deployment, observability, and cost control.
             </p>
             <div className="grid gap-6 md:grid-cols-2">
@@ -114,8 +114,8 @@ export default function CaseStudiesPage() {
           </section>
 
           {/* Disclaimer */}
-          <section className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/50 p-6">
-            <p className="text-sm text-slate-600 dark:text-slate-400 italic">
+          <section className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-6">
+            <p className="text-sm text-zinc-400 italic">
               {caseStudiesDisclaimer}
             </p>
           </section>
@@ -124,7 +124,7 @@ export default function CaseStudiesPage() {
           <div className="mt-12 text-center">
             <Link
               href="/contact"
-              className="inline-flex items-center px-6 py-3 rounded-xl bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 text-sm font-semibold hover:opacity-90 transition-opacity"
+              className="inline-flex items-center px-6 py-3 rounded-xl bg-white text-zinc-900 text-sm font-semibold hover:opacity-90 transition-opacity"
             >
               Discuss your requirements
             </Link>

@@ -82,7 +82,7 @@ export const metadata: Metadata = {
 
 export default function CloudSolutionsPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-violet-50/40 to-fuchsia-50/30 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 relative">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-violet-50/40 to-fuchsia-50/30    relative">
       <BackgroundBlobs />
       <Navigation />
       <main className="pt-24 pb-24 px-4 sm:px-6 lg:px-8">
@@ -90,13 +90,13 @@ export default function CloudSolutionsPage() {
           {/* Breadcrumb */}
           <nav
             aria-label="Breadcrumb"
-            className="mb-6 text-xs text-slate-500 dark:text-slate-400"
+            className="mb-6 text-xs text-zinc-500"
           >
             <ol className="flex items-center space-x-2">
               <li>
                 <Link
                   href="/"
-                  className="hover:text-violet-600 dark:hover:text-violet-400"
+                  className="hover:text-violet-400"
                 >
                   Home
                 </Link>
@@ -114,7 +114,7 @@ export default function CloudSolutionsPage() {
               <h1 className="text-3xl md:text-5xl font-extrabold mb-4 bg-gradient-to-r from-violet-600 via-fuchsia-600 to-violet-600 bg-clip-text text-transparent">
                 {cloudSolutionsHero.title}
               </h1>
-              <p className="text-lg md:text-xl text-slate-600 dark:text-slate-400 max-w-3xl">
+              <p className="text-lg md:text-xl text-zinc-400 max-w-3xl">
                 {cloudSolutionsHero.subtitle}
               </p>
               <CloudHeroCTAs />
@@ -122,7 +122,7 @@ export default function CloudSolutionsPage() {
                 {cloudSolutionsHero.capabilities.map((capability) => (
                   <span
                     key={capability}
-                    className="inline-flex items-center rounded-full bg-slate-100 dark:bg-slate-900 px-3 py-1 text-xs font-semibold text-slate-700 dark:text-slate-300"
+                    className="inline-flex items-center rounded-full bg-white/[0.04] px-3 py-1 text-xs font-semibold text-zinc-300"
                   >
                     {capability}
                   </span>
@@ -138,35 +138,35 @@ export default function CloudSolutionsPage() {
             </h2>
             <div className="mb-8 flex items-center justify-between gap-4">
               <div>
-                <h2 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-slate-100 mb-2">
+                <h2 className="text-2xl md:text-3xl font-bold text-white mb-2">
                   Cloud solutions from foundation to operations
                 </h2>
-                <p className="text-sm md:text-base text-slate-600 dark:text-slate-400 max-w-3xl">
+                <p className="text-sm md:text-base text-zinc-400 max-w-3xl">
                   A structured set of services that cover landing zones,
                   automation, cost optimization, reliability, security, and
                   day-to-day operations on AWS, Azure, and GCP.
                 </p>
               </div>
-              <div className="hidden md:block text-xs text-slate-500 dark:text-slate-400">
+              <div className="hidden md:block text-xs text-zinc-500">
                 <p>
                   Need AWS, Azure, or GCP specifics? Visit{" "}
                   <Link
                     href="/cloud-solutions/aws"
-                    className="text-violet-600 dark:text-violet-400 hover:underline"
+                    className="text-violet-400 hover:underline"
                   >
                     AWS Cloud Solutions
                   </Link>
                   ,{" "}
                   <Link
                     href="/cloud-solutions/azure"
-                    className="text-violet-600 dark:text-violet-400 hover:underline"
+                    className="text-violet-400 hover:underline"
                   >
                     Azure Cloud Solutions
                   </Link>
                   , or{" "}
                   <Link
                     href="/cloud-solutions/gcp"
-                    className="text-violet-600 dark:text-violet-400 hover:underline"
+                    className="text-violet-400 hover:underline"
                   >
                     GCP Cloud Solutions
                   </Link>
@@ -199,10 +199,10 @@ export default function CloudSolutionsPage() {
           {/* Cloud Provider Tabs */}
           <section className="mb-16">
             <div className="mb-6 text-center">
-              <h2 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-slate-100 mb-2">
+              <h2 className="text-2xl md:text-3xl font-bold text-white mb-2">
                 AWS, Azure, and GCP delivery, unified approach
               </h2>
-              <p className="text-sm md:text-base text-slate-600 dark:text-slate-400 max-w-3xl mx-auto">
+              <p className="text-sm md:text-base text-zinc-400 max-w-3xl mx-auto">
                 We work across AWS, Azure, and Google Cloud Platform with a consistent way of designing,
                 automating, and operating platforms—while respecting each
                 provider&apos;s strengths.
@@ -213,22 +213,22 @@ export default function CloudSolutionsPage() {
               azureBullets={azureSummaryBullets}
               gcpBullets={gcpSummaryBullets}
             />
-            <div className="mt-4 flex flex-wrap justify-center gap-4 text-xs text-slate-600 dark:text-slate-400">
+            <div className="mt-4 flex flex-wrap justify-center gap-4 text-xs text-zinc-400">
               <Link
                 href="/cloud-solutions/aws"
-                className="underline underline-offset-4 hover:text-violet-600 dark:hover:text-violet-400"
+                className="underline underline-offset-4 hover:text-violet-400"
               >
                 View AWS Cloud Solutions
               </Link>
               <Link
                 href="/cloud-solutions/azure"
-                className="underline underline-offset-4 hover:text-violet-600 dark:hover:text-violet-400"
+                className="underline underline-offset-4 hover:text-violet-400"
               >
                 View Azure Cloud Solutions
               </Link>
               <Link
                 href="/cloud-solutions/gcp"
-                className="underline underline-offset-4 hover:text-violet-600 dark:hover:text-violet-400"
+                className="underline underline-offset-4 hover:text-violet-400"
               >
                 View GCP Cloud Solutions
               </Link>
@@ -238,10 +238,10 @@ export default function CloudSolutionsPage() {
           {/* Implementation Methodology */}
           <section className="mb-16" aria-labelledby="methodology-heading">
             <div className="mb-8 text-center">
-              <h2 id="methodology-heading" className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-slate-100 mb-2">
+              <h2 id="methodology-heading" className="text-2xl md:text-3xl font-bold text-white mb-2">
                 Implementation methodology
               </h2>
-              <p className="text-sm md:text-base text-slate-600 dark:text-slate-400 max-w-3xl mx-auto">
+              <p className="text-sm md:text-base text-zinc-400 max-w-3xl mx-auto">
                 A structured, outcome-focused approach that keeps delivery
                 predictable while giving you clear visibility at every step.
               </p>
@@ -268,10 +268,10 @@ export default function CloudSolutionsPage() {
           {/* Engagement Model */}
           <section className="mb-16">
             <div className="mb-8 text-center">
-              <h2 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-slate-100 mb-2">
+              <h2 className="text-2xl md:text-3xl font-bold text-white mb-2">
                 Engagement model
               </h2>
-              <p className="text-sm md:text-base text-slate-600 dark:text-slate-400 max-w-3xl mx-auto">
+              <p className="text-sm md:text-base text-zinc-400 max-w-3xl mx-auto">
                 Structured ways to work together—whether you need a quick
                 assessment, a solid foundation, or ongoing optimization and
                 support.
@@ -292,13 +292,13 @@ export default function CloudSolutionsPage() {
 
           {/* Ideal Clients */}
           <section className="mb-16">
-            <h2 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-slate-100 mb-4">
+            <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">
               Ideal clients
             </h2>
-            <p className="text-slate-600 dark:text-slate-400 mb-6 max-w-3xl">
+            <p className="text-zinc-400 mb-6 max-w-3xl">
               We work best with teams that have clear goals and are ready to invest in platform quality.
             </p>
-            <ul className="space-y-2 text-slate-700 dark:text-slate-300">
+            <ul className="space-y-2 text-zinc-300">
               {idealClientsCloud.map((item) => (
                 <li key={item} className="flex items-start">
                   <span className="text-violet-500 mr-2 mt-0.5">•</span>
@@ -310,10 +310,10 @@ export default function CloudSolutionsPage() {
 
           {/* Use Cases */}
           <section className="mb-16">
-            <h2 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-slate-100 mb-4">
+            <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">
               Use cases
             </h2>
-            <p className="text-slate-600 dark:text-slate-400 mb-8 max-w-3xl">
+            <p className="text-zinc-400 mb-8 max-w-3xl">
               Problem → approach → outcome. Representative scenarios we are set up to address.
             </p>
             <CloudUseCasesGrid useCases={useCases} />
@@ -328,10 +328,10 @@ export default function CloudSolutionsPage() {
           {/* Industries */}
           <section className="mb-16">
             <div className="mb-6 text-center">
-              <h2 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-slate-100 mb-2">
+              <h2 className="text-2xl md:text-3xl font-bold text-white mb-2">
                 Industries
               </h2>
-              <p className="text-sm md:text-base text-slate-600 dark:text-slate-400 max-w-3xl mx-auto">
+              <p className="text-sm md:text-base text-zinc-400 max-w-3xl mx-auto">
                 We work with a range of teams and products. These examples are
                 representative, not exhaustive.
               </p>
@@ -342,10 +342,10 @@ export default function CloudSolutionsPage() {
           {/* Trust & Compliance */}
           <section className="mb-16">
             <div className="mb-6 text-center">
-              <h2 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-slate-100 mb-2">
+              <h2 className="text-2xl md:text-3xl font-bold text-white mb-2">
                 Trust, security, and operational discipline
               </h2>
-              <p className="text-sm md:text-base text-slate-600 dark:text-slate-400 max-w-3xl mx-auto">
+              <p className="text-sm md:text-base text-zinc-400 max-w-3xl mx-auto">
                 We focus on building platforms you can trust—without making
                 claims we can&apos;t stand behind.
               </p>
@@ -373,10 +373,10 @@ export default function CloudSolutionsPage() {
           {/* FAQ */}
           <section className="mb-16">
             <div className="mb-6 text-center">
-              <h2 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-slate-100 mb-2">
+              <h2 className="text-2xl md:text-3xl font-bold text-white mb-2">
                 Frequently asked questions
               </h2>
-              <p className="text-sm md:text-base text-slate-600 dark:text-slate-400 max-w-3xl mx-auto">
+              <p className="text-sm md:text-base text-zinc-400 max-w-3xl mx-auto">
                 If you don&apos;t see your question here, we&apos;re happy to
                 cover it in a quick call.
               </p>
@@ -386,12 +386,12 @@ export default function CloudSolutionsPage() {
 
           {/* Link to AI Solutions */}
           <div className="mb-16 text-center">
-            <p className="text-sm text-slate-600 dark:text-slate-400 mb-2">
+            <p className="text-sm text-zinc-400 mb-2">
               Building AI on top of your cloud? Explore our AI Solutions practice.
             </p>
             <Link
               href="/ai-solutions"
-              className="text-sm font-semibold text-violet-600 dark:text-violet-400 hover:underline"
+              className="text-sm font-semibold text-violet-400 hover:underline"
             >
               AI Solutions →
             </Link>
@@ -399,12 +399,12 @@ export default function CloudSolutionsPage() {
 
           {/* Link to Cloud Review Session */}
           <div className="mb-16 text-center">
-            <p className="text-sm text-slate-600 dark:text-slate-400 mb-2">
+            <p className="text-sm text-zinc-400 mb-2">
               Want a short, structured walkthrough before deciding on scope?
             </p>
             <Link
               href="/cloud-review"
-              className="text-sm font-semibold text-violet-600 dark:text-violet-400 hover:underline"
+              className="text-sm font-semibold text-violet-400 hover:underline"
             >
               Cloud &amp; AI Infrastructure Review Session →
             </Link>

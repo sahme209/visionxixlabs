@@ -46,15 +46,15 @@ const SECURITY_FEATURES = [
 
 export default function VisionXIXAIFeaturesPage() {
   return (
-    <div className="min-h-screen bg-white dark:bg-slate-900">
+    <div className="min-h-screen bg-white/[0.02]">
       <Navigation />
 
       <section className="pt-28 pb-16 px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto text-center">
-          <h1 className="text-4xl sm:text-5xl font-bold text-slate-900 dark:text-slate-100 tracking-tight">
+          <h1 className="text-4xl sm:text-5xl font-bold text-white tracking-tight">
             Everything you need for AI customer support
           </h1>
-          <p className="mt-6 text-xl text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
+          <p className="mt-6 text-xl text-zinc-400 max-w-2xl mx-auto">
             Vision XIX AI is a production-ready support solution that does the work of a full support staff at a fraction of the cost.
           </p>
           <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
@@ -62,27 +62,27 @@ export default function VisionXIXAIFeaturesPage() {
               Try live demo
               <ArrowRightIcon className="h-5 w-5" />
             </Link>
-            <a href={`mailto:${SUPPORT_EMAIL}?subject=Demo Request`} className="inline-flex items-center gap-2 rounded-full border-2 border-indigo-600 px-6 py-3 text-base font-semibold text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-900/20">
+            <a href={`mailto:${SUPPORT_EMAIL}?subject=Demo Request`} className="inline-flex items-center gap-2 rounded-full border-2 border-indigo-600 px-6 py-3 text-base font-semibold text-indigo-600 hover:bg-indigo-50 hover:bg-violet-500/10">
               Book a demo
             </a>
           </div>
         </div>
       </section>
 
-      <section className="py-16 px-4 sm:px-6 lg:px-8 bg-slate-50 dark:bg-slate-800/50">
+      <section className="py-16 px-4 sm:px-6 lg:px-8 bg-white/[0.02]">
         <div className="max-w-5xl mx-auto">
-          <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-100 mb-2">Training & customization</h2>
-          <p className="text-slate-600 dark:text-slate-400 mb-10">Unlock the full potential of your chatbot by customizing its knowledge.</p>
+          <h2 className="text-2xl font-bold text-white mb-2">Training & customization</h2>
+          <p className="text-zinc-400 mb-10">Unlock the full potential of your chatbot by customizing its knowledge.</p>
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {TRAINING_FEATURES.map((f) => {
               const Icon = f.icon;
               return (
-                <div key={f.title} className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-6">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 mb-3">
+                <div key={f.title} className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-6">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-indigo-100 bg-violet-500/10 text-indigo-600 mb-3">
                     <Icon className="h-5 w-5" />
                   </div>
-                  <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100 mb-2">{f.title}</h3>
-                  <p className="text-sm text-slate-600 dark:text-slate-400">{f.desc}</p>
+                  <h3 className="text-lg font-semibold text-white mb-2">{f.title}</h3>
+                  <p className="text-sm text-zinc-400">{f.desc}</p>
                 </div>
               );
             })}
@@ -92,18 +92,18 @@ export default function VisionXIXAIFeaturesPage() {
 
       <section className="py-16 px-4 sm:px-6 lg:px-8">
         <div className="max-w-5xl mx-auto">
-          <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-100 mb-2">Chat interactions</h2>
-          <p className="text-slate-600 dark:text-slate-400 mb-10">Enhance user interactions with advanced AI, multi-language support, and seamless human escalation.</p>
+          <h2 className="text-2xl font-bold text-white mb-2">Chat interactions</h2>
+          <p className="text-zinc-400 mb-10">Enhance user interactions with advanced AI, multi-language support, and seamless human escalation.</p>
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {CHAT_FEATURES.map((f) => {
               const Icon = f.icon;
               return (
-                <div key={f.title} className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-6">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 mb-3">
+                <div key={f.title} className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-6">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-indigo-100 bg-violet-500/10 text-indigo-600 mb-3">
                     <Icon className="h-5 w-5" />
                   </div>
-                  <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100 mb-2">{f.title}</h3>
-                  <p className="text-sm text-slate-600 dark:text-slate-400">{f.desc}</p>
+                  <h3 className="text-lg font-semibold text-white mb-2">{f.title}</h3>
+                  <p className="text-sm text-zinc-400">{f.desc}</p>
                 </div>
               );
             })}
@@ -111,20 +111,20 @@ export default function VisionXIXAIFeaturesPage() {
         </div>
       </section>
 
-      <section className="py-16 px-4 sm:px-6 lg:px-8 bg-slate-50 dark:bg-slate-800/50">
+      <section className="py-16 px-4 sm:px-6 lg:px-8 bg-white/[0.02]">
         <div className="max-w-5xl mx-auto">
-          <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-100 mb-2">Extensions</h2>
-          <p className="text-slate-600 dark:text-slate-400 mb-10">Extend your chatbot with automation, summaries, and integrations.</p>
+          <h2 className="text-2xl font-bold text-white mb-2">Extensions</h2>
+          <p className="text-zinc-400 mb-10">Extend your chatbot with automation, summaries, and integrations.</p>
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {EXTENSION_FEATURES.map((f) => {
               const Icon = f.icon;
               return (
-                <div key={f.title} className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-6">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 mb-3">
+                <div key={f.title} className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-6">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-indigo-100 bg-violet-500/10 text-indigo-600 mb-3">
                     <Icon className="h-5 w-5" />
                   </div>
-                  <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100 mb-2">{f.title}</h3>
-                  <p className="text-sm text-slate-600 dark:text-slate-400">{f.desc}</p>
+                  <h3 className="text-lg font-semibold text-white mb-2">{f.title}</h3>
+                  <p className="text-sm text-zinc-400">{f.desc}</p>
                 </div>
               );
             })}
@@ -134,18 +134,18 @@ export default function VisionXIXAIFeaturesPage() {
 
       <section className="py-16 px-4 sm:px-6 lg:px-8">
         <div className="max-w-5xl mx-auto">
-          <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-100 mb-2">Security & production</h2>
-          <p className="text-slate-600 dark:text-slate-400 mb-10">Built for enterprise. Your data, your cloud, your control.</p>
+          <h2 className="text-2xl font-bold text-white mb-2">Security & production</h2>
+          <p className="text-zinc-400 mb-10">Built for enterprise. Your data, your cloud, your control.</p>
           <div className="grid sm:grid-cols-2 gap-6">
             {SECURITY_FEATURES.map((f) => {
               const Icon = f.icon;
               return (
-                <div key={f.title} className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-6">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 mb-3">
+                <div key={f.title} className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-6">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-indigo-100 bg-violet-500/10 text-indigo-600 mb-3">
                     <Icon className="h-5 w-5" />
                   </div>
-                  <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100 mb-2">{f.title}</h3>
-                  <p className="text-sm text-slate-600 dark:text-slate-400">{f.desc}</p>
+                  <h3 className="text-lg font-semibold text-white mb-2">{f.title}</h3>
+                  <p className="text-sm text-zinc-400">{f.desc}</p>
                 </div>
               );
             })}
@@ -153,11 +153,11 @@ export default function VisionXIXAIFeaturesPage() {
         </div>
       </section>
 
-      <section className="py-16 px-4 sm:px-6 lg:px-8 bg-slate-50 dark:bg-slate-800/50">
+      <section className="py-16 px-4 sm:px-6 lg:px-8 bg-white/[0.02]">
         <div className="max-w-4xl mx-auto">
-          <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-100 mb-4">Embed on your site</h2>
-          <p className="text-slate-600 dark:text-slate-400 mb-6">Each chatbot gets a unique URL and embed code. Add it to your marketing site, help center, or in-app.</p>
-          <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-900 p-6 overflow-x-auto">
+          <h2 className="text-2xl font-bold text-white mb-4">Embed on your site</h2>
+          <p className="text-zinc-400 mb-6">Each chatbot gets a unique URL and embed code. Add it to your marketing site, help center, or in-app.</p>
+          <div className="rounded-xl border border-white/[0.06] bg-slate-900 p-6 overflow-x-auto">
             <pre className="text-sm text-emerald-400 font-mono">
 {`<script src="https://visionxixlabs.com/widget.js" data-chat-id="YOUR_CHAT_ID"></script>`}
             </pre>
@@ -167,7 +167,7 @@ export default function VisionXIXAIFeaturesPage() {
 
       <section className="py-16 px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-100 mb-4">Ready to supercharge your support?</h2>
+          <h2 className="text-2xl font-bold text-white mb-4">Ready to supercharge your support?</h2>
           <Link href="/visionxix-ai" className="inline-flex items-center gap-2 rounded-full bg-indigo-600 px-6 py-3 text-base font-semibold text-white hover:bg-indigo-700">
             Get started
             <ArrowRightIcon className="h-5 w-5" />

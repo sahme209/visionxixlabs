@@ -75,12 +75,12 @@ export default function DashboardPage() {
   return (
     <>
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">Your chatbots</h1>
-        <p className="text-slate-600 dark:text-slate-400 mt-1">
+        <h1 className="text-2xl font-bold text-white">Your chatbots</h1>
+        <p className="text-zinc-400 mt-1">
           Create chatbots, train them on your site, and embed them on your website.
         </p>
         {usage && limits && (
-          <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
+          <p className="mt-2 text-sm text-zinc-500">
             Plan: <span className="font-medium capitalize">{plan}</span> — {usage.messages} / {limits.messages} messages · {usage.pages} / {limits.pages} pages · {usage.bots} / {limits.bots} chatbots
           </p>
         )}
@@ -97,10 +97,10 @@ export default function DashboardPage() {
 
       <div className="space-y-4">
         {bots.length === 0 ? (
-          <div className="rounded-2xl border-2 border-dashed border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-12 text-center">
+          <div className="rounded-2xl border-2 border-dashed border-white/[0.06] bg-white/[0.02] p-12 text-center">
             <ChatBubbleLeftRightIcon className="h-12 w-12 text-slate-400 mx-auto mb-4" />
-            <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100 mb-2">No chatbots yet</h2>
-            <p className="text-slate-600 dark:text-slate-400 mb-6 max-w-sm mx-auto">
+            <h2 className="text-lg font-semibold text-white mb-2">No chatbots yet</h2>
+            <p className="text-zinc-400 mb-6 max-w-sm mx-auto">
               Create your first chatbot and train it on your website or documents.
             </p>
             <button
@@ -116,11 +116,11 @@ export default function DashboardPage() {
           bots.map((bot) => (
             <div
               key={bot.id}
-              className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-6"
+              className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-6"
             >
               <div className="flex items-start justify-between gap-4">
                 <div>
-                  <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">{bot.name}</h2>
+                  <h2 className="text-lg font-semibold text-white">{bot.name}</h2>
                   <div className="mt-2 flex flex-wrap gap-4 text-sm text-slate-500">
                     <span>{(bot.sources ?? []).length} sources</span>
                     <span>{bot.messageCount} messages</span>
@@ -139,9 +139,9 @@ export default function DashboardPage() {
         )}
       </div>
 
-      <div className="mt-12 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-6">
-        <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100 mb-2">Getting started</h2>
-        <ol className="list-decimal list-inside space-y-2 text-slate-600 dark:text-slate-400">
+      <div className="mt-12 rounded-2xl border border-white/[0.06] bg-white/[0.02] p-6">
+        <h2 className="text-lg font-semibold text-white mb-2">Getting started</h2>
+        <ol className="list-decimal list-inside space-y-2 text-zinc-400">
           <li>Create a chatbot</li>
           <li>Add URLs or text to train it</li>
           <li>Copy the embed code to your website</li>

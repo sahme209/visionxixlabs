@@ -42,33 +42,33 @@ export function AxiomAIVision() {
   ];
 
   return (
-    <div className="rounded-2xl border-2 border-violet-200/80 dark:border-violet-700/50 bg-gradient-to-br from-violet-50/60 to-fuchsia-50/40 dark:from-violet-950/40 dark:to-fuchsia-950/20 p-6">
+    <div className="rounded-2xl border-2 border-violet-500/20 bg-gradient-to-br from-violet-950/20 to-fuchsia-950/10 p-6">
       <div className="flex items-center gap-2 mb-4">
-        <BoltIcon className="h-5 w-5 text-violet-600 dark:text-violet-400" />
-        <h3 className="text-base font-bold text-slate-900 dark:text-slate-100">
+        <BoltIcon className="h-5 w-5 text-violet-400" />
+        <h3 className="text-base font-bold text-white">
           AI beyond basic — where we&apos;re headed
         </h3>
       </div>
-      <p className="text-sm text-slate-600 dark:text-slate-400 mb-6">
+      <p className="text-sm text-zinc-400 mb-6">
         Axiom is evolving from analysis to automation. Connect your environment via APIs and let AI do more—recommendations today, approved execution tomorrow.
       </p>
       <div className="space-y-4 mb-6">
         {capabilities.map((item) => (
           <div
             key={item.title}
-            className="flex gap-3 p-3 rounded-xl bg-white/60 dark:bg-slate-800/40 border border-slate-200/60 dark:border-slate-700/50"
+            className="flex gap-3 p-3 rounded-xl bg-white/[0.02] border border-white/[0.06]"
           >
-            <item.icon className="h-5 w-5 text-violet-600 dark:text-violet-400 shrink-0 mt-0.5" />
+            <item.icon className="h-5 w-5 text-violet-400 shrink-0 mt-0.5" />
             <div>
               <div className="flex items-center gap-2 flex-wrap">
-                <h4 className="text-sm font-semibold text-slate-900 dark:text-slate-100">
+                <h4 className="text-sm font-semibold text-white">
                   {item.title}
                 </h4>
-                <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-violet-100 dark:bg-violet-900/50 text-violet-700 dark:text-violet-300">
+                <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-violet-500/10 text-violet-300">
                   {item.status}
                 </span>
               </div>
-              <p className="text-xs text-slate-600 dark:text-slate-400 mt-0.5">
+              <p className="text-xs text-zinc-400 mt-0.5">
                 {item.desc}
               </p>
             </div>

@@ -116,15 +116,15 @@ function MetricCard({ label, value, sub, icon: Icon, accent = "violet" }: {
   accent?: "violet" | "emerald" | "amber" | "blue" | "red";
 }) {
   const accents: Record<string, string> = {
-    violet: "bg-violet-50 dark:bg-violet-950/40 text-violet-400",
-    emerald: "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400",
-    amber: "bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400",
-    blue: "bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400",
-    red: "bg-red-50 dark:bg-red-950/40 text-red-600 dark:text-red-400",
+    violet: "bg-violet-500/10 text-violet-400",
+    emerald: "bg-emerald-50 bg-emerald-500/10 text-emerald-400",
+    amber: "bg-amber-50 bg-amber-500/10 text-amber-600 text-amber-400",
+    blue: "bg-blue-50 bg-blue-500/10 text-blue-600 text-blue-400",
+    red: "bg-red-50 bg-red-500/10 text-red-400",
   };
 
   return (
-    <div className="card-hover rounded-xl border border-white/[0.06] bg-white/[0.02] p-5 hover:border-violet-200 dark:hover:border-violet-800 transition-colors">
+    <div className="card-hover rounded-xl border border-white/[0.06] bg-white/[0.02] p-5 hover:border-violet-200 hover:border-white/[0.08] transition-colors">
       <div className="flex items-center gap-3 mb-3">
         <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${accents[accent]}`}>
           <Icon className="h-4 w-4" />
@@ -142,7 +142,7 @@ function RunRow({ run }: { run: OperationsData["recentRuns"][0] }) {
   const StatusIcon = config.icon;
 
   return (
-    <div className="flex items-center gap-4 py-3 px-4 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors rounded-lg group">
+    <div className="flex items-center gap-4 py-3 px-4 hover:bg-white/[0.04]/50 transition-colors rounded-lg group">
       <StatusIcon className={`h-4.5 w-4.5 flex-shrink-0 ${config.color}`} />
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-2">
@@ -150,7 +150,7 @@ function RunRow({ run }: { run: OperationsData["recentRuns"][0] }) {
             {run.summary ? run.summary.slice(0, 80) : config.label}
           </span>
           {run.trigger !== "manual" && (
-            <span className="text-[10px] font-medium text-zinc-500 uppercase tracking-wider px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 flex-shrink-0">
+            <span className="text-[10px] font-medium text-zinc-500 uppercase tracking-wider px-1.5 py-0.5 rounded bg-white/[0.04] flex-shrink-0">
               {run.trigger}
             </span>
           )}
@@ -181,7 +181,7 @@ function EmptyState({ title, desc, action }: { title: string; desc: string; acti
       <p className="text-sm font-medium text-zinc-300 mb-1">{title}</p>
       <p className="text-xs text-zinc-500 mb-4 max-w-xs mx-auto">{desc}</p>
       {action && (
-        <Link href={action.href} className="inline-flex items-center gap-1.5 text-sm font-medium text-violet-400 hover:text-violet-700 dark:hover:text-violet-300">
+        <Link href={action.href} className="inline-flex items-center gap-1.5 text-sm font-medium text-violet-400 hover:text-white">
           {action.label}
           <ChevronRightIcon className="h-3.5 w-3.5" />
         </Link>
@@ -221,7 +221,7 @@ export default function OperationsPage() {
 
   if (authStatus === "loading" || loading) {
     return (
-      <div className="min-h-screen bg-white dark:bg-slate-950 flex items-center justify-center">
+      <div className="min-h-screen bg-[#09090b] flex items-center justify-center">
         <div className="flex items-center gap-3 text-zinc-500">
           <ArrowPathIcon className="h-5 w-5 animate-spin" />
           <span className="text-sm">Loading operations...</span>
@@ -232,7 +232,7 @@ export default function OperationsPage() {
 
   if (authStatus === "unauthenticated") {
     return (
-      <div className="min-h-screen bg-white dark:bg-slate-950">
+      <div className="min-h-screen bg-[#09090b]">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pt-24">
           <EmptyState
             title="Sign in to view operations"
@@ -256,8 +256,8 @@ export default function OperationsPage() {
               <CpuChipIcon className="h-5 w-5 text-violet-400" />
               <span className="font-bold text-sm">Axiom</span>
             </Link>
-            <span className="text-slate-300 dark:text-slate-700">/</span>
-            <span className="text-sm text-slate-600 dark:text-slate-400">Operations</span>
+            <span className="text-zinc-600">/</span>
+            <span className="text-sm text-zinc-400">Operations</span>
           </div>
           <div className="flex items-center gap-3">
             <Link
@@ -273,7 +273,7 @@ export default function OperationsPage() {
 
       <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
         {error && (
-          <div className="rounded-xl border border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-950/30 p-4 text-sm text-red-700 dark:text-red-400">
+          <div className="rounded-xl border border-red-200 border-red-500/20 bg-red-50 bg-red-500/10 p-4 text-sm text-red-700 text-red-400">
             {error}
           </div>
         )}
@@ -325,7 +325,7 @@ export default function OperationsPage() {
                   {data?.recentRuns.length ?? 0} recent runs
                 </span>
               </div>
-              <div className="divide-y divide-slate-50 dark:divide-slate-800/50">
+              <div className="divide-y divide-white/[0.06]">
                 {data?.recentRuns && data.recentRuns.length > 0 ? (
                   data.recentRuns.slice(0, 10).map((run) => (
                     <RunRow key={run.id} run={run} />
@@ -356,7 +356,7 @@ export default function OperationsPage() {
                   data.cloudAccounts.map((account) => (
                     <div key={account.id} className="flex items-center justify-between">
                       <div className="flex items-center gap-2.5">
-                        <span className={`w-1.5 h-1.5 rounded-full ${account.enabled ? "bg-emerald-500" : "bg-slate-300 dark:bg-slate-600"}`} />
+                        <span className={`w-1.5 h-1.5 rounded-full ${account.enabled ? "bg-emerald-500" : "bg-zinc-600"}`} />
                         <div>
                           <p className="text-sm font-medium text-white">
                             {PROVIDER_LABELS[account.provider] ?? account.provider}
@@ -397,13 +397,13 @@ export default function OperationsPage() {
                   data.schedules.map((sched) => (
                     <div key={sched.id} className="flex items-center justify-between">
                       <div className="flex items-center gap-2.5">
-                        <span className={`w-1.5 h-1.5 rounded-full ${sched.enabled ? "bg-emerald-500" : "bg-slate-300 dark:bg-slate-600"}`} />
+                        <span className={`w-1.5 h-1.5 rounded-full ${sched.enabled ? "bg-emerald-500" : "bg-zinc-600"}`} />
                         <div>
                           <p className="text-sm font-medium text-white">
                             {PROVIDER_LABELS[sched.provider] ?? sched.provider} — {sched.frequency}
                           </p>
                           {sched.consecutiveFailures > 0 && (
-                            <p className="text-xs text-amber-600 dark:text-amber-400">
+                            <p className="text-xs text-amber-600 text-amber-400">
                               {sched.consecutiveFailures} consecutive failure{sched.consecutiveFailures === 1 ? "" : "s"}
                             </p>
                           )}
@@ -426,14 +426,14 @@ export default function OperationsPage() {
 
             {/* Pending Approvals */}
             {data?.pendingApprovals && data.pendingApprovals.length > 0 && (
-              <div className="rounded-2xl border border-amber-200 dark:border-amber-800/50 bg-amber-50/50 dark:bg-amber-950/20 overflow-hidden">
-                <div className="px-5 py-4 border-b border-amber-200 dark:border-amber-800/50">
+              <div className="rounded-2xl border border-amber-200 border-amber-500/20 bg-amber-50/50 bg-amber-500/10 overflow-hidden">
+                <div className="px-5 py-4 border-b border-amber-200 border-amber-500/20">
                   <div className="flex items-center gap-2">
-                    <ShieldCheckIcon className="h-4 w-4 text-amber-600 dark:text-amber-400" />
-                    <h2 className="text-sm font-semibold text-amber-900 dark:text-amber-200">
+                    <ShieldCheckIcon className="h-4 w-4 text-amber-600 text-amber-400" />
+                    <h2 className="text-sm font-semibold text-amber-900 text-amber-400">
                       Pending Approvals
                     </h2>
-                    <span className="ml-auto text-xs font-bold text-amber-700 dark:text-amber-300 bg-amber-200 dark:bg-amber-800 rounded-full px-2 py-0.5">
+                    <span className="ml-auto text-xs font-bold text-amber-700 text-amber-400 bg-amber-200 bg-amber-500/10 rounded-full px-2 py-0.5">
                       {data.pendingApprovals.length}
                     </span>
                   </div>
@@ -485,7 +485,7 @@ export default function OperationsPage() {
               { step: "Continuous", active: (s?.activeSchedules ?? 0) > 0 && (s?.totalScans ?? 0) > 2 },
             ].map(({ step, active }) => (
               <div key={step} className="flex items-center gap-2">
-                <span className={`w-2 h-2 rounded-full flex-shrink-0 ${active ? "bg-emerald-500" : "bg-slate-200 dark:bg-slate-700"}`} />
+                <span className={`w-2 h-2 rounded-full flex-shrink-0 ${active ? "bg-emerald-500" : "bg-zinc-700"}`} />
                 <span className={`text-xs font-medium ${active ? "text-white" : "text-zinc-500"}`}>
                   {step}
                 </span>

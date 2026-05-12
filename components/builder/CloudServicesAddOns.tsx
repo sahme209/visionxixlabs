@@ -71,12 +71,12 @@ export function CloudServicesAddOns({
   };
 
   return (
-    <div className="rounded-xl border-2 border-slate-200/80 dark:border-slate-700/80 bg-white/80 dark:bg-slate-900/80 p-5">
-      <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-1 flex items-center gap-2">
+    <div className="rounded-xl border-2 border-white/[0.06] bg-white/[0.02] p-5">
+      <h3 className="text-sm font-semibold text-white mb-1 flex items-center gap-2">
         <CloudArrowUpIcon className="h-4 w-4 text-violet-500" />
         Optional cloud infrastructure
       </h3>
-      <p className="text-xs text-slate-600 dark:text-slate-400 mb-4">
+      <p className="text-xs text-zinc-400 mb-4">
         Enable add-ons to provision resources automatically. Not text suggestions—real provisioning via cloud APIs.
       </p>
       <div className="grid sm:grid-cols-2 gap-3">
@@ -89,10 +89,10 @@ export function CloudServicesAddOns({
               key={svc.id}
               className={`flex gap-3 rounded-xl border-2 p-3 cursor-pointer transition ${
                 isIncluded
-                  ? "border-emerald-200 dark:border-emerald-800/60 bg-emerald-50/50 dark:bg-emerald-900/20"
+                  ? "border-emerald-500/20 bg-emerald-500/[0.06]"
                   : isChecked
-                  ? "border-violet-500/80 dark:border-violet-500/60 bg-violet-50/50 dark:bg-violet-900/20"
-                  : "border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600"
+                  ? "border-violet-500/30 bg-violet-500/[0.06]"
+                  : "border-white/[0.06] hover:border-white/[0.12]"
               } ${disabled ? "opacity-60 cursor-not-allowed" : ""}`}
             >
               <input
@@ -104,17 +104,17 @@ export function CloudServicesAddOns({
               />
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2">
-                  <Icon className="h-4 w-4 text-slate-500 dark:text-slate-400 shrink-0" />
-                  <span className="text-sm font-medium text-slate-900 dark:text-slate-100">
+                  <Icon className="h-4 w-4 text-zinc-500 shrink-0" />
+                  <span className="text-sm font-medium text-white">
                     {svc.name}
                     {isIncluded && (
-                      <span className="ml-1 text-xs text-emerald-600 dark:text-emerald-400">
+                      <span className="ml-1 text-xs text-emerald-400">
                         (included)
                       </span>
                     )}
                   </span>
                 </div>
-                <p className="text-xs text-slate-600 dark:text-slate-400 mt-0.5">
+                <p className="text-xs text-zinc-400 mt-0.5">
                   {svc.description}
                 </p>
               </div>

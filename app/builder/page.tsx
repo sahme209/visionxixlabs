@@ -212,21 +212,21 @@ export default function WebsiteBuilderPage() {
 
   // Huly-inspired: generous white space, vibrant gradients, rounded-3xl, clean typography
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-violet-50/40 to-fuchsia-50/30 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 relative">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-violet-50/40 to-fuchsia-50/30    relative">
       <BackgroundBlobs />
       <Navigation />
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-20">
         <div className="flex flex-wrap items-center gap-4 mb-10">
           <Link
             href="/"
-            className="inline-flex items-center gap-2 text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-violet-600 dark:hover:text-violet-400 transition-colors"
+            className="inline-flex items-center gap-2 text-sm font-medium text-zinc-400 hover:text-violet-400 transition-colors"
           >
             <ArrowLeftIcon className="h-4 w-4" />
             Back to Home
           </Link>
           <Link
             href="/builder/pricing"
-            className="text-sm font-medium text-violet-600 dark:text-violet-400 hover:text-violet-700 dark:hover:text-violet-300"
+            className="text-sm font-medium text-violet-400 hover:text-white"
           >
             Pricing
           </Link>
@@ -237,22 +237,22 @@ export default function WebsiteBuilderPage() {
             <span className={`rounded-full px-3 py-1 text-xs font-semibold ${step === "prompt" ? "bg-violet-500 text-white" : "bg-emerald-500 text-white"}`}>
               {step === "prompt" ? "Step 1" : "Step 2"}
             </span>
-            <span className="text-slate-400 dark:text-slate-500 text-xs">of 2</span>
-            <span className="text-slate-500 dark:text-slate-400 text-xs">
+            <span className="text-zinc-500 text-xs">of 2</span>
+            <span className="text-zinc-500 text-xs">
               {step === "prompt" ? "Describe your site" : "Preview & deploy"}
             </span>
           </div>
-          <div className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-violet-100 to-fuchsia-100 dark:from-violet-900/40 dark:to-fuchsia-900/40 px-4 py-2 text-xs font-semibold text-violet-700 dark:text-violet-300 mb-5">
+          <div className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-violet-100 to-fuchsia-100   px-4 py-2 text-xs font-semibold text-violet-300 mb-5">
             <SparklesIcon className="h-4 w-4" />
             AI Website Engine — Optional cloud infrastructure add-ons
           </div>
-          <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight text-slate-900 dark:text-slate-100 mb-4">
+          <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight text-white mb-4">
             Design, structure, graphics — one prompt.
           </h1>
-          <p className="text-lg text-slate-600 dark:text-slate-400 max-w-2xl mb-2">
+          <p className="text-lg text-zinc-400 max-w-2xl mb-2">
             Premium sites with real images, animations, gradients, and balanced design—competing with Wix and Webflow. One prompt, production-ready.
           </p>
-          <p className="text-sm text-slate-500 dark:text-slate-500">
+          <p className="text-sm text-zinc-500">
             Vibrant colors, smooth animations, Unsplash imagery. Optionally enable hosting, storage, CI/CD, monitoring—provisioned via cloud APIs, not text suggestions.
           </p>
         </header>
@@ -261,9 +261,9 @@ export default function WebsiteBuilderPage() {
         {step === "prompt" && (
           <section className="space-y-6">
             <form onSubmit={handlePromptSubmit} className="space-y-4">
-              <div className="rounded-3xl border-2 border-slate-200/80 dark:border-slate-700/80 bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm shadow-xl shadow-slate-200/50 dark:shadow-none p-6 sm:p-8 space-y-4">
+              <div className="rounded-3xl border-2 border-white/[0.06] bg-white/[0.02] backdrop-blur-sm  p-6 sm:p-8 space-y-4">
                 <div>
-                  <label htmlFor="prompt" className="flex items-center gap-2 text-sm font-semibold text-slate-700 dark:text-slate-300 mb-3">
+                  <label htmlFor="prompt" className="flex items-center gap-2 text-sm font-semibold text-zinc-300 mb-3">
                     <ChatBubbleLeftRightIcon className="h-5 w-5 text-violet-500" />
                     Describe your site — we build design, structure & copy
                   </label>
@@ -275,7 +275,7 @@ export default function WebsiteBuilderPage() {
                     rows={4}
                     required
                     disabled={planning}
-                    className="w-full rounded-2xl border-2 border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 px-4 py-3 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:border-violet-500 focus:ring-2 focus:ring-violet-200 dark:focus:ring-violet-900/50 transition-all resize-none"
+                    className="w-full rounded-2xl border-2 border-white/[0.06] bg-[#09090b] px-4 py-3 text-white placeholder:text-zinc-600 focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20 transition-all resize-none"
                   />
                 </div>
                 <div className="flex flex-wrap gap-2">
@@ -284,7 +284,7 @@ export default function WebsiteBuilderPage() {
                       key={i}
                       type="button"
                       onClick={() => setPrompt(t)}
-                      className="text-xs px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:border-violet-400 hover:text-violet-600 dark:hover:text-violet-400 transition-colors"
+                      className="text-xs px-3 py-1.5 rounded-xl border border-white/[0.06] bg-white/[0.02] text-zinc-400 hover:border-violet-400 hover:text-violet-400 transition-colors"
                     >
                       {t.length > 45 ? `${t.slice(0, 45)}…` : t}
                     </button>
@@ -292,11 +292,11 @@ export default function WebsiteBuilderPage() {
                 </div>
                 <div className="grid sm:grid-cols-2 gap-4 pt-2">
                   <div>
-                    <label className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-2">Visual style</label>
+                    <label className="block text-xs font-medium text-zinc-500 mb-2">Visual style</label>
                     <select
                       value={visualStyle}
                       onChange={(e) => setVisualStyle(e.target.value)}
-                      className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 px-3 py-2 text-sm text-slate-900 dark:text-slate-100"
+                      className="w-full rounded-xl border border-white/[0.06] bg-[#09090b] px-3 py-2 text-sm text-white"
                     >
                       <option value="">Auto</option>
                       {VISUAL_STYLES.map((s) => (
@@ -305,11 +305,11 @@ export default function WebsiteBuilderPage() {
                     </select>
                   </div>
                   <div>
-                    <label className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-2">Layout</label>
+                    <label className="block text-xs font-medium text-zinc-500 mb-2">Layout</label>
                     <select
                       value={layout}
                       onChange={(e) => setLayout(e.target.value)}
-                      className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 px-3 py-2 text-sm text-slate-900 dark:text-slate-100"
+                      className="w-full rounded-xl border border-white/[0.06] bg-[#09090b] px-3 py-2 text-sm text-white"
                     >
                       <option value="">Auto</option>
                       {LAYOUTS.map((l) => (
@@ -319,7 +319,7 @@ export default function WebsiteBuilderPage() {
                   </div>
                 </div>
                 {error && (
-                  <p className="mt-2 text-sm text-rose-600 dark:text-rose-400">{error}</p>
+                  <p className="mt-2 text-sm text-rose-600 text-rose-400">{error}</p>
                 )}
                 <button
                   type="submit"
@@ -342,7 +342,7 @@ export default function WebsiteBuilderPage() {
                   )}
                 </button>
                 {planning && (
-                  <div className="mt-4 flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400">
+                  <div className="mt-4 flex items-center gap-2 text-sm text-zinc-500">
                     <span className="inline-flex gap-1">
                       <span className="animate-pulse">●</span> Generating design
                     </span>
@@ -356,20 +356,20 @@ export default function WebsiteBuilderPage() {
             </form>
 
             {/* Cloud integration hook — curiosity */}
-            <div className="rounded-3xl border-2 border-slate-200/80 dark:border-slate-700/80 bg-white/60 dark:bg-slate-900/60 backdrop-blur-sm p-6 sm:p-8">
+            <div className="rounded-3xl border-2 border-white/[0.06] bg-white/[0.02] backdrop-blur-sm p-6 sm:p-8">
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <div className="flex items-start gap-4">
-                  <div className="rounded-2xl bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-700 p-3">
-                    <CloudIcon className="h-8 w-8 text-violet-600 dark:text-violet-400" />
+                  <div className="rounded-2xl bg-gradient-to-br from-slate-100 to-slate-200   p-3">
+                    <CloudIcon className="h-8 w-8 text-violet-400" />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-slate-900 dark:text-slate-100">Site + cloud, together</h3>
-                    <p className="text-sm text-slate-600 dark:text-slate-400 mt-0.5">
+                    <h3 className="font-semibold text-white">Site + cloud, together</h3>
+                    <p className="text-sm text-zinc-400 mt-0.5">
                       After generating your plan, add Axiom for infra scores, CI/CD automation, and cost optimization.
                     </p>
                     <Link
                       href="/axiom"
-                      className="mt-3 inline-flex items-center gap-2 text-sm font-semibold text-violet-600 dark:text-violet-400 hover:text-violet-700 dark:hover:text-violet-300"
+                      className="mt-3 inline-flex items-center gap-2 text-sm font-semibold text-violet-400 hover:text-white"
                     >
                       Try Axiom (Cloud Operations Agent)
                       <ArrowRightIcon className="h-4 w-4" />
@@ -385,18 +385,18 @@ export default function WebsiteBuilderPage() {
         {step === "plan" && plan && (
           <section className="space-y-8">
             {/* Journey + next steps — clear path to deploy & membership */}
-            <div className="rounded-2xl border-2 border-violet-200/80 dark:border-violet-700/80 bg-white/80 dark:bg-slate-900/80 p-4 mb-4">
-              <p className="text-sm font-semibold text-slate-800 dark:text-slate-200 mb-1">What&apos;s next?</p>
-              <p className="text-xs text-slate-600 dark:text-slate-400">
+            <div className="rounded-2xl border-2 border-violet-500/20 bg-white/[0.02] p-4 mb-4">
+              <p className="text-sm font-semibold text-zinc-200 mb-1">What&apos;s next?</p>
+              <p className="text-xs text-zinc-400">
                 Enter your email below to deploy your site. Then add Axiom for infra, or join membership for full access.
               </p>
             </div>
             {/* Live preview — full page when available, else hero */}
             {(plan.fullPageHtml || plan.heroHtml) && (
-              <div className="rounded-3xl border-2 border-slate-200/80 dark:border-slate-700/80 bg-white dark:bg-slate-900 overflow-hidden shadow-xl shadow-slate-200/50 dark:shadow-none">
-                <div className="px-6 py-3 border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/80 flex items-center gap-2">
+              <div className="rounded-3xl border-2 border-white/[0.06] bg-white/[0.02] overflow-hidden ">
+                <div className="px-6 py-3 border-b border-white/[0.06] bg-white/[0.03]/80 flex items-center gap-2">
                   <div className="w-2 h-2 rounded-full bg-emerald-500" />
-                  <span className="text-xs font-medium text-slate-600 dark:text-slate-400">
+                  <span className="text-xs font-medium text-zinc-400">
                     Live preview {plan.fullPageHtml ? "(full site)" : "(hero)"}
                   </span>
                 </div>
@@ -407,12 +407,12 @@ export default function WebsiteBuilderPage() {
             )}
 
             {/* Step 2: Get site deployed — PRIMARY CTA */}
-            <form onSubmit={handleGetSite} className="rounded-3xl border-2 border-violet-500/80 dark:border-violet-500/80 bg-white/95 dark:bg-slate-900/95 backdrop-blur-sm shadow-xl shadow-violet-500/20 dark:shadow-violet-500/10 p-6 sm:p-8 ring-2 ring-violet-200/50 dark:ring-violet-800/50">
-              <h3 className="text-xl font-bold text-slate-900 dark:text-slate-100 mb-2 flex items-center gap-2">
+            <form onSubmit={handleGetSite} className="rounded-3xl border-2 border-violet-500/40 bg-white/[0.02] backdrop-blur-sm shadow-xl shadow-violet-500/10 p-6 sm:p-8 ring-1 ring-violet-500/20">
+              <h3 className="text-xl font-bold text-white mb-2 flex items-center gap-2">
                 <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-violet-500 text-white text-sm font-bold">2</span>
                 Get your site deployed
               </h3>
-              <p className="text-sm text-slate-600 dark:text-slate-400 mb-6">
+              <p className="text-sm text-zinc-400 mb-6">
                 Enter your email — we&apos;ll deploy to managed cloud with CDN, SSL, and email you the live link in 1–3 minutes.
               </p>
               <div className="mb-6">
@@ -432,18 +432,18 @@ export default function WebsiteBuilderPage() {
               )}
               <div className="grid sm:grid-cols-2 gap-4 mb-4">
                 <div>
-                  <label htmlFor="name" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Name</label>
+                  <label htmlFor="name" className="block text-sm font-medium text-zinc-300 mb-1">Name</label>
                   <input
                     id="name"
                     type="text"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     placeholder="Your name"
-                    className="w-full rounded-xl border-2 border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 px-4 py-2.5 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:border-violet-500 focus:ring-2 focus:ring-violet-200"
+                    className="w-full rounded-xl border-2 border-white/[0.06] bg-[#09090b] px-4 py-2.5 text-white placeholder:text-slate-400 focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20"
                   />
                 </div>
                 <div>
-                  <label htmlFor="email" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Email *</label>
+                  <label htmlFor="email" className="block text-sm font-medium text-zinc-300 mb-1">Email *</label>
                   <input
                     id="email"
                     type="email"
@@ -451,11 +451,11 @@ export default function WebsiteBuilderPage() {
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="you@company.com"
                     required
-                    className="w-full rounded-xl border-2 border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 px-4 py-2.5 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:border-violet-500 focus:ring-2 focus:ring-violet-200"
+                    className="w-full rounded-xl border-2 border-white/[0.06] bg-[#09090b] px-4 py-2.5 text-white placeholder:text-slate-400 focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20"
                   />
                 </div>
               </div>
-              {error && <p className="mb-4 text-sm text-rose-600 dark:text-rose-400">{error}</p>}
+              {error && <p className="mb-4 text-sm text-rose-600 text-rose-400">{error}</p>}
               <button
                 type="submit"
                 disabled={loading || !email.trim()}
@@ -486,61 +486,61 @@ export default function WebsiteBuilderPage() {
               deploySubmitted={false}
             />
 
-            <div className="rounded-3xl border-2 border-slate-200/80 dark:border-slate-700/80 bg-white/80 dark:bg-slate-900/80 p-6 sm:p-8">
+            <div className="rounded-3xl border-2 border-white/[0.06] bg-white/[0.02] p-6 sm:p-8">
               <div className="flex items-center gap-2 mb-4">
                 <CheckCircleIcon className="h-6 w-6 text-emerald-600" />
-                <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100">
+                <h2 className="text-lg font-bold text-white">
                   Your plan: {plan.siteName}
                 </h2>
               </div>
-              <p className="text-slate-700 dark:text-slate-300 mb-4 text-sm">{plan.designLanguage}</p>
+              <p className="text-zinc-300 mb-4 text-sm">{plan.designLanguage}</p>
               <div className="flex flex-wrap gap-2 mb-4">
                 <span className="w-6 h-6 rounded-lg shadow-inner" style={{ backgroundColor: plan.colorPalette.primary }} title="Primary" />
                 <span className="w-6 h-6 rounded-lg shadow-inner" style={{ backgroundColor: plan.colorPalette.secondary }} title="Secondary" />
                 <span className="w-6 h-6 rounded-lg shadow-inner" style={{ backgroundColor: plan.colorPalette.accent }} title="Accent" />
               </div>
-              <div className="flex items-center gap-2 text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
+              <div className="flex items-center gap-2 text-sm font-semibold text-zinc-300 mb-2">
                 <Squares2X2Icon className="h-4 w-4 text-violet-500" />
                 Sections
               </div>
               <ul className="space-y-2">
                 {plan.sections.map((s) => (
-                  <li key={s.id} className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/80 px-3 py-2 text-sm">
-                    <span className="font-medium text-slate-900 dark:text-slate-100">{s.name}</span>
-                    <p className="text-xs text-slate-600 dark:text-slate-400 mt-0.5">{s.description}</p>
+                  <li key={s.id} className="rounded-xl border border-white/[0.06] bg-white/[0.02]/80 px-3 py-2 text-sm">
+                    <span className="font-medium text-white">{s.name}</span>
+                    <p className="text-xs text-zinc-400 mt-0.5">{s.description}</p>
                   </li>
                 ))}
               </ul>
             </div>
 
             {/* Infrastructure readiness — psychological hook */}
-            <div className="rounded-3xl border-2 border-amber-200/80 dark:border-amber-800/80 bg-gradient-to-br from-amber-50/80 to-orange-50/60 dark:from-amber-900/20 dark:to-orange-900/20 p-6 sm:p-8">
-              <h3 className="font-semibold text-slate-900 dark:text-slate-100 mb-1 flex items-center gap-2">
+            <div className="rounded-3xl border-2 border-amber-200/80 border-amber-500/20/80 bg-gradient-to-br from-amber-50/80 to-orange-50/60   p-6 sm:p-8">
+              <h3 className="font-semibold text-white mb-1 flex items-center gap-2">
                 <ShieldCheckIcon className="h-5 w-5 text-amber-600" />
                 Infrastructure readiness
               </h3>
-              <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">
+              <p className="text-sm text-zinc-400 mb-4">
                 What enterprise teams unlock before going live
               </p>
               <div className="grid sm:grid-cols-2 gap-3 mb-4">
-                <div className="flex items-center gap-3 rounded-xl bg-white/80 dark:bg-slate-800/80 px-4 py-3 border border-slate-200 dark:border-slate-700">
+                <div className="flex items-center gap-3 rounded-xl bg-white/[0.02] px-4 py-3 border border-white/[0.06]">
                   <CheckCircleIcon className="h-5 w-5 text-emerald-500 shrink-0" />
-                  <span className="text-sm font-medium text-slate-700 dark:text-slate-300">CDN + SSL</span>
+                  <span className="text-sm font-medium text-zinc-300">CDN + SSL</span>
                 </div>
-                <div className="flex items-center gap-3 rounded-xl bg-white/80 dark:bg-slate-800/80 px-4 py-3 border border-slate-200 dark:border-slate-700">
+                <div className="flex items-center gap-3 rounded-xl bg-white/[0.02] px-4 py-3 border border-white/[0.06]">
                   <QuestionMarkCircleIcon className="h-5 w-5 text-amber-500 shrink-0" />
-                  <span className="text-sm font-medium text-slate-700 dark:text-slate-300">CI/CD automation</span>
+                  <span className="text-sm font-medium text-zinc-300">CI/CD automation</span>
                 </div>
-                <div className="flex items-center gap-3 rounded-xl bg-white/80 dark:bg-slate-800/80 px-4 py-3 border border-slate-200 dark:border-slate-700">
+                <div className="flex items-center gap-3 rounded-xl bg-white/[0.02] px-4 py-3 border border-white/[0.06]">
                   <QuestionMarkCircleIcon className="h-5 w-5 text-amber-500 shrink-0" />
-                  <span className="text-sm font-medium text-slate-700 dark:text-slate-300">Cost optimization</span>
+                  <span className="text-sm font-medium text-zinc-300">Cost optimization</span>
                 </div>
-                <div className="flex items-center gap-3 rounded-xl bg-white/80 dark:bg-slate-800/80 px-4 py-3 border border-slate-200 dark:border-slate-700">
+                <div className="flex items-center gap-3 rounded-xl bg-white/[0.02] px-4 py-3 border border-white/[0.06]">
                   <QuestionMarkCircleIcon className="h-5 w-5 text-amber-500 shrink-0" />
-                  <span className="text-sm font-medium text-slate-700 dark:text-slate-300">30-day roadmap</span>
+                  <span className="text-sm font-medium text-zinc-300">30-day roadmap</span>
                 </div>
               </div>
-              <p className="text-xs text-slate-600 dark:text-slate-400 mb-4">
+              <p className="text-xs text-zinc-400 mb-4">
                 Teams that add infra analysis see faster deploys and lower risk. Run Axiom to unlock.
               </p>
               {plan.inferredOperatorProfile ? (
@@ -548,7 +548,7 @@ export default function WebsiteBuilderPage() {
                   type="button"
                   onClick={handleRunAxiom}
                   disabled={axiomLoading}
-                  className="inline-flex items-center gap-2 rounded-2xl bg-slate-900 dark:bg-slate-100 px-5 py-2.5 font-semibold text-white dark:text-slate-900 hover:bg-slate-800 dark:hover:bg-slate-200 transition-colors disabled:opacity-60"
+                  className="inline-flex items-center gap-2 rounded-2xl bg-white px-5 py-2.5 font-semibold text-zinc-900 hover:bg-zinc-100 transition-colors disabled:opacity-60"
                 >
                   {axiomLoading ? (
                     <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
@@ -565,24 +565,24 @@ export default function WebsiteBuilderPage() {
               ) : (
                 <Link
                   href="/cloud-operator"
-                  className="inline-flex items-center gap-2 rounded-2xl bg-slate-900 dark:bg-slate-100 px-5 py-2.5 font-semibold text-white dark:text-slate-900 hover:bg-slate-800 dark:hover:bg-slate-200 transition-colors"
+                  className="inline-flex items-center gap-2 rounded-2xl bg-white px-5 py-2.5 font-semibold text-zinc-900 hover:bg-zinc-100 transition-colors"
                 >
                   <BoltIcon className="h-5 w-5" />
                   Run Axiom Analysis
                 </Link>
               )}
               {error && plan.inferredOperatorProfile && (
-                <p className="mt-2 text-sm text-rose-600 dark:text-rose-400">{error}</p>
+                <p className="mt-2 text-sm text-rose-600 text-rose-400">{error}</p>
               )}
             </div>
 
             {/* End goal: Membership — full journey destination */}
-            <div className="rounded-3xl border-2 border-violet-500/60 dark:border-violet-500/60 bg-gradient-to-br from-violet-100/80 to-fuchsia-100/60 dark:from-violet-900/40 dark:to-fuchsia-900/30 p-6 sm:p-8 shadow-xl shadow-violet-500/10">
+            <div className="rounded-3xl border-2 border-violet-500/60 border-violet-500/60 bg-gradient-to-br from-violet-100/80 to-fuchsia-100/60   p-6 sm:p-8 shadow-xl shadow-violet-500/10">
               <div className="flex items-center gap-2 mb-2">
                 <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white text-sm font-bold">5</span>
-                <h3 className="text-xl font-bold text-slate-900 dark:text-slate-100">Join membership — full access</h3>
+                <h3 className="text-xl font-bold text-white">Join membership — full access</h3>
               </div>
-              <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">
+              <p className="text-sm text-zinc-400 mb-4">
                 One plan unlocks Axiom, website builder, chatbots, cloud guidance, and priority support. Everything you need to scale.
               </p>
               <Link
@@ -597,7 +597,7 @@ export default function WebsiteBuilderPage() {
             <button
               type="button"
               onClick={() => setStep("prompt")}
-              className="text-sm font-medium text-slate-500 dark:text-slate-400 hover:text-violet-600 dark:hover:text-violet-400"
+              className="text-sm font-medium text-zinc-500 hover:text-violet-400"
             >
               ← Change prompt
             </button>

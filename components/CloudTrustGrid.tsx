@@ -8,7 +8,7 @@ export function CloudTrustGrid({ principles }: { principles: string[] }) {
     <div className="space-y-3">
       {principles.map((principle, idx) => (
         <Reveal key={principle} direction="up" delay={idx * 0.06}>
-          <HoverCard className="p-4 bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 shadow-lg text-sm text-slate-700 dark:text-slate-300">
+          <HoverCard className="p-4 bg-white/[0.02] border-white/[0.06] shadow-lg text-sm text-zinc-300">
             {principle}
           </HoverCard>
         </Reveal>

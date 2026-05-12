@@ -14,11 +14,11 @@ export function AIDifferentiatorsGrid({
     <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
       {differentiators.map((d, idx) => (
         <Reveal key={d.title} direction="up" delay={idx * 0.06}>
-          <HoverCard className="p-6 bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700">
-            <h3 className="font-semibold text-slate-900 dark:text-slate-100 mb-2">
+          <HoverCard className="p-6 bg-white/[0.02] border-white/[0.06]">
+            <h3 className="font-semibold text-white mb-2">
               {d.title}
             </h3>
-            <p className="text-sm text-slate-600 dark:text-slate-400">
+            <p className="text-sm text-zinc-400">
               {d.description}
             </p>
           </HoverCard>

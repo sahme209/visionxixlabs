@@ -31,11 +31,11 @@ export function HowWeWorkSection({
   return (
     <section className="mb-16" aria-labelledby="how-we-work-heading">
       <div className="mb-10">
-        <h2 id="how-we-work-heading" className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-slate-100 mb-2">
+        <h2 id="how-we-work-heading" className="text-2xl md:text-3xl font-bold text-white mb-2">
           {title}
         </h2>
         {intro && (
-          <p className="text-slate-600 dark:text-slate-400 max-w-3xl">
+          <p className="text-zinc-400 max-w-3xl">
             {intro}
           </p>
         )}
@@ -46,25 +46,25 @@ export function HowWeWorkSection({
           return (
             <div
               key={p.phase}
-              className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-5 shadow-sm hover:shadow-md transition-shadow"
+              className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-5 shadow-sm hover:shadow-md transition-shadow"
             >
               <div className="flex items-start gap-3 mb-3">
                 <span
-                  className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-indigo-100 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400"
+                  className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-violet-500/10 text-violet-400"
                   aria-hidden
                 >
                   <Icon className="h-5 w-5" />
                 </span>
                 <div>
-                  <span className="text-xs font-semibold text-slate-400 dark:text-slate-500">
+                  <span className="text-xs font-semibold text-zinc-500">
                     Phase {p.phase}
                   </span>
-                  <h3 className="text-base font-semibold text-slate-900 dark:text-slate-100 leading-tight">
+                  <h3 className="text-base font-semibold text-white leading-tight">
                     {p.title}
                   </h3>
                 </div>
               </div>
-              <ul className="space-y-1.5 text-sm text-slate-600 dark:text-slate-400">
+              <ul className="space-y-1.5 text-sm text-zinc-400">
                 {p.items.map((item) => (
                   <li key={item} className="flex items-start gap-2">
                     <span className="text-indigo-500 mt-0.5 shrink-0">•</span>

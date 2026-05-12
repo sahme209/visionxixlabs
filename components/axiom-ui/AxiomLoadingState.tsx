@@ -71,7 +71,7 @@ export function AxiomLoadingState({
               }}
             >
               <motion.div
-                className="rounded-xl bg-white/90 dark:bg-slate-800/90 border border-slate-200/80 dark:border-slate-600/50 shadow-sm px-4 py-2.5 flex items-center gap-2"
+                className="rounded-xl bg-white/[0.03] border border-white/[0.06] shadow-sm px-4 py-2.5 flex items-center gap-2"
                 animate={
                   reduceMotion
                     ? {}
@@ -91,8 +91,8 @@ export function AxiomLoadingState({
                   ease: "easeInOut",
                 }}
               >
-                <CloudIcon className="h-5 w-5 text-indigo-500 dark:text-indigo-400" />
-                <span className="text-sm font-medium text-slate-700 dark:text-slate-300">{label}</span>
+                <CloudIcon className="h-5 w-5 text-violet-400" />
+                <span className="text-sm font-medium text-zinc-300">{label}</span>
               </motion.div>
             </motion.div>
           ))}
@@ -100,14 +100,14 @@ export function AxiomLoadingState({
       )}
 
       <div className="flex flex-col items-center gap-3">
-        <p className="text-sm font-medium text-slate-600 dark:text-slate-400 text-center max-w-xs">
+        <p className="text-sm font-medium text-zinc-400 text-center max-w-xs">
           {stagedMessage}
         </p>
         <div className="flex items-center gap-1.5">
           {[0, 1, 2].map((i) => (
             <motion.span
               key={i}
-              className="h-1.5 w-1.5 rounded-full bg-indigo-500/70 dark:bg-indigo-400/70"
+              className="h-1.5 w-1.5 rounded-full bg-violet-400/70"
               animate={
                 reduceMotion
                   ? {}
@@ -129,7 +129,7 @@ export function AxiomLoadingState({
 
       {variant === "full" && !reduceMotion && (
         <motion.div
-          className="h-1 w-48 rounded-full bg-slate-200/80 dark:bg-slate-700/80 overflow-hidden"
+          className="h-1 w-48 rounded-full bg-zinc-700/50 overflow-hidden"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: duration || motionDurations.short }}
@@ -157,7 +157,7 @@ export function AxiomLoadingState({
           {[1, 2, 3, 4, 5].map((i) => (
             <motion.div
               key={i}
-              className="h-24 rounded-xl bg-slate-200/80 dark:bg-slate-700/80"
+              className="h-24 rounded-xl bg-zinc-700/50"
               animate={
                 reduceMotion
                   ? {}

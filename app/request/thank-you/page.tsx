@@ -101,11 +101,11 @@ export default function ThankYouPage() {
 
   if (!token) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
+      <div className="min-h-screen bg-[#09090b]">
         <Navigation />
         <main className="max-w-2xl mx-auto px-4 py-24 text-center">
-          <p className="text-slate-600 dark:text-slate-400 mb-4">Invalid or missing access. Please submit your request from the form.</p>
-          <Link href="/request" className="text-indigo-600 dark:text-indigo-400 hover:underline">
+          <p className="text-zinc-400 mb-4">Invalid or missing access. Please submit your request from the form.</p>
+          <Link href="/request" className="text-violet-400 hover:underline">
             Go to AI + Cloud Deployment Request
           </Link>
         </main>
@@ -163,20 +163,20 @@ export default function ThankYouPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-violet-50/40 to-fuchsia-50/30 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
+    <div className="min-h-screen">
       <Navigation />
       <main className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="flex flex-wrap items-center gap-4 mb-6">
           <Link
             href="/request"
-            className="inline-flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400"
+            className="inline-flex items-center gap-2 text-sm text-zinc-400 hover:text-violet-400"
           >
             <ArrowLeftIcon className="h-4 w-4" />
             Back to Request
           </Link>
           <Link
             href="/builder"
-            className="text-sm text-slate-500 dark:text-slate-400 hover:text-violet-600 dark:hover:text-violet-400"
+            className="text-sm text-zinc-500 hover:text-violet-400"
           >
             Build another site
           </Link>
@@ -193,42 +193,42 @@ export default function ThankYouPage() {
           />
         </div>
 
-        <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-3xl shadow-xl shadow-slate-200/50 dark:shadow-none border-2 border-slate-200/80 dark:border-slate-700/80 p-8 sm:p-10">
+        <div className="bg-white/[0.02] backdrop-blur-sm rounded-3xl  border-2 border-white/[0.06] p-8 sm:p-10">
           <div className="text-center mb-8">
             <CheckCircleIcon className="h-16 w-16 text-emerald-500 mx-auto mb-4" />
-            <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100 mb-2">
+            <h1 className="text-2xl font-bold text-white mb-2">
               Thank you
             </h1>
-            <p className="text-slate-600 dark:text-slate-400">
+            <p className="text-zinc-400">
               Your AI + Enterprise Cloud deployment is in progress. You&apos;ll see your live preview link when it&apos;s ready.
             </p>
           </div>
 
           {polling && !isReady && !isManagedPending && (
             <div className="mb-8 space-y-4">
-              <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 p-6">
+              <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-6">
                 <div className="animate-pulse space-y-3">
-                  <div className="h-4 w-48 mx-auto rounded-full bg-slate-200 dark:bg-slate-700" />
-                  <div className="h-40 rounded-xl bg-slate-100 dark:bg-slate-800 mt-4" />
+                  <div className="h-4 w-48 mx-auto rounded-full bg-zinc-700" />
+                  <div className="h-40 rounded-xl bg-white/[0.04] mt-4" />
                 </div>
               </div>
-              <p className="text-xs text-slate-500 dark:text-slate-400 text-center">
+              <p className="text-xs text-zinc-500 text-center">
                 Managed cloud preview in 1–3 minutes. We&apos;ll email you when it&apos;s ready.
               </p>
             </div>
           )}
 
           {isManagedPending && (
-            <div className="mb-8 rounded-xl border-2 border-amber-200 dark:border-amber-800 bg-amber-50/60 dark:bg-amber-900/20 p-6">
-              <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100 mb-2">
+            <div className="mb-8 rounded-xl border-2 border-amber-200 border-amber-500/20 bg-amber-50/60 bg-amber-500/10 p-6">
+              <h2 className="text-lg font-semibold text-white mb-2">
                 Your AI site is ready—preview pending
               </h2>
-              <p className="text-sm text-slate-600 dark:text-slate-400 mb-3">
+              <p className="text-sm text-zinc-400 mb-3">
                 We&apos;ve generated your site. Preview deployment requires our team to complete it—we&apos;ll deploy and email you when it&apos;s live.
               </p>
-              <p className="text-xs text-slate-500 dark:text-slate-400">
+              <p className="text-xs text-zinc-500">
                 Questions? Email us at{" "}
-                <a href="mailto:support@visionxixlabs.com" className="text-indigo-600 dark:text-indigo-400 hover:underline">
+                <a href="mailto:support@visionxixlabs.com" className="text-violet-400 hover:underline">
                   support@visionxixlabs.com
                 </a>
               </p>
@@ -242,8 +242,8 @@ export default function ThankYouPage() {
           )}
 
           {isReady && (
-            <div className="mb-8 rounded-xl border-2 border-emerald-200 dark:border-emerald-800 bg-emerald-50/50 dark:bg-emerald-900/20 p-6 transition-opacity duration-200 ease-in-out">
-              <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100 mb-2 flex items-center gap-2">
+            <div className="mb-8 rounded-xl border-2 border-emerald-200 border-emerald-500/20 bg-emerald-50/50 bg-emerald-500/10 p-6 transition-opacity duration-200 ease-in-out">
+              <h2 className="text-lg font-semibold text-white mb-2 flex items-center gap-2">
                 <LinkIcon className="h-5 w-5 text-emerald-600" />
                 Your AI-built site is live
               </h2>
@@ -256,13 +256,13 @@ export default function ThankYouPage() {
                 View your website
                 <LinkIcon className="h-4 w-4" />
               </a>
-              <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">
+              <p className="mt-2 text-sm text-zinc-400">
                 Link also sent by email. Select your infrastructure below.
               </p>
 
-              <div className="mt-6 pt-6 border-t border-emerald-200 dark:border-emerald-700">
-                <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-2">Infrastructure selection</h3>
-                <p className="text-xs text-slate-600 dark:text-slate-400 mb-3">
+              <div className="mt-6 pt-6 border-t border-emerald-500/20">
+                <h3 className="text-sm font-semibold text-white mb-2">Infrastructure selection</h3>
+                <p className="text-xs text-zinc-400 mb-3">
                   Choose your cloud provider for production deployment.
                 </p>
                 <div className="flex flex-wrap gap-2">
@@ -277,7 +277,7 @@ export default function ThankYouPage() {
                       className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                         infraProvider === p.id
                           ? "bg-indigo-600 text-white"
-                          : "bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600"
+                          : "bg-white/[0.06] text-zinc-300 hover:bg-white/[0.06]"
                       }`}
                     >
                       {p.label}
@@ -286,9 +286,9 @@ export default function ThankYouPage() {
                 </div>
               </div>
 
-              <div className="mt-6 pt-6 border-t border-emerald-200 dark:border-emerald-700">
-                <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-2">Request changes</h3>
-                <p className="text-xs text-slate-600 dark:text-slate-400 mb-2">
+              <div className="mt-6 pt-6 border-t border-emerald-500/20">
+                <h3 className="text-sm font-semibold text-white mb-2">Request changes</h3>
+                <p className="text-xs text-zinc-400 mb-2">
                   Tell us what to adjust. We&apos;ll regenerate and redeploy.{revisionsRemaining !== null && revisionsRemaining >= 0 && (
                     <span className="ml-1">({revisionsRemaining} revisions left)</span>
                   )}
@@ -298,9 +298,9 @@ export default function ThankYouPage() {
                   onChange={(e) => setChangeRequest(e.target.value)}
                   placeholder="e.g. Make the tone more formal, add a section about our team..."
                   rows={3}
-                  className="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 px-3 py-2 text-sm text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-indigo-500 mb-2"
+                  className="w-full rounded-lg border border-white/[0.08] bg-white/[0.02] px-3 py-2 text-sm text-white focus:ring-2 focus:ring-indigo-500 mb-2"
                 />
-                {changeError && <p className="text-sm text-red-600 dark:text-red-400 mb-2">{changeError}</p>}
+                {changeError && <p className="text-sm text-red-400 mb-2">{changeError}</p>}
                 <button
                   type="button"
                   onClick={submitChangeRequest}
@@ -314,39 +314,39 @@ export default function ThankYouPage() {
           )}
 
           {isReady && (
-            <section className="mb-8 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 p-6">
-              <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100 mb-4 flex items-center gap-2">
+            <section className="mb-8 rounded-xl border border-white/[0.06] bg-white/[0.02] p-6">
+              <h2 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
                 <CloudIcon className="h-5 w-5 text-indigo-600" />
                 Infrastructure Stack
               </h2>
               <dl className="grid gap-2 text-sm">
                 <div className="flex justify-between">
-                  <dt className="text-slate-500 dark:text-slate-400">Provider</dt>
-                  <dd className="font-medium text-slate-700 dark:text-slate-300 capitalize">{infrastructure?.cloudProvider || infraProvider || "Managed Cloud"}</dd>
+                  <dt className="text-zinc-500">Provider</dt>
+                  <dd className="font-medium text-zinc-300 capitalize">{infrastructure?.cloudProvider || infraProvider || "Managed Cloud"}</dd>
                 </div>
                 <div className="flex justify-between">
-                  <dt className="text-slate-500 dark:text-slate-400">CDN</dt>
-                  <dd className="font-medium text-slate-700 dark:text-slate-300">{infrastructure?.cdnEnabled ? "Enabled" : "—"}</dd>
+                  <dt className="text-zinc-500">CDN</dt>
+                  <dd className="font-medium text-zinc-300">{infrastructure?.cdnEnabled ? "Enabled" : "—"}</dd>
                 </div>
                 <div className="flex justify-between">
-                  <dt className="text-slate-500 dark:text-slate-400">SSL</dt>
-                  <dd className="font-medium text-slate-700 dark:text-slate-300">{infrastructure?.sslEnabled ? "Enabled" : "—"}</dd>
+                  <dt className="text-zinc-500">SSL</dt>
+                  <dd className="font-medium text-zinc-300">{infrastructure?.sslEnabled ? "Enabled" : "—"}</dd>
                 </div>
                 <div className="flex justify-between">
-                  <dt className="text-slate-500 dark:text-slate-400">CI/CD</dt>
-                  <dd className="font-medium text-slate-700 dark:text-slate-300">{infrastructure?.cicdEnabled ? "Enabled" : "—"}</dd>
+                  <dt className="text-zinc-500">CI/CD</dt>
+                  <dd className="font-medium text-zinc-300">{infrastructure?.cicdEnabled ? "Enabled" : "—"}</dd>
                 </div>
                 <div className="flex justify-between">
-                  <dt className="text-slate-500 dark:text-slate-400">Security status</dt>
-                  <dd className="font-medium text-slate-700 dark:text-slate-300 capitalize">{infrastructure?.securityLevel || "Basic"}</dd>
+                  <dt className="text-zinc-500">Security status</dt>
+                  <dd className="font-medium text-zinc-300 capitalize">{infrastructure?.securityLevel || "Basic"}</dd>
                 </div>
               </dl>
               {infrastructure?.addOns && infrastructure.addOns.length > 0 && (
-                <div className="mt-4 pt-4 border-t border-slate-200 dark:border-slate-700">
-                  <h3 className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Selected Add-ons</h3>
+                <div className="mt-4 pt-4 border-t border-white/[0.06]">
+                  <h3 className="text-sm font-medium text-zinc-300 mb-2">Selected Add-ons</h3>
                   <ul className="flex flex-wrap gap-2">
                     {infrastructure.addOns.map((a) => (
-                      <li key={a} className="px-2 py-1 rounded-lg bg-indigo-100 dark:bg-indigo-900/40 text-indigo-700 dark:text-indigo-300 text-xs font-medium capitalize">
+                      <li key={a} className="px-2 py-1 rounded-lg bg-violet-500/10 text-violet-400 text-xs font-medium capitalize">
                         {a}
                       </li>
                     ))}
@@ -356,20 +356,20 @@ export default function ThankYouPage() {
             </section>
           )}
 
-          <section className="rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 p-6">
-            <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100 mb-4 flex items-center gap-2">
+          <section className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-6">
+            <h2 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
               <DocumentTextIcon className="h-5 w-5 text-indigo-600" />
               Domain & hosting next steps
             </h2>
-            <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">
+            <p className="text-sm text-zinc-400 mb-4">
               We&apos;ll help you connect your domain and go live—no call required. Reply to our email with the info below.
             </p>
 
             {hasDomain && domainName ? (
               <div>
-                <h3 className="font-medium text-slate-800 dark:text-slate-200 mb-2">You have a domain: {domainName}</h3>
-                <p className="text-sm text-slate-600 dark:text-slate-400 mb-2">Please send us:</p>
-                <ul className="list-disc list-inside text-sm text-slate-600 dark:text-slate-400 space-y-1">
+                <h3 className="font-medium text-zinc-200 mb-2">You have a domain: {domainName}</h3>
+                <p className="text-sm text-zinc-400 mb-2">Please send us:</p>
+                <ul className="list-disc list-inside text-sm text-zinc-400 space-y-1">
                   <li>Registrar name (e.g. Namecheap, GoDaddy, Cloudflare)</li>
                   <li>Access to update DNS records, or willingness to add the records we provide</li>
                   <li>We&apos;ll handle the rest and confirm when your site is live</li>
@@ -377,18 +377,18 @@ export default function ThankYouPage() {
               </div>
             ) : (
               <div>
-                <h3 className="font-medium text-slate-800 dark:text-slate-200 mb-2 flex items-center gap-2">
+                <h3 className="font-medium text-zinc-200 mb-2 flex items-center gap-2">
                   <GlobeAltIcon className="h-4 w-4" />
                   You don&apos;t have a domain yet
                 </h3>
-                <p className="text-sm text-slate-600 dark:text-slate-400 mb-2">
+                <p className="text-sm text-zinc-400 mb-2">
                   We recommend registrars like Namecheap, Cloudflare Registrar, or Google Domains for simple setup. Tell us:
                 </p>
-                <ul className="list-disc list-inside text-sm text-slate-600 dark:text-slate-400 space-y-1 mb-4">
+                <ul className="list-disc list-inside text-sm text-zinc-400 space-y-1 mb-4">
                   <li>What domain you&apos;d like (e.g. yourcompany.com)</li>
                   <li>Whether you&apos;ll purchase it yourself or want us to purchase and set it up with your approval</li>
                 </ul>
-                <p className="text-sm text-slate-500 dark:text-slate-500 italic">
+                <p className="text-sm text-zinc-500 italic">
                   We can purchase and set up the domain with your approval. Just let us know in your reply.
                 </p>
               </div>
@@ -396,11 +396,11 @@ export default function ThankYouPage() {
           </section>
 
           {/* End goal: Membership CTA */}
-          <section className="mt-10 rounded-2xl border-2 border-violet-500/60 dark:border-violet-500/60 bg-gradient-to-br from-violet-100/80 to-fuchsia-100/60 dark:from-violet-900/40 dark:to-fuchsia-900/30 p-6">
-            <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100 mb-2">
+          <section className="mt-10 rounded-2xl border-2 border-violet-500/60 border-violet-500/20 bg-gradient-to-br from-violet-100/80 to-fuchsia-100/60   p-6">
+            <h2 className="text-lg font-bold text-white mb-2">
               Ready for full access?
             </h2>
-            <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">
+            <p className="text-sm text-zinc-400 mb-4">
               Membership unlocks Axiom, chatbots, priority support, and all products. One plan, everything included.
             </p>
             <Link
@@ -413,16 +413,16 @@ export default function ThankYouPage() {
             <span className="mx-3 text-slate-400">or</span>
             <Link
               href={token ? `/cloud-operator?ref=${encodeURIComponent(token)}` : "/cloud-operator"}
-              className="inline-flex items-center gap-2 text-sm font-semibold text-violet-600 dark:text-violet-400 hover:underline"
+              className="inline-flex items-center gap-2 text-sm font-semibold text-violet-400 hover:underline"
             >
               Run Axiom on this project
               <CloudIcon className="h-4 w-4" />
             </Link>
           </section>
 
-          <p className="mt-8 text-center text-sm text-slate-500 dark:text-slate-400">
+          <p className="mt-8 text-center text-sm text-zinc-500">
             Questions? Email us at{" "}
-            <a href="mailto:support@visionxixlabs.com" className="text-indigo-600 dark:text-indigo-400 hover:underline">
+            <a href="mailto:support@visionxixlabs.com" className="text-violet-400 hover:underline">
               support@visionxixlabs.com
             </a>
           </p>

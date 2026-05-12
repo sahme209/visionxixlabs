@@ -26,7 +26,7 @@ export function HoverCard({ children, className = "", minimal }: HoverCardProps)
 
   const base = minimal
     ? ""
-    : "rounded-2xl border border-slate-200/80 dark:border-slate-700/80 bg-white/80 dark:bg-slate-900/70 backdrop-blur shadow-sm transition-colors";
+    : "rounded-2xl border border-white/[0.06] bg-white/[0.02] backdrop-blur shadow-sm transition-colors";
 
   if (reduceMotion) {
     return <div className={`${base} ${className}`.trim()}>{children}</div>;

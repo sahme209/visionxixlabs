@@ -30,20 +30,20 @@ export const metadata: Metadata = {
 
 export default function GcpCloudSolutionsPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
+    <div className="min-h-screen bg-[#09090b]">
       <Navigation />
       <main className="pt-24 pb-24 px-4 sm:px-6 lg:px-8">
         <div className="max-w-5xl mx-auto">
           {/* Breadcrumb */}
           <nav
             aria-label="Breadcrumb"
-            className="mb-6 text-xs text-slate-500 dark:text-slate-400"
+            className="mb-6 text-xs text-zinc-500"
           >
             <ol className="flex items-center space-x-2">
               <li>
                 <Link
                   href="/"
-                  className="hover:text-indigo-600 dark:hover:text-indigo-400"
+                  className="hover:text-violet-400"
                 >
                   Home
                 </Link>
@@ -52,7 +52,7 @@ export default function GcpCloudSolutionsPage() {
               <li>
                 <Link
                   href="/cloud-solutions"
-                  className="hover:text-indigo-600 dark:hover:text-indigo-400"
+                  className="hover:text-violet-400"
                 >
                   Cloud Solutions
                 </Link>
@@ -69,12 +69,12 @@ export default function GcpCloudSolutionsPage() {
             <h1 id="overview-heading" className="text-3xl md:text-4xl font-extrabold mb-3 bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
               Google Cloud Platform (GCP) Engineering
             </h1>
-            <p className="text-lg md:text-xl text-slate-600 dark:text-slate-400 max-w-3xl mb-4">
+            <p className="text-lg md:text-xl text-zinc-400 max-w-3xl mb-4">
               Design, automate, optimize, and operate on GCP with patterns that
               leverage Google&apos;s strengths while keeping operations practical
               and maintainable.
             </p>
-            <p className="text-sm text-slate-600 dark:text-slate-400 max-w-3xl">
+            <p className="text-sm text-zinc-400 max-w-3xl">
               We help structure projects, networks, compute, CI/CD, observability,
               identity, and governance so your teams can build and operate
               confidently on GCP.
@@ -83,19 +83,19 @@ export default function GcpCloudSolutionsPage() {
 
           <div className="space-y-10">
             {/* 2. Technical Scope */}
-            <h2 id="technical-scope" className="text-2xl font-bold text-slate-900 dark:text-slate-100 mb-4">
+            <h2 id="technical-scope" className="text-2xl font-bold text-white mb-4">
               Technical scope
             </h2>
             {/* GCP Project Structure */}
             <section>
-              <h2 className="text-xl md:text-2xl font-bold text-slate-900 dark:text-slate-100 mb-2">
+              <h2 className="text-xl md:text-2xl font-bold text-white mb-2">
                 Project structure &amp; organization strategy
               </h2>
-              <p className="text-sm md:text-base text-slate-600 dark:text-slate-400 mb-3">
+              <p className="text-sm md:text-base text-zinc-400 mb-3">
                 We design GCP project and folder structures that give you clear
                 boundaries for environments, teams, and workloads.
               </p>
-              <ul className="list-disc list-inside text-sm text-slate-600 dark:text-slate-400 space-y-1">
+              <ul className="list-disc list-inside text-sm text-zinc-400 space-y-1">
                 <li>
                   High-level project and folder organization aligned to your
                   organization.
@@ -113,14 +113,14 @@ export default function GcpCloudSolutionsPage() {
 
             {/* VPC and Networking */}
             <section>
-              <h2 className="text-xl md:text-2xl font-bold text-slate-900 dark:text-slate-100 mb-2">
+              <h2 className="text-xl md:text-2xl font-bold text-white mb-2">
                 VPC and networking patterns
               </h2>
-              <p className="text-sm md:text-base text-slate-600 dark:text-slate-400 mb-3">
+              <p className="text-sm md:text-base text-zinc-400 mb-3">
                 We help define VPC, subnet, and routing concepts that keep
                 services connected and secure without unnecessary complexity.
               </p>
-              <ul className="list-disc list-inside text-sm text-slate-600 dark:text-slate-400 space-y-1">
+              <ul className="list-disc list-inside text-sm text-zinc-400 space-y-1">
                 <li>
                   High-level VPC and subnet patterns for your core environments.
                 </li>
@@ -137,15 +137,15 @@ export default function GcpCloudSolutionsPage() {
 
             {/* Compute & Storage */}
             <section>
-              <h2 className="text-xl md:text-2xl font-bold text-slate-900 dark:text-slate-100 mb-2">
+              <h2 className="text-xl md:text-2xl font-bold text-white mb-2">
                 Compute &amp; Storage Strategy
               </h2>
-              <p className="text-sm md:text-base text-slate-600 dark:text-slate-400 mb-3">
+              <p className="text-sm md:text-base text-zinc-400 mb-3">
                 We guide VM, managed instance groups, and storage usage so
                 workloads have appropriate performance, resilience, and cost
                 characteristics.
               </p>
-              <ul className="list-disc list-inside text-sm text-slate-600 dark:text-slate-400 space-y-1">
+              <ul className="list-disc list-inside text-sm text-zinc-400 space-y-1">
                 <li>
                   VM sizing and machine family guidance for representative
                   workloads.
@@ -163,14 +163,14 @@ export default function GcpCloudSolutionsPage() {
 
             {/* CI/CD Integration */}
             <section>
-              <h2 className="text-xl md:text-2xl font-bold text-slate-900 dark:text-slate-100 mb-2">
+              <h2 className="text-xl md:text-2xl font-bold text-white mb-2">
                 CI/CD Integration
               </h2>
-              <p className="text-sm md:text-base text-slate-600 dark:text-slate-400 mb-3">
+              <p className="text-sm md:text-base text-zinc-400 mb-3">
                 We implement CI/CD using GitHub Actions or Cloud Build pipelines
                 and can integrate with Octopus Deploy where it makes sense.
               </p>
-              <ul className="list-disc list-inside text-sm text-slate-600 dark:text-slate-400 space-y-1">
+              <ul className="list-disc list-inside text-sm text-zinc-400 space-y-1">
                 <li>
                   CI workflows for build, test, and validation using GitHub
                   Actions or Cloud Build.
@@ -188,14 +188,14 @@ export default function GcpCloudSolutionsPage() {
 
             {/* Cost Visibility & Optimization */}
             <section>
-              <h2 className="text-xl md:text-2xl font-bold text-slate-900 dark:text-slate-100 mb-2">
+              <h2 className="text-xl md:text-2xl font-bold text-white mb-2">
                 Cost visibility &amp; optimization
               </h2>
-              <p className="text-sm md:text-base text-slate-600 dark:text-slate-400 mb-3">
+              <p className="text-sm md:text-base text-zinc-400 mb-3">
                 We make use of GCP billing and cost management capabilities to
                 analyze spend and shape usage, budgets, and alerts.
               </p>
-              <ul className="list-disc list-inside text-sm text-slate-600 dark:text-slate-400 space-y-1">
+              <ul className="list-disc list-inside text-sm text-zinc-400 space-y-1">
                 <li>
                   Review of current GCP usage to identify optimization
                   opportunities.
@@ -212,15 +212,15 @@ export default function GcpCloudSolutionsPage() {
 
             {/* Observability */}
             <section>
-              <h2 className="text-xl md:text-2xl font-bold text-slate-900 dark:text-slate-100 mb-2">
+              <h2 className="text-xl md:text-2xl font-bold text-white mb-2">
                 Observability
               </h2>
-              <p className="text-sm md:text-base text-slate-600 dark:text-slate-400 mb-3">
+              <p className="text-sm md:text-base text-zinc-400 mb-3">
                 We help set up monitoring using Cloud Monitoring and Cloud
                 Logging concepts at a high level, aligned to your existing tools
                 where appropriate.
               </p>
-              <ul className="list-disc list-inside text-sm text-slate-600 dark:text-slate-400 space-y-1">
+              <ul className="list-disc list-inside text-sm text-zinc-400 space-y-1">
                 <li>
                   Monitoring and alerting baselines using Cloud Monitoring or
                   compatible tools.
@@ -237,14 +237,14 @@ export default function GcpCloudSolutionsPage() {
 
             {/* Identity & Access Governance */}
             <section>
-              <h2 className="text-xl md:text-2xl font-bold text-slate-900 dark:text-slate-100 mb-2">
+              <h2 className="text-xl md:text-2xl font-bold text-white mb-2">
                 Identity &amp; Access Governance
               </h2>
-              <p className="text-sm md:text-base text-slate-600 dark:text-slate-400 mb-3">
+              <p className="text-sm md:text-base text-zinc-400 mb-3">
                 We apply Cloud IAM and policy concepts so access is controlled
                 and auditable while remaining workable for engineering teams.
               </p>
-              <ul className="list-disc list-inside text-sm text-slate-600 dark:text-slate-400 space-y-1">
+              <ul className="list-disc list-inside text-sm text-zinc-400 space-y-1">
                 <li>
                   High-level identity and access patterns using Cloud IAM and
                   service accounts.
@@ -268,10 +268,10 @@ export default function GcpCloudSolutionsPage() {
 
             {/* 5. Implementation Methodology */}
             <section id="implementation-methodology">
-              <h2 className="text-xl md:text-2xl font-bold text-slate-900 dark:text-slate-100 mb-2">
+              <h2 className="text-xl md:text-2xl font-bold text-white mb-2">
                 Implementation methodology
               </h2>
-              <p className="text-sm md:text-base text-slate-600 dark:text-slate-400">
+              <p className="text-sm md:text-base text-zinc-400">
                 {implementationMethodologyShort}
               </p>
             </section>
@@ -281,10 +281,10 @@ export default function GcpCloudSolutionsPage() {
 
             {/* 7. Engagement Model */}
             <section>
-              <h2 className="text-xl md:text-2xl font-bold text-slate-900 dark:text-slate-100 mb-4">
+              <h2 className="text-xl md:text-2xl font-bold text-white mb-4">
                 Engagement model
               </h2>
-              <p className="text-sm md:text-base text-slate-600 dark:text-slate-400 mb-6">
+              <p className="text-sm md:text-base text-zinc-400 mb-6">
                 Our engagement models apply equally to GCP-focused work and
                 multi-cloud initiatives.
               </p>
@@ -303,10 +303,10 @@ export default function GcpCloudSolutionsPage() {
 
             {/* 8. Ideal Clients */}
             <section>
-              <h2 className="text-xl md:text-2xl font-bold text-slate-900 dark:text-slate-100 mb-4">
+              <h2 className="text-xl md:text-2xl font-bold text-white mb-4">
                 Ideal clients
               </h2>
-              <ul className="space-y-2 text-sm text-slate-700 dark:text-slate-300">
+              <ul className="space-y-2 text-sm text-zinc-300">
                 {idealClientsCloud.map((item) => (
                   <li key={item} className="flex items-start">
                     <span className="text-indigo-500 mr-2 mt-0.5">•</span>
@@ -320,7 +320,7 @@ export default function GcpCloudSolutionsPage() {
 
             {/* 9. FAQ */}
             <section>
-              <h2 className="text-xl md:text-2xl font-bold text-slate-900 dark:text-slate-100 mb-4">
+              <h2 className="text-xl md:text-2xl font-bold text-white mb-4">
                 FAQ
               </h2>
               <FAQAccordion items={cloudFAQ} />
@@ -339,28 +339,28 @@ export default function GcpCloudSolutionsPage() {
 
             {/* Navigation to related pages */}
             <section>
-              <div className="mt-8 text-xs text-slate-600 dark:text-slate-400 flex flex-wrap gap-4">
+              <div className="mt-8 text-xs text-zinc-400 flex flex-wrap gap-4">
                 <Link
                   href="/cloud-solutions"
-                  className="underline underline-offset-4 hover:text-indigo-600 dark:hover:text-indigo-400"
+                  className="underline underline-offset-4 hover:text-violet-400"
                 >
                   Back to Cloud Solutions overview
                 </Link>
                 <Link
                   href="/cloud-solutions/aws"
-                  className="underline underline-offset-4 hover:text-indigo-600 dark:hover:text-indigo-400"
+                  className="underline underline-offset-4 hover:text-violet-400"
                 >
                   View AWS Cloud Solutions
                 </Link>
                 <Link
                   href="/cloud-solutions/azure"
-                  className="underline underline-offset-4 hover:text-indigo-600 dark:hover:text-indigo-400"
+                  className="underline underline-offset-4 hover:text-violet-400"
                 >
                   View Azure Cloud Solutions
                 </Link>
                 <Link
                   href="/contact"
-                  className="underline underline-offset-4 hover:text-indigo-600 dark:hover:text-indigo-400"
+                  className="underline underline-offset-4 hover:text-violet-400"
                 >
                   Talk to us about GCP
                 </Link>
