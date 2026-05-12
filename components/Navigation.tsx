@@ -21,9 +21,9 @@ import { AnimatePresence, motion } from "framer-motion";
 
 /* ── Dropdown items ──────────────────────────────────────────── */
 const productDropdown = [
-  { href: "/axiom", label: "Axiom", desc: "Autonomous cloud agent", icon: CpuChipIcon },
+  { href: "/axiom", label: "Axiom Agent", desc: "Autonomous cloud operations", icon: CpuChipIcon },
   { href: "/operator/onboarding", label: "Cloud Operator", desc: "Connect and scan your cloud", icon: CloudIcon },
-  { href: "/builder", label: "Website Builder", desc: "AI-powered site engine", icon: SparklesIcon },
+  { href: "/cloud-solutions", label: "Multi-Cloud", desc: "AWS · Azure · GCP intelligence", icon: SparklesIcon },
   { href: "/services", label: "Services", desc: "Cloud and AI consulting", icon: CogIcon },
 ];
 

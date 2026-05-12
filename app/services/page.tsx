@@ -213,10 +213,10 @@ export default function ServicesPage() {
                 Companies often struggle with: scale-up beyond pilots, digital maturity, technical capacity, strategy focus, and skills/governance. We help address these so cloud and AI deliver tangible value.
               </p>
               <Link
-                href="/markets"
+                href="/cloud-solutions"
                 className="text-sm font-semibold text-violet-400 hover:underline"
               >
-                See where companies need AI →
+                View cloud solutions →
               </Link>
             </section>
           </Reveal>
@@ -251,16 +251,16 @@ export default function ServicesPage() {
                 </p>
                 <div className="flex flex-wrap gap-4 text-sm">
                   <AnimatedButton
-                    href="/ai-engineering"
+                    href="/axiom"
                     variant="primary"
                   >
-                    AI Engineering &amp; LLM Systems
+                    Axiom Agent Platform
                   </AnimatedButton>
                   <AnimatedButton
-                    href="/ai-solutions"
+                    href="/cloud-solutions"
                     variant="ghost"
                   >
-                    Explore AI Solutions
+                    Multi-Cloud Solutions
                   </AnimatedButton>
                 </div>
               </div>

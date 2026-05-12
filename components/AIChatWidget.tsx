@@ -43,10 +43,10 @@ function saveMessages(msgs: Message[]) {
 }
 
 const SUGGESTIONS = [
-  "How can Vision XIX Labs help us productionize AI in AWS?",
-  "Do you build internal AI assistants on our own data?",
-  "What does a Free Cloud & AI Review include?",
-  "What makes Vision XIX Labs AI different?",
+  "How does Axiom Agent scan my AWS infrastructure?",
+  "What security controls does Axiom use?",
+  "How does the autonomous execution loop work?",
+  "What cloud providers does Axiom support?",
 ];
 
 export default function AIChatWidget() {
@@ -72,10 +72,8 @@ export default function AIChatWidget() {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
   }, [messages]);
 
-  // Don't show Vision XIX Labs widget inside embed iframe — only show the customer's bot
-  if (pathname?.startsWith("/embed/")) return null;
-  if (pathname?.startsWith("/cloud-operator")) return null;
   if (pathname?.startsWith("/operator/onboarding")) return null;
+  if (pathname?.startsWith("/dashboard")) return null;
 
   const sendMessage = async () => {
     const text = input.trim();
@@ -139,7 +137,7 @@ export default function AIChatWidget() {
     <>
       <button
         onClick={() => setOpen(true)}
-        aria-label="Open Vision XIX Labs AI Assistant"
+        aria-label="Open Axiom Assistant"
         className="fixed right-4 z-[9998] flex items-center gap-2 rounded-full bg-white/[0.02] px-4 py-3 text-white shadow-lg border-2 border-white/[0.06] hover:border-violet-400 hover:border-white/[0.08] hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-violet-500 focus:ring-offset-2 transition-all hover:scale-[1.02] active:scale-[0.98] bottom-[5.5rem] md:bottom-6 chat-bubble-glow"
       >
         <div className="flex h-8 w-8 items-center justify-center rounded-full bg-violet-500/10">
@@ -160,8 +158,8 @@ export default function AIChatWidget() {
                 <SparklesIcon className="h-5 w-5 text-white" />
               </div>
               <div>
-                <h2 className="text-sm font-semibold text-white">Vision XIX Labs AI</h2>
-                <p className="text-xs text-white/90">Cloud & AI assistant</p>
+                <h2 className="text-sm font-semibold text-white">Axiom Assistant</h2>
+                <p className="text-xs text-white/90">Ask about cloud operations</p>
               </div>
             </div>
             <button
@@ -271,10 +269,10 @@ export default function AIChatWidget() {
               </button>
             </div>
             <Link
-              href="/visionxix-ai-assistant"
+              href="/axiom"
               className="mt-2 block text-center text-[10px] text-slate-500 hover:text-indigo-600"
             >
-              Open full AI assistant
+              Learn about Axiom Agent
             </Link>
           </div>
         </div>

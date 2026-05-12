@@ -83,13 +83,13 @@ export default function InsightsPage() {
         <Reveal direction="up" blur delay={0.15}>
           <section className="glass-card rounded-2xl border border-violet-500/20 bg-violet-500/10 p-8 text-center">
             <h2 className="text-xl font-bold text-white mb-2 tracking-[-0.04em]">
-              Free Cloud &amp; AI <span className="text-gradient">Review</span>
+              Try <span className="text-gradient">Axiom Agent</span>
             </h2>
             <p className="text-zinc-400 text-sm mb-4 max-w-xl mx-auto">
-              Get a focused 30-minute review of your cloud and AI setup. No obligation — we'll share practical recommendations and next steps.
+              Autonomous cloud operations for AWS, Azure, and GCP. Connect your cloud and let Axiom handle the rest.
             </p>
-            <AnimatedButton variant="primary" href="/free-review">
-              Request your free review
+            <AnimatedButton variant="primary" href="/operator/onboarding">
+              Run Axiom
             </AnimatedButton>
           </section>
         </Reveal>

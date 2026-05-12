@@ -99,16 +99,16 @@ export default async function InsightArticlePage({ params }: Props) {
         <Reveal direction="up" blur delay={0.2}>
           <section className="glass-card glow-border-card rounded-2xl p-6 text-center">
             <h2 className="text-lg font-bold text-white mb-2 tracking-[-0.04em]">
-              Free Cloud &amp; AI <span className="text-gradient">Review</span>
+              Try <span className="text-gradient">Axiom Agent</span>
             </h2>
             <p className="text-zinc-400 text-sm mb-4">
-              Get a focused 30-minute review of your cloud and AI setup. No obligation.
+              Autonomous cloud operations for AWS, Azure, and GCP. Connect your cloud in minutes.
             </p>
             <Link
-              href="/free-review"
-              className="btn-huly cta-glow inline-flex items-center px-5 py-2.5 rounded-xl bg-violet-600 text-white text-sm font-semibold hover:bg-violet-700 transition-colors"
+              href="/operator/onboarding"
+              className="btn-huly cta-glow inline-flex items-center px-5 py-2.5 rounded-full bg-white text-zinc-900 text-sm font-semibold hover:bg-zinc-100 transition-colors"
             >
-              Request your free review
+              Run Axiom
               <ArrowRightIcon className="ml-2 h-4 w-4" />
             </Link>
           </section>

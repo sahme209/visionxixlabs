@@ -424,41 +424,15 @@ export default function CloudSolutionsPage() {
             </section>
           </Reveal>
 
-          {/* Link to AI Solutions */}
-          <div className="mb-16 text-center">
-            <p className="text-sm text-zinc-400 mb-2">
-              Building AI on top of your cloud? Explore our AI Solutions practice.
-            </p>
-            <Link
-              href="/ai-solutions"
-              className="text-sm font-semibold text-violet-400 hover:underline"
-            >
-              AI Solutions →
-            </Link>
-          </div>
-
-          {/* Link to Cloud Review Session */}
-          <div className="mb-16 text-center">
-            <p className="text-sm text-zinc-400 mb-2">
-              Want a short, structured walkthrough before deciding on scope?
-            </p>
-            <Link
-              href="/cloud-review"
-              className="text-sm font-semibold text-violet-400 hover:underline"
-            >
-              Cloud &amp; AI Infrastructure Review Session →
-            </Link>
-          </div>
-
           {/* CTA Footer */}
           <CTASection
             title="Let's build a cloud platform you can trust."
-            subtitle="Talk to us about where you are today and where you want your AWS or Azure platform to be. We'll help you chart a practical path forward."
+            subtitle="Talk to us about where you are today and where you want your AWS, Azure, or GCP platform to be. We'll help you chart a practical path forward."
             primaryLabel="Book a Call"
             primaryHref="/contact"
-            secondaryLabel="Email Us"
-            secondaryHref="mailto:support@visionxixlabs.com"
-            plansHref="/visionxix-ai/pricing"
+            secondaryLabel="Run Axiom"
+            secondaryHref="/operator/onboarding"
+            plansHref="/operator/pricing"
           />
         </div>
       </main>

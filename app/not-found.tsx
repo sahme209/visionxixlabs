@@ -32,11 +32,11 @@ export default function NotFound() {
         <nav className="mt-12 pt-8 border-t border-white/[0.06]">
           <p className="text-sm text-zinc-500 mb-4">Popular pages</p>
           <div className="flex flex-wrap gap-4 justify-center text-sm">
+            <Link href="/axiom" className="text-violet-400 hover:underline">
+              Axiom Agent
+            </Link>
             <Link href="/cloud-solutions" className="text-violet-400 hover:underline">
               Cloud Solutions
-            </Link>
-            <Link href="/ai-solutions" className="text-violet-400 hover:underline">
-              AI Solutions
             </Link>
             <Link href="/services" className="text-violet-400 hover:underline">
               Services

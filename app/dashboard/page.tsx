@@ -3,65 +3,34 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import {
-  PlusIcon,
-  ChatBubbleLeftRightIcon,
+  CloudIcon,
+  ShieldCheckIcon,
+  BoltIcon,
+  ArrowRightIcon,
 } from "@heroicons/react/24/outline";
 import { Reveal } from "@/components/motion/Reveal";
 import { Stagger } from "@/components/motion/Stagger";
 
-type Bot = {
-  id: string;
-  name: string;
-  messageCount: number;
-  messageLimit: number;
-  pageCount: number;
-  pageLimit: number;
-  sources: { id: string; type: string; url?: string | null }[];
+type ConnectorStatus = {
+  provider: string;
+  status: string;
+  accountId?: string;
+  lastScan?: string;
 };
 
-type Usage = { messages: number; pages: number; bots: number };
-type Limits = { messages: number; pages: number; bots: number };
-
 export default function DashboardPage() {
-  const [bots, setBots] = useState<Bot[]>([]);
-  const [usage, setUsage] = useState<Usage | null>(null);
-  const [limits, setLimits] = useState<Limits | null>(null);
-  const [plan, setPlan] = useState<string>("starter");
+  const [connectors, setConnectors] = useState<ConnectorStatus[]>([]);
   const [loading, setLoading] = useState(true);
-  const [creating, setCreating] = useState(false);
-
-  const loadBots = () =>
-    fetch("/api/bots")
-      .then((r) => r.json())
-      .then((data) => {
-        setBots(data.bots || []);
-        setUsage(data.usage ?? null);
-        setLimits(data.limits ?? null);
-        setPlan(data.plan ?? "starter");
-      });
 
   useEffect(() => {
-    loadBots().finally(() => setLoading(false));
+    fetch("/api/connectors/status")
+      .then((r) => r.json())
+      .then((data) => {
+        setConnectors(data.connectors || []);
+      })
+      .catch(() => {})
+      .finally(() => setLoading(false));
   }, []);
-
-  const createBot = async () => {
-    setCreating(true);
-    try {
-      const res = await fetch("/api/bots", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: "My Chatbot" }),
-      });
-      const data = await res.json();
-      if (res.ok && data.bot) {
-        await loadBots();
-      } else {
-        alert(data.error || "Failed to create");
-      }
-    } finally {
-      setCreating(false);
-    }
-  };
 
   if (loading) {
     return (
@@ -71,95 +40,125 @@ export default function DashboardPage() {
     );
   }
 
+  const connected = connectors.filter((c) => c.status === "connected");
+
   return (
     <>
       <Reveal direction="up" blur delay={0.05}>
         <div className="mb-8">
-          <h1 className="text-2xl font-bold text-white tracking-[-0.04em]">Your <span className="text-gradient">chatbots</span></h1>
+          <h1 className="text-2xl font-bold text-white tracking-[-0.04em]">
+            Axiom <span className="text-gradient">Dashboard</span>
+          </h1>
           <p className="text-zinc-400 mt-1">
-            Create chatbots, train them on your site, and embed them on your website.
+            Manage your cloud connections, view scan results, and run operations.
           </p>
-          {usage && limits && (
-            <div className="mt-3 flex flex-wrap gap-3">
-              <span className="huly-badge">
-                Plan: <span className="font-medium capitalize text-violet-400">{plan}</span>
-              </span>
-              <span className="huly-badge">{usage.messages} / {limits.messages} messages</span>
-              <span className="huly-badge">{usage.pages} / {limits.pages} pages</span>
-              <span className="huly-badge">{usage.bots} / {limits.bots} chatbots</span>
+        </div>
+      </Reveal>
+
+      <Stagger delay={0.1} interval={0.06} className="grid sm:grid-cols-3 gap-4 mb-8">
+        <Link
+          href="/operator/onboarding"
+          className="glass-card card-hover animated-border card-inner-glow rounded-xl p-5 group"
+        >
+          <div className="flex items-center gap-3 mb-3">
+            <div className="w-9 h-9 rounded-lg bg-violet-500/10 flex items-center justify-center">
+              <CloudIcon className="h-5 w-5 text-violet-400" />
+            </div>
+            <h2 className="text-sm font-semibold text-white">Connect Cloud</h2>
+          </div>
+          <p className="text-xs text-zinc-500">
+            Link your AWS, Azure, or GCP account with a read-only IAM role.
+          </p>
+        </Link>
+
+        <Link
+          href="/axiom/operations"
+          className="glass-card card-hover animated-border card-inner-glow rounded-xl p-5 group"
+        >
+          <div className="flex items-center gap-3 mb-3">
+            <div className="w-9 h-9 rounded-lg bg-emerald-500/10 flex items-center justify-center">
+              <BoltIcon className="h-5 w-5 text-emerald-400" />
+            </div>
+            <h2 className="text-sm font-semibold text-white">Operations</h2>
+          </div>
+          <p className="text-xs text-zinc-500">
+            View scan results, findings, execution plans, and audit trail.
+          </p>
+        </Link>
+
+        <Link
+          href="/dashboard/resilience"
+          className="glass-card card-hover animated-border card-inner-glow rounded-xl p-5 group"
+        >
+          <div className="flex items-center gap-3 mb-3">
+            <div className="w-9 h-9 rounded-lg bg-fuchsia-500/10 flex items-center justify-center">
+              <ShieldCheckIcon className="h-5 w-5 text-fuchsia-400" />
+            </div>
+            <h2 className="text-sm font-semibold text-white">Resilience</h2>
+          </div>
+          <p className="text-xs text-zinc-500">
+            Architecture analysis, Terraform generation, and deployment safety.
+          </p>
+        </Link>
+      </Stagger>
+
+      {/* Connected accounts */}
+      <Reveal direction="up" blur delay={0.15}>
+        <div className="glass-card rounded-2xl p-6 mb-6">
+          <h2 className="text-lg font-semibold text-white mb-4 tracking-[-0.04em]">
+            Connected accounts
+          </h2>
+          {connected.length === 0 ? (
+            <div className="text-center py-8">
+              <CloudIcon className="h-12 w-12 text-zinc-600 mx-auto mb-3" />
+              <p className="text-zinc-400 mb-4">No cloud accounts connected yet.</p>
+              <Link
+                href="/operator/onboarding"
+                className="btn-huly inline-flex items-center gap-2 px-5 py-2.5 bg-white text-zinc-900 rounded-full text-sm font-semibold hover:bg-zinc-100 transition-all"
+              >
+                Connect your first account
+                <ArrowRightIcon className="h-3.5 w-3.5" />
+              </Link>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {connected.map((c) => (
+                <div
+                  key={c.accountId || c.provider}
+                  className="flex items-center justify-between rounded-xl border border-white/[0.06] bg-white/[0.02] p-4"
+                >
+                  <div className="flex items-center gap-3">
+                    <span className="w-2 h-2 rounded-full bg-emerald-400" />
+                    <div>
+                      <p className="text-sm font-medium text-white">{c.provider}</p>
+                      {c.accountId && (
+                        <p className="text-xs text-zinc-500">{c.accountId}</p>
+                      )}
+                    </div>
+                  </div>
+                  {c.lastScan && (
+                    <span className="text-xs text-zinc-500">
+                      Last scan: {new Date(c.lastScan).toLocaleDateString()}
+                    </span>
+                  )}
+                </div>
+              ))}
             </div>
           )}
         </div>
       </Reveal>
 
-      <Reveal direction="up" blur delay={0.1}>
-        <button
-          onClick={createBot}
-          disabled={creating}
-          className="btn-huly cta-glow mb-8 inline-flex items-center gap-2 rounded-xl bg-violet-600 px-4 py-3 font-semibold text-white hover:bg-violet-700 disabled:opacity-60"
-        >
-          <PlusIcon className="h-5 w-5" />
-          {creating ? "Creating..." : "Create chatbot"}
-        </button>
-      </Reveal>
+      <div className="section-divider my-8" />
 
-      <div className="space-y-4">
-        {bots.length === 0 ? (
-          <Reveal direction="up" blur delay={0.15}>
-            <div className="glass-card rounded-2xl border-2 border-dashed border-white/[0.08] p-12 text-center">
-              <ChatBubbleLeftRightIcon className="h-12 w-12 text-zinc-500 mx-auto mb-4" />
-              <h2 className="text-lg font-semibold text-white mb-2 tracking-[-0.04em]">No chatbots yet</h2>
-              <p className="text-zinc-400 mb-6 max-w-sm mx-auto">
-                Create your first chatbot and train it on your website or documents.
-              </p>
-              <button
-                onClick={createBot}
-                disabled={creating}
-                className="btn-huly cta-glow inline-flex items-center gap-2 rounded-xl bg-violet-600 px-4 py-3 font-semibold text-white hover:bg-violet-700 disabled:opacity-60"
-              >
-                <PlusIcon className="h-5 w-5" />
-                Create chatbot
-              </button>
-            </div>
-          </Reveal>
-        ) : (
-          <Stagger delay={0.1} interval={0.06}>
-            {bots.map((bot) => (
-              <div
-                key={bot.id}
-                className="glass-card card-hover animated-border card-inner-glow rounded-2xl p-6"
-              >
-                <div className="flex items-start justify-between gap-4">
-                  <div>
-                    <h2 className="text-lg font-semibold text-white tracking-[-0.04em]">{bot.name}</h2>
-                    <div className="mt-2 flex flex-wrap gap-3 text-sm text-zinc-500">
-                      <span className="huly-badge">{(bot.sources ?? []).length} sources</span>
-                      <span className="huly-badge">{bot.messageCount} messages</span>
-                      <span className="huly-badge">{bot.pageCount} pages</span>
-                    </div>
-                  </div>
-                  <Link
-                    href={`/dashboard/bots/${bot.id}`}
-                    className="btn-huly rounded-lg bg-violet-600 px-4 py-2 text-sm font-semibold text-white hover:bg-violet-700"
-                  >
-                    Manage
-                  </Link>
-                </div>
-              </div>
-            ))}
-          </Stagger>
-        )}
-      </div>
-
-      <div className="section-divider my-10" />
-
-      <Reveal direction="up" blur delay={0.15}>
+      <Reveal direction="up" blur delay={0.2}>
         <div className="glass-card card-hover rounded-2xl p-6">
-          <h2 className="text-lg font-semibold text-white mb-2 tracking-[-0.04em]">Getting started</h2>
+          <h2 className="text-lg font-semibold text-white mb-2 tracking-[-0.04em]">
+            Getting started
+          </h2>
           <ol className="list-decimal list-inside space-y-2 text-zinc-400">
-            <li>Create a chatbot</li>
-            <li>Add URLs or text to train it</li>
-            <li>Copy the embed code to your website</li>
+            <li>Connect a cloud account with a read-only IAM role</li>
+            <li>Run your first scan to discover infrastructure and findings</li>
+            <li>Review execution plans and approve changes</li>
           </ol>
         </div>
       </Reveal>

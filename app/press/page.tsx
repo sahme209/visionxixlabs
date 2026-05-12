@@ -67,10 +67,10 @@ export default function PressPage() {
                 </p>
                 <ul className="space-y-2 text-sm text-zinc-300">
                   <li><strong>Vision XIX Labs</strong> – company name</li>
+                  <li><strong>Axiom Agent</strong> – autonomous cloud operations platform</li>
                   <li><strong>Vision XIX Labs – Cloud &amp; AI Engineering</strong> – with tagline</li>
-                  <li><strong>cloud and AI engineering</strong> – keyword-focused</li>
-                  <li><strong>multi-cloud consulting (AWS, Azure, GCP)</strong> – service-focused</li>
-                  <li><strong>VisaNova</strong> or <strong>RecallEase</strong> – when referencing our apps</li>
+                  <li><strong>autonomous cloud operations</strong> – product-focused</li>
+                  <li><strong>multi-cloud intelligence (AWS, Azure, GCP)</strong> – service-focused</li>
                 </ul>
               </section>
             </Reveal>
@@ -123,8 +123,8 @@ export default function PressPage() {
                 <ul className="flex flex-wrap gap-3 text-sm">
                   <li><Link href="/" className="text-violet-400 hover:underline">Home</Link></li>
                   <li><Link href="/cloud-solutions" className="text-violet-400 hover:underline">Cloud Solutions</Link></li>
-                  <li><Link href="/ai-solutions" className="text-violet-400 hover:underline">AI Solutions</Link></li>
-                  <li><Link href="/apps" className="text-violet-400 hover:underline">Our Apps</Link></li>
+                  <li><Link href="/axiom" className="text-violet-400 hover:underline">Axiom Agent</Link></li>
+                  <li><Link href="/services" className="text-violet-400 hover:underline">Services</Link></li>
                   <li><Link href="/contact" className="text-violet-400 hover:underline">Contact</Link></li>
                   <li><Link href="/case-studies" className="text-violet-400 hover:underline">Case Studies</Link></li>
                   <li><Link href="/insights" className="text-violet-400 hover:underline">Insights</Link></li>

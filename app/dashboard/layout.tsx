@@ -24,7 +24,7 @@ export default async function DashboardLayout({
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
           <Link href="/dashboard" className="flex items-center gap-2 nav-link-underline">
             <CpuChipIcon className="h-8 w-8 text-violet-500" />
-            <span className="font-bold text-white tracking-[-0.04em]">Vision XIX AI</span>
+            <span className="font-bold text-white tracking-[-0.04em]">Axiom</span>
           </Link>
           <div className="flex items-center gap-4">
             <span className="text-sm text-zinc-400">{session.user.email}</span>

@@ -220,15 +220,15 @@ export default function EnterpriseReadinessPage() {
                     Ready to review your environment?
                   </h2>
                   <p className="text-sm text-zinc-400">
-                    Start with a Free Cloud &amp; AI Review or share your requirements directly.
+                    Connect your cloud with Axiom Agent or share your requirements directly.
                   </p>
                 </div>
                 <div className="flex flex-wrap gap-3">
                   <Link
-                    href="/free-review"
+                    href="/operator/onboarding"
                     className="btn-huly inline-flex items-center px-7 py-3 rounded-full bg-white text-zinc-900 text-sm font-semibold uppercase tracking-wide hover:bg-zinc-100 transition-all shadow-lg shadow-white/10"
                   >
-                    Free Cloud &amp; AI Review
+                    Run Axiom
                     <ArrowRightIcon className="ml-2 h-4 w-4" />
                   </Link>
                   <Link
@@ -252,12 +252,12 @@ export default function EnterpriseReadinessPage() {
                   </p>
                 </Link>
                 <Link
-                  href="/ai-engineering"
+                  href="/axiom"
                   className="glass-card rounded-xl border border-white/[0.06] p-4 hover:border-white/[0.12] transition-colors card-hover card-shine-sweep card-reactive"
                 >
-                  <p className="font-semibold mb-1">AI Engineering &amp; LLM Systems</p>
+                  <p className="font-semibold mb-1">Axiom Agent</p>
                   <p className="text-zinc-400 text-xs">
-                    Architecture, integration, and operations for production AI systems.
+                    Autonomous cloud operations powered by AI intelligence.
                   </p>
                 </Link>
                 <Link

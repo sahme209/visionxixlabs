@@ -123,7 +123,7 @@ export default function AxiomPricingPage() {
 
                     {/* CTA button — solid white pill */}
                     <Link
-                      href={isEnterprise ? `mailto:${SUPPORT_EMAIL}?subject=Axiom%20Enterprise` : "/cloud-operator"}
+                      href={isEnterprise ? `mailto:${SUPPORT_EMAIL}?subject=Axiom%20Enterprise` : "/operator/onboarding"}
                       className={`w-full py-3 rounded-full text-center font-semibold transition-all duration-300 block ${
                         highlighted
                           ? "bg-white text-zinc-900 hover:bg-zinc-100 shadow-[0_0_20px_rgba(255,255,255,0.1)]"

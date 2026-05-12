@@ -366,9 +366,9 @@ export default function AwsCloudSolutionsPage() {
               subtitle="Talk to us about your AWS foundations, CI/CD, cost, or operations. We'll help you chart a practical path."
               primaryLabel="Book a Call"
               primaryHref="/contact"
-              secondaryLabel="Email Us"
-              secondaryHref="mailto:support@visionxixlabs.com"
-              plansHref="/visionxix-ai/pricing"
+              secondaryLabel="Run Axiom"
+              secondaryHref="/operator/onboarding"
+              plansHref="/operator/pricing"
             />
 
             {/* Navigation to related pages */}

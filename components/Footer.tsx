@@ -31,8 +31,8 @@ const productLinks = [
   { href: "/operator/onboarding", label: "Run Axiom" },
   { href: "/operator/pricing", label: "Pricing" },
   { href: "/axiom", label: "About Axiom" },
+  { href: "/cloud-solutions", label: "Multi-Cloud" },
   { href: "/services", label: "Services" },
-  { href: "/products", label: "Products" },
 ];
 
 const companyLinks = [
@@ -46,11 +46,10 @@ const companyLinks = [
 ];
 
 const resourceLinks = [
-  { href: "/cloud-solutions", label: "Cloud Solutions" },
-  { href: "/ai-solutions", label: "AI Solutions" },
-  { href: "/ai-engineering", label: "AI Engineering" },
+  { href: "/cloud-solutions/aws", label: "AWS Intelligence" },
+  { href: "/cloud-solutions/azure", label: "Azure Intelligence" },
+  { href: "/cloud-solutions/gcp", label: "GCP Intelligence" },
   { href: "/enterprise-readiness", label: "Enterprise Readiness" },
-  { href: "/free-review", label: "Free Review" },
   { href: "/cloud-security", label: "Cloud Security" },
 ];
 
