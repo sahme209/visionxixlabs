@@ -3862,7 +3862,7 @@ function CloudOperatorPageInner() {
                     </div>
                   </div>
                   <Link
-                    href="/pricing"
+                    href="/operator/pricing"
                     className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-xs font-semibold text-white hover:bg-indigo-700"
                   >
                     View pricing
