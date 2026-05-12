@@ -136,16 +136,16 @@ const TRUST_SIGNALS = [
 export default function AxiomPage() {
   return (
     <div className="min-h-screen bg-[#09090b] text-white relative">
-      <div className="absolute inset-0 bg-grid-mesh opacity-30" aria-hidden />
+      <div className="absolute inset-0 bg-grid-mesh opacity-30 pointer-events-none" aria-hidden />
       <div className="absolute inset-0 noise-grain pointer-events-none" aria-hidden />
       <div className="relative z-10">
       <Navigation />
 
       {/* ── Hero ──────────────────────────────────────────────────────── */}
       <section className="relative overflow-hidden">
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[500px] spotlight-orb opacity-50" aria-hidden />
-        <div className="absolute -top-40 -left-60 w-[500px] h-[500px] rounded-full bg-indigo-500/[0.07] blur-[120px]" aria-hidden />
-        <div className="absolute -top-20 -right-40 w-[400px] h-[400px] rounded-full bg-blue-500/[0.05] blur-[100px]" aria-hidden />
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[500px] spotlight-orb opacity-50 pointer-events-none" aria-hidden />
+        <div className="absolute -top-40 -left-60 w-[500px] h-[500px] rounded-full bg-indigo-500/[0.07] blur-[120px] pointer-events-none" aria-hidden />
+        <div className="absolute -top-20 -right-40 w-[400px] h-[400px] rounded-full bg-blue-500/[0.05] blur-[100px] pointer-events-none" aria-hidden />
         <div className="relative max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-20 text-center">
           <Reveal direction="up" blur delay={0}>
             <div className="inline-flex items-center gap-2 huly-badge px-4 py-1.5 text-sm font-medium text-zinc-300 mb-8">
@@ -154,9 +154,9 @@ export default function AxiomPage() {
             </div>
           </Reveal>
           <Reveal direction="up" blur delay={0.1}>
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-[-0.04em] text-white mb-6 leading-[1.1]">
-              Infrastructure intelligence<br className="hidden sm:block" />
-              that operates <span className="text-gradient">autonomously.</span>
+            <h1 className="text-4xl sm:text-5xl lg:text-7xl font-extrabold tracking-[-0.04em] text-white mb-6 leading-[1.05]">
+              Infrastructure intelligence.<br className="hidden sm:block" />
+              <span className="text-zinc-500">That operates autonomously.</span>
             </h1>
           </Reveal>
           <Reveal direction="up" blur delay={0.2}>
@@ -168,16 +168,16 @@ export default function AxiomPage() {
             <div className="flex flex-wrap justify-center gap-4">
               <Link
                 href="/operator/onboarding"
-                className="btn-huly cta-glow inline-flex items-center gap-2 px-7 py-3.5 bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white rounded-xl font-semibold text-sm hover:shadow-violet-500/40 transition-all shadow-lg shadow-violet-500/25"
+                className="btn-huly inline-flex items-center gap-2 px-8 py-3.5 bg-white text-zinc-900 rounded-full font-semibold text-sm uppercase tracking-wide hover:bg-zinc-100 transition-all shadow-lg shadow-white/10"
               >
                 Run Axiom
                 <ArrowRightIcon className="h-4 w-4" />
               </Link>
               <Link
                 href="/operator/pricing"
-                className="btn-huly inline-flex items-center gap-2 px-7 py-3.5 border border-white/[0.06] text-zinc-300 rounded-xl font-semibold text-sm hover:bg-white/[0.05] hover:border-white/[0.12] transition-all"
+                className="btn-huly inline-flex items-center gap-2 px-8 py-3.5 border border-white/[0.12] text-zinc-300 rounded-full font-semibold text-sm uppercase tracking-wide hover:bg-white/[0.05] hover:border-white/[0.20] transition-all"
               >
-                View pricing
+                View Pricing
               </Link>
             </div>
           </Reveal>
@@ -204,8 +204,9 @@ export default function AxiomPage() {
               <span className="huly-badge text-xs font-semibold text-violet-400 mb-3 tracking-wide uppercase px-3 py-1">
                 How Axiom Operates
               </span>
-              <h2 className="text-3xl sm:text-4xl font-bold tracking-[-0.04em] text-white mb-4 mt-4">
-                A complete <span className="text-gradient">autonomous loop.</span>
+              <h2 className="text-4xl md:text-5xl font-extrabold tracking-[-0.04em] text-white mb-4 mt-4">
+                A complete autonomous loop.<br className="hidden sm:block" />
+                <span className="text-zinc-500">From scan to verified execution.</span>
               </h2>
               <p className="text-zinc-400 max-w-xl mx-auto">
                 Every scan executes a 12-step cycle — from infrastructure discovery through execution verification to outcome learning. The loop runs continuously on schedule.
@@ -246,15 +247,16 @@ export default function AxiomPage() {
       {/* ── Capabilities ──────────────────────────────────────────────── */}
       <div className="section-divider" />
       <section className="py-24 relative">
-        <div className="absolute top-1/2 left-0 -translate-y-1/2 w-[400px] h-[400px] rounded-full bg-indigo-500/[0.04] blur-[120px]" aria-hidden />
+        <div className="absolute top-1/2 left-0 -translate-y-1/2 w-[400px] h-[400px] rounded-full bg-indigo-500/[0.04] blur-[120px] pointer-events-none" aria-hidden />
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative">
           <Reveal direction="up" blur>
             <div className="text-center mb-16">
               <span className="huly-badge text-xs font-semibold text-violet-400 mb-3 tracking-wide uppercase px-3 py-1">
                 Capabilities
               </span>
-              <h2 className="text-3xl sm:text-4xl font-bold tracking-[-0.04em] text-white mb-4 mt-4">
-                Built for <span className="text-gradient">real operations.</span>
+              <h2 className="text-4xl md:text-5xl font-extrabold tracking-[-0.04em] text-white mb-4 mt-4">
+                Built for real operations.<br className="hidden sm:block" />
+                <span className="text-zinc-500">Not impressive demos.</span>
               </h2>
               <p className="text-zinc-400 max-w-xl mx-auto">
                 Every feature in Axiom exists because it solves a real operational problem — not because it looks impressive in a demo.
@@ -310,8 +312,9 @@ export default function AxiomPage() {
               <span className="huly-badge text-xs font-semibold text-violet-400 mb-3 tracking-wide uppercase px-3 py-1">
                 Enterprise Trust
               </span>
-              <h2 className="text-3xl sm:text-4xl font-bold tracking-[-0.04em] text-white mb-4 mt-4">
-                Powerful, but <span className="text-gradient">controlled.</span>
+              <h2 className="text-4xl md:text-5xl font-extrabold tracking-[-0.04em] text-white mb-4 mt-4">
+                Powerful, but controlled.<br className="hidden sm:block" />
+                <span className="text-zinc-500">Enterprise-grade governance.</span>
               </h2>
               <p className="text-zinc-400 max-w-xl mx-auto">
                 Axiom is designed so that autonomous operations never compromise governance, auditability, or human oversight.
@@ -335,15 +338,16 @@ export default function AxiomPage() {
       {/* ── Architecture ──────────────────────────────────────────────── */}
       <div className="section-divider" />
       <section className="py-24 relative">
-        <div className="absolute -bottom-20 right-0 w-[350px] h-[350px] rounded-full bg-blue-500/[0.04] blur-[100px]" aria-hidden />
+        <div className="absolute -bottom-20 right-0 w-[350px] h-[350px] rounded-full bg-blue-500/[0.04] blur-[100px] pointer-events-none" aria-hidden />
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative">
           <Reveal direction="up" blur>
             <div className="text-center mb-12">
               <span className="huly-badge text-xs font-semibold text-violet-400 mb-3 tracking-wide uppercase px-3 py-1">
                 Architecture
               </span>
-              <h2 className="text-3xl sm:text-4xl font-bold tracking-[-0.04em] text-white mb-4 mt-4">
-                Real infrastructure, <span className="text-gradient">real code.</span>
+              <h2 className="text-4xl md:text-5xl font-extrabold tracking-[-0.04em] text-white mb-4 mt-4">
+                Real infrastructure.<br className="hidden sm:block" />
+                <span className="text-zinc-500">Real code. Real execution.</span>
               </h2>
             </div>
           </Reveal>
@@ -399,8 +403,9 @@ export default function AxiomPage() {
               <span className="huly-badge text-xs font-semibold text-violet-400 mb-3 tracking-wide uppercase px-3 py-1">
                 Live Preview
               </span>
-              <h2 className="text-3xl sm:text-4xl font-bold tracking-[-0.04em] text-white mb-4 mt-4">
-                See it in <span className="text-gradient">action.</span>
+              <h2 className="text-4xl md:text-5xl font-extrabold tracking-[-0.04em] text-white mb-4 mt-4">
+                See it in action.<br className="hidden sm:block" />
+                <span className="text-zinc-500">Watch Axiom work.</span>
               </h2>
               <p className="text-zinc-400 max-w-xl mx-auto">
                 Watch Axiom scan an AWS account and surface findings in real time.
@@ -454,30 +459,31 @@ export default function AxiomPage() {
       {/* ── CTA ───────────────────────────────────────────────────────── */}
       <div className="section-divider" />
       <section className="py-24 relative overflow-hidden">
-        <div className="absolute inset-0 beam-sweep opacity-20" aria-hidden />
-        <div className="absolute -top-40 -right-40 w-80 h-80 rounded-full bg-indigo-500/[0.08] blur-[100px]" aria-hidden />
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 rounded-full bg-blue-500/[0.08] blur-[100px]" aria-hidden />
+        <div className="absolute inset-0 beam-sweep opacity-20 pointer-events-none" aria-hidden />
+        <div className="absolute -top-40 -right-40 w-80 h-80 rounded-full bg-indigo-500/[0.08] blur-[100px] pointer-events-none" aria-hidden />
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 rounded-full bg-blue-500/[0.08] blur-[100px] pointer-events-none" aria-hidden />
         <div className="relative max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <Reveal direction="up" blur>
-            <h2 className="text-3xl sm:text-4xl font-bold tracking-[-0.04em] text-white mb-4">
-              Start operating <span className="text-gradient">autonomously.</span>
+            <h2 className="text-4xl md:text-5xl font-extrabold tracking-[-0.04em] text-white mb-4">
+              Start operating autonomously.<br className="hidden sm:block" />
+              <span className="text-zinc-500">Your first scan takes 60 seconds.</span>
             </h2>
-            <p className="text-zinc-400 mb-8 max-w-lg mx-auto">
-              Connect your AWS account with a read-only IAM role. Your first scan takes 60 seconds. No credentials stored.
+            <p className="text-zinc-400 mb-10 max-w-lg mx-auto">
+              Connect your AWS account with a read-only IAM role. No credentials stored. Full audit trail from day one.
             </p>
             <div className="flex flex-wrap justify-center gap-4">
               <Link
                 href="/operator/onboarding"
-                className="btn-huly cta-glow inline-flex items-center gap-2 px-7 py-3.5 bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white rounded-xl font-semibold text-sm hover:shadow-violet-500/35 transition-all shadow-lg shadow-violet-500/20"
+                className="btn-huly inline-flex items-center gap-2 px-8 py-3.5 bg-white text-zinc-900 rounded-full font-semibold text-sm uppercase tracking-wide hover:bg-zinc-100 transition-all shadow-lg shadow-white/10"
               >
                 Run Axiom
                 <ArrowRightIcon className="h-4 w-4" />
               </Link>
               <Link
                 href="/operator/pricing"
-                className="btn-huly inline-flex items-center gap-2 px-7 py-3.5 border border-white/[0.06] text-zinc-300 rounded-xl font-semibold text-sm hover:bg-white/[0.05] hover:border-white/[0.12] transition-all"
+                className="btn-huly inline-flex items-center gap-2 px-8 py-3.5 border border-white/[0.12] text-zinc-300 rounded-full font-semibold text-sm uppercase tracking-wide hover:bg-white/[0.05] hover:border-white/[0.20] transition-all"
               >
-                View pricing
+                View Pricing
               </Link>
             </div>
           </Reveal>

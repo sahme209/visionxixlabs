@@ -49,20 +49,19 @@ function CTASection() {
   return (
     <section className="py-12">
       <div className="max-w-3xl mx-auto glass-card rounded-xl border border-white/[0.06] px-6 py-8 text-center glow-border-card">
-        <h2 className="text-xl font-bold text-white mb-2 tracking-[-0.04em]">
-          Discuss your AWS or DevOps requirements
+        <h2 className="text-2xl md:text-3xl font-extrabold text-white mb-2 tracking-[-0.04em]">
+          Discuss your requirements.
         </h2>
         <p className="text-zinc-400 mb-6 text-sm">
           For infrastructure, CI/CD, cost optimization, or security--we work with technical leads to define scope and delivery.
         </p>
         <div className="flex flex-wrap justify-center gap-3">
-          <AnimatedButton href="/contact" variant="secondary">
-            Contact
+          <AnimatedButton href="/contact" variant="primary">
+            Contact Us
           </AnimatedButton>
           <AnimatedButton
             href="mailto:support@visionxixlabs.com"
             variant="ghost"
-            className="border border-white/[0.06]"
           >
             Email
           </AnimatedButton>
@@ -192,8 +191,9 @@ export default function ServicesPage() {
           {/* 1. Overview */}
           <Reveal direction="up" blur>
             <section className="mb-12" aria-labelledby="overview-heading">
-              <h1 id="overview-heading" className="text-3xl md:text-4xl font-bold text-white mb-4 tracking-[-0.04em]">
-                Cloud &amp; AI Engineering <span className="text-gradient">Services</span>
+              <h1 id="overview-heading" className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-white mb-6 tracking-[-0.04em] leading-[1.05]">
+                Cloud &amp; AI Engineering.<br className="hidden sm:block" />
+                <span className="text-zinc-500">Services that ship.</span>
               </h1>
               <p className="text-lg text-zinc-400 max-w-3xl">
                 We design and implement AWS infrastructure, CI/CD with GitHub and Octopus Deploy, AI integration, cost optimization, reliability, and security--with clear deliverables and handover.
@@ -224,8 +224,9 @@ export default function ServicesPage() {
           {/* 2. Technical Scope -- service areas */}
           <Reveal direction="up" delay={0.1}>
             <section aria-labelledby="services-heading" className="mb-16">
-              <h2 id="services-heading" className="text-2xl font-bold text-white mb-6 tracking-[-0.04em]">
-                Technical <span className="text-gradient">scope</span>
+              <h2 id="services-heading" className="text-4xl md:text-5xl font-extrabold text-white mb-6 tracking-[-0.04em]">
+                Technical scope.<br className="hidden sm:block" />
+                <span className="text-zinc-500">Outcome-focused workstreams.</span>
               </h2>
               <p className="text-zinc-400 mb-8 max-w-3xl">
                 Outcome-focused workstreams: infrastructure, CI/CD, FinOps, observability, security, and production AI integration. Each with defined deliverables and outcomes.
@@ -240,8 +241,9 @@ export default function ServicesPage() {
           <Reveal direction="up" delay={0.1}>
             <section className="mb-16" aria-labelledby="ai-services-heading">
               <div className="glass-card rounded-2xl p-6 md:p-8 shadow-xl border border-white/[0.06] glow-border-card">
-                <h2 id="ai-services-heading" className="text-2xl font-bold text-white mb-3 tracking-[-0.04em]">
-                  AI engineering as part of your <span className="text-gradient">platform</span>
+                <h2 id="ai-services-heading" className="text-4xl md:text-5xl font-extrabold text-white mb-3 tracking-[-0.04em]">
+                  AI engineering.<br className="hidden sm:block" />
+                  <span className="text-zinc-500">As part of your platform.</span>
                 </h2>
                 <p className="text-sm md:text-base text-zinc-300 mb-4 max-w-3xl">
                   We do not build new foundation models. We engineer AI systems for production environments:
@@ -250,15 +252,13 @@ export default function ServicesPage() {
                 <div className="flex flex-wrap gap-4 text-sm">
                   <AnimatedButton
                     href="/ai-engineering"
-                    variant="secondary"
-                    className="bg-white text-zinc-900 hover:bg-slate-100"
+                    variant="primary"
                   >
                     AI Engineering &amp; LLM Systems
                   </AnimatedButton>
                   <AnimatedButton
                     href="/ai-solutions"
                     variant="ghost"
-                    className="border border-white/[0.08] text-white hover:border-white/[0.16]"
                   >
                     Explore AI Solutions
                   </AnimatedButton>
@@ -281,8 +281,9 @@ export default function ServicesPage() {
           {/* 5. Implementation Methodology */}
           <Reveal direction="up" delay={0.1}>
             <section className="mb-16" aria-labelledby="methodology-heading">
-              <h2 id="methodology-heading" className="text-2xl font-bold text-white mb-2 tracking-[-0.04em]">
-                Implementation <span className="text-gradient">methodology</span>
+              <h2 id="methodology-heading" className="text-4xl md:text-5xl font-extrabold text-white mb-2 tracking-[-0.04em]">
+                Implementation methodology.<br className="hidden sm:block" />
+                <span className="text-zinc-500">Structured delivery.</span>
               </h2>
               <p className="text-zinc-400 mb-8 max-w-3xl">
                 {implementationMethodologyShort}
@@ -306,8 +307,9 @@ export default function ServicesPage() {
           {/* 8. Engagement Model */}
           <Reveal direction="up" delay={0.1}>
             <section className="mb-16" aria-labelledby="engagement-heading">
-              <h2 id="engagement-heading" className="text-2xl font-bold text-white mb-6 tracking-[-0.04em]">
-                Engagement <span className="text-gradient">model</span>
+              <h2 id="engagement-heading" className="text-4xl md:text-5xl font-extrabold text-white mb-6 tracking-[-0.04em]">
+                Engagement model.<br className="hidden sm:block" />
+                <span className="text-zinc-500">Flexible, scoped, documented.</span>
               </h2>
               <p className="text-zinc-400 mb-8 max-w-3xl">
                 Project-based, retainer, or assessment and roadmap. We align to your timeline and team structure.
@@ -348,8 +350,8 @@ export default function ServicesPage() {
           {/* 10. FAQ */}
           <Reveal direction="up" delay={0.1}>
             <section className="mb-16" aria-labelledby="faq-heading">
-              <h2 id="faq-heading" className="text-2xl font-bold text-white mb-6 tracking-[-0.04em]">
-                Frequently asked questions
+              <h2 id="faq-heading" className="text-4xl md:text-5xl font-extrabold text-white mb-6 tracking-[-0.04em]">
+                Frequently asked questions.
               </h2>
               <FAQAccordion items={cloudFAQ} />
             </section>

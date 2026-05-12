@@ -46,7 +46,7 @@ function SignInForm() {
     <div className="min-h-screen flex items-center justify-center bg-[#09090b] px-4 relative overflow-hidden">
       <RealisticFogBackground backgroundColor="transparent" opacity={0.2} darken contained />
       {/* Spotlight orb */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[400px] spotlight-orb opacity-40" aria-hidden />
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[400px] spotlight-orb opacity-40 pointer-events-none" aria-hidden />
       {/* Floating blur orbs */}
       <div className="absolute -top-32 -left-32 w-72 h-72 rounded-full bg-indigo-600/10 blur-[100px] pointer-events-none" aria-hidden />
       <div className="absolute bottom-0 right-0 w-56 h-56 rounded-full bg-blue-600/8 blur-[90px] pointer-events-none" aria-hidden />

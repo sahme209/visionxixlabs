@@ -70,7 +70,7 @@ function SignUpForm() {
     <div className="min-h-screen flex bg-[#09090b] relative overflow-hidden">
       <RealisticFogBackground backgroundColor="transparent" opacity={0.15} darken contained />
       {/* Spotlight orb */}
-      <div className="absolute top-0 left-1/4 w-[600px] h-[400px] spotlight-orb opacity-30" aria-hidden />
+      <div className="absolute top-0 left-1/4 w-[600px] h-[400px] spotlight-orb opacity-30 pointer-events-none" aria-hidden />
       {/* Floating blur orbs */}
       <div className="absolute -top-40 right-0 w-80 h-80 rounded-full bg-indigo-600/10 blur-[120px] pointer-events-none" aria-hidden />
       <div className="absolute bottom-20 -left-20 w-60 h-60 rounded-full bg-blue-600/8 blur-[90px] pointer-events-none" aria-hidden />

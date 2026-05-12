@@ -100,12 +100,12 @@ const aiPackages: AIPackage[] = [
 export default function AIEngineeringPage() {
   return (
     <div className="min-h-screen bg-[#09090b] text-white relative">
-      <div className="absolute inset-0 bg-dots opacity-20" aria-hidden />
+      <div className="absolute inset-0 bg-dots opacity-20 pointer-events-none" aria-hidden />
       <div className="absolute inset-0 noise-grain pointer-events-none" aria-hidden />
       {/* Floating blur orbs */}
-      <div className="absolute -top-40 left-1/3 w-[600px] h-[500px] rounded-full bg-violet-500/[0.06] blur-[140px]" aria-hidden />
-      <div className="absolute top-[40%] -right-60 w-[400px] h-[400px] rounded-full bg-fuchsia-500/[0.05] blur-[120px]" aria-hidden />
-      <div className="absolute bottom-[20%] -left-40 w-[350px] h-[350px] rounded-full bg-violet-500/[0.04] blur-[100px]" aria-hidden />
+      <div className="absolute -top-40 left-1/3 w-[600px] h-[500px] rounded-full bg-violet-500/[0.06] blur-[140px] pointer-events-none" aria-hidden />
+      <div className="absolute top-[40%] -right-60 w-[400px] h-[400px] rounded-full bg-fuchsia-500/[0.05] blur-[120px] pointer-events-none" aria-hidden />
+      <div className="absolute bottom-[20%] -left-40 w-[350px] h-[350px] rounded-full bg-violet-500/[0.04] blur-[100px] pointer-events-none" aria-hidden />
 
       <div className="relative z-10">
         <Navigation />
@@ -122,7 +122,7 @@ export default function AIEngineeringPage() {
 
             {/* Hero */}
             <section className="mb-16 relative">
-              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-[400px] spotlight-orb opacity-40" aria-hidden />
+              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-[400px] spotlight-orb opacity-40 pointer-events-none" aria-hidden />
               <div className="relative text-center max-w-4xl mx-auto">
                 <Reveal direction="up" blur delay={0}>
                   <span className="huly-badge text-xs font-semibold text-violet-400 tracking-wide uppercase px-3 py-1 mb-6 inline-block">
@@ -295,7 +295,7 @@ export default function AIEngineeringPage() {
 
             {/* Section 3 – AI Infrastructure & Deployment */}
             <section className="mb-16 mt-16 relative">
-              <div className="absolute top-1/2 right-0 -translate-y-1/2 w-[300px] h-[300px] rounded-full bg-fuchsia-500/[0.04] blur-[100px]" aria-hidden />
+              <div className="absolute top-1/2 right-0 -translate-y-1/2 w-[300px] h-[300px] rounded-full bg-fuchsia-500/[0.04] blur-[100px] pointer-events-none" aria-hidden />
               <div className="relative">
                 <Reveal direction="up" blur>
                   <div className="mb-8">

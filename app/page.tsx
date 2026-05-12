@@ -109,7 +109,7 @@ function SectionDivider() {
 export default function Home() {
   return (
     <div className="min-h-screen bg-[#09090b] text-white relative">
-      <div className="absolute inset-0 bg-grid-mesh opacity-40" aria-hidden />
+      <div className="absolute inset-0 bg-grid-mesh opacity-40 pointer-events-none" aria-hidden />
       <div className="relative z-10">
       <Navigation />
 
@@ -117,11 +117,11 @@ export default function Home() {
       <section className="pt-32 pb-24 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
         <RealisticFogBackground backgroundColor="transparent" opacity={0.3} darken contained />
         {/* Hero-specific grid mesh overlay */}
-        <div className="absolute inset-0 hero-grid-mesh opacity-60" aria-hidden />
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[500px] spotlight-orb opacity-60" aria-hidden />
-        <div className="absolute top-40 -right-40 w-[500px] h-[500px] rounded-full bg-violet-600/5 blur-[120px]" aria-hidden />
-        <div className="absolute top-60 -left-40 w-[400px] h-[400px] rounded-full bg-fuchsia-600/5 blur-[120px]" aria-hidden />
-        <div className="hero-beam-vertical" aria-hidden />
+        <div className="absolute inset-0 hero-grid-mesh opacity-60 pointer-events-none" aria-hidden />
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[500px] spotlight-orb opacity-60 pointer-events-none" aria-hidden />
+        <div className="absolute top-40 -right-40 w-[500px] h-[500px] rounded-full bg-violet-600/5 blur-[120px] pointer-events-none" aria-hidden />
+        <div className="absolute top-60 -left-40 w-[400px] h-[400px] rounded-full bg-fuchsia-600/5 blur-[120px] pointer-events-none" aria-hidden />
+        <div className="hero-beam-vertical pointer-events-none" aria-hidden />
 
         {/* Floating ambient particles */}
         <AmbientParticles />
@@ -155,7 +155,7 @@ export default function Home() {
           </Reveal>
           <Stagger delay={0.12}>
             {/* Beam sweep effect behind CTA buttons */}
-            <div className="relative flex flex-wrap justify-center gap-4 mb-10">
+            <div className="relative z-20 flex flex-wrap justify-center gap-4 mb-10">
               <div className="absolute inset-0 beam-sweep rounded-2xl pointer-events-none" aria-hidden />
               <AnimatedButton
                 href="/operator/onboarding"
@@ -197,7 +197,7 @@ export default function Home() {
 
       {/* ── Trust Marquee ──────────────────────────────────────────── */}
       <section className="py-8 overflow-hidden relative">
-        <div className="absolute inset-0 bg-white/[0.01]" aria-hidden />
+        <div className="absolute inset-0 bg-white/[0.01] pointer-events-none" aria-hidden />
         <div className="relative overflow-hidden">
           <div className="marquee-track">
             {[...TRUST_LOGOS, ...TRUST_LOGOS].map((logo, i) => (
@@ -577,10 +577,10 @@ export default function Home() {
 
       {/* ── CTA — Huly "Join the Movement" style ────────────────── */}
       <section className="py-32 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
-        <div className="absolute inset-0 diagonal-streak opacity-40" aria-hidden />
-        <div className="absolute -top-20 -right-20 w-[500px] h-[500px] rounded-full bg-violet-600/12 blur-[150px]" aria-hidden />
-        <div className="absolute -bottom-20 -left-20 w-[500px] h-[500px] rounded-full bg-fuchsia-600/12 blur-[150px]" aria-hidden />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[300px] rounded-full bg-violet-500/5 blur-[100px]" aria-hidden />
+        <div className="absolute inset-0 diagonal-streak opacity-40 pointer-events-none" aria-hidden />
+        <div className="absolute -top-20 -right-20 w-[500px] h-[500px] rounded-full bg-violet-600/12 blur-[150px] pointer-events-none" aria-hidden />
+        <div className="absolute -bottom-20 -left-20 w-[500px] h-[500px] rounded-full bg-fuchsia-600/12 blur-[150px] pointer-events-none" aria-hidden />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[300px] rounded-full bg-violet-500/5 blur-[100px] pointer-events-none" aria-hidden />
 
         <div className="relative max-w-4xl mx-auto flex flex-col md:flex-row items-center gap-12">
           {/* Glowing orb — Huly-style */}

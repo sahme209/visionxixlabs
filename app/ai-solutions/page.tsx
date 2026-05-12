@@ -69,12 +69,12 @@ import { AnimatedButton } from "@/components/ui/AnimatedButton";
 export default function AISolutionsPage() {
   return (
     <div className="min-h-screen bg-[#09090b] text-white relative">
-      <div className="absolute inset-0 bg-dots opacity-20" aria-hidden />
+      <div className="absolute inset-0 bg-dots opacity-20 pointer-events-none" aria-hidden />
       <div className="absolute inset-0 noise-grain pointer-events-none" aria-hidden />
       {/* Floating blur orbs */}
-      <div className="absolute -top-40 left-1/4 w-[600px] h-[600px] rounded-full bg-violet-500/[0.06] blur-[140px]" aria-hidden />
-      <div className="absolute top-[30%] -right-60 w-[500px] h-[500px] rounded-full bg-fuchsia-500/[0.04] blur-[120px]" aria-hidden />
-      <div className="absolute bottom-[15%] -left-40 w-[400px] h-[400px] rounded-full bg-violet-500/[0.03] blur-[100px]" aria-hidden />
+      <div className="absolute -top-40 left-1/4 w-[600px] h-[600px] rounded-full bg-violet-500/[0.06] blur-[140px] pointer-events-none" aria-hidden />
+      <div className="absolute top-[30%] -right-60 w-[500px] h-[500px] rounded-full bg-fuchsia-500/[0.04] blur-[120px] pointer-events-none" aria-hidden />
+      <div className="absolute bottom-[15%] -left-40 w-[400px] h-[400px] rounded-full bg-violet-500/[0.03] blur-[100px] pointer-events-none" aria-hidden />
 
       <div className="relative z-10">
         <Navigation />
@@ -91,7 +91,7 @@ export default function AISolutionsPage() {
 
             {/* Hero */}
             <section className="mb-20 relative">
-              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[500px] spotlight-orb opacity-40" aria-hidden />
+              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[500px] spotlight-orb opacity-40 pointer-events-none" aria-hidden />
               <div className="relative text-center max-w-4xl mx-auto">
                 <Reveal direction="up" blur delay={0}>
                   <span className="huly-badge text-xs font-semibold text-violet-400 tracking-wide uppercase px-3 py-1 mb-6 inline-block">
@@ -431,7 +431,7 @@ export default function AISolutionsPage() {
 
             {/* AI + Cloud Expertise */}
             <section className="mb-20 mt-16 relative">
-              <div className="absolute top-1/2 -right-40 -translate-y-1/2 w-[350px] h-[350px] rounded-full bg-fuchsia-500/[0.04] blur-[100px]" aria-hidden />
+              <div className="absolute top-1/2 -right-40 -translate-y-1/2 w-[350px] h-[350px] rounded-full bg-fuchsia-500/[0.04] blur-[100px] pointer-events-none" aria-hidden />
               <div className="relative">
                 <Reveal direction="up" blur>
                   <div className="text-center mb-12">

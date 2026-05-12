@@ -55,8 +55,9 @@ export default function EnterpriseReadinessPage() {
               <div className="huly-badge inline-flex items-center justify-center rounded-full px-4 py-1.5 text-xs font-semibold text-violet-400 mb-3">
                 Cloud &amp; AI Engineering for Modern Infrastructure
               </div>
-              <h1 className="text-3xl md:text-4xl lg:text-5xl font-extrabold text-white mb-4 tracking-[-0.04em]">
-                Enterprise readiness &amp; <span className="text-gradient">engagement model</span>
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-white mb-4 tracking-[-0.04em] leading-[1.05]">
+                Enterprise readiness.<br className="hidden sm:block" />
+                <span className="text-zinc-500">Built for your governance.</span>
               </h1>
               <p className="text-sm md:text-base text-zinc-400 max-w-2xl mx-auto">
                 How we handle access, governance, delivery, and support when working with larger teams.
@@ -72,7 +73,7 @@ export default function EnterpriseReadinessPage() {
             <section className="mb-12">
               <div className="flex items-center gap-3 mb-4">
                 <ShieldCheckIcon className="h-6 w-6 text-violet-400" />
-                <h2 className="text-2xl font-bold text-white tracking-[-0.04em]">
+                <h2 className="text-3xl md:text-4xl font-extrabold text-white tracking-[-0.04em]">
                   Security &amp; access model
                 </h2>
               </div>
@@ -116,8 +117,8 @@ export default function EnterpriseReadinessPage() {
             <section className="mb-12">
               <div className="flex items-center gap-3 mb-4">
                 <ClipboardDocumentCheckIcon className="h-6 w-6 text-violet-400" />
-                <h2 className="text-2xl font-bold text-white tracking-[-0.04em]">
-                  AI governance &amp; <span className="text-gradient">risk management</span>
+                <h2 className="text-3xl md:text-4xl font-extrabold text-white tracking-[-0.04em]">
+                  AI governance &amp; risk management
                 </h2>
               </div>
               <p className="text-zinc-400 mb-4 max-w-3xl">
@@ -154,8 +155,8 @@ export default function EnterpriseReadinessPage() {
           {/* Delivery & collaboration */}
           <Reveal direction="up" delay={0.1}>
             <section className="mb-12">
-              <h2 className="text-2xl font-bold text-white mb-3 tracking-[-0.04em]">
-                Delivery, collaboration, and <span className="text-gradient">support</span>
+              <h2 className="text-3xl md:text-4xl font-extrabold text-white mb-3 tracking-[-0.04em]">
+                Delivery, collaboration, and support.
               </h2>
               <p className="text-zinc-400 mb-4 max-w-3xl">
                 We work as an engineering partner, not a black box. Engagements are structured,
@@ -195,8 +196,8 @@ export default function EnterpriseReadinessPage() {
           {/* Working with larger organizations */}
           <Reveal direction="up" delay={0.1}>
             <section className="mb-12">
-              <h2 className="text-2xl font-bold text-white mb-3 tracking-[-0.04em]">
-                Working with larger organizations
+              <h2 className="text-3xl md:text-4xl font-extrabold text-white mb-3 tracking-[-0.04em]">
+                Working with larger organizations.
               </h2>
               <p className="text-zinc-400 mb-4 max-w-3xl">
                 We adapt to your procurement, security review, and change-management processes instead of
@@ -215,7 +216,7 @@ export default function EnterpriseReadinessPage() {
             <section className="mt-10">
               <div className="glass-card rounded-2xl border border-white/[0.06] p-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4 glow-border-card">
                 <div>
-                  <h2 className="text-lg md:text-xl font-bold text-white mb-1 tracking-[-0.04em]">
+                  <h2 className="text-2xl md:text-3xl font-extrabold text-white mb-1 tracking-[-0.04em]">
                     Ready to review your environment?
                   </h2>
                   <p className="text-sm text-zinc-400">
@@ -225,14 +226,14 @@ export default function EnterpriseReadinessPage() {
                 <div className="flex flex-wrap gap-3">
                   <Link
                     href="/free-review"
-                    className="btn-huly cta-glow inline-flex items-center px-5 py-2.5 rounded-xl bg-violet-600 text-white text-sm font-semibold hover:bg-violet-700 transition-colors"
+                    className="btn-huly inline-flex items-center px-7 py-3 rounded-full bg-white text-zinc-900 text-sm font-semibold uppercase tracking-wide hover:bg-zinc-100 transition-all shadow-lg shadow-white/10"
                   >
                     Free Cloud &amp; AI Review
                     <ArrowRightIcon className="ml-2 h-4 w-4" />
                   </Link>
                   <Link
                     href="/contact"
-                    className="btn-huly inline-flex items-center px-5 py-2.5 rounded-xl border border-white/[0.08] text-sm font-semibold text-white hover:border-white/[0.16] transition-colors"
+                    className="btn-huly inline-flex items-center px-7 py-3 rounded-full border border-white/[0.12] text-sm font-semibold uppercase tracking-wide text-white hover:border-white/[0.20] hover:bg-white/[0.05] transition-all"
                   >
                     Talk to an Engineer
                     <ArrowRightIcon className="ml-2 h-4 w-4" />

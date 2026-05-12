@@ -235,7 +235,7 @@ export default function OperationsPage() {
   if (authStatus === "unauthenticated") {
     return (
       <div className="min-h-screen bg-[#09090b] relative">
-        <div className="absolute inset-0 bg-dots opacity-20" aria-hidden />
+        <div className="absolute inset-0 bg-dots opacity-20 pointer-events-none" aria-hidden />
         <div className="relative max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pt-24">
           <EmptyState
             title="Sign in to view operations"
@@ -251,11 +251,11 @@ export default function OperationsPage() {
 
   return (
     <div className="min-h-screen bg-[#09090b] text-white relative">
-      <div className="absolute inset-0 bg-grid-mesh opacity-20" aria-hidden />
+      <div className="absolute inset-0 bg-grid-mesh opacity-20 pointer-events-none" aria-hidden />
       <div className="absolute inset-0 noise-grain pointer-events-none" aria-hidden />
       {/* Floating blur orbs */}
-      <div className="absolute -top-40 -left-40 w-[500px] h-[500px] rounded-full bg-violet-500/[0.05] blur-[120px]" aria-hidden />
-      <div className="absolute top-1/2 -right-60 w-[400px] h-[400px] rounded-full bg-fuchsia-500/[0.04] blur-[100px]" aria-hidden />
+      <div className="absolute -top-40 -left-40 w-[500px] h-[500px] rounded-full bg-violet-500/[0.05] blur-[120px] pointer-events-none" aria-hidden />
+      <div className="absolute top-1/2 -right-60 w-[400px] h-[400px] rounded-full bg-fuchsia-500/[0.04] blur-[100px] pointer-events-none" aria-hidden />
 
       <div className="relative z-10">
         {/* Header */}

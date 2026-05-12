@@ -26,11 +26,11 @@ import { Stagger } from "@/components/motion/Stagger";
 export default function InternalAIPage() {
   return (
     <div className="min-h-screen bg-[#09090b] text-white relative">
-      <div className="absolute inset-0 bg-dots opacity-20" aria-hidden />
+      <div className="absolute inset-0 bg-dots opacity-20 pointer-events-none" aria-hidden />
       <div className="absolute inset-0 noise-grain pointer-events-none" aria-hidden />
       {/* Floating blur orbs */}
-      <div className="absolute -top-40 left-1/4 w-[500px] h-[500px] rounded-full bg-violet-500/[0.06] blur-[130px]" aria-hidden />
-      <div className="absolute top-[45%] -right-60 w-[450px] h-[450px] rounded-full bg-fuchsia-500/[0.04] blur-[110px]" aria-hidden />
+      <div className="absolute -top-40 left-1/4 w-[500px] h-[500px] rounded-full bg-violet-500/[0.06] blur-[130px] pointer-events-none" aria-hidden />
+      <div className="absolute top-[45%] -right-60 w-[450px] h-[450px] rounded-full bg-fuchsia-500/[0.04] blur-[110px] pointer-events-none" aria-hidden />
 
       <div className="relative z-10">
         <Navigation />
@@ -48,7 +48,7 @@ export default function InternalAIPage() {
 
             {/* 1. Overview */}
             <section id="overview" className="mb-12 relative">
-              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] spotlight-orb opacity-40" aria-hidden />
+              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] spotlight-orb opacity-40 pointer-events-none" aria-hidden />
               <div className="relative">
                 <Reveal direction="up" blur delay={0}>
                   <span className="huly-badge text-xs font-semibold text-violet-400 tracking-wide uppercase px-3 py-1 mb-4 inline-block">

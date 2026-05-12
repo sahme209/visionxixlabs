@@ -7,8 +7,8 @@ import { Navigation } from "../../components/Navigation";
 export default function PrivacyPolicyPage() {
   return (
     <div className="min-h-screen bg-[#09090b] text-white relative overflow-hidden">
-      <div className="absolute inset-0 bg-dots opacity-10" aria-hidden />
-      <div className="absolute -top-40 right-0 w-96 h-96 rounded-full bg-violet-600/5 blur-[120px]" aria-hidden />
+      <div className="absolute inset-0 bg-dots opacity-10 pointer-events-none" aria-hidden />
+      <div className="absolute -top-40 right-0 w-96 h-96 rounded-full bg-violet-600/5 blur-[120px] pointer-events-none" aria-hidden />
       <Navigation />
 
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-16">

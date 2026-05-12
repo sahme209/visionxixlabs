@@ -129,16 +129,16 @@ export default function OperatorPricingPage() {
   return (
     <div className="min-h-screen bg-[#09090b] text-white relative overflow-hidden">
       {/* Background effects */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[500px] spotlight-orb opacity-30" aria-hidden />
-      <div className="absolute inset-0 bg-dots opacity-20" aria-hidden />
-      <div className="absolute -top-60 -right-60 w-[500px] h-[500px] rounded-full bg-blue-600/[0.04] blur-[120px]" aria-hidden />
-      <div className="absolute -bottom-60 -left-60 w-[500px] h-[500px] rounded-full bg-indigo-600/[0.04] blur-[120px]" aria-hidden />
-      <div className="absolute top-40 right-0 w-[600px] h-[400px] rounded-full bg-cyan-500/[0.03] blur-[140px]" aria-hidden />
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[500px] spotlight-orb opacity-30 pointer-events-none" aria-hidden />
+      <div className="absolute inset-0 bg-dots opacity-20 pointer-events-none" aria-hidden />
+      <div className="absolute -top-60 -right-60 w-[500px] h-[500px] rounded-full bg-blue-600/[0.04] blur-[120px] pointer-events-none" aria-hidden />
+      <div className="absolute -bottom-60 -left-60 w-[500px] h-[500px] rounded-full bg-indigo-600/[0.04] blur-[120px] pointer-events-none" aria-hidden />
+      <div className="absolute top-40 right-0 w-[600px] h-[400px] rounded-full bg-cyan-500/[0.03] blur-[140px] pointer-events-none" aria-hidden />
       <Navigation />
 
       {/* Header — content-first philosophy section */}
       <section className="pt-36 pb-8 text-center px-4 relative">
-        <div className="beam-sweep absolute inset-0" aria-hidden />
+        <div className="beam-sweep absolute inset-0 pointer-events-none" aria-hidden />
 
         <Reveal>
           <p className="text-sm font-semibold text-blue-400 mb-4 tracking-wide uppercase">
@@ -405,9 +405,9 @@ export default function OperatorPricingPage() {
 
       {/* CTA */}
       <section className="py-24 border-t border-white/[0.04] text-center px-4 relative overflow-hidden">
-        <div className="absolute inset-0 diagonal-streak opacity-10" aria-hidden />
-        <div className="absolute -top-40 -right-40 w-80 h-80 rounded-full bg-blue-500/5 blur-[100px]" aria-hidden />
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 rounded-full bg-indigo-500/5 blur-[100px]" aria-hidden />
+        <div className="absolute inset-0 diagonal-streak opacity-10 pointer-events-none" aria-hidden />
+        <div className="absolute -top-40 -right-40 w-80 h-80 rounded-full bg-blue-500/5 blur-[100px] pointer-events-none" aria-hidden />
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 rounded-full bg-indigo-500/5 blur-[100px] pointer-events-none" aria-hidden />
         <Reveal>
           <h2 className="text-3xl font-bold mb-5 relative">Ready to scan your cloud?</h2>
           <p className="text-zinc-400 mb-10 relative max-w-md mx-auto">7 days free on any paid plan. Cancel anytime.</p>

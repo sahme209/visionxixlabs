@@ -199,12 +199,9 @@ export default function OperatorLandingPage() {
             </div>
           </Reveal>
           <Reveal delay={0.1}>
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-[-0.04em] leading-tight">
-              Your cloud, operated by
-              <br />
-              <span className="text-gradient">
-                an AI agent
-              </span>
+            <h1 className="text-4xl sm:text-5xl lg:text-7xl font-extrabold tracking-[-0.04em] leading-[1.05]">
+              Your cloud, operated by<br />
+              <span className="text-zinc-500">an AI agent.</span>
             </h1>
           </Reveal>
           <Reveal delay={0.2}>
@@ -308,7 +305,7 @@ export default function OperatorLandingPage() {
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <Reveal>
             <div className="text-center mb-16">
-              <h2 className="text-3xl sm:text-4xl font-bold tracking-[-0.04em]">How <span className="text-gradient">Axiom</span> works</h2>
+              <h2 className="text-4xl md:text-5xl font-extrabold tracking-[-0.04em]">How Axiom works.<br className="hidden sm:block" /><span className="text-zinc-500">Scan to execution in minutes.</span></h2>
               <p className="mt-4 text-zinc-400 text-lg max-w-2xl mx-auto">
                 From first scan to approved execution plan in under 5 minutes.
               </p>
@@ -339,7 +336,7 @@ export default function OperatorLandingPage() {
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <Reveal>
             <div className="text-center mb-16">
-              <h2 className="text-3xl sm:text-4xl font-bold tracking-[-0.04em]">Built for <span className="text-gradient">trust</span></h2>
+              <h2 className="text-4xl md:text-5xl font-extrabold tracking-[-0.04em]">Built for trust.<br className="hidden sm:block" /><span className="text-zinc-500">Every action is reversible.</span></h2>
               <p className="mt-4 text-zinc-400 text-lg max-w-2xl mx-auto">
                 We never touch your infrastructure without your explicit approval. Every action is logged, every change is reversible.
               </p>
@@ -391,7 +388,7 @@ export default function OperatorLandingPage() {
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <Reveal>
             <div className="text-center mb-16">
-              <h2 className="text-3xl sm:text-4xl font-bold tracking-[-0.04em]">Simple <span className="text-gradient">pricing</span></h2>
+              <h2 className="text-4xl md:text-5xl font-extrabold tracking-[-0.04em]">Simple pricing.<br className="hidden sm:block" /><span className="text-zinc-500">Start free, scale when ready.</span></h2>
               <p className="mt-4 text-zinc-400 text-lg">
                 Start with a free scan. Upgrade to the full autonomous agent when you&apos;re ready.
               </p>
@@ -447,7 +444,7 @@ export default function OperatorLandingPage() {
       <section id="faq" className="py-20">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
           <Reveal>
-            <h2 className="text-3xl font-bold text-center mb-12 tracking-[-0.04em]">Frequently asked <span className="text-gradient">questions</span></h2>
+            <h2 className="text-4xl md:text-5xl font-extrabold text-center mb-12 tracking-[-0.04em]">Frequently asked questions.</h2>
           </Reveal>
           <div className="space-y-6">
             {faqs.map((faq, i) => (
@@ -473,8 +470,9 @@ export default function OperatorLandingPage() {
         <div className="absolute -bottom-20 -right-20 w-60 h-60 rounded-full bg-fuchsia-600/8 blur-[100px] pointer-events-none" aria-hidden />
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
           <Reveal>
-            <h2 className="text-3xl sm:text-4xl font-bold mb-4 tracking-[-0.04em]">
-              What&apos;s hiding in <span className="text-gradient">your cloud</span>?
+            <h2 className="text-4xl md:text-5xl font-extrabold mb-4 tracking-[-0.04em]">
+              What&apos;s hiding in your cloud?<br className="hidden sm:block" />
+              <span className="text-zinc-500">Find out in 60 seconds.</span>
             </h2>
             <p className="text-lg text-zinc-400 mb-10 max-w-xl mx-auto">
               Connect your AWS account, let Axiom scan and reason, and see exactly what needs fixing — prioritized and ready to act on.

@@ -18,15 +18,15 @@ type BaseProps = {
 };
 
 const baseClasses =
-  "btn-shimmer focus-ring-animated inline-flex items-center justify-center gap-2 rounded-2xl text-sm font-semibold transition-all";
+  "btn-shimmer focus-ring-animated inline-flex items-center justify-center gap-2 rounded-full text-sm font-semibold tracking-wide uppercase transition-all";
 
 const variantClasses: Record<Variant, string> = {
   primary:
-    "px-6 py-3 bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white shadow-lg shadow-violet-500/20 hover:shadow-violet-500/30 shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]",
+    "px-7 py-3 bg-white text-zinc-900 hover:bg-zinc-100 shadow-lg shadow-white/10 hover:shadow-white/20",
   secondary:
-    "px-6 py-3 bg-white text-zinc-900 hover:bg-zinc-100 shadow-sm",
+    "px-7 py-3 bg-white/[0.08] text-white border border-white/[0.12] hover:bg-white/[0.12] hover:border-white/[0.20]",
   ghost:
-    "px-4 py-2 border border-white/[0.08] text-zinc-300 bg-white/[0.02] hover:bg-white/[0.05] hover:shadow-[inset_0_0_20px_rgba(124,58,237,0.06)]",
+    "px-5 py-2.5 border border-white/[0.08] text-zinc-300 bg-white/[0.02] hover:bg-white/[0.05] hover:border-white/[0.16]",
 };
 
 export function AnimatedButton({ variant = "primary", href, className = "", children, onClick, disabled }: BaseProps) {

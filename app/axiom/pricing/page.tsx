@@ -23,9 +23,9 @@ export default function AxiomPricingPage() {
 
   return (
     <div className="min-h-screen bg-[#09090b] text-white relative overflow-hidden">
-      <div className="absolute inset-0 bg-dots opacity-20" aria-hidden />
-      <div className="absolute -top-40 left-1/4 w-[500px] h-[500px] rounded-full bg-blue-500/[0.04] blur-[120px]" aria-hidden />
-      <div className="absolute top-1/3 -right-40 w-[400px] h-[400px] rounded-full bg-indigo-500/[0.04] blur-[100px]" aria-hidden />
+      <div className="absolute inset-0 bg-dots opacity-20 pointer-events-none" aria-hidden />
+      <div className="absolute -top-40 left-1/4 w-[500px] h-[500px] rounded-full bg-blue-500/[0.04] blur-[120px] pointer-events-none" aria-hidden />
+      <div className="absolute top-1/3 -right-40 w-[400px] h-[400px] rounded-full bg-indigo-500/[0.04] blur-[100px] pointer-events-none" aria-hidden />
       <div className="absolute bottom-20 left-10 w-72 h-72 rounded-full bg-cyan-600/[0.04] blur-[100px] pointer-events-none" aria-hidden />
       <div className="relative z-10">
         <Navigation />
@@ -36,7 +36,7 @@ export default function AxiomPricingPage() {
 
           {/* Hero — content-first */}
           <section className="relative overflow-hidden mb-16">
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] spotlight-orb opacity-40" aria-hidden />
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] spotlight-orb opacity-40 pointer-events-none" aria-hidden />
             <div className="relative text-center">
               <Reveal direction="up" blur delay={0}>
                 <span className="huly-badge text-xs font-semibold text-blue-400 tracking-wide uppercase px-3 py-1 mb-6 inline-block">

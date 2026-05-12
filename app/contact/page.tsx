@@ -51,9 +51,9 @@ export default function ContactPage() {
 
   return (
     <div className="min-h-screen bg-[#09090b] relative overflow-hidden">
-      <div className="absolute inset-0 bg-dots opacity-15" aria-hidden />
-      <div className="spotlight-orb absolute -top-40 right-0 w-96 h-96 rounded-full bg-violet-600/5 blur-[120px]" aria-hidden />
-      <div className="absolute bottom-0 -left-40 w-96 h-96 rounded-full bg-fuchsia-600/5 blur-[120px] animate-pulse" aria-hidden />
+      <div className="absolute inset-0 bg-dots opacity-15 pointer-events-none" aria-hidden />
+      <div className="spotlight-orb absolute -top-40 right-0 w-96 h-96 rounded-full bg-violet-600/5 blur-[120px] pointer-events-none" aria-hidden />
+      <div className="absolute bottom-0 -left-40 w-96 h-96 rounded-full bg-fuchsia-600/5 blur-[120px] animate-pulse pointer-events-none" aria-hidden />
       {/* Extra floating orb */}
       <div className="absolute top-1/2 left-1/3 w-64 h-64 rounded-full bg-violet-500/[0.04] blur-[100px] pointer-events-none" aria-hidden />
       <Navigation />
@@ -64,8 +64,9 @@ export default function ContactPage() {
             <p className="huly-badge text-sm font-semibold text-violet-400 mb-3 tracking-wide uppercase">
               Contact
             </p>
-            <h1 className="text-3xl md:text-4xl font-bold mb-4 tracking-[-0.04em]">
-              Get in <span className="text-gradient">touch</span>
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold mb-6 tracking-[-0.04em] leading-[1.05]">
+              Get in touch.<br className="hidden sm:block" />
+              <span className="text-zinc-500">We respond fast.</span>
             </h1>
             <p className="text-zinc-400 max-w-lg">
               Questions about Axiom, enterprise plans, or how autonomous cloud operations works for your infrastructure? We respond within one business day.
@@ -89,7 +90,7 @@ export default function ContactPage() {
           </Reveal>
         ) : (
           <Reveal direction="up" blur delay={0.15}>
-            <form ref={formRef} onSubmit={handleSubmit} className="glass-card rounded-2xl border border-white/[0.06] bg-white/[0.02] p-6 sm:p-8 space-y-5">
+            <form ref={formRef} onSubmit={handleSubmit} className="glass-card rounded-2xl border border-white/[0.08] bg-white/[0.02] p-6 sm:p-8 space-y-5 animated-border card-inner-glow">
               <div className="grid gap-5 sm:grid-cols-2">
                 <div className="floating-label-group">
                   <label htmlFor="name" className="block text-sm font-medium text-zinc-300 mb-1.5">
@@ -151,9 +152,9 @@ export default function ContactPage() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="btn-huly btn-shimmer cta-glow inline-flex items-center gap-2 rounded-lg bg-white px-5 py-2.5 text-sm font-semibold text-zinc-900 hover:bg-zinc-100 transition-colors disabled:opacity-50 shadow-sm"
+                  className="btn-huly btn-shimmer inline-flex items-center gap-2 rounded-full bg-white px-7 py-3 text-sm font-semibold uppercase tracking-wide text-zinc-900 hover:bg-zinc-100 transition-all disabled:opacity-50 shadow-lg shadow-white/10"
                 >
-                  {loading ? "Sending..." : "Send message"}
+                  {loading ? "Sending..." : "Send Message"}
                   {!loading && <ArrowRightIcon className="h-4 w-4" />}
                 </button>
                 <span className="response-time-badge">
