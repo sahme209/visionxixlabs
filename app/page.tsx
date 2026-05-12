@@ -87,7 +87,7 @@ export default function Home() {
               <AnimatedButton
                 href="/operator/onboarding"
                 variant="primary"
-                className="shadow-sm"
+                className="btn-huly cta-glow shadow-lg shadow-violet-500/25 hover:shadow-violet-500/40"
               >
                 Run Axiom
                 <ArrowRightIcon className="ml-2 h-4 w-4" />
@@ -143,7 +143,7 @@ export default function Home() {
           </Reveal>
           <div className="grid md:grid-cols-3 gap-6">
             <Reveal direction="up">
-              <div className="rounded-xl border border-slate-200 dark:border-slate-700/80 bg-white dark:bg-slate-800/80 p-6 h-full">
+              <div className="card-hover rounded-xl border border-slate-200 dark:border-slate-700/80 bg-white dark:bg-slate-800/80 p-6 h-full hover:border-violet-300 dark:hover:border-violet-700 transition-colors">
                 <div className="flex items-center gap-2 mb-3">
                   <span className="w-2 h-2 rounded-full bg-violet-500" />
                   <h3 className="text-base font-semibold text-slate-900 dark:text-slate-100">Deep Scanning</h3>
@@ -159,7 +159,7 @@ export default function Home() {
               </div>
             </Reveal>
             <Reveal direction="up" delay={0.06}>
-              <div className="rounded-xl border border-slate-200 dark:border-slate-700/80 bg-white dark:bg-slate-800/80 p-6 h-full">
+              <div className="card-hover rounded-xl border border-slate-200 dark:border-slate-700/80 bg-white dark:bg-slate-800/80 p-6 h-full hover:border-violet-300 dark:hover:border-violet-700 transition-colors">
                 <div className="flex items-center gap-2 mb-3">
                   <span className="w-2 h-2 rounded-full bg-fuchsia-500" />
                   <h3 className="text-base font-semibold text-slate-900 dark:text-slate-100">Autonomous Reasoning</h3>
@@ -175,7 +175,7 @@ export default function Home() {
               </div>
             </Reveal>
             <Reveal direction="up" delay={0.12}>
-              <div className="rounded-xl border border-slate-200 dark:border-slate-700/80 bg-white dark:bg-slate-800/80 p-6 h-full">
+              <div className="card-hover rounded-xl border border-slate-200 dark:border-slate-700/80 bg-white dark:bg-slate-800/80 p-6 h-full hover:border-violet-300 dark:hover:border-violet-700 transition-colors">
                 <div className="flex items-center gap-2 mb-3">
                   <span className="w-2 h-2 rounded-full bg-emerald-500" />
                   <h3 className="text-base font-semibold text-slate-900 dark:text-slate-100">Governed Execution</h3>
@@ -259,8 +259,11 @@ export default function Home() {
       </AnimateOnScroll>
 
       {/* CTA */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-slate-900 dark:bg-slate-950">
-        <div className="max-w-3xl mx-auto text-center">
+      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-slate-900 dark:bg-slate-950 relative overflow-hidden">
+        <div className="absolute inset-0 diagonal-streak opacity-30" aria-hidden />
+        <div className="absolute -top-40 -right-40 w-80 h-80 rounded-full bg-violet-500/10 blur-3xl" aria-hidden />
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 rounded-full bg-fuchsia-500/10 blur-3xl" aria-hidden />
+        <div className="relative max-w-3xl mx-auto text-center">
           <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
             Your cloud, operated by an agent you control
           </h2>
@@ -270,7 +273,7 @@ export default function Home() {
           <div className="flex flex-wrap justify-center gap-4 mb-6">
             <Link
               href="/operator/onboarding"
-              className="inline-flex items-center gap-2 px-7 py-3.5 bg-white text-slate-900 rounded-xl font-semibold text-sm hover:bg-slate-100 transition-colors"
+              className="btn-huly cta-glow inline-flex items-center gap-2 px-7 py-3.5 bg-white text-slate-900 rounded-xl font-semibold text-sm shadow-lg hover:bg-slate-100 transition-colors"
             >
               Run Axiom
               <ArrowRightIcon className="h-4 w-4" />

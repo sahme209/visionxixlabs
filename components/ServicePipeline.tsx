@@ -86,7 +86,7 @@ export function ServicePipeline() {
             <button
               key={phase.phase}
               onClick={() => setExpandedPhase(isExpanded ? null : pi)}
-              className={`text-left rounded-xl border p-4 transition-all duration-200 ${
+              className={`card-hover text-left rounded-xl border p-4 transition-all duration-200 ${
                 isExpanded
                   ? `${colors.border} ${colors.bg} shadow-sm`
                   : "border-slate-200 dark:border-slate-700/80 bg-white dark:bg-slate-800/80 hover:border-slate-300 dark:hover:border-slate-600"
