@@ -4,7 +4,6 @@ import { useState } from "react";
 import Link from "next/link";
 import { Footer } from "@/components/Footer";
 
-// Stripe Payment Links — env vars override per plan/billing; fallback to plan defaults.
 const STRIPE_LINKS = {
   starter: {
     monthly: process.env.NEXT_PUBLIC_STRIPE_STARTER_MONTHLY || "https://buy.stripe.com/8x25kE1ARe7gbGrcNX6c000",
@@ -23,8 +22,9 @@ const STRIPE_LINKS = {
 function getStripeLink(planId: string, billing: "monthly" | "yearly"): string | null {
   const plan = STRIPE_LINKS[planId as keyof typeof STRIPE_LINKS];
   if (!plan) return null;
-  return plan[billing === "monthly" ? "monthly" : "yearly"];
+  return plan[billing];
 }
+
 import {
   CheckIcon,
   SparklesIcon,
@@ -41,7 +41,6 @@ import { MEMBERSHIP_PLANS, INCLUDED_IN_EVERY_PLAN, ADDONS } from "@/lib/pricing/
 
 type BillingCycle = "monthly" | "yearly";
 
-/** Build plans from canonical membership config */
 const PLANS = (["starter", "growth", "scale", "enterprise"] as const).map((id) => {
   const p = MEMBERSHIP_PLANS[id];
   return {
@@ -55,67 +54,71 @@ const PLANS = (["starter", "growth", "scale", "enterprise"] as const).map((id) =
   };
 });
 
+function getCardClass(planId: string, popular: boolean): string {
+  if (popular) return "electric-card-featured";
+  if (planId === "enterprise") return "electric-card-enterprise";
+  return "electric-card";
+}
+
 export default function VisionXIXAIPricingPage() {
   const [billing, setBilling] = useState<BillingCycle>("monthly");
 
   return (
     <div className="min-h-screen bg-[#09090b] relative overflow-hidden">
-      {/* Background layers */}
       <div className="fixed inset-0 bg-dots opacity-20 pointer-events-none" aria-hidden />
-      <div className="fixed inset-0 noise-grain pointer-events-none" aria-hidden />
+      <div className="absolute -top-32 -right-20 w-72 h-72 rounded-full bg-blue-600/[0.05] blur-[100px] pointer-events-none" aria-hidden />
+      <div className="absolute bottom-0 -left-20 w-60 h-60 rounded-full bg-indigo-600/[0.05] blur-[90px] pointer-events-none" aria-hidden />
+      <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[600px] h-[400px] rounded-full bg-cyan-500/[0.03] blur-[140px] pointer-events-none" aria-hidden />
       <Navigation />
 
-      {/* Hero */}
+      {/* Hero — content-first */}
       <section className="pt-28 pb-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-[500px] spotlight-orb opacity-35 pointer-events-none" aria-hidden />
-        <div className="absolute -top-32 -right-20 w-72 h-72 rounded-full bg-fuchsia-600/8 blur-[100px] pointer-events-none" aria-hidden />
-        <div className="absolute bottom-0 -left-20 w-60 h-60 rounded-full bg-violet-600/8 blur-[90px] pointer-events-none" aria-hidden />
         <div className="max-w-4xl mx-auto text-center relative z-10">
           <Reveal direction="up" blur delay={0.05}>
-            <h1 className="text-4xl sm:text-5xl font-bold text-white tracking-[-0.04em]">
-              One membership. <span className="text-gradient">Full stack.</span>
+            <p className="text-sm font-semibold text-blue-400 mb-4 tracking-wide uppercase">Pricing</p>
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white tracking-[-0.04em] mb-4">
+              One membership. Full stack.
             </h1>
           </Reveal>
           <Reveal direction="up" blur delay={0.1}>
-            <p className="mt-6 text-xl text-zinc-400 max-w-2xl mx-auto">
-              One membership for everything: Axiom, Website Builder, AI assistants, Cloud Studio, and cloud guidance. Production-ready, white-label included.
+            <p className="mt-4 text-xl text-zinc-400 max-w-2xl mx-auto leading-relaxed">
+              We believe in making powerful tools accessible. One membership unlocks Axiom, Website Builder, AI assistants, Cloud Studio, and cloud guidance. Start free, cancel anytime.
             </p>
           </Reveal>
           <Reveal direction="up" blur delay={0.15}>
-            <div className="mt-8 flex items-center justify-center gap-3">
+            <div className="mt-8 inline-flex items-center rounded-full border border-white/[0.08] bg-white/[0.02] p-1 backdrop-blur-sm">
               <button
                 onClick={() => setBilling("monthly")}
-                className={`btn-huly px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                className={`px-6 py-2.5 rounded-full text-sm font-medium transition-all duration-300 ${
                   billing === "monthly"
-                    ? "bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white"
-                    : "text-zinc-400 hover:bg-white/[0.04]"
+                    ? "bg-white text-zinc-900 shadow-sm"
+                    : "text-zinc-400 hover:text-white"
                 }`}
               >
-                Pay monthly
+                Monthly
               </button>
               <button
                 onClick={() => setBilling("yearly")}
-                className={`btn-huly px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2 ${
+                className={`px-6 py-2.5 rounded-full text-sm font-medium transition-all duration-300 flex items-center ${
                   billing === "yearly"
-                    ? "bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white"
-                    : "text-zinc-400 hover:bg-white/[0.04]"
+                    ? "bg-white text-zinc-900 shadow-sm"
+                    : "text-zinc-400 hover:text-white"
                 }`}
               >
-                Pay yearly
-                <span className="huly-badge text-xs bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded-full">
-                  Save 40%
-                </span>
+                Yearly
+                <span className="ml-1.5 text-emerald-400 text-xs font-semibold">Save 40%</span>
               </button>
             </div>
-            <p className="mt-2 text-sm text-zinc-500">7 days free, then charged. Cancel anytime before trial ends.</p>
+            <p className="mt-3 text-sm text-zinc-600">7 days free, then charged. Cancel anytime before trial ends.</p>
           </Reveal>
           <Reveal direction="up" blur delay={0.2}>
-            <div className="mt-12 glass-card rounded-2xl border border-white/[0.06] p-6 text-left max-w-3xl mx-auto">
+            <div className="mt-12 rounded-2xl border border-white/[0.06] bg-white/[0.02] backdrop-blur-sm p-6 text-left max-w-3xl mx-auto">
               <h2 className="text-sm font-bold uppercase tracking-wider text-zinc-500 mb-3">Included in every plan</h2>
-              <ul className="feature-list-animated grid sm:grid-cols-2 gap-3 text-sm text-zinc-300">
+              <ul className="grid sm:grid-cols-2 gap-3 text-sm text-zinc-300">
                 {INCLUDED_IN_EVERY_PLAN.map((item) => (
                   <li key={item} className="flex items-center gap-2">
-                    <CheckIcon className="h-5 w-5 text-emerald-500 shrink-0" />
+                    <CheckIcon className="h-4 w-4 text-emerald-400 shrink-0" />
                     {item}
                   </li>
                 ))}
@@ -127,10 +130,10 @@ export default function VisionXIXAIPricingPage() {
 
       <div className="section-divider" />
 
-      {/* Plans Grid */}
-      <section id="plans" className="pb-20 px-4 sm:px-6 lg:px-8 scroll-mt-28">
-        <div className="max-w-6xl mx-auto">
-          <div className="grid md:grid-cols-2 xl:grid-cols-4 gap-6">
+      {/* Plans Grid — Electric Glow */}
+      <section id="plans" className="pb-20 pt-12 px-4 sm:px-6 lg:px-8 scroll-mt-28">
+        <div className="max-w-7xl mx-auto">
+          <div className="grid md:grid-cols-2 xl:grid-cols-4 gap-8">
             <Stagger delay={0.1} interval={0.06}>
               {PLANS.map((plan) => {
                 const monthlyPrice = plan.monthlyPrice;
@@ -138,50 +141,43 @@ export default function VisionXIXAIPricingPage() {
                 const yearlyMonthly = yearlyTotal != null ? Math.round(yearlyTotal / 12) : null;
                 const price = billing === "monthly" ? monthlyPrice : yearlyMonthly;
                 const isEnterprise = plan.id === "enterprise";
+                const highlighted = plan.popular;
                 return (
                   <div
                     key={plan.id}
-                    className={`animated-border card-inner-glow card-hover relative rounded-2xl border-2 p-6 flex flex-col ${
-                      plan.popular
-                        ? "border-violet-500 bg-violet-500/10 shadow-lg shadow-violet-500/10"
-                        : "border-white/[0.06] bg-white/[0.02]"
-                    }`}
+                    className={`group relative flex flex-col ${getCardClass(plan.id, highlighted)}`}
                   >
-                    {plan.popular && (
-                      <span className="huly-badge absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full bg-gradient-to-r from-violet-600 to-fuchsia-600 text-xs font-semibold text-white">
+                    {highlighted && (
+                      <div className="absolute -inset-4 rounded-3xl bg-indigo-500/[0.06] blur-2xl pointer-events-none" aria-hidden />
+                    )}
+                    {highlighted && (
+                      <span className="absolute -top-3.5 left-1/2 -translate-x-1/2 z-10 text-xs font-semibold text-indigo-300 bg-indigo-500/15 border border-indigo-500/25 px-4 py-1 rounded-full whitespace-nowrap">
                         Most popular
                       </span>
                     )}
-                    <h2 className="text-lg font-bold text-white">{plan.name}</h2>
-                    <p className="text-sm text-zinc-500 mt-1">{plan.desc}</p>
-                    <div className="mt-4 mb-6">
-                      {isEnterprise ? (
-                        <div className="flex items-baseline gap-1">
-                          <span className="text-2xl font-bold text-white">Custom</span>
-                        </div>
-                      ) : (
-                        <div className="flex items-baseline gap-1">
-                          <span className="text-3xl font-bold text-gradient">${price}</span>
-                          <span className="text-zinc-500">/mo</span>
-                          {billing === "yearly" && yearlyTotal != null && (
-                            <span className="text-xs text-zinc-600 ml-2">${yearlyTotal}/yr</span>
-                          )}
-                        </div>
-                      )}
-                    </div>
-                    <ul className="feature-list-animated space-y-2 flex-1">
-                      {plan.features.map((f) => (
-                        <li key={f} className="flex items-start gap-2 text-sm text-zinc-400">
-                          <CheckIcon className="h-5 w-5 text-emerald-500 shrink-0 mt-0.5" />
-                          {f}
-                        </li>
-                      ))}
-                    </ul>
-                    <div className="mt-6 pt-6 border-t border-white/[0.06]">
+                    <div className="relative p-8 flex flex-col flex-1 z-10">
+                      <h2 className="text-xl font-bold text-white">{plan.name}</h2>
+                      <p className="text-sm text-zinc-500 mt-1">{plan.desc}</p>
+                      <div className="mt-6 mb-6">
+                        {isEnterprise ? (
+                          <span className="text-4xl font-bold text-white">Custom</span>
+                        ) : (
+                          <>
+                            <span className="text-2xl font-medium text-zinc-400 align-super">$</span>
+                            <span className="text-4xl font-bold text-white">{price}</span>
+                            <span className="text-zinc-500 ml-1">/mo</span>
+                            {billing === "yearly" && yearlyTotal != null && (
+                              <span className="text-xs text-zinc-600 ml-2">${yearlyTotal}/yr</span>
+                            )}
+                          </>
+                        )}
+                      </div>
+
+                      {/* CTA — solid white pill */}
                       {isEnterprise ? (
                         <a
                           href={`mailto:${SUPPORT_EMAIL}?subject=Vision XIX AI - Enterprise`}
-                          className="btn-huly block w-full rounded-xl border-2 border-violet-600 px-4 py-3 text-center text-sm font-semibold text-violet-400 hover:bg-violet-500/10 transition-colors"
+                          className="w-full py-3 rounded-full text-center font-semibold border border-amber-500/25 text-amber-300 hover:bg-amber-500/10 transition-all duration-300 block"
                         >
                           Contact sales
                         </a>
@@ -192,20 +188,37 @@ export default function VisionXIXAIPricingPage() {
                             <a
                               href={stripeLink}
                               rel="noopener noreferrer"
-                              className="btn-huly cta-glow block w-full rounded-xl bg-gradient-to-r from-violet-600 to-fuchsia-600 px-4 py-3 text-center text-sm font-semibold text-white hover:shadow-lg hover:shadow-violet-500/30 transition-all"
+                              className={`w-full py-3 rounded-full text-center font-semibold transition-all duration-300 block ${
+                                highlighted
+                                  ? "bg-white text-zinc-900 hover:bg-zinc-100 shadow-[0_0_20px_rgba(255,255,255,0.1)]"
+                                  : "bg-white/[0.08] text-white hover:bg-white/[0.14] border border-white/[0.08]"
+                              }`}
                             >
                               Start free trial
                             </a>
                           ) : (
                             <Link
                               href="/auth/signup"
-                              className="btn-huly cta-glow block w-full rounded-xl bg-gradient-to-r from-violet-600 to-fuchsia-600 px-4 py-3 text-center text-sm font-semibold text-white hover:shadow-lg hover:shadow-violet-500/30 transition-all"
+                              className={`w-full py-3 rounded-full text-center font-semibold transition-all duration-300 block ${
+                                highlighted
+                                  ? "bg-white text-zinc-900 hover:bg-zinc-100 shadow-[0_0_20px_rgba(255,255,255,0.1)]"
+                                  : "bg-white/[0.08] text-white hover:bg-white/[0.14] border border-white/[0.08]"
+                              }`}
                             >
                               Start free trial
                             </Link>
                           );
                         })()
                       )}
+
+                      <ul className="space-y-2.5 flex-1 mt-8">
+                        {plan.features.map((f) => (
+                          <li key={f} className="flex items-start gap-2 text-sm">
+                            <CheckIcon className="h-4 w-4 text-emerald-400 shrink-0 mt-0.5" />
+                            <span className="text-zinc-300">{f}</span>
+                          </li>
+                        ))}
+                      </ul>
                     </div>
                   </div>
                 );
@@ -215,13 +228,13 @@ export default function VisionXIXAIPricingPage() {
 
           <div className="mt-16 max-w-4xl mx-auto">
             <Reveal direction="up" blur>
-              <h2 className="text-xl font-bold text-white mb-4 tracking-[-0.04em]">What each plan <span className="text-gradient">delivers</span></h2>
+              <h2 className="text-xl font-bold text-white mb-4 tracking-[-0.04em]">What each plan delivers</h2>
               <p className="text-sm text-zinc-400 mb-4">
                 One membership unlocks Axiom, Website Builder, AI assistants, Cloud Studio, and automation. Capabilities scale with your plan.
               </p>
             </Reveal>
             <Reveal direction="up" blur delay={0.1}>
-              <div className="glass-card rounded-xl border border-white/[0.06] overflow-hidden mb-12">
+              <div className="rounded-2xl border border-white/[0.06] overflow-hidden backdrop-blur-sm mb-12">
                 <table className="w-full text-sm">
                   <thead>
                     <tr className="border-b border-white/[0.06] bg-white/[0.02]">
@@ -267,10 +280,10 @@ export default function VisionXIXAIPricingPage() {
             </Reveal>
 
             <Reveal direction="up" blur>
-              <h2 className="text-xl font-bold text-white mb-4 tracking-[-0.04em]"><span className="text-gradient">Add-ons</span></h2>
+              <h2 className="text-xl font-bold text-white mb-4 tracking-[-0.04em]">Add-ons</h2>
             </Reveal>
             <Reveal direction="up" blur delay={0.1}>
-              <div className="glass-card rounded-xl border border-white/[0.06] p-6">
+              <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] backdrop-blur-sm p-6">
                 <div className="space-y-4">
                   {ADDONS.map((addon) => (
                     <div key={addon.name} className="flex items-center justify-between py-2 border-b border-white/[0.04] last:border-0">
@@ -293,11 +306,10 @@ export default function VisionXIXAIPricingPage() {
 
       {/* Why unified */}
       <section className="py-16 px-4 sm:px-6 lg:px-8 relative">
-        <div className="absolute inset-0 bg-grid-mesh opacity-20 pointer-events-none" aria-hidden />
         <div className="max-w-4xl mx-auto relative z-10">
           <Reveal direction="up" blur>
             <h2 className="text-2xl font-bold text-center text-white mb-12 tracking-[-0.04em]">
-              Why a unified membership <span className="text-gradient">beats point solutions</span>
+              Why a unified membership beats point solutions
             </h2>
           </Reveal>
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -308,10 +320,12 @@ export default function VisionXIXAIPricingPage() {
                 { icon: RocketLaunchIcon, title: "More value per $", desc: "More operations, pages, and projects per dollar." },
                 { icon: BuildingOffice2Icon, title: "Enterprise-ready", desc: "SOC2-ready, RBAC, optional self-host." },
               ].map((item) => (
-                <div key={item.title} className="animated-border card-inner-glow card-hover group rounded-xl border border-white/[0.06] bg-white/[0.02] p-5 text-center">
-                  <item.icon className="h-8 w-8 text-violet-400 mx-auto mb-2" />
-                  <p className="font-semibold text-white">{item.title}</p>
-                  <p className="text-sm text-zinc-500 mt-1">{item.desc}</p>
+                <div key={item.title} className="electric-card group p-5 text-center">
+                  <div className="relative z-10">
+                    <item.icon className="h-8 w-8 text-blue-400 mx-auto mb-2" />
+                    <p className="font-semibold text-white">{item.title}</p>
+                    <p className="text-sm text-zinc-500 mt-1">{item.desc}</p>
+                  </div>
                 </div>
               ))}
             </Stagger>
@@ -326,7 +340,7 @@ export default function VisionXIXAIPricingPage() {
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[300px] spotlight-orb opacity-20 pointer-events-none" aria-hidden />
         <div className="max-w-3xl mx-auto text-center relative z-10">
           <Reveal direction="up" blur>
-            <h2 className="text-2xl font-bold text-white mb-4 tracking-[-0.04em]">One plan. <span className="text-gradient">All services.</span></h2>
+            <h2 className="text-2xl font-bold text-white mb-4 tracking-[-0.04em]">One plan. All services.</h2>
             <p className="text-zinc-400 mb-8">
               Get Axiom, Website Builder, AI assistants, and cloud guidance — one membership. 7 days free, then charged. Cancel anytime.
             </p>
@@ -335,14 +349,14 @@ export default function VisionXIXAIPricingPage() {
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <Link
                 href="/visionxix-ai-assistant"
-                className="cta-glow btn-huly inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-violet-600 to-fuchsia-600 px-6 py-3 text-base font-semibold text-white hover:shadow-lg hover:shadow-violet-500/30 transition-all"
+                className="inline-flex items-center gap-2 rounded-full bg-white px-6 py-3 text-base font-semibold text-zinc-900 hover:bg-zinc-100 transition-all shadow-[0_0_20px_rgba(255,255,255,0.1)]"
               >
                 Try live demo
                 <ArrowRightIcon className="h-5 w-5" />
               </Link>
               <Link
                 href="/visionxix-ai/pricing#plans"
-                className="btn-huly inline-flex items-center gap-2 rounded-full border-2 border-violet-600 px-6 py-3 text-base font-semibold text-violet-400 hover:bg-violet-500/10 transition-colors"
+                className="inline-flex items-center gap-2 rounded-full border border-white/[0.1] px-6 py-3 text-base font-semibold text-zinc-400 hover:text-white hover:border-white/[0.2] transition-colors"
               >
                 View plans
               </Link>
@@ -350,10 +364,6 @@ export default function VisionXIXAIPricingPage() {
           </Reveal>
         </div>
       </section>
-
-      {/* Floating blur orbs */}
-      <div className="absolute bottom-1/4 left-10 w-72 h-72 bg-violet-600/10 rounded-full blur-3xl pointer-events-none" aria-hidden />
-      <div className="absolute bottom-1/3 right-0 w-96 h-96 bg-fuchsia-600/[0.06] rounded-full blur-3xl pointer-events-none" aria-hidden />
 
       <Footer />
     </div>

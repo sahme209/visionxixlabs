@@ -40,7 +40,7 @@ export default async function InternalPricingPage({ searchParams }: Props) {
             {pricingTiersInternal.map((tier) => (
               <div
                 key={tier.id}
-                className="glass-card card-hover animated-border card-inner-glow rounded-2xl p-5"
+                className="electric-card p-5"
               >
                 <div className="flex flex-wrap items-baseline justify-between gap-2 mb-2">
                   <h2 className="text-lg font-semibold text-white tracking-[-0.04em]">{tier.name}</h2>

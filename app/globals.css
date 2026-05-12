@@ -1405,6 +1405,210 @@ h1, h2, h3, h4, h5, h6 {
   z-index: 0;
 }
 
+/* ══════════════════════════════════════════════════════════════════
+   Huly.io Electric Glow Pricing Cards
+   Intense plasma/lightning border glow effect
+   ══════════════════════════════════════════════════════════════════ */
+
+@keyframes electric-pulse {
+  0%, 100% {
+    box-shadow:
+      0 0 15px rgba(59, 130, 246, 0.1),
+      0 0 30px rgba(6, 182, 212, 0.06),
+      0 0 2px rgba(59, 130, 246, 0.3),
+      inset 0 0 20px rgba(59, 130, 246, 0.02);
+  }
+  50% {
+    box-shadow:
+      0 0 20px rgba(59, 130, 246, 0.18),
+      0 0 40px rgba(6, 182, 212, 0.1),
+      0 0 4px rgba(59, 130, 246, 0.4),
+      inset 0 0 30px rgba(59, 130, 246, 0.03);
+  }
+}
+
+@keyframes electric-pulse-featured {
+  0%, 100% {
+    box-shadow:
+      0 0 20px rgba(99, 102, 241, 0.25),
+      0 0 40px rgba(124, 58, 237, 0.15),
+      0 0 80px rgba(59, 130, 246, 0.08),
+      0 0 4px rgba(139, 92, 246, 0.5),
+      inset 0 0 30px rgba(99, 102, 241, 0.04);
+  }
+  50% {
+    box-shadow:
+      0 0 30px rgba(99, 102, 241, 0.35),
+      0 0 60px rgba(124, 58, 237, 0.22),
+      0 0 100px rgba(59, 130, 246, 0.12),
+      0 0 6px rgba(139, 92, 246, 0.6),
+      inset 0 0 40px rgba(99, 102, 241, 0.06);
+  }
+}
+
+@keyframes electric-border-flow {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.electric-card {
+  position: relative;
+  background: rgba(255, 255, 255, 0.015);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(59, 130, 246, 0.12);
+  border-radius: 1.25rem;
+  overflow: hidden;
+  transition: all 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  animation: electric-pulse 5s ease-in-out infinite;
+}
+
+.electric-card::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(
+    270deg,
+    rgba(59, 130, 246, 0.2),
+    rgba(6, 182, 212, 0.15),
+    rgba(99, 102, 241, 0.2),
+    rgba(6, 182, 212, 0.15),
+    rgba(59, 130, 246, 0.2)
+  );
+  background-size: 400% 100%;
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  animation: electric-border-flow 6s ease infinite;
+  opacity: 0.6;
+}
+
+.electric-card::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.4), rgba(6, 182, 212, 0.3), rgba(59, 130, 246, 0.4), transparent);
+}
+
+.electric-card:hover {
+  border-color: rgba(59, 130, 246, 0.25);
+  transform: translateY(-4px);
+}
+
+.electric-card:hover::before {
+  opacity: 1;
+}
+
+/* Featured — intense plasma glow */
+.electric-card-featured {
+  position: relative;
+  background: rgba(99, 102, 241, 0.03);
+  backdrop-filter: blur(24px);
+  border: 1px solid rgba(99, 102, 241, 0.3);
+  border-radius: 1.25rem;
+  overflow: hidden;
+  transition: all 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  animation: electric-pulse-featured 4s ease-in-out infinite;
+  transform: scale(1.03);
+}
+
+.electric-card-featured::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1.5px;
+  background: linear-gradient(
+    270deg,
+    rgba(99, 102, 241, 0.5),
+    rgba(124, 58, 237, 0.4),
+    rgba(59, 130, 246, 0.5),
+    rgba(139, 92, 246, 0.45),
+    rgba(99, 102, 241, 0.5)
+  );
+  background-size: 400% 100%;
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  animation: electric-border-flow 4s ease infinite;
+  opacity: 1;
+}
+
+.electric-card-featured::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(99, 102, 241, 0.7), rgba(139, 92, 246, 0.6), rgba(99, 102, 241, 0.7), transparent);
+}
+
+.electric-card-featured:hover {
+  border-color: rgba(99, 102, 241, 0.45);
+  transform: scale(1.03) translateY(-4px);
+}
+
+/* Enterprise — amber electric variant */
+.electric-card-enterprise {
+  position: relative;
+  background: rgba(245, 158, 11, 0.015);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(245, 158, 11, 0.15);
+  border-radius: 1.25rem;
+  overflow: hidden;
+  transition: all 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.electric-card-enterprise::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(
+    270deg,
+    rgba(245, 158, 11, 0.3),
+    rgba(251, 191, 36, 0.2),
+    rgba(245, 158, 11, 0.3),
+    rgba(251, 191, 36, 0.2),
+    rgba(245, 158, 11, 0.3)
+  );
+  background-size: 400% 100%;
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  animation: electric-border-flow 6s ease infinite;
+  opacity: 0.5;
+}
+
+.electric-card-enterprise::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(245, 158, 11, 0.5), rgba(251, 191, 36, 0.4), rgba(245, 158, 11, 0.5), transparent);
+}
+
+.electric-card-enterprise:hover {
+  border-color: rgba(245, 158, 11, 0.3);
+  transform: translateY(-4px);
+}
+
+.electric-card-enterprise:hover::before {
+  opacity: 0.9;
+}
+
 /* ── Live demo section pulse ring ────────────────────────────── */
 @keyframes demo-ring-expand {
   0% { transform: scale(0.95); opacity: 0.6; }

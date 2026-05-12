@@ -117,19 +117,11 @@ const comparisonRows = [
   { feature: "SSO", starter: "—", growth: "—", scale: "—", enterprise: "SAML + OIDC" },
 ];
 
-const TIER_HOVER_GRADIENT: Record<MembershipPlanId, string> = {
-  starter: "from-zinc-500/[0.03]",
-  growth: "from-violet-500/[0.05]",
-  scale: "from-fuchsia-500/[0.04]",
-  enterprise: "from-amber-500/[0.03]",
-};
-
-const TIER_GLOW_COLOR: Record<MembershipPlanId, string> = {
-  starter: "bg-zinc-400/[0.08]",
-  growth: "bg-violet-500/[0.08]",
-  scale: "bg-fuchsia-500/[0.08]",
-  enterprise: "bg-amber-500/[0.08]",
-};
+function getCardClass(planId: MembershipPlanId, highlighted: boolean): string {
+  if (highlighted) return "electric-card-featured";
+  if (planId === "enterprise") return "electric-card-enterprise";
+  return "electric-card";
+}
 
 export default function OperatorPricingPage() {
   const [billing, setBilling] = useState<BillingCycle>("monthly");
@@ -139,33 +131,41 @@ export default function OperatorPricingPage() {
       {/* Background effects */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[500px] spotlight-orb opacity-30" aria-hidden />
       <div className="absolute inset-0 bg-dots opacity-20" aria-hidden />
-      <div className="absolute -top-60 -right-60 w-[500px] h-[500px] rounded-full bg-violet-600/5 blur-[120px]" aria-hidden />
-      <div className="absolute -bottom-60 -left-60 w-[500px] h-[500px] rounded-full bg-fuchsia-600/5 blur-[120px]" aria-hidden />
-      {/* Second spotlight orb — fuchsia tint, right side */}
-      <div className="absolute top-40 right-0 w-[600px] h-[400px] rounded-full bg-fuchsia-500/[0.04] blur-[140px]" aria-hidden />
+      <div className="absolute -top-60 -right-60 w-[500px] h-[500px] rounded-full bg-blue-600/[0.04] blur-[120px]" aria-hidden />
+      <div className="absolute -bottom-60 -left-60 w-[500px] h-[500px] rounded-full bg-indigo-600/[0.04] blur-[120px]" aria-hidden />
+      <div className="absolute top-40 right-0 w-[600px] h-[400px] rounded-full bg-cyan-500/[0.03] blur-[140px]" aria-hidden />
       <Navigation />
 
-      {/* Header */}
-      <section className="pt-36 pb-14 text-center px-4 relative">
-        {/* Beam sweep behind header */}
+      {/* Header — content-first philosophy section */}
+      <section className="pt-36 pb-8 text-center px-4 relative">
         <div className="beam-sweep absolute inset-0" aria-hidden />
 
         <Reveal>
-          <p className="text-sm font-semibold text-violet-400 mb-4 tracking-wide uppercase">
+          <p className="text-sm font-semibold text-blue-400 mb-4 tracking-wide uppercase">
             Pricing
           </p>
-          <h1 className="text-4xl sm:text-5xl font-bold mb-5 tracking-tight">
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-6 tracking-tight">
             Simple, transparent pricing
           </h1>
-          <p className="text-zinc-400 text-lg max-w-xl mx-auto leading-relaxed">
-            Start with a free scan. Upgrade to the full autonomous agent with reasoning, execution, and governance.
-          </p>
+        </Reveal>
 
-          {/* Billing Toggle — Huly-style pill */}
+        <Reveal delay={0.1}>
+          <p className="text-zinc-400 text-lg sm:text-xl max-w-2xl mx-auto leading-relaxed mb-4">
+            We believe that great cloud infrastructure tooling should be accessible to teams of all sizes.
+            Start free, upgrade when your team is ready.
+          </p>
+          <p className="text-zinc-500 text-base max-w-xl mx-auto leading-relaxed">
+            Every plan includes a 7-day free trial. No credit card required to start.
+            Cancel anytime before your trial ends.
+          </p>
+        </Reveal>
+
+        {/* Billing Toggle — Huly-style pill */}
+        <Reveal delay={0.2}>
           <div className="mt-10 inline-flex items-center rounded-full border border-white/[0.08] bg-white/[0.02] p-1 backdrop-blur-sm">
             <button
               onClick={() => setBilling("monthly")}
-              className={`px-5 py-2 rounded-full text-sm font-medium transition-all duration-300 ${
+              className={`px-6 py-2.5 rounded-full text-sm font-medium transition-all duration-300 ${
                 billing === "monthly"
                   ? "bg-white text-zinc-900 shadow-sm"
                   : "text-zinc-400 hover:text-white"
@@ -175,7 +175,7 @@ export default function OperatorPricingPage() {
             </button>
             <button
               onClick={() => setBilling("yearly")}
-              className={`px-5 py-2 rounded-full text-sm font-medium transition-all duration-300 flex items-center ${
+              className={`px-6 py-2.5 rounded-full text-sm font-medium transition-all duration-300 flex items-center ${
                 billing === "yearly"
                   ? "bg-white text-zinc-900 shadow-sm"
                   : "text-zinc-400 hover:text-white"
@@ -185,13 +185,12 @@ export default function OperatorPricingPage() {
               <span className="ml-1.5 text-emerald-400 text-xs font-semibold">Save 40%</span>
             </button>
           </div>
-          <p className="mt-3 text-sm text-zinc-600">7 days free, then charged. Cancel anytime before trial ends.</p>
         </Reveal>
       </section>
 
-      {/* Plan Cards */}
-      <section className="pb-24 px-4">
-        <Stagger className="grid md:grid-cols-2 xl:grid-cols-4 gap-6 max-w-6xl mx-auto" interval={0.06}>
+      {/* Plan Cards — Electric Glow Style */}
+      <section className="pb-28 pt-10 px-4">
+        <Stagger className="grid md:grid-cols-2 xl:grid-cols-4 gap-8 max-w-7xl mx-auto items-start" interval={0.08}>
           {PLAN_ORDER.map((planId) => {
             const plan = MEMBERSHIP_PLANS[planId];
             const axiom = AXIOM_FEATURES[planId];
@@ -205,63 +204,83 @@ export default function OperatorPricingPage() {
             return (
               <div
                 key={planId}
-                className={`group relative overflow-hidden rounded-2xl backdrop-blur-sm transition-all duration-500 flex flex-col ${
-                  highlighted
-                    ? "featured-glow border border-violet-500/30 bg-white/[0.04] scale-[1.02] ring-1 ring-violet-500/10"
-                    : isEnterprise
-                      ? "enterprise-border border border-amber-500/20 bg-gradient-to-b from-amber-500/[0.03] to-transparent"
-                      : "border border-white/[0.06] bg-white/[0.02] hover:border-white/[0.12]"
-                }`}
+                className={`group relative flex flex-col ${getCardClass(planId, highlighted)}`}
               >
-                {/* Gradient overlay on hover */}
-                <div className={`absolute inset-0 bg-gradient-to-b ${TIER_HOVER_GRADIENT[planId]} to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none`} aria-hidden />
-                {/* Card inner glow orb on hover */}
-                <div className={`absolute top-0 left-1/2 -translate-x-1/2 w-3/4 h-32 ${TIER_GLOW_COLOR[planId]} rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none`} aria-hidden />
-                {/* Top accent line for featured card */}
+                {/* Ambient glow orb behind featured card */}
                 {highlighted && (
-                  <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-violet-500 to-transparent" aria-hidden />
-                )}
-                {/* Top accent line for enterprise card */}
-                {isEnterprise && (
-                  <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-amber-500/60 to-transparent" aria-hidden />
+                  <div className="absolute -inset-4 rounded-3xl bg-indigo-500/[0.06] blur-2xl pointer-events-none" aria-hidden />
                 )}
 
                 {highlighted && (
-                  <span className="absolute -top-3 left-6 z-10 text-xs font-semibold text-violet-300 bg-violet-500/15 border border-violet-500/20 px-3 py-1 rounded-full flex items-center gap-1.5">
+                  <span className="absolute -top-3.5 left-1/2 -translate-x-1/2 z-10 text-xs font-semibold text-indigo-300 bg-indigo-500/15 border border-indigo-500/25 px-4 py-1 rounded-full flex items-center gap-1.5 whitespace-nowrap">
                     <SparklesIcon className="h-3 w-3" />
                     Most popular
                   </span>
                 )}
 
                 {/* Content */}
-                <div className="relative p-8 flex flex-col flex-1">
+                <div className="relative p-8 flex flex-col flex-1 z-10">
                   <h3 className="text-xl font-bold mt-1">{plan.name}</h3>
-                  <p className="text-xs text-violet-400 font-medium mt-1">{plan.axiom.label}</p>
+                  <p className="text-xs text-blue-400 font-medium mt-1">{plan.axiom.label}</p>
 
-                  {/* Price display — Huly-style */}
-                  <div className="mt-5 flex items-baseline">
+                  {/* Price display */}
+                  <div className="mt-6 flex items-baseline">
                     {isEnterprise ? (
                       <span className="text-5xl font-bold tracking-tight">Custom</span>
                     ) : (
                       <>
                         <span className="text-2xl font-medium text-zinc-400 align-super">$</span>
                         <span className="text-5xl font-bold tracking-tight">{price}</span>
-                        <span className="text-sm text-zinc-500 ml-1">
-                          /mo
-                        </span>
+                        <span className="text-sm text-zinc-500 ml-1">/mo</span>
                         {billing === "yearly" && yearlyTotal != null && (
-                          <span className="ml-2 text-xs text-zinc-600">
-                            ${yearlyTotal}/yr
-                          </span>
+                          <span className="ml-2 text-xs text-zinc-600">${yearlyTotal}/yr</span>
                         )}
                       </>
                     )}
                   </div>
 
-                  <p className="text-sm text-zinc-400 mt-3 mb-7 leading-relaxed">{plan.description}</p>
+                  <p className="text-sm text-zinc-400 mt-4 mb-8 leading-relaxed">{plan.description}</p>
 
-                  {/* Feature list with stagger animation */}
-                  <ul className="space-y-3 flex-1 feature-list-animated">
+                  {/* CTA button — solid white pill */}
+                  {isEnterprise ? (
+                    <a
+                      href={`mailto:${SUPPORT_EMAIL}?subject=Axiom - Enterprise`}
+                      className="w-full inline-flex items-center justify-center gap-2 rounded-full border border-amber-500/25 px-4 py-3 text-sm font-semibold text-amber-300 hover:bg-amber-500/10 transition-all duration-300"
+                    >
+                      Contact sales
+                      <ArrowRightIcon className="h-3.5 w-3.5" />
+                    </a>
+                  ) : (
+                    (() => {
+                      const stripeLink = getStripeLink(planId, billing);
+                      return stripeLink ? (
+                        <a
+                          href={stripeLink}
+                          rel="noopener noreferrer"
+                          className={`w-full inline-flex items-center justify-center gap-2 rounded-full px-4 py-3 text-sm font-semibold transition-all duration-300 ${
+                            highlighted
+                              ? "bg-white text-zinc-900 hover:bg-zinc-100 shadow-[0_0_20px_rgba(255,255,255,0.1)]"
+                              : "bg-white/[0.08] text-white hover:bg-white/[0.14] border border-white/[0.08]"
+                          }`}
+                        >
+                          Start free trial
+                          <ArrowRightIcon className="h-3.5 w-3.5" />
+                        </a>
+                      ) : (
+                        <AnimatedButton
+                          href="/auth/signup?redirect=/operator/onboarding"
+                          variant={highlighted ? "primary" : "secondary"}
+                          className="w-full justify-center rounded-full"
+                        >
+                          Start free trial
+                          <ArrowRightIcon className="h-3.5 w-3.5" />
+                        </AnimatedButton>
+                      );
+                    })()
+                  )}
+
+                  {/* Feature list */}
+                  <ul className="space-y-3 mt-8 flex-1">
                     {axiom.included.map((f) => (
                       <li key={f} className="flex items-start gap-2.5 text-sm">
                         <CheckCircleIcon className="h-4 w-4 mt-0.5 flex-shrink-0 text-emerald-400" />
@@ -275,44 +294,6 @@ export default function OperatorPricingPage() {
                       </li>
                     ))}
                   </ul>
-
-                  {/* CTA button */}
-                  {isEnterprise ? (
-                    <a
-                      href={`mailto:${SUPPORT_EMAIL}?subject=Axiom - Enterprise`}
-                      className="mt-8 w-full inline-flex items-center justify-center gap-2 rounded-xl border border-amber-500/20 px-4 py-3 text-sm font-semibold text-amber-300 hover:bg-amber-500/10 transition-all duration-300"
-                    >
-                      Contact sales
-                      <ArrowRightIcon className="h-3.5 w-3.5" />
-                    </a>
-                  ) : (
-                    (() => {
-                      const stripeLink = getStripeLink(planId, billing);
-                      return stripeLink ? (
-                        <a
-                          href={stripeLink}
-                          rel="noopener noreferrer"
-                          className={`mt-8 w-full inline-flex items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold transition-all duration-300 ${
-                            highlighted
-                              ? "btn-huly cta-glow bg-white text-zinc-900 hover:bg-zinc-100 shadow-sm"
-                              : "bg-white/[0.06] text-white hover:bg-white/[0.10] border border-white/[0.06]"
-                          }`}
-                        >
-                          Start free trial
-                          <ArrowRightIcon className="h-3.5 w-3.5" />
-                        </a>
-                      ) : (
-                        <AnimatedButton
-                          href="/auth/signup?redirect=/operator/onboarding"
-                          variant={highlighted ? "primary" : "secondary"}
-                          className="mt-8 w-full justify-center"
-                        >
-                          Start free trial
-                          <ArrowRightIcon className="h-3.5 w-3.5" />
-                        </AnimatedButton>
-                      );
-                    })()
-                  )}
                 </div>
               </div>
             );
@@ -320,7 +301,7 @@ export default function OperatorPricingPage() {
         </Stagger>
       </section>
 
-      {/* Comparison Table — Deep Treatment */}
+      {/* Comparison Table */}
       <section className="pb-24 px-4">
         <div className="max-w-6xl mx-auto">
           <Reveal>
@@ -334,8 +315,8 @@ export default function OperatorPricingPage() {
                     <th className="text-left px-6 py-4 font-semibold text-zinc-300">Feature</th>
                     <th className="text-center px-4 py-4 font-semibold text-zinc-400">Starter</th>
                     <th className="text-center px-4 py-4 font-semibold relative">
-                      <span className="text-violet-400">Growth</span>
-                      <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-12 h-px bg-gradient-to-r from-transparent via-violet-500/50 to-transparent" />
+                      <span className="text-indigo-400">Growth</span>
+                      <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-12 h-px bg-gradient-to-r from-transparent via-indigo-500/50 to-transparent" />
                     </th>
                     <th className="text-center px-4 py-4 font-semibold text-zinc-300">Scale</th>
                     <th className="text-center px-4 py-4 font-semibold text-zinc-300">Enterprise</th>
@@ -362,7 +343,7 @@ export default function OperatorPricingPage() {
         </div>
       </section>
 
-      {/* Add-ons — Deep Treatment */}
+      {/* Add-ons */}
       <section className="pb-24 px-4">
         <div className="max-w-3xl mx-auto">
           <Reveal>
@@ -372,7 +353,7 @@ export default function OperatorPricingPage() {
             {ADDONS.map((addon) => (
               <div
                 key={addon.name}
-                className="group animated-border card-inner-glow rounded-2xl border border-white/[0.06] bg-white/[0.02] p-6 backdrop-blur-sm transition-all duration-500 hover:border-white/[0.12] hover:-translate-y-1"
+                className="electric-card group p-6 transition-all duration-500 hover:-translate-y-1"
               >
                 <div className="relative z-10">
                   <div className="flex items-center justify-between mb-2">
@@ -389,13 +370,13 @@ export default function OperatorPricingPage() {
         </div>
       </section>
 
-      {/* Footer CTA — "Still have questions?" glass card */}
+      {/* Footer CTA */}
       <section className="pb-24 px-4">
         <div className="max-w-2xl mx-auto">
           <Reveal>
             <div className="glass-cta-card bg-white/[0.02] backdrop-blur-sm p-10 text-center">
               <div className="relative z-10">
-                <ChatBubbleLeftRightIcon className="h-8 w-8 text-violet-400 mx-auto mb-4" />
+                <ChatBubbleLeftRightIcon className="h-8 w-8 text-blue-400 mx-auto mb-4" />
                 <h2 className="text-2xl font-bold mb-3">Still have questions?</h2>
                 <p className="text-zinc-400 text-sm mb-8 max-w-md mx-auto leading-relaxed">
                   Our engineering team can walk you through Axiom, discuss your infrastructure, and help you pick the right plan.
@@ -403,7 +384,7 @@ export default function OperatorPricingPage() {
                 <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                   <a
                     href={`mailto:${SUPPORT_EMAIL}?subject=Axiom - Pricing Question`}
-                    className="btn-huly cta-glow inline-flex items-center gap-2 rounded-xl bg-white px-7 py-3 text-sm font-semibold text-zinc-900 hover:bg-zinc-100 transition-colors shadow-sm"
+                    className="inline-flex items-center gap-2 rounded-full bg-white px-7 py-3 text-sm font-semibold text-zinc-900 hover:bg-zinc-100 transition-colors shadow-[0_0_20px_rgba(255,255,255,0.08)]"
                   >
                     <EnvelopeIcon className="h-4 w-4" />
                     Contact us
@@ -425,14 +406,14 @@ export default function OperatorPricingPage() {
       {/* CTA */}
       <section className="py-24 border-t border-white/[0.04] text-center px-4 relative overflow-hidden">
         <div className="absolute inset-0 diagonal-streak opacity-10" aria-hidden />
-        <div className="absolute -top-40 -right-40 w-80 h-80 rounded-full bg-violet-500/5 blur-[100px]" aria-hidden />
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 rounded-full bg-fuchsia-500/5 blur-[100px]" aria-hidden />
+        <div className="absolute -top-40 -right-40 w-80 h-80 rounded-full bg-blue-500/5 blur-[100px]" aria-hidden />
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 rounded-full bg-indigo-500/5 blur-[100px]" aria-hidden />
         <Reveal>
           <h2 className="text-3xl font-bold mb-5 relative">Ready to scan your cloud?</h2>
           <p className="text-zinc-400 mb-10 relative max-w-md mx-auto">7 days free on any paid plan. Cancel anytime.</p>
           <a
             href="/auth/signup?redirect=/operator/onboarding"
-            className="btn-huly cta-glow inline-flex items-center gap-2 rounded-xl bg-white px-8 py-3.5 text-sm font-semibold text-zinc-900 hover:bg-zinc-100 transition-colors shadow-sm relative"
+            className="inline-flex items-center gap-2 rounded-full bg-white px-8 py-3.5 text-sm font-semibold text-zinc-900 hover:bg-zinc-100 transition-colors shadow-[0_0_20px_rgba(255,255,255,0.1)] relative"
           >
             Start Free Trial
             <ArrowRightIcon className="h-4 w-4" />
