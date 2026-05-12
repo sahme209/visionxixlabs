@@ -8,6 +8,8 @@ import {
   ArrowRightIcon,
   CpuChipIcon,
   SparklesIcon,
+  ChatBubbleLeftRightIcon,
+  EnvelopeIcon,
 } from "@heroicons/react/24/outline";
 import { Navigation } from "@/components/Navigation";
 import { Reveal } from "@/components/motion/Reveal";
@@ -114,18 +116,18 @@ const comparisonRows = [
   { feature: "SSO", starter: "—", growth: "—", scale: "—", enterprise: "SAML + OIDC" },
 ];
 
-const TIER_ACCENTS: Record<MembershipPlanId, string> = {
-  starter: "from-zinc-500/20 to-zinc-600/5",
-  growth: "from-violet-500/20 to-fuchsia-500/5",
-  scale: "from-fuchsia-500/20 to-violet-500/5",
-  enterprise: "from-amber-500/20 to-orange-500/5",
+const TIER_HOVER_GRADIENT: Record<MembershipPlanId, string> = {
+  starter: "from-zinc-500/[0.03]",
+  growth: "from-violet-500/[0.05]",
+  scale: "from-fuchsia-500/[0.04]",
+  enterprise: "from-amber-500/[0.03]",
 };
 
-const TIER_BORDER_GLOW: Record<MembershipPlanId, string> = {
-  starter: "hover:border-zinc-500/30",
-  growth: "hover:border-violet-500/40",
-  scale: "hover:border-fuchsia-500/30",
-  enterprise: "hover:border-amber-500/30",
+const TIER_GLOW_COLOR: Record<MembershipPlanId, string> = {
+  starter: "bg-zinc-400/[0.08]",
+  growth: "bg-violet-500/[0.08]",
+  scale: "bg-fuchsia-500/[0.08]",
+  enterprise: "bg-amber-500/[0.08]",
 };
 
 export default function OperatorPricingPage() {
@@ -133,14 +135,20 @@ export default function OperatorPricingPage() {
 
   return (
     <div className="min-h-screen bg-[#09090b] text-white relative overflow-hidden">
+      {/* Background effects */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[500px] spotlight-orb opacity-30" aria-hidden />
-      <div className="absolute inset-0 bg-dots opacity-10" aria-hidden />
+      <div className="absolute inset-0 bg-dots opacity-20" aria-hidden />
       <div className="absolute -top-60 -right-60 w-[500px] h-[500px] rounded-full bg-violet-600/5 blur-[120px]" aria-hidden />
       <div className="absolute -bottom-60 -left-60 w-[500px] h-[500px] rounded-full bg-fuchsia-600/5 blur-[120px]" aria-hidden />
+      {/* Second spotlight orb — fuchsia tint, right side */}
+      <div className="absolute top-40 right-0 w-[600px] h-[400px] rounded-full bg-fuchsia-500/[0.04] blur-[140px]" aria-hidden />
       <Navigation />
 
       {/* Header */}
       <section className="pt-36 pb-14 text-center px-4 relative">
+        {/* Beam sweep behind header */}
+        <div className="beam-sweep absolute inset-0" aria-hidden />
+
         <Reveal>
           <p className="text-sm font-semibold text-violet-400 mb-4 tracking-wide uppercase">
             Pricing
@@ -152,11 +160,11 @@ export default function OperatorPricingPage() {
             Start with a free scan. Upgrade to the full autonomous agent with reasoning, execution, and governance.
           </p>
 
-          {/* Billing Toggle */}
-          <div className="mt-10 inline-flex items-center rounded-xl border border-white/[0.06] bg-white/[0.02] p-1 backdrop-blur-sm">
+          {/* Billing Toggle — Huly-style pill */}
+          <div className="mt-10 inline-flex items-center rounded-full border border-white/[0.08] bg-white/[0.02] p-1 backdrop-blur-sm">
             <button
               onClick={() => setBilling("monthly")}
-              className={`px-5 py-2.5 rounded-lg text-sm font-medium transition-all duration-300 ${
+              className={`px-5 py-2 rounded-full text-sm font-medium transition-all duration-300 ${
                 billing === "monthly"
                   ? "bg-white text-zinc-900 shadow-sm"
                   : "text-zinc-400 hover:text-white"
@@ -166,16 +174,14 @@ export default function OperatorPricingPage() {
             </button>
             <button
               onClick={() => setBilling("yearly")}
-              className={`px-5 py-2.5 rounded-lg text-sm font-medium transition-all duration-300 flex items-center gap-2 ${
+              className={`px-5 py-2 rounded-full text-sm font-medium transition-all duration-300 flex items-center ${
                 billing === "yearly"
                   ? "bg-white text-zinc-900 shadow-sm"
                   : "text-zinc-400 hover:text-white"
               }`}
             >
               Yearly
-              <span className="text-xs bg-emerald-500/15 text-emerald-400 px-2 py-0.5 rounded-full border border-emerald-500/20">
-                Save 40%
-              </span>
+              <span className="ml-1.5 text-emerald-400 text-xs font-semibold">Save 40%</span>
             </button>
           </div>
           <p className="mt-3 text-sm text-zinc-600">7 days free, then charged. Cancel anytime before trial ends.</p>
@@ -184,137 +190,161 @@ export default function OperatorPricingPage() {
 
       {/* Plan Cards */}
       <section className="pb-24 px-4">
-        <Stagger className="grid md:grid-cols-2 xl:grid-cols-4 gap-6 max-w-6xl mx-auto" interval={0.08}>
-            {PLAN_ORDER.map((planId) => {
-              const plan = MEMBERSHIP_PLANS[planId];
-              const axiom = AXIOM_FEATURES[planId];
-              const isEnterprise = planId === "enterprise";
-              const price = billing === "monthly" ? plan.monthlyPrice : plan.yearlyPrice;
-              const highlighted = plan.popular ?? false;
+        <Stagger className="grid md:grid-cols-2 xl:grid-cols-4 gap-6 max-w-6xl mx-auto" interval={0.06}>
+          {PLAN_ORDER.map((planId) => {
+            const plan = MEMBERSHIP_PLANS[planId];
+            const axiom = AXIOM_FEATURES[planId];
+            const isEnterprise = planId === "enterprise";
+            const price = billing === "monthly" ? plan.monthlyPrice : plan.yearlyPrice;
+            const highlighted = plan.popular ?? false;
 
-              return (
-                <div
-                  key={planId}
-                  className={`group card-hover rounded-2xl border p-8 flex flex-col relative transition-all duration-500 ${
-                    highlighted
-                      ? "glow-border-card border-violet-500/30 bg-white/[0.04] ring-1 ring-violet-500/15"
-                      : `border-white/[0.06] bg-white/[0.02] ${TIER_BORDER_GLOW[planId]}`
-                  }`}
-                >
-                  {/* Tier accent glow */}
-                  <div className={`absolute inset-0 rounded-2xl bg-gradient-to-b ${TIER_ACCENTS[planId]} opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none`} aria-hidden />
+            return (
+              <div
+                key={planId}
+                className={`group relative overflow-hidden rounded-2xl backdrop-blur-sm transition-all duration-500 flex flex-col ${
+                  highlighted
+                    ? "featured-glow border border-violet-500/30 bg-white/[0.04] scale-[1.02] ring-1 ring-violet-500/10"
+                    : isEnterprise
+                      ? "enterprise-border border border-amber-500/20 bg-gradient-to-b from-amber-500/[0.03] to-transparent"
+                      : "border border-white/[0.06] bg-white/[0.02] hover:border-white/[0.12]"
+                }`}
+              >
+                {/* Gradient overlay on hover */}
+                <div className={`absolute inset-0 bg-gradient-to-b ${TIER_HOVER_GRADIENT[planId]} to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none`} aria-hidden />
+                {/* Card inner glow orb on hover */}
+                <div className={`absolute top-0 left-1/2 -translate-x-1/2 w-3/4 h-32 ${TIER_GLOW_COLOR[planId]} rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none`} aria-hidden />
+                {/* Top accent line for featured card */}
+                {highlighted && (
+                  <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-violet-500 to-transparent" aria-hidden />
+                )}
+                {/* Top accent line for enterprise card */}
+                {isEnterprise && (
+                  <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-amber-500/60 to-transparent" aria-hidden />
+                )}
 
-                  {highlighted && (
-                    <span className="absolute -top-3 left-6 text-xs font-semibold text-violet-300 bg-violet-500/15 border border-violet-500/20 px-3 py-1 rounded-full flex items-center gap-1.5">
-                      <SparklesIcon className="h-3 w-3" />
-                      Most popular
-                    </span>
-                  )}
+                {highlighted && (
+                  <span className="absolute -top-3 left-6 z-10 text-xs font-semibold text-violet-300 bg-violet-500/15 border border-violet-500/20 px-3 py-1 rounded-full flex items-center gap-1.5">
+                    <SparklesIcon className="h-3 w-3" />
+                    Most popular
+                  </span>
+                )}
 
-                  <div className="relative">
-                    <h3 className="text-xl font-bold mt-1">{plan.name}</h3>
-                    <p className="text-xs text-violet-400 font-medium mt-1">{plan.axiom.label}</p>
+                {/* Content */}
+                <div className="relative p-8 flex flex-col flex-1">
+                  <h3 className="text-xl font-bold mt-1">{plan.name}</h3>
+                  <p className="text-xs text-violet-400 font-medium mt-1">{plan.axiom.label}</p>
 
-                    <div className="mt-5 flex items-baseline gap-1">
-                      {isEnterprise ? (
-                        <span className="text-4xl font-bold">Custom</span>
-                      ) : (
-                        <>
-                          <span className="text-4xl font-bold">${price}</span>
-                          <span className="text-zinc-500 text-sm">
-                            /mo
-                            {billing === "yearly" && <span className="text-xs ml-0.5">(billed annually)</span>}
-                          </span>
-                        </>
-                      )}
-                    </div>
-
-                    <p className="text-sm text-zinc-400 mt-3 mb-7 leading-relaxed">{plan.description}</p>
-
-                    <ul className="space-y-3 flex-1">
-                      {axiom.included.map((f) => (
-                        <li key={f} className="flex items-start gap-2.5 text-sm">
-                          <CheckCircleIcon className="h-4 w-4 mt-0.5 flex-shrink-0 text-emerald-400" />
-                          <span className="text-zinc-300">{f}</span>
-                        </li>
-                      ))}
-                      {axiom.excluded.map((f) => (
-                        <li key={f} className="flex items-start gap-2.5 text-sm">
-                          <XCircleIcon className="h-4 w-4 mt-0.5 flex-shrink-0 text-zinc-700" />
-                          <span className="text-zinc-600 line-through">{f}</span>
-                        </li>
-                      ))}
-                    </ul>
-
+                  {/* Price display — Huly-style */}
+                  <div className="mt-5 flex items-baseline">
                     {isEnterprise ? (
-                      <a
-                        href={`mailto:${SUPPORT_EMAIL}?subject=Axiom - Enterprise`}
-                        className="mt-8 w-full inline-flex items-center justify-center gap-2 rounded-xl border border-white/[0.08] px-4 py-3 text-sm font-semibold text-white hover:bg-white/[0.04] transition-colors"
-                      >
-                        Contact sales
-                        <ArrowRightIcon className="h-3.5 w-3.5" />
-                      </a>
+                      <span className="text-5xl font-bold tracking-tight">Custom</span>
                     ) : (
-                      (() => {
-                        const stripeLink = getStripeLink(planId, billing);
-                        return stripeLink ? (
-                          <a
-                            href={stripeLink}
-                            rel="noopener noreferrer"
-                            className={`mt-8 w-full inline-flex items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold transition-all duration-300 ${
-                              highlighted
-                                ? "btn-huly bg-white text-zinc-900 hover:bg-zinc-100 shadow-sm"
-                                : "bg-white/[0.06] text-white hover:bg-white/[0.10] border border-white/[0.06]"
-                            }`}
-                          >
-                            Start free trial
-                            <ArrowRightIcon className="h-3.5 w-3.5" />
-                          </a>
-                        ) : (
-                          <AnimatedButton
-                            href="/auth/signup?redirect=/operator/onboarding"
-                            variant={highlighted ? "primary" : "secondary"}
-                            className="mt-8 w-full justify-center"
-                          >
-                            Start free trial
-                            <ArrowRightIcon className="h-3.5 w-3.5" />
-                          </AnimatedButton>
-                        );
-                      })()
+                      <>
+                        <span className="text-2xl font-medium text-zinc-400 align-super">$</span>
+                        <span className="text-5xl font-bold tracking-tight">{price}</span>
+                        <span className="text-sm text-zinc-500 ml-1">
+                          /mo
+                          {billing === "yearly" && <span className="text-xs ml-0.5">(billed annually)</span>}
+                        </span>
+                      </>
                     )}
                   </div>
+
+                  <p className="text-sm text-zinc-400 mt-3 mb-7 leading-relaxed">{plan.description}</p>
+
+                  {/* Feature list with stagger animation */}
+                  <ul className="space-y-3 flex-1 feature-list-animated">
+                    {axiom.included.map((f) => (
+                      <li key={f} className="flex items-start gap-2.5 text-sm">
+                        <CheckCircleIcon className="h-4 w-4 mt-0.5 flex-shrink-0 text-emerald-400" />
+                        <span className="text-zinc-300">{f}</span>
+                      </li>
+                    ))}
+                    {axiom.excluded.map((f) => (
+                      <li key={f} className="flex items-start gap-2.5 text-sm">
+                        <XCircleIcon className="h-4 w-4 mt-0.5 flex-shrink-0 text-zinc-700" />
+                        <span className="text-zinc-600 line-through">{f}</span>
+                      </li>
+                    ))}
+                  </ul>
+
+                  {/* CTA button */}
+                  {isEnterprise ? (
+                    <a
+                      href={`mailto:${SUPPORT_EMAIL}?subject=Axiom - Enterprise`}
+                      className="mt-8 w-full inline-flex items-center justify-center gap-2 rounded-xl border border-amber-500/20 px-4 py-3 text-sm font-semibold text-amber-300 hover:bg-amber-500/10 transition-all duration-300"
+                    >
+                      Contact sales
+                      <ArrowRightIcon className="h-3.5 w-3.5" />
+                    </a>
+                  ) : (
+                    (() => {
+                      const stripeLink = getStripeLink(planId, billing);
+                      return stripeLink ? (
+                        <a
+                          href={stripeLink}
+                          rel="noopener noreferrer"
+                          className={`mt-8 w-full inline-flex items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold transition-all duration-300 ${
+                            highlighted
+                              ? "btn-huly cta-glow bg-white text-zinc-900 hover:bg-zinc-100 shadow-sm"
+                              : "bg-white/[0.06] text-white hover:bg-white/[0.10] border border-white/[0.06]"
+                          }`}
+                        >
+                          Start free trial
+                          <ArrowRightIcon className="h-3.5 w-3.5" />
+                        </a>
+                      ) : (
+                        <AnimatedButton
+                          href="/auth/signup?redirect=/operator/onboarding"
+                          variant={highlighted ? "primary" : "secondary"}
+                          className="mt-8 w-full justify-center"
+                        >
+                          Start free trial
+                          <ArrowRightIcon className="h-3.5 w-3.5" />
+                        </AnimatedButton>
+                      );
+                    })()
+                  )}
                 </div>
-              );
-            })}
+              </div>
+            );
+          })}
         </Stagger>
       </section>
 
-      {/* Comparison Table */}
+      {/* Comparison Table — Deep Treatment */}
       <section className="pb-24 px-4">
         <div className="max-w-6xl mx-auto">
           <Reveal>
             <h2 className="text-2xl font-bold text-center mb-12">Compare plans</h2>
           </Reveal>
           <Reveal delay={0.1}>
-            <div className="rounded-xl border border-white/[0.06] overflow-x-auto backdrop-blur-sm bg-white/[0.01]">
+            <div className="rounded-2xl border border-white/[0.06] overflow-hidden backdrop-blur-sm">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="border-b border-white/[0.06]">
+                  <tr className="bg-white/[0.03] border-b border-white/[0.06]">
                     <th className="text-left px-6 py-4 font-semibold text-zinc-300">Feature</th>
                     <th className="text-center px-4 py-4 font-semibold text-zinc-400">Starter</th>
-                    <th className="text-center px-4 py-4 font-semibold text-violet-400">Growth</th>
+                    <th className="text-center px-4 py-4 font-semibold relative">
+                      <span className="text-violet-400">Growth</span>
+                      <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-12 h-px bg-gradient-to-r from-transparent via-violet-500/50 to-transparent" />
+                    </th>
                     <th className="text-center px-4 py-4 font-semibold text-zinc-300">Scale</th>
                     <th className="text-center px-4 py-4 font-semibold text-zinc-300">Enterprise</th>
                   </tr>
                 </thead>
                 <tbody>
                   {comparisonRows.map((row, i) => (
-                    <tr key={row.feature} className={`border-t border-white/[0.04] ${i % 2 === 0 ? "bg-white/[0.01]" : ""}`}>
-                      <td className="px-6 py-3.5 text-zinc-400">{row.feature}</td>
-                      <td className="px-4 py-3.5 text-center text-zinc-500">{row.starter}</td>
-                      <td className="px-4 py-3.5 text-center text-zinc-200 font-medium">{row.growth}</td>
-                      <td className="px-4 py-3.5 text-center text-zinc-300">{row.scale}</td>
-                      <td className="px-4 py-3.5 text-center text-zinc-400">{row.enterprise}</td>
+                    <tr
+                      key={row.feature}
+                      className={`border-t border-white/[0.04] transition-colors duration-300 hover:bg-white/[0.02] ${i % 2 !== 0 ? "bg-white/[0.01]" : ""}`}
+                      style={{ animation: `fadeInUp 0.5s cubic-bezier(0.22, 1, 0.36, 1) ${0.05 * i}s both` }}
+                    >
+                      <td className="px-6 py-3.5 text-sm text-zinc-300 font-medium">{row.feature}</td>
+                      <td className="px-4 py-3.5 text-center text-sm text-zinc-500">{row.starter}</td>
+                      <td className="px-4 py-3.5 text-center text-sm text-white font-medium">{row.growth}</td>
+                      <td className="px-4 py-3.5 text-center text-sm text-zinc-300">{row.scale}</td>
+                      <td className="px-4 py-3.5 text-center text-sm text-zinc-400">{row.enterprise}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -324,24 +354,60 @@ export default function OperatorPricingPage() {
         </div>
       </section>
 
-      {/* Add-ons */}
+      {/* Add-ons — Deep Treatment */}
       <section className="pb-24 px-4">
         <div className="max-w-3xl mx-auto">
           <Reveal>
             <h2 className="text-2xl font-bold text-center mb-10">Add-ons</h2>
           </Reveal>
-          <Reveal delay={0.1}>
-            <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-6 backdrop-blur-sm">
-              <div className="space-y-0">
-                {ADDONS.map((addon, i) => (
-                  <div key={addon.name} className={`flex items-center justify-between py-4 ${i < ADDONS.length - 1 ? "border-b border-white/[0.04]" : ""}`}>
-                    <span className="text-zinc-300">{addon.name}</span>
-                    <span className="font-semibold text-white">
+          <Stagger className="grid sm:grid-cols-2 gap-4" interval={0.06}>
+            {ADDONS.map((addon) => (
+              <div
+                key={addon.name}
+                className="group animated-border card-inner-glow rounded-2xl border border-white/[0.06] bg-white/[0.02] p-6 backdrop-blur-sm transition-all duration-500 hover:border-white/[0.12] hover:-translate-y-1"
+              >
+                <div className="relative z-10">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-sm font-medium text-zinc-200">{addon.name}</span>
+                    <span className="text-sm font-bold text-white">
                       +${billing === "monthly" ? addon.monthly : addon.yearly}
-                      <span className="text-zinc-500 text-sm font-normal">/mo</span>
+                      <span className="text-zinc-500 text-xs font-normal ml-0.5">/mo</span>
                     </span>
                   </div>
-                ))}
+                </div>
+              </div>
+            ))}
+          </Stagger>
+        </div>
+      </section>
+
+      {/* Footer CTA — "Still have questions?" glass card */}
+      <section className="pb-24 px-4">
+        <div className="max-w-2xl mx-auto">
+          <Reveal>
+            <div className="glass-cta-card bg-white/[0.02] backdrop-blur-sm p-10 text-center">
+              <div className="relative z-10">
+                <ChatBubbleLeftRightIcon className="h-8 w-8 text-violet-400 mx-auto mb-4" />
+                <h2 className="text-2xl font-bold mb-3">Still have questions?</h2>
+                <p className="text-zinc-400 text-sm mb-8 max-w-md mx-auto leading-relaxed">
+                  Our engineering team can walk you through Axiom, discuss your infrastructure, and help you pick the right plan.
+                </p>
+                <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+                  <a
+                    href={`mailto:${SUPPORT_EMAIL}?subject=Axiom - Pricing Question`}
+                    className="btn-huly cta-glow inline-flex items-center gap-2 rounded-xl bg-white px-7 py-3 text-sm font-semibold text-zinc-900 hover:bg-zinc-100 transition-colors shadow-sm"
+                  >
+                    <EnvelopeIcon className="h-4 w-4" />
+                    Contact us
+                  </a>
+                  <a
+                    href={`mailto:${SUPPORT_EMAIL}?subject=Axiom - Talk to an Engineer`}
+                    className="inline-flex items-center gap-2 text-sm font-medium text-zinc-400 hover:text-white transition-colors"
+                  >
+                    Talk to an engineer
+                    <ArrowRightIcon className="h-3.5 w-3.5" />
+                  </a>
+                </div>
               </div>
             </div>
           </Reveal>

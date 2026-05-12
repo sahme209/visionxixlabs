@@ -17,8 +17,8 @@
   --axiom-radius-2xl: 1.5rem;
 
   /* Shadow tokens */
-  --axiom-shadow-subtle: 0 10px 25px rgba(15, 23, 42, 0.06);
-  --axiom-shadow-soft: 0 16px 40px rgba(15, 23, 42, 0.08);
+  --axiom-shadow-subtle: 0 10px 25px rgba(0, 0, 0, 0.3);
+  --axiom-shadow-soft: 0 16px 40px rgba(0, 0, 0, 0.4);
 
   /* Animation timings */
   --axiom-transition-fast: 200ms ease-in-out;
@@ -77,7 +77,7 @@
 
 .axiom-page .axiom-card-hover:hover {
   transform: translateY(-2px);
-  box-shadow: 0 12px 32px rgba(15, 23, 42, 0.1);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5);
 }
 
 .axiom-metric-glow {

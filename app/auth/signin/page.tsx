@@ -7,6 +7,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { ArrowRightIcon } from "@heroicons/react/24/outline";
 import { RealisticFogBackground } from "@/components/ui/realistic-fog-background";
+import { Reveal } from "@/components/motion/Reveal";
 
 function SignInForm() {
   const [email, setEmail] = useState("");
@@ -43,74 +44,83 @@ function SignInForm() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#09090b] px-4 relative overflow-hidden">
       <RealisticFogBackground backgroundColor="transparent" opacity={0.2} darken contained />
+      {/* Spotlight orb */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[400px] spotlight-orb opacity-40" aria-hidden />
-      <div className="w-full max-w-sm relative z-10">
-        <Link href="/" className="flex items-center gap-2.5 mb-10">
-          <Image
-            src="/vision-xix-logo.png"
-            alt="Vision XIX Labs"
-            width={28}
-            height={28}
-            className="rounded-lg"
-          />
-          <span className="text-sm font-semibold text-gradient">
-            Vision XIX Labs
-          </span>
-        </Link>
-        <h1 className="text-2xl font-bold mb-1">Sign in</h1>
-        <p className="text-sm text-zinc-500 mb-8">
-          Access your Axiom dashboard and operations.
-        </p>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label htmlFor="email" className="block text-sm font-medium text-zinc-300 mb-1.5">
-              Email
-            </label>
-            <input
-              id="email"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              autoComplete="email"
-              className="w-full rounded-lg border border-white/[0.08] bg-white/[0.03] px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-violet-500/50 focus:ring-2 focus:ring-violet-500/20 transition-colors placeholder:text-zinc-600"
+      {/* Floating blur orbs */}
+      <div className="absolute -top-32 -left-32 w-72 h-72 rounded-full bg-violet-600/10 blur-[100px] pointer-events-none" aria-hidden />
+      <div className="absolute bottom-0 right-0 w-56 h-56 rounded-full bg-fuchsia-600/8 blur-[90px] pointer-events-none" aria-hidden />
+      {/* Dot pattern background */}
+      <div className="absolute inset-0 bg-dots opacity-30 pointer-events-none" aria-hidden />
+
+      <Reveal direction="up" blur delay={0.05}>
+        <div className="w-full max-w-sm relative z-10 glass-card rounded-2xl border border-white/[0.06] p-8">
+          <Link href="/" className="flex items-center gap-2.5 mb-10">
+            <Image
+              src="/vision-xix-logo.png"
+              alt="Vision XIX Labs"
+              width={28}
+              height={28}
+              className="rounded-lg"
             />
-          </div>
-          <div>
-            <label htmlFor="password" className="block text-sm font-medium text-zinc-300 mb-1.5">
-              Password
-            </label>
-            <input
-              id="password"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              autoComplete="current-password"
-              className="w-full rounded-lg border border-white/[0.08] bg-white/[0.03] px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-violet-500/50 focus:ring-2 focus:ring-violet-500/20 transition-colors placeholder:text-zinc-600"
-            />
-          </div>
-          {error && (
-            <div className="rounded-lg border border-red-500/20 bg-red-500/[0.06] px-3.5 py-2.5 text-sm text-red-400">
-              {error}
-            </div>
-          )}
-          <button
-            type="submit"
-            disabled={loading}
-            className="btn-huly w-full rounded-lg bg-white py-2.5 text-sm font-semibold text-zinc-900 hover:bg-zinc-100 disabled:opacity-50 flex items-center justify-center gap-2 transition-colors shadow-sm"
-          >
-            {loading ? "Signing in..." : "Sign in"}
-            {!loading && <ArrowRightIcon className="h-4 w-4" />}
-          </button>
-        </form>
-        <p className="mt-6 text-sm text-zinc-500 text-center">
-          Don&apos;t have an account?{" "}
-          <Link href="/auth/signup" className="font-medium text-violet-400 hover:text-violet-300">
-            Sign up
+            <span className="text-sm font-semibold text-gradient">
+              Vision XIX Labs
+            </span>
           </Link>
-        </p>
-      </div>
+          <h1 className="text-2xl font-bold mb-1 tracking-[-0.04em]">Sign in</h1>
+          <p className="text-sm text-zinc-500 mb-8">
+            Access your Axiom dashboard and operations.
+          </p>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <label htmlFor="email" className="block text-sm font-medium text-zinc-300 mb-1.5">
+                Email
+              </label>
+              <input
+                id="email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                autoComplete="email"
+                className="w-full rounded-lg border border-white/[0.08] bg-white/[0.03] px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-violet-500/50 focus:ring-2 focus:ring-violet-500/20 transition-colors placeholder:text-zinc-600"
+              />
+            </div>
+            <div>
+              <label htmlFor="password" className="block text-sm font-medium text-zinc-300 mb-1.5">
+                Password
+              </label>
+              <input
+                id="password"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                autoComplete="current-password"
+                className="w-full rounded-lg border border-white/[0.08] bg-white/[0.03] px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-violet-500/50 focus:ring-2 focus:ring-violet-500/20 transition-colors placeholder:text-zinc-600"
+              />
+            </div>
+            {error && (
+              <div className="rounded-lg border border-red-500/20 bg-red-500/[0.06] px-3.5 py-2.5 text-sm text-red-400">
+                {error}
+              </div>
+            )}
+            <button
+              type="submit"
+              disabled={loading}
+              className="btn-huly cta-glow w-full rounded-lg bg-white py-2.5 text-sm font-semibold text-zinc-900 hover:bg-zinc-100 disabled:opacity-50 flex items-center justify-center gap-2 transition-colors shadow-sm"
+            >
+              {loading ? "Signing in..." : "Sign in"}
+              {!loading && <ArrowRightIcon className="h-4 w-4" />}
+            </button>
+          </form>
+          <p className="mt-6 text-sm text-zinc-500 text-center">
+            Don&apos;t have an account?{" "}
+            <Link href="/auth/signup" className="font-medium text-violet-400 hover:text-violet-300">
+              Sign up
+            </Link>
+          </p>
+        </div>
+      </Reveal>
     </div>
   );
 }

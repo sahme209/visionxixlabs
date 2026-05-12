@@ -18,6 +18,8 @@ import { TechStackSection } from "../../../components/TechStackSection";
 import { FAQAccordion } from "../../../components/FAQAccordion";
 import { CTASection } from "../../../components/CTASection";
 import { WhatWeDoNotDo } from "../../../components/WhatWeDoNotDo";
+import { Reveal } from "@/components/motion/Reveal";
+import { Stagger } from "@/components/motion/Stagger";
 
 export const metadata: Metadata = {
   title: "GCP Cloud Solutions",
@@ -30,9 +32,12 @@ export const metadata: Metadata = {
 
 export default function GcpCloudSolutionsPage() {
   return (
-    <div className="min-h-screen bg-[#09090b]">
+    <div className="min-h-screen bg-[#09090b] relative overflow-hidden">
+      {/* Background effects */}
+      <div className="spotlight-orb absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[600px] pointer-events-none" />
+      <div className="bg-grid-mesh absolute inset-0 pointer-events-none" />
       <Navigation />
-      <main className="pt-24 pb-24 px-4 sm:px-6 lg:px-8">
+      <main className="pt-24 pb-24 px-4 sm:px-6 lg:px-8 relative">
         <div className="max-w-5xl mx-auto">
           {/* Breadcrumb */}
           <nav
@@ -65,200 +70,223 @@ export default function GcpCloudSolutionsPage() {
           </nav>
 
           {/* 1. Overview */}
-          <section id="overview" className="mb-12" aria-labelledby="overview-heading">
-            <h1 id="overview-heading" className="text-3xl md:text-4xl font-extrabold mb-3 bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
-              Google Cloud Platform (GCP) Engineering
-            </h1>
-            <p className="text-lg md:text-xl text-zinc-400 max-w-3xl mb-4">
-              Design, automate, optimize, and operate on GCP with patterns that
-              leverage Google&apos;s strengths while keeping operations practical
-              and maintainable.
-            </p>
-            <p className="text-sm text-zinc-400 max-w-3xl">
-              We help structure projects, networks, compute, CI/CD, observability,
-              identity, and governance so your teams can build and operate
-              confidently on GCP.
-            </p>
-          </section>
+          <Reveal direction="up" blur>
+            <section id="overview" className="mb-12" aria-labelledby="overview-heading">
+              <h1 id="overview-heading" className="text-3xl md:text-4xl font-extrabold mb-3 tracking-[-0.04em] text-gradient">
+                Google Cloud Platform (GCP) Engineering
+              </h1>
+              <p className="text-lg md:text-xl text-zinc-400 max-w-3xl mb-4">
+                Design, automate, optimize, and operate on GCP with patterns that
+                leverage Google&apos;s strengths while keeping operations practical
+                and maintainable.
+              </p>
+              <p className="text-sm text-zinc-400 max-w-3xl">
+                We help structure projects, networks, compute, CI/CD, observability,
+                identity, and governance so your teams can build and operate
+                confidently on GCP.
+              </p>
+            </section>
+          </Reveal>
+
+          <div className="section-divider my-12" />
 
           <div className="space-y-10">
             {/* 2. Technical Scope */}
-            <h2 id="technical-scope" className="text-2xl font-bold text-white mb-4">
-              Technical scope
-            </h2>
-            {/* GCP Project Structure */}
-            <section>
-              <h2 className="text-xl md:text-2xl font-bold text-white mb-2">
-                Project structure &amp; organization strategy
+            <Reveal direction="up" delay={0.1}>
+              <h2 id="technical-scope" className="text-2xl font-bold text-white mb-4 tracking-[-0.04em]">
+                Technical <span className="text-gradient">scope</span>
               </h2>
-              <p className="text-sm md:text-base text-zinc-400 mb-3">
-                We design GCP project and folder structures that give you clear
-                boundaries for environments, teams, and workloads.
-              </p>
-              <ul className="list-disc list-inside text-sm text-zinc-400 space-y-1">
-                <li>
-                  High-level project and folder organization aligned to your
-                  organization.
-                </li>
-                <li>
-                  Baseline policies and configuration for security and
-                  compliance.
-                </li>
-                <li>
-                  Environment separation patterns that support safe releases and
-                  testing.
-                </li>
-              </ul>
-            </section>
+            </Reveal>
+
+            {/* GCP Project Structure */}
+            <Reveal direction="up" delay={0.1}>
+              <section className="glass-card rounded-2xl p-6 border border-white/[0.06] animated-border card-inner-glow">
+                <h2 className="text-xl md:text-2xl font-bold text-white mb-2">
+                  Project structure &amp; organization strategy
+                </h2>
+                <p className="text-sm md:text-base text-zinc-400 mb-3">
+                  We design GCP project and folder structures that give you clear
+                  boundaries for environments, teams, and workloads.
+                </p>
+                <ul className="list-disc list-inside text-sm text-zinc-400 space-y-1">
+                  <li>
+                    High-level project and folder organization aligned to your
+                    organization.
+                  </li>
+                  <li>
+                    Baseline policies and configuration for security and
+                    compliance.
+                  </li>
+                  <li>
+                    Environment separation patterns that support safe releases and
+                    testing.
+                  </li>
+                </ul>
+              </section>
+            </Reveal>
 
             {/* VPC and Networking */}
-            <section>
-              <h2 className="text-xl md:text-2xl font-bold text-white mb-2">
-                VPC and networking patterns
-              </h2>
-              <p className="text-sm md:text-base text-zinc-400 mb-3">
-                We help define VPC, subnet, and routing concepts that keep
-                services connected and secure without unnecessary complexity.
-              </p>
-              <ul className="list-disc list-inside text-sm text-zinc-400 space-y-1">
-                <li>
-                  High-level VPC and subnet patterns for your core environments.
-                </li>
-                <li>
-                  Routing and connectivity approaches for hybrid and cloud-only
-                  setups.
-                </li>
-                <li>
-                  Network security considerations that support least-privilege
-                  access.
-                </li>
-              </ul>
-            </section>
+            <Reveal direction="up" delay={0.1}>
+              <section className="glass-card rounded-2xl p-6 border border-white/[0.06] animated-border card-inner-glow">
+                <h2 className="text-xl md:text-2xl font-bold text-white mb-2">
+                  VPC and networking patterns
+                </h2>
+                <p className="text-sm md:text-base text-zinc-400 mb-3">
+                  We help define VPC, subnet, and routing concepts that keep
+                  services connected and secure without unnecessary complexity.
+                </p>
+                <ul className="list-disc list-inside text-sm text-zinc-400 space-y-1">
+                  <li>
+                    High-level VPC and subnet patterns for your core environments.
+                  </li>
+                  <li>
+                    Routing and connectivity approaches for hybrid and cloud-only
+                    setups.
+                  </li>
+                  <li>
+                    Network security considerations that support least-privilege
+                    access.
+                  </li>
+                </ul>
+              </section>
+            </Reveal>
 
             {/* Compute & Storage */}
-            <section>
-              <h2 className="text-xl md:text-2xl font-bold text-white mb-2">
-                Compute &amp; Storage Strategy
-              </h2>
-              <p className="text-sm md:text-base text-zinc-400 mb-3">
-                We guide VM, managed instance groups, and storage usage so
-                workloads have appropriate performance, resilience, and cost
-                characteristics.
-              </p>
-              <ul className="list-disc list-inside text-sm text-zinc-400 space-y-1">
-                <li>
-                  VM sizing and machine family guidance for representative
-                  workloads.
-                </li>
-                <li>
-                  Persistent disk strategies for performance and lifecycle
-                  management.
-                </li>
-                <li>
-                  High-level patterns for managed instance groups or serverless
-                  options where appropriate.
-                </li>
-              </ul>
-            </section>
+            <Reveal direction="up" delay={0.1}>
+              <section className="glass-card rounded-2xl p-6 border border-white/[0.06] animated-border card-inner-glow">
+                <h2 className="text-xl md:text-2xl font-bold text-white mb-2">
+                  Compute &amp; Storage Strategy
+                </h2>
+                <p className="text-sm md:text-base text-zinc-400 mb-3">
+                  We guide VM, managed instance groups, and storage usage so
+                  workloads have appropriate performance, resilience, and cost
+                  characteristics.
+                </p>
+                <ul className="list-disc list-inside text-sm text-zinc-400 space-y-1">
+                  <li>
+                    VM sizing and machine family guidance for representative
+                    workloads.
+                  </li>
+                  <li>
+                    Persistent disk strategies for performance and lifecycle
+                    management.
+                  </li>
+                  <li>
+                    High-level patterns for managed instance groups or serverless
+                    options where appropriate.
+                  </li>
+                </ul>
+              </section>
+            </Reveal>
 
             {/* CI/CD Integration */}
-            <section>
-              <h2 className="text-xl md:text-2xl font-bold text-white mb-2">
-                CI/CD Integration
-              </h2>
-              <p className="text-sm md:text-base text-zinc-400 mb-3">
-                We implement CI/CD using GitHub Actions or Cloud Build pipelines
-                and can integrate with Octopus Deploy where it makes sense.
-              </p>
-              <ul className="list-disc list-inside text-sm text-zinc-400 space-y-1">
-                <li>
-                  CI workflows for build, test, and validation using GitHub
-                  Actions or Cloud Build.
-                </li>
-                <li>
-                  Deployment patterns for GCP resources and applications,
-                  including Octopus Deploy where used.
-                </li>
-                <li>
-                  Consistent promotion flows across dev, test, staging, and
-                  production.
-                </li>
-              </ul>
-            </section>
+            <Reveal direction="up" delay={0.1}>
+              <section className="glass-card rounded-2xl p-6 border border-white/[0.06] animated-border card-inner-glow">
+                <h2 className="text-xl md:text-2xl font-bold text-white mb-2">
+                  CI/CD Integration
+                </h2>
+                <p className="text-sm md:text-base text-zinc-400 mb-3">
+                  We implement CI/CD using GitHub Actions or Cloud Build pipelines
+                  and can integrate with Octopus Deploy where it makes sense.
+                </p>
+                <ul className="list-disc list-inside text-sm text-zinc-400 space-y-1">
+                  <li>
+                    CI workflows for build, test, and validation using GitHub
+                    Actions or Cloud Build.
+                  </li>
+                  <li>
+                    Deployment patterns for GCP resources and applications,
+                    including Octopus Deploy where used.
+                  </li>
+                  <li>
+                    Consistent promotion flows across dev, test, staging, and
+                    production.
+                  </li>
+                </ul>
+              </section>
+            </Reveal>
 
             {/* Cost Visibility & Optimization */}
-            <section>
-              <h2 className="text-xl md:text-2xl font-bold text-white mb-2">
-                Cost visibility &amp; optimization
-              </h2>
-              <p className="text-sm md:text-base text-zinc-400 mb-3">
-                We make use of GCP billing and cost management capabilities to
-                analyze spend and shape usage, budgets, and alerts.
-              </p>
-              <ul className="list-disc list-inside text-sm text-zinc-400 space-y-1">
-                <li>
-                  Review of current GCP usage to identify optimization
-                  opportunities.
-                </li>
-                <li>
-                  Budget and alert configuration using GCP billing and cost
-                  management.
-                </li>
-                <li>
-                  Practical recommendations that teams can execute and maintain.
-                </li>
-              </ul>
-            </section>
+            <Reveal direction="up" delay={0.1}>
+              <section className="glass-card rounded-2xl p-6 border border-white/[0.06] animated-border card-inner-glow">
+                <h2 className="text-xl md:text-2xl font-bold text-white mb-2">
+                  Cost visibility &amp; optimization
+                </h2>
+                <p className="text-sm md:text-base text-zinc-400 mb-3">
+                  We make use of GCP billing and cost management capabilities to
+                  analyze spend and shape usage, budgets, and alerts.
+                </p>
+                <ul className="list-disc list-inside text-sm text-zinc-400 space-y-1">
+                  <li>
+                    Review of current GCP usage to identify optimization
+                    opportunities.
+                  </li>
+                  <li>
+                    Budget and alert configuration using GCP billing and cost
+                    management.
+                  </li>
+                  <li>
+                    Practical recommendations that teams can execute and maintain.
+                  </li>
+                </ul>
+              </section>
+            </Reveal>
 
             {/* Observability */}
-            <section>
-              <h2 className="text-xl md:text-2xl font-bold text-white mb-2">
-                Observability
-              </h2>
-              <p className="text-sm md:text-base text-zinc-400 mb-3">
-                We help set up monitoring using Cloud Monitoring and Cloud
-                Logging concepts at a high level, aligned to your existing tools
-                where appropriate.
-              </p>
-              <ul className="list-disc list-inside text-sm text-zinc-400 space-y-1">
-                <li>
-                  Monitoring and alerting baselines using Cloud Monitoring or
-                  compatible tools.
-                </li>
-                <li>
-                  Logging approaches that support troubleshooting and audit
-                  needs.
-                </li>
-                <li>
-                  Simple dashboards or views for key services and environments.
-                </li>
-              </ul>
-            </section>
+            <Reveal direction="up" delay={0.1}>
+              <section className="glass-card rounded-2xl p-6 border border-white/[0.06] animated-border card-inner-glow">
+                <h2 className="text-xl md:text-2xl font-bold text-white mb-2">
+                  Observability
+                </h2>
+                <p className="text-sm md:text-base text-zinc-400 mb-3">
+                  We help set up monitoring using Cloud Monitoring and Cloud
+                  Logging concepts at a high level, aligned to your existing tools
+                  where appropriate.
+                </p>
+                <ul className="list-disc list-inside text-sm text-zinc-400 space-y-1">
+                  <li>
+                    Monitoring and alerting baselines using Cloud Monitoring or
+                    compatible tools.
+                  </li>
+                  <li>
+                    Logging approaches that support troubleshooting and audit
+                    needs.
+                  </li>
+                  <li>
+                    Simple dashboards or views for key services and environments.
+                  </li>
+                </ul>
+              </section>
+            </Reveal>
 
             {/* Identity & Access Governance */}
-            <section>
-              <h2 className="text-xl md:text-2xl font-bold text-white mb-2">
-                Identity &amp; Access Governance
-              </h2>
-              <p className="text-sm md:text-base text-zinc-400 mb-3">
-                We apply Cloud IAM and policy concepts so access is controlled
-                and auditable while remaining workable for engineering teams.
-              </p>
-              <ul className="list-disc list-inside text-sm text-zinc-400 space-y-1">
-                <li>
-                  High-level identity and access patterns using Cloud IAM and
-                  service accounts.
-                </li>
-                <li>
-                  Policy approaches that support compliance and guardrails without
-                  blocking delivery.
-                </li>
-                <li>
-                  Integration with existing identity and approval processes where
-                  needed.
-                </li>
-              </ul>
-            </section>
+            <Reveal direction="up" delay={0.1}>
+              <section className="glass-card rounded-2xl p-6 border border-white/[0.06] animated-border card-inner-glow">
+                <h2 className="text-xl md:text-2xl font-bold text-white mb-2">
+                  Identity &amp; Access Governance
+                </h2>
+                <p className="text-sm md:text-base text-zinc-400 mb-3">
+                  We apply Cloud IAM and policy concepts so access is controlled
+                  and auditable while remaining workable for engineering teams.
+                </p>
+                <ul className="list-disc list-inside text-sm text-zinc-400 space-y-1">
+                  <li>
+                    High-level identity and access patterns using Cloud IAM and
+                    service accounts.
+                  </li>
+                  <li>
+                    Policy approaches that support compliance and guardrails without
+                    blocking delivery.
+                  </li>
+                  <li>
+                    Integration with existing identity and approval processes where
+                    needed.
+                  </li>
+                </ul>
+              </section>
+            </Reveal>
+
+            <div className="section-divider my-12" />
 
             {/* 3. Architecture Approach */}
             <ArchitectureBlock title="Engineering principles" principles={engineeringPrinciples} />
@@ -266,65 +294,79 @@ export default function GcpCloudSolutionsPage() {
             {/* 4. Tooling & Stack */}
             <TechStackSection title="Tooling & stack" groups={techStackGroups} />
 
+            <div className="section-divider my-12" />
+
             {/* 5. Implementation Methodology */}
-            <section id="implementation-methodology">
-              <h2 className="text-xl md:text-2xl font-bold text-white mb-2">
-                Implementation methodology
-              </h2>
-              <p className="text-sm md:text-base text-zinc-400">
-                {implementationMethodologyShort}
-              </p>
-            </section>
+            <Reveal direction="up" delay={0.1}>
+              <section id="implementation-methodology">
+                <h2 className="text-xl md:text-2xl font-bold text-white mb-2 tracking-[-0.04em]">
+                  Implementation <span className="text-gradient">methodology</span>
+                </h2>
+                <p className="text-sm md:text-base text-zinc-400">
+                  {implementationMethodologyShort}
+                </p>
+              </section>
+            </Reveal>
 
             {/* 6. Deliverables */}
             <DeliverableList title="Deliverables" items={coreDeliverables} />
 
+            <div className="section-divider my-12" />
+
             {/* 7. Engagement Model */}
-            <section>
-              <h2 className="text-xl md:text-2xl font-bold text-white mb-4">
-                Engagement model
-              </h2>
-              <p className="text-sm md:text-base text-zinc-400 mb-6">
-                Our engagement models apply equally to GCP-focused work and
-                multi-cloud initiatives.
-              </p>
-              <div className="grid gap-6 md:grid-cols-3">
-                {engagementPackages.map((pkg) => (
-                  <PackageCard
-                    key={pkg.id}
-                    name={pkg.name}
-                    duration={pkg.duration}
-                    includes={pkg.includes}
-                    bestFor={pkg.bestFor}
-                  />
-                ))}
-              </div>
-            </section>
+            <Reveal direction="up" delay={0.1}>
+              <section>
+                <h2 className="text-xl md:text-2xl font-bold text-white mb-4 tracking-[-0.04em]">
+                  Engagement model
+                </h2>
+                <p className="text-sm md:text-base text-zinc-400 mb-6">
+                  Our engagement models apply equally to GCP-focused work and
+                  multi-cloud initiatives.
+                </p>
+                <Stagger className="grid gap-6 md:grid-cols-3">
+                  {engagementPackages.map((pkg) => (
+                    <PackageCard
+                      key={pkg.id}
+                      name={pkg.name}
+                      duration={pkg.duration}
+                      includes={pkg.includes}
+                      bestFor={pkg.bestFor}
+                    />
+                  ))}
+                </Stagger>
+              </section>
+            </Reveal>
 
             {/* 8. Ideal Clients */}
-            <section>
-              <h2 className="text-xl md:text-2xl font-bold text-white mb-4">
-                Ideal clients
-              </h2>
-              <ul className="space-y-2 text-sm text-zinc-300">
-                {idealClientsCloud.map((item) => (
-                  <li key={item} className="flex items-start">
-                    <span className="text-indigo-500 mr-2 mt-0.5">•</span>
-                    {item}
-                  </li>
-                ))}
-              </ul>
-            </section>
+            <Reveal direction="up" delay={0.1}>
+              <section>
+                <h2 className="text-xl md:text-2xl font-bold text-white mb-4 tracking-[-0.04em]">
+                  Ideal clients
+                </h2>
+                <ul className="space-y-2 text-sm text-zinc-300">
+                  {idealClientsCloud.map((item) => (
+                    <li key={item} className="flex items-start">
+                      <span className="text-violet-400 mr-2 mt-0.5">•</span>
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            </Reveal>
 
             <WhatWeDoNotDo focusItems={whatWeFocusOn} notDoItems={whatWeDoNotDo} />
 
+            <div className="section-divider my-12" />
+
             {/* 9. FAQ */}
-            <section>
-              <h2 className="text-xl md:text-2xl font-bold text-white mb-4">
-                FAQ
-              </h2>
-              <FAQAccordion items={cloudFAQ} />
-            </section>
+            <Reveal direction="up" delay={0.1}>
+              <section>
+                <h2 className="text-xl md:text-2xl font-bold text-white mb-4 tracking-[-0.04em]">
+                  FAQ
+                </h2>
+                <FAQAccordion items={cloudFAQ} />
+              </section>
+            </Reveal>
 
             {/* 10. CTA */}
             <CTASection
@@ -369,6 +411,10 @@ export default function GcpCloudSolutionsPage() {
           </div>
         </div>
       </main>
+
+      {/* Floating blur orbs */}
+      <div className="absolute bottom-1/4 left-10 w-72 h-72 bg-violet-600/10 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute top-1/2 right-0 w-80 h-80 bg-fuchsia-600/8 rounded-full blur-3xl pointer-events-none" />
     </div>
   );
 }

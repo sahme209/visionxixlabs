@@ -142,7 +142,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .card-hover:hover {
-  transform: translateY(-4px);
+  transform: translateY(-4px) scale(1.01);
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3),
     0 0 30px var(--glow-violet);
 }
@@ -537,4 +537,617 @@ h1, h2, h3, h4, h5, h6 {
 .gradient-animated {
   background-size: 200% 200%;
   animation: gradient-shift 8s ease infinite;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   Huly.io Deep Effects — mouse spotlight, animated borders,
+   text reveal, beam sweep, inner glow, status pulse, badges
+   ══════════════════════════════════════════════════════════════════ */
+
+/* ── A) Mouse-tracking spotlight ──────────────────────────────── */
+.mouse-spotlight {
+  position: relative;
+  overflow: hidden;
+}
+.mouse-spotlight::before {
+  content: "";
+  position: absolute;
+  width: 400px;
+  height: 400px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(124,58,237,0.06) 0%, transparent 70%);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+.mouse-spotlight:hover::before {
+  opacity: 1;
+}
+
+/* ── B) Animated gradient border ──────────────────────────────── */
+@keyframes border-flow {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.animated-border {
+  position: relative;
+  background: var(--bg-surface);
+  border-radius: var(--huly-radius-lg);
+}
+.animated-border::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(270deg,
+    rgba(124,58,237,0.4),
+    rgba(217,70,239,0.3),
+    rgba(6,182,212,0.2),
+    rgba(124,58,237,0.4));
+  background-size: 300% 300%;
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  animation: border-flow 4s ease infinite;
+  opacity: 0;
+  transition: opacity 0.6s ease;
+}
+.animated-border:hover::before {
+  opacity: 1;
+}
+
+/* ── C) Section divider with gradient fade ────────────────────── */
+.section-divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.06) 20%, rgba(124,58,237,0.15) 50%, rgba(255,255,255,0.06) 80%, transparent);
+}
+
+/* ── D) Text reveal animation ─────────────────────────────────── */
+@keyframes text-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+    filter: blur(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+}
+.text-reveal {
+  animation: text-reveal 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  opacity: 0;
+}
+.text-reveal-delay-1 { animation-delay: 0.1s; }
+.text-reveal-delay-2 { animation-delay: 0.2s; }
+.text-reveal-delay-3 { animation-delay: 0.3s; }
+.text-reveal-delay-4 { animation-delay: 0.4s; }
+
+/* ── E) Counter / number animation ────────────────────────────── */
+@keyframes count-up {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-count-up {
+  animation: count-up 0.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+/* ── F) Beam sweep for hero sections ──────────────────────────── */
+@keyframes beam-sweep {
+  0% { transform: translateX(-100%) rotate(-45deg); }
+  100% { transform: translateX(200%) rotate(-45deg); }
+}
+.beam-sweep::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 200px;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(124,58,237,0.08), transparent);
+  animation: beam-sweep 8s ease-in-out infinite;
+  pointer-events: none;
+}
+
+/* ── G) Enhanced scrollbar styling ────────────────────────────── */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.1);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255,255,255,0.2);
+}
+
+/* ── H) Card inner glow on hover ──────────────────────────────── */
+.card-inner-glow {
+  position: relative;
+  overflow: hidden;
+}
+.card-inner-glow::after {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(ellipse at center, rgba(124,58,237,0.04) 0%, transparent 60%);
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  pointer-events: none;
+}
+.card-inner-glow:hover::after {
+  opacity: 1;
+}
+
+/* ── I) Pulsing status dot ────────────────────────────────────── */
+@keyframes status-pulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.5); opacity: 0.5; }
+}
+.status-dot-pulse {
+  position: relative;
+}
+.status-dot-pulse::after {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  border-radius: 50%;
+  background: inherit;
+  animation: status-pulse 2s ease-in-out infinite;
+  opacity: 0.4;
+}
+
+/* ── J) Huly number badge ─────────────────────────────────────── */
+.huly-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  border: 1px solid rgba(255,255,255,0.08);
+  background: rgba(255,255,255,0.04);
+  backdrop-filter: blur(8px);
+}
+
+/* ── L) Line drawing animation for borders ────────────────────── */
+@keyframes line-draw {
+  from { stroke-dashoffset: 1000; }
+  to { stroke-dashoffset: 0; }
+}
+
+/* ── M) Horizontal gradient line separator ────────────────────── */
+.gradient-line {
+  height: 1px;
+  background: linear-gradient(90deg,
+    transparent,
+    rgba(124,58,237,0.2) 25%,
+    rgba(217,70,239,0.3) 50%,
+    rgba(124,58,237,0.2) 75%,
+    transparent
+  );
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   Pricing Page — Huly.io Deep Treatment
+   ══════════════════════════════════════════════════════════════════ */
+
+/* ── Feature list staggered fade-in on card hover ─────────────── */
+.feature-list-animated li {
+  opacity: 0.75;
+  transform: translateX(0);
+  transition: opacity 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.group:hover .feature-list-animated li {
+  opacity: 1;
+  transform: translateX(2px);
+}
+
+.group:hover .feature-list-animated li:nth-child(1)  { transition-delay: 0ms; }
+.group:hover .feature-list-animated li:nth-child(2)  { transition-delay: 30ms; }
+.group:hover .feature-list-animated li:nth-child(3)  { transition-delay: 60ms; }
+.group:hover .feature-list-animated li:nth-child(4)  { transition-delay: 90ms; }
+.group:hover .feature-list-animated li:nth-child(5)  { transition-delay: 120ms; }
+.group:hover .feature-list-animated li:nth-child(6)  { transition-delay: 150ms; }
+.group:hover .feature-list-animated li:nth-child(7)  { transition-delay: 180ms; }
+.group:hover .feature-list-animated li:nth-child(8)  { transition-delay: 210ms; }
+.group:hover .feature-list-animated li:nth-child(9)  { transition-delay: 240ms; }
+.group:hover .feature-list-animated li:nth-child(10) { transition-delay: 270ms; }
+
+/* ── Enterprise always-visible gradient border ────────────────── */
+.enterprise-border {
+  position: relative;
+  overflow: hidden;
+}
+.enterprise-border::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(
+    135deg,
+    rgba(245, 158, 11, 0.3) 0%,
+    rgba(251, 191, 36, 0.15) 50%,
+    rgba(245, 158, 11, 0.3) 100%
+  );
+  background-size: 200% 200%;
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  animation: gradient-shift 6s ease infinite;
+  opacity: 1;
+}
+
+/* ── Featured / most popular persistent glow border ───────────── */
+.featured-glow {
+  position: relative;
+  overflow: hidden;
+}
+.featured-glow::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(
+    135deg,
+    rgba(124, 58, 237, 0.4) 0%,
+    rgba(168, 85, 247, 0.25) 30%,
+    rgba(217, 70, 239, 0.3) 60%,
+    rgba(124, 58, 237, 0.4) 100%
+  );
+  background-size: 200% 200%;
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  animation: gradient-shift 6s ease infinite;
+  opacity: 0.7;
+  transition: opacity 0.4s ease;
+}
+.featured-glow:hover::before {
+  opacity: 1;
+}
+
+/* ── Glass CTA card ───────────────────────────────────────────── */
+.glass-cta-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 1.5rem;
+}
+.glass-cta-card::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(135deg,
+    rgba(124, 58, 237, 0.25),
+    rgba(217, 70, 239, 0.15),
+    rgba(255, 255, 255, 0.05),
+    rgba(124, 58, 237, 0.25));
+  background-size: 200% 200%;
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  animation: gradient-shift 8s ease infinite;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   Huly Deep Transform — component upgrade effects
+   ══════════════════════════════════════════════════════════════════ */
+
+/* ── Button shimmer sweep ─────────────────────────────────────── */
+@keyframes btn-sweep {
+  from { left: -100%; }
+  to { left: 100%; }
+}
+
+.btn-shimmer {
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-shimmer::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.08) 40%,
+    rgba(255, 255, 255, 0.15) 50%,
+    rgba(255, 255, 255, 0.08) 60%,
+    transparent 100%
+  );
+  pointer-events: none;
+  z-index: 1;
+}
+
+.btn-shimmer:hover::before {
+  animation: btn-sweep 0.7s ease forwards;
+}
+
+/* ── Focus ring animated pulse ────────────────────────────────── */
+@keyframes focus-ring-pulse {
+  0%, 100% { box-shadow: 0 0 0 2px var(--bg-primary), 0 0 0 4px rgba(124, 58, 237, 0.5); }
+  50% { box-shadow: 0 0 0 2px var(--bg-primary), 0 0 0 5px rgba(124, 58, 237, 0.8), 0 0 16px rgba(124, 58, 237, 0.2); }
+}
+
+.focus-ring-animated:focus-visible {
+  outline: none;
+  animation: focus-ring-pulse 2s ease-in-out infinite;
+}
+
+/* ── Sticky CTA shimmer button ────────────────────────────────── */
+@keyframes cta-shimmer-sweep {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+.cta-shimmer-btn {
+  background-size: 200% auto;
+  background-image: linear-gradient(
+    90deg,
+    #fafafa 0%,
+    #fafafa 35%,
+    rgba(124, 58, 237, 0.15) 50%,
+    #fafafa 65%,
+    #fafafa 100%
+  );
+  animation: cta-shimmer-sweep 3s linear infinite;
+}
+
+/* ── Slide-up entry ───────────────────────────────────────────── */
+@keyframes slide-up-enter {
+  from { transform: translateY(100%); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.animate-slide-up-enter {
+  animation: slide-up-enter 0.4s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+/* ── Scroll blur-fade variant ─────────────────────────────────── */
+.animate-on-scroll-blur {
+  opacity: 0;
+  transform: translateY(16px);
+  filter: blur(8px);
+  transition:
+    opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+    filter 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.animate-on-scroll-blur.visible {
+  opacity: 1;
+  transform: translateY(0);
+  filter: blur(0);
+}
+
+/* ── Pipeline animated gradient line ──────────────────────────── */
+@keyframes pipeline-flow {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 200% 50%; }
+}
+
+.pipeline-animated-line {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(124, 58, 237, 0.15) 15%,
+    rgba(124, 58, 237, 0.4) 30%,
+    rgba(217, 70, 239, 0.5) 50%,
+    rgba(124, 58, 237, 0.4) 70%,
+    rgba(124, 58, 237, 0.15) 85%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
+  animation: pipeline-flow 3s linear infinite;
+}
+
+.pipeline-animated-line-glow {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(124, 58, 237, 0.3) 15%,
+    rgba(124, 58, 237, 0.6) 30%,
+    rgba(217, 70, 239, 0.8) 50%,
+    rgba(124, 58, 237, 0.6) 70%,
+    rgba(124, 58, 237, 0.3) 85%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
+  animation: pipeline-flow 2s linear infinite;
+}
+
+/* ── Pipeline pulsing dot ─────────────────────────────────────── */
+@keyframes dot-pulse {
+  0%, 100% { transform: scale(1); opacity: 0.6; box-shadow: 0 0 0 0 currentColor; }
+  50% { transform: scale(1.4); opacity: 1; box-shadow: 0 0 8px currentColor; }
+}
+
+.pipeline-dot-pulse {
+  animation: dot-pulse 2s ease-in-out infinite;
+}
+
+/* ── Blob slow rotation ───────────────────────────────────────── */
+@keyframes blob-rotate {
+  0% { transform: translate(0, 0) scale(1) rotate(0deg); }
+  33% { transform: translate(15px, -15px) scale(1.03) rotate(120deg); }
+  66% { transform: translate(-8px, 8px) scale(0.98) rotate(240deg); }
+  100% { transform: translate(0, 0) scale(1) rotate(360deg); }
+}
+
+.animate-blob-rotate {
+  animation: blob-rotate 20s ease-in-out infinite;
+}
+
+.animate-blob-rotate-delayed {
+  animation: blob-rotate 25s ease-in-out infinite;
+  animation-delay: -8s;
+}
+
+/* ── FAQ expanded gradient indicator ──────────────────────────── */
+.faq-gradient-indicator {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  border-radius: 3px;
+  background: linear-gradient(180deg, rgba(124, 58, 237, 0.6), rgba(217, 70, 239, 0.4));
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.faq-expanded .faq-gradient-indicator {
+  opacity: 1;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   Huly.io Homepage Deep Effects — particles, hero grid, badges,
+   CTA glow, card accent overlays
+   ══════════════════════════════════════════════════════════════════ */
+
+/* ── N) Floating ambient particle ────────────────────────────── */
+@keyframes particle-drift {
+  0%, 100% { transform: translate(0, 0); opacity: 0.3; }
+  25% { transform: translate(12px, -18px); opacity: 0.6; }
+  50% { transform: translate(-8px, -30px); opacity: 0.4; }
+  75% { transform: translate(15px, -12px); opacity: 0.5; }
+}
+
+.ambient-particle {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  animation: particle-drift 12s ease-in-out infinite;
+}
+
+/* ── O) Hero grid mesh overlay ───────────────────────────────── */
+.hero-grid-mesh {
+  background-image:
+    linear-gradient(to right, rgba(124,58,237,0.04) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(124,58,237,0.04) 1px, transparent 1px);
+  background-size: 64px 64px;
+  mask-image: radial-gradient(ellipse 70% 50% at 50% 40%, black 30%, transparent 70%);
+  -webkit-mask-image: radial-gradient(ellipse 70% 50% at 50% 40%, black 30%, transparent 70%);
+}
+
+/* ── P) Badge shimmer on hover ───────────────────────────────── */
+@keyframes badge-shimmer-sweep {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+.badge-shimmer {
+  transition: background 0.3s ease;
+}
+.badge-shimmer:hover {
+  background: linear-gradient(90deg,
+    rgba(255,255,255,0.04) 0%,
+    rgba(124,58,237,0.08) 25%,
+    rgba(217,70,239,0.1) 50%,
+    rgba(124,58,237,0.08) 75%,
+    rgba(255,255,255,0.04) 100%
+  ) !important;
+  background-size: 200% 100% !important;
+  animation: badge-shimmer-sweep 1.5s ease-in-out;
+}
+
+/* ── Q) CTA button white glow shadow ─────────────────────────── */
+.cta-white-glow {
+  box-shadow: 0 0 20px rgba(255,255,255,0.1), 0 0 40px rgba(124,58,237,0.08);
+  transition: box-shadow 0.3s ease, transform 0.2s ease;
+}
+.cta-white-glow:hover {
+  box-shadow: 0 0 30px rgba(255,255,255,0.15), 0 0 60px rgba(124,58,237,0.12);
+  transform: translateY(-1px);
+}
+
+/* ── R) Card accent gradient overlay at top ──────────────────── */
+.card-accent-violet {
+  position: relative;
+}
+.card-accent-violet > .card-accent-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 80px;
+  background: linear-gradient(180deg, rgba(124,58,237,0.06) 0%, transparent 100%);
+  border-radius: inherit;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.card-accent-fuchsia {
+  position: relative;
+}
+.card-accent-fuchsia > .card-accent-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 80px;
+  background: linear-gradient(180deg, rgba(217,70,239,0.06) 0%, transparent 100%);
+  border-radius: inherit;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.card-accent-emerald {
+  position: relative;
+}
+.card-accent-emerald > .card-accent-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 80px;
+  background: linear-gradient(180deg, rgba(16,185,129,0.06) 0%, transparent 100%);
+  border-radius: inherit;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ── S) Social link hover ────────────────────────────────────── */
+.social-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid rgba(255,255,255,0.06);
+  color: #71717a;
+  transition: all 0.2s ease;
+}
+.social-link:hover {
+  color: #fafafa;
+  border-color: rgba(255,255,255,0.15);
+  background: rgba(255,255,255,0.04);
 }

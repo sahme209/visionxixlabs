@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { motionConfig, prefersReducedMotionQuery } from "@/lib/motion/tokens";
 
@@ -33,8 +33,15 @@ export function FAQAccordion({ items }: FAQAccordionProps) {
         return (
           <div
             key={item.question}
-            className="card-hover rounded-xl border border-white/[0.06] bg-white/[0.02] backdrop-blur-sm"
+            className={`relative rounded-xl border backdrop-blur-sm transition-all duration-300 ${
+              isOpen
+                ? "faq-expanded border-violet-500/20 bg-violet-500/[0.03]"
+                : "border-white/[0.06] bg-white/[0.02]"
+            }`}
           >
+            {/* Gradient indicator on left side */}
+            <div className="faq-gradient-indicator" aria-hidden />
+
             <button
               type="button"
               onClick={() => setOpenIndex(isOpen ? null : idx)}
@@ -45,13 +52,16 @@ export function FAQAccordion({ items }: FAQAccordionProps) {
               <span className="text-sm md:text-base font-semibold text-white">
                 {item.question}
               </span>
-              <span
-                className={`flex h-6 w-6 items-center justify-center rounded-full border border-white/[0.08] text-zinc-400 text-xs transition-transform ${
-                  isOpen ? "rotate-90" : ""
-                }`}
+              <motion.span
+                className="flex h-6 w-6 items-center justify-center rounded-full border border-white/[0.08] text-zinc-400 text-xs shrink-0"
+                animate={{ rotate: isOpen ? 45 : 0 }}
+                transition={{
+                  duration: reduceMotion ? 0 : 0.3,
+                  ease: [0.22, 1, 0.36, 1],
+                }}
               >
                 +
-              </span>
+              </motion.span>
             </button>
             <AnimatePresence initial={false}>
               {isOpen && (
@@ -60,12 +70,31 @@ export function FAQAccordion({ items }: FAQAccordionProps) {
                   initial={{ height: 0, opacity: 0 }}
                   animate={{ height: "auto", opacity: 1 }}
                   exit={{ height: 0, opacity: 0 }}
-                  transition={{ duration, ease: motionConfig.ease }}
+                  transition={{
+                    height: {
+                      duration: reduceMotion ? 0 : 0.35,
+                      ease: [0.22, 1, 0.36, 1],
+                    },
+                    opacity: {
+                      duration: reduceMotion ? 0 : 0.25,
+                      delay: reduceMotion ? 0 : 0.1,
+                    },
+                  }}
                   className="overflow-hidden px-4 md:px-5 pb-4"
                 >
-                  <div className="mt-1 text-sm text-zinc-400">
+                  <motion.div
+                    initial={{ opacity: 0, y: 6 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 6 }}
+                    transition={{
+                      duration: reduceMotion ? 0 : 0.3,
+                      delay: reduceMotion ? 0 : 0.12,
+                      ease: [0.22, 1, 0.36, 1],
+                    }}
+                    className="mt-1 text-sm text-zinc-400 leading-relaxed"
+                  >
                     {item.answer}
-                  </div>
+                  </motion.div>
                 </motion.div>
               )}
             </AnimatePresence>

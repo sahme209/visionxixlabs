@@ -90,18 +90,18 @@ function StepIndicator({ current }: { current: OnboardingStep }) {
             <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
               isActive ? "bg-violet-500/20 text-violet-300 border border-violet-500/30" :
               isDone ? "bg-emerald-500/10 text-emerald-400" :
-              "text-slate-600"
+              "text-zinc-600"
             }`}>
               {isDone ? (
                 <CheckCircleIcon className="h-3.5 w-3.5" />
               ) : (
                 <span className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold ${
-                  isActive ? "bg-violet-500 text-white" : "bg-slate-800 text-slate-500"
+                  isActive ? "bg-violet-500 text-white" : "bg-white/[0.06] text-zinc-500"
                 }`}>{stepNum}</span>
               )}
               <span className="hidden sm:inline">{label}</span>
             </div>
-            {i < 3 && <div className={`w-8 h-px ${isDone ? "bg-emerald-500/30" : "bg-slate-800"}`} />}
+            {i < 3 && <div className={`w-8 h-px ${isDone ? "bg-emerald-500/30" : "bg-white/[0.06]"}`} />}
           </div>
         );
       })}
@@ -120,13 +120,13 @@ function CopyBlock({ label, value }: { label: string; value: string }) {
   return (
     <div>
       <div className="flex items-center justify-between mb-1.5">
-        <span className="text-xs font-medium text-slate-400">{label}</span>
-        <button onClick={handleCopy} className="flex items-center gap-1 text-xs text-slate-500 hover:text-violet-400 transition-colors">
+        <span className="text-xs font-medium text-zinc-400">{label}</span>
+        <button onClick={handleCopy} className="flex items-center gap-1 text-xs text-zinc-500 hover:text-violet-400 transition-colors">
           <ClipboardDocumentIcon className="h-3.5 w-3.5" />
           {copied ? "Copied!" : "Copy"}
         </button>
       </div>
-      <pre className="bg-slate-950 border border-slate-800 rounded-lg px-4 py-3 text-xs text-slate-300 overflow-x-auto font-mono whitespace-pre-wrap break-all">
+      <pre className="bg-[#09090b] border border-white/[0.06] rounded-lg px-4 py-3 text-xs text-zinc-300 overflow-x-auto font-mono whitespace-pre-wrap break-all">
         {value}
       </pre>
     </div>
@@ -138,18 +138,18 @@ function AWSSetupInstructions({ externalId }: { externalId: string }) {
 
   return (
     <div className="space-y-6">
-      <div className="rounded-xl border border-slate-800 bg-slate-900/50 p-6">
+      <div className="glass-card rounded-xl border border-white/[0.06] p-6">
         <div className="flex items-center gap-3 mb-4">
           <div className="w-8 h-8 rounded-lg bg-violet-500/10 flex items-center justify-center">
             <LockClosedIcon className="h-4 w-4 text-violet-400" />
           </div>
           <div>
-            <h3 className="text-sm font-semibold text-slate-200">How it works</h3>
-            <p className="text-xs text-slate-500">Read-only access via IAM Role</p>
+            <h3 className="text-sm font-semibold text-zinc-200">How it works</h3>
+            <p className="text-xs text-zinc-500">Read-only access via IAM Role</p>
           </div>
         </div>
-        <p className="text-sm text-slate-400 mb-4">
-          We use an IAM Role with <strong className="text-slate-300">read-only permissions</strong> in your AWS account.
+        <p className="text-sm text-zinc-400 mb-4">
+          We use an IAM Role with <strong className="text-zinc-300">read-only permissions</strong> in your AWS account.
           Our broker account assumes this role to scan your infrastructure. We never store your AWS access keys.
         </p>
         <div className="flex items-center gap-2 text-xs text-emerald-400 bg-emerald-500/5 border border-emerald-500/10 rounded-lg px-3 py-2">
@@ -158,13 +158,13 @@ function AWSSetupInstructions({ externalId }: { externalId: string }) {
         </div>
       </div>
 
-      <div className="rounded-xl border border-slate-800 bg-slate-900/50 p-6">
-        <h3 className="text-sm font-semibold text-slate-200 mb-4">Create the IAM Role in your AWS account</h3>
-        <ol className="space-y-4 text-sm text-slate-400">
+      <div className="glass-card rounded-xl border border-white/[0.06] p-6">
+        <h3 className="text-sm font-semibold text-zinc-200 mb-4">Create the IAM Role in your AWS account</h3>
+        <ol className="space-y-4 text-sm text-zinc-400">
           <li className="flex gap-3">
-            <span className="w-6 h-6 rounded-full bg-slate-800 flex items-center justify-center text-xs font-bold text-slate-400 flex-shrink-0 mt-0.5">1</span>
+            <span className="w-6 h-6 rounded-full bg-white/[0.06] flex items-center justify-center text-xs font-bold text-zinc-400 flex-shrink-0 mt-0.5">1</span>
             <div className="flex-1">
-              <p>Go to <strong className="text-slate-300">IAM → Roles → Create Role</strong> in the AWS Console.</p>
+              <p>Go to <strong className="text-zinc-300">IAM &rarr; Roles &rarr; Create Role</strong> in the AWS Console.</p>
               <a
                 href="https://console.aws.amazon.com/iam/home#/roles$new?step=type&roleType=crossAccount"
                 target="_blank"
@@ -176,9 +176,9 @@ function AWSSetupInstructions({ externalId }: { externalId: string }) {
             </div>
           </li>
           <li className="flex gap-3">
-            <span className="w-6 h-6 rounded-full bg-slate-800 flex items-center justify-center text-xs font-bold text-slate-400 flex-shrink-0 mt-0.5">2</span>
+            <span className="w-6 h-6 rounded-full bg-white/[0.06] flex items-center justify-center text-xs font-bold text-zinc-400 flex-shrink-0 mt-0.5">2</span>
             <div className="flex-1">
-              <p className="mb-2">Select <strong className="text-slate-300">&quot;Another AWS account&quot;</strong> and enter:</p>
+              <p className="mb-2">Select <strong className="text-zinc-300">&quot;Another AWS account&quot;</strong> and enter:</p>
               <CopyBlock label="Account ID" value={BROKER_ACCOUNT_ID} />
               <div className="mt-2">
                 <CopyBlock label="External ID (required)" value={externalId} />
@@ -186,10 +186,10 @@ function AWSSetupInstructions({ externalId }: { externalId: string }) {
             </div>
           </li>
           <li className="flex gap-3">
-            <span className="w-6 h-6 rounded-full bg-slate-800 flex items-center justify-center text-xs font-bold text-slate-400 flex-shrink-0 mt-0.5">3</span>
+            <span className="w-6 h-6 rounded-full bg-white/[0.06] flex items-center justify-center text-xs font-bold text-zinc-400 flex-shrink-0 mt-0.5">3</span>
             <div className="flex-1">
               <p>
-                Attach the <strong className="text-slate-300">ReadOnlyAccess</strong> AWS managed policy, or use our custom minimal policy below.
+                Attach the <strong className="text-zinc-300">ReadOnlyAccess</strong> AWS managed policy, or use our custom minimal policy below.
               </p>
               <button
                 onClick={() => setShowPolicy(showPolicy === "permissions" ? null : "permissions")}
@@ -205,25 +205,25 @@ function AWSSetupInstructions({ externalId }: { externalId: string }) {
             </div>
           </li>
           <li className="flex gap-3">
-            <span className="w-6 h-6 rounded-full bg-slate-800 flex items-center justify-center text-xs font-bold text-slate-400 flex-shrink-0 mt-0.5">4</span>
+            <span className="w-6 h-6 rounded-full bg-white/[0.06] flex items-center justify-center text-xs font-bold text-zinc-400 flex-shrink-0 mt-0.5">4</span>
             <div className="flex-1">
               <p>
-                Name the role <strong className="text-slate-300">CloudOperatorReadOnly</strong> (or any name you prefer) and create it.
+                Name the role <strong className="text-zinc-300">CloudOperatorReadOnly</strong> (or any name you prefer) and create it.
               </p>
             </div>
           </li>
           <li className="flex gap-3">
-            <span className="w-6 h-6 rounded-full bg-slate-800 flex items-center justify-center text-xs font-bold text-slate-400 flex-shrink-0 mt-0.5">5</span>
+            <span className="w-6 h-6 rounded-full bg-white/[0.06] flex items-center justify-center text-xs font-bold text-zinc-400 flex-shrink-0 mt-0.5">5</span>
             <div className="flex-1">
-              <p>Copy the <strong className="text-slate-300">Role ARN</strong> from the role summary page and paste it below.</p>
+              <p>Copy the <strong className="text-zinc-300">Role ARN</strong> from the role summary page and paste it below.</p>
             </div>
           </li>
         </ol>
 
-        <div className="mt-4 pt-4 border-t border-slate-800">
+        <div className="mt-4 pt-4 border-t border-white/[0.06]">
           <button
             onClick={() => setShowPolicy(showPolicy === "trust" ? null : "trust")}
-            className="text-xs text-slate-500 hover:text-slate-300"
+            className="text-xs text-zinc-500 hover:text-zinc-300"
           >
             {showPolicy === "trust" ? "Hide" : "View"} trust policy JSON (for reference)
           </button>
@@ -429,18 +429,25 @@ export default function OnboardingPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100">
-      <nav className="border-b border-slate-800/50">
+    <div className="min-h-screen bg-[#09090b] text-slate-100 relative">
+      {/* Background layers */}
+      <div className="fixed inset-0 bg-dots opacity-15 pointer-events-none" aria-hidden />
+      <div className="fixed inset-0 noise-grain pointer-events-none" aria-hidden />
+      {/* Floating blur orbs */}
+      <div className="fixed -top-40 right-0 w-80 h-80 rounded-full bg-violet-600/8 blur-[120px] pointer-events-none" aria-hidden />
+      <div className="fixed bottom-0 -left-20 w-60 h-60 rounded-full bg-fuchsia-600/6 blur-[100px] pointer-events-none" aria-hidden />
+
+      <nav className="border-b border-white/[0.06]">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
           <Link href="/operator" className="flex items-center gap-2">
             <CpuChipIcon className="h-6 w-6 text-violet-400" />
             <span className="font-bold">Cloud Operator</span>
           </Link>
-          <span className="text-sm text-slate-500">Setup</span>
+          <span className="text-sm text-zinc-500">Setup</span>
         </div>
       </nav>
 
-      <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-12 relative z-10">
         <StepIndicator current={step} />
 
         {/* Step 1: Welcome */}
@@ -450,23 +457,25 @@ export default function OnboardingPage() {
               <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-violet-500 to-fuchsia-500 flex items-center justify-center mx-auto mb-6">
                 <ShieldCheckIcon className="h-8 w-8 text-white" />
               </div>
-              <h1 className="text-2xl sm:text-3xl font-bold mb-3">Welcome to Axiom</h1>
-              <p className="text-slate-400 mb-8 max-w-md mx-auto">
+              <h1 className="text-2xl sm:text-3xl font-bold mb-3 tracking-[-0.04em]">Welcome to <span className="text-gradient">Axiom</span></h1>
+              <p className="text-zinc-400 mb-8 max-w-md mx-auto">
                 In the next few minutes, we&apos;ll scan your AWS infrastructure, analyze what needs fixing, and give you a prioritized findings report.
               </p>
-              <div className="space-y-3 text-left max-w-sm mx-auto mb-8">
-                {[
-                  "Connect your AWS account (read-only IAM Role)",
-                  "Axiom scans and reasons about your infrastructure",
-                  "Get your prioritized findings and action plan",
-                ].map((item, i) => (
-                  <div key={i} className="flex items-center gap-3 text-sm text-slate-300">
-                    <span className="w-6 h-6 rounded-full bg-slate-800 flex items-center justify-center text-xs font-bold text-slate-400">{i + 1}</span>
-                    {item}
-                  </div>
-                ))}
+              <div className="glass-card rounded-xl border border-white/[0.06] p-6 text-left max-w-sm mx-auto mb-8">
+                <div className="space-y-3">
+                  {[
+                    "Connect your AWS account (read-only IAM Role)",
+                    "Axiom scans and reasons about your infrastructure",
+                    "Get your prioritized findings and action plan",
+                  ].map((item, i) => (
+                    <div key={i} className="flex items-center gap-3 text-sm text-zinc-300">
+                      <span className="w-6 h-6 rounded-full bg-white/[0.06] flex items-center justify-center text-xs font-bold text-zinc-400">{i + 1}</span>
+                      {item}
+                    </div>
+                  ))}
+                </div>
               </div>
-              <AnimatedButton onClick={() => setStep(2)} variant="primary" className="px-8 py-3">
+              <AnimatedButton onClick={() => setStep(2)} variant="primary" className="px-8 py-3 cta-glow">
                 Get Started
                 <ArrowRightIcon className="h-4 w-4" />
               </AnimatedButton>
@@ -487,7 +496,7 @@ export default function OnboardingPage() {
                     setStep(1);
                   }
                 }}
-                className="flex items-center gap-1 text-sm text-slate-500 hover:text-slate-300 mb-6"
+                className="flex items-center gap-1 text-sm text-zinc-500 hover:text-zinc-300 mb-6 transition-colors"
               >
                 <ArrowLeftIcon className="h-3.5 w-3.5" /> Back
               </button>
@@ -495,8 +504,8 @@ export default function OnboardingPage() {
               {/* Phase: Select provider */}
               {connectionPhase === "select" && (
                 <>
-                  <h1 className="text-2xl font-bold mb-2">Connect your cloud</h1>
-                  <p className="text-slate-400 mb-8">
+                  <h1 className="text-2xl font-bold mb-2 tracking-[-0.04em]">Connect your <span className="text-gradient">cloud</span></h1>
+                  <p className="text-zinc-400 mb-8">
                     Choose your primary cloud provider. We use read-only access to scan your infrastructure safely.
                   </p>
 
@@ -512,10 +521,10 @@ export default function OnboardingPage() {
                             setError(null);
                             try { const raw = localStorage.getItem(STORAGE_KEY); const c = raw ? JSON.parse(raw) : {}; localStorage.setItem(STORAGE_KEY, JSON.stringify({ ...c, provider: p })); } catch {}
                           }}
-                          className={`w-full text-left rounded-xl border p-5 transition-all ${
+                          className={`animated-border w-full text-left rounded-xl border p-5 transition-all ${
                             isSelected
                               ? "border-violet-500/50 bg-violet-950/20"
-                              : "border-slate-800 bg-slate-900/50 hover:border-slate-700"
+                              : "border-white/[0.06] bg-white/[0.02] hover:border-white/[0.12]"
                           }`}
                         >
                           <div className="flex items-center gap-4">
@@ -524,7 +533,7 @@ export default function OnboardingPage() {
                             </div>
                             <div className="flex-1">
                               <div className="font-semibold text-sm">{config.name}</div>
-                              <div className="text-xs text-slate-500">{config.description}</div>
+                              <div className="text-xs text-zinc-500">{config.description}</div>
                             </div>
                             {isSelected && <CheckCircleIcon className="h-5 w-5 text-violet-400" />}
                           </div>
@@ -544,7 +553,7 @@ export default function OnboardingPage() {
                     onClick={handleProviderNext}
                     disabled={!selectedProvider || checkingAvailability}
                     variant="primary"
-                    className="w-full justify-center py-3"
+                    className="w-full justify-center py-3 cta-glow"
                   >
                     {checkingAvailability ? "Checking..." : "Continue"}
                     <ArrowRightIcon className="h-4 w-4" />
@@ -555,20 +564,20 @@ export default function OnboardingPage() {
               {/* Phase: AWS IAM Role Setup */}
               {connectionPhase === "setup" && selectedProvider === "aws" && (
                 <>
-                  <h1 className="text-2xl font-bold mb-2">Set up AWS connection</h1>
-                  <p className="text-slate-400 mb-6">
+                  <h1 className="text-2xl font-bold mb-2 tracking-[-0.04em]">Set up <span className="text-gradient">AWS connection</span></h1>
+                  <p className="text-zinc-400 mb-6">
                     Create a read-only IAM Role in your AWS account, then paste the Role ARN below.
                   </p>
 
                   <AWSSetupInstructions externalId={externalId} />
 
                   <div className="mt-8 space-y-4">
-                    <div className="rounded-xl border border-slate-800 bg-slate-900/50 p-6">
-                      <h3 className="text-sm font-semibold text-slate-200 mb-4">Validate your connection</h3>
+                    <div className="glass-card rounded-xl border border-white/[0.06] p-6">
+                      <h3 className="text-sm font-semibold text-zinc-200 mb-4">Validate your connection</h3>
 
                       <div className="space-y-4">
                         <div>
-                          <label className="block text-sm font-medium text-slate-400 mb-1.5">
+                          <label className="block text-sm font-medium text-zinc-400 mb-1.5">
                             Role ARN <span className="text-red-400">*</span>
                           </label>
                           <input
@@ -581,12 +590,12 @@ export default function OnboardingPage() {
                               if (match) setAwsAccountId(match[1]);
                             }}
                             placeholder="arn:aws:iam::123456789012:role/CloudOperatorReadOnly"
-                            className="w-full rounded-lg border border-slate-700 bg-slate-950 px-4 py-3 text-slate-100 placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-violet-500/50 focus:border-violet-500/50 text-sm font-mono"
+                            className="w-full rounded-lg border border-white/[0.08] bg-white/[0.03] px-4 py-3 text-slate-100 placeholder:text-zinc-600 focus:outline-none focus:ring-2 focus:ring-violet-500/30 focus:border-violet-500/50 text-sm font-mono transition-colors"
                           />
                         </div>
 
                         <div>
-                          <label className="block text-sm font-medium text-slate-400 mb-1.5">
+                          <label className="block text-sm font-medium text-zinc-400 mb-1.5">
                             AWS Account ID <span className="text-red-400">*</span>
                           </label>
                           <input
@@ -598,7 +607,7 @@ export default function OnboardingPage() {
                               setError(null);
                             }}
                             placeholder="123456789012"
-                            className="w-full rounded-lg border border-slate-700 bg-slate-950 px-4 py-3 text-slate-100 placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-violet-500/50 focus:border-violet-500/50 text-sm font-mono"
+                            className="w-full rounded-lg border border-white/[0.08] bg-white/[0.03] px-4 py-3 text-slate-100 placeholder:text-zinc-600 focus:outline-none focus:ring-2 focus:ring-violet-500/30 focus:border-violet-500/50 text-sm font-mono transition-colors"
                           />
                           {arnAccountId && awsAccountId && arnAccountId !== awsAccountId && (
                             <p className="text-xs text-amber-400 mt-1">
@@ -667,17 +676,17 @@ export default function OnboardingPage() {
               <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-emerald-500 to-green-500 flex items-center justify-center mx-auto mb-6">
                 <CheckCircleIcon className="h-8 w-8 text-white" />
               </div>
-              <h1 className="text-2xl font-bold mb-2">Cloud connected</h1>
-              <p className="text-slate-400 mb-2">
+              <h1 className="text-2xl font-bold mb-2 tracking-[-0.04em]">Cloud <span className="text-gradient">connected</span></h1>
+              <p className="text-zinc-400 mb-2">
                 Your AWS account {verifiedAccount ? `(${verifiedAccount})` : ""} is verified and linked.
               </p>
-              <p className="text-slate-500 text-sm mb-8">
+              <p className="text-zinc-500 text-sm mb-8">
                 Now let&apos;s scan your infrastructure and generate your findings report.
               </p>
 
-              <div className="rounded-xl border border-slate-800 bg-slate-900/50 p-6 mb-8 text-left">
-                <h3 className="text-sm font-semibold text-slate-300 mb-3">What happens next:</h3>
-                <div className="space-y-2 text-sm text-slate-400">
+              <div className="glass-card rounded-xl border border-white/[0.06] p-6 mb-8 text-left">
+                <h3 className="text-sm font-semibold text-zinc-300 mb-3">What happens next:</h3>
+                <div className="space-y-2 text-sm text-zinc-400">
                   <div className="flex items-center gap-2">
                     <span className="w-1.5 h-1.5 rounded-full bg-blue-400" />
                     Discover all resources (VMs, storage, networking, databases)
@@ -708,7 +717,7 @@ export default function OnboardingPage() {
                 onClick={handleAnalyze}
                 disabled={analyzing}
                 variant="primary"
-                className="px-8 py-3"
+                className="px-8 py-3 cta-glow"
               >
                 {analyzing ? (
                   <>
@@ -724,7 +733,7 @@ export default function OnboardingPage() {
               </AnimatedButton>
 
               {analyzing && (
-                <p className="text-xs text-slate-500 mt-4">
+                <p className="text-xs text-zinc-500 mt-4">
                   This typically takes 30-60 seconds. We&apos;re scanning your resources and running AI analysis.
                 </p>
               )}
@@ -739,8 +748,8 @@ export default function OnboardingPage() {
               <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-violet-500 to-fuchsia-500 flex items-center justify-center mx-auto mb-6">
                 <ChartBarIcon className="h-8 w-8 text-white" />
               </div>
-              <h1 className="text-2xl font-bold mb-2">Your report is ready</h1>
-              <p className="text-slate-400 mb-8">
+              <h1 className="text-2xl font-bold mb-2 tracking-[-0.04em]">Your report is <span className="text-gradient">ready</span></h1>
+              <p className="text-zinc-400 mb-8">
                 Redirecting you to your findings dashboard...
               </p>
               <div className="w-8 h-8 border-2 border-violet-500/30 border-t-violet-500 rounded-full animate-spin mx-auto" />

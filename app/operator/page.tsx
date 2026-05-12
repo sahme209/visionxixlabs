@@ -155,22 +155,26 @@ const faqs = [
 
 export default function OperatorLandingPage() {
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100">
+    <div className="min-h-screen bg-[#09090b] text-slate-100 relative">
+      {/* Background layers */}
+      <div className="fixed inset-0 bg-dots opacity-15 pointer-events-none" aria-hidden />
+      <div className="fixed inset-0 noise-grain pointer-events-none" aria-hidden />
+
       {/* Nav */}
-      <nav className="border-b border-slate-800/50 backdrop-blur-sm sticky top-0 z-50 bg-slate-950/80">
+      <nav className="border-b border-white/[0.06] backdrop-blur-sm sticky top-0 z-50 bg-[#09090b]/80">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
           <Link href="/operator" className="flex items-center gap-2">
             <CpuChipIcon className="h-7 w-7 text-violet-400" />
             <span className="font-bold text-lg">Cloud Operator</span>
           </Link>
-          <div className="hidden md:flex items-center gap-8 text-sm text-slate-400">
+          <div className="hidden md:flex items-center gap-8 text-sm text-zinc-400">
             <a href="#how-it-works" className="hover:text-white transition-colors">How it works</a>
             <a href="#features" className="hover:text-white transition-colors">Features</a>
             <a href="#pricing" className="hover:text-white transition-colors">Pricing</a>
             <a href="#faq" className="hover:text-white transition-colors">FAQ</a>
           </div>
           <div className="flex items-center gap-3">
-            <Link href="/auth/signin" className="text-sm text-slate-400 hover:text-white transition-colors hidden sm:block">
+            <Link href="/auth/signin" className="text-sm text-zinc-400 hover:text-white transition-colors hidden sm:block">
               Sign in
             </Link>
             <AnimatedButton href="/auth/signup?redirect=/operator/onboarding" variant="primary" className="text-sm px-4 py-2">
@@ -183,32 +187,34 @@ export default function OperatorLandingPage() {
       {/* Hero */}
       <section className="relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-violet-950/20 via-transparent to-transparent" />
-        <div className="absolute top-20 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-violet-600/10 rounded-full blur-[120px]" />
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[500px] spotlight-orb opacity-40 pointer-events-none" aria-hidden />
+        <div className="absolute -top-40 -right-32 w-80 h-80 rounded-full bg-fuchsia-600/8 blur-[120px] pointer-events-none" aria-hidden />
+        <div className="absolute bottom-0 -left-32 w-64 h-64 rounded-full bg-violet-600/8 blur-[100px] pointer-events-none" aria-hidden />
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-20 text-center relative">
           <Reveal>
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-violet-500/10 border border-violet-500/20 text-violet-300 text-xs font-medium mb-6">
+            <div className="inline-flex items-center gap-2 huly-badge px-3 py-1 text-violet-300 text-xs font-medium mb-6">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
               Now in public beta
             </div>
           </Reveal>
           <Reveal delay={0.1}>
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight leading-tight">
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-[-0.04em] leading-tight">
               Your cloud, operated by
               <br />
-              <span className="bg-gradient-to-r from-violet-400 via-fuchsia-400 to-violet-400 bg-clip-text text-transparent">
+              <span className="text-gradient">
                 an AI agent
               </span>
             </h1>
           </Reveal>
           <Reveal delay={0.2}>
-            <p className="mt-6 text-lg sm:text-xl text-slate-400 max-w-2xl mx-auto leading-relaxed">
+            <p className="mt-6 text-lg sm:text-xl text-zinc-400 max-w-2xl mx-auto leading-relaxed">
               Axiom scans your AWS infrastructure, reasons about what to fix, generates
               phased execution plans, and applies approved changes — with full governance and audit trail.
             </p>
           </Reveal>
           <Reveal delay={0.3}>
             <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
-              <AnimatedButton href="/auth/signup?redirect=/operator/onboarding" variant="primary" className="px-8 py-4 text-base">
+              <AnimatedButton href="/auth/signup?redirect=/operator/onboarding" variant="primary" className="px-8 py-4 text-base cta-glow">
                 Start Free
                 <ArrowRightIcon className="h-4 w-4" />
               </AnimatedButton>
@@ -218,7 +224,7 @@ export default function OperatorLandingPage() {
             </div>
           </Reveal>
           <Reveal delay={0.4}>
-            <div className="mt-12 flex items-center justify-center gap-6 text-sm text-slate-500">
+            <div className="mt-12 flex items-center justify-center gap-6 text-sm text-zinc-500">
               <span className="flex items-center gap-1.5">
                 <CheckCircleIcon className="h-4 w-4 text-emerald-400" />
                 No credit card
@@ -240,7 +246,7 @@ export default function OperatorLandingPage() {
       <section className="pb-20">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <Reveal>
-            <div className="rounded-2xl border border-slate-800 bg-slate-900/50 backdrop-blur-sm p-8 sm:p-12">
+            <div className="glass-card rounded-2xl border border-white/[0.06] p-8 sm:p-12">
               <div className="grid sm:grid-cols-3 gap-8 items-center">
                 <div className="sm:col-span-1 flex flex-col items-center">
                   <div className="relative w-32 h-32">
@@ -256,49 +262,53 @@ export default function OperatorLandingPage() {
                     </svg>
                     <div className="absolute inset-0 flex flex-col items-center justify-center">
                       <span className="text-3xl font-bold text-amber-400">14</span>
-                      <span className="text-xs text-slate-500">Findings</span>
+                      <span className="text-xs text-zinc-500">Findings</span>
                     </div>
                   </div>
-                  <p className="text-xs text-slate-500 mt-3 text-center">Typical first scan</p>
+                  <p className="text-xs text-zinc-500 mt-3 text-center">Typical first scan</p>
                 </div>
                 <div className="sm:col-span-2 space-y-3">
                   <div className="flex items-center justify-between text-sm">
-                    <span className="text-slate-400">Cost Optimization</span>
+                    <span className="text-zinc-400">Cost Optimization</span>
                     <span className="text-red-400 font-medium">5 critical</span>
                   </div>
-                  <div className="h-1.5 bg-slate-800 rounded-full"><div className="h-1.5 bg-red-500 rounded-full" style={{ width: "70%" }} /></div>
+                  <div className="h-1.5 bg-white/[0.06] rounded-full"><div className="h-1.5 bg-red-500 rounded-full" style={{ width: "70%" }} /></div>
                   <div className="flex items-center justify-between text-sm">
-                    <span className="text-slate-400">Security Gaps</span>
+                    <span className="text-zinc-400">Security Gaps</span>
                     <span className="text-red-400 font-medium">3 high</span>
                   </div>
-                  <div className="h-1.5 bg-slate-800 rounded-full"><div className="h-1.5 bg-red-500 rounded-full" style={{ width: "55%" }} /></div>
+                  <div className="h-1.5 bg-white/[0.06] rounded-full"><div className="h-1.5 bg-red-500 rounded-full" style={{ width: "55%" }} /></div>
                   <div className="flex items-center justify-between text-sm">
-                    <span className="text-slate-400">Configuration Drift</span>
+                    <span className="text-zinc-400">Configuration Drift</span>
                     <span className="text-yellow-400 font-medium">4 medium</span>
                   </div>
-                  <div className="h-1.5 bg-slate-800 rounded-full"><div className="h-1.5 bg-yellow-500 rounded-full" style={{ width: "40%" }} /></div>
+                  <div className="h-1.5 bg-white/[0.06] rounded-full"><div className="h-1.5 bg-yellow-500 rounded-full" style={{ width: "40%" }} /></div>
                   <div className="flex items-center justify-between text-sm">
-                    <span className="text-slate-400">Resource Utilization</span>
+                    <span className="text-zinc-400">Resource Utilization</span>
                     <span className="text-yellow-400 font-medium">2 low</span>
                   </div>
-                  <div className="h-1.5 bg-slate-800 rounded-full"><div className="h-1.5 bg-yellow-500 rounded-full" style={{ width: "25%" }} /></div>
+                  <div className="h-1.5 bg-white/[0.06] rounded-full"><div className="h-1.5 bg-yellow-500 rounded-full" style={{ width: "25%" }} /></div>
                 </div>
               </div>
-              <p className="text-center text-slate-500 text-sm mt-8 border-t border-slate-800 pt-6">
-                Axiom finds what matters and prioritizes it. <strong className="text-slate-300">What&apos;s hiding in your cloud?</strong>
+              <div className="gradient-line mt-8 mb-6" />
+              <p className="text-center text-zinc-500 text-sm">
+                Axiom finds what matters and prioritizes it. <strong className="text-zinc-300">What&apos;s hiding in your cloud?</strong>
               </p>
             </div>
           </Reveal>
         </div>
       </section>
 
+      <div className="section-divider" />
+
       {/* How It Works */}
-      <section id="how-it-works" className="py-20 border-t border-slate-800/50">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section id="how-it-works" className="py-20 relative">
+        <div className="absolute inset-0 bg-grid-mesh opacity-20 pointer-events-none" aria-hidden />
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <Reveal>
             <div className="text-center mb-16">
-              <h2 className="text-3xl sm:text-4xl font-bold">How Axiom works</h2>
-              <p className="mt-4 text-slate-400 text-lg max-w-2xl mx-auto">
+              <h2 className="text-3xl sm:text-4xl font-bold tracking-[-0.04em]">How <span className="text-gradient">Axiom</span> works</h2>
+              <p className="mt-4 text-zinc-400 text-lg max-w-2xl mx-auto">
                 From first scan to approved execution plan in under 5 minutes.
               </p>
             </div>
@@ -306,13 +316,13 @@ export default function OperatorLandingPage() {
           <div className="grid md:grid-cols-3 gap-8">
             <Stagger>
               {steps.map((step) => (
-                <div key={step.number} className="relative rounded-2xl border border-slate-800 bg-slate-900/50 p-8 hover:border-slate-700 transition-colors">
+                <div key={step.number} className="relative animated-border card-inner-glow card-hover rounded-2xl border border-white/[0.06] bg-white/[0.02] p-8 transition-colors">
                   <div className={`inline-flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-br ${step.color} mb-6`}>
                     <step.icon className="h-6 w-6 text-white" />
                   </div>
-                  <span className="absolute top-8 right-8 text-5xl font-bold text-slate-800/50">{step.number}</span>
+                  <span className="absolute top-8 right-8 text-5xl font-bold text-white/[0.04]">{step.number}</span>
                   <h3 className="text-xl font-semibold mb-3">{step.title}</h3>
-                  <p className="text-slate-400 leading-relaxed text-sm">{step.description}</p>
+                  <p className="text-zinc-400 leading-relaxed text-sm">{step.description}</p>
                 </div>
               ))}
             </Stagger>
@@ -320,13 +330,16 @@ export default function OperatorLandingPage() {
         </div>
       </section>
 
+      <div className="section-divider" />
+
       {/* Features */}
-      <section id="features" className="py-20 bg-slate-900/30 border-t border-slate-800/50">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section id="features" className="py-20 relative">
+        <div className="absolute inset-0 bg-grid-mesh opacity-15 pointer-events-none" aria-hidden />
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <Reveal>
             <div className="text-center mb-16">
-              <h2 className="text-3xl sm:text-4xl font-bold">Built for trust</h2>
-              <p className="mt-4 text-slate-400 text-lg max-w-2xl mx-auto">
+              <h2 className="text-3xl sm:text-4xl font-bold tracking-[-0.04em]">Built for <span className="text-gradient">trust</span></h2>
+              <p className="mt-4 text-zinc-400 text-lg max-w-2xl mx-auto">
                 We never touch your infrastructure without your explicit approval. Every action is logged, every change is reversible.
               </p>
             </div>
@@ -334,10 +347,10 @@ export default function OperatorLandingPage() {
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
             <Stagger>
               {features.map((f) => (
-                <div key={f.title} className="rounded-xl border border-slate-800 bg-slate-900/50 p-6 hover:border-slate-700 transition-colors">
+                <div key={f.title} className="animated-border card-inner-glow card-hover rounded-xl border border-white/[0.06] bg-white/[0.02] p-6 transition-colors">
                   <f.icon className="h-6 w-6 text-violet-400 mb-4" />
                   <h3 className="font-semibold mb-2">{f.title}</h3>
-                  <p className="text-sm text-slate-400 leading-relaxed">{f.description}</p>
+                  <p className="text-sm text-zinc-400 leading-relaxed">{f.description}</p>
                 </div>
               ))}
             </Stagger>
@@ -345,35 +358,40 @@ export default function OperatorLandingPage() {
         </div>
       </section>
 
+      <div className="section-divider" />
+
       {/* Social proof */}
-      <section className="py-20 border-t border-slate-800/50">
+      <section className="py-20">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <Reveal>
             <div className="grid grid-cols-3 gap-8">
               <div>
-                <div className="text-3xl sm:text-4xl font-bold text-violet-400">9</div>
-                <p className="text-sm text-slate-500 mt-1">Cognitive phases</p>
+                <div className="text-3xl sm:text-4xl font-bold text-gradient">9</div>
+                <p className="text-sm text-zinc-500 mt-1">Cognitive phases</p>
               </div>
               <div>
                 <div className="text-3xl sm:text-4xl font-bold text-emerald-400">14</div>
-                <p className="text-sm text-slate-500 mt-1">Workflow stages</p>
+                <p className="text-sm text-zinc-500 mt-1">Workflow stages</p>
               </div>
               <div>
                 <div className="text-3xl sm:text-4xl font-bold text-fuchsia-400">0</div>
-                <p className="text-sm text-slate-500 mt-1">Changes without approval</p>
+                <p className="text-sm text-zinc-500 mt-1">Changes without approval</p>
               </div>
             </div>
           </Reveal>
         </div>
       </section>
 
+      <div className="section-divider" />
+
       {/* Pricing */}
-      <section id="pricing" className="py-20 bg-slate-900/30 border-t border-slate-800/50">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section id="pricing" className="py-20 relative">
+        <div className="absolute inset-0 bg-grid-mesh opacity-15 pointer-events-none" aria-hidden />
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <Reveal>
             <div className="text-center mb-16">
-              <h2 className="text-3xl sm:text-4xl font-bold">Simple pricing</h2>
-              <p className="mt-4 text-slate-400 text-lg">
+              <h2 className="text-3xl sm:text-4xl font-bold tracking-[-0.04em]">Simple <span className="text-gradient">pricing</span></h2>
+              <p className="mt-4 text-zinc-400 text-lg">
                 Start with a free scan. Upgrade to the full autonomous agent when you&apos;re ready.
               </p>
             </div>
@@ -383,26 +401,26 @@ export default function OperatorLandingPage() {
               {plans.map((plan) => (
                 <div
                 key={plan.name}
-                className={`rounded-2xl border p-8 flex flex-col ${
+                className={`animated-border card-inner-glow card-hover rounded-2xl border p-8 flex flex-col ${
                   plan.highlighted
                     ? "border-violet-500/50 bg-violet-950/20 ring-1 ring-violet-500/20"
-                    : "border-slate-800 bg-slate-900/50"
+                    : "border-white/[0.06] bg-white/[0.02]"
                 }`}
               >
                 {plan.highlighted && (
-                  <span className="text-xs font-medium text-violet-300 bg-violet-500/10 px-2.5 py-1 rounded-full self-start mb-4">
+                  <span className="huly-badge text-xs font-medium text-violet-300 px-2.5 py-1 self-start mb-4">
                     Most popular
                   </span>
                 )}
                 <h3 className="text-xl font-bold">{plan.name}</h3>
                 <div className="mt-4 flex items-baseline gap-1">
-                  <span className="text-4xl font-bold">{plan.price}</span>
-                  {plan.period && <span className="text-slate-500">{plan.period}</span>}
+                  <span className="text-4xl font-bold text-gradient">{plan.price}</span>
+                  {plan.period && <span className="text-zinc-500">{plan.period}</span>}
                 </div>
-                <p className="text-sm text-slate-400 mt-2">{plan.description}</p>
+                <p className="text-sm text-zinc-400 mt-2">{plan.description}</p>
                 <ul className="mt-6 space-y-3 flex-1">
                   {plan.features.map((f) => (
-                    <li key={f} className="flex items-start gap-2 text-sm text-slate-300">
+                    <li key={f} className="flex items-start gap-2 text-sm text-zinc-300">
                       <CheckCircleIcon className="h-4 w-4 text-emerald-400 mt-0.5 flex-shrink-0" />
                       {f}
                     </li>
@@ -411,7 +429,7 @@ export default function OperatorLandingPage() {
                 <AnimatedButton
                   href={plan.ctaHref}
                   variant={plan.highlighted ? "primary" : "secondary"}
-                  className="mt-8 w-full justify-center"
+                  className={`mt-8 w-full justify-center ${plan.highlighted ? "cta-glow" : ""}`}
                 >
                   {plan.cta}
                 </AnimatedButton>
@@ -422,21 +440,23 @@ export default function OperatorLandingPage() {
         </div>
       </section>
 
+      <div className="section-divider" />
+
       {/* FAQ */}
-      <section id="faq" className="py-20 border-t border-slate-800/50">
+      <section id="faq" className="py-20">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
           <Reveal>
-            <h2 className="text-3xl font-bold text-center mb-12">Frequently asked questions</h2>
+            <h2 className="text-3xl font-bold text-center mb-12 tracking-[-0.04em]">Frequently asked <span className="text-gradient">questions</span></h2>
           </Reveal>
           <div className="space-y-6">
             {faqs.map((faq, i) => (
               <Reveal key={i} delay={i * 0.05}>
-                <details className="group rounded-xl border border-slate-800 bg-slate-900/50 p-6">
+                <details className="group animated-border rounded-xl border border-white/[0.06] bg-white/[0.02] p-6">
                   <summary className="font-semibold cursor-pointer list-none flex items-center justify-between">
                     {faq.q}
-                    <span className="text-slate-500 group-open:rotate-45 transition-transform text-xl">+</span>
+                    <span className="text-zinc-500 group-open:rotate-45 transition-transform text-xl">+</span>
                   </summary>
-                  <p className="mt-4 text-sm text-slate-400 leading-relaxed">{faq.a}</p>
+                  <p className="mt-4 text-sm text-zinc-400 leading-relaxed">{faq.a}</p>
                 </details>
               </Reveal>
             ))}
@@ -444,17 +464,21 @@ export default function OperatorLandingPage() {
         </div>
       </section>
 
+      <div className="section-divider" />
+
       {/* Final CTA */}
-      <section className="py-24 bg-gradient-to-b from-slate-950 via-violet-950/10 to-slate-950 border-t border-slate-800/50">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <section className="py-24 relative overflow-hidden">
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[400px] spotlight-orb opacity-20 pointer-events-none" aria-hidden />
+        <div className="absolute -bottom-20 -right-20 w-60 h-60 rounded-full bg-fuchsia-600/8 blur-[100px] pointer-events-none" aria-hidden />
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
           <Reveal>
-            <h2 className="text-3xl sm:text-4xl font-bold mb-4">
-              What&apos;s hiding in your cloud?
+            <h2 className="text-3xl sm:text-4xl font-bold mb-4 tracking-[-0.04em]">
+              What&apos;s hiding in <span className="text-gradient">your cloud</span>?
             </h2>
-            <p className="text-lg text-slate-400 mb-10 max-w-xl mx-auto">
+            <p className="text-lg text-zinc-400 mb-10 max-w-xl mx-auto">
               Connect your AWS account, let Axiom scan and reason, and see exactly what needs fixing — prioritized and ready to act on.
             </p>
-            <AnimatedButton href="/auth/signup?redirect=/operator/onboarding" variant="primary" className="px-10 py-4 text-base">
+            <AnimatedButton href="/auth/signup?redirect=/operator/onboarding" variant="primary" className="px-10 py-4 text-base cta-glow">
               Start Free — No Credit Card
               <ArrowRightIcon className="h-4 w-4" />
             </AnimatedButton>
@@ -463,18 +487,18 @@ export default function OperatorLandingPage() {
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-slate-800/50 py-12">
+      <footer className="border-t border-white/[0.06] py-12">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-2">
               <CpuChipIcon className="h-5 w-5 text-violet-400" />
               <span className="font-semibold text-sm">Cloud Operator</span>
-              <span className="text-xs text-slate-600 ml-2">by Vision XIX Labs</span>
+              <span className="text-xs text-zinc-600 ml-2">by Vision XIX Labs</span>
             </div>
-            <div className="flex items-center gap-6 text-sm text-slate-500">
-              <Link href="/privacy" className="hover:text-slate-300">Privacy</Link>
-              <Link href="/terms" className="hover:text-slate-300">Terms</Link>
-              <Link href="/contact" className="hover:text-slate-300">Contact</Link>
+            <div className="flex items-center gap-6 text-sm text-zinc-500">
+              <Link href="/privacy" className="hover:text-zinc-300">Privacy</Link>
+              <Link href="/terms" className="hover:text-zinc-300">Terms</Link>
+              <Link href="/contact" className="hover:text-zinc-300">Contact</Link>
               <span>support@visionxixlabs.com</span>
             </div>
           </div>

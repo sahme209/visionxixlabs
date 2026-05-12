@@ -10,6 +10,8 @@ import {
   ShieldCheckIcon,
 } from "@heroicons/react/24/outline";
 import { RealisticFogBackground } from "@/components/ui/realistic-fog-background";
+import { Reveal } from "@/components/motion/Reveal";
+import { Stagger } from "@/components/motion/Stagger";
 
 export default function SignUpPage() {
   return (
@@ -64,125 +66,136 @@ function SignUpForm() {
   return (
     <div className="min-h-screen flex bg-[#09090b] relative overflow-hidden">
       <RealisticFogBackground backgroundColor="transparent" opacity={0.15} darken contained />
+      {/* Spotlight orb */}
       <div className="absolute top-0 left-1/4 w-[600px] h-[400px] spotlight-orb opacity-30" aria-hidden />
+      {/* Floating blur orbs */}
+      <div className="absolute -top-40 right-0 w-80 h-80 rounded-full bg-violet-600/10 blur-[120px] pointer-events-none" aria-hidden />
+      <div className="absolute bottom-20 -left-20 w-60 h-60 rounded-full bg-fuchsia-600/8 blur-[90px] pointer-events-none" aria-hidden />
+      {/* Dot pattern background */}
+      <div className="absolute inset-0 bg-dots opacity-25 pointer-events-none" aria-hidden />
+
       <div className="flex-1 flex items-center justify-center px-4 sm:px-8 relative z-10">
-        <div className="w-full max-w-sm">
-          <Link href="/" className="flex items-center gap-2.5 mb-10">
-            <Image
-              src="/vision-xix-logo.png"
-              alt="Vision XIX Labs"
-              width={28}
-              height={28}
-              className="rounded-lg"
-            />
-            <span className="text-sm font-semibold text-gradient">
-              Vision XIX Labs
-            </span>
-          </Link>
-
-          <h1 className="text-2xl font-bold mb-1">Create your account</h1>
-          <p className="text-sm text-zinc-500 mb-8">
-            {isOperatorFlow
-              ? "Scan your cloud and get findings in under 5 minutes."
-              : "Get started with Axiom."}
-          </p>
-
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label htmlFor="name" className="block text-sm font-medium text-zinc-300 mb-1.5">
-                Name
-              </label>
-              <input
-                id="name"
-                type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                autoComplete="name"
-                className="w-full rounded-lg border border-white/[0.08] bg-white/[0.03] px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-violet-500/50 focus:ring-2 focus:ring-violet-500/20 transition-colors placeholder:text-zinc-600"
+        <Reveal direction="up" blur delay={0.05}>
+          <div className="w-full max-w-sm glass-card rounded-2xl border border-white/[0.06] p-8">
+            <Link href="/" className="flex items-center gap-2.5 mb-10">
+              <Image
+                src="/vision-xix-logo.png"
+                alt="Vision XIX Labs"
+                width={28}
+                height={28}
+                className="rounded-lg"
               />
-            </div>
-            <div>
-              <label htmlFor="signup-email" className="block text-sm font-medium text-zinc-300 mb-1.5">
-                Work email
-              </label>
-              <input
-                id="signup-email"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                autoComplete="email"
-                className="w-full rounded-lg border border-white/[0.08] bg-white/[0.03] px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-violet-500/50 focus:ring-2 focus:ring-violet-500/20 transition-colors placeholder:text-zinc-600"
-              />
-            </div>
-            <div>
-              <label htmlFor="signup-password" className="block text-sm font-medium text-zinc-300 mb-1.5">
-                Password
-              </label>
-              <input
-                id="signup-password"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                minLength={8}
-                placeholder="8+ characters"
-                autoComplete="new-password"
-                className="w-full rounded-lg border border-white/[0.08] bg-white/[0.03] px-3.5 py-2.5 text-sm text-white placeholder:text-zinc-600 focus:outline-none focus:border-violet-500/50 focus:ring-2 focus:ring-violet-500/20 transition-colors"
-              />
-            </div>
-            {error && (
-              <div className="rounded-lg border border-red-500/20 bg-red-500/[0.06] px-3.5 py-2.5 text-sm text-red-400">
-                {error}
-              </div>
-            )}
-            <button
-              type="submit"
-              disabled={loading}
-              className="btn-huly w-full rounded-lg bg-white py-2.5 text-sm font-semibold text-zinc-900 hover:bg-zinc-100 disabled:opacity-50 flex items-center justify-center gap-2 transition-colors shadow-sm"
-            >
-              {loading ? "Creating account..." : "Create account"}
-              {!loading && <ArrowRightIcon className="h-4 w-4" />}
-            </button>
-          </form>
-
-          <p className="mt-6 text-sm text-zinc-500 text-center">
-            Already have an account?{" "}
-            <Link
-              href={`/auth/signin?callbackUrl=${encodeURIComponent(redirect)}`}
-              className="font-medium text-violet-400 hover:text-violet-300"
-            >
-              Sign in
+              <span className="text-sm font-semibold text-gradient">
+                Vision XIX Labs
+              </span>
             </Link>
-          </p>
 
-          <p className="mt-4 text-xs text-zinc-600 text-center">
-            No credit card required. Free plan includes 1 cloud account.
-          </p>
-        </div>
+            <h1 className="text-2xl font-bold mb-1 tracking-[-0.04em]">Create your account</h1>
+            <p className="text-sm text-zinc-500 mb-8">
+              {isOperatorFlow
+                ? "Scan your cloud and get findings in under 5 minutes."
+                : "Get started with Axiom."}
+            </p>
+
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div>
+                <label htmlFor="name" className="block text-sm font-medium text-zinc-300 mb-1.5">
+                  Name
+                </label>
+                <input
+                  id="name"
+                  type="text"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  autoComplete="name"
+                  className="w-full rounded-lg border border-white/[0.08] bg-white/[0.03] px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-violet-500/50 focus:ring-2 focus:ring-violet-500/20 transition-colors placeholder:text-zinc-600"
+                />
+              </div>
+              <div>
+                <label htmlFor="signup-email" className="block text-sm font-medium text-zinc-300 mb-1.5">
+                  Work email
+                </label>
+                <input
+                  id="signup-email"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  autoComplete="email"
+                  className="w-full rounded-lg border border-white/[0.08] bg-white/[0.03] px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-violet-500/50 focus:ring-2 focus:ring-violet-500/20 transition-colors placeholder:text-zinc-600"
+                />
+              </div>
+              <div>
+                <label htmlFor="signup-password" className="block text-sm font-medium text-zinc-300 mb-1.5">
+                  Password
+                </label>
+                <input
+                  id="signup-password"
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  minLength={8}
+                  placeholder="8+ characters"
+                  autoComplete="new-password"
+                  className="w-full rounded-lg border border-white/[0.08] bg-white/[0.03] px-3.5 py-2.5 text-sm text-white placeholder:text-zinc-600 focus:outline-none focus:border-violet-500/50 focus:ring-2 focus:ring-violet-500/20 transition-colors"
+                />
+              </div>
+              {error && (
+                <div className="rounded-lg border border-red-500/20 bg-red-500/[0.06] px-3.5 py-2.5 text-sm text-red-400">
+                  {error}
+                </div>
+              )}
+              <button
+                type="submit"
+                disabled={loading}
+                className="btn-huly cta-glow w-full rounded-lg bg-white py-2.5 text-sm font-semibold text-zinc-900 hover:bg-zinc-100 disabled:opacity-50 flex items-center justify-center gap-2 transition-colors shadow-sm"
+              >
+                {loading ? "Creating account..." : "Create account"}
+                {!loading && <ArrowRightIcon className="h-4 w-4" />}
+              </button>
+            </form>
+
+            <p className="mt-6 text-sm text-zinc-500 text-center">
+              Already have an account?{" "}
+              <Link
+                href={`/auth/signin?callbackUrl=${encodeURIComponent(redirect)}`}
+                className="font-medium text-violet-400 hover:text-violet-300"
+              >
+                Sign in
+              </Link>
+            </p>
+
+            <p className="mt-4 text-xs text-zinc-600 text-center">
+              No credit card required. Free plan includes 1 cloud account.
+            </p>
+          </div>
+        </Reveal>
       </div>
 
       {isOperatorFlow && (
         <div className="hidden lg:flex flex-1 items-center justify-center border-l border-white/[0.04] px-12 relative z-10">
-          <div className="max-w-xs">
-            <h2 className="text-sm font-semibold mb-6">
-              What you get — free
-            </h2>
-            <div className="space-y-4">
-              {[
-                { icon: ShieldCheckIcon, text: "Read-only AWS access via assume-role" },
-                { icon: CheckCircleIcon, text: "Full infrastructure scan and analysis" },
-                { icon: CheckCircleIcon, text: "Cost, security, and drift findings" },
-                { icon: CheckCircleIcon, text: "Prioritized recommendations" },
-                { icon: CheckCircleIcon, text: "Execution plans on upgrade" },
-              ].map((item, i) => (
-                <div key={i} className="flex items-center gap-2.5 text-sm text-zinc-400">
-                  <item.icon className="h-4 w-4 text-emerald-500 flex-shrink-0" />
-                  {item.text}
-                </div>
-              ))}
+          <Reveal direction="up" blur delay={0.2}>
+            <div className="max-w-xs">
+              <h2 className="text-sm font-semibold mb-6 tracking-[-0.04em]">
+                What you get — <span className="text-gradient">free</span>
+              </h2>
+              <Stagger delay={0.1} interval={0.06}>
+                {[
+                  { icon: ShieldCheckIcon, text: "Read-only AWS access via assume-role" },
+                  { icon: CheckCircleIcon, text: "Full infrastructure scan and analysis" },
+                  { icon: CheckCircleIcon, text: "Cost, security, and drift findings" },
+                  { icon: CheckCircleIcon, text: "Prioritized recommendations" },
+                  { icon: CheckCircleIcon, text: "Execution plans on upgrade" },
+                ].map((item, i) => (
+                  <div key={i} className="flex items-center gap-2.5 text-sm text-zinc-400">
+                    <item.icon className="h-4 w-4 text-emerald-500 flex-shrink-0" />
+                    {item.text}
+                  </div>
+                ))}
+              </Stagger>
             </div>
-          </div>
+          </Reveal>
         </div>
       )}
     </div>

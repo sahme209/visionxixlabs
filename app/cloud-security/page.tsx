@@ -5,6 +5,8 @@ import { SecurityServiceCard } from "@/components/SecurityServiceCard";
 import { SecurityPrinciplesBlock } from "@/components/SecurityPrinciplesBlock";
 import { AccessModelSection } from "@/components/AccessModelSection";
 import { FAQAccordion } from "@/components/FAQAccordion";
+import { Reveal } from "@/components/motion/Reveal";
+import { Stagger } from "@/components/motion/Stagger";
 import {
   cloudSecurityHero,
   cloudSecurityServices,
@@ -29,9 +31,12 @@ export const metadata: Metadata = {
 
 export default function CloudSecurityPage() {
   return (
-    <div className="min-h-screen bg-[#09090b]">
+    <div className="min-h-screen bg-[#09090b] relative overflow-hidden">
+      {/* Background effects */}
+      <div className="spotlight-orb absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[600px] pointer-events-none" />
+      <div className="bg-dots absolute inset-0 pointer-events-none" />
       <Navigation />
-      <main className="pt-24 pb-24 px-4 sm:px-6 lg:px-8">
+      <main className="pt-24 pb-24 px-4 sm:px-6 lg:px-8 relative">
         <div className="max-w-4xl mx-auto">
           {/* Breadcrumb */}
           <nav
@@ -52,76 +57,100 @@ export default function CloudSecurityPage() {
           </nav>
 
           {/* Hero */}
-          <header className="mb-16 text-center">
-            <h1 className="text-3xl md:text-4xl font-bold text-white mb-4">
-              {cloudSecurityHero.title}
-            </h1>
-            <p className="text-lg text-zinc-400 max-w-2xl mx-auto">
-              {cloudSecurityHero.subtitle}
-            </p>
-          </header>
+          <Reveal direction="up" blur>
+            <header className="mb-16 text-center">
+              <h1 className="text-3xl md:text-4xl font-bold text-white mb-4 tracking-[-0.04em]">
+                <span className="text-gradient">{cloudSecurityHero.title}</span>
+              </h1>
+              <p className="text-lg text-zinc-400 max-w-2xl mx-auto">
+                {cloudSecurityHero.subtitle}
+              </p>
+            </header>
+          </Reveal>
+
+          <div className="section-divider my-16" />
 
           {/* Security services */}
-          <section
-            className="mb-16"
-            aria-labelledby="services-heading"
-          >
-            <h2 id="services-heading" className="text-2xl font-bold text-white mb-6">
-              Security offerings
-            </h2>
-            <p className="text-zinc-400 mb-8 max-w-2xl">
-              Structured services to harden your cloud environment and deployment process. No fear-based marketing — clear scope and deliverables.
-            </p>
-            <div className="grid gap-6 sm:grid-cols-2">
-              {cloudSecurityServices.map((service) => (
-                <SecurityServiceCard
-                  key={service.id}
-                  {...service}
-                  ctaHref="/contact"
-                  ctaLabel="Discuss this service"
-                />
-              ))}
-            </div>
-          </section>
+          <Reveal direction="up" delay={0.1}>
+            <section
+              className="mb-16"
+              aria-labelledby="services-heading"
+            >
+              <h2 id="services-heading" className="text-2xl font-bold text-white mb-6 tracking-[-0.04em]">
+                Security <span className="text-gradient">offerings</span>
+              </h2>
+              <p className="text-zinc-400 mb-8 max-w-2xl">
+                Structured services to harden your cloud environment and deployment process. No fear-based marketing — clear scope and deliverables.
+              </p>
+              <Stagger className="grid gap-6 sm:grid-cols-2">
+                {cloudSecurityServices.map((service) => (
+                  <SecurityServiceCard
+                    key={service.id}
+                    {...service}
+                    ctaHref="/contact"
+                    ctaLabel="Discuss this service"
+                  />
+                ))}
+              </Stagger>
+            </section>
+          </Reveal>
+
+          <div className="section-divider my-16" />
 
           {/* How we access your environment + What we are not */}
-          <AccessModelSection
-            weOperateUsing={accessModelItems}
-            whatWeAreNot={whatWeAreNot}
-            whatWeFocusOn={whatWeFocusOnSecurity}
-          />
+          <Reveal direction="up" delay={0.1}>
+            <AccessModelSection
+              weOperateUsing={accessModelItems}
+              whatWeAreNot={whatWeAreNot}
+              whatWeFocusOn={whatWeFocusOnSecurity}
+            />
+          </Reveal>
+
+          <div className="section-divider my-16" />
 
           {/* Trust principles */}
-          <SecurityPrinciplesBlock
-            title="Trust and transparency"
-            items={securityPrinciples}
-          />
+          <Reveal direction="up" delay={0.1}>
+            <SecurityPrinciplesBlock
+              title="Trust and transparency"
+              items={securityPrinciples}
+            />
+          </Reveal>
+
+          <div className="section-divider my-16" />
 
           {/* FAQ */}
-          <section className="mt-16" aria-labelledby="faq-heading">
-            <h2 id="faq-heading" className="text-2xl font-bold text-white mb-6">
-              Frequently asked questions
-            </h2>
-            <FAQAccordion items={cloudSecurityFAQ} />
-          </section>
+          <Reveal direction="up" delay={0.1}>
+            <section className="mt-16" aria-labelledby="faq-heading">
+              <h2 id="faq-heading" className="text-2xl font-bold text-white mb-6 tracking-[-0.04em]">
+                Frequently asked questions
+              </h2>
+              <FAQAccordion items={cloudSecurityFAQ} />
+            </section>
+          </Reveal>
 
           {/* CTA */}
-          <div className="mt-16 text-center">
-            <p className="text-zinc-400 mb-3">
-              Book a cloud review call to walk through your environment, risks, and improvement options.
-            </p>
-            <p className="text-xs text-zinc-500 mb-4">
-              Includes a free 30-minute cloud health assessment for qualified teams.
-            </p>
-            <Link
-              href="/contact"
-              className="inline-flex items-center px-6 py-3 bg-white text-zinc-900 rounded-xl font-semibold hover:opacity-90 transition-opacity"
-            >
-              Book a Cloud Review Call
-            </Link>
-          </div>
+          <Reveal direction="up" delay={0.1}>
+            <div className="mt-16 text-center">
+              <p className="text-zinc-400 mb-3">
+                Book a cloud review call to walk through your environment, risks, and improvement options.
+              </p>
+              <p className="text-xs text-zinc-500 mb-4">
+                Includes a free 30-minute cloud health assessment for qualified teams.
+              </p>
+              <Link
+                href="/contact"
+                className="btn-huly cta-glow inline-flex items-center px-6 py-3 bg-white text-zinc-900 rounded-xl font-semibold hover:opacity-90 transition-opacity"
+              >
+                Book a Cloud Review Call
+              </Link>
+            </div>
+          </Reveal>
         </div>
       </main>
+
+      {/* Floating blur orbs */}
+      <div className="absolute bottom-1/3 left-10 w-72 h-72 bg-violet-600/10 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute top-1/2 right-0 w-80 h-80 bg-fuchsia-600/8 rounded-full blur-3xl pointer-events-none" />
     </div>
   );
 }

@@ -14,6 +14,8 @@ import {
   CurrencyDollarIcon,
 } from "@heroicons/react/24/outline";
 import { Navigation } from "@/components/Navigation";
+import { Reveal } from "@/components/motion/Reveal";
+import { Stagger } from "@/components/motion/Stagger";
 
 interface Message {
   id: string;
@@ -155,85 +157,99 @@ export default function VisionXIXAIAssistantPage() {
   };
 
   return (
-    <div className="min-h-screen bg-white/[0.02] flex flex-col">
+    <div className="min-h-screen bg-[#09090b] flex flex-col relative">
+      {/* Background layers */}
+      <div className="fixed inset-0 bg-dots opacity-15 pointer-events-none" aria-hidden />
+      <div className="fixed inset-0 noise-grain pointer-events-none" aria-hidden />
       <Navigation />
 
-      <div className="border-b border-white/[0.06] bg-white/[0.02] pt-24">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+      {/* Header bar */}
+      <div className="border-b border-white/[0.06] bg-white/[0.02] pt-24 relative overflow-hidden">
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] spotlight-orb opacity-20 pointer-events-none" aria-hidden />
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 relative z-10">
           <div>
-            <p className="text-xs font-medium text-slate-500 uppercase tracking-wider mb-1">Vision XIX AI is part of the Axiom ecosystem.</p>
-            <h1 className="text-3xl md:text-4xl font-extrabold text-white">
-              Site Assistant — Cloud & AI
-            </h1>
-            <p className="text-sm text-zinc-400 mt-1 max-w-2xl">
-              Ask how we design, automate, and secure cloud platforms, or how we build production AI (internal assistants, RAG, more).
-            </p>
+            <Reveal direction="up" blur delay={0.05}>
+              <p className="text-xs font-medium text-zinc-500 uppercase tracking-wider mb-1">Vision XIX AI is part of the Axiom ecosystem.</p>
+              <h1 className="text-3xl md:text-4xl font-extrabold text-white tracking-[-0.04em]">
+                Site Assistant — <span className="text-gradient">Cloud & AI</span>
+              </h1>
+              <p className="text-sm text-zinc-400 mt-1 max-w-2xl">
+                Ask how we design, automate, and secure cloud platforms, or how we build production AI (internal assistants, RAG, more).
+              </p>
+            </Reveal>
           </div>
-          <div className="flex flex-col items-start sm:items-end gap-3">
-            <div className="flex flex-wrap gap-2">
-              {QUICK_ACTIONS.map((action) => {
-                const Icon = action.icon;
-                return (
-                  <a key={action.label} href={action.href} className="inline-flex items-center gap-1.5 rounded-full border border-white/[0.06] px-3 py-1.5 text-xs font-medium text-zinc-400 hover:border-indigo-400 hover:text-indigo-600">
-                    <Icon className="h-3.5 w-3.5" />
-                    {action.label}
-                  </a>
-                );
-              })}
+          <Reveal direction="up" blur delay={0.1}>
+            <div className="flex flex-col items-start sm:items-end gap-3">
+              <div className="flex flex-wrap gap-2">
+                {QUICK_ACTIONS.map((action) => {
+                  const Icon = action.icon;
+                  return (
+                    <a key={action.label} href={action.href} className="inline-flex items-center gap-1.5 huly-badge px-3 py-1.5 text-xs font-medium text-zinc-400 hover:border-violet-400/50 hover:text-violet-400 transition-colors">
+                      <Icon className="h-3.5 w-3.5" />
+                      {action.label}
+                    </a>
+                  );
+                })}
+              </div>
+              <a
+                href="/operator/onboarding"
+                className="btn-huly cta-glow inline-flex items-center justify-center rounded-full bg-gradient-to-r from-violet-600 to-fuchsia-600 px-4 py-2 text-sm font-medium text-white hover:shadow-lg hover:shadow-violet-500/30 transition-all"
+              >
+                Run Infrastructure Analysis with Axiom
+              </a>
+              <button onClick={() => setLeadModalOpen(true)} className="text-[11px] text-violet-400 hover:underline">
+                Get personalized demo
+              </button>
             </div>
-            <a
-              href="/operator/onboarding"
-              className="inline-flex items-center justify-center rounded-full bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700"
-            >
-              Run Infrastructure Analysis with Axiom
-            </a>
-            <button onClick={() => setLeadModalOpen(true)} className="text-[11px] text-indigo-600 hover:underline">
-              Get personalized demo →
-            </button>
-          </div>
+          </Reveal>
         </div>
       </div>
 
+      {/* Chat area */}
       <div
         ref={scrollRef}
         className="flex-1 overflow-y-auto max-w-6xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-6"
       >
         {messages.length === 0 ? (
           <div className="text-center py-12">
-            <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-white/[0.02] border border-white/[0.06] shadow-md mb-6">
-              <ChatBubbleLeftRightIcon className="w-8 h-8 text-indigo-600" />
-            </div>
-            <h2 className="text-xl font-semibold text-white mb-2">Ask the Vision XIX Labs Site Assistant</h2>
-            <p className="text-zinc-400 text-sm mb-8 max-w-xl mx-auto">
-              Learn how we approach cloud foundations, CI/CD, security, FinOps, and production AI. Ask about RAG vs fine-tuning or how we work with your team.
-            </p>
+            <Reveal direction="up" blur delay={0.05}>
+              <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl glass-card border border-white/[0.06] shadow-md mb-6">
+                <ChatBubbleLeftRightIcon className="w-8 h-8 text-violet-400" />
+              </div>
+              <h2 className="text-xl font-semibold text-white mb-2 tracking-[-0.04em]">Ask the Vision XIX Labs <span className="text-gradient">Site Assistant</span></h2>
+              <p className="text-zinc-400 text-sm mb-8 max-w-xl mx-auto">
+                Learn how we approach cloud foundations, CI/CD, security, FinOps, and production AI. Ask about RAG vs fine-tuning or how we work with your team.
+              </p>
+            </Reveal>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-w-xl mx-auto">
-              {suggestions.map((s) => (
-                <button key={s} onClick={() => setInput(s)} className="px-4 py-3 text-left text-sm text-zinc-400 bg-white/[0.02] border border-white/[0.06] rounded-xl hover:border-indigo-400 hover:text-indigo-600">
-                  {s}
-                </button>
-              ))}
+              <Stagger delay={0.1} interval={0.06}>
+                {suggestions.map((s) => (
+                  <button key={s} onClick={() => setInput(s)} className="animated-border hover-lift px-4 py-3 text-left text-sm text-zinc-400 bg-white/[0.02] border border-white/[0.06] rounded-xl hover:border-violet-400/50 hover:text-violet-400 transition-colors">
+                    {s}
+                  </button>
+                ))}
+              </Stagger>
             </div>
           </div>
         ) : (
           <div className="space-y-4 pb-10">
             {messages.map((m) => (
               <div key={m.id} className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}>
-                <div className={`max-w-[85%] sm:max-w-[80%] px-4 py-3 rounded-2xl ${m.role === "user" ? "bg-indigo-600 text-white rounded-br-xl shadow-md" : "bg-white/[0.02] border border-white/[0.06] text-white rounded-bl-xl"}`}>
+                <div className={`max-w-[85%] sm:max-w-[80%] px-4 py-3 rounded-2xl ${m.role === "user" ? "bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white rounded-br-xl shadow-md" : "glass-card border border-white/[0.06] text-white rounded-bl-xl"}`}>
                   {m.role === "assistant" && (
                     <div className="flex items-center justify-between gap-2 mb-1.5">
                       <div className="flex items-center gap-1.5">
-                        <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-indigo-100 bg-violet-500/10 text-indigo-600 text-[10px] font-semibold">VX</span>
-                        <span className="text-xs font-medium text-slate-500">Vision XIX Labs Site Assistant</span>
+                        <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-violet-500/10 text-violet-400 text-[10px] font-semibold">VX</span>
+                        <span className="text-xs font-medium text-zinc-500">Vision XIX Labs Site Assistant</span>
                       </div>
                       <div className="flex items-center gap-0.5">
-                        <button onClick={() => navigator.clipboard?.writeText(m.content)} aria-label="Copy" className="rounded p-1 text-slate-400 hover:bg-white/[0.06] hover:text-slate-700">
+                        <button onClick={() => navigator.clipboard?.writeText(m.content)} aria-label="Copy" className="rounded p-1 text-zinc-400 hover:bg-white/[0.06] hover:text-zinc-300">
                           <ClipboardDocumentIcon className="w-4 h-4" />
                         </button>
-                        <button onClick={() => setFeedback(m.id, "up")} aria-label="Helpful" className={`rounded p-1 ${m.feedback === "up" ? "text-emerald-500" : "text-slate-400 hover:text-emerald-500"}`}>
+                        <button onClick={() => setFeedback(m.id, "up")} aria-label="Helpful" className={`rounded p-1 ${m.feedback === "up" ? "text-emerald-500" : "text-zinc-400 hover:text-emerald-500"}`}>
                           <HandThumbUpIcon className="w-4 h-4" />
                         </button>
-                        <button onClick={() => setFeedback(m.id, "down")} aria-label="Not helpful" className={`rounded p-1 ${m.feedback === "down" ? "text-red-500" : "text-slate-400 hover:text-red-500"}`}>
+                        <button onClick={() => setFeedback(m.id, "down")} aria-label="Not helpful" className={`rounded p-1 ${m.feedback === "down" ? "text-red-500" : "text-zinc-400 hover:text-red-500"}`}>
                           <HandThumbDownIcon className="w-4 h-4" />
                         </button>
                       </div>
@@ -245,11 +261,11 @@ export default function VisionXIXAIAssistantPage() {
             ))}
             {loading && (
               <div className="flex justify-start">
-                <div className="max-w-[85%] px-4 py-3 rounded-2xl rounded-bl-xl bg-white/[0.02] border border-white/[0.06]">
-                  <div className="flex items-center gap-2 text-slate-500">
-                    <span className="w-2 h-2 rounded-full bg-indigo-600 animate-pulse" />
-                    <span className="w-2 h-2 rounded-full bg-indigo-600 animate-pulse [animation-delay:0.2s]" />
-                    <span className="w-2 h-2 rounded-full bg-indigo-600 animate-pulse [animation-delay:0.4s]" />
+                <div className="max-w-[85%] px-4 py-3 rounded-2xl rounded-bl-xl glass-card border border-white/[0.06]">
+                  <div className="flex items-center gap-2 text-zinc-500">
+                    <span className="w-2 h-2 rounded-full bg-violet-500 animate-pulse" />
+                    <span className="w-2 h-2 rounded-full bg-violet-500 animate-pulse [animation-delay:0.2s]" />
+                    <span className="w-2 h-2 rounded-full bg-violet-500 animate-pulse [animation-delay:0.4s]" />
                   </div>
                 </div>
               </div>
@@ -258,9 +274,10 @@ export default function VisionXIXAIAssistantPage() {
         )}
       </div>
 
+      {/* Input bar */}
       <div className="shrink-0 border-t border-white/[0.06] bg-white/[0.02]">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          {error && <p className="text-sm text-red-600 mb-2">{error}</p>}
+          {error && <p className="text-sm text-red-400 mb-2">{error}</p>}
           <div className="flex gap-2">
             <input
               type="text"
@@ -269,18 +286,18 @@ export default function VisionXIXAIAssistantPage() {
               onKeyDown={handleKeyDown}
               placeholder="Ask about cloud, AI, RAG, assistants..."
               disabled={loading}
-              className="flex-1 px-4 py-3 bg-white/[0.03] border border-white/[0.06] rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 text-white placeholder:text-slate-400 disabled:opacity-60"
+              className="flex-1 px-4 py-3 bg-white/[0.03] border border-white/[0.06] rounded-xl focus:outline-none focus:ring-2 focus:ring-violet-500/30 focus:border-violet-500/50 text-white placeholder:text-zinc-500 disabled:opacity-60 transition-colors"
             />
-            <button onClick={sendMessage} disabled={!input.trim() || loading} className="px-4 py-3 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed" aria-label="Send">
+            <button onClick={sendMessage} disabled={!input.trim() || loading} className="btn-huly px-4 py-3 bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white rounded-xl hover:shadow-lg hover:shadow-violet-500/30 disabled:opacity-50 disabled:cursor-not-allowed transition-all" aria-label="Send">
               <PaperAirplaneIcon className="w-5 h-5" />
             </button>
           </div>
-          <div className="mt-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 text-[11px] text-slate-500">
-            <p>Vision XIX Labs · Cloud & AI engineering</p>
+          <div className="mt-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 text-[11px] text-zinc-500">
+            <p>Vision XIX Labs &middot; Cloud & AI engineering</p>
             <div className="flex items-center gap-4">
-              <Link href="/visionxix-ai" className="hover:text-indigo-600">Product</Link>
-              <Link href="/visionxix-ai/pricing" className="hover:text-indigo-600">Plans & Membership</Link>
-              <a href={`mailto:${SUPPORT_EMAIL}`} className="inline-flex items-center gap-1 hover:text-indigo-600">
+              <Link href="/visionxix-ai" className="hover:text-violet-400">Product</Link>
+              <Link href="/visionxix-ai/pricing" className="hover:text-violet-400">Plans & Membership</Link>
+              <a href={`mailto:${SUPPORT_EMAIL}`} className="inline-flex items-center gap-1 hover:text-violet-400">
                 <ChatBubbleBottomCenterTextIcon className="w-3.5 h-3.5" />
                 Talk to an engineer
               </a>
@@ -289,24 +306,27 @@ export default function VisionXIXAIAssistantPage() {
         </div>
       </div>
 
+      {/* Lead modal */}
       {leadModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-          <div className="w-full max-w-md rounded-2xl border border-white/[0.06] bg-white/[0.02] p-6 shadow-xl">
-            <h3 className="text-lg font-semibold text-white mb-2">Get a personalized demo</h3>
-            <p className="text-sm text-zinc-400 mb-4">Leave your details and we&apos;ll show you how Vision XIX Labs AI can convert more visitors into leads.</p>
-            <form onSubmit={submitLead} className="space-y-3">
-              <input type="text" placeholder="Name" value={leadName} onChange={(e) => setLeadName(e.target.value)} className="w-full rounded-xl border border-white/[0.06] px-4 py-2.5 text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white/[0.02]" />
-              <input type="email" placeholder="Email *" required value={leadEmail} onChange={(e) => setLeadEmail(e.target.value)} className="w-full rounded-xl border border-white/[0.06] px-4 py-2.5 text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white/[0.02]" />
-              <div className="flex gap-2 pt-2">
-                <button type="button" onClick={() => setLeadModalOpen(false)} className="flex-1 rounded-xl border border-white/[0.06] py-2.5 text-sm font-medium text-zinc-400 hover:bg-white/[0.04]">
-                  Cancel
-                </button>
-                <button type="submit" disabled={leadStatus === "loading"} className="flex-1 rounded-xl bg-indigo-600 py-2.5 text-sm font-semibold text-white hover:bg-indigo-700 disabled:opacity-60">
-                  {leadStatus === "loading" ? "Sending..." : leadStatus === "success" ? "Sent ✓" : "Request demo"}
-                </button>
-              </div>
-            </form>
-          </div>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+          <Reveal direction="up" blur delay={0.05}>
+            <div className="w-full max-w-md glass-card rounded-2xl border border-white/[0.06] p-6 shadow-xl">
+              <h3 className="text-lg font-semibold text-white mb-2 tracking-[-0.04em]">Get a <span className="text-gradient">personalized demo</span></h3>
+              <p className="text-sm text-zinc-400 mb-4">Leave your details and we&apos;ll show you how Vision XIX Labs AI can convert more visitors into leads.</p>
+              <form onSubmit={submitLead} className="space-y-3">
+                <input type="text" placeholder="Name" value={leadName} onChange={(e) => setLeadName(e.target.value)} className="w-full rounded-xl border border-white/[0.06] px-4 py-2.5 text-white placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-violet-500/30 focus:border-violet-500/50 bg-white/[0.02] transition-colors" />
+                <input type="email" placeholder="Email *" required value={leadEmail} onChange={(e) => setLeadEmail(e.target.value)} className="w-full rounded-xl border border-white/[0.06] px-4 py-2.5 text-white placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-violet-500/30 focus:border-violet-500/50 bg-white/[0.02] transition-colors" />
+                <div className="flex gap-2 pt-2">
+                  <button type="button" onClick={() => setLeadModalOpen(false)} className="btn-huly flex-1 rounded-xl border border-white/[0.06] py-2.5 text-sm font-medium text-zinc-400 hover:bg-white/[0.04] transition-colors">
+                    Cancel
+                  </button>
+                  <button type="submit" disabled={leadStatus === "loading"} className="btn-huly cta-glow flex-1 rounded-xl bg-gradient-to-r from-violet-600 to-fuchsia-600 py-2.5 text-sm font-semibold text-white hover:shadow-lg hover:shadow-violet-500/30 disabled:opacity-60 transition-all">
+                    {leadStatus === "loading" ? "Sending..." : leadStatus === "success" ? "Sent" : "Request demo"}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </Reveal>
         </div>
       )}
     </div>

@@ -14,6 +14,7 @@ import {
 } from "@heroicons/react/24/outline";
 import { Navigation } from "@/components/Navigation";
 import { AxiomButton } from "@/components/axiom-ui/AxiomButton";
+import { Reveal } from "@/components/motion/Reveal";
 import { CLOUD_STUDIO_SERVICE_TYPES, CLOUD_STUDIO_TIERS } from "@/lib/cloudStudio/types";
 
 const SERVICE_OPTIONS: { id: (typeof CLOUD_STUDIO_SERVICE_TYPES)[number]; label: string; icon: React.ElementType }[] = [
@@ -95,9 +96,12 @@ export default function CloudStudioPage() {
   };
 
   return (
-    <div className="axiom-page min-h-screen bg-[#09090b]">
+    <div className="axiom-page min-h-screen bg-[#09090b] relative overflow-hidden">
+      {/* Background effects */}
+      <div className="spotlight-orb absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[600px] pointer-events-none" />
+      <div className="bg-grid-mesh absolute inset-0 pointer-events-none" />
       <Navigation />
-      <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-20">
+      <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-20 relative">
         <div className="max-w-3xl mx-auto">
           <Link
             href="/"
@@ -106,32 +110,37 @@ export default function CloudStudioPage() {
             <ArrowLeftIcon className="h-4 w-4" />
             Back to Home
           </Link>
-          <div className="mb-6 rounded-2xl border border-indigo-200 border-violet-500/20 bg-indigo-50/60 bg-violet-500/10 p-4">
-            <p className="text-xs font-semibold text-indigo-900 text-violet-400 mb-1">
-              Cloud Studio is legacy, human-guided analysis.
-            </p>
-            <p className="text-xs text-indigo-900/80 text-violet-400 mb-3">
-              For full scoring and a 30-day roadmap, run Axiom first.
-            </p>
-            <AxiomButton href="/operator/onboarding" variant="primary" className="text-xs px-3 py-1.5">
-              Run Axiom
-              <ArrowLeftIcon className="h-3 w-3 rotate-180" />
-            </AxiomButton>
-          </div>
-          <div className="bg-white/[0.02] rounded-2xl shadow-xl border border-white/[0.06] p-8">
-            <header className="mb-8 text-center">
-              <div className="inline-flex items-center justify-center rounded-full bg-violet-500/10 px-4 py-2 text-xs font-semibold text-violet-400 mb-4">
-                AI Cloud Studio
-              </div>
-              <h1 className="axiom-heading-xl text-3xl md:text-4xl font-extrabold text-white mb-2">
-                Cloud Studio
-              </h1>
-              <p className="text-sm text-zinc-400">
-                One-off CI/CD, cost, security, architecture, or networking blueprints you review before any changes.
-              </p>
-            </header>
 
-            <form onSubmit={handleSubmit} className="space-y-6">
+          <Reveal direction="up" delay={0.1}>
+            <div className="mb-6 rounded-2xl border border-violet-500/20 bg-violet-500/10 p-4 glass-card">
+              <p className="text-xs font-semibold text-violet-400 mb-1">
+                Cloud Studio is legacy, human-guided analysis.
+              </p>
+              <p className="text-xs text-violet-400 mb-3">
+                For full scoring and a 30-day roadmap, run Axiom first.
+              </p>
+              <AxiomButton href="/operator/onboarding" variant="primary" className="text-xs px-3 py-1.5">
+                Run Axiom
+                <ArrowLeftIcon className="h-3 w-3 rotate-180" />
+              </AxiomButton>
+            </div>
+          </Reveal>
+
+          <Reveal direction="up" blur>
+            <div className="glass-card rounded-2xl shadow-xl border border-white/[0.06] p-8 animated-border">
+              <header className="mb-8 text-center">
+                <div className="huly-badge inline-flex items-center justify-center rounded-full px-4 py-2 text-xs font-semibold text-violet-400 mb-4">
+                  AI Cloud Studio
+                </div>
+                <h1 className="axiom-heading-xl text-3xl md:text-4xl font-extrabold text-white mb-2 tracking-[-0.04em]">
+                  Cloud <span className="text-gradient">Studio</span>
+                </h1>
+                <p className="text-sm text-zinc-400">
+                  One-off CI/CD, cost, security, architecture, or networking blueprints you review before any changes.
+                </p>
+              </header>
+
+              <form onSubmit={handleSubmit} className="space-y-6">
             <div>
               <label className="text-sm font-medium text-zinc-300 mb-2 block">
                 Service type
@@ -140,7 +149,7 @@ export default function CloudStudioPage() {
                 {SERVICE_OPTIONS.map((opt) => (
                   <label
                     key={opt.id}
-                    className="flex items-center gap-3 p-3 rounded-xl border-2 border-white/[0.06] bg-white/[0.02] cursor-pointer hover:border-indigo-400 has-[:checked]:border-indigo-500 has-[:checked]:ring-2 has-[:checked]:ring-indigo-200"
+                    className="flex items-center gap-3 p-3 rounded-xl border-2 border-white/[0.06] bg-white/[0.02] cursor-pointer hover:border-violet-400/40 has-[:checked]:border-violet-500 has-[:checked]:ring-2 has-[:checked]:ring-violet-500/20 transition-colors"
                   >
                     <input
                       type="radio"
@@ -150,7 +159,7 @@ export default function CloudStudioPage() {
                       onChange={() => setServiceType(opt.id)}
                       className="sr-only"
                     />
-                    <opt.icon className="h-5 w-5 text-indigo-600" />
+                    <opt.icon className="h-5 w-5 text-violet-400" />
                     <span className="font-medium text-white">{opt.label}</span>
                   </label>
                 ))}
@@ -336,7 +345,7 @@ export default function CloudStudioPage() {
               <label className="text-sm font-medium text-zinc-300 mb-2 block">Output tier</label>
               <div className="space-y-2">
                 {Object.values(CLOUD_STUDIO_TIERS).map((t) => (
-                  <label key={t.id} className="flex items-start gap-3 p-3 rounded-xl border border-white/[0.06] cursor-pointer has-[:checked]:border-indigo-500 has-[:checked]:ring-2 has-[:checked]:ring-indigo-200">
+                  <label key={t.id} className="flex items-start gap-3 p-3 rounded-xl border border-white/[0.06] cursor-pointer has-[:checked]:border-violet-500 has-[:checked]:ring-2 has-[:checked]:ring-violet-500/20 transition-colors">
                     <input
                       type="radio"
                       name="tier"
@@ -349,7 +358,7 @@ export default function CloudStudioPage() {
                       <span className="font-medium text-white">{t.name}</span>
                       {t.id === "professional" && (
                         <span className="ml-2 text-violet-400 text-sm">
-                          $99–$299 per service
+                          $99-$299 per service
                         </span>
                       )}
                       {t.id === "enterprise" && (
@@ -363,7 +372,7 @@ export default function CloudStudioPage() {
             </div>
 
             {error && (
-              <div className="rounded-lg border border-red-300 bg-red-50 border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-800 text-red-400">
+              <div className="rounded-lg border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-400">
                 {error}
               </div>
             )}
@@ -371,7 +380,7 @@ export default function CloudStudioPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full rounded-xl bg-indigo-600 py-3 font-semibold text-white hover:bg-indigo-700 disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                className="btn-huly cta-glow w-full rounded-xl bg-violet-600 py-3 font-semibold text-white hover:bg-violet-700 disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               >
                 {loading ? (
                   <>
@@ -383,9 +392,14 @@ export default function CloudStudioPage() {
                 )}
               </button>
             </form>
-          </div>
+            </div>
+          </Reveal>
         </div>
       </main>
+
+      {/* Floating blur orbs */}
+      <div className="absolute bottom-1/4 left-10 w-72 h-72 bg-violet-600/10 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute top-1/2 right-0 w-80 h-80 bg-fuchsia-600/8 rounded-full blur-3xl pointer-events-none" />
     </div>
   );
 }

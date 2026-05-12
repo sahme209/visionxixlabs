@@ -7,6 +7,7 @@ import {
   CheckCircleIcon,
 } from "@heroicons/react/24/outline";
 import { Navigation } from "../../components/Navigation";
+import { Reveal } from "@/components/motion/Reveal";
 
 export default function ContactPage() {
   const [submitted, setSubmitted] = useState(false);
@@ -50,125 +51,137 @@ export default function ContactPage() {
   return (
     <div className="min-h-screen bg-[#09090b] relative overflow-hidden">
       <div className="absolute inset-0 bg-dots opacity-15" aria-hidden />
-      <div className="absolute -top-40 right-0 w-96 h-96 rounded-full bg-violet-600/5 blur-[120px]" aria-hidden />
-      <div className="absolute bottom-0 -left-40 w-96 h-96 rounded-full bg-fuchsia-600/5 blur-[120px]" aria-hidden />
+      <div className="spotlight-orb absolute -top-40 right-0 w-96 h-96 rounded-full bg-violet-600/5 blur-[120px]" aria-hidden />
+      <div className="absolute bottom-0 -left-40 w-96 h-96 rounded-full bg-fuchsia-600/5 blur-[120px] animate-pulse" aria-hidden />
+      {/* Extra floating orb */}
+      <div className="absolute top-1/2 left-1/3 w-64 h-64 rounded-full bg-violet-500/[0.04] blur-[100px] pointer-events-none" aria-hidden />
       <Navigation />
 
       <main className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 pt-36 pb-24 relative">
-        <div className="mb-12">
-          <p className="text-sm font-semibold text-violet-400 mb-3 tracking-wide uppercase">
-            Contact
-          </p>
-          <h1 className="text-3xl md:text-4xl font-bold mb-4">
-            Get in touch
-          </h1>
-          <p className="text-zinc-400 max-w-lg">
-            Questions about Axiom, enterprise plans, or how autonomous cloud operations works for your infrastructure? We respond within one business day.
-          </p>
-        </div>
+        <Reveal direction="up" blur delay={0.05}>
+          <div className="mb-12">
+            <p className="huly-badge text-sm font-semibold text-violet-400 mb-3 tracking-wide uppercase">
+              Contact
+            </p>
+            <h1 className="text-3xl md:text-4xl font-bold mb-4 tracking-[-0.04em]">
+              Get in <span className="text-gradient">touch</span>
+            </h1>
+            <p className="text-zinc-400 max-w-lg">
+              Questions about Axiom, enterprise plans, or how autonomous cloud operations works for your infrastructure? We respond within one business day.
+            </p>
+          </div>
+        </Reveal>
 
         {submitted ? (
-          <div className="rounded-xl border border-emerald-500/20 bg-emerald-500/[0.06] p-6">
-            <div className="flex items-start gap-3">
-              <CheckCircleIcon className="h-5 w-5 text-emerald-400 mt-0.5 flex-shrink-0" />
-              <div>
-                <p className="font-semibold mb-1">Message sent</p>
-                <p className="text-sm text-zinc-400">
-                  We&apos;ve received your message and will get back to you soon.
-                </p>
+          <Reveal direction="up" blur delay={0.1}>
+            <div className="glass-card rounded-xl border border-emerald-500/20 bg-emerald-500/[0.06] p-6">
+              <div className="flex items-start gap-3">
+                <CheckCircleIcon className="h-5 w-5 text-emerald-400 mt-0.5 flex-shrink-0" />
+                <div>
+                  <p className="font-semibold mb-1">Message sent</p>
+                  <p className="text-sm text-zinc-400">
+                    We&apos;ve received your message and will get back to you soon.
+                  </p>
+                </div>
               </div>
             </div>
-          </div>
+          </Reveal>
         ) : (
-          <form ref={formRef} onSubmit={handleSubmit} className="space-y-5">
-            <div className="grid gap-5 sm:grid-cols-2">
+          <Reveal direction="up" blur delay={0.15}>
+            <form ref={formRef} onSubmit={handleSubmit} className="glass-card rounded-2xl border border-white/[0.06] bg-white/[0.02] p-6 sm:p-8 space-y-5">
+              <div className="grid gap-5 sm:grid-cols-2">
+                <div>
+                  <label htmlFor="name" className="block text-sm font-medium text-zinc-300 mb-1.5">
+                    Name
+                  </label>
+                  <input
+                    id="name"
+                    name="name"
+                    type="text"
+                    required
+                    className="w-full rounded-lg border border-white/[0.08] bg-white/[0.03] px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-violet-500/50 focus:ring-2 focus:ring-violet-500/20 transition-colors placeholder:text-zinc-600"
+                  />
+                </div>
+                <div>
+                  <label htmlFor="email" className="block text-sm font-medium text-zinc-300 mb-1.5">
+                    Work email
+                  </label>
+                  <input
+                    id="email"
+                    name="email"
+                    type="email"
+                    required
+                    className="w-full rounded-lg border border-white/[0.08] bg-white/[0.03] px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-violet-500/50 focus:ring-2 focus:ring-violet-500/20 transition-colors placeholder:text-zinc-600"
+                  />
+                </div>
+              </div>
               <div>
-                <label htmlFor="name" className="block text-sm font-medium text-zinc-300 mb-1.5">
-                  Name
+                <label htmlFor="company" className="block text-sm font-medium text-zinc-300 mb-1.5">
+                  Company
                 </label>
                 <input
-                  id="name"
-                  name="name"
+                  id="company"
+                  name="company"
                   type="text"
-                  required
                   className="w-full rounded-lg border border-white/[0.08] bg-white/[0.03] px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-violet-500/50 focus:ring-2 focus:ring-violet-500/20 transition-colors placeholder:text-zinc-600"
                 />
               </div>
               <div>
-                <label htmlFor="email" className="block text-sm font-medium text-zinc-300 mb-1.5">
-                  Work email
+                <label htmlFor="message" className="block text-sm font-medium text-zinc-300 mb-1.5">
+                  How can we help?
                 </label>
-                <input
-                  id="email"
-                  name="email"
-                  type="email"
+                <textarea
+                  id="message"
+                  name="message"
+                  rows={4}
                   required
-                  className="w-full rounded-lg border border-white/[0.08] bg-white/[0.03] px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-violet-500/50 focus:ring-2 focus:ring-violet-500/20 transition-colors placeholder:text-zinc-600"
+                  className="w-full rounded-lg border border-white/[0.08] bg-white/[0.03] px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-violet-500/50 focus:ring-2 focus:ring-violet-500/20 transition-colors resize-none placeholder:text-zinc-600"
+                  placeholder="Tell us about your cloud environment and what you're looking for."
                 />
               </div>
-            </div>
-            <div>
-              <label htmlFor="company" className="block text-sm font-medium text-zinc-300 mb-1.5">
-                Company
-              </label>
-              <input
-                id="company"
-                name="company"
-                type="text"
-                className="w-full rounded-lg border border-white/[0.08] bg-white/[0.03] px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-violet-500/50 focus:ring-2 focus:ring-violet-500/20 transition-colors placeholder:text-zinc-600"
-              />
-            </div>
-            <div>
-              <label htmlFor="message" className="block text-sm font-medium text-zinc-300 mb-1.5">
-                How can we help?
-              </label>
-              <textarea
-                id="message"
-                name="message"
-                rows={4}
-                required
-                className="w-full rounded-lg border border-white/[0.08] bg-white/[0.03] px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-violet-500/50 focus:ring-2 focus:ring-violet-500/20 transition-colors resize-none placeholder:text-zinc-600"
-                placeholder="Tell us about your cloud environment and what you're looking for."
-              />
-            </div>
 
-            {error && (
-              <div className="rounded-lg border border-red-500/20 bg-red-500/[0.06] px-4 py-3 text-sm text-red-400">
-                {error}
+              {error && (
+                <div className="rounded-lg border border-red-500/20 bg-red-500/[0.06] px-4 py-3 text-sm text-red-400">
+                  {error}
+                </div>
+              )}
+
+              <div className="flex items-center justify-between gap-4">
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="btn-huly cta-glow inline-flex items-center gap-2 rounded-lg bg-white px-5 py-2.5 text-sm font-semibold text-zinc-900 hover:bg-zinc-100 transition-colors disabled:opacity-50 shadow-sm"
+                >
+                  {loading ? "Sending..." : "Send message"}
+                  {!loading && <ArrowRightIcon className="h-4 w-4" />}
+                </button>
+                <a
+                  href="mailto:support@visionxixlabs.com"
+                  className="text-sm text-zinc-500 hover:text-violet-400 transition-colors"
+                >
+                  support@visionxixlabs.com
+                </a>
               </div>
-            )}
-
-            <div className="flex items-center justify-between gap-4">
-              <button
-                type="submit"
-                disabled={loading}
-                className="btn-huly inline-flex items-center gap-2 rounded-lg bg-white px-5 py-2.5 text-sm font-semibold text-zinc-900 hover:bg-zinc-100 transition-colors disabled:opacity-50 shadow-sm"
-              >
-                {loading ? "Sending..." : "Send message"}
-                {!loading && <ArrowRightIcon className="h-4 w-4" />}
-              </button>
-              <a
-                href="mailto:support@visionxixlabs.com"
-                className="text-sm text-zinc-500 hover:text-violet-400 transition-colors"
-              >
-                support@visionxixlabs.com
-              </a>
-            </div>
-          </form>
+            </form>
+          </Reveal>
         )}
 
-        <div className="mt-16 pt-8 border-t border-white/[0.04]">
-          <p className="text-sm text-zinc-500 mb-4">
-            Ready to scan your infrastructure now?
-          </p>
-          <Link
-            href="/operator/onboarding"
-            className="inline-flex items-center gap-2 text-sm font-medium text-violet-400 hover:text-violet-300 transition-colors"
-          >
-            Run Axiom — connect your AWS account in 5 minutes
-            <ArrowRightIcon className="h-3.5 w-3.5" />
-          </Link>
-        </div>
+        <div className="section-divider my-12" />
+
+        <Reveal direction="up" blur delay={0.2}>
+          <div className="pt-4">
+            <p className="text-sm text-zinc-500 mb-4">
+              Ready to scan your infrastructure now?
+            </p>
+            <Link
+              href="/operator/onboarding"
+              className="inline-flex items-center gap-2 text-sm font-medium text-violet-400 hover:text-violet-300 transition-colors"
+            >
+              Run Axiom — connect your AWS account in 5 minutes
+              <ArrowRightIcon className="h-3.5 w-3.5" />
+            </Link>
+          </div>
+        </Reveal>
       </main>
     </div>
   );

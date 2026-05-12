@@ -17,6 +17,9 @@ import {
 } from "@heroicons/react/24/outline";
 import { SUPPORT_EMAIL } from "@/lib/constants/company";
 import { Navigation } from "@/components/Navigation";
+import { Reveal } from "@/components/motion/Reveal";
+import { Stagger } from "@/components/motion/Stagger";
+import { AnimatedButton } from "@/components/ui/AnimatedButton";
 
 const TRAINING_FEATURES = [
   { title: "Import training content", desc: "Enter a URL to scan, upload PDFs/DOCX/CSV/MD, or drop raw text. We index your site and knowledge base.", icon: DocumentTextIcon },
@@ -44,134 +47,152 @@ const SECURITY_FEATURES = [
   { title: "Enterprise security", desc: "RBAC, audit logs, SOC2-ready. No shared credentials. Enterprise-ready from day one.", icon: ShieldCheckIcon },
 ];
 
+function FeatureGrid({ features }: { features: typeof TRAINING_FEATURES }) {
+  return (
+    <div className={`grid sm:grid-cols-2 ${features.length > 2 ? "lg:grid-cols-3" : ""} gap-6`}>
+      <Stagger delay={0.1} interval={0.06}>
+        {features.map((f) => {
+          const Icon = f.icon;
+          return (
+            <div key={f.title} className="animated-border card-inner-glow card-hover rounded-2xl border border-white/[0.06] bg-white/[0.02] p-6">
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-violet-500/10 text-violet-400 mb-3">
+                <Icon className="h-5 w-5" />
+              </div>
+              <h3 className="text-lg font-semibold text-white mb-2">{f.title}</h3>
+              <p className="text-sm text-zinc-400">{f.desc}</p>
+            </div>
+          );
+        })}
+      </Stagger>
+    </div>
+  );
+}
+
 export default function VisionXIXAIFeaturesPage() {
   return (
-    <div className="min-h-screen bg-white/[0.02]">
+    <div className="min-h-screen bg-[#09090b] relative">
+      {/* Background layers */}
+      <div className="fixed inset-0 bg-dots opacity-20 pointer-events-none" aria-hidden />
+      <div className="fixed inset-0 noise-grain pointer-events-none" aria-hidden />
       <Navigation />
 
-      <section className="pt-28 pb-16 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-4xl mx-auto text-center">
-          <h1 className="text-4xl sm:text-5xl font-bold text-white tracking-tight">
-            Everything you need for AI customer support
-          </h1>
-          <p className="mt-6 text-xl text-zinc-400 max-w-2xl mx-auto">
-            Vision XIX AI is a production-ready support solution that does the work of a full support staff at a fraction of the cost.
-          </p>
-          <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Link href="/visionxix-ai-assistant" className="inline-flex items-center gap-2 rounded-full bg-indigo-600 px-6 py-3 text-base font-semibold text-white hover:bg-indigo-700">
-              Try live demo
-              <ArrowRightIcon className="h-5 w-5" />
-            </Link>
-            <a href={`mailto:${SUPPORT_EMAIL}?subject=Demo Request`} className="inline-flex items-center gap-2 rounded-full border-2 border-indigo-600 px-6 py-3 text-base font-semibold text-indigo-600 hover:bg-indigo-50 hover:bg-violet-500/10">
-              Book a demo
-            </a>
-          </div>
+      {/* Hero */}
+      <section className="pt-28 pb-16 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-[500px] spotlight-orb opacity-35 pointer-events-none" aria-hidden />
+        <div className="absolute -top-32 right-10 w-64 h-64 rounded-full bg-fuchsia-600/8 blur-[100px] pointer-events-none" aria-hidden />
+        <div className="max-w-4xl mx-auto text-center relative z-10">
+          <Reveal direction="up" blur delay={0.05}>
+            <h1 className="text-4xl sm:text-5xl font-bold text-white tracking-[-0.04em]">
+              Everything you need for <span className="text-gradient">AI customer support</span>
+            </h1>
+          </Reveal>
+          <Reveal direction="up" blur delay={0.1}>
+            <p className="mt-6 text-xl text-zinc-400 max-w-2xl mx-auto">
+              Vision XIX AI is a production-ready support solution that does the work of a full support staff at a fraction of the cost.
+            </p>
+          </Reveal>
+          <Reveal direction="up" blur delay={0.15}>
+            <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
+              <AnimatedButton href="/visionxix-ai-assistant" variant="primary" className="px-6 py-3 text-base cta-glow">
+                Try live demo
+                <ArrowRightIcon className="h-5 w-5" />
+              </AnimatedButton>
+              <AnimatedButton href={`mailto:${SUPPORT_EMAIL}?subject=Demo Request`} variant="ghost" className="px-6 py-3 text-base">
+                Book a demo
+              </AnimatedButton>
+            </div>
+          </Reveal>
         </div>
       </section>
 
-      <section className="py-16 px-4 sm:px-6 lg:px-8 bg-white/[0.02]">
-        <div className="max-w-5xl mx-auto">
-          <h2 className="text-2xl font-bold text-white mb-2">Training & customization</h2>
-          <p className="text-zinc-400 mb-10">Unlock the full potential of your chatbot by customizing its knowledge.</p>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {TRAINING_FEATURES.map((f) => {
-              const Icon = f.icon;
-              return (
-                <div key={f.title} className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-6">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-indigo-100 bg-violet-500/10 text-indigo-600 mb-3">
-                    <Icon className="h-5 w-5" />
-                  </div>
-                  <h3 className="text-lg font-semibold text-white mb-2">{f.title}</h3>
-                  <p className="text-sm text-zinc-400">{f.desc}</p>
-                </div>
-              );
-            })}
-          </div>
+      <div className="section-divider" />
+
+      {/* Training & customization */}
+      <section className="py-16 px-4 sm:px-6 lg:px-8 relative">
+        <div className="absolute inset-0 bg-grid-mesh opacity-20 pointer-events-none" aria-hidden />
+        <div className="max-w-5xl mx-auto relative z-10">
+          <Reveal direction="up" blur>
+            <h2 className="text-2xl font-bold text-white mb-2 tracking-[-0.04em]">Training & <span className="text-gradient">customization</span></h2>
+            <p className="text-zinc-400 mb-10">Unlock the full potential of your chatbot by customizing its knowledge.</p>
+          </Reveal>
+          <FeatureGrid features={TRAINING_FEATURES} />
         </div>
       </section>
 
+      <div className="section-divider" />
+
+      {/* Chat interactions */}
       <section className="py-16 px-4 sm:px-6 lg:px-8">
         <div className="max-w-5xl mx-auto">
-          <h2 className="text-2xl font-bold text-white mb-2">Chat interactions</h2>
-          <p className="text-zinc-400 mb-10">Enhance user interactions with advanced AI, multi-language support, and seamless human escalation.</p>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {CHAT_FEATURES.map((f) => {
-              const Icon = f.icon;
-              return (
-                <div key={f.title} className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-6">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-indigo-100 bg-violet-500/10 text-indigo-600 mb-3">
-                    <Icon className="h-5 w-5" />
-                  </div>
-                  <h3 className="text-lg font-semibold text-white mb-2">{f.title}</h3>
-                  <p className="text-sm text-zinc-400">{f.desc}</p>
-                </div>
-              );
-            })}
-          </div>
+          <Reveal direction="up" blur>
+            <h2 className="text-2xl font-bold text-white mb-2 tracking-[-0.04em]">Chat <span className="text-gradient">interactions</span></h2>
+            <p className="text-zinc-400 mb-10">Enhance user interactions with advanced AI, multi-language support, and seamless human escalation.</p>
+          </Reveal>
+          <FeatureGrid features={CHAT_FEATURES} />
         </div>
       </section>
 
-      <section className="py-16 px-4 sm:px-6 lg:px-8 bg-white/[0.02]">
-        <div className="max-w-5xl mx-auto">
-          <h2 className="text-2xl font-bold text-white mb-2">Extensions</h2>
-          <p className="text-zinc-400 mb-10">Extend your chatbot with automation, summaries, and integrations.</p>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {EXTENSION_FEATURES.map((f) => {
-              const Icon = f.icon;
-              return (
-                <div key={f.title} className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-6">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-indigo-100 bg-violet-500/10 text-indigo-600 mb-3">
-                    <Icon className="h-5 w-5" />
-                  </div>
-                  <h3 className="text-lg font-semibold text-white mb-2">{f.title}</h3>
-                  <p className="text-sm text-zinc-400">{f.desc}</p>
-                </div>
-              );
-            })}
-          </div>
+      <div className="section-divider" />
+
+      {/* Extensions */}
+      <section className="py-16 px-4 sm:px-6 lg:px-8 relative">
+        <div className="absolute inset-0 bg-grid-mesh opacity-20 pointer-events-none" aria-hidden />
+        <div className="max-w-5xl mx-auto relative z-10">
+          <Reveal direction="up" blur>
+            <h2 className="text-2xl font-bold text-white mb-2 tracking-[-0.04em]"><span className="text-gradient">Extensions</span></h2>
+            <p className="text-zinc-400 mb-10">Extend your chatbot with automation, summaries, and integrations.</p>
+          </Reveal>
+          <FeatureGrid features={EXTENSION_FEATURES} />
         </div>
       </section>
 
+      <div className="section-divider" />
+
+      {/* Security & production */}
       <section className="py-16 px-4 sm:px-6 lg:px-8">
         <div className="max-w-5xl mx-auto">
-          <h2 className="text-2xl font-bold text-white mb-2">Security & production</h2>
-          <p className="text-zinc-400 mb-10">Built for enterprise. Your data, your cloud, your control.</p>
-          <div className="grid sm:grid-cols-2 gap-6">
-            {SECURITY_FEATURES.map((f) => {
-              const Icon = f.icon;
-              return (
-                <div key={f.title} className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-6">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-indigo-100 bg-violet-500/10 text-indigo-600 mb-3">
-                    <Icon className="h-5 w-5" />
-                  </div>
-                  <h3 className="text-lg font-semibold text-white mb-2">{f.title}</h3>
-                  <p className="text-sm text-zinc-400">{f.desc}</p>
-                </div>
-              );
-            })}
-          </div>
+          <Reveal direction="up" blur>
+            <h2 className="text-2xl font-bold text-white mb-2 tracking-[-0.04em]">Security & <span className="text-gradient">production</span></h2>
+            <p className="text-zinc-400 mb-10">Built for enterprise. Your data, your cloud, your control.</p>
+          </Reveal>
+          <FeatureGrid features={SECURITY_FEATURES} />
         </div>
       </section>
 
-      <section className="py-16 px-4 sm:px-6 lg:px-8 bg-white/[0.02]">
+      <div className="section-divider" />
+
+      {/* Embed */}
+      <section className="py-16 px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto">
-          <h2 className="text-2xl font-bold text-white mb-4">Embed on your site</h2>
-          <p className="text-zinc-400 mb-6">Each chatbot gets a unique URL and embed code. Add it to your marketing site, help center, or in-app.</p>
-          <div className="rounded-xl border border-white/[0.06] bg-slate-900 p-6 overflow-x-auto">
-            <pre className="text-sm text-emerald-400 font-mono">
+          <Reveal direction="up" blur>
+            <h2 className="text-2xl font-bold text-white mb-4 tracking-[-0.04em]">Embed on <span className="text-gradient">your site</span></h2>
+            <p className="text-zinc-400 mb-6">Each chatbot gets a unique URL and embed code. Add it to your marketing site, help center, or in-app.</p>
+          </Reveal>
+          <Reveal direction="up" blur delay={0.1}>
+            <div className="glass-card rounded-xl border border-white/[0.06] p-6 overflow-x-auto">
+              <pre className="text-sm text-emerald-400 font-mono">
 {`<script src="https://visionxixlabs.com/widget.js" data-chat-id="YOUR_CHAT_ID"></script>`}
-            </pre>
-          </div>
+              </pre>
+            </div>
+          </Reveal>
         </div>
       </section>
 
-      <section className="py-16 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-2xl font-bold text-white mb-4">Ready to supercharge your support?</h2>
-          <Link href="/visionxix-ai" className="inline-flex items-center gap-2 rounded-full bg-indigo-600 px-6 py-3 text-base font-semibold text-white hover:bg-indigo-700">
-            Get started
-            <ArrowRightIcon className="h-5 w-5" />
-          </Link>
+      <div className="section-divider" />
+
+      {/* CTA */}
+      <section className="py-16 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[300px] spotlight-orb opacity-20 pointer-events-none" aria-hidden />
+        <div className="max-w-4xl mx-auto text-center relative z-10">
+          <Reveal direction="up" blur>
+            <h2 className="text-2xl font-bold text-white mb-4 tracking-[-0.04em]">Ready to <span className="text-gradient">supercharge</span> your support?</h2>
+          </Reveal>
+          <Reveal direction="up" blur delay={0.1}>
+            <AnimatedButton href="/visionxix-ai" variant="primary" className="px-6 py-3 text-base cta-glow">
+              Get started
+              <ArrowRightIcon className="h-5 w-5" />
+            </AnimatedButton>
+          </Reveal>
         </div>
       </section>
     </div>

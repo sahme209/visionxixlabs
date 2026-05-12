@@ -34,6 +34,8 @@ import { FAQAccordion } from "@/components/FAQAccordion";
 import { PackageCard } from "@/components/PackageCard";
 import { ServicesGrid } from "@/components/ServicesGrid";
 import { AnimatedButton } from "@/components/ui/AnimatedButton";
+import { Reveal } from "@/components/motion/Reveal";
+import { Stagger } from "@/components/motion/Stagger";
 
 export const metadata: Metadata = {
   title: "Cloud & AI Engineering Services",
@@ -46,12 +48,12 @@ export const metadata: Metadata = {
 function CTASection() {
   return (
     <section className="py-12">
-      <div className="max-w-3xl mx-auto rounded-xl border border-white/[0.06] bg-white/[0.02] px-6 py-8 text-center">
-        <h2 className="text-xl font-bold text-white mb-2">
+      <div className="max-w-3xl mx-auto glass-card rounded-xl border border-white/[0.06] px-6 py-8 text-center glow-border-card">
+        <h2 className="text-xl font-bold text-white mb-2 tracking-[-0.04em]">
           Discuss your AWS or DevOps requirements
         </h2>
         <p className="text-zinc-400 mb-6 text-sm">
-          For infrastructure, CI/CD, cost optimization, or security—we work with technical leads to define scope and delivery.
+          For infrastructure, CI/CD, cost optimization, or security--we work with technical leads to define scope and delivery.
         </p>
         <div className="flex flex-wrap justify-center gap-3">
           <AnimatedButton href="/contact" variant="secondary">
@@ -94,12 +96,12 @@ const services = [
     icon: ArrowPathIcon,
     title: "CI/CD & Release Automation",
     description:
-      "Modern, GitHub‑centric delivery pipelines that make shipping changes routine instead of risky.",
+      "Modern, GitHub-centric delivery pipelines that make shipping changes routine instead of risky.",
     items: [
       "CI workflows built around GitHub Actions and your branching model",
       "Octopus Deploy release pipelines and promotion strategies",
       "Environment consistency across dev, test, staging, and prod",
-      "Release automation that fits regulatory and change‑management needs",
+      "Release automation that fits regulatory and change-management needs",
     ],
     outcomes: [
       "Safer, more controlled releases",
@@ -114,7 +116,7 @@ const services = [
     description:
       "Practical cloud cost optimization that keeps performance high while bringing AWS spend under control.",
     items: [
-      "Assessment to identify waste and right‑size workloads",
+      "Assessment to identify waste and right-size workloads",
       "Storage and compute optimization including EBS lifecycle and EC2 sizing",
       "Budgeting, guardrails, and reporting tuned to your finance cadence",
     ],
@@ -133,7 +135,7 @@ const services = [
     items: [
       "Monitoring and alerting strategy aligned to business impact",
       "Centralized logging and operational dashboards",
-      "Incident reduction through SLA/SLO‑driven best practices",
+      "Incident reduction through SLA/SLO-driven best practices",
     ],
     outcomes: [
       "Faster detection of issues in production",
@@ -148,8 +150,8 @@ const services = [
     description:
       "Security and governance patterns that scale with your organization without slowing teams down.",
     items: [
-      "High‑level IAM best practices and access patterns",
-      "Policy guardrails and compliance‑ready configuration baselines",
+      "High-level IAM best practices and access patterns",
+      "Policy guardrails and compliance-ready configuration baselines",
       "Secure deployment practices embedded into CI/CD pipelines",
     ],
     outcomes: [
@@ -163,7 +165,7 @@ const services = [
     icon: SparklesIcon,
     title: "AI Engineering & LLM Systems",
     description:
-      "Production-grade AI systems deployed inside your cloud: architecture, integration, and operations—not research or hype.",
+      "Production-grade AI systems deployed inside your cloud: architecture, integration, and operations--not research or hype.",
     items: [
       "Architecture and strategy for LLM systems and AI-assisted workflows",
       "Integration of models with your data, APIs, and internal applications",
@@ -179,76 +181,91 @@ const services = [
 
 export default function ServicesPage() {
   return (
-    <div className="min-h-screen bg-[#09090b]">
+    <div className="min-h-screen bg-[#09090b] relative overflow-hidden">
+      {/* Background effects */}
+      <div className="spotlight-orb absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[600px] pointer-events-none" />
+      <div className="bg-dots absolute inset-0 pointer-events-none" />
       <Navigation />
 
-      <main className="pt-20 pb-24 px-4 sm:px-6 lg:px-8">
+      <main className="pt-20 pb-24 px-4 sm:px-6 lg:px-8 relative">
         <div className="max-w-5xl mx-auto">
           {/* 1. Overview */}
-          <section className="mb-12" aria-labelledby="overview-heading">
-            <h1 id="overview-heading" className="text-3xl md:text-4xl font-bold text-white mb-4">
-              Cloud &amp; AI Engineering Services
-            </h1>
-            <p className="text-lg text-zinc-400 max-w-3xl">
-              We design and implement AWS infrastructure, CI/CD with GitHub and Octopus Deploy, AI integration, cost optimization, reliability, and security—with clear deliverables and handover.
-            </p>
-          </section>
+          <Reveal direction="up" blur>
+            <section className="mb-12" aria-labelledby="overview-heading">
+              <h1 id="overview-heading" className="text-3xl md:text-4xl font-bold text-white mb-4 tracking-[-0.04em]">
+                Cloud &amp; AI Engineering <span className="text-gradient">Services</span>
+              </h1>
+              <p className="text-lg text-zinc-400 max-w-3xl">
+                We design and implement AWS infrastructure, CI/CD with GitHub and Octopus Deploy, AI integration, cost optimization, reliability, and security--with clear deliverables and handover.
+              </p>
+            </section>
+          </Reveal>
+
+          <div className="section-divider my-12" />
 
           {/* 1b. Common gaps we close */}
-          <section className="mb-16 rounded-xl border border-white/[0.06] bg-white/[0.02] p-6" aria-labelledby="gaps-heading">
-            <h2 id="gaps-heading" className="text-lg font-bold text-white mb-4">
-              Common gaps we close
-            </h2>
-            <p className="text-sm text-zinc-400 mb-4 max-w-3xl">
-              Companies often struggle with: scale-up beyond pilots, digital maturity, technical capacity, strategy focus, and skills/governance. We help address these so cloud and AI deliver tangible value.
-            </p>
-            <Link
-              href="/markets"
-              className="text-sm font-semibold text-violet-400 hover:underline"
-            >
-              See where companies need AI →
-            </Link>
-          </section>
+          <Reveal direction="up" delay={0.1}>
+            <section className="mb-16 glass-card rounded-xl border border-white/[0.06] p-6 animated-border card-inner-glow" aria-labelledby="gaps-heading">
+              <h2 id="gaps-heading" className="text-lg font-bold text-white mb-4 tracking-[-0.04em]">
+                Common gaps we close
+              </h2>
+              <p className="text-sm text-zinc-400 mb-4 max-w-3xl">
+                Companies often struggle with: scale-up beyond pilots, digital maturity, technical capacity, strategy focus, and skills/governance. We help address these so cloud and AI deliver tangible value.
+              </p>
+              <Link
+                href="/markets"
+                className="text-sm font-semibold text-violet-400 hover:underline"
+              >
+                See where companies need AI →
+              </Link>
+            </section>
+          </Reveal>
 
-          {/* 2. Technical Scope — service areas */}
-          <section aria-labelledby="services-heading" className="mb-16">
-            <h2 id="services-heading" className="text-2xl font-bold text-white mb-6">
-              Technical scope
-            </h2>
-            <p className="text-zinc-400 mb-8 max-w-3xl">
-              Outcome-focused workstreams: infrastructure, CI/CD, FinOps, observability, security, and production AI integration. Each with defined deliverables and outcomes.
-            </p>
-            <ServicesGrid services={services} />
-          </section>
+          {/* 2. Technical Scope -- service areas */}
+          <Reveal direction="up" delay={0.1}>
+            <section aria-labelledby="services-heading" className="mb-16">
+              <h2 id="services-heading" className="text-2xl font-bold text-white mb-6 tracking-[-0.04em]">
+                Technical <span className="text-gradient">scope</span>
+              </h2>
+              <p className="text-zinc-400 mb-8 max-w-3xl">
+                Outcome-focused workstreams: infrastructure, CI/CD, FinOps, observability, security, and production AI integration. Each with defined deliverables and outcomes.
+              </p>
+              <ServicesGrid services={services} />
+            </section>
+          </Reveal>
+
+          <div className="section-divider my-16" />
 
           {/* AI-focused services overview */}
-          <section className="mb-16" aria-labelledby="ai-services-heading">
-            <div className="rounded-2xl bg-slate-900 text-slate-100 p-6 md:p-8 shadow-xl">
-              <h2 id="ai-services-heading" className="text-2xl font-bold mb-3">
-                AI engineering as part of your platform
-              </h2>
-              <p className="text-sm md:text-base text-slate-200 mb-4 max-w-3xl">
-                We do not build new foundation models. We engineer AI systems for production environments:
-                secure, observable, and cost-aware AI workloads that live alongside your existing services.
-              </p>
-              <div className="flex flex-wrap gap-4 text-sm">
-                <AnimatedButton
-                  href="/ai-engineering"
-                  variant="secondary"
-                  className="bg-white text-slate-900 hover:bg-slate-100"
-                >
-                  AI Engineering &amp; LLM Systems
-                </AnimatedButton>
-                <AnimatedButton
-                  href="/ai-solutions"
-                  variant="ghost"
-                  className="border border-slate-500 text-slate-100 hover:border-slate-300"
-                >
-                  Explore AI Solutions
-                </AnimatedButton>
+          <Reveal direction="up" delay={0.1}>
+            <section className="mb-16" aria-labelledby="ai-services-heading">
+              <div className="glass-card rounded-2xl p-6 md:p-8 shadow-xl border border-white/[0.06] glow-border-card">
+                <h2 id="ai-services-heading" className="text-2xl font-bold text-white mb-3 tracking-[-0.04em]">
+                  AI engineering as part of your <span className="text-gradient">platform</span>
+                </h2>
+                <p className="text-sm md:text-base text-zinc-300 mb-4 max-w-3xl">
+                  We do not build new foundation models. We engineer AI systems for production environments:
+                  secure, observable, and cost-aware AI workloads that live alongside your existing services.
+                </p>
+                <div className="flex flex-wrap gap-4 text-sm">
+                  <AnimatedButton
+                    href="/ai-engineering"
+                    variant="secondary"
+                    className="bg-white text-zinc-900 hover:bg-slate-100"
+                  >
+                    AI Engineering &amp; LLM Systems
+                  </AnimatedButton>
+                  <AnimatedButton
+                    href="/ai-solutions"
+                    variant="ghost"
+                    className="border border-white/[0.08] text-white hover:border-white/[0.16]"
+                  >
+                    Explore AI Solutions
+                  </AnimatedButton>
+                </div>
               </div>
-            </div>
-          </section>
+            </section>
+          </Reveal>
 
           <TechnicalSection {...cloudArchitectureSection} />
           <TechnicalSection {...devOpsSection} />
@@ -259,16 +276,20 @@ export default function ServicesPage() {
           {/* 4. Tooling & Stack */}
           <TechStackSection title="Tooling & stack" groups={techStackGroups} />
 
+          <div className="section-divider my-16" />
+
           {/* 5. Implementation Methodology */}
-          <section className="mb-16" aria-labelledby="methodology-heading">
-            <h2 id="methodology-heading" className="text-2xl font-bold text-white mb-2">
-              Implementation methodology
-            </h2>
-            <p className="text-zinc-400 mb-8 max-w-3xl">
-              {implementationMethodologyShort}
-            </p>
-            <HowWeWorkSection phases={howWeWorkPhases} />
-          </section>
+          <Reveal direction="up" delay={0.1}>
+            <section className="mb-16" aria-labelledby="methodology-heading">
+              <h2 id="methodology-heading" className="text-2xl font-bold text-white mb-2 tracking-[-0.04em]">
+                Implementation <span className="text-gradient">methodology</span>
+              </h2>
+              <p className="text-zinc-400 mb-8 max-w-3xl">
+                {implementationMethodologyShort}
+              </p>
+              <HowWeWorkSection phases={howWeWorkPhases} />
+            </section>
+          </Reveal>
 
           {/* 6. Deliverables */}
           <DeliverableList title="Deliverables" items={coreDeliverables} />
@@ -280,49 +301,59 @@ export default function ServicesPage() {
             blocks={securityAccessBlocks}
           />
 
+          <div className="section-divider my-16" />
+
           {/* 8. Engagement Model */}
-          <section className="mb-16" aria-labelledby="engagement-heading">
-            <h2 id="engagement-heading" className="text-2xl font-bold text-white mb-6">
-              Engagement model
-            </h2>
-            <p className="text-zinc-400 mb-8 max-w-3xl">
-              Project-based, retainer, or assessment and roadmap. We align to your timeline and team structure.
-            </p>
-            <div className="grid gap-6 md:grid-cols-3">
-              {engagementPackages.map((pkg) => (
-                <PackageCard
-                  key={pkg.id}
-                  name={pkg.name}
-                  duration={pkg.duration}
-                  includes={pkg.includes}
-                  bestFor={pkg.bestFor}
-                />
-              ))}
-            </div>
-          </section>
+          <Reveal direction="up" delay={0.1}>
+            <section className="mb-16" aria-labelledby="engagement-heading">
+              <h2 id="engagement-heading" className="text-2xl font-bold text-white mb-6 tracking-[-0.04em]">
+                Engagement <span className="text-gradient">model</span>
+              </h2>
+              <p className="text-zinc-400 mb-8 max-w-3xl">
+                Project-based, retainer, or assessment and roadmap. We align to your timeline and team structure.
+              </p>
+              <Stagger className="grid gap-6 md:grid-cols-3">
+                {engagementPackages.map((pkg) => (
+                  <PackageCard
+                    key={pkg.id}
+                    name={pkg.name}
+                    duration={pkg.duration}
+                    includes={pkg.includes}
+                    bestFor={pkg.bestFor}
+                  />
+                ))}
+              </Stagger>
+            </section>
+          </Reveal>
 
           {/* 9. Ideal Clients */}
-          <section className="mb-16" aria-labelledby="ideal-clients-heading">
-            <h2 id="ideal-clients-heading" className="text-2xl font-bold text-white mb-4">
-              Ideal clients
-            </h2>
-            <ul className="space-y-2 text-zinc-400">
-              {idealClientsCloud.map((item) => (
-                <li key={item} className="flex items-start">
-                  <span className="text-indigo-500 mr-2 mt-0.5">•</span>
-                  {item}
-                </li>
-              ))}
-            </ul>
-          </section>
+          <Reveal direction="up" delay={0.1}>
+            <section className="mb-16" aria-labelledby="ideal-clients-heading">
+              <h2 id="ideal-clients-heading" className="text-2xl font-bold text-white mb-4 tracking-[-0.04em]">
+                Ideal clients
+              </h2>
+              <ul className="space-y-2 text-zinc-400">
+                {idealClientsCloud.map((item) => (
+                  <li key={item} className="flex items-start">
+                    <span className="text-violet-400 mr-2 mt-0.5">•</span>
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </section>
+          </Reveal>
+
+          <div className="section-divider my-16" />
 
           {/* 10. FAQ */}
-          <section className="mb-16" aria-labelledby="faq-heading">
-            <h2 id="faq-heading" className="text-2xl font-bold text-white mb-6">
-              Frequently asked questions
-            </h2>
-            <FAQAccordion items={cloudFAQ} />
-          </section>
+          <Reveal direction="up" delay={0.1}>
+            <section className="mb-16" aria-labelledby="faq-heading">
+              <h2 id="faq-heading" className="text-2xl font-bold text-white mb-6 tracking-[-0.04em]">
+                Frequently asked questions
+              </h2>
+              <FAQAccordion items={cloudFAQ} />
+            </section>
+          </Reveal>
 
           {/* 11. CTA */}
           <CTASection />
@@ -330,60 +361,60 @@ export default function ServicesPage() {
       </main>
 
       {/* Footer */}
-      <footer className="bg-slate-900 text-slate-300 py-12 px-4 sm:px-6 lg:px-8 mt-24">
+      <footer className="bg-white/[0.02] border-t border-white/[0.06] text-zinc-300 py-12 px-4 sm:px-6 lg:px-8 mt-24">
         <div className="max-w-7xl mx-auto">
           <div className="grid md:grid-cols-5 gap-8 mb-8">
             <div className="md:col-span-2">
               <div className="flex items-center space-x-2 mb-4">
-                <SparklesIcon className="h-6 w-6 text-indigo-400" />
+                <SparklesIcon className="h-6 w-6 text-violet-400" />
                 <span className="text-lg font-bold text-white">
                   Vision XIX Labs
                 </span>
               </div>
-              <p className="text-slate-400 text-sm">
-                Cloud &amp; AI engineering. AWS, Azure, GCP — infrastructure, CI/CD, reliability, security.
+              <p className="text-zinc-500 text-sm">
+                Cloud &amp; AI engineering. AWS, Azure, GCP -- infrastructure, CI/CD, reliability, security.
               </p>
             </div>
             <div>
               <h4 className="text-white font-semibold mb-4 text-sm">Cloud</h4>
               <ul className="space-y-2 text-sm">
-                <li><Link href="/cloud-solutions" className="hover:text-indigo-400 transition-colors">Cloud Solutions</Link></li>
-                <li><Link href="/cloud-solutions/aws" className="hover:text-indigo-400 transition-colors">AWS</Link></li>
-                <li><Link href="/cloud-solutions/azure" className="hover:text-indigo-400 transition-colors">Azure</Link></li>
-                <li><Link href="/cloud-solutions/gcp" className="hover:text-indigo-400 transition-colors">GCP</Link></li>
+                <li><Link href="/cloud-solutions" className="hover:text-violet-400 transition-colors">Cloud Solutions</Link></li>
+                <li><Link href="/cloud-solutions/aws" className="hover:text-violet-400 transition-colors">AWS</Link></li>
+                <li><Link href="/cloud-solutions/azure" className="hover:text-violet-400 transition-colors">Azure</Link></li>
+                <li><Link href="/cloud-solutions/gcp" className="hover:text-violet-400 transition-colors">GCP</Link></li>
               </ul>
             </div>
             <div>
               <h4 className="text-white font-semibold mb-4 text-sm">Solutions</h4>
               <ul className="space-y-2 text-sm">
-                <li><Link href="/ai-solutions" className="hover:text-indigo-400 transition-colors">AI Solutions</Link></li>
-                <li><Link href="/ai-engineering" className="hover:text-indigo-400 transition-colors">AI Engineering</Link></li>
-                <li><Link href="/markets" className="hover:text-indigo-400 transition-colors">Where Companies Need AI</Link></li>
-                <li><Link href="/enterprise-readiness" className="hover:text-indigo-400 transition-colors">Enterprise Readiness</Link></li>
-                <li><Link href="/cloud-security" className="hover:text-indigo-400 transition-colors">Cloud Security</Link></li>
-                <li><Link href="/free-review" className="hover:text-indigo-400 transition-colors">Free Review</Link></li>
-                <li><Link href="/solutions-for-growing-teams" className="hover:text-indigo-400 transition-colors">Growing Teams</Link></li>
+                <li><Link href="/ai-solutions" className="hover:text-violet-400 transition-colors">AI Solutions</Link></li>
+                <li><Link href="/ai-engineering" className="hover:text-violet-400 transition-colors">AI Engineering</Link></li>
+                <li><Link href="/markets" className="hover:text-violet-400 transition-colors">Where Companies Need AI</Link></li>
+                <li><Link href="/enterprise-readiness" className="hover:text-violet-400 transition-colors">Enterprise Readiness</Link></li>
+                <li><Link href="/cloud-security" className="hover:text-violet-400 transition-colors">Cloud Security</Link></li>
+                <li><Link href="/free-review" className="hover:text-violet-400 transition-colors">Free Review</Link></li>
+                <li><Link href="/solutions-for-growing-teams" className="hover:text-violet-400 transition-colors">Growing Teams</Link></li>
               </ul>
             </div>
             <div>
               <h4 className="text-white font-semibold mb-4 text-sm">Company</h4>
               <ul className="space-y-2 text-sm">
-                <li><Link href="/" className="hover:text-indigo-400 transition-colors">Home</Link></li>
-                <li><Link href="/services" className="hover:text-indigo-400 transition-colors">Services</Link></li>
-                <li><Link href="/case-studies" className="hover:text-indigo-400 transition-colors">Case Studies</Link></li>
-                <li><Link href="/press" className="hover:text-indigo-400 transition-colors">Press &amp; Media</Link></li>
-                <li><Link href="/insights" className="hover:text-indigo-400 transition-colors">Insights</Link></li>
-                <li><Link href="/privacy" className="hover:text-indigo-400 transition-colors">Privacy</Link></li>
-                <li><Link href="/terms" className="hover:text-indigo-400 transition-colors">Terms</Link></li>
+                <li><Link href="/" className="hover:text-violet-400 transition-colors">Home</Link></li>
+                <li><Link href="/services" className="hover:text-violet-400 transition-colors">Services</Link></li>
+                <li><Link href="/case-studies" className="hover:text-violet-400 transition-colors">Case Studies</Link></li>
+                <li><Link href="/press" className="hover:text-violet-400 transition-colors">Press &amp; Media</Link></li>
+                <li><Link href="/insights" className="hover:text-violet-400 transition-colors">Insights</Link></li>
+                <li><Link href="/privacy" className="hover:text-violet-400 transition-colors">Privacy</Link></li>
+                <li><Link href="/terms" className="hover:text-violet-400 transition-colors">Terms</Link></li>
               </ul>
             </div>
             <div>
               <h4 className="text-white font-semibold mb-4 text-sm">Connect</h4>
               <ul className="space-y-2 text-sm">
-                <li><Link href="/request" className="hover:text-indigo-400 transition-colors">Website Request / Get a Quote</Link></li>
-                <li><Link href="/contact" className="hover:text-indigo-400 transition-colors">Contact</Link></li>
+                <li><Link href="/request" className="hover:text-violet-400 transition-colors">Website Request / Get a Quote</Link></li>
+                <li><Link href="/contact" className="hover:text-violet-400 transition-colors">Contact</Link></li>
                 <li>
-                  <a href="mailto:support@visionxixlabs.com" className="hover:text-indigo-400 transition-colors inline-flex items-center">
+                  <a href="mailto:support@visionxixlabs.com" className="hover:text-violet-400 transition-colors inline-flex items-center">
                     <EnvelopeIcon className="h-4 w-4 mr-2" />
                     support@visionxixlabs.com
                   </a>
@@ -391,7 +422,7 @@ export default function ServicesPage() {
               </ul>
             </div>
           </div>
-          <div className="border-t border-slate-800 pt-8 text-center text-slate-400">
+          <div className="border-t border-white/[0.06] pt-8 text-center text-zinc-500">
             <p>
               © {new Date().getFullYear()} Vision XIX Labs LLC. All rights
               reserved.
@@ -399,7 +430,10 @@ export default function ServicesPage() {
           </div>
         </div>
       </footer>
+
+      {/* Floating blur orbs */}
+      <div className="absolute bottom-1/4 left-10 w-72 h-72 bg-violet-600/10 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute top-1/2 right-0 w-96 h-96 bg-fuchsia-600/8 rounded-full blur-3xl pointer-events-none" />
     </div>
   );
 }
-
