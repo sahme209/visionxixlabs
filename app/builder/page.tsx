@@ -589,7 +589,7 @@ export default function WebsiteBuilderPage() {
                   </button>
                 ) : (
                   <Link
-                    href="/cloud-operator"
+                    href="/operator/onboarding"
                     className="btn-huly inline-flex items-center gap-2 rounded-2xl bg-white px-5 py-2.5 font-semibold text-zinc-900 hover:bg-zinc-100 transition-colors"
                   >
                     <BoltIcon className="h-5 w-5" />

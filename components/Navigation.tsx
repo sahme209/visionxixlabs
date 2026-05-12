@@ -23,14 +23,14 @@ import { AnimatePresence, motion } from "framer-motion";
 const productDropdown = [
   { href: "/axiom", label: "Axiom", desc: "Autonomous cloud agent", icon: CpuChipIcon },
   { href: "/axiom/operations", label: "Operations", desc: "Infrastructure workflows", icon: CogIcon },
-  { href: "/operator/dashboard", label: "Cloud Operator", desc: "Multi-cloud control plane", icon: CloudIcon },
-  { href: "/axiom#ai", label: "AI Engineering", desc: "ML/AI infrastructure ops", icon: SparklesIcon },
+  { href: "/operator/onboarding", label: "Cloud Operator", desc: "Multi-cloud control plane", icon: CloudIcon },
+  { href: "/builder", label: "Website Builder", desc: "AI-powered site engine", icon: SparklesIcon },
 ];
 
 const resourcesDropdown = [
-  { href: "/blog", label: "Blog", desc: "Latest updates and guides", icon: BookOpenIcon },
-  { href: "/docs", label: "Docs", desc: "API and integration docs", icon: DocumentTextIcon },
-  { href: "/security", label: "Security", desc: "Compliance and trust", icon: ShieldCheckIcon },
+  { href: "/insights", label: "Insights", desc: "Latest updates and guides", icon: BookOpenIcon },
+  { href: "/enterprise-readiness", label: "Enterprise", desc: "Compliance and readiness", icon: DocumentTextIcon },
+  { href: "/security", label: "Security", desc: "Trust center and policies", icon: ShieldCheckIcon },
 ];
 
 /* ── Dropdown component ──────────────────────────────────────── */
@@ -210,7 +210,7 @@ export function Navigation() {
             </Link>
             <Link
               href="/operator/onboarding"
-              className="btn-huly cta-glow inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white rounded-xl text-sm font-semibold shadow-lg shadow-violet-500/20 hover:shadow-violet-500/30 transition-all ml-2"
+              className="btn-huly inline-flex items-center gap-2 px-5 py-2.5 bg-white text-zinc-900 rounded-full text-sm font-semibold shadow-[0_0_20px_rgba(255,255,255,0.1)] hover:bg-zinc-100 transition-all ml-2"
             >
               Start Free
               <ArrowRightIcon className="h-3.5 w-3.5" />
@@ -245,7 +245,7 @@ export function Navigation() {
                   <Link
                     href="/operator/onboarding"
                     onClick={() => setMobileMenuOpen(false)}
-                    className="mx-4 mb-3 inline-flex items-center justify-center gap-2 px-4 py-3 text-white bg-gradient-to-r from-violet-600 to-fuchsia-600 rounded-xl text-sm font-semibold shadow-lg shadow-violet-500/20 cta-glow"
+                    className="mx-4 mb-3 inline-flex items-center justify-center gap-2 px-4 py-3 bg-white text-zinc-900 rounded-full text-sm font-semibold shadow-[0_0_20px_rgba(255,255,255,0.1)]"
                   >
                     Start Free
                     <ArrowRightIcon className="h-4 w-4" />

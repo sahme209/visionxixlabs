@@ -22,6 +22,12 @@ import {
   CurrencyDollarIcon,
   LockClosedIcon,
   ArrowPathIcon,
+  BoltIcon,
+  CloudArrowUpIcon,
+  EyeIcon,
+  CommandLineIcon,
+  ChartBarIcon,
+  DocumentCheckIcon,
 } from "@heroicons/react/24/outline";
 
 const axiomFAQ = [
@@ -240,13 +246,14 @@ export default function Home() {
         <div className="max-w-6xl mx-auto">
           <Reveal direction="up">
             <div className="text-center mb-16">
-              <p className="text-sm font-semibold text-violet-400 mb-3 tracking-wide uppercase">
+              <p className="text-sm font-semibold text-violet-400 mb-4 tracking-wide uppercase">
                 What Axiom Delivers
               </p>
-              <h2 className="text-3xl md:text-4xl font-bold mb-4">
-                Operational intelligence, not dashboards
+              <h2 className="text-4xl md:text-5xl font-bold mb-5 tracking-[-0.04em]">
+                Operational intelligence.<br className="hidden sm:block" />
+                <span className="text-zinc-500">Not dashboards.</span>
               </h2>
-              <p className="text-zinc-400 max-w-xl mx-auto">
+              <p className="text-zinc-400 text-lg max-w-xl mx-auto">
                 Axiom doesn&apos;t show you charts. It scans, reasons, and acts — then reports what it did and why.
               </p>
             </div>
@@ -365,11 +372,12 @@ export default function Home() {
       <section className="py-24 px-4 sm:px-6 lg:px-8">
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-12">
-            <p className="text-sm font-semibold text-violet-400 mb-3 tracking-wide uppercase">
+            <p className="text-sm font-semibold text-violet-400 mb-4 tracking-wide uppercase">
               Platform Support
             </p>
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              Multi-cloud support
+            <h2 className="text-4xl md:text-5xl font-bold mb-4 tracking-[-0.04em]">
+              Multi-cloud.<br className="hidden sm:block" />
+              <span className="text-zinc-500">One agent.</span>
             </h2>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -396,6 +404,51 @@ export default function Home() {
       {/* ── Section Divider ────────────────────────────────────────── */}
       <SectionDivider />
 
+      {/* ── Platform Features Grid (Huly-style icon grid) ─────────── */}
+      <section className="py-24 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-5xl mx-auto">
+          <Reveal direction="up" blur>
+            <div className="text-center mb-16">
+              <h2 className="text-4xl md:text-5xl font-bold tracking-[-0.04em] mb-4">
+                Everything you need.<br />
+                <span className="text-zinc-500">Nothing you don&apos;t.</span>
+              </h2>
+              <p className="text-zinc-400 text-lg max-w-xl mx-auto">
+                A complete cloud operations platform — from scanning to execution.
+              </p>
+            </div>
+          </Reveal>
+          <Stagger delay={0.1} interval={0.06} className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            {[
+              { icon: EyeIcon, title: "Deep Visibility", desc: "Full infrastructure snapshot across cost, security, and configuration state." },
+              { icon: CpuChipIcon, title: "AI Reasoning", desc: "12-step cognitive loop that prioritizes and plans — not just alerts." },
+              { icon: CommandLineIcon, title: "Terraform Generation", desc: "Auto-generated IaC with dependency-aware phased execution plans." },
+              { icon: ShieldCheckIcon, title: "Governance & Safety", desc: "Approval gates, blast radius limits, and compliance policy enforcement." },
+              { icon: ChartBarIcon, title: "Outcome Learning", desc: "Every action recorded. Failed actions auto-downgrade future recommendations." },
+              { icon: DocumentCheckIcon, title: "Audit Trail", desc: "Immutable log of every scan, plan, approval, and execution." },
+            ].map((feature) => {
+              const Icon = feature.icon;
+              return (
+                <Reveal key={feature.title} direction="up">
+                  <div className="group flex items-start gap-4 p-1">
+                    <div className="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center shrink-0 group-hover:bg-blue-500/15 transition-colors">
+                      <Icon className="h-5 w-5 text-blue-400" />
+                    </div>
+                    <div>
+                      <h3 className="text-base font-semibold text-white mb-1">{feature.title}</h3>
+                      <p className="text-sm text-zinc-500 leading-relaxed">{feature.desc}</p>
+                    </div>
+                  </div>
+                </Reveal>
+              );
+            })}
+          </Stagger>
+        </div>
+      </section>
+
+      {/* ── Section Divider ────────────────────────────────────────── */}
+      <SectionDivider />
+
       {/* ── Testimonials ───────────────────────────────────────────── */}
       <Reveal direction="up">
         <TestimonialsCarousel />
@@ -409,13 +462,14 @@ export default function Home() {
         <div className="max-w-6xl mx-auto">
           <Reveal direction="up" blur>
             <div className="text-center mb-16">
-              <p className="text-sm font-semibold text-violet-400 mb-3 tracking-wide uppercase">
+              <p className="text-sm font-semibold text-violet-400 mb-4 tracking-wide uppercase">
                 Use Cases
               </p>
-              <h2 className="text-3xl md:text-4xl font-bold mb-4">
-                How customers use Axiom
+              <h2 className="text-4xl md:text-5xl font-bold mb-5 tracking-[-0.04em]">
+                Built for real<br className="hidden sm:block" />
+                <span className="text-zinc-500">infrastructure problems.</span>
               </h2>
-              <p className="text-zinc-400 max-w-xl mx-auto">
+              <p className="text-zinc-400 text-lg max-w-xl mx-auto">
                 From cutting cloud spend to hardening security posture and preventing drift — Axiom operates across the full stack.
               </p>
             </div>
@@ -521,43 +575,51 @@ export default function Home() {
       {/* ── Section Divider ────────────────────────────────────────── */}
       <SectionDivider />
 
-      {/* ── CTA ────────────────────────────────────────────────────── */}
-      <section className="py-24 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+      {/* ── CTA — Huly "Join the Movement" style ────────────────── */}
+      <section className="py-32 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
         <div className="absolute inset-0 diagonal-streak opacity-40" aria-hidden />
-        {/* Dual glow orbs with higher opacity */}
         <div className="absolute -top-20 -right-20 w-[500px] h-[500px] rounded-full bg-violet-600/12 blur-[150px]" aria-hidden />
         <div className="absolute -bottom-20 -left-20 w-[500px] h-[500px] rounded-full bg-fuchsia-600/12 blur-[150px]" aria-hidden />
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[300px] rounded-full bg-violet-500/5 blur-[100px]" aria-hidden />
-        <div className="relative max-w-3xl mx-auto text-center">
-          <h2 className="text-3xl md:text-5xl font-bold mb-5 tracking-[-0.04em]">
-            Your cloud, operated by an<br className="hidden sm:block" />
-            agent <span className="text-gradient">you control</span>
-          </h2>
-          <p className="text-zinc-400 text-lg mb-10 max-w-lg mx-auto">
-            Connect your AWS account. Axiom scans, reasons, plans, and executes — nothing changes until you approve.
-          </p>
-          <div className="flex flex-wrap justify-center gap-4 mb-4">
-            <Link
-              href="/operator/onboarding"
-              className="btn-amber-shimmer cta-white-glow inline-flex items-center gap-2 px-8 py-4 bg-white text-zinc-900 rounded-full font-semibold text-sm shadow-lg hover:bg-zinc-100 transition-colors"
-            >
-              Run Axiom
-              <ArrowRightIcon className="h-4 w-4" />
-            </Link>
-            <Link
-              href="/operator/pricing"
-              className="inline-flex items-center gap-2 px-8 py-4 border border-white/[0.12] text-zinc-300 rounded-xl font-semibold text-sm hover:bg-white/5 hover:border-white/20 transition-colors"
-            >
-              View plans
-            </Link>
+
+        <div className="relative max-w-4xl mx-auto flex flex-col md:flex-row items-center gap-12">
+          {/* Glowing orb — Huly-style */}
+          <div className="relative w-48 h-48 md:w-64 md:h-64 shrink-0">
+            <div className="absolute inset-0 rounded-full bg-gradient-to-br from-violet-600/20 via-blue-500/15 to-fuchsia-600/20 blur-[40px] animate-pulse" />
+            <div className="absolute inset-4 rounded-full bg-gradient-to-br from-violet-500/30 via-blue-400/20 to-fuchsia-500/30 blur-[20px]" />
+            <div className="absolute inset-8 rounded-full border border-white/[0.08] bg-[#09090b]/60 backdrop-blur-xl flex items-center justify-center">
+              <BoltIcon className="h-12 w-12 text-violet-400/80" />
+            </div>
+            <div className="ripple-ring" />
+            <div className="ripple-ring" />
+            <div className="ripple-ring" />
           </div>
-          <p className="text-xs text-zinc-600 mb-6">No credit card required</p>
-          <a
-            href="mailto:support@visionxixlabs.com"
-            className="text-sm text-zinc-500 hover:text-white transition-colors"
-          >
-            support@visionxixlabs.com
-          </a>
+
+          {/* Content */}
+          <div className="text-center md:text-left">
+            <h2 className="text-4xl md:text-5xl font-bold mb-5 tracking-[-0.04em]">
+              Join the<br />Movement
+            </h2>
+            <p className="text-zinc-400 text-lg mb-8 max-w-md leading-relaxed">
+              Connect your AWS account. Axiom scans, reasons, plans, and executes — nothing changes until you approve.
+            </p>
+            <div className="flex flex-wrap justify-center md:justify-start gap-4">
+              <Link
+                href="/operator/onboarding"
+                className="btn-amber-shimmer inline-flex items-center gap-2 px-7 py-3.5 bg-white text-zinc-900 rounded-full font-semibold text-sm shadow-[0_0_20px_rgba(255,255,255,0.1)] hover:bg-zinc-100 transition-colors"
+              >
+                Run Axiom
+                <ArrowRightIcon className="h-4 w-4" />
+              </Link>
+              <Link
+                href="/operator/pricing"
+                className="inline-flex items-center gap-2 px-7 py-3.5 border border-white/[0.12] text-zinc-300 rounded-full font-semibold text-sm hover:bg-white/5 hover:border-white/20 transition-colors"
+              >
+                View plans
+              </Link>
+            </div>
+            <p className="text-xs text-zinc-600 mt-4">No credit card required</p>
+          </div>
         </div>
       </section>
 
