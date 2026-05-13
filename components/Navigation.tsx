@@ -185,6 +185,12 @@ export function Navigation() {
               Pricing
             </Link>
             <Link
+              href="/docs"
+              className="nav-link-underline relative px-4 py-2 text-zinc-400 hover:text-white rounded-lg transition-colors text-sm font-medium"
+            >
+              Docs
+            </Link>
+            <Link
               href="/download"
               className="nav-link-underline relative px-4 py-2 text-zinc-400 hover:text-white rounded-lg transition-colors text-sm font-medium"
             >

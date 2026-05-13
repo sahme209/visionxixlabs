@@ -47,11 +47,14 @@ const companyLinks = [
 ];
 
 const resourceLinks = [
+  { href: "/docs", label: "Documentation" },
+  { href: "/docs/getting-started", label: "Getting Started" },
+  { href: "/docs/aws-setup", label: "AWS Setup Guide" },
+  { href: "/docs/security-model", label: "Security Model" },
+  { href: "/docs/faq", label: "FAQ" },
   { href: "/cloud-solutions/aws", label: "AWS Intelligence" },
   { href: "/cloud-solutions/azure", label: "Azure Intelligence" },
   { href: "/cloud-solutions/gcp", label: "GCP Intelligence" },
-  { href: "/enterprise-readiness", label: "Enterprise Readiness" },
-  { href: "/cloud-security", label: "Cloud Security" },
 ];
 
 export function Footer() {
