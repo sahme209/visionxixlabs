@@ -22,6 +22,7 @@ import { AnimatePresence, motion } from "framer-motion";
 /* ── Dropdown items ──────────────────────────────────────────── */
 const productDropdown = [
   { href: "/axiom", label: "Axiom Agent", desc: "Autonomous cloud operations", icon: CpuChipIcon },
+  { href: "/axiom/releaseops", label: "ReleaseOps", desc: "Deployment governance + operational intelligence", icon: ShieldCheckIcon },
   { href: "/operator/onboarding", label: "Cloud Operator", desc: "Connect and scan your cloud", icon: CloudIcon },
   { href: "/download", label: "Desktop App", desc: "macOS, Windows, Linux command center", icon: SparklesIcon },
   { href: "/cloud-solutions", label: "Multi-Cloud", desc: "AWS · Azure · GCP intelligence", icon: CogIcon },

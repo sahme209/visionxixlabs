@@ -720,6 +720,71 @@ export default function Home() {
       {/* ── Section Divider ────────────────────────────────────────── */}
       <SectionDivider />
 
+      {/* ── ReleaseOps Callout ─────────────────────────────────────── */}
+      <section className="py-24 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+        <div className="absolute -top-20 right-20 w-[500px] h-[300px] rounded-full bg-violet-600/[0.04] blur-[120px] pointer-events-none" aria-hidden />
+        <div className="absolute -bottom-20 left-20 w-[400px] h-[300px] rounded-full bg-amber-500/[0.04] blur-[120px] pointer-events-none" aria-hidden />
+        <div className="max-w-6xl mx-auto">
+          <Reveal direction="up" blur>
+            <Link
+              href="/axiom/releaseops"
+              className="block rounded-3xl border border-violet-500/15 bg-gradient-to-br from-violet-500/[0.05] via-transparent to-amber-500/[0.03] p-8 sm:p-10 lg:p-12 hover:border-violet-500/30 transition-all group relative overflow-hidden"
+            >
+              <div className="absolute -top-12 -right-12 w-64 h-64 rounded-full bg-violet-500/[0.08] blur-[60px] pointer-events-none" aria-hidden />
+              <div className="absolute -bottom-12 -left-12 w-64 h-64 rounded-full bg-amber-500/[0.06] blur-[60px] pointer-events-none" aria-hidden />
+              <div className="relative grid lg:grid-cols-5 gap-8 items-center">
+                <div className="lg:col-span-3">
+                  <div className="flex items-center gap-2 mb-4">
+                    <ShieldCheckIcon className="h-4 w-4 text-violet-400" />
+                    <span className="text-[10px] font-semibold text-violet-400 uppercase tracking-widest">
+                      Axiom · ReleaseOps
+                    </span>
+                    <span className="text-[9px] font-semibold text-amber-400 bg-amber-500/15 border border-amber-500/30 rounded-full px-1.5 py-px uppercase tracking-wider">
+                      New capability
+                    </span>
+                  </div>
+                  <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-[-0.04em] mb-4">
+                    Deployment governance.{" "}
+                    <span className="text-zinc-500">Operational intelligence.</span>
+                  </h2>
+                  <p className="text-dim-paragraph text-base lg:text-lg max-w-2xl leading-relaxed mb-6">
+                    The AI-native release governance and deployment intelligence layer of Axiom. <span className="dim-1">Coordinates releases across GitHub, GitLab, Azure DevOps, Jenkins, Terraform, and ServiceNow.</span> <span className="dim-2">Quantified readiness · approval orchestration · drift detection · rollback verification.</span>
+                  </p>
+                  <div className="flex flex-wrap gap-3">
+                    <span className="inline-flex items-center gap-2 text-amber-300 font-semibold text-sm group-hover:gap-3 transition-all">
+                      Explore Axiom ReleaseOps
+                      <ArrowRightIcon className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+                    </span>
+                  </div>
+                </div>
+                {/* Capability tiles */}
+                <div className="lg:col-span-2 grid grid-cols-2 gap-2.5">
+                  {[
+                    { label: "GitHub · GitLab · Azure DevOps", icon: CommandLineIcon },
+                    { label: "Terraform governance", icon: DocumentCheckIcon },
+                    { label: "Rollback readiness", icon: ArrowPathIcon },
+                    { label: "Approval orchestration", icon: ShieldCheckIcon },
+                  ].map((tile) => {
+                    const Icon = tile.icon;
+                    return (
+                      <div key={tile.label} className="rounded-xl bg-black/30 border border-white/[0.06] p-3.5">
+                        <div className="w-8 h-8 rounded-lg bg-violet-500/10 border border-violet-500/20 flex items-center justify-center mb-2">
+                          <Icon className="h-4 w-4 text-violet-400" />
+                        </div>
+                        <p className="text-xs text-zinc-300 leading-snug font-medium">{tile.label}</p>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            </Link>
+          </Reveal>
+        </div>
+      </section>
+
+      {/* ── Section Divider ────────────────────────────────────────── */}
+      <SectionDivider />
+
       {/* ── FAQ ────────────────────────────────────────────────────── */}
       <AnimateOnScroll>
       <section id="faq" className="py-24 px-4 sm:px-6 lg:px-8" aria-labelledby="faq-heading">
