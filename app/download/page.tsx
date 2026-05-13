@@ -22,6 +22,7 @@ import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
 import { Reveal } from "@/components/motion/Reveal";
 import { Stagger } from "@/components/motion/Stagger";
+import { useDesktopRuntime } from "@/lib/desktop/useDesktopRuntime";
 
 type DetectedPlatform = "mac-arm" | "mac-intel" | "windows" | "linux" | "web";
 
@@ -74,6 +75,7 @@ const PLATFORMS: Record<DetectedPlatform, PlatformInfo> = {
 export default function DownloadPage() {
   const [primary, setPrimary] = useState<DetectedPlatform>("mac-arm");
   const [mounted, setMounted] = useState(false);
+  const { isDesktop, status: desktopStatus } = useDesktopRuntime();
 
   useEffect(() => {
     setMounted(true);
@@ -129,12 +131,20 @@ export default function DownloadPage() {
             </div>
           </Reveal>
 
-          {/* Build badge */}
+          {/* Build badge — runtime-aware */}
           <Reveal direction="up" delay={0.05}>
-            <span className="badge-shimmer badge-shimmer-border inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.08] text-zinc-300 text-xs font-medium mb-8 backdrop-blur-sm cursor-default">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-              Preview Build · 0.9.2 · Code-signed
-            </span>
+            {isDesktop && desktopStatus.available ? (
+              <span className="badge-shimmer badge-shimmer-border inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 text-xs font-medium mb-8 backdrop-blur-sm cursor-default">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                Desktop runtime detected {desktopStatus.version ? `· v${desktopStatus.version}` : ""}
+                {desktopStatus.platform ? ` · ${desktopStatus.platform}` : ""}
+              </span>
+            ) : (
+              <span className="badge-shimmer badge-shimmer-border inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.08] text-zinc-300 text-xs font-medium mb-8 backdrop-blur-sm cursor-default">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                Preview Build · 0.9.2 · Code-signed
+              </span>
+            )}
           </Reveal>
 
           {/* Headline */}

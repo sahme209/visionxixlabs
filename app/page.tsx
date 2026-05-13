@@ -30,6 +30,7 @@ import {
   DocumentCheckIcon,
 } from "@heroicons/react/24/outline";
 import { listProviders, capabilitySummary } from "@/lib/cloud/providerRegistry";
+import { primaryCta, secondaryCta, fallbackCta } from "@/lib/product/ctaMap";
 
 const axiomFAQ = [
   {
@@ -912,19 +913,41 @@ export default function Home() {
               <span className="flex items-center gap-1.5"><span className="w-1 h-1 rounded-full bg-emerald-500" />Revoke anytime</span>
             </div>
             <div className="flex flex-wrap justify-center md:justify-start gap-4">
-              <Link
-                href="/operator/onboarding"
-                className="btn-amber-shimmer inline-flex items-center gap-2 px-7 py-3.5 bg-white text-zinc-900 rounded-full font-semibold text-sm shadow-[0_0_20px_rgba(255,255,255,0.1)] hover:bg-zinc-100 transition-colors"
-              >
-                Start free scan
-                <ArrowRightIcon className="h-4 w-4" />
-              </Link>
-              <Link
-                href="/axiom"
-                className="inline-flex items-center gap-2 px-7 py-3.5 border border-white/[0.12] text-zinc-300 rounded-full font-semibold text-sm hover:bg-white/5 hover:border-white/20 transition-colors"
-              >
-                See how it works
-              </Link>
+              {(() => {
+                const primary = primaryCta("homepage_cta");
+                const secondary = secondaryCta("homepage_cta");
+                const fallback = fallbackCta("homepage_cta");
+                return (
+                  <>
+                    {primary && (
+                      <Link
+                        href={primary.href}
+                        className="btn-amber-shimmer inline-flex items-center gap-2 px-7 py-3.5 rounded-full font-semibold text-sm transition-colors"
+                      >
+                        {primary.label}
+                        <ArrowRightIcon className="h-4 w-4" />
+                      </Link>
+                    )}
+                    {secondary && (
+                      <Link
+                        href={secondary.href}
+                        className="inline-flex items-center gap-2 px-7 py-3.5 border border-white/[0.12] text-zinc-300 rounded-full font-semibold text-sm hover:bg-white/5 hover:border-white/20 transition-colors"
+                      >
+                        {secondary.label}
+                        <ArrowRightIcon className="h-4 w-4" />
+                      </Link>
+                    )}
+                    {fallback && (
+                      <Link
+                        href={fallback.href}
+                        className="inline-flex items-center gap-2 px-4 py-3.5 text-zinc-500 hover:text-zinc-300 text-sm transition-colors"
+                      >
+                        {fallback.label}
+                      </Link>
+                    )}
+                  </>
+                );
+              })()}
             </div>
           </div>
         </div>
