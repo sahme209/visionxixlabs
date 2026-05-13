@@ -247,7 +247,7 @@ export default function CommandCenterPage() {
         {/* Left: Activity Feed (2 cols) */}
         <div className="lg:col-span-2 space-y-5">
           <Reveal direction="up" delay={0.1}>
-            <ActivityFeed />
+            <ActivityFeed liveFetch />
           </Reveal>
 
           {/* Agent Reasoning Trace */}
@@ -365,8 +365,8 @@ export default function CommandCenterPage() {
                 {[
                   { href: "/operator/onboarding", icon: CloudIcon, label: "Run new scan" },
                   { href: "/dashboard/topology", icon: EyeIcon, label: "View topology" },
+                  { href: "/dashboard/workflows", icon: ChartBarIcon, label: "Continuous workflows" },
                   { href: "/dashboard/memory", icon: CpuChipIcon, label: "Operational memory" },
-                  { href: "/dashboard/resilience", icon: ChartBarIcon, label: "Architecture analysis" },
                   { href: "/download", icon: CpuChipIcon, label: "Install desktop agent" },
                 ].map((action) => {
                   const Icon = action.icon;

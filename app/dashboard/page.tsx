@@ -11,6 +11,7 @@ import {
   CpuChipIcon,
   ArrowsPointingOutIcon,
   ClockIcon,
+  ArrowPathIcon,
 } from "@heroicons/react/24/outline";
 import { Reveal } from "@/components/motion/Reveal";
 import { Stagger } from "@/components/motion/Stagger";
@@ -139,6 +140,21 @@ export default function DashboardPage() {
           </div>
           <p className="text-xs text-zinc-500">
             90-day operational history · scans · plans · approvals · confidence shifts.
+          </p>
+        </Link>
+
+        <Link
+          href="/dashboard/workflows"
+          className="glass-card card-hover animated-border card-inner-glow rounded-xl p-5 group"
+        >
+          <div className="flex items-center gap-3 mb-3">
+            <div className="w-9 h-9 rounded-lg bg-emerald-500/10 flex items-center justify-center">
+              <ArrowPathIcon className="h-5 w-5 text-emerald-400" />
+            </div>
+            <h2 className="text-sm font-semibold text-white">Workflows</h2>
+          </div>
+          <p className="text-xs text-zinc-500">
+            Continuous operations · recurring scans · drift monitoring · execution queues.
           </p>
         </Link>
 

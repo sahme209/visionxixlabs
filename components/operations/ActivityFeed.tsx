@@ -172,6 +172,8 @@ interface ActivityFeedProps {
   showLive?: boolean;
   maxItems?: number;
   className?: string;
+  /** When true, fetch from /api/operations/events on mount and every 30s. */
+  liveFetch?: boolean;
 }
 
 export function ActivityFeed({
@@ -180,8 +182,10 @@ export function ActivityFeed({
   showLive = true,
   maxItems = 20,
   className = "",
+  liveFetch = false,
 }: ActivityFeedProps) {
   const [items, setItems] = useState<ActivityEvent[]>(events ?? DEMO_EVENTS);
+  const [source, setSource] = useState<"prop" | "api" | "demo">(events ? "prop" : "demo");
   const [, setTick] = useState(0);
 
   // Re-render every 30s to refresh "X minutes ago" labels
@@ -192,8 +196,37 @@ export function ActivityFeed({
 
   // If parent provided events, sync
   useEffect(() => {
-    if (events) setItems(events);
+    if (events) {
+      setItems(events);
+      setSource("prop");
+    }
   }, [events]);
+
+  // Live-fetch from the operations event-stream API
+  useEffect(() => {
+    if (!liveFetch || events) return;
+    let cancelled = false;
+
+    const load = async () => {
+      try {
+        const res = await fetch(`/api/operations/events?limit=${maxItems}`, { cache: "no-store" });
+        if (!res.ok) return;
+        const data = (await res.json()) as { events?: ActivityEvent[] };
+        if (cancelled || !data.events) return;
+        if (data.events.length > 0) {
+          setItems(data.events);
+          setSource("api");
+        }
+      } catch { /* keep demo data on failure — surfaces still render */ }
+    };
+
+    load();
+    const t = setInterval(load, 30_000);
+    return () => {
+      cancelled = true;
+      clearInterval(t);
+    };
+  }, [liveFetch, events, maxItems]);
 
   const visible = items.slice(0, maxItems);
 
@@ -272,7 +305,15 @@ export function ActivityFeed({
 
       {/* Footer */}
       <div className="px-6 py-3 border-t border-white/[0.06] bg-white/[0.01] flex items-center justify-between text-xs">
-        <span className="text-zinc-500">Showing {visible.length} of {items.length}</span>
+        <div className="flex items-center gap-2">
+          <span className="text-zinc-500">Showing {visible.length} of {items.length}</span>
+          {source === "api" && (
+            <span className="text-[9px] font-semibold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 rounded-full px-1.5 py-px uppercase tracking-wider">Live data</span>
+          )}
+          {source === "demo" && (
+            <span className="text-[9px] font-semibold text-zinc-500 bg-white/[0.04] border border-white/[0.08] rounded-full px-1.5 py-px uppercase tracking-wider">Sample</span>
+          )}
+        </div>
         <button className="text-zinc-400 hover:text-white transition-colors font-medium">
           View full audit log →
         </button>
