@@ -12,9 +12,18 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
+import { Prisma } from "@prisma/client";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { composeActivityStream, composeMemoryGroups } from "@/lib/operations/eventStream";
+
+type AgentRunWithRelations = Prisma.AxiomAgentRunGetPayload<{
+  include: {
+    cloudAccount: { select: { provider: true } };
+    findings: { select: { id: true; category: true; severity: true; title: true; region: true; provider: true; monthlyHigh: true; createdAt: true } };
+    recommendations: { select: { id: true; title: true; disposition: true; monthlyHigh: true; createdAt: true } };
+  };
+}>;
 
 const MAX_LIMIT = 200;
 const DEFAULT_LIMIT = 50;
@@ -68,7 +77,7 @@ export async function GET(req: NextRequest) {
 
     // Best-effort: also pull Axiom-specific tables if they exist for this user.
     // Wrapped in try/catch so a missing table or schema drift never poisons the response.
-    let agentRuns: Awaited<ReturnType<typeof prisma.axiomAgentRun.findMany>> = [];
+    let agentRuns: AgentRunWithRelations[] = [];
     let findings: Awaited<ReturnType<typeof prisma.axiomFinding.findMany>> = [];
     let auditEvents: Awaited<ReturnType<typeof prisma.axiomAuditEvent.findMany>> = [];
 
