@@ -1,8 +1,3 @@
-/**
- * Cloud Security & Infrastructure Hardening — content.
- * Secure-by-design positioning. No exaggerated claims.
- */
-
 export type SecurityService = {
   id: string;
   name: string;
@@ -12,116 +7,126 @@ export type SecurityService = {
 };
 
 export const cloudSecurityHero = {
-  title: "Secure-by-Design Cloud Engineering",
+  title: "Cloud Security That Ships With Your Infrastructure",
   subtitle:
-    "We build security into your cloud infrastructure and deployment process — practical hardening, not compliance theater.",
+    "Security baseline enforcement, zero-trust deployment, AI workload isolation, and measurable risk reduction — built into your cloud from day one.",
 };
 
 export const cloudSecurityServices: SecurityService[] = [
   {
     id: "security-baseline",
-    name: "Cloud Security Baseline",
+    name: "Security Baseline Enforcement",
     description:
-      "Establish foundational security controls within your cloud environment.",
+      "Pre-configured security controls that enforce governance across every account and region automatically.",
     includes: [
-      "IAM role review",
-      "Least privilege access configuration",
-      "Root account lockdown strategy",
-      "MFA enforcement guidance",
-      "Logging enablement",
-      "Basic guardrail configuration",
+      "IAM role audit and least-privilege enforcement",
+      "Root account lockdown with hardware MFA",
+      "Service Control Policies across organization",
+      "CloudTrail and GuardDuty enablement",
+      "Automated guardrail configuration via IaC",
+      "Security Hub baseline with auto-remediation",
     ],
-    bestFor: "Startups and growing teams lacking structured security.",
+    bestFor: "Teams building foundational cloud security practices.",
   },
   {
     id: "devops-hardening",
-    name: "Deployment & DevOps Hardening",
-    description: "Reduce risk in your release and deployment process.",
+    name: "CI/CD & Deployment Hardening",
+    description:
+      "Pipelines that enforce security by default — role-based access, secret rotation, immutable artifacts, and full change traceability.",
     includes: [
-      "CI/CD access review",
-      "Role-based pipeline permissions",
-      "Secret management review",
-      "Infrastructure-as-Code enforcement",
-      "Change traceability setup",
+      "Pipeline permission model with role-based gates",
+      "Secret management with rotation enforcement",
+      "Infrastructure-as-Code with drift detection",
+      "Immutable artifact signing and verification",
+      "Change traceability with approval audit trail",
     ],
-    bestFor: "Teams deploying via console or lacking audit visibility.",
+    bestFor: "Teams moving from console deploys to automated, auditable releases.",
   },
   {
     id: "ai-security-review",
-    name: "AI Infrastructure Security Review",
-    description: "Secure AI integrations and prevent data exposure.",
+    name: "AI & LLM Security Architecture",
+    description:
+      "Secure AI workloads in production — model isolation, prompt injection defense, cost guardrails, and data classification enforcement.",
     includes: [
-      "API access control review",
-      "Model endpoint access policy",
-      "AI logging configuration",
-      "Cost monitoring setup",
-      "Governance recommendations",
+      "Model endpoint isolation and access control",
+      "Prompt injection and data exfiltration defense",
+      "AI-specific logging and anomaly detection",
+      "Per-model cost guardrails and budget alerts",
+      "Data classification enforcement for training data",
+      "Incident response runbooks for AI-specific failures",
     ],
-    bestFor: "Businesses implementing AI features.",
+    bestFor: "Teams deploying LLMs, RAG pipelines, or AI-assisted workflows in production.",
   },
   {
     id: "visibility-monitoring",
-    name: "Cloud Visibility & Monitoring Setup",
-    description: "Improve operational and security visibility.",
+    name: "Security Observability & Incident Response",
+    description:
+      "Centralized security visibility with actionable alerts, automated response, and incident runbooks that reduce MTTR.",
     includes: [
-      "Centralized logging configuration",
-      "Alert threshold setup",
-      "Budget anomaly detection",
-      "Basic monitoring framework",
+      "Centralized logging with correlation and search",
+      "SLO-driven alert thresholds — zero noise, only signal",
+      "Budget anomaly detection with auto-notification",
+      "Incident response playbooks and escalation paths",
+      "Secrets exposure monitoring and rotation triggers",
     ],
-    bestFor: "Teams without structured observability.",
+    bestFor: "Teams scaling beyond ad-hoc monitoring into structured security operations.",
   },
 ];
 
 export const accessModelItems = [
-  "Role-based IAM access",
-  "Federated authentication where possible",
-  "No shared credentials",
-  "Auditable activity logging",
-  "Infrastructure-as-Code deployments",
+  "Cross-account IAM role assumption — revoke anytime",
+  "Federated authentication with SSO integration",
+  "Zero stored credentials — validated and encrypted in transit",
+  "Immutable audit trail for every action",
+  "Infrastructure-as-Code deployments with approval gates",
 ];
 
 export const whatWeAreNot = [
-  "A SOC2 audit firm",
-  "A penetration testing service",
-  "A compliance-only consultancy",
+  "We specialize in infrastructure-level security, not penetration testing",
+  "We implement controls that support compliance — certification audits require specialized firms",
+  "We harden your cloud posture; we don't replace your security team",
 ];
 
 export const whatWeFocusOnSecurity = [
-  "Practical cloud security hardening",
-  "Infrastructure-level protection",
-  "Deployment discipline",
-  "Secure architecture design",
+  "Security baseline enforcement across accounts and regions",
+  "Zero-trust deployment with immutable infrastructure",
+  "AI workload isolation and cost containment",
+  "Measurable risk reduction with before/after metrics",
 ];
 
 export const securityPrinciples = [
-  "Security is embedded in architecture decisions.",
-  "Access is always controlled and auditable.",
-  "Changes are documented and reproducible.",
-  "Infrastructure is version-controlled.",
+  "Security is enforced by architecture, not documentation.",
+  "Every action is logged, attributable, and reversible.",
+  "Changes are version-controlled, reviewed, and reproducible.",
+  "Access follows least privilege with automatic expiration.",
 ];
 
 export type FAQItem = { question: string; answer: string };
 
 export const cloudSecurityFAQ: FAQItem[] = [
   {
-    question: "Do you perform penetration testing or security audits?",
+    question: "Do you perform penetration testing?",
     answer:
-      "No. We focus on building and hardening cloud infrastructure and deployment practices. For pentests or formal compliance audits, we recommend specialized firms and can work alongside them.",
+      "We focus on infrastructure-level security: IAM hardening, deployment pipelines, network segmentation, and AI workload isolation. For penetration testing, we work alongside specialized firms and ensure your infrastructure is hardened before they test.",
   },
   {
     question: "How do you access our cloud environment?",
     answer:
-      "We use role-based IAM access with least privilege, federated auth where available, and never use shared credentials. All access is logged and auditable. We deploy via Infrastructure as Code, not manual console changes.",
+      "Cross-account IAM role assumption with least privilege. No stored credentials — we validate and encrypt in transit. All access is logged via CloudTrail. Revoke access anytime from your AWS console; active sessions self-terminate within 60 seconds.",
   },
   {
-    question: "Can you help us get SOC2 or other certifications?",
+    question: "Can you help with SOC2 or compliance readiness?",
     answer:
-      "We are not a compliance audit firm. We can help you implement security controls and practices that support compliance goals (e.g., IAM, logging, change management). For certification itself, you would work with an audit or compliance specialist.",
+      "We implement the security controls that compliance frameworks require: IAM governance, logging, change management, encryption, and access auditing. For certification itself, you work with an audit firm — but the infrastructure they evaluate is what we build.",
   },
   {
-    question: "What if we already have some security in place?",
+    question: "What if we already have security controls in place?",
     answer:
-      "We often work with teams that have partial controls. We review what you have, identify gaps and priorities, and implement improvements in a structured way without disrupting existing workflows.",
+      "We audit what exists, quantify gaps with a risk-weighted scorecard, and implement improvements in priority order. Existing controls are preserved and strengthened, not replaced.",
+  },
+  {
+    question: "How do you secure AI workloads specifically?",
+    answer:
+      "Model endpoint isolation, prompt injection defense, per-model cost guardrails, data classification for training data, and AI-specific incident response runbooks. Every AI workload gets the same governance as your core infrastructure.",
   },
 ];
