@@ -364,10 +364,10 @@ export default function CommandCenterPage() {
               <div className="space-y-1.5">
                 {[
                   { href: "/operator/onboarding", icon: CloudIcon, label: "Run new scan" },
+                  { href: "/dashboard/releaseops", icon: LockClosedIcon, label: "ReleaseOps command center" },
                   { href: "/dashboard/topology", icon: EyeIcon, label: "View topology" },
                   { href: "/dashboard/workflows", icon: ChartBarIcon, label: "Continuous workflows" },
                   { href: "/dashboard/memory", icon: CpuChipIcon, label: "Operational memory" },
-                  { href: "/download", icon: CpuChipIcon, label: "Install desktop agent" },
                 ].map((action) => {
                   const Icon = action.icon;
                   return (

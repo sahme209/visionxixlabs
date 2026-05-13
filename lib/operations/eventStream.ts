@@ -31,7 +31,63 @@ export type ActivityEventType =
   | "agent.reasoning"
   | "approval.required"
   | "monitoring.alert"
-  | "audit.event";
+  | "audit.event"
+  // ReleaseOps event types
+  | "release.assessed"
+  | "release.approved"
+  | "release.deployed"
+  | "release.blocked"
+  | "release.rolled_back"
+  | "release.drift_detected"
+  | "release.readiness_dropped"
+  | "release.config_mismatch"
+  | "release.dependency_conflict"
+  | "release.verification_passed"
+  | "release.approval_pending"
+  | "release.servicenow_synced"
+  | "release.terraform_plan";
+
+// ReleaseOps-specific operational types
+export type ReleaseSystemId = "github" | "gitlab" | "azure_devops" | "jenkins" | "argocd";
+
+export type PipelineStatus = "running" | "queued" | "succeeded" | "failed" | "blocked" | "awaiting_approval";
+
+export interface ReleasePipeline {
+  id: string;
+  service: string;
+  environment: "production" | "staging" | "development" | "qa";
+  system: ReleaseSystemId;
+  status: PipelineStatus;
+  ref: string;
+  commit: string;
+  author: string;
+  startedAt: string;
+  durationMs?: number;
+  readinessScore?: number;
+  blastRadius?: "contained" | "moderate" | "broad";
+  awaitingApprovals?: number;
+}
+
+export interface ReleaseReadinessDimension {
+  key: string;
+  label: string;
+  score: number;
+  detail: string;
+}
+
+export interface ReleaseService {
+  id: string;
+  name: string;
+  team: string;
+  environment: "production" | "staging" | "development";
+  compositeScore: number;
+  trend: "up" | "down" | "flat";
+  trendDelta?: string;
+  dimensions: ReleaseReadinessDimension[];
+  lastDeployedAt?: string;
+  lastIncidentAt?: string;
+  rollbackVerified: boolean;
+}
 
 export type ProviderTag = "aws" | "azure" | "gcp" | "system";
 

@@ -13,6 +13,9 @@ import {
   CloudArrowDownIcon,
   LockClosedIcon,
   ClockIcon,
+  RocketLaunchIcon,
+  XCircleIcon,
+  CodeBracketIcon,
 } from "@heroicons/react/24/outline";
 
 export type ActivityEventType =
@@ -30,7 +33,21 @@ export type ActivityEventType =
   | "agent.reasoning"
   | "approval.required"
   | "monitoring.alert"
-  | "audit.event";
+  | "audit.event"
+  // ReleaseOps event types
+  | "release.assessed"
+  | "release.approved"
+  | "release.deployed"
+  | "release.blocked"
+  | "release.rolled_back"
+  | "release.drift_detected"
+  | "release.readiness_dropped"
+  | "release.config_mismatch"
+  | "release.dependency_conflict"
+  | "release.verification_passed"
+  | "release.approval_pending"
+  | "release.servicenow_synced"
+  | "release.terraform_plan";
 
 export interface ActivityEvent {
   id: string;
@@ -137,6 +154,85 @@ const EVENT_CONFIG: Record<
     iconClass: "text-zinc-400",
     bgClass: "bg-white/[0.04]",
     borderClass: "border-white/[0.08]",
+  },
+  // ReleaseOps event configs
+  "release.assessed": {
+    icon: DocumentCheckIcon,
+    iconClass: "text-violet-400",
+    bgClass: "bg-violet-500/10",
+    borderClass: "border-violet-500/20",
+  },
+  "release.approved": {
+    icon: CheckCircleIcon,
+    iconClass: "text-emerald-400",
+    bgClass: "bg-emerald-500/10",
+    borderClass: "border-emerald-500/20",
+  },
+  "release.deployed": {
+    icon: RocketLaunchIcon,
+    iconClass: "text-emerald-400",
+    bgClass: "bg-emerald-500/10",
+    borderClass: "border-emerald-500/20",
+  },
+  "release.blocked": {
+    icon: XCircleIcon,
+    iconClass: "text-red-400",
+    bgClass: "bg-red-500/10",
+    borderClass: "border-red-500/20",
+  },
+  "release.rolled_back": {
+    icon: ArrowPathIcon,
+    iconClass: "text-cyan-400",
+    bgClass: "bg-cyan-500/10",
+    borderClass: "border-cyan-500/20",
+  },
+  "release.drift_detected": {
+    icon: ExclamationTriangleIcon,
+    iconClass: "text-amber-400",
+    bgClass: "bg-amber-500/10",
+    borderClass: "border-amber-500/20",
+  },
+  "release.readiness_dropped": {
+    icon: ShieldExclamationIcon,
+    iconClass: "text-amber-400",
+    bgClass: "bg-amber-500/10",
+    borderClass: "border-amber-500/20",
+  },
+  "release.config_mismatch": {
+    icon: ExclamationTriangleIcon,
+    iconClass: "text-amber-400",
+    bgClass: "bg-amber-500/10",
+    borderClass: "border-amber-500/20",
+  },
+  "release.dependency_conflict": {
+    icon: ShieldExclamationIcon,
+    iconClass: "text-amber-400",
+    bgClass: "bg-amber-500/10",
+    borderClass: "border-amber-500/20",
+  },
+  "release.verification_passed": {
+    icon: CheckCircleIcon,
+    iconClass: "text-emerald-400",
+    bgClass: "bg-emerald-500/10",
+    borderClass: "border-emerald-500/20",
+  },
+  "release.approval_pending": {
+    icon: LockClosedIcon,
+    iconClass: "text-amber-400",
+    bgClass: "bg-amber-500/10",
+    borderClass: "border-amber-500/20",
+  },
+  "release.servicenow_synced": {
+    icon: DocumentCheckIcon,
+    iconClass: "text-blue-400",
+    bgClass: "bg-blue-500/10",
+    borderClass: "border-blue-500/20",
+  },
+  "release.terraform_plan": {
+    icon: CodeBracketIcon,
+    iconClass: "text-violet-400",
+    bgClass: "bg-violet-500/10",
+    borderClass: "border-violet-500/20",
   },
 };
 

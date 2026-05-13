@@ -222,19 +222,19 @@ export default function ReleaseOpsPage() {
           <Reveal direction="up" delay={0.14}>
             <div className="flex flex-wrap gap-4 mb-10">
               <AnimatedButton
-                href="#assessment"
+                href="/dashboard/releaseops"
                 variant="primary"
                 className="btn-amber-shimmer relative z-10 rounded-full text-zinc-900 font-semibold"
               >
-                Request ReleaseOps Assessment
+                Open Command Center
                 <ArrowRightIcon className="ml-2 h-4 w-4" />
               </AnimatedButton>
               <AnimatedButton
-                href="#capabilities"
+                href="#assessment"
                 variant="ghost"
                 className="border-white/10 text-zinc-300 hover:bg-white/5 hover:border-white/20 relative z-10"
               >
-                Explore Operational Capabilities
+                Request ReleaseOps Assessment
               </AnimatedButton>
             </div>
           </Reveal>
