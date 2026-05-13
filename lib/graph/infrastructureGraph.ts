@@ -79,7 +79,7 @@ export interface GraphNode {
   id: string;
   type: GraphNodeType;
   label: string;
-  provider?: CloudProvider | "github" | "gitlab" | "azure_devops" | "jenkins" | "system" | "desktop";
+  provider?: CloudProvider | "github" | "gitlab" | "azure_devops" | "jenkins" | "argocd" | "servicenow" | "system" | "desktop";
   /** Account / subscription / project ID this node lives in. */
   accountId?: string;
   /** Region / location if applicable. */
