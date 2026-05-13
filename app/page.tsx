@@ -123,6 +123,8 @@ export default function Home() {
         <div className="absolute top-40 -right-40 w-[500px] h-[500px] rounded-full bg-violet-600/5 blur-[120px] pointer-events-none" aria-hidden />
         <div className="absolute top-60 -left-40 w-[400px] h-[400px] rounded-full bg-fuchsia-600/5 blur-[120px] pointer-events-none" aria-hidden />
         <div className="hero-beam-vertical pointer-events-none" aria-hidden />
+        <div className="hero-beam-flare pointer-events-none" aria-hidden />
+        <div className="hero-beam-converge pointer-events-none" aria-hidden />
 
         {/* Floating ambient particles */}
         <AmbientParticles />

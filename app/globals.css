@@ -1439,11 +1439,11 @@ h1, h2, h3, h4, h5, h6 {
 @keyframes electric-pulse-featured {
   0%, 100% {
     box-shadow:
-      0 0 35px rgba(99, 102, 241, 0.65),
-      0 0 70px rgba(124, 58, 237, 0.5),
-      0 0 120px rgba(59, 130, 246, 0.25),
-      0 0 5px rgba(139, 92, 246, 0.95),
-      inset 0 0 50px rgba(99, 102, 241, 0.1);
+      0 0 35px rgba(139, 92, 246, 0.65),
+      0 0 70px rgba(217, 70, 239, 0.4),
+      0 0 120px rgba(139, 92, 246, 0.2),
+      0 0 5px rgba(168, 85, 247, 0.95),
+      inset 0 0 50px rgba(139, 92, 246, 0.08);
   }
   50% {
     box-shadow:
@@ -1511,12 +1511,12 @@ h1, h2, h3, h4, h5, h6 {
   transform: translateY(-4px);
 }
 
-/* Featured — intense plasma glow */
+/* Featured — intense purple/violet plasma glow (Huly-style) */
 .electric-card-featured {
   position: relative;
-  background: rgba(99, 102, 241, 0.05);
+  background: rgba(139, 92, 246, 0.05);
   backdrop-filter: blur(24px);
-  border: 2px solid rgba(99, 102, 241, 0.7);
+  border: 2px solid rgba(139, 92, 246, 0.7);
   border-radius: 1.25rem;
   transition: all 0.5s cubic-bezier(0.22, 1, 0.36, 1);
   animation: electric-pulse-featured 4s ease-in-out infinite;
@@ -1532,7 +1532,7 @@ h1, h2, h3, h4, h5, h6 {
   padding: 2px;
   background: linear-gradient(
     270deg,
-    rgba(99, 102, 241, 1),
+    rgba(139, 92, 246, 1),
     rgba(124, 58, 237, 0.9),
     rgba(59, 130, 246, 1),
     rgba(139, 92, 246, 0.9),
@@ -1555,13 +1555,17 @@ h1, h2, h3, h4, h5, h6 {
   left: 0;
   right: 0;
   height: 2px;
-  background: linear-gradient(90deg, transparent, rgba(99, 102, 241, 1), rgba(139, 92, 246, 0.9), rgba(99, 102, 241, 1), transparent);
+  background: linear-gradient(90deg, transparent, rgba(139, 92, 246, 1), rgba(217, 70, 239, 0.9), rgba(139, 92, 246, 1), transparent);
   pointer-events: none;
 }
 
 .electric-card-featured:hover {
-  border-color: rgba(99, 102, 241, 0.85);
+  border-color: rgba(139, 92, 246, 0.85);
   transform: scale(1.04) translateY(-4px);
+  box-shadow:
+    0 0 45px rgba(139, 92, 246, 0.7),
+    0 0 90px rgba(217, 70, 239, 0.4),
+    0 0 150px rgba(139, 92, 246, 0.2);
 }
 
 /* Enterprise — amber electric variant */
@@ -1662,10 +1666,22 @@ h1, h2, h3, h4, h5, h6 {
    button, concentric rings, card tilt hover, warm glow, live pulse
    ══════════════════════════════════════════════════════════════════ */
 
-/* ── Vertical Hero Light Beam ───────────────────────────────────── */
+/* ── Vertical Hero Light Beam (Huly-style dramatic energy pillar) ── */
 @keyframes beam-vertical-pulse {
-  0%, 100% { opacity: 0.7; filter: blur(0px); }
-  50% { opacity: 1; filter: blur(1px); }
+  0%, 100% { opacity: 0.8; }
+  50% { opacity: 1; }
+}
+
+@keyframes beam-flicker {
+  0%, 100% { opacity: 0.6; transform: translateX(-50%) scaleX(1); }
+  25% { opacity: 0.9; transform: translateX(-50%) scaleX(1.3); }
+  50% { opacity: 1; transform: translateX(-50%) scaleX(0.9); }
+  75% { opacity: 0.7; transform: translateX(-50%) scaleX(1.15); }
+}
+
+@keyframes beam-converge-pulse {
+  0%, 100% { transform: translateX(-50%) scale(1); opacity: 0.6; }
+  50% { transform: translateX(-50%) scale(1.2); opacity: 1; }
 }
 
 .hero-beam-vertical {
@@ -1673,19 +1689,22 @@ h1, h2, h3, h4, h5, h6 {
   left: 50%;
   top: 0;
   transform: translateX(-50%);
-  width: 2px;
+  width: 3px;
   height: 100%;
   background: linear-gradient(
     180deg,
-    transparent 0%,
-    rgba(255, 255, 255, 0.6) 15%,
-    rgba(139, 92, 246, 0.8) 30%,
-    rgba(59, 130, 246, 0.6) 50%,
-    rgba(139, 92, 246, 0.4) 70%,
+    rgba(255, 255, 255, 0.05) 0%,
+    rgba(255, 255, 255, 0.8) 10%,
+    rgba(139, 92, 246, 0.9) 25%,
+    rgba(59, 130, 246, 0.8) 40%,
+    rgba(139, 92, 246, 0.7) 55%,
+    rgba(59, 130, 246, 0.5) 70%,
+    rgba(139, 92, 246, 0.3) 85%,
     transparent 100%
   );
   animation: beam-vertical-pulse 3s ease-in-out infinite;
   pointer-events: none;
+  z-index: 1;
 }
 
 .hero-beam-vertical::before {
@@ -1694,17 +1713,19 @@ h1, h2, h3, h4, h5, h6 {
   left: 50%;
   top: 0;
   transform: translateX(-50%);
-  width: 60px;
+  width: 120px;
   height: 100%;
   background: linear-gradient(
     180deg,
     transparent 0%,
-    rgba(139, 92, 246, 0.08) 15%,
-    rgba(59, 130, 246, 0.12) 30%,
-    rgba(139, 92, 246, 0.06) 60%,
+    rgba(139, 92, 246, 0.12) 10%,
+    rgba(59, 130, 246, 0.18) 25%,
+    rgba(139, 92, 246, 0.12) 45%,
+    rgba(59, 130, 246, 0.06) 65%,
     transparent 100%
   );
-  filter: blur(20px);
+  filter: blur(25px);
+  animation: beam-flicker 4s ease-in-out infinite;
 }
 
 .hero-beam-vertical::after {
@@ -1713,26 +1734,112 @@ h1, h2, h3, h4, h5, h6 {
   left: 50%;
   top: 0;
   transform: translateX(-50%);
-  width: 200px;
+  width: 500px;
   height: 100%;
   background: linear-gradient(
     180deg,
     transparent 0%,
-    rgba(99, 102, 241, 0.04) 20%,
-    rgba(139, 92, 246, 0.06) 40%,
-    rgba(59, 130, 246, 0.03) 60%,
+    rgba(99, 102, 241, 0.06) 10%,
+    rgba(139, 92, 246, 0.08) 30%,
+    rgba(59, 130, 246, 0.05) 50%,
+    rgba(139, 92, 246, 0.03) 70%,
     transparent 100%
   );
-  filter: blur(40px);
+  filter: blur(60px);
 }
 
-/* ── Amber Gradient Button Shimmer (Huly login style) ──────────── */
+/* Convergence point at bottom of beam (where light narrows to a point) */
+.hero-beam-converge {
+  position: absolute;
+  left: 50%;
+  bottom: -20px;
+  transform: translateX(-50%);
+  width: 300px;
+  height: 200px;
+  background: radial-gradient(
+    ellipse at center bottom,
+    rgba(59, 130, 246, 0.2) 0%,
+    rgba(139, 92, 246, 0.1) 30%,
+    transparent 70%
+  );
+  filter: blur(30px);
+  animation: beam-converge-pulse 3s ease-in-out infinite;
+  pointer-events: none;
+}
+
+/* Horizontal flare at beam bottom (Huly-style V-shape spread) */
+.hero-beam-flare {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  transform: translateX(-50%);
+  width: 800px;
+  height: 300px;
+  background: conic-gradient(
+    from 270deg at 50% 0%,
+    transparent 0deg,
+    rgba(59, 130, 246, 0.06) 70deg,
+    rgba(139, 92, 246, 0.1) 85deg,
+    rgba(255, 255, 255, 0.03) 90deg,
+    rgba(139, 92, 246, 0.1) 95deg,
+    rgba(59, 130, 246, 0.06) 110deg,
+    transparent 180deg,
+    transparent 360deg
+  );
+  filter: blur(20px);
+  pointer-events: none;
+  opacity: 0.8;
+}
+
+/* ── Amber Gradient Button (Huly-style warm CTA) ─────────────── */
 @keyframes amber-shimmer-sweep {
   0% { background-position: -200% center; }
   100% { background-position: 200% center; }
 }
 
+@keyframes amber-glow-pulse {
+  0%, 100% { box-shadow: 0 4px 20px rgba(245, 158, 11, 0.2), 0 0 40px rgba(251, 191, 36, 0.1); }
+  50% { box-shadow: 0 4px 30px rgba(245, 158, 11, 0.35), 0 0 60px rgba(251, 191, 36, 0.15); }
+}
+
 .btn-amber-shimmer {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(
+    90deg,
+    #f5c842 0%,
+    #f0b429 20%,
+    #fcd34d 40%,
+    #f5c842 60%,
+    #f0b429 80%,
+    #f5c842 100%
+  );
+  background-size: 200% auto;
+  color: #1a1a1a !important;
+  -webkit-text-fill-color: #1a1a1a;
+  animation: amber-shimmer-sweep 3s ease-in-out infinite, amber-glow-pulse 4s ease-in-out infinite;
+  border: 1px solid rgba(251, 191, 36, 0.5);
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.15);
+}
+
+.btn-amber-shimmer:hover {
+  background: linear-gradient(
+    90deg,
+    #fcd34d 0%,
+    #f5c842 25%,
+    #ffe066 50%,
+    #f5c842 75%,
+    #fcd34d 100%
+  );
+  box-shadow:
+    0 6px 35px rgba(245, 158, 11, 0.4),
+    0 0 60px rgba(251, 191, 36, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  border-color: rgba(251, 191, 36, 0.7);
+}
+
+/* Alternative: white CTA with amber shimmer accent */
+.btn-white-amber {
   position: relative;
   overflow: hidden;
   background-image: linear-gradient(
@@ -1747,6 +1854,154 @@ h1, h2, h3, h4, h5, h6 {
   );
   background-size: 200% auto;
   animation: amber-shimmer-sweep 3s ease-in-out infinite;
+}
+
+/* ── Progressive Text Dimming (Huly pricing-style) ────────────── */
+.text-progressive-dim > *:nth-child(1) { color: #fafafa; }
+.text-progressive-dim > *:nth-child(2) { color: rgba(250, 250, 250, 0.5); }
+.text-progressive-dim > *:nth-child(3) { color: rgba(250, 250, 250, 0.3); }
+.text-progressive-dim > *:nth-child(4) { color: rgba(250, 250, 250, 0.2); }
+
+.text-dim-paragraph {
+  color: #fafafa;
+}
+.text-dim-paragraph .dim-1 { color: rgba(250, 250, 250, 0.5); }
+.text-dim-paragraph .dim-2 { color: rgba(250, 250, 250, 0.3); }
+.text-dim-paragraph .dim-3 { color: rgba(250, 250, 250, 0.2); }
+
+/* ── Auth Glassmorphism (Huly sign-in/sign-up style) ──────────── */
+.auth-glass-card {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(40px) saturate(150%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 1.25rem;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+  position: relative;
+  overflow: hidden;
+}
+
+.auth-glass-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 60%;
+  height: 50%;
+  background: linear-gradient(
+    135deg,
+    rgba(59, 130, 246, 0.15) 0%,
+    rgba(139, 92, 246, 0.1) 50%,
+    transparent 100%
+  );
+  border-radius: inherit;
+  filter: blur(40px);
+  pointer-events: none;
+}
+
+/* Purple/blue gradient blobs behind auth card */
+.auth-bg-blobs {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.auth-blob-purple {
+  position: absolute;
+  top: 15%;
+  right: 10%;
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, rgba(139, 92, 246, 0.2) 0%, transparent 70%);
+  filter: blur(80px);
+}
+
+.auth-blob-blue {
+  position: absolute;
+  bottom: 20%;
+  left: 10%;
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, rgba(59, 130, 246, 0.15) 0%, transparent 70%);
+  filter: blur(80px);
+}
+
+/* ── Product Frame with Energy Border (Huly app screenshot) ───── */
+@keyframes frame-energy-flow {
+  0% { background-position: 0% 0%; }
+  50% { background-position: 100% 100%; }
+  100% { background-position: 0% 0%; }
+}
+
+.product-frame {
+  position: relative;
+  border-radius: 1rem;
+  overflow: hidden;
+  box-shadow: 0 20px 80px rgba(0, 0, 0, 0.6);
+}
+
+.product-frame::before {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  border-radius: inherit;
+  padding: 2px;
+  background: linear-gradient(
+    135deg,
+    rgba(245, 158, 11, 0.6) 0%,
+    rgba(239, 68, 68, 0.4) 25%,
+    rgba(139, 92, 246, 0.5) 50%,
+    rgba(59, 130, 246, 0.4) 75%,
+    rgba(245, 158, 11, 0.6) 100%
+  );
+  background-size: 300% 300%;
+  animation: frame-energy-flow 6s ease infinite;
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+.product-frame-glow {
+  position: absolute;
+  inset: -30px;
+  border-radius: inherit;
+  background: linear-gradient(
+    135deg,
+    rgba(245, 158, 11, 0.08) 0%,
+    transparent 30%,
+    rgba(139, 92, 246, 0.06) 60%,
+    transparent 100%
+  );
+  filter: blur(30px);
+  pointer-events: none;
+  z-index: -1;
+}
+
+/* ── 2x2 Huly Feature Grid Card ──────────────────────────────── */
+.huly-feature-card {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 1.25rem;
+  overflow: hidden;
+  transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.huly-feature-card:hover {
+  border-color: rgba(255, 255, 255, 0.12);
+  transform: translateY(-4px);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+}
+
+.huly-feature-card-image {
+  height: 280px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.03) 0%, rgba(0, 0, 0, 0.2) 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+.huly-feature-card-content {
+  padding: 1.5rem;
 }
 
 /* ── Concentric Ripple Rings ───────────────────────────────────── */

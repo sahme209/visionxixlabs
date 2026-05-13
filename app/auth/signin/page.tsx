@@ -48,7 +48,7 @@ function SignInForm() {
       {/* Spotlight orb */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[400px] spotlight-orb opacity-40 pointer-events-none" aria-hidden />
       {/* Floating blur orbs */}
-      <div className="absolute -top-32 -left-32 w-72 h-72 rounded-full bg-indigo-600/10 blur-[100px] pointer-events-none" aria-hidden />
+      <div className="absolute -top-32 -left-32 w-72 h-72 rounded-full bg-violet-600/10 blur-[100px] pointer-events-none" aria-hidden />
       <div className="absolute bottom-0 right-0 w-56 h-56 rounded-full bg-blue-600/8 blur-[90px] pointer-events-none" aria-hidden />
       {/* Grid mesh background */}
       <div className="absolute inset-0 bg-grid-mesh opacity-30 pointer-events-none" aria-hidden />

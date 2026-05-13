@@ -208,11 +208,11 @@ export default function OperatorPricingPage() {
               >
                 {/* Ambient glow orb behind featured card */}
                 {highlighted && (
-                  <div className="absolute -inset-4 rounded-3xl bg-indigo-500/[0.06] blur-2xl pointer-events-none" aria-hidden />
+                  <div className="absolute -inset-4 rounded-3xl bg-violet-500/[0.06] blur-2xl pointer-events-none" aria-hidden />
                 )}
 
                 {highlighted && (
-                  <span className="absolute -top-3.5 left-1/2 -translate-x-1/2 z-10 text-xs font-semibold text-indigo-300 bg-indigo-500/15 border border-indigo-500/25 px-4 py-1 rounded-full flex items-center gap-1.5 whitespace-nowrap">
+                  <span className="absolute -top-3.5 left-1/2 -translate-x-1/2 z-10 text-xs font-semibold text-violet-300 bg-violet-500/15 border border-violet-500/25 px-4 py-1 rounded-full flex items-center gap-1.5 whitespace-nowrap">
                     <SparklesIcon className="h-3 w-3" />
                     Most popular
                   </span>
@@ -259,7 +259,7 @@ export default function OperatorPricingPage() {
                           rel="noopener noreferrer"
                           className={`w-full inline-flex items-center justify-center gap-2 rounded-full px-4 py-3 text-sm font-semibold transition-all duration-300 ${
                             highlighted
-                              ? "bg-white text-zinc-900 hover:bg-zinc-100 shadow-[0_0_20px_rgba(255,255,255,0.1)]"
+                              ? "btn-amber-shimmer"
                               : "bg-white/[0.08] text-white hover:bg-white/[0.14] border border-white/[0.08]"
                           }`}
                         >
@@ -315,8 +315,8 @@ export default function OperatorPricingPage() {
                     <th className="text-left px-6 py-4 font-semibold text-zinc-300">Feature</th>
                     <th className="text-center px-4 py-4 font-semibold text-zinc-400">Starter</th>
                     <th className="text-center px-4 py-4 font-semibold relative">
-                      <span className="text-indigo-400">Growth</span>
-                      <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-12 h-px bg-gradient-to-r from-transparent via-indigo-500/50 to-transparent" />
+                      <span className="text-violet-400">Growth</span>
+                      <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-12 h-px bg-gradient-to-r from-transparent via-violet-500/50 to-transparent" />
                     </th>
                     <th className="text-center px-4 py-4 font-semibold text-zinc-300">Scale</th>
                     <th className="text-center px-4 py-4 font-semibold text-zinc-300">Enterprise</th>
@@ -413,7 +413,7 @@ export default function OperatorPricingPage() {
           <p className="text-zinc-400 mb-10 relative max-w-md mx-auto">7 days free on any paid plan. Cancel anytime.</p>
           <a
             href="/auth/signup?redirect=/operator/onboarding"
-            className="inline-flex items-center gap-2 rounded-full bg-white px-8 py-3.5 text-sm font-semibold text-zinc-900 hover:bg-zinc-100 transition-colors shadow-[0_0_20px_rgba(255,255,255,0.1)] relative"
+            className="btn-amber-shimmer inline-flex items-center gap-2 rounded-full px-8 py-3.5 text-sm font-semibold relative"
           >
             Start Free Trial
             <ArrowRightIcon className="h-4 w-4" />

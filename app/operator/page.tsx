@@ -191,6 +191,9 @@ export default function OperatorLandingPage() {
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[500px] spotlight-orb opacity-40 pointer-events-none" aria-hidden />
         <div className="absolute -top-40 -right-32 w-80 h-80 rounded-full bg-fuchsia-600/8 blur-[120px] pointer-events-none" aria-hidden />
         <div className="absolute bottom-0 -left-32 w-64 h-64 rounded-full bg-violet-600/8 blur-[100px] pointer-events-none" aria-hidden />
+        <div className="hero-beam-vertical pointer-events-none" aria-hidden />
+        <div className="hero-beam-flare pointer-events-none" aria-hidden />
+        <div className="hero-beam-converge pointer-events-none" aria-hidden />
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-20 text-center relative">
           <Reveal>
             <div className="inline-flex items-center gap-2 huly-badge px-3 py-1 text-violet-300 text-xs font-medium mb-6">
@@ -212,7 +215,7 @@ export default function OperatorLandingPage() {
           </Reveal>
           <Reveal delay={0.3}>
             <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
-              <AnimatedButton href="/auth/signup?redirect=/operator/onboarding" variant="primary" className="px-8 py-4 text-base cta-glow">
+              <AnimatedButton href="/auth/signup?redirect=/operator/onboarding" variant="primary" className="btn-amber-shimmer px-8 py-4 text-base">
                 Start Free
                 <ArrowRightIcon className="h-4 w-4" />
               </AnimatedButton>
@@ -399,38 +402,42 @@ export default function OperatorLandingPage() {
               {plans.map((plan) => (
                 <div
                 key={plan.name}
-                className={`animated-border card-inner-glow card-hover rounded-2xl border p-8 flex flex-col ${
+                className={`flex flex-col ${
                   plan.highlighted
-                    ? "border-violet-500/50 bg-violet-950/20 ring-1 ring-violet-500/20"
-                    : "border-white/[0.06] bg-white/[0.02]"
+                    ? "electric-card-featured"
+                    : plan.name === "Enterprise"
+                      ? "electric-card-enterprise"
+                      : "electric-card"
                 }`}
               >
-                {plan.highlighted && (
-                  <span className="huly-badge text-xs font-medium text-violet-300 px-2.5 py-1 self-start mb-4">
-                    Most popular
-                  </span>
-                )}
-                <h3 className="text-xl font-bold">{plan.name}</h3>
-                <div className="mt-4 flex items-baseline gap-1">
-                  <span className="text-4xl font-bold text-gradient">{plan.price}</span>
-                  {plan.period && <span className="text-zinc-500">{plan.period}</span>}
+                <div className="relative p-8 flex flex-col flex-1 z-10">
+                  {plan.highlighted && (
+                    <span className="absolute -top-3.5 left-1/2 -translate-x-1/2 z-10 text-xs font-semibold text-violet-300 bg-violet-500/15 border border-violet-500/25 px-4 py-1 rounded-full flex items-center gap-1.5 whitespace-nowrap">
+                      Most popular
+                    </span>
+                  )}
+                  <h3 className="text-xl font-bold">{plan.name}</h3>
+                  <div className="mt-4 flex items-baseline gap-1">
+                    <span className="text-4xl font-bold text-gradient">{plan.price}</span>
+                    {plan.period && <span className="text-zinc-500">{plan.period}</span>}
+                  </div>
+                  <p className="text-sm text-zinc-400 mt-2">{plan.description}</p>
+                  <ul className="mt-6 space-y-3 flex-1">
+                    {plan.features.map((f) => (
+                      <li key={f} className="flex items-start gap-2 text-sm text-zinc-300">
+                        <CheckCircleIcon className="h-4 w-4 text-emerald-400 mt-0.5 flex-shrink-0" />
+                        {f}
+                      </li>
+                    ))}
+                  </ul>
+                  <AnimatedButton
+                    href={plan.ctaHref}
+                    variant={plan.highlighted ? "primary" : "secondary"}
+                    className={`mt-8 w-full justify-center ${plan.highlighted ? "btn-amber-shimmer" : ""}`}
+                  >
+                    {plan.cta}
+                  </AnimatedButton>
                 </div>
-                <p className="text-sm text-zinc-400 mt-2">{plan.description}</p>
-                <ul className="mt-6 space-y-3 flex-1">
-                  {plan.features.map((f) => (
-                    <li key={f} className="flex items-start gap-2 text-sm text-zinc-300">
-                      <CheckCircleIcon className="h-4 w-4 text-emerald-400 mt-0.5 flex-shrink-0" />
-                      {f}
-                    </li>
-                  ))}
-                </ul>
-                <AnimatedButton
-                  href={plan.ctaHref}
-                  variant={plan.highlighted ? "primary" : "secondary"}
-                  className={`mt-8 w-full justify-center ${plan.highlighted ? "cta-glow" : ""}`}
-                >
-                  {plan.cta}
-                </AnimatedButton>
               </div>
               ))}
             </Stagger>
@@ -477,7 +484,7 @@ export default function OperatorLandingPage() {
             <p className="text-lg text-zinc-400 mb-10 max-w-xl mx-auto">
               Connect your AWS account, let Axiom scan and reason, and see exactly what needs fixing — prioritized and ready to act on.
             </p>
-            <AnimatedButton href="/auth/signup?redirect=/operator/onboarding" variant="primary" className="px-10 py-4 text-base cta-glow">
+            <AnimatedButton href="/auth/signup?redirect=/operator/onboarding" variant="primary" className="btn-amber-shimmer px-10 py-4 text-base">
               Start Free — No Credit Card
               <ArrowRightIcon className="h-4 w-4" />
             </AnimatedButton>
