@@ -235,6 +235,11 @@ export default function CommandCenterPage() {
         })}
       </Stagger>
 
+      {/* Executive summary banner — memory-driven */}
+      <Reveal direction="up" delay={0.06}>
+        <ExecutiveSummaryBanner />
+      </Reveal>
+
       {/* Full-width topology row */}
       <Reveal direction="up" delay={0.08}>
         <div className="mb-6">
@@ -443,6 +448,56 @@ export default function CommandCenterPage() {
               </div>
             </div>
           </Reveal>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Executive summary banner — memory-driven, demo-state for now
+// ---------------------------------------------------------------------------
+
+function ExecutiveSummaryBanner() {
+  // Demo data — will be replaced by real summary fetch when /api/operations/summary is wired.
+  const summary = {
+    opener: "26 operational events this week — 4 scans observed, 6 changes applied.",
+    highlights: [
+      { headline: "$4,200/mo in savings locked", detail: "Confirmed by post-execution verification.", severity: "success" as const, link: { label: "Open Memory", href: "/dashboard/memory" } },
+      { headline: "1 service requires attention", detail: "auth-gateway recurring in finding queue — investigate root cause.", severity: "warning" as const, link: { label: "Open Topology", href: "/dashboard/topology" } },
+      { headline: "Agent confidence trending up", detail: "+4 pts week over week — outcomes validating the reasoning.", severity: "info" as const, link: { label: "Why?", href: "/docs/architecture#layers" } },
+    ],
+    recommended: "Address auth-gateway recurring findings before approving new high-risk plans.",
+  };
+
+  return (
+    <div className="mb-6 rounded-2xl border border-violet-500/15 bg-gradient-to-br from-violet-500/[0.04] via-transparent to-fuchsia-500/[0.03] p-5 relative overflow-hidden">
+      <div className="absolute -top-12 -right-12 w-48 h-48 rounded-full bg-violet-500/[0.06] blur-[60px] pointer-events-none" aria-hidden />
+      <div className="relative">
+        <div className="flex items-center gap-2 mb-3">
+          <CpuChipIcon className="h-4 w-4 text-violet-400" />
+          <p className="text-[10px] font-semibold text-violet-400 uppercase tracking-widest">Executive summary · this week</p>
+          <span className="text-[9px] font-semibold text-zinc-500 bg-white/[0.04] border border-white/[0.06] rounded-full px-1.5 py-px uppercase tracking-wider">Memory-driven</span>
+        </div>
+        <p className="text-sm font-semibold text-white mb-4 leading-relaxed">{summary.opener}</p>
+        <div className="grid sm:grid-cols-3 gap-2.5 mb-4">
+          {summary.highlights.map((h, i) => {
+            const tint =
+              h.severity === "success" ? "border-emerald-500/15 bg-emerald-500/[0.03]" :
+              h.severity === "warning" ? "border-amber-500/15 bg-amber-500/[0.03]" :
+              "border-blue-500/15 bg-blue-500/[0.03]";
+            return (
+              <Link key={i} href={h.link.href} className={`rounded-xl border ${tint} p-3 hover:border-white/[0.18] transition-colors group`}>
+                <p className="text-xs font-bold text-white mb-1 leading-snug">{h.headline}</p>
+                <p className="text-[11px] text-zinc-400 leading-relaxed">{h.detail}</p>
+                <p className="text-[10px] text-zinc-500 mt-2 group-hover:text-white transition-colors">{h.link.label} →</p>
+              </Link>
+            );
+          })}
+        </div>
+        <div className="flex items-center gap-2 text-xs text-zinc-400">
+          <span className="text-[10px] font-semibold text-amber-400 uppercase tracking-widest">Next best action:</span>
+          <span className="text-zinc-300">{summary.recommended}</span>
         </div>
       </div>
     </div>
