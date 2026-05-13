@@ -63,8 +63,8 @@ const TOPIC_GROUPS = [
     icon: CloudIcon,
     items: [
       { href: "/docs/aws-setup", label: "AWS · IAM role + External ID", available: true },
-      { href: "/docs/azure-setup", label: "Azure · Service Principal", available: false },
-      { href: "/docs/gcp-setup", label: "GCP · Service Account", available: false },
+      { href: "/docs/azure-setup", label: "Azure · Service Principal", available: true },
+      { href: "/docs/gcp-setup", label: "GCP · Service Account", available: true },
     ],
   },
   {
@@ -100,8 +100,8 @@ const TOPIC_GROUPS = [
     icon: LockClosedIcon,
     items: [
       { href: "/docs/security-model", label: "Security model", available: true },
-      { href: "/docs/permissions-model", label: "Permissions model", available: false },
-      { href: "/docs/audit-logs", label: "Audit logs", available: false },
+      { href: "/docs/permissions-model", label: "Permissions model", available: true },
+      { href: "/docs/audit-logs", label: "Audit logs", available: true },
     ],
   },
   {

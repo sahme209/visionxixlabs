@@ -35,15 +35,15 @@ export const DOC_SECTIONS: DocSection[] = [
     items: [
       { href: "/docs", label: "Overview", icon: BookOpenIcon },
       { href: "/docs/getting-started", label: "Getting started", icon: RocketLaunchIcon },
-      { href: "/docs/architecture", label: "Architecture overview", icon: MapIcon, status: "coming-soon" },
+      { href: "/docs/architecture", label: "Architecture overview", icon: MapIcon },
     ],
   },
   {
     title: "Connect a cloud",
     items: [
       { href: "/docs/aws-setup", label: "AWS setup", icon: CloudIcon },
-      { href: "/docs/azure-setup", label: "Azure setup", icon: CloudIcon, status: "coming-soon" },
-      { href: "/docs/gcp-setup", label: "GCP setup", icon: CloudIcon, status: "coming-soon" },
+      { href: "/docs/azure-setup", label: "Azure setup", icon: CloudIcon },
+      { href: "/docs/gcp-setup", label: "GCP setup", icon: CloudIcon },
     ],
   },
   {
@@ -75,8 +75,8 @@ export const DOC_SECTIONS: DocSection[] = [
     title: "Trust & security",
     items: [
       { href: "/docs/security-model", label: "Security model", icon: ShieldCheckIcon },
-      { href: "/docs/permissions-model", label: "Permissions model", icon: LockClosedIcon, status: "coming-soon" },
-      { href: "/docs/audit-logs", label: "Audit logs", icon: DocumentTextIcon, status: "coming-soon" },
+      { href: "/docs/permissions-model", label: "Permissions model", icon: LockClosedIcon },
+      { href: "/docs/audit-logs", label: "Audit logs", icon: DocumentTextIcon },
     ],
   },
   {

@@ -400,6 +400,14 @@ function AWSSetupInstructions({ externalId }: { externalId: string }) {
           <p>Enter the Axiom broker account ID and external ID:</p>
           <CopyBlock label="Account ID" value={BROKER_ACCOUNT_ID} />
           <CopyBlock label="External ID (required for security)" value={externalId} />
+          <a
+            href="/docs/aws-setup#option-2"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1 text-[11px] font-medium text-violet-400 hover:text-violet-300 transition-colors"
+          >
+            Why External ID? Read more →
+          </a>
         </div>
       ),
     },
@@ -415,6 +423,14 @@ function AWSSetupInstructions({ externalId }: { externalId: string }) {
             {expandedPolicy === "permissions" ? "Hide" : "View"} custom policy
           </button>
           {expandedPolicy === "permissions" && <div className="mt-3"><CopyBlock label="Permissions Policy (JSON)" value={IAM_PERMISSIONS_POLICY} /></div>}
+          <div className="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-[11px]">
+            <a href="/docs/aws-setup#permissions-explained" target="_blank" rel="noopener noreferrer" className="text-violet-400 hover:text-violet-300 transition-colors">
+              What does Axiom access? →
+            </a>
+            <a href="/docs/permissions-model" target="_blank" rel="noopener noreferrer" className="text-violet-400 hover:text-violet-300 transition-colors">
+              Permissions model →
+            </a>
+          </div>
         </div>
       ),
     },
@@ -426,7 +442,19 @@ function AWSSetupInstructions({ externalId }: { externalId: string }) {
     {
       num: 5,
       title: "Copy the Role ARN",
-      content: <p>Open the role summary page and copy the <strong className="text-zinc-200">Role ARN</strong>. Paste it in the validation form below.</p>,
+      content: (
+        <div>
+          <p>Open the role summary page and copy the <strong className="text-zinc-200">Role ARN</strong>. Paste it in the validation form below.</p>
+          <a
+            href="/docs/aws-setup"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1 text-[11px] font-medium text-violet-400 hover:text-violet-300 mt-2 transition-colors"
+          >
+            Full AWS setup guide →
+          </a>
+        </div>
+      ),
     },
   ];
 
@@ -450,6 +478,17 @@ function AWSSetupInstructions({ externalId }: { externalId: string }) {
                   <ShieldCheckIcon className="h-3 w-3" /> {t}
                 </span>
               ))}
+            </div>
+            <div className="mt-3 flex flex-wrap gap-x-3 gap-y-1 text-[11px]">
+              <a href="/docs/security-model" target="_blank" rel="noopener noreferrer" className="text-emerald-400 hover:text-emerald-300 transition-colors font-medium">
+                Read security model →
+              </a>
+              <a href="/docs/aws-setup" target="_blank" rel="noopener noreferrer" className="text-emerald-400 hover:text-emerald-300 transition-colors font-medium">
+                AWS setup guide →
+              </a>
+              <a href="/docs/permissions-model" target="_blank" rel="noopener noreferrer" className="text-emerald-400 hover:text-emerald-300 transition-colors font-medium">
+                Permissions model →
+              </a>
             </div>
           </div>
         </div>
@@ -582,6 +621,19 @@ function ProviderAdapterPreview({ provider, onClose }: { provider: CloudProvider
           <div className="flex items-center gap-2 text-xs text-zinc-500 bg-white/[0.02] border border-white/[0.04] rounded-lg px-3 py-2.5">
             <GlobeAltIcon className="h-3.5 w-3.5 flex-shrink-0 text-zinc-600" />
             <span>Same agent architecture as AWS — provider adapters share the scan → reason → plan → execute pipeline.</span>
+          </div>
+
+          {/* Docs links */}
+          <div className="flex flex-wrap gap-x-3 gap-y-1 text-[11px] pt-1">
+            <Link href={provider === "azure" ? "/docs/azure-setup" : provider === "gcp" ? "/docs/gcp-setup" : "/docs"} target="_blank" className="text-violet-400 hover:text-violet-300 transition-colors font-medium">
+              Read {info.shortName} setup guide →
+            </Link>
+            <Link href="/docs/permissions-model" target="_blank" className="text-violet-400 hover:text-violet-300 transition-colors font-medium">
+              Permissions model →
+            </Link>
+            <Link href="/docs/security-model" target="_blank" className="text-violet-400 hover:text-violet-300 transition-colors font-medium">
+              Security model →
+            </Link>
           </div>
         </div>
 
@@ -1129,9 +1181,27 @@ export default function OnboardingPage() {
                         <div className="mt-4 text-sm text-red-400 bg-red-500/[0.06] border border-red-500/15 rounded-lg px-4 py-3">
                           <div className="flex items-start gap-2">
                             <ExclamationTriangleIcon className="h-4 w-4 flex-shrink-0 mt-0.5" />
-                            <div>
+                            <div className="flex-1">
                               {error}
                               {validationDetail && <p className="text-xs text-red-300/60 mt-1.5">{validationDetail}</p>}
+                              <div className="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-[11px]">
+                                <a
+                                  href="/docs/troubleshooting#aws-connection"
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="text-red-300 hover:text-red-200 underline underline-offset-2 font-medium"
+                                >
+                                  Troubleshoot this error →
+                                </a>
+                                <a
+                                  href="/docs/aws-setup"
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="text-red-300 hover:text-red-200 underline underline-offset-2 font-medium"
+                                >
+                                  Review AWS setup steps →
+                                </a>
+                              </div>
                             </div>
                           </div>
                         </div>
