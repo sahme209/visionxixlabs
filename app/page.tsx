@@ -29,6 +29,7 @@ import {
   ChartBarIcon,
   DocumentCheckIcon,
 } from "@heroicons/react/24/outline";
+import { listProviders, capabilitySummary } from "@/lib/cloud/providerRegistry";
 
 const axiomFAQ = [
   {
@@ -436,57 +437,57 @@ export default function Home() {
             </p>
           </div>
           <div className="grid md:grid-cols-3 gap-5 mb-5">
-            {[
-              {
-                name: "AWS", shortName: "AWS", statusLabel: "Full Operations", statusColor: "bg-emerald-400",
-                textAccent: "text-amber-400", bgAccent: "bg-amber-500/10", borderAccent: "border-amber-500/20",
-                desc: "Complete autonomous loop — scan, reason, plan, execute, monitor, and learn.",
-                capabilities: ["Scan", "Snapshot", "Signals", "Reasoning", "Execution", "Terraform", "Audit", "Monitoring"],
-                allActive: true,
-              },
-              {
-                name: "Microsoft Azure", shortName: "Azure", statusLabel: "Scan Active · Reasoning Q2", statusColor: "bg-blue-400",
-                textAccent: "text-blue-400", bgAccent: "bg-blue-500/10", borderAccent: "border-blue-500/20",
-                desc: "Service Principal connector live · VM, Storage, Network discovery · Signal derivation rolling out Q2 2026.",
-                capabilities: ["Scan", "Snapshot", "Signals", "Reasoning", "Execution", "Terraform", "Audit", "Monitoring"],
-                allActive: false,
-              },
-              {
-                name: "Google Cloud", shortName: "GCP", statusLabel: "Scan Active · Reasoning Q3", statusColor: "bg-red-400",
-                textAccent: "text-red-400", bgAccent: "bg-red-500/10", borderAccent: "border-red-500/20",
-                desc: "Service Account connector live · Compute, Storage, IAM discovery · Reasoning loop rolling out Q3 2026.",
-                capabilities: ["Scan", "Snapshot", "Signals", "Reasoning", "Execution", "Terraform", "Audit", "Monitoring"],
-                allActive: false,
-              },
-            ].map((p) => (
-              <div key={p.shortName} className="animated-border card-inner-glow card-hover card-shine-sweep rounded-xl border border-white/[0.06] bg-white/[0.02] p-6 hover:border-white/[0.12] transition-colors">
-                <div className="flex items-center gap-3 mb-3">
-                  <div className={`w-10 h-10 rounded-xl ${p.bgAccent} border ${p.borderAccent} flex items-center justify-center`}>
-                    <span className={`text-sm font-bold ${p.textAccent}`}>{p.shortName}</span>
-                  </div>
-                  <div>
-                    <div className={`text-sm font-semibold text-white`}>{p.name}</div>
-                    <div className="flex items-center gap-1.5">
-                      <span className={`w-1.5 h-1.5 rounded-full ${p.statusColor} ${p.allActive ? "" : "animate-pulse"}`} />
-                      <span className={`text-[10px] font-semibold uppercase tracking-wider ${p.allActive ? "text-emerald-400/80" : "text-zinc-500"}`}>{p.statusLabel}</span>
+            {listProviders().map((p) => {
+              const accent =
+                p.provider === "aws" ? { text: "text-amber-400", bg: "bg-amber-500/10", border: "border-amber-500/20", dot: "bg-emerald-400" } :
+                p.provider === "azure" ? { text: "text-blue-400", bg: "bg-blue-500/10", border: "border-blue-500/20", dot: "bg-blue-400" } :
+                { text: "text-red-400", bg: "bg-red-500/10", border: "border-red-500/20", dot: "bg-red-400" };
+              const summary = capabilitySummary(p.provider);
+              const isOperational = p.status === "operational";
+              const docsHref = p.authModel.docsHref;
+              return (
+                <a
+                  key={p.provider}
+                  href={docsHref}
+                  className="block animated-border card-inner-glow card-hover card-shine-sweep rounded-xl border border-white/[0.06] bg-white/[0.02] p-6 hover:border-white/[0.12] transition-colors group"
+                >
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className={`w-10 h-10 rounded-xl ${accent.bg} border ${accent.border} flex items-center justify-center`}>
+                      <span className={`text-sm font-bold ${accent.text}`}>{p.shortName}</span>
+                    </div>
+                    <div className="min-w-0">
+                      <div className="text-sm font-semibold text-white">{p.displayName}</div>
+                      <div className="flex items-center gap-1.5">
+                        <span className={`w-1.5 h-1.5 rounded-full ${accent.dot} ${isOperational ? "" : "animate-pulse"}`} />
+                        <span className={`text-[10px] font-semibold uppercase tracking-wider ${isOperational ? "text-emerald-400/80" : "text-zinc-500"}`}>
+                          {isOperational ? "Full operations" : `${summary.live + summary.preview} live · ${summary.building + summary.planned} expanding`}
+                        </span>
+                      </div>
                     </div>
                   </div>
-                </div>
-                <p className="text-xs text-zinc-500 mb-4 leading-relaxed">{p.desc}</p>
-                <div className="flex flex-wrap gap-1.5">
-                  {p.capabilities.map((cap, i) => {
-                    const isActive = p.allActive || i < 2 || i === 6;
-                    const isBuilding = !p.allActive && (i === 2 || i === 3);
-                    return (
-                      <span key={cap} className="inline-flex items-center gap-1 text-[10px] text-zinc-500 bg-white/[0.03] border border-white/[0.04] rounded-full px-2 py-0.5">
-                        <span className={`w-1.5 h-1.5 rounded-full ${isActive ? "bg-emerald-400" : isBuilding ? "bg-amber-400/80" : "bg-zinc-700"}`} />
-                        {cap}
-                      </span>
-                    );
-                  })}
-                </div>
-              </div>
-            ))}
+                  <p className="text-xs text-zinc-500 mb-4 leading-relaxed">{p.statusCopy}</p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {p.capabilities.slice(0, 8).map((cap) => {
+                      const isLive = cap.status === "live" || cap.status === "preview";
+                      const isBuilding = cap.status === "building" || cap.status === "planned";
+                      return (
+                        <span
+                          key={cap.key}
+                          title={cap.description}
+                          className="inline-flex items-center gap-1 text-[10px] text-zinc-500 bg-white/[0.03] border border-white/[0.04] rounded-full px-2 py-0.5"
+                        >
+                          <span className={`w-1.5 h-1.5 rounded-full ${isLive ? "bg-emerald-400" : isBuilding ? "bg-amber-400/80" : "bg-zinc-700"}`} />
+                          {cap.label.split(" ")[0]}
+                        </span>
+                      );
+                    })}
+                  </div>
+                  <p className="mt-3 text-[10px] text-zinc-600 group-hover:text-zinc-400 transition-colors">
+                    Read setup guide →
+                  </p>
+                </a>
+              );
+            })}
           </div>
           <div className="animated-border card-inner-glow rounded-xl border border-white/[0.06] bg-white/[0.02] p-5 flex items-center justify-between">
             <div className="flex items-center gap-3">

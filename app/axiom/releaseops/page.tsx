@@ -599,28 +599,28 @@ export default function ReleaseOpsPage() {
             </p>
             <div className="flex flex-wrap items-center justify-center gap-4 mb-8">
               <Link
-                href="/contact?topic=releaseops"
+                href="/dashboard/releaseops"
                 className="btn-amber-shimmer group inline-flex items-center gap-2.5 px-7 py-3.5 rounded-full text-sm font-semibold uppercase tracking-wide"
               >
-                Request Operational Assessment
+                Open Command Center
                 <ArrowRightIcon className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
               </Link>
               <Link
-                href="/contact"
+                href="/docs/releaseops"
                 className="inline-flex items-center gap-2 px-7 py-3.5 border border-white/[0.12] text-zinc-300 rounded-full text-sm font-semibold hover:bg-white/5 hover:border-white/20 transition-colors"
               >
-                Talk to Vision XIX Labs
+                Read setup guide
+                <ArrowRightIcon className="h-4 w-4" />
               </Link>
               <Link
-                href="/dashboard"
+                href="/contact?topic=releaseops"
                 className="inline-flex items-center gap-2 px-7 py-3.5 text-zinc-400 hover:text-white text-sm font-semibold transition-colors"
               >
-                Explore Platform
-                <ArrowRightIcon className="h-4 w-4" />
+                Need enterprise help?
               </Link>
             </div>
             <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs text-zinc-500">
-              {["2-week initial assessment", "Working integration on day 1", "No CI/CD replacement"].map((item) => (
+              {["Self-serve onboarding", "Working integration on day 1", "No CI/CD replacement"].map((item) => (
                 <span key={item} className="flex items-center gap-1.5">
                   <CheckCircleIcon className="h-3.5 w-3.5 text-emerald-500" />
                   {item}
