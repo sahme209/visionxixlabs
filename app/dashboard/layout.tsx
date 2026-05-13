@@ -21,7 +21,7 @@ export default async function DashboardLayout({
       <div className="bg-grid-mesh absolute inset-0 pointer-events-none" />
 
       <header className="relative z-10 glass-dark border-b border-white/[0.06] backdrop-blur-sm">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
           <Link href="/dashboard" className="flex items-center gap-2 nav-link-underline">
             <CpuChipIcon className="h-8 w-8 text-violet-500" />
             <span className="font-bold text-white tracking-[-0.04em]">Axiom</span>
@@ -32,7 +32,7 @@ export default async function DashboardLayout({
           </div>
         </div>
       </header>
-      <main className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">{children}</main>
+      <main className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">{children}</main>
     </div>
   );
 }

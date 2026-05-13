@@ -7,6 +7,8 @@ import {
   ShieldCheckIcon,
   BoltIcon,
   ArrowRightIcon,
+  CommandLineIcon,
+  CpuChipIcon,
 } from "@heroicons/react/24/outline";
 import { Reveal } from "@/components/motion/Reveal";
 import { Stagger } from "@/components/motion/Stagger";
@@ -46,16 +48,53 @@ export default function DashboardPage() {
     <>
       <Reveal direction="up" blur delay={0.05}>
         <div className="mb-8">
-          <h1 className="text-2xl font-bold text-white tracking-[-0.04em]">
-            Axiom <span className="text-gradient">Dashboard</span>
+          <div className="flex items-center gap-3 mb-3">
+            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_10px_rgba(52,211,153,0.6)]" />
+            <p className="text-[10px] font-semibold text-emerald-400 uppercase tracking-widest">
+              Live · Agent operational
+            </p>
+          </div>
+          <h1 className="text-3xl md:text-4xl font-bold text-white tracking-[-0.04em] mb-2">
+            Axiom <span className="text-gradient">Dashboard.</span>
           </h1>
-          <p className="text-zinc-400 mt-1">
-            Manage your cloud connections, view scan results, and run operations.
+          <p className="text-dim-paragraph text-base max-w-2xl leading-relaxed">
+            Manage your cloud connections, run scans, and review execution plans. <span className="dim-1">Every action is reversible. Every reasoning trace is auditable.</span>
           </p>
         </div>
       </Reveal>
 
-      <Stagger delay={0.1} interval={0.06} className="grid sm:grid-cols-3 gap-4 mb-8">
+      {/* Command Center spotlight */}
+      <Reveal direction="up" delay={0.08}>
+        <Link
+          href="/dashboard/command-center"
+          className="block mb-6 relative rounded-2xl border border-violet-500/15 bg-gradient-to-br from-violet-500/[0.05] via-transparent to-fuchsia-500/[0.03] p-6 hover:border-violet-500/30 transition-all group overflow-hidden"
+        >
+          <div className="absolute -top-10 -right-10 w-48 h-48 rounded-full bg-violet-500/[0.08] blur-[60px] pointer-events-none" aria-hidden />
+          <div className="absolute -bottom-10 -left-10 w-48 h-48 rounded-full bg-fuchsia-500/[0.05] blur-[60px] pointer-events-none" aria-hidden />
+          <div className="relative flex items-center justify-between gap-4 flex-wrap">
+            <div className="flex items-start gap-4">
+              <div className="w-11 h-11 rounded-xl bg-violet-500/10 border border-violet-500/20 flex items-center justify-center shrink-0">
+                <CpuChipIcon className="h-5 w-5 text-violet-400" />
+              </div>
+              <div>
+                <div className="flex items-center gap-2 mb-1">
+                  <p className="text-base font-bold text-white">Operational Command Center</p>
+                  <span className="text-[9px] font-semibold text-violet-400 bg-violet-500/15 border border-violet-500/30 rounded-full px-1.5 py-px uppercase tracking-wider">New</span>
+                </div>
+                <p className="text-sm text-zinc-400 leading-relaxed">
+                  Live activity feed, agent reasoning traces, and execution-plan inspection — all in one place.
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2 text-violet-400 font-semibold text-sm">
+              Open command center
+              <ArrowRightIcon className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+            </div>
+          </div>
+        </Link>
+      </Reveal>
+
+      <Stagger delay={0.1} interval={0.06} className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         <Link
           href="/operator/onboarding"
           className="glass-card card-hover animated-border card-inner-glow rounded-xl p-5 group"
@@ -98,6 +137,21 @@ export default function DashboardPage() {
           </div>
           <p className="text-xs text-zinc-500">
             Architecture analysis, Terraform generation, and deployment safety.
+          </p>
+        </Link>
+
+        <Link
+          href="/download"
+          className="glass-card card-hover animated-border card-inner-glow rounded-xl p-5 group"
+        >
+          <div className="flex items-center gap-3 mb-3">
+            <div className="w-9 h-9 rounded-lg bg-amber-500/10 flex items-center justify-center">
+              <CommandLineIcon className="h-5 w-5 text-amber-400" />
+            </div>
+            <h2 className="text-sm font-semibold text-white">Desktop Agent</h2>
+          </div>
+          <p className="text-xs text-zinc-500">
+            Install Axiom locally for secure workstation mode and background scans.
           </p>
         </Link>
       </Stagger>
