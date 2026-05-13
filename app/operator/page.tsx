@@ -208,9 +208,8 @@ export default function OperatorLandingPage() {
             </h1>
           </Reveal>
           <Reveal delay={0.2}>
-            <p className="mt-6 text-lg sm:text-xl text-zinc-400 max-w-2xl mx-auto leading-relaxed">
-              Axiom scans your AWS infrastructure, reasons about what to fix, generates
-              phased execution plans, and applies approved changes — with full governance and audit trail.
+            <p className="mt-6 text-lg sm:text-xl max-w-2xl mx-auto leading-relaxed text-dim-paragraph">
+              Axiom scans your AWS infrastructure, reasons about what to fix, <span className="dim-1">generates phased execution plans, and applies approved changes</span> <span className="dim-2">— with full governance and audit trail.</span>
             </p>
           </Reveal>
           <Reveal delay={0.3}>
@@ -307,10 +306,10 @@ export default function OperatorLandingPage() {
         <div className="absolute inset-0 bg-grid-mesh opacity-20 pointer-events-none" aria-hidden />
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <Reveal>
-            <div className="text-center mb-16">
-              <h2 className="text-4xl md:text-5xl font-extrabold tracking-[-0.04em]">How Axiom works.<br className="hidden sm:block" /><span className="text-zinc-500">Scan to execution in minutes.</span></h2>
-              <p className="mt-4 text-zinc-400 text-lg max-w-2xl mx-auto">
-                From first scan to approved execution plan in under 5 minutes.
+            <div className="mb-16">
+              <h2 className="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-[-0.04em]">How Axiom works.{" "}<span className="text-zinc-500">Scan to execution in minutes.</span></h2>
+              <p className="mt-4 text-dim-paragraph text-lg max-w-2xl leading-relaxed">
+                From first scan to approved execution plan <span className="dim-1">in under 5 minutes.</span>
               </p>
             </div>
           </Reveal>
@@ -338,10 +337,10 @@ export default function OperatorLandingPage() {
         <div className="absolute inset-0 bg-grid-mesh opacity-15 pointer-events-none" aria-hidden />
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <Reveal>
-            <div className="text-center mb-16">
-              <h2 className="text-4xl md:text-5xl font-extrabold tracking-[-0.04em]">Built for trust.<br className="hidden sm:block" /><span className="text-zinc-500">Every action is reversible.</span></h2>
-              <p className="mt-4 text-zinc-400 text-lg max-w-2xl mx-auto">
-                We never touch your infrastructure without your explicit approval. Every action is logged, every change is reversible.
+            <div className="mb-16">
+              <h2 className="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-[-0.04em]">Built for trust.{" "}<span className="text-zinc-500">Every action is reversible.</span></h2>
+              <p className="mt-4 text-dim-paragraph text-lg max-w-2xl leading-relaxed">
+                We never touch your infrastructure without your explicit approval. <span className="dim-1">Every action is logged, every change is reversible.</span>
               </p>
             </div>
           </Reveal>
@@ -390,10 +389,10 @@ export default function OperatorLandingPage() {
         <div className="absolute inset-0 bg-grid-mesh opacity-15 pointer-events-none" aria-hidden />
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <Reveal>
-            <div className="text-center mb-16">
-              <h2 className="text-4xl md:text-5xl font-extrabold tracking-[-0.04em]">Simple pricing.<br className="hidden sm:block" /><span className="text-zinc-500">Start free, scale when ready.</span></h2>
-              <p className="mt-4 text-zinc-400 text-lg">
-                Start with a free scan. Upgrade to the full autonomous agent when you&apos;re ready.
+            <div className="mb-16">
+              <h2 className="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-[-0.04em]">Simple pricing.{" "}<span className="text-zinc-500">Start free, scale when ready.</span></h2>
+              <p className="mt-4 text-dim-paragraph text-lg max-w-2xl leading-relaxed">
+                Start with a free scan. <span className="dim-1">Upgrade to the full autonomous agent when you&apos;re ready.</span>
               </p>
             </div>
           </Reveal>

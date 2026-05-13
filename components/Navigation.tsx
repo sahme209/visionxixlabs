@@ -204,13 +204,13 @@ export function Navigation() {
             <div className="w-px h-5 bg-white/[0.08] mx-2" aria-hidden />
             <Link
               href="/auth/signin"
-              className="px-4 py-2 text-zinc-400 hover:text-white rounded-lg transition-colors text-sm font-medium"
+              className="px-4 py-1.5 text-zinc-400 hover:text-white rounded-full border border-white/[0.1] hover:border-white/[0.2] transition-all text-sm font-medium uppercase tracking-wide"
             >
               Sign in
             </Link>
             <Link
               href="/operator/onboarding"
-              className="btn-huly inline-flex items-center gap-2 px-5 py-2.5 bg-white text-zinc-900 rounded-full text-sm font-semibold shadow-[0_0_20px_rgba(255,255,255,0.1)] hover:bg-zinc-100 transition-all ml-2"
+              className="btn-amber-shimmer inline-flex items-center gap-2 px-5 py-2 rounded-full text-sm font-semibold ml-2"
             >
               Start Free
               <ArrowRightIcon className="h-3.5 w-3.5" />
