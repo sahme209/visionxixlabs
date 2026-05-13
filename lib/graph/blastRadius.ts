@@ -12,7 +12,6 @@
 import type {
   InfrastructureGraph,
   GraphNode,
-  GraphEdge,
   GraphEdgeType,
 } from "@/lib/graph/infrastructureGraph";
 import {
@@ -265,7 +264,6 @@ export function aggregateReports(reports: BlastRadiusReport[]): BlastRadiusRepor
     safeNextAction: reports[0]?.safeNextAction ?? "Review individual reports for safe next action.",
     rollbackComplexity: reports.reduce((worst, r) => worseRollback(worst, r.rollbackComplexity), "trivial" as BlastRadiusReport["rollbackComplexity"]),
   };
-  void GraphEdge;
 }
 
 function uniqueByNodeId(nodes: GraphNode[]): GraphNode[] {
