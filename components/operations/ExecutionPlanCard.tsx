@@ -133,9 +133,9 @@ export function ExecutionPlanCard({ plan, className = "", onApprove }: Execution
       <div className="flex border-b border-white/[0.06] bg-white/[0.01]">
         {([
           { id: "phases", label: "Phases", count: data.phases.length },
-          { id: "terraform", label: "Terraform" },
+          { id: "terraform", label: "Terraform", count: undefined },
           { id: "resources", label: "Resources", count: data.affectedResources.length },
-          { id: "safety", label: "Safety" },
+          { id: "safety", label: "Safety", count: undefined },
         ] as const).map((t) => (
           <button
             key={t.id}
