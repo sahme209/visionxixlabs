@@ -12,7 +12,10 @@ import {
   ArrowsPointingOutIcon,
   ClockIcon,
   ArrowPathIcon,
+  SparklesIcon,
 } from "@heroicons/react/24/outline";
+import { resolveNextAction } from "@/lib/product/nextAction";
+import { useDesktopRuntime } from "@/lib/desktop/useDesktopRuntime";
 import { Reveal } from "@/components/motion/Reveal";
 import { Stagger } from "@/components/motion/Stagger";
 
@@ -49,6 +52,7 @@ export default function DashboardPage() {
 
   return (
     <>
+      <NextActionBanner connectedClouds={connected.length} />
       <Reveal direction="up" blur delay={0.05}>
         <div className="mb-8">
           <div className="flex items-center gap-3 mb-3">
@@ -286,5 +290,55 @@ export default function DashboardPage() {
         </div>
       </Reveal>
     </>
+  );
+}
+
+function NextActionBanner({ connectedClouds }: { connectedClouds: number }) {
+  const { isDesktop } = useDesktopRuntime();
+  const action = resolveNextAction({
+    connectedClouds,
+    primaryLifecycle: connectedClouds > 0 ? "lifecycle.idle" : undefined,
+    pendingApprovals: 0,
+    readyPlans: 0,
+    releaseopsConnected: false,
+    releaseopsServicesAtRisk: 0,
+    desktopAvailable: isDesktop,
+    hasRunScan: connectedClouds > 0,
+    isAuthenticated: true,
+  });
+
+  const severityClass =
+    action.severity === "critical" ? "border-red-500/20 bg-red-500/[0.04]" :
+    action.severity === "warning" ? "border-amber-500/20 bg-amber-500/[0.04]" :
+    action.severity === "success" ? "border-emerald-500/20 bg-emerald-500/[0.04]" :
+    "border-violet-500/20 bg-violet-500/[0.04]";
+
+  return (
+    <Reveal direction="up">
+      <Link
+        href={action.cta.href}
+        className={`mb-6 block rounded-2xl border ${severityClass} p-5 hover:border-white/[0.18] transition-all group relative overflow-hidden`}
+      >
+        <div className="absolute -top-10 -right-10 w-32 h-32 rounded-full bg-violet-500/[0.06] blur-[40px] pointer-events-none" aria-hidden />
+        <div className="relative flex items-center justify-between gap-4 flex-wrap">
+          <div className="flex items-start gap-3 flex-1 min-w-0">
+            <div className="w-10 h-10 rounded-xl bg-white/[0.04] border border-white/[0.08] flex items-center justify-center shrink-0">
+              <SparklesIcon className="h-5 w-5 text-violet-400" />
+            </div>
+            <div className="min-w-0">
+              <p className="text-[10px] font-semibold text-violet-400 uppercase tracking-widest mb-0.5">
+                Next best action
+              </p>
+              <p className="text-sm font-bold text-white mb-0.5">{action.cta.label}</p>
+              <p className="text-xs text-zinc-400 leading-relaxed">{action.reason}</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2 text-violet-300 font-semibold text-sm shrink-0">
+            Go
+            <ArrowRightIcon className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+          </div>
+        </div>
+      </Link>
+    </Reveal>
   );
 }
