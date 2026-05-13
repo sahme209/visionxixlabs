@@ -356,6 +356,40 @@ function ApprovalDetailPanel({ approval }: { approval: DemoApproval }) {
         </div>
       </div>
 
+      {/* Blast radius — graph intelligence */}
+      <div className="px-6 py-4 border-b border-white/[0.06]">
+        <p className="text-[10px] font-semibold text-zinc-500 uppercase tracking-widest mb-3">Blast radius · graph analysis</p>
+        <div className={`rounded-xl border p-4 ${
+          approval.blastRadius === "broad" ? "border-red-500/15 bg-red-500/[0.03]" :
+          approval.blastRadius === "moderate" ? "border-amber-500/15 bg-amber-500/[0.03]" :
+          "border-emerald-500/15 bg-emerald-500/[0.03]"
+        }`}>
+          <div className="flex items-center justify-between gap-3 mb-3 flex-wrap">
+            <div className="flex items-center gap-2">
+              <span className={`text-sm font-bold uppercase tracking-wider ${
+                approval.blastRadius === "broad" ? "text-red-400" :
+                approval.blastRadius === "moderate" ? "text-amber-400" :
+                "text-emerald-400"
+              }`}>
+                {approval.blastRadius} blast radius
+              </span>
+              <span className="text-[10px] text-zinc-500 font-mono">{approval.resources} direct · 2 indirect dependencies</span>
+            </div>
+          </div>
+          <p className="text-xs text-zinc-400 leading-relaxed mb-2">
+            {approval.environment === "production"
+              ? `Change reaches ${approval.resources} production resource${approval.resources !== 1 ? "s" : ""} and 2 dependent nodes through the dependency graph.`
+              : `Change is scoped to ${approval.resources} ${approval.environment} resource${approval.resources !== 1 ? "s" : ""} with shallow dependency depth.`}
+          </p>
+          <div className="flex items-center gap-x-3 gap-y-1 text-[10px] text-zinc-500 flex-wrap">
+            <span>·</span>
+            <span>Provider: {approval.provider.toUpperCase()}</span>
+            <span>·</span>
+            <span>Rollback complexity: {approval.rollbackVerified ? "trivial · pre-flight ready" : "complex · unverified"}</span>
+          </div>
+        </div>
+      </div>
+
       {/* Plan artifacts */}
       <div className="px-6 py-4 border-b border-white/[0.06]">
         <p className="text-[10px] font-semibold text-zinc-500 uppercase tracking-widest mb-3">Plan artifacts</p>
