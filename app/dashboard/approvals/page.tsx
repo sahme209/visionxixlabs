@@ -256,7 +256,8 @@ export default function ApprovalsPage() {
       {/* Main grid — queue on left, detail on right */}
       <div className="grid lg:grid-cols-5 gap-5">
         {/* Queue list */}
-        <Reveal direction="up" delay={0.1} className="lg:col-span-2">
+        <div className="lg:col-span-2">
+        <Reveal direction="up" delay={0.1}>
           <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] overflow-hidden">
             <div className="px-5 py-3 border-b border-white/[0.06] bg-white/[0.01] flex items-center justify-between">
               <h3 className="text-sm font-semibold text-white">{filtered.length} approvals</h3>
@@ -303,15 +304,18 @@ export default function ApprovalsPage() {
             </div>
           </div>
         </Reveal>
+        </div>
 
         {/* Detail panel */}
-        <Reveal direction="up" delay={0.14} className="lg:col-span-3">
+        <div className="lg:col-span-3">
+        <Reveal direction="up" delay={0.14}>
           {active ? <ApprovalDetailPanel approval={active} /> : (
             <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-10 text-center">
               <p className="text-sm text-zinc-500">Select an approval from the queue to see the full plan.</p>
             </div>
           )}
         </Reveal>
+        </div>
       </div>
     </div>
   );
