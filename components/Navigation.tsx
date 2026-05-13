@@ -23,8 +23,8 @@ import { AnimatePresence, motion } from "framer-motion";
 const productDropdown = [
   { href: "/axiom", label: "Axiom Agent", desc: "Autonomous cloud operations", icon: CpuChipIcon },
   { href: "/operator/onboarding", label: "Cloud Operator", desc: "Connect and scan your cloud", icon: CloudIcon },
-  { href: "/cloud-solutions", label: "Multi-Cloud", desc: "AWS · Azure · GCP intelligence", icon: SparklesIcon },
-  { href: "/services", label: "Services", desc: "Cloud and AI consulting", icon: CogIcon },
+  { href: "/download", label: "Desktop App", desc: "macOS, Windows, Linux command center", icon: SparklesIcon },
+  { href: "/cloud-solutions", label: "Multi-Cloud", desc: "AWS · Azure · GCP intelligence", icon: CogIcon },
 ];
 
 const resourcesDropdown = [
@@ -182,6 +182,12 @@ export function Navigation() {
               className="nav-link-underline relative px-4 py-2 text-zinc-400 hover:text-white rounded-lg transition-colors text-sm font-medium"
             >
               Pricing
+            </Link>
+            <Link
+              href="/download"
+              className="nav-link-underline relative px-4 py-2 text-zinc-400 hover:text-white rounded-lg transition-colors text-sm font-medium"
+            >
+              Download
             </Link>
             <Link
               href="/contact"

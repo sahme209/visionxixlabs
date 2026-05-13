@@ -445,16 +445,16 @@ export default function Home() {
                 allActive: true,
               },
               {
-                name: "Microsoft Azure", shortName: "Azure", statusLabel: "Expanding", statusColor: "bg-blue-400",
+                name: "Microsoft Azure", shortName: "Azure", statusLabel: "Scan Active · Reasoning Q2", statusColor: "bg-blue-400",
                 textAccent: "text-blue-400", bgAccent: "bg-blue-500/10", borderAccent: "border-blue-500/20",
-                desc: "Scan and analysis active. Signal derivation and reasoning in development.",
+                desc: "Service Principal connector live · VM, Storage, Network discovery · Signal derivation rolling out Q2 2026.",
                 capabilities: ["Scan", "Snapshot", "Signals", "Reasoning", "Execution", "Terraform", "Audit", "Monitoring"],
                 allActive: false,
               },
               {
-                name: "Google Cloud", shortName: "GCP", statusLabel: "Expanding", statusColor: "bg-red-400",
+                name: "Google Cloud", shortName: "GCP", statusLabel: "Scan Active · Reasoning Q3", statusColor: "bg-red-400",
                 textAccent: "text-red-400", bgAccent: "bg-red-500/10", borderAccent: "border-red-500/20",
-                desc: "Scan and analysis active. Signal derivation and reasoning in development.",
+                desc: "Service Account connector live · Compute, Storage, IAM discovery · Reasoning loop rolling out Q3 2026.",
                 capabilities: ["Scan", "Snapshot", "Signals", "Reasoning", "Execution", "Terraform", "Audit", "Monitoring"],
                 allActive: false,
               },
@@ -741,8 +741,9 @@ export default function Home() {
         <div className="max-w-5xl mx-auto">
           <Reveal direction="up" blur>
             <div className="mb-12">
-              <span className="huly-badge text-violet-400 border-violet-500/20 mb-4 inline-block text-xs px-3 py-1">
-                Coming Soon
+              <span className="badge-shimmer badge-shimmer-border inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 text-xs font-medium mb-4 backdrop-blur-sm">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                Preview Build · Available Now
               </span>
               <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-4 tracking-[-0.04em]">
                 Axiom on your{" "}
@@ -787,13 +788,21 @@ export default function Home() {
                 <p className="text-zinc-500 text-sm mb-5 max-w-md mx-auto">
                   Built with Tauri for minimal footprint, native performance, and enterprise-grade security. Your infrastructure data never leaves your machine.
                 </p>
-                <Link
-                  href="/contact"
-                  className="inline-flex items-center gap-2 px-6 py-2.5 border border-violet-500/25 text-violet-300 rounded-full text-sm font-medium hover:bg-violet-500/10 transition-all duration-200"
-                >
-                  Request early access
-                  <ArrowRightIcon className="h-3.5 w-3.5" />
-                </Link>
+                <div className="flex flex-wrap items-center justify-center gap-3">
+                  <Link
+                    href="/download"
+                    className="btn-amber-shimmer inline-flex items-center gap-2 px-6 py-2.5 rounded-full text-sm font-semibold"
+                  >
+                    Download Axiom Agent
+                    <ArrowRightIcon className="h-3.5 w-3.5" />
+                  </Link>
+                  <Link
+                    href="/download"
+                    className="inline-flex items-center gap-2 px-5 py-2.5 border border-white/[0.12] text-zinc-300 rounded-full text-sm font-medium hover:bg-white/5 hover:border-white/20 transition-all duration-200"
+                  >
+                    View all platforms
+                  </Link>
+                </div>
               </div>
             </div>
           </Reveal>
