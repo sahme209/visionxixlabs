@@ -20,6 +20,7 @@ import { Stagger } from "@/components/motion/Stagger";
 import { ActivityFeed } from "@/components/operations/ActivityFeed";
 import { ReasoningTrace } from "@/components/operations/ReasoningTrace";
 import { ExecutionPlanCard } from "@/components/operations/ExecutionPlanCard";
+import { InfrastructureTopology } from "@/components/operations/InfrastructureTopology";
 
 interface KpiTile {
   label: string;
@@ -234,6 +235,13 @@ export default function CommandCenterPage() {
         })}
       </Stagger>
 
+      {/* Full-width topology row */}
+      <Reveal direction="up" delay={0.08}>
+        <div className="mb-6">
+          <InfrastructureTopology />
+        </div>
+      </Reveal>
+
       {/* Main grid: feed on left, sidebars on right */}
       <div className="grid lg:grid-cols-3 gap-5 mb-6">
         {/* Left: Activity Feed (2 cols) */}
@@ -356,8 +364,9 @@ export default function CommandCenterPage() {
               <div className="space-y-1.5">
                 {[
                   { href: "/operator/onboarding", icon: CloudIcon, label: "Run new scan" },
+                  { href: "/dashboard/topology", icon: EyeIcon, label: "View topology" },
+                  { href: "/dashboard/memory", icon: CpuChipIcon, label: "Operational memory" },
                   { href: "/dashboard/resilience", icon: ChartBarIcon, label: "Architecture analysis" },
-                  { href: "/axiom/operations", icon: EyeIcon, label: "View all operations" },
                   { href: "/download", icon: CpuChipIcon, label: "Install desktop agent" },
                 ].map((action) => {
                   const Icon = action.icon;

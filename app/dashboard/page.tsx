@@ -9,6 +9,8 @@ import {
   ArrowRightIcon,
   CommandLineIcon,
   CpuChipIcon,
+  ArrowsPointingOutIcon,
+  ClockIcon,
 } from "@heroicons/react/24/outline";
 import { Reveal } from "@/components/motion/Reveal";
 import { Stagger } from "@/components/motion/Stagger";
@@ -94,7 +96,7 @@ export default function DashboardPage() {
         </Link>
       </Reveal>
 
-      <Stagger delay={0.1} interval={0.06} className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+      <Stagger delay={0.1} interval={0.06} className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
         <Link
           href="/operator/onboarding"
           className="glass-card card-hover animated-border card-inner-glow rounded-xl p-5 group"
@@ -107,6 +109,36 @@ export default function DashboardPage() {
           </div>
           <p className="text-xs text-zinc-500">
             Link your AWS, Azure, or GCP account with a read-only IAM role.
+          </p>
+        </Link>
+
+        <Link
+          href="/dashboard/topology"
+          className="glass-card card-hover animated-border card-inner-glow rounded-xl p-5 group"
+        >
+          <div className="flex items-center gap-3 mb-3">
+            <div className="w-9 h-9 rounded-lg bg-blue-500/10 flex items-center justify-center">
+              <ArrowsPointingOutIcon className="h-5 w-5 text-blue-400" />
+            </div>
+            <h2 className="text-sm font-semibold text-white">Topology</h2>
+          </div>
+          <p className="text-xs text-zinc-500">
+            Live map of every provider, region, and resource Axiom is operating.
+          </p>
+        </Link>
+
+        <Link
+          href="/dashboard/memory"
+          className="glass-card card-hover animated-border card-inner-glow rounded-xl p-5 group"
+        >
+          <div className="flex items-center gap-3 mb-3">
+            <div className="w-9 h-9 rounded-lg bg-violet-500/10 flex items-center justify-center">
+              <ClockIcon className="h-5 w-5 text-violet-400" />
+            </div>
+            <h2 className="text-sm font-semibold text-white">Memory</h2>
+          </div>
+          <p className="text-xs text-zinc-500">
+            90-day operational history · scans · plans · approvals · confidence shifts.
           </p>
         </Link>
 
