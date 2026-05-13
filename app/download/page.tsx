@@ -185,6 +185,16 @@ export default function DownloadPage() {
             </div>
           </Reveal>
 
+          {/* Doc link */}
+          <Reveal direction="up" delay={0.18}>
+            <p className="text-center text-xs text-zinc-500 mb-6">
+              First time? Read the{" "}
+              <Link href="/docs/desktop-install" className="text-violet-300 hover:text-violet-200 underline underline-offset-4">install guide</Link>
+              {" "}or the{" "}
+              <Link href="/docs/desktop-architecture" className="text-violet-300 hover:text-violet-200 underline underline-offset-4">architecture overview</Link>.
+            </p>
+          </Reveal>
+
           {/* Secondary platform links */}
           <Reveal direction="up" delay={0.2}>
             <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-3 text-sm">

@@ -374,6 +374,31 @@ export default function ReleaseOpsCommandCenterPage() {
               </p>
             </div>
           </Reveal>
+
+          {/* Documentation links */}
+          <Reveal direction="up" delay={0.26}>
+            <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-4">
+              <p className="text-[10px] font-semibold text-zinc-500 uppercase tracking-widest mb-3">Learn ReleaseOps</p>
+              <div className="space-y-1">
+                {[
+                  { href: "/docs/releaseops", label: "ReleaseOps overview" },
+                  { href: "/docs/releaseops/connectors", label: "CI/CD connectors" },
+                  { href: "/docs/releaseops/readiness", label: "Readiness scoring" },
+                  { href: "/docs/approval-workflow", label: "Approval workflow" },
+                  { href: "/docs/security-model", label: "Security model" },
+                ].map((doc) => (
+                  <Link
+                    key={doc.href}
+                    href={doc.href}
+                    className="flex items-center justify-between rounded-lg px-3 py-1.5 hover:bg-white/[0.04] transition-colors group"
+                  >
+                    <span className="text-[11px] text-zinc-400 group-hover:text-white transition-colors">{doc.label}</span>
+                    <ArrowRightIcon className="h-3 w-3 text-zinc-700 group-hover:text-zinc-400 group-hover:translate-x-0.5 transition-all" />
+                  </Link>
+                ))}
+              </div>
+            </div>
+          </Reveal>
         </div>
       </div>
 

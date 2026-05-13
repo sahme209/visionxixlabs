@@ -71,28 +71,28 @@ const TOPIC_GROUPS = [
     title: "Operate",
     icon: CpuChipIcon,
     items: [
-      { href: "/docs/scanning", label: "Infrastructure scanning", available: false },
-      { href: "/docs/approval-workflow", label: "Approval workflow", available: false },
-      { href: "/docs/execution-plans", label: "Execution plans", available: false },
-      { href: "/docs/terraform-export", label: "Terraform & CLI export", available: false },
-      { href: "/docs/rollback", label: "Rollback strategy", available: false },
+      { href: "/docs/scanning", label: "Infrastructure scanning", available: true },
+      { href: "/docs/approval-workflow", label: "Approval workflow", available: true },
+      { href: "/docs/execution-plans", label: "Execution plans", available: true },
+      { href: "/docs/terraform-export", label: "Terraform & CLI export", available: true },
+      { href: "/docs/rollback", label: "Rollback strategy", available: true },
     ],
   },
   {
     title: "ReleaseOps",
     icon: ShieldCheckIcon,
     items: [
-      { href: "/docs/releaseops", label: "ReleaseOps overview", available: false },
-      { href: "/docs/releaseops/connectors", label: "CI/CD connectors", available: false },
-      { href: "/docs/releaseops/readiness", label: "Readiness scoring", available: false },
+      { href: "/docs/releaseops", label: "ReleaseOps overview", available: true },
+      { href: "/docs/releaseops/connectors", label: "CI/CD connectors", available: true },
+      { href: "/docs/releaseops/readiness", label: "Readiness scoring", available: true },
     ],
   },
   {
     title: "Desktop",
     icon: CommandLineIcon,
     items: [
-      { href: "/docs/desktop-install", label: "Install the desktop app", available: false },
-      { href: "/docs/desktop-architecture", label: "Desktop architecture", available: false },
+      { href: "/docs/desktop-install", label: "Install the desktop app", available: true },
+      { href: "/docs/desktop-architecture", label: "Desktop architecture", available: true },
     ],
   },
   {

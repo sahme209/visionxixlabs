@@ -49,26 +49,26 @@ export const DOC_SECTIONS: DocSection[] = [
   {
     title: "Operate",
     items: [
-      { href: "/docs/scanning", label: "Infrastructure scanning", icon: CpuChipIcon, status: "coming-soon" },
-      { href: "/docs/approval-workflow", label: "Approval workflow", icon: LockClosedIcon, status: "coming-soon" },
-      { href: "/docs/execution-plans", label: "Execution plans", icon: PuzzlePieceIcon, status: "coming-soon" },
-      { href: "/docs/terraform-export", label: "Terraform & CLI export", icon: CommandLineIcon, status: "coming-soon" },
-      { href: "/docs/rollback", label: "Rollback strategy", icon: WrenchScrewdriverIcon, status: "coming-soon" },
+      { href: "/docs/scanning", label: "Infrastructure scanning", icon: CpuChipIcon },
+      { href: "/docs/approval-workflow", label: "Approval workflow", icon: LockClosedIcon },
+      { href: "/docs/execution-plans", label: "Execution plans", icon: PuzzlePieceIcon },
+      { href: "/docs/terraform-export", label: "Terraform & CLI export", icon: CommandLineIcon },
+      { href: "/docs/rollback", label: "Rollback strategy", icon: WrenchScrewdriverIcon },
     ],
   },
   {
     title: "ReleaseOps",
     items: [
-      { href: "/docs/releaseops", label: "ReleaseOps overview", icon: ShieldCheckIcon, status: "coming-soon" },
-      { href: "/docs/releaseops/connectors", label: "CI/CD connectors", icon: PuzzlePieceIcon, status: "coming-soon" },
-      { href: "/docs/releaseops/readiness", label: "Readiness scoring", icon: ShieldCheckIcon, status: "coming-soon" },
+      { href: "/docs/releaseops", label: "ReleaseOps overview", icon: ShieldCheckIcon },
+      { href: "/docs/releaseops/connectors", label: "CI/CD connectors", icon: PuzzlePieceIcon },
+      { href: "/docs/releaseops/readiness", label: "Readiness scoring", icon: ShieldCheckIcon },
     ],
   },
   {
     title: "Desktop",
     items: [
-      { href: "/docs/desktop-install", label: "Install the desktop app", icon: CommandLineIcon, status: "coming-soon" },
-      { href: "/docs/desktop-architecture", label: "Desktop architecture", icon: MapIcon, status: "coming-soon" },
+      { href: "/docs/desktop-install", label: "Install the desktop app", icon: CommandLineIcon },
+      { href: "/docs/desktop-architecture", label: "Desktop architecture", icon: MapIcon },
     ],
   },
   {

@@ -416,6 +416,33 @@ export default function CommandCenterPage() {
               </div>
             </div>
           </Reveal>
+
+          {/* Documentation links */}
+          <Reveal direction="up" delay={0.3}>
+            <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-4">
+              <div className="flex items-center gap-2 mb-3">
+                <span className="text-[10px] font-semibold text-zinc-500 uppercase tracking-widest">Learn how this works</span>
+              </div>
+              <div className="space-y-1">
+                {[
+                  { href: "/docs/scanning", label: "How scans work" },
+                  { href: "/docs/approval-workflow", label: "Approval workflow" },
+                  { href: "/docs/execution-plans", label: "Execution plans" },
+                  { href: "/docs/rollback", label: "Rollback strategy" },
+                  { href: "/docs/security-model", label: "Security model" },
+                ].map((doc) => (
+                  <Link
+                    key={doc.href}
+                    href={doc.href}
+                    className="flex items-center justify-between rounded-lg px-3 py-1.5 hover:bg-white/[0.04] transition-colors group"
+                  >
+                    <span className="text-[11px] text-zinc-400 group-hover:text-white transition-colors">{doc.label}</span>
+                    <ArrowRightIcon className="h-3 w-3 text-zinc-700 group-hover:text-zinc-400 group-hover:translate-x-0.5 transition-all" />
+                  </Link>
+                ))}
+              </div>
+            </div>
+          </Reveal>
         </div>
       </div>
     </div>
