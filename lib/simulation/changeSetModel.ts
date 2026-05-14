@@ -149,6 +149,20 @@ export function changeSetMaxRisk(changeSet: ChangeSet): DigitalTwinRiskLevel {
   return max;
 }
 
+/** Returns the canonical action type for a remediation category. */
+function pickActionType(category: RemediationCandidate["category"]): ChangeActionType {
+  switch (category) {
+    case "security_hardening":         return "restrict";
+    case "configuration_change":       return "update";
+    case "cost_optimization":          return "update";
+    case "reliability_improvement":    return "enable";
+    case "pipeline_governance":        return "enable";
+    case "desktop_review":             return "review_only";
+    case "documentation_only":         return "review_only";
+    case "manual_external_required":   return "review_only";
+  }
+}
+
 /**
  * Compose a ChangeSet from a remediation candidate. The simulator can
  * later replace the synthetic before/after blocks with twin-derived data.
@@ -160,15 +174,7 @@ export function changeSetFromCandidate(candidate: RemediationCandidate, targetRe
     : {};
   const after: ChangeAction["after"] = { ...before, axiomRemediation: candidate.connector };
 
-  const actionType: ChangeActionType =
-    candidate.category === "security_hardening"   ? "restrict" :
-    candidate.category === "configuration_change" ? "update"   :
-    candidate.category === "cost_optimization"    ? "update"   :
-    candidate.category === "reliability_improvement" ? "enable" :
-    candidate.category === "pipeline_governance"  ? "enable"   :
-    candidate.category === "desktop_review"       ? "review_only" :
-    candidate.category === "documentation_only"   ? "review_only" :
-                                                     "review_only";
+  const actionType: ChangeActionType = pickActionType(candidate.category);
 
   const action = newChangeAction({
     actionType,
@@ -182,6 +188,10 @@ export function changeSetFromCandidate(candidate: RemediationCandidate, targetRe
     notes: [candidate.impactSummary].filter(Boolean),
   });
 
+  const addedSet:    ChangeActionType[] = ["create"];
+  const modifiedSet: ChangeActionType[] = ["update", "restrict", "enable", "disable", "attach", "detach", "expand"];
+  const removedSet:  ChangeActionType[] = ["delete"];
+
   return {
     id: `cs.${candidate.id}`,
     tenantId: candidate.tenantId,
@@ -193,9 +203,9 @@ export function changeSetFromCandidate(candidate: RemediationCandidate, targetRe
     description: candidate.description,
     proposedActions: [action],
     affectedResources: [targetId],
-    addedResources: actionType === "create" ? [targetId] : [],
-    modifiedResources: actionType === "update" || actionType === "restrict" || actionType === "enable" || actionType === "disable" ? [targetId] : [],
-    removedResources: actionType === "delete" ? [targetId] : [],
+    addedResources:    addedSet.includes(actionType)    ? [targetId] : [],
+    modifiedResources: modifiedSet.includes(actionType) ? [targetId] : [],
+    removedResources:  removedSet.includes(actionType)  ? [targetId] : [],
     policyDecisions: [candidate.policyDecision],
     approvalRequirements: [candidate.approvalRequirement],
     rollbackPlanId: `rb.${candidate.id}`,
