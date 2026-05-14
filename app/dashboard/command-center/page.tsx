@@ -17,13 +17,14 @@ import {
 } from "@heroicons/react/24/outline";
 import { Reveal } from "@/components/motion/Reveal";
 import { Stagger } from "@/components/motion/Stagger";
-import { ShieldCheckIcon, SignalIcon } from "@heroicons/react/24/outline";
+import { ShieldCheckIcon, SignalIcon, ChartBarSquareIcon } from "@heroicons/react/24/outline";
 import { ActivityFeed } from "@/components/operations/ActivityFeed";
 import { ReasoningTrace } from "@/components/operations/ReasoningTrace";
 import { ExecutionPlanCard } from "@/components/operations/ExecutionPlanCard";
 import { InfrastructureTopology } from "@/components/operations/InfrastructureTopology";
 import { buildSecurityPosture } from "@/lib/security/securityPosture";
 import { buildReliabilityPosture } from "@/lib/reliability/reliabilityPosture";
+import { buildObservabilityPosture } from "@/lib/observability/observabilityPosture";
 
 interface KpiTile {
   label: string;
@@ -238,11 +239,12 @@ export default function CommandCenterPage() {
         })}
       </Stagger>
 
-      {/* Security + Reliability strips — canonical posture aggregators */}
+      {/* Security + Reliability + Observability strips — canonical posture aggregators */}
       <Reveal direction="up" delay={0.055}>
-        <div className="grid md:grid-cols-2 gap-3 mb-6">
+        <div className="grid md:grid-cols-3 gap-3 mb-6">
           <SecurityPostureStrip />
           <ReliabilityPostureStrip />
+          <ObservabilityPostureStrip />
         </div>
       </Reveal>
 
@@ -625,6 +627,55 @@ function ReliabilityPostureStrip() {
             <Stat label="DLQ" value={`${posture.unresolvedDeadLetters.length}`} />
           </div>
           <ArrowRightIcon className="h-4 w-4 text-zinc-500 group-hover:text-cyan-300 group-hover:translate-x-0.5 transition-all" />
+        </div>
+      </div>
+    </Link>
+  );
+}
+
+function ObservabilityPostureStrip() {
+  const posture = buildObservabilityPosture({
+    source: "preview",
+    traces24h: 287,
+    auditRecords24h: 612,
+    bundlesExported30d: 4,
+    loggerActive: true,
+    auditStoreConfigured: true,
+    copilotAuditActive: true,
+  });
+  const errors = posture.checks.filter((c) => c.semantic === "error").length;
+  const warnings = posture.checks.filter((c) => c.semantic === "warning").length;
+  const tone =
+    errors > 0   ? "border-red-500/15 bg-red-500/[0.03]"     :
+    warnings > 0 ? "border-amber-500/15 bg-amber-500/[0.03]" :
+                   "border-violet-500/15 bg-violet-500/[0.03]";
+  const headlineCheck =
+    posture.checks.find((c) => c.semantic === "error") ??
+    posture.checks.find((c) => c.semantic === "warning") ??
+    posture.checks[0];
+  return (
+    <Link href="/dashboard/traces" className={`block rounded-2xl border ${tone} p-5 hover:border-violet-500/30 transition-colors group`}>
+      <div className="flex items-center justify-between gap-4 flex-wrap">
+        <div className="flex items-center gap-3 min-w-0">
+          <div className="w-10 h-10 rounded-lg bg-violet-500/10 border border-violet-500/20 flex items-center justify-center shrink-0">
+            <ChartBarSquareIcon className="h-5 w-5 text-violet-400" />
+          </div>
+          <div className="min-w-0">
+            <div className="flex items-center gap-2 mb-1">
+              <p className="text-[10px] font-semibold text-violet-400 uppercase tracking-widest">Observability</p>
+              <span className="text-[9px] font-semibold text-amber-400 bg-amber-500/15 border border-amber-500/30 rounded-full px-1.5 py-px uppercase tracking-wider">Preview</span>
+            </div>
+            <p className="text-sm font-semibold text-white">Every action traceable · {headlineCheck?.label}</p>
+            <p className="text-[11px] text-zinc-500 mt-0.5 leading-relaxed">{headlineCheck?.detail}</p>
+          </div>
+        </div>
+        <div className="flex items-center gap-4">
+          <div className="hidden sm:flex items-center gap-3">
+            <Stat label="Traces" value="287" />
+            <Stat label="Audit" value="612" />
+            <Stat label="Bundles" value="4" />
+          </div>
+          <ArrowRightIcon className="h-4 w-4 text-zinc-500 group-hover:text-violet-300 group-hover:translate-x-0.5 transition-all" />
         </div>
       </div>
     </Link>
