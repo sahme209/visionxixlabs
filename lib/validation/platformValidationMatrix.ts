@@ -108,6 +108,33 @@ export const VALIDATION_MATRIX: ValidationRow[] = [
   { id: "sim.api_twin_build",       area: "command_center",   capability: "POST /api/digital-twin/build",                         status: "passing", evidence: "app/api/digital-twin/build/route.ts" },
   { id: "sim.api_twin_current",     area: "command_center",   capability: "GET  /api/digital-twin/current (not persisted yet)",   status: "partial", evidence: "app/api/digital-twin/current/route.ts", nextFix: "Persist twins in Prisma so /current can return the latest stored one." },
   { id: "sim.center_ui",            area: "command_center",   capability: "/dashboard/simulations Center UI",                     status: "passing", evidence: "app/dashboard/simulations/page.tsx" },
+
+  // Governed execution orchestration + approval operating system
+  { id: "orc.model",                area: "command_center",   capability: "ExecutionOrchestration model + status / stage taxonomy", status: "passing", evidence: "lib/execution/orchestrationModel.ts" },
+  { id: "orc.state_machine",        area: "command_center",   capability: "Orchestration state machine w/ refs + flag gates",       status: "passing", evidence: "lib/execution/executionStateMachine.ts" },
+  { id: "orc.approval_model",       area: "command_center",   capability: "Typed ApprovalRequest model + TTL by risk",              status: "passing", evidence: "lib/approvals/approvalModel.ts" },
+  { id: "orc.approval_policy",      area: "command_center",   capability: "Approval policy (10 strict rules) → role + quorum",      status: "passing", evidence: "lib/approvals/approvalPolicy.ts" },
+  { id: "orc.approval_engine",      area: "command_center",   capability: "Approval engine (in-memory; Prisma swap-in ready)",      status: "preview", evidence: "lib/approvals/approvalEngine.ts", nextFix: "Persist approvals in Prisma (alongside lib/axiom/approvalCenter.ts plan-item store)." },
+  { id: "orc.preflight",            area: "command_center",   capability: "Preflight engine (15 typed checks)",                     status: "passing", evidence: "lib/execution/preflightEngine.ts" },
+  { id: "orc.locks",                area: "command_center",   capability: "Execution locks (in-memory; conflict-aware)",            status: "preview", evidence: "lib/execution/executionLocks.ts", nextFix: "Swap lock store to Prisma with row-level lock semantics." },
+  { id: "orc.idempotency",          area: "command_center",   capability: "Idempotency store (in-memory; replay-aware)",            status: "preview", evidence: "lib/execution/executionIdempotency.ts", nextFix: "Swap idempotency store to Prisma." },
+  { id: "orc.adapter_interface",    area: "command_center",   capability: "ExecutionAdapter interface + precheck",                  status: "passing", evidence: "lib/execution/executionAdapter.ts" },
+  { id: "orc.preview_adapter",      area: "command_center",   capability: "PreviewExecutionAdapter (no-op)",                        status: "passing", evidence: "lib/execution/executionAdapter.ts" },
+  { id: "orc.aws_adapter",          area: "aws",              capability: "AWS execution adapter skeleton (no execute)",            status: "preview", evidence: "lib/execution/executionAdapter.ts", nextFix: "Wire @aws-sdk for restrict / encrypt / tag operations behind feature flag." },
+  { id: "orc.azure_adapter",        area: "azure",            capability: "Azure execution adapter skeleton",                       status: "preview", evidence: "lib/execution/executionAdapter.ts" },
+  { id: "orc.gcp_adapter",          area: "gcp",              capability: "GCP execution adapter skeleton",                         status: "preview", evidence: "lib/execution/executionAdapter.ts" },
+  { id: "orc.github_adapter",       area: "github",           capability: "GitHub ReleaseOps execution adapter skeleton",           status: "preview", evidence: "lib/execution/executionAdapter.ts" },
+  { id: "orc.desktop_adapter",      area: "desktop",          capability: "Desktop review adapter (execute intentionally blocked)", status: "passing", evidence: "lib/execution/executionAdapter.ts" },
+  { id: "orc.terraform_boundary",   area: "command_center",   capability: "Terraform plan / apply boundary (apply disabled)",      status: "passing", evidence: "lib/execution/terraformBoundary.ts" },
+  { id: "orc.release_orchestrator", area: "release",          capability: "Release approval orchestrator (blocker → approval)",     status: "passing", evidence: "lib/releaseops/releaseApprovalOrchestrator.ts" },
+  { id: "orc.security_orchestrator",area: "security_scanner", capability: "Security approval orchestrator (finding → approval)",    status: "passing", evidence: "lib/securityScanner/securityApprovalOrchestrator.ts" },
+  { id: "orc.api_orchestration",    area: "command_center",   capability: "GET /api/orchestration",                                  status: "passing", evidence: "app/api/orchestration/route.ts" },
+  { id: "orc.api_preflight",        area: "command_center",   capability: "POST /api/orchestration/preflight",                       status: "passing", evidence: "app/api/orchestration/preflight/route.ts" },
+  { id: "orc.api_approvals",        area: "command_center",   capability: "GET / POST /api/orchestration/approvals",                 status: "passing", evidence: "app/api/orchestration/approvals/route.ts" },
+  { id: "orc.api_decide",           area: "command_center",   capability: "POST /api/orchestration/approvals/[id]/decide",          status: "passing", evidence: "app/api/orchestration/approvals/[id]/decide/route.ts" },
+  { id: "orc.api_locks",            area: "command_center",   capability: "GET /api/orchestration/locks",                            status: "passing", evidence: "app/api/orchestration/locks/route.ts" },
+  { id: "orc.api_tf_boundary",      area: "command_center",   capability: "GET /api/orchestration/terraform-boundary",               status: "passing", evidence: "app/api/orchestration/terraform-boundary/route.ts" },
+  { id: "orc.center_ui",            area: "command_center",   capability: "/dashboard/orchestration Center UI",                     status: "passing", evidence: "app/dashboard/orchestration/page.tsx" },
 ];
 
 // ---------------------------------------------------------------------------
