@@ -12,7 +12,8 @@
 
 import "server-only";
 
-import { buildControlPlaneState, type ControlPlaneState } from "@/lib/controlPlane/controlPlaneBuilder";
+import { buildControlPlaneState } from "@/lib/controlPlane/controlPlaneBuilder";
+import type { ControlPlaneState } from "@/lib/controlPlane/controlPlaneModel";
 import { runSafeTask, isSafeTaskKind, type SafeTaskKind, type SafeTaskRunResult } from "@/lib/controlPlane/safeTaskRunner";
 import { recordFeedback } from "@/lib/memory/feedbackLoop";
 
