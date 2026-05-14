@@ -89,7 +89,7 @@ export interface OrchestrationReferences {
 export interface ExecutionOrchestration {
   id: string;
   tenantId?: string;
-  provider: CloudProvider | "github" | "desktop" | "multi";
+  provider: CloudProvider | "github" | "desktop" | "platform" | "multi";
 
   /** Underlying signal that started this orchestration. */
   sourceFindingId?: string;
