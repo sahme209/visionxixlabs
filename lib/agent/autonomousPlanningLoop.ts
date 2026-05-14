@@ -60,7 +60,7 @@ export interface CandidateAction {
   /** Hard requirement before this action can proceed. */
   policyRequirement: "no_approval_required" | "operator_only" | "approver_required" | "two_approvers" | "policy_blocked";
   /** Safe action surface — never destructive. */
-  safeAction: { label: string; href: string };
+  safeAction: { label: string; href?: string };
   /** Underlying source ids (validation rows / coverage rows / setup flow ids). */
   sourceIds: string[];
 }

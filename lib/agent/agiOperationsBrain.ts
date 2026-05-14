@@ -72,7 +72,7 @@ export interface BrainReasoningSummary {
 }
 
 export interface BrainNextActions {
-  recommended: { id: string; title: string; href: string; rationale: string }[];
+  recommended: { id: string; title: string; href?: string; rationale: string }[];
   approvalRequiredFor: string[];
   desktopEligibleFor: string[];
 }
@@ -299,7 +299,7 @@ export async function reasonAboutOperations(input: OperationsBrainInput = {}): P
       .filter((c) => c.policyRequirement === "approver_required" || c.policyRequirement === "two_approvers")
       .map((c) => c.title),
     desktopEligibleFor: planning.candidates
-      .filter((c) => c.safeAction.href.startsWith("/desktop"))
+      .filter((c) => c.safeAction.href?.startsWith("/desktop") ?? false)
       .map((c) => c.title),
   };
 
