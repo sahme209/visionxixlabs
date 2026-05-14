@@ -74,6 +74,24 @@ export const VALIDATION_MATRIX: ValidationRow[] = [
   // Release
   { id: "rel.web",          area: "release", capability: "Web app released on https://visionxixlabs.com",          status: "passing", evidence: "lib/release/versionModel.ts" },
   { id: "rel.desktop_pkg",  area: "release", capability: "Signed desktop binaries published",                       status: "blocked", evidence: "lib/release/versionModel.ts", nextFix: "Blocked on signing certificates." },
+
+  // Remediation (filed under security_scanner area since it consumes scanner output today)
+  { id: "rem.model",                area: "security_scanner", capability: "Remediation candidate model + state machine",       status: "passing", evidence: "lib/remediation/remediationModel.ts" },
+  { id: "rem.planner",              area: "security_scanner", capability: "Remediation planner (security + releases + gaps → candidate)", status: "passing", evidence: "lib/remediation/remediationPlanner.ts" },
+  { id: "rem.terraform_preview",    area: "security_scanner", capability: "Terraform preview generator (typed, no execution)", status: "partial", evidence: "lib/execution/terraformPreviewGenerator.ts", nextFix: "Expand HCL templates beyond S3 / SG / encryption / backup / branch protection." },
+  { id: "rem.cli_preview",          area: "security_scanner", capability: "CLI preview generator (typed, no execution)",        status: "partial", evidence: "lib/execution/cliPreviewGenerator.ts", nextFix: "Add Azure / GCP / Terraform-Cloud CLI templates." },
+  { id: "rem.rollback",             area: "security_scanner", capability: "Rollback plan generator (honest availability)",       status: "passing", evidence: "lib/execution/rollbackPlanGenerator.ts" },
+  { id: "rem.verification",         area: "security_scanner", capability: "Verification checklist generator (typed)",            status: "passing", evidence: "lib/execution/verificationChecklist.ts" },
+  { id: "rem.pipeline",             area: "security_scanner", capability: "Closed-loop remediation pipeline (no apply)",         status: "passing", evidence: "lib/remediation/remediationPipeline.ts" },
+  { id: "rem.api_candidates",       area: "security_scanner", capability: "POST /api/remediation/candidates",                    status: "passing", evidence: "app/api/remediation/candidates/route.ts" },
+  { id: "rem.api_plan",             area: "security_scanner", capability: "POST /api/remediation/plan",                          status: "passing", evidence: "app/api/remediation/plan/route.ts" },
+  { id: "rem.api_readiness",        area: "security_scanner", capability: "POST /api/remediation/readiness",                     status: "passing", evidence: "app/api/remediation/readiness/route.ts" },
+  { id: "rem.api_desktop_handoff",  area: "security_scanner", capability: "POST /api/remediation/desktop-handoff (preview only)", status: "preview", evidence: "app/api/remediation/desktop-handoff/route.ts" },
+  { id: "rem.api_terraform",        area: "security_scanner", capability: "POST /api/execution/terraform-preview",               status: "passing", evidence: "app/api/execution/terraform-preview/route.ts" },
+  { id: "rem.api_cli",              area: "security_scanner", capability: "POST /api/execution/cli-preview",                      status: "passing", evidence: "app/api/execution/cli-preview/route.ts" },
+  { id: "rem.api_rollback",         area: "security_scanner", capability: "POST /api/execution/rollback-preview",                 status: "passing", evidence: "app/api/execution/rollback-preview/route.ts" },
+  { id: "rem.api_verification",     area: "security_scanner", capability: "POST /api/execution/verification-checklist",          status: "passing", evidence: "app/api/execution/verification-checklist/route.ts" },
+  { id: "rem.center_ui",            area: "command_center",   capability: "/dashboard/remediation Center UI",                    status: "passing", evidence: "app/dashboard/remediation/page.tsx" },
 ];
 
 // ---------------------------------------------------------------------------
