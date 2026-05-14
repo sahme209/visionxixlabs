@@ -135,6 +135,19 @@ export const VALIDATION_MATRIX: ValidationRow[] = [
   { id: "orc.api_locks",            area: "command_center",   capability: "GET /api/orchestration/locks",                            status: "passing", evidence: "app/api/orchestration/locks/route.ts" },
   { id: "orc.api_tf_boundary",      area: "command_center",   capability: "GET /api/orchestration/terraform-boundary",               status: "passing", evidence: "app/api/orchestration/terraform-boundary/route.ts" },
   { id: "orc.center_ui",            area: "command_center",   capability: "/dashboard/orchestration Center UI",                     status: "passing", evidence: "app/dashboard/orchestration/page.tsx" },
+
+  // Control plane
+  { id: "cp.model",                 area: "command_center",   capability: "ControlPlaneState model — providers/connectors/posture/inventory/actions", status: "passing", evidence: "lib/controlPlane/controlPlaneModel.ts" },
+  { id: "cp.builder",               area: "command_center",   capability: "Control plane builder composes from canonical adapters",   status: "passing", evidence: "lib/controlPlane/controlPlaneBuilder.ts" },
+  { id: "cp.next_action_engine",    area: "command_center",   capability: "Next-best-action engine (12 typed action templates)",     status: "passing", evidence: "lib/controlPlane/nextBestActionEngine.ts" },
+  { id: "cp.safe_task_runner",      area: "command_center",   capability: "Safe task runner — strict allow-list, blocks destructive", status: "passing", evidence: "lib/controlPlane/safeTaskRunner.ts" },
+  { id: "cp.autonomous_loop_v2",    area: "command_center",   capability: "Autonomous ops loop v2 — runs safe tasks, stops on approval", status: "passing", evidence: "lib/controlPlane/autonomousOpsLoop.ts" },
+  { id: "cp.api_state",             area: "command_center",   capability: "GET /api/control-plane/state",                              status: "passing", evidence: "app/api/control-plane/state/route.ts" },
+  { id: "cp.api_next_actions",      area: "command_center",   capability: "GET /api/control-plane/next-actions",                       status: "passing", evidence: "app/api/control-plane/next-actions/route.ts" },
+  { id: "cp.api_refresh",           area: "command_center",   capability: "POST /api/control-plane/refresh",                           status: "passing", evidence: "app/api/control-plane/refresh/route.ts" },
+  { id: "cp.api_validate",          area: "command_center",   capability: "POST /api/control-plane/validate (autonomous + deep)",     status: "passing", evidence: "app/api/control-plane/validate/route.ts" },
+  { id: "cp.api_run_safe_task",     area: "command_center",   capability: "POST /api/control-plane/run-safe-task (allow-list)",       status: "passing", evidence: "app/api/control-plane/run-safe-task/route.ts" },
+  { id: "cp.multi_cloud_ui",        area: "command_center",   capability: "/dashboard/multi-cloud operating view",                    status: "passing", evidence: "app/dashboard/multi-cloud/page.tsx" },
 ];
 
 // ---------------------------------------------------------------------------
