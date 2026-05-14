@@ -23,6 +23,8 @@ import { Stagger } from "@/components/motion/Stagger";
 import { ActivityFeed, type ActivityEvent } from "@/components/operations/ActivityFeed";
 import { ReleasePipelineGrid } from "@/components/operations/ReleasePipelineGrid";
 import { ReadinessScoreCard } from "@/components/operations/ReadinessScoreCard";
+import { evaluateBlockers, BLOCKER_KIND_LABEL } from "@/lib/releaseops/deploymentBlockers";
+import { assessReleaseRisk, RISK_LABEL, riskSemantic } from "@/lib/releaseops/releaseRisk";
 
 // ReleaseOps-specific demo event stream — mixes release/Terraform/approval events
 const NOW = Date.now();
@@ -224,6 +226,13 @@ export default function ReleaseOpsCommandCenterPage() {
       <Reveal direction="up" delay={0.1}>
         <div className="mb-6">
           <ReleasePipelineGrid />
+        </div>
+      </Reveal>
+
+      {/* Release risk panel — typed engine output */}
+      <Reveal direction="up" delay={0.11}>
+        <div className="mb-6">
+          <ReleaseRiskPanel />
         </div>
       </Reveal>
 
@@ -444,6 +453,137 @@ export default function ReleaseOpsCommandCenterPage() {
           })}
         </div>
       </Reveal>
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Release risk panel — typed engine output (deploymentBlockers + releaseRisk)
+// ---------------------------------------------------------------------------
+
+function ReleaseRiskPanel() {
+  // Honest preview release — same shape the engines run on in production.
+  const release = {
+    id: "rel_payments_4120",
+    service: "payments-api",
+    repositoryId: "repo_payments",
+    pipelineId: "pipe_payments_prod",
+    system: "github" as const,
+    environment: "production" as const,
+    status: "awaiting_approval" as const,
+    ref: "main",
+    commit: "9a7e1c4",
+    author: "alice@example.com",
+    startedAt: new Date(Date.now() - 4 * 60 * 60_000).toISOString(),
+    blastRadius: "moderate" as const,
+    approvals: [
+      { id: "apr_1", source: "github" as const, approver: "bob", approvedAt: new Date(Date.now() - 30 * 60_000).toISOString(), required: true },
+      { id: "apr_2", source: "github" as const, approver: "—",   required: true },
+    ],
+    rollback: { verified: false, strategy: "redeploy_prior" as const, priorReleaseId: "rel_payments_4119", rtoSec: 180 },
+  };
+  const readiness = {
+    serviceId: "svc_payments",
+    serviceName: "payments-api",
+    team: "payments",
+    environment: "production" as const,
+    compositeScore: 68,
+    trend: "up" as const,
+    dimensions: [
+      { key: "branch_governance"        as const, label: "Branch governance",        score: 0.85, detail: "Required reviewers + signed commits in place." },
+      { key: "rollback_readiness"       as const, label: "Rollback readiness",       score: 0.40, detail: "Rollback strategy defined but unverified." },
+      { key: "observability"            as const, label: "Observability",            score: 0.70, detail: "Metrics + traces emitted; alerts wired." },
+      { key: "deployment_maturity"      as const, label: "Deployment maturity",      score: 0.75, detail: "Canary supported; auto-rollback configured." },
+      { key: "release_auditability"     as const, label: "Release auditability",     score: 0.90, detail: "Every release fully audited." },
+    ],
+    rollbackVerified: false,
+  };
+  const blockers = evaluateBlockers({
+    release,
+    branchProtections: [
+      { branch: "main", requiredReviewers: 1, requireCodeOwnerReviews: false, requireLinearHistory: true, requireSignedCommits: false, requireStatusChecks: ["build", "test"], enforceAdmins: true },
+    ],
+    readiness,
+    hasFreshTerraformPlan: true,
+    driftDetected: false,
+    hasOpenIncident: false,
+  });
+  const risk = assessReleaseRisk({ release, readiness, blockers });
+
+  const semantic = riskSemantic(risk.level);
+  const tone =
+    semantic === "error"   ? "border-red-500/20 bg-red-500/[0.04]"   :
+    semantic === "warning" ? "border-amber-500/20 bg-amber-500/[0.04]" :
+                             "border-emerald-500/20 bg-emerald-500/[0.04]";
+
+  return (
+    <div className={`rounded-2xl border ${tone} p-6 overflow-hidden`}>
+      <div className="flex items-center justify-between flex-wrap gap-3 mb-4">
+        <div>
+          <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-zinc-400 mb-1">
+            Release risk · payments-api v4.12.0
+          </p>
+          <h2 className="text-lg font-bold text-white tracking-[-0.03em]">
+            {RISK_LABEL[risk.level]} · {risk.score}/100 · {risk.shouldBlock ? "blocked" : risk.requiresApproval ? "needs approval" : "ready"}
+          </h2>
+        </div>
+        <div className="flex items-center gap-2">
+          {risk.safeNextAction && (
+            <Link
+              href={risk.safeNextAction.href}
+              className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-white/[0.1] bg-white/[0.04] text-zinc-200 hover:bg-white/[0.08] text-xs font-semibold"
+            >
+              {risk.safeNextAction.label}
+              <ArrowRightIcon className="h-3 w-3" />
+            </Link>
+          )}
+        </div>
+      </div>
+      <p className="text-sm text-zinc-300 mb-4 leading-relaxed">{risk.summary}</p>
+      <div className="grid md:grid-cols-2 gap-4">
+        <div>
+          <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-zinc-500 mb-2">Contributing factors</p>
+          <div className="space-y-1.5">
+            {risk.factors.slice(0, 5).map((f, i) => (
+              <div key={i} className="flex items-start gap-3">
+                <div className="w-12 h-1.5 rounded-full bg-white/[0.04] overflow-hidden mt-1.5 shrink-0">
+                  <div className="h-full bg-gradient-to-r from-violet-400 to-fuchsia-400" style={{ width: `${Math.min(100, f.weight * 2)}%` }} />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-[12px] font-semibold text-zinc-200">{f.label}</p>
+                  <p className="text-[11px] text-zinc-500 whitespace-pre-line">{f.detail}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+        <div>
+          <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-zinc-500 mb-2">
+            Deployment blockers · {blockers.length}
+          </p>
+          {blockers.length === 0 ? (
+            <p className="text-[12px] text-emerald-300">No blockers — release is structurally clean.</p>
+          ) : (
+            <div className="space-y-1.5">
+              {blockers.slice(0, 5).map((b) => (
+                <div key={b.id} className="rounded-lg border border-white/[0.05] bg-white/[0.02] px-3 py-2">
+                  <div className="flex items-center justify-between gap-2 mb-0.5">
+                    <span className="text-[12px] font-semibold text-zinc-100 truncate">{b.title}</span>
+                    <span className={`text-[9px] font-bold uppercase tracking-wider border rounded-full px-1.5 py-px shrink-0 ${
+                      b.severity === "critical" ? "text-red-300 bg-red-500/10 border-red-500/20" :
+                      b.severity === "high"     ? "text-amber-300 bg-amber-500/10 border-amber-500/20" :
+                      b.severity === "medium"   ? "text-amber-300 bg-amber-500/10 border-amber-500/20" :
+                                                  "text-zinc-400 bg-zinc-700/30 border-zinc-700/40"
+                    }`}>{b.severity}</span>
+                  </div>
+                  <p className="text-[10px] text-zinc-500 leading-relaxed">{b.detail}</p>
+                  <p className="text-[10px] text-zinc-600 mt-1">{BLOCKER_KIND_LABEL[b.kind]}</p>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 }

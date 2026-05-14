@@ -16,6 +16,11 @@ import type { PolicyEvaluationResult } from "@/lib/governance/policyEngine";
 import { explain } from "@/lib/governance/policyExplanation";
 import { type Diagnosis, diagnose } from "@/lib/agent/troubleshootingAdvisor";
 import { type OperationalTask } from "@/lib/agent/taskOrchestrator";
+import { classifyReliabilityIntent, composeReliabilityAnswer } from "@/lib/agent/copilotReliabilityIntent";
+import type { ClassifiedFailure } from "@/lib/reliability/failureClassifier";
+import type { CircuitSnapshot } from "@/lib/reliability/circuitBreaker";
+import type { DeadLetterRecord } from "@/lib/reliability/deadLetter";
+import type { WorkflowDiagnosis } from "@/lib/reliability/workflowRecovery";
 
 // ---------------------------------------------------------------------------
 // Context inputs
@@ -54,6 +59,14 @@ export interface CopilotContext {
   activePolicyResult?: PolicyEvaluationResult;
   /** Error text if the user is asking about a failure. */
   errorContext?: string;
+  /** Optional reliability-intent inputs — when provided, the base composer
+   *  delegates reliability-class questions to the typed reliability composer. */
+  reliability?: {
+    workflowDiagnosis?: WorkflowDiagnosis;
+    classifiedFailure?: ClassifiedFailure;
+    circuits?: CircuitSnapshot[];
+    deadLetters?: DeadLetterRecord[];
+  };
 }
 
 export interface CopilotQuery {
@@ -100,8 +113,28 @@ export interface CopilotResponse {
 
 /**
  * Compose a copilot response from typed platform state. Pure function.
+ *
+ * Reliability-class questions are *first-class*: when the question text
+ * matches a reliability intent (stuck workflow, retry safety, provider
+ * rate limit, etc.), we delegate to `composeReliabilityAnswer()` which
+ * reads from the typed reliability primitives instead of the generic
+ * composers. This keeps "is this safe to retry?" answers grounded in
+ * the actual ClassifiedFailure / CircuitSnapshot / DeadLetterRecord
+ * state rather than the broad "explain_state" path.
  */
 export function composeCopilotResponse(query: CopilotQuery, ctx: CopilotContext): CopilotResponse {
+  // Reliability-class delegation — only when the question text matches.
+  const reliabilityIntent = classifyReliabilityIntent(query.question);
+  if (reliabilityIntent && ctx.reliability) {
+    return composeReliabilityAnswer(reliabilityIntent, {
+      workflowDiagnosis: ctx.reliability.workflowDiagnosis,
+      classifiedFailure: ctx.reliability.classifiedFailure,
+      circuits: ctx.reliability.circuits,
+      deadLetters: ctx.reliability.deadLetters,
+      userText: query.question,
+    });
+  }
+
   switch (query.intent) {
     case "diagnose_error":   return composeDiagnosis(query, ctx);
     case "next_best_action": return composeNextBestAction(query, ctx);
