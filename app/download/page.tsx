@@ -34,39 +34,43 @@ interface PlatformInfo {
   available: boolean;
 }
 
+// Honest platform availability — desktop binaries are in active development
+// but distribution requires signing/notarization (planned for 1.0). Every
+// desktop button routes to /download/preview, which explains the state and
+// captures interest. Web app is always live.
 const PLATFORMS: Record<DetectedPlatform, PlatformInfo> = {
   "mac-arm": {
     id: "mac-arm",
-    label: "Download for macOS (Apple Silicon)",
-    sublabel: "macOS 13+ · M-series",
-    href: "/api/desktop/download?platform=mac-arm",
-    available: true,
+    label: "macOS · Apple Silicon",
+    sublabel: "Preview · signed builds in 1.0",
+    href: "/download/preview?platform=mac-arm",
+    available: false,
   },
   "mac-intel": {
     id: "mac-intel",
-    label: "Download for macOS (Intel)",
-    sublabel: "macOS 12+ · x64",
-    href: "/api/desktop/download?platform=mac-intel",
-    available: true,
+    label: "macOS · Intel",
+    sublabel: "Preview · signed builds in 1.0",
+    href: "/download/preview?platform=mac-intel",
+    available: false,
   },
   windows: {
     id: "windows",
-    label: "Download for Windows",
-    sublabel: "Windows 10/11 · x64",
-    href: "/api/desktop/download?platform=windows",
+    label: "Windows",
+    sublabel: "Preview · MSI + EV signing in 1.0",
+    href: "/download/preview?platform=windows",
     available: false,
   },
   linux: {
     id: "linux",
-    label: "Download for Linux",
-    sublabel: "AppImage · deb · rpm",
-    href: "/api/desktop/download?platform=linux",
+    label: "Linux",
+    sublabel: "Preview · AppImage / .deb / .rpm",
+    href: "/download/preview?platform=linux",
     available: false,
   },
   web: {
     id: "web",
     label: "Open Web Application",
-    sublabel: "No install required",
+    sublabel: "No install required · live",
     href: "/dashboard",
     available: true,
   },
@@ -131,7 +135,7 @@ export default function DownloadPage() {
             </div>
           </Reveal>
 
-          {/* Build badge — runtime-aware */}
+          {/* Build badge — runtime-aware. Honest: signed builds ship in 1.0. */}
           <Reveal direction="up" delay={0.05}>
             {isDesktop && desktopStatus.available ? (
               <span className="badge-shimmer badge-shimmer-border inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 text-xs font-medium mb-8 backdrop-blur-sm cursor-default">
@@ -140,9 +144,9 @@ export default function DownloadPage() {
                 {desktopStatus.platform ? ` · ${desktopStatus.platform}` : ""}
               </span>
             ) : (
-              <span className="badge-shimmer badge-shimmer-border inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.08] text-zinc-300 text-xs font-medium mb-8 backdrop-blur-sm cursor-default">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                Preview Build · 0.9.2 · Code-signed
+              <span className="badge-shimmer badge-shimmer-border inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-200 text-xs font-medium mb-8 backdrop-blur-sm cursor-default">
+                <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
+                Desktop preview · binaries ship with signed 1.0 release
               </span>
             )}
           </Reveal>
@@ -162,35 +166,29 @@ export default function DownloadPage() {
             </p>
           </Reveal>
 
-          {/* Primary CTA */}
+          {/* Primary CTAs — honest self-serve options. Open the web app
+              right now, or sign up for the desktop preview. */}
           <Reveal direction="up" delay={0.16}>
-            <div className="flex flex-col items-center gap-3 mb-10">
-              {primaryPlatform.available ? (
-                <a
-                  href={primaryPlatform.href}
+            <div className="flex flex-col items-center gap-4 mb-10">
+              <div className="flex flex-wrap items-center justify-center gap-3">
+                <Link
+                  href="/dashboard"
                   className="btn-amber-shimmer group inline-flex items-center gap-3 px-8 py-4 rounded-full text-base font-semibold tracking-wide uppercase relative"
                 >
-                  <ArrowDownTrayIcon className="h-5 w-5" />
-                  {mounted ? primaryPlatform.label : "Download Axiom Agent"}
+                  <BoltIcon className="h-5 w-5" />
+                  Open the web app
                   <ArrowRightIcon className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
-                </a>
-              ) : (
-                <div className="flex flex-col items-center gap-3">
-                  <a
-                    href={PLATFORMS["mac-arm"].href}
-                    className="btn-amber-shimmer group inline-flex items-center gap-3 px-8 py-4 rounded-full text-base font-semibold tracking-wide uppercase relative"
-                  >
-                    <ArrowDownTrayIcon className="h-5 w-5" />
-                    Download for macOS (Apple Silicon)
-                    <ArrowRightIcon className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
-                  </a>
-                  <span className="text-xs text-zinc-500">
-                    {primaryPlatform.label.replace("Download for ", "")} preview rolling out — currently macOS only.
-                  </span>
-                </div>
-              )}
+                </Link>
+                <Link
+                  href={mounted ? primaryPlatform.href : "/download/preview"}
+                  className="inline-flex items-center gap-2 px-6 py-3.5 rounded-full text-sm font-semibold border border-white/[0.12] bg-white/[0.03] hover:bg-white/[0.06] hover:border-white/[0.2] transition-colors"
+                >
+                  <CloudArrowDownIcon className="h-4 w-4 text-amber-300" />
+                  Join {mounted ? primaryPlatform.label : "desktop"} preview
+                </Link>
+              </div>
               <span className="text-xs text-zinc-500 font-mono">
-                {mounted ? primaryPlatform.sublabel : "macOS · Windows · Linux · Web"} · 18.4 MB · SHA256 verified
+                Web app: live · Desktop: preview signed builds shipping with 1.0 (macOS · Windows · Linux)
               </span>
             </div>
           </Reveal>
@@ -205,30 +203,38 @@ export default function DownloadPage() {
             </p>
           </Reveal>
 
-          {/* Secondary platform links */}
+          {/* Platform availability table — honest preview/live tags. */}
           <Reveal direction="up" delay={0.2}>
-            <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-3 text-sm">
-              {(["mac-arm", "mac-intel", "windows", "linux", "web"] as DetectedPlatform[])
-                .filter((id) => id !== primary)
-                .map((id, i, arr) => {
-                  const p = PLATFORMS[id];
-                  const label = p.label.replace("Download for ", "").replace("Open ", "");
-                  return (
-                    <span key={id} className="flex items-center gap-6">
-                      {p.available ? (
-                        <a href={p.href} className="text-zinc-400 hover:text-white underline underline-offset-4 decoration-white/20 hover:decoration-white/60 transition-colors">
-                          {label}
-                        </a>
-                      ) : (
-                        <span className="text-zinc-600 inline-flex items-center gap-1.5">
-                          {label}
-                          <span className="text-[10px] text-amber-400/70 font-semibold uppercase tracking-wider">Soon</span>
-                        </span>
-                      )}
-                      {i < arr.length - 1 && <span className="text-zinc-700">|</span>}
-                    </span>
-                  );
-                })}
+            <div className="mt-2 grid sm:grid-cols-2 md:grid-cols-5 gap-2 max-w-3xl mx-auto">
+              {(["mac-arm", "mac-intel", "windows", "linux", "web"] as DetectedPlatform[]).map((id) => {
+                const p = PLATFORMS[id];
+                const isLive = p.available;
+                return (
+                  <Link
+                    key={id}
+                    href={p.href}
+                    className={`rounded-xl border p-3 text-left transition-colors ${
+                      isLive
+                        ? "border-emerald-500/15 bg-emerald-500/[0.03] hover:border-emerald-500/30"
+                        : "border-white/[0.06] bg-white/[0.02] hover:border-amber-500/25"
+                    }`}
+                  >
+                    <div className="flex items-center justify-between mb-1">
+                      <p className="text-[12px] font-semibold text-white">{p.label}</p>
+                      <span
+                        className={`text-[9px] font-bold uppercase tracking-wider border rounded-full px-1.5 py-px ${
+                          isLive
+                            ? "text-emerald-300 bg-emerald-500/10 border-emerald-500/20"
+                            : "text-amber-300 bg-amber-500/10 border-amber-500/20"
+                        }`}
+                      >
+                        {isLive ? "Live" : "Preview"}
+                      </span>
+                    </div>
+                    <p className="text-[10px] text-zinc-500 leading-relaxed">{p.sublabel}</p>
+                  </Link>
+                );
+              })}
             </div>
           </Reveal>
         </div>

@@ -25,6 +25,8 @@ import { InfrastructureTopology } from "@/components/operations/InfrastructureTo
 import { buildSecurityPosture } from "@/lib/security/securityPosture";
 import { buildReliabilityPosture } from "@/lib/reliability/reliabilityPosture";
 import { buildObservabilityPosture } from "@/lib/observability/observabilityPosture";
+import { DEFAULT_DESKTOP_SHELL_STATE, summarizeShell } from "@/lib/desktop/desktopShellState";
+import { ComputerDesktopIcon } from "@heroicons/react/24/outline";
 
 interface KpiTile {
   label: string;
@@ -435,6 +437,11 @@ export default function CommandCenterPage() {
             </div>
           </Reveal>
 
+          {/* Desktop runtime panel — typed shell state */}
+          <Reveal direction="up" delay={0.28}>
+            <DesktopRuntimePanel />
+          </Reveal>
+
           {/* Documentation links */}
           <Reveal direction="up" delay={0.3}>
             <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-4">
@@ -679,5 +686,58 @@ function ObservabilityPostureStrip() {
         </div>
       </div>
     </Link>
+  );
+}
+
+function DesktopRuntimePanel() {
+  // Honest preview state — when desktop pairing wires up, this reads from the
+  // useDesktopRuntime hook + canonical shell state.
+  const summary = summarizeShell({
+    ...DEFAULT_DESKTOP_SHELL_STATE,
+    runtimeState: "offline",
+    platform: "unknown",
+    appVersion: "0.1.0",
+    capabilities: ["review", "preview", "verify", "audit_sync"],
+    connection: "offline",
+    auditSync: "unknown",
+  });
+  return (
+    <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] overflow-hidden">
+      <div className="px-5 py-3.5 border-b border-white/[0.06] bg-white/[0.01] flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <ComputerDesktopIcon className="h-4 w-4 text-violet-300" />
+          <h3 className="text-sm font-semibold text-white">Desktop runtime</h3>
+        </div>
+        <Link href="/download" className="text-[10px] text-zinc-500 hover:text-white transition-colors">View</Link>
+      </div>
+      <div className="px-4 py-3 border-b border-white/[0.04]">
+        <p className="text-[12px] text-zinc-200 font-semibold">{summary.headline}</p>
+        <p className="text-[11px] text-zinc-500 mt-0.5 leading-relaxed">No paired desktop. Download the preview to enable local execution-plan review.</p>
+      </div>
+      <div className="p-3 space-y-1.5">
+        {summary.checks.slice(0, 4).map((c) => (
+          <div key={c.id} className="flex items-start gap-2.5">
+            <span className={`mt-1.5 w-1.5 h-1.5 rounded-full shrink-0 ${
+              c.semantic === "success" ? "bg-emerald-400" :
+              c.semantic === "warning" ? "bg-amber-400" :
+              c.semantic === "error"   ? "bg-red-400"   :
+                                          "bg-zinc-500"
+            }`} />
+            <div className="flex-1 min-w-0">
+              <p className="text-[11px] font-semibold text-zinc-200">{c.label}</p>
+              <p className="text-[10px] text-zinc-500 leading-snug">{c.detail}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+      <div className="px-3 pb-3 pt-1 flex items-center gap-2">
+        <Link href="/download" className="flex-1 text-center text-[11px] font-semibold text-violet-300 hover:text-violet-200 rounded-md border border-violet-500/20 bg-violet-500/[0.06] hover:border-violet-500/40 px-2 py-1.5 transition-colors">
+          Download desktop
+        </Link>
+        <Link href="/dashboard/security" className="text-[11px] text-zinc-400 hover:text-white rounded-md border border-white/[0.06] bg-white/[0.02] hover:bg-white/[0.04] px-2 py-1.5 transition-colors">
+          Security
+        </Link>
+      </div>
+    </div>
   );
 }
