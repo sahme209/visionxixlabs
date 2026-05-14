@@ -15,6 +15,7 @@ import { Reveal } from "@/components/motion/Reveal";
 import { Stagger } from "@/components/motion/Stagger";
 import { AnimatedButton } from "@/components/ui/AnimatedButton";
 import { RealisticFogBackground } from "@/components/ui/realistic-fog-background";
+import { MotherboardBackdrop } from "@/components/ui/MotherboardBackdrop";
 import { TestimonialsCarousel } from "@/components/TestimonialsCarousel";
 import { FAQAccordion } from "@/components/FAQAccordion";
 import { Footer } from "@/components/Footer";
@@ -119,7 +120,9 @@ export default function Home() {
       {/* ── Hero ───────────────────────────────────────────────────── */}
       <section className="pt-32 pb-24 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
         <RealisticFogBackground backgroundColor="transparent" opacity={0.3} darken contained />
-        <div className="absolute inset-0 hero-grid-mesh opacity-60 pointer-events-none" aria-hidden />
+        {/* Huly-style cursor-reactive motherboard pattern — circuit board emerges where the cursor is. */}
+        <MotherboardBackdrop radius={420} tint="violet" baseOpacity={0.05} peakOpacity={0.22} />
+        <div className="absolute inset-0 hero-grid-mesh opacity-40 pointer-events-none" aria-hidden />
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[500px] spotlight-orb opacity-60 pointer-events-none" aria-hidden />
         <div className="absolute top-40 -right-40 w-[500px] h-[500px] rounded-full bg-violet-600/5 blur-[120px] pointer-events-none" aria-hidden />
         <div className="absolute top-60 -left-40 w-[400px] h-[400px] rounded-full bg-fuchsia-600/5 blur-[120px] pointer-events-none" aria-hidden />
