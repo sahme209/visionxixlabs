@@ -7,6 +7,7 @@
  */
 
 import { BUILTIN_WORKFLOWS, scheduledWorkflows, type WorkflowDefinition } from "./workflowModel";
+import { nextFireIso, describeCron } from "./cronParser";
 
 // ---------------------------------------------------------------------------
 // Schedule state
@@ -68,6 +69,8 @@ const DEFAULT_SCHEDULE: Record<string, Omit<ScheduledWorkflow, "workflow">> = {
 /**
  * Return all scheduled workflows with their state. Honest: preview-state
  * entries are tagged "preview" until a real scheduler backend is wired.
+ * `nextRunAt` is computed by the cron parser when the expression is
+ * recognised; otherwise undefined.
  */
 export function listScheduledWorkflows(): ScheduledWorkflow[] {
   return scheduledWorkflows().map((wf) => {
@@ -77,7 +80,8 @@ export function listScheduledWorkflows(): ScheduledWorkflow[] {
       runsThisWeek: 0,
       note: "No explicit schedule configuration — defaulting to preview state.",
     };
-    return { workflow: wf, ...cfg };
+    const nextRunAt = cfg.cron ? nextFireIso(cfg.cron) ?? undefined : undefined;
+    return { workflow: wf, ...cfg, nextRunAt };
   });
 }
 
@@ -100,13 +104,17 @@ export function scheduleSummary(): Record<ScheduleState, number> {
 }
 
 /**
- * Compute the next cron firing for a Cron-style string.
- * Stub: returns 24h from now to keep the UI working without a cron library.
- * Real implementation slots in here later.
+ * Compute the next cron firing for a Cron-style string. Uses the typed
+ * cron parser; falls back to "24 hours from now" only when the expression
+ * can't be parsed by the supported grammar.
  */
 export function approximateNextRunAt(cron: string, now: Date = new Date()): string {
-  void cron;
-  return new Date(now.getTime() + 86_400_000).toISOString();
+  return nextFireIso(cron, now) ?? new Date(now.getTime() + 86_400_000).toISOString();
+}
+
+/** Human-readable description for a cron expression. */
+export function describeSchedule(cron: string): string {
+  return describeCron(cron);
 }
 
 export { BUILTIN_WORKFLOWS };
