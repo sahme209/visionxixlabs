@@ -31,9 +31,17 @@ type ConnectorStatus = {
   lastScan?: string;
 };
 
+interface FeatureSummary {
+  awsScanMode: "live" | "preview" | "disabled";
+  githubSyncMode: "live" | "preview" | "disabled";
+  copilotEnabled: boolean;
+  oauth: { google: boolean; github: boolean };
+}
+
 export default function DashboardPage() {
   const [connectors, setConnectors] = useState<ConnectorStatus[]>([]);
   const [loading, setLoading] = useState(true);
+  const [features, setFeatures] = useState<FeatureSummary | null>(null);
   const { isDesktop } = useDesktopRuntime();
 
   useEffect(() => {
@@ -42,6 +50,20 @@ export default function DashboardPage() {
       .then((data) => setConnectors(data.connectors || []))
       .catch(() => {})
       .finally(() => setLoading(false));
+    // Real-state adapter — features mode lives here.
+    fetch("/api/command-center")
+      .then((r) => r.json())
+      .then((res) => {
+        if (res?.ok && res.data?.features) {
+          setFeatures({
+            awsScanMode:    res.data.features.awsScanMode,
+            githubSyncMode: res.data.features.githubSyncMode,
+            copilotEnabled: res.data.features.copilotEnabled,
+            oauth:          res.data.features.oauth,
+          });
+        }
+      })
+      .catch(() => {});
   }, []);
 
   if (loading) {
@@ -115,11 +137,16 @@ export default function DashboardPage() {
       {/* Welcome header — calm, premium, plenty of breathing room */}
       <header className="mb-10 flex items-end justify-between flex-wrap gap-6">
         <div>
-          <div className="flex items-center gap-3 mb-3">
+          <div className="flex items-center gap-2 mb-3 flex-wrap">
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_10px_rgba(52,211,153,0.6)]" />
-            <p className="text-[10px] font-semibold text-emerald-300 uppercase tracking-[0.18em]">
-              Workspace · live
-            </p>
+            <p className="text-[10px] font-semibold text-emerald-300 uppercase tracking-[0.18em]">Workspace · live</p>
+            {features && (
+              <>
+                <ModeBadge label="AWS scan"     value={features.awsScanMode} />
+                <ModeBadge label="GitHub sync"  value={features.githubSyncMode} />
+                <ModeBadge label="Copilot"      value={features.copilotEnabled ? "live" : "disabled"} />
+              </>
+            )}
           </div>
           <h1 className="text-3xl md:text-4xl font-bold text-white tracking-[-0.04em] mb-2">
             Welcome back to <span className="bg-gradient-to-r from-violet-300 to-fuchsia-300 bg-clip-text text-transparent">Axiom</span>.
@@ -438,5 +465,17 @@ function CapabilityColumn({
         })}
       </div>
     </div>
+  );
+}
+
+function ModeBadge({ label, value }: { label: string; value: "live" | "preview" | "disabled" }) {
+  const tone =
+    value === "live"     ? "text-emerald-300 bg-emerald-500/10 border-emerald-500/20" :
+    value === "preview"  ? "text-amber-300 bg-amber-500/10 border-amber-500/20" :
+                            "text-zinc-500 bg-white/[0.04] border-white/[0.08]";
+  return (
+    <span className={`text-[9px] font-semibold uppercase tracking-[0.15em] border rounded-full px-1.5 py-px ${tone}`}>
+      {label} · {value}
+    </span>
   );
 }
