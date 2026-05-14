@@ -52,7 +52,7 @@ export async function currentContext(): Promise<CurrentContext> {
     displayName: session.user.name ?? userEmail,
     organizationId: orgId,
     workspaceLabel: deriveWorkspaceLabel(userEmail),
-    roles: deriveRolesFromSession(session.user),
+    roles: deriveRolesFromSession(session.user as { roles?: string[] | null }),
   };
 }
 
