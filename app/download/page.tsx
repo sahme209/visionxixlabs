@@ -32,7 +32,39 @@ interface PlatformInfo {
   sublabel: string;
   href: string;
   available: boolean;
+  /** Set when a real signed/unsigned download exists in the GitHub release. */
+  fileName?: string;
+  /** Honest one-line friction note (rendered when available === true). */
+  installFriction?: string;
 }
+
+interface ManifestAsset {
+  platform: "macos-arm" | "macos-intel" | "windows-x64" | "linux-x64";
+  fileName: string;
+  downloadUrl: string;
+  sizeBytes: number;
+  signed: boolean;
+  notarized: boolean;
+  installFriction: string;
+}
+
+interface ReleaseManifest {
+  source: "github_release" | "none";
+  tag?: string;
+  publishedAt?: string;
+  htmlUrl?: string;
+  assets: Record<"macos-arm" | "macos-intel" | "windows-x64" | "linux-x64", ManifestAsset | null>;
+  hasAnyAsset: boolean;
+  allSignedAndNotarized: boolean;
+  note?: string;
+}
+
+const PLATFORM_TO_MANIFEST: Record<Exclude<DetectedPlatform, "web">, keyof ReleaseManifest["assets"]> = {
+  "mac-arm":   "macos-arm",
+  "mac-intel": "macos-intel",
+  windows:     "windows-x64",
+  linux:       "linux-x64",
+};
 
 // Honest platform availability — desktop binaries are in active development
 // but distribution requires signing/notarization (planned for 1.0). Every
@@ -79,6 +111,7 @@ const PLATFORMS: Record<DetectedPlatform, PlatformInfo> = {
 export default function DownloadPage() {
   const [primary, setPrimary] = useState<DetectedPlatform>("mac-arm");
   const [mounted, setMounted] = useState(false);
+  const [manifest, setManifest] = useState<ReleaseManifest | null>(null);
   const { isDesktop, status: desktopStatus } = useDesktopRuntime();
 
   useEffect(() => {
@@ -96,7 +129,44 @@ export default function DownloadPage() {
     }
   }, []);
 
-  const primaryPlatform = PLATFORMS[primary];
+  // Fetch the live release manifest so download buttons resolve to real
+  // GitHub-hosted binaries when a release exists. Falls back to preview
+  // routes when no release / network failure.
+  useEffect(() => {
+    let cancelled = false;
+    fetch("/api/desktop/release-manifest")
+      .then((r) => r.json())
+      .then((body) => {
+        if (cancelled) return;
+        if (body && body.ok && body.data) setManifest(body.data as ReleaseManifest);
+      })
+      .catch(() => { /* preview state stays */ });
+    return () => { cancelled = true; };
+  }, []);
+
+  // Compose the per-platform info — live download when manifest has an
+  // asset, preview route otherwise.
+  const platformsLive: Record<DetectedPlatform, PlatformInfo> = {
+    ...PLATFORMS,
+    ...Object.fromEntries(
+      (["mac-arm", "mac-intel", "windows", "linux"] as const).map((id) => {
+        const base = PLATFORMS[id];
+        const key = PLATFORM_TO_MANIFEST[id];
+        const asset = manifest?.assets[key] ?? null;
+        if (!asset) return [id, base];
+        return [id, {
+          ...base,
+          href: asset.downloadUrl,
+          sublabel: asset.signed && asset.notarized ? "Signed + notarized" : asset.signed ? "Signed · not notarized" : "Developer build · unsigned",
+          available: true,
+          fileName: asset.fileName,
+          installFriction: asset.installFriction,
+        }] as const;
+      }),
+    ),
+  } as Record<DetectedPlatform, PlatformInfo>;
+
+  const primaryPlatform = platformsLive[primary];
 
   return (
     <div className="min-h-screen bg-[#09090b] text-white relative overflow-hidden">
@@ -181,15 +251,27 @@ export default function DownloadPage() {
                 </Link>
                 <Link
                   href={mounted ? primaryPlatform.href : "/download/preview"}
-                  className="inline-flex items-center gap-2 px-6 py-3.5 rounded-full text-sm font-semibold border border-white/[0.12] bg-white/[0.03] hover:bg-white/[0.06] hover:border-white/[0.2] transition-colors"
+                  className={`inline-flex items-center gap-2 px-6 py-3.5 rounded-full text-sm font-semibold border transition-colors ${
+                    mounted && primaryPlatform.available
+                      ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-200 hover:bg-emerald-500/20 hover:border-emerald-500/50"
+                      : "border-white/[0.12] bg-white/[0.03] hover:bg-white/[0.06] hover:border-white/[0.2]"
+                  }`}
+                  {...(mounted && primaryPlatform.available && primaryPlatform.fileName ? { download: primaryPlatform.fileName } : {})}
                 >
-                  <CloudArrowDownIcon className="h-4 w-4 text-amber-300" />
-                  Join {mounted ? primaryPlatform.label : "desktop"} preview
+                  {mounted && primaryPlatform.available ? <ArrowDownTrayIcon className="h-4 w-4" /> : <CloudArrowDownIcon className="h-4 w-4 text-amber-300" />}
+                  {mounted && primaryPlatform.available
+                    ? `Download for ${primaryPlatform.label}`
+                    : `Join ${mounted ? primaryPlatform.label : "desktop"} preview`}
                 </Link>
               </div>
               <span className="text-xs text-zinc-500 font-mono">
-                Web app: live · Desktop: preview signed builds shipping with 1.0 (macOS · Windows · Linux)
+                {manifest?.hasAnyAsset
+                  ? `Latest desktop release: ${manifest.tag ?? "—"} · ${manifest.allSignedAndNotarized ? "signed + notarized" : "developer build · per-platform friction notes below"}`
+                  : "Web app: live · Desktop: developer builds publish via CI on `desktop-v*` tag — signed binaries when Apple/Windows certs are configured"}
               </span>
+              {mounted && primaryPlatform.available && primaryPlatform.installFriction && (
+                <span className="text-[11px] text-amber-200/80 font-mono">{primaryPlatform.installFriction}</span>
+              )}
             </div>
           </Reveal>
 
@@ -203,16 +285,19 @@ export default function DownloadPage() {
             </p>
           </Reveal>
 
-          {/* Platform availability table — honest preview/live tags. */}
+          {/* Platform availability table — live download when manifest has an
+              asset, preview route + honest label otherwise. */}
           <Reveal direction="up" delay={0.2}>
             <div className="mt-2 grid sm:grid-cols-2 md:grid-cols-5 gap-2 max-w-3xl mx-auto">
               {(["mac-arm", "mac-intel", "windows", "linux", "web"] as DetectedPlatform[]).map((id) => {
-                const p = PLATFORMS[id];
+                const p = platformsLive[id];
                 const isLive = p.available;
+                const downloadAttrs = isLive && p.fileName && id !== "web" ? { download: p.fileName } : {};
                 return (
                   <Link
                     key={id}
                     href={p.href}
+                    {...downloadAttrs}
                     className={`rounded-xl border p-3 text-left transition-colors ${
                       isLive
                         ? "border-emerald-500/15 bg-emerald-500/[0.03] hover:border-emerald-500/30"
@@ -228,10 +313,13 @@ export default function DownloadPage() {
                             : "text-amber-300 bg-amber-500/10 border-amber-500/20"
                         }`}
                       >
-                        {isLive ? "Live" : "Preview"}
+                        {isLive ? (id === "web" ? "Live" : "Download") : "Preview"}
                       </span>
                     </div>
                     <p className="text-[10px] text-zinc-500 leading-relaxed">{p.sublabel}</p>
+                    {p.installFriction && id !== "web" && (
+                      <p className="text-[9.5px] text-amber-200/70 mt-1 font-mono leading-snug">{p.installFriction}</p>
+                    )}
                   </Link>
                 );
               })}

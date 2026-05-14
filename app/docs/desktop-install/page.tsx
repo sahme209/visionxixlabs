@@ -17,7 +17,7 @@ export default function DesktopInstallPage() {
       />
 
       <Callout variant="info" title="Where each platform is right now">
-        macOS is in <strong>preview</strong> — code-signed and notarized, but feature-incomplete. Windows ships Q2 2026. Linux ships Q3 2026. The web platform is fully available today across all browsers.
+        Every desktop platform (macOS Apple Silicon + Intel, Windows x64, Linux x64) builds and runs end-to-end today. Binaries publish via CI on every <code>desktop-v*</code> tag. Signing + notarization activate automatically when Apple Developer + Windows EV cert secrets are configured — until then, builds are honestly labelled <strong>developer build · unsigned</strong> with a one-time install-friction step per OS (see below). The web platform is fully available now.
       </Callout>
 
       <DocSection id="why-desktop" title="Web vs desktop — when to install" kicker="01">
@@ -32,45 +32,54 @@ export default function DesktopInstallPage() {
         </ul>
       </DocSection>
 
-      <DocSection id="install" title="Install — macOS preview" kicker="02">
+      <DocSection id="install-macos" title="Install — macOS (Apple Silicon + Intel)" kicker="02">
         <Step number={1} title="Download from /download">
-          <p>Visit <Link href="/download">/download</Link>. The page auto-detects macOS Apple Silicon vs Intel. Click the appropriate primary button.</p>
+          <p>Visit <Link href="/download">/download</Link>. The page auto-detects Apple Silicon vs Intel and links to the matching <code>.dmg</code> from the latest <code>desktop-v*</code> GitHub release.</p>
         </Step>
-        <Step number={2} title="Verify code signature">
-          <p>The downloaded <code>.dmg</code> is Apple-notarized. Gatekeeper will validate on first open. If you receive a Gatekeeper warning, the download is corrupt — re-download.</p>
+        <Step number={2} title="Open the .dmg + drag to Applications">
+          <p>Mount the disk image. Drag <strong>Axiom Agent</strong> to <code>/Applications</code>. Eject the DMG.</p>
         </Step>
-        <Step number={3} title="Drag to Applications">
-          <p>Standard macOS install. Drag Axiom to <code>/Applications</code>. Eject the DMG.</p>
+        <Step number={3} title="First launch — handle Gatekeeper honestly">
+          <p>When Apple Developer ID signing + notarization secrets are configured, double-click runs the app cleanly. <strong>Until then</strong>: right-click the app in <code>/Applications</code> → <strong>Open</strong> → <strong>Open</strong> again at the prompt. macOS records the one-time exception and won&apos;t prompt again.</p>
         </Step>
-        <Step number={4} title="First launch + auth">
-          <p>The app opens to a sign-in screen. Use your existing Axiom credentials. After auth, it offers to migrate any existing AWS connections from the web platform.</p>
-        </Step>
-        <Step number={5} title="Optional: enable menu-bar agent">
-          <p>Settings → General → &quot;Run agent in menu bar&quot;. Enables background scans + native notifications.</p>
+        <Step number={4} title="Sign in to your workspace">
+          <p>The app opens to a sign-in screen. Use your existing Axiom credentials. After auth, it pairs the workstation and starts receiving HMAC-signed handoffs.</p>
         </Step>
       </DocSection>
 
-      <DocSection id="windows" title="Install — Windows (Q2 2026)" kicker="03">
-        <p>Windows 10/11 x64 and ARM64 will be supported. Distribution via:</p>
-        <ul className="list-disc list-inside space-y-1.5 text-zinc-400 ml-1">
-          <li>Direct MSIX download from <Link href="/download">/download</Link></li>
-          <li>Microsoft Store</li>
-          <li>Winget package: <code>winget install axiom-agent</code> (planned)</li>
-          <li>Enterprise MSI bundle for IT-managed deployments</li>
-        </ul>
-        <p>Q2 2026 ETA. Sign up at <Link href="/download">/download</Link> for early-access invitations.</p>
+      <DocSection id="install-windows" title="Install — Windows x64" kicker="03">
+        <Step number={1} title="Download the .msi">
+          <p>The <code>desktop-v*</code> GitHub release contains a Windows MSI installer.</p>
+        </Step>
+        <Step number={2} title="SmartScreen first-run dialog (unsigned builds)">
+          <p>When the EV code-signing certificate is configured in CI, the installer runs cleanly. <strong>Until then</strong>: when Windows SmartScreen warns, click <strong>More info</strong> → <strong>Run anyway</strong>. The MSI is published from a verified CI pipeline and only carries developer-mode binaries.</p>
+        </Step>
+        <Step number={3} title="Standard MSI install">
+          <p>Walk through the installer. The app installs to <code>%LocalAppData%\Programs\Axiom Agent</code> and pins to the Start menu.</p>
+        </Step>
+        <Step number={4} title="Sign in">
+          <p>Same Axiom credentials as the web. The desktop pairs your workstation on first sign-in.</p>
+        </Step>
       </DocSection>
 
-      <DocSection id="linux" title="Install — Linux (Q3 2026)" kicker="04">
-        <p>Linux distribution will include:</p>
-        <ul className="list-disc list-inside space-y-1.5 text-zinc-400 ml-1">
-          <li>AppImage (universal)</li>
-          <li><code>.deb</code> (Debian, Ubuntu)</li>
-          <li><code>.rpm</code> (RHEL, Fedora, openSUSE)</li>
-          <li>Snap (universal)</li>
-          <li>Flatpak (universal)</li>
-        </ul>
-        <p>Q3 2026 ETA. The same menu-bar / system-tray agent will be available on supported desktop environments.</p>
+      <DocSection id="install-linux" title="Install — Linux x64" kicker="04">
+        <Step number={1} title="Pick a packaging format">
+          <p>Each release ships an <code>.AppImage</code>, a <code>.deb</code>, and a <code>.rpm</code>. AppImage works on every distribution; <code>.deb</code> covers Debian/Ubuntu; <code>.rpm</code> covers RHEL/Fedora.</p>
+        </Step>
+        <Step number={2} title="AppImage — chmod + run">
+          <p>Linux doesn&apos;t require signing for end-user run. Make the AppImage executable and double-click:</p>
+          <pre className="rounded-lg bg-black/40 border border-white/[0.06] p-3 text-[12px] font-mono text-zinc-300 overflow-x-auto">{`chmod +x ./Axiom-Agent-*.AppImage
+./Axiom-Agent-*.AppImage`}</pre>
+        </Step>
+        <Step number={3} title=".deb — sudo dpkg -i">
+          <pre className="rounded-lg bg-black/40 border border-white/[0.06] p-3 text-[12px] font-mono text-zinc-300 overflow-x-auto">{`sudo dpkg -i axiom-agent_*_amd64.deb`}</pre>
+        </Step>
+        <Step number={4} title=".rpm — sudo rpm -i">
+          <pre className="rounded-lg bg-black/40 border border-white/[0.06] p-3 text-[12px] font-mono text-zinc-300 overflow-x-auto">{`sudo rpm -i axiom-agent-*.x86_64.rpm`}</pre>
+        </Step>
+        <Step number={5} title="Sign in">
+          <p>Launch <code>axiom-agent</code> (or open from the application menu). Use your Axiom credentials to pair the workstation.</p>
+        </Step>
       </DocSection>
 
       <DocSection id="cli" title="CLI binary — available now" kicker="05">
@@ -88,7 +97,7 @@ export default function DesktopInstallPage() {
           items={[
             { question: "What does the desktop app do that the web doesn't?", answer: "Local Terraform execution, OS-keychain credential storage, background agent with native notifications, offline audit export, optional workstation mode." },
             { question: "Why install it?", answer: "Stricter security posture, reduced cloud round-trip latency, and ability to work offline." },
-            { question: "Is the desktop app safe?", answer: "Apple-notarized + Microsoft-signed binaries. No telemetry by default. Workstation mode disables all outbound network entirely." },
+            { question: "Is the desktop app safe?", answer: "Binaries publish from a public CI pipeline you can inspect. Signing + notarization activate the moment Apple Developer + Windows EV cert secrets are configured. The HMAC handoff signer + local-apply block are enforced on every build, signed or unsigned." },
             { question: "Where are credentials stored?", answer: "OS keychain (macOS Keychain / Windows Credential Manager / Linux libsecret). Never in the app's own files." },
             { question: "Can I revoke?", answer: "Sign out + uninstall. Credentials in OS keychain are removed on sign-out." },
             { question: "What if my org blocks Apple-signed apps?", answer: "Enterprise deployment via managed Apple Business Manager / Jamf is supported on the Enterprise tier." },
