@@ -92,6 +92,22 @@ export const VALIDATION_MATRIX: ValidationRow[] = [
   { id: "rem.api_rollback",         area: "security_scanner", capability: "POST /api/execution/rollback-preview",                 status: "passing", evidence: "app/api/execution/rollback-preview/route.ts" },
   { id: "rem.api_verification",     area: "security_scanner", capability: "POST /api/execution/verification-checklist",          status: "passing", evidence: "app/api/execution/verification-checklist/route.ts" },
   { id: "rem.center_ui",            area: "command_center",   capability: "/dashboard/remediation Center UI",                    status: "passing", evidence: "app/dashboard/remediation/page.tsx" },
+
+  // Digital Twin + Simulation
+  { id: "sim.twin_model",           area: "command_center",   capability: "Digital twin model + types",                          status: "passing", evidence: "lib/digitalTwin/digitalTwinModel.ts" },
+  { id: "sim.twin_builder",         area: "command_center",   capability: "Digital twin builder (overview + scan + readiness)",  status: "preview", evidence: "lib/digitalTwin/digitalTwinBuilder.ts", nextFix: "Wire live snapshot ingestion once provider live-scan is on." },
+  { id: "sim.changeset",            area: "security_scanner", capability: "ChangeSet model + destructive-action guards",         status: "passing", evidence: "lib/simulation/changeSetModel.ts" },
+  { id: "sim.diff_engine",          area: "security_scanner", capability: "Field diff with redaction (no secrets ever shown)",   status: "passing", evidence: "lib/simulation/diffEngine.ts" },
+  { id: "sim.impact_analyzer",      area: "security_scanner", capability: "Blast-radius + dependency-impact analyzer (3-hop BFS)", status: "passing", evidence: "lib/simulation/impactAnalyzer.ts" },
+  { id: "sim.execution_simulator",  area: "security_scanner", capability: "Execution simulator (in-memory twin mutation, no apply)", status: "passing", evidence: "lib/simulation/executionSimulator.ts" },
+  { id: "sim.releaseops",           area: "release",          capability: "Release readiness simulator (typed score deltas)",     status: "passing", evidence: "lib/releaseops/releaseSimulation.ts" },
+  { id: "sim.security",             area: "security_scanner", capability: "Security remediation simulator (per-finding delta)",   status: "passing", evidence: "lib/securityScanner/securitySimulation.ts" },
+  { id: "sim.api_create",           area: "security_scanner", capability: "POST /api/simulations/create",                         status: "passing", evidence: "app/api/simulations/create/route.ts" },
+  { id: "sim.api_by_id",            area: "security_scanner", capability: "GET /api/simulations/[id]",                            status: "passing", evidence: "app/api/simulations/[id]/route.ts" },
+  { id: "sim.api_from_rem",         area: "security_scanner", capability: "POST /api/simulations/from-remediation",               status: "passing", evidence: "app/api/simulations/from-remediation/route.ts" },
+  { id: "sim.api_twin_build",       area: "command_center",   capability: "POST /api/digital-twin/build",                         status: "passing", evidence: "app/api/digital-twin/build/route.ts" },
+  { id: "sim.api_twin_current",     area: "command_center",   capability: "GET  /api/digital-twin/current (not persisted yet)",   status: "partial", evidence: "app/api/digital-twin/current/route.ts", nextFix: "Persist twins in Prisma so /current can return the latest stored one." },
+  { id: "sim.center_ui",            area: "command_center",   capability: "/dashboard/simulations Center UI",                     status: "passing", evidence: "app/dashboard/simulations/page.tsx" },
 ];
 
 // ---------------------------------------------------------------------------
