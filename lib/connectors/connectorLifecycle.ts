@@ -1,6 +1,10 @@
 /**
  * Universal connector lifecycle — shared state machine for every connector
- * type (cloud, repository, CI/CD, IaC, ticketing, messaging, desktop, audit).
+ * kind (cloud, repository, CI/CD, IaC, ticketing, messaging, desktop, audit).
+ *
+ * Distinct from `lib/cloud/connectorLifecycle.ts`, which models the
+ * cloud-specific scan & reasoning lifecycle. This file is the broader,
+ * connector-agnostic state machine that runs upstream of any scan.
  *
  * Each transition emits an event into the operational event stream so the
  * Command Center, workflows, and memory timeline reflect lifecycle state.

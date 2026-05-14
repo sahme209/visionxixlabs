@@ -1,10 +1,15 @@
 /**
- * Connector lifecycle engine — typed state machine for cloud onboarding,
+ * Cloud scan lifecycle engine — typed state machine for cloud onboarding,
  * validation, scanning, snapshot generation, and reasoning.
  *
- * All three providers (AWS active, Azure/GCP foundation) share this same
- * state machine. Provider-specific lifecycle behavior is composed by
- * implementing handlers per state; the state machine itself is provider-agnostic.
+ * NOT the same concern as `lib/connectors/connectorLifecycle.ts`:
+ *  - This file models the end-to-end cloud *scan & reasoning* lifecycle
+ *    (credentials → scan → snapshot → findings → recommendations → plan).
+ *  - `lib/connectors/connectorLifecycle.ts` models the *universal connector*
+ *    lifecycle that applies to every connector kind (cloud, repo, CI/CD,
+ *    chat, ticketing) — auth_required → connected → syncing → synced.
+ *
+ * Both exist intentionally; do not collapse them.
  */
 
 import type { CloudProvider } from "@/lib/connectors/interface";

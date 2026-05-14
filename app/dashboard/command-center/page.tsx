@@ -17,10 +17,13 @@ import {
 } from "@heroicons/react/24/outline";
 import { Reveal } from "@/components/motion/Reveal";
 import { Stagger } from "@/components/motion/Stagger";
+import { ShieldCheckIcon, SignalIcon } from "@heroicons/react/24/outline";
 import { ActivityFeed } from "@/components/operations/ActivityFeed";
 import { ReasoningTrace } from "@/components/operations/ReasoningTrace";
 import { ExecutionPlanCard } from "@/components/operations/ExecutionPlanCard";
 import { InfrastructureTopology } from "@/components/operations/InfrastructureTopology";
+import { buildSecurityPosture } from "@/lib/security/securityPosture";
+import { buildReliabilityPosture } from "@/lib/reliability/reliabilityPosture";
 
 interface KpiTile {
   label: string;
@@ -234,6 +237,14 @@ export default function CommandCenterPage() {
           );
         })}
       </Stagger>
+
+      {/* Security + Reliability strips — canonical posture aggregators */}
+      <Reveal direction="up" delay={0.055}>
+        <div className="grid md:grid-cols-2 gap-3 mb-6">
+          <SecurityPostureStrip />
+          <ReliabilityPostureStrip />
+        </div>
+      </Reveal>
 
       {/* Executive summary banner — memory-driven */}
       <Reveal direction="up" delay={0.06}>
@@ -501,5 +512,121 @@ function ExecutiveSummaryBanner() {
         </div>
       </div>
     </div>
+  );
+}
+
+function SecurityPostureStrip() {
+  const posture = buildSecurityPosture({
+    source: "preview",
+    credentials: [],
+    pairedDesktops: [],
+    crossTenantAttempts30d: 0,
+    policyBlocks30d: 2,
+    openHighRiskFindings: 1,
+    redactionEnabled: true,
+    auditStoreConfigured: true,
+    copilotContextSafe: true,
+  });
+  const tone =
+    posture.semantic === "success" ? "border-emerald-500/15 bg-emerald-500/[0.03]" :
+    posture.semantic === "warning" ? "border-amber-500/15 bg-amber-500/[0.03]" :
+    posture.semantic === "error"   ? "border-red-500/15 bg-red-500/[0.03]" :
+                                     "border-white/[0.06] bg-white/[0.02]";
+  const scorePct = Math.round(posture.score * 100);
+  const headlineCheck = posture.checks.find((c) => c.semantic === "error") ?? posture.checks.find((c) => c.semantic === "warning") ?? posture.checks[0];
+  return (
+    <Link href="/dashboard/security" className={`block rounded-2xl border ${tone} p-5 hover:border-emerald-500/30 transition-colors group`}>
+      <div className="flex items-center justify-between gap-4 flex-wrap">
+        <div className="flex items-center gap-3 min-w-0">
+          <div className="w-10 h-10 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center shrink-0">
+            <ShieldCheckIcon className="h-5 w-5 text-emerald-400" />
+          </div>
+          <div className="min-w-0">
+            <div className="flex items-center gap-2 mb-1">
+              <p className="text-[10px] font-semibold text-emerald-400 uppercase tracking-widest">Security posture</p>
+              <span className="text-[9px] font-semibold text-amber-400 bg-amber-500/15 border border-amber-500/30 rounded-full px-1.5 py-px uppercase tracking-wider">
+                Preview
+              </span>
+            </div>
+            <p className="text-sm font-semibold text-white">{scorePct}% baseline · {headlineCheck?.label}</p>
+            <p className="text-[11px] text-zinc-500 mt-0.5 leading-relaxed">{headlineCheck?.detail}</p>
+          </div>
+        </div>
+        <div className="flex items-center gap-4">
+          <div className="hidden sm:flex items-center gap-3">
+            <Stat label="Redaction" value={`${posture.redaction.patterns.length}`} />
+            <Stat label="Credentials" value={`${posture.credentialSummary.total}`} />
+            <Stat label="Desktops" value={`${posture.desktopSummary.trusted}/${posture.desktopSummary.paired}`} />
+          </div>
+          <ArrowRightIcon className="h-4 w-4 text-zinc-500 group-hover:text-emerald-300 group-hover:translate-x-0.5 transition-all" />
+        </div>
+      </div>
+    </Link>
+  );
+}
+
+function Stat({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="text-center min-w-[3.5rem]">
+      <p className="text-base font-bold text-white tracking-tight leading-none">{value}</p>
+      <p className="text-[9px] text-zinc-500 uppercase tracking-wider mt-1">{label}</p>
+    </div>
+  );
+}
+
+function ReliabilityPostureStrip() {
+  const posture = buildReliabilityPosture({
+    source: "preview",
+    components: [
+      { id: "web_app",          label: "Web app",          status: "healthy"   },
+      { id: "database",         label: "Database",         status: "healthy"   },
+      { id: "connector.aws",    label: "AWS connector",    status: "healthy"   },
+      { id: "connector.azure",  label: "Azure connector",  status: "degraded"  },
+      { id: "connector.github", label: "GitHub connector", status: "healthy"   },
+      { id: "copilot_llm",      label: "Copilot / LLM",    status: "healthy"   },
+      { id: "workflow_engine",  label: "Workflow engine",  status: "healthy"   },
+    ],
+    circuits: [],
+    deadLetters: [],
+    fleet: { total: 12, healthy: 11, stalled: 1, stuck: 0, failed: 0, partial: 0, actionable: [] },
+    retryingJobs: 3,
+    successfulRetries24h: 17,
+    rateLimitPauses24h: 4,
+  });
+  const tone =
+    posture.semantic === "success" ? "border-cyan-500/15 bg-cyan-500/[0.03]" :
+    posture.semantic === "warning" ? "border-amber-500/15 bg-amber-500/[0.03]" :
+    posture.semantic === "error"   ? "border-red-500/15 bg-red-500/[0.03]" :
+                                     "border-white/[0.06] bg-white/[0.02]";
+  const scorePct = Math.round(posture.score * 100);
+  const headlineCheck = posture.checks.find((c) => c.semantic === "error") ?? posture.checks.find((c) => c.semantic === "warning") ?? posture.checks[0];
+  return (
+    <Link href="/dashboard/reliability" className={`block rounded-2xl border ${tone} p-5 hover:border-cyan-500/30 transition-colors group`}>
+      <div className="flex items-center justify-between gap-4 flex-wrap">
+        <div className="flex items-center gap-3 min-w-0">
+          <div className="w-10 h-10 rounded-lg bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center shrink-0">
+            <SignalIcon className="h-5 w-5 text-cyan-400" />
+          </div>
+          <div className="min-w-0">
+            <div className="flex items-center gap-2 mb-1">
+              <p className="text-[10px] font-semibold text-cyan-400 uppercase tracking-widest">Reliability posture</p>
+              <span className="text-[9px] font-semibold text-amber-400 bg-amber-500/15 border border-amber-500/30 rounded-full px-1.5 py-px uppercase tracking-wider">
+                Preview
+              </span>
+            </div>
+            <p className="text-sm font-semibold text-white">{scorePct}% healthy · {headlineCheck?.label}</p>
+            <p className="text-[11px] text-zinc-500 mt-0.5 leading-relaxed">{headlineCheck?.detail}</p>
+          </div>
+        </div>
+        <div className="flex items-center gap-4">
+          <div className="hidden sm:flex items-center gap-3">
+            <Stat label="Retrying" value={`${posture.retryingJobs}`} />
+            <Stat label="Open circ." value={`${posture.openCircuits.length}`} />
+            <Stat label="DLQ" value={`${posture.unresolvedDeadLetters.length}`} />
+          </div>
+          <ArrowRightIcon className="h-4 w-4 text-zinc-500 group-hover:text-cyan-300 group-hover:translate-x-0.5 transition-all" />
+        </div>
+      </div>
+    </Link>
   );
 }

@@ -11,7 +11,7 @@
  * relationships are surfaced as facts.
  */
 
-import type { CloudProvider } from "@/lib/connectors/interface";
+import type { CloudProvider } from "@/lib/domain/provider";
 
 // ---------------------------------------------------------------------------
 // Node taxonomy

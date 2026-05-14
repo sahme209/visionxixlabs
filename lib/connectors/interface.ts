@@ -1,11 +1,16 @@
 /**
  * CloudConnectorInterface — unified abstraction for cloud providers.
  * Axiom calls these methods without knowing which cloud (AWS, Azure, GCP) is used.
+ *
+ * `CloudProvider` here is the canonical taxonomy from `lib/domain/provider`.
+ * Older modules import it from this file — we re-export to keep that path
+ * stable while consolidating new code on the domain layer.
  */
 
 import type { ConnectorStatus } from "./types";
+import type { CloudProvider } from "@/lib/domain/provider";
 
-export type CloudProvider = "aws" | "azure" | "gcp";
+export type { CloudProvider };
 
 export interface CloudConnectorContext {
   userId: string; // Required for execution context; use leadId when user not yet linked
