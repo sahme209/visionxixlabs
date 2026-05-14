@@ -1,0 +1,118 @@
+/**
+ * Platform validation matrix.
+ *
+ * Single internal source of truth for "what works end-to-end right now".
+ * Each row carries a stable id, a typed status, the source file/route
+ * that backs it, and an honest next-fix line. The Trust Center + Command
+ * Center + a future QA report all read from here.
+ *
+ * No row claims "passing" without an evidence ref.
+ */
+
+export type ValidationStatus = "passing" | "partial" | "failing" | "preview" | "blocked";
+
+export interface ValidationRow {
+  id: string;
+  area: "aws" | "azure" | "gcp" | "github" | "security_scanner" | "desktop" | "command_center" | "compliance" | "release";
+  capability: string;
+  status: ValidationStatus;
+  /** Where the proof lives — module path, route, env var. */
+  evidence: string;
+  /** Optional honest blocker / next fix. */
+  nextFix?: string;
+}
+
+export const VALIDATION_MATRIX: ValidationRow[] = [
+  // AWS
+  { id: "aws.format",       area: "aws",    capability: "Role ARN + External ID + region format validation",      status: "passing", evidence: "lib/cloud/aws/awsValidator.ts" },
+  { id: "aws.live_sts",     area: "aws",    capability: "Live STS AssumeRole + GetCallerIdentity validation",     status: "partial", evidence: "lib/cloud/aws/awsValidator.ts", nextFix: "Requires AWS_CONNECTOR_BROKER_ACCESS_KEY_ID + AWS_CONNECTOR_BROKER_SECRET_ACCESS_KEY on host." },
+  { id: "aws.preview_scan", area: "aws",    capability: "Preview scan returns snapshot + findings + recommendations", status: "passing", evidence: "lib/cloud/aws/awsPreviewScanner.ts" },
+  { id: "aws.live_inventory", area: "aws",  capability: "Live EC2 / S3 / RDS inventory",                          status: "preview", evidence: "lib/cloud/aws/awsPreviewScanner.ts", nextFix: "Wire EC2/S3/RDS describe-calls behind feature flag." },
+  { id: "aws.scan_pipeline", area: "aws",   capability: "End-to-end pipeline w/ trace + evidence",                status: "passing", evidence: "lib/pipeline/cloudScanPipeline.ts" },
+  { id: "aws.iam_trust",    area: "aws",    capability: "IAM trust policy A-F grader",                            status: "passing", evidence: "lib/cloud/iamTrustEvaluator.ts" },
+
+  // Azure
+  { id: "azure.format",     area: "azure",  capability: "Tenant + subscription id format validation",             status: "passing", evidence: "lib/cloud/azure/azureValidator.ts" },
+  { id: "azure.live_sp",    area: "azure",  capability: "Live service principal authentication",                  status: "blocked", evidence: "lib/cloud/azure/azureValidator.ts", nextFix: "Wire @azure/identity ClientSecretCredential + @azure/arm-subscriptions call." },
+  { id: "azure.preview",    area: "azure",  capability: "Preview snapshot + findings + recommendations",          status: "passing", evidence: "lib/cloud/azure/azurePreviewScanner.ts" },
+
+  // GCP
+  { id: "gcp.format",       area: "gcp",    capability: "Project id + service account JSON shape validation",     status: "passing", evidence: "lib/cloud/gcp/gcpValidator.ts" },
+  { id: "gcp.live_sa",      area: "gcp",    capability: "Live service account authentication",                    status: "blocked", evidence: "lib/cloud/gcp/gcpValidator.ts", nextFix: "Wire google-auth-library + @google-cloud/resource-manager call." },
+  { id: "gcp.preview",      area: "gcp",    capability: "Preview snapshot + findings + recommendations",          status: "passing", evidence: "lib/cloud/gcp/gcpPreviewScanner.ts" },
+
+  // GitHub
+  { id: "gh.format",        area: "github", capability: "Owner / repo name format validation",                    status: "passing", evidence: "lib/connectors/github/githubValidator.ts" },
+  { id: "gh.live_token",    area: "github", capability: "Live token validation via /user endpoint",               status: "passing", evidence: "lib/connectors/github/githubValidator.ts" },
+  { id: "gh.oauth",         area: "github", capability: "OAuth sign-in (GitHub + Google) on /auth/signin",        status: "passing", evidence: "lib/auth.ts + GITHUB_CLIENT_ID set on Vercel" },
+  { id: "gh.preview_sync",  area: "github", capability: "Preview repo + workflow + branch protection inventory",  status: "passing", evidence: "lib/connectors/github/githubPreviewSync.ts" },
+  { id: "gh.live_sync",     area: "github", capability: "Live GitHub repo + workflow discovery",                  status: "blocked", evidence: "TBD", nextFix: "Wire octokit + repo discovery behind GITHUB_SYNC_MODE=live." },
+
+  // Security scanner
+  { id: "sec.engine",       area: "security_scanner", capability: "Scanner engine produces typed check results",  status: "passing", evidence: "lib/securityScanner/securityScanner.ts" },
+  { id: "sec.cloud_checks", area: "security_scanner", capability: "Cloud misconfiguration checks (preview-derived)", status: "preview", evidence: "lib/securityScanner/securityScanner.ts" },
+  { id: "sec.app_checks",   area: "security_scanner", capability: "App / platform boundary checks",               status: "passing", evidence: "lib/securityScanner/securityScanner.ts" },
+  { id: "sec.supply_chain", area: "security_scanner", capability: "Supply-chain checks",                          status: "passing", evidence: "lib/securityScanner/securityScanner.ts" },
+  { id: "sec.desktop",      area: "security_scanner", capability: "Desktop distribution + execution checks",      status: "passing", evidence: "lib/securityScanner/securityScanner.ts" },
+
+  // Desktop
+  { id: "desk.shell",       area: "desktop", capability: "Tauri shell + React frontend",                          status: "passing", evidence: "desktop/" },
+  { id: "desk.handoff",     area: "desktop", capability: "Signed handoff contract + validator (HMAC + nonce + TTL)", status: "passing", evidence: "lib/desktop/handoffContract.ts + handoffSigner.ts + handoffValidator.ts" },
+  { id: "desk.signing",     area: "desktop", capability: "Code signing + notarization for macOS / Windows / Linux", status: "blocked", evidence: "lib/release/versionModel.ts", nextFix: "Apple Developer ID + Windows EV cert + Linux GPG required." },
+  { id: "desk.downloads",   area: "desktop", capability: "Public binary distribution",                            status: "blocked", evidence: "lib/desktop/desktopDistribution.ts", nextFix: "Blocked on signing." },
+
+  // Command Center
+  { id: "cc.state_adapter", area: "command_center", capability: "Canonical CommandCenterState adapter",           status: "passing", evidence: "lib/platform/getCommandCenterState.ts" },
+  { id: "cc.api_route",     area: "command_center", capability: "GET /api/command-center",                        status: "passing", evidence: "app/api/command-center/route.ts" },
+  { id: "cc.dashboard_wired", area: "command_center", capability: "Dashboard pulls mode flags from /api/command-center", status: "passing", evidence: "app/dashboard/page.tsx" },
+
+  // Compliance
+  { id: "comp.registry",    area: "compliance", capability: "19 typed compliance controls",                        status: "passing", evidence: "lib/compliance/controlRegistry.ts" },
+  { id: "comp.bundle",      area: "compliance", capability: "Evidence bundle export (JSON / NDJSON)",              status: "passing", evidence: "lib/compliance/evidenceBundle.ts" },
+  { id: "comp.trust_center", area: "compliance", capability: "/dashboard/trust premium UI",                        status: "passing", evidence: "app/dashboard/trust/page.tsx" },
+
+  // Release
+  { id: "rel.web",          area: "release", capability: "Web app released on https://visionxixlabs.com",          status: "passing", evidence: "lib/release/versionModel.ts" },
+  { id: "rel.desktop_pkg",  area: "release", capability: "Signed desktop binaries published",                       status: "blocked", evidence: "lib/release/versionModel.ts", nextFix: "Blocked on signing certificates." },
+];
+
+// ---------------------------------------------------------------------------
+// Summary
+// ---------------------------------------------------------------------------
+
+export interface ValidationSummary {
+  total: number;
+  passing: number;
+  partial: number;
+  failing: number;
+  preview: number;
+  blocked: number;
+  /** 0..1 — passing = 1, partial = 0.6, preview = 0.4, blocked = 0.2, failing = 0. */
+  score: number;
+}
+
+export function summarizeValidation(rows: ValidationRow[] = VALIDATION_MATRIX): ValidationSummary {
+  let passing = 0, partial = 0, failing = 0, preview = 0, blocked = 0;
+  for (const r of rows) {
+    if (r.status === "passing") passing++;
+    else if (r.status === "partial") partial++;
+    else if (r.status === "failing") failing++;
+    else if (r.status === "preview") preview++;
+    else blocked++;
+  }
+  const denom = rows.length || 1;
+  const score = (passing + partial * 0.6 + preview * 0.4 + blocked * 0.2) / denom;
+  return { total: rows.length, passing, partial, failing, preview, blocked, score };
+}
+
+export function rowsByArea(area: ValidationRow["area"]): ValidationRow[] {
+  return VALIDATION_MATRIX.filter((r) => r.area === area);
+}
+
+export const STATUS_LABEL: Record<ValidationStatus, string> = {
+  passing: "Passing",
+  partial: "Partial",
+  failing: "Failing",
+  preview: "Preview",
+  blocked: "Blocked",
+};
