@@ -22,6 +22,11 @@ import { buildObservabilityPosture } from "@/lib/observability/observabilityPost
 import { resolveNextAction } from "@/lib/product/nextAction";
 import { summarizeControls, CONTROL_REGISTRY } from "@/lib/compliance/controlRegistry";
 import { platformSummaries } from "@/lib/release/versionModel";
+import { buildMultiCloudOverview } from "@/lib/cloud/multiCloudOverview";
+import type { MultiCloudOverview } from "@/lib/cloud/multiCloudOverview";
+import { getReleaseOpsState } from "@/lib/releaseops/getReleaseOpsState";
+import type { ReleaseOpsState } from "@/lib/releaseops/getReleaseOpsState";
+import { summarizeValidation } from "@/lib/validation/platformValidationMatrix";
 import type { FeatureFlags } from "@/lib/config/features";
 
 // ---------------------------------------------------------------------------
@@ -54,6 +59,12 @@ export interface CommandCenterState {
   nextAction: SectionEnvelope<ReturnType<typeof resolveNextAction>>;
   compliance: SectionEnvelope<{ score: number; implemented: number; total: number; partial: number; planned: number }>;
   releases: SectionEnvelope<ReturnType<typeof platformSummaries>>;
+  /** Normalised multi-cloud overview across AWS / Azure / GCP. */
+  multiCloud: SectionEnvelope<MultiCloudOverview>;
+  /** ReleaseOps state (GitHub connector + readiness). */
+  releaseOps: SectionEnvelope<ReleaseOpsState>;
+  /** Validation matrix headline. */
+  validation: SectionEnvelope<{ score: number; passing: number; total: number; partial: number; preview: number; blocked: number }>;
   /** What the Command Center should headline if the user is fresh. */
   headline: string;
 }
@@ -146,6 +157,17 @@ export async function getCommandCenterState(): Promise<CommandCenterState> {
     isAuthenticated: ctx.isAuthenticated,
   });
 
+  // Multi-cloud overview — runs with no scan inputs (preview-only) so the
+  // tile is always populated. Live inputs slot in once provider scanners
+  // are invoked elsewhere and their output is passed in here.
+  const multiCloud = buildMultiCloudOverview({});
+
+  // ReleaseOps — runs the preview GitHub sync + readiness composer.
+  const releaseOps = await getReleaseOpsState({});
+
+  // Validation matrix summary
+  const validation = summarizeValidation();
+
   const headline = !ctx.isAuthenticated
     ? "Sign in to open your workspace."
     : connectedClouds === 0
@@ -169,6 +191,9 @@ export async function getCommandCenterState(): Promise<CommandCenterState> {
     nextAction:    { source: "real", data: nextAction },
     compliance:    { source: "real", data: compliance, note: `${compliance.implemented}/${compliance.total} controls implemented.` },
     releases:      { source: "real", data: releases },
+    multiCloud:    { source: "preview", data: multiCloud, note: "Multi-cloud aggregator running on preview inputs — live snapshots slot in once provider scanners are invoked." },
+    releaseOps:    { source: "preview", data: releaseOps, note: "ReleaseOps state running on preview sync; live GitHub sync ships once octokit wiring lands." },
+    validation:    { source: "real",    data: { score: validation.score, passing: validation.passing, total: validation.total, partial: validation.partial, preview: validation.preview, blocked: validation.blocked } },
     headline,
   };
 }
