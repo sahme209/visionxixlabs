@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { invoke } from "@tauri-apps/api/core";
+import { ViewShell } from "../components/Primitives";
 
 interface ScanResult {
   provider: string;
@@ -41,7 +42,7 @@ export function ScansView() {
   };
 
   return (
-    <div className="p-6 space-y-6">
+    <ViewShell>
       <div>
         <h1 className="text-xl font-bold tracking-tight">Cloud Scans</h1>
         <p className="text-sm text-zinc-500 mt-0.5">
@@ -136,6 +137,6 @@ export function ScansView() {
           <p className="text-xs text-zinc-600 mt-1">Select a scan type above to begin</p>
         </div>
       )}
-    </div>
+    </ViewShell>
   );
 }

@@ -14,7 +14,7 @@ interface RuntimeProbe {
 }
 
 export function ConnectionBanner() {
-  const [probe, setProbe] = useState<RuntimeProbe>({ connection: "online", auditPending: 0, updateReady: false });
+  const [probe] = useState<RuntimeProbe>({ connection: "online", auditPending: 0, updateReady: false });
 
   // Real implementation would invoke a Tauri command. For now keep the probe
   // in a healthy default so we don't render misleading banners.

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { invoke } from "@tauri-apps/api/core";
+import { ViewShell } from "../components/Primitives";
 
 type Provider = "aws" | "azure" | "gcp";
 
@@ -84,7 +85,7 @@ export function ConnectorsView() {
   };
 
   return (
-    <div className="p-6 space-y-6">
+    <ViewShell>
       <div>
         <h1 className="text-xl font-bold tracking-tight">Cloud Connectors</h1>
         <p className="text-sm text-zinc-500 mt-0.5">
@@ -188,6 +189,6 @@ export function ConnectorsView() {
           </div>
         </div>
       </div>
-    </div>
+    </ViewShell>
   );
 }

@@ -1,132 +1,153 @@
+/**
+ * Dashboard view — projects from the live `/api/control-plane/state`
+ * response. Renders the canonical posture rail, top KPIs, providers,
+ * and the ranked next-best actions the autonomous loop would run.
+ */
+
 import { useEffect, useState } from "react";
-import { invoke } from "@tauri-apps/api/core";
+import { desktopClient, type ControlPlaneStateLite } from "../lib/desktopClient";
+import { Card, Kpi, PostureTile, SectionHeader, ViewShell, LoadingState, EmptyState, Badge, statusToneFor, riskToneFor } from "../components/Primitives";
 
-interface SystemInfo {
-  platform: string;
-  arch: string;
-  version: string;
-}
+export function DashboardView() {
+  const [state, setState] = useState<ControlPlaneStateLite | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-interface HealthStatus {
-  status: string;
-  version: string;
-  uptime_ms: number;
-}
+  useEffect(() => {
+    let cancelled = false;
+    setLoading(true);
+    desktopClient.controlPlaneState().then((res) => {
+      if (cancelled) return;
+      if (res.ok) setState(res.data);
+      else setError(res.error);
+      setLoading(false);
+    });
+    return () => { cancelled = true; };
+  }, []);
 
-interface MetricCardProps {
-  label: string;
-  value: string;
-  sub?: string;
-  accent?: "emerald" | "violet" | "amber" | "red";
-}
+  if (loading) return <ViewShell><LoadingState label="Building control plane state…" /></ViewShell>;
+  if (error || !state) {
+    return (
+      <ViewShell>
+        <EmptyState
+          Icon={ConnIcon}
+          title="Not connected to your workspace yet"
+          detail={error ?? "Sign in via the web app first, then this view will project live state. The desktop runs against https://visionxixlabs.com — open the web sign-in and your session cookie will be used."}
+          action={<a href="https://visionxixlabs.com/auth/signin" className="btn-primary" target="_blank" rel="noreferrer">Open web sign-in</a>}
+        />
+      </ViewShell>
+    );
+  }
 
-function MetricCard({ label, value, sub, accent = "violet" }: MetricCardProps) {
-  const colors = {
-    emerald: "text-emerald-400",
-    violet: "text-violet-400",
-    amber: "text-amber-400",
-    red: "text-red-400",
-  };
+  const liveCount = state.providers.filter((p) => p.sourceMode === "live").length;
 
   return (
-    <div className="metric-card animate-fade-in">
-      <span className="text-xs text-zinc-500 uppercase tracking-wider">{label}</span>
-      <span className={`text-2xl font-bold tracking-tight ${colors[accent]}`}>{value}</span>
-      {sub && <span className="text-xs text-zinc-500">{sub}</span>}
-    </div>
+    <ViewShell>
+      <SectionHeader
+        kicker="// control plane"
+        title="One operating system for every cloud."
+        subtitle={`Projecting live state generated ${new Date(state.generatedAt).toLocaleTimeString()} · source mode · ${state.sourceMode}`}
+      />
+
+      {/* Top KPIs */}
+      <section className="grid grid-cols-4 gap-3">
+        <Kpi label="Resources"      value={state.cloudInventory.totalResources} tone="violet" />
+        <Kpi label="Providers live" value={`${liveCount} / ${state.providers.length}`} tone="emerald" />
+        <Kpi label="Risks"          value={state.risks.length}    tone="rose"    delta={state.blockers.length > 0 ? `${state.blockers.length} blocker(s)` : "no blockers"} deltaTone={state.blockers.length > 0 ? "down" : "neutral"} />
+        <Kpi label="Next actions"   value={state.nextBestActions.length} tone="cyan" />
+      </section>
+
+      {/* Posture rail */}
+      <section>
+        <h2 className="text-xs font-mono text-zinc-500 uppercase tracking-[0.22em] mb-3">// posture</h2>
+        <div className="grid grid-cols-4 gap-3">
+          <PostureTile label="Security"    score={state.securityPosture.score}    status={state.securityPosture.status}    detail={state.securityPosture.summary} />
+          <PostureTile label="Reliability" score={state.reliabilityPosture.score} status={state.reliabilityPosture.status} detail={state.reliabilityPosture.summary} />
+          <PostureTile label="ReleaseOps"  score={state.releaseOpsPosture.score}  status={state.releaseOpsPosture.status}  detail={state.releaseOpsPosture.summary} />
+          <PostureTile label="Validation"  score={state.validationPosture.score}  status={state.validationPosture.status}  detail={state.validationPosture.summary} />
+        </div>
+      </section>
+
+      {/* Provider snapshot */}
+      <section>
+        <h2 className="text-xs font-mono text-zinc-500 uppercase tracking-[0.22em] mb-3">// providers</h2>
+        <div className="grid grid-cols-3 gap-3">
+          {state.providers.map((p) => (
+            <Card key={p.provider} className="p-5" tint={p.provider === "aws" ? "amber" : p.provider === "azure" ? "cyan" : "emerald"}>
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="text-base font-semibold text-white uppercase tracking-tight">{p.provider}</h3>
+                <Badge tone={statusToneFor(p.connectionStatus)}>{p.connectionStatus}</Badge>
+              </div>
+              <p className="text-[10px] font-mono text-zinc-500 uppercase tracking-[0.18em] mb-2">resource kinds</p>
+              <div className="flex flex-wrap gap-1.5 mb-3">
+                {Object.entries(p.resourceCounts).length === 0
+                  ? <span className="text-[11px] text-zinc-600">none yet</span>
+                  : Object.entries(p.resourceCounts).map(([k, v]) => (
+                      <span key={k} className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-white/[0.04] text-zinc-300 border border-white/[0.04]">{k}: {v}</span>
+                    ))}
+              </div>
+              <div className="text-[10px] font-mono text-zinc-500 flex items-center justify-between">
+                <span>scan · {p.scanStatus}</span>
+                <span>conf · {(p.confidence * 100).toFixed(0)}%</span>
+              </div>
+            </Card>
+          ))}
+        </div>
+      </section>
+
+      {/* Next-best actions */}
+      <section>
+        <h2 className="text-xs font-mono text-zinc-500 uppercase tracking-[0.22em] mb-3">// next best actions</h2>
+        <Card className="p-2">
+          <ul className="divide-y divide-axiom-border">
+            {state.nextBestActions.slice(0, 8).map((a) => (
+              <li key={a.id} className="px-4 py-3 hover:bg-white/[0.02] transition-colors">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-2 mb-1 flex-wrap">
+                      <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-wider">prio {a.priority}</span>
+                      <Badge tone={riskToneFor(a.riskLevel)}>{a.riskLevel}</Badge>
+                      {a.approvalRequired && <Badge tone="warning">approval</Badge>}
+                      <span className="text-[10px] font-mono text-zinc-600">{a.category}</span>
+                    </div>
+                    <p className="text-sm font-semibold text-white truncate">{a.title}</p>
+                    <p className="text-[11px] text-zinc-500 line-clamp-2 mt-0.5">{a.description}</p>
+                  </div>
+                  {a.route && (
+                    <a
+                      href={`https://visionxixlabs.com${a.route}`}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="shrink-0 btn-ghost"
+                    >
+                      Open ↗
+                    </a>
+                  )}
+                </div>
+              </li>
+            ))}
+          </ul>
+        </Card>
+      </section>
+
+      {/* Honest footer */}
+      <section className="rounded-xl border border-amber-500/20 bg-amber-500/[0.04] p-5">
+        <p className="text-[10px] font-mono text-amber-300 uppercase tracking-[0.22em] mb-2">// honest limitations</p>
+        <ul className="space-y-1 text-[12px] text-zinc-300">
+          <li>• Posture scores are projected from the live web platform — connect a provider for live signals.</li>
+          <li>• Local apply is intentionally blocked from desktop; every action routes through the governed orchestration center.</li>
+          <li>• This window updates on view enter — refresh by reopening the dashboard.</li>
+        </ul>
+      </section>
+    </ViewShell>
   );
 }
 
-export function DashboardView() {
-  const [systemInfo, setSystemInfo] = useState<SystemInfo | null>(null);
-  const [health, setHealth] = useState<HealthStatus | null>(null);
-
-  useEffect(() => {
-    invoke<SystemInfo>("get_system_info").then(setSystemInfo).catch(console.error);
-    invoke<HealthStatus>("get_health").then(setHealth).catch(console.error);
-  }, []);
-
+function ConnIcon({ className }: { className?: string }) {
   return (
-    <div className="p-6 space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-xl font-bold tracking-tight">Operations Dashboard</h1>
-          <p className="text-sm text-zinc-500 mt-0.5">
-            Cloud infrastructure intelligence at a glance
-          </p>
-        </div>
-        <div className="flex items-center gap-2">
-          {health && (
-            <span className="flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-              <span className="glow-dot bg-emerald-400" />
-              {health.status}
-            </span>
-          )}
-        </div>
-      </div>
-
-      {/* Metrics grid */}
-      <div className="grid grid-cols-4 gap-4">
-        <MetricCard label="Resources scanned" value="--" sub="Run first scan" accent="violet" />
-        <MetricCard label="Monthly savings" value="--" sub="Pending analysis" accent="emerald" />
-        <MetricCard label="Security findings" value="--" sub="Not scanned" accent="red" />
-        <MetricCard label="Drift detected" value="--" sub="Not scanned" accent="amber" />
-      </div>
-
-      {/* Provider status */}
-      <div className="glass-card p-5">
-        <h2 className="text-sm font-semibold mb-4 text-zinc-300">Cloud Providers</h2>
-        <div className="grid grid-cols-3 gap-4">
-          {["AWS", "Azure", "GCP"].map((provider) => (
-            <div key={provider} className="flex items-center gap-3 p-3 rounded-lg bg-zinc-800/40 border border-zinc-700/30">
-              <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold ${
-                provider === "AWS" ? "bg-orange-500/20 text-orange-400" :
-                provider === "Azure" ? "bg-blue-500/20 text-blue-400" :
-                "bg-red-500/20 text-red-400"
-              }`}>
-                {provider[0]}
-              </div>
-              <div>
-                <div className="text-sm font-medium">{provider}</div>
-                <div className="text-xs text-zinc-500">Not connected</div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* System info */}
-      {systemInfo && (
-        <div className="glass-card p-5">
-          <h2 className="text-sm font-semibold mb-3 text-zinc-300">System</h2>
-          <div className="grid grid-cols-3 gap-4 text-sm">
-            <div>
-              <span className="text-zinc-500 text-xs">Platform</span>
-              <div className="font-mono text-zinc-300">{systemInfo.platform}</div>
-            </div>
-            <div>
-              <span className="text-zinc-500 text-xs">Architecture</span>
-              <div className="font-mono text-zinc-300">{systemInfo.arch}</div>
-            </div>
-            <div>
-              <span className="text-zinc-500 text-xs">Version</span>
-              <div className="font-mono text-zinc-300">{systemInfo.version}</div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Recent activity */}
-      <div className="glass-card p-5">
-        <h2 className="text-sm font-semibold mb-3 text-zinc-300">Recent Activity</h2>
-        <div className="flex items-center justify-center py-8 text-sm text-zinc-500">
-          <div className="text-center">
-            <p>No activity yet</p>
-            <p className="text-xs mt-1">Connect a cloud provider to begin scanning</p>
-          </div>
-        </div>
-      </div>
-    </div>
+    <svg viewBox="0 0 24 24" className={className} fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+      <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+    </svg>
   );
 }

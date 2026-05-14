@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { invoke } from "@tauri-apps/api/core";
+import { ViewShell } from "../components/Primitives";
 
 interface Preferences {
   theme: string;
@@ -37,14 +38,14 @@ export function SettingsView() {
 
   if (!prefs) {
     return (
-      <div className="p-6">
+      <ViewShell>
         <div className="text-sm text-zinc-500">Loading preferences...</div>
-      </div>
+      </ViewShell>
     );
   }
 
   return (
-    <div className="p-6 space-y-6 max-w-2xl">
+    <ViewShell>
       <div>
         <h1 className="text-xl font-bold tracking-tight">Settings</h1>
         <p className="text-sm text-zinc-500 mt-0.5">Configure Axiom Agent preferences</p>
@@ -142,6 +143,6 @@ export function SettingsView() {
       >
         {saved ? "Saved" : "Save preferences"}
       </button>
-    </div>
+    </ViewShell>
   );
 }

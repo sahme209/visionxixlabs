@@ -2,78 +2,225 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ===========================================================================
+   GLOBAL BASE — cinematic dark Huly-style theme.
+   =========================================================================== */
 @layer base {
+  html, body, #root {
+    height: 100%;
+    background: #09090b;
+    color: #e4e4e7;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
   * {
     -webkit-tap-highlight-color: transparent;
+    box-sizing: border-box;
   }
 
   ::-webkit-scrollbar {
-    width: 6px;
+    width: 8px;
+    height: 8px;
   }
   ::-webkit-scrollbar-track {
     background: transparent;
   }
   ::-webkit-scrollbar-thumb {
-    background: #3f3f46;
-    border-radius: 3px;
+    background: #2a2a32;
+    border-radius: 4px;
   }
   ::-webkit-scrollbar-thumb:hover {
-    background: #52525b;
+    background: #3a3a44;
+  }
+
+  button, a {
+    -webkit-app-region: no-drag;
+  }
+
+  /* Focus ring — subtle violet. */
+  *:focus-visible {
+    outline: 2px solid rgba(139, 92, 246, 0.5);
+    outline-offset: 2px;
+    border-radius: 4px;
   }
 }
 
-@layer utilities {
+/* ===========================================================================
+   COMPONENT-CLASS UTILITIES
+   =========================================================================== */
+@layer components {
+  /* ── Glass surfaces ───────────────────────────────────────────────── */
   .glass-panel {
-    @apply bg-zinc-900/80 backdrop-blur-xl border border-zinc-800/60;
+    @apply bg-axiom-bg-elev/80 backdrop-blur-xl border border-axiom-border;
   }
-
   .glass-card {
-    @apply bg-zinc-900/60 backdrop-blur-md border border-zinc-800/50 rounded-xl;
+    @apply bg-axiom-surface/70 backdrop-blur-md border border-axiom-border rounded-xl;
+  }
+  .glass-card-lift {
+    @apply glass-card transition-all duration-200;
+    box-shadow: 0 1px 0 rgba(255,255,255,0.03) inset;
+  }
+  .glass-card-lift:hover {
+    @apply border-axiom-accent/30;
+    box-shadow: 0 1px 0 rgba(255,255,255,0.05) inset, 0 12px 32px -16px rgba(139,92,246,0.25);
   }
 
+  /* ── Text gradients ───────────────────────────────────────────────── */
   .text-gradient {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-violet-400 to-fuchsia-400;
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-violet-300 via-fuchsia-300 to-cyan-300;
+  }
+  .text-gradient-warm {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-amber-300 via-fuchsia-300 to-rose-300;
   }
 
-  .glow-dot {
-    @apply w-2 h-2 rounded-full;
-    box-shadow: 0 0 6px currentColor;
-  }
-
-  .status-active {
-    @apply text-emerald-400;
-    animation: pulse-glow 2s ease-in-out infinite;
-  }
-
+  /* ── Sidebar items ────────────────────────────────────────────────── */
   .sidebar-item {
-    @apply flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-zinc-400
-           hover:text-white hover:bg-zinc-800/60 transition-all duration-150 cursor-pointer;
+    @apply flex items-center gap-2.5 px-3 py-2 rounded-lg text-[13px] font-medium text-zinc-500
+           hover:text-white hover:bg-white/[0.04] transition-all duration-150 cursor-pointer
+           relative;
   }
-
   .sidebar-item-active {
-    @apply text-white bg-zinc-800/80 border border-zinc-700/50;
+    @apply text-white bg-gradient-to-r from-violet-500/10 to-transparent border border-violet-500/20;
+  }
+  .sidebar-item-active::before {
+    content: "";
+    @apply absolute left-0 top-1.5 bottom-1.5 w-[2px] rounded-r bg-gradient-to-b from-violet-400 to-fuchsia-400;
   }
 
+  /* ── Metric / KPI cards ───────────────────────────────────────────── */
   .metric-card {
-    @apply glass-card p-4 flex flex-col gap-1;
+    @apply glass-card-lift p-5 flex flex-col gap-2;
+  }
+  .metric-value {
+    @apply text-3xl font-bold tracking-tightest text-white;
+  }
+  .metric-label {
+    @apply text-[10px] font-mono uppercase tracking-[0.18em] text-zinc-500;
+  }
+  .metric-delta {
+    @apply text-[11px] font-mono;
+  }
+
+  /* ── Status badges ────────────────────────────────────────────────── */
+  .badge {
+    @apply inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md text-[10px] font-mono font-semibold uppercase tracking-wider border;
+  }
+  .badge-success { @apply text-emerald-300 bg-emerald-500/10 border-emerald-500/25; }
+  .badge-warning { @apply text-amber-300   bg-amber-500/10   border-amber-500/25;   }
+  .badge-danger  { @apply text-rose-300    bg-rose-500/10    border-rose-500/25;    }
+  .badge-preview { @apply text-violet-300  bg-violet-500/10  border-violet-500/25;  }
+  .badge-neutral { @apply text-zinc-300    bg-zinc-500/10    border-zinc-500/25;    }
+  .badge-cyan    { @apply text-cyan-300    bg-cyan-500/10    border-cyan-500/25;    }
+
+  /* ── Buttons ──────────────────────────────────────────────────────── */
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg
+           text-sm font-semibold text-white
+           bg-gradient-to-r from-violet-600 to-fuchsia-600
+           hover:from-violet-500 hover:to-fuchsia-500
+           transition-all shadow-glow-violet;
+  }
+  .btn-secondary {
+    @apply inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg
+           text-sm font-medium text-zinc-200
+           bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] hover:border-white/[0.15]
+           transition-all;
+  }
+  .btn-ghost {
+    @apply inline-flex items-center gap-1.5 text-[12px] font-semibold text-zinc-400
+           hover:text-white transition-colors;
+  }
+
+  /* ── Window chrome ────────────────────────────────────────────────── */
+  .window-chrome-titlebar {
+    @apply h-9 flex items-center justify-between px-3 border-b border-axiom-border bg-axiom-bg-elev/60;
+    -webkit-app-region: drag;
+  }
+
+  /* ── Section header ───────────────────────────────────────────────── */
+  .section-kicker {
+    @apply text-[10px] font-mono font-semibold uppercase tracking-[0.22em];
+  }
+  .section-title {
+    @apply text-2xl font-bold tracking-tightest text-white;
+  }
+
+  /* ── Aurora backdrop ──────────────────────────────────────────────── */
+  .aurora-bg {
+    position: relative;
+    overflow: hidden;
+  }
+  .aurora-bg::before, .aurora-bg::after {
+    content: "";
+    position: absolute;
+    pointer-events: none;
+    filter: blur(80px);
+    z-index: 0;
+  }
+  .aurora-bg::before {
+    top: -20%; left: -10%;
+    width: 60%; height: 60%;
+    background: radial-gradient(circle, rgba(139,92,246,0.25), transparent 70%);
+    animation: aurora 12s ease-in-out infinite;
+  }
+  .aurora-bg::after {
+    bottom: -20%; right: -10%;
+    width: 60%; height: 60%;
+    background: radial-gradient(circle, rgba(217,70,239,0.18), transparent 70%);
+    animation: aurora 14s ease-in-out infinite reverse;
   }
 }
 
+/* ===========================================================================
+   ANIMATION KEYFRAMES
+   =========================================================================== */
 @keyframes pulse-glow {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.6; }
+  0%, 100% { opacity: 1; box-shadow: 0 0 8px currentColor; }
+  50%      { opacity: 0.6; box-shadow: 0 0 12px currentColor; }
 }
 
 @keyframes scan-line {
-  0% { transform: translateY(-100%); }
-  100% { transform: translateY(100%); }
+  0%   { transform: translateY(-100%); opacity: 0; }
+  10%  { opacity: 1; }
+  90%  { opacity: 1; }
+  100% { transform: translateY(100%); opacity: 0; }
 }
 
 @keyframes fade-in {
   from { opacity: 0; transform: translateY(8px); }
-  to { opacity: 1; transform: translateY(0); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
-.animate-fade-in {
-  animation: fade-in 0.3s ease-out forwards;
+.animate-fade-in     { animation: fade-in 0.3s ease-out forwards; }
+.animate-fade-in-up  { animation: fade-in-up 0.4s ease-out forwards; }
+
+/* ===========================================================================
+   UTILITY OVERRIDES
+   =========================================================================== */
+.no-drag { -webkit-app-region: no-drag; }
+.drag    { -webkit-app-region: drag; }
+
+/* Subtle inner border for cards, gives a Huly "edge-lit" feel. */
+.edge-light {
+  position: relative;
+}
+.edge-light::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(135deg, rgba(255,255,255,0.06), transparent 50%);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+          mask-composite: exclude;
+  pointer-events: none;
+}
+
+/* Mono numeric tabular — keeps numbers from jittering. */
+.tabular-mono {
+  font-family: "JetBrains Mono", "Fira Code", monospace;
+  font-variant-numeric: tabular-nums;
 }

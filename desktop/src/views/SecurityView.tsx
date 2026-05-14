@@ -1,97 +1,116 @@
 /**
- * Desktop-side security view. Renders the trust posture the desktop runtime
- * reports to the web — paired status, version, audit sync, local-execution
- * gates. Shapes mirror `lib/desktop/desktopSecurity.ts` + `desktopShellState.ts`
- * in the parent project.
+ * Security view — runs the security scanner against the web platform
+ * and renders typed checks with severity / scope / remediation.
  */
 
-interface SecurityCheck {
-  id: string;
-  label: string;
-  detail: string;
-  semantic: "neutral" | "success" | "warning" | "error";
-  action?: string;
-}
+import { useEffect, useState } from "react";
+import { desktopClient, type SecurityScanLite } from "../lib/desktopClient";
+import { Card, SectionHeader, ViewShell, LoadingState, EmptyState, Badge, Kpi, statusToneFor } from "../components/Primitives";
 
-const CHECKS: SecurityCheck[] = [
-  { id: "pairing",      label: "Pairing",                detail: "Desktop is paired with the web workspace and trusted.",          semantic: "success" },
-  { id: "version",      label: "Version",                detail: "v0.1.0 · preview channel · within tenant policy.",               semantic: "success" },
-  { id: "signature",    label: "Code signing",           detail: "Unsigned build (preview). Signed builds ship in 1.0.",            semantic: "warning", action: "View packaging roadmap" },
-  { id: "keychain",     label: "OS keychain",            detail: "Available — macOS Keychain detected.",                            semantic: "success" },
-  { id: "audit_sync",   label: "Audit sync",             detail: "All local audit events have synced to the web store.",            semantic: "success" },
-  { id: "local_apply",  label: "Local Terraform apply",  detail: "Disabled — approval-gated. Re-enable via tenant policy.",         semantic: "warning", action: "Open governance" },
-  { id: "redaction",    label: "Log redaction",          detail: "Every log line passes through canonical redaction.",              semantic: "success" },
-  { id: "offline",      label: "Offline mode",           detail: "Disabled by tenant policy — audit sync is required.",             semantic: "neutral" },
-];
+const SEVERITY_TONE = { critical: "danger", high: "warning", medium: "cyan", low: "neutral", info: "neutral" } as const;
 
 export function SecurityView() {
+  const [scan, setScan] = useState<SecurityScanLite | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [filter, setFilter] = useState<"all" | "fail" | "warn" | "preview">("all");
+
+  const run = () => {
+    setLoading(true);
+    setError(null);
+    desktopClient.securityScan().then((res) => {
+      if (res.ok) setScan(res.data);
+      else setError(res.error);
+      setLoading(false);
+    });
+  };
+
+  useEffect(() => { run(); }, []);
+
+  if (loading && !scan) return <ViewShell><LoadingState label="Running security scan…" /></ViewShell>;
+  if (error && !scan) {
+    return (
+      <ViewShell>
+        <EmptyState
+          Icon={ShieldIcon}
+          title="Security scan failed"
+          detail={error}
+          action={<button onClick={run} className="btn-primary">Retry</button>}
+        />
+      </ViewShell>
+    );
+  }
+
+  const results = scan?.results ?? [];
+  const filtered = results.filter((r) => filter === "all" ? true : r.status === filter);
+
   return (
-    <div className="p-6 space-y-6 max-w-3xl">
-      <div>
-        <h1 className="text-xl font-bold tracking-tight">Desktop Security</h1>
-        <p className="text-sm text-zinc-500 mt-0.5">
-          What the desktop has access to, how it protects it, and what is still on the roadmap.
-        </p>
-      </div>
+    <ViewShell>
+      <SectionHeader
+        kicker="// security"
+        title="Cloud · app · supply chain · desktop posture."
+        subtitle={scan ? `Score ${scan.summary.score}/100 across ${scan.summary.total} typed checks.` : ""}
+        action={<button onClick={run} className="btn-secondary text-[12px]">Re-run scan</button>}
+      />
 
-      <div className="rounded-xl border border-emerald-500/15 bg-emerald-500/[0.04] p-4 text-xs text-zinc-300 leading-relaxed">
-        <span className="font-semibold text-emerald-300">Approval-gated.</span> The desktop runtime never bypasses
-        web approval, governance policy, RBAC, or audit. Destructive operations require all four gates to pass —
-        this surface shows the current state of each.
-      </div>
+      {scan && (
+        <>
+          <section className="grid grid-cols-5 gap-3">
+            <Kpi label="Score"     value={`${scan.summary.score}/100`} tone="emerald" />
+            <Kpi label="Passing"   value={scan.summary.pass}    tone="emerald" />
+            <Kpi label="Failing"   value={scan.summary.fail}    tone="rose" />
+            <Kpi label="Warning"   value={scan.summary.warn}    tone="amber" />
+            <Kpi label="Preview"   value={scan.summary.preview} tone="violet" />
+          </section>
 
-      <div className="rounded-xl border border-zinc-800/60 bg-zinc-900/40 overflow-hidden">
-        <div className="px-4 py-3 border-b border-zinc-800/60 text-xs font-semibold text-zinc-300 uppercase tracking-widest">
-          Posture checks
-        </div>
-        <ul className="divide-y divide-zinc-800/50">
-          {CHECKS.map((c) => (
-            <li key={c.id} className="px-4 py-3 flex items-start gap-3">
-              <span className={`mt-1 w-2 h-2 rounded-full shrink-0 ${
-                c.semantic === "success" ? "bg-emerald-400" :
-                c.semantic === "warning" ? "bg-amber-400"  :
-                c.semantic === "error"   ? "bg-red-400"    :
-                                           "bg-zinc-500"
-              }`} />
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 flex-wrap">
-                  <p className="text-sm font-semibold text-zinc-100">{c.label}</p>
-                  <span className={`text-[9px] font-semibold uppercase tracking-wider border rounded-full px-1.5 py-px ${
-                    c.semantic === "success" ? "text-emerald-300 bg-emerald-500/10 border-emerald-500/20" :
-                    c.semantic === "warning" ? "text-amber-300 bg-amber-500/10 border-amber-500/20" :
-                    c.semantic === "error"   ? "text-red-300 bg-red-500/10 border-red-500/20" :
-                                                "text-zinc-400 bg-zinc-700/30 border-zinc-700/40"
-                  }`}>{c.semantic}</span>
+          <div className="flex items-center gap-2">
+            {(["all", "fail", "warn", "preview"] as const).map((f) => (
+              <button
+                key={f}
+                onClick={() => setFilter(f)}
+                className={`px-3 py-1.5 rounded-md text-[11px] font-semibold transition-colors ${
+                  filter === f
+                    ? "bg-violet-500/15 border border-violet-500/30 text-violet-200"
+                    : "bg-white/[0.02] border border-axiom-border text-zinc-400 hover:text-white"
+                }`}
+              >
+                {f.toUpperCase()} · {f === "all" ? results.length : results.filter((r) => r.status === f).length}
+              </button>
+            ))}
+          </div>
+
+          <section className="space-y-2">
+            {filtered.slice(0, 30).map((r) => (
+              <Card key={r.id} className="p-4">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center gap-2 mb-1.5 flex-wrap">
+                      <Badge tone={SEVERITY_TONE[r.severity] as "danger" | "warning" | "cyan" | "neutral"}>{r.severity}</Badge>
+                      <Badge tone={statusToneFor(r.status)}>{r.status}</Badge>
+                      <span className="text-[10px] font-mono text-zinc-500">{r.scope}</span>
+                      {r.provider && <span className="text-[10px] font-mono text-zinc-500">· {r.provider}</span>}
+                      <span className="text-[10px] font-mono text-zinc-500">· {r.source}</span>
+                    </div>
+                    <p className="text-sm font-semibold text-white">{r.title}</p>
+                    <p className="text-[11px] text-zinc-500 mt-1 line-clamp-2">{r.description}</p>
+                    {r.remediation && (
+                      <p className="text-[11px] text-violet-300 mt-2"><span className="text-zinc-500">fix · </span>{r.remediation}</p>
+                    )}
+                  </div>
                 </div>
-                <p className="text-[11px] text-zinc-500 mt-0.5 leading-relaxed">{c.detail}</p>
-                {c.action && (
-                  <button className="mt-1.5 text-[11px] font-semibold text-violet-300 hover:text-violet-200">
-                    {c.action} →
-                  </button>
-                )}
-              </div>
-            </li>
-          ))}
-        </ul>
-      </div>
+              </Card>
+            ))}
+          </section>
+        </>
+      )}
+    </ViewShell>
+  );
+}
 
-      <div className="rounded-xl border border-zinc-800/40 bg-zinc-900/30 p-4 text-xs text-zinc-400 leading-relaxed">
-        <p className="font-semibold text-zinc-200 mb-2">If your security team asks…</p>
-        <ul className="space-y-1.5">
-          {[
-            ["Does the desktop store credentials?",   "Only via the OS keychain (planned). The local audit log is redacted before write."],
-            ["Can the desktop execute Terraform?",   "Preview only today. Apply requires approval + tenant policy + rollback + reachable audit sink."],
-            ["Does it require approval?",             "Yes. Approval is granted on the web; the desktop refuses destructive operations otherwise."],
-            ["Does it sync audit logs?",              "Yes. Local audit events sync to the web store; sync state appears here and in the web Audit Center."],
-            ["What platforms are supported?",         "macOS / Windows / Linux. macOS preview ships first; signing/notarization ship in 1.0."],
-            ["What if the desktop is offline?",       "Bundles queue locally. Apply is disabled by default until audit sync resumes."],
-          ].map(([q, a]) => (
-            <li key={q}>
-              <span className="text-zinc-200 font-semibold">{q}</span> <span className="text-zinc-500">{a}</span>
-            </li>
-          ))}
-        </ul>
-      </div>
-    </div>
+function ShieldIcon({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" className={className} fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+    </svg>
   );
 }
