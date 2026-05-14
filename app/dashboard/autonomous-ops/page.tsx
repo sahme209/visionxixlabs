@@ -23,11 +23,11 @@ import {
 } from "@heroicons/react/24/outline";
 
 import { reasonAboutOperations } from "@/lib/agent/agiOperationsBrain";
-import { buildExecutionGraph, type ExecutionGraph } from "@/lib/agent/executionGraphBuilder";
+import { buildExecutionGraph } from "@/lib/agent/executionGraphBuilder";
 import { analyzeCoverageGaps } from "@/lib/cloud/coverageGapAnalyzer";
 import { runDeepValidation } from "@/lib/validation/deepValidationRunner";
 import { summarizeFeedback } from "@/lib/memory/feedbackLoop";
-import { highestRiskNodes, blockedNodes, nodesOfType, nextActionsFromGraph } from "@/lib/agent/executionGraph";
+import { highestRiskNodes, blockedNodes, nodesOfType, nextActionsFromGraph, type ExecutionGraph } from "@/lib/agent/executionGraph";
 
 export const dynamic = "force-dynamic";
 
