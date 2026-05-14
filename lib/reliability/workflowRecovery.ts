@@ -189,8 +189,10 @@ export function diagnoseWorkflow(run: WorkflowRun, thresholds: RecoveryThreshold
     });
   }
 
-  // Partial output but completed jobs lower than current index
-  const hasPartial = Object.keys(run.outputs).length > 0 && run.status !== "completed";
+  // Partial output observed while still running — note as healthy/partial.
+  // By this point run.status has been narrowed to "running" | "queued" because
+  // every other status returned earlier in the function.
+  const hasPartial = Object.keys(run.outputs).length > 0;
   if (hasPartial && run.status === "running") {
     return diag(run, "partial", "Run is progressing with partial outputs.", {
       kind: "no_action",
