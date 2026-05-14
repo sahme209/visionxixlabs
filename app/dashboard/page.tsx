@@ -240,6 +240,24 @@ export default function DashboardPage() {
         </Link>
 
         <Link
+          href="/dashboard/jobs"
+          className="glass-card card-hover animated-border card-inner-glow rounded-xl p-5 group relative overflow-hidden"
+        >
+          <span aria-hidden className="absolute -top-8 -right-8 w-24 h-24 rounded-full bg-fuchsia-500/[0.08] blur-[30px] pointer-events-none" />
+          <div className="relative">
+            <div className="flex items-center gap-3 mb-3">
+              <div className="w-9 h-9 rounded-lg bg-fuchsia-500/10 flex items-center justify-center">
+                <CpuChipIcon className="h-5 w-5 text-fuchsia-400" />
+              </div>
+              <h2 className="text-sm font-semibold text-white">Agent Jobs</h2>
+            </div>
+            <p className="text-xs text-zinc-500">
+              Durable operational work · retry policy · blocked-state visibility · audit-traceable.
+            </p>
+          </div>
+        </Link>
+
+        <Link
           href="/dashboard/releaseops"
           className="glass-card card-hover animated-border card-inner-glow rounded-xl p-5 group relative overflow-hidden"
         >
