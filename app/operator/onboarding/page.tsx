@@ -34,6 +34,20 @@ import {
 import { Reveal } from "@/components/motion/Reveal";
 import { Stagger } from "@/components/motion/Stagger";
 import { AnimatedButton } from "@/components/ui/AnimatedButton";
+import { MotherboardBackdrop } from "@/components/ui/MotherboardBackdrop";
+import { MagneticCard } from "@/components/ui/MagneticCard";
+
+/* Futuristic terminal-style corner ticks. Pure decoration. */
+function CornerBrackets() {
+  return (
+    <>
+      <span aria-hidden className="pointer-events-none absolute top-2.5 left-2.5 w-3 h-3 border-t border-l border-white/20" />
+      <span aria-hidden className="pointer-events-none absolute top-2.5 right-2.5 w-3 h-3 border-t border-r border-white/20" />
+      <span aria-hidden className="pointer-events-none absolute bottom-2.5 left-2.5 w-3 h-3 border-b border-l border-white/20" />
+      <span aria-hidden className="pointer-events-none absolute bottom-2.5 right-2.5 w-3 h-3 border-b border-r border-white/20" />
+    </>
+  );
+}
 
 /* ═══════════════════════════════════════════════════════════════════
    TYPES & PROVIDER MODEL
@@ -966,22 +980,28 @@ export default function OnboardingPage() {
         <div className="absolute top-1/3 -left-20 w-[300px] h-[300px] rounded-full bg-blue-600/[0.03] blur-[100px]" />
       </div>
 
-      {/* Nav */}
+      {/* Nav — cinematic full-bleed, terminal-feel right meta */}
       <nav className="relative z-20 border-b border-white/[0.06] bg-[#09090b]/80 backdrop-blur-xl">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
+        <div className="max-w-screen-2xl mx-auto px-6 sm:px-10 lg:px-16 py-4 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2.5 group">
             <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-violet-500/20 to-fuchsia-500/20 border border-violet-500/20 flex items-center justify-center group-hover:border-violet-500/40 transition-colors">
               <CpuChipIcon className="h-4 w-4 text-violet-400" />
             </div>
             <span className="font-bold text-white tracking-[-0.02em]">Axiom</span>
+            <span className="hidden sm:inline-block ml-2 text-[10px] font-mono text-zinc-600 tracking-wider">v0.1 · preview</span>
           </Link>
-          <div className="flex items-center gap-3">
-            <span className="text-[10px] font-bold text-zinc-600 uppercase tracking-wider">Agent Activation</span>
+          <div className="flex items-center gap-3 text-[10px] font-mono text-zinc-500 tracking-wider">
+            <span className="inline-flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_8px_rgba(52,211,153,0.7)]" />
+              live · workspace
+            </span>
+            <span className="text-zinc-700">·</span>
+            <span className="hidden sm:inline">agent ready</span>
           </div>
         </div>
       </nav>
 
-      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-12 relative z-10">
+      <div className="max-w-screen-2xl mx-auto px-6 sm:px-10 lg:px-16 py-12 sm:py-16 relative z-10">
         <StepIndicator current={step} />
 
         {/* ════════════════════════════════════════════════════════
@@ -989,126 +1009,212 @@ export default function OnboardingPage() {
            ════════════════════════════════════════════════════════ */}
         {step === 1 && (
           <Reveal direction="up">
-            <div className="max-w-5xl mx-auto">
-              {/* Workspace status strip — calm, dense, product-feel */}
-              <div className="mb-8 flex items-center justify-between flex-wrap gap-3">
-                <div className="flex items-center gap-2">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_8px_rgba(52,211,153,0.6)]" />
-                  <span className="text-[10px] font-semibold text-emerald-300 uppercase tracking-[0.18em]">Workspace · Ready to connect</span>
-                </div>
-                <div className="flex items-center gap-3 text-[10px] font-mono text-zinc-600">
-                  <span>5-min setup</span>
-                  <span className="text-zinc-700">·</span>
-                  <span>Read-only by default</span>
-                  <span className="text-zinc-700">·</span>
-                  <span>One-click revoke</span>
-                </div>
+            <div className="relative">
+              {/* Cinematic backdrop layers — fill full step height */}
+              <div className="absolute inset-x-[-4rem] top-[-2rem] -bottom-20 -z-0 overflow-hidden pointer-events-none">
+                <MotherboardBackdrop radius={620} tint="violet" baseOpacity={0.05} peakOpacity={0.24} />
+                <div aria-hidden className="absolute top-1/4 left-1/4 w-[640px] h-[640px] rounded-full bg-violet-600/[0.10] blur-[180px]" />
+                <div aria-hidden className="absolute bottom-0 right-1/4 w-[520px] h-[520px] rounded-full bg-fuchsia-600/[0.07] blur-[160px]" />
+                <div aria-hidden className="absolute top-1/2 -right-32 w-[420px] h-[420px] rounded-full bg-cyan-600/[0.05] blur-[140px]" />
               </div>
 
-              {/* Two-column hero — left: focused product message, right: pipeline + context */}
-              <div className="grid lg:grid-cols-5 gap-6">
-                {/* Left — welcome + headline + CTA */}
-                <div className="lg:col-span-3 rounded-2xl border border-white/[0.06] bg-gradient-to-br from-violet-500/[0.05] via-white/[0.01] to-fuchsia-500/[0.03] p-8 relative overflow-hidden">
-                  <div className="absolute -top-12 -right-12 w-56 h-56 rounded-full bg-violet-500/[0.07] blur-[80px] pointer-events-none" aria-hidden />
-
-                  <div className="relative">
-                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-violet-600 to-fuchsia-600 flex items-center justify-center shadow-[0_0_30px_rgba(139,92,246,0.25)] mb-6">
-                      <CpuChipIcon className="h-6 w-6 text-white" />
+              <div className="relative z-10 space-y-16">
+                {/* ── HERO ─────────────────────────────────────────── */}
+                <div className="grid lg:grid-cols-12 gap-10 items-center pt-2">
+                  {/* Left — headline + CTAs (col-span-7) */}
+                  <div className="lg:col-span-7">
+                    <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-violet-500/25 bg-violet-500/[0.07] backdrop-blur-sm mb-7">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_10px_rgba(52,211,153,0.8)]" />
+                      <span className="text-[11px] font-mono text-violet-200 tracking-[0.18em] uppercase">workspace · ready</span>
+                      <span className="text-zinc-600">·</span>
+                      <span className="text-[11px] font-mono text-zinc-400">awaiting cloud connection</span>
                     </div>
 
-                    <h1 className="text-3xl sm:text-4xl font-bold tracking-[-0.04em] leading-[1.05] mb-3">
-                      Activate your{" "}
-                      <span className="bg-gradient-to-r from-violet-300 to-fuchsia-300 bg-clip-text text-transparent">cloud workspace.</span>
+                    <h1 className="text-5xl sm:text-6xl lg:text-7xl xl:text-[5.5rem] font-bold tracking-[-0.05em] leading-[0.96]">
+                      <span className="block text-white">Your autonomous</span>
+                      <span className="block">
+                        <span className="bg-gradient-to-r from-violet-300 via-fuchsia-300 to-cyan-300 bg-clip-text text-transparent">multi-cloud</span>
+                      </span>
+                      <span className="block text-zinc-400 italic font-light">— starts here.</span>
                     </h1>
-                    <p className="text-sm text-zinc-400 leading-relaxed max-w-md mb-8">
-                      One read-only IAM role connects Axiom to your cloud. From there, scanning, reasoning, plan generation,
-                      and approval-gated execution all run as a single auditable loop.
+
+                    <p className="mt-8 text-lg sm:text-xl text-zinc-400 leading-relaxed max-w-2xl">
+                      Provision one read-only IAM role with an External ID. Axiom scans every region,
+                      reasons about findings, builds approval-gated execution plans, and renders the
+                      audit trail in real time.
                     </p>
 
-                    <div className="flex items-center gap-3 flex-wrap">
-                      <AnimatedButton onClick={() => setStep(2)} variant="primary" className="px-6 py-3">
-                        Connect cloud <ArrowRightIcon className="h-4 w-4" />
+                    <div className="mt-10 flex items-center gap-4 flex-wrap">
+                      <AnimatedButton onClick={() => setStep(2)} variant="primary" className="px-7 py-4 text-base group">
+                        <span className="font-mono text-[11px] tracking-wider mr-2 text-violet-200/80">[01]</span>
+                        Begin activation <ArrowRightIcon className="h-4 w-4" />
                       </AnimatedButton>
                       <Link
                         href="/docs/aws-setup"
-                        className="inline-flex items-center gap-2 px-4 py-2.5 rounded-full border border-white/[0.1] bg-white/[0.04] text-zinc-200 hover:bg-white/[0.08] text-xs font-semibold transition-colors"
+                        className="inline-flex items-center gap-2 px-5 py-3.5 rounded-full border border-white/[0.12] bg-white/[0.025] backdrop-blur-sm text-zinc-200 hover:bg-white/[0.06] hover:border-white/[0.22] text-sm font-semibold transition-all"
                       >
                         Read the setup guide
-                        <ArrowTopRightOnSquareIcon className="h-3.5 w-3.5" />
+                        <ArrowTopRightOnSquareIcon className="h-4 w-4" />
                       </Link>
                     </div>
 
-                    <div className="mt-8 pt-6 border-t border-white/[0.05] grid grid-cols-3 gap-4">
+                    {/* Metric row — terminal-feel telemetry */}
+                    <div className="mt-12 grid grid-cols-3 gap-6 max-w-2xl border-t border-white/[0.06] pt-6">
                       {[
-                        { label: "Credentials", value: "Never stored", tone: "emerald" },
-                        { label: "Execution",   value: "Approval-gated", tone: "violet" },
-                        { label: "Revocation",  value: "One click",  tone: "amber" },
-                      ].map((stat) => (
-                        <div key={stat.label}>
-                          <p className="text-[10px] text-zinc-500 uppercase tracking-[0.12em] mb-1">{stat.label}</p>
-                          <p className={`text-[13px] font-semibold ${
-                            stat.tone === "emerald" ? "text-emerald-300" :
-                            stat.tone === "violet"  ? "text-violet-300" :
-                                                       "text-amber-300"
-                          }`}>{stat.value}</p>
+                        { k: "setup time",   v: "~5 min",      tone: "text-zinc-300"    },
+                        { k: "access mode",  v: "read-only",   tone: "text-emerald-300" },
+                        { k: "revoke",       v: "one_click",   tone: "text-amber-300"   },
+                      ].map((m) => (
+                        <div key={m.k}>
+                          <p className="text-[10px] font-mono text-zinc-600 uppercase tracking-[0.18em] mb-1.5">{m.k}</p>
+                          <p className={`text-sm font-mono font-semibold ${m.tone}`}>{m.v}</p>
                         </div>
                       ))}
                     </div>
                   </div>
-                </div>
 
-                {/* Right — operational pipeline as a tight Huly-style timeline */}
-                <div className="lg:col-span-2 rounded-2xl border border-white/[0.06] bg-white/[0.015] p-6">
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-center gap-2">
-                      <SignalIcon className="h-3.5 w-3.5 text-emerald-300" />
-                      <span className="text-[10px] font-semibold text-zinc-400 uppercase tracking-[0.15em]">Operational pipeline</span>
-                    </div>
-                    <span className="text-[9px] font-mono text-zinc-600">5 phases</span>
-                  </div>
+                  {/* Right — floating agent console (col-span-5) */}
+                  <div className="lg:col-span-5">
+                    <MagneticCard tint="violet" maxTilt={3} radius={260} className="rounded-2xl">
+                      <div className="relative rounded-2xl border border-white/[0.09] bg-gradient-to-br from-[#0e0e14] via-[#0a0a0f] to-[#070709] p-6 overflow-hidden shadow-[0_30px_80px_-20px_rgba(139,92,246,0.35)]">
+                        <CornerBrackets />
+                        <div aria-hidden className="absolute -top-24 -right-24 w-72 h-72 rounded-full bg-violet-500/[0.18] blur-[110px] pointer-events-none" />
 
-                  <div className="space-y-0">
-                    {[
-                      { icon: LockClosedIcon,   color: "text-emerald-300", bg: "bg-emerald-500/10 border-emerald-500/20", label: "Connect",  desc: "Read-only role, External ID, zero stored secrets." },
-                      { icon: EyeIcon,          color: "text-blue-300",    bg: "bg-blue-500/10 border-blue-500/20",      label: "Scan",     desc: "Inventory across regions + resource types." },
-                      { icon: CpuChipIcon,      color: "text-violet-300",  bg: "bg-violet-500/10 border-violet-500/20",  label: "Reason",   desc: "Prioritise by blast radius, cost, compliance." },
-                      { icon: CommandLineIcon,  color: "text-fuchsia-300", bg: "bg-fuchsia-500/10 border-fuchsia-500/20", label: "Execute",  desc: "Terraform / CLI plans, approval-gated apply." },
-                      { icon: DocumentCheckIcon,color: "text-amber-300",   bg: "bg-amber-500/10 border-amber-500/20",    label: "Audit",    desc: "Immutable trail, exportable bundles." },
-                    ].map((item, i, arr) => {
-                      const Icon = item.icon;
-                      const isLast = i === arr.length - 1;
-                      return (
-                        <div key={item.label} className="flex items-stretch gap-3">
-                          <div className="flex flex-col items-center pt-0.5">
-                            <div className={`w-8 h-8 rounded-lg ${item.bg} border flex items-center justify-center shrink-0`}>
-                              <Icon className={`h-3.5 w-3.5 ${item.color}`} />
+                        <div className="relative z-10">
+                          {/* Window chrome */}
+                          <div className="flex items-center justify-between mb-5 pb-3 border-b border-white/[0.06]">
+                            <div className="flex items-center gap-1.5">
+                              <span className="w-2.5 h-2.5 rounded-full bg-rose-500/70" />
+                              <span className="w-2.5 h-2.5 rounded-full bg-amber-500/70" />
+                              <span className="w-2.5 h-2.5 rounded-full bg-emerald-500/70" />
                             </div>
-                            {!isLast && <div className="w-px flex-1 bg-gradient-to-b from-white/[0.08] to-transparent min-h-[12px] my-1" />}
+                            <span className="text-[10px] font-mono text-zinc-600 tracking-wider">axiom://agent.boot</span>
                           </div>
-                          <div className={`flex-1 min-w-0 ${isLast ? "" : "pb-4"}`}>
-                            <p className="text-[12px] font-semibold text-white leading-snug">{item.label}</p>
-                            <p className="text-[11px] text-zinc-500 leading-relaxed mt-0.5">{item.desc}</p>
+
+                          {/* Boot sequence */}
+                          <div className="space-y-1.5 font-mono text-[11.5px] leading-relaxed">
+                            {[
+                              { p: "$", t: "axiom init --provider aws --mode read-only", c: "text-zinc-300" },
+                              { p: "→", t: "validating identity broker…",                c: "text-zinc-500" },
+                              { p: "✓", t: "STS AssumeRole · sts.amazonaws.com",          c: "text-emerald-300" },
+                              { p: "✓", t: "GetCallerIdentity verified",                  c: "text-emerald-300" },
+                              { p: "→", t: "discovering regions × resource kinds…",       c: "text-zinc-500" },
+                              { p: "▷", t: "scan plan ready · 22 controls · 4 scopes",    c: "text-violet-300" },
+                              { p: "→", t: "awaiting operator approval to apply",         c: "text-amber-300" },
+                            ].map((row, i) => (
+                              <div key={i} className="flex gap-3">
+                                <span className={`w-3 shrink-0 ${row.c}`}>{row.p}</span>
+                                <span className={row.c}>{row.t}</span>
+                              </div>
+                            ))}
+                            <div className="flex gap-3 pt-1">
+                              <span className="w-3 shrink-0 text-violet-300">$</span>
+                              <span className="text-zinc-200">
+                                <span className="inline-block w-2 h-3.5 bg-violet-300 align-middle animate-pulse" />
+                              </span>
+                            </div>
+                          </div>
+
+                          {/* Footer meter */}
+                          <div className="mt-6 pt-4 border-t border-white/[0.05] grid grid-cols-3 gap-3">
+                            {[
+                              { k: "trace",   v: "live",     tone: "text-emerald-300" },
+                              { k: "policy",  v: "enforced", tone: "text-violet-300"  },
+                              { k: "audit",   v: "writing",  tone: "text-cyan-300"    },
+                            ].map((m) => (
+                              <div key={m.k}>
+                                <p className="text-[9px] font-mono text-zinc-600 uppercase tracking-[0.18em] mb-0.5">{m.k}</p>
+                                <p className={`text-[11px] font-mono font-semibold ${m.tone}`}>{m.v}</p>
+                              </div>
+                            ))}
                           </div>
                         </div>
-                      );
-                    })}
+                      </div>
+                    </MagneticCard>
                   </div>
                 </div>
-              </div>
 
-              {/* Trust strip — three calm questions a customer asks before clicking Connect */}
-              <div className="mt-6 grid sm:grid-cols-3 gap-3">
-                {[
-                  { Icon: ShieldCheckIcon, title: "Read-only by default",  detail: "IAM role only grants the permissions listed in the setup guide. Writes are opt-in." },
-                  { Icon: LockClosedIcon,  title: "No stored credentials", detail: "Axiom assumes the role on demand. Nothing about your account is persisted." },
-                  { Icon: BoltIcon,        title: "Approval-gated changes", detail: "Every proposed action requires human review. Execution is reversible by design." },
-                ].map(({ Icon, title, detail }) => (
-                  <div key={title} className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-4">
-                    <Icon className="h-4 w-4 text-emerald-300 mb-3" />
-                    <p className="text-[13px] font-semibold text-white mb-1">{title}</p>
-                    <p className="text-[11px] text-zinc-500 leading-relaxed">{detail}</p>
+                {/* ── HORIZONTAL PIPELINE ─────────────────────────── */}
+                <div className="relative">
+                  <div className="flex items-center justify-between mb-6">
+                    <div className="flex items-center gap-2.5">
+                      <SignalIcon className="h-3.5 w-3.5 text-cyan-300" />
+                      <span className="text-[10px] font-mono text-cyan-300/90 uppercase tracking-[0.22em]">// agent pipeline</span>
+                    </div>
+                    <span className="text-[10px] font-mono text-zinc-600 tracking-[0.18em]">5 phases · approval-gated · reversible</span>
                   </div>
-                ))}
+
+                  <div className="relative rounded-2xl border border-white/[0.06] bg-white/[0.015] backdrop-blur-sm overflow-hidden">
+                    <CornerBrackets />
+                    {/* Horizontal rail */}
+                    <div aria-hidden className="absolute left-8 right-8 top-[3.25rem] h-px bg-gradient-to-r from-emerald-500/30 via-violet-500/30 to-amber-500/30 hidden md:block" />
+                    <div className="grid md:grid-cols-5 gap-0 p-6">
+                      {[
+                        { icon: LockClosedIcon,   color: "text-emerald-300", bg: "bg-emerald-500/10 border-emerald-500/40", label: "01 · CONNECT", desc: "Read-only IAM role + External ID — assumed on demand." },
+                        { icon: EyeIcon,          color: "text-blue-300",    bg: "bg-blue-500/10 border-blue-500/40",       label: "02 · SCAN",    desc: "Multi-region inventory across every resource kind." },
+                        { icon: CpuChipIcon,      color: "text-violet-300",  bg: "bg-violet-500/10 border-violet-500/40",   label: "03 · REASON",  desc: "Risk × cost × compliance prioritisation." },
+                        { icon: CommandLineIcon,  color: "text-fuchsia-300", bg: "bg-fuchsia-500/10 border-fuchsia-500/40", label: "04 · EXECUTE", desc: "Terraform / CLI plans — approval-gated apply." },
+                        { icon: DocumentCheckIcon,color: "text-amber-300",   bg: "bg-amber-500/10 border-amber-500/40",     label: "05 · AUDIT",   desc: "Immutable trail · exportable evidence bundles." },
+                      ].map((item) => {
+                        const Icon = item.icon;
+                        return (
+                          <div key={item.label} className="relative px-3 py-2">
+                            <div className={`relative z-10 w-10 h-10 rounded-xl ${item.bg} border-2 flex items-center justify-center shadow-[0_0_24px_-4px_rgba(139,92,246,0.4)] mb-3`}>
+                              <Icon className={`h-4 w-4 ${item.color}`} />
+                            </div>
+                            <p className="text-[11px] font-mono font-bold text-white tracking-[0.12em] mb-1">{item.label}</p>
+                            <p className="text-[11.5px] text-zinc-500 leading-relaxed max-w-[18ch]">{item.desc}</p>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </div>
+
+                {/* ── TRUST STRIP ─────────────────────────────────── */}
+                <div>
+                  <div className="flex items-center gap-2.5 mb-5">
+                    <ShieldCheckIcon className="h-3.5 w-3.5 text-violet-300" />
+                    <span className="text-[10px] font-mono text-violet-300/90 uppercase tracking-[0.22em]">// safety model</span>
+                  </div>
+                  <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    {[
+                      { Icon: ShieldCheckIcon, title: "Read-only by default",    detail: "IAM role grants only what the setup guide lists. Writes are opt-in.",            tone: "emerald" },
+                      { Icon: LockClosedIcon,  title: "Zero stored credentials", detail: "Axiom assumes the role on demand. Nothing about your account persists at rest.", tone: "violet"  },
+                      { Icon: BoltIcon,        title: "Approval-gated changes",  detail: "Every proposed action requires human review. Execution is reversible by design.", tone: "amber"   },
+                      { Icon: SignalIcon,      title: "Real-time audit trail",   detail: "Every scan, plan, approval, and apply becomes an exportable audit record.",       tone: "cyan"    },
+                    ].map(({ Icon, title, detail, tone }) => (
+                      <MagneticCard key={title} tint={tone === "amber" ? "amber" : tone === "cyan" ? "cyan" : tone === "violet" ? "violet" : "emerald"} maxTilt={2.5} radius={180} className="rounded-xl h-full">
+                        <div className="group relative rounded-xl border border-white/[0.07] bg-white/[0.02] p-5 overflow-hidden h-full transition-colors hover:border-white/[0.18]">
+                          <CornerBrackets />
+                          <div aria-hidden className={`absolute -top-14 -right-14 w-36 h-36 rounded-full blur-[50px] pointer-events-none opacity-0 group-hover:opacity-80 transition-opacity ${
+                            tone === "emerald" ? "bg-emerald-500/30" :
+                            tone === "violet"  ? "bg-violet-500/30"  :
+                            tone === "amber"   ? "bg-amber-500/30"   :
+                                                  "bg-cyan-500/30"
+                          }`} />
+                          <div className="relative z-10">
+                            <div className={`inline-flex w-9 h-9 rounded-lg items-center justify-center mb-4 border ${
+                              tone === "emerald" ? "bg-emerald-500/10 border-emerald-500/30" :
+                              tone === "violet"  ? "bg-violet-500/10 border-violet-500/30"   :
+                              tone === "amber"   ? "bg-amber-500/10 border-amber-500/30"     :
+                                                    "bg-cyan-500/10 border-cyan-500/30"
+                            }`}>
+                              <Icon className={`h-4 w-4 ${
+                                tone === "emerald" ? "text-emerald-300" :
+                                tone === "violet"  ? "text-violet-300"  :
+                                tone === "amber"   ? "text-amber-300"   :
+                                                      "text-cyan-300"
+                              }`} />
+                            </div>
+                            <p className="text-[13px] font-semibold text-white mb-1.5 tracking-tight">{title}</p>
+                            <p className="text-[12px] text-zinc-500 leading-relaxed">{detail}</p>
+                          </div>
+                        </div>
+                      </MagneticCard>
+                    ))}
+                  </div>
+                </div>
               </div>
             </div>
           </Reveal>
@@ -1303,7 +1409,7 @@ export default function OnboardingPage() {
            ════════════════════════════════════════════════════════ */}
         {step === 3 && (
           <Reveal direction="up" blur>
-            <div className="max-w-xl mx-auto">
+            <div className="max-w-3xl mx-auto">
               {!analyzing && !scanComplete && (
                 <>
                   <div className="text-center mb-8">
@@ -1380,7 +1486,7 @@ export default function OnboardingPage() {
            ════════════════════════════════════════════════════════ */}
         {step === 4 && (
           <Reveal direction="up" blur>
-            <div className="max-w-xl mx-auto">
+            <div className="max-w-3xl mx-auto">
               <div className="text-center mb-8">
                 <div className="relative w-16 h-16 mx-auto mb-6">
                   <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-violet-500/25 to-fuchsia-500/25 blur-xl animate-pulse" />
@@ -1473,7 +1579,7 @@ export default function OnboardingPage() {
            ════════════════════════════════════════════════════════ */}
         {step === 5 && (
           <Reveal direction="up" blur>
-            <div className="text-center max-w-xl mx-auto">
+            <div className="text-center max-w-3xl mx-auto">
               <div className="relative w-16 h-16 mx-auto mb-6">
                 <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-fuchsia-500/25 to-violet-500/25 blur-xl animate-pulse" />
                 <div className="relative w-16 h-16 rounded-2xl bg-gradient-to-br from-fuchsia-500 to-violet-500 flex items-center justify-center shadow-[0_0_30px_rgba(168,85,247,0.3)]">

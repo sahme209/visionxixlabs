@@ -39,6 +39,9 @@ prisma/dev.db-journal
 # generated scaffolds
 /data/scaffolds
 
+# local scratch scripts (AI Gateway test, etc.)
+/index.mjs
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts
