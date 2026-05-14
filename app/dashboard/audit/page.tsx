@@ -275,9 +275,19 @@ function StoryCard({ story }: { story: AuditStory }) {
           {story.hasBlockedAction && <Badge label="Blocked action" tone="amber" />}
           {story.hasSecurityEvent && <Badge label="Security event" tone="fuchsia" />}
         </div>
-        <Link href="/dashboard/traces" className="text-[11px] font-semibold text-fuchsia-300 hover:text-fuchsia-200">
-          View trace <ArrowRightIcon className="inline h-3 w-3 ml-0.5 -mt-0.5" />
-        </Link>
+        <div className="flex items-center gap-3">
+          <a
+            href={`/api/audit/bundle/${encodeURIComponent(story.correlationId as unknown as string)}?format=json`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-[11px] font-semibold text-emerald-300 hover:text-emerald-200"
+          >
+            Export bundle <ArrowDownTrayIcon className="inline h-3 w-3 ml-0.5 -mt-0.5" />
+          </a>
+          <Link href="/dashboard/traces" className="text-[11px] font-semibold text-fuchsia-300 hover:text-fuchsia-200">
+            View trace <ArrowRightIcon className="inline h-3 w-3 ml-0.5 -mt-0.5" />
+          </Link>
+        </div>
       </div>
     </div>
   );
