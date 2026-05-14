@@ -15,7 +15,8 @@ import { runDeepValidation, type DeepValidationReport } from "@/lib/validation/d
 import { runRemediationPipeline, type RemediationPipelineOutcome } from "@/lib/remediation/remediationPipeline";
 import { runPreflight, type PreflightOutcome, type PreflightInput } from "@/lib/execution/preflightEngine";
 import { runSimulation, type SimulationResult } from "@/lib/simulation/executionSimulator";
-import { buildDigitalTwin, type DigitalTwin } from "@/lib/digitalTwin/digitalTwinBuilder";
+import { buildDigitalTwin } from "@/lib/digitalTwin/digitalTwinBuilder";
+import type { DigitalTwin } from "@/lib/digitalTwin/digitalTwinModel";
 import { changeSetFromCandidate } from "@/lib/simulation/changeSetModel";
 import { listDiagnoses, diagnoseFromError, type Diagnosis } from "@/lib/troubleshooting/selfServeTroubleshooter";
 import { loadAppEnv } from "@/lib/config/env";
