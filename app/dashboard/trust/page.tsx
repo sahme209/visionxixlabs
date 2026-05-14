@@ -30,6 +30,7 @@ import { platformSummaries, PLATFORM_LABEL, STATUS_LABEL as RELEASE_STATUS_LABEL
 import { CONNECTOR_EVIDENCE, summarizeConnectorEvidence } from "@/lib/connectors/permissionEvidence";
 import { buildAiSafetyEvidence, summarizeAiSafety } from "@/lib/agent/aiSafetyEvidence";
 import { buildDataHandlingSummary, summarizeDataHandling } from "@/lib/security/dataHandlingSummary";
+import { summarizeValidation, VALIDATION_MATRIX } from "@/lib/validation/platformValidationMatrix";
 
 export default function TrustCenterPage() {
   const controlSummary = summarizeControls();
@@ -323,13 +324,19 @@ export default function TrustCenterPage() {
         </div>
       </Reveal>
 
+      {/* Validation matrix headline — pulled from /lib/validation */}
+      <Reveal direction="up" delay={0.34}>
+        <ValidationSummaryStrip />
+      </Reveal>
+
       {/* Self-serve links */}
       <Reveal direction="up" delay={0.36}>
-        <div className="mt-8 grid sm:grid-cols-3 gap-3">
+        <div className="mt-8 grid sm:grid-cols-4 gap-3">
           {[
-            { href: "/dashboard/security",   label: "Security center",  icon: ShieldCheckIcon, sub: "Tenant isolation, RBAC, credentials, redaction." },
-            { href: "/dashboard/audit",      label: "Audit center",     icon: DocumentTextIcon, sub: "Evidence-backed audit stories with export." },
-            { href: "/dashboard/reliability", label: "Reliability",      icon: BoltIcon, sub: "Circuits, retries, dead-letter, system health." },
+            { href: "/dashboard/validation",      label: "Validation matrix", icon: CubeTransparentIconShim, sub: "What actually works + multi-cloud capability table." },
+            { href: "/dashboard/security-scanner", label: "Security scanner", icon: ShieldCheckIcon, sub: "Cloud + app + supply-chain + desktop checks." },
+            { href: "/dashboard/security",        label: "Security center",   icon: ShieldCheckIcon, sub: "Tenant isolation, RBAC, credentials, redaction." },
+            { href: "/dashboard/reliability",     label: "Reliability",       icon: BoltIcon, sub: "Circuits, retries, dead-letter, system health." },
           ].map(({ href, label, icon: Icon, sub }) => (
             <Link key={href} href={href} className="block rounded-2xl border border-white/[0.06] bg-white/[0.02] p-4 hover:border-emerald-500/25 hover:bg-emerald-500/[0.03] transition-colors">
               <Icon className="h-4 w-4 text-emerald-300 mb-2" />
@@ -340,6 +347,51 @@ export default function TrustCenterPage() {
         </div>
       </Reveal>
     </div>
+  );
+}
+
+function CubeTransparentIconShim(props: { className?: string }) {
+  // Local SVG so we don't add another heroicons import. Cube outline.
+  return (
+    <svg className={props.className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+      <path d="M21 7.5l-9-4.5-9 4.5L12 12l9-4.5z" />
+      <path d="M3 7.5V16.5l9 4.5 9-4.5V7.5" />
+      <path d="M12 12v9" />
+    </svg>
+  );
+}
+
+function ValidationSummaryStrip() {
+  const summary = summarizeValidation();
+  const actionable = VALIDATION_MATRIX.filter((r) => r.status === "partial" || r.status === "blocked").slice(0, 3);
+  return (
+    <Link
+      href="/dashboard/validation"
+      className="block mt-8 rounded-2xl border border-cyan-500/15 bg-gradient-to-br from-cyan-500/[0.05] via-transparent to-emerald-500/[0.03] p-5 hover:border-cyan-500/30 transition-colors group"
+    >
+      <div className="flex items-start justify-between gap-4 flex-wrap">
+        <div>
+          <p className="text-[10px] font-semibold text-cyan-300 uppercase tracking-[0.18em] mb-1">Validation matrix</p>
+          <h3 className="text-base font-bold text-white">{summary.passing} of {summary.total} capabilities passing · {Math.round(summary.score * 100)}% score</h3>
+          <p className="text-[12px] text-zinc-400 mt-1 leading-relaxed">
+            {summary.partial} partial · {summary.preview} preview · {summary.blocked} blocked · {summary.failing} failing.
+          </p>
+        </div>
+        <div className="flex items-center gap-1 text-cyan-300 font-semibold text-sm">
+          Open validation matrix <ArrowRightIcon className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
+        </div>
+      </div>
+      {actionable.length > 0 && (
+        <div className="mt-4 pt-4 border-t border-white/[0.05] grid sm:grid-cols-3 gap-2">
+          {actionable.map((r) => (
+            <div key={r.id} className="rounded-lg border border-white/[0.05] bg-white/[0.02] px-3 py-2">
+              <p className="text-[11px] text-zinc-300 font-semibold truncate">{r.capability}</p>
+              <p className="text-[10px] text-amber-300/80 mt-0.5">{r.nextFix ?? "Action needed"}</p>
+            </div>
+          ))}
+        </div>
+      )}
+    </Link>
   );
 }
 
