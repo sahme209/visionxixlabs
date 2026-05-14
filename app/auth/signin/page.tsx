@@ -6,8 +6,6 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { ArrowRightIcon, EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
-import { RealisticFogBackground } from "@/components/ui/realistic-fog-background";
-import { Reveal } from "@/components/motion/Reveal";
 
 function SignInForm() {
   const [email, setEmail] = useState("");
@@ -15,6 +13,7 @@ function SignInForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [oauthLoading, setOauthLoading] = useState<null | "google" | "github">(null);
   const router = useRouter();
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get("callbackUrl") || "/dashboard";
@@ -42,115 +41,165 @@ function SignInForm() {
     }
   };
 
+  const handleOAuth = async (provider: "google" | "github") => {
+    setOauthLoading(provider);
+    try {
+      await signIn(provider, { callbackUrl });
+    } catch {
+      setError(`Couldn't start ${provider} sign-in.`);
+      setOauthLoading(null);
+    }
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#09090b] px-4 relative overflow-hidden">
-      <RealisticFogBackground backgroundColor="transparent" opacity={0.2} darken contained />
-      {/* Spotlight orb */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[400px] spotlight-orb opacity-40 pointer-events-none" aria-hidden />
-      {/* Floating blur orbs */}
-      <div className="absolute -top-32 -left-32 w-72 h-72 rounded-full bg-violet-600/10 blur-[100px] pointer-events-none" aria-hidden />
-      <div className="absolute bottom-0 right-0 w-56 h-56 rounded-full bg-blue-600/8 blur-[90px] pointer-events-none" aria-hidden />
-      {/* Grid mesh background */}
-      <div className="absolute inset-0 bg-grid-mesh opacity-30 pointer-events-none" aria-hidden />
+      {/* Background — pointer-events strictly disabled so inputs always receive focus. */}
+      <div className="absolute inset-0 pointer-events-none" aria-hidden>
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-[500px] rounded-full bg-gradient-to-b from-violet-500/[0.12] via-violet-500/[0.04] to-transparent blur-[80px]" />
+        <div className="absolute -top-32 -left-32 w-72 h-72 rounded-full bg-violet-600/10 blur-[100px]" />
+        <div className="absolute bottom-0 right-0 w-96 h-96 rounded-full bg-blue-600/[0.07] blur-[120px]" />
+        <div
+          className="absolute inset-0 opacity-[0.04]"
+          style={{
+            backgroundImage:
+              "linear-gradient(to right, rgba(255,255,255,0.5) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,0.5) 1px, transparent 1px)",
+            backgroundSize: "48px 48px",
+          }}
+        />
+      </div>
 
       <Link href="/" className="absolute top-6 left-6 text-sm text-zinc-500 hover:text-white transition-colors z-20">
         ← Home
       </Link>
 
-      <Reveal direction="up" blur delay={0.05}>
-        <div className="w-full max-w-sm relative z-10 glass-card auth-gradient-border auth-card-huly rounded-2xl border border-white/[0.06] p-8">
-          <div className="auth-gradient-corner" aria-hidden />
-          <Link href="/" className="flex items-center gap-2.5 mb-10">
-            <Image
-              src="/vision-xix-logo.png"
-              alt="Vision XIX Labs"
-              width={28}
-              height={28}
-              className="rounded-lg"
+      <div className="w-full max-w-sm relative z-10 rounded-2xl border border-white/[0.08] bg-[#0c0c10]/85 backdrop-blur-xl p-8 shadow-[0_30px_80px_-20px_rgba(0,0,0,0.6)]">
+        <Link href="/" className="flex items-center gap-2.5 mb-10">
+          <Image src="/vision-xix-logo.png" alt="Vision XIX Labs" width={28} height={28} className="rounded-lg" />
+          <span className="text-sm font-semibold bg-gradient-to-r from-violet-400 to-fuchsia-300 bg-clip-text text-transparent">
+            Vision XIX Labs
+          </span>
+        </Link>
+        <h1 className="text-2xl font-bold mb-1 tracking-[-0.04em]">Sign in</h1>
+        <p className="text-sm text-zinc-500 mb-8">Access your Axiom dashboard and operations.</p>
+
+        <form onSubmit={handleSubmit} className="space-y-4" noValidate>
+          <div>
+            <label htmlFor="email" className="block text-sm font-medium text-zinc-300 mb-1.5">
+              Email
+            </label>
+            <input
+              id="email"
+              name="email"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              autoComplete="email"
+              autoFocus
+              placeholder="you@company.com"
+              className="block w-full rounded-lg border border-white/[0.08] bg-white/[0.04] px-3.5 py-2.5 text-sm text-white placeholder:text-zinc-600 outline-none transition focus:border-violet-500/50 focus:bg-white/[0.06] focus:ring-2 focus:ring-violet-500/20"
             />
-            <span className="text-sm font-semibold text-gradient">
-              Vision XIX Labs
-            </span>
-          </Link>
-          <h1 className="text-2xl font-bold mb-1 tracking-[-0.04em]">Sign in</h1>
-          <p className="text-sm text-zinc-500 mb-8">
-            Access your Axiom dashboard and operations.
-          </p>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label htmlFor="email" className="block text-sm font-medium text-zinc-300 mb-1.5">
-                Email
-              </label>
+          </div>
+          <div>
+            <label htmlFor="password" className="block text-sm font-medium text-zinc-300 mb-1.5">
+              Password
+            </label>
+            <div className="relative">
               <input
-                id="email"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                id="password"
+                name="password"
+                type={showPassword ? "text" : "password"}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 required
-                autoComplete="email"
-                className="auth-input w-full rounded-lg border border-white/[0.06] bg-white/[0.03] px-3.5 py-2.5 text-sm text-white transition-all duration-300 placeholder:text-zinc-600"
+                autoComplete="current-password"
+                placeholder="••••••••"
+                className="block w-full rounded-lg border border-white/[0.08] bg-white/[0.04] px-3.5 py-2.5 pr-10 text-sm text-white placeholder:text-zinc-600 outline-none transition focus:border-violet-500/50 focus:bg-white/[0.06] focus:ring-2 focus:ring-violet-500/20"
               />
+              <button
+                type="button"
+                onClick={() => setShowPassword((s) => !s)}
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 rounded p-1 text-zinc-500 hover:text-zinc-200 transition-colors"
+                aria-label={showPassword ? "Hide password" : "Show password"}
+                tabIndex={-1}
+              >
+                {showPassword ? <EyeSlashIcon className="h-4 w-4" /> : <EyeIcon className="h-4 w-4" />}
+              </button>
             </div>
-            <div>
-              <label htmlFor="password" className="block text-sm font-medium text-zinc-300 mb-1.5">
-                Password
-              </label>
-              <div className="relative">
-                <input
-                  id="password"
-                  type={showPassword ? "text" : "password"}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                  autoComplete="current-password"
-                  className="auth-input w-full rounded-lg border border-white/[0.06] bg-white/[0.03] px-3.5 py-2.5 pr-10 text-sm text-white transition-all duration-300 placeholder:text-zinc-600"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="password-toggle-btn"
-                  aria-label={showPassword ? "Hide password" : "Show password"}
-                >
-                  {showPassword ? <EyeSlashIcon className="h-4 w-4" /> : <EyeIcon className="h-4 w-4" />}
-                </button>
-              </div>
+          </div>
+          {error && (
+            <div className="rounded-lg border border-red-500/20 bg-red-500/[0.08] px-3.5 py-2.5 text-sm text-red-300">
+              {error}
             </div>
-            {error && (
-              <div className="rounded-lg border border-red-500/20 bg-red-500/[0.06] px-3.5 py-2.5 text-sm text-red-400">
-                {error}
-              </div>
-            )}
-            <button
-              type="submit"
-              disabled={loading}
-              className="btn-huly btn-amber-shimmer w-full rounded-full bg-white py-3 text-sm font-semibold text-zinc-900 hover:bg-zinc-100 disabled:opacity-50 flex items-center justify-center gap-2 transition-colors shadow-[0_0_20px_rgba(255,255,255,0.08)]"
-            >
-              {loading ? "Signing in..." : "Sign in"}
-              {!loading && <ArrowRightIcon className="h-4 w-4" />}
-            </button>
-          </form>
-          <div className="flex items-center gap-3 my-6">
-            <div className="flex-1 h-px bg-white/[0.06]" />
-            <span className="text-xs text-zinc-600">Or</span>
-            <div className="flex-1 h-px bg-white/[0.06]" />
-          </div>
-          <div className="flex items-center justify-center gap-3">
-            <button type="button" className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-white/[0.08] bg-white/[0.02] text-sm text-zinc-400 hover:bg-white/[0.06] hover:text-white transition-all">
-              Sign in with Google
-            </button>
-            <button type="button" className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-white/[0.08] bg-white/[0.02] text-sm text-zinc-400 hover:bg-white/[0.06] hover:text-white transition-all">
-              Sign in with GitHub
-            </button>
-          </div>
-          <p className="mt-6 text-sm text-zinc-500 text-center">
-            Don&apos;t have an account?{" "}
-            <Link href="/auth/signup" className="font-medium text-violet-400 hover:text-violet-300">
-              Sign up
-            </Link>
-          </p>
+          )}
+          <button
+            type="submit"
+            disabled={loading || oauthLoading !== null}
+            className="w-full inline-flex items-center justify-center gap-2 rounded-full bg-amber-400 px-4 py-3 text-sm font-semibold text-zinc-900 hover:bg-amber-300 disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-[0_8px_24px_-6px_rgba(245,158,11,0.45)]"
+          >
+            {loading ? "Signing in…" : "Sign in"}
+            {!loading && <ArrowRightIcon className="h-4 w-4" />}
+          </button>
+        </form>
+
+        <div className="flex items-center gap-3 my-6">
+          <div className="flex-1 h-px bg-white/[0.06]" />
+          <span className="text-xs text-zinc-600">Or</span>
+          <div className="flex-1 h-px bg-white/[0.06]" />
         </div>
-      </Reveal>
+
+        <div className="grid grid-cols-2 gap-3">
+          <button
+            type="button"
+            onClick={() => handleOAuth("google")}
+            disabled={oauthLoading !== null || loading}
+            className="inline-flex items-center justify-center gap-2 rounded-full border border-white/[0.08] bg-white/[0.02] px-3 py-2.5 text-xs font-medium text-zinc-200 hover:bg-white/[0.06] hover:text-white disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+          >
+            <GoogleMark className="h-4 w-4" />
+            {oauthLoading === "google" ? "Opening…" : "Sign in with Google"}
+          </button>
+          <button
+            type="button"
+            onClick={() => handleOAuth("github")}
+            disabled={oauthLoading !== null || loading}
+            className="inline-flex items-center justify-center gap-2 rounded-full border border-white/[0.08] bg-white/[0.02] px-3 py-2.5 text-xs font-medium text-zinc-200 hover:bg-white/[0.06] hover:text-white disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+          >
+            <GitHubMark className="h-4 w-4" />
+            {oauthLoading === "github" ? "Opening…" : "Sign in with GitHub"}
+          </button>
+        </div>
+
+        <p className="mt-6 text-sm text-zinc-500 text-center">
+          Don&apos;t have an account?{" "}
+          <Link href="/auth/signup" className="font-medium text-violet-400 hover:text-violet-300">
+            Sign up
+          </Link>
+        </p>
+      </div>
     </div>
+  );
+}
+
+function GoogleMark({ className }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 48 48" aria-hidden>
+      <path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3c-1.6 4.7-6.1 8-11.3 8a12 12 0 1 1 0-24c3 0 5.7 1.1 7.8 2.9l5.7-5.7A20 20 0 1 0 24 44c11 0 20-8 20-20 0-1.2-.1-2.3-.4-3.5z" />
+      <path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 16 19 13 24 13c3 0 5.7 1.1 7.8 2.9l5.7-5.7A20 20 0 0 0 6.3 14.7z" />
+      <path fill="#4CAF50" d="M24 44c5.2 0 10-2 13.6-5.2l-6.3-5.3A12 12 0 0 1 12.7 28l-6.5 5A20 20 0 0 0 24 44z" />
+      <path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3a12 12 0 0 1-4.1 5.5l6.3 5.3C41.9 35 44 30 44 24c0-1.2-.1-2.3-.4-3.5z" />
+    </svg>
+  );
+}
+
+function GitHubMark({ className }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+      <path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M12 .5C5.7.5.7 5.6.7 11.8c0 5 3.3 9.2 7.8 10.7.6.1.8-.2.8-.6v-2c-3.2.7-3.9-1.5-3.9-1.5-.5-1.3-1.3-1.7-1.3-1.7-1.1-.8.1-.8.1-.8 1.2.1 1.8 1.2 1.8 1.2 1.1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.8-1.6-2.6-.3-5.3-1.3-5.3-5.8 0-1.3.5-2.3 1.2-3.2-.1-.3-.5-1.5.1-3.1 0 0 1-.3 3.2 1.2a11 11 0 0 1 5.8 0c2.2-1.5 3.2-1.2 3.2-1.2.6 1.6.2 2.8.1 3.1.7.9 1.2 2 1.2 3.2 0 4.6-2.8 5.5-5.4 5.8.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6 4.5-1.5 7.8-5.8 7.8-10.7C23.3 5.6 18.3.5 12 .5z"
+      />
+    </svg>
   );
 }
 
