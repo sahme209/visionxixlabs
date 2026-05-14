@@ -27,6 +27,8 @@ import { buildReliabilityPosture } from "@/lib/reliability/reliabilityPosture";
 import { buildObservabilityPosture } from "@/lib/observability/observabilityPosture";
 import { DEFAULT_DESKTOP_SHELL_STATE, summarizeShell } from "@/lib/desktop/desktopShellState";
 import { ComputerDesktopIcon } from "@heroicons/react/24/outline";
+import { assessOnboarding, progressPercent } from "@/lib/onboarding/onboardingState";
+import type { OnboardingProgress } from "@/lib/onboarding/onboardingState";
 
 interface KpiTile {
   label: string;
@@ -437,6 +439,11 @@ export default function CommandCenterPage() {
             </div>
           </Reveal>
 
+          {/* Onboarding progress — observation-driven journey */}
+          <Reveal direction="up" delay={0.26}>
+            <OnboardingPanel />
+          </Reveal>
+
           {/* Desktop runtime panel — typed shell state */}
           <Reveal direction="up" delay={0.28}>
             <DesktopRuntimePanel />
@@ -738,6 +745,75 @@ function DesktopRuntimePanel() {
           Security
         </Link>
       </div>
+    </div>
+  );
+}
+
+function OnboardingPanel() {
+  // Honest preview state — a freshly-onboarding tenant. Real implementation
+  // pulls observations from the orgContext + memory + audit aggregators.
+  const progress: OnboardingProgress = assessOnboarding({
+    hasAccount: true,
+    providerSelected: true,
+    credentialsSubmitted: true,
+    credentialsValidated: true,
+    scansStarted: 1,
+    snapshotsPersisted: 1,
+    recommendationsViewed: 0,
+    plansBuilt: 0,
+    approvalsGranted: 0,
+    plansExecutedOrExported: 0,
+    auditBundlesExported: 0,
+  });
+  const pct = progressPercent(progress);
+  return (
+    <div className="rounded-2xl border border-emerald-500/15 bg-gradient-to-br from-emerald-500/[0.04] via-transparent to-cyan-500/[0.02] overflow-hidden">
+      <div className="px-5 py-3.5 border-b border-white/[0.06] bg-white/[0.01] flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <BoltIcon className="h-4 w-4 text-emerald-300" />
+          <h3 className="text-sm font-semibold text-white">Getting Axiom productive</h3>
+        </div>
+        <span className="text-[11px] font-mono text-zinc-500">{pct}%</span>
+      </div>
+      <div className="px-4 py-3 border-b border-white/[0.04]">
+        <div className="w-full h-1.5 rounded-full bg-white/[0.04] overflow-hidden mb-3">
+          <div
+            className="h-full bg-gradient-to-r from-emerald-400 to-cyan-400 transition-all"
+            style={{ width: `${pct}%` }}
+          />
+        </div>
+        {progress.nextStep ? (
+          <>
+            <p className="text-[12px] font-semibold text-white">Next: {progress.nextStep.label}</p>
+            <p className="text-[11px] text-zinc-500 mt-0.5 leading-relaxed">{progress.nextStep.detail}</p>
+          </>
+        ) : (
+          <p className="text-[12px] font-semibold text-emerald-300">You're operating in steady state.</p>
+        )}
+      </div>
+      <div className="p-3 space-y-1.5 max-h-56 overflow-y-auto">
+        {progress.milestones.map((m) => (
+          <div key={m.stage} className="flex items-start gap-2.5">
+            <span className={`mt-1.5 w-1.5 h-1.5 rounded-full shrink-0 ${m.done ? "bg-emerald-400" : "bg-zinc-700"}`} />
+            <div className="flex-1 min-w-0">
+              <p className={`text-[11px] font-semibold ${m.done ? "text-zinc-200 line-through decoration-zinc-600" : "text-zinc-300"}`}>
+                {m.label}
+              </p>
+              {!m.done && <p className="text-[10px] text-zinc-500 leading-snug">{m.detail}</p>}
+            </div>
+          </div>
+        ))}
+      </div>
+      {progress.nextStep && (
+        <div className="px-3 pb-3 pt-1">
+          <Link
+            href={progress.nextStep.href}
+            className="block w-full text-center text-[11px] font-semibold text-emerald-200 hover:text-emerald-100 rounded-md border border-emerald-500/20 bg-emerald-500/[0.06] hover:border-emerald-500/40 px-2 py-1.5 transition-colors"
+          >
+            {progress.nextStep.label} →
+          </Link>
+        </div>
+      )}
     </div>
   );
 }
