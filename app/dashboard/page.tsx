@@ -219,6 +219,27 @@ export default function DashboardPage() {
         </Link>
 
         <Link
+          href="/dashboard/copilot"
+          className="glass-card card-hover animated-border card-inner-glow rounded-xl p-5 group relative overflow-hidden"
+        >
+          <span aria-hidden className="absolute -top-8 -right-8 w-24 h-24 rounded-full bg-violet-500/[0.08] blur-[30px] pointer-events-none" />
+          <div className="relative">
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-lg bg-violet-500/10 flex items-center justify-center">
+                  <SparklesIcon className="h-5 w-5 text-violet-400" />
+                </div>
+                <h2 className="text-sm font-semibold text-white">Copilot</h2>
+              </div>
+              <span className="text-[9px] font-semibold text-violet-400 bg-violet-500/15 border border-violet-500/30 rounded-full px-1.5 py-px uppercase tracking-wider">New</span>
+            </div>
+            <p className="text-xs text-zinc-500">
+              AI operations copilot · governance-aware · evidence-backed · self-serve troubleshooting.
+            </p>
+          </div>
+        </Link>
+
+        <Link
           href="/dashboard/releaseops"
           className="glass-card card-hover animated-border card-inner-glow rounded-xl p-5 group relative overflow-hidden"
         >

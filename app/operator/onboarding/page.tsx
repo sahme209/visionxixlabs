@@ -998,13 +998,18 @@ export default function OnboardingPage() {
                 </div>
               </div>
 
-              <h1 className="text-3xl sm:text-4xl font-bold mb-3 tracking-[-0.04em] leading-tight">
-                Activate <span className="text-gradient">Axiom Agent</span>
+              <div className="inline-flex items-center gap-2 mb-6 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-[10px] font-semibold text-emerald-300 uppercase tracking-widest">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                5-minute setup · Read-only · Reversible
+              </div>
+              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-4 tracking-[-0.04em] leading-[1.05]">
+                Connect your cloud.<br />
+                <span className="text-gradient">Activate Axiom.</span>
               </h1>
-              <p className="text-zinc-400 text-sm mb-2 max-w-md mx-auto">
-                Connect your cloud to an intelligent, secure AI operator that scans, reasons, plans, and safely executes infrastructure improvements.
+              <p className="text-dim-paragraph text-base sm:text-lg mb-2 max-w-xl mx-auto leading-relaxed">
+                Create one read-only IAM role. <span className="dim-1">Axiom scans, reasons, plans, and proposes safe infrastructure improvements</span> <span className="dim-2">— with full audit, rollback, and human-in-the-loop approval.</span>
               </p>
-              <p className="text-zinc-600 text-xs mb-10">5-minute setup · No credit card · Revoke access anytime</p>
+              <p className="text-zinc-600 text-xs mb-10">No credit card · Revoke access in one click · Approval-gated execution</p>
 
               {/* Agent pipeline */}
               <div className="rounded-2xl border border-white/[0.06] bg-white/[0.015] p-6 text-left mb-8">
