@@ -203,7 +203,10 @@ export default function DashboardPage() {
         </div>
       </section>
 
-      {/* Live posture row: Security, Reliability, Connections — one strip each */}
+      {/* Posture row: scores marked "Preview" honestly until real telemetry
+          is wired (the aggregator engines run on hardcoded preview inputs
+          right now). "Cloud connections" reads real data from
+          /api/connectors/status. */}
       <section className="grid lg:grid-cols-3 gap-4 mb-10">
         <PostureCard
           icon={ShieldCheckIcon}
@@ -212,6 +215,7 @@ export default function DashboardPage() {
           value={`${Math.round(security.score * 100)}%`}
           detail={security.checks[0]?.label ?? "Tenant isolation healthy"}
           href="/dashboard/security"
+          source="preview"
         />
         <PostureCard
           icon={ChartBarSquareIcon}
@@ -220,6 +224,7 @@ export default function DashboardPage() {
           value={`${Math.round(reliability.score * 100)}%`}
           detail={`${reliability.health.counts.healthy}/${reliability.health.components.length} components healthy`}
           href="/dashboard/reliability"
+          source="preview"
         />
         <PostureCard
           icon={CloudIcon}
@@ -228,6 +233,7 @@ export default function DashboardPage() {
           value={`${connected.length}`}
           detail={connected.length === 0 ? "No accounts connected" : `${connected.length} provider${connected.length === 1 ? "" : "s"} live`}
           href="/operator/onboarding"
+          source="live"
         />
       </section>
 
@@ -346,6 +352,7 @@ function PostureCard({
   value,
   detail,
   href,
+  source,
 }: {
   icon: typeof CloudIcon;
   tone: "emerald" | "cyan" | "violet";
@@ -353,6 +360,9 @@ function PostureCard({
   value: string;
   detail: string;
   href: string;
+  /** Honest source tag — "preview" renders a badge so the user knows the
+   *  number isn't reading live telemetry yet. */
+  source?: "live" | "preview" | "demo";
 }) {
   const tones: Record<typeof tone, string> = {
     emerald: "text-emerald-300 bg-emerald-500/10 border-emerald-500/20",
@@ -363,6 +373,7 @@ function PostureCard({
     tone === "emerald" ? "hover:border-emerald-500/25" :
     tone === "cyan"    ? "hover:border-cyan-500/25"    :
                           "hover:border-violet-500/25";
+  const showPreviewBadge = source === "preview" || source === "demo";
   return (
     <Link
       href={href}
@@ -372,11 +383,23 @@ function PostureCard({
         <div className={`w-9 h-9 rounded-lg border flex items-center justify-center ${tones[tone]}`}>
           <Icon className="h-4.5 w-4.5" />
         </div>
-        <ArrowRightIcon className="h-3.5 w-3.5 text-zinc-700 group-hover:text-zinc-300 transition-colors" />
+        <div className="flex items-center gap-2">
+          {showPreviewBadge && (
+            <span className="text-[9px] font-semibold uppercase tracking-[0.15em] text-amber-300 bg-amber-500/10 border border-amber-500/25 rounded-full px-1.5 py-px">
+              {source === "preview" ? "Preview" : "Demo"}
+            </span>
+          )}
+          <ArrowRightIcon className="h-3.5 w-3.5 text-zinc-700 group-hover:text-zinc-300 transition-colors" />
+        </div>
       </div>
       <p className="text-3xl font-bold text-white tracking-[-0.04em]">{value}</p>
       <p className="text-[11px] text-zinc-500 uppercase tracking-[0.12em] mt-1">{label}</p>
       <p className="text-[12px] text-zinc-400 mt-2 leading-relaxed">{detail}</p>
+      {showPreviewBadge && (
+        <p className="text-[10px] text-zinc-600 mt-2 leading-relaxed">
+          Score is a real engine running on preview inputs — wires to live telemetry once data is connected.
+        </p>
+      )}
     </Link>
   );
 }
