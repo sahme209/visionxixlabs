@@ -178,61 +178,48 @@ function SignInForm() {
           </button>
         </form>
 
-        <div className="flex items-center gap-3 my-6">
-          <div className="flex-1 h-px bg-white/[0.06]" />
-          <span className="text-xs text-zinc-600">Or</span>
-          <div className="flex-1 h-px bg-white/[0.06]" />
-        </div>
+        {/* OAuth buttons — only render when actually configured. Cleaner than
+            showing greyed-out "NOT SET" buttons (the previous approach). */}
+        {(enabledProviders === null || enabledProviders.google || enabledProviders.github) && (
+          <>
+            <div className="flex items-center gap-3 my-6">
+              <div className="flex-1 h-px bg-white/[0.06]" />
+              <span className="text-xs text-zinc-600">Or</span>
+              <div className="flex-1 h-px bg-white/[0.06]" />
+            </div>
 
-        {oauthError && (
-          <div className="mb-3 rounded-lg border border-amber-500/20 bg-amber-500/[0.06] px-3.5 py-2.5 text-xs text-amber-200 flex items-start gap-2">
-            <ExclamationTriangleIcon className="h-3.5 w-3.5 shrink-0 mt-0.5" />
-            <span>OAuth returned <span className="font-mono">{oauthError}</span>. See `/api/auth/error` for details.</span>
-          </div>
-        )}
-
-        <div className="grid grid-cols-2 gap-3">
-          <button
-            type="button"
-            onClick={() => handleOAuth("google")}
-            disabled={oauthLoading !== null || loading || (enabledProviders !== null && !enabledProviders.google)}
-            title={enabledProviders !== null && !enabledProviders.google ? "Google OAuth not configured — set GOOGLE_CLIENT_ID + GOOGLE_CLIENT_SECRET on the host" : undefined}
-            className="inline-flex items-center justify-center gap-2 rounded-full border border-white/[0.08] bg-white/[0.02] px-3 py-2.5 text-xs font-medium text-zinc-200 hover:bg-white/[0.06] hover:text-white disabled:opacity-40 disabled:cursor-not-allowed transition-all relative"
-          >
-            <GoogleMark className="h-4 w-4" />
-            {oauthLoading === "google" ? "Opening…" : "Sign in with Google"}
-            {enabledProviders !== null && !enabledProviders.google && (
-              <span className="absolute -top-1 -right-1 text-[8px] font-bold text-amber-200 bg-amber-500/20 border border-amber-500/30 rounded-full px-1 py-px uppercase tracking-wider">
-                Not set
-              </span>
+            {oauthError && (
+              <div className="mb-3 rounded-lg border border-amber-500/20 bg-amber-500/[0.06] px-3.5 py-2.5 text-xs text-amber-200 flex items-start gap-2">
+                <ExclamationTriangleIcon className="h-3.5 w-3.5 shrink-0 mt-0.5" />
+                <span>OAuth returned <span className="font-mono">{oauthError}</span>.</span>
+              </div>
             )}
-          </button>
-          <button
-            type="button"
-            onClick={() => handleOAuth("github")}
-            disabled={oauthLoading !== null || loading || (enabledProviders !== null && !enabledProviders.github)}
-            title={enabledProviders !== null && !enabledProviders.github ? "GitHub OAuth not configured — set GITHUB_CLIENT_ID + GITHUB_CLIENT_SECRET on the host" : undefined}
-            className="inline-flex items-center justify-center gap-2 rounded-full border border-white/[0.08] bg-white/[0.02] px-3 py-2.5 text-xs font-medium text-zinc-200 hover:bg-white/[0.06] hover:text-white disabled:opacity-40 disabled:cursor-not-allowed transition-all relative"
-          >
-            <GitHubMark className="h-4 w-4" />
-            {oauthLoading === "github" ? "Opening…" : "Sign in with GitHub"}
-            {enabledProviders !== null && !enabledProviders.github && (
-              <span className="absolute -top-1 -right-1 text-[8px] font-bold text-amber-200 bg-amber-500/20 border border-amber-500/30 rounded-full px-1 py-px uppercase tracking-wider">
-                Not set
-              </span>
-            )}
-          </button>
-        </div>
 
-        {enabledProviders !== null && (!enabledProviders.google || !enabledProviders.github) && (
-          <p className="mt-3 text-[11px] text-zinc-500 text-center leading-relaxed">
-            OAuth buttons greyed out are missing host env credentials.
-            {" "}
-            <Link href="/docs/oauth-setup" className="text-violet-300 hover:text-violet-200 underline underline-offset-2">
-              How to configure
-            </Link>
-            .
-          </p>
+            <div className={`grid gap-3 ${enabledProviders === null ? "grid-cols-2" : enabledProviders.google && enabledProviders.github ? "grid-cols-2" : "grid-cols-1"}`}>
+              {(enabledProviders === null || enabledProviders.google) && (
+                <button
+                  type="button"
+                  onClick={() => handleOAuth("google")}
+                  disabled={oauthLoading !== null || loading}
+                  className="inline-flex items-center justify-center gap-2 rounded-full border border-white/[0.08] bg-white/[0.02] px-3 py-2.5 text-xs font-medium text-zinc-200 hover:bg-white/[0.06] hover:text-white disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                >
+                  <GoogleMark className="h-4 w-4" />
+                  {oauthLoading === "google" ? "Opening…" : "Sign in with Google"}
+                </button>
+              )}
+              {(enabledProviders === null || enabledProviders.github) && (
+                <button
+                  type="button"
+                  onClick={() => handleOAuth("github")}
+                  disabled={oauthLoading !== null || loading}
+                  className="inline-flex items-center justify-center gap-2 rounded-full border border-white/[0.08] bg-white/[0.02] px-3 py-2.5 text-xs font-medium text-zinc-200 hover:bg-white/[0.06] hover:text-white disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                >
+                  <GitHubMark className="h-4 w-4" />
+                  {oauthLoading === "github" ? "Opening…" : "Sign in with GitHub"}
+                </button>
+              )}
+            </div>
+          </>
         )}
 
         <p className="mt-6 text-sm text-zinc-500 text-center">
