@@ -128,6 +128,40 @@ jobs:
           echo "--- Flat directory:"
           ls -la flat/
 
+      - name: Install Linux signing tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y dpkg-sig rpm gnupg
+
+      - name: Import GPG key + sign Linux packages
+        env:
+          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+          GPG_KEY_ID:      ${{ secrets.GPG_KEY_ID }}
+        run: |
+          echo "$GPG_PRIVATE_KEY" | gpg --batch --import
+          gpg --list-secret-keys --keyid-format LONG
+
+          # Configure rpm + dpkg-sig to use our key.
+          echo "%_signature gpg"          >> ~/.rpmmacros
+          echo "%_gpg_name $GPG_KEY_ID"   >> ~/.rpmmacros
+
+          # Sign every .deb in place.
+          for deb in flat/*.deb; do
+            [ -e "$deb" ] || continue
+            echo "Signing $deb"
+            dpkg-sig --sign builder -k "$GPG_KEY_ID" "$deb"
+          done
+
+          # Sign every .rpm in place.
+          for rpm in flat/*.rpm; do
+            [ -e "$rpm" ] || continue
+            echo "Signing $rpm"
+            rpm --addsign "$rpm"
+          done
+
+          echo "--- After signing:"
+          ls -la flat/
+
       - name: Create release in public repo
         env:
           GH_TOKEN: ${{ secrets.RELEASES_REPO_TOKEN }}
@@ -139,7 +173,7 @@ jobs:
 
           - **macOS (Apple Silicon + Intel):** signed + notarized when Apple Developer secrets are configured on the build (right-click → Open only if your Apple cert hasn't propagated yet).
           - **Windows (x64 .msi / .exe):** unsigned — click "More info" → "Run anyway" on the SmartScreen prompt. Signed builds activate when a Windows EV cert is configured.
-          - **Linux (.AppImage / .deb / .rpm):** unsigned (Linux doesn't require code-signing for end-user run).
+          - **Linux .deb / .rpm:** GPG-signed by Vision XIX Labs (key id `7A9619F59D35D120`). Verify with the public key at https://github.com/sahme209/axiom-releases/blob/main/axiom-public-key.asc — `apt-key add` / `rpm --import` accept it. AppImage is unsigned (Linux doesn't require it for end-user run).
 
           Every build carries the same HMAC-signed handoff contract and refuses local apply by default.
           NOTES
