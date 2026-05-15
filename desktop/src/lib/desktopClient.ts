@@ -222,9 +222,19 @@ export class DesktopClient {
     this.config = { ...this.config, apiBase: base };
   }
 
+  /** True when the last API call fell back to mock data (cross-origin or 4xx). */
+  isPreviewMode = false;
+
   // ── Command center / control plane ────────────────────────────────
   commandCenterState():  Promise<ApiResult<CommandCenterStateLite>>   { return this.get("/api/command-center"); }
-  controlPlaneState():   Promise<ApiResult<ControlPlaneStateLite>>    { return this.get("/api/control-plane/state"); }
+
+  async controlPlaneState(): Promise<ApiResult<ControlPlaneStateLite>> {
+    const res = await this.get<ControlPlaneStateLite>("/api/control-plane/state");
+    if (res.ok) { this.isPreviewMode = false; return res; }
+    this.isPreviewMode = true;
+    const { MOCK_CONTROL_PLANE } = await import("./mockData");
+    return { ok: true, data: MOCK_CONTROL_PLANE };
+  }
   controlPlaneActions(): Promise<ApiResult<{ nextBestActions: ControlPlaneStateLite["nextBestActions"] }>> { return this.get("/api/control-plane/next-actions"); }
   controlPlaneRefresh(): Promise<ApiResult<{ state: ControlPlaneStateLite }>> { return this.post("/api/control-plane/refresh", {}); }
 
@@ -243,20 +253,44 @@ export class DesktopClient {
   }
 
   // ── Security scanner ──────────────────────────────────────────────
-  securityScan(): Promise<ApiResult<SecurityScanLite>> { return this.post("/api/security-scan", {}); }
+  async securityScan(): Promise<ApiResult<SecurityScanLite>> {
+    const res = await this.post<SecurityScanLite>("/api/security-scan", {});
+    if (res.ok) { this.isPreviewMode = false; return res; }
+    this.isPreviewMode = true;
+    const { MOCK_SECURITY } = await import("./mockData");
+    return { ok: true, data: MOCK_SECURITY };
+  }
 
   // ── Remediation ───────────────────────────────────────────────────
-  remediationPlan(): Promise<ApiResult<RemediationPipelineLite>> { return this.post("/api/remediation/plan", {}); }
+  async remediationPlan(): Promise<ApiResult<RemediationPipelineLite>> {
+    const res = await this.post<RemediationPipelineLite>("/api/remediation/plan", {});
+    if (res.ok) { this.isPreviewMode = false; return res; }
+    this.isPreviewMode = true;
+    const { MOCK_REMEDIATION } = await import("./mockData");
+    return { ok: true, data: MOCK_REMEDIATION };
+  }
   remediationCandidates(): Promise<ApiResult<{ candidates: RemediationCandidateLite[] }>> { return this.post("/api/remediation/candidates", {}); }
 
   // ── Simulation ────────────────────────────────────────────────────
-  simulationsBatch(): Promise<ApiResult<SimulationsBatchLite>> { return this.post("/api/simulations/create", {}); }
+  async simulationsBatch(): Promise<ApiResult<SimulationsBatchLite>> {
+    const res = await this.post<SimulationsBatchLite>("/api/simulations/create", {});
+    if (res.ok) { this.isPreviewMode = false; return res; }
+    this.isPreviewMode = true;
+    const { MOCK_SIMULATIONS } = await import("./mockData");
+    return { ok: true, data: MOCK_SIMULATIONS };
+  }
   simulationFromRemediation(candidateId: string): Promise<ApiResult<{ result: SimulationResultLite }>> {
     return this.post("/api/simulations/from-remediation", { candidateId });
   }
 
   // ── Orchestration ─────────────────────────────────────────────────
-  orchestration(): Promise<ApiResult<OrchestrationListLite>> { return this.get("/api/orchestration"); }
+  async orchestration(): Promise<ApiResult<OrchestrationListLite>> {
+    const res = await this.get<OrchestrationListLite>("/api/orchestration");
+    if (res.ok) { this.isPreviewMode = false; return res; }
+    this.isPreviewMode = true;
+    const { MOCK_ORCHESTRATION } = await import("./mockData");
+    return { ok: true, data: MOCK_ORCHESTRATION };
+  }
   decideApproval(id: string, decision: "approved" | "rejected", reason?: string): Promise<ApiResult<unknown>> {
     return this.post(`/api/orchestration/approvals/${encodeURIComponent(id)}/decide`, { decision, reason });
   }

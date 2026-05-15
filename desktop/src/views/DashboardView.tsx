@@ -1,17 +1,18 @@
 /**
- * Dashboard view — projects from the live `/api/control-plane/state`
- * response. Renders the canonical posture rail, top KPIs, providers,
- * and the ranked next-best actions the autonomous loop would run.
+ * Dashboard view — projects from `/api/control-plane/state` or falls
+ * back to realistic mock data when the desktop can't share cross-origin
+ * cookies with the web app. Always renders the full UI with a clear
+ * preview-mode banner when not connected.
  */
 
 import { useEffect, useState } from "react";
 import { desktopClient, type ControlPlaneStateLite } from "../lib/desktopClient";
-import { Card, Kpi, PostureTile, SectionHeader, ViewShell, LoadingState, EmptyState, Badge, statusToneFor, riskToneFor } from "../components/Primitives";
+import { Card, Kpi, PostureTile, SectionHeader, ViewShell, LoadingState, Badge, statusToneFor, riskToneFor } from "../components/Primitives";
 
 export function DashboardView() {
   const [state, setState] = useState<ControlPlaneStateLite | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [previewMode, setPreviewMode] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -19,37 +20,26 @@ export function DashboardView() {
     desktopClient.controlPlaneState().then((res) => {
       if (cancelled) return;
       if (res.ok) setState(res.data);
-      else setError(res.error);
+      setPreviewMode(desktopClient.isPreviewMode);
       setLoading(false);
     });
     return () => { cancelled = true; };
   }, []);
 
-  if (loading) return <ViewShell><LoadingState label="Building control plane state…" /></ViewShell>;
-  if (error || !state) {
-    return (
-      <ViewShell>
-        <EmptyState
-          Icon={ConnIcon}
-          title="Not connected to your workspace yet"
-          detail={error ?? "Sign in via the web app first, then this view will project live state. The desktop runs against https://visionxixlabs.com — open the web sign-in and your session cookie will be used."}
-          action={<a href="https://visionxixlabs.com/auth/signin" className="btn-primary" target="_blank" rel="noreferrer">Open web sign-in</a>}
-        />
-      </ViewShell>
-    );
-  }
+  if (loading || !state) return <ViewShell><LoadingState label="Composing control plane state…" /></ViewShell>;
 
   const liveCount = state.providers.filter((p) => p.sourceMode === "live").length;
 
   return (
     <ViewShell>
+      {previewMode && <PreviewBanner />}
+
       <SectionHeader
         kicker="// control plane"
         title="One operating system for every cloud."
-        subtitle={`Projecting live state generated ${new Date(state.generatedAt).toLocaleTimeString()} · source mode · ${state.sourceMode}`}
+        subtitle={`Snapshot ${new Date(state.generatedAt).toLocaleTimeString()} · source mode · ${state.sourceMode}`}
       />
 
-      {/* Top KPIs */}
       <section className="grid grid-cols-4 gap-3">
         <Kpi label="Resources"      value={state.cloudInventory.totalResources} tone="violet" />
         <Kpi label="Providers live" value={`${liveCount} / ${state.providers.length}`} tone="emerald" />
@@ -57,7 +47,6 @@ export function DashboardView() {
         <Kpi label="Next actions"   value={state.nextBestActions.length} tone="cyan" />
       </section>
 
-      {/* Posture rail */}
       <section>
         <h2 className="text-xs font-mono text-zinc-500 uppercase tracking-[0.22em] mb-3">// posture</h2>
         <div className="grid grid-cols-4 gap-3">
@@ -68,7 +57,6 @@ export function DashboardView() {
         </div>
       </section>
 
-      {/* Provider snapshot */}
       <section>
         <h2 className="text-xs font-mono text-zinc-500 uppercase tracking-[0.22em] mb-3">// providers</h2>
         <div className="grid grid-cols-3 gap-3">
@@ -95,7 +83,6 @@ export function DashboardView() {
         </div>
       </section>
 
-      {/* Next-best actions */}
       <section>
         <h2 className="text-xs font-mono text-zinc-500 uppercase tracking-[0.22em] mb-3">// next best actions</h2>
         <Card className="p-2">
@@ -129,25 +116,57 @@ export function DashboardView() {
           </ul>
         </Card>
       </section>
-
-      {/* Honest footer */}
-      <section className="rounded-xl border border-amber-500/20 bg-amber-500/[0.04] p-5">
-        <p className="text-[10px] font-mono text-amber-300 uppercase tracking-[0.22em] mb-2">// honest limitations</p>
-        <ul className="space-y-1 text-[12px] text-zinc-300">
-          <li>• Posture scores are projected from the live web platform — connect a provider for live signals.</li>
-          <li>• Local apply is intentionally blocked from desktop; every action routes through the governed orchestration center.</li>
-          <li>• This window updates on view enter — refresh by reopening the dashboard.</li>
-        </ul>
-      </section>
     </ViewShell>
   );
 }
 
-function ConnIcon({ className }: { className?: string }) {
+// ---------------------------------------------------------------------------
+// Preview-mode banner — Huly-grade cinematic call-to-connect
+// ---------------------------------------------------------------------------
+
+function PreviewBanner() {
   return (
-    <svg viewBox="0 0 24 24" className={className} fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
-      <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
-    </svg>
+    <div className="relative rounded-2xl border border-violet-500/25 bg-gradient-to-br from-violet-500/[0.10] via-fuchsia-500/[0.06] to-cyan-500/[0.04] p-6 overflow-hidden animate-fade-in-up">
+      <div className="absolute -top-20 -right-20 w-64 h-64 rounded-full bg-violet-500/20 blur-[80px] pointer-events-none" aria-hidden />
+      <div className="absolute -bottom-20 -left-20 w-48 h-48 rounded-full bg-fuchsia-500/15 blur-[60px] pointer-events-none" aria-hidden />
+      <div className="relative flex items-start justify-between gap-6 flex-wrap">
+        <div className="flex items-start gap-4">
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-500 to-fuchsia-500 flex items-center justify-center shadow-glow-violet shrink-0">
+            <svg className="h-5 w-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="12" cy="12" r="3" />
+              <path d="M12 1v6m0 10v6M4.22 4.22l4.24 4.24m7.08 7.08 4.24 4.24M1 12h6m10 0h6M4.22 19.78l4.24-4.24m7.08-7.08 4.24-4.24" />
+            </svg>
+          </div>
+          <div>
+            <div className="flex items-center gap-2 mb-1.5">
+              <span className="text-[10px] font-mono font-semibold text-violet-300 uppercase tracking-[0.22em]">preview mode</span>
+              <span className="w-1.5 h-1.5 rounded-full bg-violet-400 animate-pulse" />
+            </div>
+            <h3 className="text-lg font-bold text-white tracking-tight mb-1.5">Showing realistic mock data — sign in to load live state.</h3>
+            <p className="text-[12px] text-zinc-400 leading-relaxed max-w-xl">
+              The desktop runs against <span className="font-mono text-zinc-300">visionxixlabs.com</span> but cross-origin cookies can&apos;t flow from your browser. Sign in via the web first; the desktop will then project your real workspace.
+            </p>
+          </div>
+        </div>
+        <div className="flex items-center gap-2 shrink-0">
+          <a
+            href="https://visionxixlabs.com/auth/signin?callbackUrl=/dashboard"
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-full bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500 text-white text-[12px] font-semibold shadow-glow-violet transition-all"
+          >
+            Sign in via web →
+          </a>
+          <a
+            href="https://visionxixlabs.com/dashboard"
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-full border border-white/[0.12] bg-white/[0.03] hover:bg-white/[0.06] text-zinc-200 text-[12px] font-semibold transition-all"
+          >
+            Open web app
+          </a>
+        </div>
+      </div>
+    </div>
   );
 }
