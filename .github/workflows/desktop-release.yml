@@ -1,39 +1,36 @@
 name: Desktop release
 
 # Builds Axiom Agent for macOS (Apple Silicon + Intel), Windows, and Linux
-# on every tag matching `desktop-v*`. Uploads each artefact to a GitHub
-# Release. Signs + notarizes when the relevant secrets are present;
-# otherwise ships honest unsigned binaries that still run end-to-end.
+# on every tag matching `desktop-v*`. Binaries are produced in this private
+# repo by the build matrix, then a single `publish` job uploads them to the
+# public `sahme209/axiom-releases` repo so end users can download without
+# needing access to the private code.
 #
-# Required secrets when ready (each one is optional; missing secrets just
-# skip that signing step):
-#   APPLE_CERTIFICATE             — base64-encoded .p12 Developer ID Application cert
-#   APPLE_CERTIFICATE_PASSWORD    — password for the .p12
-#   APPLE_SIGNING_IDENTITY        — e.g. "Developer ID Application: Vision XIX Labs LLC (TEAMID)"
-#   APPLE_ID                      — Apple ID email for notarization
-#   APPLE_PASSWORD                — App-Specific password for notarization
-#   APPLE_TEAM_ID                 — 10-char Apple team id
-#   WINDOWS_CERTIFICATE           — base64-encoded .pfx EV cert
-#   WINDOWS_CERTIFICATE_PASSWORD  — password for the .pfx
-#   TAURI_PRIVATE_KEY             — Tauri updater signing key
-#   TAURI_KEY_PASSWORD            — password for TAURI_PRIVATE_KEY
+# Required secrets:
+#   GITHUB_TOKEN              — provided automatically. Used by tauri-action
+#                               for build-time API calls within this repo.
+#   RELEASES_REPO_TOKEN       — PAT with `repo` scope on sahme209/axiom-releases.
+#                               Used to create releases + upload assets in the
+#                               public repo.
+#   APPLE_CERTIFICATE         — base64 .p12 Developer ID Application cert
+#   APPLE_CERTIFICATE_PASSWORD
+#   APPLE_SIGNING_IDENTITY    — e.g. "Developer ID Application: ... (TEAMID)"
+#   APPLE_ID                  — Apple ID email for notarization
+#   APPLE_PASSWORD            — App-Specific password for notarization
+#   APPLE_TEAM_ID
 
 on:
   push:
     tags:
       - 'desktop-v*'
   workflow_dispatch:
-    inputs:
-      version:
-        description: 'Override version (e.g. 0.1.0)'
-        required: false
 
 permissions:
-  contents: write   # needed to create + upload release assets
+  contents: write
 
 jobs:
   build:
-    name: Build (${{ matrix.platform }} · ${{ matrix.target }})
+    name: Build (${{ matrix.label }})
     strategy:
       fail-fast: false
       matrix:
@@ -66,16 +63,13 @@ jobs:
         with:
           targets: ${{ matrix.target }}
 
-      - name: Linux build dependencies
+      - name: Linux build deps
         if: matrix.platform == 'ubuntu-latest'
         run: |
           sudo apt-get update
           sudo apt-get install -y \
-            libgtk-3-dev \
-            libwebkit2gtk-4.1-dev \
-            libappindicator3-dev \
-            librsvg2-dev \
-            patchelf
+            libgtk-3-dev libwebkit2gtk-4.1-dev libappindicator3-dev \
+            librsvg2-dev patchelf
 
       - name: Install desktop deps
         working-directory: desktop
@@ -85,64 +79,26 @@ jobs:
         working-directory: desktop
         run: npm run build
 
+      # tauri-action builds + signs but does NOT publish here. We capture the
+      # artefacts and let the publish job upload them to the public repo.
       - name: Build Tauri bundle
         uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN:                ${{ secrets.GITHUB_TOKEN }}
-          # Apple Developer signing — activates only on macOS runners when
-          # every required secret is configured on the repository. Missing
-          # secrets evaluate to empty strings; tauri-action requires the
-          # full set, so partial config is treated the same as none.
           APPLE_CERTIFICATE:           ${{ secrets.APPLE_CERTIFICATE }}
           APPLE_CERTIFICATE_PASSWORD:  ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
           APPLE_SIGNING_IDENTITY:      ${{ secrets.APPLE_SIGNING_IDENTITY }}
           APPLE_ID:                    ${{ secrets.APPLE_ID }}
           APPLE_PASSWORD:              ${{ secrets.APPLE_PASSWORD }}
           APPLE_TEAM_ID:               ${{ secrets.APPLE_TEAM_ID }}
-          # Tauri updater signing — optional.
-          TAURI_PRIVATE_KEY:           ${{ secrets.TAURI_PRIVATE_KEY }}
-          TAURI_KEY_PASSWORD:          ${{ secrets.TAURI_KEY_PASSWORD }}
         with:
           projectPath: desktop
-          tagName: ${{ github.ref_name }}
-          releaseName: 'Axiom Agent ${{ github.ref_name }}'
-          releaseBody: |
-            Multi-platform desktop build.
-
-            Signing status is honest per platform:
-            - **macOS:** signed + notarized when Apple Developer secrets are present; otherwise unsigned (right-click → Open the first time).
-            - **Windows:** signed when EV cert is present; otherwise unsigned (SmartScreen → More info → Run anyway).
-            - **Linux:** unsigned binary + AppImage (chmod +x to run).
-
-            All builds carry the same HMAC handoff signer and refuse local apply by default.
-          releaseDraft: false
-          prerelease: ${{ contains(github.ref_name, 'rc') || contains(github.ref_name, 'beta') }}
           args: --target ${{ matrix.target }}
-
-      # Windows signing — invoked separately because Tauri doesn't natively
-      # handle PFX-based signing in the action yet.
-      - name: Sign Windows binaries
-        if: matrix.platform == 'windows-latest' && env.WINDOWS_CERTIFICATE != ''
-        env:
-          WINDOWS_CERTIFICATE:          ${{ secrets.WINDOWS_CERTIFICATE }}
-          WINDOWS_CERTIFICATE_PASSWORD: ${{ secrets.WINDOWS_CERTIFICATE_PASSWORD }}
-        shell: pwsh
-        run: |
-          $bytes = [System.Convert]::FromBase64String($env:WINDOWS_CERTIFICATE)
-          [System.IO.File]::WriteAllBytes('cert.pfx', $bytes)
-          $msi = Get-ChildItem -Recurse "desktop\src-tauri\target\${{ matrix.target }}\release\bundle\msi" -Include *.msi | Select-Object -First 1
-          if ($msi) {
-            & "${env:ProgramFiles(x86)}\Windows Kits\10\bin\10.0.22621.0\x64\signtool.exe" sign /f cert.pfx /p $env:WINDOWS_CERTIFICATE_PASSWORD /tr http://timestamp.digicert.com /td sha256 /fd sha256 $msi.FullName
-            echo "Signed $($msi.FullName)"
-          } else {
-            echo "::warning::No MSI artefact found to sign."
-          }
-          Remove-Item cert.pfx -Force
 
       - name: Upload artefact
         uses: actions/upload-artifact@v4
         with:
-          name: axiom-agent-${{ matrix.label }}
+          name: axiom-${{ matrix.label }}
           path: |
             desktop/src-tauri/target/${{ matrix.target }}/release/bundle/**/*.dmg
             desktop/src-tauri/target/${{ matrix.target }}/release/bundle/**/*.msi
@@ -151,3 +107,46 @@ jobs:
             desktop/src-tauri/target/${{ matrix.target }}/release/bundle/**/*.deb
             desktop/src-tauri/target/${{ matrix.target }}/release/bundle/**/*.rpm
           if-no-files-found: warn
+
+  publish:
+    name: Publish to public releases repo
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download every build's artefacts
+        uses: actions/download-artifact@v4
+        with:
+          path: ./artifacts
+
+      - name: Flatten artefacts
+        run: |
+          mkdir -p flat
+          find ./artifacts -type f \
+            \( -name "*.dmg" -o -name "*.msi" -o -name "*.exe" \
+               -o -name "*.AppImage" -o -name "*.deb" -o -name "*.rpm" \) \
+            -exec cp {} flat/ \;
+          echo "--- Flat directory:"
+          ls -la flat/
+
+      - name: Create release in public repo
+        env:
+          GH_TOKEN: ${{ secrets.RELEASES_REPO_TOKEN }}
+        run: |
+          cat > release-notes.md <<'NOTES'
+          # Axiom Agent ${{ github.ref_name }}
+
+          Cross-platform desktop builds. Signing status per platform:
+
+          - **macOS (Apple Silicon + Intel):** signed + notarized when Apple Developer secrets are configured on the build (right-click → Open only if your Apple cert hasn't propagated yet).
+          - **Windows (x64 .msi / .exe):** unsigned — click "More info" → "Run anyway" on the SmartScreen prompt. Signed builds activate when a Windows EV cert is configured.
+          - **Linux (.AppImage / .deb / .rpm):** unsigned (Linux doesn't require code-signing for end-user run).
+
+          Every build carries the same HMAC-signed handoff contract and refuses local apply by default.
+          NOTES
+
+          # Create (or update) the release in the public repo and upload all bundles.
+          gh release create "${{ github.ref_name }}" \
+            --repo sahme209/axiom-releases \
+            --title "Axiom Agent ${{ github.ref_name }}" \
+            --notes-file release-notes.md \
+            flat/* || gh release upload "${{ github.ref_name }}" flat/* --repo sahme209/axiom-releases --clobber

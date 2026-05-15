@@ -62,8 +62,11 @@ export interface DesktopReleaseManifest {
 // Config
 // ---------------------------------------------------------------------------
 
+// The public repo where release binaries live. The main `visionxixlabs`
+// repo is private; only release artefacts are mirrored here so the
+// /download page can serve unauthenticated public downloads.
 const REPO_OWNER = process.env.AXIOM_DESKTOP_REPO_OWNER ?? "sahme209";
-const REPO_NAME  = process.env.AXIOM_DESKTOP_REPO_NAME  ?? "visionxixlabs";
+const REPO_NAME  = process.env.AXIOM_DESKTOP_REPO_NAME  ?? "axiom-releases";
 const TAG_PREFIX = "desktop-";
 const CACHE_MS   = 60_000;
 
