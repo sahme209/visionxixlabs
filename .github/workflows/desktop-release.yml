@@ -128,12 +128,12 @@ jobs:
           echo "--- Flat directory:"
           ls -la flat/
 
-      - name: Install Linux signing tools
+      - name: Install GPG
         run: |
           sudo apt-get update
-          sudo apt-get install -y dpkg-sig rpm gnupg
+          sudo apt-get install -y gnupg
 
-      - name: Import GPG key + sign Linux packages
+      - name: Import GPG key + create detached signatures
         env:
           GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
           GPG_KEY_ID:      ${{ secrets.GPG_KEY_ID }}
@@ -141,22 +141,16 @@ jobs:
           echo "$GPG_PRIVATE_KEY" | gpg --batch --import
           gpg --list-secret-keys --keyid-format LONG
 
-          # Configure rpm + dpkg-sig to use our key.
-          echo "%_signature gpg"          >> ~/.rpmmacros
-          echo "%_gpg_name $GPG_KEY_ID"   >> ~/.rpmmacros
-
-          # Sign every .deb in place.
-          for deb in flat/*.deb; do
-            [ -e "$deb" ] || continue
-            echo "Signing $deb"
-            dpkg-sig --sign builder -k "$GPG_KEY_ID" "$deb"
-          done
-
-          # Sign every .rpm in place.
-          for rpm in flat/*.rpm; do
-            [ -e "$rpm" ] || continue
-            echo "Signing $rpm"
-            rpm --addsign "$rpm"
+          # Create a detached signature for every artefact. Universal —
+          # works for .deb, .rpm, .AppImage, .dmg, .msi, .exe alike.
+          # Users verify with:
+          #   gpg --import axiom-public-key.asc
+          #   gpg --verify <file>.asc <file>
+          for f in flat/*; do
+            [ -e "$f" ] || continue
+            echo "Signing $f"
+            gpg --batch --yes --local-user "$GPG_KEY_ID" \
+                --output "${f}.asc" --armor --detach-sign "$f"
           done
 
           echo "--- After signing:"
@@ -173,7 +167,13 @@ jobs:
 
           - **macOS (Apple Silicon + Intel):** signed + notarized when Apple Developer secrets are configured on the build (right-click → Open only if your Apple cert hasn't propagated yet).
           - **Windows (x64 .msi / .exe):** unsigned — click "More info" → "Run anyway" on the SmartScreen prompt. Signed builds activate when a Windows EV cert is configured.
-          - **Linux .deb / .rpm:** GPG-signed by Vision XIX Labs (key id `7A9619F59D35D120`). Verify with the public key at https://github.com/sahme209/axiom-releases/blob/main/axiom-public-key.asc — `apt-key add` / `rpm --import` accept it. AppImage is unsigned (Linux doesn't require it for end-user run).
+          - **Every artefact** ships with a detached GPG signature (`.asc` file alongside each download). Verify origin with:
+              ```
+              curl -sLO https://github.com/sahme209/axiom-releases/raw/main/axiom-public-key.asc
+              gpg --import axiom-public-key.asc
+              gpg --verify <file>.asc <file>
+              ```
+          - **Windows (x64 .msi / .exe):** unsigned executable + GPG-signed for origin verification. SmartScreen still shows "More info → Run anyway" prompt.
 
           Every build carries the same HMAC-signed handoff contract and refuses local apply by default.
           NOTES
