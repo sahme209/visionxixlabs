@@ -88,13 +88,20 @@ jobs:
       - name: Build Tauri bundle
         uses: tauri-apps/tauri-action@v0
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          # Apple signing env vars are intentionally omitted — tauri-action
-          # skips codesign when they are unset. To enable signed macOS builds
-          # later, add APPLE_CERTIFICATE / APPLE_CERTIFICATE_PASSWORD /
-          # APPLE_SIGNING_IDENTITY / APPLE_ID / APPLE_PASSWORD / APPLE_TEAM_ID
-          # as repository secrets here, then either re-introduce them under
-          # this env: block or run a parallel signed workflow.
+          GITHUB_TOKEN:                ${{ secrets.GITHUB_TOKEN }}
+          # Apple Developer signing — activates only on macOS runners when
+          # every required secret is configured on the repository. Missing
+          # secrets evaluate to empty strings; tauri-action requires the
+          # full set, so partial config is treated the same as none.
+          APPLE_CERTIFICATE:           ${{ secrets.APPLE_CERTIFICATE }}
+          APPLE_CERTIFICATE_PASSWORD:  ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+          APPLE_SIGNING_IDENTITY:      ${{ secrets.APPLE_SIGNING_IDENTITY }}
+          APPLE_ID:                    ${{ secrets.APPLE_ID }}
+          APPLE_PASSWORD:              ${{ secrets.APPLE_PASSWORD }}
+          APPLE_TEAM_ID:               ${{ secrets.APPLE_TEAM_ID }}
+          # Tauri updater signing — optional.
+          TAURI_PRIVATE_KEY:           ${{ secrets.TAURI_PRIVATE_KEY }}
+          TAURI_KEY_PASSWORD:          ${{ secrets.TAURI_KEY_PASSWORD }}
         with:
           projectPath: desktop
           tagName: ${{ github.ref_name }}
