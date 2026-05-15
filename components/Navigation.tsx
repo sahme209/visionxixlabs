@@ -191,6 +191,12 @@ export function Navigation() {
               Docs
             </Link>
             <Link
+              href="/blog"
+              className="nav-link-underline relative px-4 py-2 text-zinc-400 hover:text-white rounded-lg transition-colors text-sm font-medium"
+            >
+              Blog
+            </Link>
+            <Link
               href="/download"
               className="nav-link-underline relative px-4 py-2 text-zinc-400 hover:text-white rounded-lg transition-colors text-sm font-medium"
             >

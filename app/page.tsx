@@ -18,6 +18,7 @@ import { RealisticFogBackground } from "@/components/ui/realistic-fog-background
 import { MotherboardBackdrop } from "@/components/ui/MotherboardBackdrop";
 import { TestimonialsCarousel } from "@/components/TestimonialsCarousel";
 import { FAQAccordion } from "@/components/FAQAccordion";
+import { DesktopShowcase } from "@/components/home/DesktopShowcase";
 import { Footer } from "@/components/Footer";
 import {
   CurrencyDollarIcon,
@@ -248,6 +249,12 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      {/* ── Section Divider ────────────────────────────────────────── */}
+      <SectionDivider />
+
+      {/* ── Desktop Showcase (Huly-style big product reveal) ──────── */}
+      <DesktopShowcase />
 
       {/* ── Section Divider ────────────────────────────────────────── */}
       <SectionDivider />
