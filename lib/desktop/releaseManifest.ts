@@ -177,10 +177,15 @@ async function fetchLatestRelease(): Promise<DesktopReleaseManifest> {
 
   // Honest signing detection — parse body for `signed: true` / `notarized: true`
   // markers. The CI workflow writes these when secrets are present.
+  // Signing detection — checks both the explicit body markers (`signed: true`
+  // / `notarized: true` written by older workflows) AND the body text for the
+  // honest copy our current workflow writes ("signed + notarized"). When the
+  // new workflow shipped macOS as signed + notarized via Apple Developer ID,
+  // the release notes contain that phrase; we honour it.
   const body = latest.body?.toLowerCase() ?? "";
   const sigMarker = (kw: string) => body.includes(`${kw}: true`);
-  const signedFlag = sigMarker("signed");
-  const notarizedFlag = sigMarker("notarized");
+  const signedFlag = sigMarker("signed") || body.includes("signed + notarized");
+  const notarizedFlag = sigMarker("notarized") || body.includes("signed + notarized");
 
   const assets: DesktopReleaseManifest["assets"] = {
     "macos-arm":   null,
