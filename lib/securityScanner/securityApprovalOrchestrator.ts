@@ -47,6 +47,8 @@ function changeTypeFor(check: SecurityCheckResult): ChangeType {
     case "app_boundary":          return "configuration_change";
     case "desktop_distribution":  return "documentation_only";
     case "desktop_execution":     return "documentation_only";
+    case "release_governance":    return "pipeline_governance";
+    case "pipeline_health":       return "pipeline_governance";
   }
 }
 
@@ -64,6 +66,8 @@ function verificationFor(check: SecurityCheckResult): string {
     case "app_boundary":          return "Confirm boundary control enforced server-side.";
     case "desktop_distribution":  return "Re-verify signing / notarization is published.";
     case "desktop_execution":     return "Confirm desktop local apply remains blocked.";
+    case "release_governance":    return "Re-check branch protection / required reviewers / signed commits on the repo.";
+    case "pipeline_health":       return "Re-run failing workflows and confirm conclusion = success.";
   }
 }
 
