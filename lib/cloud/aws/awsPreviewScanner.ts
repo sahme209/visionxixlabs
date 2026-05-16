@@ -21,7 +21,7 @@ export interface PreviewSnapshot {
   provider: "aws";
   region: string;
   generatedAt: string;
-  source: "preview";
+  source: "live" | "partial" | "preview";
   resourceCounts: {
     ec2: number;
     s3: number;
@@ -41,7 +41,7 @@ export interface PreviewFinding {
   description: string;
   risk: "info" | "low" | "medium" | "high" | "critical";
   resourceRef: string;
-  source: "preview";
+  source: "live" | "preview";
 }
 
 export interface PreviewRecommendation {
@@ -51,7 +51,7 @@ export interface PreviewRecommendation {
   description: string;
   actionClass: "cost_optimization" | "security_remediation" | "drift_correction" | "scaling" | "iam_modification";
   monthlySavingsUsd?: number;
-  source: "preview";
+  source: "live" | "preview";
 }
 
 export interface PreviewScanOutcome {

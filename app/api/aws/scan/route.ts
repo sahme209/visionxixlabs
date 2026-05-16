@@ -2,9 +2,11 @@
  * POST /api/aws/scan
  *
  * Runs the cloud scan pipeline against an AWS connection input. Live mode
- * activates when configured; otherwise the pipeline runs the preview
- * scanner. Output is always tagged `source: "preview"` until full live
- * inventory is wired.
+ * activates when configured (AWS_SCAN_MODE=live + broker creds + valid
+ * STS AssumeRole). The pipeline now performs read-only EC2 / VPC / SG /
+ * S3 / RDS calls via `awsLiveInventory` when live; otherwise it returns
+ * preview snapshots. Output is honestly tagged `source: "live"` or
+ * `"preview"`.
  *
  * Auth required.
  */

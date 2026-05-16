@@ -1,11 +1,16 @@
 /**
  * Azure connection validator.
  *
- * Pure-shape validation today — live SDK calls (`@azure/identity` +
- * `@azure/arm-subscriptions`) are wired behind a feature flag for the
- * upcoming production milestone. Until then the validator confirms the
- * input shape and returns a typed `valid_format_only` outcome instead of
- * fabricating success.
+ * Format validation always runs (cheap, deterministic). Live mode runs a
+ * `@azure/identity` ClientSecretCredential against `@azure/arm-subscriptions`
+ * `SubscriptionsClient.subscriptions.get(subscriptionId)` when:
+ *   - the feature flag says Azure live mode is allowed,
+ *   - tenant + client + secret + subscription are set on the host env,
+ *   - the user explicitly requested a live validation.
+ *
+ * Errors are classified into a typed outcome — `invalid_format`,
+ * `permission_denied`, `auth_failure`, `not_found`, `network`, `other`.
+ * Secrets never leave the module.
  *
  * Server-only.
  */
@@ -17,12 +22,16 @@ import {
 } from "@/lib/security/validation";
 import { isAxiomError } from "@/lib/errors/axiomErrors";
 import type { AzureConnectionInput, AzureConnectionStatus } from "./azureConnection";
+import { getAzureConfig, resolveAzureClientId, resolveAzureClientSecret } from "./azureConfig";
 
 export type AzureValidationOutcome =
   | "valid_live"
   | "valid_format_only"
   | "invalid_format"
   | "permission_denied"
+  | "auth_failure"
+  | "not_found"
+  | "network"
   | "live_disabled";
 
 export interface AzureValidationResult {
@@ -30,9 +39,17 @@ export interface AzureValidationResult {
   outcome: AzureValidationOutcome;
   status: AzureConnectionStatus;
   validatedTenantId?: string;
+  validatedSubscriptionId?: string;
+  subscriptionDisplayName?: string;
   message: string;
   errorCode?: string;
   mode: "live" | "preview" | "expanding";
+  /** Honest hints about what's missing for live mode. */
+  missingRequirements?: string[];
+  /** Limitations the caller should surface in UI. */
+  limitations?: string[];
+  /** A safe action label the UI can render. */
+  safeNextAction?: { label: string; href: string };
 }
 
 export interface AzureValidateInput {
@@ -40,7 +57,10 @@ export interface AzureValidateInput {
   requestLive: boolean;
 }
 
+const LIVE_CALL_TIMEOUT_MS = 8_000;
+
 export async function validateAzureConnection(opts: AzureValidateInput): Promise<AzureValidationResult> {
+  // 1) Format validation — always runs.
   try {
     requireAzureTenantId(opts.input.tenantId);
     requireAzureSubscriptionId(opts.input.subscriptionId);
@@ -52,29 +72,177 @@ export async function validateAzureConnection(opts: AzureValidateInput): Promise
       message: isAxiomError(err) ? err.userMessage : "Azure input is malformed.",
       errorCode: isAxiomError(err) ? err.code : "validation.malformed",
       mode: "expanding",
+      safeNextAction: { label: "Open Azure setup", href: "/docs/azure-setup" },
     };
   }
 
-  // Live mode placeholder — not yet wired. When the Azure SDK call is
-  // added (using clientId + clientSecret via `@azure/identity`), this
-  // branch will be reachable. Until then we honestly tag the response.
-  if (opts.requestLive) {
+  const cfg = getAzureConfig();
+
+  // 2) Live mode disabled at the deployment level.
+  if (cfg.mode === "disabled") {
+    return {
+      ok: true,
+      outcome: "live_disabled",
+      status: "not_configured",
+      message: "Azure is disabled on this deployment (AZURE_SCAN_MODE=disabled).",
+      mode: "expanding",
+      limitations: ["AZURE_SCAN_MODE is set to disabled."],
+      safeNextAction: { label: "Open Azure setup", href: "/docs/azure-setup" },
+    };
+  }
+
+  // 3) Live requested but credentials not configured.
+  if (opts.requestLive && cfg.mode !== "live") {
+    const missing = listMissingAzureEnv();
     return {
       ok: true,
       outcome: "live_disabled",
       status: "validating",
-      message:
-        "Azure input is well-formed. Live Azure validation is in the expanding tier — adapter " +
-        "ships once the host configures the Azure connector SDK pipeline.",
-      mode: "expanding",
+      message: "Azure input is well-formed. Live validation requires host-side service principal credentials.",
+      mode: cfg.mode,
+      missingRequirements: missing,
+      safeNextAction: { label: "Open Azure setup", href: "/docs/azure-setup" },
     };
   }
 
+  // 4) Live call.
+  if (opts.requestLive) {
+    return await runLiveValidation(opts);
+  }
+
+  // 5) Format-only path.
   return {
     ok: true,
     outcome: "valid_format_only",
     status: "validating",
     message: "Azure input format validated. Live validation runs when the scan is started.",
-    mode: "preview",
+    mode: cfg.mode,
+    validatedTenantId: opts.input.tenantId,
+    validatedSubscriptionId: opts.input.subscriptionId,
   };
+}
+
+// ---------------------------------------------------------------------------
+// Live SDK call — dynamic import so non-Azure deployments don't pay the cost.
+// ---------------------------------------------------------------------------
+
+async function runLiveValidation(opts: AzureValidateInput): Promise<AzureValidationResult> {
+  const clientId = resolveAzureClientId();
+  const clientSecret = resolveAzureClientSecret();
+  if (!clientId || !clientSecret) {
+    return {
+      ok: false,
+      outcome: "auth_failure",
+      status: "validation_failed",
+      message: "Azure live validation requires AZURE_CLIENT_ID + AZURE_CLIENT_SECRET on the host.",
+      errorCode: "azure.no_credentials",
+      mode: "expanding",
+      missingRequirements: listMissingAzureEnv(),
+    };
+  }
+
+  try {
+    const [{ ClientSecretCredential }, { SubscriptionClient }] = await Promise.all([
+      import("@azure/identity"),
+      import("@azure/arm-subscriptions"),
+    ]);
+
+    const credential = new ClientSecretCredential(opts.input.tenantId, clientId, clientSecret);
+    const client = new SubscriptionClient(credential);
+
+    const sub = await withTimeout(
+      client.subscriptions.get(opts.input.subscriptionId),
+      LIVE_CALL_TIMEOUT_MS,
+      "subscriptions.get",
+    );
+
+    return {
+      ok: true,
+      outcome: "valid_live",
+      status: "connected",
+      validatedTenantId: opts.input.tenantId,
+      validatedSubscriptionId: sub.subscriptionId ?? opts.input.subscriptionId,
+      subscriptionDisplayName: sub.displayName,
+      message: `Validated Azure subscription ${sub.displayName ?? sub.subscriptionId ?? opts.input.subscriptionId}.`,
+      mode: "live",
+    };
+  } catch (err) {
+    return classifyAzureError(err, opts);
+  }
+}
+
+function classifyAzureError(err: unknown, opts: AzureValidateInput): AzureValidationResult {
+  const code = errCode(err);
+  const message = errMessage(err);
+
+  if (code === "AADSTS7000215" || /invalid_client/i.test(message)) {
+    return failure(opts, "auth_failure", "Azure rejected the client secret.", "azure.bad_secret");
+  }
+  if (code === "AADSTS90002" || code === "AADSTS50059" || /tenant/i.test(message)) {
+    return failure(opts, "auth_failure", "Azure tenant id is invalid or the application is not registered there.", "azure.bad_tenant");
+  }
+  if (code === "AuthorizationFailed" || /AuthorizationFailed/i.test(message)) {
+    return failure(opts, "permission_denied", "Service principal lacks read permission on the subscription.", "azure.access_denied");
+  }
+  if (code === "SubscriptionNotFound" || /not\s*found/i.test(message)) {
+    return failure(opts, "not_found", "Subscription was not found.", "azure.subscription_not_found");
+  }
+  if (/ENOTFOUND|ECONNREFUSED|timeout/i.test(message)) {
+    return failure(opts, "network", "Network error reaching Azure Management API.", "azure.network");
+  }
+  return failure(opts, "auth_failure", `Azure validation failed: ${redact(message)}`, "azure.live_failed");
+}
+
+function failure(opts: AzureValidateInput, outcome: AzureValidationOutcome, message: string, errorCode: string): AzureValidationResult {
+  return {
+    ok: false,
+    outcome,
+    status: outcome === "permission_denied" ? "permission_denied" : "validation_failed",
+    message,
+    errorCode,
+    mode: "live",
+    validatedTenantId: opts.input.tenantId,
+    validatedSubscriptionId: opts.input.subscriptionId,
+  };
+}
+
+// ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
+
+function listMissingAzureEnv(): string[] {
+  const e = process.env;
+  const missing: string[] = [];
+  if (!e.AZURE_TENANT_ID)       missing.push("AZURE_TENANT_ID");
+  if (!e.AZURE_CLIENT_ID)       missing.push("AZURE_CLIENT_ID");
+  if (!e.AZURE_CLIENT_SECRET)   missing.push("AZURE_CLIENT_SECRET");
+  if (!e.AZURE_SUBSCRIPTION_ID) missing.push("AZURE_SUBSCRIPTION_ID");
+  return missing;
+}
+
+function errCode(err: unknown): string | undefined {
+  if (err && typeof err === "object") {
+    if ("code" in err) return String((err as { code?: string }).code);
+    if ("errorCode" in err) return String((err as { errorCode?: string }).errorCode);
+    if ("name" in err) return String((err as { name?: string }).name);
+  }
+  return undefined;
+}
+
+function errMessage(err: unknown): string {
+  if (err instanceof Error) return err.message;
+  return String(err);
+}
+
+function redact(s: string): string {
+  return s
+    .replace(/[0-9a-fA-F-]{36}/g, "***-uuid-***")
+    .replace(/AZURE_CLIENT_SECRET=\S+/g, "AZURE_CLIENT_SECRET=***");
+}
+
+function withTimeout<T>(p: Promise<T>, ms: number, op: string): Promise<T> {
+  return new Promise<T>((resolve, reject) => {
+    const t = setTimeout(() => reject(new Error(`${op} timed out after ${ms}ms`)), ms);
+    p.then((v) => { clearTimeout(t); resolve(v); }, (e) => { clearTimeout(t); reject(e); });
+  });
 }

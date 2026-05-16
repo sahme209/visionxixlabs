@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { invoke } from "@tauri-apps/api/core";
 import { ViewShell } from "../components/Primitives";
+import { useWorkspaceState } from "../lib/workspaceState";
 
 interface Preferences {
   theme: string;
@@ -14,6 +15,9 @@ export function SettingsView() {
   const [prefs, setPrefs] = useState<Preferences | null>(null);
   const [apiEndpoint, setApiEndpoint] = useState("");
   const [saved, setSaved] = useState(false);
+  const workspace = useWorkspaceState();
+  const [pasteValue, setPasteValue] = useState("");
+  const [pasteError, setPasteError] = useState<string | null>(null);
 
   useEffect(() => {
     invoke<Preferences>("get_preferences").then(setPrefs).catch(console.error);
@@ -63,6 +67,66 @@ export function SettingsView() {
             className="w-full bg-zinc-800/60 border border-zinc-700/50 rounded-lg px-3 py-2 text-sm font-mono text-zinc-200 focus:outline-none focus:border-violet-500/50"
           />
         </div>
+      </section>
+
+      {/* Workspace pairing */}
+      <section className="glass-card p-5 space-y-4">
+        <div className="flex items-center justify-between gap-2">
+          <h2 className="text-sm font-semibold text-zinc-300">Workspace pairing</h2>
+          <span className={`text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded ${
+            workspace.status === "paired"   ? "bg-emerald-500/15 text-emerald-300" :
+            workspace.status === "unpaired" ? "bg-zinc-700/40 text-zinc-400" :
+                                              "bg-zinc-700/40 text-zinc-500"
+          }`}>{workspace.status}</span>
+        </div>
+
+        {workspace.status === "paired" && workspace.session ? (
+          <div className="space-y-3">
+            <div className="text-xs text-zinc-400">
+              Paired as <span className="text-zinc-200 font-mono">{workspace.session.deviceLabel}</span>
+              {" · expires "}<span className="font-mono">{new Date(workspace.session.expiresAt).toLocaleDateString()}</span>
+            </div>
+            <button
+              onClick={() => workspace.disconnect()}
+              className="px-3 py-1.5 rounded-lg bg-zinc-800/60 hover:bg-zinc-700/60 text-xs text-zinc-200 transition-colors"
+            >
+              Disconnect
+            </button>
+          </div>
+        ) : (
+          <div className="space-y-3">
+            <p className="text-xs text-zinc-500">
+              Mint a pairing token on the web app at <span className="font-mono text-zinc-400">visionxixlabs.com/settings/desktop</span>, then paste it here.
+            </p>
+            <textarea
+              rows={3}
+              value={pasteValue}
+              onChange={(e) => { setPasteValue(e.target.value); setPasteError(null); }}
+              placeholder="Paste the JSON the web app showed you (token + session)…"
+              className="w-full bg-zinc-800/60 border border-zinc-700/50 rounded-lg px-3 py-2 text-xs font-mono text-zinc-200 placeholder-zinc-600 focus:outline-none focus:border-violet-500/50 resize-none"
+            />
+            {pasteError && <div className="text-xs text-red-400">{pasteError}</div>}
+            <button
+              onClick={async () => {
+                try {
+                  const parsed = JSON.parse(pasteValue.trim());
+                  if (!parsed.token || !parsed.session?.id) {
+                    setPasteError("Paste must include both `token` and `session.id`.");
+                    return;
+                  }
+                  await workspace.connect({ token: parsed.token, session: parsed.session });
+                  setPasteValue("");
+                } catch (err) {
+                  setPasteError(err instanceof Error ? err.message : "Invalid JSON.");
+                }
+              }}
+              disabled={!pasteValue.trim()}
+              className="px-3 py-1.5 rounded-lg bg-violet-600 hover:bg-violet-500 text-white text-xs font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Pair workspace
+            </button>
+          </div>
+        )}
       </section>
 
       {/* General */}

@@ -1,5 +1,9 @@
 /**
- * Autonomous Operations Loop v2.
+ * Autonomous Operations Loop (v2 — canonical execution loop).
+ *
+ * This is the canonical autonomous loop for the control plane. v1 at
+ * `lib/agent/autonomousPlanningLoop.ts` is the legacy read-only planning
+ * surface; v2 is the only loop that actually executes safe tasks.
  *
  * Practical AGI-oriented loop that *only ever runs safe tasks*. The loop
  * builds the control plane → picks the highest-leverage safe action →

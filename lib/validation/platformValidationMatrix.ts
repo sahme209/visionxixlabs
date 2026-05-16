@@ -13,7 +13,7 @@ export type ValidationStatus = "passing" | "partial" | "failing" | "preview" | "
 
 export interface ValidationRow {
   id: string;
-  area: "aws" | "azure" | "gcp" | "github" | "security_scanner" | "desktop" | "command_center" | "compliance" | "release";
+  area: "aws" | "azure" | "gcp" | "github" | "security_scanner" | "desktop" | "command_center" | "compliance" | "release" | "operating_loop";
   capability: string;
   status: ValidationStatus;
   /** Where the proof lives — module path, route, env var. */
@@ -27,26 +27,32 @@ export const VALIDATION_MATRIX: ValidationRow[] = [
   { id: "aws.format",       area: "aws",    capability: "Role ARN + External ID + region format validation",      status: "passing", evidence: "lib/cloud/aws/awsValidator.ts" },
   { id: "aws.live_sts",     area: "aws",    capability: "Live STS AssumeRole + GetCallerIdentity validation",     status: "partial", evidence: "lib/cloud/aws/awsValidator.ts", nextFix: "Requires AWS_CONNECTOR_BROKER_ACCESS_KEY_ID + AWS_CONNECTOR_BROKER_SECRET_ACCESS_KEY on host." },
   { id: "aws.preview_scan", area: "aws",    capability: "Preview scan returns snapshot + findings + recommendations", status: "passing", evidence: "lib/cloud/aws/awsPreviewScanner.ts" },
-  { id: "aws.live_inventory", area: "aws",  capability: "Live EC2 / S3 / RDS inventory",                          status: "preview", evidence: "lib/cloud/aws/awsPreviewScanner.ts", nextFix: "Wire EC2/S3/RDS describe-calls behind feature flag." },
+  { id: "aws.live_inventory", area: "aws",  capability: "Live EC2 / S3 / RDS / VPC / SG read-only inventory",     status: "passing", evidence: "lib/cloud/aws/awsLiveInventory.ts + cloudScanPipeline", nextFix: "Multi-region expansion (currently single region from connection input)." },
   { id: "aws.scan_pipeline", area: "aws",   capability: "End-to-end pipeline w/ trace + evidence",                status: "passing", evidence: "lib/pipeline/cloudScanPipeline.ts" },
   { id: "aws.iam_trust",    area: "aws",    capability: "IAM trust policy A-F grader",                            status: "passing", evidence: "lib/cloud/iamTrustEvaluator.ts" },
 
   // Azure
   { id: "azure.format",     area: "azure",  capability: "Tenant + subscription id format validation",             status: "passing", evidence: "lib/cloud/azure/azureValidator.ts" },
-  { id: "azure.live_sp",    area: "azure",  capability: "Live service principal authentication",                  status: "blocked", evidence: "lib/cloud/azure/azureValidator.ts", nextFix: "Wire @azure/identity ClientSecretCredential + @azure/arm-subscriptions call." },
+  { id: "azure.live_sp",    area: "azure",  capability: "Live service principal validation via @azure/identity + arm-subscriptions", status: "passing", evidence: "lib/cloud/azure/azureValidator.ts", nextFix: "Requires AZURE_TENANT_ID + AZURE_CLIENT_ID + AZURE_CLIENT_SECRET + AZURE_SUBSCRIPTION_ID on host." },
   { id: "azure.preview",    area: "azure",  capability: "Preview snapshot + findings + recommendations",          status: "passing", evidence: "lib/cloud/azure/azurePreviewScanner.ts" },
+  { id: "azure.config",     area: "azure",  capability: "Azure runtime config helper (mode + presence booleans)", status: "passing", evidence: "lib/cloud/azure/azureConfig.ts" },
+  { id: "azure.scan_route", area: "azure",  capability: "POST /api/azure/scan — audited, preview-honest",         status: "passing", evidence: "app/api/azure/scan/route.ts" },
+  { id: "azure.live_inventory", area: "azure", capability: "Live ARM resource inventory (VMs / Storage / VNet / NSG / SQL)", status: "blocked", evidence: "TBD — requires arm-compute + arm-storage + arm-network read traversal", nextFix: "Wire arm-* SDKs read-only behind getAzureConfig().mode === \"live\"." },
 
   // GCP
   { id: "gcp.format",       area: "gcp",    capability: "Project id + service account JSON shape validation",     status: "passing", evidence: "lib/cloud/gcp/gcpValidator.ts" },
-  { id: "gcp.live_sa",      area: "gcp",    capability: "Live service account authentication",                    status: "blocked", evidence: "lib/cloud/gcp/gcpValidator.ts", nextFix: "Wire google-auth-library + @google-cloud/resource-manager call." },
+  { id: "gcp.live_sa",      area: "gcp",    capability: "Live service account validation via @google-cloud/resource-manager", status: "partial", evidence: "lib/cloud/gcp/gcpValidator.ts", nextFix: "Live path imports @google-cloud/resource-manager dynamically — honest fallback when import fails. Requires GCP_PROJECT_ID + (GCP_SERVICE_ACCOUNT_JSON or GCP_CLIENT_EMAIL+GCP_PRIVATE_KEY)." },
   { id: "gcp.preview",      area: "gcp",    capability: "Preview snapshot + findings + recommendations",          status: "passing", evidence: "lib/cloud/gcp/gcpPreviewScanner.ts" },
+  { id: "gcp.config",       area: "gcp",    capability: "GCP runtime config helper (mode + credential-format flag)", status: "passing", evidence: "lib/cloud/gcp/gcpConfig.ts" },
+  { id: "gcp.scan_route",   area: "gcp",    capability: "POST /api/gcp/scan — audited, preview-honest",           status: "passing", evidence: "app/api/gcp/scan/route.ts" },
+  { id: "gcp.live_inventory", area: "gcp", capability: "Live Compute / Storage / Firewall inventory",            status: "blocked", evidence: "TBD — requires @google-cloud/compute + @google-cloud/storage read traversal", nextFix: "Wire compute + storage SDKs read-only behind getGcpConfig().mode === \"live\"." },
 
   // GitHub
   { id: "gh.format",        area: "github", capability: "Owner / repo name format validation",                    status: "passing", evidence: "lib/connectors/github/githubValidator.ts" },
   { id: "gh.live_token",    area: "github", capability: "Live token validation via /user endpoint",               status: "passing", evidence: "lib/connectors/github/githubValidator.ts" },
   { id: "gh.oauth",         area: "github", capability: "OAuth sign-in (GitHub + Google) on /auth/signin",        status: "passing", evidence: "lib/auth.ts + GITHUB_CLIENT_ID set on Vercel" },
   { id: "gh.preview_sync",  area: "github", capability: "Preview repo + workflow + branch protection inventory",  status: "passing", evidence: "lib/connectors/github/githubPreviewSync.ts" },
-  { id: "gh.live_sync",     area: "github", capability: "Live GitHub repo + workflow discovery",                  status: "blocked", evidence: "TBD", nextFix: "Wire octokit + repo discovery behind GITHUB_SYNC_MODE=live." },
+  { id: "gh.live_sync",     area: "github", capability: "Live GitHub repo + workflow + branch-protection discovery", status: "passing", evidence: "lib/connectors/github/githubLiveScanner.ts", nextFix: "GitHub App flow (JWT + installation token) — PAT path is shipping." },
 
   // Security scanner
   { id: "sec.engine",       area: "security_scanner", capability: "Scanner engine produces typed check results",  status: "passing", evidence: "lib/securityScanner/securityScanner.ts" },
@@ -148,6 +154,59 @@ export const VALIDATION_MATRIX: ValidationRow[] = [
   { id: "cp.api_validate",          area: "command_center",   capability: "POST /api/control-plane/validate (autonomous + deep)",     status: "passing", evidence: "app/api/control-plane/validate/route.ts" },
   { id: "cp.api_run_safe_task",     area: "command_center",   capability: "POST /api/control-plane/run-safe-task (allow-list)",       status: "passing", evidence: "app/api/control-plane/run-safe-task/route.ts" },
   { id: "cp.multi_cloud_ui",        area: "command_center",   capability: "/dashboard/multi-cloud operating view",                    status: "passing", evidence: "app/dashboard/multi-cloud/page.tsx" },
+
+  // GitHub / ReleaseOps live wiring (Live GitHub ReleaseOps + AWS Inventory Phase)
+  { id: "gh.live_client",           area: "github",       capability: "GitHub live REST client (native fetch, no octokit dep)",  status: "passing", evidence: "lib/connectors/github/githubLiveClient.ts" },
+  { id: "gh.live_scanner",          area: "github",       capability: "GitHub read-only live scanner (repos / workflows / runs / branch protection)", status: "passing", evidence: "lib/connectors/github/githubLiveScanner.ts" },
+  { id: "gh.preview_fallback",      area: "github",       capability: "Honest preview fallback when live unavailable",            status: "passing", evidence: "lib/releaseops/getReleaseOpsState.ts" },
+  { id: "gh.api_sync",              area: "github",       capability: "POST /api/github/sync (live or preview)",                  status: "passing", evidence: "app/api/github/sync/route.ts" },
+  { id: "relops.hybrid_state",      area: "command_center",   capability: "ReleaseOps live/preview hybrid state aggregator",          status: "passing", evidence: "lib/releaseops/getReleaseOpsState.ts" },
+  { id: "relops.api_state",         area: "command_center",   capability: "GET /api/releaseops/state",                                 status: "passing", evidence: "app/api/releaseops/state/route.ts" },
+  { id: "relops.api_scan",          area: "command_center",   capability: "POST /api/releaseops/scan (audited)",                       status: "passing", evidence: "app/api/releaseops/scan/route.ts" },
+  { id: "gh.security_checks",       area: "security_scanner", capability: "GitHub / ReleaseOps security checks (branch protection, required checks, failing workflows)", status: "passing", evidence: "lib/securityScanner/securityScanner.ts:githubChecksFromState" },
+  { id: "gh.audit_trace",           area: "security_scanner", capability: "Audit + trace wired on GitHub sync + ReleaseOps scan",     status: "passing", evidence: "app/api/github/sync/route.ts,app/api/releaseops/scan/route.ts" },
+  { id: "gh.live_requires_pat",     area: "github",       capability: "GitHub live requires GITHUB_PAT (or App) + SYNC_MODE=live", status: "preview", evidence: "lib/config/providerModes.ts:getConnectorMode" },
+
+  // AWS live inventory wiring (Live AWS Inventory Phase)
+  { id: "aws.live_inv_module",      area: "aws",          capability: "AWS read-only live inventory module (STS + EC2 + S3 + RDS)", status: "passing", evidence: "lib/cloud/aws/awsLiveInventory.ts" },
+  { id: "aws.hybrid_pipeline",      area: "aws",          capability: "Cloud scan pipeline calls live inventory when STS validates", status: "passing", evidence: "lib/pipeline/cloudScanPipeline.ts" },
+  { id: "aws.live_findings",        area: "security_scanner", capability: "AWS findings emitted from live data (public SG, S3 PAB gap, RDS public)", status: "passing", evidence: "lib/cloud/aws/awsLiveInventory.ts" },
+  { id: "aws.api_scan_live",        area: "aws",          capability: "POST /api/aws/scan returns honest live/preview source",   status: "passing", evidence: "app/api/aws/scan/route.ts" },
+  { id: "aws.live_requires_broker", area: "aws",          capability: "AWS live requires broker creds + AWS_SCAN_MODE=live",     status: "preview", evidence: "lib/config/env.ts" },
+
+  // Persistence promotions (Stabilization Phase)
+  { id: "prisma.audit_record",      area: "command_center",   capability: "Prisma SecureAuditRecord model + adapter behind store factory", status: "passing", evidence: "lib/audit/auditStore.prisma.ts,prisma/schema.prisma" },
+  { id: "prisma.memory_record",     area: "command_center",   capability: "Prisma OperationalMemoryRecord model + adapter behind getMemoryStore()", status: "passing", evidence: "lib/memory/memoryStore.prisma.ts" },
+  { id: "prisma.desktop_session",   area: "command_center",   capability: "Prisma DesktopSessionRecord model + adapter (paste-flow pairing)", status: "passing", evidence: "lib/desktop/desktopSessionStore.prisma.ts" },
+  { id: "prisma.handoff_record",    area: "command_center",   capability: "Prisma DesktopHandoffRecord model (storage TBD)",          status: "preview", evidence: "prisma/schema.prisma" },
+  { id: "prisma.trace_span",        area: "command_center",   capability: "Prisma OperationTraceSpan model (storage TBD)",            status: "preview", evidence: "prisma/schema.prisma" },
+  { id: "platform.store_factory",   area: "command_center",   capability: "Store factory selects Prisma vs in-memory by DATABASE_URL", status: "passing", evidence: "lib/platform/storeFactory.ts,instrumentation.ts" },
+
+  // Desktop auth session model
+  { id: "desk.session_token",       area: "command_center",   capability: "Desktop session HMAC token mint + verify",                  status: "passing", evidence: "lib/desktop/desktopToken.ts" },
+  { id: "desk.session_store",       area: "command_center",   capability: "DesktopSessionStore interface + in-memory + Prisma adapter", status: "passing", evidence: "lib/desktop/desktopSession.ts" },
+  { id: "desk.auth_policy",         area: "command_center",   capability: "Pairing policy (5-session cap, fingerprint validation)",   status: "passing", evidence: "lib/desktop/desktopAuthPolicy.ts" },
+  { id: "desk.api_session",         area: "command_center",   capability: "POST/GET/DELETE /api/desktop/session",                      status: "passing", evidence: "app/api/desktop/session/route.ts" },
+  { id: "desk.api_state",           area: "command_center",   capability: "GET /api/desktop/state (Bearer-authenticated)",             status: "passing", evidence: "app/api/desktop/state/route.ts" },
+  { id: "desk.paste_flow_ui",       area: "command_center",   capability: "Desktop Settings pairing UI (paste token + connect)",       status: "passing", evidence: "desktop/src/views/SettingsView.tsx" },
+
+  // ---------------------------------------------------------------------------
+  // End-to-end operating loop wiring (Operating Loop Phase)
+  // ---------------------------------------------------------------------------
+  { id: "loop.model",            area: "operating_loop", capability: "OperatingLoopRun model — 16 canonical stages + status taxonomy", status: "passing", evidence: "lib/operatingLoop/operatingLoopModel.ts" },
+  { id: "loop.builder",          area: "operating_loop", capability: "Operating loop builder queries existing subsystems (read-only)", status: "passing", evidence: "lib/operatingLoop/operatingLoopBuilder.ts" },
+  { id: "loop.runner",           area: "operating_loop", capability: "Operating loop runner — safe-stage execution only, halts at approval / preflight / verification", status: "passing", evidence: "lib/operatingLoop/operatingLoopRunner.ts" },
+  { id: "loop.api_state",        area: "operating_loop", capability: "GET /api/operating-loop/state (inspect-only)",                status: "passing", evidence: "app/api/operating-loop/state/route.ts" },
+  { id: "loop.api_run",          area: "operating_loop", capability: "POST /api/operating-loop/run (all providers, audited)",       status: "passing", evidence: "app/api/operating-loop/run/route.ts" },
+  { id: "loop.api_run_provider", area: "operating_loop", capability: "POST /api/operating-loop/run-provider (single provider, audited)", status: "passing", evidence: "app/api/operating-loop/run-provider/route.ts" },
+  { id: "loop.aws",              area: "operating_loop", capability: "AWS loop: setup → validation → scan → snapshot → findings → ... → next_action", status: "passing", evidence: "lib/operatingLoop/operatingLoopBuilder.ts:buildStagesFor" },
+  { id: "loop.azure",            area: "operating_loop", capability: "Azure loop: live validation, preview scan + findings, preview remediation", status: "partial",   evidence: "lib/operatingLoop/operatingLoopBuilder.ts", nextFix: "Live Azure ARM inventory ships next." },
+  { id: "loop.gcp",              area: "operating_loop", capability: "GCP loop: live validation, preview scan + findings, preview remediation",   status: "partial",   evidence: "lib/operatingLoop/operatingLoopBuilder.ts", nextFix: "Live GCP Compute/Storage inventory ships next." },
+  { id: "loop.github",           area: "operating_loop", capability: "GitHub/ReleaseOps loop: live scan + branch protection + workflow checks", status: "passing", evidence: "lib/operatingLoop/operatingLoopBuilder.ts" },
+  { id: "loop.security",         area: "operating_loop", capability: "Security scanner loop: always-available cross-cutting scanner",          status: "passing", evidence: "lib/operatingLoop/operatingLoopBuilder.ts" },
+  { id: "loop.desktop",          area: "operating_loop", capability: "Desktop loop: setup → token validation → review → no local apply",       status: "passing", evidence: "lib/operatingLoop/operatingLoopBuilder.ts" },
+  { id: "loop.safety_contract",  area: "operating_loop", capability: "Runner refuses approval / preflight / verification stages — operator-only", status: "passing", evidence: "lib/operatingLoop/operatingLoopRunner.ts:haltConditions" },
+  { id: "loop.audit_emission",   area: "operating_loop", capability: "Every runner pass writes a SecureAuditRecord with correlation id",        status: "passing", evidence: "lib/operatingLoop/operatingLoopRunner.ts" },
 ];
 
 // ---------------------------------------------------------------------------

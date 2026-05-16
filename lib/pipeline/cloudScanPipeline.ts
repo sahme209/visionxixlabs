@@ -131,20 +131,55 @@ export async function runCloudScanPipeline(input: CloudScanInput): Promise<Cloud
   const liveSelected = validation.mode === "live" && validation.outcome === "valid_live";
   let scanMode: CloudScanMode = liveSelected ? "live" : "preview";
 
-  // 3. Run the scanner. Live mode isn't fully wired for service inventory yet —
-  //    in this milestone we always fall back to the preview scanner for the
-  //    inventory phase even if STS validation succeeded. This is honest:
-  //    we'll surface that as a "validated live, inventory preview" annotation.
-  void liveSelected;
-  scanMode = "preview";
+  // 3. Run the scanner. Live mode runs the read-only inventory (EC2 / VPCs /
+  //    SGs / S3 / RDS). Partial inventory is honestly tagged with
+  //    `source: "partial"` and the limitations array.
+  let preview: Awaited<ReturnType<typeof runPreviewAwsScan>>;
+  let liveLimitations: string[] = [];
 
-  const { trace: t2, spanId: scanSpan } = openSpan(trace, "scan.inventory.preview", rootSpanId);
-  trace = t2;
-  const preview = await runPreviewAwsScan({ organizationId: input.organizationId, region: input.connection.region });
-  trace = closeSpan(trace, scanSpan, {
-    status: "ok",
-    attributes: { resources: Object.values(preview.snapshot.resourceCounts).reduce((s, v) => s + v, 0) },
-  });
+  if (liveSelected) {
+    const { trace: t2, spanId: scanSpan } = openSpan(trace, "scan.inventory.live", rootSpanId);
+    trace = t2;
+    const { runLiveAwsInventory } = await import("@/lib/cloud/aws/awsLiveInventory");
+    const live = await runLiveAwsInventory({
+      organizationId: input.organizationId,
+      roleArn:        input.connection.roleArn,
+      externalId:     input.connection.externalId,
+      region:         input.connection.region,
+    });
+    liveLimitations = live.limitations;
+    // If the live inventory returned at least one resource we trust it; if
+    // it bailed out entirely (auth/throttle), fall through to preview.
+    if (live.snapshot.resources.length > 0 || live.findings.length > 0) {
+      preview = {
+        snapshot: live.snapshot,
+        findings: live.findings,
+        recommendations: live.recommendations,
+        durationMs: live.durationMs,
+      };
+      scanMode = live.source === "live" ? "live" : "preview";
+    } else {
+      preview = await runPreviewAwsScan({ organizationId: input.organizationId, region: input.connection.region });
+      scanMode = "preview";
+      liveLimitations.push("Live inventory returned no resources — falling back to preview snapshot.");
+    }
+    trace = closeSpan(trace, scanSpan, {
+      status: live.limitations.length === 0 ? "ok" : "error",
+      attributes: {
+        resources: Object.values(preview.snapshot.resourceCounts).reduce((s, v) => s + v, 0),
+        limitations: live.limitations.length,
+      },
+    });
+  } else {
+    const { trace: t2, spanId: scanSpan } = openSpan(trace, "scan.inventory.preview", rootSpanId);
+    trace = t2;
+    preview = await runPreviewAwsScan({ organizationId: input.organizationId, region: input.connection.region });
+    trace = closeSpan(trace, scanSpan, {
+      status: "ok",
+      attributes: { resources: Object.values(preview.snapshot.resourceCounts).reduce((s, v) => s + v, 0) },
+    });
+  }
+  void liveLimitations; // Surface via snapshot.source / future return-shape extension.
 
   // 4. Attach evidence + links into the trace
   trace = linkTrace(trace, {
@@ -167,7 +202,7 @@ export async function runCloudScanPipeline(input: CloudScanInput): Promise<Cloud
   return {
     ok: true,
     correlationId,
-    source: "preview",
+    source: scanMode === "live" ? "live" : "preview",
     mode: scanMode,
     validation: {
       outcome: validation.outcome,

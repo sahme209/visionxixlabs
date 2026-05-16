@@ -29,11 +29,19 @@ export function getCloudProviderMode(provider: CloudProvider): ProviderMode {
       if (env.awsScanMode === "live" && env.awsBrokerConfigured) return "live";
       return "preview";
     case "azure":
-      // Azure has typed adapters + validators in place but no live SDK wiring yet.
-      return "expanding";
+      // Live requires AZURE_SCAN_MODE=live AND tenant+client+secret+subscription set.
+      if (env.azureScanMode === "disabled") return "disabled";
+      if (env.azureScanMode === "live" && env.azureConfigured) return "live";
+      // Expanding when at least some config is present but live mode isn't activated.
+      if (env.azureTenantId || env.azureSubscriptionId) return "expanding";
+      return "preview";
     case "gcp":
-      // Same as Azure — adapter + validator foundation ready.
-      return "expanding";
+      // Live requires GCP_SCAN_MODE=live AND either (PROJECT_ID + CLIENT_EMAIL + PRIVATE_KEY)
+      // or (PROJECT_ID + SERVICE_ACCOUNT_JSON).
+      if (env.gcpScanMode === "disabled") return "disabled";
+      if (env.gcpScanMode === "live" && env.gcpConfigured) return "live";
+      if (env.gcpProjectId) return "expanding";
+      return "preview";
   }
 }
 
@@ -46,9 +54,14 @@ export function getConnectorMode(connector: ConnectorKind): ProviderMode {
   switch (connector) {
     case "github":
     case "github_app":
-      // Live requires OAuth env present + sync mode flipped on.
+      // Live requires sync mode = live AND at least one credential path:
+      // - GITHUB_PAT (personal access token — practical / dev path), or
+      // - GITHUB_APP_ID + GITHUB_PRIVATE_KEY (production path), or
+      // - OAuth client (legacy — only useful for sign-in, not live reads).
       if (env.githubSyncMode === "disabled") return "disabled";
-      if (env.githubSyncMode === "live" && env.oauth.github) return "live";
+      if (env.githubSyncMode === "live" && (env.githubPatConfigured || env.githubAppConfigured)) {
+        return "live";
+      }
       return "preview";
     case "gitlab":
     case "azure_devops":
@@ -57,6 +70,20 @@ export function getConnectorMode(connector: ConnectorKind): ProviderMode {
       // No live integration shipped yet.
       return "expanding";
   }
+}
+
+/**
+ * Which GitHub auth path is actually usable right now. Pages can call this
+ * to render honest connection-state UI.
+ */
+export type GithubAuthPath = "github_app" | "personal_access_token" | "oauth_only" | "none";
+
+export function getGithubAuthPath(): GithubAuthPath {
+  const env = loadAppEnv();
+  if (env.githubAppConfigured) return "github_app";
+  if (env.githubPatConfigured) return "personal_access_token";
+  if (env.oauth.github) return "oauth_only";
+  return "none";
 }
 
 // ---------------------------------------------------------------------------

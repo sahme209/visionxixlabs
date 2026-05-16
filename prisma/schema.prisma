@@ -983,3 +983,127 @@ model AxiomRbacAuditEvent {
   @@index([actorId])
   @@index([targetId])
 }
+
+// ---------------------------------------------------------------------------
+// Stabilization Phase — persistence for stores that were previously in-memory.
+// Adapters live in lib/audit/auditStore.prisma.ts,
+// lib/memory/memoryStore.prisma.ts, lib/desktop/desktopSessionStore.prisma.ts,
+// and switch on via lib/platform/storeFactory.ts when DATABASE_URL is set.
+// ---------------------------------------------------------------------------
+
+/// Generic typed audit trail. Distinct from AxiomAuditEvent (which is per
+/// cloud-mutation): this row records every governance-relevant action a
+/// user / agent / system takes (auth events, policy decisions, store
+/// writes). Backs lib/audit/secureAudit.ts → SecureAuditStore.
+model SecureAuditRecord {
+  id             String   @id
+  organizationId String
+  actorUserId    String?
+  actorKind      String   // "user" | "agent" | "system"
+  action         String
+  outcome        String   // "success" | "failure" | "blocked"
+  entityRef      String?
+  correlationId  String
+  source         String
+  occurredAt     DateTime
+  detail         Json?
+  errorCode      String?
+  createdAt      DateTime @default(now())
+
+  @@index([organizationId, occurredAt])
+  @@index([action])
+  @@index([correlationId])
+}
+
+/// Long-term operational memory — outcomes, recurring patterns, confidence
+/// trends. Backs lib/memory/operationalMemory.ts → MemoryStore.
+model OperationalMemoryRecord {
+  id             String   @id
+  organizationId String
+  actorId        String
+  kind           String   // MemoryRecordKind
+  provider       String?
+  resources      Json     // ResourceRef[]
+  summary        String   @db.Text
+  evidence       Json     // { name, value }[]
+  outcome        String   // "positive" | "negative" | "neutral" | "pending"
+  impact         Json     // { costDeltaUsd?, confidenceDelta?, riskDelta? }
+  links          Json     // { auditEventIds, executionPlanIds, ... }
+  nextAction     Json?
+  occurredAt     DateTime
+  recordedAt     DateTime
+
+  @@index([organizationId, occurredAt])
+  @@index([organizationId, kind])
+  @@index([organizationId, outcome])
+}
+
+/// Desktop pairing session — long-lived bearer-token pairing between a web
+/// user and a Tauri desktop instance. Backs lib/desktop/desktopSession.ts
+/// → DesktopSessionStore.
+model DesktopSessionRecord {
+  id                 String    @id
+  userId             String
+  organizationId     String
+  deviceFingerprint  String
+  deviceLabel        String
+  platform           String
+  desktopVersion     String?
+  issuedAt           DateTime
+  expiresAt          DateTime
+  lastSeenAt         DateTime
+  revokedAt          DateTime?
+  revokeReason       String?
+  createdAt          DateTime  @default(now())
+
+  @@index([userId])
+  @@index([organizationId])
+  @@index([expiresAt])
+}
+
+/// Desktop handoff bundle persistence — packaged execution plans the
+/// desktop opens. Backs the handoff lifecycle in lib/desktop/.
+model DesktopHandoffRecord {
+  id              String    @id
+  organizationId  String
+  userId          String
+  executionPlanId String
+  approver        String
+  status          String    // "ready" | "delivered" | "rejected_by_desktop" | "expired"
+  rejectionReason String?
+  manifest        Json
+  payload         Json
+  preparedAt      DateTime
+  expiresAt       DateTime
+  deliveredAt     DateTime?
+  rejectedAt      DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@index([organizationId, status])
+  @@index([userId])
+  @@index([expiresAt])
+}
+
+/// Distributed-trace span captured by the observability layer. Lets
+/// /dashboard/observability render real call graphs instead of mock
+/// timelines. Backs lib/observability/ (trace store TBD).
+model OperationTraceSpan {
+  id             String    @id
+  organizationId String
+  traceId        String
+  parentId       String?
+  name           String
+  service        String
+  startedAt      DateTime
+  endedAt        DateTime?
+  durationMs     Int?
+  status         String    // "ok" | "error" | "in_progress"
+  attributes     Json?
+  errorMessage   String?
+  createdAt      DateTime  @default(now())
+
+  @@index([organizationId, traceId])
+  @@index([organizationId, startedAt])
+  @@index([traceId])
+}

@@ -26,9 +26,11 @@ export type SecurityCheckCategory =
   | "secret_handling"
   | "audit_gap"
   | "desktop_distribution"
-  | "desktop_execution";
+  | "desktop_execution"
+  | "release_governance"
+  | "pipeline_health";
 export type SecurityCheckStatus = "pass" | "fail" | "warn" | "unknown" | "preview";
-export type SecurityCheckScope = "cloud" | "app" | "supply_chain" | "desktop";
+export type SecurityCheckScope = "cloud" | "app" | "supply_chain" | "desktop" | "github";
 
 export interface SecurityCheckResult {
   id: string;
@@ -80,6 +82,21 @@ export interface SecurityScannerInputs {
     linuxSigned: boolean;
     handoffSignerConfigured: boolean;
     localApplyBlockedByDefault: boolean;
+  };
+  /** GitHub / ReleaseOps state — drives release-governance + pipeline-health checks. */
+  github?: {
+    /** Source mode the caller observed when assembling this input. */
+    sourceMode: "live" | "partial" | "preview" | "disabled";
+    /** Repositories the caller resolved. */
+    repos: { id: string; name: string; defaultBranch: string; protected: boolean }[];
+    /** Workflows resolved. */
+    workflows: { id: string; repoId: string; name: string; lastRunStatus?: "success" | "failure" | "cancelled" | "in_progress" }[];
+    /** Branch protection rows resolved. */
+    protections: { repoId: string; branch: string; requiredReviewers: number; requireSignedCommits: boolean; requireStatusChecks: string[]; enforceAdmins: boolean }[];
+    /** Whether GitHub credentials are present at all. */
+    credentialsConfigured: boolean;
+    /** Webhook secret presence (for future webhook handler). */
+    webhookSecretConfigured?: boolean;
   };
 }
 
@@ -231,6 +248,11 @@ export async function runSecurityScan(input: SecurityScannerInputs): Promise<Sec
     }));
   }
 
+  // ---------- GitHub / ReleaseOps checks ----------
+  if (input.github) {
+    results.push(...githubChecksFromState(input.github));
+  }
+
   // ---------- Desktop checks ----------
   if (input.desktop) {
     results.push(boolCheck({
@@ -377,6 +399,128 @@ function boolCheck(opts: {
     remediation: opts.ok ? undefined : opts.remediationIfFail,
     source: "live",
   };
+}
+
+// ---------------------------------------------------------------------------
+// GitHub / ReleaseOps check derivation
+// ---------------------------------------------------------------------------
+
+function githubChecksFromState(state: NonNullable<SecurityScannerInputs["github"]>): SecurityCheckResult[] {
+  const out: SecurityCheckResult[] = [];
+  const isLive = state.sourceMode === "live" || state.sourceMode === "partial";
+  const sourceTag: SecurityCheckResult["source"] = isLive ? "live" : "preview";
+
+  // 0) Honest credential check — fails when ReleaseOps is enabled but no
+  //    credentials are configured (= we cannot actually see anything).
+  if (state.sourceMode !== "disabled") {
+    out.push({
+      id: "gh.credentials",
+      title: "GitHub credentials configured",
+      description: "ReleaseOps surfaces real data only when GITHUB_PAT (or GITHUB_APP_ID + GITHUB_PRIVATE_KEY) is set.",
+      severity: "high",
+      category: "release_governance",
+      scope: "github",
+      status: state.credentialsConfigured ? "pass" : "fail",
+      evidence: [`source=${state.sourceMode}`, `credentials=${state.credentialsConfigured}`],
+      remediation: state.credentialsConfigured
+        ? undefined
+        : "Set GITHUB_PAT in the server env and GITHUB_SYNC_MODE=live, or install the GitHub App.",
+      source: sourceTag,
+    });
+  }
+
+  // 1) Branch protection per repo
+  for (const repo of state.repos) {
+    const bp = state.protections.find((p) => p.repoId === repo.id && p.branch === repo.defaultBranch);
+    const hasBp = Boolean(bp && (bp.requiredReviewers > 0 || bp.requireStatusChecks.length > 0));
+    out.push({
+      id: `gh.branch_protection.${repo.id}`,
+      title: `Branch protection on ${repo.name}:${repo.defaultBranch}`,
+      description: "Default branch should require reviewers and status checks before merge.",
+      severity: hasBp ? "low" : "high",
+      category: "release_governance",
+      scope: "github",
+      status: hasBp ? "pass" : "fail",
+      evidence: bp
+        ? [`requiredReviewers=${bp.requiredReviewers}`, `statusChecks=${bp.requireStatusChecks.length}`, `enforceAdmins=${bp.enforceAdmins}`]
+        : ["no branch protection record found"],
+      remediation: hasBp
+        ? undefined
+        : `Enable branch protection on ${repo.name}:${repo.defaultBranch}: ≥1 required reviewer + required status checks.`,
+      affectedResources: [`${repo.name}/${repo.defaultBranch}`],
+      source: sourceTag,
+    });
+
+    // 1b) Required status checks specifically
+    if (bp && bp.requireStatusChecks.length === 0) {
+      out.push({
+        id: `gh.required_checks.${repo.id}`,
+        title: `Required status checks missing on ${repo.name}`,
+        description: "A protected branch with no required status checks lets unverified code merge.",
+        severity: "medium",
+        category: "release_governance",
+        scope: "github",
+        status: "fail",
+        evidence: ["required_status_checks=[]"],
+        remediation: `Add required status checks (e.g. CI, tests) on ${repo.name}:${repo.defaultBranch}.`,
+        affectedResources: [`${repo.name}/${repo.defaultBranch}`],
+        source: sourceTag,
+      });
+    }
+
+    // 1c) Signed commits — informational
+    if (bp && !bp.requireSignedCommits) {
+      out.push({
+        id: `gh.signed_commits.${repo.id}`,
+        title: `Signed commits not required on ${repo.name}`,
+        description: "Signed commits prevent unattributed pushes from bypassing approval policy.",
+        severity: "low",
+        category: "release_governance",
+        scope: "github",
+        status: "warn",
+        evidence: ["require_signed_commits=false"],
+        remediation: `Enable required signed commits on ${repo.name}:${repo.defaultBranch}.`,
+        affectedResources: [`${repo.name}/${repo.defaultBranch}`],
+        source: sourceTag,
+      });
+    }
+  }
+
+  // 2) Failing workflows
+  const failingWorkflows = state.workflows.filter((w) => w.lastRunStatus === "failure");
+  if (failingWorkflows.length > 0) {
+    out.push({
+      id: "gh.failing_workflows",
+      title: `${failingWorkflows.length} workflow(s) currently failing`,
+      description: "Failing CI workflows block safe deploys and indicate broken release pipelines.",
+      severity: failingWorkflows.length >= 3 ? "high" : "medium",
+      category: "pipeline_health",
+      scope: "github",
+      status: "fail",
+      evidence: failingWorkflows.slice(0, 5).map((w) => `${w.repoId}/${w.name}`),
+      remediation: "Open the failing workflow runs and fix the broken jobs before next deploy.",
+      affectedResources: failingWorkflows.map((w) => w.name),
+      source: sourceTag,
+    });
+  }
+
+  // 3) Webhook secret — only flag when caller chose to surface it
+  if (state.sourceMode !== "disabled" && state.webhookSecretConfigured === false) {
+    out.push({
+      id: "gh.webhook_secret",
+      title: "GitHub webhook secret not configured",
+      description: "Webhook delivery should be HMAC-signed so the platform can verify origin.",
+      severity: "medium",
+      category: "release_governance",
+      scope: "github",
+      status: "fail",
+      evidence: ["GITHUB_WEBHOOK_SECRET unset"],
+      remediation: "Set GITHUB_WEBHOOK_SECRET ≥ 32 chars and configure it in the GitHub App / repo webhook.",
+      source: sourceTag,
+    });
+  }
+
+  return out;
 }
 
 function unknownCheck(opts: {

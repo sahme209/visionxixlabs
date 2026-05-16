@@ -229,6 +229,15 @@ export class DesktopClient {
   commandCenterState():  Promise<ApiResult<CommandCenterStateLite>>   { return this.get("/api/command-center"); }
 
   async controlPlaneState(): Promise<ApiResult<ControlPlaneStateLite>> {
+    // When a desktop session token is paired, prefer the Bearer-authenticated
+    // endpoint so the call works cross-origin (cookie auth would fail).
+    if (this.config.sessionToken) {
+      const wrapped = await this.get<{ state: ControlPlaneStateLite }>("/api/desktop/state");
+      if (wrapped.ok && wrapped.data?.state) {
+        this.isPreviewMode = false;
+        return { ok: true, data: wrapped.data.state };
+      }
+    }
     const res = await this.get<ControlPlaneStateLite>("/api/control-plane/state");
     if (res.ok) { this.isPreviewMode = false; return res; }
     this.isPreviewMode = true;

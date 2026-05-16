@@ -16,7 +16,7 @@ export interface GithubRepoPreview {
   visibility: "public" | "private" | "internal";
   pushedAt: string;
   protected: boolean;
-  source: "preview";
+  source: "live" | "preview";
 }
 
 export interface GithubWorkflowPreview {
@@ -28,7 +28,7 @@ export interface GithubWorkflowPreview {
   trigger: ("push" | "pull_request" | "schedule" | "workflow_dispatch")[];
   lastRunStatus?: "success" | "failure" | "cancelled" | "in_progress";
   lastRunAt?: string;
-  source: "preview";
+  source: "live" | "preview";
 }
 
 export interface GithubBranchProtectionPreview {
@@ -38,7 +38,7 @@ export interface GithubBranchProtectionPreview {
   requireSignedCommits: boolean;
   requireStatusChecks: string[];
   enforceAdmins: boolean;
-  source: "preview";
+  source: "live" | "preview";
 }
 
 export interface GithubPreviewSyncOutcome {

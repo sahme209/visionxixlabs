@@ -40,8 +40,28 @@ export interface AppEnv {
   awsBrokerConfigured: boolean;
   /** AWS scan mode — drives the scanner branch. */
   awsScanMode: FeatureMode;
+  /** Azure service-principal credentials presence (server-only). */
+  azureConfigured: boolean;
+  /** Azure scan mode. */
+  azureScanMode: FeatureMode;
+  /** Azure default subscription id for ambient validation. */
+  azureSubscriptionId?: string;
+  /** Azure tenant id for ambient validation. */
+  azureTenantId?: string;
+  /** GCP credentials presence (private key or service account JSON, server-only). */
+  gcpConfigured: boolean;
+  /** GCP scan mode. */
+  gcpScanMode: FeatureMode;
+  /** GCP default project id for ambient validation. */
+  gcpProjectId?: string;
   /** GitHub sync mode. */
   githubSyncMode: FeatureMode;
+  /** GitHub personal access token presence — practical live path without full OAuth roundtrip. */
+  githubPatConfigured: boolean;
+  /** GitHub App credentials presence. */
+  githubAppConfigured: boolean;
+  /** GitHub default org/login for unauthenticated browses (UI hint only — not used for live calls). */
+  githubDefaultOrg?: string;
   /** Desktop runtime mode. */
   desktopMode: FeatureMode;
   /** Desktop downloads — false unless real signed binaries are present. */
@@ -112,10 +132,32 @@ export function loadAppEnv(): AppEnv {
       env.AWS_SCAN_MODE,
       isSet(env.AWS_CONNECTOR_BROKER_ACCESS_KEY_ID) ? "live" : "preview",
     ),
+    azureConfigured:
+      isSet(env.AZURE_TENANT_ID) &&
+      isSet(env.AZURE_CLIENT_ID) &&
+      isSet(env.AZURE_CLIENT_SECRET) &&
+      isSet(env.AZURE_SUBSCRIPTION_ID),
+    azureScanMode: mode(
+      env.AZURE_SCAN_MODE,
+      isSet(env.AZURE_CLIENT_SECRET) ? "live" : "preview",
+    ),
+    azureSubscriptionId: env.AZURE_SUBSCRIPTION_ID?.trim() || undefined,
+    azureTenantId: env.AZURE_TENANT_ID?.trim() || undefined,
+    gcpConfigured:
+      (isSet(env.GCP_PROJECT_ID) && isSet(env.GCP_CLIENT_EMAIL) && isSet(env.GCP_PRIVATE_KEY)) ||
+      (isSet(env.GCP_PROJECT_ID) && isSet(env.GCP_SERVICE_ACCOUNT_JSON)),
+    gcpScanMode: mode(
+      env.GCP_SCAN_MODE,
+      (isSet(env.GCP_PRIVATE_KEY) || isSet(env.GCP_SERVICE_ACCOUNT_JSON)) ? "live" : "preview",
+    ),
+    gcpProjectId: env.GCP_PROJECT_ID?.trim() || undefined,
     githubSyncMode: mode(
       env.GITHUB_SYNC_MODE,
-      isSet(env.GITHUB_CLIENT_ID) ? "preview" : "preview",
+      isSet(env.GITHUB_PAT) || isSet(env.GITHUB_APP_ID) ? "live" : "preview",
     ),
+    githubPatConfigured: isSet(env.GITHUB_PAT),
+    githubAppConfigured: isSet(env.GITHUB_APP_ID) && isSet(env.GITHUB_PRIVATE_KEY),
+    githubDefaultOrg: env.GITHUB_DEFAULT_ORG?.trim() || undefined,
     desktopMode: mode(env.DESKTOP_MODE, "preview"),
     desktopDownloadsEnabled: bool(env.DESKTOP_DOWNLOADS_ENABLED, false),
     desktopHandoffSigningKeySet: isSet(env.DESKTOP_HANDOFF_SIGNING_KEY),

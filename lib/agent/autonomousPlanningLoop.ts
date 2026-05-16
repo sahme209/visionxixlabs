@@ -1,5 +1,17 @@
 /**
- * Autonomous Planning Loop.
+ * Autonomous Planning Loop (v1 — planning / observation surface).
+ *
+ * @deprecated for new call sites. The canonical execution loop is
+ *   `lib/controlPlane/autonomousOpsLoop.ts` (v2). This module is retained
+ *   as the legacy read-only planning surface — it observes coverage,
+ *   validation, and setup flows and produces ranked candidate actions,
+ *   but never executes them. v2 is the canonical loop that actually runs
+ *   safe tasks against the control plane.
+ *
+ *   Existing consumers (executionGraphBuilder, agiOperationsBrain,
+ *   /api/agent/plan-next-actions) depend on this module's
+ *   `AutonomousLoopReport` shape. New consumers must use
+ *   `runAutonomousOpsLoopV2()` from `lib/controlPlane/autonomousOpsLoop.ts`.
  *
  * Observe → identify gaps → classify risk/impact → choose highest-value
  * next action → check policy/security boundaries → create a task → run

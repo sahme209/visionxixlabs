@@ -13,7 +13,7 @@
 import type { ExecutionPlanCandidate } from "@/lib/execution/executionPlanBuilder";
 import type { TerraformArtifact } from "@/lib/execution/terraformGenerator";
 import type { CliArtifact } from "@/lib/execution/cliGenerator";
-import type { RollbackPlan } from "@/lib/execution/rollbackPlanner";
+import type { RollbackPlan } from "@/lib/execution/rollbackPlanGenerator";
 import type { VerificationSpec } from "@/lib/execution/verificationEngine";
 
 // ---------------------------------------------------------------------------

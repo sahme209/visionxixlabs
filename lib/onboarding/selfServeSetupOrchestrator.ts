@@ -108,10 +108,11 @@ const FLOWS: Record<SetupTrack, SetupFlow> = {
   azure: {
     track: "azure",
     title: "Connect Azure",
-    status: "expanding",
+    status: "preview",
     prerequisites: [
       "Azure tenant + subscription id you want Axiom to scan.",
       "Owner or User-Access-Administrator role on the subscription.",
+      "Server-side env: AZURE_TENANT_ID, AZURE_CLIENT_ID, AZURE_CLIENT_SECRET, AZURE_SUBSCRIPTION_ID, AZURE_SCAN_MODE=live.",
     ],
     requiredPermissions: [
       "Microsoft.Authorization/roleAssignments/write on the subscription scope.",
@@ -122,7 +123,8 @@ const FLOWS: Record<SetupTrack, SetupFlow> = {
       { id: "azure.s2", ordinal: 2, kind: "create_resource", title: "Register Axiom application",        detail: "Register a new app for Axiom and create a client secret.", estMinutes: 3 },
       { id: "azure.s3", ordinal: 3, kind: "create_resource", title: "Assign Reader at subscription scope", detail: "Grant the new app the built-in Reader role on the target subscription.", estMinutes: 2 },
       { id: "azure.s4", ordinal: 4, kind: "copy_value",      title: "Copy tenant + subscription + client secret", detail: "Paste into the Axiom Azure connect form.", action: { label: "Open connect form", href: "/operator/onboarding" }, estMinutes: 1 },
-      { id: "azure.s5", ordinal: 5, kind: "validate",        title: "Validate connection",                detail: "Axiom runs a format + SDK round-trip when @azure/identity is enabled.", validation: { label: "Run validation", href: "/api/azure/validate" }, estMinutes: 1 },
+      { id: "azure.s5", ordinal: 5, kind: "validate",        title: "Validate connection",                detail: "Axiom runs @azure/identity ClientSecretCredential against arm-subscriptions.subscriptions.get — confirms tenant + client secret + read access.", validation: { label: "Run validation", href: "/api/azure/validate" }, estMinutes: 1 },
+      { id: "azure.s6", ordinal: 6, kind: "scan",            title: "Run first scan",                     detail: "Axiom returns the preview snapshot today; live ARM resource inventory ships next.",                                                                       action:     { label: "Start scan",                href: "/dashboard/multi-cloud" }, estMinutes: 2 },
     ],
     commonFailures: [
       { cause: "Tenant id invalid",       symptom: "Validation reports 'invalid tenant id'.",          fix: "Use the GUID-form tenant id (e.g. `4d0e...`), not the *.onmicrosoft.com domain.", troubleshooterId: "azure.tenant_invalid" },
@@ -136,20 +138,23 @@ const FLOWS: Record<SetupTrack, SetupFlow> = {
   gcp: {
     track: "gcp",
     title: "Connect GCP",
-    status: "expanding",
+    status: "preview",
     prerequisites: [
       "GCP project you want Axiom to scan.",
       "Project-Owner or Service-Account-Admin role.",
+      "Server-side env: GCP_PROJECT_ID + either GCP_SERVICE_ACCOUNT_JSON or (GCP_CLIENT_EMAIL + GCP_PRIVATE_KEY) + GCP_SCAN_MODE=live.",
     ],
     requiredPermissions: [
       "iam.serviceAccounts.create on the project.",
       "resourcemanager.projects.setIamPolicy on the project.",
+      "Service account needs roles/viewer (or roles/iam.securityReviewer for IAM checks).",
     ],
     steps: [
       { id: "gcp.s1", ordinal: 1, kind: "navigate",        title: "Open GCP IAM console",                  detail: "Open the Cloud Console → IAM & Admin → Service Accounts.", action: { label: "Open GCP IAM", href: "https://console.cloud.google.com/iam-admin/serviceaccounts" }, estMinutes: 1 },
       { id: "gcp.s2", ordinal: 2, kind: "create_resource", title: "Create Axiom service account + key",   detail: "Create a service account, attach Viewer + Security Reviewer roles, and download a JSON key.", estMinutes: 3 },
-      { id: "gcp.s3", ordinal: 3, kind: "copy_value",      title: "Upload service account JSON",            detail: "Paste the JSON content into the Axiom GCP connect form.", action: { label: "Open connect form", href: "/operator/onboarding" }, estMinutes: 1 },
-      { id: "gcp.s4", ordinal: 4, kind: "validate",        title: "Validate connection",                    detail: "Axiom validates the JSON shape today; live SDK validation lands with google-auth-library wiring.", validation: { label: "Run validation", href: "/api/gcp/validate" }, estMinutes: 1 },
+      { id: "gcp.s3", ordinal: 3, kind: "copy_value",      title: "Upload service account JSON",            detail: "Paste the JSON content into the Axiom GCP connect form (server-side env or per-tenant connection).", action: { label: "Open connect form", href: "/operator/onboarding" }, estMinutes: 1 },
+      { id: "gcp.s4", ordinal: 4, kind: "validate",        title: "Validate connection",                    detail: "Axiom validates the JSON shape and runs @google-cloud/resource-manager ProjectsClient.getProject for live mode. SDK probe falls back to honest preview if the package isn't reachable.", validation: { label: "Run validation", href: "/api/gcp/validate" }, estMinutes: 1 },
+      { id: "gcp.s5", ordinal: 5, kind: "scan",            title: "Run first scan",                          detail: "Axiom returns the preview snapshot; live Compute / Storage / Firewall inventory lands next.",                                                                                      action: { label: "Start scan", href: "/dashboard/multi-cloud" }, estMinutes: 2 },
     ],
     commonFailures: [
       { cause: "Service account JSON malformed", symptom: "Validation reports parse error.", fix: "Paste the full JSON file content — including the curly braces.",      troubleshooterId: "gcp.json_invalid" },
