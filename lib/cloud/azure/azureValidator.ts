@@ -2,8 +2,13 @@
  * Azure connection validator.
  *
  * Format validation always runs (cheap, deterministic). Live mode runs a
- * `@azure/identity` ClientSecretCredential against `@azure/arm-subscriptions`
- * `SubscriptionsClient.subscriptions.get(subscriptionId)` when:
+ * `@azure/identity` ClientSecretCredential.getToken() (fully validates
+ * tenant + client + secret against AAD) then calls the ARM REST API
+ * `GET /subscriptions/{id}?api-version=2020-01-01` to confirm the
+ * service principal has read access. SDK-version-agnostic — no
+ * dependency on `arm-subscriptions` operation names.
+ *
+ * Live mode requires:
  *   - the feature flag says Azure live mode is allowed,
  *   - tenant + client + secret + subscription are set on the host env,
  *   - the user explicitly requested a live validation.
@@ -142,19 +147,45 @@ async function runLiveValidation(opts: AzureValidateInput): Promise<AzureValidat
   }
 
   try {
-    const [{ ClientSecretCredential }, { SubscriptionClient }] = await Promise.all([
-      import("@azure/identity"),
-      import("@azure/arm-subscriptions"),
-    ]);
-
+    const { ClientSecretCredential } = await import("@azure/identity");
     const credential = new ClientSecretCredential(opts.input.tenantId, clientId, clientSecret);
-    const client = new SubscriptionClient(credential);
 
-    const sub = await withTimeout(
-      client.subscriptions.get(opts.input.subscriptionId),
+    // Step 1: acquire a token. Fully validates tenant + client + secret against AAD.
+    const tokenResponse = await withTimeout(
+      credential.getToken("https://management.azure.com/.default"),
       LIVE_CALL_TIMEOUT_MS,
-      "subscriptions.get",
+      "credential.getToken",
     );
+    if (!tokenResponse?.token) {
+      return failure(opts, "auth_failure", "Azure credential returned no token.", "azure.no_token");
+    }
+
+    // Step 2: confirm the service principal can read the subscription.
+    // Direct ARM REST call — SDK-version-agnostic.
+    const subRes = await withTimeout(
+      fetch(`https://management.azure.com/subscriptions/${encodeURIComponent(opts.input.subscriptionId)}?api-version=2020-01-01`, {
+        headers: { Authorization: `Bearer ${tokenResponse.token}` },
+      }),
+      LIVE_CALL_TIMEOUT_MS,
+      "arm.subscription.get",
+    );
+
+    if (subRes.status === 401 || subRes.status === 403) {
+      return failure(
+        opts,
+        "permission_denied",
+        "Service principal lacks read permission on the subscription (assign Reader at subscription scope).",
+        "azure.access_denied",
+      );
+    }
+    if (subRes.status === 404) {
+      return failure(opts, "not_found", "Subscription was not found.", "azure.subscription_not_found");
+    }
+    if (!subRes.ok) {
+      return failure(opts, "auth_failure", `ARM returned HTTP ${subRes.status}.`, "azure.arm_error");
+    }
+
+    const sub = (await subRes.json().catch(() => ({}))) as { subscriptionId?: string; displayName?: string };
 
     return {
       ok: true,

@@ -236,7 +236,7 @@ function buildValidationStage(provider: OperatingLoopProvider): OperatingLoopSta
       stage.status = mode === "live" ? "passing" : mode === "expanding" ? "partial" : mode === "preview" ? "preview" : "blocked";
       stage.sourceMode = mode === "live" ? "live" : mode === "preview" ? "preview" : "expanding";
       stage.summary = mode === "live"
-        ? "@azure/identity ClientSecretCredential + arm-subscriptions ready."
+        ? "@azure/identity ClientSecretCredential.getToken() + ARM REST subscriptions GET ready."
         : "Format validation only — live SDK requires AZURE_* env.";
       stage.confidence = mode === "live" ? 0.9 : 0.55;
       stage.safeNextAction = { label: "Validate Azure connection", href: "/api/azure/validate" };

@@ -33,7 +33,7 @@ export const VALIDATION_MATRIX: ValidationRow[] = [
 
   // Azure
   { id: "azure.format",     area: "azure",  capability: "Tenant + subscription id format validation",             status: "passing", evidence: "lib/cloud/azure/azureValidator.ts" },
-  { id: "azure.live_sp",    area: "azure",  capability: "Live service principal validation via @azure/identity + arm-subscriptions", status: "passing", evidence: "lib/cloud/azure/azureValidator.ts", nextFix: "Requires AZURE_TENANT_ID + AZURE_CLIENT_ID + AZURE_CLIENT_SECRET + AZURE_SUBSCRIPTION_ID on host." },
+  { id: "azure.live_sp",    area: "azure",  capability: "Live service principal validation via @azure/identity getToken + ARM REST", status: "passing", evidence: "lib/cloud/azure/azureValidator.ts", nextFix: "Requires AZURE_TENANT_ID + AZURE_CLIENT_ID + AZURE_CLIENT_SECRET + AZURE_SUBSCRIPTION_ID on host." },
   { id: "azure.preview",    area: "azure",  capability: "Preview snapshot + findings + recommendations",          status: "passing", evidence: "lib/cloud/azure/azurePreviewScanner.ts" },
   { id: "azure.config",     area: "azure",  capability: "Azure runtime config helper (mode + presence booleans)", status: "passing", evidence: "lib/cloud/azure/azureConfig.ts" },
   { id: "azure.scan_route", area: "azure",  capability: "POST /api/azure/scan — audited, preview-honest",         status: "passing", evidence: "app/api/azure/scan/route.ts" },
