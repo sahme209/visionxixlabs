@@ -30,6 +30,7 @@ import {
   type EvidenceRef,
   type OperatingLoopProvider,
   type OperatingLoopRun,
+  type OperatingLoopRunStatus,
   type OperatingLoopStage,
   type OperatingLoopStageId,
   type OperatingLoopStageStatus,
