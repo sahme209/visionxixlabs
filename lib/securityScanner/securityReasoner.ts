@@ -140,6 +140,7 @@ function composeNarrative(check: SecurityCheckResult): string {
     app:          "application posture",
     supply_chain: "supply chain posture",
     desktop:      "desktop posture",
+    github:       "GitHub / ReleaseOps posture",
   }[check.scope];
 
   if (check.status === "pass") {

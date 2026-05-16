@@ -162,7 +162,7 @@ function fromSecurityCheck(check: SecurityCheckResult, tenantId?: string): Remed
     id,
     tenantId,
     sourceFindingId: check.id,
-    provider: check.provider ?? (check.scope === "supply_chain" ? "github" : check.scope === "desktop" ? "desktop" : "platform"),
+    provider: check.provider ?? (check.scope === "github" ? "github" : check.scope === "supply_chain" ? "github" : check.scope === "desktop" ? "desktop" : "platform"),
     connector,
     resourceIds: check.affectedResources ?? [],
     category: change,
