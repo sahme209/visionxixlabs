@@ -310,6 +310,15 @@ export const VALIDATION_MATRIX: ValidationRow[] = [
   { id: "desk.role_workstation", area: "desktop", capability: "Desktop role literal = 'local_review_workstation' — type system prevents drift to 'local_executor'",                           status: "passing", evidence: "lib/desktop/desktopProductModel.ts:role" },
   { id: "desk.no_creds_storage", area: "desktop", capability: "storesRawCloudCredentials:false literal — desktop never stores AWS/Azure/GCP/GitHub creds at the product-model level",        status: "passing", evidence: "lib/desktop/desktopProductModel.ts:safety" },
   { id: "desk.no_apply_paths",   area: "desktop", capability: "terraformApplyEnabled:false + cliApplyEnabled:false + cloudMutationEnabled:false + githubMutationEnabled:false literals",    status: "passing", evidence: "lib/desktop/desktopProductModel.ts:safety" },
+
+  // ---------------------------------------------------------------------------
+  // Cross-platform Axiom product taxonomy
+  // ---------------------------------------------------------------------------
+  { id: "product.surface_model", area: "operating_loop", capability: "AxiomProductModel — 14 typed surfaces (web + macOS + Windows + Linux + 10 sub-systems) each with status / sourceMode / evidence / limitations / blockers / routes / safeNextAction", status: "passing", evidence: "lib/product/axiomProductModel.ts" },
+  { id: "product.api_surfaces",  area: "operating_loop", capability: "GET /api/product/surfaces — tenant-scoped canonical surface map composed from AxiomOS + desktop product model + control registry + matrix", status: "passing", evidence: "app/api/product/surfaces/route.ts" },
+  { id: "product.first_class_desktop", area: "desktop", capability: "Desktop platforms (macOS / Windows / Linux) are first-class surfaces in the canonical taxonomy — never hidden as side features",      status: "passing", evidence: "lib/product/axiomProductModel.ts:AxiomSurfaceId" },
+  { id: "product.honest_rollup", area: "operating_loop", capability: "rollupMode + rollupStatus honestly demote the composite: any blocked → blocked, any preview → preview, all live → live",            status: "passing", evidence: "lib/product/axiomProductModel.ts" },
+  { id: "product.safety_literal", area: "operating_loop", capability: "AxiomProductModel.safetyContract = 'approval_gated_no_destructive_execution' literal — TS prevents fabrication",                   status: "passing", evidence: "lib/product/axiomProductModel.ts" },
 ];
 
 // ---------------------------------------------------------------------------
