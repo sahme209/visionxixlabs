@@ -16,6 +16,9 @@ import { Stagger } from "@/components/motion/Stagger";
 import { AnimatedButton } from "@/components/ui/AnimatedButton";
 import { RealisticFogBackground } from "@/components/ui/realistic-fog-background";
 import { MotherboardBackdrop } from "@/components/ui/MotherboardBackdrop";
+import { Spotlight } from "@/components/motion/Spotlight";
+import { MagneticButton } from "@/components/motion/MagneticButton";
+import { CountUp } from "@/components/motion/CountUp";
 import { TestimonialsCarousel } from "@/components/TestimonialsCarousel";
 import { FAQAccordion } from "@/components/FAQAccordion";
 import { DesktopShowcase } from "@/components/home/DesktopShowcase";
@@ -132,6 +135,8 @@ export default function Home() {
         <div className="hero-beam-converge pointer-events-none" aria-hidden />
         <AmbientParticles />
         <div className="hero-noise-grain" aria-hidden />
+        {/* Huly-style cursor-following spotlight — soft violet glow tracks the pointer */}
+        <Spotlight tint="violet" size={680} intensity={0.9} />
 
         <div className="max-w-6xl mx-auto relative">
           <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
@@ -157,21 +162,25 @@ export default function Home() {
               </Reveal>
               <Stagger delay={0.12}>
                 <div className="relative z-20 flex flex-wrap gap-4 mb-8">
-                  <AnimatedButton
-                    href="/operator/onboarding"
-                    variant="primary"
-                    className="btn-amber-shimmer cta-glow shadow-lg shadow-violet-500/20 relative z-10 rounded-full text-zinc-900 font-semibold"
-                  >
-                    SEE IN ACTION
-                    <ArrowRightIcon className="ml-2 h-4 w-4" />
-                  </AnimatedButton>
-                  <AnimatedButton
-                    href="/axiom"
-                    variant="ghost"
-                    className="border-white/10 text-zinc-300 hover:bg-white/5 hover:border-white/20 relative z-10"
-                  >
-                    How it works
-                  </AnimatedButton>
+                  <MagneticButton strength={10} radius={140}>
+                    <AnimatedButton
+                      href="/operator/onboarding"
+                      variant="primary"
+                      className="btn-amber-shimmer cta-glow shadow-lg shadow-violet-500/20 relative z-10 rounded-full text-zinc-900 font-semibold"
+                    >
+                      SEE IN ACTION
+                      <ArrowRightIcon className="ml-2 h-4 w-4" />
+                    </AnimatedButton>
+                  </MagneticButton>
+                  <MagneticButton strength={6} radius={120}>
+                    <AnimatedButton
+                      href="/axiom"
+                      variant="ghost"
+                      className="border-white/10 text-zinc-300 hover:bg-white/5 hover:border-white/20 relative z-10"
+                    >
+                      How it works
+                    </AnimatedButton>
+                  </MagneticButton>
                 </div>
               </Stagger>
               <Reveal direction="up" delay={0.2}>
@@ -277,6 +286,40 @@ export default function Home() {
       <SectionDivider />
 
       {/* ── Built For ─────────────────────────────────────────────── */}
+      {/* Huly-style animated outcomes strip — numbers count up on scroll */}
+      <section className="py-14 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-5xl mx-auto">
+          <Reveal direction="up" delay={0.05}>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-8 text-center">
+              <div>
+                <p className="text-4xl md:text-5xl font-bold text-white tracking-[-0.04em]">
+                  <CountUp to={35} suffix="%" duration={1600} />
+                </p>
+                <p className="text-[11px] text-zinc-500 uppercase tracking-[0.18em] mt-2">Avg cloud spend cut</p>
+              </div>
+              <div>
+                <p className="text-4xl md:text-5xl font-bold text-white tracking-[-0.04em]">
+                  <CountUp to={60} suffix="s" duration={1400} />
+                </p>
+                <p className="text-[11px] text-zinc-500 uppercase tracking-[0.18em] mt-2">First findings report</p>
+              </div>
+              <div>
+                <p className="text-4xl md:text-5xl font-bold text-white tracking-[-0.04em]">
+                  <CountUp to={3} duration={1200} />
+                </p>
+                <p className="text-[11px] text-zinc-500 uppercase tracking-[0.18em] mt-2">Clouds wired today</p>
+              </div>
+              <div>
+                <p className="text-4xl md:text-5xl font-bold text-white tracking-[-0.04em]">
+                  <CountUp to={100} suffix="%" duration={1500} />
+                </p>
+                <p className="text-[11px] text-zinc-500 uppercase tracking-[0.18em] mt-2">Approval-gated execution</p>
+              </div>
+            </div>
+          </Reveal>
+        </div>
+      </section>
+
       <section className="py-10 px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto">
           <Reveal direction="up" blur delay={0.05}>
