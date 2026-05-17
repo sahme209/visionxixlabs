@@ -127,7 +127,7 @@ export default function Home() {
       <Navigation />
 
       {/* ── Hero ───────────────────────────────────────────────────── */}
-      <section className="pt-32 pb-24 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+      <section className="pt-24 sm:pt-28 md:pt-32 pb-16 sm:pb-20 md:pb-24 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
         <RealisticFogBackground backgroundColor="transparent" opacity={0.3} darken contained />
         {/* Huly-style cursor-reactive motherboard pattern — circuit board emerges where the cursor is. */}
         <MotherboardBackdrop radius={420} tint="violet" baseOpacity={0.05} peakOpacity={0.22} />
@@ -143,15 +143,15 @@ export default function Home() {
         {/* Huly-style cursor-following spotlight — soft violet glow tracks the pointer */}
         <Spotlight tint="violet" size={680} intensity={0.9} />
 
-        {/* Dripping beam — luminescent droplets slide down a centered vertical light column */}
+        {/* Dripping beam — luminescent droplets slide down a centered vertical light column.
+            Center beam shows on all screens; side beams hidden on mobile to reduce clutter + battery. */}
         <div className="absolute top-0 left-1/2 -translate-x-1/2 pointer-events-none" aria-hidden>
           <DrippingBeam tint="violet" dropCount={7} heightClass="h-[640px]" width={4} durationSec={3.4} />
         </div>
-        {/* A second beam, offset + cyan tint, for layered cinematic depth */}
-        <div className="absolute top-10 left-[28%] pointer-events-none opacity-50" aria-hidden>
+        <div className="hidden md:block absolute top-10 left-[28%] pointer-events-none opacity-50" aria-hidden>
           <DrippingBeam tint="cyan" dropCount={4} heightClass="h-[500px]" width={3} durationSec={4.6} />
         </div>
-        <div className="absolute top-20 right-[28%] pointer-events-none opacity-50" aria-hidden>
+        <div className="hidden md:block absolute top-20 right-[28%] pointer-events-none opacity-50" aria-hidden>
           <DrippingBeam tint="fuchsia" dropCount={4} heightClass="h-[520px]" width={3} durationSec={5.2} />
         </div>
 
@@ -165,7 +165,7 @@ export default function Home() {
                   Autonomous Cloud Operations
                 </span>
               </Reveal>
-              <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold mb-6 leading-[1.05] tracking-[-0.04em]">
+              <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-6 leading-[1.08] sm:leading-[1.05] tracking-[-0.03em] sm:tracking-[-0.04em] break-words">
                 <TextReveal text="Your cloud" splitBy="char" stagger={22} startDelay={120} className="block" />
                 <span className="block">
                   <TextReveal text="runs itself " splitBy="char" stagger={22} startDelay={420} />
@@ -175,7 +175,7 @@ export default function Home() {
                 </span>
               </h1>
               <Reveal direction="up" delay={0.06}>
-                <p className="text-dim-paragraph text-lg md:text-xl mb-10 max-w-lg leading-relaxed">
+                <p className="text-dim-paragraph text-base sm:text-lg md:text-xl mb-8 sm:mb-10 max-w-lg leading-relaxed">
                   Axiom is an autonomous agent that scans your AWS infrastructure, <span className="dim-1">reasons about cost and security, generates Terraform execution plans,</span> <span className="dim-2">and applies approved changes — cutting cloud spend by 30–40%.</span>
                 </p>
               </Reveal>
@@ -306,33 +306,33 @@ export default function Home() {
 
       {/* ── Built For ─────────────────────────────────────────────── */}
       {/* Huly-style animated outcomes strip — numbers count up on scroll */}
-      <section className="py-14 px-4 sm:px-6 lg:px-8">
+      <section className="py-10 sm:py-14 px-4 sm:px-6 lg:px-8">
         <div className="max-w-5xl mx-auto">
           <Reveal direction="up" delay={0.05}>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-8 text-center">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-x-4 sm:gap-x-6 gap-y-6 sm:gap-y-8 text-center">
               <div>
-                <p className="text-4xl md:text-5xl font-bold text-white tracking-[-0.04em]">
+                <p className="text-3xl sm:text-4xl md:text-5xl font-bold text-white tracking-[-0.04em]">
                   <CountUp to={35} suffix="%" duration={1600} />
                 </p>
-                <p className="text-[11px] text-zinc-500 uppercase tracking-[0.18em] mt-2">Avg cloud spend cut</p>
+                <p className="text-[10px] sm:text-[11px] text-zinc-500 uppercase tracking-[0.16em] sm:tracking-[0.18em] mt-2 leading-tight">Avg cloud spend cut</p>
               </div>
               <div>
-                <p className="text-4xl md:text-5xl font-bold text-white tracking-[-0.04em]">
+                <p className="text-3xl sm:text-4xl md:text-5xl font-bold text-white tracking-[-0.04em]">
                   <CountUp to={60} suffix="s" duration={1400} />
                 </p>
-                <p className="text-[11px] text-zinc-500 uppercase tracking-[0.18em] mt-2">First findings report</p>
+                <p className="text-[10px] sm:text-[11px] text-zinc-500 uppercase tracking-[0.16em] sm:tracking-[0.18em] mt-2 leading-tight">First findings report</p>
               </div>
               <div>
-                <p className="text-4xl md:text-5xl font-bold text-white tracking-[-0.04em]">
+                <p className="text-3xl sm:text-4xl md:text-5xl font-bold text-white tracking-[-0.04em]">
                   <CountUp to={3} duration={1200} />
                 </p>
-                <p className="text-[11px] text-zinc-500 uppercase tracking-[0.18em] mt-2">Clouds wired today</p>
+                <p className="text-[10px] sm:text-[11px] text-zinc-500 uppercase tracking-[0.16em] sm:tracking-[0.18em] mt-2 leading-tight">Clouds wired today</p>
               </div>
               <div>
-                <p className="text-4xl md:text-5xl font-bold text-white tracking-[-0.04em]">
+                <p className="text-3xl sm:text-4xl md:text-5xl font-bold text-white tracking-[-0.04em]">
                   <CountUp to={100} suffix="%" duration={1500} />
                 </p>
-                <p className="text-[11px] text-zinc-500 uppercase tracking-[0.18em] mt-2">Approval-gated execution</p>
+                <p className="text-[10px] sm:text-[11px] text-zinc-500 uppercase tracking-[0.16em] sm:tracking-[0.18em] mt-2 leading-tight">Approval-gated execution</p>
               </div>
             </div>
           </Reveal>
@@ -371,15 +371,15 @@ export default function Home() {
       <section className="py-24 px-4 sm:px-6 lg:px-8">
         <div className="max-w-6xl mx-auto">
           <Reveal direction="up">
-            <div className="mb-16">
-              <p className="text-sm font-semibold text-violet-400 mb-4 tracking-wide uppercase">
+            <div className="mb-12 sm:mb-16">
+              <p className="text-xs sm:text-sm font-semibold text-violet-400 mb-3 sm:mb-4 tracking-wide uppercase">
                 Operational Intelligence
               </p>
-              <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-5 tracking-[-0.04em]">
+              <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 sm:mb-5 tracking-[-0.03em] sm:tracking-[-0.04em] leading-[1.1]">
                 It doesn&apos;t alert.{" "}
                 <span className="text-zinc-500">It operates.</span>
               </h2>
-              <p className="text-dim-paragraph text-lg max-w-2xl leading-relaxed">
+              <p className="text-dim-paragraph text-base sm:text-lg max-w-2xl leading-relaxed">
                 Axiom scans your infrastructure, reasons about what matters, <span className="dim-1">builds execution plans, and applies approved changes</span> <span className="dim-2">— then learns from outcomes.</span>
               </p>
             </div>

@@ -40,8 +40,9 @@ export function TiltCard({
   useEffect(() => {
     if (typeof window === "undefined") return;
     const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
-    setReducedMotion(mq.matches);
-    const onChange = () => setReducedMotion(mq.matches);
+    const isTouch = window.matchMedia?.("(hover: none) and (pointer: coarse)").matches;
+    setReducedMotion(mq.matches || isTouch);
+    const onChange = () => setReducedMotion(mq.matches || isTouch);
     mq.addEventListener?.("change", onChange);
     return () => mq.removeEventListener?.("change", onChange);
   }, []);

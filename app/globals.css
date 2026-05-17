@@ -53,6 +53,32 @@ body {
   color: var(--text-primary);
   letter-spacing: -0.01em;
   line-height: 1.6;
+  /* Prevent horizontal scroll from any decorative absolute element overflowing on small screens. */
+  overflow-x: hidden;
+}
+
+/* iOS Safari: prevent the soft-keyboard from zooming in on input focus.
+   16px on text inputs is the iOS threshold. */
+@media (max-width: 640px) {
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="search"],
+  input[type="tel"],
+  input[type="url"],
+  textarea,
+  select {
+    font-size: 16px;
+  }
+}
+
+/* Touch-target floor — accessible minimum for interactive elements on touch devices. */
+@media (hover: none) and (pointer: coarse) {
+  button,
+  a[href],
+  [role="button"] {
+    min-height: 44px;
+  }
 }
 
 ::selection {
