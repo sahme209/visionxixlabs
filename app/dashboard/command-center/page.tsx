@@ -19,8 +19,6 @@ import { ActivityFeed } from "@/components/operations/ActivityFeed";
 import { ReasoningTrace } from "@/components/operations/ReasoningTrace";
 import { ExecutionPlanCard } from "@/components/operations/ExecutionPlanCard";
 import { InfrastructureTopology } from "@/components/operations/InfrastructureTopology";
-import { buildSecurityPosture } from "@/lib/security/securityPosture";
-import { buildReliabilityPosture } from "@/lib/reliability/reliabilityPosture";
 import { buildObservabilityPosture } from "@/lib/observability/observabilityPosture";
 import { ComputerDesktopIcon } from "@heroicons/react/24/outline";
 import { assessOnboarding, progressPercent } from "@/lib/onboarding/onboardingState";
@@ -540,6 +538,37 @@ interface AxiomOSStateLite {
     sourceMode: string;
     attentionRequiredCount: number;
   }[];
+  securityPosture: {
+    status: string;
+    sourceMode: string;
+    data: {
+      totalFindings: number;
+      criticalCount: number;
+      highCount: number;
+      mediumCount: number;
+      lowCount: number;
+      compoundedRiskCount: number;
+      affectedSystems: string[];
+    };
+    limitations: string[];
+  };
+  desktopPosture: {
+    status: string;
+    sourceMode: string;
+    data: {
+      binaryAvailable: boolean;
+      signingStatus: string;
+      pairedSessions: number;
+      localExecutionDisabled: true;
+    };
+    limitations: string[];
+  };
+  evidencePosture: {
+    status: string;
+    sourceMode: string;
+    data: { totalRecords: number; verifiedRecords: number; coverageScore: number };
+    limitations: string[];
+  };
   approvalPosture: {
     status: string;
     sourceMode: string;
@@ -831,24 +860,53 @@ function ReadinessStrip() {
 }
 
 function SecurityPostureStrip() {
-  const posture = buildSecurityPosture({
-    source: "preview",
-    credentials: [],
-    pairedDesktops: [],
-    crossTenantAttempts30d: 0,
-    policyBlocks30d: 2,
-    openHighRiskFindings: 1,
-    redactionEnabled: true,
-    auditStoreConfigured: true,
-    copilotContextSafe: true,
-  });
+  // Canonical security posture from /api/axiom-os/state. Replaces a panel
+  // that called buildSecurityPosture() with hardcoded demo inputs
+  // (policyBlocks30d: 2, openHighRiskFindings: 1). Honest stats only.
+  const [state, setState] = useState<AxiomOSStateLite | null>(null);
+  useEffect(() => {
+    let cancelled = false;
+    fetch("/api/axiom-os/state", { credentials: "include" })
+      .then((r) => r.json())
+      .then((json: { ok?: boolean; data?: AxiomOSStateLite }) => {
+        if (cancelled) return;
+        if (json.ok && json.data) setState(json.data);
+      })
+      .catch(() => {});
+    return () => { cancelled = true; };
+  }, []);
+
+  const sec = state?.securityPosture;
+  const desk = state?.desktopPosture;
+  const totalFindings = sec?.data.totalFindings ?? 0;
+  const criticalCount = sec?.data.criticalCount ?? 0;
+  const highCount = sec?.data.highCount ?? 0;
+  const compoundedRiskCount = sec?.data.compoundedRiskCount ?? 0;
+  const sourceMode = sec?.sourceMode ?? "preview";
+
+  const semantic: "success" | "warning" | "error" =
+    !state ? "warning" :
+    (criticalCount > 0 || highCount > 2) ? "error" :
+    (highCount > 0 || totalFindings > 5)  ? "warning" :
+                                             "success";
+
   const tone =
-    posture.semantic === "success" ? "border-emerald-500/15 bg-emerald-500/[0.03]" :
-    posture.semantic === "warning" ? "border-amber-500/15 bg-amber-500/[0.03]" :
-    posture.semantic === "error"   ? "border-red-500/15 bg-red-500/[0.03]" :
-                                     "border-white/[0.06] bg-white/[0.02]";
-  const scorePct = Math.round(posture.score * 100);
-  const headlineCheck = posture.checks.find((c) => c.semantic === "error") ?? posture.checks.find((c) => c.semantic === "warning") ?? posture.checks[0];
+    semantic === "success" ? "border-emerald-500/15 bg-emerald-500/[0.03]" :
+    semantic === "warning" ? "border-amber-500/15 bg-amber-500/[0.03]"   :
+                             "border-rose-500/15 bg-rose-500/[0.03]";
+
+  const headline =
+    !state ? "Composing security posture…" :
+    criticalCount > 0 ? `${criticalCount} critical finding${criticalCount === 1 ? "" : "s"} require operator attention` :
+    highCount > 0     ? `${highCount} high-risk finding${highCount === 1 ? "" : "s"} pending review` :
+    totalFindings > 0 ? `${totalFindings} finding${totalFindings === 1 ? "" : "s"} from canonical scanners` :
+                        "No high-risk findings — security baseline holding";
+
+  const labelTone =
+    sourceMode === "live" ? "bg-emerald-500/15 text-emerald-300 border-emerald-500/30" :
+    sourceMode === "partial_live" ? "bg-cyan-500/15 text-cyan-300 border-cyan-500/30" :
+    "bg-amber-500/15 text-amber-300 border-amber-500/30";
+
   return (
     <Link href="/dashboard/security" className={`block rounded-2xl border ${tone} p-5 hover:border-emerald-500/30 transition-colors group`}>
       <div className="flex items-center justify-between gap-4 flex-wrap">
@@ -859,19 +917,22 @@ function SecurityPostureStrip() {
           <div className="min-w-0">
             <div className="flex items-center gap-2 mb-1">
               <p className="text-[10px] font-semibold text-emerald-400 uppercase tracking-widest">Security posture</p>
-              <span className="text-[9px] font-semibold text-amber-400 bg-amber-500/15 border border-amber-500/30 rounded-full px-1.5 py-px uppercase tracking-wider">
-                Preview
+              <span className={`text-[9px] font-semibold ${labelTone} border rounded-full px-1.5 py-px uppercase tracking-wider`}>
+                {sourceMode.replace(/_/g, " ")}
               </span>
             </div>
-            <p className="text-sm font-semibold text-white">{scorePct}% baseline · {headlineCheck?.label}</p>
-            <p className="text-[11px] text-zinc-500 mt-0.5 leading-relaxed">{headlineCheck?.detail}</p>
+            <p className="text-sm font-semibold text-white">{headline}</p>
+            <p className="text-[11px] text-zinc-500 mt-0.5 leading-relaxed">
+              {sec?.limitations[0] ?? "Findings emitted by the canonical scanner — every finding carries evidence or a limitation."}
+            </p>
           </div>
         </div>
         <div className="flex items-center gap-4">
           <div className="hidden sm:flex items-center gap-3">
-            <Stat label="Redaction" value={`${posture.redaction.patterns.length}`} />
-            <Stat label="Credentials" value={`${posture.credentialSummary.total}`} />
-            <Stat label="Desktops" value={`${posture.desktopSummary.trusted}/${posture.desktopSummary.paired}`} />
+            <Stat label="Findings" value={state ? String(totalFindings) : "—"} />
+            <Stat label="Critical" value={state ? String(criticalCount) : "—"} />
+            <Stat label="Compound" value={state ? String(compoundedRiskCount) : "—"} />
+            <Stat label="Desktops" value={state ? String(desk?.data.pairedSessions ?? 0) : "—"} />
           </div>
           <ArrowRightIcon className="h-4 w-4 text-zinc-500 group-hover:text-emerald-300 group-hover:translate-x-0.5 transition-all" />
         </div>
@@ -890,33 +951,66 @@ function Stat({ label, value }: { label: string; value: string }) {
 }
 
 function ReliabilityPostureStrip() {
-  const posture = buildReliabilityPosture({
-    source: "preview",
-    components: [
-      { id: "web_app",          label: "Web app",          status: "healthy"   },
-      { id: "database",         label: "Database",         status: "healthy"   },
-      { id: "connector.aws",    label: "AWS connector",    status: "healthy"   },
-      { id: "connector.azure",  label: "Azure connector",  status: "degraded"  },
-      { id: "connector.github", label: "GitHub connector", status: "healthy"   },
-      { id: "copilot_llm",      label: "Copilot / LLM",    status: "healthy"   },
-      { id: "workflow_engine",  label: "Workflow engine",  status: "healthy"   },
-    ],
-    circuits: [],
-    deadLetters: [],
-    fleet: { total: 12, healthy: 11, stalled: 1, stuck: 0, failed: 0, partial: 0, actionable: [] },
-    retryingJobs: 3,
-    successfulRetries24h: 17,
-    rateLimitPauses24h: 4,
-  });
+  // Canonical reliability rollup — derived from operatingLoops + critical
+  // blockers + provider modes in AxiomOSState. Replaces a panel that called
+  // buildReliabilityPosture() with hardcoded { retryingJobs: 3,
+  // successfulRetries24h: 17, rateLimitPauses24h: 4 } demo values.
+  const [state, setState] = useState<AxiomOSStateLite | null>(null);
+  useEffect(() => {
+    let cancelled = false;
+    fetch("/api/axiom-os/state", { credentials: "include" })
+      .then((r) => r.json())
+      .then((json: { ok?: boolean; data?: AxiomOSStateLite }) => {
+        if (cancelled) return;
+        if (json.ok && json.data) setState(json.data);
+      })
+      .catch(() => {});
+    return () => { cancelled = true; };
+  }, []);
+
+  // Health is a function of: how many operating loops are non-failed +
+  // how many providers are connected vs blocked + how many critical
+  // blockers exist. No fabricated retry counts.
+  const loops = state?.operatingLoops ?? [];
+  const providers = state?.providers ?? [];
+  const blockers = state?.criticalBlockers ?? [];
+
+  const totalLoops = loops.length;
+  const failedLoops = loops.filter((l) => l.status === "failed" || l.status === "blocked").length;
+  const pausedLoops = loops.filter((l) => l.status === "paused_for_approval" || l.status === "paused_for_user_input").length;
+  const inProgressLoops = loops.filter((l) => l.status === "in_progress").length;
+  const completedLoops = loops.filter((l) => l.status === "completed").length;
+  const connectedProviders = providers.filter((p) => p.mode === "live" || p.mode === "partial_live").length;
+  const totalProviders = providers.length;
+
+  const semantic: "success" | "warning" | "error" =
+    !state ? "warning" :
+    (failedLoops > 0 || blockers.length > 0) ? "error" :
+    (pausedLoops > 0 || (totalProviders > 0 && connectedProviders === 0)) ? "warning" :
+                                                                              "success";
+
   const tone =
-    posture.semantic === "success" ? "border-cyan-500/15 bg-cyan-500/[0.03]" :
-    posture.semantic === "warning" ? "border-amber-500/15 bg-amber-500/[0.03]" :
-    posture.semantic === "error"   ? "border-red-500/15 bg-red-500/[0.03]" :
-                                     "border-white/[0.06] bg-white/[0.02]";
-  const scorePct = Math.round(posture.score * 100);
-  const headlineCheck = posture.checks.find((c) => c.semantic === "error") ?? posture.checks.find((c) => c.semantic === "warning") ?? posture.checks[0];
+    semantic === "success" ? "border-cyan-500/15 bg-cyan-500/[0.03]" :
+    semantic === "warning" ? "border-amber-500/15 bg-amber-500/[0.03]" :
+                             "border-rose-500/15 bg-rose-500/[0.03]";
+
+  const headline =
+    !state ? "Composing reliability rollup…" :
+    failedLoops > 0      ? `${failedLoops} operating loop${failedLoops === 1 ? "" : "s"} failed — operator attention required` :
+    blockers.length > 0  ? `${blockers.length} critical blocker${blockers.length === 1 ? "" : "s"} across providers` :
+    pausedLoops > 0      ? `${pausedLoops} loop${pausedLoops === 1 ? "" : "s"} paused for approval / operator input` :
+    inProgressLoops > 0  ? `${inProgressLoops} loop${inProgressLoops === 1 ? "" : "s"} in progress · ${completedLoops} completed` :
+                           "All operating loops idle · no failed states";
+
+  const sourceMode = state?.sourceMode ?? "preview";
+  const labelTone =
+    sourceMode === "live"         ? "bg-emerald-500/15 text-emerald-300 border-emerald-500/30" :
+    sourceMode === "partial_live" ? "bg-cyan-500/15 text-cyan-300 border-cyan-500/30" :
+    sourceMode === "blocked"      ? "bg-rose-500/15 text-rose-300 border-rose-500/30" :
+    "bg-amber-500/15 text-amber-300 border-amber-500/30";
+
   return (
-    <Link href="/dashboard/reliability" className={`block rounded-2xl border ${tone} p-5 hover:border-cyan-500/30 transition-colors group`}>
+    <Link href="/dashboard/multi-cloud" className={`block rounded-2xl border ${tone} p-5 hover:border-cyan-500/30 transition-colors group`}>
       <div className="flex items-center justify-between gap-4 flex-wrap">
         <div className="flex items-center gap-3 min-w-0">
           <div className="w-10 h-10 rounded-lg bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center shrink-0">
@@ -925,19 +1019,22 @@ function ReliabilityPostureStrip() {
           <div className="min-w-0">
             <div className="flex items-center gap-2 mb-1">
               <p className="text-[10px] font-semibold text-cyan-400 uppercase tracking-widest">Reliability posture</p>
-              <span className="text-[9px] font-semibold text-amber-400 bg-amber-500/15 border border-amber-500/30 rounded-full px-1.5 py-px uppercase tracking-wider">
-                Preview
+              <span className={`text-[9px] font-semibold ${labelTone} border rounded-full px-1.5 py-px uppercase tracking-wider`}>
+                {sourceMode.replace(/_/g, " ")}
               </span>
             </div>
-            <p className="text-sm font-semibold text-white">{scorePct}% healthy · {headlineCheck?.label}</p>
-            <p className="text-[11px] text-zinc-500 mt-0.5 leading-relaxed">{headlineCheck?.detail}</p>
+            <p className="text-sm font-semibold text-white">{headline}</p>
+            <p className="text-[11px] text-zinc-500 mt-0.5 leading-relaxed">
+              Derived from {totalLoops} operating loop{totalLoops === 1 ? "" : "s"} · {connectedProviders}/{totalProviders} providers connected
+            </p>
           </div>
         </div>
         <div className="flex items-center gap-4">
           <div className="hidden sm:flex items-center gap-3">
-            <Stat label="Retrying" value={`${posture.retryingJobs}`} />
-            <Stat label="Open circ." value={`${posture.openCircuits.length}`} />
-            <Stat label="DLQ" value={`${posture.unresolvedDeadLetters.length}`} />
+            <Stat label="In prog." value={state ? String(inProgressLoops) : "—"} />
+            <Stat label="Paused" value={state ? String(pausedLoops) : "—"} />
+            <Stat label="Failed" value={state ? String(failedLoops) : "—"} />
+            <Stat label="Blockers" value={state ? String(blockers.length) : "—"} />
           </div>
           <ArrowRightIcon className="h-4 w-4 text-zinc-500 group-hover:text-cyan-300 group-hover:translate-x-0.5 transition-all" />
         </div>
@@ -1188,21 +1285,54 @@ function DesktopRuntimePanel() {
 
 function OnboardingPanel() {
   // Honest preview state — a freshly-onboarding tenant. Real implementation
-  // pulls observations from the orgContext + memory + audit aggregators.
+  // Derive OnboardingObservations from canonical AxiomOSState. Replaces the
+  // prior hardcoded { providerSelected: true, scansStarted: 1, ... } stub.
+  // Honest defaults until real per-tenant observation aggregators ship.
+  const [state, setState] = useState<AxiomOSStateLite | null>(null);
+  const [loadingState, setLoadingState] = useState(true);
+  useEffect(() => {
+    let cancelled = false;
+    fetch("/api/axiom-os/state", { credentials: "include" })
+      .then((r) => r.json())
+      .then((json: { ok?: boolean; data?: AxiomOSStateLite }) => {
+        if (cancelled) return;
+        if (json.ok && json.data) setState(json.data);
+      })
+      .catch(() => {})
+      .finally(() => { if (!cancelled) setLoadingState(false); });
+    return () => { cancelled = true; };
+  }, []);
+
+  const providers = state?.providers ?? [];
+  const liveProviders = providers.filter((p) => p.mode === "live");
+  const submittedProviders = providers.filter((p) => p.connectionStatus !== "blocked");
+  const operatingLoops = state?.operatingLoops ?? [];
+  const completedOrRunning = operatingLoops.filter((l) => l.status === "completed" || l.status === "in_progress").length;
+  const approvalCount = state?.approvalPosture?.data.pendingCount ?? 0;
+  const evidenceRecords = state?.evidencePosture?.data.totalRecords ?? 0;
+  const auditPersistent = state?.auditPosture?.data.persistent ?? false;
+
   const progress: OnboardingProgress = assessOnboarding({
-    hasAccount: true,
-    providerSelected: true,
-    credentialsSubmitted: true,
-    credentialsValidated: true,
-    scansStarted: 1,
-    snapshotsPersisted: 1,
-    recommendationsViewed: 0,
-    plansBuilt: 0,
-    approvalsGranted: 0,
-    plansExecutedOrExported: 0,
-    auditBundlesExported: 0,
+    hasAccount: true,                                          // operator is signed in to reach this view
+    providerSelected: providers.length > 0,                    // canonical: any provider configured
+    credentialsSubmitted: submittedProviders.length > 0,       // canonical: any provider not blocked
+    credentialsValidated: liveProviders.length > 0,            // canonical: any provider in live mode
+    scansStarted: completedOrRunning,                          // canonical: completed + in-progress loops
+    snapshotsPersisted: auditPersistent ? completedOrRunning : 0, // honest: 0 unless persistence is on
+    recommendationsViewed: 0,                                  // no observation source yet
+    plansBuilt: approvalCount,                                 // canonical: pending approvals = plans waiting
+    approvalsGranted: 0,                                       // no observation source yet
+    plansExecutedOrExported: 0,                                // execution is disabled by safety contract
+    auditBundlesExported: evidenceRecords,                     // canonical: evidence record count
   });
   const pct = progressPercent(progress);
+  if (loadingState && !state) {
+    return (
+      <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-4">
+        <p className="text-[11px] font-mono text-zinc-500 uppercase tracking-[0.18em]">// composing onboarding state…</p>
+      </div>
+    );
+  }
   return (
     <div className="rounded-2xl border border-emerald-500/15 bg-gradient-to-br from-emerald-500/[0.04] via-transparent to-cyan-500/[0.02] overflow-hidden">
       <div className="px-5 py-3.5 border-b border-white/[0.06] bg-white/[0.01] flex items-center justify-between">

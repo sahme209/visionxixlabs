@@ -73,4 +73,70 @@ describe("product honesty scanner", () => {
     expect(hit.line).toBe(2);
     expect(hit.snippet).toContain("book a call");
   });
+
+  // ---------------------------------------------------------------------------
+  // Regression suite — patterns added after specific honesty bugs were fixed
+  // ---------------------------------------------------------------------------
+
+  it("flags 'auto-refresh on' as a fabricated refresh claim", () => {
+    const findings = scanStringForHonesty(
+      "fixture.tsx",
+      `<span>3:14:22 PM · auto-refresh on</span>`,
+    );
+    const hit = findings.find((f) => f.id.startsWith("auto_refresh_on"));
+    expect(hit).toBeDefined();
+    expect(hit?.severity).toBe("high");
+  });
+
+  it("flags 'Live · ReleaseOps engine operating'-style claims", () => {
+    const findings = scanStringForHonesty(
+      "fixture.tsx",
+      `<p>Live · ReleaseOps engine operating</p>`,
+    );
+    expect(findings.find((f) => f.id.startsWith("engine_operating_claim"))).toBeDefined();
+  });
+
+  it("flags fabricated dollar savings (e.g. $4,200/mo in savings)", () => {
+    const findings = scanStringForHonesty(
+      "fixture.tsx",
+      `<p>$4,200/mo in savings locked</p>`,
+    );
+    const hit = findings.find((f) => f.id.startsWith("fabricated_savings"));
+    expect(hit).toBeDefined();
+    expect(hit?.severity).toBe("high");
+  });
+
+  it("flags fabricated lifetime savings like '$48,720 lifetime savings'", () => {
+    const findings = scanStringForHonesty(
+      "fixture.tsx",
+      `<p>$48,720 lifetime savings</p>`,
+    );
+    expect(findings.find((f) => f.id.startsWith("fabricated_savings"))).toBeDefined();
+  });
+
+  it("flags 'fully autonomous' as unsupported autonomy claim", () => {
+    const findings = scanStringForHonesty(
+      "fixture.tsx",
+      `<p>Axiom operates fully autonomous remediation.</p>`,
+    );
+    expect(findings.find((f) => f.id.startsWith("fully_autonomous"))).toBeDefined();
+  });
+
+  it("flags 'Live · Agent operational' unconditional badge", () => {
+    const findings = scanStringForHonesty(
+      "fixture.tsx",
+      `<p>Live · Agent operational</p>`,
+    );
+    const hit = findings.find((f) => f.id.startsWith("agent_operational_unconditional"));
+    expect(hit).toBeDefined();
+    expect(hit?.severity).toBe("high");
+  });
+
+  it("does not flag honest 'governed automation' phrasing", () => {
+    const findings = scanStringForHonesty(
+      "fixture.tsx",
+      `<p>Governed automation: every mutation requires explicit approval.</p>`,
+    );
+    expect(findings).toHaveLength(0);
+  });
 });

@@ -100,23 +100,17 @@ export default function TopologyPage() {
           <div className="flex items-center gap-2 mb-3">
             <ChartBarSquareIcon className="h-4 w-4 text-emerald-400" />
             <h3 className="text-sm font-semibold text-white">Cost concentration</h3>
+            <span className="text-[9px] font-mono text-amber-300 bg-amber-500/10 border border-amber-500/20 rounded-full px-1.5 py-px uppercase tracking-wider ml-auto">
+              Pending
+            </span>
           </div>
-          <div className="space-y-2">
-            {[
-              { label: "AWS · us-east-1 · Compute", value: "$8,400/mo", pct: 38 },
-              { label: "Azure · westeurope · Compute", value: "$5,200/mo", pct: 24 },
-              { label: "GCP · us-west1 · Compute", value: "$2,800/mo", pct: 13 },
-            ].map((r) => (
-              <div key={r.label} className="rounded-lg bg-white/[0.02] border border-white/[0.04] px-3 py-2">
-                <div className="flex items-center justify-between mb-1.5">
-                  <span className="text-[11px] text-zinc-300 truncate">{r.label}</span>
-                  <span className="text-[10px] font-semibold text-emerald-400">{r.value}</span>
-                </div>
-                <div className="h-1 bg-white/[0.06] rounded-full overflow-hidden">
-                  <div className="h-full rounded-full bg-gradient-to-r from-emerald-500 to-amber-500" style={{ width: `${r.pct}%` }} />
-                </div>
-              </div>
-            ))}
+          <div className="rounded-lg border border-white/[0.06] bg-white/[0.02] px-3 py-4">
+            <p className="text-[11px] text-zinc-400 leading-relaxed mb-2">
+              Cost concentration requires AWS Cost Explorer + Azure Cost Management + GCP Billing connectors. None are wired today, so this view honestly shows no values rather than fabricated dollar figures.
+            </p>
+            <p className="text-[10px] font-mono text-zinc-500 uppercase tracking-wider">
+              // source mode: not_yet_connected
+            </p>
           </div>
         </div>
 

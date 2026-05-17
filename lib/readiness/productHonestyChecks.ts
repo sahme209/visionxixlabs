@@ -88,6 +88,48 @@ const RULES: ScanRule[] = [
     title: "Absolute security claim",
     suggestion: "Replace with measurable evidence (e.g. 'Passes 22 typed checks').",
   },
+
+  // ---------------------------------------------------------------------------
+  // Regression patterns from prior precision audits — each represents an
+  // honesty bug that was fixed and must not return.
+  // ---------------------------------------------------------------------------
+
+  {
+    id: "auto_refresh_on",
+    pattern: /\bauto-refresh on\b/i,
+    severity: "high",
+    title: "Phrase claims auto-refresh that does not exist",
+    suggestion: "Remove the 'auto-refresh on' caption. Use '{time} local' or wire a real refresh interval before claiming it.",
+  },
+  {
+    id: "engine_operating_claim",
+    pattern: /\b(Live · [A-Z][A-Za-z]+ engine operating|engine operating)\b/i,
+    severity: "high",
+    title: "Phrase claims an engine is 'operating' without backing",
+    suggestion: "Replace with 'source mode reported by /api/<x>/state' or a real source-mode pill from canonical state.",
+  },
+  {
+    id: "fabricated_savings",
+    pattern: /\$\d{1,3}(?:,\d{3})+\s*(?:\/mo)?\s*(?:in\s+)?\b(?:savings|saved|locked|lifetime savings)\b/i,
+    severity: "high",
+    title: "Dollar savings claim without cost-explorer source",
+    suggestion: "Cost telemetry is not yet connected. Either gate behind a real Cost Explorer / Cost Management feed or remove the dollar figure.",
+  },
+  {
+    id: "fully_autonomous",
+    pattern: /\bfully autonomous\b/i,
+    severity: "high",
+    title: "Phrase claims unsupervised full autonomy",
+    suggestion: "Use 'governed automation' / 'approval-gated' / 'never auto-applying' — the product never executes mutations without explicit approval.",
+    exceptFiles: ["lib/readiness/productHonestyChecks.ts", "lib/readiness/__tests__/productHonestyChecks.test.ts"],
+  },
+  {
+    id: "agent_operational_unconditional",
+    pattern: /\bLive\s*·\s*Agent operational\b/i,
+    severity: "high",
+    title: "Hero unconditionally claims 'Live · Agent operational'",
+    suggestion: "Use a HeroEyebrow that reads the real sourceMode from /api/axiom-os/state — never an unconditional 'Live' badge.",
+  },
 ];
 
 // ---------------------------------------------------------------------------
