@@ -386,6 +386,11 @@ export const VALIDATION_MATRIX: ValidationRow[] = [
   // ---------------------------------------------------------------------------
   { id: "aws.scan_runnable_cta",        area: "aws",          capability: "/dashboard/aws gains RunAwsScanPanel — clickable POST /api/aws/scan with loading + done + error phases. Renders canonical response: source mode pill, accountId, resource count, finding count, top-3 findings (rule code + risk + resource), duration, limitations, safeNextAction. Honest blocked state with missingRequirements when no creds. No raw stack traces.", status: "passing", evidence: "app/dashboard/aws/page.tsx + components/dashboard/RunAwsScanPanel.tsx" },
   { id: "honesty.production_ready",     area: "operating_loop", capability: "productHonestyChecks adds 'production_ready_claim' rule + 2 vitest regression tests — flags 'production-ready' phrasing as medium severity, accepts 'production-directed' replacement. Cleans up the prior 'production-ready AWS' claim in /services page",                                                                                                       status: "passing", evidence: "lib/readiness/productHonestyChecks.ts + lib/readiness/__tests__/productHonestyChecks.test.ts + app/services/page.tsx" },
+
+  // ---------------------------------------------------------------------------
+  // Release candidate hardening — GitHub sync invokable from UI
+  // ---------------------------------------------------------------------------
+  { id: "github.sync_runnable_cta",     area: "github",       capability: "/dashboard/github gains RunGithubSyncPanel — clickable POST /api/github/sync with idle/running/done/error phases. Renders canonical response: source mode pill, authenticatedLogin, real repo/workflow/failing-workflow counts, durationMs, rateLimit remaining/limit, limitations. Honest error state from apiFailure; never raw stack traces. GitHub live mode is shipping today via PAT, so this is the easiest demo path to 'click and watch it work'.", status: "passing", evidence: "app/dashboard/github/page.tsx + components/dashboard/RunGithubSyncPanel.tsx" },
 ];
 
 // ---------------------------------------------------------------------------
