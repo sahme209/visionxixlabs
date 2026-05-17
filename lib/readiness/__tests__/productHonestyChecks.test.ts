@@ -139,4 +139,22 @@ describe("product honesty scanner", () => {
     );
     expect(findings).toHaveLength(0);
   });
+
+  it("flags 'production-ready' as an unsupported absolute claim", () => {
+    const findings = scanStringForHonesty(
+      "fixture.tsx",
+      `<p>Axiom is production-ready for enterprise.</p>`,
+    );
+    const hit = findings.find((f) => f.id.startsWith("production_ready_claim"));
+    expect(hit).toBeDefined();
+    expect(hit?.severity).toBe("medium");
+  });
+
+  it("does not flag honest 'production-directed' replacement", () => {
+    const findings = scanStringForHonesty(
+      "fixture.tsx",
+      `<p>Axiom is production-directed and pilot-ready.</p>`,
+    );
+    expect(findings.find((f) => f.id.startsWith("production_ready_claim"))).toBeUndefined();
+  });
 });

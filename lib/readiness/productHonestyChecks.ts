@@ -130,6 +130,14 @@ const RULES: ScanRule[] = [
     title: "Hero unconditionally claims 'Live · Agent operational'",
     suggestion: "Use a HeroEyebrow that reads the real sourceMode from /api/axiom-os/state — never an unconditional 'Live' badge.",
   },
+  {
+    id: "production_ready_claim",
+    pattern: /\bproduction[\s-]?ready\b/i,
+    severity: "medium",
+    title: "Phrase claims 'production-ready' without backing",
+    suggestion: "Use 'production-directed' / 'pilot-ready' / 'launch-ready when bands hit ≥80' — the platform reports launch readiness scores; let those speak.",
+    exceptFiles: ["lib/readiness/productHonestyChecks.ts", "lib/readiness/__tests__/productHonestyChecks.test.ts"],
+  },
 ];
 
 // ---------------------------------------------------------------------------

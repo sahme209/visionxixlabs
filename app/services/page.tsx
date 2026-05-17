@@ -77,7 +77,7 @@ const services = [
     icon: CloudIcon,
     title: "AWS Cloud Infrastructure",
     description:
-      "From zero to production-ready AWS: landing zones, multi-account isolation, cost guardrails, and deployment velocity that doesn't sacrifice security.",
+      "From zero to production-directed AWS: landing zones, multi-account isolation, cost guardrails, and deployment velocity that doesn't sacrifice security.",
     items: [
       "Architecture guidance for core AWS services and landing zones",
       "Design, provisioning, and scaling of cloud infrastructure",
