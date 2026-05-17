@@ -27,7 +27,10 @@ export const VALIDATION_MATRIX: ValidationRow[] = [
   { id: "aws.format",       area: "aws",    capability: "Role ARN + External ID + region format validation",      status: "passing", evidence: "lib/cloud/aws/awsValidator.ts" },
   { id: "aws.live_sts",     area: "aws",    capability: "Live STS AssumeRole + GetCallerIdentity validation",     status: "partial", evidence: "lib/cloud/aws/awsValidator.ts", nextFix: "Requires AWS_CONNECTOR_BROKER_ACCESS_KEY_ID + AWS_CONNECTOR_BROKER_SECRET_ACCESS_KEY on host." },
   { id: "aws.preview_scan", area: "aws",    capability: "Preview scan returns snapshot + findings + recommendations", status: "passing", evidence: "lib/cloud/aws/awsPreviewScanner.ts" },
-  { id: "aws.live_inventory", area: "aws",  capability: "Live EC2 / S3 / RDS / VPC / SG read-only inventory",     status: "passing", evidence: "lib/cloud/aws/awsLiveInventory.ts + cloudScanPipeline", nextFix: "Multi-region expansion (currently single region from connection input)." },
+  { id: "aws.live_inventory",    area: "aws",  capability: "Live EC2 / S3 / RDS / VPC / SG read-only inventory (single region)", status: "passing", evidence: "lib/cloud/aws/awsLiveInventory.ts" },
+  { id: "aws.multi_region",      area: "aws",  capability: "Multi-region read-only inventory — DescribeRegions + parallel per-region scans + merged snapshot", status: "passing", evidence: "lib/cloud/aws/awsMultiRegionInventory.ts" },
+  { id: "aws.config_helper",     area: "aws",  capability: "AwsRuntimeConfig helper + missing-config hint (parallel to Azure/GCP)", status: "passing", evidence: "lib/cloud/aws/awsConfig.ts" },
+  { id: "aws.ambient_connection",area: "aws",  capability: "/api/aws/scan accepts ambient AWS_ROLE_ARN + AWS_EXTERNAL_ID + AWS_REGION", status: "passing", evidence: "app/api/aws/scan/route.ts" },
   { id: "aws.scan_pipeline", area: "aws",   capability: "End-to-end pipeline w/ trace + evidence",                status: "passing", evidence: "lib/pipeline/cloudScanPipeline.ts" },
   { id: "aws.iam_trust",    area: "aws",    capability: "IAM trust policy A-F grader",                            status: "passing", evidence: "lib/cloud/iamTrustEvaluator.ts" },
 
