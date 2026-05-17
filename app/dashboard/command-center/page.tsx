@@ -86,6 +86,11 @@ export default function CommandCenterPage() {
       {/* KPI row — real values from /api/axiom-os/state, no fabricated dollar savings */}
       <LiveKpiRow />
 
+      {/* Demo journey card — entry into the canonical 7-step AWS narrative */}
+      <Reveal direction="up" delay={0.04}>
+        <DemoJourneyCard />
+      </Reveal>
+
       {/* Axiom OS strip — unified product state from /api/axiom-os/state */}
       <Reveal direction="up" delay={0.045}>
         <AxiomOSStrip />
@@ -336,6 +341,100 @@ interface ReadinessReportLite {
   categoryScores: { category: string; score: number; total: number; passing: number; partial: number; preview: number; failing: number; blocked: number }[];
   criticalFailures: { id: string; title: string; nextFix?: string }[];
   recommendedNextFixes: { id: string; title: string; reason: string; href?: string }[];
+}
+
+// ---------------------------------------------------------------------------
+// DemoJourneyCard — entry into the canonical 7-step AWS demo journey at
+// /dashboard/aws. Renders the current step count + AWS provider mode so
+// the operator can pick up wherever they left off. Pulls only what is
+// needed from canonical state.
+// ---------------------------------------------------------------------------
+
+function DemoJourneyCard() {
+  const [state, setState] = useState<AxiomOSStateLite | null>(null);
+  useEffect(() => {
+    let cancelled = false;
+    fetch("/api/axiom-os/state", { credentials: "include" })
+      .then((r) => r.json())
+      .then((json: { ok?: boolean; data?: AxiomOSStateLite }) => {
+        if (cancelled) return;
+        if (json.ok && json.data) setState(json.data);
+      })
+      .catch(() => {});
+    return () => { cancelled = true; };
+  }, []);
+
+  const aws = state?.providers.find((p) => p.provider === "aws");
+  const awsLoop = state?.operatingLoops.find((l) => l.provider === "aws");
+  const awsMode = aws?.mode ?? "preview";
+
+  // Compute step completion (mirrors the JourneyTimeline logic at a glance).
+  let stepsDone = 0;
+  if (state) {
+    if (aws?.mode === "live") stepsDone++;
+    if (awsLoop?.status === "completed") stepsDone++;
+    if (state.securityPosture.data.criticalCount === 0 && state.securityPosture.data.highCount === 0) stepsDone++;
+    if (state.remediationPosture.data.candidateCount > 0) stepsDone++;
+    if (state.approvalPosture.data.pendingCount === 0 && state.approvalPosture.data.expiredCount === 0) stepsDone++;
+    if (state.desktopPosture.data.pairedSessions > 0) stepsDone++;
+    if (state.evidencePosture.data.verifiedRecords > 0) stepsDone++;
+  }
+
+  const tone =
+    awsMode === "live"         ? { border: "border-emerald-500/[0.22]", bg: "from-emerald-500/[0.06] via-white/[0.015] to-transparent", text: "text-emerald-300", dot: "bg-emerald-400 animate-pulse" } :
+    awsMode === "partial_live" ? { border: "border-cyan-500/[0.22]",    bg: "from-cyan-500/[0.06] via-white/[0.015] to-transparent",    text: "text-cyan-300",    dot: "bg-cyan-400 animate-pulse"    } :
+    awsMode === "blocked"      ? { border: "border-rose-500/[0.22]",    bg: "from-rose-500/[0.06] via-white/[0.015] to-transparent",    text: "text-rose-300",    dot: "bg-rose-400"                  } :
+                                  { border: "border-amber-500/[0.18]",  bg: "from-amber-500/[0.06] via-white/[0.015] to-transparent",   text: "text-amber-300",   dot: "bg-amber-400"                 };
+
+  return (
+    <Link
+      href="/dashboard/aws"
+      className={`group block rounded-2xl border ${tone.border} bg-gradient-to-br ${tone.bg} p-5 mb-6 relative overflow-hidden hover:-translate-y-0.5 transition-all`}
+    >
+      <div
+        className="absolute inset-0 -z-10 opacity-90 pointer-events-none"
+        style={{
+          background:
+            "radial-gradient(700px 200px at 90% 0%, rgba(99,102,241,0.08), transparent 60%)",
+        }}
+        aria-hidden
+      />
+      <div className="flex items-center justify-between gap-4 flex-wrap">
+        <div className="min-w-0 flex-1">
+          <div className="flex items-center gap-2 mb-2 flex-wrap">
+            <span className="inline-flex items-center gap-2 rounded-full border border-white/[0.06] bg-white/[0.02] px-2 py-0.5">
+              <span className={`w-1.5 h-1.5 rounded-full ${tone.dot}`} />
+              <span className={`text-[10px] font-semibold uppercase tracking-widest ${tone.text}`}>AWS demo journey · {awsMode.replace(/_/g, " ")}</span>
+            </span>
+            <span className="text-[10px] font-mono text-zinc-500">
+              {state ? `${stepsDone}/7 steps complete` : "composing…"}
+            </span>
+          </div>
+          <h2 className="text-xl md:text-2xl font-bold text-white tracking-tight mb-1">
+            Connect → Scan → Find → Remediate → Approve → Review → Evidence
+          </h2>
+          <p className="text-[12.5px] text-zinc-400 leading-relaxed">
+            One canonical 7-step narrative. Every step reads from /api/axiom-os/state and shows real status, sourceMode, and safe-next-action.
+          </p>
+        </div>
+        <div className="flex items-center gap-3 shrink-0">
+          {/* Mini-step indicators */}
+          <div className="hidden sm:flex items-center gap-1">
+            {Array.from({ length: 7 }).map((_, i) => (
+              <span
+                key={i}
+                className={`w-2 h-2 rounded-full ${i < stepsDone ? "bg-emerald-400" : "bg-white/[0.08]"}`}
+              />
+            ))}
+          </div>
+          <span className="inline-flex items-center gap-1.5 text-[12px] font-medium text-zinc-200 group-hover:text-white border border-white/[0.08] group-hover:border-white/[0.2] rounded-md px-3 py-1.5 transition-colors">
+            Open journey
+            <ArrowRightIcon className="h-3.5 w-3.5 group-hover:translate-x-0.5 transition-transform" />
+          </span>
+        </div>
+      </div>
+    </Link>
+  );
 }
 
 // ---------------------------------------------------------------------------
