@@ -16,7 +16,7 @@ import { Reveal } from "@/components/motion/Reveal";
 import { Footer } from "@/components/Footer";
 import { Stagger } from "@/components/motion/Stagger";
 import { AnimatedButton } from "@/components/ui/AnimatedButton";
-import { MEMBERSHIP_PLANS, ADDONS, type MembershipPlanId } from "@/lib/pricing/membership";
+import { MEMBERSHIP_PLANS, type MembershipPlanId } from "@/lib/pricing/membership";
 import { SUPPORT_EMAIL } from "@/lib/constants/company";
 
 type BillingCycle = "monthly" | "yearly";
@@ -340,33 +340,6 @@ export default function OperatorPricingPage() {
               </table>
             </div>
           </Reveal>
-        </div>
-      </section>
-
-      {/* Add-ons */}
-      <section className="pb-24 px-4">
-        <div className="max-w-3xl mx-auto">
-          <Reveal>
-            <h2 className="text-2xl font-bold text-center mb-10">Add-ons</h2>
-          </Reveal>
-          <Stagger className="grid sm:grid-cols-2 gap-4" interval={0.06}>
-            {ADDONS.map((addon) => (
-              <div
-                key={addon.name}
-                className="electric-card group p-6 transition-all duration-500 hover:-translate-y-1"
-              >
-                <div className="relative z-10">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm font-medium text-zinc-200">{addon.name}</span>
-                    <span className="text-sm font-bold text-white">
-                      +${billing === "monthly" ? addon.monthly : addon.yearly}
-                      <span className="text-zinc-500 text-xs font-normal ml-0.5">/mo</span>
-                    </span>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </Stagger>
         </div>
       </section>
 

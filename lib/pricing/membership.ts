@@ -259,11 +259,6 @@ export const INCLUDED_IN_EVERY_PLAN = [
   "AI solutions & engineering resources",
 ] as const;
 
-export const ADDONS = [
-  { name: "Extra 10k AI operations", monthly: 25, yearly: 180 },
-  { name: "Extra 25k AI operations", monthly: 49, yearly: 353 },
-] as const;
-
 /** User.plan (from Stripe) → MembershipPlan */
 export function getMembershipPlan(plan: string | null | undefined): MembershipPlan {
   const id = (plan ?? "starter").toLowerCase() as MembershipPlanId;
