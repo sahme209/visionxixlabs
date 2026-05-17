@@ -38,7 +38,7 @@ export async function GET(): Promise<NextResponse> {
     const live = controlSummary.implemented;
     const total = controlSummary.total;
     let sourceMode: "live" | "partial" | "preview" = "preview";
-    if (total > 0 && live === total && evidence.length > 0) sourceMode = "live";
+    if (total > 0 && live === total && evidenceSummary.verified > 0) sourceMode = "live";
     else if (live > 0) sourceMode = "partial";
 
     return NextResponse.json(
@@ -49,14 +49,17 @@ export async function GET(): Promise<NextResponse> {
           total: controlSummary.total,
           implemented: controlSummary.implemented,
           partial: controlSummary.partial,
-          preview: controlSummary.preview,
           planned: controlSummary.planned,
-          blocked: controlSummary.blocked,
+          notApplicable: controlSummary.notApplicable,
+          score: controlSummary.score,
         },
         evidence: {
           total: evidenceSummary.total,
-          byType: evidenceSummary.byType,
-          newest: evidenceSummary.newest,
+          verified: evidenceSummary.verified,
+          selfAttested: evidenceSummary.selfAttested,
+          manual: evidenceSummary.manual,
+          unverified: evidenceSummary.unverified,
+          coverageScore: evidenceSummary.coverageScore,
         },
         limitations: total === 0
           ? ["Control registry is empty — load the canonical registry."]
