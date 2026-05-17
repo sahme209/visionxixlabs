@@ -347,7 +347,7 @@ function buildSecurityReviewPacket(): SecurityReviewPacket {
   const summary = summarizeControls(CONTROL_REGISTRY);
   const implementedControls = CONTROL_REGISTRY.filter((c) => c.status === "implemented").map((c) => ({ id: c.id, title: c.title, status: c.status }));
   const previewControls = CONTROL_REGISTRY.filter((c) => c.status === "partial").map((c) => ({ id: c.id, title: c.title }));
-  const missingControls = CONTROL_REGISTRY.filter((c) => c.status === "planned").map((c) => ({ id: c.id, title: c.title, nextFix: c.nextFix }));
+  const missingControls = CONTROL_REGISTRY.filter((c) => c.status === "planned").map((c) => ({ id: c.id, title: c.title, nextFix: c.internalNote }));
 
   return {
     productSummary: "Axiom is an AI-native cloud operations control plane. Read-only by default. Evidence-based findings. Approval-gated remediation. No destructive execution from the platform.",
