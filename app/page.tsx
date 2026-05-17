@@ -23,6 +23,7 @@ import { TextReveal } from "@/components/motion/TextReveal";
 import { TiltCard } from "@/components/motion/TiltCard";
 import { Marquee } from "@/components/motion/Marquee";
 import { GradientBorder } from "@/components/motion/GradientBorder";
+import { DrippingBeam } from "@/components/motion/DrippingBeam";
 import { TestimonialsCarousel } from "@/components/TestimonialsCarousel";
 import { FAQAccordion } from "@/components/FAQAccordion";
 import { DesktopShowcase } from "@/components/home/DesktopShowcase";
@@ -141,6 +142,18 @@ export default function Home() {
         <div className="hero-noise-grain" aria-hidden />
         {/* Huly-style cursor-following spotlight — soft violet glow tracks the pointer */}
         <Spotlight tint="violet" size={680} intensity={0.9} />
+
+        {/* Dripping beam — luminescent droplets slide down a centered vertical light column */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 pointer-events-none" aria-hidden>
+          <DrippingBeam tint="violet" dropCount={7} heightClass="h-[640px]" width={4} durationSec={3.4} />
+        </div>
+        {/* A second beam, offset + cyan tint, for layered cinematic depth */}
+        <div className="absolute top-10 left-[28%] pointer-events-none opacity-50" aria-hidden>
+          <DrippingBeam tint="cyan" dropCount={4} heightClass="h-[500px]" width={3} durationSec={4.6} />
+        </div>
+        <div className="absolute top-20 right-[28%] pointer-events-none opacity-50" aria-hidden>
+          <DrippingBeam tint="fuchsia" dropCount={4} heightClass="h-[520px]" width={3} durationSec={5.2} />
+        </div>
 
         <div className="max-w-6xl mx-auto relative">
           <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
