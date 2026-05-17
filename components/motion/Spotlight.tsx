@@ -39,16 +39,19 @@ export function Spotlight({
 }: SpotlightProps) {
   const ref = useRef<HTMLDivElement | null>(null);
   const [reducedMotion, setReducedMotion] = useState(false);
+  const [isTouch, setIsTouch] = useState(false);
   const [pos, setPos] = useState({ x: 0.5, y: 0.5, visible: false });
 
   useEffect(() => {
     if (typeof window === "undefined") return;
     const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
     // On primary-touch devices (phones / tablets) the cursor-follow effect
-    // doesn't make sense — also a battery + perf win to skip the rAF loop.
-    const isTouch = window.matchMedia?.("(hover: none) and (pointer: coarse)").matches;
-    setReducedMotion(mq.matches || isTouch);
-    const onChange = () => setReducedMotion(mq.matches || isTouch);
+    // doesn't make sense — render nothing at all (saves a giant blurred
+    // div + rAF loop + listener overhead).
+    const touch = window.matchMedia?.("(hover: none) and (pointer: coarse)").matches ?? false;
+    setIsTouch(touch);
+    setReducedMotion(mq.matches);
+    const onChange = () => setReducedMotion(mq.matches);
     mq.addEventListener?.("change", onChange);
     return () => mq.removeEventListener?.("change", onChange);
   }, []);
@@ -89,6 +92,10 @@ export function Spotlight({
       if (raf) cancelAnimationFrame(raf);
     };
   }, [reducedMotion]);
+
+  // On touch devices we render nothing at all — saves a 680x680 blurred
+  // div from getting composited every frame.
+  if (isTouch) return null;
 
   const tintColor = TINT_COLORS[tint];
   const radius = size / 2;

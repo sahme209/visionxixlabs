@@ -128,25 +128,46 @@ export default function Home() {
 
       {/* ── Hero ───────────────────────────────────────────────────── */}
       <section className="pt-24 sm:pt-28 md:pt-32 pb-16 sm:pb-20 md:pb-24 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
-        <RealisticFogBackground backgroundColor="transparent" opacity={0.3} darken contained />
-        {/* Huly-style cursor-reactive motherboard pattern — circuit board emerges where the cursor is. */}
-        <MotherboardBackdrop radius={420} tint="violet" baseOpacity={0.05} peakOpacity={0.22} />
-        <div className="absolute inset-0 hero-grid-mesh opacity-40 pointer-events-none" aria-hidden />
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[500px] spotlight-orb opacity-60 pointer-events-none" aria-hidden />
-        <div className="absolute top-40 -right-40 w-[500px] h-[500px] rounded-full bg-violet-600/5 blur-[120px] pointer-events-none" aria-hidden />
-        <div className="absolute top-60 -left-40 w-[400px] h-[400px] rounded-full bg-fuchsia-600/5 blur-[120px] pointer-events-none" aria-hidden />
-        <div className="hero-beam-vertical pointer-events-none" aria-hidden />
-        <div className="hero-beam-flare pointer-events-none" aria-hidden />
-        <div className="hero-beam-converge pointer-events-none" aria-hidden />
-        <AmbientParticles />
-        <div className="hero-noise-grain" aria-hidden />
-        {/* Huly-style cursor-following spotlight — soft violet glow tracks the pointer */}
-        <Spotlight tint="violet" size={680} intensity={0.9} />
+        {/* Heavy decoratives — all hidden on mobile so the hero scrolls smoothly.
+            Each of these is a fillrate-heavy element (large filter:blur, full-section
+            SVG / canvas, infinite CSS animation) and stacking them tanks first paint
+            + scroll perf on phones. Desktop stack is unchanged. */}
+        <div className="hidden md:block">
+          <RealisticFogBackground backgroundColor="transparent" opacity={0.3} darken contained />
+          <MotherboardBackdrop radius={420} tint="violet" baseOpacity={0.05} peakOpacity={0.22} />
+          <div className="absolute inset-0 hero-grid-mesh opacity-40 pointer-events-none" aria-hidden />
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[500px] spotlight-orb opacity-60 pointer-events-none" aria-hidden />
+          <div className="absolute top-40 -right-40 w-[500px] h-[500px] rounded-full bg-violet-600/5 blur-[120px] pointer-events-none" aria-hidden />
+          <div className="absolute top-60 -left-40 w-[400px] h-[400px] rounded-full bg-fuchsia-600/5 blur-[120px] pointer-events-none" aria-hidden />
+          <div className="hero-beam-vertical pointer-events-none" aria-hidden />
+          <div className="hero-beam-flare pointer-events-none" aria-hidden />
+          <div className="hero-beam-converge pointer-events-none" aria-hidden />
+          <AmbientParticles />
+          <div className="hero-noise-grain" aria-hidden />
+          <Spotlight tint="violet" size={680} intensity={0.9} />
+        </div>
 
-        {/* Dripping beam — luminescent droplets slide down a centered vertical light column.
-            Center beam shows on all screens; side beams hidden on mobile to reduce clutter + battery. */}
+        {/* Light-weight mobile-only backdrop: one static gradient orb, zero animation,
+            zero filter:blur, zero JS — paints once and never repaints. */}
+        <div
+          className="md:hidden absolute -top-32 left-1/2 -translate-x-1/2 w-[420px] h-[420px] pointer-events-none"
+          aria-hidden
+          style={{
+            background: "radial-gradient(circle, rgba(139, 92, 246, 0.18) 0%, transparent 65%)",
+          }}
+        />
+
+        {/* Center DrippingBeam — only one shows on mobile, with fewer drops + smaller height
+            to keep the animation budget low. Two side beams remain hidden on mobile. */}
         <div className="absolute top-0 left-1/2 -translate-x-1/2 pointer-events-none" aria-hidden>
-          <DrippingBeam tint="violet" dropCount={7} heightClass="h-[640px]" width={4} durationSec={3.4} />
+          {/* Mobile config: 3 drops, 460px, slower (less rAF churn). */}
+          <div className="md:hidden">
+            <DrippingBeam tint="violet" dropCount={3} heightClass="h-[460px]" width={3} durationSec={4.2} />
+          </div>
+          {/* Desktop config: full 7 drops, 640px. */}
+          <div className="hidden md:block">
+            <DrippingBeam tint="violet" dropCount={7} heightClass="h-[640px]" width={4} durationSec={3.4} />
+          </div>
         </div>
         <div className="hidden md:block absolute top-10 left-[28%] pointer-events-none opacity-50" aria-hidden>
           <DrippingBeam tint="cyan" dropCount={4} heightClass="h-[500px]" width={3} durationSec={4.6} />
