@@ -300,6 +300,16 @@ export const VALIDATION_MATRIX: ValidationRow[] = [
   { id: "pilot.api_mode",          area: "operating_loop", capability: "GET /api/pilot/mode — tenant-scoped pilot contract + checklist + acknowledgements",                                                  status: "passing", evidence: "app/api/pilot/mode/route.ts" },
   { id: "pilot.safety_literals",   area: "operating_loop", capability: "Safety flags encoded as literal types (true/false constants) — TS prevents fabrication",                                            status: "passing", evidence: "lib/product/pilotMode.ts:PilotMode.safety" },
   { id: "pilot.acknowledgements",  area: "compliance",     capability: "Required acknowledgements list rendered to operator — read-only / no Terraform apply / no compliance claims explicitly stated",     status: "passing", evidence: "lib/product/pilotMode.ts:buildPilotMode" },
+
+  // ---------------------------------------------------------------------------
+  // Cross-platform desktop foundation
+  // ---------------------------------------------------------------------------
+  { id: "desk.product_model",    area: "desktop", capability: "DesktopProductModel — typed role + 11 literal safety flags (localExecutionEnabled:false etc.) + 13 capability classifications", status: "passing", evidence: "lib/desktop/desktopProductModel.ts" },
+  { id: "desk.state_model",      area: "desktop", capability: "Unified DesktopState contract — platform / session / sourceMode / platformStatus / review inbox / auditSync / safetyStatus",  status: "passing", evidence: "lib/desktop/desktopStateModel.ts" },
+  { id: "desk.platform_status",  area: "desktop", capability: "GET /api/desktop/platform-status — honest per-platform packaging + signing + downloadability (macOS arm/intel notarized, Windows EV pending, Linux GPG-signed package pending)", status: "passing", evidence: "app/api/desktop/platform-status/route.ts" },
+  { id: "desk.role_workstation", area: "desktop", capability: "Desktop role literal = 'local_review_workstation' — type system prevents drift to 'local_executor'",                           status: "passing", evidence: "lib/desktop/desktopProductModel.ts:role" },
+  { id: "desk.no_creds_storage", area: "desktop", capability: "storesRawCloudCredentials:false literal — desktop never stores AWS/Azure/GCP/GitHub creds at the product-model level",        status: "passing", evidence: "lib/desktop/desktopProductModel.ts:safety" },
+  { id: "desk.no_apply_paths",   area: "desktop", capability: "terraformApplyEnabled:false + cliApplyEnabled:false + cloudMutationEnabled:false + githubMutationEnabled:false literals",    status: "passing", evidence: "lib/desktop/desktopProductModel.ts:safety" },
 ];
 
 // ---------------------------------------------------------------------------
