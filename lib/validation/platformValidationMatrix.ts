@@ -239,6 +239,16 @@ export const VALIDATION_MATRIX: ValidationRow[] = [
   { id: "gh.client_dual_auth",       area: "github", capability: "Live client transparently prefers App auth when configured, falls back to PAT",                  status: "passing", evidence: "lib/connectors/github/githubLiveClient.ts" },
   { id: "gh.deployment_env_discovery", area: "github", capability: "Deployment environment discovery — required reviewers, wait timer, branch policy",            status: "passing", evidence: "lib/connectors/github/githubLiveScanner.ts" },
   { id: "gh.app_enterprise_path",    area: "github", capability: "GitHub App is the preferred enterprise auth path (vs PAT for dev/preview)",                     status: "preview", evidence: "lib/connectors/github/githubConfig.ts:authPreference", nextFix: "Requires GITHUB_APP_ID + GITHUB_PRIVATE_KEY + GITHUB_INSTALLATION_ID on host." },
+
+  // ---------------------------------------------------------------------------
+  // Security scanner + vulnerability intelligence productionization
+  // ---------------------------------------------------------------------------
+  { id: "sec.vuln_model",          area: "security_scanner", capability: "Canonical SecurityFinding model + converter from SecurityCheckResult (additive — existing scanner untouched)", status: "passing", evidence: "lib/securityScanner/vulnerabilityModel.ts" },
+  { id: "sec.compounded_reasoner", area: "security_scanner", capability: "Compounded-risk reasoner — exposed_compute_no_governance, public_db_audit_gap, broken_pipeline_no_approval", status: "passing", evidence: "lib/securityScanner/compoundedRiskReasoner.ts" },
+  { id: "sec.test_vuln_model",     area: "security_scanner", capability: "vitest: SecurityFinding converter — category remap (incl. release_governance/pipeline_health), confidence, action flags", status: "passing", evidence: "lib/securityScanner/__tests__/vulnerabilityModel.test.ts" },
+  { id: "sec.test_compounded",     area: "security_scanner", capability: "vitest: 3 compound patterns + negative cases + sourceMode rollup",                                                  status: "passing", evidence: "lib/securityScanner/__tests__/compoundedRiskReasoner.test.ts" },
+  { id: "sec.evidence_required",   area: "security_scanner", capability: "Every SecurityFinding carries evidence array or a limitation explaining why none was collected",                    status: "passing", evidence: "lib/securityScanner/vulnerabilityModel.ts:toSecurityFinding" },
+  { id: "sec.compounded_no_apply", area: "security_scanner", capability: "Compounded findings explicitly remediationEligible:false — point at constituents, never claim a fix",                status: "passing", evidence: "lib/securityScanner/compoundedRiskReasoner.ts" },
 ];
 
 // ---------------------------------------------------------------------------
