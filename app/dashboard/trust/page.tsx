@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import {
   ShieldCheckIcon,
@@ -43,24 +44,36 @@ export default function TrustCenterPage() {
 
   return (
     <div className="relative">
-      {/* Hero */}
+      {/* Premium hero — calm depth, sourceMode-honest from /api/trust/summary */}
       <Reveal direction="up" blur>
-        <div className="mb-10">
-          <div className="flex items-center gap-3 mb-3">
-            <ShieldCheckIcon className="h-4 w-4 text-emerald-300" />
-            <p className="text-[10px] font-semibold text-emerald-300 uppercase tracking-[0.18em]">Trust Center</p>
-            <span className="text-[9px] font-semibold text-zinc-400 bg-white/[0.04] border border-white/[0.08] rounded-full px-2 py-0.5 uppercase tracking-wider">
-              Evidence-backed
+        <div className="relative mb-8 rounded-3xl border border-white/[0.05] bg-gradient-to-br from-white/[0.025] via-white/[0.015] to-transparent p-6 md:p-8 overflow-hidden">
+          <div
+            className="absolute inset-0 -z-10 opacity-90 pointer-events-none"
+            style={{
+              background:
+                "radial-gradient(900px 320px at 12% 0%, rgba(16,185,129,0.08), transparent 60%), radial-gradient(700px 260px at 88% 110%, rgba(99,102,241,0.06), transparent 60%)",
+            }}
+            aria-hidden
+          />
+          <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/[0.08] to-transparent" aria-hidden />
+          <div className="flex items-center gap-3 mb-3 flex-wrap">
+            <span className="inline-flex items-center gap-2 rounded-full border border-white/[0.06] bg-white/[0.02] px-2.5 py-1">
+              <ShieldCheckIcon className="h-3.5 w-3.5 text-emerald-300" />
+              <span className="text-[10px] font-semibold uppercase tracking-widest text-emerald-300">Trust Center · evidence-backed</span>
             </span>
+            <Link href="/dashboard/evidence" className="text-[10px] text-zinc-500 hover:text-white transition-colors">Inspect raw evidence →</Link>
           </div>
-          <h1 className="text-3xl md:text-4xl font-bold text-white tracking-[-0.04em] mb-2">
+          <h1 className="text-4xl md:text-5xl font-bold text-white tracking-[-0.045em] leading-[1.05] mb-3">
             Enterprise <span className="bg-gradient-to-r from-emerald-300 to-cyan-300 bg-clip-text text-transparent">trust + controls.</span>
           </h1>
-          <p className="text-sm text-zinc-400 max-w-2xl leading-relaxed">
-            Controls are listed only when they exist in code. Status is honest: <span className="text-emerald-300">implemented</span>, <span className="text-amber-300">partial</span>, or <span className="text-zinc-400">planned</span>. No certifications are claimed without proof.
+          <p className="text-[15px] text-zinc-400 max-w-2xl leading-relaxed">
+            Controls are listed only when they exist in code. Status is honest: <span className="text-emerald-300">implemented</span>, <span className="text-amber-300">partial</span>, or <span className="text-zinc-400">planned</span>. <span className="text-zinc-500">No SOC 2 / ISO certifications claimed without backing records.</span>
           </p>
         </div>
       </Reveal>
+
+      {/* Canonical Trust strip — sources of truth from /api/trust/summary */}
+      <CanonicalTrustStrip />
 
       {/* Posture KPIs */}
       <Stagger delay={0.05} interval={0.05} className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-8">
@@ -480,4 +493,114 @@ function groupBy<T, K extends keyof T>(arr: T[], key: K): Record<string, T[]> {
     (out[k] ?? (out[k] = [])).push(item);
   }
   return out;
+}
+
+// ---------------------------------------------------------------------------
+// CanonicalTrustStrip — anchors the Trust Center to the same canonical
+// numbers /api/trust/summary reports. Replaces the prior pattern where the
+// page composed locally and could drift from /api/axiom-os/state. Renders
+// honest sourceMode pill + control/evidence counts + safeNextAction.
+// ---------------------------------------------------------------------------
+
+interface TrustSummaryLite {
+  generatedAt: string;
+  sourceMode: "live" | "partial" | "preview";
+  controls: { total: number; implemented: number; partial: number; planned: number; notApplicable: number; score: number };
+  evidence: { total: number; verified: number; selfAttested: number; manual: number; unverified: number; coverageScore: number };
+  limitations: string[];
+  safeNextAction: { label: string; href: string };
+}
+
+function CanonicalTrustStrip() {
+  const [summary, setSummary] = useState<TrustSummaryLite | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+    fetch("/api/trust/summary", { credentials: "include" })
+      .then((r) => r.json())
+      .then((json: { ok?: boolean; data?: TrustSummaryLite; error?: { userMessage?: string } }) => {
+        if (cancelled) return;
+        if (json.ok && json.data) setSummary(json.data);
+        else setError(json.error?.userMessage ?? "Trust summary unavailable.");
+      })
+      .catch((err) => {
+        if (cancelled) return;
+        setError(err instanceof Error ? err.message : "Network error.");
+      })
+      .finally(() => { if (!cancelled) setLoading(false); });
+    return () => { cancelled = true; };
+  }, []);
+
+  const controlPct = summary ? Math.round(summary.controls.score * 100) : 0;
+  const coveragePct = summary ? Math.round(summary.evidence.coverageScore * 100) : 0;
+  const sourceMode = summary?.sourceMode ?? "preview";
+  const sourceTone =
+    sourceMode === "live"    ? "bg-emerald-500/15 text-emerald-300 border-emerald-500/30" :
+    sourceMode === "partial" ? "bg-cyan-500/15 text-cyan-300 border-cyan-500/30"        :
+                                "bg-amber-500/15 text-amber-300 border-amber-500/30";
+
+  if (loading) {
+    return (
+      <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 mb-8">
+        <p className="text-[11px] font-mono text-zinc-500 uppercase tracking-[0.18em]">// composing canonical trust summary…</p>
+      </div>
+    );
+  }
+  if (error || !summary) {
+    return (
+      <div className="rounded-2xl border border-amber-500/[0.18] bg-amber-500/[0.04] p-5 mb-8">
+        <p className="text-[11px] font-mono text-amber-300/80 uppercase tracking-[0.18em] mb-1">// trust summary unavailable</p>
+        <p className="text-[13px] text-zinc-300">{error ?? "Sign in to load /api/trust/summary."}</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="rounded-2xl border border-emerald-500/[0.18] bg-gradient-to-br from-emerald-500/[0.04] via-white/[0.015] to-transparent p-5 mb-8 relative overflow-hidden">
+      <div className="flex items-center gap-2 mb-4 flex-wrap">
+        <span className={`text-[10px] font-mono uppercase tracking-wider border rounded-full px-2 py-0.5 ${sourceTone}`}>
+          {sourceMode} · from /api/trust/summary
+        </span>
+        <span className="text-[10px] font-mono text-zinc-500">last sync {new Date(summary.generatedAt).toLocaleTimeString()}</span>
+      </div>
+      <div className="grid sm:grid-cols-4 gap-4">
+        <div>
+          <p className="text-[10px] font-mono text-zinc-500 uppercase tracking-wider mb-1">Control coverage</p>
+          <p className="text-3xl font-bold text-white tracking-tight">{controlPct}%</p>
+          <p className="text-[11px] text-zinc-500 mt-1">
+            {summary.controls.implemented} implemented · {summary.controls.partial} partial · {summary.controls.planned} planned
+          </p>
+        </div>
+        <div>
+          <p className="text-[10px] font-mono text-zinc-500 uppercase tracking-wider mb-1">Evidence records</p>
+          <p className="text-3xl font-bold text-white tracking-tight">{summary.evidence.total}</p>
+          <p className="text-[11px] text-zinc-500 mt-1">
+            {summary.evidence.verified} verified · {summary.evidence.selfAttested} attested · {summary.evidence.manual} manual
+          </p>
+        </div>
+        <div>
+          <p className="text-[10px] font-mono text-zinc-500 uppercase tracking-wider mb-1">Evidence coverage</p>
+          <p className={`text-3xl font-bold tracking-tight ${coveragePct >= 60 ? "text-emerald-300" : coveragePct >= 30 ? "text-amber-300" : "text-rose-300"}`}>{coveragePct}%</p>
+          <p className="text-[11px] text-zinc-500 mt-1">Verified / total ratio</p>
+        </div>
+        <div className="flex flex-col justify-between">
+          <div>
+            <p className="text-[10px] font-mono text-zinc-500 uppercase tracking-wider mb-1">Safe next action</p>
+            <p className="text-[13px] font-semibold text-white leading-snug">{summary.safeNextAction.label}</p>
+          </div>
+          <Link href={summary.safeNextAction.href} className="inline-flex items-center gap-1.5 mt-2 text-[12px] font-medium text-emerald-200 hover:text-emerald-100 transition-colors w-fit">
+            Open → <ArrowRightIcon className="h-3 w-3" />
+          </Link>
+        </div>
+      </div>
+      {summary.limitations.length > 0 && (
+        <div className="mt-4 pt-4 border-t border-white/[0.06]">
+          <p className="text-[10px] font-mono text-zinc-500 uppercase tracking-wider mb-1">// limitations</p>
+          <p className="text-[12px] text-zinc-400 leading-relaxed">{summary.limitations[0]}</p>
+        </div>
+      )}
+    </div>
+  );
 }
