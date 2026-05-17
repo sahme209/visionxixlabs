@@ -270,6 +270,18 @@ export const VALIDATION_MATRIX: ValidationRow[] = [
   { id: "axiomos.api_safe_loop",  area: "operating_loop", capability: "POST /api/axiom-os/run-safe-loop — delegates to operating-loop runner, refuses approval / preflight / verify", status: "passing", evidence: "app/api/axiom-os/run-safe-loop/route.ts" },
   { id: "axiomos.safety_contract", area: "operating_loop", capability: "AxiomOS state always reports safetyStatus = approval_gated_no_destructive_execution",                          status: "passing", evidence: "lib/axiomOS/axiomOSModel.ts" },
   { id: "axiomos.ui_strip",        area: "operating_loop", capability: "Command Center AxiomOSStrip — overall status + readiness + trust + provider chips + critical blockers + top-4 next actions",  status: "passing", evidence: "app/dashboard/command-center/page.tsx:AxiomOSStrip" },
+
+  // ---------------------------------------------------------------------------
+  // Strategic product depth — one composite summary over every canonical builder
+  // ---------------------------------------------------------------------------
+  { id: "strategy.summary_model",     area: "operating_loop", capability: "StrategicSummary — value + executive + defensibility + enterprise readiness v2 + security review packet + onboarding + risk register + limitations", status: "passing", evidence: "lib/strategy/strategicSummary.ts" },
+  { id: "strategy.api_snapshot",      area: "operating_loop", capability: "GET /api/strategy/snapshot — composed summary, audience-aware, tenant-scoped",                                                                       status: "passing", evidence: "app/api/strategy/snapshot/route.ts" },
+  { id: "strategy.value_no_dollars",  area: "operating_loop", capability: "ValueSummary.costTelemetryConnected literal false — no fabricated dollar savings until cost-explorer ingestion is wired",                          status: "passing", evidence: "lib/strategy/strategicSummary.ts:buildValueSummary" },
+  { id: "strategy.defensibility_emerging", area: "operating_loop", capability: "DefensibilitySignals framed as 'emerging' (literal type) — never claims complete moat / network effects",                                   status: "passing", evidence: "lib/strategy/strategicSummary.ts:buildDefensibilitySignals" },
+  { id: "strategy.enterprise_v2",     area: "operating_loop", capability: "EnterpriseReadinessV2 — 14 categories with composite score, derived from real signals (no fabrication)",                                          status: "passing", evidence: "lib/strategy/strategicSummary.ts:buildEnterpriseReadinessV2" },
+  { id: "strategy.review_packet",     area: "compliance",     capability: "SecurityReviewPacket — implementedControls / previewControls / missingControls + access model + AI safety boundaries, no SOC2/ISO claims",         status: "passing", evidence: "lib/strategy/strategicSummary.ts:buildSecurityReviewPacket" },
+  { id: "strategy.risk_register",     area: "operating_loop", capability: "Product risk register surfaces execution-safety + persistence + provider-depth risks honestly",                                                   status: "passing", evidence: "lib/strategy/strategicSummary.ts:buildRiskRegister" },
+  { id: "strategy.limitations",       area: "operating_loop", capability: "Customer-facing limitations model — each carries resolvesWhen so enterprise buyers see the unblock path",                                         status: "passing", evidence: "lib/strategy/strategicSummary.ts:buildLimitations" },
 ];
 
 // ---------------------------------------------------------------------------
