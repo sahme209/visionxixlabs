@@ -593,6 +593,8 @@ export const CATEGORY_LABEL: Record<SecurityCheckCategory, string> = {
   audit_gap:             "Audit gap",
   desktop_distribution:  "Desktop distribution",
   desktop_execution:     "Desktop execution",
+  release_governance:    "Release governance",
+  pipeline_health:       "Pipeline health",
 };
 
 export const STATUS_LABEL: Record<SecurityCheckStatus, string> = {
