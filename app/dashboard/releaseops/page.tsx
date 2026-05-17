@@ -176,16 +176,16 @@ export default function ReleaseOpsCommandCenterPage() {
         <div className="mb-8">
           <div className="flex items-center justify-between flex-wrap gap-4 mb-3">
             <div className="flex items-center gap-3">
-              <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_12px_rgba(52,211,153,0.6)]" />
-              <p className="text-[10px] font-semibold text-emerald-400 uppercase tracking-widest">
-                Live · ReleaseOps engine operating
+              <span className="w-2 h-2 rounded-full bg-zinc-500" />
+              <p className="text-[10px] font-semibold text-zinc-400 uppercase tracking-widest">
+                ReleaseOps · source mode reported by /api/releaseops/state
               </p>
-              <span className="text-[9px] font-semibold text-violet-400 bg-violet-500/15 border border-violet-500/30 rounded-full px-2 py-0.5 uppercase tracking-wider">
+              <span className="text-[9px] font-semibold text-violet-300 bg-violet-500/10 border border-violet-500/20 rounded-full px-2 py-0.5 uppercase tracking-wider">
                 Axiom · Capability surface
               </span>
             </div>
             <span className="text-[10px] font-mono text-zinc-500">
-              {currentTime || "—:—:—"} · auto-refresh on
+              {currentTime || "—:—:—"} local
             </span>
           </div>
           <h1 className="text-3xl md:text-4xl font-bold text-white tracking-[-0.04em] mb-2">

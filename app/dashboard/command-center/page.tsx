@@ -22,7 +22,6 @@ import { InfrastructureTopology } from "@/components/operations/InfrastructureTo
 import { buildSecurityPosture } from "@/lib/security/securityPosture";
 import { buildReliabilityPosture } from "@/lib/reliability/reliabilityPosture";
 import { buildObservabilityPosture } from "@/lib/observability/observabilityPosture";
-import { DEFAULT_DESKTOP_SHELL_STATE, summarizeShell } from "@/lib/desktop/desktopShellState";
 import { ComputerDesktopIcon } from "@heroicons/react/24/outline";
 import { assessOnboarding, progressPercent } from "@/lib/onboarding/onboardingState";
 import type { OnboardingProgress } from "@/lib/onboarding/onboardingState";
@@ -275,13 +274,13 @@ function ExecutiveSummaryBanner() {
       headline: blockers.length === 0 ? "No critical blockers" : `${blockers.length} critical blocker${blockers.length === 1 ? "" : "s"}`,
       detail: blockers.length === 0 ? "All canonical sections report green for the current source mode." : `${blockers[0].area}: ${blockers[0].reason}`,
       severity: blockers.length === 0 ? "success" : "warning",
-      link: { label: blockers.length === 0 ? "Open Axiom OS" : "Resolve blocker", href: blockers[0]?.safeNextAction?.href ?? "/dashboard/axiom-os" },
+      link: { label: blockers.length === 0 ? "Open Axiom OS" : "Resolve blocker", href: blockers[0]?.safeNextAction?.href ?? "/dashboard" },
     });
     highlights.push({
       headline: `${pendingApprovals} approval${pendingApprovals === 1 ? "" : "s"} awaiting operator`,
       detail: pendingApprovals === 0 ? "Approval queue is empty — agent has no proposed changes pending." : "Open the approval center to review change summaries, blast radius, and rollback plans.",
       severity: pendingApprovals > 0 ? "warning" : "info",
-      link: { label: "Open approvals", href: "/dashboard/orchestration/approvals" },
+      link: { label: "Open approvals", href: "/dashboard/approvals" },
     });
     highlights.push({
       headline: `Source mode: ${sourceMode.replace(/_/g, " ")}`,
@@ -292,7 +291,7 @@ function ExecutiveSummaryBanner() {
   }
 
   const recommended = topAction?.title ?? (state ? "All next-best actions complete — agent is idle." : "—");
-  const recommendedHref = topAction?.route ?? "/dashboard/axiom-os";
+  const recommendedHref = topAction?.route ?? "/dashboard";
 
   return (
     <div className="mb-6 rounded-2xl border border-violet-500/15 bg-gradient-to-br from-violet-500/[0.04] via-transparent to-fuchsia-500/[0.03] p-5 relative overflow-hidden">
@@ -948,25 +947,50 @@ function ReliabilityPostureStrip() {
 }
 
 function ObservabilityPostureStrip() {
+  // Fetch canonical audit + memory posture so we never render fabricated
+  // "287 traces / 612 audit / 4 bundles" demo numbers. When state is
+  // unavailable we render honest dashes — not invented counts.
+  const [state, setState] = useState<AxiomOSStateLite | null>(null);
+  useEffect(() => {
+    let cancelled = false;
+    fetch("/api/axiom-os/state", { credentials: "include" })
+      .then((r) => r.json())
+      .then((json: { ok?: boolean; data?: AxiomOSStateLite }) => {
+        if (cancelled) return;
+        if (json.ok && json.data) setState(json.data);
+      })
+      .catch(() => {});
+    return () => { cancelled = true; };
+  }, []);
+
+  const auditCount = state?.auditPosture?.data.recentEventCount;
+  const memoryCount = state?.memoryPosture?.data.recordCount;
+  const persistent = state?.auditPosture?.data.persistent ?? false;
+  const sourceMode = state?.auditPosture?.sourceMode ?? "preview";
+
   const posture = buildObservabilityPosture({
-    source: "preview",
-    traces24h: 287,
-    auditRecords24h: 612,
-    bundlesExported30d: 4,
+    source: sourceMode === "live" ? "live" : "preview",
+    traces24h: auditCount ?? 0,
+    auditRecords24h: auditCount ?? 0,
+    bundlesExported30d: 0,
     loggerActive: true,
-    auditStoreConfigured: true,
-    copilotAuditActive: true,
+    auditStoreConfigured: persistent,
+    copilotAuditActive: persistent,
   });
   const errors = posture.checks.filter((c) => c.semantic === "error").length;
   const warnings = posture.checks.filter((c) => c.semantic === "warning").length;
   const tone =
-    errors > 0   ? "border-red-500/15 bg-red-500/[0.03]"     :
+    errors > 0   ? "border-rose-500/15 bg-rose-500/[0.03]"   :
     warnings > 0 ? "border-amber-500/15 bg-amber-500/[0.03]" :
                    "border-violet-500/15 bg-violet-500/[0.03]";
   const headlineCheck =
     posture.checks.find((c) => c.semantic === "error") ??
     posture.checks.find((c) => c.semantic === "warning") ??
     posture.checks[0];
+  const headline = state
+    ? (persistent ? "Audit + memory persistent · every event traceable" : "Audit + memory in-memory · enable persistence for durability")
+    : (headlineCheck?.label ?? "Composing observability state…");
+  const labelTone = persistent ? "bg-emerald-500/15 text-emerald-300 border-emerald-500/30" : "bg-amber-500/15 text-amber-300 border-amber-500/30";
   return (
     <Link href="/dashboard/traces" className={`block rounded-2xl border ${tone} p-5 hover:border-violet-500/30 transition-colors group`}>
       <div className="flex items-center justify-between gap-4 flex-wrap">
@@ -977,17 +1001,19 @@ function ObservabilityPostureStrip() {
           <div className="min-w-0">
             <div className="flex items-center gap-2 mb-1">
               <p className="text-[10px] font-semibold text-violet-400 uppercase tracking-widest">Observability</p>
-              <span className="text-[9px] font-semibold text-amber-400 bg-amber-500/15 border border-amber-500/30 rounded-full px-1.5 py-px uppercase tracking-wider">Preview</span>
+              <span className={`text-[9px] font-semibold ${labelTone} border rounded-full px-1.5 py-px uppercase tracking-wider`}>
+                {sourceMode.replace(/_/g, " ")}
+              </span>
             </div>
-            <p className="text-sm font-semibold text-white">Every action traceable · {headlineCheck?.label}</p>
-            <p className="text-[11px] text-zinc-500 mt-0.5 leading-relaxed">{headlineCheck?.detail}</p>
+            <p className="text-sm font-semibold text-white">{headline}</p>
+            <p className="text-[11px] text-zinc-500 mt-0.5 leading-relaxed">{headlineCheck?.detail ?? "Audit + memory + trace stores feed every operator view."}</p>
           </div>
         </div>
         <div className="flex items-center gap-4">
           <div className="hidden sm:flex items-center gap-3">
-            <Stat label="Traces" value="287" />
-            <Stat label="Audit" value="612" />
-            <Stat label="Bundles" value="4" />
+            <Stat label="Audit events" value={typeof auditCount === "number" ? String(auditCount) : "—"} />
+            <Stat label="Memory" value={typeof memoryCount === "number" ? String(memoryCount) : "—"} />
+            <Stat label="Persistence" value={state ? (persistent ? "on" : "off") : "—"} />
           </div>
           <ArrowRightIcon className="h-4 w-4 text-zinc-500 group-hover:text-violet-300 group-hover:translate-x-0.5 transition-all" />
         </div>
@@ -996,38 +1022,146 @@ function ObservabilityPostureStrip() {
   );
 }
 
+// ---------------------------------------------------------------------------
+// DesktopRuntimePanel — wired to /api/desktop/platform-status. Replaces
+// a panel that rendered DEFAULT_DESKTOP_SHELL_STATE regardless of real
+// session/platform/signing state. Honest checklist derived from the
+// canonical DesktopState (sessionStatus / sourceMode / platformStatus /
+// auditSyncStatus / localExecutionStatus). Local execution is enforced
+// to "disabled" by the literal type on DesktopState.
+// ---------------------------------------------------------------------------
+
+interface DesktopStateLite {
+  tenantId: string;
+  generatedAt: string;
+  platform: string;
+  appVersion?: string;
+  sessionStatus: "active" | "expired" | "not_paired";
+  sourceMode: "live" | "partial_live" | "preview" | "blocked" | "unknown";
+  handoffInboxCount: number;
+  reviewItemCount: number;
+  platformStatus: { platform: string; signed: boolean; notarized?: boolean; publiclyDownloadable: boolean; label: string }[];
+  auditSyncStatus: "live" | "preview" | "disabled";
+  syncStatus: "synced" | "stale" | "not_synced";
+  localExecutionStatus: "disabled";
+  limitations: string[];
+  safeNextAction?: { label: string; href: string };
+}
+
 function DesktopRuntimePanel() {
-  // Honest preview state — when desktop pairing wires up, this reads from the
-  // useDesktopRuntime hook + canonical shell state.
-  const summary = summarizeShell({
-    ...DEFAULT_DESKTOP_SHELL_STATE,
-    runtimeState: "offline",
-    platform: "unknown",
-    appVersion: "0.1.0",
-    capabilities: ["review", "preview", "verify", "audit_sync"],
-    connection: "offline",
-    auditSync: "unknown",
-  });
+  const [state, setState] = useState<DesktopStateLite | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+    fetch("/api/desktop/platform-status", { credentials: "include" })
+      .then((r) => r.json())
+      .then((json: { ok?: boolean; data?: DesktopStateLite; error?: { userMessage?: string } }) => {
+        if (cancelled) return;
+        if (json.ok && json.data) setState(json.data);
+        else setError(json.error?.userMessage ?? "Desktop state unavailable.");
+      })
+      .catch((err) => {
+        if (cancelled) return;
+        setError(err instanceof Error ? err.message : "Network error.");
+      })
+      .finally(() => { if (!cancelled) setLoading(false); });
+    return () => { cancelled = true; };
+  }, []);
+
+  // Derive an honest checklist from canonical state. Each row's semantic is
+  // a function of real fields — never hardcoded.
+  const checks: { id: string; label: string; detail: string; semantic: "success" | "warning" | "error" | "info" }[] = [];
+  if (state) {
+    checks.push({
+      id: "session",
+      label: state.sessionStatus === "active" ? "Desktop session paired" : state.sessionStatus === "expired" ? "Session expired" : "No paired desktop",
+      detail: state.sessionStatus === "active"
+        ? `Platform: ${state.platform} · v${state.appVersion ?? "—"}`
+        : "Pair from desktop Settings to enable plan review.",
+      semantic: state.sessionStatus === "active" ? "success" : state.sessionStatus === "expired" ? "warning" : "info",
+    });
+    checks.push({
+      id: "local-exec",
+      label: "Local execution",
+      detail: "Disabled by safety contract — desktop is a review workstation, never an executor.",
+      semantic: "success",
+    });
+    const macArm = state.platformStatus.find((p) => p.platform === "macos-arm");
+    const windows = state.platformStatus.find((p) => p.platform === "windows");
+    if (macArm) {
+      checks.push({
+        id: "macos",
+        label: `macOS · ${macArm.signed ? "signed" : "unsigned"}${macArm.notarized ? " + notarized" : ""}`,
+        detail: macArm.publiclyDownloadable ? "Public download enabled." : "Public binary not yet published.",
+        semantic: macArm.publiclyDownloadable ? "success" : "warning",
+      });
+    }
+    if (windows) {
+      checks.push({
+        id: "windows",
+        label: `Windows · ${windows.signed ? "signed" : "unsigned"}`,
+        detail: windows.publiclyDownloadable ? "Public download enabled." : "EV cert required to clear SmartScreen.",
+        semantic: windows.publiclyDownloadable ? "success" : "info",
+      });
+    }
+    checks.push({
+      id: "audit-sync",
+      label: `Audit sync · ${state.auditSyncStatus}`,
+      detail: state.auditSyncStatus === "live" ? "Desktop ↔ web audit reconciliation is live." : "Audit reconciliation runs in preview until persistence is enabled.",
+      semantic: state.auditSyncStatus === "live" ? "success" : "info",
+    });
+  }
+
+  const sourceMode = state?.sourceMode ?? "preview";
+  const sourceTone =
+    sourceMode === "live"         ? "bg-emerald-500/15 text-emerald-300" :
+    sourceMode === "partial_live" ? "bg-cyan-500/15 text-cyan-300"       :
+    sourceMode === "blocked"      ? "bg-rose-500/15 text-rose-300"       :
+                                    "bg-amber-500/15 text-amber-300";
+
   return (
     <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] overflow-hidden">
       <div className="px-5 py-3.5 border-b border-white/[0.06] bg-white/[0.01] flex items-center justify-between">
         <div className="flex items-center gap-2">
           <ComputerDesktopIcon className="h-4 w-4 text-violet-300" />
           <h3 className="text-sm font-semibold text-white">Desktop runtime</h3>
+          <span className={`text-[9px] font-mono uppercase tracking-wider rounded px-1.5 py-px ${sourceTone}`}>
+            {sourceMode.replace(/_/g, " ")}
+          </span>
         </div>
         <Link href="/download" className="text-[10px] text-zinc-500 hover:text-white transition-colors">View</Link>
       </div>
       <div className="px-4 py-3 border-b border-white/[0.04]">
-        <p className="text-[12px] text-zinc-200 font-semibold">{summary.headline}</p>
-        <p className="text-[11px] text-zinc-500 mt-0.5 leading-relaxed">No paired desktop. Download the preview to enable local execution-plan review.</p>
+        {loading && (
+          <p className="text-[11px] text-zinc-500 font-mono uppercase tracking-[0.18em]">// composing desktop state…</p>
+        )}
+        {!loading && error && (
+          <p className="text-[12px] text-amber-300/90">{error}</p>
+        )}
+        {!loading && !error && state && (
+          <>
+            <p className="text-[12px] text-zinc-200 font-semibold">
+              {state.sessionStatus === "active"
+                ? `Paired · ${state.handoffInboxCount} handoff${state.handoffInboxCount === 1 ? "" : "s"} · ${state.reviewItemCount} review item${state.reviewItemCount === 1 ? "" : "s"}`
+                : "No paired desktop"}
+            </p>
+            <p className="text-[11px] text-zinc-500 mt-0.5 leading-relaxed">
+              {state.sessionStatus === "active"
+                ? `Last sync ${new Date(state.generatedAt).toLocaleTimeString()}`
+                : "Download the binary to enable plan review."}
+            </p>
+          </>
+        )}
       </div>
       <div className="p-3 space-y-1.5">
-        {summary.checks.slice(0, 4).map((c) => (
+        {!loading && checks.slice(0, 4).map((c) => (
           <div key={c.id} className="flex items-start gap-2.5">
             <span className={`mt-1.5 w-1.5 h-1.5 rounded-full shrink-0 ${
               c.semantic === "success" ? "bg-emerald-400" :
               c.semantic === "warning" ? "bg-amber-400" :
-              c.semantic === "error"   ? "bg-red-400"   :
+              c.semantic === "error"   ? "bg-rose-400"   :
                                           "bg-zinc-500"
             }`} />
             <div className="flex-1 min-w-0">
@@ -1038,8 +1172,11 @@ function DesktopRuntimePanel() {
         ))}
       </div>
       <div className="px-3 pb-3 pt-1 flex items-center gap-2">
-        <Link href="/download" className="flex-1 text-center text-[11px] font-semibold text-violet-300 hover:text-violet-200 rounded-md border border-violet-500/20 bg-violet-500/[0.06] hover:border-violet-500/40 px-2 py-1.5 transition-colors">
-          Download desktop
+        <Link
+          href={state?.safeNextAction?.href ?? "/download"}
+          className="flex-1 text-center text-[11px] font-semibold text-violet-300 hover:text-violet-200 rounded-md border border-violet-500/20 bg-violet-500/[0.06] hover:border-violet-500/40 px-2 py-1.5 transition-colors"
+        >
+          {state?.safeNextAction?.label ?? "Download desktop"}
         </Link>
         <Link href="/dashboard/security" className="text-[11px] text-zinc-400 hover:text-white rounded-md border border-white/[0.06] bg-white/[0.02] hover:bg-white/[0.04] px-2 py-1.5 transition-colors">
           Security
@@ -1355,7 +1492,7 @@ function LivePendingApprovals() {
             return (
               <Link
                 key={a.id}
-                href={`/dashboard/orchestration/approvals?id=${encodeURIComponent(a.id)}`}
+                href={`/dashboard/approvals?id=${encodeURIComponent(a.id)}`}
                 className="block rounded-xl bg-white/[0.02] border border-white/[0.04] p-3 hover:border-amber-500/20 hover:bg-amber-500/[0.04] transition-all group"
               >
                 <div className="flex items-center gap-2 mb-1.5">
@@ -1383,7 +1520,7 @@ function LivePendingApprovals() {
 
       <div className="px-3 pb-3 pt-1">
         <Link
-          href="/dashboard/orchestration/approvals"
+          href="/dashboard/approvals"
           className="flex items-center justify-center gap-1.5 w-full text-[11px] text-zinc-400 hover:text-white border border-dashed border-white/[0.1] hover:border-white/[0.2] rounded-xl py-2 transition-colors"
         >
           Open approval center →

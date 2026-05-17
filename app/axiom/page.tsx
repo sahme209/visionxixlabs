@@ -416,7 +416,7 @@ export default function AxiomPage() {
                 <h3 className="font-bold text-white">Scheduled operations</h3>
               </div>
               <p className="text-sm text-zinc-400 leading-relaxed">
-                Configure daily or weekly scans per cloud account. The scheduler processes due runs, diffs against previous baselines, detects drift, generates notifications, and creates approval requests — fully autonomous, fully audited, and never auto-applying without explicit human approval.
+                Configure daily or weekly scans per cloud account. The scheduler runs read-only scans, diffs against previous baselines, detects drift, emits notifications, and creates approval requests — governed automation: fully audited, never auto-applying, every mutation requires explicit human approval.
               </p>
             </div>
           </Reveal>
