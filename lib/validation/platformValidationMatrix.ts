@@ -291,6 +291,15 @@ export const VALIDATION_MATRIX: ValidationRow[] = [
   { id: "launch.api",            area: "operating_loop", capability: "GET /api/readiness/launch — tenant-scoped honest launch report",                                                    status: "passing", evidence: "app/api/readiness/launch/route.ts" },
   { id: "launch.honest_bands",   area: "operating_loop", capability: "Score-to-status bands: ≥80 launch_ready, 60..79 acceptable, 40..59 partial, 20..39 blocked, <20 failing",            status: "passing", evidence: "lib/readiness/launchReadinessModel.ts:statusForScore" },
   { id: "launch.demo_critical",  area: "operating_loop", capability: "Demo-critical / paid-critical category partitioning — fail < 40 demo, fail < 70 paid",                              status: "passing", evidence: "lib/readiness/launchReadinessRunner.ts:demoCritical+paidCritical" },
+
+  // ---------------------------------------------------------------------------
+  // Paid customer / first pilot readiness — typed PilotMode
+  // ---------------------------------------------------------------------------
+  { id: "pilot.mode_model",        area: "operating_loop", capability: "PilotMode — typed contract: 7 literal safety flags (terraformApplyEnabled:false, cliApplyEnabled:false, etc.) prevent unsafe drift", status: "passing", evidence: "lib/product/pilotMode.ts" },
+  { id: "pilot.mode_builder",      area: "operating_loop", capability: "Pilot mode builder composes from AxiomOSState + env — actions classified as allowed / preview_only / approval_required / blocked_by_config / blocked_by_safety", status: "passing", evidence: "lib/product/pilotMode.ts:buildPilotMode" },
+  { id: "pilot.api_mode",          area: "operating_loop", capability: "GET /api/pilot/mode — tenant-scoped pilot contract + checklist + acknowledgements",                                                  status: "passing", evidence: "app/api/pilot/mode/route.ts" },
+  { id: "pilot.safety_literals",   area: "operating_loop", capability: "Safety flags encoded as literal types (true/false constants) — TS prevents fabrication",                                            status: "passing", evidence: "lib/product/pilotMode.ts:PilotMode.safety" },
+  { id: "pilot.acknowledgements",  area: "compliance",     capability: "Required acknowledgements list rendered to operator — read-only / no Terraform apply / no compliance claims explicitly stated",     status: "passing", evidence: "lib/product/pilotMode.ts:buildPilotMode" },
 ];
 
 // ---------------------------------------------------------------------------
