@@ -258,6 +258,17 @@ export const VALIDATION_MATRIX: ValidationRow[] = [
   { id: "trust.api_evidence",  area: "compliance", capability: "GET /api/trust/evidence — tenant-scoped evidence list w/ control + kind filters", status: "passing", evidence: "app/api/trust/evidence/route.ts" },
   { id: "trust.api_export",    area: "compliance", capability: "POST /api/trust/export — compliance bundle (9 kinds × JSON or NDJSON)",      status: "passing", evidence: "app/api/trust/export/route.ts" },
   { id: "trust.honest_labels", area: "compliance", capability: "No SOC 2 / ISO / 'fully compliant' claims — labels are 'audit-ready evidence' / 'control evidence'", status: "passing", evidence: "lib/compliance/controlRegistry.ts" },
+
+  // ---------------------------------------------------------------------------
+  // Axiom OS unification — one canonical state for the entire product
+  // ---------------------------------------------------------------------------
+  { id: "axiomos.model",          area: "operating_loop", capability: "AxiomOSState — typed unified shape over providers, postures, loops, evidence, next-actions", status: "passing", evidence: "lib/axiomOS/axiomOSModel.ts" },
+  { id: "axiomos.builder",        area: "operating_loop", capability: "AxiomOS state builder — pure read-only composition over existing canonical builders, per-section error isolation", status: "passing", evidence: "lib/axiomOS/axiomOSStateBuilder.ts" },
+  { id: "axiomos.api_state",      area: "operating_loop", capability: "GET /api/axiom-os/state — full AxiomOSState",                                                                  status: "passing", evidence: "app/api/axiom-os/state/route.ts" },
+  { id: "axiomos.api_refresh",    area: "operating_loop", capability: "POST /api/axiom-os/refresh — audited rebuild",                                                                 status: "passing", evidence: "app/api/axiom-os/refresh/route.ts" },
+  { id: "axiomos.api_actions",    area: "operating_loop", capability: "GET /api/axiom-os/next-actions — operator action surfaces only",                                              status: "passing", evidence: "app/api/axiom-os/next-actions/route.ts" },
+  { id: "axiomos.api_safe_loop",  area: "operating_loop", capability: "POST /api/axiom-os/run-safe-loop — delegates to operating-loop runner, refuses approval / preflight / verify", status: "passing", evidence: "app/api/axiom-os/run-safe-loop/route.ts" },
+  { id: "axiomos.safety_contract", area: "operating_loop", capability: "AxiomOS state always reports safetyStatus = approval_gated_no_destructive_execution",                          status: "passing", evidence: "lib/axiomOS/axiomOSModel.ts" },
 ];
 
 // ---------------------------------------------------------------------------
