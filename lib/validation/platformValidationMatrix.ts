@@ -207,6 +207,19 @@ export const VALIDATION_MATRIX: ValidationRow[] = [
   { id: "loop.desktop",          area: "operating_loop", capability: "Desktop loop: setup → token validation → review → no local apply",       status: "passing", evidence: "lib/operatingLoop/operatingLoopBuilder.ts" },
   { id: "loop.safety_contract",  area: "operating_loop", capability: "Runner refuses approval / preflight / verification stages — operator-only", status: "passing", evidence: "lib/operatingLoop/operatingLoopRunner.ts:haltConditions" },
   { id: "loop.audit_emission",   area: "operating_loop", capability: "Every runner pass writes a SecureAuditRecord with correlation id",        status: "passing", evidence: "lib/operatingLoop/operatingLoopRunner.ts" },
+
+  // ---------------------------------------------------------------------------
+  // Production readiness gauntlet (Readiness Phase)
+  // ---------------------------------------------------------------------------
+  { id: "readiness.model",           area: "operating_loop", capability: "ProductionReadinessReport model + scoring helpers",                    status: "passing", evidence: "lib/readiness/productionReadinessModel.ts" },
+  { id: "readiness.runner",          area: "operating_loop", capability: "Production readiness runner aggregates matrix + loops + honesty + exhaustiveness", status: "passing", evidence: "lib/readiness/productionReadinessRunner.ts" },
+  { id: "readiness.exhaustive",      area: "operating_loop", capability: "Exhaustiveness audit catches enum-cascade bugs at runtime + via vitest", status: "passing", evidence: "lib/readiness/exhaustivenessChecks.ts" },
+  { id: "readiness.honesty",         area: "operating_loop", capability: "Product honesty scanner — flags 'Azure live'/'GCP live'/'book a call'/'fix applied' phrases", status: "passing", evidence: "lib/readiness/productHonestyChecks.ts" },
+  { id: "readiness.api",             area: "operating_loop", capability: "GET /api/readiness returns ProductionReadinessReport",                  status: "passing", evidence: "app/api/readiness/route.ts" },
+  { id: "readiness.test_exhaustive", area: "operating_loop", capability: "vitest: catches missing labels for new SecurityCheckCategory / Scope keys", status: "passing", evidence: "lib/readiness/__tests__/exhaustivenessChecks.test.ts" },
+  { id: "readiness.test_honesty",    area: "operating_loop", capability: "vitest: product honesty scanner unit tests",                            status: "passing", evidence: "lib/readiness/__tests__/productHonestyChecks.test.ts" },
+  { id: "readiness.test_model",      area: "operating_loop", capability: "vitest: scoring + category summary helpers",                            status: "passing", evidence: "lib/readiness/__tests__/productionReadinessModel.test.ts" },
+  { id: "readiness.test_op_loop",    area: "operating_loop", capability: "vitest: operating loop model + rollupSourceMode invariants",            status: "passing", evidence: "lib/operatingLoop/__tests__/operatingLoopModel.test.ts" },
 ];
 
 // ---------------------------------------------------------------------------
