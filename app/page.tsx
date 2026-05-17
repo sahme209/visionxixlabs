@@ -19,6 +19,10 @@ import { MotherboardBackdrop } from "@/components/ui/MotherboardBackdrop";
 import { Spotlight } from "@/components/motion/Spotlight";
 import { MagneticButton } from "@/components/motion/MagneticButton";
 import { CountUp } from "@/components/motion/CountUp";
+import { TextReveal } from "@/components/motion/TextReveal";
+import { TiltCard } from "@/components/motion/TiltCard";
+import { Marquee } from "@/components/motion/Marquee";
+import { GradientBorder } from "@/components/motion/GradientBorder";
 import { TestimonialsCarousel } from "@/components/TestimonialsCarousel";
 import { FAQAccordion } from "@/components/FAQAccordion";
 import { DesktopShowcase } from "@/components/home/DesktopShowcase";
@@ -148,13 +152,15 @@ export default function Home() {
                   Autonomous Cloud Operations
                 </span>
               </Reveal>
-              <Reveal direction="up" blur delay={0.04}>
-                <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold mb-6 leading-[1.05] tracking-[-0.04em]">
-                  Your cloud<br />
-                  runs itself{" "}
-                  <span className="text-gradient">now.</span>
-                </h1>
-              </Reveal>
+              <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold mb-6 leading-[1.05] tracking-[-0.04em]">
+                <TextReveal text="Your cloud" splitBy="char" stagger={22} startDelay={120} className="block" />
+                <span className="block">
+                  <TextReveal text="runs itself " splitBy="char" stagger={22} startDelay={420} />
+                  <span className="text-gradient">
+                    <TextReveal text="now." splitBy="char" stagger={28} startDelay={780} />
+                  </span>
+                </span>
+              </h1>
               <Reveal direction="up" delay={0.06}>
                 <p className="text-dim-paragraph text-lg md:text-xl mb-10 max-w-lg leading-relaxed">
                   Axiom is an autonomous agent that scans your AWS infrastructure, <span className="dim-1">reasons about cost and security, generates Terraform execution plans,</span> <span className="dim-2">and applies approved changes — cutting cloud spend by 30–40%.</span>
@@ -410,6 +416,7 @@ export default function Home() {
               const Icon = card.icon;
               return (
                 <Reveal key={card.title} direction="up" delay={i * 0.06}>
+                  <TiltCard maxTilt={6} scale={1.012} glare>
                   <div className={`group glow-border-card animated-border card-inner-glow card-hover card-shine-sweep card-reactive warm-bottom-glow ${card.accentClass} rounded-xl border border-white/[0.06] bg-white/[0.02] p-6 h-full backdrop-blur-sm hover:border-white/[0.12] transition-colors relative`}>
                     <div className="card-accent-overlay" />
                     <div className="relative z-10">
@@ -433,6 +440,7 @@ export default function Home() {
                       </ul>
                     </div>
                   </div>
+                  </TiltCard>
                 </Reveal>
               );
             })}
