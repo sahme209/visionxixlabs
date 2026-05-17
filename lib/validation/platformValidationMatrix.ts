@@ -282,6 +282,15 @@ export const VALIDATION_MATRIX: ValidationRow[] = [
   { id: "strategy.review_packet",     area: "compliance",     capability: "SecurityReviewPacket — implementedControls / previewControls / missingControls + access model + AI safety boundaries, no SOC2/ISO claims",         status: "passing", evidence: "lib/strategy/strategicSummary.ts:buildSecurityReviewPacket" },
   { id: "strategy.risk_register",     area: "operating_loop", capability: "Product risk register surfaces execution-safety + persistence + provider-depth risks honestly",                                                   status: "passing", evidence: "lib/strategy/strategicSummary.ts:buildRiskRegister" },
   { id: "strategy.limitations",       area: "operating_loop", capability: "Customer-facing limitations model — each carries resolvesWhen so enterprise buyers see the unblock path",                                         status: "passing", evidence: "lib/strategy/strategicSummary.ts:buildLimitations" },
+
+  // ---------------------------------------------------------------------------
+  // Axiom 1.0 launch readiness
+  // ---------------------------------------------------------------------------
+  { id: "launch.model",          area: "operating_loop", capability: "LaunchReadinessReport — 17 categories with 0..100 score + 5-band status",                                            status: "passing", evidence: "lib/readiness/launchReadinessModel.ts" },
+  { id: "launch.runner",         area: "operating_loop", capability: "Launch readiness runner composes AxiomOS + production readiness + matrix + controls — preview categories cap at partial", status: "passing", evidence: "lib/readiness/launchReadinessRunner.ts" },
+  { id: "launch.api",            area: "operating_loop", capability: "GET /api/readiness/launch — tenant-scoped honest launch report",                                                    status: "passing", evidence: "app/api/readiness/launch/route.ts" },
+  { id: "launch.honest_bands",   area: "operating_loop", capability: "Score-to-status bands: ≥80 launch_ready, 60..79 acceptable, 40..59 partial, 20..39 blocked, <20 failing",            status: "passing", evidence: "lib/readiness/launchReadinessModel.ts:statusForScore" },
+  { id: "launch.demo_critical",  area: "operating_loop", capability: "Demo-critical / paid-critical category partitioning — fail < 40 demo, fail < 70 paid",                              status: "passing", evidence: "lib/readiness/launchReadinessRunner.ts:demoCritical+paidCritical" },
 ];
 
 // ---------------------------------------------------------------------------
