@@ -71,14 +71,14 @@ export default function SourceModesPage() {
       <DocHeader
         kicker="Honesty contract"
         title="Source modes"
-        intro="Every source Axiom reads from carries a typed sourceMode. The UI never shows a value without showing which mode produced it. This page is the canonical reference for what each mode means."
+        summary="Every source Axiom reads from carries a typed sourceMode. The UI never shows a value without showing which mode produced it. This page is the canonical reference for what each mode means."
       />
 
       <DocSection id="why" kicker="why this exists" title="Why label every source">
         <p className="text-zinc-300 leading-relaxed">
           Operators need to know which numbers on the dashboard are <em className="text-zinc-100 not-italic font-semibold">live</em> and which are <em className="text-zinc-100 not-italic font-semibold">preview</em>. A platform that fabricates dollar savings or fakes "connected" status loses operator trust permanently. The source-mode taxonomy is a typed contract: every <code className="font-mono text-[12px] text-cyan-300">ProviderPosture</code>, <code className="font-mono text-[12px] text-cyan-300">SectionEnvelope</code>, and <code className="font-mono text-[12px] text-cyan-300">AxiomOSState</code> shape carries a mode, and the rollup at the top reflects the most conservative section.
         </p>
-        <Callout tone="success">
+        <Callout variant="safe">
           The TypeScript literal type <code className="font-mono text-[12px] text-emerald-300">AxiomOSSourceMode</code> in <code className="font-mono text-[12px] text-emerald-300">lib/axiomOS/axiomOSModel.ts</code> enforces this. A new mode cannot be added without updating the rollup logic + every UI consumer.
         </Callout>
       </DocSection>
@@ -117,7 +117,7 @@ export default function SourceModesPage() {
           <li>If any section reports <code className="font-mono text-[12px]">expanding</code> → composite is <code className="font-mono text-[12px]">expanding</code>.</li>
           <li>Only if <em>every</em> section is <code className="font-mono text-[12px]">live</code> → composite is <code className="font-mono text-[12px]">live</code>.</li>
         </ol>
-        <Callout tone="info">
+        <Callout variant="info">
           This is the conservative direction: the composite can never claim more than its weakest section. If one provider is in preview, the overall state is preview.
         </Callout>
       </DocSection>
