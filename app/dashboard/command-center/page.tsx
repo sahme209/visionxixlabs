@@ -243,6 +243,11 @@ export default function CommandCenterPage() {
         })}
       </Stagger>
 
+      {/* Axiom OS strip — unified product state from /api/axiom-os/state */}
+      <Reveal direction="up" delay={0.045}>
+        <AxiomOSStrip />
+      </Reveal>
+
       {/* Production-readiness strip — canonical /api/readiness consumer */}
       <Reveal direction="up" delay={0.05}>
         <ReadinessStrip />
@@ -542,6 +547,169 @@ interface ReadinessReportLite {
   categoryScores: { category: string; score: number; total: number; passing: number; partial: number; preview: number; failing: number; blocked: number }[];
   criticalFailures: { id: string; title: string; nextFix?: string }[];
   recommendedNextFixes: { id: string; title: string; reason: string; href?: string }[];
+}
+
+interface AxiomOSStateLite {
+  overallStatus: string;
+  sourceMode: string;
+  readinessScore: number;
+  trustScore: number;
+  safetyStatus: string;
+  generatedAt: string;
+  providers: {
+    provider: string;
+    mode: string;
+    headline: string;
+    connectionStatus: string;
+    missingRequirements: string[];
+    safeNextAction?: { label: string; href: string };
+  }[];
+  nextBestActions: { id: string; title: string; description: string; category: string; route?: string }[];
+  criticalBlockers: { area: string; reason: string; safeNextAction?: { label: string; href: string } }[];
+  limitations: string[];
+}
+
+function AxiomOSStrip() {
+  const [state, setState] = useState<AxiomOSStateLite | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+    fetch("/api/axiom-os/state", { credentials: "include" })
+      .then((r) => r.json())
+      .then((json: { ok?: boolean; data?: AxiomOSStateLite; error?: { userMessage?: string } }) => {
+        if (cancelled) return;
+        if (json.ok && json.data) setState(json.data);
+        else setError(json.error?.userMessage ?? "Axiom OS state unavailable.");
+      })
+      .catch((err) => {
+        if (cancelled) return;
+        setError(err instanceof Error ? err.message : "Network error.");
+      })
+      .finally(() => { if (!cancelled) setLoading(false); });
+    return () => { cancelled = true; };
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-5 mb-6">
+        <p className="text-[11px] font-mono text-zinc-500 uppercase tracking-[0.18em]">// axiom os</p>
+        <p className="text-sm text-zinc-400 mt-2">Composing unified product state…</p>
+      </div>
+    );
+  }
+  if (error || !state) {
+    return (
+      <div className="rounded-xl border border-zinc-700/30 bg-white/[0.02] p-5 mb-6">
+        <p className="text-[11px] font-mono text-zinc-500 uppercase tracking-[0.18em]">// axiom os · preview</p>
+        <p className="text-sm text-zinc-400 mt-2">{error ?? "Sign in to load unified state."}</p>
+      </div>
+    );
+  }
+
+  const readinessPct = Math.round(state.readinessScore * 100);
+  const trustPct = Math.round(state.trustScore * 100);
+  const tone =
+    state.overallStatus === "all_systems_live" ? "emerald" :
+    state.overallStatus === "partial_live"     ? "cyan"    :
+    state.overallStatus === "preview_mode"     ? "amber"   :
+    state.overallStatus === "blocked"          ? "rose"    : "zinc";
+  const toneClasses: Record<string, { border: string; bg: string; text: string; pill: string }> = {
+    emerald: { border: "border-emerald-500/[0.22]", bg: "bg-emerald-500/[0.05]", text: "text-emerald-300", pill: "bg-emerald-500/15 text-emerald-300" },
+    cyan:    { border: "border-cyan-500/[0.22]",    bg: "bg-cyan-500/[0.05]",    text: "text-cyan-300",    pill: "bg-cyan-500/15 text-cyan-300"    },
+    amber:   { border: "border-amber-500/[0.22]",   bg: "bg-amber-500/[0.05]",   text: "text-amber-300",   pill: "bg-amber-500/15 text-amber-300"   },
+    rose:    { border: "border-rose-500/[0.22]",    bg: "bg-rose-500/[0.05]",    text: "text-rose-300",    pill: "bg-rose-500/15 text-rose-300"    },
+    zinc:    { border: "border-zinc-700/30",        bg: "bg-white/[0.02]",       text: "text-zinc-300",    pill: "bg-zinc-700/40 text-zinc-300"     },
+  };
+  const t = toneClasses[tone];
+  const statusLabel = state.overallStatus.replace(/_/g, " ");
+
+  const providerToneOf = (mode: string): string =>
+    mode === "live" ? "bg-emerald-500/15 text-emerald-300 border-emerald-500/20" :
+    mode === "partial_live" ? "bg-cyan-500/15 text-cyan-300 border-cyan-500/20" :
+    mode === "preview" || mode === "expanding" ? "bg-amber-500/15 text-amber-300 border-amber-500/20" :
+    "bg-zinc-700/40 text-zinc-400 border-zinc-700/30";
+
+  return (
+    <div className={`rounded-xl border ${t.border} ${t.bg} p-5 mb-6`}>
+      <div className="flex items-start justify-between gap-4 mb-5 flex-wrap">
+        <div>
+          <p className="text-[11px] font-mono text-zinc-500 uppercase tracking-[0.18em] mb-1">// axiom os</p>
+          <div className="flex items-baseline gap-3 flex-wrap">
+            <span className={`text-2xl font-bold tracking-tight ${t.text} capitalize`}>{statusLabel}</span>
+            <span className={`text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded ${t.pill}`}>
+              {state.sourceMode}
+            </span>
+            <span className="text-xs text-zinc-500 font-mono">
+              · last sync {new Date(state.generatedAt).toLocaleTimeString()}
+            </span>
+          </div>
+          <p className="text-[11px] text-zinc-500 mt-1.5">{state.safetyStatus.replace(/_/g, " ")}</p>
+        </div>
+        <div className="flex items-center gap-4 text-right">
+          <div>
+            <p className={`text-2xl font-bold ${t.text}`}>{readinessPct}%</p>
+            <p className="text-[10px] text-zinc-500 uppercase tracking-wider">Readiness</p>
+          </div>
+          <div className="w-px h-10 bg-white/[0.06]" />
+          <div>
+            <p className={`text-2xl font-bold ${t.text}`}>{trustPct}%</p>
+            <p className="text-[10px] text-zinc-500 uppercase tracking-wider">Trust</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Provider chips */}
+      <div className="flex flex-wrap gap-2 mb-4">
+        {state.providers.map((p) => (
+          <Link
+            key={p.provider}
+            href={p.safeNextAction?.href ?? "#"}
+            className={`group inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border text-[11px] font-mono uppercase tracking-wider ${providerToneOf(p.mode)} hover:brightness-110 transition`}
+          >
+            <span className="font-semibold">{p.provider}</span>
+            <span className="opacity-70">·</span>
+            <span className="opacity-90">{p.mode.replace(/_/g, " ")}</span>
+          </Link>
+        ))}
+      </div>
+
+      {/* Critical blockers */}
+      {state.criticalBlockers.length > 0 && (
+        <div className="rounded-lg border border-rose-500/[0.22] bg-rose-500/[0.04] px-3 py-2 mb-3">
+          <p className="text-[10px] font-mono text-rose-300/80 uppercase tracking-[0.18em] mb-1">
+            // {state.criticalBlockers.length} critical blocker{state.criticalBlockers.length === 1 ? "" : "s"}
+          </p>
+          <p className="text-sm text-rose-200/90">
+            {state.criticalBlockers[0].area}: {state.criticalBlockers[0].reason}
+          </p>
+        </div>
+      )}
+
+      {/* Next best actions */}
+      {state.nextBestActions.length > 0 && (
+        <div>
+          <p className="text-[10px] font-mono text-zinc-500 uppercase tracking-[0.18em] mb-2">// next best actions</p>
+          <div className="grid sm:grid-cols-2 gap-2">
+            {state.nextBestActions.slice(0, 4).map((a) => (
+              <Link
+                key={a.id}
+                href={a.route ?? "#"}
+                className="flex items-start gap-2 rounded-lg border border-white/[0.06] bg-white/[0.02] p-3 hover:bg-white/[0.04] transition"
+              >
+                <ArrowRightIcon className="h-3.5 w-3.5 text-zinc-400 mt-0.5 shrink-0" />
+                <div className="min-w-0">
+                  <p className="text-sm text-zinc-200 truncate">{a.title}</p>
+                  <p className="text-[11px] text-zinc-500 line-clamp-2 mt-0.5">{a.description}</p>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
 }
 
 function ReadinessStrip() {

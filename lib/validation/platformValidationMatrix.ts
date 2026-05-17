@@ -269,6 +269,7 @@ export const VALIDATION_MATRIX: ValidationRow[] = [
   { id: "axiomos.api_actions",    area: "operating_loop", capability: "GET /api/axiom-os/next-actions — operator action surfaces only",                                              status: "passing", evidence: "app/api/axiom-os/next-actions/route.ts" },
   { id: "axiomos.api_safe_loop",  area: "operating_loop", capability: "POST /api/axiom-os/run-safe-loop — delegates to operating-loop runner, refuses approval / preflight / verify", status: "passing", evidence: "app/api/axiom-os/run-safe-loop/route.ts" },
   { id: "axiomos.safety_contract", area: "operating_loop", capability: "AxiomOS state always reports safetyStatus = approval_gated_no_destructive_execution",                          status: "passing", evidence: "lib/axiomOS/axiomOSModel.ts" },
+  { id: "axiomos.ui_strip",        area: "operating_loop", capability: "Command Center AxiomOSStrip — overall status + readiness + trust + provider chips + critical blockers + top-4 next actions",  status: "passing", evidence: "app/dashboard/command-center/page.tsx:AxiomOSStrip" },
 ];
 
 // ---------------------------------------------------------------------------
