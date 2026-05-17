@@ -249,6 +249,15 @@ export const VALIDATION_MATRIX: ValidationRow[] = [
   { id: "sec.test_compounded",     area: "security_scanner", capability: "vitest: 3 compound patterns + negative cases + sourceMode rollup",                                                  status: "passing", evidence: "lib/securityScanner/__tests__/compoundedRiskReasoner.test.ts" },
   { id: "sec.evidence_required",   area: "security_scanner", capability: "Every SecurityFinding carries evidence array or a limitation explaining why none was collected",                    status: "passing", evidence: "lib/securityScanner/vulnerabilityModel.ts:toSecurityFinding" },
   { id: "sec.compounded_no_apply", area: "security_scanner", capability: "Compounded findings explicitly remediationEligible:false — point at constituents, never claim a fix",                status: "passing", evidence: "lib/securityScanner/compoundedRiskReasoner.ts" },
+
+  // ---------------------------------------------------------------------------
+  // Enterprise Trust Center + audit-evidence productionization
+  // ---------------------------------------------------------------------------
+  { id: "trust.api_summary",   area: "compliance", capability: "GET /api/trust/summary — composite controls + evidence + sourceMode rollup", status: "passing", evidence: "app/api/trust/summary/route.ts" },
+  { id: "trust.api_controls",  area: "compliance", capability: "GET /api/trust/controls — control registry with status + evidence sources",  status: "passing", evidence: "app/api/trust/controls/route.ts" },
+  { id: "trust.api_evidence",  area: "compliance", capability: "GET /api/trust/evidence — tenant-scoped evidence list w/ control + kind filters", status: "passing", evidence: "app/api/trust/evidence/route.ts" },
+  { id: "trust.api_export",    area: "compliance", capability: "POST /api/trust/export — compliance bundle (9 kinds × JSON or NDJSON)",      status: "passing", evidence: "app/api/trust/export/route.ts" },
+  { id: "trust.honest_labels", area: "compliance", capability: "No SOC 2 / ISO / 'fully compliant' claims — labels are 'audit-ready evidence' / 'control evidence'", status: "passing", evidence: "lib/compliance/controlRegistry.ts" },
 ];
 
 // ---------------------------------------------------------------------------
