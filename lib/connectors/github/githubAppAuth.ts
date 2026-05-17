@@ -1,0 +1,183 @@
+/**
+ * GitHub App authentication.
+ *
+ * Mints the two-stage credential GitHub Apps require:
+ *
+ *   1. **App JWT** — signed with the App's private key (RS256). Valid for
+ *      10 minutes. Identifies "this is App #N" to GitHub.
+ *   2. **Installation access token** — POST to
+ *      /app/installations/{id}/access_tokens with the App JWT. Returns a
+ *      short-lived (1 hour) bearer token scoped to one installation.
+ *
+ * The installation token is what the rest of the platform actually uses
+ * to read repos / workflows / branch protection on behalf of the
+ * installed organisation.
+ *
+ * This module caches the installation token in-memory until ~5 minutes
+ * before its real expiry, so we don't pay the JWT-sign + HTTP round-trip
+ * on every API call.
+ *
+ * Hard rules:
+ *  - Never returns the private key or the JWT. Only the installation
+ *    token is exposed to other modules.
+ *  - Never logs key material — error messages strip BEGIN/END PRIVATE
+ *    KEY blocks.
+ *  - Server-only. Imports `node:crypto`.
+ */
+
+import "server-only";
+
+import { createSign } from "node:crypto";
+import { getGithubConfig, resolveGithubAppPrivateKey } from "./githubConfig";
+
+const GITHUB_API = "https://api.github.com";
+const JWT_TTL_SEC = 9 * 60;             // GitHub max is 10 min; we use 9 to allow for clock skew.
+const TOKEN_REFRESH_BUFFER_MS = 5 * 60_000; // Refresh installation tokens 5 min before expiry.
+
+// ---------------------------------------------------------------------------
+// JWT signing (RS256 — GitHub requires it)
+// ---------------------------------------------------------------------------
+
+interface JwtClaims {
+  iat: number;
+  exp: number;
+  iss: number;
+}
+
+function base64url(input: Buffer | string): string {
+  const buf = typeof input === "string" ? Buffer.from(input) : input;
+  return buf.toString("base64")
+    .replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+}
+
+function signJwt(appId: number, privateKey: string): string {
+  const now = Math.floor(Date.now() / 1000);
+  const header = { alg: "RS256", typ: "JWT" };
+  const claims: JwtClaims = {
+    iat: now - 30,           // 30s clock-skew tolerance backward.
+    exp: now + JWT_TTL_SEC,
+    iss: appId,
+  };
+  const headerB64 = base64url(JSON.stringify(header));
+  const claimsB64 = base64url(JSON.stringify(claims));
+  const signingInput = `${headerB64}.${claimsB64}`;
+  const signer = createSign("RSA-SHA256");
+  signer.update(signingInput);
+  signer.end();
+  const signature = signer.sign(privateKey);
+  return `${signingInput}.${base64url(signature)}`;
+}
+
+// ---------------------------------------------------------------------------
+// Installation token caching
+// ---------------------------------------------------------------------------
+
+interface CachedInstallationToken {
+  token: string;
+  expiresAt: number;
+  installationId: number;
+}
+
+let cached: CachedInstallationToken | undefined;
+
+function tokenIsFresh(c: CachedInstallationToken | undefined): boolean {
+  if (!c) return false;
+  return c.expiresAt - Date.now() > TOKEN_REFRESH_BUFFER_MS;
+}
+
+// ---------------------------------------------------------------------------
+// Public entry — resolve a usable installation token
+// ---------------------------------------------------------------------------
+
+export interface InstallationTokenResult {
+  ok: true;
+  token: string;
+  installationId: number;
+  expiresAt: number;
+}
+
+export interface InstallationTokenError {
+  ok: false;
+  errorCode: string;
+  message: string;
+}
+
+export type InstallationTokenOutcome = InstallationTokenResult | InstallationTokenError;
+
+export async function resolveGithubInstallationToken(): Promise<InstallationTokenOutcome> {
+  const cfg = getGithubConfig();
+  if (!cfg.appConfigured || !cfg.appId) {
+    return { ok: false, errorCode: "github.app_not_configured", message: "GITHUB_APP_ID + GITHUB_PRIVATE_KEY required for App auth." };
+  }
+  if (!cfg.installationId) {
+    return { ok: false, errorCode: "github.app_no_installation", message: "GITHUB_INSTALLATION_ID required to mint an installation access token." };
+  }
+
+  if (tokenIsFresh(cached) && cached!.installationId === cfg.installationId) {
+    return { ok: true, token: cached!.token, installationId: cached!.installationId, expiresAt: cached!.expiresAt };
+  }
+
+  const privateKey = resolveGithubAppPrivateKey();
+  if (!privateKey) {
+    return { ok: false, errorCode: "github.app_no_key", message: "GITHUB_PRIVATE_KEY not present on the host." };
+  }
+
+  let appJwt: string;
+  try {
+    appJwt = signJwt(cfg.appId, privateKey);
+  } catch (err) {
+    return {
+      ok: false,
+      errorCode: "github.app_jwt_sign_failed",
+      message: `Could not sign App JWT: ${redact(err)}`,
+    };
+  }
+
+  try {
+    const res = await fetch(`${GITHUB_API}/app/installations/${cfg.installationId}/access_tokens`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${appJwt}`,
+        Accept: "application/vnd.github+json",
+        "X-GitHub-Api-Version": "2022-11-28",
+        "User-Agent": "axiom-agent/1.0",
+      },
+    });
+    if (res.status === 401) {
+      return { ok: false, errorCode: "github.app_jwt_rejected", message: "GitHub rejected the App JWT (401). Verify GITHUB_APP_ID + GITHUB_PRIVATE_KEY match." };
+    }
+    if (res.status === 404) {
+      return { ok: false, errorCode: "github.app_installation_not_found", message: "Installation id not found for this App." };
+    }
+    if (!res.ok) {
+      return { ok: false, errorCode: "github.app_token_failed", message: `GitHub returned HTTP ${res.status}.` };
+    }
+    const body = (await res.json().catch(() => undefined)) as { token?: string; expires_at?: string } | undefined;
+    if (!body?.token || !body?.expires_at) {
+      return { ok: false, errorCode: "github.app_token_malformed", message: "GitHub returned no token / expiry." };
+    }
+    const expiresAt = Date.parse(body.expires_at);
+    cached = {
+      token: body.token,
+      expiresAt: Number.isFinite(expiresAt) ? expiresAt : Date.now() + 50 * 60_000,
+      installationId: cfg.installationId,
+    };
+    return { ok: true, token: cached.token, installationId: cached.installationId, expiresAt: cached.expiresAt };
+  } catch (err) {
+    return { ok: false, errorCode: "github.app_token_network", message: `Network error: ${redact(err)}` };
+  }
+}
+
+/** Test seam — drop the cache so a subsequent call re-mints. */
+export function clearInstallationTokenCache(): void {
+  cached = undefined;
+}
+
+// ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
+
+function redact(err: unknown): string {
+  const msg = err instanceof Error ? err.message : String(err);
+  return msg.replace(/-----BEGIN [A-Z ]+-----[\s\S]+?-----END [A-Z ]+-----/g, "-----PRIVATE KEY REDACTED-----");
+}

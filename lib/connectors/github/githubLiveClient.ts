@@ -96,15 +96,29 @@ function resolvePatToken(): string | undefined {
 export function createGithubClient(): GithubClient {
   const authPath = getGithubAuthPath();
   const pat = resolvePatToken();
-  const available = Boolean(pat); // App flow not yet implemented — PAT-only for now.
+  // Available when EITHER the App is configured (token minted on demand)
+  // OR a PAT is present. The App path is preferred when both exist.
+  const available = authPath === "github_app" || Boolean(pat);
 
   return {
     authPath,
     available,
 
     async get<T>(path: string, opts: { timeoutMs?: number } = {}): Promise<GithubResult<T>> {
-      if (!available || !pat) {
-        return failed<T>(0, "auth_failure", "No GitHub credential configured. Set GITHUB_PAT.");
+      // Resolve the bearer token: App installation token if configured,
+      // otherwise PAT. The App path mints + caches transparently.
+      let bearer: string | undefined;
+      if (authPath === "github_app") {
+        const { resolveGithubInstallationToken } = await import("./githubAppAuth");
+        const result = await resolveGithubInstallationToken();
+        if (result.ok) bearer = result.token;
+        else if (!pat) {
+          return failed<T>(0, "auth_failure", `GitHub App auth unavailable: ${result.errorCode}.`);
+        }
+      }
+      if (!bearer) bearer = pat;
+      if (!bearer) {
+        return failed<T>(0, "auth_failure", "No GitHub credential configured. Set GITHUB_APP_ID + GITHUB_PRIVATE_KEY (+ GITHUB_INSTALLATION_ID) or GITHUB_PAT.");
       }
       const url = path.startsWith("http") ? path : `${DEFAULT_BASE}${path.startsWith("/") ? "" : "/"}${path}`;
       const controller = new AbortController();
@@ -114,7 +128,7 @@ export function createGithubClient(): GithubClient {
         const res = await fetch(url, {
           method: "GET",
           headers: {
-            Authorization: `Bearer ${pat}`,
+            Authorization: `Bearer ${bearer}`,
             Accept: "application/vnd.github+json",
             "X-GitHub-Api-Version": "2022-11-28",
             "User-Agent": USER_AGENT,

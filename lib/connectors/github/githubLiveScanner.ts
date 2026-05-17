@@ -33,6 +33,25 @@ const DEFAULT_WORKFLOWS_PER_REPO = 10;
 // Outcome shape — superset of GithubPreviewSyncOutcome with honest limitations
 // ---------------------------------------------------------------------------
 
+/**
+ * Deployment environment surfaced from `/repos/{owner}/{repo}/environments`.
+ * Populated when the scanner has the `actions:read` or `administration:read`
+ * scope. Missing scope → record is omitted + a limitation is captured.
+ */
+export interface GithubDeploymentEnv {
+  repoId: string;
+  /** Environment name as GitHub returns it (e.g. "production"). */
+  name: string;
+  /** Number of required reviewers, if the API exposes the protection rule. */
+  requiredReviewers: number;
+  /** Wait timer in minutes — the GitHub deployment delay rule. */
+  waitTimerMin: number;
+  /** Whether deployments are restricted to specific branches. */
+  branchPolicyEnabled: boolean;
+  /** Honest source-tag — "live" for real fetch, "partial" if any field was unavailable. */
+  source: "live" | "partial";
+}
+
 export interface GithubLiveSyncOutcome extends GithubPreviewSyncOutcome {
   source: "live" | "partial";
   /** Authenticated identity that made these calls — never the token. */
@@ -41,6 +60,8 @@ export interface GithubLiveSyncOutcome extends GithubPreviewSyncOutcome {
   limitations: string[];
   /** Rate-limit snapshot at the end of the sync. */
   rateLimit: GithubRateLimit;
+  /** Optional — deployment environments discovered, when scope allows. */
+  deploymentEnvs?: GithubDeploymentEnv[];
 }
 
 export interface GithubLiveScannerInput {
@@ -87,6 +108,17 @@ interface ApiBranchProtection {
   required_signatures?: { enabled?: boolean } | null;
   required_status_checks?: { contexts?: string[] } | null;
   enforce_admins?: { enabled?: boolean } | null;
+}
+
+interface ApiEnvironment {
+  id: number;
+  name: string;
+  protection_rules?: Array<{
+    type: string;
+    reviewers?: unknown[];
+    wait_timer?: number;
+  }>;
+  deployment_branch_policy?: unknown;
 }
 
 // ---------------------------------------------------------------------------
@@ -155,9 +187,10 @@ export async function runLiveGithubSync(input: GithubLiveScannerInput): Promise<
     source: "live",
   }));
 
-  // 3) For each repo, fetch workflows + most recent run, plus branch protection.
+  // 3) For each repo, fetch workflows + most recent run, plus branch protection, plus deployment environments.
   const workflows: GithubWorkflowPreview[] = [];
   const protections: GithubBranchProtectionPreview[] = [];
+  const deploymentEnvs: GithubDeploymentEnv[] = [];
   const maxWorkflows = Math.min(Math.max(input.maxWorkflowsPerRepo ?? DEFAULT_WORKFLOWS_PER_REPO, 1), 30);
 
   for (const repo of apiRepos) {
@@ -224,6 +257,31 @@ export async function runLiveGithubSync(input: GithubLiveScannerInput): Promise<
     } else if (bpRes.errorKind === "permission_denied") {
       limitations.push(`Branch protection unavailable for ${repo.full_name} (token lacks admin:repo scope).`);
     }
+
+    // Deployment environments — best-effort. Missing scope returns 404 / 403.
+    const envRes = await client.get<{ environments?: ApiEnvironment[] }>(`/repos/${owner}/${repo.name}/environments`);
+    rateLimit = envRes.rateLimit;
+    if (envRes.ok && envRes.data?.environments) {
+      for (const env of envRes.data.environments) {
+        const requiredReviewers = (env.protection_rules ?? [])
+          .filter((r) => r.type === "required_reviewers")
+          .reduce((sum, r) => sum + (r.reviewers?.length ?? 0), 0);
+        const waitRule = (env.protection_rules ?? []).find((r) => r.type === "wait_timer");
+        deploymentEnvs.push({
+          repoId: `repo_${repo.id}`,
+          name: env.name,
+          requiredReviewers,
+          waitTimerMin: waitRule?.wait_timer ?? 0,
+          branchPolicyEnabled: Boolean(env.deployment_branch_policy),
+          source: "live",
+        });
+      }
+    } else if (envRes.errorKind === "permission_denied" || envRes.errorKind === "not_found") {
+      // Don't spam the limitations list — one entry per repo is enough.
+      if (envRes.errorKind === "permission_denied") {
+        limitations.push(`Deployment environments unavailable for ${repo.full_name} (token lacks actions:read).`);
+      }
+    }
   }
 
   const source: GithubLiveSyncOutcome["source"] = limitations.length === 0 ? "live" : "partial";
@@ -237,6 +295,7 @@ export async function runLiveGithubSync(input: GithubLiveScannerInput): Promise<
     authenticatedLogin,
     limitations,
     rateLimit,
+    deploymentEnvs,
   };
 }
 

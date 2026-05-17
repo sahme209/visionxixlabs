@@ -230,6 +230,15 @@ export const VALIDATION_MATRIX: ValidationRow[] = [
   { id: "prisma.migration_stabilization", area: "command_center", capability: "Prisma migration creates 5 stabilization-phase tables (audit / memory / desktop session / handoff / trace span)", status: "passing", evidence: "prisma/migrations/20260516120000_add_observability_and_desktop_models/migration.sql" },
   { id: "cc.readiness_strip",             area: "command_center", capability: "Command Center renders ReadinessStrip from /api/readiness — overall score, totals, critical failures, top-3 fixes", status: "passing", evidence: "app/dashboard/command-center/page.tsx:ReadinessStrip" },
   { id: "honesty.product_copy_clean",     area: "operating_loop", capability: "Product copy audit clean — zero 'Azure live' / 'GCP live' / 'book a call' / 'fix applied' / 'autonomous execution' false claims across 8 product surfaces", status: "passing", evidence: "audit by lib/readiness/productHonestyChecks.ts run against app/page.tsx, dashboard pages, docs" },
+
+  // ---------------------------------------------------------------------------
+  // GitHub / ReleaseOps productionization
+  // ---------------------------------------------------------------------------
+  { id: "gh.config_helper",          area: "github", capability: "GithubRuntimeConfig helper — mode, authPreference, appId, installationId, missing-config hint", status: "passing", evidence: "lib/connectors/github/githubConfig.ts" },
+  { id: "gh.app_auth",               area: "github", capability: "GitHub App auth path — JWT (RS256) + installation token mint + in-memory cache (5-min refresh)", status: "passing", evidence: "lib/connectors/github/githubAppAuth.ts" },
+  { id: "gh.client_dual_auth",       area: "github", capability: "Live client transparently prefers App auth when configured, falls back to PAT",                  status: "passing", evidence: "lib/connectors/github/githubLiveClient.ts" },
+  { id: "gh.deployment_env_discovery", area: "github", capability: "Deployment environment discovery — required reviewers, wait timer, branch policy",            status: "passing", evidence: "lib/connectors/github/githubLiveScanner.ts" },
+  { id: "gh.app_enterprise_path",    area: "github", capability: "GitHub App is the preferred enterprise auth path (vs PAT for dev/preview)",                     status: "preview", evidence: "lib/connectors/github/githubConfig.ts:authPreference", nextFix: "Requires GITHUB_APP_ID + GITHUB_PRIVATE_KEY + GITHUB_INSTALLATION_ID on host." },
 ];
 
 // ---------------------------------------------------------------------------
