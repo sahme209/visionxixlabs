@@ -220,6 +220,13 @@ export const VALIDATION_MATRIX: ValidationRow[] = [
   { id: "readiness.test_honesty",    area: "operating_loop", capability: "vitest: product honesty scanner unit tests",                            status: "passing", evidence: "lib/readiness/__tests__/productHonestyChecks.test.ts" },
   { id: "readiness.test_model",      area: "operating_loop", capability: "vitest: scoring + category summary helpers",                            status: "passing", evidence: "lib/readiness/__tests__/productionReadinessModel.test.ts" },
   { id: "readiness.test_op_loop",    area: "operating_loop", capability: "vitest: operating loop model + rollupSourceMode invariants",            status: "passing", evidence: "lib/operatingLoop/__tests__/operatingLoopModel.test.ts" },
+
+  // ---------------------------------------------------------------------------
+  // Gap closure + production hardening
+  // ---------------------------------------------------------------------------
+  { id: "prisma.migration_stabilization", area: "command_center", capability: "Prisma migration creates 5 stabilization-phase tables (audit / memory / desktop session / handoff / trace span)", status: "passing", evidence: "prisma/migrations/20260516120000_add_observability_and_desktop_models/migration.sql" },
+  { id: "cc.readiness_strip",             area: "command_center", capability: "Command Center renders ReadinessStrip from /api/readiness — overall score, totals, critical failures, top-3 fixes", status: "passing", evidence: "app/dashboard/command-center/page.tsx:ReadinessStrip" },
+  { id: "honesty.product_copy_clean",     area: "operating_loop", capability: "Product copy audit clean — zero 'Azure live' / 'GCP live' / 'book a call' / 'fix applied' / 'autonomous execution' false claims across 8 product surfaces", status: "passing", evidence: "audit by lib/readiness/productHonestyChecks.ts run against app/page.tsx, dashboard pages, docs" },
 ];
 
 // ---------------------------------------------------------------------------

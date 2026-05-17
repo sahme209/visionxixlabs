@@ -243,6 +243,11 @@ export default function CommandCenterPage() {
         })}
       </Stagger>
 
+      {/* Production-readiness strip — canonical /api/readiness consumer */}
+      <Reveal direction="up" delay={0.05}>
+        <ReadinessStrip />
+      </Reveal>
+
       {/* Security + Reliability + Observability strips — canonical posture aggregators */}
       <Reveal direction="up" delay={0.055}>
         <div className="grid md:grid-cols-3 gap-3 mb-6">
@@ -527,6 +532,127 @@ function ExecutiveSummaryBanner() {
           <span className="text-zinc-300">{summary.recommended}</span>
         </div>
       </div>
+    </div>
+  );
+}
+
+interface ReadinessReportLite {
+  overallScore: number;
+  generatedAt: string;
+  categoryScores: { category: string; score: number; total: number; passing: number; partial: number; preview: number; failing: number; blocked: number }[];
+  criticalFailures: { id: string; title: string; nextFix?: string }[];
+  recommendedNextFixes: { id: string; title: string; reason: string; href?: string }[];
+}
+
+function ReadinessStrip() {
+  const [report, setReport] = useState<ReadinessReportLite | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+    fetch("/api/readiness", { credentials: "include" })
+      .then((r) => r.json())
+      .then((json: { ok?: boolean; data?: ReadinessReportLite; error?: { userMessage?: string } }) => {
+        if (cancelled) return;
+        if (json.ok && json.data) {
+          setReport(json.data);
+        } else {
+          setError(json.error?.userMessage ?? "Readiness report unavailable.");
+        }
+      })
+      .catch((err) => {
+        if (cancelled) return;
+        setError(err instanceof Error ? err.message : "Network error.");
+      })
+      .finally(() => { if (!cancelled) setLoading(false); });
+    return () => { cancelled = true; };
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-5 mb-6">
+        <p className="text-[11px] font-mono text-zinc-500 uppercase tracking-[0.18em]">// production readiness</p>
+        <p className="text-sm text-zinc-400 mt-2">Composing readiness report…</p>
+      </div>
+    );
+  }
+  if (error || !report) {
+    return (
+      <div className="rounded-xl border border-amber-500/[0.18] bg-amber-500/[0.04] p-5 mb-6">
+        <p className="text-[11px] font-mono text-amber-300/80 uppercase tracking-[0.18em]">// production readiness · preview</p>
+        <p className="text-sm text-amber-200/80 mt-2">{error ?? "Readiness report not yet available — sign in to load."}</p>
+      </div>
+    );
+  }
+
+  const pct = Math.round(report.overallScore * 100);
+  const tone = pct >= 80 ? "emerald" : pct >= 60 ? "cyan" : pct >= 40 ? "amber" : "rose";
+  const toneClasses: Record<string, { border: string; bg: string; text: string }> = {
+    emerald: { border: "border-emerald-500/[0.22]", bg: "bg-emerald-500/[0.06]", text: "text-emerald-300" },
+    cyan:    { border: "border-cyan-500/[0.22]",    bg: "bg-cyan-500/[0.06]",    text: "text-cyan-300"    },
+    amber:   { border: "border-amber-500/[0.22]",   bg: "bg-amber-500/[0.06]",   text: "text-amber-300"   },
+    rose:    { border: "border-rose-500/[0.22]",    bg: "bg-rose-500/[0.06]",    text: "text-rose-300"    },
+  };
+  const t = toneClasses[tone];
+
+  const totalsRollup = report.categoryScores.reduce(
+    (acc, c) => ({
+      passing: acc.passing + c.passing,
+      partial: acc.partial + c.partial,
+      preview: acc.preview + c.preview,
+      blocked: acc.blocked + c.blocked,
+      failing: acc.failing + c.failing,
+    }),
+    { passing: 0, partial: 0, preview: 0, blocked: 0, failing: 0 },
+  );
+
+  return (
+    <div className={`rounded-xl border ${t.border} ${t.bg} p-5 mb-6`}>
+      <div className="flex items-start justify-between gap-4 mb-4 flex-wrap">
+        <div>
+          <p className="text-[11px] font-mono text-zinc-500 uppercase tracking-[0.18em]">// production readiness</p>
+          <div className="flex items-baseline gap-3 mt-1">
+            <span className={`text-3xl font-bold tracking-tight ${t.text}`}>{pct}%</span>
+            <span className="text-xs text-zinc-500 font-mono">
+              {report.categoryScores.length} categories · last sync {new Date(report.generatedAt).toLocaleTimeString()}
+            </span>
+          </div>
+        </div>
+        <div className="flex items-center gap-3 text-[10px] font-mono uppercase tracking-wider">
+          <span className="text-emerald-400">{totalsRollup.passing} pass</span>
+          <span className="text-cyan-400">{totalsRollup.partial} partial</span>
+          <span className="text-zinc-400">{totalsRollup.preview} preview</span>
+          <span className="text-amber-400">{totalsRollup.blocked} blocked</span>
+          <span className="text-rose-400">{totalsRollup.failing} failing</span>
+        </div>
+      </div>
+
+      {report.criticalFailures.length > 0 && (
+        <div className="rounded-lg border border-rose-500/[0.22] bg-rose-500/[0.04] px-3 py-2 mb-3">
+          <p className="text-[10px] font-mono text-rose-300/80 uppercase tracking-[0.18em] mb-1">
+            // {report.criticalFailures.length} critical failure{report.criticalFailures.length === 1 ? "" : "s"}
+          </p>
+          <p className="text-sm text-rose-200/90 truncate">{report.criticalFailures[0].title}</p>
+        </div>
+      )}
+
+      {report.recommendedNextFixes.length > 0 && (
+        <div>
+          <p className="text-[10px] font-mono text-zinc-500 uppercase tracking-[0.18em] mb-2">// next focused fixes</p>
+          <ul className="space-y-1.5">
+            {report.recommendedNextFixes.slice(0, 3).map((fix) => (
+              <li key={fix.id} className="flex items-start gap-2 text-[12px]">
+                <ArrowRightIcon className="h-3.5 w-3.5 text-zinc-500 mt-0.5 shrink-0" />
+                <div className="min-w-0">
+                  <span className="text-zinc-200">{fix.title}</span>
+                  <span className="text-zinc-500"> — {fix.reason}</span>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
     </div>
   );
 }
