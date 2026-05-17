@@ -34,45 +34,11 @@ const PROVIDER_COLOR = {
   GitHub: "text-violet-400 bg-violet-500/10 border-violet-500/20",
 } as const;
 
-interface PendingApproval {
-  id: string;
-  title: string;
-  provider: "AWS" | "Azure" | "GCP";
-  blastRadius: "contained" | "moderate" | "broad";
-  monthlySavings?: number;
-  riskLevel: "low" | "medium" | "high";
-}
-
-const PENDING_APPROVALS: PendingApproval[] = [
-  {
-    id: "approval_01",
-    title: "IAM policy modification · prod-api-role",
-    provider: "AWS",
-    blastRadius: "broad",
-    riskLevel: "high",
-  },
-  {
-    id: "approval_02",
-    title: "Right-size 3 EC2 instances · phase 3 of 4",
-    provider: "AWS",
-    blastRadius: "contained",
-    monthlySavings: 800,
-    riskLevel: "low",
-  },
-  {
-    id: "approval_03",
-    title: "Delete 7 unused EBS volumes",
-    provider: "AWS",
-    blastRadius: "contained",
-    monthlySavings: 380,
-    riskLevel: "low",
-  },
-];
-
-const APPROVAL_RISK = {
-  low: "text-emerald-400 bg-emerald-500/10 border-emerald-500/20",
-  medium: "text-amber-400 bg-amber-500/10 border-amber-500/20",
-  high: "text-red-400 bg-red-500/10 border-red-500/20",
+const APPROVAL_RISK: Record<"low" | "medium" | "high" | "critical", string> = {
+  low:      "text-emerald-400 bg-emerald-500/10 border-emerald-500/20",
+  medium:   "text-amber-400 bg-amber-500/10 border-amber-500/20",
+  high:     "text-rose-400 bg-rose-500/10 border-rose-500/20",
+  critical: "text-rose-400 bg-rose-500/15 border-rose-500/30",
 };
 
 export default function CommandCenterPage() {
@@ -90,26 +56,33 @@ export default function CommandCenterPage() {
 
   return (
     <div className="relative">
-      {/* Hero header */}
+      {/* Hero header — premium operator zone. Calm radial depth, honest
+          source-mode eyebrow from canonical state, refined typography. */}
       <Reveal direction="up" blur>
-        <div className="mb-8">
-          <div className="flex items-center justify-between flex-wrap gap-4 mb-3">
-            <div className="flex items-center gap-3">
-              <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_12px_rgba(52,211,153,0.6)]" />
-              <p className="text-[10px] font-semibold text-emerald-400 uppercase tracking-widest">
-                Live · Agent operational
+        <div className="relative mb-10 rounded-3xl border border-white/[0.05] bg-gradient-to-br from-white/[0.025] via-white/[0.015] to-transparent p-6 md:p-8 overflow-hidden">
+          {/* Calm depth — radial glow behind the heading, never on top of content */}
+          <div
+            className="absolute inset-0 -z-10 opacity-90 pointer-events-none"
+            style={{
+              background:
+                "radial-gradient(900px 320px at 12% 0%, rgba(99,102,241,0.10), transparent 60%), radial-gradient(700px 260px at 88% 110%, rgba(45,212,191,0.06), transparent 60%)",
+            }}
+            aria-hidden
+          />
+          <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/[0.08] to-transparent" aria-hidden />
+
+          <div className="grid md:grid-cols-[1fr_auto] items-end gap-6">
+            <div className="min-w-0">
+              <HeroEyebrow currentTime={currentTime} />
+              <h1 className="text-4xl md:text-5xl font-bold text-white tracking-[-0.045em] leading-[1.05] mt-3 mb-3">
+                Operational <span className="text-gradient">Command Center.</span>
+              </h1>
+              <p className="text-dim-paragraph text-[15px] max-w-2xl leading-relaxed">
+                One canonical view of every source, finding, plan, and execution. <span className="dim-1">Agent reasoning is auditable. Every action is approval-gated. Execution is disabled by default.</span>
               </p>
             </div>
-            <span className="text-[10px] font-mono text-zinc-500">
-              {currentTime || "—:—:—"} · auto-refresh on
-            </span>
+            <HeroStateRibbon />
           </div>
-          <h1 className="text-3xl md:text-4xl font-bold text-white tracking-[-0.04em] mb-2">
-            Operational <span className="text-gradient">Command Center.</span>
-          </h1>
-          <p className="text-dim-paragraph text-base max-w-2xl leading-relaxed">
-            Real-time view of every scan, finding, plan, and execution. <span className="dim-1">Agent reasoning is auditable. Every action is reversible.</span>
-          </p>
         </div>
       </Reveal>
 
@@ -173,47 +146,9 @@ export default function CommandCenterPage() {
             <LiveProvidersStrip />
           </Reveal>
 
-          {/* Pending Approvals */}
+          {/* Pending Approvals — live fetch from /api/orchestration/approvals */}
           <Reveal direction="up" delay={0.15}>
-            <div className="rounded-2xl border border-amber-500/15 bg-amber-500/[0.02] overflow-hidden">
-              <div className="px-5 py-3.5 border-b border-amber-500/15 bg-amber-500/[0.04]">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <LockClosedIcon className="h-3.5 w-3.5 text-amber-400" />
-                    <h3 className="text-sm font-semibold text-white">Pending approvals</h3>
-                  </div>
-                  <span className="text-[10px] font-bold text-amber-400 bg-amber-500/15 border border-amber-500/30 rounded-full px-1.5 py-px">
-                    {PENDING_APPROVALS.length}
-                  </span>
-                </div>
-              </div>
-              <div className="p-3 space-y-2">
-                {PENDING_APPROVALS.map((a) => (
-                  <button
-                    key={a.id}
-                    className="w-full text-left rounded-xl bg-white/[0.02] border border-white/[0.04] p-3 hover:border-amber-500/20 hover:bg-amber-500/[0.04] transition-all group"
-                  >
-                    <div className="flex items-center gap-2 mb-1.5">
-                      <span className={`text-[9px] font-bold uppercase tracking-wider border rounded-full px-1.5 py-px ${PROVIDER_COLOR[a.provider]}`}>
-                        {a.provider}
-                      </span>
-                      <span className={`text-[9px] font-semibold uppercase tracking-wider border rounded-full px-1.5 py-px ${APPROVAL_RISK[a.riskLevel]}`}>
-                        {a.riskLevel} risk
-                      </span>
-                    </div>
-                    <p className="text-xs text-white font-medium leading-snug mb-1.5">{a.title}</p>
-                    <div className="flex items-center justify-between">
-                      <span className="text-[10px] text-zinc-500 capitalize">{a.blastRadius} blast</span>
-                      {a.monthlySavings && (
-                        <span className="text-[10px] text-emerald-400 font-semibold">
-                          +${a.monthlySavings}/mo
-                        </span>
-                      )}
-                    </div>
-                  </button>
-                ))}
-              </div>
-            </div>
+            <LivePendingApprovals />
           </Reveal>
 
           {/* Quick Actions */}
@@ -247,33 +182,9 @@ export default function CommandCenterPage() {
             </div>
           </Reveal>
 
-          {/* Agent status */}
+          {/* Agent status — honest values from canonical AxiomOSState */}
           <Reveal direction="up" delay={0.25}>
-            <div className="rounded-2xl border border-violet-500/15 bg-gradient-to-br from-violet-500/[0.05] via-transparent to-fuchsia-500/[0.03] p-4 relative overflow-hidden">
-              <div className="absolute -top-10 -right-10 w-32 h-32 rounded-full bg-violet-500/[0.08] blur-[40px] pointer-events-none" aria-hidden />
-              <div className="relative">
-                <div className="flex items-center gap-2 mb-3">
-                  <CpuChipIcon className="h-4 w-4 text-violet-400" />
-                  <h3 className="text-sm font-semibold text-white">Agent status</h3>
-                </div>
-                <div className="space-y-2 text-[11px]">
-                  {[
-                    { label: "Reasoning loop", value: "Active", color: "text-emerald-400", dot: "bg-emerald-400 animate-pulse" },
-                    { label: "Confidence", value: "0.92", color: "text-emerald-400", dot: "bg-emerald-400" },
-                    { label: "Memory", value: "1,847 events", color: "text-zinc-300", dot: "bg-violet-400" },
-                    { label: "Outcome safety", value: "Learning", color: "text-amber-400", dot: "bg-amber-400 animate-pulse" },
-                  ].map((row) => (
-                    <div key={row.label} className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <span className={`w-1.5 h-1.5 rounded-full ${row.dot}`} />
-                        <span className="text-zinc-500">{row.label}</span>
-                      </div>
-                      <span className={`font-medium ${row.color}`}>{row.value}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
+            <LiveAgentStatusPanel />
           </Reveal>
 
           {/* Onboarding progress — observation-driven journey */}
@@ -319,50 +230,104 @@ export default function CommandCenterPage() {
 }
 
 // ---------------------------------------------------------------------------
-// Executive summary banner — memory-driven, demo-state for now
+// Executive summary banner — honest values from canonical AxiomOSState. No
+// fabricated dollar savings, no fabricated confidence percentages, no fake
+// "this week" event counts. Surfaces the same shape as before (opener +
+// 3 highlights + next-action) but every value is read from a real source.
 // ---------------------------------------------------------------------------
 
 function ExecutiveSummaryBanner() {
-  // Demo data — will be replaced by real summary fetch when /api/operations/summary is wired.
-  const summary = {
-    opener: "26 operational events this week — 4 scans observed, 6 changes applied.",
-    highlights: [
-      { headline: "$4,200/mo in savings locked", detail: "Confirmed by post-execution verification.", severity: "success" as const, link: { label: "Open Memory", href: "/dashboard/memory" } },
-      { headline: "1 service requires attention", detail: "auth-gateway recurring in finding queue — investigate root cause.", severity: "warning" as const, link: { label: "Open Topology", href: "/dashboard/topology" } },
-      { headline: "Agent confidence trending up", detail: "+4 pts week over week — outcomes validating the reasoning.", severity: "info" as const, link: { label: "Why?", href: "/docs/architecture#layers" } },
-    ],
-    recommended: "Address auth-gateway recurring findings before approving new high-risk plans.",
-  };
+  const [state, setState] = useState<AxiomOSStateLite | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+    fetch("/api/axiom-os/state", { credentials: "include" })
+      .then((r) => r.json())
+      .then((json: { ok?: boolean; data?: AxiomOSStateLite }) => {
+        if (cancelled) return;
+        if (json.ok && json.data) setState(json.data);
+      })
+      .catch(() => {})
+      .finally(() => { if (!cancelled) setLoading(false); });
+    return () => { cancelled = true; };
+  }, []);
+
+  const liveProviders = state?.providers?.filter((p) => p.mode === "live").length ?? 0;
+  const totalProviders = state?.providers?.length ?? 0;
+  const blockers = state?.criticalBlockers ?? [];
+  const limitations = state?.limitations ?? [];
+  const pendingApprovals = state?.approvalPosture?.data?.pendingCount ?? 0;
+  const topAction = state?.nextBestActions?.[0];
+  const readinessPct = state ? Math.round(state.readinessScore * 100) : null;
+  const trustPct = state ? Math.round(state.trustScore * 100) : null;
+  const sourceMode = state?.sourceMode ?? "preview";
+
+  const opener = state
+    ? `${liveProviders}/${totalProviders} providers live · ${pendingApprovals} pending approvals · readiness ${readinessPct ?? "—"}% · trust ${trustPct ?? "—"}%.`
+    : loading
+      ? "Composing operator summary from canonical state…"
+      : "Sign in to load canonical operator summary.";
+
+  const highlights: { headline: string; detail: string; severity: "success" | "warning" | "info"; link: { label: string; href: string } }[] = [];
+  if (state) {
+    highlights.push({
+      headline: blockers.length === 0 ? "No critical blockers" : `${blockers.length} critical blocker${blockers.length === 1 ? "" : "s"}`,
+      detail: blockers.length === 0 ? "All canonical sections report green for the current source mode." : `${blockers[0].area}: ${blockers[0].reason}`,
+      severity: blockers.length === 0 ? "success" : "warning",
+      link: { label: blockers.length === 0 ? "Open Axiom OS" : "Resolve blocker", href: blockers[0]?.safeNextAction?.href ?? "/dashboard/axiom-os" },
+    });
+    highlights.push({
+      headline: `${pendingApprovals} approval${pendingApprovals === 1 ? "" : "s"} awaiting operator`,
+      detail: pendingApprovals === 0 ? "Approval queue is empty — agent has no proposed changes pending." : "Open the approval center to review change summaries, blast radius, and rollback plans.",
+      severity: pendingApprovals > 0 ? "warning" : "info",
+      link: { label: "Open approvals", href: "/dashboard/orchestration/approvals" },
+    });
+    highlights.push({
+      headline: `Source mode: ${sourceMode.replace(/_/g, " ")}`,
+      detail: limitations[0] ?? "Every section reports its source honestly — no live claims without backing.",
+      severity: sourceMode === "live" ? "success" : "info",
+      link: { label: "Why?", href: "/docs/architecture#source-modes" },
+    });
+  }
+
+  const recommended = topAction?.title ?? (state ? "All next-best actions complete — agent is idle." : "—");
+  const recommendedHref = topAction?.route ?? "/dashboard/axiom-os";
 
   return (
     <div className="mb-6 rounded-2xl border border-violet-500/15 bg-gradient-to-br from-violet-500/[0.04] via-transparent to-fuchsia-500/[0.03] p-5 relative overflow-hidden">
       <div className="absolute -top-12 -right-12 w-48 h-48 rounded-full bg-violet-500/[0.06] blur-[60px] pointer-events-none" aria-hidden />
       <div className="relative">
-        <div className="flex items-center gap-2 mb-3">
+        <div className="flex items-center gap-2 mb-3 flex-wrap">
           <CpuChipIcon className="h-4 w-4 text-violet-400" />
-          <p className="text-[10px] font-semibold text-violet-400 uppercase tracking-widest">Executive summary · this week</p>
-          <span className="text-[9px] font-semibold text-zinc-500 bg-white/[0.04] border border-white/[0.06] rounded-full px-1.5 py-px uppercase tracking-wider">Memory-driven</span>
+          <p className="text-[10px] font-semibold text-violet-400 uppercase tracking-widest">Executive summary</p>
+          <span className="text-[9px] font-semibold text-zinc-400 bg-white/[0.04] border border-white/[0.06] rounded-full px-1.5 py-px uppercase tracking-wider">
+            from /api/axiom-os/state
+          </span>
         </div>
-        <p className="text-sm font-semibold text-white mb-4 leading-relaxed">{summary.opener}</p>
-        <div className="grid sm:grid-cols-3 gap-2.5 mb-4">
-          {summary.highlights.map((h, i) => {
-            const tint =
-              h.severity === "success" ? "border-emerald-500/15 bg-emerald-500/[0.03]" :
-              h.severity === "warning" ? "border-amber-500/15 bg-amber-500/[0.03]" :
-              "border-blue-500/15 bg-blue-500/[0.03]";
-            return (
-              <Link key={i} href={h.link.href} className={`rounded-xl border ${tint} p-3 hover:border-white/[0.18] transition-colors group`}>
-                <p className="text-xs font-bold text-white mb-1 leading-snug">{h.headline}</p>
-                <p className="text-[11px] text-zinc-400 leading-relaxed">{h.detail}</p>
-                <p className="text-[10px] text-zinc-500 mt-2 group-hover:text-white transition-colors">{h.link.label} →</p>
-              </Link>
-            );
-          })}
-        </div>
-        <div className="flex items-center gap-2 text-xs text-zinc-400">
+        <p className="text-sm font-semibold text-white mb-4 leading-relaxed">{opener}</p>
+        {highlights.length > 0 && (
+          <div className="grid sm:grid-cols-3 gap-2.5 mb-4">
+            {highlights.map((h, i) => {
+              const tint =
+                h.severity === "success" ? "border-emerald-500/15 bg-emerald-500/[0.03]" :
+                h.severity === "warning" ? "border-amber-500/15 bg-amber-500/[0.03]" :
+                "border-blue-500/15 bg-blue-500/[0.03]";
+              return (
+                <Link key={i} href={h.link.href} className={`rounded-xl border ${tint} p-3 hover:border-white/[0.18] transition-colors group`}>
+                  <p className="text-xs font-bold text-white mb-1 leading-snug">{h.headline}</p>
+                  <p className="text-[11px] text-zinc-400 leading-relaxed">{h.detail}</p>
+                  <p className="text-[10px] text-zinc-500 mt-2 group-hover:text-white transition-colors">{h.link.label} →</p>
+                </Link>
+              );
+            })}
+          </div>
+        )}
+        <Link href={recommendedHref} className="flex items-center gap-2 text-xs text-zinc-400 hover:text-white transition-colors group">
           <span className="text-[10px] font-semibold text-amber-400 uppercase tracking-widest">Next best action:</span>
-          <span className="text-zinc-300">{summary.recommended}</span>
-        </div>
+          <span className="text-zinc-300 group-hover:text-white transition-colors">{recommended}</span>
+          <ArrowRightIcon className="h-3 w-3 text-zinc-600 group-hover:text-amber-300 group-hover:translate-x-0.5 transition-all" />
+        </Link>
       </div>
     </div>
   );
@@ -374,6 +339,96 @@ interface ReadinessReportLite {
   categoryScores: { category: string; score: number; total: number; passing: number; partial: number; preview: number; failing: number; blocked: number }[];
   criticalFailures: { id: string; title: string; nextFix?: string }[];
   recommendedNextFixes: { id: string; title: string; reason: string; href?: string }[];
+}
+
+// ---------------------------------------------------------------------------
+// HeroEyebrow — honest source-mode pill driven by /api/axiom-os/state. Never
+// claims "Live · Agent operational" unconditionally. Falls back to a calm
+// "preview" pill until canonical state arrives.
+// ---------------------------------------------------------------------------
+
+function HeroEyebrow({ currentTime }: { currentTime: string }) {
+  const [state, setState] = useState<AxiomOSStateLite | null>(null);
+  useEffect(() => {
+    let cancelled = false;
+    fetch("/api/axiom-os/state", { credentials: "include" })
+      .then((r) => r.json())
+      .then((json: { ok?: boolean; data?: AxiomOSStateLite }) => {
+        if (cancelled) return;
+        if (json.ok && json.data) setState(json.data);
+      })
+      .catch(() => {});
+    return () => { cancelled = true; };
+  }, []);
+
+  const sourceMode = state?.sourceMode ?? "preview";
+  const tone =
+    sourceMode === "live"           ? { dot: "bg-emerald-400 animate-pulse shadow-[0_0_12px_rgba(52,211,153,0.5)]", text: "text-emerald-300", pill: "border-emerald-500/[0.25]" } :
+    sourceMode === "partial_live"   ? { dot: "bg-cyan-400 animate-pulse",     text: "text-cyan-300",    pill: "border-cyan-500/[0.25]"    } :
+    sourceMode === "expanding"      ? { dot: "bg-amber-400 animate-pulse",    text: "text-amber-300",   pill: "border-amber-500/[0.25]"   } :
+    sourceMode === "blocked"        ? { dot: "bg-rose-400",                   text: "text-rose-300",    pill: "border-rose-500/[0.25]"    } :
+    sourceMode === "disabled"       ? { dot: "bg-zinc-600",                   text: "text-zinc-400",    pill: "border-zinc-700/40"        } :
+                                      { dot: "bg-amber-400",                  text: "text-amber-300",   pill: "border-amber-500/[0.18]"   };
+
+  return (
+    <div className="flex items-center gap-3 flex-wrap">
+      <span className={`inline-flex items-center gap-2 rounded-full border ${tone.pill} bg-white/[0.02] px-2.5 py-1`}>
+        <span className={`w-2 h-2 rounded-full ${tone.dot}`} />
+        <span className={`text-[10px] font-semibold uppercase tracking-widest ${tone.text}`}>
+          {sourceMode === "live" ? "Live · canonical state" :
+           sourceMode === "partial_live" ? "Partial · live signals" :
+           sourceMode === "expanding" ? "Expanding · adapter foundation" :
+           sourceMode === "blocked" ? "Blocked · operator action required" :
+           sourceMode === "disabled" ? "Disabled" :
+           "Preview · awaiting provider connect"}
+        </span>
+      </span>
+      <span className="text-[10px] font-mono text-zinc-500">{currentTime || "—:—:—"} local</span>
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// HeroStateRibbon — premium readiness / trust / safety stat trio. All values
+// derived from canonical state. Safety is a literal — never derived.
+// ---------------------------------------------------------------------------
+
+function HeroStateRibbon() {
+  const [state, setState] = useState<AxiomOSStateLite | null>(null);
+  useEffect(() => {
+    let cancelled = false;
+    fetch("/api/axiom-os/state", { credentials: "include" })
+      .then((r) => r.json())
+      .then((json: { ok?: boolean; data?: AxiomOSStateLite }) => {
+        if (cancelled) return;
+        if (json.ok && json.data) setState(json.data);
+      })
+      .catch(() => {});
+    return () => { cancelled = true; };
+  }, []);
+
+  const readinessPct = state ? Math.round(state.readinessScore * 100) : null;
+  const trustPct = state ? Math.round(state.trustScore * 100) : null;
+
+  const RibbonStat = ({ label, value, tone }: { label: string; value: string; tone: string }) => (
+    <div className="text-right min-w-[5rem]">
+      <p className={`text-2xl font-bold tracking-tight leading-none ${tone}`}>{value}</p>
+      <p className="text-[10px] text-zinc-500 uppercase tracking-widest mt-1.5">{label}</p>
+    </div>
+  );
+
+  return (
+    <div className="hidden md:flex items-end gap-5 rounded-2xl border border-white/[0.06] bg-white/[0.025] backdrop-blur-sm px-5 py-4">
+      <RibbonStat label="Readiness" value={readinessPct !== null ? `${readinessPct}%` : "—"} tone="text-white" />
+      <div className="w-px h-9 bg-white/[0.08]" />
+      <RibbonStat label="Trust" value={trustPct !== null ? `${trustPct}%` : "—"} tone="text-white" />
+      <div className="w-px h-9 bg-white/[0.08]" />
+      <div className="text-right min-w-[8rem]">
+        <p className="text-[12px] font-semibold leading-none text-emerald-300">Approval-gated</p>
+        <p className="text-[10px] text-zinc-500 uppercase tracking-widest mt-1.5">Safety</p>
+      </div>
+    </div>
+  );
 }
 
 /** Client-driven KPI strip — consumes /api/axiom-os/state. Replaces the
@@ -479,9 +534,45 @@ interface AxiomOSStateLite {
     lastScannedAt?: string;
     safeNextAction?: { label: string; href: string };
   }[];
+  operatingLoops: {
+    provider: string;
+    currentStage: string;
+    status: string;
+    sourceMode: string;
+    attentionRequiredCount: number;
+  }[];
+  approvalPosture: {
+    status: string;
+    sourceMode: string;
+    data: { pendingCount: number; highRiskCount: number; expiredCount: number };
+    limitations: string[];
+  };
+  auditPosture: {
+    status: string;
+    sourceMode: string;
+    data: { recentEventCount: number; persistent: boolean };
+    limitations: string[];
+  };
+  memoryPosture: {
+    status: string;
+    sourceMode: string;
+    data: { recordCount: number; persistent: boolean };
+    limitations: string[];
+  };
   nextBestActions: { id: string; title: string; description: string; category: string; route?: string }[];
   criticalBlockers: { area: string; reason: string; safeNextAction?: { label: string; href: string } }[];
   limitations: string[];
+}
+
+interface ApprovalRequestLite {
+  id: string;
+  provider: string;
+  riskLevel: "low" | "medium" | "high" | "critical";
+  changeSummary: string;
+  status: string;
+  blastRadius?: string;
+  expiresAt: string;
+  affectedResources?: string[];
 }
 
 function AxiomOSStrip() {
@@ -1165,6 +1256,245 @@ function LiveProvidersStrip() {
         >
           + Connect provider
         </Link>
+      </div>
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// LivePendingApprovals — fetches /api/orchestration/approvals and renders
+// only pending requests. Replaces a static array of 3 fake AWS approvals
+// (IAM policy modification, EC2 right-size with "+$800/mo", EBS delete with
+// "+$380/mo") that fabricated dollar savings the platform cannot calculate.
+// Honest empty state when the queue is empty.
+// ---------------------------------------------------------------------------
+
+function LivePendingApprovals() {
+  const [approvals, setApprovals] = useState<ApprovalRequestLite[] | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [sourceMode, setSourceMode] = useState<string>("preview");
+
+  useEffect(() => {
+    let cancelled = false;
+
+    Promise.all([
+      fetch("/api/orchestration/approvals", { credentials: "include" })
+        .then((r) => r.json())
+        .then((json: { ok?: boolean; data?: { approvals: ApprovalRequestLite[] }; error?: { userMessage?: string } }) => {
+          if (cancelled) return;
+          if (json.ok && json.data) setApprovals(json.data.approvals);
+          else setError(json.error?.userMessage ?? "Approval queue unavailable.");
+        }),
+      fetch("/api/axiom-os/state", { credentials: "include" })
+        .then((r) => r.json())
+        .then((json: { ok?: boolean; data?: AxiomOSStateLite }) => {
+          if (cancelled) return;
+          if (json.ok && json.data?.approvalPosture?.sourceMode) setSourceMode(json.data.approvalPosture.sourceMode);
+        })
+        .catch(() => {}),
+    ])
+      .catch((err) => {
+        if (cancelled) return;
+        setError(err instanceof Error ? err.message : "Network error.");
+      })
+      .finally(() => { if (!cancelled) setLoading(false); });
+
+    return () => { cancelled = true; };
+  }, []);
+
+  const pending = (approvals ?? []).filter((a) => a.status === "pending");
+
+  return (
+    <div className="rounded-2xl border border-amber-500/15 bg-amber-500/[0.02] overflow-hidden">
+      <div className="px-5 py-3.5 border-b border-amber-500/15 bg-amber-500/[0.04]">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <LockClosedIcon className="h-3.5 w-3.5 text-amber-400" />
+            <h3 className="text-sm font-semibold text-white">Pending approvals</h3>
+            <span className="text-[9px] font-mono text-zinc-500 uppercase tracking-wider bg-white/[0.04] border border-white/[0.06] rounded px-1.5 py-px">
+              {sourceMode.replace(/_/g, " ")}
+            </span>
+          </div>
+          <span className="text-[10px] font-bold text-amber-400 bg-amber-500/15 border border-amber-500/30 rounded-full px-1.5 py-px">
+            {loading ? "…" : pending.length}
+          </span>
+        </div>
+      </div>
+
+      {loading && (
+        <div className="px-5 py-6 text-[11px] text-zinc-500 font-mono uppercase tracking-[0.18em]">
+          // composing approval queue…
+        </div>
+      )}
+      {!loading && error && (
+        <div className="px-5 py-4">
+          <p className="text-[11px] font-mono text-amber-300/80 uppercase tracking-[0.18em] mb-1">// queue unavailable</p>
+          <p className="text-[12px] text-zinc-400">{error}</p>
+        </div>
+      )}
+      {!loading && !error && pending.length === 0 && (
+        <div className="px-5 py-5">
+          <p className="text-[12px] text-zinc-300 font-semibold mb-1">Queue is empty.</p>
+          <p className="text-[11px] text-zinc-500 leading-relaxed">
+            No proposed changes are waiting for operator review. Approvals are created when the agent prepares an execution plan that exceeds your blast-radius policy.
+          </p>
+        </div>
+      )}
+
+      {!loading && !error && pending.length > 0 && (
+        <div className="p-3 space-y-2">
+          {pending.slice(0, 6).map((a) => {
+            const providerKey =
+              a.provider === "aws"     ? "AWS" :
+              a.provider === "azure"   ? "Azure" :
+              a.provider === "gcp"     ? "GCP" :
+              a.provider === "github"  ? "GitHub" : null;
+            const chipClass = providerKey ? PROVIDER_COLOR[providerKey] : "text-zinc-400 bg-white/[0.04] border-white/[0.08]";
+            const riskClass = APPROVAL_RISK[a.riskLevel] ?? APPROVAL_RISK.medium;
+            return (
+              <Link
+                key={a.id}
+                href={`/dashboard/orchestration/approvals?id=${encodeURIComponent(a.id)}`}
+                className="block rounded-xl bg-white/[0.02] border border-white/[0.04] p-3 hover:border-amber-500/20 hover:bg-amber-500/[0.04] transition-all group"
+              >
+                <div className="flex items-center gap-2 mb-1.5">
+                  <span className={`text-[9px] font-bold uppercase tracking-wider border rounded-full px-1.5 py-px ${chipClass}`}>
+                    {providerKey ?? a.provider}
+                  </span>
+                  <span className={`text-[9px] font-semibold uppercase tracking-wider border rounded-full px-1.5 py-px ${riskClass}`}>
+                    {a.riskLevel} risk
+                  </span>
+                </div>
+                <p className="text-xs text-white font-medium leading-snug mb-1.5 line-clamp-2">{a.changeSummary}</p>
+                <div className="flex items-center justify-between text-[10px]">
+                  <span className="text-zinc-500 capitalize">
+                    {a.blastRadius ? `${a.blastRadius} blast` : "blast — unknown"}
+                  </span>
+                  <span className="text-zinc-500 font-mono">
+                    expires {new Date(a.expiresAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                  </span>
+                </div>
+              </Link>
+            );
+          })}
+        </div>
+      )}
+
+      <div className="px-3 pb-3 pt-1">
+        <Link
+          href="/dashboard/orchestration/approvals"
+          className="flex items-center justify-center gap-1.5 w-full text-[11px] text-zinc-400 hover:text-white border border-dashed border-white/[0.1] hover:border-white/[0.2] rounded-xl py-2 transition-colors"
+        >
+          Open approval center →
+        </Link>
+      </div>
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// LiveAgentStatusPanel — replaces the static "0.92 confidence / 1,847 events
+// / Learning" agent-status block. Every row is derived from canonical state:
+//   - Reasoning loop: in_progress / paused / idle from operatingLoops[]
+//   - Audit log:      auditPosture.data.recentEventCount + persistence flag
+//   - Memory store:   memoryPosture.data.recordCount + persistence flag
+//   - Safety:         literal safetyStatus from AxiomOSState
+// No confidence percentage is shown — the platform does not compute one.
+// ---------------------------------------------------------------------------
+
+function LiveAgentStatusPanel() {
+  const [state, setState] = useState<AxiomOSStateLite | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+    fetch("/api/axiom-os/state", { credentials: "include" })
+      .then((r) => r.json())
+      .then((json: { ok?: boolean; data?: AxiomOSStateLite }) => {
+        if (cancelled) return;
+        if (json.ok && json.data) setState(json.data);
+      })
+      .catch(() => {})
+      .finally(() => { if (!cancelled) setLoading(false); });
+    return () => { cancelled = true; };
+  }, []);
+
+  const loops = state?.operatingLoops ?? [];
+  const inProgress = loops.filter((l) => l.status === "in_progress").length;
+  const paused = loops.filter((l) => l.status === "paused_for_approval" || l.status === "paused_for_user_input").length;
+
+  const audit = state?.auditPosture;
+  const memory = state?.memoryPosture;
+
+  const rows: { label: string; value: string; tone: "live" | "preview" | "blocked" | "info" }[] = [];
+  if (state) {
+    rows.push({
+      label: "Reasoning loops",
+      value:
+        inProgress > 0 ? `${inProgress} in progress` :
+        paused > 0     ? `${paused} paused for operator` :
+                         "idle",
+      tone: inProgress > 0 ? "live" : paused > 0 ? "preview" : "info",
+    });
+    rows.push({
+      label: "Audit log",
+      value: audit ? `${audit.data.recentEventCount} events · ${audit.data.persistent ? "persistent" : "in-memory"}` : "—",
+      tone: audit?.data.persistent ? "live" : "preview",
+    });
+    rows.push({
+      label: "Memory store",
+      value: memory ? `${memory.data.recordCount} records · ${memory.data.persistent ? "persistent" : "in-memory"}` : "—",
+      tone: memory?.data.persistent ? "live" : "preview",
+    });
+    rows.push({
+      label: "Safety boundary",
+      value: "Approval-gated · execution disabled",
+      tone: "live",
+    });
+  }
+
+  const toneDot = (t: "live" | "preview" | "blocked" | "info"): string =>
+    t === "live"    ? "bg-emerald-400" :
+    t === "preview" ? "bg-amber-400"   :
+    t === "blocked" ? "bg-rose-400"    :
+                      "bg-violet-400";
+  const toneText = (t: "live" | "preview" | "blocked" | "info"): string =>
+    t === "live"    ? "text-emerald-300" :
+    t === "preview" ? "text-amber-300"   :
+    t === "blocked" ? "text-rose-300"    :
+                      "text-zinc-200";
+
+  return (
+    <div className="rounded-2xl border border-violet-500/15 bg-gradient-to-br from-violet-500/[0.05] via-transparent to-fuchsia-500/[0.03] p-4 relative overflow-hidden">
+      <div className="absolute -top-10 -right-10 w-32 h-32 rounded-full bg-violet-500/[0.08] blur-[40px] pointer-events-none" aria-hidden />
+      <div className="relative">
+        <div className="flex items-center gap-2 mb-3">
+          <CpuChipIcon className="h-4 w-4 text-violet-400" />
+          <h3 className="text-sm font-semibold text-white">Agent status</h3>
+          <span className="text-[9px] font-mono text-zinc-500 uppercase tracking-wider bg-white/[0.04] border border-white/[0.06] rounded px-1.5 py-px ml-auto">
+            from axiom-os
+          </span>
+        </div>
+        {loading && (
+          <p className="text-[11px] text-zinc-500 font-mono uppercase tracking-[0.18em]">// composing agent status…</p>
+        )}
+        {!loading && !state && (
+          <p className="text-[11px] text-zinc-400">Agent status unavailable — sign in to load canonical state.</p>
+        )}
+        {!loading && state && (
+          <div className="space-y-2 text-[11px]">
+            {rows.map((row) => (
+              <div key={row.label} className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <span className={`w-1.5 h-1.5 rounded-full ${toneDot(row.tone)}`} />
+                  <span className="text-zinc-500">{row.label}</span>
+                </div>
+                <span className={`font-medium ${toneText(row.tone)}`}>{row.value}</span>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

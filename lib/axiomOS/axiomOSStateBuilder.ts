@@ -54,11 +54,12 @@ export async function buildAxiomOSState(input: BuildAxiomOSStateInput): Promise<
   const env = loadAppEnv();
   const generatedAt = new Date().toISOString();
 
-  // 1) Per-provider posture.
-  const providers = buildProviders();
-
-  // 2) Operating loops — pure-read on every provider.
+  // 1) Operating loops first — they carry the per-provider attentionRequiredCount
+  //    + status the provider posture is enriched with below. Pure-read, no SDK calls.
   const operatingLoops = await safeBuildOperatingLoops(input);
+
+  // 2) Per-provider posture — enriched with operating-loop counts + timestamps.
+  const providers = buildProviders(operatingLoops, generatedAt);
 
   // 3) ReleaseOps — typed envelope.
   const releaseOpsPosture = await safeReleaseOps(input);
@@ -183,8 +184,29 @@ export async function buildAxiomOSState(input: BuildAxiomOSStateInput): Promise<
 // Section builders
 // ---------------------------------------------------------------------------
 
-function buildProviders(): ProviderPosture[] {
+function buildProviders(
+  operatingLoops: OperatingLoopSummary[],
+  generatedAt: string,
+): ProviderPosture[] {
   const env = loadAppEnv();
+
+  // Index operating-loop summaries by provider so we can thread per-provider
+  // findingCount (attentionRequiredCount) + lastScannedAt without re-running
+  // any scan. Loops that haven't completed never contribute a timestamp.
+  const loopByProvider = new Map<string, OperatingLoopSummary>();
+  for (const loop of operatingLoops) loopByProvider.set(loop.provider, loop);
+
+  const loopExtras = (provider: "aws" | "azure" | "gcp" | "github"): { findingCount?: number; lastScannedAt?: string } => {
+    const loop = loopByProvider.get(provider);
+    if (!loop) return {};
+    const findingCount = typeof loop.attentionRequiredCount === "number" ? loop.attentionRequiredCount : undefined;
+    // Only claim a scan time when the loop has actually run (completed / in_progress).
+    const lastScannedAt =
+      loop.status === "completed" || loop.status === "in_progress" || loop.status === "paused_for_approval"
+        ? generatedAt
+        : undefined;
+    return { findingCount, lastScannedAt };
+  };
 
   // AWS
   const awsCfg = getAwsConfig();
@@ -195,6 +217,7 @@ function buildProviders(): ProviderPosture[] {
     headline: awsMode === "live" ? "Live read-only inventory (single + multi-region)" : "Preview snapshot — configure broker credentials for live scan",
     connectionStatus: awsMode === "live" ? "connected" : awsMode === "preview" ? "preview" : "blocked",
     missingRequirements: listMissingAwsConfig(),
+    ...loopExtras("aws"),
     safeNextAction: awsMode === "live"
       ? { label: "Run AWS scan", href: "/api/aws/scan" }
       : { label: "Open AWS setup", href: "/docs/aws-setup" },
@@ -209,6 +232,7 @@ function buildProviders(): ProviderPosture[] {
     headline: azureMode === "live" ? "Live validator + preview inventory" : "Preview foundation — configure AZURE_* for live validation",
     connectionStatus: azureMode === "live" ? "connected" : azureMode === "expanding" ? "expanding" : "preview",
     missingRequirements: azureMode === "live" ? [] : ["AZURE_TENANT_ID", "AZURE_CLIENT_ID", "AZURE_CLIENT_SECRET", "AZURE_SUBSCRIPTION_ID"],
+    ...loopExtras("azure"),
     safeNextAction: { label: "Open Azure setup", href: "/docs/azure-setup" },
   };
 
@@ -221,6 +245,7 @@ function buildProviders(): ProviderPosture[] {
     headline: gcpMode === "live" ? "Live validator + preview inventory" : "Preview foundation — configure GCP credentials for live validation",
     connectionStatus: gcpMode === "live" ? "connected" : gcpMode === "expanding" ? "expanding" : "preview",
     missingRequirements: gcpMode === "live" ? [] : ["GCP_PROJECT_ID", "GCP_SERVICE_ACCOUNT_JSON  *or*  GCP_CLIENT_EMAIL + GCP_PRIVATE_KEY"],
+    ...loopExtras("gcp"),
     safeNextAction: { label: "Open GCP setup", href: "/docs/gcp-setup" },
   };
 
@@ -235,6 +260,7 @@ function buildProviders(): ProviderPosture[] {
       : "Preview sync — configure GitHub App or PAT for live data",
     connectionStatus: ghMode === "live" ? "connected" : "preview",
     missingRequirements: listMissingGithubConfig(),
+    ...loopExtras("github"),
     safeNextAction: ghMode === "live"
       ? { label: "Run GitHub sync", href: "/api/github/sync" }
       : { label: "Open GitHub integration", href: "/dashboard/integrations/github" },
