@@ -4,10 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import {
   BoltIcon,
-  CurrencyDollarIcon,
   ShieldExclamationIcon,
-  CheckBadgeIcon,
-  ArrowTrendingUpIcon,
   ArrowRightIcon,
   CloudIcon,
   EyeIcon,
@@ -30,110 +27,11 @@ import { ComputerDesktopIcon } from "@heroicons/react/24/outline";
 import { assessOnboarding, progressPercent } from "@/lib/onboarding/onboardingState";
 import type { OnboardingProgress } from "@/lib/onboarding/onboardingState";
 
-interface KpiTile {
-  label: string;
-  value: string;
-  trend?: string;
-  trendDirection?: "up" | "down" | "flat";
-  icon: typeof BoltIcon;
-  iconClass: string;
-  bgClass: string;
-}
-
-const KPIs: KpiTile[] = [
-  {
-    label: "Cost saved this month",
-    value: "$12,840",
-    trend: "+18% vs last month",
-    trendDirection: "up",
-    icon: CurrencyDollarIcon,
-    iconClass: "text-emerald-400",
-    bgClass: "bg-emerald-500/10 border-emerald-500/20",
-  },
-  {
-    label: "Findings resolved",
-    value: "47",
-    trend: "12 pending",
-    trendDirection: "flat",
-    icon: CheckBadgeIcon,
-    iconClass: "text-violet-400",
-    bgClass: "bg-violet-500/10 border-violet-500/20",
-  },
-  {
-    label: "Critical risks open",
-    value: "3",
-    trend: "1 awaiting approval",
-    trendDirection: "flat",
-    icon: ShieldExclamationIcon,
-    iconClass: "text-red-400",
-    bgClass: "bg-red-500/10 border-red-500/20",
-  },
-  {
-    label: "Agent confidence",
-    value: "92%",
-    trend: "+4 pts this week",
-    trendDirection: "up",
-    icon: ArrowTrendingUpIcon,
-    iconClass: "text-amber-400",
-    bgClass: "bg-amber-500/10 border-amber-500/20",
-  },
-];
-
-interface ProviderHealth {
-  name: string;
-  shortName: "AWS" | "Azure" | "GCP";
-  status: "operational" | "scanning" | "degraded" | "disconnected";
-  lastScan: string;
-  resources: number;
-  findings: number;
-  region: string;
-  accountId: string;
-}
-
-const PROVIDERS: ProviderHealth[] = [
-  {
-    name: "Production AWS",
-    shortName: "AWS",
-    status: "operational",
-    lastScan: "47s ago",
-    resources: 142,
-    findings: 14,
-    region: "us-east-1",
-    accountId: "123456789012",
-  },
-  {
-    name: "Staging AWS",
-    shortName: "AWS",
-    status: "scanning",
-    lastScan: "running now",
-    resources: 38,
-    findings: 2,
-    region: "us-west-2",
-    accountId: "234567890123",
-  },
-  {
-    name: "Azure EU",
-    shortName: "Azure",
-    status: "operational",
-    lastScan: "12m ago",
-    resources: 84,
-    findings: 6,
-    region: "westeurope",
-    accountId: "sub-prod-eu",
-  },
-];
-
-const STATUS_CONFIG = {
-  operational: { dot: "bg-emerald-400", text: "text-emerald-400", label: "Operational" },
-  scanning: { dot: "bg-blue-400 animate-pulse", text: "text-blue-400", label: "Scanning" },
-  degraded: { dot: "bg-amber-400", text: "text-amber-400", label: "Degraded" },
-  disconnected: { dot: "bg-zinc-600", text: "text-zinc-500", label: "Disconnected" },
-} as const;
-
 const PROVIDER_COLOR = {
   AWS: "text-amber-400 bg-amber-500/10 border-amber-500/20",
   Azure: "text-blue-400 bg-blue-500/10 border-blue-500/20",
   GCP: "text-red-400 bg-red-500/10 border-red-500/20",
+  GitHub: "text-violet-400 bg-violet-500/10 border-violet-500/20",
 } as const;
 
 interface PendingApproval {
@@ -215,33 +113,8 @@ export default function CommandCenterPage() {
         </div>
       </Reveal>
 
-      {/* KPI row */}
-      <Stagger delay={0.05} interval={0.05} className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
-        {KPIs.map((kpi) => {
-          const Icon = kpi.icon;
-          return (
-            <div key={kpi.label} className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4 hover:border-white/[0.12] transition-colors">
-              <div className="flex items-center justify-between mb-3">
-                <div className={`w-9 h-9 rounded-lg ${kpi.bgClass} border flex items-center justify-center`}>
-                  <Icon className={`h-4.5 w-4.5 ${kpi.iconClass}`} />
-                </div>
-                {kpi.trendDirection === "up" && (
-                  <ArrowTrendingUpIcon className="h-3.5 w-3.5 text-emerald-400" />
-                )}
-              </div>
-              <p className="text-2xl font-bold text-white tracking-tight mb-1">{kpi.value}</p>
-              <p className="text-[11px] text-zinc-500 leading-tight">{kpi.label}</p>
-              {kpi.trend && (
-                <p className={`text-[10px] mt-2 font-medium ${
-                  kpi.trendDirection === "up" ? "text-emerald-400" :
-                  kpi.trendDirection === "down" ? "text-red-400" :
-                  "text-zinc-500"
-                }`}>{kpi.trend}</p>
-              )}
-            </div>
-          );
-        })}
-      </Stagger>
+      {/* KPI row — real values from /api/axiom-os/state, no fabricated dollar savings */}
+      <LiveKpiRow />
 
       {/* Axiom OS strip — unified product state from /api/axiom-os/state */}
       <Reveal direction="up" delay={0.045}>
@@ -295,55 +168,9 @@ export default function CommandCenterPage() {
 
         {/* Right: Sidebar (1 col) */}
         <div className="space-y-5">
-          {/* Provider Health */}
+          {/* Provider Health — real provider posture from /api/axiom-os/state */}
           <Reveal direction="up" delay={0.1}>
-            <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] overflow-hidden">
-              <div className="px-5 py-3.5 border-b border-white/[0.06] bg-white/[0.01]">
-                <div className="flex items-center justify-between">
-                  <h3 className="text-sm font-semibold text-white">Provider health</h3>
-                  <Link href="/dashboard" className="text-[10px] text-zinc-500 hover:text-white transition-colors">View all</Link>
-                </div>
-              </div>
-              <div className="p-3 space-y-2">
-                {PROVIDERS.map((p) => {
-                  const config = STATUS_CONFIG[p.status];
-                  return (
-                    <div key={p.accountId} className="rounded-xl bg-white/[0.02] border border-white/[0.04] p-3 hover:border-white/[0.08] transition-colors">
-                      <div className="flex items-center gap-2.5 mb-2">
-                        <span className={`text-[9px] font-bold uppercase tracking-wider border rounded-full px-1.5 py-px ${PROVIDER_COLOR[p.shortName]}`}>
-                          {p.shortName}
-                        </span>
-                        <span className="text-xs font-semibold text-white truncate">{p.name}</span>
-                      </div>
-                      <div className="flex items-center justify-between text-[10px] text-zinc-500 mb-2">
-                        <span className="font-mono">{p.region} · {p.accountId.slice(0, 12)}{p.accountId.length > 12 ? "…" : ""}</span>
-                      </div>
-                      <div className="flex items-center justify-between text-[10px]">
-                        <div className="flex items-center gap-1.5">
-                          <span className={`w-1.5 h-1.5 rounded-full ${config.dot}`} />
-                          <span className={`font-semibold uppercase tracking-wider ${config.text}`}>{config.label}</span>
-                        </div>
-                        <span className="text-zinc-500">{p.lastScan}</span>
-                      </div>
-                      <div className="flex items-center justify-between mt-2 pt-2 border-t border-white/[0.04]">
-                        <span className="text-[10px] text-zinc-500">{p.resources} resources</span>
-                        <span className={`text-[10px] font-semibold ${p.findings > 0 ? "text-amber-400" : "text-emerald-400"}`}>
-                          {p.findings} findings
-                        </span>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-              <div className="px-3 pb-3">
-                <Link
-                  href="/operator/onboarding"
-                  className="flex items-center justify-center gap-1.5 w-full text-[11px] text-zinc-400 hover:text-white border border-dashed border-white/[0.1] hover:border-white/[0.2] rounded-xl py-2.5 transition-colors"
-                >
-                  + Connect provider
-                </Link>
-              </div>
-            </div>
+            <LiveProvidersStrip />
           </Reveal>
 
           {/* Pending Approvals */}
@@ -549,6 +376,90 @@ interface ReadinessReportLite {
   recommendedNextFixes: { id: string; title: string; reason: string; href?: string }[];
 }
 
+/** Client-driven KPI strip — consumes /api/axiom-os/state. Replaces the
+ *  prior static KPIs array which had fabricated dollar-savings claims. */
+function LiveKpiRow() {
+  const [state, setState] = useState<AxiomOSStateLite | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+    fetch("/api/axiom-os/state", { credentials: "include" })
+      .then((r) => r.json())
+      .then((json: { ok?: boolean; data?: AxiomOSStateLite }) => {
+        if (cancelled) return;
+        if (json.ok && json.data) setState(json.data);
+      })
+      .catch(() => {})
+      .finally(() => { if (!cancelled) setLoading(false); });
+    return () => { cancelled = true; };
+  }, []);
+
+  // Honest values: never fabricate "$12,840 cost saved".
+  const liveProviders = state?.providers?.filter((p) => p.mode === "live").length ?? 0;
+  const totalProviders = state?.providers?.length ?? 0;
+  const nextActions = state?.nextBestActions?.length ?? 0;
+  const blockers = state?.criticalBlockers?.length ?? 0;
+  const sourceMode = state?.sourceMode ?? "preview";
+
+  const tiles: { label: string; value: string; trend?: string; icon: typeof BoltIcon; iconClass: string; bgClass: string }[] = [
+    {
+      label: "Live providers",
+      value: state ? `${liveProviders} / ${totalProviders}` : (loading ? "…" : "—"),
+      trend: state ? (liveProviders > 0 ? `${sourceMode}` : "configure a provider") : undefined,
+      icon: CloudIcon,
+      iconClass: "text-cyan-400",
+      bgClass: "bg-cyan-500/10 border-cyan-500/20",
+    },
+    {
+      label: "Next safe actions",
+      value: state ? String(nextActions) : (loading ? "…" : "—"),
+      trend: nextActions > 0 ? "ready for operator" : undefined,
+      icon: BoltIcon,
+      iconClass: "text-violet-400",
+      bgClass: "bg-violet-500/10 border-violet-500/20",
+    },
+    {
+      label: "Critical blockers",
+      value: state ? String(blockers) : (loading ? "…" : "—"),
+      trend: blockers > 0 ? "needs attention" : "none",
+      icon: ShieldExclamationIcon,
+      iconClass: blockers > 0 ? "text-rose-400" : "text-emerald-400",
+      bgClass: blockers > 0 ? "bg-rose-500/10 border-rose-500/20" : "bg-emerald-500/10 border-emerald-500/20",
+    },
+    {
+      label: "Safety status",
+      value: "Read-only · approval-gated",
+      trend: "execution disabled by default",
+      icon: ShieldCheckIcon,
+      iconClass: "text-emerald-400",
+      bgClass: "bg-emerald-500/10 border-emerald-500/20",
+    },
+  ];
+
+  return (
+    <Stagger delay={0.05} interval={0.05} className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
+      {tiles.map((kpi) => {
+        const Icon = kpi.icon;
+        return (
+          <div key={kpi.label} className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4 hover:border-white/[0.12] transition-colors">
+            <div className="flex items-center justify-between mb-3">
+              <div className={`w-9 h-9 rounded-lg ${kpi.bgClass} border flex items-center justify-center`}>
+                <Icon className={`h-4.5 w-4.5 ${kpi.iconClass}`} />
+              </div>
+            </div>
+            <p className="text-xl font-bold text-white tracking-tight mb-1">{kpi.value}</p>
+            <p className="text-[11px] text-zinc-500 leading-tight">{kpi.label}</p>
+            {kpi.trend && (
+              <p className="text-[10px] mt-2 font-medium text-zinc-400">{kpi.trend}</p>
+            )}
+          </div>
+        );
+      })}
+    </Stagger>
+  );
+}
+
 interface AxiomOSStateLite {
   overallStatus: string;
   sourceMode: string;
@@ -562,6 +473,10 @@ interface AxiomOSStateLite {
     headline: string;
     connectionStatus: string;
     missingRequirements: string[];
+    resourceCount?: number;
+    findingCount?: number;
+    remediationCount?: number;
+    lastScannedAt?: string;
     safeNextAction?: { label: string; href: string };
   }[];
   nextBestActions: { id: string; title: string; description: string; category: string; route?: string }[];
@@ -1108,6 +1023,149 @@ function OnboardingPanel() {
           </Link>
         </div>
       )}
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// LiveProvidersStrip — real provider posture from /api/axiom-os/state
+//
+// Replaces a static demo PROVIDERS array that fabricated AWS account IDs
+// (123456789012), resource counts (142), and finding counts (14). This
+// component renders **only** what canonical state reports — including the
+// honest source mode, real missing-requirements text, and the typed
+// safeNextAction. If no providers are connected the panel shows the empty
+// state with a Connect provider CTA rather than fake demo data.
+// ---------------------------------------------------------------------------
+
+function LiveProvidersStrip() {
+  const [state, setState] = useState<AxiomOSStateLite | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+    fetch("/api/axiom-os/state", { credentials: "include" })
+      .then((r) => r.json())
+      .then((json: { ok?: boolean; data?: AxiomOSStateLite; error?: { userMessage?: string } }) => {
+        if (cancelled) return;
+        if (json.ok && json.data) setState(json.data);
+        else setError(json.error?.userMessage ?? "Provider state unavailable.");
+      })
+      .catch((err) => {
+        if (cancelled) return;
+        setError(err instanceof Error ? err.message : "Network error.");
+      })
+      .finally(() => { if (!cancelled) setLoading(false); });
+    return () => { cancelled = true; };
+  }, []);
+
+  const providers = state?.providers ?? [];
+
+  return (
+    <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] overflow-hidden">
+      <div className="px-5 py-3.5 border-b border-white/[0.06] bg-white/[0.01]">
+        <div className="flex items-center justify-between">
+          <h3 className="text-sm font-semibold text-white">Provider posture</h3>
+          <Link href="/dashboard" className="text-[10px] text-zinc-500 hover:text-white transition-colors">View all</Link>
+        </div>
+      </div>
+
+      {loading && (
+        <div className="px-5 py-6 text-[11px] text-zinc-500 font-mono uppercase tracking-[0.18em]">
+          // composing provider posture…
+        </div>
+      )}
+      {!loading && error && (
+        <div className="px-5 py-4">
+          <p className="text-[11px] font-mono text-amber-300/80 uppercase tracking-[0.18em] mb-1">
+            // provider state unavailable
+          </p>
+          <p className="text-[12px] text-zinc-400">{error}</p>
+        </div>
+      )}
+      {!loading && !error && providers.length === 0 && (
+        <div className="px-5 py-4">
+          <p className="text-[12px] text-zinc-300 font-semibold mb-1">No providers connected yet.</p>
+          <p className="text-[11px] text-zinc-500 leading-relaxed">Connect a provider to start observing real resources, findings, and remediation candidates.</p>
+        </div>
+      )}
+
+      {!loading && !error && providers.length > 0 && (
+        <div className="p-3 space-y-2">
+          {providers.map((p) => {
+            const modeTone =
+              p.mode === "live"          ? { dot: "bg-emerald-400 animate-pulse",       text: "text-emerald-300",  label: "Live" } :
+              p.mode === "partial_live"  ? { dot: "bg-cyan-400 animate-pulse",          text: "text-cyan-300",     label: "Partial · live" } :
+              p.mode === "preview"       ? { dot: "bg-amber-400",                       text: "text-amber-300",    label: "Preview" } :
+              p.mode === "expanding"     ? { dot: "bg-amber-400 animate-pulse",         text: "text-amber-300",    label: "Expanding" } :
+              p.mode === "blocked"       ? { dot: "bg-rose-400",                        text: "text-rose-300",     label: "Blocked" } :
+              p.mode === "disabled"      ? { dot: "bg-zinc-600",                        text: "text-zinc-500",     label: "Disabled" } :
+                                           { dot: "bg-zinc-600",                        text: "text-zinc-500",     label: "Unknown" };
+            const chipKey =
+              p.provider === "aws"    ? "AWS"    :
+              p.provider === "azure"  ? "Azure"  :
+              p.provider === "gcp"    ? "GCP"    :
+              p.provider === "github" ? "GitHub" : null;
+            const chipClass = chipKey ? PROVIDER_COLOR[chipKey] : "text-zinc-400 bg-white/[0.04] border-white/[0.08]";
+            const lastSeen = p.lastScannedAt ? new Date(p.lastScannedAt).toLocaleTimeString() : "—";
+            const resources = typeof p.resourceCount === "number" ? p.resourceCount : null;
+            const findings = typeof p.findingCount === "number" ? p.findingCount : null;
+            const missing = p.missingRequirements?.[0];
+
+            return (
+              <div key={p.provider} className="rounded-xl bg-white/[0.02] border border-white/[0.04] p-3 hover:border-white/[0.08] transition-colors">
+                <div className="flex items-center gap-2.5 mb-1.5">
+                  <span className={`text-[9px] font-bold uppercase tracking-wider border rounded-full px-1.5 py-px ${chipClass}`}>
+                    {chipKey ?? p.provider}
+                  </span>
+                  <span className="text-xs font-semibold text-white truncate">{p.headline}</span>
+                </div>
+                <div className="flex items-center justify-between text-[10px]">
+                  <div className="flex items-center gap-1.5">
+                    <span className={`w-1.5 h-1.5 rounded-full ${modeTone.dot}`} />
+                    <span className={`font-semibold uppercase tracking-wider ${modeTone.text}`}>{modeTone.label}</span>
+                  </div>
+                  <span className="text-zinc-500 font-mono">last seen {lastSeen}</span>
+                </div>
+                {(resources !== null || findings !== null) && (
+                  <div className="flex items-center justify-between mt-2 pt-2 border-t border-white/[0.04]">
+                    <span className="text-[10px] text-zinc-500">
+                      {resources !== null ? `${resources} resources` : "resources —"}
+                    </span>
+                    <span className={`text-[10px] font-semibold ${findings !== null && findings > 0 ? "text-amber-400" : "text-emerald-400"}`}>
+                      {findings !== null ? `${findings} findings` : "findings —"}
+                    </span>
+                  </div>
+                )}
+                {missing && (
+                  <p className="mt-2 text-[10px] text-zinc-500 leading-snug">
+                    <span className="text-zinc-400 font-semibold">Needs:</span> {missing}
+                  </p>
+                )}
+                {p.safeNextAction && (
+                  <Link
+                    href={p.safeNextAction.href}
+                    className="mt-2 flex items-center justify-between text-[10px] text-zinc-300 hover:text-white rounded-md border border-white/[0.06] hover:border-white/[0.15] bg-white/[0.02] px-2 py-1 transition-colors"
+                  >
+                    <span className="truncate">{p.safeNextAction.label}</span>
+                    <ArrowRightIcon className="h-3 w-3 shrink-0" />
+                  </Link>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      <div className="px-3 pb-3">
+        <Link
+          href="/operator/onboarding"
+          className="flex items-center justify-center gap-1.5 w-full text-[11px] text-zinc-400 hover:text-white border border-dashed border-white/[0.1] hover:border-white/[0.2] rounded-xl py-2.5 transition-colors"
+        >
+          + Connect provider
+        </Link>
+      </div>
     </div>
   );
 }

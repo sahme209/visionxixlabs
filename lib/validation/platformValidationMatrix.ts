@@ -319,6 +319,13 @@ export const VALIDATION_MATRIX: ValidationRow[] = [
   { id: "product.first_class_desktop", area: "desktop", capability: "Desktop platforms (macOS / Windows / Linux) are first-class surfaces in the canonical taxonomy — never hidden as side features",      status: "passing", evidence: "lib/product/axiomProductModel.ts:AxiomSurfaceId" },
   { id: "product.honest_rollup", area: "operating_loop", capability: "rollupMode + rollupStatus honestly demote the composite: any blocked → blocked, any preview → preview, all live → live",            status: "passing", evidence: "lib/product/axiomProductModel.ts" },
   { id: "product.safety_literal", area: "operating_loop", capability: "AxiomProductModel.safetyContract = 'approval_gated_no_destructive_execution' literal — TS prevents fabrication",                   status: "passing", evidence: "lib/product/axiomProductModel.ts" },
+
+  // ---------------------------------------------------------------------------
+  // Real Advancement Sprint — kill fabricated demo data in product surfaces
+  // ---------------------------------------------------------------------------
+  { id: "cc.kpis_live",          area: "command_center",   capability: "Command Center KPI tiles are derived from /api/axiom-os/state (live providers, safe actions, blockers, safety literal) — no fabricated dollar savings or confidence percentages", status: "passing", evidence: "app/dashboard/command-center/page.tsx:LiveKpiRow" },
+  { id: "cc.providers_live",     area: "command_center",   capability: "Command Center Provider posture panel renders real ProviderPosture from /api/axiom-os/state — no fabricated AWS account IDs, resource counts, or findings",                       status: "passing", evidence: "app/dashboard/command-center/page.tsx:LiveProvidersStrip" },
+  { id: "product.surfaces_ui",   area: "command_center",   capability: "/dashboard/surfaces page consumes /api/product/surfaces — 14 typed surfaces with platform chips, status pills, real evidence + limitations + blockers + safeNextAction",         status: "passing", evidence: "app/dashboard/surfaces/page.tsx" },
 ];
 
 // ---------------------------------------------------------------------------
