@@ -23,12 +23,16 @@ export interface TextRevealProps {
   duration?: number;
   /** Optional delay before the whole reveal starts. */
   startDelay?: number;
-  /** Tailwind class applied to the wrapper. */
+  /** Tailwind class applied to the wrapper span. */
   className?: string;
-  /** Optional element to render as the wrapper (default span). Pass "h1" / "h2" etc to preserve semantics. */
-  as?: keyof React.JSX.IntrinsicElements;
 }
 
+/**
+ * Always renders an outer `<span>`. To preserve semantics, wrap the
+ * component yourself: `<h1 className="...big..."><TextReveal text="..." /></h1>`.
+ * Keeping the wrapper element fixed avoids polymorphic-component ref
+ * pitfalls (e.g. SVG element types pulled in by `keyof JSX.IntrinsicElements`).
+ */
 export function TextReveal({
   text,
   splitBy = "char",
@@ -36,7 +40,6 @@ export function TextReveal({
   duration = 620,
   startDelay = 0,
   className = "",
-  as = "span",
 }: TextRevealProps) {
   const ref = useRef<HTMLSpanElement | null>(null);
   const [visible, setVisible] = useState(false);
@@ -69,14 +72,8 @@ export function TextReveal({
     ? text.split(/(\s+)/)            // keep whitespace as its own slot
     : Array.from(text);              // grapheme-aware enough for ASCII + emoji
 
-  const Wrapper = as as keyof React.JSX.IntrinsicElements;
-
   return (
-    <Wrapper
-      ref={ref as React.Ref<HTMLSpanElement>}
-      className={className}
-      aria-label={text}
-    >
+    <span ref={ref} className={className} aria-label={text}>
       {parts.map((p, i) => {
         // Whitespace renders unchanged so the layout doesn't collapse.
         if (/^\s+$/.test(p)) return <span key={i} aria-hidden>{p}</span>;
@@ -96,6 +93,6 @@ export function TextReveal({
           </span>
         );
       })}
-    </Wrapper>
+    </span>
   );
 }
