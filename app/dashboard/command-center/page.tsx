@@ -19,6 +19,7 @@ import { ActivityFeed } from "@/components/operations/ActivityFeed";
 import { ReasoningTrace } from "@/components/operations/ReasoningTrace";
 import { ExecutionPlanCard } from "@/components/operations/ExecutionPlanCard";
 import { InfrastructureTopology } from "@/components/operations/InfrastructureTopology";
+import { OperatingGraphPanel } from "@/components/dashboard/OperatingGraphPanel";
 import { buildObservabilityPosture } from "@/lib/observability/observabilityPosture";
 import { ComputerDesktopIcon } from "@heroicons/react/24/outline";
 import { assessOnboarding, progressPercent } from "@/lib/onboarding/onboardingState";
@@ -119,6 +120,16 @@ export default function CommandCenterPage() {
       <Reveal direction="up" delay={0.08}>
         <div className="mb-6">
           <InfrastructureTopology />
+        </div>
+      </Reveal>
+
+      {/* Operating Graph — every connected production node */}
+      <Reveal direction="up" delay={0.09}>
+        <div className="mb-6">
+          <OperatingGraphPanel
+            title="Operating Graph"
+            subtitle="Every production node, every relationship. Pure read-only projection over canonical state — the graph never executes."
+          />
         </div>
       </Reveal>
 

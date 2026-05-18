@@ -33,6 +33,7 @@ import { buildAiSafetyEvidence, summarizeAiSafety } from "@/lib/agent/aiSafetyEv
 import { buildDataHandlingSummary, summarizeDataHandling } from "@/lib/security/dataHandlingSummary";
 import { summarizeValidation, VALIDATION_MATRIX } from "@/lib/validation/platformValidationMatrix";
 import { TrustExportButton } from "@/components/dashboard/TrustExportButton";
+import { OperatingGraphPanel } from "@/components/dashboard/OperatingGraphPanel";
 
 export default function TrustCenterPage() {
   const controlSummary = summarizeControls();
@@ -105,6 +106,16 @@ export default function TrustCenterPage() {
           );
         })}
       </Stagger>
+
+      {/* Operating Graph — live projection of canonical state */}
+      <Reveal direction="up" delay={0.05}>
+        <div className="mb-10">
+          <OperatingGraphPanel
+            title="Operating Graph — trust thread"
+            subtitle="Every node + edge that produces the evidence below. Pure read-only projection over canonical state."
+          />
+        </div>
+      </Reveal>
 
       {/* Controls registry — grouped by category */}
       <Reveal direction="up" delay={0.08}>
