@@ -38,7 +38,11 @@ export type ApiSafetyContract =
   | "trace_read_only"
   | "autonomy_gated_no_unsafe_execution"
   | "container_orchestration_read_only"
-  | "cicd_ops_gated_no_unsafe_execution";
+  | "cicd_ops_gated_no_unsafe_execution"
+  | "billing_summary_read_only"
+  | "telemetry_ingest_read_only"
+  | "incident_response_read_only"
+  | "closed_loop_remediation_gated";
 
 export const SAFETY_CONTRACT_LABEL: Record<ApiSafetyContract, string> = {
   axiom_os_state_read_only:                "Axiom OS state · read-only",
@@ -68,6 +72,10 @@ export const SAFETY_CONTRACT_LABEL: Record<ApiSafetyContract, string> = {
   autonomy_gated_no_unsafe_execution:      "Autonomy loop · gated, no unsafe execution",
   container_orchestration_read_only:       "Container orchestration · read-only",
   cicd_ops_gated_no_unsafe_execution:      "CI/CD operations · gated, no unsafe execution",
+  billing_summary_read_only:               "Billing connectors · read-only",
+  telemetry_ingest_read_only:              "Telemetry ingest · read-only",
+  incident_response_read_only:             "Incident response · read-only",
+  closed_loop_remediation_gated:           "Closed-loop remediation · gated",
 };
 
 /**

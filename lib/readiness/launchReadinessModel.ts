@@ -39,7 +39,15 @@ export type LaunchCategory =
   | "persistence"
   | "safety_governance"
   | "enterprise_presentation"
-  | "developer_maintainability";
+  | "developer_maintainability"
+  | "autonomy_loop"
+  | "container_orchestration"
+  | "cicd_operations"
+  | "billing_connectors"
+  | "telemetry_ingest"
+  | "incident_response"
+  | "closed_loop_remediation"
+  | "agi_cockpit";
 
 export type LaunchStatus =
   | "launch_ready"     // ≥ 80
@@ -127,4 +135,12 @@ export const CATEGORY_LABELS: Record<LaunchCategory, string> = {
   safety_governance:              "Safety + governance",
   enterprise_presentation:        "Enterprise presentation",
   developer_maintainability:      "Developer maintainability",
+  autonomy_loop:                  "Closed Autonomy Loop",
+  container_orchestration:        "Container orchestration",
+  cicd_operations:                "CI/CD operations",
+  billing_connectors:             "Live billing connectors",
+  telemetry_ingest:               "Telemetry ingestion",
+  incident_response:              "Incident response",
+  closed_loop_remediation:        "Closed-loop remediation",
+  agi_cockpit:                    "AGI Cockpit",
 };

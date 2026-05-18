@@ -1,0 +1,117 @@
+/**
+ * Telemetry Ingestion builder.
+ *
+ * Pure read-only composition. Per-provider posture honors canonical
+ * provider mode + a small static catalog of telemetry providers
+ * Axiom can integrate with. Until each SDK / webhook lands, signal
+ * lists stay empty — no synthesised alerts ever.
+ */
+
+import "server-only";
+
+import { buildAxiomOSState } from "@/lib/axiomOS/axiomOSStateBuilder";
+import type { OrganizationId, UserId } from "@/lib/domain/ids";
+import type {
+  TelemetryIngestReport,
+  TelemetryProvider,
+  TelemetryProviderPosture,
+  TelemetrySignal,
+  TelemetrySignalKind,
+  TelemetrySeverity,
+  TelemetrySourceMode,
+} from "./telemetryIngestModel";
+
+export interface BuildTelemetryInput {
+  tenantId: OrganizationId;
+  actorUserId?: UserId;
+}
+
+export async function buildTelemetryIngest(input: BuildTelemetryInput): Promise<TelemetryIngestReport> {
+  const state = await buildAxiomOSState({ tenantId: input.tenantId, actorUserId: input.actorUserId });
+  const awsLive = state.providers.find((p) => p.provider === "aws")?.mode === "live";
+  const azureLive = state.providers.find((p) => p.provider === "azure")?.mode === "live";
+  const gcpLive = state.providers.find((p) => p.provider === "gcp")?.mode === "live";
+
+  const providers: TelemetryProviderPosture[] = [
+    posture("aws_cloudwatch", awsLive ? "partial_live" : "preview", [
+      "logs:DescribeLogGroups + cloudwatch:DescribeAlarms on the broker IAM role.",
+    ], "https://console.aws.amazon.com/cloudwatch/"),
+    posture("aws_xray", awsLive ? "partial_live" : "preview", [
+      "xray:GetTraceSummaries + xray:BatchGetTraces.",
+    ], "https://console.aws.amazon.com/xray/"),
+    posture("azure_monitor", azureLive ? "partial_live" : "preview", [
+      "Monitoring Reader role on the subscription + AZURE_LOG_ANALYTICS_WORKSPACE_ID.",
+    ], "https://portal.azure.com/#blade/Microsoft_Azure_Monitoring"),
+    posture("azure_log_analytics", azureLive ? "partial_live" : "preview", [
+      "AZURE_LOG_ANALYTICS_WORKSPACE_ID + LogAnalyticsReader role.",
+    ]),
+    posture("gcp_cloud_logging", gcpLive ? "partial_live" : "preview", [
+      "logging.viewer role on the project.",
+    ], "https://console.cloud.google.com/logs/"),
+    posture("gcp_cloud_monitoring", gcpLive ? "partial_live" : "preview", [
+      "monitoring.viewer role + GCP_CLOUD_MONITORING_WORKSPACE.",
+    ]),
+    posture("datadog", "preview", ["DATADOG_API_KEY + DATADOG_APP_KEY."], "https://app.datadoghq.com/"),
+    posture("grafana_cloud", "preview", ["GRAFANA_CLOUD_TOKEN with metrics:read + logs:read."], "https://grafana.com/"),
+    posture("prometheus", "preview", ["PROMETHEUS_URL + (optional) PROMETHEUS_BEARER_TOKEN."]),
+    posture("sentry", "preview", ["SENTRY_AUTH_TOKEN with org:read + project:read."], "https://sentry.io/"),
+    posture("new_relic", "preview", ["NEW_RELIC_API_KEY + NEW_RELIC_ACCOUNT_ID."], "https://one.newrelic.com/"),
+    posture("opentelemetry_collector", "preview", ["OTEL_COLLECTOR_URL (push or pull)."]),
+  ];
+
+  const signals: TelemetrySignal[] = providers.flatMap((p) => p.signals);
+  const liveCount = providers.filter((p) => p.mode === "live").length;
+
+  const signalsBySeverity: Record<TelemetrySeverity, number> = { critical: 0, high: 0, medium: 0, low: 0, info: 0 };
+  const signalsByKind: Record<TelemetrySignalKind, number> = {
+    log_anomaly: 0, metric_breach: 0, trace_latency_spike: 0,
+    trace_error_rate_spike: 0, alert_firing: 0, alert_resolved: 0,
+    saturation_threshold: 0, synthetic_check_failure: 0,
+    cost_metric_breach: 0, security_event_emitted: 0,
+  };
+  for (const s of signals) { signalsBySeverity[s.severity]++; signalsByKind[s.kind]++; }
+
+  return {
+    generatedAt: state.generatedAt,
+    tenantId: String(input.tenantId),
+    providers,
+    signals,
+    summary: {
+      providerCount: providers.length,
+      liveProviderCount: liveCount,
+      signalsTotal: signals.length,
+      signalsBySeverity,
+      signalsByKind,
+    },
+    overallSourceMode: liveCount > 0 ? (liveCount === providers.length ? "live" : "partial_live") : "preview",
+    safetyContract: "telemetry_ingest_read_only",
+    limitations: [
+      "Telemetry connectors are typed and ready. Per-provider SDK / webhook traversal lands in follow-up phases — until then, signal arrays stay empty (no fabricated alerts).",
+      "The dispatcher (Phase 47 — closed-loop remediation) translates each TelemetrySignal into a canonical Risk Queue / Notification / Approval Packet entry.",
+    ],
+    safeNextAction: { label: "Open Risk Queue", href: "/dashboard/risks" },
+  };
+}
+
+function posture(
+  provider: TelemetryProvider,
+  rawMode: TelemetrySourceMode,
+  missingRequirements: string[],
+  externalConsoleHref?: string,
+): TelemetryProviderPosture {
+  const mode = rawMode;
+  return {
+    provider,
+    mode,
+    configured: mode === "live" || mode === "partial_live",
+    headline: mode === "live"
+      ? "Live telemetry connector — alert + log + trace stream active."
+      : mode === "partial_live"
+        ? "Provider live, telemetry SDK traversal still preview — emits no fabricated alerts."
+        : "Preview — typed connector awaiting credentials.",
+    signals: [],
+    missingRequirements: mode === "live" ? [] : missingRequirements,
+    externalConsoleHref,
+    safeNextAction: { label: "Open Sources", href: "/dashboard/sources" },
+  };
+}
