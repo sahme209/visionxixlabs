@@ -371,7 +371,7 @@ export default function DownloadPage() {
                       { label: "Credentials", status: "OS Keychain", color: "text-emerald-400" },
                       { label: "Telemetry", status: "Disabled by default", color: "text-emerald-400" },
                       { label: "Network", status: "Direct to AWS", color: "text-emerald-400" },
-                      { label: "Code signing", status: "Apple notarized", color: "text-emerald-400" },
+                      { label: "Code signing", status: "Signing pending · 1.0", color: "text-amber-400" },
                     ].map((row) => (
                       <div key={row.label} className="flex items-center justify-between text-[11px]">
                         <span className="text-zinc-500">{row.label}</span>
@@ -445,16 +445,16 @@ export default function DownloadPage() {
                 <span className="text-zinc-500">Zero compromise.</span>
               </h2>
               <p className="text-dim-paragraph text-lg max-w-2xl leading-relaxed">
-                The Axiom desktop agent is designed for security-first organizations. <span className="dim-1">Code-signed, notarized, and built with a minimal native footprint.</span>
+                The Axiom desktop agent is designed for security-first organizations. <span className="dim-1">Code-signing + notarization pipeline ready for 1.0 — current developer builds run unsigned.</span>
               </p>
             </div>
           </Reveal>
 
           <Stagger delay={0.1} interval={0.06} className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {[
-              { icon: ShieldCheckIcon, label: "Apple notarized · code-signed binaries" },
+              { icon: ShieldCheckIcon, label: "Apple signing + notarization pipeline ready · public binaries in 1.0" },
               { icon: LockClosedIcon, label: "Credentials in OS keychain, never in the app" },
-              { icon: CubeTransparentIcon, label: "Open source local executor · auditable" },
+              { icon: CubeTransparentIcon, label: "Review workstation · local execution disabled by safety contract" },
               { icon: DocumentCheckIcon, label: "Full local audit log · exportable to SIEM" },
             ].map((item) => {
               const Icon = item.icon;
@@ -493,18 +493,18 @@ export default function DownloadPage() {
             {[
               {
                 platform: "macOS",
-                status: "Available",
-                statusColor: "text-emerald-400",
-                statusBg: "bg-emerald-500/10 border-emerald-500/20",
-                detail: "Universal binary · Apple Silicon and Intel · macOS 12+",
-                dot: "bg-emerald-400",
+                status: "Developer build · 1.0",
+                statusColor: "text-amber-400",
+                statusBg: "bg-amber-500/10 border-amber-500/20",
+                detail: "Universal binary · Apple Silicon and Intel · macOS 12+ · signing + notarization pipeline ready, public binary publishes with 1.0",
+                dot: "bg-amber-400",
               },
               {
                 platform: "Web Application",
                 status: "Available",
                 statusColor: "text-emerald-400",
                 statusBg: "bg-emerald-500/10 border-emerald-500/20",
-                detail: "Full operational dashboard · Approval workflows · Live scans",
+                detail: "Full operational dashboard · Approval workflows · Live read-only scans when configured",
                 dot: "bg-emerald-400",
               },
               {
@@ -525,11 +525,11 @@ export default function DownloadPage() {
               },
               {
                 platform: "CLI Binary",
-                status: "Available",
-                statusColor: "text-emerald-400",
-                statusBg: "bg-emerald-500/10 border-emerald-500/20",
-                detail: "axiom-cli · cross-platform · CI/CD pipeline-ready · npm + brew + scoop",
-                dot: "bg-emerald-400",
+                status: "Planned · 1.0",
+                statusColor: "text-amber-400",
+                statusBg: "bg-amber-500/10 border-amber-500/20",
+                detail: "axiom-cli · cross-platform · CI/CD pipeline-ready · npm + brew + scoop distribution planned for 1.0",
+                dot: "bg-amber-400",
               },
             ].map((row) => (
               <div
