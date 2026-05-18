@@ -9,6 +9,7 @@
 import "server-only";
 
 import { buildAxiomOSState } from "@/lib/axiomOS/axiomOSStateBuilder";
+import { readIncidentQueue } from "./incidentWebhookReceiver";
 import type { OrganizationId, UserId } from "@/lib/domain/ids";
 import type {
   IncidentProvider,
@@ -37,6 +38,19 @@ export async function buildIncidentResponse(input: BuildIncidentsInput): Promise
     posture("xmatters",  "preview", ["XMATTERS_API_KEY"]),
     posture("discord_alerts", "preview", ["Discord webhook URL"]),
   ];
+
+  // ---------------------------------------------------------------------------
+  // Drain the inbound webhook queue into per-provider postures.
+  // ---------------------------------------------------------------------------
+  const inbound = readIncidentQueue();
+  for (const r of inbound) {
+    const target = providers.find((p) => p.provider === r.provider);
+    if (target) {
+      target.openIncidents.push(r);
+      target.mode = "live";
+      target.headline = `Live · ${target.openIncidents.length} incident(s) received via webhook.`;
+    }
+  }
 
   const incidents: IncidentRecord[] = providers.flatMap((p) => p.openIncidents);
   const liveCount = providers.filter((p) => p.mode === "live").length;

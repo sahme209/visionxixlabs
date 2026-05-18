@@ -56,6 +56,8 @@ export interface AppEnv {
   azureCostMgmtEnabled: boolean;
   /** Telemetry webhook shared secret — required for inbound /api/webhooks/telemetry. */
   telemetryWebhookSecret?: string;
+  /** Incident webhook shared secret — required for inbound /api/webhooks/incident. */
+  incidentWebhookSecret?: string;
   /** Azure service-principal credentials presence (server-only). */
   azureConfigured: boolean;
   /** Azure scan mode. */
@@ -156,6 +158,7 @@ export function loadAppEnv(): AppEnv {
     awsCostExplorerEnabled:   bool(env.AWS_COST_EXPLORER_ENABLED, false),
     azureCostMgmtEnabled:     bool(env.AZURE_COST_MGMT_ENABLED, false),
     telemetryWebhookSecret:   env.TELEMETRY_WEBHOOK_SECRET?.trim() || undefined,
+    incidentWebhookSecret:    env.INCIDENT_WEBHOOK_SECRET?.trim() || undefined,
     azureConfigured:
       isSet(env.AZURE_TENANT_ID) &&
       isSet(env.AZURE_CLIENT_ID) &&
