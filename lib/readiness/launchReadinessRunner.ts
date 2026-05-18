@@ -65,11 +65,17 @@ export async function runLaunchReadiness(input: RunLaunchReadinessInput): Promis
     row("security_scanner",               75, "lib/securityScanner/{securityScanner,vulnerabilityModel,compoundedRiskReasoner}.ts + 18 vitest assertions", "live", []),
     row("remediation_simulation_approval", 60, "lib/remediation/* + lib/simulation/* + lib/approvals/* — operating loop refuses approval/preflight/verify", "live", ["Remediation candidate counts populate after operator runs /api/remediation/plan."]),
     row("desktop_review",                 env.desktopHandoffSigningKeySet ? 65 : 50, "lib/desktop/{desktopSession,desktopToken,executionHandoff}.ts + paste-flow UI", env.desktopHandoffSigningKeySet ? "live" : "preview", env.desktopHandoffSigningKeySet ? [] : ["DESKTOP_HANDOFF_SIGNING_KEY not set — falling back to NEXTAUTH_SECRET."]),
+    row("desktop_intelligence",           env.desktopHandoffSigningKeySet ? 80 : 65, "lib/desktop/desktopIntelligence{Model,Builder}.ts + /api/desktop/intelligence + /dashboard/desktop/intelligence — joins Priority + ApprovalPacket + AutomationBoundary + DesktopPosture", env.desktopHandoffSigningKeySet ? "live" : "preview", env.desktopHandoffSigningKeySet ? [] : ["Pairing not configured — workstation surfaces handoff CTAs as preview."]),
+    row("desktop_releases",               env.desktopDownloadsEnabled ? 70 : 55, "lib/desktop/desktopRelease{Model,Builder}.ts + /api/desktop/releases + /dashboard/desktop/releases — joins live GitHub release manifest with per-platform signing gates", env.desktopDownloadsEnabled ? "partial_live" : "preview", env.desktopDownloadsEnabled ? ["Signing/notarization gates pending Apple Developer ID + Windows EV cert in CI."] : ["DESKTOP_DOWNLOADS_ENABLED is false — /download still in preview."]),
     row("trust_audit_evidence",           Math.min(100, Math.round(70 + evidenceCoverage * 30)), "lib/compliance/* + /api/trust/{summary,controls,evidence,export}", evidenceCoverage > 0 ? "live" : "preview", evidenceCoverage === 0 ? ["No evidence collected yet — run a scan / operating-loop pass."] : []),
     row("self_serve_onboarding",          80, "lib/onboarding/selfServeSetupOrchestrator.ts + per-provider missingRequirements[]", "live", []),
     row("product_honesty",                honestyClean ? 100 : 60, "lib/readiness/productHonestyChecks.ts + 'honesty.product_copy_clean' matrix row", "live", honestyClean ? [] : ["Honesty scanner flagged a risky phrase — see /api/readiness."]),
     row("route_health",                   Math.round(matrixCoverage * 100), `validation matrix: ${matrixPassing}/${matrixTotal} passing`, liveMode(axiomOS.sourceMode), []),
     row("api_health",                     Math.round(matrixCoverage * 100), "All new routes use apiSuccess/apiFailure + toAxiomError redaction", "live", []),
+    row("api_safety_module",              90, "lib/api/{apiEnvelope,sourceMode,safetyContracts,redaction,correlation,index}.ts — closed ApiSafetyContract union (24 literals) + canonical envelope + correlation ids + payload redaction + sourceMode rollup", "live", []),
+    row("intelligence_systems",           80, "lib/intelligence/{priorityEngine,nextActionEngine,executiveSummaryBuilder,approvalPacketBuilder,rootCauseGrouper}.ts — every engine pure-projection over canonical state", "live", []),
+    row("governance_systems",             82, "lib/risk/riskQueueBuilder + lib/notifications/notificationBuilder + lib/policy/{policyRegistry,policyEvaluator} + lib/scheduler/scheduledScanModel + lib/evidence/evidenceLibraryBuilder — closed-union typed engines", "live", []),
+    row("operating_graph_visibility",     85, "components/dashboard/OperatingGraphPanel mounted in Trust Center + Command Center — every node + edge of canonical state rendered on first paint", "live", []),
     row("persistence",                    env.databaseUrlSet ? 90 : 40, env.databaseUrlSet ? "DATABASE_URL configured + Prisma migration 20260516120000 in place" : "DATABASE_URL not configured — adapters fall back to in-memory", env.databaseUrlSet ? "live" : "preview", env.databaseUrlSet ? [] : ["Set DATABASE_URL on the host and run `prisma migrate deploy`."]),
     row("safety_governance",              95, "operating-loop runner refuses approval / preflight / verification / desktop_review", "live", []),
     row("enterprise_presentation",        70, "AxiomOSStrip + ReadinessStrip + Trust Center APIs + matrix coverage", "live", ["UI polish on per-page strategy + drilldown panels still pending."]),
@@ -217,5 +223,9 @@ function paidCritical(c: LaunchCategory): boolean {
       || c === "remediation_simulation_approval"
       || c === "trust_audit_evidence"
       || c === "persistence"
-      || c === "self_serve_onboarding";
+      || c === "self_serve_onboarding"
+      || c === "api_safety_module"
+      || c === "intelligence_systems"
+      || c === "governance_systems"
+      || c === "operating_graph_visibility";
 }

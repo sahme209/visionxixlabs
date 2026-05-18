@@ -13,8 +13,7 @@
  */
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
-import { ArrowRightIcon, ShieldCheckIcon, BoltIcon } from "@heroicons/react/24/outline";
+import { ShieldCheckIcon, BoltIcon } from "@heroicons/react/24/outline";
 
 interface LaunchRow {
   category: string;
@@ -24,7 +23,12 @@ interface LaunchRow {
   evidence?: string;
   sourceMode?: string;
   blockers?: string[];
-  topFix?: { id: string; title: string; reason: string; href?: string };
+  topFix?: string;
+}
+
+interface LaunchFix {
+  category: string;
+  reason: string;
 }
 
 interface LaunchReportLite {
@@ -32,11 +36,11 @@ interface LaunchReportLite {
   overallLaunchScore: number;
   overallStatus: string;
   rows: LaunchRow[];
-  mustFixBeforeDemo: string[];
-  mustFixBeforePaidCustomer: string[];
-  acceptablePreviewAreas: string[];
-  blockedByExternalConfig: string[];
-  nextBestLaunchFixes: { id: string; title: string; reason: string; href?: string }[];
+  mustFixBeforeDemo: LaunchFix[];
+  mustFixBeforePaidCustomer: LaunchFix[];
+  acceptablePreviewAreas: LaunchFix[];
+  blockedByExternalConfig: LaunchFix[];
+  nextBestLaunchFixes: { id: string; title: string; category: string }[];
 }
 
 interface CategoryScore {
@@ -188,7 +192,7 @@ export default function ReadinessPage() {
                   <div className="flex items-start justify-between gap-2 mb-2">
                     <h3 className="text-[14px] font-semibold text-white tracking-tight truncate">{r.label}</h3>
                     <span className={`text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded ${tone.pill} shrink-0`}>
-                      {r.status.replace(/_/g, " ")}
+                      {r.status?.replace(/_/g, " ") ?? "unknown"}
                     </span>
                   </div>
                   <div className="flex items-center gap-3 mb-2 text-[12px]">
@@ -202,9 +206,9 @@ export default function ReadinessPage() {
                     </p>
                   )}
                   {r.topFix && (
-                    <Link href={r.topFix.href ?? "#"} className="inline-flex items-center gap-1.5 text-[11px] text-zinc-300 hover:text-white transition-colors">
-                      {r.topFix.title} <ArrowRightIcon className="h-3 w-3" />
-                    </Link>
+                    <p className="inline-flex items-center gap-1.5 text-[11px] text-zinc-300">
+                      <span className="text-emerald-300/80 font-mono uppercase tracking-wider text-[10px]">top fix:</span> {r.topFix}
+                    </p>
                   )}
                 </div>
               );
@@ -224,20 +228,18 @@ export default function ReadinessPage() {
           </div>
           <div className="space-y-2">
             {launch.nextBestLaunchFixes.map((fix, i) => (
-              <Link
+              <div
                 key={fix.id}
-                href={fix.href ?? "#"}
-                className="block rounded-xl border border-white/[0.06] bg-white/[0.02] p-4 hover:border-white/[0.18] transition-colors group"
+                className="block rounded-xl border border-white/[0.06] bg-white/[0.02] p-4"
               >
                 <div className="flex items-start gap-3">
                   <span className="text-[10px] font-mono text-zinc-500 mt-0.5">#{i + 1}</span>
                   <div className="min-w-0 flex-1">
                     <p className="text-[13px] font-semibold text-white tracking-tight leading-snug">{fix.title}</p>
-                    <p className="text-[11px] text-zinc-400 leading-relaxed mt-0.5">{fix.reason}</p>
+                    <p className="text-[11px] text-zinc-500 font-mono leading-relaxed mt-0.5">{fix.category}</p>
                   </div>
-                  <ArrowRightIcon className="h-3.5 w-3.5 text-zinc-500 group-hover:text-white transition-colors shrink-0" />
                 </div>
-              </Link>
+              </div>
             ))}
           </div>
         </section>
@@ -277,8 +279,10 @@ export default function ReadinessPage() {
             <div className="rounded-2xl border border-rose-500/[0.22] bg-rose-500/[0.04] p-5">
               <p className="text-[10px] font-mono text-rose-300/80 uppercase tracking-[0.18em] mb-2">// must fix before demo</p>
               <ul className="space-y-1">
-                {launch.mustFixBeforeDemo.map((id, i) => (
-                  <li key={i} className="text-[12px] text-rose-200/90 font-mono leading-snug">{id}</li>
+                {launch.mustFixBeforeDemo.map((fix, i) => (
+                  <li key={i} className="text-[12px] text-rose-200/90 font-mono leading-snug">
+                    <span className="text-rose-300/70">{fix.category}:</span> {fix.reason}
+                  </li>
                 ))}
               </ul>
             </div>
@@ -287,8 +291,10 @@ export default function ReadinessPage() {
             <div className="rounded-2xl border border-amber-500/[0.22] bg-amber-500/[0.04] p-5">
               <p className="text-[10px] font-mono text-amber-300/80 uppercase tracking-[0.18em] mb-2">// must fix before paid pilot</p>
               <ul className="space-y-1">
-                {launch.mustFixBeforePaidCustomer.map((id, i) => (
-                  <li key={i} className="text-[12px] text-amber-200/90 font-mono leading-snug">{id}</li>
+                {launch.mustFixBeforePaidCustomer.map((fix, i) => (
+                  <li key={i} className="text-[12px] text-amber-200/90 font-mono leading-snug">
+                    <span className="text-amber-300/70">{fix.category}:</span> {fix.reason}
+                  </li>
                 ))}
               </ul>
             </div>

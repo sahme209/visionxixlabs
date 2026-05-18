@@ -25,11 +25,17 @@ export type LaunchCategory =
   | "security_scanner"
   | "remediation_simulation_approval"
   | "desktop_review"
+  | "desktop_intelligence"
+  | "desktop_releases"
   | "trust_audit_evidence"
   | "self_serve_onboarding"
   | "product_honesty"
   | "route_health"
   | "api_health"
+  | "api_safety_module"
+  | "intelligence_systems"
+  | "governance_systems"
+  | "operating_graph_visibility"
   | "persistence"
   | "safety_governance"
   | "enterprise_presentation"
@@ -106,11 +112,17 @@ export const CATEGORY_LABELS: Record<LaunchCategory, string> = {
   security_scanner:               "Security scanner",
   remediation_simulation_approval: "Remediation / simulation / approval",
   desktop_review:                 "Desktop review",
+  desktop_intelligence:           "Desktop Intelligence Workstation",
+  desktop_releases:               "Desktop Release Management",
   trust_audit_evidence:           "Trust / audit / evidence",
   self_serve_onboarding:          "Self-serve onboarding",
   product_honesty:                "Product honesty",
   route_health:                   "Route health",
   api_health:                     "API health",
+  api_safety_module:              "API safety module",
+  intelligence_systems:           "Intelligence systems",
+  governance_systems:             "Governance systems",
+  operating_graph_visibility:     "Operating Graph visibility",
   persistence:                    "Persistence durability",
   safety_governance:              "Safety + governance",
   enterprise_presentation:        "Enterprise presentation",
