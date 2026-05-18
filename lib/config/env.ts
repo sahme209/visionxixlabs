@@ -62,8 +62,12 @@ export interface AppEnv {
   autonomySchedulerEnabled: boolean;
   /** AWS ECS extractor opt-in. */
   awsEcsExtractEnabled: boolean;
+  /** AWS EKS extractor opt-in. */
+  awsEksExtractEnabled: boolean;
   /** GitHub Actions extractor opt-in. */
   githubActionsExtractEnabled: boolean;
+  /** AWS CloudWatch pull-based telemetry extractor opt-in. */
+  awsCloudWatchPullEnabled: boolean;
   /** Vercel cron secret — pre-shared header guarding the cron route. */
   cronSecret?: string;
   /** Azure service-principal credentials presence (server-only). */
@@ -170,7 +174,9 @@ export function loadAppEnv(): AppEnv {
     autonomySchedulerEnabled: bool(env.AUTONOMY_SCHEDULER_ENABLED, false),
     cronSecret:               env.CRON_SECRET?.trim() || undefined,
     awsEcsExtractEnabled:     bool(env.AWS_ECS_EXTRACT_ENABLED, false),
+    awsEksExtractEnabled:     bool(env.AWS_EKS_EXTRACT_ENABLED, false),
     githubActionsExtractEnabled: bool(env.GITHUB_ACTIONS_EXTRACT_ENABLED, false),
+    awsCloudWatchPullEnabled:  bool(env.AWS_CLOUDWATCH_PULL_ENABLED, false),
     azureConfigured:
       isSet(env.AZURE_TENANT_ID) &&
       isSet(env.AZURE_CLIENT_ID) &&

@@ -10,7 +10,9 @@
 import "server-only";
 
 import { buildAxiomOSState } from "@/lib/axiomOS/axiomOSStateBuilder";
+import { loadAppEnv } from "@/lib/config/env";
 import { readTelemetryQueue } from "./telemetryWebhookReceiver";
+import { extractAwsCloudWatchAlarms } from "./awsCloudWatchExtractor";
 import type { OrganizationId, UserId } from "@/lib/domain/ids";
 import type {
   TelemetryIngestReport,
@@ -28,8 +30,19 @@ export interface BuildTelemetryInput {
 }
 
 export async function buildTelemetryIngest(input: BuildTelemetryInput): Promise<TelemetryIngestReport> {
+  const env = loadAppEnv();
   const state = await buildAxiomOSState({ tenantId: input.tenantId, actorUserId: input.actorUserId });
   const awsLive = state.providers.find((p) => p.provider === "aws")?.mode === "live";
+
+  // Try live CloudWatch alarm pull.
+  let cwLive: Awaited<ReturnType<typeof extractAwsCloudWatchAlarms>> | null = null;
+  if (awsLive && env.awsCloudWatchPullEnabled) {
+    try {
+      cwLive = await extractAwsCloudWatchAlarms();
+    } catch {
+      cwLive = null;
+    }
+  }
   const azureLive = state.providers.find((p) => p.provider === "azure")?.mode === "live";
   const gcpLive = state.providers.find((p) => p.provider === "gcp")?.mode === "live";
 
@@ -62,16 +75,28 @@ export async function buildTelemetryIngest(input: BuildTelemetryInput): Promise<
 
   // ---------------------------------------------------------------------------
   // Drain the inbound webhook queue into the per-provider postures.
-  // The queue holds signals already-normalised + already-redacted by the
-  // receiver. Each signal is routed back to the provider it claimed.
   // ---------------------------------------------------------------------------
   const inbound = readTelemetryQueue();
   for (const sig of inbound) {
     const target = providers.find((p) => p.provider === sig.sourceProvider);
     if (target) {
       target.signals.push(sig);
-      target.mode = "live"; // promote to live the moment a real signal lands
+      target.mode = "live";
       target.headline = `Live · ${target.signals.length} signal(s) ingested via webhook.`;
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Splice live-pulled CloudWatch alarm state into the aws_cloudwatch posture.
+  // ---------------------------------------------------------------------------
+  if (cwLive && cwLive.mode === "live" && cwLive.signals.length > 0) {
+    const target = providers.find((p) => p.provider === "aws_cloudwatch");
+    if (target) {
+      for (const sig of cwLive.signals) target.signals.push(sig);
+      target.mode = "live";
+      target.headline = `Live · ${target.signals.length} CloudWatch alarm(s) pulled from DescribeAlarms.`;
+      target.missingRequirements = [];
+      target.configured = true;
     }
   }
 

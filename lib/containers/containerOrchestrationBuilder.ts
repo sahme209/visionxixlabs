@@ -17,6 +17,7 @@ import "server-only";
 import { buildAxiomOSState } from "@/lib/axiomOS/axiomOSStateBuilder";
 import { loadAppEnv } from "@/lib/config/env";
 import { extractAwsEcsClusters } from "./awsEcsExtractor";
+import { extractAwsEksClusters } from "./awsEksExtractor";
 import type { OrganizationId, UserId } from "@/lib/domain/ids";
 import type {
   ContainerCluster,
@@ -44,6 +45,16 @@ export async function buildContainerOrchestration(input: BuildContainerOrchestra
       awsEcsLive = await extractAwsEcsClusters();
     } catch {
       awsEcsLive = null;
+    }
+  }
+
+  // Try live AWS EKS extraction.
+  let awsEksLive: Awaited<ReturnType<typeof extractAwsEksClusters>> | null = null;
+  if (awsMode === "live" && env.awsEksExtractEnabled) {
+    try {
+      awsEksLive = await extractAwsEksClusters();
+    } catch {
+      awsEksLive = null;
     }
   }
   const azureMode = state.providers.find((p) => p.provider === "azure")?.mode ?? "preview";
@@ -76,20 +87,26 @@ export async function buildContainerOrchestration(input: BuildContainerOrchestra
   }
 
   // ---------------------------------------------------------------------------
-  // AWS EKS
+  // AWS EKS — live SDK traversal when AWS mode + extractor flag are on
   // ---------------------------------------------------------------------------
-  clusters.push(previewCluster({
-    id: "aws-eks:preview",
-    provider: "aws_eks",
-    name: "AWS EKS · preview",
-    region: "us-east-1",
-    providerMode: awsMode,
-    limitations: awsMode === "live"
-      ? ["EKS DescribeCluster + ListNodegroups + kubeconfig fetch wires in Phase 42b."]
-      : ["AWS mode not yet live."],
-    externalConsoleHref: "https://console.aws.amazon.com/eks/",
-    safeNextAction: { label: "Open AWS Sources", href: "/dashboard/sources" },
-  }));
+  if (awsEksLive && awsEksLive.mode === "live" && awsEksLive.clusters.length > 0) {
+    for (const c of awsEksLive.clusters) clusters.push(c);
+  } else {
+    clusters.push(previewCluster({
+      id: "aws-eks:preview",
+      provider: "aws_eks",
+      name: "AWS EKS · preview",
+      region: "us-east-1",
+      providerMode: awsMode,
+      limitations: awsEksLive
+        ? awsEksLive.limitations
+        : (awsMode === "live"
+            ? ["AWS_EKS_EXTRACT_ENABLED is not set — flip it on to traverse EKS clusters + nodegroups."]
+            : ["AWS mode not yet live."]),
+      externalConsoleHref: "https://console.aws.amazon.com/eks/",
+      safeNextAction: { label: "Open AWS Sources", href: "/dashboard/sources" },
+    }));
+  }
 
   // ---------------------------------------------------------------------------
   // GCP GKE
