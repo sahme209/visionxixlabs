@@ -90,7 +90,8 @@ const GROUPS: NavGroup[] = [
   {
     label: "Trust & evidence",
     items: [
-      { href: "/dashboard/trust",    label: "Trust Center",  icon: ShieldCheckIcon   },
+      { href: "/dashboard/trust",                  label: "Trust Center",         icon: ShieldCheckIcon   },
+      { href: "/dashboard/automation-boundaries",  label: "Automation boundaries",icon: ShieldCheckIcon   },
       { href: "/dashboard/evidence", label: "Evidence",      icon: DocumentTextIcon  },
       { href: "/dashboard/audit",    label: "Audit",         icon: DocumentTextIcon  },
       { href: "/dashboard/traces",   label: "Traces",        icon: EyeIcon           },
