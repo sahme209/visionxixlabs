@@ -107,11 +107,13 @@ const GROUPS: NavGroup[] = [
   {
     label: "Setup",
     items: [
-      { href: "/dashboard/finops",              label: "FinOps",             icon: PuzzlePieceIcon },
-      { href: "/dashboard/integrations",        label: "Integrations",       icon: PuzzlePieceIcon },
-      { href: "/dashboard/integrations/health", label: "Integration health", icon: ServerStackIcon },
-      { href: "/dashboard/integrations/github", label: "GitHub setup",       icon: CodeBracketIcon },
-      { href: "/dashboard/topology",            label: "Topology",           icon: ServerStackIcon },
+      { href: "/dashboard/setup",               label: "Setup wizard",       icon: RocketLaunchIcon },
+      { href: "/dashboard/settings/workspace",  label: "Workspace + roles",  icon: ShieldCheckIcon  },
+      { href: "/dashboard/finops",              label: "FinOps",             icon: PuzzlePieceIcon  },
+      { href: "/dashboard/integrations",        label: "Integrations",       icon: PuzzlePieceIcon  },
+      { href: "/dashboard/integrations/health", label: "Integration health", icon: ServerStackIcon  },
+      { href: "/dashboard/integrations/github", label: "GitHub setup",       icon: CodeBracketIcon  },
+      { href: "/dashboard/topology",            label: "Topology",           icon: ServerStackIcon  },
     ],
   },
 ];
