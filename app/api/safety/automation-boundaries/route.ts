@@ -1,33 +1,33 @@
 /**
  * GET /api/safety/automation-boundaries
  *
- * Returns the canonical Automation Boundary Report — every action
- * class Axiom can perform and its hard-literal classification. This
- * is the spine the platform leans on to refuse unsafe automation.
- *
- * Pure read-only. No tenant scope needed — boundaries are platform-wide.
+ * Returns the canonical Automation Boundary Report via the canonical
+ * API envelope. Pure read-only — boundaries are platform-wide.
  */
 
-import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
 import { currentContext } from "@/lib/auth/currentContext";
 import { buildAutomationBoundaryReport } from "@/lib/safety/automationBoundaryDetector";
-import { apiFailure, apiSuccess } from "@/lib/api/dtoMappers";
-import { AxiomErrors, httpStatusFor, toAxiomError } from "@/lib/errors/axiomErrors";
+import { apiOk, apiErr, resolveCorrelationId } from "@/lib/api";
+import { AxiomErrors } from "@/lib/errors/axiomErrors";
 
 export const dynamic = "force-dynamic";
 
-export async function GET(): Promise<NextResponse> {
+export async function GET(req: NextRequest) {
+  const correlationId = resolveCorrelationId(req.headers);
   try {
     const ctx = await currentContext();
     if (!ctx.isAuthenticated) {
       throw AxiomErrors.validation("auth.required", "Sign in required.");
     }
     const report = await buildAutomationBoundaryReport();
-    return NextResponse.json(apiSuccess(report), { status: 200 });
+    return apiOk(report, {
+      correlationId,
+      safetyContract: "boundaries_declared_no_action_taken",
+    });
   } catch (err) {
-    const axiomErr = toAxiomError(err);
-    return NextResponse.json(apiFailure(axiomErr), { status: httpStatusFor(axiomErr.category) });
+    return apiErr(err, { correlationId, safetyContract: "boundaries_declared_no_action_taken" });
   }
 }
 
-export async function POST(): Promise<NextResponse> { return GET(); }
+export async function POST(req: NextRequest) { return GET(req); }

@@ -1,19 +1,21 @@
 /**
  * GET /api/scheduled-scans
  *
- * Returns the canonical ScheduledScanReport. Tenant-scoped. Pure
- * read-only — declares what tasks would run; never executes them.
+ * Returns the canonical ScheduledScanReport via the canonical API
+ * envelope. Pure read-only — declares what tasks would run; never
+ * executes them.
  */
 
-import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
 import { currentContext } from "@/lib/auth/currentContext";
 import { buildScheduledScans } from "@/lib/scheduler/scheduledScanBuilder";
-import { apiFailure, apiSuccess } from "@/lib/api/dtoMappers";
-import { AxiomErrors, httpStatusFor, toAxiomError } from "@/lib/errors/axiomErrors";
+import { apiOk, apiErr, resolveCorrelationId } from "@/lib/api";
+import { AxiomErrors } from "@/lib/errors/axiomErrors";
 
 export const dynamic = "force-dynamic";
 
-export async function GET(): Promise<NextResponse> {
+export async function GET(req: NextRequest) {
+  const correlationId = resolveCorrelationId(req.headers);
   try {
     const ctx = await currentContext();
     if (!ctx.isAuthenticated || !ctx.organizationId) {
@@ -23,11 +25,13 @@ export async function GET(): Promise<NextResponse> {
       tenantId: ctx.organizationId,
       actorUserId: ctx.userId,
     });
-    return NextResponse.json(apiSuccess(report), { status: 200 });
+    return apiOk(report, {
+      correlationId,
+      safetyContract: "scheduled_scan_read_only",
+    });
   } catch (err) {
-    const axiomErr = toAxiomError(err);
-    return NextResponse.json(apiFailure(axiomErr), { status: httpStatusFor(axiomErr.category) });
+    return apiErr(err, { correlationId, safetyContract: "scheduled_scan_read_only" });
   }
 }
 
-export async function POST(): Promise<NextResponse> { return GET(); }
+export async function POST(req: NextRequest) { return GET(req); }

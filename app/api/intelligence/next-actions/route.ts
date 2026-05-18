@@ -1,23 +1,21 @@
 /**
  * GET /api/intelligence/next-actions
  *
- * Returns the canonical Next-Best-Action Report — a ranked list of
- * safe operator actions derived from the Priority Engine. Every
- * action is mapped to a literal safetyLevel; mutation actions are
- * never produced.
- *
- * Pure read-only over PriorityReport + AxiomOSState. Tenant-scoped.
+ * Returns the canonical Next-Best-Action Report via the canonical
+ * API envelope. Every action is mapped to a literal safetyLevel;
+ * mutation actions are never produced. Tenant-scoped.
  */
 
-import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
 import { currentContext } from "@/lib/auth/currentContext";
 import { buildNextActions } from "@/lib/intelligence/nextActionEngine";
-import { apiFailure, apiSuccess } from "@/lib/api/dtoMappers";
-import { AxiomErrors, httpStatusFor, toAxiomError } from "@/lib/errors/axiomErrors";
+import { apiOk, apiErr, resolveCorrelationId } from "@/lib/api";
+import { AxiomErrors } from "@/lib/errors/axiomErrors";
 
 export const dynamic = "force-dynamic";
 
-export async function GET(): Promise<NextResponse> {
+export async function GET(req: NextRequest) {
+  const correlationId = resolveCorrelationId(req.headers);
   try {
     const ctx = await currentContext();
     if (!ctx.isAuthenticated || !ctx.organizationId) {
@@ -27,11 +25,13 @@ export async function GET(): Promise<NextResponse> {
       tenantId: ctx.organizationId,
       actorUserId: ctx.userId,
     });
-    return NextResponse.json(apiSuccess(report), { status: 200 });
+    return apiOk(report, {
+      correlationId,
+      safetyContract: "next_action_read_only",
+    });
   } catch (err) {
-    const axiomErr = toAxiomError(err);
-    return NextResponse.json(apiFailure(axiomErr), { status: httpStatusFor(axiomErr.category) });
+    return apiErr(err, { correlationId, safetyContract: "next_action_read_only" });
   }
 }
 
-export async function POST(): Promise<NextResponse> { return GET(); }
+export async function POST(req: NextRequest) { return GET(req); }

@@ -1,21 +1,20 @@
 /**
  * GET /api/operating-graph
  *
- * Returns the canonical Operating Graph — nodes + edges + summary.
- * Pure read-only projection over AxiomOSState. Tenant-scoped.
- *
- * No SDK calls, no mutation. The graph never executes anything.
+ * Returns the canonical Operating Graph via the canonical API envelope.
+ * Pure read-only projection over AxiomOSState.
  */
 
-import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
 import { currentContext } from "@/lib/auth/currentContext";
 import { buildOperatingGraph } from "@/lib/operatingGraph/operatingGraphBuilder";
-import { apiFailure, apiSuccess } from "@/lib/api/dtoMappers";
-import { AxiomErrors, httpStatusFor, toAxiomError } from "@/lib/errors/axiomErrors";
+import { apiOk, apiErr, asApiSourceMode, resolveCorrelationId } from "@/lib/api";
+import { AxiomErrors } from "@/lib/errors/axiomErrors";
 
 export const dynamic = "force-dynamic";
 
-export async function GET(): Promise<NextResponse> {
+export async function GET(req: NextRequest) {
+  const correlationId = resolveCorrelationId(req.headers);
   try {
     const ctx = await currentContext();
     if (!ctx.isAuthenticated || !ctx.organizationId) {
@@ -25,11 +24,14 @@ export async function GET(): Promise<NextResponse> {
       tenantId: ctx.organizationId,
       actorUserId: ctx.userId,
     });
-    return NextResponse.json(apiSuccess(graph), { status: 200 });
+    return apiOk(graph, {
+      correlationId,
+      safetyContract: "operating_graph_read_only",
+      sourceMode: asApiSourceMode(graph.overallSourceMode),
+    });
   } catch (err) {
-    const axiomErr = toAxiomError(err);
-    return NextResponse.json(apiFailure(axiomErr), { status: httpStatusFor(axiomErr.category) });
+    return apiErr(err, { correlationId, safetyContract: "operating_graph_read_only" });
   }
 }
 
-export async function POST(): Promise<NextResponse> { return GET(); }
+export async function POST(req: NextRequest) { return GET(req); }

@@ -1,23 +1,20 @@
 /**
  * GET /api/intelligence/approval-packets
  *
- * Returns the canonical Approval Packet Report — one operator-ready
- * packet per approval-eligible decision. Pure read-only composition
- * over PriorityReport + AxiomOSState. Tenant-scoped.
- *
- * The view never executes a change. Approving still happens through
- * the existing /api/orchestration/approvals decide endpoint (audited).
+ * Returns the canonical Approval Packet Report via the canonical
+ * API envelope. The view never executes a change.
  */
 
-import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
 import { currentContext } from "@/lib/auth/currentContext";
 import { buildApprovalPackets } from "@/lib/intelligence/approvalPacketBuilder";
-import { apiFailure, apiSuccess } from "@/lib/api/dtoMappers";
-import { AxiomErrors, httpStatusFor, toAxiomError } from "@/lib/errors/axiomErrors";
+import { apiOk, apiErr, resolveCorrelationId } from "@/lib/api";
+import { AxiomErrors } from "@/lib/errors/axiomErrors";
 
 export const dynamic = "force-dynamic";
 
-export async function GET(): Promise<NextResponse> {
+export async function GET(req: NextRequest) {
+  const correlationId = resolveCorrelationId(req.headers);
   try {
     const ctx = await currentContext();
     if (!ctx.isAuthenticated || !ctx.organizationId) {
@@ -27,11 +24,13 @@ export async function GET(): Promise<NextResponse> {
       tenantId: ctx.organizationId,
       actorUserId: ctx.userId,
     });
-    return NextResponse.json(apiSuccess(report), { status: 200 });
+    return apiOk(report, {
+      correlationId,
+      safetyContract: "approval_only_no_execution",
+    });
   } catch (err) {
-    const axiomErr = toAxiomError(err);
-    return NextResponse.json(apiFailure(axiomErr), { status: httpStatusFor(axiomErr.category) });
+    return apiErr(err, { correlationId, safetyContract: "approval_only_no_execution" });
   }
 }
 
-export async function POST(): Promise<NextResponse> { return GET(); }
+export async function POST(req: NextRequest) { return GET(req); }

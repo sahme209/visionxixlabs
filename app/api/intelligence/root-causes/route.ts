@@ -1,19 +1,20 @@
 /**
  * GET /api/intelligence/root-causes
  *
- * Returns the canonical Root Cause grouping report. Pure projection
- * over the Risk Queue. Tenant-scoped. No SDK calls.
+ * Returns the canonical Root Cause grouping report via the canonical
+ * API envelope. Pure projection over the Risk Queue.
  */
 
-import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
 import { currentContext } from "@/lib/auth/currentContext";
 import { buildRootCauses } from "@/lib/intelligence/rootCauseGrouper";
-import { apiFailure, apiSuccess } from "@/lib/api/dtoMappers";
-import { AxiomErrors, httpStatusFor, toAxiomError } from "@/lib/errors/axiomErrors";
+import { apiOk, apiErr, resolveCorrelationId } from "@/lib/api";
+import { AxiomErrors } from "@/lib/errors/axiomErrors";
 
 export const dynamic = "force-dynamic";
 
-export async function GET(): Promise<NextResponse> {
+export async function GET(req: NextRequest) {
+  const correlationId = resolveCorrelationId(req.headers);
   try {
     const ctx = await currentContext();
     if (!ctx.isAuthenticated || !ctx.organizationId) {
@@ -23,11 +24,13 @@ export async function GET(): Promise<NextResponse> {
       tenantId: ctx.organizationId,
       actorUserId: ctx.userId,
     });
-    return NextResponse.json(apiSuccess(report), { status: 200 });
+    return apiOk(report, {
+      correlationId,
+      safetyContract: "root_cause_read_only",
+    });
   } catch (err) {
-    const axiomErr = toAxiomError(err);
-    return NextResponse.json(apiFailure(axiomErr), { status: httpStatusFor(axiomErr.category) });
+    return apiErr(err, { correlationId, safetyContract: "root_cause_read_only" });
   }
 }
 
-export async function POST(): Promise<NextResponse> { return GET(); }
+export async function POST(req: NextRequest) { return GET(req); }

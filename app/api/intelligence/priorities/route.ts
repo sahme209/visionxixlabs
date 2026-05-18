@@ -1,23 +1,21 @@
 /**
  * GET /api/intelligence/priorities
  *
- * Returns the canonical Operational Priority Report. Ranked top-down
- * by composite score with explainable score breakdowns. Pure read-only
- * over AxiomOSState + Operating Graph. Tenant-scoped.
- *
- * No SDK calls. No mutation. No fake certainty — confidence reflects
- * evidence quality + sourceMode.
+ * Returns the canonical Operational Priority Report via the canonical
+ * API envelope. Ranked top-down by composite score with explainable
+ * score breakdowns. Pure read-only. Tenant-scoped.
  */
 
-import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
 import { currentContext } from "@/lib/auth/currentContext";
 import { buildPriorityReport } from "@/lib/intelligence/priorityEngine";
-import { apiFailure, apiSuccess } from "@/lib/api/dtoMappers";
-import { AxiomErrors, httpStatusFor, toAxiomError } from "@/lib/errors/axiomErrors";
+import { apiOk, apiErr, asApiSourceMode, resolveCorrelationId } from "@/lib/api";
+import { AxiomErrors } from "@/lib/errors/axiomErrors";
 
 export const dynamic = "force-dynamic";
 
-export async function GET(): Promise<NextResponse> {
+export async function GET(req: NextRequest) {
+  const correlationId = resolveCorrelationId(req.headers);
   try {
     const ctx = await currentContext();
     if (!ctx.isAuthenticated || !ctx.organizationId) {
@@ -27,11 +25,14 @@ export async function GET(): Promise<NextResponse> {
       tenantId: ctx.organizationId,
       actorUserId: ctx.userId,
     });
-    return NextResponse.json(apiSuccess(report), { status: 200 });
+    return apiOk(report, {
+      correlationId,
+      safetyContract: "priority_engine_read_only",
+      sourceMode: asApiSourceMode(report.overallSourceMode),
+    });
   } catch (err) {
-    const axiomErr = toAxiomError(err);
-    return NextResponse.json(apiFailure(axiomErr), { status: httpStatusFor(axiomErr.category) });
+    return apiErr(err, { correlationId, safetyContract: "priority_engine_read_only" });
   }
 }
 
-export async function POST(): Promise<NextResponse> { return GET(); }
+export async function POST(req: NextRequest) { return GET(req); }
