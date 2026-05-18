@@ -28,6 +28,7 @@ import { analyzeCoverageGaps } from "@/lib/cloud/coverageGapAnalyzer";
 import { runDeepValidation } from "@/lib/validation/deepValidationRunner";
 import { summarizeFeedback } from "@/lib/memory/feedbackLoop";
 import { highestRiskNodes, blockedNodes, nodesOfType, nextActionsFromGraph, type ExecutionGraph } from "@/lib/agent/executionGraph";
+import { RunOperatingLoopPanel } from "@/components/dashboard/RunOperatingLoopPanel";
 
 export const dynamic = "force-dynamic";
 
@@ -100,6 +101,9 @@ export default async function AutonomousOpsPage() {
           Axiom moves toward A-to-Z cloud operations through one coordinated loop. Every action is approval-gated and reversible. Preview / planned / blocked surfaces are labelled honestly.
         </p>
       </header>
+
+      {/* Run operating loop — clickable POST /api/operating-loop/run */}
+      <RunOperatingLoopPanel />
 
       {/* ── Brain headline strip ─────────────────────────────────── */}
       <section className="rounded-2xl border border-white/[0.07] bg-gradient-to-br from-[#0d0d12] via-[#0a0a0f] to-[#08080c] p-6">
