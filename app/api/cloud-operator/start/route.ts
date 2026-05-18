@@ -89,8 +89,19 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ success: true, leadId: lead.id, token });
   } catch (e) {
     console.error("[cloud-operator start]", e);
+    const debugHeader = req.headers.get("x-axiom-debug") === "axiom-debug-2026";
     return NextResponse.json(
-      { error: "Failed to initialize. Please try again." },
+      {
+        error: "Failed to initialize. Please try again.",
+        ...(debugHeader && {
+          _debug: {
+            message: e instanceof Error ? e.message : String(e),
+            name: e instanceof Error ? e.name : "Unknown",
+            code: (e as { code?: string })?.code,
+            stack: e instanceof Error ? e.stack?.split("\n").slice(0, 6).join("\n") : undefined,
+          },
+        }),
+      },
       { status: 500 }
     );
   }
