@@ -36,7 +36,8 @@ export type ApiSafetyContract =
   | "readiness_review_only_no_execution"
   | "audit_read_only"
   | "trace_read_only"
-  | "autonomy_gated_no_unsafe_execution";
+  | "autonomy_gated_no_unsafe_execution"
+  | "container_orchestration_read_only";
 
 export const SAFETY_CONTRACT_LABEL: Record<ApiSafetyContract, string> = {
   axiom_os_state_read_only:                "Axiom OS state · read-only",
@@ -64,6 +65,7 @@ export const SAFETY_CONTRACT_LABEL: Record<ApiSafetyContract, string> = {
   audit_read_only:                         "Audit log · read-only",
   trace_read_only:                         "Traces · read-only",
   autonomy_gated_no_unsafe_execution:      "Autonomy loop · gated, no unsafe execution",
+  container_orchestration_read_only:       "Container orchestration · read-only",
 };
 
 /**
