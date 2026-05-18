@@ -25,7 +25,7 @@ import {
   EyeIcon,
   CpuChipIcon,
   PuzzlePieceIcon,
-  ArrowsRightLeftIcon,
+  ArrowsRightLeftIcon, // also used in the Operator group for the Operating Graph
   WrenchScrewdriverIcon,
 } from "@heroicons/react/24/outline";
 
@@ -44,10 +44,11 @@ const GROUPS: NavGroup[] = [
   {
     label: "Operator",
     items: [
-      { href: "/dashboard/command-center", label: "Command Center",   icon: Squares2X2Icon  },
-      { href: "/dashboard/sources",        label: "Sources",          icon: CloudIcon       },
-      { href: "/dashboard/surfaces",       label: "Product surfaces", icon: PuzzlePieceIcon },
-      { href: "/dashboard/readiness",      label: "Readiness",        icon: RocketLaunchIcon},
+      { href: "/dashboard/command-center", label: "Command Center",   icon: Squares2X2Icon       },
+      { href: "/dashboard/graph",          label: "Operating Graph",  icon: ArrowsRightLeftIcon  },
+      { href: "/dashboard/sources",        label: "Sources",          icon: CloudIcon            },
+      { href: "/dashboard/surfaces",       label: "Product surfaces", icon: PuzzlePieceIcon      },
+      { href: "/dashboard/readiness",      label: "Readiness",        icon: RocketLaunchIcon     },
     ],
   },
   {
