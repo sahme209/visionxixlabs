@@ -49,6 +49,7 @@ const GROUPS: NavGroup[] = [
       { href: "/dashboard/executive-summary",  label: "Executive summary",icon: DocumentTextIcon     },
       { href: "/dashboard/priorities",         label: "Priorities",       icon: ChartBarIcon         },
       { href: "/dashboard/next-actions",       label: "Next actions",     icon: BoltIcon             },
+      { href: "/dashboard/root-causes",        label: "Root causes",      icon: PuzzlePieceIcon      },
       { href: "/dashboard/graph",              label: "Operating Graph",  icon: ArrowsRightLeftIcon  },
       { href: "/dashboard/sources",            label: "Sources",          icon: CloudIcon            },
       { href: "/dashboard/surfaces",           label: "Product surfaces", icon: PuzzlePieceIcon      },
@@ -103,6 +104,7 @@ const GROUPS: NavGroup[] = [
   {
     label: "Setup",
     items: [
+      { href: "/dashboard/finops",              label: "FinOps",             icon: PuzzlePieceIcon },
       { href: "/dashboard/integrations",        label: "Integrations",       icon: PuzzlePieceIcon },
       { href: "/dashboard/integrations/health", label: "Integration health", icon: ServerStackIcon },
       { href: "/dashboard/integrations/github", label: "GitHub setup",       icon: CodeBracketIcon },
