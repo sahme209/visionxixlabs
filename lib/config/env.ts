@@ -85,6 +85,15 @@ export interface AppEnv {
   ghcrExtractEnabled: boolean;
   ghcrOrg?: string;
   ghcrDeepInspect: boolean;
+  /** Outbound notification channels — autonomy halts notify back. */
+  slackWebhookUrl?: string;
+  teamsWebhookUrl?: string;
+  outboundWebhookUrl?: string;
+  outboundWebhookSecret?: string;
+  /** Azure live inventory extractor opt-in. */
+  azureInventoryExtractEnabled: boolean;
+  /** GCP live inventory extractor opt-in. */
+  gcpInventoryExtractEnabled: boolean;
   /** Vercel cron secret — pre-shared header guarding the cron route. */
   cronSecret?: string;
   /** Azure service-principal credentials presence (server-only). */
@@ -207,6 +216,12 @@ export function loadAppEnv(): AppEnv {
     ghcrExtractEnabled:        bool(env.GHCR_EXTRACT_ENABLED, false),
     ghcrOrg:                   env.GHCR_ORG?.trim() || undefined,
     ghcrDeepInspect:           bool(env.GHCR_DEEP_INSPECT, false),
+    slackWebhookUrl:           env.SLACK_WEBHOOK_URL?.trim() || undefined,
+    teamsWebhookUrl:           env.TEAMS_WEBHOOK_URL?.trim() || undefined,
+    outboundWebhookUrl:        env.OUTBOUND_WEBHOOK_URL?.trim() || undefined,
+    outboundWebhookSecret:     env.OUTBOUND_WEBHOOK_SECRET?.trim() || undefined,
+    azureInventoryExtractEnabled: bool(env.AZURE_INVENTORY_EXTRACT_ENABLED, false),
+    gcpInventoryExtractEnabled:   bool(env.GCP_INVENTORY_EXTRACT_ENABLED, false),
     azureConfigured:
       isSet(env.AZURE_TENANT_ID) &&
       isSet(env.AZURE_CLIENT_ID) &&

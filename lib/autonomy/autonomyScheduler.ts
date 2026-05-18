@@ -27,6 +27,7 @@ import "server-only";
 import { runAutonomousLoopCycle } from "./autonomousLoopRunner";
 import { charterForMode } from "./autonomyCharter";
 import { loadAppEnv } from "@/lib/config/env";
+import { sendOutboundNotification } from "@/lib/notifications/outboundNotificationLane";
 import type { OrganizationId } from "@/lib/domain/ids";
 import type { AutonomyCycleReport, AutonomyMode } from "./autonomousLoopModel";
 
@@ -117,6 +118,42 @@ export async function runSchedulerTick(input: RunSchedulerTickInput): Promise<Sc
       cycles.push(report);
       HISTORY.push(report);
       if (HISTORY.length > MAX_HISTORY) HISTORY.shift();
+
+      // Fire outbound notifications for any candidate that halted at
+      // needs_human or approval_packet_prepared. Each notification is
+      // deduped by candidate id so re-firing across cycles is a no-op.
+      for (const c of report.candidates) {
+        if (c.outcome === "approval_packet_prepared") {
+          await sendOutboundNotification({
+            dedupeKey: `autonomy:approval:${c.id}`,
+            kind: "approval_packet_ready",
+            severity: "high",
+            tenantId: String(tenantId),
+            headline: `Approval packet ready: ${c.title}`,
+            body: `*Proposed intent:* ${c.proposedIntent}\n\n*Boundary class:* ${c.boundaryClass}\n*Charter mode:* ${charter.mode}\n\nLast stage transcript reached \`approve\` then halted at \`needs_human\`. Open the cockpit to decide.`,
+            safeNextAction: { label: "Open Approval Packets", href: "/dashboard/approval-packets" },
+            evidenceRefs: c.evidenceRefs,
+          });
+        } else if (c.outcome === "halted_at_gate") {
+          const halted = c.stages.find((s) => s.status.startsWith("halted"));
+          if (halted) {
+            await sendOutboundNotification({
+              dedupeKey: `autonomy:halt:${c.id}:${halted.stage}`,
+              kind: halted.status === "halted_unsafe"
+                ? "autonomy_halt_unsafe"
+                : halted.status === "halted_policy"
+                  ? "autonomy_halt_policy"
+                  : "autonomy_halt_needs_human",
+              severity: halted.status === "halted_unsafe" ? "critical" : "high",
+              tenantId: String(tenantId),
+              headline: `Autonomy loop halted at ${halted.stage}: ${c.title}`,
+              body: `*Reason:* ${halted.reason ?? halted.summary}\n\n*Evidence:* \`${halted.evidenceRef}\``,
+              safeNextAction: { label: "Open Autonomy Cockpit", href: "/dashboard/autonomy" },
+              evidenceRefs: [halted.evidenceRef, ...c.evidenceRefs],
+            });
+          }
+        }
+      }
     } catch (err) {
       skipped.push({
         tenantId: String(tenantId),
