@@ -1,21 +1,27 @@
 /**
  * GET /api/desktop/intelligence
  *
- * Returns the canonical DesktopIntelligenceReport. Pure read-only over
- * canonical state. Tenant-scoped. Never executes locally — that
- * boundary is enforced at the type level by the
+ * Returns the canonical DesktopIntelligenceReport via the canonical
+ * API envelope. Tenant-scoped. Never executes locally — the boundary
+ * is enforced at the type level by the
  * `desktop_review_only_no_local_execution` safety contract.
  */
 
-import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
 import { currentContext } from "@/lib/auth/currentContext";
 import { buildDesktopIntelligence } from "@/lib/desktop/desktopIntelligenceBuilder";
-import { apiFailure, apiSuccess } from "@/lib/api/dtoMappers";
-import { AxiomErrors, httpStatusFor, toAxiomError } from "@/lib/errors/axiomErrors";
+import {
+  apiOk,
+  apiErr,
+  asApiSourceMode,
+  resolveCorrelationId,
+} from "@/lib/api";
+import { AxiomErrors } from "@/lib/errors/axiomErrors";
 
 export const dynamic = "force-dynamic";
 
-export async function GET(): Promise<NextResponse> {
+export async function GET(req: NextRequest) {
+  const correlationId = resolveCorrelationId(req.headers);
   try {
     const ctx = await currentContext();
     if (!ctx.isAuthenticated || !ctx.organizationId) {
@@ -25,11 +31,17 @@ export async function GET(): Promise<NextResponse> {
       tenantId: ctx.organizationId,
       actorUserId: ctx.userId,
     });
-    return NextResponse.json(apiSuccess(report), { status: 200 });
+    return apiOk(report, {
+      correlationId,
+      safetyContract: "desktop_review_only_no_local_execution",
+      sourceMode: asApiSourceMode(report.pairing.binaryAvailable ? "partial_live" : "preview"),
+    });
   } catch (err) {
-    const axiomErr = toAxiomError(err);
-    return NextResponse.json(apiFailure(axiomErr), { status: httpStatusFor(axiomErr.category) });
+    return apiErr(err, {
+      correlationId,
+      safetyContract: "desktop_review_only_no_local_execution",
+    });
   }
 }
 
-export async function POST(): Promise<NextResponse> { return GET(); }
+export async function POST(req: NextRequest) { return GET(req); }

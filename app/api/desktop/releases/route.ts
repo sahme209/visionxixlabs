@@ -1,20 +1,26 @@
 /**
  * GET /api/desktop/releases
  *
- * Returns the canonical DesktopReleaseReport. Pure read-only over the
- * release manifest + distribution registry. Tenant-scoped. Never
- * publishes — the safety contract is `release_review_only_no_publish`.
+ * Returns the canonical DesktopReleaseReport via the canonical API
+ * envelope. Tenant-scoped. Never publishes — the contract is
+ * `release_review_only_no_publish`.
  */
 
-import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
 import { currentContext } from "@/lib/auth/currentContext";
 import { buildDesktopReleaseReport } from "@/lib/desktop/desktopReleaseBuilder";
-import { apiFailure, apiSuccess } from "@/lib/api/dtoMappers";
-import { AxiomErrors, httpStatusFor, toAxiomError } from "@/lib/errors/axiomErrors";
+import {
+  apiOk,
+  apiErr,
+  asApiSourceMode,
+  resolveCorrelationId,
+} from "@/lib/api";
+import { AxiomErrors } from "@/lib/errors/axiomErrors";
 
 export const dynamic = "force-dynamic";
 
-export async function GET(): Promise<NextResponse> {
+export async function GET(req: NextRequest) {
+  const correlationId = resolveCorrelationId(req.headers);
   try {
     const ctx = await currentContext();
     if (!ctx.isAuthenticated || !ctx.organizationId) {
@@ -24,11 +30,17 @@ export async function GET(): Promise<NextResponse> {
       tenantId: ctx.organizationId,
       actorUserId: ctx.userId,
     });
-    return NextResponse.json(apiSuccess(report), { status: 200 });
+    return apiOk(report, {
+      correlationId,
+      safetyContract: "release_review_only_no_publish",
+      sourceMode: asApiSourceMode(report.sourceMode),
+    });
   } catch (err) {
-    const axiomErr = toAxiomError(err);
-    return NextResponse.json(apiFailure(axiomErr), { status: httpStatusFor(axiomErr.category) });
+    return apiErr(err, {
+      correlationId,
+      safetyContract: "release_review_only_no_publish",
+    });
   }
 }
 
-export async function POST(): Promise<NextResponse> { return GET(); }
+export async function POST(req: NextRequest) { return GET(req); }
