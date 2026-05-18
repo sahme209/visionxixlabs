@@ -13,6 +13,8 @@ import { buildAxiomOSState } from "@/lib/axiomOS/axiomOSStateBuilder";
 import { loadAppEnv } from "@/lib/config/env";
 import { readTelemetryQueue } from "./telemetryWebhookReceiver";
 import { extractAwsCloudWatchAlarms } from "./awsCloudWatchExtractor";
+import { extractDatadogAlertingMonitors } from "./datadogPullExtractor";
+import { extractSentryUnresolvedIssues } from "./sentryPullExtractor";
 import type { OrganizationId, UserId } from "@/lib/domain/ids";
 import type {
   TelemetryIngestReport,
@@ -41,6 +43,26 @@ export async function buildTelemetryIngest(input: BuildTelemetryInput): Promise<
       cwLive = await extractAwsCloudWatchAlarms();
     } catch {
       cwLive = null;
+    }
+  }
+
+  // Try live Datadog pull.
+  let ddLive: Awaited<ReturnType<typeof extractDatadogAlertingMonitors>> | null = null;
+  if (env.datadogPullEnabled) {
+    try {
+      ddLive = await extractDatadogAlertingMonitors();
+    } catch {
+      ddLive = null;
+    }
+  }
+
+  // Try live Sentry pull.
+  let sentryLive: Awaited<ReturnType<typeof extractSentryUnresolvedIssues>> | null = null;
+  if (env.sentryPullEnabled) {
+    try {
+      sentryLive = await extractSentryUnresolvedIssues();
+    } catch {
+      sentryLive = null;
     }
   }
   const azureLive = state.providers.find((p) => p.provider === "azure")?.mode === "live";
@@ -95,6 +117,34 @@ export async function buildTelemetryIngest(input: BuildTelemetryInput): Promise<
       for (const sig of cwLive.signals) target.signals.push(sig);
       target.mode = "live";
       target.headline = `Live · ${target.signals.length} CloudWatch alarm(s) pulled from DescribeAlarms.`;
+      target.missingRequirements = [];
+      target.configured = true;
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Splice live-pulled Datadog monitors into the datadog posture.
+  // ---------------------------------------------------------------------------
+  if (ddLive && ddLive.mode === "live" && ddLive.signals.length > 0) {
+    const target = providers.find((p) => p.provider === "datadog");
+    if (target) {
+      for (const sig of ddLive.signals) target.signals.push(sig);
+      target.mode = "live";
+      target.headline = `Live · ${target.signals.length} Datadog monitor(s) in alert/warn state.`;
+      target.missingRequirements = [];
+      target.configured = true;
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Splice live-pulled Sentry unresolved issues into the sentry posture.
+  // ---------------------------------------------------------------------------
+  if (sentryLive && sentryLive.mode === "live" && sentryLive.signals.length > 0) {
+    const target = providers.find((p) => p.provider === "sentry");
+    if (target) {
+      for (const sig of sentryLive.signals) target.signals.push(sig);
+      target.mode = "live";
+      target.headline = `Live · ${target.signals.length} unresolved Sentry issue(s).`;
       target.missingRequirements = [];
       target.configured = true;
     }

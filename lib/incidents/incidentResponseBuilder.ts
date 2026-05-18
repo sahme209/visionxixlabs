@@ -9,7 +9,9 @@
 import "server-only";
 
 import { buildAxiomOSState } from "@/lib/axiomOS/axiomOSStateBuilder";
+import { loadAppEnv } from "@/lib/config/env";
 import { readIncidentQueue } from "./incidentWebhookReceiver";
+import { extractPagerDutyOpenIncidents } from "./pagerDutyPullExtractor";
 import type { OrganizationId, UserId } from "@/lib/domain/ids";
 import type {
   IncidentProvider,
@@ -27,7 +29,18 @@ export interface BuildIncidentsInput {
 }
 
 export async function buildIncidentResponse(input: BuildIncidentsInput): Promise<IncidentResponseReport> {
+  const env = loadAppEnv();
   const state = await buildAxiomOSState({ tenantId: input.tenantId, actorUserId: input.actorUserId });
+
+  // Try live PagerDuty pull.
+  let pdLive: Awaited<ReturnType<typeof extractPagerDutyOpenIncidents>> | null = null;
+  if (env.pagerDutyPullEnabled) {
+    try {
+      pdLive = await extractPagerDutyOpenIncidents();
+    } catch {
+      pdLive = null;
+    }
+  }
 
   const providers: IncidentProviderPosture[] = [
     posture("pagerduty", "preview", ["PAGERDUTY_API_TOKEN with incidents:read", "Routing key + service ids"], "https://app.pagerduty.com/"),
@@ -49,6 +62,24 @@ export async function buildIncidentResponse(input: BuildIncidentsInput): Promise
       target.openIncidents.push(r);
       target.mode = "live";
       target.headline = `Live · ${target.openIncidents.length} incident(s) received via webhook.`;
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Splice live-pulled PagerDuty incidents into the pagerduty posture.
+  // Dedupe against webhook-received records by externalId.
+  // ---------------------------------------------------------------------------
+  if (pdLive && pdLive.mode === "live" && pdLive.records.length > 0) {
+    const target = providers.find((p) => p.provider === "pagerduty");
+    if (target) {
+      const seenIds = new Set(target.openIncidents.map((i) => i.externalId));
+      for (const r of pdLive.records) {
+        if (!seenIds.has(r.externalId)) target.openIncidents.push(r);
+      }
+      target.mode = "live";
+      target.headline = `Live · ${target.openIncidents.length} incident(s) (webhook + REST pull).`;
+      target.missingRequirements = [];
+      target.configured = true;
     }
   }
 

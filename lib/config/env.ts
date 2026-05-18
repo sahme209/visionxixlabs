@@ -68,6 +68,23 @@ export interface AppEnv {
   githubActionsExtractEnabled: boolean;
   /** AWS CloudWatch pull-based telemetry extractor opt-in. */
   awsCloudWatchPullEnabled: boolean;
+  /** PagerDuty REST pull extractor opt-in + token. */
+  pagerDutyPullEnabled: boolean;
+  pagerDutyApiToken?: string;
+  /** Datadog REST pull extractor opt-in + keys + site. */
+  datadogPullEnabled: boolean;
+  datadogApiKey?: string;
+  datadogAppKey?: string;
+  datadogSite?: string;
+  /** Sentry REST pull extractor opt-in + token + org. */
+  sentryPullEnabled: boolean;
+  sentryAuthToken?: string;
+  sentryOrg?: string;
+  sentryBaseUrl?: string;
+  /** GHCR container inventory extractor opt-in + org + deep-inspect flag. */
+  ghcrExtractEnabled: boolean;
+  ghcrOrg?: string;
+  ghcrDeepInspect: boolean;
   /** Vercel cron secret — pre-shared header guarding the cron route. */
   cronSecret?: string;
   /** Azure service-principal credentials presence (server-only). */
@@ -177,6 +194,19 @@ export function loadAppEnv(): AppEnv {
     awsEksExtractEnabled:     bool(env.AWS_EKS_EXTRACT_ENABLED, false),
     githubActionsExtractEnabled: bool(env.GITHUB_ACTIONS_EXTRACT_ENABLED, false),
     awsCloudWatchPullEnabled:  bool(env.AWS_CLOUDWATCH_PULL_ENABLED, false),
+    pagerDutyPullEnabled:      bool(env.PAGERDUTY_PULL_ENABLED, false),
+    pagerDutyApiToken:         env.PAGERDUTY_API_TOKEN?.trim() || undefined,
+    datadogPullEnabled:        bool(env.DATADOG_PULL_ENABLED, false),
+    datadogApiKey:             env.DATADOG_API_KEY?.trim() || undefined,
+    datadogAppKey:             env.DATADOG_APPLICATION_KEY?.trim() || undefined,
+    datadogSite:               env.DATADOG_SITE?.trim() || undefined,
+    sentryPullEnabled:         bool(env.SENTRY_PULL_ENABLED, false),
+    sentryAuthToken:           env.SENTRY_AUTH_TOKEN?.trim() || undefined,
+    sentryOrg:                 env.SENTRY_ORG?.trim() || undefined,
+    sentryBaseUrl:             env.SENTRY_BASE_URL?.trim() || undefined,
+    ghcrExtractEnabled:        bool(env.GHCR_EXTRACT_ENABLED, false),
+    ghcrOrg:                   env.GHCR_ORG?.trim() || undefined,
+    ghcrDeepInspect:           bool(env.GHCR_DEEP_INSPECT, false),
     azureConfigured:
       isSet(env.AZURE_TENANT_ID) &&
       isSet(env.AZURE_CLIENT_ID) &&

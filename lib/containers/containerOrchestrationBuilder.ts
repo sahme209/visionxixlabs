@@ -18,6 +18,7 @@ import { buildAxiomOSState } from "@/lib/axiomOS/axiomOSStateBuilder";
 import { loadAppEnv } from "@/lib/config/env";
 import { extractAwsEcsClusters } from "./awsEcsExtractor";
 import { extractAwsEksClusters } from "./awsEksExtractor";
+import { extractGhcrImages } from "./githubGhcrExtractor";
 import type { OrganizationId, UserId } from "@/lib/domain/ids";
 import type {
   ContainerCluster,
@@ -55,6 +56,16 @@ export async function buildContainerOrchestration(input: BuildContainerOrchestra
       awsEksLive = await extractAwsEksClusters();
     } catch {
       awsEksLive = null;
+    }
+  }
+
+  // Try live GHCR extraction.
+  let ghcrLive: Awaited<ReturnType<typeof extractGhcrImages>> | null = null;
+  if (env.ghcrExtractEnabled) {
+    try {
+      ghcrLive = await extractGhcrImages();
+    } catch {
+      ghcrLive = null;
     }
   }
   const azureMode = state.providers.find((p) => p.provider === "azure")?.mode ?? "preview";
@@ -141,20 +152,26 @@ export async function buildContainerOrchestration(input: BuildContainerOrchestra
   }));
 
   // ---------------------------------------------------------------------------
-  // GitHub Container Registry (image source)
+  // GitHub Container Registry — live SDK traversal when flag is on
   // ---------------------------------------------------------------------------
-  clusters.push(previewCluster({
-    id: "ghcr:preview",
-    provider: "github_ghcr",
-    name: "GitHub Container Registry · preview",
-    region: "global",
-    providerMode: githubMode,
-    limitations: githubMode === "live"
-      ? ["GHCR package list + manifest digest fetch via GitHub Packages API wires in Phase 42e."]
-      : ["GitHub mode not yet live — connect GITHUB_TOKEN with read:packages scope."],
-    externalConsoleHref: "https://github.com/orgs/?tab=packages",
-    safeNextAction: { label: "Open GitHub Sources", href: "/dashboard/sources" },
-  }));
+  if (ghcrLive && ghcrLive.mode === "live" && ghcrLive.cluster) {
+    clusters.push(ghcrLive.cluster);
+  } else {
+    clusters.push(previewCluster({
+      id: "ghcr:preview",
+      provider: "github_ghcr",
+      name: "GitHub Container Registry · preview",
+      region: "global",
+      providerMode: githubMode,
+      limitations: ghcrLive
+        ? ghcrLive.limitations
+        : (githubMode === "live"
+            ? ["GHCR_EXTRACT_ENABLED + GHCR_ORG not set — flip them on to enumerate org packages."]
+            : ["GitHub mode not yet live — connect GITHUB_TOKEN with read:packages scope."]),
+      externalConsoleHref: "https://github.com/orgs/?tab=packages",
+      safeNextAction: { label: "Open GitHub Sources", href: "/dashboard/sources" },
+    }));
+  }
 
   // ---------------------------------------------------------------------------
   // Summary rollup
