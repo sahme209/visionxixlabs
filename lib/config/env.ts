@@ -54,6 +54,8 @@ export interface AppEnv {
   awsCostExplorerEnabled: boolean;
   /** Azure Cost Management extractor opt-in. */
   azureCostMgmtEnabled: boolean;
+  /** Telemetry webhook shared secret — required for inbound /api/webhooks/telemetry. */
+  telemetryWebhookSecret?: string;
   /** Azure service-principal credentials presence (server-only). */
   azureConfigured: boolean;
   /** Azure scan mode. */
@@ -153,6 +155,7 @@ export function loadAppEnv(): AppEnv {
     awsAmbientRegion:         env.AWS_REGION?.trim() || undefined,
     awsCostExplorerEnabled:   bool(env.AWS_COST_EXPLORER_ENABLED, false),
     azureCostMgmtEnabled:     bool(env.AZURE_COST_MGMT_ENABLED, false),
+    telemetryWebhookSecret:   env.TELEMETRY_WEBHOOK_SECRET?.trim() || undefined,
     azureConfigured:
       isSet(env.AZURE_TENANT_ID) &&
       isSet(env.AZURE_CLIENT_ID) &&

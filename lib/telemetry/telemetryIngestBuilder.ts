@@ -10,6 +10,7 @@
 import "server-only";
 
 import { buildAxiomOSState } from "@/lib/axiomOS/axiomOSStateBuilder";
+import { readTelemetryQueue } from "./telemetryWebhookReceiver";
 import type { OrganizationId, UserId } from "@/lib/domain/ids";
 import type {
   TelemetryIngestReport,
@@ -58,6 +59,21 @@ export async function buildTelemetryIngest(input: BuildTelemetryInput): Promise<
     posture("new_relic", "preview", ["NEW_RELIC_API_KEY + NEW_RELIC_ACCOUNT_ID."], "https://one.newrelic.com/"),
     posture("opentelemetry_collector", "preview", ["OTEL_COLLECTOR_URL (push or pull)."]),
   ];
+
+  // ---------------------------------------------------------------------------
+  // Drain the inbound webhook queue into the per-provider postures.
+  // The queue holds signals already-normalised + already-redacted by the
+  // receiver. Each signal is routed back to the provider it claimed.
+  // ---------------------------------------------------------------------------
+  const inbound = readTelemetryQueue();
+  for (const sig of inbound) {
+    const target = providers.find((p) => p.provider === sig.sourceProvider);
+    if (target) {
+      target.signals.push(sig);
+      target.mode = "live"; // promote to live the moment a real signal lands
+      target.headline = `Live · ${target.signals.length} signal(s) ingested via webhook.`;
+    }
+  }
 
   const signals: TelemetrySignal[] = providers.flatMap((p) => p.signals);
   const liveCount = providers.filter((p) => p.mode === "live").length;
