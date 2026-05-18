@@ -14,6 +14,8 @@
 import "server-only";
 
 import { buildAxiomOSState } from "@/lib/axiomOS/axiomOSStateBuilder";
+import { loadAppEnv } from "@/lib/config/env";
+import { extractAwsCostExplorerSpend } from "./awsCostExplorerExtractor";
 import type { OrganizationId, UserId } from "@/lib/domain/ids";
 import type {
   BillingAnomaly,
@@ -30,16 +32,52 @@ export interface BuildBillingInput {
 }
 
 export async function buildBillingConnectors(input: BuildBillingInput): Promise<BillingConnectorsReport> {
+  const env = loadAppEnv();
   const state = await buildAxiomOSState({ tenantId: input.tenantId, actorUserId: input.actorUserId });
   const awsMode = state.providers.find((p) => p.provider === "aws")?.mode ?? "preview";
   const azureMode = state.providers.find((p) => p.provider === "azure")?.mode ?? "preview";
   const gcpMode = state.providers.find((p) => p.provider === "gcp")?.mode ?? "preview";
   const githubMode = state.providers.find((p) => p.provider === "github")?.mode ?? "preview";
 
+  // ---------------------------------------------------------------------------
+  // Live AWS Cost Explorer extractor (Phase 44b)
+  // ---------------------------------------------------------------------------
+  // Only attempted when AWS is live + AWS_COST_EXPLORER_ENABLED is set.
+  // Extractor returns honest preview/blocked envelope otherwise; we merge it
+  // into the AWS provider posture so the UI sees real dollars when present.
+  let awsCostLive: Awaited<ReturnType<typeof extractAwsCostExplorerSpend>> | null = null;
+  if (awsMode === "live" && env.awsCostExplorerEnabled) {
+    try {
+      awsCostLive = await extractAwsCostExplorerSpend();
+    } catch {
+      // Extractor errors stay honest in the posture — no fabricated numbers.
+      awsCostLive = null;
+    }
+  }
+
   const providers: BillingProviderPosture[] = [
-    posture("aws_cost_explorer", awsMode, [
-      "AWS_COST_EXPLORER_ENABLED + ce:GetCostAndUsage permission on the broker IAM role.",
-    ], "https://console.aws.amazon.com/cost-management/", { label: "Open AWS sources", href: "/dashboard/sources" }),
+    {
+      ...posture("aws_cost_explorer", awsMode, [
+        "AWS_COST_EXPLORER_ENABLED + ce:GetCostAndUsage permission on the broker IAM role.",
+      ], "https://console.aws.amazon.com/cost-management/", { label: "Open AWS sources", href: "/dashboard/sources" }),
+      // Splice in real dollars + anomalies when the extractor succeeded.
+      ...(awsCostLive && awsCostLive.mode === "live"
+        ? {
+            mode: "live" as BillingSourceMode,
+            configured: true,
+            headline: `Live AWS Cost Explorer — $${awsCostLive.confirmedDollarsLast30d.toFixed(2)} confirmed over last 30d.`,
+            confirmedDollarsLast30d: awsCostLive.confirmedDollarsLast30d,
+            confirmedDollarsPrev30d: awsCostLive.confirmedDollarsPrev30d,
+            anomalies: awsCostLive.anomalies,
+            missingRequirements: [],
+          }
+        : awsCostLive
+          ? {
+              headline: `Cost Explorer extraction ${awsCostLive.mode}: ${awsCostLive.limitations[0] ?? "n/a"}`,
+              missingRequirements: awsCostLive.limitations,
+            }
+          : {}),
+    },
     posture("azure_cost_management", azureMode, [
       "AZURE_COST_MGMT_ENABLED + CostManagement Reader role on the subscription.",
     ], "https://portal.azure.com/#blade/Microsoft_Azure_CostManagement", { label: "Open Azure sources", href: "/dashboard/sources" }),

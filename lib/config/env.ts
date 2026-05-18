@@ -40,6 +40,18 @@ export interface AppEnv {
   awsBrokerConfigured: boolean;
   /** AWS scan mode — drives the scanner branch. */
   awsScanMode: FeatureMode;
+  /** AWS broker access key id (server-only — used by SDK extractors). */
+  awsBrokerAccessKeyId?: string;
+  /** AWS broker secret access key (server-only — used by SDK extractors). */
+  awsBrokerSecretAccessKey?: string;
+  /** Ambient AWS role ARN for tenant-scoped reads. */
+  awsAmbientRoleArn?: string;
+  /** Ambient AWS external id paired with the role. */
+  awsAmbientExternalId?: string;
+  /** Ambient AWS region (Cost Explorer pins us-east-1 regardless; this is the customer's primary). */
+  awsAmbientRegion?: string;
+  /** AWS Cost Explorer extractor opt-in (CE API has per-request cost). */
+  awsCostExplorerEnabled: boolean;
   /** Azure service-principal credentials presence (server-only). */
   azureConfigured: boolean;
   /** Azure scan mode. */
@@ -132,6 +144,12 @@ export function loadAppEnv(): AppEnv {
       env.AWS_SCAN_MODE,
       isSet(env.AWS_CONNECTOR_BROKER_ACCESS_KEY_ID) ? "live" : "preview",
     ),
+    awsBrokerAccessKeyId:     env.AWS_CONNECTOR_BROKER_ACCESS_KEY_ID?.trim() || undefined,
+    awsBrokerSecretAccessKey: env.AWS_CONNECTOR_BROKER_SECRET_ACCESS_KEY?.trim() || undefined,
+    awsAmbientRoleArn:        env.AWS_ROLE_ARN?.trim() || undefined,
+    awsAmbientExternalId:     env.AWS_EXTERNAL_ID?.trim() || undefined,
+    awsAmbientRegion:         env.AWS_REGION?.trim() || undefined,
+    awsCostExplorerEnabled:   bool(env.AWS_COST_EXPLORER_ENABLED, false),
     azureConfigured:
       isSet(env.AZURE_TENANT_ID) &&
       isSet(env.AZURE_CLIENT_ID) &&
