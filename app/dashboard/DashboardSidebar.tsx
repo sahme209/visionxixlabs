@@ -47,6 +47,7 @@ const GROUPS: NavGroup[] = [
     label: "Operator",
     items: [
       { href: "/dashboard/command-center",     label: "Command Center",   icon: Squares2X2Icon       },
+      { href: "/dashboard/autonomy",           label: "Autonomy Cockpit", icon: CpuChipIcon          },
       { href: "/dashboard/executive-summary",  label: "Executive summary",icon: DocumentTextIcon     },
       { href: "/dashboard/priorities",         label: "Priorities",       icon: ChartBarIcon         },
       { href: "/dashboard/next-actions",       label: "Next actions",     icon: BoltIcon             },

@@ -35,7 +35,8 @@ export type ApiSafetyContract =
   | "rbac_never_enables_mutation"
   | "readiness_review_only_no_execution"
   | "audit_read_only"
-  | "trace_read_only";
+  | "trace_read_only"
+  | "autonomy_gated_no_unsafe_execution";
 
 export const SAFETY_CONTRACT_LABEL: Record<ApiSafetyContract, string> = {
   axiom_os_state_read_only:                "Axiom OS state · read-only",
@@ -62,6 +63,7 @@ export const SAFETY_CONTRACT_LABEL: Record<ApiSafetyContract, string> = {
   readiness_review_only_no_execution:      "Readiness · review only",
   audit_read_only:                         "Audit log · read-only",
   trace_read_only:                         "Traces · read-only",
+  autonomy_gated_no_unsafe_execution:      "Autonomy loop · gated, no unsafe execution",
 };
 
 /**
