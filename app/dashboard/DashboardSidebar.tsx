@@ -68,6 +68,7 @@ const GROUPS: NavGroup[] = [
   {
     label: "Engines",
     items: [
+      { href: "/dashboard/risks",          label: "Risk Queue",     icon: ShieldCheckIcon       },
       { href: "/dashboard/security",       label: "Security",       icon: ShieldCheckIcon       },
       { href: "/dashboard/releaseops",     label: "ReleaseOps",     icon: RocketLaunchIcon      },
       { href: "/dashboard/remediation",    label: "Remediation",    icon: WrenchScrewdriverIcon },
