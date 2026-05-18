@@ -87,8 +87,10 @@ const GROUPS: NavGroup[] = [
   {
     label: "Desktop",
     items: [
-      { href: "/dashboard/desktop", label: "Runtime status", icon: ComputerDesktopIcon },
-      { href: "/download",          label: "Download",       icon: ComputerDesktopIcon },
+      { href: "/dashboard/desktop",              label: "Runtime status",             icon: ComputerDesktopIcon },
+      { href: "/dashboard/desktop/intelligence", label: "Intelligence workstation",   icon: CpuChipIcon         },
+      { href: "/dashboard/desktop/releases",     label: "Release management",         icon: RocketLaunchIcon    },
+      { href: "/download",                       label: "Download",                   icon: ComputerDesktopIcon },
     ],
   },
   {
