@@ -241,13 +241,13 @@ export default function Home() {
                 <div className="product-frame-glow" aria-hidden />
                 <div className="product-frame rounded-xl">
                   <div className="bg-[#0c0c0e] p-5 rounded-lg space-y-4">
-                    {/* Fake scan header */}
+                    {/* Demo preview header — illustrative only; real scan UI is /dashboard/aws */}
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
-                        <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                        <span className="text-xs font-semibold text-zinc-300">Axiom Scan — Production</span>
+                        <span className="w-2 h-2 rounded-full bg-amber-400" />
+                        <span className="text-xs font-semibold text-zinc-300">Axiom Scan — Preview</span>
                       </div>
-                      <span className="text-[10px] text-zinc-600 font-mono">aws:us-east-1</span>
+                      <span className="text-[9px] font-mono uppercase tracking-wider px-1.5 py-px rounded bg-amber-500/15 text-amber-300 border border-amber-500/30">demo preview</span>
                     </div>
                     <div className="h-px bg-white/[0.06]" />
                     {/* Findings */}

@@ -410,6 +410,12 @@ export const VALIDATION_MATRIX: ValidationRow[] = [
   // Continuation cycle — operating loop runnable
   // ---------------------------------------------------------------------------
   { id: "autonomous.loop_runnable",     area: "operating_loop", capability: "/dashboard/autonomous-ops gains RunOperatingLoopPanel — clickable POST /api/operating-loop/run (zero-body) advances every provider loop through safe stages only. Halts at approval / preflight / verification. Renders providersAdvanced / providersBlocked / paused-for-approval / paused-for-input counts + per-provider status rows. Eighth invokable action on the platform.", status: "passing", evidence: "app/dashboard/autonomous-ops/page.tsx + components/dashboard/RunOperatingLoopPanel.tsx" },
+
+  // ---------------------------------------------------------------------------
+  // Honesty sweep — homepage scan card labeled, false-positive exempt files added
+  // ---------------------------------------------------------------------------
+  { id: "honesty.homepage_demo_label",  area: "operating_loop", capability: "Homepage product-frame demo card explicitly labels itself as 'demo preview' with an amber badge — previously the card said 'Axiom Scan — Production' with an emerald animate-pulse dot, which could be mistaken for live data in screenshots. The card still shows illustrative $2,400/mo + $4,200/mo numbers but they are now clearly bounded by the demo-preview header.", status: "passing", evidence: "app/page.tsx" },
+  { id: "honesty.exception_files",      area: "operating_loop", capability: "productHonestyChecks rules 'fully_autonomous' + 'agent_operational_unconditional' now allow-list files where the literal strings appear inside JSDoc / comments documenting the anti-pattern (autonomous-ops page describing what NOT to claim; HeroEyebrow comment explaining its anti-claim purpose). Prevents the regression checker from false-flagging anti-claim documentation.", status: "passing", evidence: "lib/readiness/productHonestyChecks.ts" },
 ];
 
 // ---------------------------------------------------------------------------

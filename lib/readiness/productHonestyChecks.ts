@@ -121,7 +121,13 @@ const RULES: ScanRule[] = [
     severity: "high",
     title: "Phrase claims unsupervised full autonomy",
     suggestion: "Use 'governed automation' / 'approval-gated' / 'never auto-applying' — the product never executes mutations without explicit approval.",
-    exceptFiles: ["lib/readiness/productHonestyChecks.ts", "lib/readiness/__tests__/productHonestyChecks.test.ts"],
+    // Allow-list: files that document the anti-pattern in comments (the
+    // string appears inside JSDoc or // comments explaining what NOT to do)
+    exceptFiles: [
+      "lib/readiness/productHonestyChecks.ts",
+      "lib/readiness/__tests__/productHonestyChecks.test.ts",
+      "app/dashboard/autonomous-ops/page.tsx",
+    ],
   },
   {
     id: "agent_operational_unconditional",
@@ -129,6 +135,14 @@ const RULES: ScanRule[] = [
     severity: "high",
     title: "Hero unconditionally claims 'Live · Agent operational'",
     suggestion: "Use a HeroEyebrow that reads the real sourceMode from /api/axiom-os/state — never an unconditional 'Live' badge.",
+    // Allow-list: the Command Center HeroEyebrow file documents the anti-
+    // pattern in a leading JSDoc — the literal string is referenced as a
+    // contrast to what the component now does.
+    exceptFiles: [
+      "lib/readiness/productHonestyChecks.ts",
+      "lib/readiness/__tests__/productHonestyChecks.test.ts",
+      "app/dashboard/command-center/page.tsx",
+    ],
   },
   {
     id: "production_ready_claim",
