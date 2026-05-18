@@ -674,6 +674,12 @@ interface AxiomOSStateLite {
     data: { pendingCount: number; highRiskCount: number; expiredCount: number };
     limitations: string[];
   };
+  remediationPosture: {
+    status: string;
+    sourceMode: string;
+    data: { candidateCount: number; simulatedCount: number; approvalGatedCount: number; desktopReviewEligibleCount: number };
+    limitations: string[];
+  };
   auditPosture: {
     status: string;
     sourceMode: string;
