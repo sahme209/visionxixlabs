@@ -15,6 +15,8 @@
 import "server-only";
 
 import { buildAxiomOSState } from "@/lib/axiomOS/axiomOSStateBuilder";
+import { loadAppEnv } from "@/lib/config/env";
+import { extractAwsEcsClusters } from "./awsEcsExtractor";
 import type { OrganizationId, UserId } from "@/lib/domain/ids";
 import type {
   ContainerCluster,
@@ -30,9 +32,20 @@ export interface BuildContainerOrchestrationInput {
 }
 
 export async function buildContainerOrchestration(input: BuildContainerOrchestrationInput): Promise<ContainerOrchestrationReport> {
+  const env = loadAppEnv();
   const state = await buildAxiomOSState({ tenantId: input.tenantId, actorUserId: input.actorUserId });
 
   const awsMode = state.providers.find((p) => p.provider === "aws")?.mode ?? "preview";
+
+  // Try live AWS ECS extraction.
+  let awsEcsLive: Awaited<ReturnType<typeof extractAwsEcsClusters>> | null = null;
+  if (awsMode === "live" && env.awsEcsExtractEnabled) {
+    try {
+      awsEcsLive = await extractAwsEcsClusters();
+    } catch {
+      awsEcsLive = null;
+    }
+  }
   const azureMode = state.providers.find((p) => p.provider === "azure")?.mode ?? "preview";
   const gcpMode = state.providers.find((p) => p.provider === "gcp")?.mode ?? "preview";
   const githubMode = state.providers.find((p) => p.provider === "github")?.mode ?? "preview";
@@ -40,20 +53,27 @@ export async function buildContainerOrchestration(input: BuildContainerOrchestra
   const clusters: ContainerCluster[] = [];
 
   // ---------------------------------------------------------------------------
-  // AWS ECS
+  // AWS ECS — live SDK traversal when AWS mode + extractor flag are on
   // ---------------------------------------------------------------------------
-  clusters.push(previewCluster({
-    id: "aws-ecs:preview",
-    provider: "aws_ecs",
-    name: "AWS ECS · preview",
-    region: "us-east-1",
-    providerMode: awsMode,
-    limitations: awsMode === "live"
-      ? ["ECS DescribeClusters + DescribeServices traversal wires in Phase 42b."]
-      : ["AWS mode not yet live — set AWS_ROLE_ARN + AWS_EXTERNAL_ID + AWS_REGION to unblock."],
-    externalConsoleHref: "https://console.aws.amazon.com/ecs/",
-    safeNextAction: { label: "Open AWS Sources", href: "/dashboard/sources" },
-  }));
+  if (awsEcsLive && awsEcsLive.mode === "live" && awsEcsLive.clusters.length > 0) {
+    // Real clusters from the SDK go straight in.
+    for (const c of awsEcsLive.clusters) clusters.push(c);
+  } else {
+    clusters.push(previewCluster({
+      id: "aws-ecs:preview",
+      provider: "aws_ecs",
+      name: "AWS ECS · preview",
+      region: "us-east-1",
+      providerMode: awsMode,
+      limitations: awsEcsLive
+        ? awsEcsLive.limitations
+        : (awsMode === "live"
+            ? ["AWS_ECS_EXTRACT_ENABLED is not set — flip it on to traverse ECS clusters."]
+            : ["AWS mode not yet live — set AWS_ROLE_ARN + AWS_EXTERNAL_ID + AWS_REGION to unblock."]),
+      externalConsoleHref: "https://console.aws.amazon.com/ecs/",
+      safeNextAction: { label: "Open AWS Sources", href: "/dashboard/sources" },
+    }));
+  }
 
   // ---------------------------------------------------------------------------
   // AWS EKS

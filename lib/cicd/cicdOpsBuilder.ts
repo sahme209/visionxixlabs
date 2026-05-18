@@ -19,6 +19,8 @@
 import "server-only";
 
 import { buildAxiomOSState } from "@/lib/axiomOS/axiomOSStateBuilder";
+import { loadAppEnv } from "@/lib/config/env";
+import { extractGithubActionsRuns } from "./githubActionsExtractor";
 import type { OrganizationId, UserId } from "@/lib/domain/ids";
 import type {
   CicdOperation,
@@ -37,19 +39,49 @@ export interface BuildCicdOpsInput {
 }
 
 export async function buildCicdOps(input: BuildCicdOpsInput): Promise<CicdOpsReport> {
+  const env = loadAppEnv();
   const state = await buildAxiomOSState({ tenantId: input.tenantId, actorUserId: input.actorUserId });
 
   const githubMode = state.providers.find((p) => p.provider === "github")?.mode ?? "preview";
 
+  // Try live GitHub Actions extraction.
+  let ghActionsLive: Awaited<ReturnType<typeof extractGithubActionsRuns>> | null = null;
+  if (githubMode === "live" && env.githubActionsExtractEnabled) {
+    try {
+      ghActionsLive = await extractGithubActionsRuns();
+    } catch {
+      ghActionsLive = null;
+    }
+  }
+
   const providers: CicdProviderPosture[] = [
-    providerPosture("github_actions", githubMode, {
-      headline:
-        githubMode === "live"
-          ? "GitHub Actions live — workflow + branch protection inventory active."
-          : "GitHub mode preview — connect GITHUB_TOKEN (or GitHub App) to unblock Actions surface.",
-      missingRequirements: githubMode === "live" ? [] : ["GITHUB_TOKEN (or GitHub App installation token) with workflow:read"],
-      sampleRunsWhenLive: 3,
-    }),
+    (() => {
+      const base = providerPosture("github_actions", githubMode, {
+        headline:
+          githubMode === "live"
+            ? "GitHub Actions live — workflow + branch protection inventory active."
+            : "GitHub mode preview — connect GITHUB_TOKEN (or GitHub App) to unblock Actions surface.",
+        missingRequirements: githubMode === "live" ? [] : ["GITHUB_TOKEN (or GitHub App installation token) with workflow:read"],
+        sampleRunsWhenLive: 3,
+      });
+      if (ghActionsLive && ghActionsLive.mode === "live" && ghActionsLive.runs.length > 0) {
+        return {
+          ...base,
+          mode: "live",
+          configured: true,
+          headline: `Live GitHub Actions — ${ghActionsLive.runs.length} recent run(s) ingested.`,
+          recentRuns: ghActionsLive.runs,
+        };
+      }
+      if (ghActionsLive && ghActionsLive.mode !== "live") {
+        return {
+          ...base,
+          headline: `Actions extractor ${ghActionsLive.mode}: ${ghActionsLive.limitations[0] ?? "n/a"}`,
+          missingRequirements: ghActionsLive.limitations,
+        };
+      }
+      return base;
+    })(),
     providerPosture("gitlab_ci", "preview", {
       headline: "GitLab CI preview — Connect via GITLAB_TOKEN to unblock live pipeline state.",
       missingRequirements: ["GITLAB_TOKEN with api scope", "GITLAB_BASE_URL (self-hosted only)"],

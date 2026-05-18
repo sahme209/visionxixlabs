@@ -58,6 +58,14 @@ export interface AppEnv {
   telemetryWebhookSecret?: string;
   /** Incident webhook shared secret — required for inbound /api/webhooks/incident. */
   incidentWebhookSecret?: string;
+  /** Autonomy scheduler opt-in — required before cron will run a cycle. */
+  autonomySchedulerEnabled: boolean;
+  /** AWS ECS extractor opt-in. */
+  awsEcsExtractEnabled: boolean;
+  /** GitHub Actions extractor opt-in. */
+  githubActionsExtractEnabled: boolean;
+  /** Vercel cron secret — pre-shared header guarding the cron route. */
+  cronSecret?: string;
   /** Azure service-principal credentials presence (server-only). */
   azureConfigured: boolean;
   /** Azure scan mode. */
@@ -159,6 +167,10 @@ export function loadAppEnv(): AppEnv {
     azureCostMgmtEnabled:     bool(env.AZURE_COST_MGMT_ENABLED, false),
     telemetryWebhookSecret:   env.TELEMETRY_WEBHOOK_SECRET?.trim() || undefined,
     incidentWebhookSecret:    env.INCIDENT_WEBHOOK_SECRET?.trim() || undefined,
+    autonomySchedulerEnabled: bool(env.AUTONOMY_SCHEDULER_ENABLED, false),
+    cronSecret:               env.CRON_SECRET?.trim() || undefined,
+    awsEcsExtractEnabled:     bool(env.AWS_ECS_EXTRACT_ENABLED, false),
+    githubActionsExtractEnabled: bool(env.GITHUB_ACTIONS_EXTRACT_ENABLED, false),
     azureConfigured:
       isSet(env.AZURE_TENANT_ID) &&
       isSet(env.AZURE_CLIENT_ID) &&
