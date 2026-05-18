@@ -45,13 +45,14 @@ const GROUPS: NavGroup[] = [
   {
     label: "Operator",
     items: [
-      { href: "/dashboard/command-center", label: "Command Center",   icon: Squares2X2Icon       },
-      { href: "/dashboard/priorities",     label: "Priorities",       icon: ChartBarIcon         },
-      { href: "/dashboard/next-actions",   label: "Next actions",     icon: BoltIcon             },
-      { href: "/dashboard/graph",          label: "Operating Graph",  icon: ArrowsRightLeftIcon  },
-      { href: "/dashboard/sources",        label: "Sources",          icon: CloudIcon            },
-      { href: "/dashboard/surfaces",       label: "Product surfaces", icon: PuzzlePieceIcon      },
-      { href: "/dashboard/readiness",      label: "Readiness",        icon: RocketLaunchIcon     },
+      { href: "/dashboard/command-center",     label: "Command Center",   icon: Squares2X2Icon       },
+      { href: "/dashboard/executive-summary",  label: "Executive summary",icon: DocumentTextIcon     },
+      { href: "/dashboard/priorities",         label: "Priorities",       icon: ChartBarIcon         },
+      { href: "/dashboard/next-actions",       label: "Next actions",     icon: BoltIcon             },
+      { href: "/dashboard/graph",              label: "Operating Graph",  icon: ArrowsRightLeftIcon  },
+      { href: "/dashboard/sources",            label: "Sources",          icon: CloudIcon            },
+      { href: "/dashboard/surfaces",           label: "Product surfaces", icon: PuzzlePieceIcon      },
+      { href: "/dashboard/readiness",          label: "Readiness",        icon: RocketLaunchIcon     },
     ],
   },
   {
