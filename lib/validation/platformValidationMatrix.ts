@@ -752,6 +752,24 @@ export const VALIDATION_MATRIX: ValidationRow[] = [
   // ---------------------------------------------------------------------------
   { id: "gcp.live_inventory", area: "gcp", capability: "lib/cloud/gcp/gcpLiveInventory — pure read-only traversal via existing @google-cloud/compute + @google-cloud/storage SDKs. Counts Compute Engine instances (aggregatedListAsync across zones), Storage buckets (with publicBucketCount via per-bucket IAM probe detecting allUsers / allAuthenticatedUsers bindings — capped at 50 buckets to bound IAM API cost), Firewall rules (with allOpenFirewallCount via sourceRanges includes 0.0.0.0/0 + allowed[].length > 0). Service account key resolves from either GCP_SERVICE_ACCOUNT_JSON (full) or split GCP_CLIENT_EMAIL + GCP_PRIVATE_KEY.", status: "passing", evidence: "lib/cloud/gcp/gcpLiveInventory.ts", nextFix: "Requires GCP_INVENTORY_EXTRACT_ENABLED + GCP_PROJECT_ID + (GCP_SERVICE_ACCOUNT_JSON or GCP_CLIENT_EMAIL + GCP_PRIVATE_KEY) + roles/compute.viewer + roles/storage.objectViewer." },
   { id: "gcp.inventory_route", area: "gcp", capability: "GET /api/cloud/gcp-inventory — tenant-scoped canonical envelope returning the GcpLiveInventoryResult.", status: "passing", evidence: "app/api/cloud/gcp-inventory/route.ts" },
+
+  // ---------------------------------------------------------------------------
+  // Phase 60 — GitHub deep posture (PRs + Dependabot + CodeQL + branch protection)
+  // ---------------------------------------------------------------------------
+  { id: "github.deep_posture",  area: "github", capability: "lib/connectors/github/githubDeepPostureExtractor — pulls open PRs (with reviewer count + age), Dependabot alerts (with CVE ids + severity), code scanning (CodeQL) alerts, and branch protection on default branch across the GITHUB_ACTIONS_REPOS allowlist. Honest gap list when protection is missing (no PR review / no signed commits / no status checks / no conversation resolution / admins bypass). Per-repo failures degrade gracefully.", status: "passing", evidence: "lib/connectors/github/githubDeepPostureExtractor.ts", nextFix: "Requires GITHUB_DEEP_POSTURE_ENABLED + GitHub PAT/App with repo + security_events scopes + GITHUB_ACTIONS_REPOS allowlist." },
+  { id: "github.deep_route",    area: "github", capability: "GET /api/github/deep-posture — tenant-scoped canonical envelope.", status: "passing", evidence: "app/api/github/deep-posture/route.ts" },
+
+  // ---------------------------------------------------------------------------
+  // Phase 61 — Live Vercel deployments
+  // ---------------------------------------------------------------------------
+  { id: "vercel.extractor",      area: "github", capability: "lib/cicd/vercelDeploymentsExtractor — GET https://api.vercel.com/v6/deployments?projectId=...&limit=30. Bearer auth. Optional VERCEL_TEAM_ID for team accounts. Maps Vercel state (READY/ERROR/BUILDING/QUEUED/CANCELED/INITIALIZING) to canonical PipelineStatus. Commit + branch + author derived from deployment.meta when GitHub-linked.", status: "passing", evidence: "lib/cicd/vercelDeploymentsExtractor.ts", nextFix: "Requires VERCEL_DEPLOYMENTS_EXTRACT_ENABLED + VERCEL_TOKEN + VERCEL_PROJECT_ID." },
+  { id: "vercel.wired",          area: "github", capability: "lib/cicd/cicdOpsBuilder — live Vercel runs splice into the aws_codepipeline posture slot (keeps the closed 7-provider union stable). Provider promotes to partial_live when first deployment lands. /api/cicd + /dashboard/cicd + /dashboard/agi auto-render real deploy history.", status: "passing", evidence: "lib/cicd/cicdOpsBuilder.ts" },
+
+  // ---------------------------------------------------------------------------
+  // Phase 62 — DORA metrics
+  // ---------------------------------------------------------------------------
+  { id: "dora.builder", area: "operating_loop", capability: "lib/cicd/doraMetricsBuilder — the 4 canonical DORA metrics derived from canonical data. (1) Deployment Frequency = successful runs/day. (2) Lead Time = median pipeline duration in hours. (3) Change Failure Rate = failed/(failed+success). (4) MTTR = median incident triggered → resolved hours. Each metric ships as DoraMetric<number> with value:null when sample size insufficient — NEVER fabricated. DoraTier (elite/high/medium/low/unknown) only set when ≥3 of 4 metrics are live. Industry-standard thresholds: elite = daily deploys + <1hr lead + <15% failure + <1hr MTTR.", status: "passing", evidence: "lib/cicd/doraMetricsBuilder.ts" },
+  { id: "dora.route",   area: "operating_loop", capability: "GET /api/cicd/dora?windowDays=N — tenant-scoped envelope, default 30d window, max 90d.", status: "passing", evidence: "app/api/cicd/dora/route.ts" },
 ];
 
 // ---------------------------------------------------------------------------

@@ -21,6 +21,7 @@ import "server-only";
 import { buildAxiomOSState } from "@/lib/axiomOS/axiomOSStateBuilder";
 import { loadAppEnv } from "@/lib/config/env";
 import { extractGithubActionsRuns } from "./githubActionsExtractor";
+import { extractVercelDeployments } from "./vercelDeploymentsExtractor";
 import type { OrganizationId, UserId } from "@/lib/domain/ids";
 import type {
   CicdOperation,
@@ -51,6 +52,16 @@ export async function buildCicdOps(input: BuildCicdOpsInput): Promise<CicdOpsRep
       ghActionsLive = await extractGithubActionsRuns();
     } catch {
       ghActionsLive = null;
+    }
+  }
+
+  // Try live Vercel deployments extraction.
+  let vercelLive: Awaited<ReturnType<typeof extractVercelDeployments>> | null = null;
+  if (env.vercelDeploymentsEnabled) {
+    try {
+      vercelLive = await extractVercelDeployments();
+    } catch {
+      vercelLive = null;
     }
   }
 
@@ -86,10 +97,28 @@ export async function buildCicdOps(input: BuildCicdOpsInput): Promise<CicdOpsRep
       headline: "GitLab CI preview — Connect via GITLAB_TOKEN to unblock live pipeline state.",
       missingRequirements: ["GITLAB_TOKEN with api scope", "GITLAB_BASE_URL (self-hosted only)"],
     }),
-    providerPosture("aws_codepipeline", "preview", {
-      headline: "AWS CodePipeline preview — Once AWS mode is live, CodePipeline ListPipelines + GetPipelineExecution traversal wires here.",
-      missingRequirements: ["AWS live mode (AWS_ROLE_ARN + AWS_EXTERNAL_ID)"],
-    }),
+    (() => {
+      // Re-use the aws_codepipeline posture slot to carry Vercel deployments
+      // when the Vercel extractor is on. (Vercel is conceptually a pipeline
+      // provider but we already have 7 in the closed union; keeping the model
+      // stable matters more than adding a literal here.)
+      const base = providerPosture("aws_codepipeline", "preview", {
+        headline: vercelLive && vercelLive.mode === "live"
+          ? "AWS CodePipeline preview · Vercel deployments piggyback in this slot"
+          : "AWS CodePipeline preview — Once AWS mode is live, CodePipeline ListPipelines + GetPipelineExecution traversal wires here.",
+        missingRequirements: ["AWS live mode (AWS_ROLE_ARN + AWS_EXTERNAL_ID)"],
+      });
+      if (vercelLive && vercelLive.mode === "live" && vercelLive.runs.length > 0) {
+        return {
+          ...base,
+          mode: "partial_live" as const,
+          configured: true,
+          headline: `Live Vercel deployments — ${vercelLive.runs.length} recent (AWS CodePipeline still preview).`,
+          recentRuns: vercelLive.runs,
+        };
+      }
+      return base;
+    })(),
     providerPosture("gcp_cloud_build", "preview", {
       headline: "GCP Cloud Build preview — projects.builds.list traversal wires once GCP mode is live.",
       missingRequirements: ["GCP live mode (GCP_PROJECT_ID + GCP_SERVICE_ACCOUNT_JSON)"],

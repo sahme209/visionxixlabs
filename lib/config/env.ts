@@ -94,6 +94,13 @@ export interface AppEnv {
   azureInventoryExtractEnabled: boolean;
   /** GCP live inventory extractor opt-in. */
   gcpInventoryExtractEnabled: boolean;
+  /** GitHub deep posture extractor opt-in (PRs / Dependabot / CodeQL / branch protection). */
+  githubDeepPostureEnabled: boolean;
+  /** Vercel deployments extractor opt-in + token + project + team. */
+  vercelDeploymentsEnabled: boolean;
+  vercelToken?: string;
+  vercelProjectId?: string;
+  vercelTeamId?: string;
   /** Vercel cron secret — pre-shared header guarding the cron route. */
   cronSecret?: string;
   /** Azure service-principal credentials presence (server-only). */
@@ -222,6 +229,11 @@ export function loadAppEnv(): AppEnv {
     outboundWebhookSecret:     env.OUTBOUND_WEBHOOK_SECRET?.trim() || undefined,
     azureInventoryExtractEnabled: bool(env.AZURE_INVENTORY_EXTRACT_ENABLED, false),
     gcpInventoryExtractEnabled:   bool(env.GCP_INVENTORY_EXTRACT_ENABLED, false),
+    githubDeepPostureEnabled:     bool(env.GITHUB_DEEP_POSTURE_ENABLED, false),
+    vercelDeploymentsEnabled:     bool(env.VERCEL_DEPLOYMENTS_EXTRACT_ENABLED, false),
+    vercelToken:                  env.VERCEL_TOKEN?.trim() || undefined,
+    vercelProjectId:              env.VERCEL_PROJECT_ID?.trim() || undefined,
+    vercelTeamId:                 env.VERCEL_TEAM_ID?.trim() || undefined,
     azureConfigured:
       isSet(env.AZURE_TENANT_ID) &&
       isSet(env.AZURE_CLIENT_ID) &&
