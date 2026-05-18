@@ -17,6 +17,7 @@ import {
 } from "@heroicons/react/24/outline";
 import { Reveal } from "@/components/motion/Reveal";
 import { Stagger } from "@/components/motion/Stagger";
+import { RunSecurityScannerPanel } from "@/components/dashboard/RunSecurityScannerPanel";
 import { buildSecurityPosture } from "@/lib/security/securityPosture";
 import type { PostureCheck, PostureSemantic } from "@/lib/security/securityPosture";
 import type { CredentialMetadata } from "@/lib/security/credentialMeta";
@@ -122,6 +123,9 @@ export default function SecurityCenterPage() {
           </p>
         </div>
       </Reveal>
+
+      {/* Run scanner — clickable POST /api/security-scan with canonical result */}
+      <RunSecurityScannerPanel />
 
       {/* Posture KPIs */}
       <Stagger delay={0.05} interval={0.05} className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-6">

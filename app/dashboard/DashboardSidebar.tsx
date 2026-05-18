@@ -100,7 +100,11 @@ const GROUPS: NavGroup[] = [
 ];
 
 function isActive(pathname: string, href: string): boolean {
-  if (href === "/dashboard/command-center") return pathname === href;
+  // Treat the bare /dashboard index as the Command Center entry — it has no
+  // dedicated page but the layout shell redirects/renders it there in spirit.
+  if (href === "/dashboard/command-center") {
+    return pathname === href || pathname === "/dashboard";
+  }
   return pathname === href || pathname.startsWith(`${href}/`);
 }
 

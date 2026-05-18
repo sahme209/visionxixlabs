@@ -32,6 +32,7 @@ import { CONNECTOR_EVIDENCE, summarizeConnectorEvidence } from "@/lib/connectors
 import { buildAiSafetyEvidence, summarizeAiSafety } from "@/lib/agent/aiSafetyEvidence";
 import { buildDataHandlingSummary, summarizeDataHandling } from "@/lib/security/dataHandlingSummary";
 import { summarizeValidation, VALIDATION_MATRIX } from "@/lib/validation/platformValidationMatrix";
+import { TrustExportButton } from "@/components/dashboard/TrustExportButton";
 
 export default function TrustCenterPage() {
   const controlSummary = summarizeControls();
@@ -74,6 +75,9 @@ export default function TrustCenterPage() {
 
       {/* Canonical Trust strip — sources of truth from /api/trust/summary */}
       <CanonicalTrustStrip />
+
+      {/* Evidence export — clickable POST /api/trust/export with browser download */}
+      <TrustExportButton />
 
       {/* Posture KPIs */}
       <Stagger delay={0.05} interval={0.05} className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-8">
