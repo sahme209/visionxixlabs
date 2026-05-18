@@ -52,6 +52,8 @@ export interface AppEnv {
   awsAmbientRegion?: string;
   /** AWS Cost Explorer extractor opt-in (CE API has per-request cost). */
   awsCostExplorerEnabled: boolean;
+  /** Azure Cost Management extractor opt-in. */
+  azureCostMgmtEnabled: boolean;
   /** Azure service-principal credentials presence (server-only). */
   azureConfigured: boolean;
   /** Azure scan mode. */
@@ -150,6 +152,7 @@ export function loadAppEnv(): AppEnv {
     awsAmbientExternalId:     env.AWS_EXTERNAL_ID?.trim() || undefined,
     awsAmbientRegion:         env.AWS_REGION?.trim() || undefined,
     awsCostExplorerEnabled:   bool(env.AWS_COST_EXPLORER_ENABLED, false),
+    azureCostMgmtEnabled:     bool(env.AZURE_COST_MGMT_ENABLED, false),
     azureConfigured:
       isSet(env.AZURE_TENANT_ID) &&
       isSet(env.AZURE_CLIENT_ID) &&

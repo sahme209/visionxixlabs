@@ -16,6 +16,7 @@ import "server-only";
 import { buildAxiomOSState } from "@/lib/axiomOS/axiomOSStateBuilder";
 import { loadAppEnv } from "@/lib/config/env";
 import { extractAwsCostExplorerSpend } from "./awsCostExplorerExtractor";
+import { extractAzureCostManagementSpend } from "./azureCostManagementExtractor";
 import type { OrganizationId, UserId } from "@/lib/domain/ids";
 import type {
   BillingAnomaly,
@@ -55,6 +56,18 @@ export async function buildBillingConnectors(input: BuildBillingInput): Promise<
     }
   }
 
+  // ---------------------------------------------------------------------------
+  // Live Azure Cost Management extractor (Phase 44c)
+  // ---------------------------------------------------------------------------
+  let azureCostLive: Awaited<ReturnType<typeof extractAzureCostManagementSpend>> | null = null;
+  if (azureMode === "live" && env.azureCostMgmtEnabled) {
+    try {
+      azureCostLive = await extractAzureCostManagementSpend();
+    } catch {
+      azureCostLive = null;
+    }
+  }
+
   const providers: BillingProviderPosture[] = [
     {
       ...posture("aws_cost_explorer", awsMode, [
@@ -78,9 +91,27 @@ export async function buildBillingConnectors(input: BuildBillingInput): Promise<
             }
           : {}),
     },
-    posture("azure_cost_management", azureMode, [
-      "AZURE_COST_MGMT_ENABLED + CostManagement Reader role on the subscription.",
-    ], "https://portal.azure.com/#blade/Microsoft_Azure_CostManagement", { label: "Open Azure sources", href: "/dashboard/sources" }),
+    {
+      ...posture("azure_cost_management", azureMode, [
+        "AZURE_COST_MGMT_ENABLED + CostManagement Reader role on the subscription.",
+      ], "https://portal.azure.com/#blade/Microsoft_Azure_CostManagement", { label: "Open Azure sources", href: "/dashboard/sources" }),
+      ...(azureCostLive && azureCostLive.mode === "live"
+        ? {
+            mode: "live" as BillingSourceMode,
+            configured: true,
+            headline: `Live Azure Cost Management — ${azureCostLive.currency} ${azureCostLive.confirmedDollarsLast30d.toFixed(2)} confirmed over last 30d.`,
+            confirmedDollarsLast30d: azureCostLive.confirmedDollarsLast30d,
+            confirmedDollarsPrev30d: azureCostLive.confirmedDollarsPrev30d,
+            anomalies: azureCostLive.anomalies,
+            missingRequirements: [],
+          }
+        : azureCostLive
+          ? {
+              headline: `Azure Cost Management extraction ${azureCostLive.mode}: ${azureCostLive.limitations[0] ?? "n/a"}`,
+              missingRequirements: azureCostLive.limitations,
+            }
+          : {}),
+    },
     posture("gcp_billing", gcpMode, [
       "GCP_BILLING_BIGQUERY_DATASET + bigquery.dataViewer + billing.viewer roles on the project.",
     ], "https://console.cloud.google.com/billing/", { label: "Open GCP sources", href: "/dashboard/sources" }),
