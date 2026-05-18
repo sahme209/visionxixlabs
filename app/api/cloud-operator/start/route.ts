@@ -62,7 +62,9 @@ export async function POST(req: NextRequest) {
     const lead = await prisma.lead.create({
       data: {
         email: body.email?.trim().toLowerCase() || "cloud-operator@placeholder.local",
-        name: body.name?.trim() || null,
+        // DB column is NOT NULL (migration drift vs nullable schema) — always
+        // pass a string default to avoid P2011 null-constraint violations.
+        name: body.name?.trim() || "Cloud Operator",
         userId: userId ?? undefined,
         source: "cloud-operator",
         status: "created",
@@ -89,19 +91,8 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ success: true, leadId: lead.id, token });
   } catch (e) {
     console.error("[cloud-operator start]", e);
-    const debugHeader = req.headers.get("x-axiom-debug") === "axiom-debug-2026";
     return NextResponse.json(
-      {
-        error: "Failed to initialize. Please try again.",
-        ...(debugHeader && {
-          _debug: {
-            message: e instanceof Error ? e.message : String(e),
-            name: e instanceof Error ? e.name : "Unknown",
-            code: (e as { code?: string })?.code,
-            stack: e instanceof Error ? e.stack?.split("\n").slice(0, 6).join("\n") : undefined,
-          },
-        }),
-      },
+      { error: "Failed to initialize. Please try again." },
       { status: 500 }
     );
   }
