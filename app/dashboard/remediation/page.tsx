@@ -22,6 +22,7 @@ import {
 
 import { runRemediationPipeline, topReadyBundles } from "@/lib/remediation/remediationPipeline";
 import { REMEDIATION_STATUS_LABEL, REMEDIATION_STATUS_SEMANTIC, CHANGE_TYPE_LABEL } from "@/lib/remediation/remediationModel";
+import { RunRemediationPlanPanel } from "@/components/dashboard/RunRemediationPlanPanel";
 
 export const dynamic = "force-dynamic";
 
@@ -60,6 +61,9 @@ export default async function RemediationCenter() {
           Every candidate carries a Terraform preview, CLI preview, rollback plan, verification checklist, and execution-readiness decision. Apply is approval-gated and reversible. Nothing on this page mutates cloud state.
         </p>
       </header>
+
+      {/* Run remediation plan — clickable POST /api/remediation/plan */}
+      <RunRemediationPlanPanel />
 
       {/* KPIs */}
       <section className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">

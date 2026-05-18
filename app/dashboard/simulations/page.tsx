@@ -22,6 +22,7 @@ import { runRemediationPipeline } from "@/lib/remediation/remediationPipeline";
 import { buildDigitalTwin } from "@/lib/digitalTwin/digitalTwinBuilder";
 import { changeSetFromCandidate } from "@/lib/simulation/changeSetModel";
 import { runSimulation, type SimulationResult } from "@/lib/simulation/executionSimulator";
+import { CreateSimulationPanel } from "@/components/dashboard/CreateSimulationPanel";
 
 export const dynamic = "force-dynamic";
 
@@ -82,6 +83,9 @@ export default async function SimulationsCenter() {
           Every candidate is simulated against the digital twin before approval. We compute before/after diff, blast radius, risk delta, rollback feasibility, and verification readiness. Nothing on this page mutates cloud state.
         </p>
       </header>
+
+      {/* Create simulation — clickable POST /api/simulations/create */}
+      <CreateSimulationPanel />
 
       {/* Twin posture */}
       <section className="rounded-2xl border border-white/[0.07] bg-gradient-to-br from-[#0d0d12] via-[#0a0a0f] to-[#08080c] p-6">
