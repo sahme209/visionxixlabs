@@ -17,6 +17,7 @@ import {
   ShieldCheckIcon,
   RocketLaunchIcon,
   BeakerIcon,
+  BoltIcon,
   LockClosedIcon,
   ComputerDesktopIcon,
   ServerStackIcon,
@@ -46,6 +47,7 @@ const GROUPS: NavGroup[] = [
     items: [
       { href: "/dashboard/command-center", label: "Command Center",   icon: Squares2X2Icon       },
       { href: "/dashboard/priorities",     label: "Priorities",       icon: ChartBarIcon         },
+      { href: "/dashboard/next-actions",   label: "Next actions",     icon: BoltIcon             },
       { href: "/dashboard/graph",          label: "Operating Graph",  icon: ArrowsRightLeftIcon  },
       { href: "/dashboard/sources",        label: "Sources",          icon: CloudIcon            },
       { href: "/dashboard/surfaces",       label: "Product surfaces", icon: PuzzlePieceIcon      },
