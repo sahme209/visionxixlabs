@@ -93,9 +93,10 @@ const GROUPS: NavGroup[] = [
   {
     label: "Setup",
     items: [
-      { href: "/dashboard/integrations",        label: "Integrations", icon: PuzzlePieceIcon },
-      { href: "/dashboard/integrations/github", label: "GitHub setup", icon: CodeBracketIcon },
-      { href: "/dashboard/topology",            label: "Topology",     icon: ServerStackIcon },
+      { href: "/dashboard/integrations",        label: "Integrations",       icon: PuzzlePieceIcon },
+      { href: "/dashboard/integrations/health", label: "Integration health", icon: ServerStackIcon },
+      { href: "/dashboard/integrations/github", label: "GitHub setup",       icon: CodeBracketIcon },
+      { href: "/dashboard/topology",            label: "Topology",           icon: ServerStackIcon },
     ],
   },
 ];
