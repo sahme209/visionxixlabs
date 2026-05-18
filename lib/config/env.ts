@@ -52,6 +52,8 @@ export interface AppEnv {
   awsAmbientRegion?: string;
   /** AWS Cost Explorer extractor opt-in (CE API has per-request cost). */
   awsCostExplorerEnabled: boolean;
+  /** Skip AssumeRole and use broker credentials directly (single-account / test setups). */
+  awsUseDirectCreds: boolean;
   /** Azure Cost Management extractor opt-in. */
   azureCostMgmtEnabled: boolean;
   /** Telemetry webhook shared secret — required for inbound /api/webhooks/telemetry. */
@@ -201,6 +203,7 @@ export function loadAppEnv(): AppEnv {
     awsAmbientExternalId:     env.AWS_EXTERNAL_ID?.trim() || undefined,
     awsAmbientRegion:         env.AWS_REGION?.trim() || undefined,
     awsCostExplorerEnabled:   bool(env.AWS_COST_EXPLORER_ENABLED, false),
+    awsUseDirectCreds:        bool(env.AWS_USE_DIRECT_CREDS, false),
     azureCostMgmtEnabled:     bool(env.AZURE_COST_MGMT_ENABLED, false),
     telemetryWebhookSecret:   env.TELEMETRY_WEBHOOK_SECRET?.trim() || undefined,
     incidentWebhookSecret:    env.INCIDENT_WEBHOOK_SECRET?.trim() || undefined,

@@ -20,7 +20,6 @@
 
 import "server-only";
 
-import { STSClient, AssumeRoleCommand } from "@aws-sdk/client-sts";
 import {
   CloudWatchClient,
   DescribeAlarmsCommand,
@@ -28,6 +27,7 @@ import {
 
 import { loadAppEnv } from "@/lib/config/env";
 import { getAwsConfig } from "@/lib/cloud/aws/awsConfig";
+import { resolveAwsCredentials } from "@/lib/cloud/aws/awsCredentialResolver";
 import type { TelemetrySeverity, TelemetrySignal } from "./telemetryIngestModel";
 
 const DEFAULT_TIMEOUT_MS = 8_000;
@@ -51,45 +51,10 @@ export async function extractAwsCloudWatchAlarms(): Promise<AwsCloudWatchExtract
   if (awsCfg.mode !== "live") {
     return preview(start, "AWS mode is not live — extractor returned honest preview.");
   }
-  const brokerKey = env.awsBrokerAccessKeyId;
-  const brokerSecret = env.awsBrokerSecretAccessKey;
-  if (!brokerKey || !brokerSecret) {
-    return blocked(start, "Broker credentials missing — set AWS_CONNECTOR_BROKER_* env vars.");
-  }
-  const roleArn = env.awsAmbientRoleArn;
-  const externalId = env.awsAmbientExternalId;
-  const region = env.awsAmbientRegion;
-  if (!roleArn || !externalId || !region) {
-    return blocked(start, "Ambient AWS_ROLE_ARN + AWS_EXTERNAL_ID + AWS_REGION required.");
-  }
-
-  // AssumeRole.
-  let creds: { accessKeyId: string; secretAccessKey: string; sessionToken: string };
-  try {
-    const sts = new STSClient({
-      region,
-      credentials: { accessKeyId: brokerKey, secretAccessKey: brokerSecret },
-    });
-    const assumed = await withTimeout(
-      sts.send(new AssumeRoleCommand({
-        RoleArn: roleArn,
-        RoleSessionName: `axiom-cw-${Date.now()}`,
-        ExternalId: externalId,
-        DurationSeconds: 900,
-      })),
-      DEFAULT_TIMEOUT_MS,
-      "sts.assume_role",
-    );
-    const c = assumed.Credentials;
-    if (!c?.AccessKeyId || !c?.SecretAccessKey || !c?.SessionToken) {
-      return blocked(start, "AssumeRole returned no credentials.");
-    }
-    creds = { accessKeyId: c.AccessKeyId, secretAccessKey: c.SecretAccessKey, sessionToken: c.SessionToken };
-  } catch (err) {
-    return blocked(start, `AssumeRole failed: ${redact(errMessage(err))}`);
-  }
-
-  const cw = new CloudWatchClient({ region, credentials: creds });
+  const resolved = await resolveAwsCredentials({ sessionLabel: "cw" });
+  if (resolved.mode !== "ok") return blocked(start, resolved.reason);
+  const region = resolved.region;
+  const cw = new CloudWatchClient({ region, credentials: resolved.credentials });
 
   // Pull all metric alarms (composite alarms left for follow-up).
   let alarms: {

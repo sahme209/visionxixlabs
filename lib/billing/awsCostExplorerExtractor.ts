@@ -20,7 +20,6 @@
 
 import "server-only";
 
-import { STSClient, AssumeRoleCommand } from "@aws-sdk/client-sts";
 import {
   CostExplorerClient,
   GetCostAndUsageCommand,
@@ -29,6 +28,7 @@ import {
 
 import { loadAppEnv } from "@/lib/config/env";
 import { getAwsConfig } from "@/lib/cloud/aws/awsConfig";
+import { resolveAwsCredentials } from "@/lib/cloud/aws/awsCredentialResolver";
 import type {
   BillingAnomaly,
   BillingAnomalyKind,
@@ -77,48 +77,14 @@ export async function extractAwsCostExplorerSpend(): Promise<AwsCostExplorerExtr
     return preview(start, "AWS mode is not live — extractor returned honest preview.");
   }
 
-  // Need broker creds + role arn + external id to AssumeRole.
-  const brokerKey = env.awsBrokerAccessKeyId;
-  const brokerSecret = env.awsBrokerSecretAccessKey;
-  if (!brokerKey || !brokerSecret) {
-    return blocked(start, "Broker credentials missing — set AWS_CONNECTOR_BROKER_* env vars.");
-  }
-  const roleArn = env.awsAmbientRoleArn;
-  const externalId = env.awsAmbientExternalId;
-  const region = env.awsAmbientRegion;
-  if (!roleArn || !externalId || !region) {
-    return blocked(start, "Ambient AWS_ROLE_ARN + AWS_EXTERNAL_ID + AWS_REGION are required for tenant-scoped Cost Explorer reads.");
-  }
-
-  // AssumeRole into the customer account using the broker credentials.
-  let creds: { accessKeyId: string; secretAccessKey: string; sessionToken: string };
-  try {
-    const sts = new STSClient({
-      region,
-      credentials: { accessKeyId: brokerKey, secretAccessKey: brokerSecret },
-    });
-    const assumed = await withTimeout(
-      sts.send(new AssumeRoleCommand({
-        RoleArn: roleArn,
-        RoleSessionName: `axiom-billing-${Date.now()}`,
-        ExternalId: externalId,
-        DurationSeconds: 900,
-      })),
-      DEFAULT_TIMEOUT_MS,
-      "sts.assume_role",
-    );
-    const c = assumed.Credentials;
-    if (!c?.AccessKeyId || !c?.SecretAccessKey || !c?.SessionToken) {
-      return blocked(start, "AssumeRole returned no credentials.");
-    }
-    creds = { accessKeyId: c.AccessKeyId, secretAccessKey: c.SecretAccessKey, sessionToken: c.SessionToken };
-  } catch (err) {
-    return blocked(start, `AssumeRole failed: ${redact(errMessage(err))}`);
+  const resolved = await resolveAwsCredentials({ sessionLabel: "billing" });
+  if (resolved.mode !== "ok") {
+    return blocked(start, resolved.reason);
   }
 
   // Cost Explorer is a global service in us-east-1. Region pinned regardless
   // of the customer's primary region.
-  const ce = new CostExplorerClient({ region: "us-east-1", credentials: creds });
+  const ce = new CostExplorerClient({ region: "us-east-1", credentials: resolved.credentials });
 
   // Two period queries: current 30 days + prior 30 days.
   const now = new Date();
