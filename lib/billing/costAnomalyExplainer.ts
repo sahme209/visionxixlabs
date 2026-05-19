@@ -261,7 +261,7 @@ const SERVICE_TOKENS: ServiceToken[] = [
 ];
 
 const KIND_EVENT_AFFINITY: Partial<Record<BillingAnomalyKind, string[]>> = {
-  cost_spike: ["runinstances", "createcluster", "createdbinstance", "putobject", "publish", "invokefunction"],
+  spend_spike_7d: ["runinstances", "createcluster", "createdbinstance", "putobject", "publish", "invokefunction"],
   unattributed_spend: ["runinstances", "createvolume", "createbucket"],
   idle_resource_costing: ["runinstances", "createvolume", "createnatgateway"],
   egress_spike: ["putobject", "createdistribution", "createnetworkinterface"],
