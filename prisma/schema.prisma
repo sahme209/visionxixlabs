@@ -1137,6 +1137,34 @@ model OutboundNotificationRecord {
   @@index([dedupeKey, createdAt])
 }
 
+/// Autonomous-decision rationale row. For every candidate the autonomy
+/// loop touches, we write one durable audit record with the inputs +
+/// per-stage reasoning + final outcome. The audit-readable spine of
+/// "why did the AGI do that?" — never trimmed for space.
+model AutonomyDecisionRationale {
+  id              String   @id
+  organizationId  String
+  cycleId         String?
+  candidateId     String
+  title           String
+  charterMode     String   // AutonomyMode literal
+  boundaryClass   String
+  /// "passed" | "approval_packet_prepared" | "halted_at_gate" | "policy_blocked" | "unsafe_blocked" | "credential_blocked"
+  outcome         String
+  haltedAtStage   String?  // when outcome is halted_*
+  haltReason      String?
+  proposedIntent  String
+  /// Each stage transcript serialized — { stage, status, summary, evidenceRef, reason? }[]
+  stages          Json
+  evidenceRefs    String[]
+  durationMs      Int
+  createdAt       DateTime @default(now())
+
+  @@index([organizationId, createdAt])
+  @@index([organizationId, outcome, createdAt])
+  @@index([candidateId, createdAt])
+}
+
 /// Runbook staged for human approval. Operators promote any runbook
 /// from /dashboard/runbooks into this queue, then approve or reject.
 /// Approval here NEVER triggers an actual mutation — it records the

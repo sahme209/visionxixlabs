@@ -30,6 +30,8 @@ import {
   ArrowsRightLeftIcon, // also used in the Operator group for the Operating Graph
   WrenchScrewdriverIcon,
   BellAlertIcon,
+  QuestionMarkCircleIcon,
+  DocumentMagnifyingGlassIcon,
 } from "@heroicons/react/24/outline";
 
 interface NavLink {
@@ -51,6 +53,8 @@ const GROUPS: NavGroup[] = [
       { href: "/dashboard/agi",                label: "AGI Cockpit",      icon: CpuChipIcon          },
       { href: "/dashboard/autonomy",           label: "Autonomy Cockpit", icon: CpuChipIcon          },
       { href: "/dashboard/charter",            label: "Autonomy Charter", icon: CpuChipIcon          },
+      { href: "/dashboard/rationale",          label: "Decision Rationale",icon: DocumentMagnifyingGlassIcon },
+      { href: "/dashboard/help",               label: "Help & Docs",      icon: QuestionMarkCircleIcon },
       { href: "/dashboard/executive-summary",  label: "Executive summary",icon: DocumentTextIcon     },
       { href: "/dashboard/priorities",         label: "Priorities",       icon: ChartBarIcon         },
       { href: "/dashboard/next-actions",       label: "Next actions",     icon: BoltIcon             },

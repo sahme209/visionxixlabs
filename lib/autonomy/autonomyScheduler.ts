@@ -27,6 +27,7 @@ import "server-only";
 import { runAutonomousLoopCycle } from "./autonomousLoopRunner";
 import { charterForMode } from "./autonomyCharter";
 import { readTenantCharter } from "./tenantCharterStore";
+import { recordCycleRationale } from "./decisionRationaleStore";
 import { loadAppEnv } from "@/lib/config/env";
 import { sendOutboundNotification } from "@/lib/notifications/outboundNotificationLane";
 import type { OrganizationId } from "@/lib/domain/ids";
@@ -122,6 +123,12 @@ export async function runSchedulerTick(input: RunSchedulerTickInput): Promise<Sc
       cycles.push(report);
       HISTORY.push(report);
       if (HISTORY.length > MAX_HISTORY) HISTORY.shift();
+
+      // Best-effort durable rationale persistence — never blocks the cycle.
+      void recordCycleRationale({
+        organizationId: String(tenantId),
+        report,
+      });
 
       // Fire outbound notifications for any candidate that halted at
       // needs_human or approval_packet_prepared. Each notification is
