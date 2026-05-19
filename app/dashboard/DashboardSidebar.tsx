@@ -70,6 +70,7 @@ const GROUPS: NavGroup[] = [
       { href: "/dashboard/gcp",        label: "GCP",      icon: CloudIcon      },
       { href: "/dashboard/github",     label: "GitHub",   icon: CodeBracketIcon},
       { href: "/dashboard/multi-cloud",label: "Multi-cloud", icon: ServerStackIcon },
+      { href: "/dashboard/cloud-inventory", label: "Cloud Inventory", icon: ServerStackIcon },
       { href: "/dashboard/containers", label: "Containers",  icon: ServerStackIcon },
     ],
   },
