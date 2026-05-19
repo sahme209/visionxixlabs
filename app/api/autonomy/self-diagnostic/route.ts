@@ -1,0 +1,33 @@
+/**
+ * GET /api/autonomy/self-diagnostic
+ *
+ * Pure local AGI loop health-check. Verifies the spine (charter,
+ * SCP simulator, help search, terraform drafter, validation matrix,
+ * outbound env consistency). No cloud calls, no Prisma queries.
+ */
+
+import type { NextRequest } from "next/server";
+import { currentContext } from "@/lib/auth/currentContext";
+import { runAgiSelfDiagnostic } from "@/lib/autonomy/agiSelfDiagnostic";
+import { apiOk, apiErr, asApiSourceMode, resolveCorrelationId } from "@/lib/api";
+import { AxiomErrors } from "@/lib/errors/axiomErrors";
+
+export const dynamic = "force-dynamic";
+
+export async function GET(req: NextRequest) {
+  const correlationId = resolveCorrelationId(req.headers);
+  try {
+    const ctx = await currentContext();
+    if (!ctx.isAuthenticated) throw AxiomErrors.validation("auth.required", "Sign in required.");
+    const report = runAgiSelfDiagnostic();
+    return apiOk(report, {
+      correlationId,
+      safetyContract: "trust_center_read_only",
+      sourceMode: asApiSourceMode("live"),
+    });
+  } catch (err) {
+    return apiErr(err, { correlationId, safetyContract: "trust_center_read_only" });
+  }
+}
+
+export async function POST(req: NextRequest) { return GET(req); }

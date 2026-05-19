@@ -54,6 +54,7 @@ const GROUPS: NavGroup[] = [
       { href: "/dashboard/autonomy",           label: "Autonomy Cockpit", icon: CpuChipIcon          },
       { href: "/dashboard/charter",            label: "Autonomy Charter", icon: CpuChipIcon          },
       { href: "/dashboard/rationale",          label: "Decision Rationale",icon: DocumentMagnifyingGlassIcon },
+      { href: "/dashboard/self-diagnostic",    label: "Self-Diagnostic",  icon: ShieldCheckIcon       },
       { href: "/dashboard/help",               label: "Help & Docs",      icon: QuestionMarkCircleIcon },
       { href: "/dashboard/executive-summary",  label: "Executive summary",icon: DocumentTextIcon     },
       { href: "/dashboard/priorities",         label: "Priorities",       icon: ChartBarIcon         },

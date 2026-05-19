@@ -1031,6 +1031,31 @@ export const VALIDATION_MATRIX: ValidationRow[] = [
   { id: "autonomy.scheduler_rationale_hook", area: "operating_loop", capability: "lib/autonomy/autonomyScheduler — every scheduler tick that produces a report fires `void recordCycleRationale(...)` so every candidate decision lands in the audit table. DB failure never breaks the loop.", status: "passing", evidence: "lib/autonomy/autonomyScheduler.ts" },
   { id: "autonomy.rationale_route", area: "operating_loop", capability: "GET /api/autonomy/rationale?limit=N&outcome=... — typed envelope returning DecisionRationaleReport. safetyContract 'audit_read_only'.", status: "passing", evidence: "app/api/autonomy/rationale/route.ts" },
   { id: "ui.rationale_page", area: "command_center", capability: "/dashboard/rationale — per-row card with outcome chip + charter mode + boundary class + proposed intent + collapsible per-stage transcript. Halted rows show halt stage + reason callout. Stat ribbon (total / approval packets / verified / halted / errored). Outcome filter chips. Sidebar entry next to Autonomy Charter.", status: "passing", evidence: "app/dashboard/rationale/page.tsx" },
+
+  // ---------------------------------------------------------------------------
+  // Phase 111 — Contextual help bubble
+  // ---------------------------------------------------------------------------
+  { id: "help.route_index", area: "command_center", capability: "lib/help/helpRouteIndex — longest-prefix map from dashboard routes to HelpEntry ids so /runbooks/queue resolves to the queue entry rather than the parent runbooks entry. resolveHelpForPath returns undefined for unmapped routes (bubble shows generic 'browse help' instead of guessing).", status: "passing", evidence: "lib/help/helpRouteIndex.ts" },
+  { id: "ui.contextual_help_bubble", area: "command_center", capability: "app/dashboard/ContextualHelpBubble — floating '?' button rendered by the dashboard layout on every page. Looks up usePathname() in the help route index, shows description + requirements + safetyContract chip + deep-link to /dashboard/help?focus=<id>. Closes on Esc / outside click.", status: "passing", evidence: "app/dashboard/ContextualHelpBubble.tsx" },
+
+  // ---------------------------------------------------------------------------
+  // Phase 113 — Weekly digest
+  // ---------------------------------------------------------------------------
+  { id: "notifications.weekly_digest_builder", area: "operating_loop", capability: "lib/notifications/weeklyDigestBuilder — reads last 7 days from AutonomyDecisionRationale + StagedRemediationRunbook + OutboundNotificationRecord. Computes perOutcome counts + topN boundary classes + topN halt reasons + topN runbook event names. Returns typed digest + slack-mrkdwn body. Read-only, best-effort: DB failures yield empty-but-honest digest.", status: "passing", evidence: "lib/notifications/weeklyDigestBuilder.ts" },
+  { id: "notifications.weekly_digest_route", area: "operating_loop", capability: "GET /api/notifications/weekly-digest — on-demand preview of the digest for the caller's tenant. Doesn't send, just returns the typed payload.", status: "passing", evidence: "app/api/notifications/weekly-digest/route.ts" },
+  { id: "notifications.weekly_digest_cron", area: "operating_loop", capability: "GET/POST /api/notifications/cron-weekly-digest — Vercel cron at `0 14 * * 1` (Monday 14:00 UTC). For every tenant in AUTONOMY_SCHEDULER_TENANTS, builds digest and fires one Slack/Teams notification. Dedupe key 'weekly-digest:{tenant}:{date}'. CRON_SECRET bearer guard.", status: "passing", evidence: "app/api/notifications/cron-weekly-digest/route.ts" },
+
+  // ---------------------------------------------------------------------------
+  // Phase 114 — Decision thread reply (runbook staged → Slack)
+  // ---------------------------------------------------------------------------
+  { id: "autonomy.runbook_stage_notification", area: "operating_loop", capability: "lib/autonomy/runbookQueueStore — stageRunbook now fires a Slack/Teams notification immediately on stage. Combined with the decideRunbook notification (Phase 105), the chat thread shows full lifecycle: staged → approved/rejected. Dedupe key 'runbook-staged:{rowId}' so the staging notification can't double-fire.", status: "passing", evidence: "lib/autonomy/runbookQueueStore.ts" },
+
+  // ---------------------------------------------------------------------------
+  // Phase 115 — AGI self-diagnostic
+  // ---------------------------------------------------------------------------
+  { id: "autonomy.self_diagnostic", area: "operating_loop", capability: "lib/autonomy/agiSelfDiagnostic — pure local AGI loop health-check. Verifies charter resolution (4 modes), SCP simulator deny/allow paths, help search primary/no_match honesty, terraform drafter HCL round-trip, validation matrix size + evidence completeness, outbound env consistency. No cloud calls, no Prisma queries — verifies wiring not data. Each check returns pass/fail + reason + durationMs; failures never crash the diagnostic.", status: "passing", evidence: "lib/autonomy/agiSelfDiagnostic.ts" },
+  { id: "autonomy.self_diagnostic_route", area: "operating_loop", capability: "GET /api/autonomy/self-diagnostic — typed envelope returning SelfDiagnosticReport with totalChecks + passCount + failCount + healthScore (0..1) + per-check verdicts.", status: "passing", evidence: "app/api/autonomy/self-diagnostic/route.ts" },
+  { id: "ui.self_diagnostic_page", area: "command_center", capability: "/dashboard/self-diagnostic — health score % + pass/fail/duration ribbon + per-check rows with green/rose icon, label, id, reason, ms. One-click Re-run button. Sidebar entry next to Decision Rationale.", status: "passing", evidence: "app/dashboard/self-diagnostic/page.tsx" },
 ];
 
 // ---------------------------------------------------------------------------

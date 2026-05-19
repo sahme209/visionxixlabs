@@ -5,6 +5,7 @@ import Link from "next/link";
 import { CpuChipIcon } from "@heroicons/react/24/outline";
 import { SignOutButton } from "./SignOutButton";
 import { DashboardSidebar } from "./DashboardSidebar";
+import { ContextualHelpBubble } from "./ContextualHelpBubble";
 
 export default async function DashboardLayout({
   children,
@@ -38,6 +39,8 @@ export default async function DashboardLayout({
         <DashboardSidebar />
         <main className="flex-1 min-w-0 py-6 lg:py-8">{children}</main>
       </div>
+
+      <ContextualHelpBubble />
     </div>
   );
 }

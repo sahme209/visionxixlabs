@@ -84,6 +84,18 @@ export async function stageRunbook(opts: {
       stagedBy: opts.stagedBy ?? null,
     },
   });
+  // Phase 114 — Slack/Teams stage notification so the chat thread has the
+  // full lifecycle (stage → approve/reject). Fire-and-forget.
+  void sendOutboundNotification({
+    dedupeKey: `runbook-staged:${row.id}`,
+    kind: "approval_packet_ready",
+    severity: rb.severity === "critical" ? "critical" : rb.severity === "high" ? "high" : "medium",
+    tenantId: opts.organizationId,
+    headline: `Runbook staged for review: ${rb.eventName}`,
+    body: `*Source:* ${rb.rootCauseHypothesis}\n\n*Reversal (${rb.reversal.risk}):* ${rb.reversal.label}\n*Hardening:* ${rb.hardening.label}\n*Confidence:* ${Math.round(rb.confidence * 100)}%\n\nStaged by ${opts.stagedBy ?? "unknown"}. Open the queue to approve or reject.`,
+    safeNextAction: { label: "Open Runbook Queue", href: "/dashboard/runbooks/queue" },
+    evidenceRefs: [`runbook:${rb.id}`, `cloudtrail:event:${rb.sourceEventId}`],
+  });
   return mapRow(row);
 }
 
