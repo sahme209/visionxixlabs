@@ -26,7 +26,7 @@ interface Spec {
   group: Group;
 }
 
-interface Record {
+interface FlagRecord {
   key: string;
   spec: Spec;
   enabled: boolean;
@@ -37,7 +37,7 @@ interface Record {
 }
 
 interface Report {
-  records: Record[];
+  records: FlagRecord[];
   total: number;
   overrideCount: number;
 }
@@ -68,7 +68,7 @@ export default function FlagsPage() {
 
   useEffect(() => { load(); }, []);
 
-  async function toggle(rec: Record) {
+  async function toggle(rec: FlagRecord) {
     setBusy(rec.key);
     try {
       await fetch("/api/flags", {
@@ -87,7 +87,7 @@ export default function FlagsPage() {
     }
   }
 
-  async function clearOverride(rec: Record) {
+  async function clearOverride(rec: FlagRecord) {
     setBusy(rec.key);
     try {
       await fetch("/api/flags", {
@@ -103,7 +103,7 @@ export default function FlagsPage() {
   }
 
   const grouped = useMemo(() => {
-    const m: Record<Group, Record[]> = { autonomy: [], notifications: [], audit: [], ui: [] };
+    const m: Record<Group, FlagRecord[]> = { autonomy: [], notifications: [], audit: [], ui: [] };
     for (const r of report?.records ?? []) {
       m[r.spec.group as Group].push(r);
     }
