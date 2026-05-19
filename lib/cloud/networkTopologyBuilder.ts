@@ -134,7 +134,7 @@ async function extractAwsTopology(): Promise<{ nodes: TopologyNode[]; edges: Top
     const igws = await withTimeout(ec2.send(new DescribeInternetGatewaysCommand({})), CALL_TIMEOUT_MS, "ec2.describe_igws");
     for (const igw of igws.InternetGateways ?? []) {
       for (const att of igw.Attachments ?? []) {
-        if (att.VpcId && att.State === "available") vpcInternetSet.add(att.VpcId);
+        if (att.VpcId && String(att.State) === "available") vpcInternetSet.add(att.VpcId);
       }
     }
   } catch (err) {
