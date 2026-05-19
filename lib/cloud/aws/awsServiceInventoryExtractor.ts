@@ -49,6 +49,7 @@ import {
   type SqsQueueSummary,
   type SsmInstancePatchSummary,
   type VpcSummary,
+  type WebAclSummary,
 } from "./awsServiceInventoryModel";
 import type { OrganizationId, UserId } from "@/lib/domain/ids";
 
@@ -83,7 +84,7 @@ export async function buildAwsServiceInventory(input: BuildAwsServiceInventoryIn
   // ---------------------------------------------------------------------------
   // Run all 10 sections in parallel; each catches its own errors.
   // ---------------------------------------------------------------------------
-  const [lambda, rds, iam, s3, ec2, network, loadBalancers, messaging, patchCompliance, logGroups, certificates, threats, secrets, backups] = await Promise.all([
+  const [lambda, rds, iam, s3, ec2, network, loadBalancers, messaging, patchCompliance, logGroups, certificates, threats, secrets, backups, waf] = await Promise.all([
     runLambda(credentials, region),
     runRds(credentials, region),
     runIam(credentials, region),
@@ -98,6 +99,7 @@ export async function buildAwsServiceInventory(input: BuildAwsServiceInventoryIn
     runGuardDuty(credentials, region),
     runSecrets(credentials, region),
     runBackups(credentials, region),
+    runWaf(credentials, region),
   ]);
 
   blank.lambda = lambda;
@@ -114,8 +116,9 @@ export async function buildAwsServiceInventory(input: BuildAwsServiceInventoryIn
   blank.threats = threats;
   blank.secrets = secrets;
   blank.backups = backups;
+  blank.waf = waf;
 
-  const modes = [lambda.mode, rds.mode, iam.mode, s3.mode, ec2.mode, network.mode, loadBalancers.mode, messaging.mode, patchCompliance.mode, logGroups.mode, certificates.mode, threats.mode, secrets.mode, backups.mode];
+  const modes = [lambda.mode, rds.mode, iam.mode, s3.mode, ec2.mode, network.mode, loadBalancers.mode, messaging.mode, patchCompliance.mode, logGroups.mode, certificates.mode, threats.mode, secrets.mode, backups.mode, waf.mode];
   const anyLive = modes.some((m) => m === "live");
   blank.overallSourceMode = anyLive ? "live" : "preview";
 
@@ -893,6 +896,59 @@ async function runBackups(
 }
 
 // ---------------------------------------------------------------------------
+// WAF v2 (Phase 88 — Web Application Firewall posture)
+// ---------------------------------------------------------------------------
+
+async function runWaf(
+  credentials: { accessKeyId: string; secretAccessKey: string; sessionToken?: string },
+  region: string,
+): Promise<AwsServiceInventoryReport["waf"]> {
+  try {
+    const { WAFV2Client, ListWebACLsCommand, GetWebACLCommand, ListResourcesForWebACLCommand } = await import("@aws-sdk/client-wafv2");
+    // REGIONAL Web ACLs only (CLOUDFRONT requires us-east-1 + global scope).
+    const c = new WAFV2Client({ region, credentials });
+    const listRes = await withTimeout(c.send(new ListWebACLsCommand({ Scope: "REGIONAL", Limit: 50 })), DEFAULT_TIMEOUT_MS, "wafv2.list");
+    const summaries = listRes.WebACLs ?? [];
+    const items: WebAclSummary[] = await Promise.all(summaries.slice(0, 30).map(async (s): Promise<WebAclSummary> => {
+      let ruleCount = 0;
+      let defaultAction: "Allow" | "Block" | "unknown" = "unknown";
+      let metricsEnabled = false;
+      let associatedResourceCount = 0;
+      try {
+        const detail = await withTimeout(c.send(new GetWebACLCommand({ Name: s.Name, Id: s.Id, Scope: "REGIONAL" })), DEFAULT_TIMEOUT_MS, "wafv2.get");
+        ruleCount = detail.WebACL?.Rules?.length ?? 0;
+        if (detail.WebACL?.DefaultAction?.Allow) defaultAction = "Allow";
+        else if (detail.WebACL?.DefaultAction?.Block) defaultAction = "Block";
+        metricsEnabled = !!detail.WebACL?.VisibilityConfig?.CloudWatchMetricsEnabled;
+      } catch { /* skip */ }
+      try {
+        const resRes = await withTimeout(c.send(new ListResourcesForWebACLCommand({ WebACLArn: s.ARN })), DEFAULT_TIMEOUT_MS, "wafv2.resources");
+        associatedResourceCount = resRes.ResourceArns?.length ?? 0;
+      } catch { /* skip */ }
+      return {
+        arn: s.ARN ?? "unknown",
+        name: s.Name ?? "unknown",
+        scope: "REGIONAL",
+        ruleCount,
+        defaultAction,
+        metricsEnabled,
+        associatedResourceCount,
+      };
+    }));
+    return {
+      mode: "live",
+      total: items.length,
+      blockDefaultCount: items.filter((i) => i.defaultAction === "Block").length,
+      associatedResourceCount: items.reduce((s, i) => s + i.associatedResourceCount, 0),
+      items,
+      limitations: ["CLOUDFRONT-scoped Web ACLs require us-east-1 + Scope=CLOUDFRONT — surface in follow-up phase."],
+    };
+  } catch (err) {
+    return blankWaf(`WAFv2 list failed: ${redact(errMessage(err))}`);
+  }
+}
+
+// ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
 
@@ -916,6 +972,7 @@ function emptyReport(generatedAt: string, tenantId: string): AwsServiceInventory
     threats: blankThreats("Not extracted."),
     secrets: blankSecrets("Not extracted."),
     backups: blankBackups("Not extracted."),
+    waf: blankWaf("Not extracted."),
     overallSourceMode: "preview",
     safetyContract: "aws_service_inventory_read_only",
     limitations: [],
@@ -977,6 +1034,9 @@ function blankSecrets(note: string): AwsServiceInventoryReport["secrets"] {
 }
 function blankBackups(note: string): AwsServiceInventoryReport["backups"] {
   return { mode: "blocked", vaultCount: 0, totalRecoveryPoints: 0, emptyVaultCount: 0, vaults: [], limitations: [note] };
+}
+function blankWaf(note: string): AwsServiceInventoryReport["waf"] {
+  return { mode: "blocked", total: 0, blockDefaultCount: 0, associatedResourceCount: 0, items: [], limitations: [note] };
 }
 function withGlobalNote(r: AwsServiceInventoryReport, note: string): AwsServiceInventoryReport {
   r.limitations.push(note);

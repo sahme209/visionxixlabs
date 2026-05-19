@@ -272,6 +272,26 @@ export interface BackupVaultSummary {
 }
 
 // ---------------------------------------------------------------------------
+// WAF v2 (Phase 88)
+// ---------------------------------------------------------------------------
+
+export type WafScope = "CLOUDFRONT" | "REGIONAL";
+
+export interface WebAclSummary {
+  arn: string;
+  name: string;
+  scope: WafScope;
+  /** Number of rules attached (managed + custom). */
+  ruleCount: number;
+  /** Default action when no rule matches. */
+  defaultAction: "Allow" | "Block" | "unknown";
+  /** True when CloudWatch metrics are enabled. */
+  metricsEnabled: boolean;
+  /** Resource ARNs associated with this Web ACL (CloudFront / ALB / API GW). */
+  associatedResourceCount: number;
+}
+
+// ---------------------------------------------------------------------------
 // Top-level report
 // ---------------------------------------------------------------------------
 
@@ -426,6 +446,15 @@ export interface AwsServiceInventoryReport {
     totalRecoveryPoints: number;
     emptyVaultCount: number;
     vaults: BackupVaultSummary[];
+    limitations: string[];
+  };
+
+  waf: {
+    mode: AwsServiceMode;
+    total: number;
+    blockDefaultCount: number;
+    associatedResourceCount: number;
+    items: WebAclSummary[];
     limitations: string[];
   };
 

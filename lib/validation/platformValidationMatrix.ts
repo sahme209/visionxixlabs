@@ -858,7 +858,18 @@ export const VALIDATION_MATRIX: ValidationRow[] = [
   { id: "security.builder", area: "operating_loop", capability: "lib/cloud/multiCloudSecurityBuilder — runs 3 cloud security services in parallel: AWS GuardDuty + Azure Defender for Cloud + GCP Security Command Center. Per-cloud failures isolated. Severity normalized to canonical 6-literal union. PERMISSION_DENIED on SCC honestly maps to 'not enabled at project level'.", status: "passing", evidence: "lib/cloud/multiCloudSecurityBuilder.ts" },
   { id: "security.api",     area: "operating_loop", capability: "GET /api/cloud/security — tenant-scoped envelope. maxDuration 30s. Single endpoint surfaces threats across all 3 clouds.", status: "passing", evidence: "app/api/cloud/security/route.ts" },
   { id: "security.page",    area: "command_center", capability: "/dashboard/cloud-security — premium UI: cross-cloud stat ribbon (clouds reporting / total / critical / high / medium), per-cloud section cards with mode + service-enabled flags + per-severity counts, combined findings list (top 50 by severity) with severity pill + cloud chip + category + resource id. Sidebar Providers group lists 'Cloud Security'.", status: "passing", evidence: "app/dashboard/cloud-security/page.tsx + app/dashboard/DashboardSidebar.tsx" },
-  { id: "deps.phase83_85",  area: "operating_loop", capability: "package.json — added @azure/arm-security ^6.0.0 + @google-cloud/security-center ^9.4.0 as direct dependencies.", status: "passing", evidence: "package.json" },
+  { id: "deps.phase83_85",  area: "operating_loop", capability: "package.json — added @azure/arm-security ^5.0.0 + @google-cloud/security-center ^9.3.1 as direct dependencies.", status: "passing", evidence: "package.json" },
+
+  // ---------------------------------------------------------------------------
+  // Phase 86 — Unified Cost Overview UI
+  // ---------------------------------------------------------------------------
+  { id: "ui.cost_overview_page", area: "command_center", capability: "/dashboard/cost-overview — premium cross-cloud cost dashboard consuming /api/billing (already merges 6 providers). Stat ribbon (providers reporting / Last 30d / Prev 30d / Δ%). Anomaly panel + per-provider card with mode pill + cost trend + missing requirements. Sidebar entry between 'Cloud Security' and 'Azure'.", status: "passing", evidence: "app/dashboard/cost-overview/page.tsx" },
+
+  // ---------------------------------------------------------------------------
+  // Phase 88 — WAF v2 Web Application Firewall posture
+  // ---------------------------------------------------------------------------
+  { id: "aws.waf_v2", area: "aws", capability: "lib/cloud/aws/awsServiceInventoryExtractor:runWaf — @aws-sdk/client-wafv2 ListWebACLs (REGIONAL scope) → GetWebACL + ListResourcesForWebACL. Per-ACL: ruleCount + defaultAction (Allow/Block) + metricsEnabled + associatedResourceCount. Surface counts: total + blockDefaultCount + associatedResourceCount. CLOUDFRONT-scoped Web ACLs deferred to follow-up phase.", status: "passing", evidence: "lib/cloud/aws/awsServiceInventoryExtractor.ts", nextFix: "Requires wafv2:ListWebACLs + GetWebACL + ListResourcesForWebACL." },
+  { id: "deps.phase88",  area: "operating_loop", capability: "package.json — added @aws-sdk/client-wafv2 ^3.1001.0 as direct dependency.", status: "passing", evidence: "package.json" },
 ];
 
 // ---------------------------------------------------------------------------

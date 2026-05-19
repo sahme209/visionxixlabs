@@ -65,6 +65,7 @@ const GROUPS: NavGroup[] = [
       { href: "/dashboard/aws",          label: "AWS",            icon: CloudIcon       },
       { href: "/dashboard/aws-services", label: "AWS Services",   icon: ServerStackIcon },
       { href: "/dashboard/cloud-security",label: "Cloud Security",icon: ShieldCheckIcon },
+      { href: "/dashboard/cost-overview", label: "Cost Overview",  icon: ChartBarIcon    },
       { href: "/dashboard/azure",        label: "Azure",          icon: CloudIcon       },
       { href: "/dashboard/gcp",        label: "GCP",      icon: CloudIcon      },
       { href: "/dashboard/github",     label: "GitHub",   icon: CodeBracketIcon},

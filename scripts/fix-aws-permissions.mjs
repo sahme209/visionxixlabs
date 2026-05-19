@@ -89,6 +89,10 @@ const POLICY = {
       "secretsmanager:ListSecrets",
       // Service inventory: AWS Backup (Phase 80)
       "backup:ListBackupVaults",
+      // Service inventory: WAF v2 (Phase 88)
+      "wafv2:ListWebACLs",
+      "wafv2:GetWebACL",
+      "wafv2:ListResourcesForWebACL",
     ],
     Resource: "*",
   }],
