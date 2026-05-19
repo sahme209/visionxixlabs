@@ -1002,6 +1002,13 @@ export const VALIDATION_MATRIX: ValidationRow[] = [
   // Phase 106 — Kubernetes EOL upgrade planner
   // ---------------------------------------------------------------------------
   { id: "ui.k8s_eol_page", area: "command_center", capability: "/dashboard/k8s-eol — consumes /api/containers, filters to versionEol=true clusters, groups by provider (AWS EKS / Azure AKS / GCP GKE). Per-cluster row shows EOL→target arrow chip, nodePool/workload/pod tiles, collapsible 'workloads with upgrade-risk flags' detail. Per-cloud TARGET_VERSION map updated as vendor support windows close. Sidebar entry next to Containers.", status: "passing", evidence: "app/dashboard/k8s-eol/page.tsx" },
+
+  // ---------------------------------------------------------------------------
+  // Phase 107 — Terraform HCL drafter
+  // ---------------------------------------------------------------------------
+  { id: "autonomy.terraform_drafter", area: "operating_loop", capability: "lib/autonomy/terraformDrafter — pure string templating that converts Phase 102 policy preview JSON to ready-to-PR Terraform HCL. AWS → aws_organizations_policy with content=jsonencode(...) wrapping the SCP. Azure → azurerm_policy_definition with policy_rule extracted from properties.policyRule. GCP → google_org_policy_policy with constraint path derived from policy.name. Resource name slugified from label. Includes per-cloud sanity validation that emits warnings (e.g. missing Version/Statement fields).", status: "passing", evidence: "lib/autonomy/terraformDrafter.ts" },
+  { id: "autonomy.terraform_draft_route", area: "operating_loop", capability: "POST /api/autonomy/terraform-draft — typed envelope. Body { cloud, label, policyJson }. safetyContract 'approval_only_no_execution'.", status: "passing", evidence: "app/api/autonomy/terraform-draft/route.ts" },
+  { id: "ui.terraform_draft_modal", area: "command_center", capability: "/dashboard/policy-previews — per-preview 'tf' button calls /api/autonomy/terraform-draft and opens a full-page modal with the HCL pre block + copy-HCL button + apply hint + warnings. Operator copies → pastes into IaC repo → reviews terraform plan → applies via their own pipeline.", status: "passing", evidence: "app/dashboard/policy-previews/page.tsx" },
 ];
 
 // ---------------------------------------------------------------------------

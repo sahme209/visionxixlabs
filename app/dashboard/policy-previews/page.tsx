@@ -66,6 +66,8 @@ export default function PolicyPreviewsPage() {
   const [loading, setLoading] = useState(true);
   const [lookback, setLookback] = useState(360);
   const [copied, setCopied] = useState<string | null>(null);
+  const [tfDraft, setTfDraft] = useState<{ key: string; hcl: string; applyHint: string; warnings: string[] } | null>(null);
+  const [tfBusy, setTfBusy] = useState<string | null>(null);
 
   const load = useCallback((minutes: number) => {
     setLoading(true);
@@ -87,6 +89,24 @@ export default function PolicyPreviewsPage() {
       setCopied(key);
       setTimeout(() => setCopied((c) => (c === key ? null : c)), 1500);
     });
+  }
+
+  async function draftTf(key: string, cloud: Cloud, label: string, policyJson: string) {
+    setTfBusy(key);
+    try {
+      const r = await fetch("/api/autonomy/terraform-draft", {
+        method: "POST",
+        credentials: "include",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ cloud, label, policyJson }),
+      });
+      const j = (await r.json()) as { ok?: boolean; data?: { hcl: string; applyHint: string; warnings: string[] } };
+      if (j.ok && j.data) {
+        setTfDraft({ key, hcl: j.data.hcl, applyHint: j.data.applyHint, warnings: j.data.warnings });
+      }
+    } finally {
+      setTfBusy(null);
+    }
   }
 
   return (
@@ -203,22 +223,31 @@ export default function PolicyPreviewsPage() {
                               <span className="text-[10px] font-mono text-white/80 uppercase tracking-wider">
                                 {CLOUD_LABEL[p.cloud]}
                               </span>
-                              <button
-                                onClick={() => copyOne(key, p.policyJson)}
-                                className="inline-flex items-center gap-1 text-[10px] font-mono px-1.5 py-0.5 rounded border bg-black/30 border-white/[0.08] text-zinc-300 hover:text-white"
-                              >
-                                {copied === key ? (
-                                  <>
-                                    <CheckIcon className="h-3 w-3 text-emerald-300" />
-                                    copied
-                                  </>
-                                ) : (
-                                  <>
-                                    <ClipboardDocumentIcon className="h-3 w-3" />
-                                    copy
-                                  </>
-                                )}
-                              </button>
+                              <div className="flex items-center gap-1">
+                                <button
+                                  onClick={() => draftTf(key, p.cloud, p.label, p.policyJson)}
+                                  disabled={tfBusy === key}
+                                  className="inline-flex items-center gap-1 text-[10px] font-mono px-1.5 py-0.5 rounded border bg-black/30 border-white/[0.08] text-zinc-300 hover:text-white disabled:opacity-50"
+                                >
+                                  {tfBusy === key ? "…" : "tf"}
+                                </button>
+                                <button
+                                  onClick={() => copyOne(key, p.policyJson)}
+                                  className="inline-flex items-center gap-1 text-[10px] font-mono px-1.5 py-0.5 rounded border bg-black/30 border-white/[0.08] text-zinc-300 hover:text-white"
+                                >
+                                  {copied === key ? (
+                                    <>
+                                      <CheckIcon className="h-3 w-3 text-emerald-300" />
+                                      copied
+                                    </>
+                                  ) : (
+                                    <>
+                                      <ClipboardDocumentIcon className="h-3 w-3" />
+                                      copy
+                                    </>
+                                  )}
+                                </button>
+                              </div>
                             </div>
                             <p className="text-[12px] font-semibold text-white">{p.label}</p>
                             <p className="text-[10px] text-zinc-400 mt-0.5 leading-snug">{p.description}</p>
@@ -240,6 +269,38 @@ export default function PolicyPreviewsPage() {
             <div className="rounded-2xl border border-amber-500/[0.18] bg-amber-500/[0.03] p-4 mb-8">
               <p className="text-[10px] font-mono text-amber-300/80 uppercase tracking-[0.18em] mb-2">// notes</p>
               {report.limitations.map((l, i) => <p key={i} className="text-[12px] text-zinc-300">· {l}</p>)}
+            </div>
+          )}
+
+          {tfDraft && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4" onClick={() => setTfDraft(null)}>
+              <div onClick={(e) => e.stopPropagation()} className="max-w-3xl w-full rounded-2xl border border-white/[0.1] bg-zinc-950 p-5">
+                <div className="flex items-center justify-between mb-2">
+                  <p className="text-[12px] font-mono text-violet-300 uppercase tracking-wider">// terraform draft · {tfDraft.key}</p>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => navigator.clipboard.writeText(tfDraft.hcl)}
+                      className="text-[11px] font-mono px-2 py-1 rounded border bg-black/30 border-white/[0.08] text-zinc-200 hover:text-white"
+                    >
+                      copy HCL
+                    </button>
+                    <button onClick={() => setTfDraft(null)} className="text-[11px] font-mono px-2 py-1 rounded border bg-black/30 border-white/[0.08] text-zinc-200 hover:text-white">
+                      close
+                    </button>
+                  </div>
+                </div>
+                <pre className="max-h-[55vh] overflow-auto rounded-lg border border-white/[0.08] bg-black/60 p-3 text-[11px] font-mono text-emerald-100 leading-relaxed">
+{tfDraft.hcl}
+                </pre>
+                <p className="text-[11px] text-zinc-400 mt-2 leading-snug">{tfDraft.applyHint}</p>
+                {tfDraft.warnings.length > 0 && (
+                  <div className="mt-2 rounded border border-amber-500/15 bg-amber-500/[0.04] p-2">
+                    {tfDraft.warnings.map((w, i) => (
+                      <p key={i} className="text-[10px] text-amber-200">· {w}</p>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
           )}
         </>
