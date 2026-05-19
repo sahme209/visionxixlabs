@@ -26,6 +26,7 @@ import "server-only";
 
 import { runAutonomousLoopCycle } from "./autonomousLoopRunner";
 import { charterForMode } from "./autonomyCharter";
+import { readTenantCharter } from "./tenantCharterStore";
 import { loadAppEnv } from "@/lib/config/env";
 import { sendOutboundNotification } from "@/lib/notifications/outboundNotificationLane";
 import type { OrganizationId } from "@/lib/domain/ids";
@@ -102,9 +103,12 @@ export async function runSchedulerTick(input: RunSchedulerTickInput): Promise<Sc
   const skipped: { tenantId: string; reason: string }[] = [];
 
   for (const tenantId of input.tenantIds) {
-    const mode: AutonomyMode = input.modeOverride ?? "observer";
+    // Per-tenant override > caller override > global observer default.
+    const tenantRow = await readTenantCharter(String(tenantId)).catch(() => null);
+    const mode: AutonomyMode = input.modeOverride ?? tenantRow?.mode ?? "observer";
     try {
-      const charter = charterForMode(mode);
+      const baseCharter = tenantRow?.resolved ?? charterForMode(mode);
+      const charter = input.modeOverride ? charterForMode(input.modeOverride) : baseCharter;
       // Hard cap per-cycle actions when running unattended.
       const capped = {
         ...charter,

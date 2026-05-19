@@ -89,6 +89,8 @@ export default function RunbooksPage() {
   const [loading, setLoading] = useState(true);
   const [lookback, setLookback] = useState(60);
   const [severityFilter, setSeverityFilter] = useState<Severity | "all">("all");
+  const [staging, setStaging] = useState<string | null>(null);
+  const [staged, setStaged] = useState<Set<string>>(new Set());
 
   const load = useCallback((minutes: number) => {
     setLoading(true);
@@ -104,6 +106,28 @@ export default function RunbooksPage() {
   }, []);
 
   useEffect(() => { load(lookback); }, [lookback, load]);
+
+  async function stage(rb: Runbook) {
+    setStaging(rb.id);
+    try {
+      const r = await fetch("/api/autonomy/runbooks/stage", {
+        method: "POST",
+        credentials: "include",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ runbook: rb }),
+      });
+      const j = (await r.json()) as { ok?: boolean };
+      if (j.ok) {
+        setStaged((prev) => {
+          const next = new Set(prev);
+          next.add(rb.id);
+          return next;
+        });
+      }
+    } finally {
+      setStaging(null);
+    }
+  }
 
   const filtered = report?.runbooks.filter((r) => severityFilter === "all" || r.severity === severityFilter) ?? [];
 
@@ -277,12 +301,19 @@ export default function RunbooksPage() {
 
                   <div className="mt-2 flex items-center justify-between gap-3 flex-wrap text-[10px] font-mono text-zinc-500">
                     <span>{rb.evidenceRefs.join(" · ")}</span>
-                    <a
-                      href={rb.reversal.reviewHref}
-                      className="inline-flex items-center gap-1 text-violet-300 hover:text-violet-200"
-                    >
-                      Send to Approval Packets →
-                    </a>
+                    {staged.has(rb.id) ? (
+                      <a href="/dashboard/runbooks/queue" className="inline-flex items-center gap-1 text-emerald-300 hover:text-emerald-200">
+                        Queued ✓ — open queue →
+                      </a>
+                    ) : (
+                      <button
+                        onClick={() => stage(rb)}
+                        disabled={staging === rb.id}
+                        className="inline-flex items-center gap-1 text-violet-300 hover:text-violet-200 disabled:opacity-50"
+                      >
+                        {staging === rb.id ? "Staging…" : "Stage for approval →"}
+                      </button>
+                    )}
                   </div>
                 </div>
               ))}

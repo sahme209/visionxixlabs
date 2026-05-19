@@ -1136,3 +1136,50 @@ model OutboundNotificationRecord {
   @@index([organizationId, dedupeKey, createdAt])
   @@index([dedupeKey, createdAt])
 }
+
+/// Runbook staged for human approval. Operators promote any runbook
+/// from /dashboard/runbooks into this queue, then approve or reject.
+/// Approval here NEVER triggers an actual mutation — it records the
+/// human decision so the IaC pipeline can pick it up. Read-only by
+/// design; the lane that actually applies a change is out of scope.
+model StagedRemediationRunbook {
+  id                String   @id
+  organizationId    String
+  runbookId         String   // From RemediationRunbook.id
+  sourceEventId     String   // CloudTrail event id
+  eventName         String
+  severity          String
+  rootCause         String
+  affectedResource  String
+  reversalLabel     String
+  reversalRisk      String
+  reversalApi       String?
+  hardeningLabel    String
+  hardeningApi      String?
+  confidence        Float
+  evidenceRefs      String[]
+  status            String   // "staged" | "approved" | "rejected" | "expired"
+  decision          String?
+  stagedBy          String?
+  stagedAt          DateTime @default(now())
+  decidedAt         DateTime?
+  decidedBy         String?
+
+  @@index([organizationId, status, stagedAt])
+  @@index([organizationId, runbookId])
+}
+
+/// Per-tenant override of the autonomy charter. When a row exists,
+/// the scheduler and on-demand cockpit use this charter instead of
+/// the global default. Mode is an AutonomyMode literal validated at
+/// the API boundary. Backs lib/autonomy/tenantCharterStore.
+model TenantAutonomyCharter {
+  organizationId       String   @id
+  mode                 String   // AutonomyMode literal: observer | review | assisted | autonomous
+  perCycleActionLimit  Int?
+  rationale            String?
+  slackWebhookOverride String?
+  updatedAt            DateTime @updatedAt
+  updatedBy            String?
+  createdAt            DateTime @default(now())
+}
