@@ -26,6 +26,7 @@ export type TelemetryProvider =
   | "prometheus"
   | "sentry"
   | "new_relic"
+  | "dynatrace"
   | "opentelemetry_collector";
 
 export type TelemetrySourceMode =

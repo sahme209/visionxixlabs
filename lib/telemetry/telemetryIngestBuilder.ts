@@ -15,6 +15,8 @@ import { readTelemetryQueue } from "./telemetryWebhookReceiver";
 import { extractAwsCloudWatchAlarms } from "./awsCloudWatchExtractor";
 import { extractDatadogAlertingMonitors } from "./datadogPullExtractor";
 import { extractSentryUnresolvedIssues } from "./sentryPullExtractor";
+import { extractDynatraceProblems } from "./dynatracePullExtractor";
+import { extractNewRelicIssues } from "./newRelicPullExtractor";
 import type { OrganizationId, UserId } from "@/lib/domain/ids";
 import type {
   TelemetryIngestReport,
@@ -65,6 +67,26 @@ export async function buildTelemetryIngest(input: BuildTelemetryInput): Promise<
       sentryLive = null;
     }
   }
+
+  // Try live Dynatrace pull.
+  let dynatraceLive: Awaited<ReturnType<typeof extractDynatraceProblems>> | null = null;
+  if (env.dynatracePullEnabled) {
+    try {
+      dynatraceLive = await extractDynatraceProblems();
+    } catch {
+      dynatraceLive = null;
+    }
+  }
+
+  // Try live New Relic pull.
+  let newRelicLive: Awaited<ReturnType<typeof extractNewRelicIssues>> | null = null;
+  if (env.newRelicPullEnabled) {
+    try {
+      newRelicLive = await extractNewRelicIssues();
+    } catch {
+      newRelicLive = null;
+    }
+  }
   const azureLive = state.providers.find((p) => p.provider === "azure")?.mode === "live";
   const gcpLive = state.providers.find((p) => p.provider === "gcp")?.mode === "live";
 
@@ -91,7 +113,8 @@ export async function buildTelemetryIngest(input: BuildTelemetryInput): Promise<
     posture("grafana_cloud", "preview", ["GRAFANA_CLOUD_TOKEN with metrics:read + logs:read."], "https://grafana.com/"),
     posture("prometheus", "preview", ["PROMETHEUS_URL + (optional) PROMETHEUS_BEARER_TOKEN."]),
     posture("sentry", "preview", ["SENTRY_AUTH_TOKEN with org:read + project:read."], "https://sentry.io/"),
-    posture("new_relic", "preview", ["NEW_RELIC_API_KEY + NEW_RELIC_ACCOUNT_ID."], "https://one.newrelic.com/"),
+    posture("new_relic", "preview", ["NEW_RELIC_USER_KEY + NEW_RELIC_ACCOUNT_ID."], "https://one.newrelic.com/"),
+    posture("dynatrace", "preview", ["DYNATRACE_ENV_URL + DYNATRACE_API_TOKEN (Read problems scope)."], "https://www.dynatrace.com/"),
     posture("opentelemetry_collector", "preview", ["OTEL_COLLECTOR_URL (push or pull)."]),
   ];
 
@@ -145,6 +168,34 @@ export async function buildTelemetryIngest(input: BuildTelemetryInput): Promise<
       for (const sig of sentryLive.signals) target.signals.push(sig);
       target.mode = "live";
       target.headline = `Live · ${target.signals.length} unresolved Sentry issue(s).`;
+      target.missingRequirements = [];
+      target.configured = true;
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Splice live-pulled Dynatrace problems into the dynatrace posture.
+  // ---------------------------------------------------------------------------
+  if (dynatraceLive && dynatraceLive.mode === "live" && dynatraceLive.signals.length > 0) {
+    const target = providers.find((p) => p.provider === "dynatrace");
+    if (target) {
+      for (const sig of dynatraceLive.signals) target.signals.push(sig);
+      target.mode = "live";
+      target.headline = `Live · ${target.signals.length} open Dynatrace problem(s).`;
+      target.missingRequirements = [];
+      target.configured = true;
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Splice live-pulled New Relic issues into the new_relic posture.
+  // ---------------------------------------------------------------------------
+  if (newRelicLive && newRelicLive.mode === "live" && newRelicLive.signals.length > 0) {
+    const target = providers.find((p) => p.provider === "new_relic");
+    if (target) {
+      for (const sig of newRelicLive.signals) target.signals.push(sig);
+      target.mode = "live";
+      target.headline = `Live · ${target.signals.length} active New Relic issue(s).`;
       target.missingRequirements = [];
       target.configured = true;
     }

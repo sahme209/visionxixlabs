@@ -85,6 +85,15 @@ export interface AppEnv {
   sentryAuthToken?: string;
   sentryOrg?: string;
   sentryBaseUrl?: string;
+  /** Dynatrace REST pull extractor opt-in + environment URL + API token. */
+  dynatracePullEnabled: boolean;
+  dynatraceEnvUrl?: string;
+  dynatraceApiToken?: string;
+  /** New Relic REST pull extractor opt-in + user-key + account id + region ("US" | "EU"). */
+  newRelicPullEnabled: boolean;
+  newRelicUserKey?: string;
+  newRelicAccountId?: string;
+  newRelicRegion?: "US" | "EU";
   /** GHCR container inventory extractor opt-in + org + deep-inspect flag. */
   ghcrExtractEnabled: boolean;
   ghcrOrg?: string;
@@ -226,6 +235,13 @@ export function loadAppEnv(): AppEnv {
     sentryAuthToken:           env.SENTRY_AUTH_TOKEN?.trim() || undefined,
     sentryOrg:                 env.SENTRY_ORG?.trim() || undefined,
     sentryBaseUrl:             env.SENTRY_BASE_URL?.trim() || undefined,
+    dynatracePullEnabled:      bool(env.DYNATRACE_PULL_ENABLED, false),
+    dynatraceEnvUrl:           env.DYNATRACE_ENV_URL?.trim() || undefined,
+    dynatraceApiToken:         env.DYNATRACE_API_TOKEN?.trim() || undefined,
+    newRelicPullEnabled:       bool(env.NEW_RELIC_PULL_ENABLED, false),
+    newRelicUserKey:           env.NEW_RELIC_USER_KEY?.trim() || undefined,
+    newRelicAccountId:         env.NEW_RELIC_ACCOUNT_ID?.trim() || undefined,
+    newRelicRegion:            (env.NEW_RELIC_REGION?.trim().toUpperCase() === "EU" ? "EU" : "US"),
     ghcrExtractEnabled:        bool(env.GHCR_EXTRACT_ENABLED, false),
     ghcrOrg:                   env.GHCR_ORG?.trim() || undefined,
     ghcrDeepInspect:           bool(env.GHCR_DEEP_INSPECT, false),
