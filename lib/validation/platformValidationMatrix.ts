@@ -850,6 +850,15 @@ export const VALIDATION_MATRIX: ValidationRow[] = [
   // ---------------------------------------------------------------------------
   { id: "azure.keyvault_extractor", area: "azure", capability: "lib/cloud/azure/azureKeyVaultExtractor — @azure/arm-keyvault listBySubscription. Per-vault flags: softDeleteEnabled + purgeProtectionEnabled + rbacAuthorization + publicNetworkAccess. Surface counts: total + noSoftDeleteCount + noPurgeProtectionCount + publicAccessCount. Mirrors AWS Secrets Manager rotation tracking — cross-cloud secrets posture parity.", status: "passing", evidence: "lib/cloud/azure/azureKeyVaultExtractor.ts", nextFix: "Requires AZURE_INVENTORY_EXTRACT_ENABLED + Microsoft.KeyVault/vaults/read permission." },
   { id: "azure.keyvault_route", area: "azure", capability: "GET /api/cloud/azure-keyvaults — tenant-scoped canonical envelope.", status: "passing", evidence: "app/api/cloud/azure-keyvaults/route.ts" },
+
+  // ---------------------------------------------------------------------------
+  // Phase 83-85 — Multi-cloud security: AWS GuardDuty + Azure Defender + GCP SCC
+  // ---------------------------------------------------------------------------
+  { id: "security.model",   area: "operating_loop", capability: "lib/cloud/multiCloudSecurityModel — typed MultiCloudSecurityReport. 3 SecurityCloud literals (aws/azure/gcp) × 6 SecuritySeverity literals × 5 SecurityState literals. Unified SecurityFinding shape across all 3 clouds. safetyContract literal 'multi_cloud_security_read_only'.", status: "passing", evidence: "lib/cloud/multiCloudSecurityModel.ts" },
+  { id: "security.builder", area: "operating_loop", capability: "lib/cloud/multiCloudSecurityBuilder — runs 3 cloud security services in parallel: AWS GuardDuty + Azure Defender for Cloud + GCP Security Command Center. Per-cloud failures isolated. Severity normalized to canonical 6-literal union. PERMISSION_DENIED on SCC honestly maps to 'not enabled at project level'.", status: "passing", evidence: "lib/cloud/multiCloudSecurityBuilder.ts" },
+  { id: "security.api",     area: "operating_loop", capability: "GET /api/cloud/security — tenant-scoped envelope. maxDuration 30s. Single endpoint surfaces threats across all 3 clouds.", status: "passing", evidence: "app/api/cloud/security/route.ts" },
+  { id: "security.page",    area: "command_center", capability: "/dashboard/cloud-security — premium UI: cross-cloud stat ribbon (clouds reporting / total / critical / high / medium), per-cloud section cards with mode + service-enabled flags + per-severity counts, combined findings list (top 50 by severity) with severity pill + cloud chip + category + resource id. Sidebar Providers group lists 'Cloud Security'.", status: "passing", evidence: "app/dashboard/cloud-security/page.tsx + app/dashboard/DashboardSidebar.tsx" },
+  { id: "deps.phase83_85",  area: "operating_loop", capability: "package.json — added @azure/arm-security ^6.0.0 + @google-cloud/security-center ^9.4.0 as direct dependencies.", status: "passing", evidence: "package.json" },
 ];
 
 // ---------------------------------------------------------------------------
