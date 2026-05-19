@@ -839,6 +839,17 @@ export const VALIDATION_MATRIX: ValidationRow[] = [
   // Combined deps for phases 77-80
   // ---------------------------------------------------------------------------
   { id: "deps.phase77_80", area: "operating_loop", capability: "package.json — added @aws-sdk/client-acm + @aws-sdk/client-guardduty + @aws-sdk/client-secrets-manager + @aws-sdk/client-backup (all ^3.1001.0) as direct dependencies.", status: "passing", evidence: "package.json" },
+
+  // ---------------------------------------------------------------------------
+  // Phase 81 — /dashboard/aws-services UI page (web + desktop both consume)
+  // ---------------------------------------------------------------------------
+  { id: "ui.aws_services_page", area: "command_center", capability: "/dashboard/aws-services — premium UI rendering all 14 sections of /api/cloud/aws-services. Per-section card with mode pill (live/blocked/preview) + 2-6 stat tiles with tone-coded severity (emerald=good, amber=warn, rose=critical, zinc=neutral). Safety contract callout at bottom. Sidebar Providers group now lists 'AWS Services' below 'AWS'. The desktop runtime consumes the same /api endpoint when paired — no separate code path.", status: "passing", evidence: "app/dashboard/aws-services/page.tsx + app/dashboard/DashboardSidebar.tsx" },
+
+  // ---------------------------------------------------------------------------
+  // Phase 82 — Azure Key Vault inventory (cross-cloud secrets parity)
+  // ---------------------------------------------------------------------------
+  { id: "azure.keyvault_extractor", area: "azure", capability: "lib/cloud/azure/azureKeyVaultExtractor — @azure/arm-keyvault listBySubscription. Per-vault flags: softDeleteEnabled + purgeProtectionEnabled + rbacAuthorization + publicNetworkAccess. Surface counts: total + noSoftDeleteCount + noPurgeProtectionCount + publicAccessCount. Mirrors AWS Secrets Manager rotation tracking — cross-cloud secrets posture parity.", status: "passing", evidence: "lib/cloud/azure/azureKeyVaultExtractor.ts", nextFix: "Requires AZURE_INVENTORY_EXTRACT_ENABLED + Microsoft.KeyVault/vaults/read permission." },
+  { id: "azure.keyvault_route", area: "azure", capability: "GET /api/cloud/azure-keyvaults — tenant-scoped canonical envelope.", status: "passing", evidence: "app/api/cloud/azure-keyvaults/route.ts" },
 ];
 
 // ---------------------------------------------------------------------------
