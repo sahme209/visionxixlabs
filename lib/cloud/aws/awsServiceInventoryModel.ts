@@ -89,6 +89,71 @@ export interface S3BucketSummary {
 }
 
 // ---------------------------------------------------------------------------
+// EC2 (Phase 71)
+// ---------------------------------------------------------------------------
+
+export interface Ec2InstanceSummary {
+  id: string;
+  instanceType?: string;
+  state?: string;
+  publicIp?: string;
+  privateIp?: string;
+  imageId?: string;
+  /** True when the instance metadata service is IMDSv2-required. */
+  imdsv2Required: boolean;
+  launchTime?: string;
+}
+
+// ---------------------------------------------------------------------------
+// VPC + Security Groups (Phase 71)
+// ---------------------------------------------------------------------------
+
+export interface SecurityGroupSummary {
+  id: string;
+  name?: string;
+  description?: string;
+  vpcId?: string;
+  /** True when at least one inbound rule allows 0.0.0.0/0 on any port. */
+  hasWideOpenIngress: boolean;
+  /** True when a wide-open rule allows SSH (22) or RDP (3389). */
+  hasWideOpenAdminPort: boolean;
+}
+
+export interface VpcSummary {
+  id: string;
+  cidrBlock?: string;
+  isDefault: boolean;
+}
+
+// ---------------------------------------------------------------------------
+// ELB v2 (ALB / NLB) (Phase 71)
+// ---------------------------------------------------------------------------
+
+export interface LoadBalancerSummary {
+  arn: string;
+  name?: string;
+  type?: "application" | "network" | "gateway" | string;
+  scheme?: "internet-facing" | "internal" | string;
+  state?: string;
+  /** True when the LB is internet-facing. */
+  publiclyExposed: boolean;
+}
+
+// ---------------------------------------------------------------------------
+// SNS + SQS (Phase 71)
+// ---------------------------------------------------------------------------
+
+export interface SnsTopicSummary {
+  arn: string;
+  name: string;
+}
+
+export interface SqsQueueSummary {
+  url: string;
+  name: string;
+}
+
+// ---------------------------------------------------------------------------
 // Top-level report
 // ---------------------------------------------------------------------------
 
@@ -136,6 +201,45 @@ export interface AwsServiceInventoryReport {
     publiclyExposedCount: number;
     unencryptedCount: number;
     buckets: S3BucketSummary[];
+    limitations: string[];
+  };
+
+  ec2: {
+    mode: AwsServiceMode;
+    total: number;
+    runningCount: number;
+    stoppedCount: number;
+    publicIpCount: number;
+    imdsv2Count: number;
+    instances: Ec2InstanceSummary[];
+    limitations: string[];
+  };
+
+  network: {
+    mode: AwsServiceMode;
+    vpcCount: number;
+    securityGroupCount: number;
+    wideOpenIngressCount: number;
+    wideOpenAdminPortCount: number;
+    vpcs: VpcSummary[];
+    securityGroups: SecurityGroupSummary[];
+    limitations: string[];
+  };
+
+  loadBalancers: {
+    mode: AwsServiceMode;
+    total: number;
+    publicCount: number;
+    items: LoadBalancerSummary[];
+    limitations: string[];
+  };
+
+  messaging: {
+    mode: AwsServiceMode;
+    snsTopicCount: number;
+    sqsQueueCount: number;
+    snsTopics: SnsTopicSummary[];
+    sqsQueues: SqsQueueSummary[];
     limitations: string[];
   };
 

@@ -28,13 +28,18 @@ import {
   isDeprecatedLambdaRuntime,
   LAMBDA_RUNTIME_FAMILIES,
   type AwsServiceInventoryReport,
-  type AwsServiceMode,
+  type Ec2InstanceSummary,
   type IamRoleSummary,
   type IamUserSummary,
   type LambdaFunctionSummary,
   type LambdaRuntimeFamily,
+  type LoadBalancerSummary,
   type RdsInstanceSummary,
   type S3BucketSummary,
+  type SecurityGroupSummary,
+  type SnsTopicSummary,
+  type SqsQueueSummary,
+  type VpcSummary,
 } from "./awsServiceInventoryModel";
 import type { OrganizationId, UserId } from "@/lib/domain/ids";
 
@@ -67,23 +72,31 @@ export async function buildAwsServiceInventory(input: BuildAwsServiceInventoryIn
   blank.region = region;
 
   // ---------------------------------------------------------------------------
-  // Run all 4 in parallel; each catches its own errors.
+  // Run all 9 sections in parallel; each catches its own errors.
   // ---------------------------------------------------------------------------
-  const [lambda, rds, iam, s3] = await Promise.all([
+  const [lambda, rds, iam, s3, ec2, network, loadBalancers, messaging] = await Promise.all([
     runLambda(credentials, region),
     runRds(credentials, region),
     runIam(credentials, region),
     runS3(credentials, region),
+    runEc2(credentials, region),
+    runNetwork(credentials, region),
+    runLoadBalancers(credentials, region),
+    runMessaging(credentials, region),
   ]);
 
   blank.lambda = lambda;
   blank.rds = rds;
   blank.iam = iam;
   blank.s3 = s3;
+  blank.ec2 = ec2;
+  blank.network = network;
+  blank.loadBalancers = loadBalancers;
+  blank.messaging = messaging;
 
-  const allLive = [lambda.mode, rds.mode, iam.mode, s3.mode].every((m) => m === "live");
-  const anyLive = [lambda.mode, rds.mode, iam.mode, s3.mode].some((m) => m === "live");
-  blank.overallSourceMode = allLive ? "live" : anyLive ? "live" : "preview";
+  const modes = [lambda.mode, rds.mode, iam.mode, s3.mode, ec2.mode, network.mode, loadBalancers.mode, messaging.mode];
+  const anyLive = modes.some((m) => m === "live");
+  blank.overallSourceMode = anyLive ? "live" : "preview";
 
   return blank;
 }
@@ -298,6 +311,186 @@ async function runS3(
 }
 
 // ---------------------------------------------------------------------------
+// EC2 (Phase 71)
+// ---------------------------------------------------------------------------
+
+async function runEc2(
+  credentials: { accessKeyId: string; secretAccessKey: string; sessionToken?: string },
+  region: string,
+): Promise<AwsServiceInventoryReport["ec2"]> {
+  try {
+    const { EC2Client, DescribeInstancesCommand } = await import("@aws-sdk/client-ec2");
+    const c = new EC2Client({ region, credentials });
+    const res = await withTimeout(c.send(new DescribeInstancesCommand({ MaxResults: MAX_ITEMS })), DEFAULT_TIMEOUT_MS, "ec2.list");
+    const instances: Ec2InstanceSummary[] = [];
+    for (const r of res.Reservations ?? []) {
+      for (const i of r.Instances ?? []) {
+        instances.push({
+          id: i.InstanceId ?? "unknown",
+          instanceType: i.InstanceType ?? undefined,
+          state: i.State?.Name ?? undefined,
+          publicIp: i.PublicIpAddress ?? undefined,
+          privateIp: i.PrivateIpAddress ?? undefined,
+          imageId: i.ImageId ?? undefined,
+          imdsv2Required: i.MetadataOptions?.HttpTokens === "required",
+          launchTime: i.LaunchTime ? new Date(i.LaunchTime).toISOString() : undefined,
+        });
+      }
+    }
+    return {
+      mode: "live",
+      total: instances.length,
+      runningCount: instances.filter((i) => i.state === "running").length,
+      stoppedCount: instances.filter((i) => i.state === "stopped").length,
+      publicIpCount: instances.filter((i) => !!i.publicIp).length,
+      imdsv2Count: instances.filter((i) => i.imdsv2Required).length,
+      instances,
+      limitations: [],
+    };
+  } catch (err) {
+    return blankEc2(`EC2 describe failed: ${redact(errMessage(err))}`);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// VPC + Security Groups (Phase 71)
+// ---------------------------------------------------------------------------
+
+async function runNetwork(
+  credentials: { accessKeyId: string; secretAccessKey: string; sessionToken?: string },
+  region: string,
+): Promise<AwsServiceInventoryReport["network"]> {
+  try {
+    const { EC2Client, DescribeVpcsCommand, DescribeSecurityGroupsCommand } = await import("@aws-sdk/client-ec2");
+    const c = new EC2Client({ region, credentials });
+    const [vpcsRes, sgsRes] = await Promise.all([
+      withTimeout(c.send(new DescribeVpcsCommand({ MaxResults: 100 })), DEFAULT_TIMEOUT_MS, "vpc.list"),
+      withTimeout(c.send(new DescribeSecurityGroupsCommand({ MaxResults: 100 })), DEFAULT_TIMEOUT_MS, "sg.list"),
+    ]);
+    const vpcs: VpcSummary[] = (vpcsRes.Vpcs ?? []).map((v) => ({
+      id: v.VpcId ?? "unknown",
+      cidrBlock: v.CidrBlock ?? undefined,
+      isDefault: !!v.IsDefault,
+    }));
+    const securityGroups: SecurityGroupSummary[] = (sgsRes.SecurityGroups ?? []).map((sg) => {
+      const inbound = sg.IpPermissions ?? [];
+      let wideOpen = false;
+      let wideOpenAdmin = false;
+      for (const rule of inbound) {
+        for (const range of rule.IpRanges ?? []) {
+          if (range.CidrIp === "0.0.0.0/0") {
+            wideOpen = true;
+            const from = rule.FromPort ?? -1;
+            const to = rule.ToPort ?? -1;
+            if (from === -1 || (from <= 22 && to >= 22) || (from <= 3389 && to >= 3389)) {
+              wideOpenAdmin = true;
+            }
+          }
+        }
+      }
+      return {
+        id: sg.GroupId ?? "unknown",
+        name: sg.GroupName ?? undefined,
+        description: sg.Description ?? undefined,
+        vpcId: sg.VpcId ?? undefined,
+        hasWideOpenIngress: wideOpen,
+        hasWideOpenAdminPort: wideOpenAdmin,
+      };
+    });
+    return {
+      mode: "live",
+      vpcCount: vpcs.length,
+      securityGroupCount: securityGroups.length,
+      wideOpenIngressCount: securityGroups.filter((g) => g.hasWideOpenIngress).length,
+      wideOpenAdminPortCount: securityGroups.filter((g) => g.hasWideOpenAdminPort).length,
+      vpcs,
+      securityGroups,
+      limitations: [],
+    };
+  } catch (err) {
+    return blankNetwork(`VPC/SG describe failed: ${redact(errMessage(err))}`);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Load Balancers v2 (ALB / NLB) (Phase 71)
+// ---------------------------------------------------------------------------
+
+async function runLoadBalancers(
+  credentials: { accessKeyId: string; secretAccessKey: string; sessionToken?: string },
+  region: string,
+): Promise<AwsServiceInventoryReport["loadBalancers"]> {
+  try {
+    const { ElasticLoadBalancingV2Client, DescribeLoadBalancersCommand } = await import("@aws-sdk/client-elastic-load-balancing-v2");
+    const c = new ElasticLoadBalancingV2Client({ region, credentials });
+    const res = await withTimeout(c.send(new DescribeLoadBalancersCommand({ PageSize: 100 })), DEFAULT_TIMEOUT_MS, "elb.list");
+    const items: LoadBalancerSummary[] = (res.LoadBalancers ?? []).map((lb) => ({
+      arn: lb.LoadBalancerArn ?? "unknown",
+      name: lb.LoadBalancerName ?? undefined,
+      type: lb.Type ?? undefined,
+      scheme: lb.Scheme ?? undefined,
+      state: lb.State?.Code ?? undefined,
+      publiclyExposed: lb.Scheme === "internet-facing",
+    }));
+    return {
+      mode: "live",
+      total: items.length,
+      publicCount: items.filter((lb) => lb.publiclyExposed).length,
+      items,
+      limitations: [],
+    };
+  } catch (err) {
+    return blankLoadBalancers(`ELB describe failed: ${redact(errMessage(err))}`);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Messaging — SNS + SQS (Phase 71)
+// ---------------------------------------------------------------------------
+
+async function runMessaging(
+  credentials: { accessKeyId: string; secretAccessKey: string; sessionToken?: string },
+  region: string,
+): Promise<AwsServiceInventoryReport["messaging"]> {
+  const limitations: string[] = [];
+  let snsTopics: SnsTopicSummary[] = [];
+  let sqsQueues: SqsQueueSummary[] = [];
+  try {
+    const { SNSClient, ListTopicsCommand } = await import("@aws-sdk/client-sns");
+    const c = new SNSClient({ region, credentials });
+    const res = await withTimeout(c.send(new ListTopicsCommand({})), DEFAULT_TIMEOUT_MS, "sns.list");
+    snsTopics = (res.Topics ?? []).slice(0, MAX_ITEMS).map((t) => ({
+      arn: t.TopicArn ?? "unknown",
+      name: (t.TopicArn ?? "").split(":").pop() ?? "unknown",
+    }));
+  } catch (err) {
+    limitations.push(`SNS list failed: ${redact(errMessage(err))}`);
+  }
+  try {
+    const { SQSClient, ListQueuesCommand } = await import("@aws-sdk/client-sqs");
+    const c = new SQSClient({ region, credentials });
+    const res = await withTimeout(c.send(new ListQueuesCommand({ MaxResults: MAX_ITEMS })), DEFAULT_TIMEOUT_MS, "sqs.list");
+    sqsQueues = (res.QueueUrls ?? []).map((url) => ({
+      url,
+      name: url.split("/").pop() ?? "unknown",
+    }));
+  } catch (err) {
+    limitations.push(`SQS list failed: ${redact(errMessage(err))}`);
+  }
+  // If both succeeded (no limitations from either), mode = live; else if at
+  // least one succeeded, still live.
+  const mode = (snsTopics.length + sqsQueues.length > 0) || limitations.length === 0 ? "live" : "blocked";
+  return {
+    mode: mode === "blocked" ? "blocked" : "live",
+    snsTopicCount: snsTopics.length,
+    sqsQueueCount: sqsQueues.length,
+    snsTopics,
+    sqsQueues,
+    limitations,
+  };
+}
+
+// ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
 
@@ -311,6 +504,10 @@ function emptyReport(generatedAt: string, tenantId: string): AwsServiceInventory
     rds: blankRds("Not extracted."),
     iam: blankIam("Not extracted."),
     s3: blankS3("Not extracted."),
+    ec2: blankEc2("Not extracted."),
+    network: blankNetwork("Not extracted."),
+    loadBalancers: blankLoadBalancers("Not extracted."),
+    messaging: blankMessaging("Not extracted."),
     overallSourceMode: "preview",
     safetyContract: "aws_service_inventory_read_only",
     limitations: [],
@@ -330,6 +527,18 @@ function blankIam(note: string): AwsServiceInventoryReport["iam"] {
 }
 function blankS3(note: string): AwsServiceInventoryReport["s3"] {
   return { mode: "blocked", total: 0, publiclyExposedCount: 0, unencryptedCount: 0, buckets: [], limitations: [note] };
+}
+function blankEc2(note: string): AwsServiceInventoryReport["ec2"] {
+  return { mode: "blocked", total: 0, runningCount: 0, stoppedCount: 0, publicIpCount: 0, imdsv2Count: 0, instances: [], limitations: [note] };
+}
+function blankNetwork(note: string): AwsServiceInventoryReport["network"] {
+  return { mode: "blocked", vpcCount: 0, securityGroupCount: 0, wideOpenIngressCount: 0, wideOpenAdminPortCount: 0, vpcs: [], securityGroups: [], limitations: [note] };
+}
+function blankLoadBalancers(note: string): AwsServiceInventoryReport["loadBalancers"] {
+  return { mode: "blocked", total: 0, publicCount: 0, items: [], limitations: [note] };
+}
+function blankMessaging(note: string): AwsServiceInventoryReport["messaging"] {
+  return { mode: "blocked", snsTopicCount: 0, sqsQueueCount: 0, snsTopics: [], sqsQueues: [], limitations: [note] };
 }
 function withGlobalNote(r: AwsServiceInventoryReport, note: string): AwsServiceInventoryReport {
   r.limitations.push(note);

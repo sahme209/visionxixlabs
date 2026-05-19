@@ -30,9 +30,11 @@ const POLICY = {
   Statement: [{
     Effect: "Allow",
     Action: [
+      // Cost Explorer
       "ce:GetCostAndUsage",
       "ce:GetCostForecast",
       "ce:GetDimensionValues",
+      // Containers
       "ecs:ListClusters",
       "ecs:DescribeClusters",
       "ecs:ListServices",
@@ -41,8 +43,34 @@ const POLICY = {
       "eks:DescribeCluster",
       "eks:ListNodegroups",
       "eks:DescribeNodegroup",
+      // Telemetry
       "cloudwatch:DescribeAlarms",
       "cloudwatch:ListMetrics",
+      // Service inventory: Lambda
+      "lambda:ListFunctions",
+      // Service inventory: RDS
+      "rds:DescribeDBInstances",
+      // Service inventory: IAM
+      "iam:ListUsers",
+      "iam:ListRoles",
+      "iam:ListMFADevices",
+      "iam:ListAttachedUserPolicies",
+      "iam:ListAccessKeys",
+      "iam:GetRole",
+      // Service inventory: S3
+      "s3:ListAllMyBuckets",
+      "s3:GetBucketPublicAccessBlock",
+      "s3:GetEncryptionConfiguration",
+      "s3:GetBucketLocation",
+      // Service inventory: EC2 + VPC + SG (Phase 71)
+      "ec2:DescribeInstances",
+      "ec2:DescribeVpcs",
+      "ec2:DescribeSecurityGroups",
+      // Service inventory: ELB v2 (Phase 71)
+      "elasticloadbalancing:DescribeLoadBalancers",
+      // Service inventory: Messaging (Phase 71)
+      "sns:ListTopics",
+      "sqs:ListQueues",
     ],
     Resource: "*",
   }],
