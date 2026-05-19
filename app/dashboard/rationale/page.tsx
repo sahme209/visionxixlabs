@@ -113,6 +113,12 @@ export default function RationalePage() {
             <ArrowPathIcon className={`h-3 w-3 ${loading ? "animate-spin" : ""}`} />
             Refresh
           </button>
+          <a
+            href={`/api/autonomy/rationale/export${filter === "all" ? "?limit=1000" : `?limit=1000&outcome=${encodeURIComponent(filter)}`}`}
+            className="inline-flex items-center gap-1.5 text-[11px] font-mono px-2.5 py-1 rounded-full border bg-emerald-500/[0.05] text-emerald-300 border-emerald-500/[0.20] hover:bg-emerald-500/[0.1]"
+          >
+            Export CSV
+          </a>
         </div>
         <h1 className="text-4xl md:text-5xl font-bold text-white tracking-[-0.045em] leading-[1.05] mb-3">
           Why did the AGI <span className="text-gradient">do that?</span>

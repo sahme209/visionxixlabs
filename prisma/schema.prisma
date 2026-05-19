@@ -1137,6 +1137,24 @@ model OutboundNotificationRecord {
   @@index([dedupeKey, createdAt])
 }
 
+/// Per-tenant feature flag. Keyed on (organizationId, key) so each
+/// tenant can independently enable / disable any flag declared in
+/// the closed FeatureFlagKey union. Stores the boolean value + an
+/// optional rationale + updatedBy for audit. Backs
+/// lib/flags/featureFlagStore.
+model TenantFeatureFlag {
+  organizationId String
+  key            String
+  enabled        Boolean
+  rationale      String?
+  updatedBy      String?
+  updatedAt      DateTime @updatedAt
+  createdAt      DateTime @default(now())
+
+  @@id([organizationId, key])
+  @@index([organizationId, updatedAt])
+}
+
 /// Autonomous-decision rationale row. For every candidate the autonomy
 /// loop touches, we write one durable audit record with the inputs +
 /// per-stage reasoning + final outcome. The audit-readable spine of
