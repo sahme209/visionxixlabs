@@ -77,6 +77,7 @@ const GROUPS: NavGroup[] = [
       { href: "/dashboard/network-topology", label: "Network Topology", icon: ArrowsRightLeftIcon },
       { href: "/dashboard/cloudtrail", label: "CloudTrail",    icon: EyeIcon         },
       { href: "/dashboard/containers", label: "Containers",  icon: ServerStackIcon },
+      { href: "/dashboard/k8s-eol",    label: "K8s EOL",      icon: RocketLaunchIcon },
     ],
   },
   {

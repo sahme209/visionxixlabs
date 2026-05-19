@@ -986,6 +986,22 @@ export const VALIDATION_MATRIX: ValidationRow[] = [
   { id: "autonomy.scp_simulator", area: "operating_loop", capability: "lib/autonomy/scpSimulator — pure local evaluator. Action + Resource glob match (case-insensitive AWS-style * and ?). NotAction / NotResource inversion. Conditions: StringEquals, StringNotEquals, NumericEquals, Bool, BoolIfExists, Null. Multi-statement aggregation — explicit Deny wins, else first Allow, else NotApplicable. Unknown condition operators add to limitations[] (never crash, never fake a verdict).", status: "passing", evidence: "lib/autonomy/scpSimulator.ts" },
   { id: "autonomy.scp_simulate_route", area: "operating_loop", capability: "POST /api/autonomy/scp-simulate — typed envelope. Body { policyJson, request: SimulationRequest }. safetyContract 'approval_only_no_execution'.", status: "passing", evidence: "app/api/autonomy/scp-simulate/route.ts" },
   { id: "ui.scp_simulator_page", area: "command_center", capability: "/dashboard/scp-simulator — two-column editor (policy JSON / request form: action + resource + principal tags JSON). Result panel shows verdict pill (Allow/Deny/NotApplicable) + summary + per-statement reasoning + limitations callout. Sidebar entry under Policy Previews in the Engines group.", status: "passing", evidence: "app/dashboard/scp-simulator/page.tsx" },
+
+  // ---------------------------------------------------------------------------
+  // Phase 104 — Cron telemetry → Slack auto-dispatch
+  // ---------------------------------------------------------------------------
+  { id: "notifications.cron_telemetry_route", area: "operating_loop", capability: "GET/POST /api/notifications/cron-dispatch-telemetry — Vercel cron entrypoint. For every tenant in AUTONOMY_SCHEDULER_TENANTS, runs buildTelemetryIngest + dispatchCriticalTelemetry (minSeverity=high). Bearer-token CRON_SECRET guard. maxDuration=60s. safetyContract 'telemetry_ingest_read_only'.", status: "passing", evidence: "app/api/notifications/cron-dispatch-telemetry/route.ts" },
+  { id: "notifications.cron_schedule", area: "operating_loop", capability: "vercel.json — added `/api/notifications/cron-dispatch-telemetry` to crons list with schedule */10 * * * * (every 10 minutes). Combined with the 10-min dedupe window in the outbound lane, this means a critical signal pages humans within at most 10 minutes of detection and never spams.", status: "passing", evidence: "vercel.json" },
+
+  // ---------------------------------------------------------------------------
+  // Phase 105 — Queue decision → outbound notification
+  // ---------------------------------------------------------------------------
+  { id: "autonomy.runbook_queue_notification", area: "operating_loop", capability: "lib/autonomy/runbookQueueStore — decideRunbook now fires an outbound notification on every approve/reject. Dedupe key 'runbook-decision:{rowId}:{decision}' so the same decision can't double-page. Severity high on approve / medium on reject. Body includes reversal + hardening labels + confidence + decidedBy.", status: "passing", evidence: "lib/autonomy/runbookQueueStore.ts" },
+
+  // ---------------------------------------------------------------------------
+  // Phase 106 — Kubernetes EOL upgrade planner
+  // ---------------------------------------------------------------------------
+  { id: "ui.k8s_eol_page", area: "command_center", capability: "/dashboard/k8s-eol — consumes /api/containers, filters to versionEol=true clusters, groups by provider (AWS EKS / Azure AKS / GCP GKE). Per-cluster row shows EOL→target arrow chip, nodePool/workload/pod tiles, collapsible 'workloads with upgrade-risk flags' detail. Per-cloud TARGET_VERSION map updated as vendor support windows close. Sidebar entry next to Containers.", status: "passing", evidence: "app/dashboard/k8s-eol/page.tsx" },
 ];
 
 // ---------------------------------------------------------------------------

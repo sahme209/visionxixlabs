@@ -19,6 +19,7 @@ import "server-only";
 
 import { randomUUID } from "crypto";
 import { prisma } from "@/lib/db";
+import { sendOutboundNotification } from "@/lib/notifications/outboundNotificationLane";
 import type { RemediationRunbook } from "./remediationRunbookGenerator";
 
 export type StagedStatus = "staged" | "approved" | "rejected" | "expired";
@@ -103,7 +104,19 @@ export async function decideRunbook(opts: {
       },
     });
     if (row.organizationId !== opts.organizationId) return null; // tenant cross-talk guard
-    return mapRow(row);
+    const mapped = mapRow(row);
+    // Fire-and-forget outbound notification — never block the API.
+    void sendOutboundNotification({
+      dedupeKey: `runbook-decision:${row.id}:${opts.decision}`,
+      kind: "approval_packet_ready",
+      severity: opts.decision === "approve" ? "high" : "medium",
+      tenantId: opts.organizationId,
+      headline: `Runbook ${opts.decision}d: ${row.eventName}`,
+      body: `*Decision:* ${opts.decision}\n*Decided by:* ${opts.decidedBy ?? "—"}\n\n*Reversal:* ${row.reversalLabel}\n*Hardening:* ${row.hardeningLabel}\n*Confidence:* ${Math.round(row.confidence * 100)}%\n\nThe IaC pipeline picks up approved runbooks; Axiom records the human decision only.`,
+      safeNextAction: { label: "Open Runbook Queue", href: "/dashboard/runbooks/queue" },
+      evidenceRefs: [`runbook:${row.runbookId}`, `cloudtrail:event:${row.sourceEventId}`],
+    });
+    return mapped;
   } catch {
     return null;
   }
