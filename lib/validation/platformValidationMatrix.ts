@@ -814,6 +814,31 @@ export const VALIDATION_MATRIX: ValidationRow[] = [
   // Combined deps for phases 72-76
   // ---------------------------------------------------------------------------
   { id: "deps.phase72_76", area: "operating_loop", capability: "package.json — added @azure/arm-containerservice ^21.0.0 + @google-cloud/container ^5.13.0 + @aws-sdk/client-ssm ^3.1001.0 + @aws-sdk/client-cloudwatch-logs ^3.1001.0 as direct dependencies.", status: "passing", evidence: "package.json" },
+
+  // ---------------------------------------------------------------------------
+  // Phase 77 — ACM certificate expiry tracking
+  // ---------------------------------------------------------------------------
+  { id: "aws.acm_certs", area: "aws", capability: "lib/cloud/aws/awsServiceInventoryExtractor:runCertificates — @aws-sdk/client-acm ListCertificates + DescribeCertificate. Per-cert daysUntilExpiry computation. expiringSoon flag triggers when ≤30 days. Surface counts: total + issuedCount + expiredCount + expiringSoonCount.", status: "passing", evidence: "lib/cloud/aws/awsServiceInventoryExtractor.ts", nextFix: "Requires acm:ListCertificates + acm:DescribeCertificate." },
+
+  // ---------------------------------------------------------------------------
+  // Phase 78 — GuardDuty threat detection
+  // ---------------------------------------------------------------------------
+  { id: "aws.guardduty",  area: "aws", capability: "lib/cloud/aws/awsServiceInventoryExtractor:runGuardDuty — @aws-sdk/client-guardduty ListDetectors → ListFindings → GetFindings. Severity classification (≥7=high / ≥4=medium / >0=low). detectorEnabled flag honest. Surface counts: totalFindings + highCount + mediumCount + lowCount.", status: "passing", evidence: "lib/cloud/aws/awsServiceInventoryExtractor.ts", nextFix: "Requires guardduty:ListDetectors + ListFindings + GetFindings + account-level GuardDuty activation." },
+
+  // ---------------------------------------------------------------------------
+  // Phase 79 — Secrets Manager rotation tracking
+  // ---------------------------------------------------------------------------
+  { id: "aws.secrets_mgr", area: "aws", capability: "lib/cloud/aws/awsServiceInventoryExtractor:runSecrets — @aws-sdk/client-secrets-manager ListSecrets. daysSinceRotation from LastChangedDate. staleRotation triggers when rotation disabled OR last rotation >90 days. Surface counts: total + rotationDisabledCount + staleRotationCount.", status: "passing", evidence: "lib/cloud/aws/awsServiceInventoryExtractor.ts", nextFix: "Requires secretsmanager:ListSecrets." },
+
+  // ---------------------------------------------------------------------------
+  // Phase 80 — AWS Backup vault DR tracking
+  // ---------------------------------------------------------------------------
+  { id: "aws.backup_vaults", area: "aws", capability: "lib/cloud/aws/awsServiceInventoryExtractor:runBackups — @aws-sdk/client-backup ListBackupVaults. Per-vault recoveryPointCount + encryptionKeyArn. Surface counts: vaultCount + totalRecoveryPoints + emptyVaultCount (DR config gap).", status: "passing", evidence: "lib/cloud/aws/awsServiceInventoryExtractor.ts", nextFix: "Requires backup:ListBackupVaults." },
+
+  // ---------------------------------------------------------------------------
+  // Combined deps for phases 77-80
+  // ---------------------------------------------------------------------------
+  { id: "deps.phase77_80", area: "operating_loop", capability: "package.json — added @aws-sdk/client-acm + @aws-sdk/client-guardduty + @aws-sdk/client-secrets-manager + @aws-sdk/client-backup (all ^3.1001.0) as direct dependencies.", status: "passing", evidence: "package.json" },
 ];
 
 // ---------------------------------------------------------------------------

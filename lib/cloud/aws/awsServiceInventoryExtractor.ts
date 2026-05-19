@@ -27,9 +27,14 @@ import {
   classifyLambdaRuntime,
   isDeprecatedLambdaRuntime,
   LAMBDA_RUNTIME_FAMILIES,
+  type AcmCertificateSummary,
+  type AcmStatus,
   type AwsServiceInventoryReport,
+  type BackupVaultSummary,
   type CloudWatchLogGroupSummary,
   type Ec2InstanceSummary,
+  type GuardDutyFindingSeverity,
+  type GuardDutyFindingSummary,
   type IamRoleSummary,
   type IamUserSummary,
   type LambdaFunctionSummary,
@@ -38,6 +43,7 @@ import {
   type PatchComplianceStatus,
   type RdsInstanceSummary,
   type S3BucketSummary,
+  type SecretSummary,
   type SecurityGroupSummary,
   type SnsTopicSummary,
   type SqsQueueSummary,
@@ -77,7 +83,7 @@ export async function buildAwsServiceInventory(input: BuildAwsServiceInventoryIn
   // ---------------------------------------------------------------------------
   // Run all 10 sections in parallel; each catches its own errors.
   // ---------------------------------------------------------------------------
-  const [lambda, rds, iam, s3, ec2, network, loadBalancers, messaging, patchCompliance, logGroups] = await Promise.all([
+  const [lambda, rds, iam, s3, ec2, network, loadBalancers, messaging, patchCompliance, logGroups, certificates, threats, secrets, backups] = await Promise.all([
     runLambda(credentials, region),
     runRds(credentials, region),
     runIam(credentials, region),
@@ -88,6 +94,10 @@ export async function buildAwsServiceInventory(input: BuildAwsServiceInventoryIn
     runMessaging(credentials, region),
     runPatchCompliance(credentials, region),
     runLogGroups(credentials, region),
+    runCertificates(credentials, region),
+    runGuardDuty(credentials, region),
+    runSecrets(credentials, region),
+    runBackups(credentials, region),
   ]);
 
   blank.lambda = lambda;
@@ -100,8 +110,12 @@ export async function buildAwsServiceInventory(input: BuildAwsServiceInventoryIn
   blank.messaging = messaging;
   blank.patchCompliance = patchCompliance;
   blank.logGroups = logGroups;
+  blank.certificates = certificates;
+  blank.threats = threats;
+  blank.secrets = secrets;
+  blank.backups = backups;
 
-  const modes = [lambda.mode, rds.mode, iam.mode, s3.mode, ec2.mode, network.mode, loadBalancers.mode, messaging.mode, patchCompliance.mode, logGroups.mode];
+  const modes = [lambda.mode, rds.mode, iam.mode, s3.mode, ec2.mode, network.mode, loadBalancers.mode, messaging.mode, patchCompliance.mode, logGroups.mode, certificates.mode, threats.mode, secrets.mode, backups.mode];
   const anyLive = modes.some((m) => m === "live");
   blank.overallSourceMode = anyLive ? "live" : "preview";
 
@@ -669,6 +683,216 @@ async function runLogGroups(
 }
 
 // ---------------------------------------------------------------------------
+// ACM Certificates (Phase 77)
+// ---------------------------------------------------------------------------
+
+async function runCertificates(
+  credentials: { accessKeyId: string; secretAccessKey: string; sessionToken?: string },
+  region: string,
+): Promise<AwsServiceInventoryReport["certificates"]> {
+  try {
+    const { ACMClient, ListCertificatesCommand, DescribeCertificateCommand } = await import("@aws-sdk/client-acm");
+    const c = new ACMClient({ region, credentials });
+    const listRes = await withTimeout(c.send(new ListCertificatesCommand({ MaxItems: 100 })), DEFAULT_TIMEOUT_MS, "acm.list");
+    const summaries = listRes.CertificateSummaryList ?? [];
+    const items: AcmCertificateSummary[] = await Promise.all(summaries.slice(0, 50).map(async (s) => {
+      try {
+        const detail = await withTimeout(c.send(new DescribeCertificateCommand({ CertificateArn: s.CertificateArn })), DEFAULT_TIMEOUT_MS, "acm.describe");
+        const d = detail.Certificate;
+        const notAfter = d?.NotAfter ? new Date(d.NotAfter) : undefined;
+        const daysUntilExpiry = notAfter
+          ? Math.floor((notAfter.getTime() - Date.now()) / 86_400_000)
+          : undefined;
+        const status: AcmStatus = (d?.Status as AcmStatus) ?? "unknown";
+        return {
+          arn: s.CertificateArn ?? "unknown",
+          domainName: d?.DomainName ?? s.DomainName ?? undefined,
+          status,
+          notAfter: notAfter?.toISOString(),
+          daysUntilExpiry,
+          expiringSoon: daysUntilExpiry !== undefined && daysUntilExpiry <= 30 && daysUntilExpiry >= 0,
+          inUseBy: d?.InUseBy?.length ?? 0,
+        };
+      } catch {
+        return {
+          arn: s.CertificateArn ?? "unknown",
+          domainName: s.DomainName,
+          status: "unknown" as const,
+          notAfter: undefined,
+          daysUntilExpiry: undefined,
+          expiringSoon: false,
+          inUseBy: 0,
+        };
+      }
+    }));
+    return {
+      mode: "live",
+      total: items.length,
+      issuedCount: items.filter((i) => i.status === "ISSUED").length,
+      expiredCount: items.filter((i) => i.status === "EXPIRED" || (i.daysUntilExpiry !== undefined && i.daysUntilExpiry < 0)).length,
+      expiringSoonCount: items.filter((i) => i.expiringSoon).length,
+      items,
+      limitations: [],
+    };
+  } catch (err) {
+    return blankCertificates(`ACM list failed: ${redact(errMessage(err))}`);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// GuardDuty (Phase 78)
+// ---------------------------------------------------------------------------
+
+async function runGuardDuty(
+  credentials: { accessKeyId: string; secretAccessKey: string; sessionToken?: string },
+  region: string,
+): Promise<AwsServiceInventoryReport["threats"]> {
+  try {
+    const { GuardDutyClient, ListDetectorsCommand, ListFindingsCommand, GetFindingsCommand } = await import("@aws-sdk/client-guardduty");
+    const c = new GuardDutyClient({ region, credentials });
+    const detRes = await withTimeout(c.send(new ListDetectorsCommand({})), DEFAULT_TIMEOUT_MS, "guardduty.list_detectors");
+    const detectorId = (detRes.DetectorIds ?? [])[0];
+    if (!detectorId) {
+      return {
+        mode: "live",
+        detectorEnabled: false,
+        totalFindings: 0,
+        highCount: 0,
+        mediumCount: 0,
+        lowCount: 0,
+        findings: [],
+        limitations: ["No GuardDuty detector in this region."],
+      };
+    }
+    const listRes = await withTimeout(
+      c.send(new ListFindingsCommand({ DetectorId: detectorId, MaxResults: 50 })),
+      DEFAULT_TIMEOUT_MS,
+      "guardduty.list_findings",
+    );
+    const findingIds = listRes.FindingIds ?? [];
+    if (findingIds.length === 0) {
+      return {
+        mode: "live",
+        detectorEnabled: true,
+        totalFindings: 0,
+        highCount: 0,
+        mediumCount: 0,
+        lowCount: 0,
+        findings: [],
+        limitations: [],
+      };
+    }
+    const detail = await withTimeout(
+      c.send(new GetFindingsCommand({ DetectorId: detectorId, FindingIds: findingIds.slice(0, 50) })),
+      DEFAULT_TIMEOUT_MS,
+      "guardduty.get_findings",
+    );
+    const findings: GuardDutyFindingSummary[] = (detail.Findings ?? []).map((f): GuardDutyFindingSummary => {
+      const score = f.Severity ?? 0;
+      const severity: GuardDutyFindingSeverity = score >= 7 ? "high" : score >= 4 ? "medium" : score > 0 ? "low" : "unknown";
+      return {
+        id: f.Id ?? "unknown",
+        title: f.Title ?? undefined,
+        type: f.Type ?? undefined,
+        severityScore: score,
+        severity,
+        resourceType: f.Resource?.ResourceType ?? undefined,
+        region: f.Region ?? region,
+        updatedAt: f.UpdatedAt ?? undefined,
+      };
+    });
+    return {
+      mode: "live",
+      detectorEnabled: true,
+      totalFindings: findings.length,
+      highCount: findings.filter((f) => f.severity === "high").length,
+      mediumCount: findings.filter((f) => f.severity === "medium").length,
+      lowCount: findings.filter((f) => f.severity === "low").length,
+      findings,
+      limitations: [],
+    };
+  } catch (err) {
+    return blankThreats(`GuardDuty failed: ${redact(errMessage(err))}`);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Secrets Manager (Phase 79)
+// ---------------------------------------------------------------------------
+
+async function runSecrets(
+  credentials: { accessKeyId: string; secretAccessKey: string; sessionToken?: string },
+  region: string,
+): Promise<AwsServiceInventoryReport["secrets"]> {
+  try {
+    const { SecretsManagerClient, ListSecretsCommand } = await import("@aws-sdk/client-secrets-manager");
+    const c = new SecretsManagerClient({ region, credentials });
+    const res = await withTimeout(c.send(new ListSecretsCommand({ MaxResults: 100 })), DEFAULT_TIMEOUT_MS, "secrets.list");
+    const items: SecretSummary[] = (res.SecretList ?? []).map((s): SecretSummary => {
+      const lastChanged = s.LastChangedDate ? new Date(s.LastChangedDate) : undefined;
+      const daysSinceRotation = lastChanged
+        ? Math.floor((Date.now() - lastChanged.getTime()) / 86_400_000)
+        : undefined;
+      const rotationEnabled = !!s.RotationEnabled;
+      const staleRotation = !rotationEnabled || (daysSinceRotation !== undefined && daysSinceRotation > 90);
+      return {
+        arn: s.ARN ?? "unknown",
+        name: s.Name ?? "unknown",
+        rotationEnabled,
+        daysSinceRotation,
+        lastChangedDate: lastChanged?.toISOString(),
+        staleRotation,
+      };
+    });
+    return {
+      mode: "live",
+      total: items.length,
+      rotationDisabledCount: items.filter((i) => !i.rotationEnabled).length,
+      staleRotationCount: items.filter((i) => i.staleRotation).length,
+      items,
+      limitations: [],
+    };
+  } catch (err) {
+    return blankSecrets(`Secrets Manager list failed: ${redact(errMessage(err))}`);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// AWS Backup (Phase 80)
+// ---------------------------------------------------------------------------
+
+async function runBackups(
+  credentials: { accessKeyId: string; secretAccessKey: string; sessionToken?: string },
+  region: string,
+): Promise<AwsServiceInventoryReport["backups"]> {
+  try {
+    const { BackupClient, ListBackupVaultsCommand } = await import("@aws-sdk/client-backup");
+    const c = new BackupClient({ region, credentials });
+    const res = await withTimeout(c.send(new ListBackupVaultsCommand({ MaxResults: 100 })), DEFAULT_TIMEOUT_MS, "backup.list_vaults");
+    const vaults: BackupVaultSummary[] = (res.BackupVaultList ?? []).map((v): BackupVaultSummary => {
+      const count = v.NumberOfRecoveryPoints ?? 0;
+      return {
+        name: v.BackupVaultName ?? "unknown",
+        arn: v.BackupVaultArn ?? undefined,
+        recoveryPointCount: count,
+        encryptionKeyArn: v.EncryptionKeyArn ?? undefined,
+        hasRecentRecoveryPoint: count > 0,
+      };
+    });
+    return {
+      mode: "live",
+      vaultCount: vaults.length,
+      totalRecoveryPoints: vaults.reduce((s, v) => s + v.recoveryPointCount, 0),
+      emptyVaultCount: vaults.filter((v) => v.recoveryPointCount === 0).length,
+      vaults,
+      limitations: [],
+    };
+  } catch (err) {
+    return blankBackups(`Backup vault list failed: ${redact(errMessage(err))}`);
+  }
+}
+
+// ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
 
@@ -688,6 +912,10 @@ function emptyReport(generatedAt: string, tenantId: string): AwsServiceInventory
     messaging: blankMessaging("Not extracted."),
     patchCompliance: blankPatchCompliance("Not extracted."),
     logGroups: blankLogGroups("Not extracted."),
+    certificates: blankCertificates("Not extracted."),
+    threats: blankThreats("Not extracted."),
+    secrets: blankSecrets("Not extracted."),
+    backups: blankBackups("Not extracted."),
     overallSourceMode: "preview",
     safetyContract: "aws_service_inventory_read_only",
     limitations: [],
@@ -737,6 +965,18 @@ function blankPatchCompliance(note: string): AwsServiceInventoryReport["patchCom
 }
 function blankLogGroups(note: string): AwsServiceInventoryReport["logGroups"] {
   return { mode: "blocked", total: 0, totalStoredBytes: 0, retentionUnboundedCount: 0, unencryptedCount: 0, groups: [], limitations: [note] };
+}
+function blankCertificates(note: string): AwsServiceInventoryReport["certificates"] {
+  return { mode: "blocked", total: 0, issuedCount: 0, expiredCount: 0, expiringSoonCount: 0, items: [], limitations: [note] };
+}
+function blankThreats(note: string): AwsServiceInventoryReport["threats"] {
+  return { mode: "blocked", detectorEnabled: false, totalFindings: 0, highCount: 0, mediumCount: 0, lowCount: 0, findings: [], limitations: [note] };
+}
+function blankSecrets(note: string): AwsServiceInventoryReport["secrets"] {
+  return { mode: "blocked", total: 0, rotationDisabledCount: 0, staleRotationCount: 0, items: [], limitations: [note] };
+}
+function blankBackups(note: string): AwsServiceInventoryReport["backups"] {
+  return { mode: "blocked", vaultCount: 0, totalRecoveryPoints: 0, emptyVaultCount: 0, vaults: [], limitations: [note] };
 }
 function withGlobalNote(r: AwsServiceInventoryReport, note: string): AwsServiceInventoryReport {
   r.limitations.push(note);

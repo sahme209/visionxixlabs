@@ -209,6 +209,69 @@ export interface CloudWatchLogGroupSummary {
 }
 
 // ---------------------------------------------------------------------------
+// ACM Certificates (Phase 77)
+// ---------------------------------------------------------------------------
+
+export type AcmStatus = "ISSUED" | "EXPIRED" | "PENDING_VALIDATION" | "FAILED" | "REVOKED" | "VALIDATION_TIMED_OUT" | "INACTIVE" | "unknown";
+
+export interface AcmCertificateSummary {
+  arn: string;
+  domainName?: string;
+  status: AcmStatus;
+  notAfter?: string;
+  /** Days until expiry. Negative when already expired. */
+  daysUntilExpiry?: number;
+  /** True when the cert expires in ≤30 days. */
+  expiringSoon: boolean;
+  inUseBy: number;
+}
+
+// ---------------------------------------------------------------------------
+// GuardDuty Findings (Phase 78)
+// ---------------------------------------------------------------------------
+
+export type GuardDutyFindingSeverity = "low" | "medium" | "high" | "unknown";
+
+export interface GuardDutyFindingSummary {
+  id: string;
+  title?: string;
+  type?: string;
+  severityScore: number;
+  severity: GuardDutyFindingSeverity;
+  resourceType?: string;
+  region?: string;
+  updatedAt?: string;
+}
+
+// ---------------------------------------------------------------------------
+// Secrets Manager (Phase 79)
+// ---------------------------------------------------------------------------
+
+export interface SecretSummary {
+  arn: string;
+  name: string;
+  rotationEnabled: boolean;
+  /** Days since the secret last rotated. null when never rotated. */
+  daysSinceRotation?: number;
+  lastChangedDate?: string;
+  /** True when rotation is disabled OR last rotation was >90 days ago. */
+  staleRotation: boolean;
+}
+
+// ---------------------------------------------------------------------------
+// AWS Backup (Phase 80)
+// ---------------------------------------------------------------------------
+
+export interface BackupVaultSummary {
+  name: string;
+  arn?: string;
+  recoveryPointCount: number;
+  encryptionKeyArn?: string;
+  /** True when the vault has a recovery point. */
+  hasRecentRecoveryPoint: boolean;
+}
+
+// ---------------------------------------------------------------------------
 // Top-level report
 // ---------------------------------------------------------------------------
 
@@ -324,6 +387,45 @@ export interface AwsServiceInventoryReport {
     retentionUnboundedCount: number;
     unencryptedCount: number;
     groups: CloudWatchLogGroupSummary[];
+    limitations: string[];
+  };
+
+  certificates: {
+    mode: AwsServiceMode;
+    total: number;
+    issuedCount: number;
+    expiredCount: number;
+    expiringSoonCount: number;
+    items: AcmCertificateSummary[];
+    limitations: string[];
+  };
+
+  threats: {
+    mode: AwsServiceMode;
+    detectorEnabled: boolean;
+    totalFindings: number;
+    highCount: number;
+    mediumCount: number;
+    lowCount: number;
+    findings: GuardDutyFindingSummary[];
+    limitations: string[];
+  };
+
+  secrets: {
+    mode: AwsServiceMode;
+    total: number;
+    rotationDisabledCount: number;
+    staleRotationCount: number;
+    items: SecretSummary[];
+    limitations: string[];
+  };
+
+  backups: {
+    mode: AwsServiceMode;
+    vaultCount: number;
+    totalRecoveryPoints: number;
+    emptyVaultCount: number;
+    vaults: BackupVaultSummary[];
     limitations: string[];
   };
 

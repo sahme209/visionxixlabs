@@ -78,6 +78,17 @@ const POLICY = {
       "ssm:DescribeInstancePatchStates",
       // Service inventory: CloudWatch Logs (Phase 76 — app dev replacement)
       "logs:DescribeLogGroups",
+      // Service inventory: ACM cert expiry (Phase 77)
+      "acm:ListCertificates",
+      "acm:DescribeCertificate",
+      // Service inventory: GuardDuty (Phase 78)
+      "guardduty:ListDetectors",
+      "guardduty:ListFindings",
+      "guardduty:GetFindings",
+      // Service inventory: Secrets Manager (Phase 79)
+      "secretsmanager:ListSecrets",
+      // Service inventory: AWS Backup (Phase 80)
+      "backup:ListBackupVaults",
     ],
     Resource: "*",
   }],
