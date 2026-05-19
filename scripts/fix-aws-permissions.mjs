@@ -71,6 +71,13 @@ const POLICY = {
       // Service inventory: Messaging (Phase 71)
       "sns:ListTopics",
       "sqs:ListQueues",
+      // Service inventory: RDS deeper (Phase 74 — DBA replacement)
+      "rds:DescribeDBSnapshots",
+      // Service inventory: SSM Patch Manager (Phase 75 — sysadmin replacement)
+      "ssm:DescribeInstanceInformation",
+      "ssm:DescribeInstancePatchStates",
+      // Service inventory: CloudWatch Logs (Phase 76 — app dev replacement)
+      "logs:DescribeLogGroups",
     ],
     Resource: "*",
   }],

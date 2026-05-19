@@ -28,17 +28,20 @@ import {
   isDeprecatedLambdaRuntime,
   LAMBDA_RUNTIME_FAMILIES,
   type AwsServiceInventoryReport,
+  type CloudWatchLogGroupSummary,
   type Ec2InstanceSummary,
   type IamRoleSummary,
   type IamUserSummary,
   type LambdaFunctionSummary,
   type LambdaRuntimeFamily,
   type LoadBalancerSummary,
+  type PatchComplianceStatus,
   type RdsInstanceSummary,
   type S3BucketSummary,
   type SecurityGroupSummary,
   type SnsTopicSummary,
   type SqsQueueSummary,
+  type SsmInstancePatchSummary,
   type VpcSummary,
 } from "./awsServiceInventoryModel";
 import type { OrganizationId, UserId } from "@/lib/domain/ids";
@@ -72,9 +75,9 @@ export async function buildAwsServiceInventory(input: BuildAwsServiceInventoryIn
   blank.region = region;
 
   // ---------------------------------------------------------------------------
-  // Run all 9 sections in parallel; each catches its own errors.
+  // Run all 10 sections in parallel; each catches its own errors.
   // ---------------------------------------------------------------------------
-  const [lambda, rds, iam, s3, ec2, network, loadBalancers, messaging] = await Promise.all([
+  const [lambda, rds, iam, s3, ec2, network, loadBalancers, messaging, patchCompliance, logGroups] = await Promise.all([
     runLambda(credentials, region),
     runRds(credentials, region),
     runIam(credentials, region),
@@ -83,6 +86,8 @@ export async function buildAwsServiceInventory(input: BuildAwsServiceInventoryIn
     runNetwork(credentials, region),
     runLoadBalancers(credentials, region),
     runMessaging(credentials, region),
+    runPatchCompliance(credentials, region),
+    runLogGroups(credentials, region),
   ]);
 
   blank.lambda = lambda;
@@ -93,8 +98,10 @@ export async function buildAwsServiceInventory(input: BuildAwsServiceInventoryIn
   blank.network = network;
   blank.loadBalancers = loadBalancers;
   blank.messaging = messaging;
+  blank.patchCompliance = patchCompliance;
+  blank.logGroups = logGroups;
 
-  const modes = [lambda.mode, rds.mode, iam.mode, s3.mode, ec2.mode, network.mode, loadBalancers.mode, messaging.mode];
+  const modes = [lambda.mode, rds.mode, iam.mode, s3.mode, ec2.mode, network.mode, loadBalancers.mode, messaging.mode, patchCompliance.mode, logGroups.mode];
   const anyLive = modes.some((m) => m === "live");
   blank.overallSourceMode = anyLive ? "live" : "preview";
 
@@ -143,27 +150,68 @@ async function runRds(
   region: string,
 ): Promise<AwsServiceInventoryReport["rds"]> {
   try {
-    const { RDSClient, DescribeDBInstancesCommand } = await import("@aws-sdk/client-rds");
+    const { RDSClient, DescribeDBInstancesCommand, DescribeDBSnapshotsCommand } = await import("@aws-sdk/client-rds");
     const c = new RDSClient({ region, credentials });
     const res = await withTimeout(c.send(new DescribeDBInstancesCommand({ MaxRecords: MAX_ITEMS })), DEFAULT_TIMEOUT_MS, "rds.list");
-    const instances = (res.DBInstances ?? []).map((i): RdsInstanceSummary => ({
-      identifier: i.DBInstanceIdentifier ?? "unknown",
-      engine: i.Engine ?? undefined,
-      engineVersion: i.EngineVersion ?? undefined,
-      instanceClass: i.DBInstanceClass ?? undefined,
-      storageGb: i.AllocatedStorage ?? undefined,
-      multiAz: !!i.MultiAZ,
-      encrypted: !!i.StorageEncrypted,
-      publiclyAccessible: !!i.PubliclyAccessible,
-      status: i.DBInstanceStatus ?? undefined,
-      endpoint: i.Endpoint?.Address ?? undefined,
-    }));
+
+    // Pull recent snapshots once and lookup per instance.
+    let snapshotsByIdentifier: Map<string, Date> = new Map();
+    try {
+      const snapsRes = await withTimeout(
+        c.send(new DescribeDBSnapshotsCommand({ SnapshotType: "manual", MaxRecords: MAX_ITEMS })),
+        DEFAULT_TIMEOUT_MS,
+        "rds.snapshots",
+      );
+      for (const s of snapsRes.DBSnapshots ?? []) {
+        const dbId = s.DBInstanceIdentifier ?? "";
+        const when = s.SnapshotCreateTime ?? null;
+        if (!dbId || !when) continue;
+        const ts = new Date(when);
+        const existing = snapshotsByIdentifier.get(dbId);
+        if (!existing || ts > existing) snapshotsByIdentifier.set(dbId, ts);
+      }
+    } catch {
+      // snapshot read is best-effort; absence means daysSinceLastSnapshot stays undefined
+    }
+
+    const instances = (res.DBInstances ?? []).map((i): RdsInstanceSummary => {
+      const id = i.DBInstanceIdentifier ?? "unknown";
+      const retention = i.BackupRetentionPeriod;
+      const lastSnap = snapshotsByIdentifier.get(id);
+      const daysSinceLastSnapshot = lastSnap
+        ? Math.floor((Date.now() - lastSnap.getTime()) / 86_400_000)
+        : undefined;
+      return {
+        identifier: id,
+        engine: i.Engine ?? undefined,
+        engineVersion: i.EngineVersion ?? undefined,
+        instanceClass: i.DBInstanceClass ?? undefined,
+        storageGb: i.AllocatedStorage ?? undefined,
+        multiAz: !!i.MultiAZ,
+        encrypted: !!i.StorageEncrypted,
+        publiclyAccessible: !!i.PubliclyAccessible,
+        status: i.DBInstanceStatus ?? undefined,
+        endpoint: i.Endpoint?.Address ?? undefined,
+        backupRetentionDays: retention,
+        backupsDisabled: (retention ?? 0) === 0,
+        deletionProtection: !!i.DeletionProtection,
+        performanceInsightsEnabled: !!i.PerformanceInsightsEnabled,
+        isReadReplica: !!i.ReadReplicaSourceDBInstanceIdentifier,
+        readReplicaSourceArn: i.ReadReplicaSourceDBInstanceIdentifier ?? undefined,
+        autoMinorVersionUpgrade: !!i.AutoMinorVersionUpgrade,
+        daysSinceLastSnapshot,
+      };
+    });
     return {
       mode: "live",
       total: instances.length,
       unencryptedCount: instances.filter((i) => !i.encrypted).length,
       publiclyAccessibleCount: instances.filter((i) => i.publiclyAccessible).length,
       multiAzCount: instances.filter((i) => i.multiAz).length,
+      backupsDisabledCount: instances.filter((i) => i.backupsDisabled).length,
+      noDeletionProtectionCount: instances.filter((i) => !i.deletionProtection).length,
+      noPerformanceInsightsCount: instances.filter((i) => !i.performanceInsightsEnabled).length,
+      staleSnapshotCount: instances.filter((i) => i.daysSinceLastSnapshot !== undefined && i.daysSinceLastSnapshot > 30).length,
       instances,
       limitations: [],
     };
@@ -491,6 +539,136 @@ async function runMessaging(
 }
 
 // ---------------------------------------------------------------------------
+// SSM Patch Compliance (Phase 75 — sysadmin replacement)
+// ---------------------------------------------------------------------------
+
+async function runPatchCompliance(
+  credentials: { accessKeyId: string; secretAccessKey: string; sessionToken?: string },
+  region: string,
+): Promise<AwsServiceInventoryReport["patchCompliance"]> {
+  try {
+    const { SSMClient, DescribeInstancePatchStatesCommand, DescribeInstanceInformationCommand } = await import("@aws-sdk/client-ssm");
+    const c = new SSMClient({ region, credentials });
+
+    // First list instances managed by SSM.
+    const infoRes = await withTimeout(
+      c.send(new DescribeInstanceInformationCommand({ MaxResults: 50 })),
+      DEFAULT_TIMEOUT_MS,
+      "ssm.instance_info",
+    );
+    const managed = infoRes.InstanceInformationList ?? [];
+    if (managed.length === 0) {
+      return {
+        mode: "live",
+        totalInstances: 0,
+        compliantCount: 0,
+        nonCompliantCount: 0,
+        totalMissingPatches: 0,
+        instances: [],
+        limitations: ["No SSM-managed EC2 instances in this region."],
+      };
+    }
+
+    const instanceIds = managed.map((m) => m.InstanceId).filter((id): id is string => !!id);
+    const platformByInstance = new Map<string, { platformType?: string; platformName?: string; osVersion?: string }>();
+    for (const m of managed) {
+      if (m.InstanceId) {
+        platformByInstance.set(m.InstanceId, {
+          platformType: m.PlatformType,
+          platformName: m.PlatformName,
+          osVersion: m.PlatformVersion,
+        });
+      }
+    }
+
+    // Patch states for those instances (cap 50).
+    const patchRes = await withTimeout(
+      c.send(new DescribeInstancePatchStatesCommand({ InstanceIds: instanceIds.slice(0, 50) })),
+      DEFAULT_TIMEOUT_MS,
+      "ssm.patch_states",
+    );
+    const states = patchRes.InstancePatchStates ?? [];
+
+    const instances: SsmInstancePatchSummary[] = states.map((s): SsmInstancePatchSummary => {
+      const platform = s.InstanceId ? platformByInstance.get(s.InstanceId) ?? {} : {};
+      const missing = s.MissingCount ?? 0;
+      const failed = s.FailedCount ?? 0;
+      const installed = s.InstalledCount ?? 0;
+      let status: PatchComplianceStatus = "unspecified";
+      if (missing === 0 && failed === 0 && installed > 0) status = "compliant";
+      else if (missing > 0 || failed > 0) status = "non_compliant";
+      else status = "unknown";
+      return {
+        instanceId: s.InstanceId ?? "unknown",
+        platformType: platform.platformType,
+        platformName: platform.platformName,
+        osVersion: platform.osVersion,
+        patchGroup: s.PatchGroup ?? undefined,
+        installedCount: installed,
+        installedPendingRebootCount: s.InstalledPendingRebootCount ?? undefined,
+        missingCount: missing,
+        failedCount: failed,
+        status,
+        lastNoRebootInstallOperationTime: s.LastNoRebootInstallOperationTime
+          ? new Date(s.LastNoRebootInstallOperationTime).toISOString()
+          : undefined,
+      };
+    });
+    const compliantCount = instances.filter((i) => i.status === "compliant").length;
+    const nonCompliantCount = instances.filter((i) => i.status === "non_compliant").length;
+    const totalMissingPatches = instances.reduce((s, i) => s + (i.missingCount ?? 0), 0);
+    return {
+      mode: "live",
+      totalInstances: instances.length,
+      compliantCount,
+      nonCompliantCount,
+      totalMissingPatches,
+      instances,
+      limitations: [],
+    };
+  } catch (err) {
+    return blankPatchCompliance(`SSM patch state failed: ${redact(errMessage(err))}`);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// CloudWatch Log Groups (Phase 76 — app dev replacement)
+// ---------------------------------------------------------------------------
+
+async function runLogGroups(
+  credentials: { accessKeyId: string; secretAccessKey: string; sessionToken?: string },
+  region: string,
+): Promise<AwsServiceInventoryReport["logGroups"]> {
+  try {
+    const { CloudWatchLogsClient, DescribeLogGroupsCommand } = await import("@aws-sdk/client-cloudwatch-logs");
+    const c = new CloudWatchLogsClient({ region, credentials });
+    const res = await withTimeout(c.send(new DescribeLogGroupsCommand({ limit: 50 })), DEFAULT_TIMEOUT_MS, "logs.list");
+    const raw = res.logGroups ?? [];
+    const groups: CloudWatchLogGroupSummary[] = raw.map((g): CloudWatchLogGroupSummary => ({
+      name: g.logGroupName ?? "unknown",
+      arn: g.arn ?? undefined,
+      storedBytes: g.storedBytes ?? undefined,
+      retentionInDays: g.retentionInDays ?? undefined,
+      retentionUnbounded: g.retentionInDays === undefined,
+      kmsEncrypted: !!g.kmsKeyId,
+      createdAt: g.creationTime ? new Date(g.creationTime).toISOString() : undefined,
+    }));
+    const totalStoredBytes = groups.reduce((s, g) => s + (g.storedBytes ?? 0), 0);
+    return {
+      mode: "live",
+      total: groups.length,
+      totalStoredBytes,
+      retentionUnboundedCount: groups.filter((g) => g.retentionUnbounded).length,
+      unencryptedCount: groups.filter((g) => !g.kmsEncrypted).length,
+      groups,
+      limitations: [],
+    };
+  } catch (err) {
+    return blankLogGroups(`Logs DescribeLogGroups failed: ${redact(errMessage(err))}`);
+  }
+}
+
+// ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
 
@@ -508,6 +686,8 @@ function emptyReport(generatedAt: string, tenantId: string): AwsServiceInventory
     network: blankNetwork("Not extracted."),
     loadBalancers: blankLoadBalancers("Not extracted."),
     messaging: blankMessaging("Not extracted."),
+    patchCompliance: blankPatchCompliance("Not extracted."),
+    logGroups: blankLogGroups("Not extracted."),
     overallSourceMode: "preview",
     safetyContract: "aws_service_inventory_read_only",
     limitations: [],
@@ -520,7 +700,19 @@ function blankLambda(note: string): AwsServiceInventoryReport["lambda"] {
   return { mode: "blocked", total: 0, deprecatedRuntimeCount: 0, runtimeBreakdown, functions: [], limitations: [note] };
 }
 function blankRds(note: string): AwsServiceInventoryReport["rds"] {
-  return { mode: "blocked", total: 0, unencryptedCount: 0, publiclyAccessibleCount: 0, multiAzCount: 0, instances: [], limitations: [note] };
+  return {
+    mode: "blocked",
+    total: 0,
+    unencryptedCount: 0,
+    publiclyAccessibleCount: 0,
+    multiAzCount: 0,
+    backupsDisabledCount: 0,
+    noDeletionProtectionCount: 0,
+    noPerformanceInsightsCount: 0,
+    staleSnapshotCount: 0,
+    instances: [],
+    limitations: [note],
+  };
 }
 function blankIam(note: string): AwsServiceInventoryReport["iam"] {
   return { mode: "blocked", totalUsers: 0, totalRoles: 0, usersWithoutMfaCount: 0, usersWithAdminPolicyCount: 0, rolesWithWildcardTrustCount: 0, staleUsersCount: 0, users: [], roles: [], limitations: [note] };
@@ -539,6 +731,12 @@ function blankLoadBalancers(note: string): AwsServiceInventoryReport["loadBalanc
 }
 function blankMessaging(note: string): AwsServiceInventoryReport["messaging"] {
   return { mode: "blocked", snsTopicCount: 0, sqsQueueCount: 0, snsTopics: [], sqsQueues: [], limitations: [note] };
+}
+function blankPatchCompliance(note: string): AwsServiceInventoryReport["patchCompliance"] {
+  return { mode: "blocked", totalInstances: 0, compliantCount: 0, nonCompliantCount: 0, totalMissingPatches: 0, instances: [], limitations: [note] };
+}
+function blankLogGroups(note: string): AwsServiceInventoryReport["logGroups"] {
+  return { mode: "blocked", total: 0, totalStoredBytes: 0, retentionUnboundedCount: 0, unencryptedCount: 0, groups: [], limitations: [note] };
 }
 function withGlobalNote(r: AwsServiceInventoryReport, note: string): AwsServiceInventoryReport {
   r.limitations.push(note);

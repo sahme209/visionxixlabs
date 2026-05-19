@@ -44,6 +44,22 @@ export interface RdsInstanceSummary {
   publiclyAccessible: boolean;
   status?: string;
   endpoint?: string;
+  /** Backup retention period in days. 0 = backups effectively disabled. */
+  backupRetentionDays?: number;
+  /** True when automated backups are off (retention === 0). */
+  backupsDisabled: boolean;
+  /** True when deletion protection is enabled. */
+  deletionProtection: boolean;
+  /** True when Performance Insights is enabled. */
+  performanceInsightsEnabled: boolean;
+  /** True when this is a read replica. */
+  isReadReplica: boolean;
+  /** ARN of the source DB when this is a replica. */
+  readReplicaSourceArn?: string;
+  /** True when minor version auto-upgrades are enabled. */
+  autoMinorVersionUpgrade: boolean;
+  /** Days since last manual snapshot. null when never snapshotted. */
+  daysSinceLastSnapshot?: number;
 }
 
 // ---------------------------------------------------------------------------
@@ -154,6 +170,45 @@ export interface SqsQueueSummary {
 }
 
 // ---------------------------------------------------------------------------
+// SSM Patch Manager (Phase 75 — sysadmin replacement)
+// ---------------------------------------------------------------------------
+
+export type PatchComplianceStatus = "compliant" | "non_compliant" | "unspecified" | "unknown";
+
+export interface SsmInstancePatchSummary {
+  instanceId: string;
+  platformType?: string;
+  platformName?: string;
+  osVersion?: string;
+  patchGroup?: string;
+  /** Number of missing critical / security patches. */
+  installedCount?: number;
+  installedPendingRebootCount?: number;
+  missingCount?: number;
+  failedCount?: number;
+  /** Overall compliance. */
+  status: PatchComplianceStatus;
+  /** When the instance was last scanned. */
+  lastNoRebootInstallOperationTime?: string;
+}
+
+// ---------------------------------------------------------------------------
+// CloudWatch Logs Insights (Phase 76 — app dev replacement)
+// ---------------------------------------------------------------------------
+
+export interface CloudWatchLogGroupSummary {
+  name: string;
+  arn?: string;
+  storedBytes?: number;
+  retentionInDays?: number;
+  /** True when retention is unset (logs never expire) — usually a config gap. */
+  retentionUnbounded: boolean;
+  /** True when the log group is encrypted with a KMS key. */
+  kmsEncrypted: boolean;
+  createdAt?: string;
+}
+
+// ---------------------------------------------------------------------------
 // Top-level report
 // ---------------------------------------------------------------------------
 
@@ -178,6 +233,14 @@ export interface AwsServiceInventoryReport {
     unencryptedCount: number;
     publiclyAccessibleCount: number;
     multiAzCount: number;
+    /** Instances with retention === 0. */
+    backupsDisabledCount: number;
+    /** Instances with deletion protection disabled. */
+    noDeletionProtectionCount: number;
+    /** Instances with Performance Insights off. */
+    noPerformanceInsightsCount: number;
+    /** Instances with no snapshot in the last 30 days. */
+    staleSnapshotCount: number;
     instances: RdsInstanceSummary[];
     limitations: string[];
   };
@@ -240,6 +303,27 @@ export interface AwsServiceInventoryReport {
     sqsQueueCount: number;
     snsTopics: SnsTopicSummary[];
     sqsQueues: SqsQueueSummary[];
+    limitations: string[];
+  };
+
+  patchCompliance: {
+    mode: AwsServiceMode;
+    totalInstances: number;
+    compliantCount: number;
+    nonCompliantCount: number;
+    totalMissingPatches: number;
+    instances: SsmInstancePatchSummary[];
+    limitations: string[];
+  };
+
+  logGroups: {
+    mode: AwsServiceMode;
+    total: number;
+    /** Total stored bytes across every group. */
+    totalStoredBytes: number;
+    retentionUnboundedCount: number;
+    unencryptedCount: number;
+    groups: CloudWatchLogGroupSummary[];
     limitations: string[];
   };
 

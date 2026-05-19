@@ -18,6 +18,8 @@ import { buildAxiomOSState } from "@/lib/axiomOS/axiomOSStateBuilder";
 import { loadAppEnv } from "@/lib/config/env";
 import { extractAwsEcsClusters } from "./awsEcsExtractor";
 import { extractAwsEksClusters } from "./awsEksExtractor";
+import { extractAzureAksClusters } from "./azureAksExtractor";
+import { extractGcpGkeClusters } from "./gcpGkeExtractor";
 import { extractGhcrImages } from "./githubGhcrExtractor";
 import type { OrganizationId, UserId } from "@/lib/domain/ids";
 import type {
@@ -56,6 +58,26 @@ export async function buildContainerOrchestration(input: BuildContainerOrchestra
       awsEksLive = await extractAwsEksClusters();
     } catch {
       awsEksLive = null;
+    }
+  }
+
+  // Try live Azure AKS extraction.
+  let azureAksLive: Awaited<ReturnType<typeof extractAzureAksClusters>> | null = null;
+  if (azureMode === "live" && env.azureInventoryExtractEnabled) {
+    try {
+      azureAksLive = await extractAzureAksClusters();
+    } catch {
+      azureAksLive = null;
+    }
+  }
+
+  // Try live GCP GKE extraction.
+  let gcpGkeLive: Awaited<ReturnType<typeof extractGcpGkeClusters>> | null = null;
+  if (gcpMode === "live" && env.gcpInventoryExtractEnabled) {
+    try {
+      gcpGkeLive = await extractGcpGkeClusters();
+    } catch {
+      gcpGkeLive = null;
     }
   }
 
@@ -120,36 +142,48 @@ export async function buildContainerOrchestration(input: BuildContainerOrchestra
   }
 
   // ---------------------------------------------------------------------------
-  // GCP GKE
+  // GCP GKE — live SDK traversal when flag is on
   // ---------------------------------------------------------------------------
-  clusters.push(previewCluster({
-    id: "gcp-gke:preview",
-    provider: "gcp_gke",
-    name: "GCP GKE · preview",
-    region: "us-central1",
-    providerMode: gcpMode,
-    limitations: gcpMode === "live"
-      ? ["GKE projects.locations.clusters list + describe via @google-cloud/container wires in Phase 42c."]
-      : ["GCP mode not yet live — set GCP_PROJECT_ID + GCP_SERVICE_ACCOUNT_JSON."],
-    externalConsoleHref: "https://console.cloud.google.com/kubernetes/",
-    safeNextAction: { label: "Open GCP Sources", href: "/dashboard/sources" },
-  }));
+  if (gcpGkeLive && gcpGkeLive.mode === "live" && gcpGkeLive.clusters.length > 0) {
+    for (const c of gcpGkeLive.clusters) clusters.push(c);
+  } else {
+    clusters.push(previewCluster({
+      id: "gcp-gke:preview",
+      provider: "gcp_gke",
+      name: "GCP GKE · preview",
+      region: "us-central1",
+      providerMode: gcpMode,
+      limitations: gcpGkeLive
+        ? gcpGkeLive.limitations
+        : (gcpMode === "live"
+            ? ["GCP_INVENTORY_EXTRACT_ENABLED is not set — flip it on to traverse GKE clusters."]
+            : ["GCP mode not yet live — set GCP_PROJECT_ID + GCP_SERVICE_ACCOUNT_JSON."]),
+      externalConsoleHref: "https://console.cloud.google.com/kubernetes/",
+      safeNextAction: { label: "Open GCP Sources", href: "/dashboard/sources" },
+    }));
+  }
 
   // ---------------------------------------------------------------------------
-  // Azure AKS
+  // Azure AKS — live SDK traversal when flag is on
   // ---------------------------------------------------------------------------
-  clusters.push(previewCluster({
-    id: "azure-aks:preview",
-    provider: "azure_aks",
-    name: "Azure AKS · preview",
-    region: "eastus",
-    providerMode: azureMode,
-    limitations: azureMode === "live"
-      ? ["AKS ManagedClusters list + listClusterAdminCredentials traversal wires in Phase 42d."]
-      : ["Azure mode not yet live — set AZURE_TENANT_ID + AZURE_CLIENT_ID + AZURE_CLIENT_SECRET + AZURE_SUBSCRIPTION_ID."],
-    externalConsoleHref: "https://portal.azure.com/",
-    safeNextAction: { label: "Open Azure Sources", href: "/dashboard/sources" },
-  }));
+  if (azureAksLive && azureAksLive.mode === "live" && azureAksLive.clusters.length > 0) {
+    for (const c of azureAksLive.clusters) clusters.push(c);
+  } else {
+    clusters.push(previewCluster({
+      id: "azure-aks:preview",
+      provider: "azure_aks",
+      name: "Azure AKS · preview",
+      region: "eastus",
+      providerMode: azureMode,
+      limitations: azureAksLive
+        ? azureAksLive.limitations
+        : (azureMode === "live"
+            ? ["AZURE_INVENTORY_EXTRACT_ENABLED is not set — flip it on to traverse AKS clusters."]
+            : ["Azure mode not yet live — set AZURE_TENANT_ID + AZURE_CLIENT_ID + AZURE_CLIENT_SECRET + AZURE_SUBSCRIPTION_ID."]),
+      externalConsoleHref: "https://portal.azure.com/",
+      safeNextAction: { label: "Open Azure Sources", href: "/dashboard/sources" },
+    }));
+  }
 
   // ---------------------------------------------------------------------------
   // GitHub Container Registry — live SDK traversal when flag is on

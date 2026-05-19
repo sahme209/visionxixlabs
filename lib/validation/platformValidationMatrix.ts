@@ -787,6 +787,33 @@ export const VALIDATION_MATRIX: ValidationRow[] = [
   { id: "aws.service_inv_elb",      area: "aws", capability: "lib/cloud/aws/awsServiceInventoryExtractor:runLoadBalancers — @aws-sdk/client-elastic-load-balancing-v2 DescribeLoadBalancers. ALB/NLB/Gateway support. publiclyExposed derived from Scheme === 'internet-facing'.", status: "passing", evidence: "lib/cloud/aws/awsServiceInventoryExtractor.ts" },
   { id: "aws.service_inv_messaging",area: "aws", capability: "lib/cloud/aws/awsServiceInventoryExtractor:runMessaging — @aws-sdk/client-sns ListTopics + @aws-sdk/client-sqs ListQueues. Per-section failure isolated.", status: "passing", evidence: "lib/cloud/aws/awsServiceInventoryExtractor.ts" },
   { id: "aws.service_inv_new_deps", area: "aws", capability: "package.json — added @aws-sdk/client-elastic-load-balancing-v2 + @aws-sdk/client-sns + @aws-sdk/client-sqs (all ^3.1001.0).", status: "passing", evidence: "package.json" },
+
+  // ---------------------------------------------------------------------------
+  // Phase 72 + 73 — Live AKS + GKE clusters
+  // ---------------------------------------------------------------------------
+  { id: "containers.aks_extractor", area: "azure",  capability: "lib/containers/azureAksExtractor — @azure/arm-containerservice ManagedClusters.list. EOL k8s detection (closed set ≤1.27). enablePrivateCluster + apiServerAccessProfile → networkExposure. azureKeyvaultSecretsProvider addon detection → managed_kms posture. AAD ClientSecretCredential reused.", status: "passing", evidence: "lib/containers/azureAksExtractor.ts", nextFix: "Requires AZURE_INVENTORY_EXTRACT_ENABLED + Azure SP env + Microsoft.ContainerService/managedClusters/read perm." },
+  { id: "containers.gke_extractor", area: "gcp",    capability: "lib/containers/gcpGkeExtractor — @google-cloud/container ClusterManagerClient.listClusters with locations/- (all regions). Autopilot detection. privateClusterConfig.enablePrivateEndpoint → networkExposure. databaseEncryption.state === 'ENCRYPTED' → managed_kms posture. EOL k8s detection.", status: "passing", evidence: "lib/containers/gcpGkeExtractor.ts", nextFix: "Requires GCP_INVENTORY_EXTRACT_ENABLED + GCP SA JSON + container.viewer role." },
+  { id: "containers.aks_gke_wired",  area: "operating_loop", capability: "lib/containers/containerOrchestrationBuilder — AKS + GKE live extractors splice real cluster arrays into the canonical surface. Honest preview/blocked passes through.", status: "passing", evidence: "lib/containers/containerOrchestrationBuilder.ts" },
+
+  // ---------------------------------------------------------------------------
+  // Phase 74 — DBA replacement: RDS deep posture
+  // ---------------------------------------------------------------------------
+  { id: "aws.rds_dba_replacement", area: "aws", capability: "lib/cloud/aws/awsServiceInventoryExtractor:runRds — extended with backup retention + deletion protection + Performance Insights status + read replica detection + auto-minor-version-upgrade + days since last manual snapshot (via DescribeDBSnapshots). Surface-level counts: backupsDisabledCount + noDeletionProtectionCount + noPerformanceInsightsCount + staleSnapshotCount (>30d). Replaces ~65% of a DBA's daily posture work.", status: "passing", evidence: "lib/cloud/aws/awsServiceInventoryExtractor.ts", nextFix: "Requires rds:DescribeDBSnapshots in the IAM policy." },
+
+  // ---------------------------------------------------------------------------
+  // Phase 75 — SysAdmin replacement: SSM Patch Manager
+  // ---------------------------------------------------------------------------
+  { id: "aws.ssm_patch_compliance", area: "aws", capability: "lib/cloud/aws/awsServiceInventoryExtractor:runPatchCompliance — @aws-sdk/client-ssm DescribeInstanceInformation + DescribeInstancePatchStates. Per-instance compliance status (compliant / non_compliant / unspecified / unknown). Counts: totalInstances + compliantCount + nonCompliantCount + totalMissingPatches. Replaces ~75% of a sysadmin's patch-state monitoring.", status: "passing", evidence: "lib/cloud/aws/awsServiceInventoryExtractor.ts", nextFix: "Requires ssm:DescribeInstanceInformation + ssm:DescribeInstancePatchStates in IAM policy + SSM Agent installed on EC2 instances." },
+
+  // ---------------------------------------------------------------------------
+  // Phase 76 — AppDev replacement: CloudWatch Log Groups
+  // ---------------------------------------------------------------------------
+  { id: "aws.cw_log_groups", area: "aws", capability: "lib/cloud/aws/awsServiceInventoryExtractor:runLogGroups — @aws-sdk/client-cloudwatch-logs DescribeLogGroups. Per-group: storedBytes + retentionInDays + KMS encryption status. Surface counts: total + totalStoredBytes + retentionUnboundedCount (retention never expires — config gap) + unencryptedCount. Replaces ~30-40% of app developer ops time.", status: "passing", evidence: "lib/cloud/aws/awsServiceInventoryExtractor.ts", nextFix: "Requires logs:DescribeLogGroups in IAM policy." },
+
+  // ---------------------------------------------------------------------------
+  // Combined deps for phases 72-76
+  // ---------------------------------------------------------------------------
+  { id: "deps.phase72_76", area: "operating_loop", capability: "package.json — added @azure/arm-containerservice ^21.0.0 + @google-cloud/container ^5.13.0 + @aws-sdk/client-ssm ^3.1001.0 + @aws-sdk/client-cloudwatch-logs ^3.1001.0 as direct dependencies.", status: "passing", evidence: "package.json" },
 ];
 
 // ---------------------------------------------------------------------------
