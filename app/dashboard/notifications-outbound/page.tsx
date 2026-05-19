@@ -46,6 +46,24 @@ interface SendResult {
   durationMs: number;
 }
 
+interface HistoryRow {
+  id: string;
+  dedupeKey: string;
+  kind: string;
+  severity: string;
+  headline: string;
+  outcome: string;
+  channelsSucceeded: string[];
+  channelsSkipped: string[];
+  createdAt: string;
+}
+interface HistoryReport {
+  totalRows: number;
+  rows: HistoryRow[];
+  perOutcome: Record<string, number>;
+  perSeverity: Record<string, number>;
+}
+
 const CHANNEL_LABEL: Record<Channel, string> = {
   slack: "Slack",
   microsoft_teams: "Microsoft Teams",
@@ -66,6 +84,16 @@ export default function OutboundNotificationsPage() {
   const [testResult, setTestResult] = useState<SendResult | null>(null);
   const [telemetryOutcome, setTelemetryOutcome] = useState<{ totalSignalsInspected: number; totalDispatchAttempted: number; totalDispatchSucceeded: number } | null>(null);
   const [busy, setBusy] = useState(false);
+  const [history, setHistory] = useState<HistoryReport | null>(null);
+
+  const loadHistory = () => {
+    fetch("/api/notifications/history?limit=50", { credentials: "include" })
+      .then((r) => r.json())
+      .then((j: { ok?: boolean; data?: HistoryReport }) => {
+        if (j.ok && j.data) setHistory(j.data);
+      })
+      .catch(() => { /* silent — history is optional */ });
+  };
 
   useEffect(() => {
     fetch("/api/notifications/outbound-status", { credentials: "include" })
@@ -75,6 +103,7 @@ export default function OutboundNotificationsPage() {
         else setStatusError(j.error?.userMessage ?? "Status unavailable.");
       })
       .catch((err) => setStatusError(err instanceof Error ? err.message : "Network error."));
+    loadHistory();
   }, []);
 
   async function sendTest() {
@@ -88,6 +117,7 @@ export default function OutboundNotificationsPage() {
       const j = (await r.json()) as { ok?: boolean; data?: SendResult; error?: { userMessage?: string } };
       if (j.ok && j.data) setTestResult(j.data);
       else setTestResult({ ok: false, channelsAttempted: [], channelsSucceeded: [], channelsSkipped: [], reason: j.error?.userMessage, durationMs: 0 });
+      loadHistory();
     } catch (err) {
       setTestResult({ ok: false, channelsAttempted: [], channelsSucceeded: [], channelsSkipped: [], reason: err instanceof Error ? err.message : "Network error.", durationMs: 0 });
     } finally {
@@ -257,6 +287,70 @@ export default function OutboundNotificationsPage() {
                 <Stat label="Signals inspected" value={String(telemetryOutcome.totalSignalsInspected)} tone="zinc" />
                 <Stat label="Dispatched" value={String(telemetryOutcome.totalDispatchAttempted)} tone="violet" />
                 <Stat label="Succeeded" value={String(telemetryOutcome.totalDispatchSucceeded)} tone={telemetryOutcome.totalDispatchSucceeded > 0 ? "emerald" : "amber"} />
+              </div>
+            )}
+          </div>
+
+          {/* History panel */}
+          <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 mb-6">
+            <div className="flex items-center justify-between gap-3 flex-wrap mb-3">
+              <div className="min-w-0">
+                <p className="text-[11px] font-mono text-cyan-300/80 uppercase tracking-wider mb-1">// audit · OutboundNotificationRecord</p>
+                <h2 className="text-[16px] font-semibold text-white">Recent sends</h2>
+                <p className="text-[12px] text-zinc-400">
+                  Last 50 outbound notification records — durable history, not in-memory.
+                </p>
+              </div>
+              {history && (
+                <div className="grid grid-cols-3 gap-2 text-[10px] font-mono">
+                  <div className="rounded border border-emerald-500/20 bg-emerald-500/[0.04] px-2 py-1 text-center">
+                    <p className="text-emerald-300/80 uppercase">ok</p>
+                    <p className="text-emerald-200 font-bold">{history.perOutcome.ok ?? 0}</p>
+                  </div>
+                  <div className="rounded border border-amber-500/20 bg-amber-500/[0.04] px-2 py-1 text-center">
+                    <p className="text-amber-300/80 uppercase">deduped</p>
+                    <p className="text-amber-200 font-bold">{history.perOutcome.deduped ?? 0}</p>
+                  </div>
+                  <div className="rounded border border-rose-500/20 bg-rose-500/[0.04] px-2 py-1 text-center">
+                    <p className="text-rose-300/80 uppercase">failed</p>
+                    <p className="text-rose-200 font-bold">{(history.perOutcome.failed ?? 0) + (history.perOutcome.skipped ?? 0)}</p>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {!history ? (
+              <p className="text-[11px] font-mono text-zinc-500">// loading…</p>
+            ) : history.rows.length === 0 ? (
+              <p className="text-[12px] text-zinc-400 italic">
+                No outbound sends yet. Fire a test above and the row will land here.
+              </p>
+            ) : (
+              <div className="divide-y divide-white/[0.04] border border-white/[0.06] rounded-lg overflow-hidden">
+                {history.rows.map((row) => (
+                  <div key={row.id} className="px-3 py-2 hover:bg-white/[0.02]">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className={`text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border ${
+                        row.outcome === "ok"
+                          ? "bg-emerald-500/10 text-emerald-300 border-emerald-500/20"
+                          : row.outcome === "deduped"
+                            ? "bg-amber-500/10 text-amber-300 border-amber-500/20"
+                            : "bg-rose-500/10 text-rose-300 border-rose-500/20"
+                      }`}>{row.outcome}</span>
+                      <span className="text-[9px] font-mono text-zinc-500 uppercase">{row.severity}</span>
+                      <span className="text-[9px] font-mono text-zinc-500">{row.kind}</span>
+                      <span className="text-[10px] font-mono text-zinc-500 ml-auto">{new Date(row.createdAt).toLocaleString()}</span>
+                    </div>
+                    <p className="text-[12px] text-white truncate mt-0.5" title={row.headline}>{row.headline}</p>
+                    {(row.channelsSucceeded.length > 0 || row.channelsSkipped.length > 0) && (
+                      <p className="text-[10px] font-mono text-zinc-500 truncate mt-0.5">
+                        {row.channelsSucceeded.length > 0 && <span className="text-emerald-300">✓ {row.channelsSucceeded.join(", ")}</span>}
+                        {row.channelsSucceeded.length > 0 && row.channelsSkipped.length > 0 && " · "}
+                        {row.channelsSkipped.length > 0 && <span>skipped {row.channelsSkipped.slice(0, 2).join(", ")}{row.channelsSkipped.length > 2 ? "…" : ""}</span>}
+                      </p>
+                    )}
+                  </div>
+                ))}
               </div>
             )}
           </div>

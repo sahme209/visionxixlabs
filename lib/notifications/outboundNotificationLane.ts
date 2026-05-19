@@ -21,6 +21,7 @@ import "server-only";
 
 import { loadAppEnv } from "@/lib/config/env";
 import { redactPayload } from "@/lib/api/redaction";
+import { persistOutboundNotificationRecord } from "./outboundNotificationStore";
 
 // ---------------------------------------------------------------------------
 // Typed contract
@@ -108,7 +109,7 @@ export async function sendOutboundNotification(n: OutboundNotification): Promise
   const env = loadAppEnv();
 
   if (isDeduped(n.dedupeKey)) {
-    return {
+    const result: OutboundSendResult = {
       ok: true,
       channelsAttempted: [],
       channelsSucceeded: [],
@@ -116,6 +117,9 @@ export async function sendOutboundNotification(n: OutboundNotification): Promise
       reason: "deduped",
       durationMs: Date.now() - start,
     };
+    // Best-effort durability write — never blocks the send path.
+    void persistOutboundNotificationRecord(n, result, "deduped");
+    return result;
   }
 
   const redacted = redactPayload(n);
@@ -158,7 +162,7 @@ export async function sendOutboundNotification(n: OutboundNotification): Promise
 
   if (succeeded.length > 0) markSent(n.dedupeKey);
 
-  return {
+  const result: OutboundSendResult = {
     ok: succeeded.length > 0,
     channelsAttempted: attempted,
     channelsSucceeded: succeeded,
@@ -166,6 +170,13 @@ export async function sendOutboundNotification(n: OutboundNotification): Promise
     reason: succeeded.length === 0 ? "no_channels_succeeded" : undefined,
     durationMs: Date.now() - start,
   };
+  const outcome = succeeded.length > 0
+    ? "ok"
+    : attempted.length === 0
+      ? "skipped"
+      : "failed";
+  void persistOutboundNotificationRecord(n, result, outcome);
+  return result;
 }
 
 // ---------------------------------------------------------------------------

@@ -1107,3 +1107,32 @@ model OperationTraceSpan {
   @@index([organizationId, startedAt])
   @@index([traceId])
 }
+
+/// Outbound notification audit row — every Slack/Teams/webhook send
+/// the outbound lane attempts (success or skip). Replaces the
+/// in-memory dedupe map with a durable history so the operator can
+/// answer "did we page anyone last night?" weeks later. Backs
+/// lib/notifications/outboundNotificationLane + /api/notifications/history.
+model OutboundNotificationRecord {
+  id              String    @id
+  organizationId  String
+  dedupeKey       String
+  kind            String    // OutboundNotificationKind literal
+  severity        String    // OutboundSeverity literal
+  headline        String
+  body            String
+  /// "ok" — at least one channel succeeded
+  /// "deduped" — suppressed by the 10-min dedupe window
+  /// "failed" — every attempted channel returned non-2xx
+  /// "skipped" — no channels configured
+  outcome         String
+  channelsSucceeded String[]  // {"slack","microsoft_teams","generic_webhook"} subset
+  channelsSkipped String[]    // human-readable skip reasons
+  evidenceRefs   String[]
+  correlationId  String?
+  createdAt      DateTime  @default(now())
+
+  @@index([organizationId, createdAt])
+  @@index([organizationId, dedupeKey, createdAt])
+  @@index([dedupeKey, createdAt])
+}
