@@ -121,6 +121,7 @@ export const TELEMETRY_PROVIDER_LABEL: Record<TelemetryProvider, string> = {
   prometheus:              "Prometheus",
   sentry:                  "Sentry",
   new_relic:               "New Relic",
+  dynatrace:               "Dynatrace",
   opentelemetry_collector: "OpenTelemetry Collector",
 };
 
