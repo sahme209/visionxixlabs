@@ -29,6 +29,7 @@ import {
   PuzzlePieceIcon,
   ArrowsRightLeftIcon, // also used in the Operator group for the Operating Graph
   WrenchScrewdriverIcon,
+  BellAlertIcon,
 } from "@heroicons/react/24/outline";
 
 interface NavLink {
@@ -81,6 +82,7 @@ const GROUPS: NavGroup[] = [
       { href: "/dashboard/risks",          label: "Risk Queue",     icon: ShieldCheckIcon       },
       { href: "/dashboard/cicd",           label: "CI/CD Operations",icon: CodeBracketIcon      },
       { href: "/dashboard/notifications",  label: "Notifications",  icon: ShieldCheckIcon       },
+      { href: "/dashboard/notifications-outbound", label: "Outbound (Slack/Teams)", icon: BellAlertIcon },
       { href: "/dashboard/security",       label: "Security",       icon: ShieldCheckIcon       },
       { href: "/dashboard/releaseops",     label: "ReleaseOps",     icon: RocketLaunchIcon      },
       { href: "/dashboard/remediation",    label: "Remediation",    icon: WrenchScrewdriverIcon },

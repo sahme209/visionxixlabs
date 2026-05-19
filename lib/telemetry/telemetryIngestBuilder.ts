@@ -17,6 +17,8 @@ import { extractDatadogAlertingMonitors } from "./datadogPullExtractor";
 import { extractSentryUnresolvedIssues } from "./sentryPullExtractor";
 import { extractDynatraceProblems } from "./dynatracePullExtractor";
 import { extractNewRelicIssues } from "./newRelicPullExtractor";
+import { extractAzureMonitorAlerts } from "./azureMonitorPullExtractor";
+import { extractGcpCloudMonitoringIncidents } from "./gcpCloudMonitoringPullExtractor";
 import type { OrganizationId, UserId } from "@/lib/domain/ids";
 import type {
   TelemetryIngestReport,
@@ -85,6 +87,26 @@ export async function buildTelemetryIngest(input: BuildTelemetryInput): Promise<
       newRelicLive = await extractNewRelicIssues();
     } catch {
       newRelicLive = null;
+    }
+  }
+
+  // Try live Azure Monitor pull.
+  let azureMonitorLive: Awaited<ReturnType<typeof extractAzureMonitorAlerts>> | null = null;
+  if (env.azureInventoryExtractEnabled) {
+    try {
+      azureMonitorLive = await extractAzureMonitorAlerts();
+    } catch {
+      azureMonitorLive = null;
+    }
+  }
+
+  // Try live GCP Cloud Monitoring pull.
+  let gcpMonitoringLive: Awaited<ReturnType<typeof extractGcpCloudMonitoringIncidents>> | null = null;
+  if (env.gcpInventoryExtractEnabled) {
+    try {
+      gcpMonitoringLive = await extractGcpCloudMonitoringIncidents();
+    } catch {
+      gcpMonitoringLive = null;
     }
   }
   const azureLive = state.providers.find((p) => p.provider === "azure")?.mode === "live";
@@ -196,6 +218,34 @@ export async function buildTelemetryIngest(input: BuildTelemetryInput): Promise<
       for (const sig of newRelicLive.signals) target.signals.push(sig);
       target.mode = "live";
       target.headline = `Live · ${target.signals.length} active New Relic issue(s).`;
+      target.missingRequirements = [];
+      target.configured = true;
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Splice live-pulled Azure Monitor alerts into the azure_monitor posture.
+  // ---------------------------------------------------------------------------
+  if (azureMonitorLive && azureMonitorLive.mode === "live" && azureMonitorLive.signals.length > 0) {
+    const target = providers.find((p) => p.provider === "azure_monitor");
+    if (target) {
+      for (const sig of azureMonitorLive.signals) target.signals.push(sig);
+      target.mode = "live";
+      target.headline = `Live · ${target.signals.length} Azure Monitor alert(s) firing.`;
+      target.missingRequirements = [];
+      target.configured = true;
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Splice live-pulled GCP Cloud Monitoring incidents into the gcp posture.
+  // ---------------------------------------------------------------------------
+  if (gcpMonitoringLive && gcpMonitoringLive.mode === "live" && gcpMonitoringLive.signals.length > 0) {
+    const target = providers.find((p) => p.provider === "gcp_cloud_monitoring");
+    if (target) {
+      for (const sig of gcpMonitoringLive.signals) target.signals.push(sig);
+      target.mode = "live";
+      target.headline = `Live · ${target.signals.length} GCP Cloud Monitoring signal(s).`;
       target.missingRequirements = [];
       target.configured = true;
     }
