@@ -61,9 +61,10 @@ export function searchHelp(query: string, limit = 5): HelpAnswer {
     };
   }
 
+  const cloudIntent = detectCloudIntent(tokens);
   const scored: HelpSearchHit[] = HELP_ENTRIES.map((entry) => {
     const haystack = buildHaystack(entry);
-    const { score, matchedTokens } = scoreEntry(tokens, haystack);
+    const { score, matchedTokens } = scoreEntry(tokens, haystack, cloudIntent);
     return { entry, score, matchedTokens };
   })
     .filter((h) => h.score >= MIN_SCORE_FLOOR)
@@ -126,7 +127,11 @@ function buildHaystack(entry: HelpEntry): Haystack {
   };
 }
 
-function scoreEntry(tokens: string[], hay: Haystack): { score: number; matchedTokens: string[] } {
+function scoreEntry(
+  tokens: string[],
+  hay: Haystack,
+  cloudIntent: ReturnType<typeof detectCloudIntent>,
+): { score: number; matchedTokens: string[] } {
   let total = 0;
   const matched: string[] = [];
   for (const t of tokens) {
@@ -141,9 +146,52 @@ function scoreEntry(tokens: string[], hay: Haystack): { score: number; matchedTo
       total += contribution;
     }
   }
+  // Phase 120 — Semantic cloud boost. When the query mentions a cloud
+  // ("aws"/"azure"/"gcp") and the entry's keywords reference that cloud
+  // (directly or via service tokens like "ec2"/"aks"/"gke"), add a small
+  // bonus so cross-cloud surfaces don't accidentally outrank the
+  // cloud-specific one for cloud-specific queries.
+  if (cloudIntent.aws && shareTokens(hay.keywords, CLOUD_INDICATORS.aws)) {
+    total += 0.4;
+    if (!matched.includes("aws")) matched.push("aws");
+  }
+  if (cloudIntent.azure && shareTokens(hay.keywords, CLOUD_INDICATORS.azure)) {
+    total += 0.4;
+    if (!matched.includes("azure")) matched.push("azure");
+  }
+  if (cloudIntent.gcp && shareTokens(hay.keywords, CLOUD_INDICATORS.gcp)) {
+    total += 0.4;
+    if (!matched.includes("gcp")) matched.push("gcp");
+  }
   // Normalise by total tokens — longer queries shouldn't bias toward longer entries.
   const normalised = tokens.length > 0 ? total / (tokens.length * 3) : 0;
   return { score: Math.min(1, normalised), matchedTokens: matched };
+}
+
+// ---------------------------------------------------------------------------
+// Cloud intent detection (Phase 120)
+// ---------------------------------------------------------------------------
+
+const CLOUD_INDICATORS: Record<"aws" | "azure" | "gcp", string[]> = {
+  aws:   ["aws", "ec2", "s3", "rds", "lambda", "iam", "vpc", "cloudtrail", "guardduty", "eks", "ecs"],
+  azure: ["azure", "vnet", "aks", "subscription", "monitor"],
+  gcp:   ["gcp", "gke", "bigquery"],
+};
+
+function detectCloudIntent(tokens: string[]): { aws: boolean; azure: boolean; gcp: boolean } {
+  const set = new Set(tokens);
+  return {
+    aws: set.has("aws") || tokens.some((t) => CLOUD_INDICATORS.aws.includes(t)),
+    azure: set.has("azure") || tokens.some((t) => CLOUD_INDICATORS.azure.includes(t)),
+    gcp: set.has("gcp") || tokens.some((t) => CLOUD_INDICATORS.gcp.includes(t)),
+  };
+}
+
+function shareTokens(haystack: Set<string>, indicators: string[]): boolean {
+  for (const tok of indicators) {
+    if (haystack.has(tok)) return true;
+  }
+  return false;
 }
 
 function tokenize(s: string): string[] {

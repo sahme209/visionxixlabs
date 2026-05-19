@@ -1086,6 +1086,30 @@ export const VALIDATION_MATRIX: ValidationRow[] = [
   { id: "flags.route", area: "operating_loop", capability: "GET/POST/DELETE /api/flags — typed envelope. POST body validated against isFeatureFlagKey. safetyContract 'policy_governance_read_only'.", status: "passing", evidence: "app/api/flags/route.ts" },
   { id: "ui.flags_page", area: "command_center", capability: "/dashboard/flags — grouped flag list (Autonomy / Notifications / Audit / Interface). Per-flag row shows label + key + override badge + current state pill + catalog default + audit fields. Inline rationale input + Enable/Disable + Reset buttons. Sidebar entry in Setup group.", status: "passing", evidence: "app/dashboard/flags/page.tsx" },
   { id: "flags.catalog_tests", area: "operating_loop", capability: "lib/flags/__tests__/featureFlagCatalog.test.ts — 7 tests: at-least-one-flag-per-group, unique catalog keys, non-empty labels + descriptions, isFeatureFlagKey narrowing, isFeatureFlagKey rejection of unknown keys, defaultFlagValue lookup, throw on unknown.", status: "passing", evidence: "lib/flags/__tests__/featureFlagCatalog.test.ts" },
+
+  // ---------------------------------------------------------------------------
+  // Phase 119 — Cron self-heal (last-N-tick health tracker)
+  // ---------------------------------------------------------------------------
+  { id: "autonomy.cron_health_tracker", area: "operating_loop", capability: "lib/autonomy/cronHealthTracker — in-memory ring buffer (cap 16 per key) of recent tick outcomes. shouldSkipDueToConsecutiveFailures returns true when last N (default 3) ticks all errored. Per-cron + per-tenant key isolation. recordTickOutcome appends; readCronHealth returns total/failureCount/successRate/consecutiveFailures. Pure: no DB, no fetch.", status: "passing", evidence: "lib/autonomy/cronHealthTracker.ts" },
+  { id: "autonomy.cron_health_tests", area: "operating_loop", capability: "lib/autonomy/__tests__/cronHealthTracker.test.ts — 7 tests: fresh-history doesn't skip, 3-errored-default skips, ok-breaks-streak doesn't skip, custom threshold, per-tenant isolation, success-rate math, buffer cap at 16.", status: "passing", evidence: "lib/autonomy/__tests__/cronHealthTracker.test.ts" },
+
+  // ---------------------------------------------------------------------------
+  // Phase 120 — Semantic cloud boost on help search
+  // ---------------------------------------------------------------------------
+  { id: "help.semantic_cloud_boost", area: "operating_loop", capability: "lib/help/helpSearchEngine — detectCloudIntent inspects the query for AWS/Azure/GCP literals plus per-cloud indicator words (ec2/s3/rds/aks/gke/etc). For each detected cloud, entries whose keywords reference that cloud get +0.4 to the score. Bonus never lifts a score past the 1.0 cap; matchedTokens grows by the cloud literal when boost applies. Cloud-free queries are unaffected.", status: "passing", evidence: "lib/help/helpSearchEngine.ts" },
+  { id: "help.semantic_boost_tests", area: "operating_loop", capability: "lib/help/__tests__/helpSemanticBoost.test.ts — 5 tests: AWS query prefers aws-specific over unified, azure query steers away from aws-specific, score cap intact, cloud-free query unaffected, matchedTokens includes cloud literal.", status: "passing", evidence: "lib/help/__tests__/helpSemanticBoost.test.ts" },
+
+  // ---------------------------------------------------------------------------
+  // Phase 121 — Feature flag → cron + persistence wiring
+  // ---------------------------------------------------------------------------
+  { id: "flags.wiring_cron_telemetry", area: "operating_loop", capability: "/api/notifications/cron-dispatch-telemetry honors the per-tenant 'notifications.dispatch_critical_telemetry' flag. When disabled, the tenant is skipped with reason 'flag_disabled:...'. Also honors the cron self-heal skip when last 3 ticks errored.", status: "passing", evidence: "app/api/notifications/cron-dispatch-telemetry/route.ts" },
+  { id: "flags.wiring_cron_digest", area: "operating_loop", capability: "/api/notifications/cron-weekly-digest honors the per-tenant 'notifications.weekly_digest' flag. Skipped tenants are reported with 'flag_disabled:...'.", status: "passing", evidence: "app/api/notifications/cron-weekly-digest/route.ts" },
+  { id: "flags.wiring_rationale_persistence", area: "operating_loop", capability: "lib/autonomy/decisionRationaleStore.recordCycleRationale honors the 'audit.persist_rationale' flag. When disabled, returns { written: 0, failed: 0 } and no rows hit Postgres. Defaults ON; only off when storage is the bottleneck.", status: "passing", evidence: "lib/autonomy/decisionRationaleStore.ts" },
+
+  // ---------------------------------------------------------------------------
+  // Phase 122 — Onboarding cron reminder
+  // ---------------------------------------------------------------------------
+  { id: "onboarding.cron_reminder", area: "operating_loop", capability: "GET/POST /api/onboarding/cron-reminder — Vercel cron `0 15 * * 1` (Monday 15:00 UTC, an hour after the weekly digest). For each tenant with completionRatio < 1, sends a Slack/Teams message listing up to 5 pending steps with exact env-var hints. Dedupe key 'onboarding-reminder:{tenant}:{date}'. Completed tenants get 'complete:no_reminder_needed'.", status: "passing", evidence: "app/api/onboarding/cron-reminder/route.ts" },
 ];
 
 // ---------------------------------------------------------------------------

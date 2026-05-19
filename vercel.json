@@ -20,6 +20,10 @@
     {
       "path": "/api/notifications/cron-weekly-digest",
       "schedule": "0 14 * * 1"
+    },
+    {
+      "path": "/api/onboarding/cron-reminder",
+      "schedule": "0 15 * * 1"
     }
   ]
 }

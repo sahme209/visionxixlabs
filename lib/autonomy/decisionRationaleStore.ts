@@ -18,6 +18,7 @@ import "server-only";
 
 import { randomUUID } from "crypto";
 import { prisma } from "@/lib/db";
+import { isFlagEnabled } from "@/lib/flags/featureFlagStore";
 import type {
   AutonomyCandidate,
   AutonomyCycleReport,
@@ -57,6 +58,14 @@ export async function recordCycleRationale(opts: {
 }): Promise<{ written: number; failed: number }> {
   let written = 0;
   let failed = 0;
+  // Phase 121 — operators can disable persistence per tenant via flag.
+  // Defaults to ON in the catalog; only off when storage is the bottleneck.
+  const flagOn = await isFlagEnabled({
+    organizationId: opts.organizationId,
+    key: "audit.persist_rationale",
+  }).catch(() => true);
+  if (!flagOn) return { written: 0, failed: 0 };
+
   const start = Date.now();
   const charterMode = opts.report.charter.mode;
 

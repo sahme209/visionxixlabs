@@ -19,6 +19,11 @@ import { buildTelemetryIngest } from "@/lib/telemetry/telemetryIngestBuilder";
 import { dispatchCriticalTelemetry } from "@/lib/notifications/criticalTelemetryDispatcher";
 import { loadAppEnv } from "@/lib/config/env";
 import { resolveCorrelationId, apiOk } from "@/lib/api";
+import { isFlagEnabled } from "@/lib/flags/featureFlagStore";
+import {
+  recordTickOutcome,
+  shouldSkipDueToConsecutiveFailures,
+} from "@/lib/autonomy/cronHealthTracker";
 import type { OrganizationId } from "@/lib/domain/ids";
 
 export const dynamic = "force-dynamic";
@@ -63,6 +68,38 @@ async function handle(req: NextRequest) {
   }> = [];
 
   for (const tenantId of tenantIds) {
+    // Phase 121 — per-tenant feature-flag gate.
+    const flagOn = await isFlagEnabled({
+      organizationId: String(tenantId),
+      key: "notifications.dispatch_critical_telemetry",
+    });
+    if (!flagOn) {
+      outcomes.push({
+        tenantId: String(tenantId),
+        totalSignalsInspected: 0,
+        totalDispatchAttempted: 0,
+        totalDispatchSucceeded: 0,
+        error: "flag_disabled:notifications.dispatch_critical_telemetry",
+      });
+      continue;
+    }
+
+    // Phase 119 — self-heal skip when last 3 ticks errored.
+    const skipDecision = shouldSkipDueToConsecutiveFailures({
+      cronName: "cron-dispatch-telemetry",
+      tenantId: String(tenantId),
+    });
+    if (skipDecision.skip) {
+      outcomes.push({
+        tenantId: String(tenantId),
+        totalSignalsInspected: 0,
+        totalDispatchAttempted: 0,
+        totalDispatchSucceeded: 0,
+        error: skipDecision.reason,
+      });
+      continue;
+    }
+
     try {
       const report = await buildTelemetryIngest({ tenantId });
       const outcome = await dispatchCriticalTelemetry({
@@ -76,6 +113,11 @@ async function handle(req: NextRequest) {
         totalDispatchAttempted: outcome.totalDispatchAttempted,
         totalDispatchSucceeded: outcome.totalDispatchSucceeded,
       });
+      recordTickOutcome({
+        cronName: "cron-dispatch-telemetry",
+        tenantId: String(tenantId),
+        outcome: "ok",
+      });
     } catch (err) {
       outcomes.push({
         tenantId: String(tenantId),
@@ -83,6 +125,11 @@ async function handle(req: NextRequest) {
         totalDispatchAttempted: 0,
         totalDispatchSucceeded: 0,
         error: err instanceof Error ? err.message.slice(0, 200) : "unknown_error",
+      });
+      recordTickOutcome({
+        cronName: "cron-dispatch-telemetry",
+        tenantId: String(tenantId),
+        outcome: "errored",
       });
     }
   }
