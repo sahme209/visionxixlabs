@@ -70,6 +70,8 @@ export interface AppEnv {
   githubActionsExtractEnabled: boolean;
   /** AWS CloudWatch pull-based telemetry extractor opt-in. */
   awsCloudWatchPullEnabled: boolean;
+  /** AWS Service Inventory extractor opt-in (Lambda + RDS + IAM + S3). */
+  awsInventoryExtractEnabled: boolean;
   /** PagerDuty REST pull extractor opt-in + token. */
   pagerDutyPullEnabled: boolean;
   pagerDutyApiToken?: string;
@@ -213,6 +215,7 @@ export function loadAppEnv(): AppEnv {
     awsEksExtractEnabled:     bool(env.AWS_EKS_EXTRACT_ENABLED, false),
     githubActionsExtractEnabled: bool(env.GITHUB_ACTIONS_EXTRACT_ENABLED, false),
     awsCloudWatchPullEnabled:  bool(env.AWS_CLOUDWATCH_PULL_ENABLED, false),
+    awsInventoryExtractEnabled: bool(env.AWS_INVENTORY_EXTRACT_ENABLED, false),
     pagerDutyPullEnabled:      bool(env.PAGERDUTY_PULL_ENABLED, false),
     pagerDutyApiToken:         env.PAGERDUTY_API_TOKEN?.trim() || undefined,
     datadogPullEnabled:        bool(env.DATADOG_PULL_ENABLED, false),

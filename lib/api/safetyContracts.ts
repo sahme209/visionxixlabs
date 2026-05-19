@@ -42,7 +42,8 @@ export type ApiSafetyContract =
   | "billing_summary_read_only"
   | "telemetry_ingest_read_only"
   | "incident_response_read_only"
-  | "closed_loop_remediation_gated";
+  | "closed_loop_remediation_gated"
+  | "aws_service_inventory_read_only";
 
 export const SAFETY_CONTRACT_LABEL: Record<ApiSafetyContract, string> = {
   axiom_os_state_read_only:                "Axiom OS state · read-only",
@@ -76,6 +77,7 @@ export const SAFETY_CONTRACT_LABEL: Record<ApiSafetyContract, string> = {
   telemetry_ingest_read_only:              "Telemetry ingest · read-only",
   incident_response_read_only:             "Incident response · read-only",
   closed_loop_remediation_gated:           "Closed-loop remediation · gated",
+  aws_service_inventory_read_only:         "AWS service inventory · read-only",
 };
 
 /**
