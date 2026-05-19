@@ -40,6 +40,9 @@ export async function buildContainerOrchestration(input: BuildContainerOrchestra
   const state = await buildAxiomOSState({ tenantId: input.tenantId, actorUserId: input.actorUserId });
 
   const awsMode = state.providers.find((p) => p.provider === "aws")?.mode ?? "preview";
+  const azureMode = state.providers.find((p) => p.provider === "azure")?.mode ?? "preview";
+  const gcpMode = state.providers.find((p) => p.provider === "gcp")?.mode ?? "preview";
+  const githubMode = state.providers.find((p) => p.provider === "github")?.mode ?? "preview";
 
   // Try live AWS ECS extraction.
   let awsEcsLive: Awaited<ReturnType<typeof extractAwsEcsClusters>> | null = null;
@@ -90,10 +93,6 @@ export async function buildContainerOrchestration(input: BuildContainerOrchestra
       ghcrLive = null;
     }
   }
-  const azureMode = state.providers.find((p) => p.provider === "azure")?.mode ?? "preview";
-  const gcpMode = state.providers.find((p) => p.provider === "gcp")?.mode ?? "preview";
-  const githubMode = state.providers.find((p) => p.provider === "github")?.mode ?? "preview";
-
   const clusters: ContainerCluster[] = [];
 
   // ---------------------------------------------------------------------------
