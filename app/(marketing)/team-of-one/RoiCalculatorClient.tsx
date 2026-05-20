@@ -32,7 +32,8 @@ const ROLES: readonly RoleRow[] = [
   { id: "helpdesk", label: "IT helpdesk lead",       loadedAnnualUsd: 140_000 },
 ];
 
-const AXIOM_ANNUAL_USD = 120_000; // illustrative — operators set their real plan separately
+// illustrative — operators set their real plan separately.
+const AXIOM_ANNUAL_USD: number = 120_000;
 
 const usd = (n: number): string => `$${n.toLocaleString("en-US")}`;
 
