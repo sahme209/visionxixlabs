@@ -1262,6 +1262,23 @@ model StagedRemediationRunbook {
   @@index([organizationId, runbookId])
 }
 
+/// Per-tenant per-day usage counter. Single row per (tenant, capName,
+/// dateKey YYYY-MM-DD). Incremented by the autonomy scheduler +
+/// outbound lane; read by the tier-cap enforcer to decide allow/deny.
+/// dateKey is a string (not a DateTime) so a UNIQUE index on
+/// (tenant, capName, dateKey) is a cheap rollover boundary.
+model TenantUsageCounter {
+  organizationId  String
+  capName         String   // matches CapName literal: autonomyCyclesPerDay | outboundPerDay | ...
+  dateKey         String   // YYYY-MM-DD UTC
+  count           Int      @default(0)
+  updatedAt       DateTime @updatedAt
+  createdAt       DateTime @default(now())
+
+  @@id([organizationId, capName, dateKey])
+  @@index([organizationId, dateKey])
+}
+
 /// Tenant billing plan. One row per tenant. Tier is a closed
 /// BillingTier literal validated at the API boundary; status is a
 /// BillingStatus literal. stripeCustomerId + stripeSubscriptionId

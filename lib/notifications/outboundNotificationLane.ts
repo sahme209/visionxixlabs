@@ -24,6 +24,7 @@ import { redactPayload } from "@/lib/api/redaction";
 import { persistOutboundNotificationRecord } from "./outboundNotificationStore";
 import { readTenantCharter } from "@/lib/autonomy/tenantCharterStore";
 import { enqueueRetry } from "./outboundRetryQueue";
+import { gateAndConsume } from "@/lib/billing/tierGate";
 
 // ---------------------------------------------------------------------------
 // Typed contract
@@ -121,6 +122,28 @@ export async function sendOutboundNotification(n: OutboundNotification): Promise
     };
     // Best-effort durability write — never blocks the send path.
     void persistOutboundNotificationRecord(n, result, "deduped");
+    return result;
+  }
+
+  // Phase 146 — tier cap gate. When the tenant has hit its
+  // outboundPerDay cap, we skip the send (the persist record captures
+  // the cap reason so operators can see exactly why nothing went out).
+  // On gate failure (DB outage), we fail open — better to over-send than
+  // to drop critical halt notifications.
+  const gate = await gateAndConsume({
+    organizationId: n.tenantId,
+    capName: "outboundPerDay",
+  }).catch(() => null);
+  if (gate && !gate.allowed) {
+    const result: OutboundSendResult = {
+      ok: false,
+      channelsAttempted: [],
+      channelsSucceeded: [],
+      channelsSkipped: [{ channel: "slack", reason: `tier_cap_reached:${gate.reason}` }],
+      reason: gate.reason,
+      durationMs: Date.now() - start,
+    };
+    void persistOutboundNotificationRecord(n, result, "skipped");
     return result;
   }
 

@@ -60,6 +60,7 @@ const GROUPS: NavGroup[] = [
       { href: "/dashboard/admin-charters",     label: "Admin · Charters", icon: ShieldCheckIcon       },
       { href: "/dashboard/help",               label: "Help & Docs",      icon: QuestionMarkCircleIcon },
       { href: "/dashboard/help-analytics",     label: "Help Analytics",   icon: ChartBarIcon          },
+      { href: "/dashboard/help-suggestions",   label: "Doc Suggestions",  icon: ChartBarIcon          },
       { href: "/dashboard/executive-summary",  label: "Executive summary",icon: DocumentTextIcon     },
       { href: "/dashboard/priorities",         label: "Priorities",       icon: ChartBarIcon         },
       { href: "/dashboard/next-actions",       label: "Next actions",     icon: BoltIcon             },

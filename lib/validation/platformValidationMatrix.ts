@@ -1264,6 +1264,41 @@ export const VALIDATION_MATRIX: ValidationRow[] = [
   // ---------------------------------------------------------------------------
   { id: "billing.tier_cap_enforcer", area: "operating_loop", capability: "lib/billing/tierCapEnforcer — pure checkCap function. -1 capacity → always allow (unlimited); zero capacity → always deny (programmatic pause); finite capacity → strict less-than comparison. Returns typed CapDecision with remaining + reason so the autonomy scheduler + outbound lane can both check and log the verdict in one call. checkDailyCap thin wrapper for autonomy + outbound daily caps.", status: "passing", evidence: "lib/billing/tierCapEnforcer.ts" },
   { id: "billing.tier_cap_tests", area: "operating_loop", capability: "lib/billing/__tests__/tierCapEnforcer.test.ts — 7 tests covering unlimited tier, under-cap allow, at-cap deny, over-cap deny, checkDailyCap parity, reason-string content, zero-used safety.", status: "passing", evidence: "lib/billing/__tests__/tierCapEnforcer.test.ts" },
+
+  // ---------------------------------------------------------------------------
+  // Phase 146 — Tier-cap enforcement wired into scheduler + outbound lane
+  // ---------------------------------------------------------------------------
+  { id: "billing.tier_gate_facade", area: "operating_loop", capability: "lib/billing/tierGate — gateAndConsume (one-call allow + increment) + peekGate (read-only). Resolves the tenant's plan, asks tierCapEnforcer for the verdict, increments the daily counter atomically on allow. Fail-open on DB outage (better to over-allow than to wedge the loop). Defaults to 'trial' tier when plan resolution fails.", status: "passing", evidence: "lib/billing/tierGate.ts" },
+  { id: "autonomy.scheduler_cap_wiring", area: "operating_loop", capability: "lib/autonomy/autonomyScheduler — every tick calls gateAndConsume(autonomyCyclesPerDay) before runAutonomousLoopCycle. When the cap is hit the tenant lands in skipped[] with the cap-reason string. The counter increments atomically so two concurrent cron pods can't both slip past the boundary.", status: "passing", evidence: "lib/autonomy/autonomyScheduler.ts" },
+  { id: "notifications.lane_cap_wiring", area: "operating_loop", capability: "lib/notifications/outboundNotificationLane — every send calls gateAndConsume(outboundPerDay) after the dedupe check but before any channel post. Cap-skipped sends persist with outcome='skipped' + reason 'tier_cap_reached:<detail>' so operators can audit exactly why nothing went out. Fails open on gate exceptions.", status: "passing", evidence: "lib/notifications/outboundNotificationLane.ts" },
+
+  // ---------------------------------------------------------------------------
+  // Phase 147 — Tenant usage counter
+  // ---------------------------------------------------------------------------
+  { id: "billing.usage_counter_model", area: "operating_loop", capability: "prisma/schema.prisma — TenantUsageCounter keyed on (organizationId, capName, dateKey YYYY-MM-DD). Composite PK gives the upsert-increment its idempotent target; dateKey-as-string keeps rollover cheap. Migration 20260519210000.", status: "passing", evidence: "prisma/schema.prisma" },
+  { id: "billing.usage_counter_store", area: "operating_loop", capability: "lib/billing/usageCounterStore — todayUtcKey (deterministic UTC rollover) + readUsageCount (0 on DB outage) + incrementUsageCount (upsert with atomic increment) + readDailyUsage (full snapshot per tenant per day).", status: "passing", evidence: "lib/billing/usageCounterStore.ts" },
+  { id: "billing.usage_counter_tests", area: "operating_loop", capability: "lib/billing/__tests__/usageCounterStore.test.ts — 3 tests covering YYYY-MM-DD shape, UTC (not local) timezone, midnight-UTC rollover boundary.", status: "passing", evidence: "lib/billing/__tests__/usageCounterStore.test.ts" },
+
+  // ---------------------------------------------------------------------------
+  // Phase 148 — Public /status page + JSON endpoint
+  // ---------------------------------------------------------------------------
+  { id: "status.builder", area: "operating_loop", capability: "lib/status/publicStatusBuilder — 5-component snapshot (autonomy loop / outbound channel / billing plane / cron self-heal / AGI spine). Each component has a typed StatusVerdict ladder (operational/degraded/down/unknown). DB-blip resilience: unreachable component returns 'unknown', not 'down', so transient outages don't false-alarm the status page.", status: "passing", evidence: "lib/status/publicStatusBuilder.ts" },
+  { id: "status.api_route", area: "operating_loop", capability: "GET /api/status — unauthenticated. Returns raw PublicStatusReport (no apiOk envelope) so external uptime probes parse without our internal wrapper. cache-control: no-store. safetyContract 'trust_center_read_only' on response header.", status: "passing", evidence: "app/api/status/route.ts" },
+  { id: "ui.public_status_page", area: "command_center", capability: "app/status — public, server-rendered. Overall verdict ribbon + per-component card list with verdict-tinted borders. Surfaces the JSON probe URL for embedded status badges.", status: "passing", evidence: "app/status/page.tsx" },
+
+  // ---------------------------------------------------------------------------
+  // Phase 149 — Outbound history CSV export
+  // ---------------------------------------------------------------------------
+  { id: "notifications.history_csv_builder", area: "operating_loop", capability: "lib/notifications/outboundHistoryCsv — pure RFC 4180 builder matching the rationale + telemetry CSV invariants. CRLF, every field quoted, internal '\"\"' escape, embedded commas + newlines preserved. Stable 11-column layout: id / dedupe_key / kind / severity / outcome / headline / channels_succeeded / channels_skipped / evidence_refs / correlation_id / created_at. Channels + evidence arrays joined with ' | '.", status: "passing", evidence: "lib/notifications/outboundHistoryCsv.ts" },
+  { id: "notifications.history_csv_route", area: "operating_loop", capability: "GET /api/notifications/history/export?limit=N — streams text/csv with dated attachment filename. Tenant-scoped at the auth boundary. Reads up to 1000 OutboundNotificationRecord rows.", status: "passing", evidence: "app/api/notifications/history/export/route.ts" },
+  { id: "notifications.history_csv_tests", area: "operating_loop", capability: "lib/notifications/__tests__/outboundHistoryCsv.test.ts — 8 tests covering header + CRLF, stable 11-column header, all-fields-quoted, RFC 4180 escape, embedded comma + newline preservation, channels/evidence ' | ' joining, null correlation rendering, header-only output for empty input.", status: "passing", evidence: "lib/notifications/__tests__/outboundHistoryCsv.test.ts" },
+
+  // ---------------------------------------------------------------------------
+  // Phase 150 — No-match doc-suggestion analyzer
+  // ---------------------------------------------------------------------------
+  { id: "help.no_match_suggester", area: "operating_loop", capability: "lib/help/noMatchSuggester — reads HelpQueryRecord rows where verdict='no_match', clusters by normalized token-sorted query, picks a best-fit category via token-overlap with existing HelpEntry keywords, returns a typed DocSuggestion with suggestedKeywords + confidence. Pre-existing HELP_ENTRIES titles are excluded so we don't suggest creating an entry that already exists. DB failure returns an empty list, not a crash.", status: "passing", evidence: "lib/help/noMatchSuggester.ts" },
+  { id: "help.suggestions_route", area: "operating_loop", capability: "GET /api/help/suggestions?limit=N — typed envelope returning NoMatchSuggestReport. safetyContract 'trust_center_read_only'.", status: "passing", evidence: "app/api/help/suggestions/route.ts" },
+  { id: "ui.help_suggestions_page", area: "command_center", capability: "/dashboard/help-suggestions — per-row card with category chip + sample query + count + confidence %. Inline copy-to-clipboard pre block with a ready-to-paste HelpEntry snippet (id + title + category + keywords prefilled; operator fills description + evidenceRef).", status: "passing", evidence: "app/dashboard/help-suggestions/page.tsx" },
 ];
 
 // ---------------------------------------------------------------------------

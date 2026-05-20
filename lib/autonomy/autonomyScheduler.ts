@@ -28,6 +28,7 @@ import { runAutonomousLoopCycle } from "./autonomousLoopRunner";
 import { charterForMode } from "./autonomyCharter";
 import { readTenantCharter } from "./tenantCharterStore";
 import { recordCycleRationale } from "./decisionRationaleStore";
+import { gateAndConsume } from "@/lib/billing/tierGate";
 import { loadAppEnv } from "@/lib/config/env";
 import { sendOutboundNotification } from "@/lib/notifications/outboundNotificationLane";
 import type { OrganizationId } from "@/lib/domain/ids";
@@ -104,6 +105,16 @@ export async function runSchedulerTick(input: RunSchedulerTickInput): Promise<Sc
   const skipped: { tenantId: string; reason: string }[] = [];
 
   for (const tenantId of input.tenantIds) {
+    // Phase 146 — tier cap gate (consumes one cycle credit on allow).
+    const gate = await gateAndConsume({
+      organizationId: String(tenantId),
+      capName: "autonomyCyclesPerDay",
+    });
+    if (!gate.allowed) {
+      skipped.push({ tenantId: String(tenantId), reason: gate.reason });
+      continue;
+    }
+
     // Per-tenant override > caller override > global observer default.
     const tenantRow = await readTenantCharter(String(tenantId)).catch(() => null);
     const mode: AutonomyMode = input.modeOverride ?? tenantRow?.mode ?? "observer";
