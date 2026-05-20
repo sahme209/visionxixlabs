@@ -1581,6 +1581,36 @@ export const VALIDATION_MATRIX: ValidationRow[] = [
   // ---------------------------------------------------------------------------
   { id: "help.ai_compliance_qa", area: "operating_loop", capability: "lib/help/aiComplianceQa — RAG-lite Q&A: AI answers a compliance question using ONLY the supplied capability rows. Strict {text, citedIds} schema. REJECTS hallucinated citations — every id must appear in input. Deterministic fallback ranks rows by token overlap; returns 'no exact matches' when nothing scores > 0.", status: "passing", evidence: "lib/help/aiComplianceQa.ts" },
   { id: "help.ai_compliance_qa_tests", area: "operating_loop", capability: "lib/help/__tests__/aiComplianceQa.test.ts — 4 tests: Mock-only fallback cites keyword-matching rows, irrelevant question returns 'no exact matches', empty rows never throws, citations only from supplied list.", status: "passing", evidence: "lib/help/__tests__/aiComplianceQa.test.ts" },
+
+  // ---------------------------------------------------------------------------
+  // Phase 197 — Runbook prerequisite verifier
+  // ---------------------------------------------------------------------------
+  { id: "runbooks.prerequisite_verifier", area: "operating_loop", capability: "lib/runbooks/prerequisiteVerifier — pure. Closed PrereqKind union (approver_role | feature_flag | service_health | boundary_class | tier_minimum). Returns per-prereq pass/fail + aggregate verdict so operators see staging blockers BEFORE pinning a runbook.", status: "passing", evidence: "lib/runbooks/prerequisiteVerifier.ts" },
+  { id: "runbooks.prerequisite_verifier_tests", area: "operating_loop", capability: "lib/runbooks/__tests__/prerequisiteVerifier.test.ts — 8 tests covering each PrereqKind path + mixed pass/fail tally + empty-input allPassed=true + feature-flag default expected='on' + service_health requires 'operational'.", status: "passing", evidence: "lib/runbooks/__tests__/prerequisiteVerifier.test.ts" },
+
+  // ---------------------------------------------------------------------------
+  // Phase 198 — Auto-rollback decider
+  // ---------------------------------------------------------------------------
+  { id: "releaseops.auto_rollback_decider", area: "operating_loop", capability: "lib/releaseops/autoRollbackDecider — pure. 4 signals (p95 latency ratio, error-rate delta, saturation, anomaly). Verdict: 2+ hits → recommend_rollback; 1 hit → watch; 0 → no_rollback. Confidence = min(1, 0.4*hits). Blocks rollback when minutesSinceDeploy < minMinutes (default 5). p95LatencyBefore=0 guard prevents false-fire.", status: "passing", evidence: "lib/releaseops/autoRollbackDecider.ts" },
+  { id: "releaseops.auto_rollback_decider_tests", area: "operating_loop", capability: "lib/releaseops/__tests__/autoRollbackDecider.test.ts — 8 tests: steady=no_rollback, 1 hit=watch, 2 hits=recommend, 3 hits confidence=1.0, anomaly counts, min-time gate, custom thresholds, p95-before=0 guard.", status: "passing", evidence: "lib/releaseops/__tests__/autoRollbackDecider.test.ts" },
+
+  // ---------------------------------------------------------------------------
+  // Phase 199 — Onboarding readiness checker
+  // ---------------------------------------------------------------------------
+  { id: "onboarding.readiness_checker", area: "operating_loop", capability: "lib/onboarding/onboardingReadinessChecker — pure. 9 milestone keys with default tier requirements (trial → enterprise). Computes completion fraction (required only), nextBlocker (walks ALL_KEYS order), ready boolean. Custom requiredForTiers overrides.", status: "passing", evidence: "lib/onboarding/onboardingReadinessChecker.ts" },
+  { id: "onboarding.readiness_checker_tests", area: "operating_loop", capability: "lib/onboarding/__tests__/onboardingReadinessChecker.test.ts — 6 tests: trial ready with AWS+AI, starter nextBlocker walks ALL_KEYS, growth needs GCP+runbook, ready=true when nothing required missing, completion 0..1, custom requiredForTiers override.", status: "passing", evidence: "lib/onboarding/__tests__/onboardingReadinessChecker.test.ts" },
+
+  // ---------------------------------------------------------------------------
+  // Phase 200 — Security finding deduper
+  // ---------------------------------------------------------------------------
+  { id: "security.finding_deduper", area: "operating_loop", capability: "lib/securityScanner/findingDeduper — pure. Groups raw findings by (controlId, severity, fingerprint), preserving distinct affectedResourceIds + min(firstSeen) + max(lastSeen). Default fingerprint = controlId::severity. Clusters sorted by count desc. collapseRatio surfaces compression.", status: "passing", evidence: "lib/securityScanner/findingDeduper.ts" },
+  { id: "security.finding_deduper_tests", area: "operating_loop", capability: "lib/securityScanner/__tests__/findingDeduper.test.ts — 8 tests: empty input, default fingerprint grouping, different severity splits, explicit fingerprint splits within same control+severity, cluster sort by count desc, collapseRatio math, firstSeen/lastSeen aggregation, resource id deduplication within cluster.", status: "passing", evidence: "lib/securityScanner/__tests__/findingDeduper.test.ts" },
+
+  // ---------------------------------------------------------------------------
+  // Phase 201 — AI rollback narrator
+  // ---------------------------------------------------------------------------
+  { id: "releaseops.ai_rollback_narrator", area: "operating_loop", capability: "lib/releaseops/aiRollbackNarrator — 2-3 sentence operator-facing rollback summary via the AI manager. Fallback template ALWAYS reaffirms advisory-only wording. NEVER throws. Includes service name, minutes since deploy, supplied reasons.", status: "passing", evidence: "lib/releaseops/aiRollbackNarrator.ts" },
+  { id: "releaseops.ai_rollback_narrator_tests", area: "operating_loop", capability: "lib/releaseops/__tests__/aiRollbackNarrator.test.ts — 3 tests: Mock-only fallback includes service + minutes + reasons + 'advisory', no_rollback verdict handled cleanly, empty reasons list renders 'no signals tripped'.", status: "passing", evidence: "lib/releaseops/__tests__/aiRollbackNarrator.test.ts" },
 ];
 
 // ---------------------------------------------------------------------------
