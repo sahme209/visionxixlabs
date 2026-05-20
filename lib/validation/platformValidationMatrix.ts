@@ -1945,6 +1945,36 @@ export const VALIDATION_MATRIX: ValidationRow[] = [
   // ---------------------------------------------------------------------------
   { id: "ml.feature_store_freshness", area: "operating_loop", capability: "lib/ml/featureStoreFreshness — pure. Per-feature ago/SLA comparison + slowRefresh (last ≥ 2× mean) flag. Closed status union fresh | warn_near_sla (≥80% of SLA) | stale. Sorted stale → warn → fresh, then by hoursSinceRefresh desc within tier.", status: "passing", evidence: "lib/ml/featureStoreFreshness.ts" },
   { id: "ml.feature_store_freshness_tests", area: "operating_loop", capability: "lib/ml/__tests__/featureStoreFreshness.test.ts — 8 tests: empty ok, fresh, warn_near_sla, stale, slowRefresh ≥2×, Infinity ratio when mean missing, sort order, status totals.", status: "passing", evidence: "lib/ml/__tests__/featureStoreFreshness.test.ts" },
+
+  // ---------------------------------------------------------------------------
+  // Phase 257 — Desktop OS-platform detector + capability map
+  // ---------------------------------------------------------------------------
+  { id: "desktop.platform_capabilities", area: "desktop", capability: "lib/desktop/platformCapabilities — pure. Detects macos / windows / linux / unknown from Node process.platform OR user-agent. Closed PlatformCapabilities shape per OS: hasNativeKeychain, hasOsNotifications, hasTrayIcon, requiresSignedUpdates, supportsLoginItem, packageExt (dmg | exe | AppImage | tar.gz), supportsCustomScheme.", status: "passing", evidence: "lib/desktop/platformCapabilities.ts" },
+  { id: "desktop.platform_capabilities_tests", area: "desktop", capability: "lib/desktop/__tests__/platformCapabilities.test.ts — 8 tests: nodePlatform mapping, UA fallback per OS, unknown defaults, signed updates flag per OS, package extension per OS, unknown defaults to safe-disabled, detectAndDescribe convenience.", status: "passing", evidence: "lib/desktop/__tests__/platformCapabilities.test.ts" },
+
+  // ---------------------------------------------------------------------------
+  // Phase 258 — Desktop notification builder (macOS / Windows / Linux)
+  // ---------------------------------------------------------------------------
+  { id: "desktop.notification_builder", area: "desktop", capability: "lib/desktop/desktopNotificationBuilder — pure. Per-OS payloads: macOS UNNotificationContent shape (title/subtitle/body/sound/threadIdentifier/userInfo), Windows Toast XML with scenario='urgent' on critical + XML-escaped fields, Linux libnotify (summary/body/urgency/hints/actions). Title clipped at 60, subtitle 80, body 200. Severity→sound (mac) / urgency (linux) / scenario (win).", status: "passing", evidence: "lib/desktop/desktopNotificationBuilder.ts" },
+  { id: "desktop.notification_builder_tests", area: "desktop", capability: "lib/desktop/__tests__/desktopNotificationBuilder.test.ts — 13 tests: title/body clip per OS, severity → sound/urgency/scenario mapping, threadIdentifier groups, XML escape, primaryAction emits <action> / actions array, pickByOs router, unknown OS → null.", status: "passing", evidence: "lib/desktop/__tests__/desktopNotificationBuilder.test.ts" },
+
+  // ---------------------------------------------------------------------------
+  // Phase 259 — Cross-platform keychain abstraction
+  // ---------------------------------------------------------------------------
+  { id: "desktop.keychain_abstraction", area: "desktop", capability: "lib/desktop/keychainAbstraction — pure. Closed KeychainBackend union (macos_keychain | win_credential_manager | linux_secret_service | in_memory_fallback). Service name namespaced 'axiom.visionxixlabs.<tenantId>'. Account = closed secret-slot union. assessKeychainHealth verdict ladder operational/degraded(>1500ms)/down.", status: "passing", evidence: "lib/desktop/keychainAbstraction.ts" },
+  { id: "desktop.keychain_abstraction_tests", area: "desktop", capability: "lib/desktop/__tests__/keychainAbstraction.test.ts — 10 tests: per-OS backend mapping, unknown→in_memory_fallback, namespaced service, account matches secret slot, syncable=false default, health ok/degraded/down with errorKind passthrough.", status: "passing", evidence: "lib/desktop/__tests__/keychainAbstraction.test.ts" },
+
+  // ---------------------------------------------------------------------------
+  // Phase 260 — Desktop auto-updater manifest builder
+  // ---------------------------------------------------------------------------
+  { id: "desktop.auto_updater_manifest", area: "desktop", capability: "lib/desktop/autoUpdaterManifest — pure. Validates semver + sha256 hex (64-char) + sizeBytes > 0; rejects duplicate OS slots. decideUpdate returns up_to_date / update_available / must_update (when installed < minSupportedVersion) / unsupported_os. Pre-release semver compared lexicographically.", status: "passing", evidence: "lib/desktop/autoUpdaterManifest.ts" },
+  { id: "desktop.auto_updater_manifest_tests", area: "desktop", capability: "lib/desktop/__tests__/autoUpdaterManifest.test.ts — 12 tests: happy-path manifest, non-semver reject, bad sha256 reject, zero size reject, duplicate OS reject, missing-OS slot null, up_to_date / update_available / must_update / unsupported_os branches, newer installed → up_to_date.", status: "passing", evidence: "lib/desktop/__tests__/autoUpdaterManifest.test.ts" },
+
+  // ---------------------------------------------------------------------------
+  // Phase 261 — Desktop tray-icon state machine
+  // ---------------------------------------------------------------------------
+  { id: "desktop.tray_icon_state_machine", area: "desktop", capability: "lib/desktop/trayIconStateMachine — pure. Closed TrayVariant union (ok | attention | critical | offline | needs_login). Decision ladder: offline overrides → needs_login → critical (platform/integration down OR ≥3 unread incidents) → attention (any pending) → ok. Menu kinds: header / approvals / incidents / status / ai_provider / integrations / open_app / quit.", status: "passing", evidence: "lib/desktop/trayIconStateMachine.ts" },
+  { id: "desktop.tray_icon_state_machine_tests", area: "desktop", capability: "lib/desktop/__tests__/trayIconStateMachine.test.ts — 11 tests: all-clear ok, offline overrides, require_login, 3+ incidents critical, platform/integration down critical, pending approvals attention, session warn attention, full menu rows, offline menu minimal, mock fallback labeling.", status: "passing", evidence: "lib/desktop/__tests__/trayIconStateMachine.test.ts" },
 ];
 
 // ---------------------------------------------------------------------------
