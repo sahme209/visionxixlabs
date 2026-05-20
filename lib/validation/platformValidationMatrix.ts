@@ -1461,6 +1461,36 @@ export const VALIDATION_MATRIX: ValidationRow[] = [
   { id: "ui.workflow_translator_page", area: "command_center", capability: "/dashboard/workflow-translator — operator types NL intent → reviewable draft (name + description + trigger + actions list). Shows provider/model/latency + aiUsed flag + typed rejectionReason. Sidebar entry under Operator.", status: "passing", evidence: "app/dashboard/workflow-translator/page.tsx" },
   { id: "ui.outbound_digest_page", area: "command_center", capability: "/dashboard/outbound-digest — outcome split stat cards + by-kind (with failed sub-count) + by-severity + top-10 dedupe groups + top-10 correlation ids. 24h/7d/30d window toggle. Sidebar entry under Engines.", status: "passing", evidence: "app/dashboard/outbound-digest/page.tsx" },
   { id: "ui.tenant_insights_page", area: "command_center", capability: "/dashboard/tenant-insights — one-paragraph weekly narrative + 8 aggregate stat cards (decided, approved, applied, rejected, autonomy cycles, outbound sends, outbound failures, dissent). 7/14/30 day toggle. Footer shows provider + model + aiUsed. Sidebar entry under Operator.", status: "passing", evidence: "app/dashboard/tenant-insights/page.tsx" },
+
+  // ---------------------------------------------------------------------------
+  // Phase 177 — Anomaly detector (z-score + EWMA)
+  // ---------------------------------------------------------------------------
+  { id: "telemetry.anomaly_detector", area: "operating_loop", capability: "lib/telemetry/anomalyDetector — pure detectAnomalies(series, opts). Returns per-point { value, zScore, ewma, ewmaStd, anomaly } + flagged indices. Z-score over trailing window (default 20) + EWMA-band cross (alpha default 0.3) — point flagged if either crosses bandSigma (default 3). NaN-safe; clamps inputs.", status: "passing", evidence: "lib/telemetry/anomalyDetector.ts" },
+  { id: "telemetry.anomaly_detector_tests", area: "operating_loop", capability: "lib/telemetry/__tests__/anomalyDetector.test.ts — 8 tests: empty series, constant series no-flag, single-sharp-spike flagged, steady vs spiky comparison, custom bandSigma honored, window clamp >= 2, alpha clamp (0,1], global mean/std.", status: "passing", evidence: "lib/telemetry/__tests__/anomalyDetector.test.ts" },
+
+  // ---------------------------------------------------------------------------
+  // Phase 178 — Cost forecaster
+  // ---------------------------------------------------------------------------
+  { id: "billing.cost_forecaster", area: "operating_loop", capability: "lib/billing/costForecaster — pure forecastCost(input). Linear extrapolation from a rolling-window of daily usage values. Computes averageDailyUsage, projectedMonthEnd, windowTotal, willExceedCap, capRatio. Clamps daysInMonth to [28,31] and asOfDay to [1, daysInMonth].", status: "passing", evidence: "lib/billing/costForecaster.ts" },
+  { id: "billing.cost_forecaster_tests", area: "operating_loop", capability: "lib/billing/__tests__/costForecaster.test.ts — 7 tests: empty window zero, average + projection math, willExceedCap flag, under-cap no-flag, no-cap capRatio=0, daysInMonth clamp, asOfDay clamp.", status: "passing", evidence: "lib/billing/__tests__/costForecaster.test.ts" },
+
+  // ---------------------------------------------------------------------------
+  // Phase 179 — AI explain-this
+  // ---------------------------------------------------------------------------
+  { id: "ai.explainer", area: "operating_loop", capability: "lib/ai/aiExplainer — explainSubject({kind, label, context, audience}). Closed ExplainKind union (security_finding | cloud_resource | alert | runbook_step | control | metric). Three audience prompts (operator/executive/engineer). 500-char clip. Falls back to a labeled template when Mock answers or provider errors. NEVER throws.", status: "passing", evidence: "lib/ai/aiExplainer.ts" },
+  { id: "ai.explainer_tests", area: "operating_loop", capability: "lib/ai/__tests__/aiExplainer.test.ts — 3 tests: Mock-only fall-through with subject kind + label preserved, context snippet inclusion, audience tagging.", status: "passing", evidence: "lib/ai/__tests__/aiExplainer.test.ts" },
+
+  // ---------------------------------------------------------------------------
+  // Phase 180 — AI root-cause suggester
+  // ---------------------------------------------------------------------------
+  { id: "incidents.ai_rca_suggester", area: "operating_loop", capability: "lib/incidents/aiRootCauseSuggester — suggestRootCauses(seed). Extracts up to 5 candidates, validates each (non-empty cause + mitigation, confidence clamped to [0,1]), drops invalid entries, sorts by confidence descending. Mitigation language must remain advisory — never imply auto-execution. Deterministic 3-candidate fallback when Mock answers / model returns invalid / provider errors.", status: "passing", evidence: "lib/incidents/aiRootCauseSuggester.ts" },
+  { id: "incidents.ai_rca_suggester_tests", area: "operating_loop", capability: "lib/incidents/__tests__/aiRootCauseSuggester.test.ts — 4 tests: Mock fallback returns 3 candidates, all candidates mention the service name, every candidate has cause + mitigation + confidence in [0,1], mitigation language is advisory (matches /advisory|review|stage|consider/).", status: "passing", evidence: "lib/incidents/__tests__/aiRootCauseSuggester.test.ts" },
+
+  // ---------------------------------------------------------------------------
+  // Phase 181 — Workflow template catalog
+  // ---------------------------------------------------------------------------
+  { id: "workflows.template_catalog", area: "operating_loop", capability: "lib/workflows/workflowTemplateCatalog — deterministic library of 7 canned workflow drafts across 4 areas (security, cost, reliability, compliance). Same closed unions as aiWorkflowTranslator so a pinned template lands in the same review flow. listTemplates / listTemplatesByArea / findTemplate / TEMPLATE_AREAS. Approval-only-no-execution.", status: "passing", evidence: "lib/workflows/workflowTemplateCatalog.ts" },
+  { id: "workflows.template_catalog_tests", area: "operating_loop", capability: "lib/workflows/__tests__/workflowTemplateCatalog.test.ts — 7 tests: per-area coverage, allowed trigger kinds, allowed action kinds, no execution-kind action (closed-union contract), action list + selector non-empty, findTemplate hits + misses, unique ids.", status: "passing", evidence: "lib/workflows/__tests__/workflowTemplateCatalog.test.ts" },
 ];
 
 // ---------------------------------------------------------------------------
