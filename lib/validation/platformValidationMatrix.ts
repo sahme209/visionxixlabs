@@ -1825,6 +1825,36 @@ export const VALIDATION_MATRIX: ValidationRow[] = [
   // ---------------------------------------------------------------------------
   { id: "integrations.integration_catalog", area: "operating_loop", capability: "lib/integrations/integrationCatalog — declarative source of truth. 6 integrations (slack/teams/outlook/gmail/pagerduty/webhook_generic) × per-mode required-key lists. checkIntegrationReadiness compares (mode, env-set booleans) and surfaces missingKeys without reading the env values themselves.", status: "passing", evidence: "lib/integrations/integrationCatalog.ts" },
   { id: "integrations.integration_catalog_tests", area: "operating_loop", capability: "lib/integrations/__tests__/integrationCatalog.test.ts — 8 tests: catalog roster, unknown name null, every mode has required keys, readiness configured=true on full env, missingKeys populated, no-mode skip, unknown-mode skip, Outlook Graph creds present.", status: "passing", evidence: "lib/integrations/__tests__/integrationCatalog.test.ts" },
+
+  // ---------------------------------------------------------------------------
+  // Phase 237 — Reasoner-agent hypothesis weaver
+  // ---------------------------------------------------------------------------
+  { id: "agents.reasoner_hypothesis_weaver", area: "operating_loop", capability: "lib/agents/reasonerHypothesisWeaver — pure. Closed SignalKind union (6 kinds) and HypothesisKind union (6 kinds). Folds detector signals into 1 hypothesis per (kind, target) group; weighted mean confidence clamped [0,1]. expectedNextAgents differs per kind (which agents should run next). Sorted by confidence desc.", status: "passing", evidence: "lib/agents/reasonerHypothesisWeaver.ts" },
+  { id: "agents.reasoner_hypothesis_weaver_tests", area: "operating_loop", capability: "lib/agents/__tests__/reasonerHypothesisWeaver.test.ts — 8 tests: empty input, single signal mapping, signal merge into one hypothesis per group, different targets split, sort by confidence desc, expectedNextAgents differs by kind, confidence clamp, each signal kind maps to a distinct hypothesis kind.", status: "passing", evidence: "lib/agents/__tests__/reasonerHypothesisWeaver.test.ts" },
+
+  // ---------------------------------------------------------------------------
+  // Phase 238 — Simulator-agent sandbox-spec builder
+  // ---------------------------------------------------------------------------
+  { id: "agents.simulator_sandbox_spec", area: "operating_loop", capability: "lib/agents/simulatorSandboxSpec — pure. Closed SandboxBackend union (ephemeral_vm | k8s_namespace | localstack | in_memory_mock). Per-hypothesis backend + timeoutSec + assertions. Every spec includes a 'no_destructive_calls' assertion first. needsLiveCreds only for drift + exploit hypotheses. cloneResources sorted alphabetically.", status: "passing", evidence: "lib/agents/simulatorSandboxSpec.ts" },
+  { id: "agents.simulator_sandbox_spec_tests", area: "operating_loop", capability: "lib/agents/__tests__/simulatorSandboxSpec.test.ts — 8 tests: drift backend, slo_burn backend + metric assertion, exploit ephemeral_vm + 15-min timeout, unknown kind fallback, no_destructive_calls always first, cloneResources sorted, needsLiveCreds boundaries, proposedChange clipped 1000.", status: "passing", evidence: "lib/agents/__tests__/simulatorSandboxSpec.test.ts" },
+
+  // ---------------------------------------------------------------------------
+  // Phase 239 — Policy-gate agent evaluator
+  // ---------------------------------------------------------------------------
+  { id: "agents.policy_gate_evaluator", area: "operating_loop", capability: "lib/agents/policyGateEvaluator — pure. Closed PolicyRuleKind union (require_tag | forbid_action | max_blast_radius | require_role | require_signed_terraform). max_blast_radius enforces a strict rank ladder. Overall = fail if any rule fails. Operator-readable detail string per row.", status: "passing", evidence: "lib/agents/policyGateEvaluator.ts" },
+  { id: "agents.policy_gate_evaluator_tests", area: "operating_loop", capability: "lib/agents/__tests__/policyGateEvaluator.test.ts — 9 tests: empty rules pass, require_tag present + missing, forbid_action present + absent, max_blast_radius ladder, require_role list check, require_signed_terraform flag, mixed-rule tally.", status: "passing", evidence: "lib/agents/__tests__/policyGateEvaluator.test.ts" },
+
+  // ---------------------------------------------------------------------------
+  // Phase 240 — Boundary-gate catalog + classifier
+  // ---------------------------------------------------------------------------
+  { id: "agents.boundary_gate_catalog", area: "operating_loop", capability: "lib/agents/boundaryGateCatalog — pure. Closed BoundaryClass union (read_only | low_blast_radius | service_scoped | account_scoped | org_scoped | data_plane). Per-class required approver roles + minApprovals + requiresAllRequiredRoles strict flag. classifyBoundary maps (readOnly, touchesCustomerData, blastRadius) to the canonical class.", status: "passing", evidence: "lib/agents/boundaryGateCatalog.ts" },
+  { id: "agents.boundary_gate_catalog_tests", area: "operating_loop", capability: "lib/agents/__tests__/boundaryGateCatalog.test.ts — 7 tests: 6 classes present, unknown null, minApprovals + roles positive, read_only wins, data_plane wins, blast-radius ladder, strict flag on org_scoped + data_plane only.", status: "passing", evidence: "lib/agents/__tests__/boundaryGateCatalog.test.ts" },
+
+  // ---------------------------------------------------------------------------
+  // Phase 241 — Verifier-agent post-execution checker
+  // ---------------------------------------------------------------------------
+  { id: "agents.verifier_post_exec_checker", area: "operating_loop", capability: "lib/agents/verifierPostExecChecker — pure. Compares expected vs observed key/values + optional metricsDelta (p95LatencyRatio ≤ 1.5, errorRateDelta ≤ 0.01). Verdict ladder: pass (all expectations met + metrics ok); partial_pass (>=1 passed + at most 1 failed + metrics ok); fail otherwise.", status: "passing", evidence: "lib/agents/verifierPostExecChecker.ts" },
+  { id: "agents.verifier_post_exec_checker_tests", area: "operating_loop", capability: "lib/agents/__tests__/verifierPostExecChecker.test.ts — 8 tests: all-met pass, missing observation fail, 0 passes fail, partial_pass branch, latencyRatio>1.5 fail, errorRateDelta>0.01 fail, no metricsDelta nullable, row carries expected+observed.", status: "passing", evidence: "lib/agents/__tests__/verifierPostExecChecker.test.ts" },
 ];
 
 // ---------------------------------------------------------------------------
