@@ -66,6 +66,7 @@ const GROUPS: NavGroup[] = [
       { href: "/dashboard/agent-proposals",    label: "Method Proposals", icon: CpuChipIcon           },
       { href: "/dashboard/agent-activity",     label: "Agent Activity",   icon: ChartBarIcon          },
       { href: "/dashboard/ai-settings",        label: "AI Settings",      icon: SparklesIcon          },
+      { href: "/dashboard/ai-usage",           label: "AI Usage",         icon: ChartBarIcon          },
       { href: "/dashboard/executive-summary",  label: "Executive summary",icon: DocumentTextIcon     },
       { href: "/dashboard/priorities",         label: "Priorities",       icon: ChartBarIcon         },
       { href: "/dashboard/next-actions",       label: "Next actions",     icon: BoltIcon             },

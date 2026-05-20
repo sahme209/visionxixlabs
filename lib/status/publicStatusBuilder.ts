@@ -19,6 +19,7 @@ import { prisma } from "@/lib/db";
 import { CRON_CATALOG } from "@/lib/autonomy/cronHealthCatalog";
 import { readCronHealth } from "@/lib/autonomy/cronHealthTracker";
 import { runAgiSelfDiagnostic } from "@/lib/autonomy/agiSelfDiagnostic";
+import { getAIProviderManager } from "@/lib/ai/AIProviderManager";
 
 export type StatusVerdict = "operational" | "degraded" | "down" | "unknown";
 
@@ -45,6 +46,7 @@ export async function buildPublicStatus(): Promise<PublicStatusReport> {
   components.push(await checkBillingPlane());
   components.push(checkCronSelfHeal());
   components.push(checkAgiSpine());
+  components.push(checkAiProvider());
 
   const overall = rollUp(components);
 
@@ -188,6 +190,31 @@ function checkAgiSpine(): StatusComponent {
     };
   } catch {
     return { id: "agi_spine", label: "AGI loop spine", verdict: "unknown", detail: "Self-diagnostic threw." };
+  }
+}
+
+function checkAiProvider(): StatusComponent {
+  try {
+    const mgr = getAIProviderManager();
+    const status = mgr.status();
+    const realConfigured = status.filter((s) => s.configured && s.provider !== "mock");
+    if (realConfigured.length === 0) {
+      return {
+        id: "ai_provider",
+        label: "AI provider (free tier)",
+        verdict: "degraded",
+        detail: "No real AI provider configured — falling through to the deterministic Mock. Set GITHUB_TOKEN, GEMINI_API_KEY, or another free key.",
+      };
+    }
+    const active = realConfigured[0];
+    return {
+      id: "ai_provider",
+      label: "AI provider (free tier)",
+      verdict: "operational",
+      detail: `${realConfigured.length} provider(s) configured. Active: ${active.provider} (${active.defaultModel}).`,
+    };
+  } catch {
+    return { id: "ai_provider", label: "AI provider (free tier)", verdict: "unknown", detail: "AI provider manager threw on init." };
   }
 }
 

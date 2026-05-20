@@ -1392,6 +1392,35 @@ export const VALIDATION_MATRIX: ValidationRow[] = [
   { id: "ai.free.generate_route", area: "operating_loop", capability: "POST /api/ai/generate — body { prompt, system?, maxTokens?, temperature?, model?, only? }. Prompt capped at 8000 chars. Returns AITextResponse (text + provider + model + latencyMs + finishReason + usage). safetyContract 'audit_read_only'.", status: "passing", evidence: "app/api/ai/generate/route.ts" },
   { id: "ui.ai_settings_page", area: "command_center", capability: "/dashboard/ai-settings — three panels: active provider/model summary, configured providers (per-row env readiness + default model + collapsible recommended-model list), health-check + 'Try it' generation tester. Sidebar entry under Operator.", status: "passing", evidence: "app/dashboard/ai-settings/page.tsx" },
   { id: "ai.free.setup_docs", area: "operating_loop", capability: "lib/ai/FREE_PROVIDERS.md — operator-facing setup: env-var table, fallback-chain explanation, usage code samples, logging guarantees, paid-provider-addition note.", status: "passing", evidence: "lib/ai/FREE_PROVIDERS.md" },
+
+  // ---------------------------------------------------------------------------
+  // Phase 162 — AI usage analytics dashboard
+  // ---------------------------------------------------------------------------
+  { id: "ai.usage_route", area: "operating_loop", capability: "GET /api/ai/usage?tail=N — returns summarizeUsage() + last N events. tail clamped to [1, 500]. Underlying buffer never records prompts/keys/tokens. safetyContract 'audit_read_only'.", status: "passing", evidence: "app/api/ai/usage/route.ts" },
+  { id: "ui.ai_usage_page", area: "command_center", capability: "/dashboard/ai-usage — two tables (by provider, by task) + recent-event tail. Operator-shareable: prompts and keys are never logged so the dashboard is safe to send. Sidebar entry under Operator.", status: "passing", evidence: "app/dashboard/ai-usage/page.tsx" },
+
+  // ---------------------------------------------------------------------------
+  // Phase 163 — AI provider in public /status snapshot
+  // ---------------------------------------------------------------------------
+  { id: "status.ai_provider_component", area: "operating_loop", capability: "publicStatusBuilder.checkAiProvider — sixth component in the public /status snapshot. operational when at least one non-mock provider is configured; degraded when only Mock is available; unknown on manager init error. Detail includes active provider name + default model id (never the API key).", status: "passing", evidence: "lib/status/publicStatusBuilder.ts" },
+
+  // ---------------------------------------------------------------------------
+  // Phase 164 — AI-powered incident summarizer
+  // ---------------------------------------------------------------------------
+  { id: "notifications.ai_incident_summarizer", area: "operating_loop", capability: "lib/notifications/aiIncidentSummarizer — best-effort 1-line outbound pre-text rewriter via the AI manager. NEVER throws. Falls back to deterministic [SEVERITY] headline — detail clipped at 240 chars when Mock answers, on parse failure, or on provider error. Maps severity input to [HIGH]/[CRITICAL] prefix; system prompt forbids emojis + caps reply at 18 words.", status: "passing", evidence: "lib/notifications/aiIncidentSummarizer.ts" },
+  { id: "notifications.ai_incident_summarizer_tests", area: "operating_loop", capability: "lib/notifications/__tests__/aiIncidentSummarizer.test.ts — 4 tests: Mock-only fall-through to deterministic clip, severity prefix, long-detail clipping, empty headline never throws.", status: "passing", evidence: "lib/notifications/__tests__/aiIncidentSummarizer.test.ts" },
+
+  // ---------------------------------------------------------------------------
+  // Phase 165 — AI tenant token-budget tracker
+  // ---------------------------------------------------------------------------
+  { id: "ai.token_budget", area: "operating_loop", capability: "lib/ai/aiTokenBudget — in-process daily rolling bucket per tenant. recordTokenUsage(prompt+completion). assertWithinBudget gates new calls with a typed reason. UTC midnight reset via dateKey diff. DEFAULT_FREE_CAP=200000 tokens/day. No DB round-trip per call.", status: "passing", evidence: "lib/ai/aiTokenBudget.ts" },
+  { id: "ai.token_budget_tests", area: "operating_loop", capability: "lib/ai/__tests__/aiTokenBudget.test.ts — 7 tests: zero-on-fresh-tenant, accumulation, undefined/zero counts no-op, per-tenant scope, capped boundary, default cap headroom, UTC date roll.", status: "passing", evidence: "lib/ai/__tests__/aiTokenBudget.test.ts" },
+
+  // ---------------------------------------------------------------------------
+  // Phase 166 — AI-powered help search re-ranker
+  // ---------------------------------------------------------------------------
+  { id: "help.ai_reranker", area: "operating_loop", capability: "lib/help/aiHelpReranker — best-effort AI re-ranker. Uses extractStructuredData with a strict JSON shape ({bestId, rationale}). REJECTS hallucinated ids — bestId must appear in the supplied candidate list. Falls back to first deterministic candidate when Mock answers, when JSON parse fails, when id not in candidates, or when the chain errors. Rationale clipped at 200 chars.", status: "passing", evidence: "lib/help/aiHelpReranker.ts" },
+  { id: "help.ai_reranker_tests", area: "operating_loop", capability: "lib/help/__tests__/aiHelpReranker.test.ts — 3 tests: Mock-only fall-through to first candidate, empty-candidate-list returns empty bestId, rationale is always non-empty.", status: "passing", evidence: "lib/help/__tests__/aiHelpReranker.test.ts" },
 ];
 
 // ---------------------------------------------------------------------------
