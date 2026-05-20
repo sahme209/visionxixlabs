@@ -1731,6 +1731,36 @@ export const VALIDATION_MATRIX: ValidationRow[] = [
   // ---------------------------------------------------------------------------
   { id: "compliance.export_size_estimator", area: "compliance", capability: "lib/compliance/exportSizeEstimator — pure. Multiplies per-slice row count by typed avg byte cost + wrapper overhead + optional billing plan. Size ladder: small <100KB, medium <5MB, large <50MB, very_large ≥50MB. Warnings on large + very_large.", status: "passing", evidence: "lib/compliance/exportSizeEstimator.ts" },
   { id: "compliance.export_size_estimator_tests", area: "compliance", capability: "lib/compliance/__tests__/exportSizeEstimator.test.ts — 7 tests: zero baseline, billing-plan +2KB delta, medium, large + warning, very_large + warning, humanReadable unit picker, perSlice multiplication.", status: "passing", evidence: "lib/compliance/__tests__/exportSizeEstimator.test.ts" },
+
+  // ---------------------------------------------------------------------------
+  // Phase 222 — Idempotency-key store
+  // ---------------------------------------------------------------------------
+  { id: "api.idempotency_key_store", area: "operating_loop", capability: "lib/api/idempotencyKeyStore — in-process Map (bounded 5000) for short-circuiting duplicate deliveries. rememberIdempotencyKey returns isNew + previousResultHash on collision. TTL eviction; ttlMs clamped [60s, 7d]. Scopes independent. Never throws.", status: "passing", evidence: "lib/api/idempotencyKeyStore.ts" },
+  { id: "api.idempotency_key_store_tests", area: "operating_loop", capability: "lib/api/__tests__/idempotencyKeyStore.test.ts — 7 tests: first call new, duplicate isNew=false, scope isolation, read returns entry or null, TTL eviction, ttlMs clamp, store size reflects state.", status: "passing", evidence: "lib/api/__tests__/idempotencyKeyStore.test.ts" },
+
+  // ---------------------------------------------------------------------------
+  // Phase 223 — Rate-limit budget
+  // ---------------------------------------------------------------------------
+  { id: "api.rate_limit_budget", area: "operating_loop", capability: "lib/api/rateLimitBudget — pure-ish sliding-window per-key counter. consumeRateLimit / peekRateLimit. Returns allowed + remaining + retryAfterMs. budget clamped >=1; windowMs clamped >=1000. Per-key isolation.", status: "passing", evidence: "lib/api/rateLimitBudget.ts" },
+  { id: "api.rate_limit_budget_tests", area: "operating_loop", capability: "lib/api/__tests__/rateLimitBudget.test.ts — 7 tests: first call allowed remaining=N-1, exhaustion denies with retryAfterMs, window fall-off, peek does not consume, key isolation, budget clamp, windowMs clamp.", status: "passing", evidence: "lib/api/__tests__/rateLimitBudget.test.ts" },
+
+  // ---------------------------------------------------------------------------
+  // Phase 224 — AI resource auto-tagger
+  // ---------------------------------------------------------------------------
+  { id: "cloud.ai_resource_tagger", area: "operating_loop", capability: "lib/cloud/aiResourceTagger — closed allowed-value dictionary per required tag key. REJECTS values not in the allowed list. Deterministic fallback: heuristic service-name substring match against allowed values. Existing tag keys skipped. Advisory only.", status: "passing", evidence: "lib/cloud/aiResourceTagger.ts" },
+  { id: "cloud.ai_resource_tagger_tests", area: "operating_loop", capability: "lib/cloud/__tests__/aiResourceTagger.test.ts — 5 tests: empty resources, service-name substring match, no-match → unsureKeys, existing tags not re-suggested, aiUsed=false on Mock.", status: "passing", evidence: "lib/cloud/__tests__/aiResourceTagger.test.ts" },
+
+  // ---------------------------------------------------------------------------
+  // Phase 225 — Multi-cloud cost normalizer
+  // ---------------------------------------------------------------------------
+  { id: "billing.multi_cloud_cost_normalizer", area: "operating_loop", capability: "lib/billing/multiCloudCostNormalizer — pure. Closed CloudProvider union (aws | azure | gcp). usd / micros_usd / native unit handling. Unknown currency → unnormalized list (never thrown). perProvider / perDay / perService rollups + total. Rounds to 2 decimals. Currency case-insensitive.", status: "passing", evidence: "lib/billing/multiCloudCostNormalizer.ts" },
+  { id: "billing.multi_cloud_cost_normalizer_tests", area: "operating_loop", capability: "lib/billing/__tests__/multiCloudCostNormalizer.test.ts — 8 tests: empty, usd passthrough, micros_usd ÷ 1e6, native via fx, missing fx → unnormalized, rollup sort orders, 2-decimal rounding, currency case-insensitive.", status: "passing", evidence: "lib/billing/__tests__/multiCloudCostNormalizer.test.ts" },
+
+  // ---------------------------------------------------------------------------
+  // Phase 226 — Webhook signature validator
+  // ---------------------------------------------------------------------------
+  { id: "security.webhook_signature_validator", area: "operating_loop", capability: "lib/security/webhookSignatureValidator — HMAC-SHA256 with timing-safe compare. Optional timestamp anti-replay (default ±300s). Closed reason union (bad_signature | missing_secret | stale_timestamp | future_timestamp | malformed_hex). signWebhookPayload helper for callers.", status: "passing", evidence: "lib/security/webhookSignatureValidator.ts" },
+  { id: "security.webhook_signature_validator_tests", area: "operating_loop", capability: "lib/security/__tests__/webhookSignatureValidator.test.ts — 8 tests: valid sig passes, missing secret, malformed hex, tampered body, stale timestamp, future timestamp, within tolerance, different secret timing-safe.", status: "passing", evidence: "lib/security/__tests__/webhookSignatureValidator.test.ts" },
 ];
 
 // ---------------------------------------------------------------------------
