@@ -1262,6 +1262,67 @@ model StagedRemediationRunbook {
   @@index([organizationId, runbookId])
 }
 
+/// Agent message bus row. Every typed message the autonomy stages
+/// publish lands here for audit + replay. Bus is in-memory at runtime
+/// for fan-out; Prisma is the durable spine so operators can answer
+/// "who told what to whom" weeks later.
+model AgentBusMessage {
+  id              String   @id
+  organizationId  String
+  /// Sender agent role (closed AgentRole union literal).
+  sender          String
+  /// Optional named recipient; null = broadcast.
+  recipient       String?
+  /// Closed AgentMessageKind union literal.
+  kind            String
+  /// Operator-readable summary (≤500 chars).
+  summary         String
+  /// Structured payload (kind-specific).
+  payload         Json
+  /// Stable correlation id linking related back-and-forth.
+  threadId        String?
+  createdAt       DateTime @default(now())
+
+  @@index([organizationId, createdAt])
+  @@index([threadId, createdAt])
+  @@index([sender, createdAt])
+}
+
+/// Agent-authored proposal to improve a recipe / template / charter
+/// default. Reviewed by operators on /dashboard/agent-proposals; on
+/// approval the IaC pipeline (or future apply lane) picks it up.
+/// Status is intentionally three-valued so operators can see which
+/// proposals were considered + rejected.
+model MethodProposal {
+  id              String   @id
+  organizationId  String
+  /// Author agent role.
+  authorAgent     String
+  /// Target subsystem (closed ProposalTarget union literal):
+  /// "runbook_recipe" | "policy_template" | "charter_default" |
+  /// "help_entry" | "tier_cap"
+  target          String
+  /// Short human-readable label.
+  label           String
+  /// Operator-readable rationale (≤2000 chars).
+  rationale       String
+  /// Proposed diff (kind-specific JSON shape).
+  proposedDiff    Json
+  /// 0..1 confidence the author has in the change.
+  confidence      Float
+  /// "pending" | "approved" | "rejected" | "applied" | "superseded"
+  status          String   @default("pending")
+  decidedBy       String?
+  decidedAt       DateTime?
+  decisionReason  String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([organizationId, status, createdAt])
+  @@index([target, status])
+  @@index([authorAgent, createdAt])
+}
+
 /// Per-tenant per-day usage counter. Single row per (tenant, capName,
 /// dateKey YYYY-MM-DD). Incremented by the autonomy scheduler +
 /// outbound lane; read by the tier-cap enforcer to decide allow/deny.

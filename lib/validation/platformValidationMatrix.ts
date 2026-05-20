@@ -1299,6 +1299,39 @@ export const VALIDATION_MATRIX: ValidationRow[] = [
   { id: "help.no_match_suggester", area: "operating_loop", capability: "lib/help/noMatchSuggester — reads HelpQueryRecord rows where verdict='no_match', clusters by normalized token-sorted query, picks a best-fit category via token-overlap with existing HelpEntry keywords, returns a typed DocSuggestion with suggestedKeywords + confidence. Pre-existing HELP_ENTRIES titles are excluded so we don't suggest creating an entry that already exists. DB failure returns an empty list, not a crash.", status: "passing", evidence: "lib/help/noMatchSuggester.ts" },
   { id: "help.suggestions_route", area: "operating_loop", capability: "GET /api/help/suggestions?limit=N — typed envelope returning NoMatchSuggestReport. safetyContract 'trust_center_read_only'.", status: "passing", evidence: "app/api/help/suggestions/route.ts" },
   { id: "ui.help_suggestions_page", area: "command_center", capability: "/dashboard/help-suggestions — per-row card with category chip + sample query + count + confidence %. Inline copy-to-clipboard pre block with a ready-to-paste HelpEntry snippet (id + title + category + keywords prefilled; operator fills description + evidenceRef).", status: "passing", evidence: "app/dashboard/help-suggestions/page.tsx" },
+
+  // ---------------------------------------------------------------------------
+  // Phase 151 — Agent message bus
+  // ---------------------------------------------------------------------------
+  { id: "agents.bus_model", area: "operating_loop", capability: "lib/agents/agentBusModel — closed AgentRole union (10 roles: detector/reasoner/simulator/policy_gate/boundary_gate/approver/verifier/auditor/council/improver) + closed AgentMessageKind union (11 kinds). Adding a role or kind is a deliberate edit that breaks every consumer in the TS exhaustiveness check.", status: "passing", evidence: "lib/agents/agentBusModel.ts" },
+  { id: "agents.bus_runtime", area: "operating_loop", capability: "lib/agents/agentBus — two-layer pub/sub. In-memory ring buffer (cap 500) for synchronous intra-cycle fan-out + best-effort Prisma audit row per message. publishAgentMessage NEVER throws on persistence failure; subscribers run sequentially with per-subscriber error isolation. AgentBusMessage Prisma model + migration 20260520120000.", status: "passing", evidence: "lib/agents/agentBus.ts" },
+  { id: "agents.bus_route", area: "operating_loop", capability: "GET /api/agents/bus?threadId=...&limit=N — durable message history. safetyContract 'audit_read_only'.", status: "passing", evidence: "app/api/agents/bus/route.ts" },
+  { id: "agents.bus_model_tests", area: "operating_loop", capability: "lib/agents/__tests__/agentBusModel.test.ts — 6 tests covering the 10-role roster, 11-kind roster, narrower acceptance, narrower rejection, case-sensitivity.", status: "passing", evidence: "lib/agents/__tests__/agentBusModel.test.ts" },
+
+  // ---------------------------------------------------------------------------
+  // Phase 152 — Method proposal store
+  // ---------------------------------------------------------------------------
+  { id: "agents.method_proposal_model", area: "operating_loop", capability: "lib/agents/methodProposalModel — closed ProposalTarget union (runbook_recipe | policy_template | charter_default | help_entry | tier_cap) + ProposalStatus union (pending | approved | rejected | applied | superseded). MethodProposal Prisma model + migration 20260520120000.", status: "passing", evidence: "lib/agents/methodProposalModel.ts" },
+  { id: "agents.method_proposal_store", area: "operating_loop", capability: "lib/agents/methodProposalStore — submitProposal validates target + clamps confidence + publishes 'method_improvement' bus event. decideProposal is one-way from pending; tenant cross-talk guard; publishes 'council_consensus' on decision. markProposalApplied gated to already-approved rows.", status: "passing", evidence: "lib/agents/methodProposalStore.ts" },
+  { id: "agents.proposals_route", area: "operating_loop", capability: "GET/POST /api/agents/proposals — POST validates authorAgent + target against closed unions; runs vetProposal immediately so operators see stage results inline. POST /api/agents/proposals/[id]/decide records approved/rejected with optional reason. safetyContract 'approval_only_no_execution'.", status: "passing", evidence: "app/api/agents/proposals/route.ts" },
+  { id: "ui.agent_proposals_page", area: "command_center", capability: "/dashboard/agent-proposals — per-proposal card with status pill + target chip + authorAgent + confidence + rationale + collapsible diff. Inline rationale input + Approve/Reject buttons (only on status=pending). Status filter chips.", status: "passing", evidence: "app/dashboard/agent-proposals/page.tsx" },
+
+  // ---------------------------------------------------------------------------
+  // Phase 153 — Council consensus helper
+  // ---------------------------------------------------------------------------
+  { id: "agents.council", area: "operating_loop", capability: "lib/agents/council — pure tallyCouncil(votes, options). Weighted by confidence; default passThreshold 0.66 (two-thirds). Confidence clamped to [0,1]; empty input → passed=false. Dissent[] sorted by confidence descending. desiredVerdict option lets the caller force the decision label for support-vs-oppose math.", status: "passing", evidence: "lib/agents/council.ts" },
+  { id: "agents.council_tests", area: "operating_loop", capability: "lib/agents/__tests__/council.test.ts — 8 tests covering empty input, unanimous-approve, simple-majority-fails-default, two-thirds-passes-default, dissent ordering, confidence clamping, custom passThreshold, desiredVerdict override.", status: "passing", evidence: "lib/agents/__tests__/council.test.ts" },
+
+  // ---------------------------------------------------------------------------
+  // Phase 154 — Proposal vetting pipeline
+  // ---------------------------------------------------------------------------
+  { id: "agents.proposal_vetter", area: "operating_loop", capability: "lib/agents/proposalVetter — pure 4-stage check (parse → diff_preview → safety → duplication). Per-target schema shape check. Safety rejects Action:* + Effect:Allow open-door policies + negative tier_cap newValue; warns on tier_cap above 100k + charter_default → autonomous without 'approved' in label. Duplication warns on exact diffHash or fuzzy label. diffHash is sha256-hex over canonical-key-sorted JSON.", status: "passing", evidence: "lib/agents/proposalVetter.ts" },
+  { id: "agents.proposal_vetter_tests", area: "operating_loop", capability: "lib/agents/__tests__/proposalVetter.test.ts — 13 tests across the 4 stages: parse rejection on non-object diffs + missing schema fields; safety rejection on open-door policy + negative tier cap; safety warn on huge tier cap + bare 'autonomous' label; duplication warn on exact hash + fuzzy label; output shape (sha256 hex, non-empty summary per target).", status: "passing", evidence: "lib/agents/__tests__/proposalVetter.test.ts" },
+
+  // ---------------------------------------------------------------------------
+  // Phase 155 — Agent introspection dashboard
+  // ---------------------------------------------------------------------------
+  { id: "ui.agent_bus_page", area: "command_center", capability: "/dashboard/agent-bus — per-message row with sender-tinted chip + recipient + kind + threadId. Click any threadId to filter the view to that single conversation chain. Lets operators follow one decision from detect → reason → simulate → policy_gate → approver → verifier → auditor in one column.", status: "passing", evidence: "app/dashboard/agent-bus/page.tsx" },
 ];
 
 // ---------------------------------------------------------------------------
