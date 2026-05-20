@@ -6,6 +6,8 @@ import { CpuChipIcon } from "@heroicons/react/24/outline";
 import { SignOutButton } from "./SignOutButton";
 import { DashboardSidebar } from "./DashboardSidebar";
 import { ContextualHelpBubble } from "./ContextualHelpBubble";
+import { TrialCountdownBanner } from "./TrialCountdownBanner";
+import { FeedbackWidget } from "./FeedbackWidget";
 
 export default async function DashboardLayout({
   children,
@@ -37,10 +39,14 @@ export default async function DashboardLayout({
 
       <div className="relative z-10 max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 lg:flex lg:gap-8">
         <DashboardSidebar />
-        <main className="flex-1 min-w-0 py-6 lg:py-8">{children}</main>
+        <main className="flex-1 min-w-0 py-6 lg:py-8">
+          <TrialCountdownBanner />
+          {children}
+        </main>
       </div>
 
       <ContextualHelpBubble />
+      <FeedbackWidget />
     </div>
   );
 }

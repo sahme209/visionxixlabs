@@ -139,6 +139,7 @@ const GROUPS: NavGroup[] = [
     items: [
       { href: "/dashboard/setup",               label: "Setup wizard",       icon: RocketLaunchIcon },
       { href: "/dashboard/onboarding",          label: "First-run checklist",icon: RocketLaunchIcon },
+      { href: "/dashboard/billing",             label: "Billing & plans",    icon: BoltIcon         },
       { href: "/dashboard/flags",               label: "Feature flags",      icon: PuzzlePieceIcon  },
       { href: "/dashboard/settings/workspace",  label: "Workspace + roles",  icon: ShieldCheckIcon  },
       { href: "/dashboard/finops",              label: "FinOps",             icon: PuzzlePieceIcon  },

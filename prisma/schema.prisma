@@ -1262,6 +1262,48 @@ model StagedRemediationRunbook {
   @@index([organizationId, runbookId])
 }
 
+/// Tenant billing plan. One row per tenant. Tier is a closed
+/// BillingTier literal validated at the API boundary; status is a
+/// BillingStatus literal. stripeCustomerId + stripeSubscriptionId
+/// are nullable so the platform works without Stripe configured
+/// (defaults to 'trial' with a 14-day expiry).
+model TenantBillingPlan {
+  organizationId        String    @id
+  tier                  String
+  status                String
+  trialEndsAt           DateTime?
+  currentPeriodEndsAt   DateTime?
+  stripeCustomerId      String?
+  stripeSubscriptionId  String?
+  cancelAtPeriodEnd     Boolean   @default(false)
+  /// Last raw Stripe event id consumed by the webhook handler.
+  /// Used for idempotency: re-receiving the same id is a no-op.
+  lastStripeEventId     String?
+  updatedAt             DateTime  @updatedAt
+  createdAt             DateTime  @default(now())
+
+  @@index([status, currentPeriodEndsAt])
+  @@index([tier, status])
+}
+
+/// In-product feedback row. Captured from /api/feedback. NEVER
+/// blocking the dashboard — the form is fire-and-forget. Stored
+/// for follow-up + optionally mirrored to Slack via the outbound lane.
+model FeedbackRecord {
+  id              String   @id
+  organizationId  String?
+  email           String?
+  sentiment       String   // "happy" | "neutral" | "frustrated"
+  pagePath        String?
+  message         String
+  userAgent       String?
+  createdAt       DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([sentiment, createdAt])
+  @@index([organizationId, createdAt])
+}
+
 /// Per-tenant override of the autonomy charter. When a row exists,
 /// the scheduler and on-demand cockpit use this charter instead of
 /// the global default. Mode is an AutonomyMode literal validated at
