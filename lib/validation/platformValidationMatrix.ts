@@ -1671,6 +1671,36 @@ export const VALIDATION_MATRIX: ValidationRow[] = [
   // ---------------------------------------------------------------------------
   { id: "releaseops.ai_release_note_generator", area: "operating_loop", capability: "lib/releaseops/aiReleaseNoteGenerator — drafts 3-5 release-note bullets from a CommitSummary list. Strict {bullets} schema. NEVER throws. Falls back to one-bullet-per-commit (max 5) using [area] subject (#PR) format when Mock answers / model returns invalid / provider errors.", status: "passing", evidence: "lib/releaseops/aiReleaseNoteGenerator.ts" },
   { id: "releaseops.ai_release_note_generator_tests", area: "operating_loop", capability: "lib/releaseops/__tests__/aiReleaseNoteGenerator.test.ts — 4 tests: empty commits → no bullets, Mock-only cap at 5, fallback bullet area+PR prefix, fallback omits area when not supplied.", status: "passing", evidence: "lib/releaseops/__tests__/aiReleaseNoteGenerator.test.ts" },
+
+  // ---------------------------------------------------------------------------
+  // Phase 212 — Secret rotation tracker
+  // ---------------------------------------------------------------------------
+  { id: "security.secret_rotation_tracker", area: "operating_loop", capability: "lib/security/secretRotationTracker — pure. Per-secret status (ok / due_soon ≤7d / overdue), ageDays + dueInDays + nextDueAt. Rows sorted dueInDays asc (overdue first). nextActionDueAt surfaces earliest deadline.", status: "passing", evidence: "lib/security/secretRotationTracker.ts" },
+  { id: "security.secret_rotation_tracker_tests", area: "operating_loop", capability: "lib/security/__tests__/secretRotationTracker.test.ts — 8 tests: empty, recently-rotated ok, due_soon boundary, overdue, sort order, status totals, nextActionDueAt earliest, nextDueAt = lastRotated + maxAge.", status: "passing", evidence: "lib/security/__tests__/secretRotationTracker.test.ts" },
+
+  // ---------------------------------------------------------------------------
+  // Phase 213 — DNS sanity checker
+  // ---------------------------------------------------------------------------
+  { id: "cloud.dns_sanity_checker", area: "operating_loop", capability: "lib/cloud/dnsSanityChecker — pure. Closed DnsRecordType union (A | AAAA | CNAME | MX | TXT | NS). Reports missing / value_mismatch / ttl_mismatch / orphan findings. Name compared case-insensitively. Severity: 3+ breaking → high, 1+ → medium, any → low, else ok.", status: "passing", evidence: "lib/cloud/dnsSanityChecker.ts" },
+  { id: "cloud.dns_sanity_checker_tests", area: "operating_loop", capability: "lib/cloud/__tests__/dnsSanityChecker.test.ts — 8 tests: identical = ok, missing = medium, orphan = low, value_mismatch = medium, ttl_mismatch = low, 3+ breaking = high, case-insensitive name, finding sort order missing → orphan.", status: "passing", evidence: "lib/cloud/__tests__/dnsSanityChecker.test.ts" },
+
+  // ---------------------------------------------------------------------------
+  // Phase 214 — Cron expression validator
+  // ---------------------------------------------------------------------------
+  { id: "autonomy.cron_expression_validator", area: "operating_loop", capability: "lib/autonomy/cronExpressionValidator — pure 5-field cron parser. Validates ranges, lists, step (*/N), per-field min/max. humanReadable for common shapes (every N minutes, daily at HH:MM, every Monday at HH:MM). No deps.", status: "passing", evidence: "lib/autonomy/cronExpressionValidator.ts" },
+  { id: "autonomy.cron_expression_validator_tests", area: "operating_loop", capability: "lib/autonomy/__tests__/cronExpressionValidator.test.ts — 10 tests: empty, wrong field count, * * * * *, */5 → every 5 minutes, 0 9 * * * daily, 30 14 * * 1 Monday, out-of-range, range syntax, list syntax, non-numeric.", status: "passing", evidence: "lib/autonomy/__tests__/cronExpressionValidator.test.ts" },
+
+  // ---------------------------------------------------------------------------
+  // Phase 215 — AI feature flag analyst
+  // ---------------------------------------------------------------------------
+  { id: "flags.ai_feature_flag_analyst", area: "operating_loop", capability: "lib/flags/aiFeatureFlagAnalyst — closed action union (promote | retire | leave_alone | investigate). REJECTS hallucinated flag keys + invalid actions. Deterministic fallback rules: 100% rollout >=30d + traffic → promote; 0% >=30d OR zero traffic → retire; mid-rollout >=14d → investigate; else leave_alone. Advisory.", status: "passing", evidence: "lib/flags/aiFeatureFlagAnalyst.ts" },
+  { id: "flags.ai_feature_flag_analyst_tests", area: "operating_loop", capability: "lib/flags/__tests__/aiFeatureFlagAnalyst.test.ts — 6 tests: empty flags, promote, retire (no traffic + 0% rollout), retire (zero traffic), investigate (mid-flight), leave_alone (recent).", status: "passing", evidence: "lib/flags/__tests__/aiFeatureFlagAnalyst.test.ts" },
+
+  // ---------------------------------------------------------------------------
+  // Phase 216 — Access review builder
+  // ---------------------------------------------------------------------------
+  { id: "iam.access_review_builder", area: "operating_loop", capability: "lib/iam/accessReviewBuilder — pure. Per-grant recommendation (keep / revoke / investigate). Default unusedRevokeDays=90 (overridable). 'never used + granted < threshold' = keep (give new grants time); 'never used + granted >= threshold' = investigate; 'last used >= threshold ago' = revoke. Rows sorted revoke → investigate → keep.", status: "passing", evidence: "lib/iam/accessReviewBuilder.ts" },
+  { id: "iam.access_review_builder_tests", area: "operating_loop", capability: "lib/iam/__tests__/accessReviewBuilder.test.ts — 8 tests: empty, recently used = keep, never-used-but-new = keep, never-used-aged = investigate, stale = revoke, custom threshold, totals tally, sort order revoke → investigate → keep.", status: "passing", evidence: "lib/iam/__tests__/accessReviewBuilder.test.ts" },
 ];
 
 // ---------------------------------------------------------------------------
