@@ -1491,6 +1491,36 @@ export const VALIDATION_MATRIX: ValidationRow[] = [
   // ---------------------------------------------------------------------------
   { id: "workflows.template_catalog", area: "operating_loop", capability: "lib/workflows/workflowTemplateCatalog — deterministic library of 7 canned workflow drafts across 4 areas (security, cost, reliability, compliance). Same closed unions as aiWorkflowTranslator so a pinned template lands in the same review flow. listTemplates / listTemplatesByArea / findTemplate / TEMPLATE_AREAS. Approval-only-no-execution.", status: "passing", evidence: "lib/workflows/workflowTemplateCatalog.ts" },
   { id: "workflows.template_catalog_tests", area: "operating_loop", capability: "lib/workflows/__tests__/workflowTemplateCatalog.test.ts — 7 tests: per-area coverage, allowed trigger kinds, allowed action kinds, no execution-kind action (closed-union contract), action list + selector non-empty, findTemplate hits + misses, unique ids.", status: "passing", evidence: "lib/workflows/__tests__/workflowTemplateCatalog.test.ts" },
+
+  // ---------------------------------------------------------------------------
+  // Phase 182 — Drift detector
+  // ---------------------------------------------------------------------------
+  { id: "cloud.drift_detector", area: "operating_loop", capability: "lib/cloud/driftDetector — pure detectDrift(desired, observed, opts). Closed DriftKind union (missing | extra | value_changed | no_drift). Deep object diff, arrays compared whole. ignorePaths drops drift under those prefixes; highPriorityPaths auto-bumps severity to high. Severity ladder: 0=ok, 1=low, 2-4=medium, 5+ or high-hit=high.", status: "passing", evidence: "lib/cloud/driftDetector.ts" },
+  { id: "cloud.drift_detector_tests", area: "operating_loop", capability: "lib/cloud/__tests__/driftDetector.test.ts — 8 tests: identical-ok, missing key, extra key, value_changed at deep path, array compared whole, ignorePaths drops drift, highPriorityPaths bumps severity, severity ladder boundaries.", status: "passing", evidence: "lib/cloud/__tests__/driftDetector.test.ts" },
+
+  // ---------------------------------------------------------------------------
+  // Phase 183 — SLO error-budget tracker
+  // ---------------------------------------------------------------------------
+  { id: "slo.error_budget", area: "operating_loop", capability: "lib/slo/sloErrorBudget — pure computeSloReport({windowDays, targetAvailability, buckets}). Computes observedAvailability, totalRequests / failures, budgetFailures (floor(total*(1-target))), remainingBudget (negative = exhausted), burnRate (failureRate / allowedRate). Verdict ladder: healthy | burning_fast | exhausted. NaN-safe; clamps goodCount to totalCount; ignores zero-total buckets.", status: "passing", evidence: "lib/slo/sloErrorBudget.ts" },
+  { id: "slo.error_budget_tests", area: "operating_loop", capability: "lib/slo/__tests__/sloErrorBudget.test.ts — 8 tests: empty traffic healthy, perfect requests, budget math, burn rate > 1 + exhausted, burning_fast vs exhausted boundary, good>total clamp, zero-total bucket ignored, target=1.0 → burnRate=Infinity.", status: "passing", evidence: "lib/slo/__tests__/sloErrorBudget.test.ts" },
+
+  // ---------------------------------------------------------------------------
+  // Phase 184 — AI next-best-action advisor
+  // ---------------------------------------------------------------------------
+  { id: "insights.ai_next_best_action", area: "operating_loop", capability: "lib/insights/aiNextBestActionAdvisor — up to 3 ranked next actions per NbaSeed (pendingProposals, driftFindings, sloBurningServices, outboundFailures, autonomyCycles, dissentCount). Closed ActionCategory union (security | cost | reliability | compliance | governance) + EffortTier union (low | medium | high). REJECTS unknown categories/efforts and drops invalid actions. Deterministic fallback prioritizes pending proposals → drift → SLO; returns a single governance-low action when nothing is hot.", status: "passing", evidence: "lib/insights/aiNextBestActionAdvisor.ts" },
+  { id: "insights.ai_next_best_action_tests", area: "operating_loop", capability: "lib/insights/__tests__/aiNextBestActionAdvisor.test.ts — 5 tests: Mock-only fall-through ≤ 3 actions, pending-proposal priority, drift action inclusion, idle-state single governance-low, every action has allowed category + effort.", status: "passing", evidence: "lib/insights/__tests__/aiNextBestActionAdvisor.test.ts" },
+
+  // ---------------------------------------------------------------------------
+  // Phase 185 — Tenant data export builder (GDPR-style)
+  // ---------------------------------------------------------------------------
+  { id: "compliance.tenant_data_export_builder", area: "compliance", capability: "lib/compliance/tenantDataExportBuilder — pure buildTenantDataExport(input). Bundles tenant proposals + bus messages + rationale rows + outbound records + billing plan into a single deterministic JSON document. integrityHash = sha256-hex over canonical-key-sorted body. Counts per slice in the summary. Default scopeNote reaffirms approval-only-no-execution.", status: "passing", evidence: "lib/compliance/tenantDataExportBuilder.ts" },
+  { id: "compliance.tenant_data_export_builder_tests", area: "compliance", capability: "lib/compliance/__tests__/tenantDataExportBuilder.test.ts — 7 tests: schema constants, per-slice counts, hash determinism, hash sensitivity, default scopeNote wording, operator-supplied scopeNote, slices preserved verbatim.", status: "passing", evidence: "lib/compliance/__tests__/tenantDataExportBuilder.test.ts" },
+
+  // ---------------------------------------------------------------------------
+  // Phase 186 — AI approval-packet narrator
+  // ---------------------------------------------------------------------------
+  { id: "approvals.ai_packet_narrator", area: "operating_loop", capability: "lib/approvals/aiApprovalPacketNarrator — 2-4 sentence executive summary of an ApprovalPacketSeed via the AI manager. Mentions candidate + blast radius + council vote + policy/boundary verdicts + evidence count + duration estimate. Closed blastRadius union (single_resource | service | account | org). Falls back to deterministic template that ALWAYS reaffirms approval-only-no-execution.", status: "passing", evidence: "lib/approvals/aiApprovalPacketNarrator.ts" },
+  { id: "approvals.ai_packet_narrator_tests", area: "operating_loop", capability: "lib/approvals/__tests__/aiApprovalPacketNarrator.test.ts — 4 tests: Mock fall-through includes candidate label + blast radius + vote counts, policy/boundary fail wording, approval-only-no-execution reaffirmed, zero/empty seed never throws.", status: "passing", evidence: "lib/approvals/__tests__/aiApprovalPacketNarrator.test.ts" },
 ];
 
 // ---------------------------------------------------------------------------
