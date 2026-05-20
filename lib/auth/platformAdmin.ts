@@ -27,3 +27,22 @@ export function listAdminEmails(): string[] {
   if (!raw) return [];
   return raw.split(",").map((s) => s.trim()).filter(Boolean);
 }
+
+/**
+ * Tenant-scope role guard. Right now the session shape's roles array
+ * is the only signal; "owner" or "admin" pass, anything else fails.
+ * Layered with isPlatformAdmin: caller passes when EITHER they're a
+ * tenant admin OR a platform admin. Lets us scope cross-tenant
+ * surfaces to platform admins while in-tenant admin surfaces also
+ * accept "owner" on their own workspace.
+ */
+export function isTenantAdmin(roles: string[] | undefined): boolean {
+  if (!Array.isArray(roles) || roles.length === 0) return false;
+  const set = new Set(roles.map((r) => r.toLowerCase()));
+  return set.has("owner") || set.has("admin");
+}
+
+/** OR of the two: a tenant owner OR a platform admin gets through. */
+export function isAdminOrOwner(opts: { email: string | undefined; roles: string[] | undefined }): boolean {
+  return isPlatformAdmin(opts.email) || isTenantAdmin(opts.roles);
+}

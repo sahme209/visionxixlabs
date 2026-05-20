@@ -1167,6 +1167,35 @@ export const VALIDATION_MATRIX: ValidationRow[] = [
   { id: "auth.platform_admin_gate", area: "operating_loop", capability: "lib/auth/platformAdmin — isPlatformAdmin reads ADMIN_EMAILS env (comma-separated, case-insensitive). Returns false when env unset OR caller not in the list. Pure — no DB.", status: "passing", evidence: "lib/auth/platformAdmin.ts" },
   { id: "admin.charters_route", area: "operating_loop", capability: "GET /api/admin/charters — gated by isPlatformAdmin. Returns every TenantAutonomyCharter row (max 500) + per-mode counts. NEVER echoes the slackWebhookOverride URL — only a presence flag — so the admin view can't accidentally leak per-tenant webhooks.", status: "passing", evidence: "app/api/admin/charters/route.ts" },
   { id: "ui.admin_charters_page", area: "command_center", capability: "/dashboard/admin-charters — per-tenant row with mode chip + organizationId + per-cycle cap + slack-override badge + updatedBy + timestamp. Forbidden message when the caller isn't in ADMIN_EMAILS. Per-mode count ribbon (Observer / Review / Assisted / Autonomous).", status: "passing", evidence: "app/dashboard/admin-charters/page.tsx" },
+
+  // ---------------------------------------------------------------------------
+  // Phase 131 — Token-bucket rate limiter
+  // ---------------------------------------------------------------------------
+  { id: "api.rate_limiter", area: "operating_loop", capability: "lib/api/rateLimiter — in-memory token-bucket per opaque key. capacity + tokensPerSecond per caller. retryAfterSeconds hint on denial. Per-process bounded at 5000 buckets with soft-LRU eviction. Pure: no DB, no fetch. Same trade-off as the cron health tracker and dedupe map.", status: "passing", evidence: "lib/api/rateLimiter.ts" },
+  { id: "api.rate_limiter_tests", area: "operating_loop", capability: "lib/api/__tests__/rateLimiter.test.ts — 6 tests covering capacity drain, per-key isolation, remaining tokens visibility, retryAfter math, unknown key peek, capacity lift.", status: "passing", evidence: "lib/api/__tests__/rateLimiter.test.ts" },
+
+  // ---------------------------------------------------------------------------
+  // Phase 132 — Transient cloud-error retry helper
+  // ---------------------------------------------------------------------------
+  { id: "cloud.transient_retry", area: "operating_loop", capability: "lib/cloud/transientRetry — bounded exponential-backoff retry wrapper. isTransientError classifier handles SDK $metadata.httpStatusCode + bare statusCode + named codes (Throttling, ECONNRESET) + free-text fallbacks ('rate exceeded', 'service unavailable'). Permanent errors (4xx auth/validation) fast-fail. Per-call jitter ±25%, configurable maxDelayMs cap.", status: "passing", evidence: "lib/cloud/transientRetry.ts" },
+  { id: "cloud.transient_retry_tests", area: "operating_loop", capability: "lib/cloud/__tests__/transientRetry.test.ts — 12 tests covering null safety, 429/5xx via $metadata, bare statusCode, 4xx rejection, throttling code variants, free-text matches, first-attempt success, retry-then-success, permanent-error fast-fail, retry exhaustion, custom classifier.", status: "passing", evidence: "lib/cloud/__tests__/transientRetry.test.ts" },
+
+  // ---------------------------------------------------------------------------
+  // Phase 133 — Dashboard route error boundary
+  // ---------------------------------------------------------------------------
+  { id: "ui.dashboard_error_boundary", area: "command_center", capability: "app/dashboard/error.tsx — Next.js client error boundary for the entire /dashboard/** subtree. Renders a typed rose-tinted fallback with the error digest, a Reset button, a Command Center link, and a Self-Diagnostic link. Never echoes the raw stack — operators get a quotable digest for support.", status: "passing", evidence: "app/dashboard/error.tsx" },
+
+  // ---------------------------------------------------------------------------
+  // Phase 134 — Field-level encryption helper
+  // ---------------------------------------------------------------------------
+  { id: "security.field_encryption", area: "operating_loop", capability: "lib/security/fieldEncryption — AES-256-GCM field encryption with the 'enc:v1:<ivHex>:<tagHex>:<cipherHex>' wire format. 12-byte random IV per encrypt + 16-byte auth tag detects tampering. Accepts 64-char hex FIELD_ENCRYPTION_KEY or hashes shorter passphrases to 32 bytes. Pass-through when key is unset (dev parity). Decrypt is total: unprefixed values return as-is so readers handle mixed rows.", status: "passing", evidence: "lib/security/fieldEncryption.ts" },
+  { id: "security.field_encryption_tests", area: "operating_loop", capability: "lib/security/__tests__/fieldEncryption.test.ts — 7 tests covering plaintext pass-through, hex-key round-trip, passphrase fallback, distinct ciphertexts per encrypt (random IV), tamper detection via auth tag, unprefixed value pass-through, decrypt-without-key error.", status: "passing", evidence: "lib/security/__tests__/fieldEncryption.test.ts" },
+
+  // ---------------------------------------------------------------------------
+  // Phase 135 — RBAC role-aware admin check
+  // ---------------------------------------------------------------------------
+  { id: "auth.tenant_admin_check", area: "operating_loop", capability: "lib/auth/platformAdmin — isTenantAdmin accepts case-insensitive 'owner' / 'admin' from a session roles array. isAdminOrOwner ORs platform-admin with tenant-admin so cross-tenant surfaces can require platform admin while in-tenant surfaces accept either.", status: "passing", evidence: "lib/auth/platformAdmin.ts" },
+  { id: "auth.role_check_tests", area: "operating_loop", capability: "lib/auth/__tests__/roleChecks.test.ts — 8 tests covering owner/admin acceptance, case-insensitivity, viewer/empty rejection, isAdminOrOwner OR semantic (platform admin passes regardless of roles; tenant owner passes regardless of email; neither fails).", status: "passing", evidence: "lib/auth/__tests__/roleChecks.test.ts" },
 ];
 
 // ---------------------------------------------------------------------------
