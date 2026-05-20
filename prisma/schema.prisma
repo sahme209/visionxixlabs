@@ -1137,6 +1137,26 @@ model OutboundNotificationRecord {
   @@index([dedupeKey, createdAt])
 }
 
+/// Help query analytics row. One per /api/help/ask call. Captures
+/// the verbatim query + the verdict the local search engine returned
+/// + the top hit (when any) so operators can see which docs are
+/// missing or under-keyworded. Best-effort write — the search hot
+/// path never blocks on this table.
+model HelpQueryRecord {
+  id              String   @id
+  organizationId  String?
+  query           String
+  totalTokens     Int
+  verdict         String
+  primaryEntryId  String?
+  topHitScore     Float?
+  createdAt       DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([verdict, createdAt])
+  @@index([organizationId, createdAt])
+}
+
 /// Per-tenant feature flag. Keyed on (organizationId, key) so each
 /// tenant can independently enable / disable any flag declared in
 /// the closed FeatureFlagKey union. Stores the boolean value + an

@@ -12,7 +12,9 @@
  */
 
 import type { NextRequest } from "next/server";
+import { currentContext } from "@/lib/auth/currentContext";
 import { searchHelp } from "@/lib/help/helpSearchEngine";
+import { persistHelpQuery } from "@/lib/help/helpQueryStore";
 import { apiOk, apiErr, asApiSourceMode, resolveCorrelationId } from "@/lib/api";
 import { AxiomErrors } from "@/lib/errors/axiomErrors";
 
@@ -48,7 +50,24 @@ async function handle(req: NextRequest) {
     }
 
     const safeLimit = Number.isFinite(limit) ? Math.max(1, Math.min(20, limit as number)) : 5;
-    const answer = searchHelp(q.slice(0, 500), safeLimit);
+    const trimmedQuery = q.slice(0, 500);
+    const answer = searchHelp(trimmedQuery, safeLimit);
+
+    // Phase 125 — best-effort persistence; never blocks the hot path.
+    try {
+      const ctx = await currentContext();
+      void persistHelpQuery({
+        organizationId: ctx.organizationId ? String(ctx.organizationId) : undefined,
+        query: trimmedQuery,
+        totalTokens: answer.totalTokens,
+        verdict: answer.verdict,
+        primaryEntryId: answer.primary?.id,
+        topHitScore: answer.hits[0]?.score,
+      });
+    } catch {
+      // Anonymous queries are still fine — auth resolution can fail.
+    }
+
     return apiOk(answer, {
       correlationId,
       safetyContract: "trust_center_read_only",

@@ -1110,6 +1110,34 @@ export const VALIDATION_MATRIX: ValidationRow[] = [
   // Phase 122 — Onboarding cron reminder
   // ---------------------------------------------------------------------------
   { id: "onboarding.cron_reminder", area: "operating_loop", capability: "GET/POST /api/onboarding/cron-reminder — Vercel cron `0 15 * * 1` (Monday 15:00 UTC, an hour after the weekly digest). For each tenant with completionRatio < 1, sends a Slack/Teams message listing up to 5 pending steps with exact env-var hints. Dedupe key 'onboarding-reminder:{tenant}:{date}'. Completed tenants get 'complete:no_reminder_needed'.", status: "passing", evidence: "app/api/onboarding/cron-reminder/route.ts" },
+
+  // ---------------------------------------------------------------------------
+  // Phase 123 — Cron health dashboard
+  // ---------------------------------------------------------------------------
+  { id: "autonomy.cron_health_catalog", area: "operating_loop", capability: "lib/autonomy/cronHealthCatalog — closed list of every cron (autonomy-scheduler, cron-dispatch-telemetry, cron-weekly-digest, cron-onboarding-reminder). Each spec carries id + schedule + description + routePath. Adding a cron is a deliberate two-line edit here + in vercel.json.", status: "passing", evidence: "lib/autonomy/cronHealthCatalog.ts" },
+  { id: "autonomy.cron_health_route", area: "operating_loop", capability: "GET /api/cron-health — returns CronSpec[] joined with readCronHealth snapshot per cron. safetyContract 'trust_center_read_only'.", status: "passing", evidence: "app/api/cron-health/route.ts" },
+  { id: "ui.cron_health_page", area: "command_center", capability: "/dashboard/cron-health — per-cron card with success-rate pill, ticks/errors/streak tiles, last-tick timestamp. Red callout when consecutiveFailures >= 3 (self-heal is skipping). Sidebar entry next to Self-Diagnostic.", status: "passing", evidence: "app/dashboard/cron-health/page.tsx" },
+
+  // ---------------------------------------------------------------------------
+  // Phase 124 — Telemetry signal CSV export
+  // ---------------------------------------------------------------------------
+  { id: "telemetry.signal_csv_builder", area: "operating_loop", capability: "lib/telemetry/telemetrySignalCsv — pure RFC 4180 CSV builder for TelemetrySignal rows. CRLF terminators, every field quoted, internal double-quotes escaped, embedded commas + newlines preserved. confidence formatted to 3 decimals. Stable 10-column order.", status: "passing", evidence: "lib/telemetry/telemetrySignalCsv.ts" },
+  { id: "telemetry.signal_csv_route", area: "operating_loop", capability: "GET /api/telemetry/export?minSeverity=high — streams text/csv with attachment + dated filename. Filters signals at >= minSeverity (default 'low'). safetyContract 'telemetry_ingest_read_only'.", status: "passing", evidence: "app/api/telemetry/export/route.ts" },
+  { id: "telemetry.signal_csv_tests", area: "operating_loop", capability: "lib/telemetry/__tests__/telemetrySignalCsv.test.ts — 7 tests covering header + CRLF, stable 10-column header, all-fields-quoted, RFC 4180 escape, embedded comma + newline preservation, confidence-to-3-decimals, header-only for empty input.", status: "passing", evidence: "lib/telemetry/__tests__/telemetrySignalCsv.test.ts" },
+
+  // ---------------------------------------------------------------------------
+  // Phase 125 — Help query analytics
+  // ---------------------------------------------------------------------------
+  { id: "help.query_record_model", area: "operating_loop", capability: "prisma/schema.prisma — HelpQueryRecord stores verbatim query + totalTokens + verdict + primaryEntryId + topHitScore + createdAt. Indexed on createdAt, (verdict, createdAt), and (organizationId, createdAt). Migration 20260519180000.", status: "passing", evidence: "prisma/schema.prisma" },
+  { id: "help.query_store", area: "operating_loop", capability: "lib/help/helpQueryStore — persistHelpQuery (best-effort write, never blocks search hot path) + readHelpQueryAnalytics (tenant-scoped, returns perVerdict + topQueries + topNoMatchQueries + recent[]).", status: "passing", evidence: "lib/help/helpQueryStore.ts" },
+  { id: "help.ask_route_records", area: "operating_loop", capability: "/api/help/ask now calls void persistHelpQuery(...) after returning the answer. DB failure cannot break the hot path. Anonymous queries (no auth context) are still recorded with organizationId=null.", status: "passing", evidence: "app/api/help/ask/route.ts" },
+  { id: "help.analytics_route", area: "operating_loop", capability: "GET /api/help/analytics — typed envelope with HelpQueryAnalytics. safetyContract 'trust_center_read_only'.", status: "passing", evidence: "app/api/help/analytics/route.ts" },
+  { id: "ui.help_analytics_page", area: "command_center", capability: "/dashboard/help-analytics — verdict ribbon (total / primary / ambiguous / no_match) + two-panel layout (top queries vs top no_match queries — the real signal for missing docs) + recent query list with verdict chip + token count + entry id + score. Sidebar entry next to Help & Docs.", status: "passing", evidence: "app/dashboard/help-analytics/page.tsx" },
+
+  // ---------------------------------------------------------------------------
+  // Phase 126 — Per-tenant Slack webhook routing
+  // ---------------------------------------------------------------------------
+  { id: "notifications.slack_tenant_override", area: "operating_loop", capability: "lib/notifications/outboundNotificationLane.sendOutboundNotification now reads readTenantCharter(tenantId) before posting to Slack. When charter.slackWebhookOverride is set, the lane uses it instead of the global SLACK_WEBHOOK_URL. Best-effort — a DB failure falls through to the env URL. Skip reasons include the source ('tenant_override' | 'global_env') so audit trails reveal which URL was tried.", status: "passing", evidence: "lib/notifications/outboundNotificationLane.ts" },
 ];
 
 // ---------------------------------------------------------------------------

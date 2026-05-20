@@ -22,6 +22,7 @@ import "server-only";
 import { loadAppEnv } from "@/lib/config/env";
 import { redactPayload } from "@/lib/api/redaction";
 import { persistOutboundNotificationRecord } from "./outboundNotificationStore";
+import { readTenantCharter } from "@/lib/autonomy/tenantCharterStore";
 
 // ---------------------------------------------------------------------------
 // Typed contract
@@ -127,14 +128,30 @@ export async function sendOutboundNotification(n: OutboundNotification): Promise
   const succeeded: OutboundChannel[] = [];
   const skipped: { channel: OutboundChannel; reason: string }[] = [];
 
+  // Phase 126 — per-tenant Slack webhook override. The charter store
+  // optionally carries a tenant-specific Slack URL; when set, the
+  // lane prefers it over the global env webhook. Best-effort read —
+  // a DB failure falls back to the env URL.
+  let slackUrl: string | undefined = env.slackWebhookUrl;
+  let slackSource: "tenant_override" | "global_env" = "global_env";
+  try {
+    const tenantRow = await readTenantCharter(n.tenantId);
+    if (tenantRow?.slackWebhookOverride) {
+      slackUrl = tenantRow.slackWebhookOverride;
+      slackSource = "tenant_override";
+    }
+  } catch {
+    // Fall through to env URL.
+  }
+
   // Slack
-  if (env.slackWebhookUrl) {
+  if (slackUrl) {
     attempted.push("slack");
-    const ok = await postJson(env.slackWebhookUrl, buildSlackPayload(redacted));
+    const ok = await postJson(slackUrl, buildSlackPayload(redacted));
     if (ok) succeeded.push("slack");
-    else skipped.push({ channel: "slack", reason: "post_failed" });
+    else skipped.push({ channel: "slack", reason: `post_failed(${slackSource})` });
   } else {
-    skipped.push({ channel: "slack", reason: "SLACK_WEBHOOK_URL not set" });
+    skipped.push({ channel: "slack", reason: "SLACK_WEBHOOK_URL not set + no tenant override" });
   }
 
   // Microsoft Teams
