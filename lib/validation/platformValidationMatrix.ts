@@ -1885,6 +1885,36 @@ export const VALIDATION_MATRIX: ValidationRow[] = [
   // ---------------------------------------------------------------------------
   { id: "data.query_plan_analyzer", area: "operating_loop", capability: "lib/data/queryPlanAnalyzer — pure recursive analyzer. Closed PlanNodeKind union (10 kinds) + closed finding union (seq_scan_on_large_table | missing_index_hint | row_estimate_off | expensive_nested_loop | sort_spill_likely). Thresholds operator-overridable. Verdict ladder ok/warn/fail.", status: "passing", evidence: "lib/data/queryPlanAnalyzer.ts" },
   { id: "data.query_plan_analyzer_tests", area: "operating_loop", capability: "lib/data/__tests__/queryPlanAnalyzer.test.ts — 9 tests: trivial ok, seq_scan large → warn, seq_scan medium → info only, nested-loop cost trigger, row estimate mismatch, totalCostMs recursive sum, sort spill, threshold overrides, recursive child walk.", status: "passing", evidence: "lib/data/__tests__/queryPlanAnalyzer.test.ts" },
+
+  // ---------------------------------------------------------------------------
+  // Phase 247 — Mobile typed API client (web + mobile parity)
+  // ---------------------------------------------------------------------------
+  { id: "mobile.api_client", area: "operating_loop", capability: "lib/mobile/mobileApiClient — typed fetch wrapper shared by web + mobile shells. Closed ApiErrorKind union (unauthenticated | rate_limited | not_found | validation | network | timeout | bad_response). Unwraps {ok,data} envelope. Carries bearer token + optional x-client-id. Per-call AbortController timeout. Normalizes baseUrl trailing slashes.", status: "passing", evidence: "lib/mobile/mobileApiClient.ts" },
+  { id: "mobile.api_client_tests", area: "operating_loop", capability: "lib/mobile/__tests__/mobileApiClient.test.ts — 9 tests (fetch-stubbed): envelope unwrap, 401/429/404 → typed error kinds, bearer + clientId headers, POST + JSON body, non-JSON → bad_response, network throw → network kind, baseUrl trailing-slash normalize.", status: "passing", evidence: "lib/mobile/__tests__/mobileApiClient.test.ts" },
+
+  // ---------------------------------------------------------------------------
+  // Phase 248 — Mobile push payload builder (APNS + FCM)
+  // ---------------------------------------------------------------------------
+  { id: "mobile.push_payload_builder", area: "operating_loop", capability: "lib/mobile/pushPayloadBuilder — pure. Closed PushEventKind union (approval_packet_ready | incident_paged | deploy_rollback_recommended | drift_high_severity | compliance_packet_ready). buildApnsPayload maps severity to APNS interruption-level (passive / active / time-sensitive / critical) and emits the iOS aps + custom shape. buildFcmPayload maps high/critical to Android priority=high + axiom_critical channel. Title clipped at 60, body at 140.", status: "passing", evidence: "lib/mobile/pushPayloadBuilder.ts" },
+  { id: "mobile.push_payload_builder_tests", area: "operating_loop", capability: "lib/mobile/__tests__/pushPayloadBuilder.test.ts — 9 tests: APNS critical/high/default interruption levels, title+body clipping, custom dictionary carries kind+deepLink, FCM high severity priority + channel, low severity normal, data carries kind+deepLink+threadId, Android tag mirrors threadId.", status: "passing", evidence: "lib/mobile/__tests__/pushPayloadBuilder.test.ts" },
+
+  // ---------------------------------------------------------------------------
+  // Phase 249 — Mobile offline-queue store
+  // ---------------------------------------------------------------------------
+  { id: "mobile.offline_queue_store", area: "operating_loop", capability: "lib/mobile/offlineQueueStore — pure-ish. Bounded (200) in-memory op queue with closed QueuedOpKind union. Refuses duplicate (kind=approval_decision OR acknowledge_incident, targetId) → conflictWithId surfaces previous op. drainQueue runs caller-supplied executor; successes removed, failures retain with attempts++ + lastError. Executor throws normalized to ok=false. listQueuedOps returns deep-copied entries.", status: "passing", evidence: "lib/mobile/offlineQueueStore.ts" },
+  { id: "mobile.offline_queue_store_tests", area: "operating_loop", capability: "lib/mobile/__tests__/offlineQueueStore.test.ts — 9 tests: enqueue fresh, duplicate approval rejected, multiple comments allowed, deep copy on read, drain removes successes, drain retains + bumps attempts, executor throw normalized, queue_full at 200, now() respected.", status: "passing", evidence: "lib/mobile/__tests__/offlineQueueStore.test.ts" },
+
+  // ---------------------------------------------------------------------------
+  // Phase 250 — Mobile deep-link builder + parser
+  // ---------------------------------------------------------------------------
+  { id: "mobile.deep_link_builder", area: "operating_loop", capability: "lib/mobile/deepLinkBuilder — pure. Closed DeepLinkTarget union (7 targets). buildDeepLink emits both axiom:// scheme + https://visionxixlabs.com/m/ universal links. parseDeepLink walks scheme + universal forms, decodes the id segment, surfaces unknown_target / invalid_url reasons. Round-trip stable.", status: "passing", evidence: "lib/mobile/deepLinkBuilder.ts" },
+  { id: "mobile.deep_link_builder_tests", area: "operating_loop", capability: "lib/mobile/__tests__/deepLinkBuilder.test.ts — 12 tests: approval-packet URLs, incident with params, no-id no-trailing-slash, custom scheme + universal override, id url-encode, scheme parse, universal parse, unknown_target reason, invalid_url reason, id decode, no-id null id, round-trip stable.", status: "passing", evidence: "lib/mobile/__tests__/deepLinkBuilder.test.ts" },
+
+  // ---------------------------------------------------------------------------
+  // Phase 251 — Mobile session security helpers
+  // ---------------------------------------------------------------------------
+  { id: "mobile.session_security_helpers", area: "operating_loop", capability: "lib/mobile/sessionSecurityHelpers — pure. shouldRefreshToken (access_expired | near_expiry | ok). shouldRequireBiometric (always_required_for_kind | never_unlocked | interval_elapsed | ok). assessSession composes both → ok | warn | require_login (refresh-expired short-circuits to require_login).", status: "passing", evidence: "lib/mobile/sessionSecurityHelpers.ts" },
+  { id: "mobile.session_security_helpers_tests", area: "operating_loop", capability: "lib/mobile/__tests__/sessionSecurityHelpers.test.ts — 11 tests: refresh access_expired/near_expiry/ok, biometric always_required_for_kind, never_unlocked, interval_elapsed, within-interval countdown, refresh expired → require_login, near-expiry warn, biometric never warn, all-ok ok.", status: "passing", evidence: "lib/mobile/__tests__/sessionSecurityHelpers.test.ts" },
 ];
 
 // ---------------------------------------------------------------------------
