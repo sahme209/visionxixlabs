@@ -1521,6 +1521,36 @@ export const VALIDATION_MATRIX: ValidationRow[] = [
   // ---------------------------------------------------------------------------
   { id: "approvals.ai_packet_narrator", area: "operating_loop", capability: "lib/approvals/aiApprovalPacketNarrator — 2-4 sentence executive summary of an ApprovalPacketSeed via the AI manager. Mentions candidate + blast radius + council vote + policy/boundary verdicts + evidence count + duration estimate. Closed blastRadius union (single_resource | service | account | org). Falls back to deterministic template that ALWAYS reaffirms approval-only-no-execution.", status: "passing", evidence: "lib/approvals/aiApprovalPacketNarrator.ts" },
   { id: "approvals.ai_packet_narrator_tests", area: "operating_loop", capability: "lib/approvals/__tests__/aiApprovalPacketNarrator.test.ts — 4 tests: Mock fall-through includes candidate label + blast radius + vote counts, policy/boundary fail wording, approval-only-no-execution reaffirmed, zero/empty seed never throws.", status: "passing", evidence: "lib/approvals/__tests__/aiApprovalPacketNarrator.test.ts" },
+
+  // ---------------------------------------------------------------------------
+  // Phase 187 — Dependency graph builder
+  // ---------------------------------------------------------------------------
+  { id: "cloud.dependency_graph", area: "operating_loop", capability: "lib/cloud/dependencyGraphBuilder — pure buildDependencyGraph(nodes). Forward + reverse edges, drops dangling upstreams, Kahn topo order, Tarjan SCC cycle detection (returns cycles instead of throwing). blastRadiusOf walks reverse edges to classify impact as single_resource | service | account | org.", status: "passing", evidence: "lib/cloud/dependencyGraphBuilder.ts" },
+  { id: "cloud.dependency_graph_tests", area: "operating_loop", capability: "lib/cloud/__tests__/dependencyGraphBuilder.test.ts — 10 tests: empty graph, reverse edges, dangling upstream drop, topo order on a DAG, cycle detection still orders non-cycle node, blast radius single/service/account/org boundaries, unknown id single_resource.", status: "passing", evidence: "lib/cloud/__tests__/dependencyGraphBuilder.test.ts" },
+
+  // ---------------------------------------------------------------------------
+  // Phase 188 — Capacity planner
+  // ---------------------------------------------------------------------------
+  { id: "capacity.planner", area: "operating_loop", capability: "lib/capacity/capacityPlanner — pure planCapacity. observedPeak from history, projectedPeak via (1+growth)^periods clamped at 1. recommendedUnits = ceil((projectedPeak * current) / safeTarget). Verdict ladder: scale_up_now when observed >= target, scale_up_soon when projection crosses, ok otherwise. Handles target=0 via epsilon.", status: "passing", evidence: "lib/capacity/capacityPlanner.ts" },
+  { id: "capacity.planner_tests", area: "operating_loop", capability: "lib/capacity/__tests__/capacityPlanner.test.ts — 8 tests: empty input, scale_up_now, scale_up_soon via growth, ok stays ok, targetUtilization clamp, current=0 recommends 0, growth compounding, projected peak clamped at 1.", status: "passing", evidence: "lib/capacity/__tests__/capacityPlanner.test.ts" },
+
+  // ---------------------------------------------------------------------------
+  // Phase 189 — Tag governance auditor
+  // ---------------------------------------------------------------------------
+  { id: "cloud.tag_governance_auditor", area: "operating_loop", capability: "lib/cloud/tagGovernanceAuditor — pure auditTags. For each resource: missing required tag keys + invalid values (when valuePatterns regex doesn't match). Empty string treated as missing. fullyTaggedCount + coverage fraction. Offenders sorted by (missing+invalid) desc then id asc.", status: "passing", evidence: "lib/cloud/tagGovernanceAuditor.ts" },
+  { id: "cloud.tag_governance_auditor_tests", area: "operating_loop", capability: "lib/cloud/__tests__/tagGovernanceAuditor.test.ts — 7 tests: empty input, missing flags, invalid value via regex, empty string treated as missing, offender sort order, coverage math, zero required tags marks all fully tagged.", status: "passing", evidence: "lib/cloud/__tests__/tagGovernanceAuditor.test.ts" },
+
+  // ---------------------------------------------------------------------------
+  // Phase 190 — AI runbook recommender
+  // ---------------------------------------------------------------------------
+  { id: "runbooks.ai_recommender", area: "operating_loop", capability: "lib/runbooks/aiRunbookRecommender — recommendRunbook({problem, catalog}). Strict {bestId, rationale} schema. REJECTS hallucinated ids — bestId must appear in catalog. Falls back to first catalog entry when Mock answers / id unknown / provider errors. Rationale clipped at 240 chars; recommendation is ALWAYS advisory.", status: "passing", evidence: "lib/runbooks/aiRunbookRecommender.ts" },
+  { id: "runbooks.ai_recommender_tests", area: "operating_loop", capability: "lib/runbooks/__tests__/aiRunbookRecommender.test.ts — 3 tests: Mock-only fall-through to first candidate, empty-catalog returns empty bestId, rationale is always non-empty.", status: "passing", evidence: "lib/runbooks/__tests__/aiRunbookRecommender.test.ts" },
+
+  // ---------------------------------------------------------------------------
+  // Phase 191 — Auto-archive planner
+  // ---------------------------------------------------------------------------
+  { id: "audit.auto_archive_planner", area: "operating_loop", capability: "lib/audit/autoArchivePlanner — pure planAutoArchive. Classifies each record as eligible | too_recent | not_terminal | already_archived. Terminal statuses default to ['decided','expired'] (overridable). byKind grouping with eligible/total counts sorted by eligible desc. PLANS only — never deletes.", status: "passing", evidence: "lib/audit/autoArchivePlanner.ts" },
+  { id: "audit.auto_archive_planner_tests", area: "operating_loop", capability: "lib/audit/__tests__/autoArchivePlanner.test.ts — 7 tests: empty input, eligible when terminal + old, too_recent when young, not_terminal for active, already_archived skip, custom terminalStatuses, byKind grouping order.", status: "passing", evidence: "lib/audit/__tests__/autoArchivePlanner.test.ts" },
 ];
 
 // ---------------------------------------------------------------------------
