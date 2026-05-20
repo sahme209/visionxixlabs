@@ -1551,6 +1551,36 @@ export const VALIDATION_MATRIX: ValidationRow[] = [
   // ---------------------------------------------------------------------------
   { id: "audit.auto_archive_planner", area: "operating_loop", capability: "lib/audit/autoArchivePlanner — pure planAutoArchive. Classifies each record as eligible | too_recent | not_terminal | already_archived. Terminal statuses default to ['decided','expired'] (overridable). byKind grouping with eligible/total counts sorted by eligible desc. PLANS only — never deletes.", status: "passing", evidence: "lib/audit/autoArchivePlanner.ts" },
   { id: "audit.auto_archive_planner_tests", area: "operating_loop", capability: "lib/audit/__tests__/autoArchivePlanner.test.ts — 7 tests: empty input, eligible when terminal + old, too_recent when young, not_terminal for active, already_archived skip, custom terminalStatuses, byKind grouping order.", status: "passing", evidence: "lib/audit/__tests__/autoArchivePlanner.test.ts" },
+
+  // ---------------------------------------------------------------------------
+  // Phase 192 — Least-privilege analyzer
+  // ---------------------------------------------------------------------------
+  { id: "iam.least_privilege_analyzer", area: "operating_loop", capability: "lib/iam/leastPrivilegeAnalyzer — pure. Compares attached vs observed IAM actions. unusedActions, missingActions (escalation hint), overGrantRatio, tightenedActions suggestion. alwaysKeepPrefixes excluded from unused list. Severity ladder: missing>0 → high; ratio>=0.5 → high; >=0.25 → medium; >0 → low.", status: "passing", evidence: "lib/iam/leastPrivilegeAnalyzer.ts" },
+  { id: "iam.least_privilege_analyzer_tests", area: "operating_loop", capability: "lib/iam/__tests__/leastPrivilegeAnalyzer.test.ts — 7 tests: empty input ok, unused identification, missing escalation high severity, alwaysKeepPrefixes excluded, severity ladder boundaries, tightened set correctness, whitespace trim.", status: "passing", evidence: "lib/iam/__tests__/leastPrivilegeAnalyzer.test.ts" },
+
+  // ---------------------------------------------------------------------------
+  // Phase 193 — SaaS inventory clusterer
+  // ---------------------------------------------------------------------------
+  { id: "inventory.saas_clusterer", area: "operating_loop", capability: "lib/inventory/saasInventoryClusterer — pure clusterSaasInventory. Normalizes domain + label into a vendor key (shorter stem wins). Merges by vendor key, tracks distinct labels + domains, flags potentialDuplicate when multiple labels OR domains merge. Clamps negative seats / spend to 0.", status: "passing", evidence: "lib/inventory/saasInventoryClusterer.ts" },
+  { id: "inventory.saas_clusterer_tests", area: "operating_loop", capability: "lib/inventory/__tests__/saasInventoryClusterer.test.ts — 6 tests: empty input, slack.com merge, duplicate-flag, cluster sort by spend desc with shorter-stem preference, negative-value clamp, empty-domain fallback to label.", status: "passing", evidence: "lib/inventory/__tests__/saasInventoryClusterer.test.ts" },
+
+  // ---------------------------------------------------------------------------
+  // Phase 194 — Incident timeline builder
+  // ---------------------------------------------------------------------------
+  { id: "incidents.timeline_builder", area: "operating_loop", capability: "lib/incidents/timelineBuilder — pure buildTimeline. Sorts asc, truncates summary at 240, limit clamped to MAX_ROWS=500. Groups by groupKey with count + firstSeen/lastSeen sorted by count desc. Default severity='info'. Closed TimelineSource union (cloudtrail | agent_bus | method_proposal | runbook | manual | outbound).", status: "passing", evidence: "lib/incidents/timelineBuilder.ts" },
+  { id: "incidents.timeline_builder_tests", area: "operating_loop", capability: "lib/incidents/__tests__/timelineBuilder.test.ts — 7 tests: empty null window, chronological sort, group sort by count desc, summary 240-char truncation, custom limit keeps tail, default severity info, explicit severity respected.", status: "passing", evidence: "lib/incidents/__tests__/timelineBuilder.test.ts" },
+
+  // ---------------------------------------------------------------------------
+  // Phase 195 — Cost anomaly attributor
+  // ---------------------------------------------------------------------------
+  { id: "billing.cost_anomaly_attributor", area: "operating_loop", capability: "lib/billing/costAnomalyAttributor — pure attributeCostAnomalies. Per-(service, tag) baseline avg vs today's spend. Flags when delta>=flagThresholdUsd (default $50) AND deltaPct>=flagThresholdPct (default 25%). Severity: <2× threshold → watch, ≥2× → high. New service gets deltaPct=100. topOffenders capped at 10.", status: "passing", evidence: "lib/billing/costAnomalyAttributor.ts" },
+  { id: "billing.cost_anomaly_attributor_tests", area: "operating_loop", capability: "lib/billing/__tests__/costAnomalyAttributor.test.ts — 8 tests: empty input, flag above baseline, no-flag below $ threshold, no-flag below % threshold, custom thresholds, new-service deltaPct=100, severity watch/high boundary, rows sorted by deltaUsd desc.", status: "passing", evidence: "lib/billing/__tests__/costAnomalyAttributor.test.ts" },
+
+  // ---------------------------------------------------------------------------
+  // Phase 196 — AI compliance Q&A
+  // ---------------------------------------------------------------------------
+  { id: "help.ai_compliance_qa", area: "operating_loop", capability: "lib/help/aiComplianceQa — RAG-lite Q&A: AI answers a compliance question using ONLY the supplied capability rows. Strict {text, citedIds} schema. REJECTS hallucinated citations — every id must appear in input. Deterministic fallback ranks rows by token overlap; returns 'no exact matches' when nothing scores > 0.", status: "passing", evidence: "lib/help/aiComplianceQa.ts" },
+  { id: "help.ai_compliance_qa_tests", area: "operating_loop", capability: "lib/help/__tests__/aiComplianceQa.test.ts — 4 tests: Mock-only fallback cites keyword-matching rows, irrelevant question returns 'no exact matches', empty rows never throws, citations only from supplied list.", status: "passing", evidence: "lib/help/__tests__/aiComplianceQa.test.ts" },
 ];
 
 // ---------------------------------------------------------------------------
