@@ -2005,6 +2005,36 @@ export const VALIDATION_MATRIX: ValidationRow[] = [
   // ---------------------------------------------------------------------------
   { id: "i18n.bundle_validator", area: "operating_loop", capability: "lib/i18n/bundleValidator — pure. Flags missing_key / extra_key / placeholder_mismatch (e.g. {name} vs {nombre}) / empty_string. Per-locale coverage 0..1. Status ladder ok (100% + no mismatch) / warn (≥90%) / incomplete (<90%). Overall = worst per-locale status.", status: "passing", evidence: "lib/i18n/bundleValidator.ts" },
   { id: "i18n.bundle_validator_tests", area: "operating_loop", capability: "lib/i18n/__tests__/bundleValidator.test.ts — 9 tests: identical ok, missing key + coverage drop, extra key flagged, empty string flagged, placeholder mismatch warn, 90-100% warn, <90% incomplete, multi-locale overall worst, empty base coverage=1.", status: "passing", evidence: "lib/i18n/__tests__/bundleValidator.test.ts" },
+
+  // ---------------------------------------------------------------------------
+  // Phase 267 — WCAG a11y audit aggregator
+  // ---------------------------------------------------------------------------
+  { id: "a11y.wcag_audit_aggregator", area: "operating_loop", capability: "lib/a11y/wcagAuditAggregator — pure. Closed AxeImpact union (minor/moderate/serious/critical) + WcagLevel union (A/AA/AAA). Per-route status from byImpact roll-up (configurable blockingImpact, default 'serious'). Top-20 rules with worstImpact + affectedRoutes count. failsRequiredLevel flag — true iff any finding at the requested WCAG level hits the blocking impact.", status: "passing", evidence: "lib/a11y/wcagAuditAggregator.ts" },
+  { id: "a11y.wcag_audit_aggregator_tests", area: "operating_loop", capability: "lib/a11y/__tests__/wcagAuditAggregator.test.ts — 9 tests: empty input ok, critical AA → failsRequiredLevel, minor → warn route, AAA-only doesn't trip AA, custom blockingImpact escalates, topRules sort by count desc, affectedRoutes distinct, route sort fail→warn→ok, byImpact count split.", status: "passing", evidence: "lib/a11y/__tests__/wcagAuditAggregator.test.ts" },
+
+  // ---------------------------------------------------------------------------
+  // Phase 268 — Web Vitals performance budget tracker
+  // ---------------------------------------------------------------------------
+  { id: "perf.web_vitals_budget_tracker", area: "operating_loop", capability: "lib/perf/webVitalsBudgetTracker — pure. Closed VitalName union (lcp/cls/inp/tbt/ttfb). DEFAULT_BUDGETS match Google Web Vitals (LCP 2500/4000, CLS 0.1/0.25, INP 200/500, TBT 200/600, TTFB 800/1800). Per-cell status good/needs_improvement/poor; row status = worst cell. Custom budgets via opts.", status: "passing", evidence: "lib/perf/webVitalsBudgetTracker.ts" },
+  { id: "perf.web_vitals_budget_tracker_tests", area: "operating_loop", capability: "lib/perf/__tests__/webVitalsBudgetTracker.test.ts — 9 tests: empty → good, all within budgets, LCP intermediate → needs_improvement, CLS > 0.25 → poor, worst-cell propagation, sort worst-first, custom budgets override, totals tally, DEFAULT_BUDGETS export verified.", status: "passing", evidence: "lib/perf/__tests__/webVitalsBudgetTracker.test.ts" },
+
+  // ---------------------------------------------------------------------------
+  // Phase 269 — DR plan validator
+  // ---------------------------------------------------------------------------
+  { id: "dr.dr_plan_validator", area: "operating_loop", capability: "lib/dr/drPlanValidator — pure. Closed DrFindingKind union (8 kinds): missing_failover_region / same_region_failover / missing_drill / drill_overdue / missing_runbook / rto_too_high / rpo_too_high / rpo_exceeds_rto. Per-tier drill cadence + max RTO/RPO (tier_0 strictest, tier_3 loosest). Sorted fail→warn→ok.", status: "passing", evidence: "lib/dr/drPlanValidator.ts" },
+  { id: "dr.dr_plan_validator_tests", area: "operating_loop", capability: "lib/dr/__tests__/drPlanValidator.test.ts — 10 tests: happy path, missing failover, same-region failover, missing runbook, never drilled, overdue drill, RTO/RPO above tier max, RPO>RTO warn, multi-row sort order.", status: "passing", evidence: "lib/dr/__tests__/drPlanValidator.test.ts" },
+
+  // ---------------------------------------------------------------------------
+  // Phase 270 — GDPR DSR workflow tracker
+  // ---------------------------------------------------------------------------
+  { id: "privacy.gdpr_dsr_tracker", area: "compliance", capability: "lib/privacy/gdprDsrTracker — pure. Closed DsrKind union (access/portability/erasure/rectification/restriction/objection). GDPR 30-day base deadline + 60-day extension when extensionGranted. Status ladder draft / verifying / in_progress / completed / overdue / blocked. nextDeadlineIso = earliest deadline across open DSRs.", status: "passing", evidence: "lib/privacy/gdprDsrTracker.ts" },
+  { id: "privacy.gdpr_dsr_tracker_tests", area: "compliance", capability: "lib/privacy/__tests__/gdprDsrTracker.test.ts — 9 tests: identity not verified → verifying, all systems completed → completed, any system blocked → blocked, past 30d → overdue, extension granted preserves window, no systems → draft, daysRemaining can negative, sort ladder, nextDeadlineIso earliest.", status: "passing", evidence: "lib/privacy/__tests__/gdprDsrTracker.test.ts" },
+
+  // ---------------------------------------------------------------------------
+  // Phase 271 — AI code-review prioritizer
+  // ---------------------------------------------------------------------------
+  { id: "cicd.ai_code_review_prioritizer", area: "operating_loop", capability: "lib/cicd/aiCodeReviewPrioritizer — closed ReviewPriority union (p0_blocking | p1_must_review | p2_consider | p3_nit) + ReviewFindingKind union (lint/type_error/security/style/test_gap/doc_drift). REJECTS hallucinated ids + priorities. Deterministic fallback: security → p0, type_error/test_gap → p1, doc_drift → p2, lint(deprecated/error) → p2, others → p3.", status: "passing", evidence: "lib/cicd/aiCodeReviewPrioritizer.ts" },
+  { id: "cicd.ai_code_review_prioritizer_tests", area: "operating_loop", capability: "lib/cicd/__tests__/aiCodeReviewPrioritizer.test.ts — 8 tests: empty findings, security→p0, type_error/test_gap→p1, doc_drift→p2, lint+deprecated→p2, style→p3, rationale non-empty.", status: "passing", evidence: "lib/cicd/__tests__/aiCodeReviewPrioritizer.test.ts" },
 ];
 
 // ---------------------------------------------------------------------------
