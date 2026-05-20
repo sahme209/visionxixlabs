@@ -32,6 +32,7 @@ import {
   BellAlertIcon,
   QuestionMarkCircleIcon,
   DocumentMagnifyingGlassIcon,
+  SparklesIcon,
 } from "@heroicons/react/24/outline";
 
 interface NavLink {
@@ -63,6 +64,8 @@ const GROUPS: NavGroup[] = [
       { href: "/dashboard/help-suggestions",   label: "Doc Suggestions",  icon: ChartBarIcon          },
       { href: "/dashboard/agent-bus",          label: "Agent Bus",        icon: CpuChipIcon           },
       { href: "/dashboard/agent-proposals",    label: "Method Proposals", icon: CpuChipIcon           },
+      { href: "/dashboard/agent-activity",     label: "Agent Activity",   icon: ChartBarIcon          },
+      { href: "/dashboard/ai-settings",        label: "AI Settings",      icon: SparklesIcon          },
       { href: "/dashboard/executive-summary",  label: "Executive summary",icon: DocumentTextIcon     },
       { href: "/dashboard/priorities",         label: "Priorities",       icon: ChartBarIcon         },
       { href: "/dashboard/next-actions",       label: "Next actions",     icon: BoltIcon             },
@@ -132,6 +135,7 @@ const GROUPS: NavGroup[] = [
       { href: "/dashboard/automation-boundaries",  label: "Automation boundaries",icon: ShieldCheckIcon   },
       { href: "/dashboard/evidence",         label: "Evidence",          icon: DocumentTextIcon  },
       { href: "/dashboard/evidence-library", label: "Evidence library",  icon: DocumentTextIcon  },
+      { href: "/dashboard/compliance-packet",label: "Compliance packet", icon: DocumentTextIcon  },
       { href: "/dashboard/audit",    label: "Audit",         icon: DocumentTextIcon  },
       { href: "/dashboard/traces",   label: "Traces",        icon: EyeIcon           },
       { href: "/dashboard/memory",   label: "Memory",        icon: CpuChipIcon       },
