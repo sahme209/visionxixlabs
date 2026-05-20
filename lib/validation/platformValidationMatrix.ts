@@ -1761,6 +1761,36 @@ export const VALIDATION_MATRIX: ValidationRow[] = [
   // ---------------------------------------------------------------------------
   { id: "security.webhook_signature_validator", area: "operating_loop", capability: "lib/security/webhookSignatureValidator — HMAC-SHA256 with timing-safe compare. Optional timestamp anti-replay (default ±300s). Closed reason union (bad_signature | missing_secret | stale_timestamp | future_timestamp | malformed_hex). signWebhookPayload helper for callers.", status: "passing", evidence: "lib/security/webhookSignatureValidator.ts" },
   { id: "security.webhook_signature_validator_tests", area: "operating_loop", capability: "lib/security/__tests__/webhookSignatureValidator.test.ts — 8 tests: valid sig passes, missing secret, malformed hex, tampered body, stale timestamp, future timestamp, within tolerance, different secret timing-safe.", status: "passing", evidence: "lib/security/__tests__/webhookSignatureValidator.test.ts" },
+
+  // ---------------------------------------------------------------------------
+  // Phase 227 — Escalation policy engine
+  // ---------------------------------------------------------------------------
+  { id: "incidents.escalation_policy_engine", area: "operating_loop", capability: "lib/incidents/escalationPolicyEngine — pure. Closed EscalationTier union (primary | secondary | manager | exec). Per-severity policy steps. acknowledged → no active tier. Past last tier → that tier stays active. Defensively sorts policy steps by afterMinutes.", status: "passing", evidence: "lib/incidents/escalationPolicyEngine.ts" },
+  { id: "incidents.escalation_policy_engine_tests", area: "operating_loop", capability: "lib/incidents/__tests__/escalationPolicyEngine.test.ts — 8 tests: acknowledged nulls active tier, primary at t=0, secondary after threshold, past-last-tier stable, critical exec ladder, low pre-first-step null, ageMinutes math, unsorted policy still correct.", status: "passing", evidence: "lib/incidents/__tests__/escalationPolicyEngine.test.ts" },
+
+  // ---------------------------------------------------------------------------
+  // Phase 228 — Deploy window planner
+  // ---------------------------------------------------------------------------
+  { id: "releaseops.deploy_window_planner", area: "operating_loop", capability: "lib/releaseops/deployWindowPlanner — pure. UTC-only. evaluateDeployWindows returns isOpen + openWindows + nextOpenAt. Inverted windows (end <= start) treated as closed. Probes 8 days ahead for nextOpenAt.", status: "passing", evidence: "lib/releaseops/deployWindowPlanner.ts" },
+  { id: "releaseops.deploy_window_planner_tests", area: "operating_loop", capability: "lib/releaseops/__tests__/deployWindowPlanner.test.ts — 8 tests: inside open, before-start same-day next, after-end next-day, weekend → Monday, multiple windows, inverted closed, empty windows, invalid HH:MM closed.", status: "passing", evidence: "lib/releaseops/__tests__/deployWindowPlanner.test.ts" },
+
+  // ---------------------------------------------------------------------------
+  // Phase 229 — Backup RPO compliance checker
+  // ---------------------------------------------------------------------------
+  { id: "compliance.backup_rpo_checker", area: "compliance", capability: "lib/compliance/backupRpoChecker — pure. Closed status union (ok | approaching | overdue | no_backups). approaching when hoursSince ≥ 80% of rpoHours. Severity: 3+ overdue/no_backups = high, 1+ = medium, any approaching = low, else ok. Rows sorted no_backups → overdue → approaching → ok.", status: "passing", evidence: "lib/compliance/backupRpoChecker.ts" },
+  { id: "compliance.backup_rpo_checker_tests", area: "compliance", capability: "lib/compliance/__tests__/backupRpoChecker.test.ts — 8 tests: empty ok, within RPO ok, approaching 80%, past RPO overdue, no runs = no_backups, 3+ failures = high severity, sort order, most-recent run wins.", status: "passing", evidence: "lib/compliance/__tests__/backupRpoChecker.test.ts" },
+
+  // ---------------------------------------------------------------------------
+  // Phase 230 — Runbook step validator
+  // ---------------------------------------------------------------------------
+  { id: "runbooks.runbook_step_validator", area: "operating_loop", capability: "lib/runbooks/runbookStepValidator — pure. Closed RunbookStepKind union (stage | notify | audit | operator_gate | verify). Rejects rm -rf /<path>, aws iam delete-*, terraform destroy/apply, kubectl delete namespace, SQL DROP. Warns on auto-apply / auto-execute verbs. Requires operator_gate step; recommends audit as final step.", status: "passing", evidence: "lib/runbooks/runbookStepValidator.ts" },
+  { id: "runbooks.runbook_step_validator_tests", area: "operating_loop", capability: "lib/runbooks/__tests__/runbookStepValidator.test.ts — 8 tests: empty fail, missing operator_gate fail, happy path ok, rm -rf intentionally broad, aws iam delete fail, terraform apply fail, auto-apply warns, non-audit final warns.", status: "passing", evidence: "lib/runbooks/__tests__/runbookStepValidator.test.ts" },
+
+  // ---------------------------------------------------------------------------
+  // Phase 231 — AI postmortem drafter
+  // ---------------------------------------------------------------------------
+  { id: "incidents.ai_postmortem_drafter", area: "operating_loop", capability: "lib/incidents/aiPostmortemDrafter — BLAMELESS postmortem markdown drafter. Sections: Summary / Timeline / Impact / Root cause / Action items. NEVER throws. Falls back to deterministic template that renders even with sparse seeds (placeholder copy when fields empty).", status: "passing", evidence: "lib/incidents/aiPostmortemDrafter.ts" },
+  { id: "incidents.ai_postmortem_drafter_tests", area: "operating_loop", capability: "lib/incidents/__tests__/aiPostmortemDrafter.test.ts — 5 tests: Mock-only structured sections, timeline bullets, sparse seed placeholders, rootCauseHint rendered, empty title never throws.", status: "passing", evidence: "lib/incidents/__tests__/aiPostmortemDrafter.test.ts" },
 ];
 
 // ---------------------------------------------------------------------------
