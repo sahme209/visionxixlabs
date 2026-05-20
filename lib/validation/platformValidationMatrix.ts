@@ -1641,6 +1641,36 @@ export const VALIDATION_MATRIX: ValidationRow[] = [
   // ---------------------------------------------------------------------------
   { id: "compliance.license_auditor", area: "compliance", capability: "lib/compliance/licenseAuditor — pure. Classifies each SBOM entry against allow/warn/deny policy. Unrecognized → warn (operator refines). null / empty / whitespace license → unknown. Severity: deny>0 → fail; warn or unknown>0 → warn; else ok. byLicense sorted by count desc, case-normalized.", status: "passing", evidence: "lib/compliance/licenseAuditor.ts" },
   { id: "compliance.license_auditor_tests", area: "compliance", capability: "lib/compliance/__tests__/licenseAuditor.test.ts — 8 tests: empty input ok, allow/warn/deny classification, null/empty → unknown, unrecognized → warn (not allow), case normalization, byLicense sort, severity ok purity, severity fail trumps warn.", status: "passing", evidence: "lib/compliance/__tests__/licenseAuditor.test.ts" },
+
+  // ---------------------------------------------------------------------------
+  // Phase 207 — Terraform plan summarizer
+  // ---------------------------------------------------------------------------
+  { id: "iac.terraform_plan_summarizer", area: "operating_loop", capability: "lib/iac/terraformPlanSummarizer — pure. Closed PlanActionKind union (create | read | update | delete | no-op | replace). delete+create normalized to replace. byProvider counts. destructive list = delete+replace. Severity: 5+ destructive → high, ≥1 → medium, any create/update → low, else noop.", status: "passing", evidence: "lib/iac/terraformPlanSummarizer.ts" },
+  { id: "iac.terraform_plan_summarizer_tests", area: "operating_loop", capability: "lib/iac/__tests__/terraformPlanSummarizer.test.ts — 8 tests: empty noop, create-only low, single delete medium, 5+ delete high, delete+create=replace, byProvider counts, unknown action → no-op, read → noop severity.", status: "passing", evidence: "lib/iac/__tests__/terraformPlanSummarizer.test.ts" },
+
+  // ---------------------------------------------------------------------------
+  // Phase 208 — Cloud changefeed batcher
+  // ---------------------------------------------------------------------------
+  { id: "cloud.changefeed_batcher", area: "operating_loop", capability: "lib/cloud/changefeedBatcher — pure. Groups consecutive events by (service, changeKind, windowMs bucket). Default windowMs=5000. Sort batches by firstTs asc. Dedupes resource ids within a batch. Window clamped to [500ms, 1 day].", status: "passing", evidence: "lib/cloud/changefeedBatcher.ts" },
+  { id: "cloud.changefeed_batcher_tests", area: "operating_loop", capability: "lib/cloud/__tests__/changefeedBatcher.test.ts — 8 tests: empty input, consecutive grouping, service split, changeKind split, outside-window split, resource id dedupe, firstTs sort order, windowMs clamp boundaries.", status: "passing", evidence: "lib/cloud/__tests__/changefeedBatcher.test.ts" },
+
+  // ---------------------------------------------------------------------------
+  // Phase 209 — Approval quorum calculator
+  // ---------------------------------------------------------------------------
+  { id: "approvals.quorum_calculator", area: "operating_loop", capability: "lib/approvals/quorumCalculator — pure. Closed ApproverRole union (platform_admin | security | engineering_lead | finance | compliance). Tallies approves + rejects + perRoleApprovals. Enforces totalApprovals min + perRole min map. vetoOnReject flag short-circuits on any reject. First-failure reason string surfaced.", status: "passing", evidence: "lib/approvals/quorumCalculator.ts" },
+  { id: "approvals.quorum_calculator_tests", area: "operating_loop", capability: "lib/approvals/__tests__/quorumCalculator.test.ts — 7 tests: empty + zero policy passes, total threshold gate, perRole gate, both satisfied, vetoOnReject blocks, rejects allowed when no veto, perRole tally independence.", status: "passing", evidence: "lib/approvals/__tests__/quorumCalculator.test.ts" },
+
+  // ---------------------------------------------------------------------------
+  // Phase 210 — AGI capability scorecard
+  // ---------------------------------------------------------------------------
+  { id: "readiness.agi_capability_scorecard", area: "operating_loop", capability: "lib/readiness/agiCapabilityScorecard — pure. Folds the validation matrix into per-area scorecards. Weights match summarizeValidation (passing=1, partial=0.6, preview=0.4, blocked=0.2, failing=0). Verdict ladder: strong ≥0.9, solid ≥0.75, in_progress ≥0.5, behind. Rows sorted by score desc then area asc.", status: "passing", evidence: "lib/readiness/agiCapabilityScorecard.ts" },
+  { id: "readiness.agi_capability_scorecard_tests", area: "operating_loop", capability: "lib/readiness/__tests__/agiCapabilityScorecard.test.ts — 7 tests: empty overall 0, all-passing strong, partial-only verdict, failing → behind, ladder boundaries, sort order, overallScore weighted mean, status count split.", status: "passing", evidence: "lib/readiness/__tests__/agiCapabilityScorecard.test.ts" },
+
+  // ---------------------------------------------------------------------------
+  // Phase 211 — AI release-note generator
+  // ---------------------------------------------------------------------------
+  { id: "releaseops.ai_release_note_generator", area: "operating_loop", capability: "lib/releaseops/aiReleaseNoteGenerator — drafts 3-5 release-note bullets from a CommitSummary list. Strict {bullets} schema. NEVER throws. Falls back to one-bullet-per-commit (max 5) using [area] subject (#PR) format when Mock answers / model returns invalid / provider errors.", status: "passing", evidence: "lib/releaseops/aiReleaseNoteGenerator.ts" },
+  { id: "releaseops.ai_release_note_generator_tests", area: "operating_loop", capability: "lib/releaseops/__tests__/aiReleaseNoteGenerator.test.ts — 4 tests: empty commits → no bullets, Mock-only cap at 5, fallback bullet area+PR prefix, fallback omits area when not supplied.", status: "passing", evidence: "lib/releaseops/__tests__/aiReleaseNoteGenerator.test.ts" },
 ];
 
 // ---------------------------------------------------------------------------
