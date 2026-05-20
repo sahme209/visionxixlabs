@@ -1975,6 +1975,36 @@ export const VALIDATION_MATRIX: ValidationRow[] = [
   // ---------------------------------------------------------------------------
   { id: "desktop.tray_icon_state_machine", area: "desktop", capability: "lib/desktop/trayIconStateMachine — pure. Closed TrayVariant union (ok | attention | critical | offline | needs_login). Decision ladder: offline overrides → needs_login → critical (platform/integration down OR ≥3 unread incidents) → attention (any pending) → ok. Menu kinds: header / approvals / incidents / status / ai_provider / integrations / open_app / quit.", status: "passing", evidence: "lib/desktop/trayIconStateMachine.ts" },
   { id: "desktop.tray_icon_state_machine_tests", area: "desktop", capability: "lib/desktop/__tests__/trayIconStateMachine.test.ts — 11 tests: all-clear ok, offline overrides, require_login, 3+ incidents critical, platform/integration down critical, pending approvals attention, session warn attention, full menu rows, offline menu minimal, mock fallback labeling.", status: "passing", evidence: "lib/desktop/__tests__/trayIconStateMachine.test.ts" },
+
+  // ---------------------------------------------------------------------------
+  // Phase 262 — IT helpdesk ticket triage + SLA tracker
+  // ---------------------------------------------------------------------------
+  { id: "helpdesk.ticket_triage_engine", area: "operating_loop", capability: "lib/helpdesk/ticketTriageEngine — pure. Closed TicketPriority union (p1/p2/p3/p4) + TicketQueue union (infra/security/billing/product/general). Keyword-driven priority + queue detection. Per-priority SLA hours (overridable). SLA status closed/within/approaching(≥80%)/breached. Sorted breached → approaching → within → closed.", status: "passing", evidence: "lib/helpdesk/ticketTriageEngine.ts" },
+  { id: "helpdesk.ticket_triage_engine_tests", area: "operating_loop", capability: "lib/helpdesk/__tests__/ticketTriageEngine.test.ts — 10 tests: p1/p2/p4 keywords, default p3, infra/billing queue, breached, approaching ≥80%, custom slaHours, closed excluded from breach, sort order.", status: "passing", evidence: "lib/helpdesk/__tests__/ticketTriageEngine.test.ts" },
+
+  // ---------------------------------------------------------------------------
+  // Phase 263 — SCIM identity lifecycle helper
+  // ---------------------------------------------------------------------------
+  { id: "iam.scim_lifecycle_helper", area: "operating_loop", capability: "lib/iam/scimLifecycleHelper — pure. Diffs HRIS+SSO directory feed against current grants. Closed LifecycleActionKind union (grant_role | revoke_role | swap_role | deactivate_user). Joiner / mover / leaver counts. terminated → revoke all + deactivate; on_leave preserves grants; missing-from-HRIS treated as missed offboarding. Approval-only-no-execution.", status: "passing", evidence: "lib/iam/scimLifecycleHelper.ts" },
+  { id: "iam.scim_lifecycle_helper_tests", area: "operating_loop", capability: "lib/iam/__tests__/scimLifecycleHelper.test.ts — 8 tests: empty, joiner grants per role, mover grant + revoke deltas, terminated revoke+deactivate, on_leave preserves, missing user revoke+deactivate, joiner not counted as mover, reasons explain each action.", status: "passing", evidence: "lib/iam/__tests__/scimLifecycleHelper.test.ts" },
+
+  // ---------------------------------------------------------------------------
+  // Phase 264 — Observability log aggregator
+  // ---------------------------------------------------------------------------
+  { id: "observability.log_aggregator", area: "operating_loop", capability: "lib/observability/logAggregator — pure. Per-service rollup: byLevel split (debug/info/warn/error/fatal), errorRate, p50 + p95 latency from durationMs samples. Verdict ladder ok / degraded (≥2% errors) / burning (≥10%). Top-5 error fingerprints with identifier-shaped tokens collapsed (digits → <n>, UUIDs → <uuid>) so per-tenant errors group correctly.", status: "passing", evidence: "lib/observability/logAggregator.ts" },
+  { id: "observability.log_aggregator_tests", area: "operating_loop", capability: "lib/observability/__tests__/logAggregator.test.ts — 9 tests: empty, window start/end tracking, burning ≥10%, degraded 2-10%, ok <2%, p50+p95 math, fingerprint grouping with id collapse, sort order, byLevel split.", status: "passing", evidence: "lib/observability/__tests__/logAggregator.test.ts" },
+
+  // ---------------------------------------------------------------------------
+  // Phase 265 — Customer success health-score builder
+  // ---------------------------------------------------------------------------
+  { id: "customer.health_score_builder", area: "operating_loop", capability: "lib/customer/healthScoreBuilder — pure. 0..100 score from tenant signals (active ratio, ticket volume, bad-CSAT, NPS, billing on-time, onboarding completion). Closed tier union (green ≥70 / yellow ≥40 / red). Per-factor breakdown so CS team sees what's pulling each tenant down.", status: "passing", evidence: "lib/customer/healthScoreBuilder.ts" },
+  { id: "customer.health_score_builder_tests", area: "operating_loop", capability: "lib/customer/__tests__/healthScoreBuilder.test.ts — 10 tests: happy-path green, zero_activity factor, heavy ticket factor, bad CSAT capped, promoter/detractor NPS, invoice late, onboarding stuck, score clamp 0..100, red on worst-case, yellow band 40-69.", status: "passing", evidence: "lib/customer/__tests__/healthScoreBuilder.test.ts" },
+
+  // ---------------------------------------------------------------------------
+  // Phase 266 — i18n bundle validator
+  // ---------------------------------------------------------------------------
+  { id: "i18n.bundle_validator", area: "operating_loop", capability: "lib/i18n/bundleValidator — pure. Flags missing_key / extra_key / placeholder_mismatch (e.g. {name} vs {nombre}) / empty_string. Per-locale coverage 0..1. Status ladder ok (100% + no mismatch) / warn (≥90%) / incomplete (<90%). Overall = worst per-locale status.", status: "passing", evidence: "lib/i18n/bundleValidator.ts" },
+  { id: "i18n.bundle_validator_tests", area: "operating_loop", capability: "lib/i18n/__tests__/bundleValidator.test.ts — 9 tests: identical ok, missing key + coverage drop, extra key flagged, empty string flagged, placeholder mismatch warn, 90-100% warn, <90% incomplete, multi-locale overall worst, empty base coverage=1.", status: "passing", evidence: "lib/i18n/__tests__/bundleValidator.test.ts" },
 ];
 
 // ---------------------------------------------------------------------------
