@@ -1791,6 +1791,40 @@ export const VALIDATION_MATRIX: ValidationRow[] = [
   // ---------------------------------------------------------------------------
   { id: "incidents.ai_postmortem_drafter", area: "operating_loop", capability: "lib/incidents/aiPostmortemDrafter — BLAMELESS postmortem markdown drafter. Sections: Summary / Timeline / Impact / Root cause / Action items. NEVER throws. Falls back to deterministic template that renders even with sparse seeds (placeholder copy when fields empty).", status: "passing", evidence: "lib/incidents/aiPostmortemDrafter.ts" },
   { id: "incidents.ai_postmortem_drafter_tests", area: "operating_loop", capability: "lib/incidents/__tests__/aiPostmortemDrafter.test.ts — 5 tests: Mock-only structured sections, timeline bullets, sparse seed placeholders, rootCauseHint rendered, empty title never throws.", status: "passing", evidence: "lib/incidents/__tests__/aiPostmortemDrafter.test.ts" },
+
+  // ---------------------------------------------------------------------------
+  // Phase 232 — Slack integration (adapter + OAuth + Block Kit builders)
+  // ---------------------------------------------------------------------------
+  { id: "integrations.slack_adapter", area: "operating_loop", capability: "lib/integrations/slack/slackAdapter — closed SlackSendMode union (webhook | bot_token). bot_token requires xoxb-* token prefix. Closed errorKind union (missing_destination | missing_token | rate_limited | bad_response | network | timeout). NEVER throws.", status: "passing", evidence: "lib/integrations/slack/slackAdapter.ts" },
+  { id: "integrations.slack_builders", area: "operating_loop", capability: "buildApprovalBlocks + buildIncidentBlocks emit Slack Block Kit JSON. Approval block always reaffirms 'approval_only_no_execution'. Incident block adds the runbook button only when runbookUrl supplied.", status: "passing", evidence: "lib/integrations/slack/slackAdapter.ts" },
+  { id: "integrations.slack_oauth", area: "operating_loop", capability: "lib/integrations/slack/slackOauth — pure URL builder + state encode/decode (base64url JSON, 10-min TTL). redactSlackToken keeps only xoxb- prefix + last 4 chars. Default scopes: chat:write, chat:write.public, commands, channels:read, groups:read, im:read.", status: "passing", evidence: "lib/integrations/slack/slackOauth.ts" },
+  { id: "integrations.slack_tests", area: "operating_loop", capability: "lib/integrations/slack/__tests__/* — 14 tests across builders (6) + oauth helpers (8). Block Kit structure, header content, action URLs, severity uppercase, install URL params, state round-trip, malformed/expired state rejection, token redaction shape.", status: "passing", evidence: "lib/integrations/slack/__tests__" },
+
+  // ---------------------------------------------------------------------------
+  // Phase 233 — Microsoft Teams integration (adapter + Adaptive Cards)
+  // ---------------------------------------------------------------------------
+  { id: "integrations.teams_adapter", area: "operating_loop", capability: "lib/integrations/teams/teamsAdapter — closed TeamsSendMode union (webhook | graph_bot). Webhook expects '1' response body; graph_bot expects 201 from Graph chat-message POST. Closed errorKind union. NEVER throws.", status: "passing", evidence: "lib/integrations/teams/teamsAdapter.ts" },
+  { id: "integrations.teams_builders", area: "operating_loop", capability: "buildTeamsApprovalCard + buildTeamsIncidentCard emit AdaptiveCard 1.5 JSON with FactSet + actions. Approval card always includes 'approval_only_no_execution' fact. Incident card omits actions block when no runbookUrl.", status: "passing", evidence: "lib/integrations/teams/teamsAdapter.ts" },
+  { id: "integrations.teams_tests", area: "operating_loop", capability: "lib/integrations/teams/__tests__/teamsBuilders.test.ts — 5 tests: approval schema + version + actions count, packet label + safety string present, incident omits actions w/o runbookUrl, incident action url when supplied, severity uppercase in header.", status: "passing", evidence: "lib/integrations/teams/__tests__/teamsBuilders.test.ts" },
+
+  // ---------------------------------------------------------------------------
+  // Phase 234 — Outlook integration (Microsoft Graph mail + calendar)
+  // ---------------------------------------------------------------------------
+  { id: "integrations.outlook_adapter", area: "operating_loop", capability: "lib/integrations/outlook/outlookAdapter — sendOutlookMail (/me/sendMail or /users/{id}/sendMail) + createOutlookEvent (/me/events) via Microsoft Graph v1.0. createOutlookEvent supports onlineMeeting=true (Teams meeting) and returns Graph eventId + joinUrl on 2xx. Closed errorKind union. NEVER throws.", status: "passing", evidence: "lib/integrations/outlook/outlookAdapter.ts" },
+  { id: "integrations.outlook_war_room_builder", area: "operating_loop", capability: "buildIncidentWarRoom — pure. Default duration 30m, clamped [15, 240]. Subject contains [SEVERITY] + service. Body reaffirms approval-only-no-execution. onlineMeeting always true so the invite includes a Teams join URL.", status: "passing", evidence: "lib/integrations/outlook/outlookAdapter.ts" },
+  { id: "integrations.outlook_tests", area: "operating_loop", capability: "lib/integrations/outlook/__tests__/outlookBuilders.test.ts — 7 tests: default duration, custom duration honored, duration clamp lower + upper, subject content, body safety wording, onlineMeeting flag.", status: "passing", evidence: "lib/integrations/outlook/__tests__/outlookBuilders.test.ts" },
+
+  // ---------------------------------------------------------------------------
+  // Phase 235 — Integration health monitor
+  // ---------------------------------------------------------------------------
+  { id: "integrations.integration_health_monitor", area: "operating_loop", capability: "lib/integrations/integrationHealthMonitor — pure. Per-integration successRate + avgLatencyMs + lastAttemptAt + lastErrorKind. Verdict ladder: operational ≥95%, degraded ≥60%, down <60%, idle (0 attempts). Rows sorted down → degraded → idle → operational. overall reflects worst-case.", status: "passing", evidence: "lib/integrations/integrationHealthMonitor.ts" },
+  { id: "integrations.integration_health_monitor_tests", area: "operating_loop", capability: "lib/integrations/__tests__/integrationHealthMonitor.test.ts — 8 tests: empty input, all-ok operational, 60-95% degraded, <60% down, sort order, avg latency math, lastAttemptAt + lastErrorKind tracking, overall reflects worst.", status: "passing", evidence: "lib/integrations/__tests__/integrationHealthMonitor.test.ts" },
+
+  // ---------------------------------------------------------------------------
+  // Phase 236 — Integration catalog + readiness checker
+  // ---------------------------------------------------------------------------
+  { id: "integrations.integration_catalog", area: "operating_loop", capability: "lib/integrations/integrationCatalog — declarative source of truth. 6 integrations (slack/teams/outlook/gmail/pagerduty/webhook_generic) × per-mode required-key lists. checkIntegrationReadiness compares (mode, env-set booleans) and surfaces missingKeys without reading the env values themselves.", status: "passing", evidence: "lib/integrations/integrationCatalog.ts" },
+  { id: "integrations.integration_catalog_tests", area: "operating_loop", capability: "lib/integrations/__tests__/integrationCatalog.test.ts — 8 tests: catalog roster, unknown name null, every mode has required keys, readiness configured=true on full env, missingKeys populated, no-mode skip, unknown-mode skip, Outlook Graph creds present.", status: "passing", evidence: "lib/integrations/__tests__/integrationCatalog.test.ts" },
 ];
 
 // ---------------------------------------------------------------------------
