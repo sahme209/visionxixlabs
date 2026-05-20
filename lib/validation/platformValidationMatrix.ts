@@ -1233,6 +1233,37 @@ export const VALIDATION_MATRIX: ValidationRow[] = [
   { id: "feedback.store", area: "operating_loop", capability: "lib/feedback/feedbackStore — captureFeedback validates sentiment at the boundary, writes to FeedbackRecord, then mirrors to Slack/Teams via the outbound lane in parallel (best-effort, never blocks). Frustrated → severity high in the outbound payload so the team sees it loudest.", status: "passing", evidence: "lib/feedback/feedbackStore.ts" },
   { id: "feedback.route", area: "operating_loop", capability: "POST /api/feedback — anonymous-allowed (auth context attached when present, otherwise organizationId is null). Body validated against the sentiment closed union; 2000-char message cap defense-in-depth.", status: "passing", evidence: "app/api/feedback/route.ts" },
   { id: "ui.feedback_widget", area: "command_center", capability: "app/dashboard/FeedbackWidget — floating fuchsia chat-bubble button next to the help bubble. 3-sentiment picker + 4-row textarea + send. Auto-dismisses 2 seconds after success. Wired into dashboard layout so every page surfaces it.", status: "passing", evidence: "app/dashboard/FeedbackWidget.tsx" },
+
+  // ---------------------------------------------------------------------------
+  // Phase 141 — Demo-mode sample-data populator
+  // ---------------------------------------------------------------------------
+  { id: "demo.sample_populator", area: "operating_loop", capability: "lib/demo/sampleDataPopulator — idempotent seed of representative rows across rationale + runbook queue + outbound history + feedback + help-query tables. All rows share a 'demo:' id prefix so cleanupDemoData removes them precisely without touching real data. NEVER triggers outbound Slack sends — demo data must not leak to real channels.", status: "passing", evidence: "lib/demo/sampleDataPopulator.ts" },
+  { id: "demo.populate_route", area: "operating_loop", capability: "POST /api/demo/populate + POST /api/demo/cleanup — typed envelopes. Auth-gated (tenant-scoped). safetyContract 'setup_review_only_no_execution'.", status: "passing", evidence: "app/api/demo/populate/route.ts" },
+  { id: "demo.populator_tests", area: "operating_loop", capability: "lib/demo/__tests__/sampleDataPopulator.test.ts — locks the DEMO_ROW_PREFIX invariant ('demo:') so cleanup remains precise.", status: "passing", evidence: "lib/demo/__tests__/sampleDataPopulator.test.ts" },
+
+  // ---------------------------------------------------------------------------
+  // Phase 142 — Stripe billing portal session
+  // ---------------------------------------------------------------------------
+  { id: "billing.portal_helper", area: "operating_loop", capability: "lib/billing/stripeHelper.createBillingPortalSession — dynamic-import Stripe SDK, gracefully inert without STRIPE_SECRET_KEY. Returns typed {ok:false,reason} when stripeCustomerId is missing (operator hasn't completed checkout yet).", status: "passing", evidence: "lib/billing/stripeHelper.ts" },
+  { id: "billing.portal_route", area: "operating_loop", capability: "POST /api/billing/portal-session — auth-gated. Reads the tenant's billing plan to pull stripeCustomerId, calls createBillingPortalSession, returns the portal URL. safetyContract 'billing_summary_read_only'.", status: "passing", evidence: "app/api/billing/portal-session/route.ts" },
+
+  // ---------------------------------------------------------------------------
+  // Phase 143 — Production env validator
+  // ---------------------------------------------------------------------------
+  { id: "config.env_validator", area: "operating_loop", capability: "lib/config/envValidator — validateProductionEnv runs 10 rules (4 required: DATABASE_URL / NEXTAUTH_SECRET / NEXTAUTH_URL / CRON_SECRET; 6 recommended: scheduler enables, outbound channels, admin emails, Stripe key, encryption key). Per-rule custom predicates (NEXTAUTH_URL must be http(s); Slack URL must be hooks.slack.com). NEVER echoes raw values — only an 8-char SHA-256 prefix as a presence + uniqueness signal.", status: "passing", evidence: "lib/config/envValidator.ts" },
+  { id: "config.env_check_route", area: "operating_loop", capability: "GET /api/admin/env-check — platform-admin gated. Returns the typed report so /dashboard/admin can render which env vars still need attention before prod.", status: "passing", evidence: "app/api/admin/env-check/route.ts" },
+  { id: "config.env_validator_tests", area: "operating_loop", capability: "lib/config/__tests__/envValidator.test.ts — 7 tests covering empty env failure, full-required-set pass, short-secret rejection, non-https URL rejection, never-echoes-raw-value invariant, severity partitioning, Slack-URL shape validation.", status: "passing", evidence: "lib/config/__tests__/envValidator.test.ts" },
+
+  // ---------------------------------------------------------------------------
+  // Phase 144 — Public pricing page
+  // ---------------------------------------------------------------------------
+  { id: "marketing.pricing_page", area: "command_center", capability: "app/pricing — public ISR-rendered (1h revalidate) pricing page auto-generated from TIER_CATALOG. Marketing pricing never drifts from product caps: same source, one edit. Trial → 'Start free trial' CTA; Starter/Growth → 'Upgrade in dashboard'; Enterprise → mailto:sales@axiom.dev. Honest-billing callout explains cap enforcement.", status: "passing", evidence: "app/pricing/page.tsx" },
+
+  // ---------------------------------------------------------------------------
+  // Phase 145 — Tier-cap enforcement helper
+  // ---------------------------------------------------------------------------
+  { id: "billing.tier_cap_enforcer", area: "operating_loop", capability: "lib/billing/tierCapEnforcer — pure checkCap function. -1 capacity → always allow (unlimited); zero capacity → always deny (programmatic pause); finite capacity → strict less-than comparison. Returns typed CapDecision with remaining + reason so the autonomy scheduler + outbound lane can both check and log the verdict in one call. checkDailyCap thin wrapper for autonomy + outbound daily caps.", status: "passing", evidence: "lib/billing/tierCapEnforcer.ts" },
+  { id: "billing.tier_cap_tests", area: "operating_loop", capability: "lib/billing/__tests__/tierCapEnforcer.test.ts — 7 tests covering unlimited tier, under-cap allow, at-cap deny, over-cap deny, checkDailyCap parity, reason-string content, zero-used safety.", status: "passing", evidence: "lib/billing/__tests__/tierCapEnforcer.test.ts" },
 ];
 
 // ---------------------------------------------------------------------------

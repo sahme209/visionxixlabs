@@ -142,6 +142,67 @@ export async function createCheckoutSession(input: CreateCheckoutInput): Promise
 }
 
 // ---------------------------------------------------------------------------
+// Billing portal session (Phase 142)
+// ---------------------------------------------------------------------------
+
+export interface PortalSessionInput {
+  customerId: string;
+  returnUrl: string;
+}
+
+export interface PortalSessionResult {
+  ok: boolean;
+  url?: string;
+  reason?: string;
+}
+
+/**
+ * Create a Stripe Billing Portal session — the operator-facing
+ * page where customers manage their card, cancel, change plans.
+ * Gracefully inert when STRIPE_SECRET_KEY is unset, same pattern as
+ * createCheckoutSession.
+ */
+export async function createBillingPortalSession(input: PortalSessionInput): Promise<PortalSessionResult> {
+  if (!isStripeConfigured()) {
+    return { ok: false, reason: "STRIPE_SECRET_KEY is not set." };
+  }
+  if (!input.customerId) {
+    return { ok: false, reason: "Stripe customer id missing — operator must complete checkout first." };
+  }
+
+  type StripePortalCtor = new (key: string, opts?: unknown) => {
+    billingPortal: { sessions: { create: (params: unknown) => Promise<{ url?: string | null }> } };
+  };
+  let StripeCtor: StripePortalCtor;
+  try {
+    const mod = (await import("stripe")) as unknown as { default: StripePortalCtor };
+    StripeCtor = mod.default;
+  } catch (err) {
+    return {
+      ok: false,
+      reason: `Stripe SDK not installed yet: ${err instanceof Error ? err.message : String(err)}`,
+    };
+  }
+
+  try {
+    const stripe = new StripeCtor(process.env.STRIPE_SECRET_KEY!.trim(), { apiVersion: "2024-06-20" });
+    const session = await stripe.billingPortal.sessions.create({
+      customer: input.customerId,
+      return_url: input.returnUrl,
+    });
+    if (!session.url) {
+      return { ok: false, reason: "Stripe did not return a portal URL." };
+    }
+    return { ok: true, url: session.url };
+  } catch (err) {
+    return {
+      ok: false,
+      reason: `Stripe portal create failed: ${err instanceof Error ? err.message : String(err)}`,
+    };
+  }
+}
+
+// ---------------------------------------------------------------------------
 // Webhook signature verification
 // ---------------------------------------------------------------------------
 
