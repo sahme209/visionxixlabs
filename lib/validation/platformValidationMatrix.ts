@@ -1611,6 +1611,36 @@ export const VALIDATION_MATRIX: ValidationRow[] = [
   // ---------------------------------------------------------------------------
   { id: "releaseops.ai_rollback_narrator", area: "operating_loop", capability: "lib/releaseops/aiRollbackNarrator — 2-3 sentence operator-facing rollback summary via the AI manager. Fallback template ALWAYS reaffirms advisory-only wording. NEVER throws. Includes service name, minutes since deploy, supplied reasons.", status: "passing", evidence: "lib/releaseops/aiRollbackNarrator.ts" },
   { id: "releaseops.ai_rollback_narrator_tests", area: "operating_loop", capability: "lib/releaseops/__tests__/aiRollbackNarrator.test.ts — 3 tests: Mock-only fallback includes service + minutes + reasons + 'advisory', no_rollback verdict handled cleanly, empty reasons list renders 'no signals tripped'.", status: "passing", evidence: "lib/releaseops/__tests__/aiRollbackNarrator.test.ts" },
+
+  // ---------------------------------------------------------------------------
+  // Phase 202 — PII redactor
+  // ---------------------------------------------------------------------------
+  { id: "privacy.pii_redactor", area: "operating_loop", capability: "lib/privacy/piiRedactor — pure redactPii. Default rule order: aws_access_key → jwt → email → credit_card → phone → ipv6 → ipv4. Each match gets a typed placeholder like <email:1>. redactions[] preserves originals for an opt-in un-redact step. Convenience redactText(s) returns just the text.", status: "passing", evidence: "lib/privacy/piiRedactor.ts" },
+  { id: "privacy.pii_redactor_tests", area: "operating_loop", capability: "lib/privacy/__tests__/piiRedactor.test.ts — 9 tests: clean text passthrough, email redaction, AWS key wins over email (rule order), IPv4+IPv6 full-form, JWT redaction, per-kind counter increments, mapping preserves originals, redactText convenience, custom rules override.", status: "passing", evidence: "lib/privacy/__tests__/piiRedactor.test.ts" },
+
+  // ---------------------------------------------------------------------------
+  // Phase 203 — KEV correlator
+  // ---------------------------------------------------------------------------
+  { id: "security.kev_correlator", area: "operating_loop", capability: "lib/securityScanner/kevCorrelator — pure. Joins detected CVEs to a KEV catalog. Per matched CVE: affectedCount, affectedResourceIds, affectedServices, pastDue (KEV dueDate < now), severity ladder (pastDue=critical, count>=5=high, >=2=medium, <2=low). Unmatched detections surfaced separately.", status: "passing", evidence: "lib/securityScanner/kevCorrelator.ts" },
+  { id: "security.kev_correlator_tests", area: "operating_loop", capability: "lib/securityScanner/__tests__/kevCorrelator.test.ts — 8 tests: empty inputs, basic match, unmatched detections surfaced, pastDue → critical, resource dedup, severity ladder boundaries, sort by severity then count, affected services set.", status: "passing", evidence: "lib/securityScanner/__tests__/kevCorrelator.test.ts" },
+
+  // ---------------------------------------------------------------------------
+  // Phase 204 — AI security playbook generator
+  // ---------------------------------------------------------------------------
+  { id: "security.ai_playbook_generator", area: "operating_loop", capability: "lib/securityScanner/aiPlaybookGenerator — closed PlaybookStepType union (contain | investigate | remediate_propose | notify | evidence_capture | verify). Validates each AI-returned step before keeping; requires ≥3 valid steps else falls back to 5-step deterministic playbook. Advisory only — no auto-execution wording.", status: "passing", evidence: "lib/securityScanner/aiPlaybookGenerator.ts" },
+  { id: "security.ai_playbook_generator_tests", area: "operating_loop", capability: "lib/securityScanner/__tests__/aiPlaybookGenerator.test.ts — 5 tests: Mock-only fallback returns 5 steps, order + allowed type invariants, resource label mentioned, remediate_propose + verify present, never claims auto-execution.", status: "passing", evidence: "lib/securityScanner/__tests__/aiPlaybookGenerator.test.ts" },
+
+  // ---------------------------------------------------------------------------
+  // Phase 205 — SLO burn forecaster
+  // ---------------------------------------------------------------------------
+  { id: "slo.burn_forecaster", area: "operating_loop", capability: "lib/slo/burnForecaster — pure. remainingBudget + remainingHours + failuresPerHour + hoursUntilExhausted + sustainableBurnRate + urgency ladder (ok | tighten_soon | act_now | exhausted). Clamps remaining values to >=0. Returns Infinity when zero failures so far.", status: "passing", evidence: "lib/slo/burnForecaster.ts" },
+  { id: "slo.burn_forecaster_tests", area: "operating_loop", capability: "lib/slo/__tests__/burnForecaster.test.ts — 7 tests: zero failures → ok + null hoursUntil, act_now boundary, exhausted, tighten_soon when exhaustion outside window, sustainable=Infinity baseline, exhaustion math, clamp to >=0.", status: "passing", evidence: "lib/slo/__tests__/burnForecaster.test.ts" },
+
+  // ---------------------------------------------------------------------------
+  // Phase 206 — Dependency license auditor
+  // ---------------------------------------------------------------------------
+  { id: "compliance.license_auditor", area: "compliance", capability: "lib/compliance/licenseAuditor — pure. Classifies each SBOM entry against allow/warn/deny policy. Unrecognized → warn (operator refines). null / empty / whitespace license → unknown. Severity: deny>0 → fail; warn or unknown>0 → warn; else ok. byLicense sorted by count desc, case-normalized.", status: "passing", evidence: "lib/compliance/licenseAuditor.ts" },
+  { id: "compliance.license_auditor_tests", area: "compliance", capability: "lib/compliance/__tests__/licenseAuditor.test.ts — 8 tests: empty input ok, allow/warn/deny classification, null/empty → unknown, unrecognized → warn (not allow), case normalization, byLicense sort, severity ok purity, severity fail trumps warn.", status: "passing", evidence: "lib/compliance/__tests__/licenseAuditor.test.ts" },
 ];
 
 // ---------------------------------------------------------------------------
