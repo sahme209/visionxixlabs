@@ -1137,6 +1137,33 @@ model OutboundNotificationRecord {
   @@index([dedupeKey, createdAt])
 }
 
+/// Outbound notification retry row. When a send fails (no channel
+/// succeeded), the lane enqueues a retry here. A drain cron picks up
+/// pending rows older than 5 minutes, attempts one more send, and
+/// marks the row 'succeeded' on success or 'failed_terminal' on a
+/// second failure. Status is three-valued so operators can audit
+/// which notifications gave up and which recovered.
+model OutboundNotificationRetry {
+  id                String    @id
+  organizationId    String
+  dedupeKey         String
+  kind              String
+  severity          String
+  headline          String
+  body              String
+  evidenceRefs      String[]
+  safeActionLabel   String?
+  safeActionHref    String?
+  status            String    // "pending" | "succeeded" | "failed_terminal"
+  attemptCount      Int       @default(0)
+  lastError         String?
+  enqueuedAt        DateTime  @default(now())
+  retriedAt         DateTime?
+
+  @@index([status, enqueuedAt])
+  @@index([organizationId, status])
+}
+
 /// Help query analytics row. One per /api/help/ask call. Captures
 /// the verbatim query + the verdict the local search engine returned
 /// + the top hit (when any) so operators can see which docs are

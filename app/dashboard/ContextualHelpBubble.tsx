@@ -17,9 +17,26 @@ import { resolveHelpForPath } from "@/lib/help/helpRouteIndex";
 export function ContextualHelpBubble() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
+  const [enabled, setEnabled] = useState<boolean>(true);
   const wrapperRef = useRef<HTMLDivElement | null>(null);
 
   const entry = useMemo(() => resolveHelpForPath(pathname ?? ""), [pathname]);
+
+  // Phase 127 — honor the per-tenant ui.contextual_help_bubble flag.
+  // Optimistic default of `true` avoids a flicker; flip to false only
+  // when the public flag endpoint explicitly says so.
+  useEffect(() => {
+    let cancelled = false;
+    fetch("/api/flags/public", { credentials: "include" })
+      .then((r) => r.json())
+      .then((j: { ok?: boolean; data?: { flags?: Record<string, boolean> } }) => {
+        if (cancelled) return;
+        const flag = j.data?.flags?.["ui.contextual_help_bubble"];
+        if (flag === false) setEnabled(false);
+      })
+      .catch(() => { /* leave optimistic default */ });
+    return () => { cancelled = true; };
+  }, []);
 
   useEffect(() => {
     // Close on Escape.
@@ -40,6 +57,8 @@ export function ContextualHelpBubble() {
       window.removeEventListener("mousedown", onClick);
     };
   }, [open]);
+
+  if (!enabled) return null;
 
   return (
     <div ref={wrapperRef} className="fixed bottom-5 right-5 z-40">

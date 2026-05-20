@@ -24,6 +24,10 @@
     {
       "path": "/api/onboarding/cron-reminder",
       "schedule": "0 15 * * 1"
+    },
+    {
+      "path": "/api/notifications/cron-drain-retries",
+      "schedule": "*/5 * * * *"
     }
   ]
 }

@@ -50,4 +50,11 @@ export const CRON_CATALOG: CronSpec[] = [
     description: "Monday 15:00 UTC reminder to tenants whose onboarding completion ratio is below 100%.",
     routePath: "/api/onboarding/cron-reminder",
   },
+  {
+    id: "cron-drain-retries",
+    label: "Outbound retry drain",
+    schedule: "*/5 * * * *",
+    description: "Every 5 minutes, attempts one final send on each pending OutboundNotificationRetry row older than 5 minutes. Rows resolve to 'succeeded' or 'failed_terminal' — never re-queued.",
+    routePath: "/api/notifications/cron-drain-retries",
+  },
 ];

@@ -1138,6 +1138,35 @@ export const VALIDATION_MATRIX: ValidationRow[] = [
   // Phase 126 — Per-tenant Slack webhook routing
   // ---------------------------------------------------------------------------
   { id: "notifications.slack_tenant_override", area: "operating_loop", capability: "lib/notifications/outboundNotificationLane.sendOutboundNotification now reads readTenantCharter(tenantId) before posting to Slack. When charter.slackWebhookOverride is set, the lane uses it instead of the global SLACK_WEBHOOK_URL. Best-effort — a DB failure falls through to the env URL. Skip reasons include the source ('tenant_override' | 'global_env') so audit trails reveal which URL was tried.", status: "passing", evidence: "lib/notifications/outboundNotificationLane.ts" },
+
+  // ---------------------------------------------------------------------------
+  // Phase 127 — Contextual help bubble respects the ui flag
+  // ---------------------------------------------------------------------------
+  { id: "flags.public_route", area: "operating_loop", capability: "GET /api/flags/public — returns only the UI-relevant flag booleans for the caller's tenant. No rationale, no audit fields. Designed for client components to safely fetch and use. Currently surfaces ui.contextual_help_bubble.", status: "passing", evidence: "app/api/flags/public/route.ts" },
+  { id: "ui.help_bubble_flag_aware", area: "command_center", capability: "app/dashboard/ContextualHelpBubble.tsx — on mount, fetches /api/flags/public; when ui.contextual_help_bubble === false, the component unmounts itself (returns null). Optimistic default of `true` avoids a flicker; only an explicit `false` from the API disables the bubble.", status: "passing", evidence: "app/dashboard/ContextualHelpBubble.tsx" },
+
+  // ---------------------------------------------------------------------------
+  // Phase 128 — Decision rationale heat-map
+  // ---------------------------------------------------------------------------
+  { id: "autonomy.decision_heatmap_builder", area: "operating_loop", capability: "lib/autonomy/decisionHeatmapBuilder — aggregates AutonomyDecisionRationale rows into a stage × outcome 2D grid plus per-stage / per-outcome totals + topHotspots (top-10 cells by count). Window defaults to 7 days; configurable per call. Tenant-scoped; DB failure returns an empty heat-map honestly.", status: "passing", evidence: "lib/autonomy/decisionHeatmapBuilder.ts" },
+  { id: "autonomy.decision_heatmap_route", area: "operating_loop", capability: "GET /api/autonomy/heatmap?windowDays=N — clamps to [1, 90] days. safetyContract 'audit_read_only'.", status: "passing", evidence: "app/api/autonomy/heatmap/route.ts" },
+  { id: "ui.decision_heatmap_page", area: "command_center", capability: "/dashboard/decision-heatmap — full 2D grid with heat-tinted cells (rose / amber / emerald based on count ratio vs max), per-stage + per-outcome totals row, top-10 hot spots panel. Window switcher (1d / 7d / 30d).", status: "passing", evidence: "app/dashboard/decision-heatmap/page.tsx" },
+
+  // ---------------------------------------------------------------------------
+  // Phase 129 — Outbound notification retry queue
+  // ---------------------------------------------------------------------------
+  { id: "notifications.retry_model", area: "operating_loop", capability: "prisma/schema.prisma — OutboundNotificationRetry captures dedupeKey + kind + severity + headline + body + evidenceRefs + safeAction + status ('pending' | 'succeeded' | 'failed_terminal') + attemptCount + lastError + enqueuedAt + retriedAt. Migration 20260519190000.", status: "passing", evidence: "prisma/schema.prisma" },
+  { id: "notifications.retry_store", area: "operating_loop", capability: "lib/notifications/outboundRetryQueue — enqueueRetry called from the outbound lane when delivery hard-fails (channels attempted but none succeeded). Skipped sends with no channels configured do NOT enqueue. drainRetryQueue picks up pending rows older than 5 minutes, attempts one more send, marks 'succeeded' or 'failed_terminal'. Single-shot retry — never re-queues a failure. readRetryQueueSummary returns tenant-bounded counts.", status: "passing", evidence: "lib/notifications/outboundRetryQueue.ts" },
+  { id: "notifications.drain_cron", area: "operating_loop", capability: "GET/POST /api/notifications/cron-drain-retries — Vercel cron `*/5 * * * *`. CRON_SECRET bearer guard. Drains up to 50 pending rows per tick.", status: "passing", evidence: "app/api/notifications/cron-drain-retries/route.ts" },
+  { id: "notifications.lane_enqueues_on_failure", area: "operating_loop", capability: "lib/notifications/outboundNotificationLane.ts — after computing outcome, when outcome === 'failed' the lane calls `void enqueueRetry(n, result.reason)`. Skipped + deduped sends never enqueue.", status: "passing", evidence: "lib/notifications/outboundNotificationLane.ts" },
+  { id: "autonomy.cron_catalog_drain", area: "operating_loop", capability: "lib/autonomy/cronHealthCatalog — drain cron registered as 'cron-drain-retries' so /dashboard/cron-health shows it alongside the others.", status: "passing", evidence: "lib/autonomy/cronHealthCatalog.ts" },
+
+  // ---------------------------------------------------------------------------
+  // Phase 130 — Cross-tenant admin (charters)
+  // ---------------------------------------------------------------------------
+  { id: "auth.platform_admin_gate", area: "operating_loop", capability: "lib/auth/platformAdmin — isPlatformAdmin reads ADMIN_EMAILS env (comma-separated, case-insensitive). Returns false when env unset OR caller not in the list. Pure — no DB.", status: "passing", evidence: "lib/auth/platformAdmin.ts" },
+  { id: "admin.charters_route", area: "operating_loop", capability: "GET /api/admin/charters — gated by isPlatformAdmin. Returns every TenantAutonomyCharter row (max 500) + per-mode counts. NEVER echoes the slackWebhookOverride URL — only a presence flag — so the admin view can't accidentally leak per-tenant webhooks.", status: "passing", evidence: "app/api/admin/charters/route.ts" },
+  { id: "ui.admin_charters_page", area: "command_center", capability: "/dashboard/admin-charters — per-tenant row with mode chip + organizationId + per-cycle cap + slack-override badge + updatedBy + timestamp. Forbidden message when the caller isn't in ADMIN_EMAILS. Per-mode count ribbon (Observer / Review / Assisted / Autonomous).", status: "passing", evidence: "app/dashboard/admin-charters/page.tsx" },
 ];
 
 // ---------------------------------------------------------------------------

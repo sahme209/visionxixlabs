@@ -23,6 +23,7 @@ import { loadAppEnv } from "@/lib/config/env";
 import { redactPayload } from "@/lib/api/redaction";
 import { persistOutboundNotificationRecord } from "./outboundNotificationStore";
 import { readTenantCharter } from "@/lib/autonomy/tenantCharterStore";
+import { enqueueRetry } from "./outboundRetryQueue";
 
 // ---------------------------------------------------------------------------
 // Typed contract
@@ -193,6 +194,15 @@ export async function sendOutboundNotification(n: OutboundNotification): Promise
       ? "skipped"
       : "failed";
   void persistOutboundNotificationRecord(n, result, outcome);
+
+  // Phase 129 — enqueue a single retry when delivery hard-failed
+  // (at least one channel was attempted but none succeeded). Skipped
+  // sends (no channels configured) get no retry because retrying
+  // wouldn't fix the config gap.
+  if (outcome === "failed") {
+    void enqueueRetry(n, result.reason);
+  }
+
   return result;
 }
 
