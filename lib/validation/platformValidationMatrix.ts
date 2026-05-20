@@ -1915,6 +1915,36 @@ export const VALIDATION_MATRIX: ValidationRow[] = [
   // ---------------------------------------------------------------------------
   { id: "mobile.session_security_helpers", area: "operating_loop", capability: "lib/mobile/sessionSecurityHelpers — pure. shouldRefreshToken (access_expired | near_expiry | ok). shouldRequireBiometric (always_required_for_kind | never_unlocked | interval_elapsed | ok). assessSession composes both → ok | warn | require_login (refresh-expired short-circuits to require_login).", status: "passing", evidence: "lib/mobile/sessionSecurityHelpers.ts" },
   { id: "mobile.session_security_helpers_tests", area: "operating_loop", capability: "lib/mobile/__tests__/sessionSecurityHelpers.test.ts — 11 tests: refresh access_expired/near_expiry/ok, biometric always_required_for_kind, never_unlocked, interval_elapsed, within-interval countdown, refresh expired → require_login, near-expiry warn, biometric never warn, all-ok ok.", status: "passing", evidence: "lib/mobile/__tests__/sessionSecurityHelpers.test.ts" },
+
+  // ---------------------------------------------------------------------------
+  // Phase 252 — QA visual-regression bookkeeper
+  // ---------------------------------------------------------------------------
+  { id: "qa.visual_regression_bookkeeper", area: "operating_loop", capability: "lib/qa/visualRegressionBookkeeper — pure. Closed SnapshotStatus union (new | unchanged | changed | approved). Approved fingerprint match bypasses 'changed'. Verdict ladder: ok / warn (new only) / fail (changed). treatNewAsBlocking escalates new → fail. Rows sorted changed → new → approved → unchanged.", status: "passing", evidence: "lib/qa/visualRegressionBookkeeper.ts" },
+  { id: "qa.visual_regression_bookkeeper_tests", area: "operating_loop", capability: "lib/qa/__tests__/visualRegressionBookkeeper.test.ts — 10 tests: empty ok, under threshold unchanged, over threshold changed+fail, new warn default, treatNewAsBlocking escalates, approved fingerprint match, mismatch reverts to changed, sort order, custom threshold, approvedCount tally.", status: "passing", evidence: "lib/qa/__tests__/visualRegressionBookkeeper.test.ts" },
+
+  // ---------------------------------------------------------------------------
+  // Phase 253 — ML model drift detector (PSI)
+  // ---------------------------------------------------------------------------
+  { id: "ml.model_drift_detector", area: "operating_loop", capability: "lib/ml/modelDriftDetector — pure Population Stability Index (PSI) over feature histograms. Closed status union stable (<0.1) | drifting (<0.25) | significant_drift (≥0.25). Aligns disjoint bucket labels. Smoothing (1e-6) prevents divide-by-zero on missing buckets. topShifts surfaces top-3 contributors.", status: "passing", evidence: "lib/ml/modelDriftDetector.ts" },
+  { id: "ml.model_drift_detector_tests", area: "operating_loop", capability: "lib/ml/__tests__/modelDriftDetector.test.ts — 8 tests: identical=stable, modest=drifting, significant>0.25, topShifts populated, empty input → 0+stable, disjoint label alignment, detectModelDrift overall worst, smoothing prevents Infinity.", status: "passing", evidence: "lib/ml/__tests__/modelDriftDetector.test.ts" },
+
+  // ---------------------------------------------------------------------------
+  // Phase 254 — Network engineer IPv4 subnet allocator
+  // ---------------------------------------------------------------------------
+  { id: "network.subnet_allocator", area: "operating_loop", capability: "lib/network/subnetAllocator — pure IPv4 CIDR math, no deps. allocateSubnets sorts requests largest-first, aligns to subnet boundaries, returns SubnetAllocation rows + unsatisfied requests + remainingHosts. /31 and /32 treated as point-to-point / host (full address space used).", status: "passing", evidence: "lib/network/subnetAllocator.ts" },
+  { id: "network.subnet_allocator_tests", area: "operating_loop", capability: "lib/network/__tests__/subnetAllocator.test.ts — 11 tests: parseCidr valid/malformed/host-bit-mask, allocate /24×3 in /22, largest-first sort, doesn't fit, invalid prefix, usable host count, /31 + /32 full-space, invalid parent, remainingHosts math.", status: "passing", evidence: "lib/network/__tests__/subnetAllocator.test.ts" },
+
+  // ---------------------------------------------------------------------------
+  // Phase 255 — Mobile crash-report fingerprinter
+  // ---------------------------------------------------------------------------
+  { id: "mobile.crash_report_fingerprinter", area: "operating_loop", capability: "lib/mobile/crashReportFingerprinter — pure. Normalizes stack frames (memory addresses stripped, iOS 'Symbol + 1234' noise stripped, line numbers dropped) and SHA-1-hashes the top-N (default 3) + platform. buildCrashGroups aggregates occurrences + affectedPlatforms + affectedAppVersions + firstSeen/lastSeen. Sorted by occurrences desc.", status: "passing", evidence: "lib/mobile/crashReportFingerprinter.ts" },
+  { id: "mobile.crash_report_fingerprinter_tests", area: "operating_loop", capability: "lib/mobile/__tests__/crashReportFingerprinter.test.ts — 8 tests: identical top-N same fingerprint, addresses normalized, iOS noise stripped, different platforms differ, deeper frames don't matter, groups+counts, aggregates platforms/versions/timestamps, 16-char hex prefix.", status: "passing", evidence: "lib/mobile/__tests__/crashReportFingerprinter.test.ts" },
+
+  // ---------------------------------------------------------------------------
+  // Phase 256 — ML feature-store freshness tracker
+  // ---------------------------------------------------------------------------
+  { id: "ml.feature_store_freshness", area: "operating_loop", capability: "lib/ml/featureStoreFreshness — pure. Per-feature ago/SLA comparison + slowRefresh (last ≥ 2× mean) flag. Closed status union fresh | warn_near_sla (≥80% of SLA) | stale. Sorted stale → warn → fresh, then by hoursSinceRefresh desc within tier.", status: "passing", evidence: "lib/ml/featureStoreFreshness.ts" },
+  { id: "ml.feature_store_freshness_tests", area: "operating_loop", capability: "lib/ml/__tests__/featureStoreFreshness.test.ts — 8 tests: empty ok, fresh, warn_near_sla, stale, slowRefresh ≥2×, Infinity ratio when mean missing, sort order, status totals.", status: "passing", evidence: "lib/ml/__tests__/featureStoreFreshness.test.ts" },
 ];
 
 // ---------------------------------------------------------------------------
