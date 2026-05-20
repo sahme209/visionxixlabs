@@ -1855,6 +1855,36 @@ export const VALIDATION_MATRIX: ValidationRow[] = [
   // ---------------------------------------------------------------------------
   { id: "agents.verifier_post_exec_checker", area: "operating_loop", capability: "lib/agents/verifierPostExecChecker — pure. Compares expected vs observed key/values + optional metricsDelta (p95LatencyRatio ≤ 1.5, errorRateDelta ≤ 0.01). Verdict ladder: pass (all expectations met + metrics ok); partial_pass (>=1 passed + at most 1 failed + metrics ok); fail otherwise.", status: "passing", evidence: "lib/agents/verifierPostExecChecker.ts" },
   { id: "agents.verifier_post_exec_checker_tests", area: "operating_loop", capability: "lib/agents/__tests__/verifierPostExecChecker.test.ts — 8 tests: all-met pass, missing observation fail, 0 passes fail, partial_pass branch, latencyRatio>1.5 fail, errorRateDelta>0.01 fail, no metricsDelta nullable, row carries expected+observed.", status: "passing", evidence: "lib/agents/__tests__/verifierPostExecChecker.test.ts" },
+
+  // ---------------------------------------------------------------------------
+  // Phase 242 — Detector-agent signal emitter
+  // ---------------------------------------------------------------------------
+  { id: "agents.detector_signal_emitter", area: "operating_loop", capability: "lib/agents/detectorSignalEmitter — pure. Takes drift / cost / sloBurn / kev / policy / saturation inputs and emits typed DetectorSignals for the reasoner. severity → confidence ladder. Skips ok/zero-delta inputs. Signals sorted by confidence desc.", status: "passing", evidence: "lib/agents/detectorSignalEmitter.ts" },
+  { id: "agents.detector_signal_emitter_tests", area: "operating_loop", capability: "lib/agents/__tests__/detectorSignalEmitter.test.ts — 11 tests: empty, drift ok skipped, drift high → 0.8 confidence, cost emits + zero skipped, sloBurn ok skipped + scaling, vuln_kev critical → 0.95, policy fixed 0.7, saturation only when peak>target, sort by confidence desc.", status: "passing", evidence: "lib/agents/__tests__/detectorSignalEmitter.test.ts" },
+
+  // ---------------------------------------------------------------------------
+  // Phase 243 — Approver-agent packet assembler
+  // ---------------------------------------------------------------------------
+  { id: "agents.approver_packet_assembler", area: "operating_loop", capability: "lib/agents/approverPacketAssembler — pure. Refuses to build a packet unless every upstream gate (simulator + policy + boundary + council) has passed. Closed rejectReason union. packetSummary always reaffirms 'Approval-only-no-execution'.", status: "passing", evidence: "lib/agents/approverPacketAssembler.ts" },
+  { id: "agents.approver_packet_assembler_tests", area: "operating_loop", capability: "lib/agents/__tests__/approverPacketAssembler.test.ts — 9 tests: happy path, simulator/policy/boundary/council fail block individually, dissent list rendered, safety string present, evidenceCount + duration clamp, simulator wins gate-fail ladder.", status: "passing", evidence: "lib/agents/__tests__/approverPacketAssembler.test.ts" },
+
+  // ---------------------------------------------------------------------------
+  // Phase 244 — Auditor-agent rationale writer
+  // ---------------------------------------------------------------------------
+  { id: "agents.auditor_rationale_writer", area: "operating_loop", capability: "lib/agents/auditorRationaleWriter — pure. writeRationaleRow emits a deterministic, sha256-stamped rationale row (full agent trail + operator decision + verifier outcome). Same inputs always yield the same integrityHash. verifyRationaleRow re-derives the hash to detect tampering. Closed FinalDecision union.", status: "passing", evidence: "lib/agents/auditorRationaleWriter.ts" },
+  { id: "agents.auditor_rationale_writer_tests", area: "operating_loop", capability: "lib/agents/__tests__/auditorRationaleWriter.test.ts — 8 tests: schema + version + safety contract, sha256 hex, hash determinism, hash changes on any field change, dissenters sorted, verifyRationaleRow accepts clean, rejects tampered, full agent trail mirrored.", status: "passing", evidence: "lib/agents/__tests__/auditorRationaleWriter.test.ts" },
+
+  // ---------------------------------------------------------------------------
+  // Phase 245 — Improver-agent proposal synthesizer
+  // ---------------------------------------------------------------------------
+  { id: "agents.improver_proposal_synthesizer", area: "operating_loop", capability: "lib/agents/improverProposalSynthesizer — pure. Closed ImproverSignal kinds (5). Synthesizes typed MethodProposals from observed platform-improvement signals (verifier-fail runbook, low-calibration agent, frequent-dissent policy, stale-runbook, missing-help-entry). Conservative initial confidence (0.4-0.65). perKindCount tallies every input even when no proposal emitted.", status: "passing", evidence: "lib/agents/improverProposalSynthesizer.ts" },
+  { id: "agents.improver_proposal_synthesizer_tests", area: "operating_loop", capability: "lib/agents/__tests__/improverProposalSynthesizer.test.ts — 9 tests: empty input, < 3 observed skipped, ≥ 3 emits, low_calibration_agent → charter_default, dissent threshold, missing_help_entry threshold, perKindCount tally, sort by target/label, proposalDiff typed object.", status: "passing", evidence: "lib/agents/__tests__/improverProposalSynthesizer.test.ts" },
+
+  // ---------------------------------------------------------------------------
+  // Phase 246 — Data-engineer query-plan analyzer
+  // ---------------------------------------------------------------------------
+  { id: "data.query_plan_analyzer", area: "operating_loop", capability: "lib/data/queryPlanAnalyzer — pure recursive analyzer. Closed PlanNodeKind union (10 kinds) + closed finding union (seq_scan_on_large_table | missing_index_hint | row_estimate_off | expensive_nested_loop | sort_spill_likely). Thresholds operator-overridable. Verdict ladder ok/warn/fail.", status: "passing", evidence: "lib/data/queryPlanAnalyzer.ts" },
+  { id: "data.query_plan_analyzer_tests", area: "operating_loop", capability: "lib/data/__tests__/queryPlanAnalyzer.test.ts — 9 tests: trivial ok, seq_scan large → warn, seq_scan medium → info only, nested-loop cost trigger, row estimate mismatch, totalCostMs recursive sum, sort spill, threshold overrides, recursive child walk.", status: "passing", evidence: "lib/data/__tests__/queryPlanAnalyzer.test.ts" },
 ];
 
 // ---------------------------------------------------------------------------
