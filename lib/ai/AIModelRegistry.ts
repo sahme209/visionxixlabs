@@ -65,9 +65,12 @@ const MODELS: Record<AIProviderName, RegisteredModel[]> = {
     { id: "qwen/qwen-2.5-7b-instruct:free",          label: "Qwen 2.5 7B (OpenRouter free)",   tier: "balanced",  family: "qwen",    freeNote: "OpenRouter free" },
   ],
   gemini: [
-    { id: "gemini-1.5-flash",                  label: "Gemini 1.5 Flash",           tier: "preferred", family: "gemini",   freeNote: "Gemini free tier" },
-    { id: "gemini-1.5-flash-8b",               label: "Gemini 1.5 Flash 8B",        tier: "fast",      family: "gemini",   freeNote: "Gemini free tier" },
-    { id: "gemini-1.5-pro",                    label: "Gemini 1.5 Pro",             tier: "balanced",  family: "gemini",   freeNote: "Gemini free tier (limits apply)" },
+    // 2.5-flash is the broadest free model on the AI Studio key tier — accept
+    // the thinking-token overhead and budget for it in GeminiProvider.
+    { id: "gemini-2.5-flash",                  label: "Gemini 2.5 Flash",           tier: "preferred", family: "gemini",   freeNote: "Gemini free tier · uses thinking tokens" },
+    { id: "gemini-2.0-flash",                  label: "Gemini 2.0 Flash",           tier: "balanced",  family: "gemini",   freeNote: "Gemini free tier (project-dependent)" },
+    { id: "gemini-2.0-flash-lite",             label: "Gemini 2.0 Flash-Lite",      tier: "fast",      family: "gemini",   freeNote: "Gemini free tier (project-dependent)" },
+    { id: "gemini-2.5-pro",                    label: "Gemini 2.5 Pro",             tier: "balanced",  family: "gemini",   freeNote: "Gemini free tier (project-dependent)" },
   ],
   cloudflare: [
     { id: "@cf/meta/llama-3.1-8b-instruct",            label: "Llama 3.1 8B (Workers AI)",   tier: "preferred", family: "llama",   freeNote: "Cloudflare Workers AI free" },

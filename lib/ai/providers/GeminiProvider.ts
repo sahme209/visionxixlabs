@@ -48,11 +48,20 @@ export class GeminiProvider implements AIProvider {
     }
     const model = options?.model ?? this.defaultModel;
     const url = `${BASE_URL}/${encodeURIComponent(model)}:generateContent?key=${encodeURIComponent(this.apiKey)}`;
+    // Gemini 2.5 family consumes "thinking" tokens out of maxOutputTokens
+    // before producing visible text — small budgets often yield empty
+    // responses. Default to a high cap so the visible reply has room.
+    const isThinking = model.startsWith("gemini-2.5");
+    const requested = options?.maxTokens;
+    const maxOutputTokens =
+      typeof requested === "number"
+        ? requested
+        : isThinking ? 4096 : 1024;
     const body: Record<string, unknown> = {
       contents: [{ role: "user", parts: [{ text: prompt }] }],
       generationConfig: {
         temperature: typeof options?.temperature === "number" ? Math.max(0, Math.min(2, options.temperature)) : 0.4,
-        maxOutputTokens: options?.maxTokens ?? 1024,
+        maxOutputTokens,
       },
     };
     if (options?.system) body.systemInstruction = { role: "system", parts: [{ text: options.system }] };
