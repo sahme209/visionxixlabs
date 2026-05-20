@@ -1421,6 +1421,36 @@ export const VALIDATION_MATRIX: ValidationRow[] = [
   // ---------------------------------------------------------------------------
   { id: "help.ai_reranker", area: "operating_loop", capability: "lib/help/aiHelpReranker — best-effort AI re-ranker. Uses extractStructuredData with a strict JSON shape ({bestId, rationale}). REJECTS hallucinated ids — bestId must appear in the supplied candidate list. Falls back to first deterministic candidate when Mock answers, when JSON parse fails, when id not in candidates, or when the chain errors. Rationale clipped at 200 chars.", status: "passing", evidence: "lib/help/aiHelpReranker.ts" },
   { id: "help.ai_reranker_tests", area: "operating_loop", capability: "lib/help/__tests__/aiHelpReranker.test.ts — 3 tests: Mock-only fall-through to first candidate, empty-candidate-list returns empty bestId, rationale is always non-empty.", status: "passing", evidence: "lib/help/__tests__/aiHelpReranker.test.ts" },
+
+  // ---------------------------------------------------------------------------
+  // Phase 167 — AI decision-rationale narrator
+  // ---------------------------------------------------------------------------
+  { id: "autonomy.ai_rationale_narrator", area: "operating_loop", capability: "lib/autonomy/aiRationaleNarrator — best-effort 2-4 sentence operator-readable rationale via the AI manager. NEVER throws. Falls back to deterministic template (decisionKind + candidate + support/oppose weights + policy/boundary verdicts + dissenters list) when Mock answers or provider errors.", status: "passing", evidence: "lib/autonomy/aiRationaleNarrator.ts" },
+  { id: "autonomy.ai_rationale_narrator_tests", area: "operating_loop", capability: "lib/autonomy/__tests__/aiRationaleNarrator.test.ts — 4 tests: Mock-only fall-through, dissenters inclusion, dissenters-empty omission, policy/boundary fail wording.", status: "passing", evidence: "lib/autonomy/__tests__/aiRationaleNarrator.test.ts" },
+
+  // ---------------------------------------------------------------------------
+  // Phase 168 — AI workflow translator
+  // ---------------------------------------------------------------------------
+  { id: "agents.ai_workflow_translator", area: "operating_loop", capability: "lib/agents/aiWorkflowTranslator — natural-language operator intent → structured workflow DRAFT. Closed unions: TriggerKind (telemetry_signal | cloud_inventory_change | schedule | manual) + ActionKind (notify_outbound | stage_runbook | stage_policy_proposal | open_approval_packet | log_audit_only). REJECTS hallucinated trigger/action kinds. Refuses execution actions (apply_change / rollback). Approval-only-no-execution — Axiom never auto-applies. Typed rejectionReason for every failure branch.", status: "passing", evidence: "lib/agents/aiWorkflowTranslator.ts" },
+  { id: "agents.ai_workflow_translator_tests", area: "operating_loop", capability: "lib/agents/__tests__/aiWorkflowTranslator.test.ts — 3 tests: empty intent rejected, whitespace rejected, Mock-only fall-through with rejectionReason='ai_unavailable_or_mock'.", status: "passing", evidence: "lib/agents/__tests__/aiWorkflowTranslator.test.ts" },
+
+  // ---------------------------------------------------------------------------
+  // Phase 169 — AI risk classifier
+  // ---------------------------------------------------------------------------
+  { id: "security.ai_risk_classifier", area: "operating_loop", capability: "lib/securityScanner/aiRiskClassifier — closed AiSeverity union (info | low | medium | high | critical). REJECTS unknown severities returned by the model. Deterministic fallback ladder: 'public'/'open' or 'mfa'/'root'/'admin' → high; 'encryption'/'tls' → medium; 'log'/'audit' → low; '0.0.0.0/0' or 'anonymous' or 'internet' in evidence → critical; otherwise info.", status: "passing", evidence: "lib/securityScanner/aiRiskClassifier.ts" },
+  { id: "security.ai_risk_classifier_tests", area: "operating_loop", capability: "lib/securityScanner/__tests__/aiRiskClassifier.test.ts — 5 tests covering Mock-fallback severities: high (public), critical (0.0.0.0/0 evidence), medium (encryption), low (log retention), info (default).", status: "passing", evidence: "lib/securityScanner/__tests__/aiRiskClassifier.test.ts" },
+
+  // ---------------------------------------------------------------------------
+  // Phase 170 — Outbound digest builder
+  // ---------------------------------------------------------------------------
+  { id: "notifications.outbound_digest_builder", area: "operating_loop", capability: "lib/notifications/outboundDigestBuilder — pure buildOutboundDigest(rows). Counts: outcomes (ok/failed/skipped), per-kind (with failed-per-kind), per-severity, top-10 dedupe groups, top-10 correlation ids (skipping null). Tracks earliest + latest createdAt.", status: "passing", evidence: "lib/notifications/outboundDigestBuilder.ts" },
+  { id: "notifications.outbound_digest_builder_tests", area: "operating_loop", capability: "lib/notifications/__tests__/outboundDigestBuilder.test.ts — 7 tests: empty input, outcome counting, per-kind with failed sub-count, per-severity, top-10 dedupe cap, null correlation skip, window start/end.", status: "passing", evidence: "lib/notifications/__tests__/outboundDigestBuilder.test.ts" },
+
+  // ---------------------------------------------------------------------------
+  // Phase 171 — Tenant insights synthesizer
+  // ---------------------------------------------------------------------------
+  { id: "insights.tenant_synthesizer", area: "operating_loop", capability: "lib/insights/tenantInsightsSynthesizer — best-effort 3-5 sentence weekly tenant summary via the AI manager. Aggregate-only input (no raw events) so prompts stay small and tenant data never leaks. Deterministic fallback template covers proposal funnel + outbound ratio + autonomy cycles + dissent count + top improver agent.", status: "passing", evidence: "lib/insights/tenantInsightsSynthesizer.ts" },
+  { id: "insights.tenant_synthesizer_tests", area: "operating_loop", capability: "lib/insights/__tests__/tenantInsightsSynthesizer.test.ts — 5 tests covering Mock-fallback wording: funnel numbers, topAuthorAgent inclusion, topAuthorAgent=null omission, outbound ratio rendering, zero-sends wording.", status: "passing", evidence: "lib/insights/__tests__/tenantInsightsSynthesizer.test.ts" },
 ];
 
 // ---------------------------------------------------------------------------
