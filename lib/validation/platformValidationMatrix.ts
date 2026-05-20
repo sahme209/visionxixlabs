@@ -1701,6 +1701,36 @@ export const VALIDATION_MATRIX: ValidationRow[] = [
   // ---------------------------------------------------------------------------
   { id: "iam.access_review_builder", area: "operating_loop", capability: "lib/iam/accessReviewBuilder — pure. Per-grant recommendation (keep / revoke / investigate). Default unusedRevokeDays=90 (overridable). 'never used + granted < threshold' = keep (give new grants time); 'never used + granted >= threshold' = investigate; 'last used >= threshold ago' = revoke. Rows sorted revoke → investigate → keep.", status: "passing", evidence: "lib/iam/accessReviewBuilder.ts" },
   { id: "iam.access_review_builder_tests", area: "operating_loop", capability: "lib/iam/__tests__/accessReviewBuilder.test.ts — 8 tests: empty, recently used = keep, never-used-but-new = keep, never-used-aged = investigate, stale = revoke, custom threshold, totals tally, sort order revoke → investigate → keep.", status: "passing", evidence: "lib/iam/__tests__/accessReviewBuilder.test.ts" },
+
+  // ---------------------------------------------------------------------------
+  // Phase 217 — Baseline differ
+  // ---------------------------------------------------------------------------
+  { id: "cloud.baseline_differ", area: "operating_loop", capability: "lib/cloud/baselineDiffer — pure. Per-resource assertion check: ok (matches expected), violation (mismatch), unknown (key absent). Dotted-path lookup. perResource list (only resources with issues), sorted by violations desc. Severity: 5+ violations = high, ≥1 = medium, any unknown = low, else ok.", status: "passing", evidence: "lib/cloud/baselineDiffer.ts" },
+  { id: "cloud.baseline_differ_tests", area: "operating_loop", capability: "lib/cloud/__tests__/baselineDiffer.test.ts — 8 tests: empty, missing baseline type, all-ok, wrong value = violation, missing key = unknown, 5+ violations = high, perResource sort, nested key paths.", status: "passing", evidence: "lib/cloud/__tests__/baselineDiffer.test.ts" },
+
+  // ---------------------------------------------------------------------------
+  // Phase 218 — CI lint summary builder
+  // ---------------------------------------------------------------------------
+  { id: "cicd.lint_summary_builder", area: "operating_loop", capability: "lib/cicd/lintSummaryBuilder — pure. Groups raw eslint/tsc/biome messages by file + by rule. Verdict: error → blocking, warning → minor, info-only → clean. topFiles + topRules capped at 20. Sort: errors desc, then total desc.", status: "passing", evidence: "lib/cicd/lintSummaryBuilder.ts" },
+  { id: "cicd.lint_summary_builder_tests", area: "operating_loop", capability: "lib/cicd/__tests__/lintSummaryBuilder.test.ts — 7 tests: empty clean, error blocks, warning minor, info-only clean, file grouping, file sort, rule sort with worstSeverity, file cap at 20.", status: "passing", evidence: "lib/cicd/__tests__/lintSummaryBuilder.test.ts" },
+
+  // ---------------------------------------------------------------------------
+  // Phase 219 — PR risk scorer
+  // ---------------------------------------------------------------------------
+  { id: "cicd.pr_risk_scorer", area: "operating_loop", capability: "lib/cicd/prRiskScorer — pure. 0..100 risk score from 8 signals (LOC, files, infra files, CI green, approvals, area staleness, hotfix). Verdict ladder: critical ≥70, high ≥45, medium ≥20, low. Contributions list shows each factor's delta + note.", status: "passing", evidence: "lib/cicd/prRiskScorer.ts" },
+  { id: "cicd.pr_risk_scorer_tests", area: "operating_loop", capability: "lib/cicd/__tests__/prRiskScorer.test.ts — 9 tests: small green low, CI red bumps, large LOC = 30, infra cap = 20, no_approvals = 15, single approval + infra = 5, hotfix = 10, score clamp 0..100, verdict ladder boundaries.", status: "passing", evidence: "lib/cicd/__tests__/prRiskScorer.test.ts" },
+
+  // ---------------------------------------------------------------------------
+  // Phase 220 — AI PR description writer
+  // ---------------------------------------------------------------------------
+  { id: "cicd.ai_pr_description_writer", area: "operating_loop", capability: "lib/cicd/aiPrDescriptionWriter — drafts PR body with ## Summary / ## Test plan / ## Risk sections. NEVER throws. Falls back to deterministic markdown template that always includes the structure + the commit subjects + supplied risk notes.", status: "passing", evidence: "lib/cicd/aiPrDescriptionWriter.ts" },
+  { id: "cicd.ai_pr_description_writer_tests", area: "operating_loop", capability: "lib/cicd/__tests__/aiPrDescriptionWriter.test.ts — 3 tests: Mock-only structured markdown, empty commits handled gracefully, risk notes embedded when supplied.", status: "passing", evidence: "lib/cicd/__tests__/aiPrDescriptionWriter.test.ts" },
+
+  // ---------------------------------------------------------------------------
+  // Phase 221 — Tenant-export size estimator
+  // ---------------------------------------------------------------------------
+  { id: "compliance.export_size_estimator", area: "compliance", capability: "lib/compliance/exportSizeEstimator — pure. Multiplies per-slice row count by typed avg byte cost + wrapper overhead + optional billing plan. Size ladder: small <100KB, medium <5MB, large <50MB, very_large ≥50MB. Warnings on large + very_large.", status: "passing", evidence: "lib/compliance/exportSizeEstimator.ts" },
+  { id: "compliance.export_size_estimator_tests", area: "compliance", capability: "lib/compliance/__tests__/exportSizeEstimator.test.ts — 7 tests: zero baseline, billing-plan +2KB delta, medium, large + warning, very_large + warning, humanReadable unit picker, perSlice multiplication.", status: "passing", evidence: "lib/compliance/__tests__/exportSizeEstimator.test.ts" },
 ];
 
 // ---------------------------------------------------------------------------
