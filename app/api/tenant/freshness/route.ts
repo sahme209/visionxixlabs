@@ -14,22 +14,9 @@ import { currentContext } from "@/lib/auth/currentContext";
 import { getLivePlatformSummary } from "@/lib/platform/livePlatformState";
 import { apiOk, apiErr, asApiSourceMode, resolveCorrelationId } from "@/lib/api";
 import { AxiomErrors } from "@/lib/errors/axiomErrors";
+import type { TenantFreshnessSnapshot } from "@/lib/platform/tenantFreshnessTypes";
 
 export const dynamic = "force-dynamic";
-
-export interface TenantFreshnessSnapshot {
-  hasConnectors: boolean;
-  hasAgentRuns: boolean;
-  hasApprovals: boolean;
-  /** True when this tenant has zero connectors AND zero runs — first-login state. */
-  freshTenant: boolean;
-  counts: {
-    cloudAccounts: number;
-    agentRuns24h: number;
-    busMessages24h: number;
-    pendingApprovals: number;
-  };
-}
 
 export async function GET(req: NextRequest) {
   const correlationId = resolveCorrelationId(req.headers);

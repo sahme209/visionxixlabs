@@ -11,25 +11,16 @@
  */
 
 import { getLivePlatformSummary } from "@/lib/platform/livePlatformState";
+import type { TenantFreshnessSnapshot } from "@/lib/platform/tenantFreshnessTypes";
 
-export interface TenantFreshness {
-  hasConnectors: boolean;
-  hasAgentRuns: boolean;
-  /** True when this tenant has zero connectors AND zero runs — first-login state. */
-  freshTenant: boolean;
-  counts: {
-    cloudAccounts: number;
-    agentRuns24h: number;
-    busMessages24h: number;
-    pendingApprovals: number;
-  };
-}
+export type TenantFreshness = TenantFreshnessSnapshot;
 
 export async function getTenantFreshness(): Promise<TenantFreshness> {
   const summary = await getLivePlatformSummary();
   return {
     hasConnectors: summary.cloudAccounts > 0,
     hasAgentRuns: summary.agentRuns24h > 0 || summary.busMessages24h > 0,
+    hasApprovals: summary.pendingApprovals > 0,
     freshTenant: summary.cloudAccounts === 0 && summary.agentRuns24h === 0,
     counts: {
       cloudAccounts: summary.cloudAccounts,

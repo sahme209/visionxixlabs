@@ -6,12 +6,12 @@
  * (no connectors, no agent runs). Dashboard pages use the answer to
  * switch between showing live data and showing a calm empty-state CTA.
  *
- * Returns `null` while loading so callers can render a skeleton
- * instead of flashing sample content.
+ * The type comes from a pure types module so this hook never pulls
+ * server-only deps (prisma, next/server) into the client bundle.
  */
 
 import { useEffect, useState } from "react";
-import type { TenantFreshnessSnapshot } from "@/app/api/tenant/freshness/route";
+import type { TenantFreshnessSnapshot } from "@/lib/platform/tenantFreshnessTypes";
 
 export interface TenantFreshnessState {
   loaded: boolean;
