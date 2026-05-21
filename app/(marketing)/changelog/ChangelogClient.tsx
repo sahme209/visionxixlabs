@@ -24,6 +24,14 @@ interface ChangelogEntry {
 // Newest first. Add to the top when shipping a new batch.
 const ENTRIES: readonly ChangelogEntry[] = [
   {
+    phases: "291-295",
+    title: "AGI Engineers — spec writer + test coverage + refactor sequencer + migration coordinator",
+    summary:
+      "Four new planning-tier agent kernels in lib/agents/, each pure-function with closed-union types and a vitest suite. Public /capabilities maps every kernel on the bus — perception / reasoning / planning / safety / verification / memory — to the lib/ module that proves it.",
+    tag: "agent",
+    surface: "all",
+  },
+  {
     phases: "286-290",
     title: "/compare · /faq · social proof · /contact rebuild",
     summary:

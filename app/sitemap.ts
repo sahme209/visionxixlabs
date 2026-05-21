@@ -17,6 +17,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${SITE_URL}/team-of-one`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.95 },
     { url: `${SITE_URL}/how-it-works`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.9 },
     { url: `${SITE_URL}/disciplines`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.9 },
+    { url: `${SITE_URL}/capabilities`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.9 },
     { url: `${SITE_URL}/platforms`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.85 },
     { url: `${SITE_URL}/trust`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.85 },
     { url: `${SITE_URL}/plans`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.85 },
