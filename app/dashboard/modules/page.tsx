@@ -164,7 +164,7 @@ const MODULES: readonly PlatformModule[] = [
     id: "business",
     name: "Business Operations",
     tagline:
-      "Leads, proposals, customer success, billing, and internal knowledge base — the non-engineering surface.",
+      "Billing, executive summaries, tenant insights, and help analytics — the non-engineering surface for your workspace.",
     category: "business",
     maturity: "partial",
     icon: BuildingOffice2Icon,
@@ -175,9 +175,9 @@ const MODULES: readonly PlatformModule[] = [
       { href: "/dashboard/executive-summary",label: "Executive summary" },
       { href: "/dashboard/help-analytics",   label: "Help analytics" },
     ],
-    agentKernels: ["contactResolutionAgent", "axiomAssistantAgent"],
+    agentKernels: ["axiomAssistantAgent"],
     connectors: ["Stripe", "Slack", "Outlook"],
-    notCoveredYet: "Proposal generation and customer-success workflows are scoped, not shipped.",
+    notCoveredYet: "Custom-success workflows and tenant-specific reporting are scoped, not shipped.",
   },
   {
     id: "hr_ops",

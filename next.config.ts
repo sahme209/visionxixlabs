@@ -19,6 +19,7 @@ const nextConfig: NextConfig = {
       { source: "/dashboard/flags",            destination: "/admin/flags",            permanent: true },
       { source: "/dashboard/self-diagnostic",  destination: "/admin/self-diagnostic",  permanent: true },
       { source: "/dashboard/cron-health",      destination: "/admin/cron-health",      permanent: true },
+      { source: "/dashboard/admin-charters",   destination: "/admin/charters",         permanent: true },
 
       // Removed pages → homepage
       { source: "/builder", destination: "/", permanent: true },

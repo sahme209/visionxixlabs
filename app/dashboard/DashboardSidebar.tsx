@@ -75,7 +75,6 @@ const GROUPS: NavGroup[] = [
       { href: "/dashboard/charter",            label: "Autonomy Charter", icon: CpuChipIcon          },
       { href: "/dashboard/rationale",          label: "Decision Rationale",icon: DocumentMagnifyingGlassIcon },
       { href: "/dashboard/decision-heatmap",   label: "Decision Heatmap", icon: ChartBarIcon          },
-      { href: "/dashboard/admin-charters",     label: "Admin · Charters", icon: ShieldCheckIcon       },
       { href: "/dashboard/help",               label: "Help & Docs",      icon: QuestionMarkCircleIcon },
       { href: "/dashboard/help-analytics",     label: "Help Analytics",   icon: ChartBarIcon          },
       { href: "/dashboard/help-suggestions",   label: "Doc Suggestions",  icon: ChartBarIcon          },

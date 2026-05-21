@@ -31,7 +31,7 @@ const ENTRIES: readonly FaqEntry[] = [
     category: "safety",
     q: "What's the kill switch?",
     a: "A single tenant-charter toggle freezes all autonomy verdicts platform-wide. In-flight approvals are voided and the audit row records who pulled the switch. No cluster-wide reboot needed.",
-    proof: { href: "/dashboard/admin-charters", label: "tenant charters" },
+    proof: { href: "/dashboard/charter", label: "autonomy charter" },
   },
   {
     category: "safety",

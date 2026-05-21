@@ -50,6 +50,12 @@ export default async function AdminLayout({
                 Tenants
               </Link>
               <Link
+                href="/admin/charters"
+                className="text-sm text-zinc-400 hover:text-violet-400 transition-colors"
+              >
+                Charters
+              </Link>
+              <Link
                 href="/admin/flags"
                 className="text-sm text-zinc-400 hover:text-violet-400 transition-colors"
               >

@@ -76,7 +76,7 @@ const AGENTS: readonly AgentProfile[] = [
   { name: "Proposal Impact Tracker",   module: "proposalImpactTracker",      role: "planning",     job: "Tracks downstream impact of accepted proposals to feed the council.",                  canMutate: false },
 
   // safety
-  { name: "Policy Gate",               module: "policyGateEvaluator",        role: "safety",       job: "Applies the tenant charter to every proposal — refuses anything outside operator-signed scope.", canMutate: false, evidenceRoute: { href: "/dashboard/admin-charters", label: "Tenant charters" }, senderId: "policy_gate" },
+  { name: "Policy Gate",               module: "policyGateEvaluator",        role: "safety",       job: "Applies the tenant charter to every proposal — refuses anything outside operator-signed scope.", canMutate: false, evidenceRoute: { href: "/dashboard/charter", label: "Autonomy charter" }, senderId: "policy_gate" },
   { name: "Boundary Gate",             module: "boundaryGateCatalog",        role: "safety",       job: "Classifies blast radius into closed-union severity tiers.",                            canMutate: false, evidenceRoute: { href: "/dashboard/automation-boundaries", label: "Automation boundaries" }, senderId: "boundary_gate" },
   { name: "Approver",                  module: "approverPacketAssembler",    role: "safety",       job: "Assembles the approval packet the operator sees — the only gate that lets autonomy act.", canMutate: true,  evidenceRoute: { href: "/dashboard/approvals", label: "Approvals" }, senderId: "approver" },
 
@@ -93,7 +93,6 @@ const AGENTS: readonly AgentProfile[] = [
   { name: "Workflow Translator",       module: "aiWorkflowTranslator",       role: "workflow",     job: "Translates natural-language operator intent into typed workflow steps.",                canMutate: false, evidenceRoute: { href: "/dashboard/workflow-translator", label: "Workflow translator" } },
   { name: "Agent Bus",                 module: "agentBus",                   role: "workflow",     job: "Typed message bus between every agent kernel on this page.",                            canMutate: false, evidenceRoute: { href: "/dashboard/agent-bus", label: "Agent bus" } },
   { name: "Axiom Assistant",           module: "axiomAssistantAgent",        role: "workflow",     job: "The operator-facing chat agent — answers questions and stages proposals.",              canMutate: false },
-  { name: "Contact Resolution",        module: "contactResolutionAgent",     role: "workflow",     job: "Resolves prospect contact information for the sales pipeline.",                         canMutate: false },
 ];
 
 const ROLE_META: Record<

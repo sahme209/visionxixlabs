@@ -50,7 +50,7 @@ const DISCIPLINES: readonly Discipline[] = [
 
   // security + compliance
   { name: "Security Engineer",       category: "security_compliance", marketRate: "$240k+", scope: "Threat model, prompt-injection defenses, secret hygiene.",   evidence: "/dashboard/cloud-security",      evidenceLabel: "cloud security" },
-  { name: "IAM Specialist",          category: "security_compliance", marketRate: "$215k+", scope: "Role-binding drift, blast-radius tiering, escalation paths.", evidence: "/dashboard/admin-charters",     evidenceLabel: "tenant charters" },
+  { name: "IAM Specialist",          category: "security_compliance", marketRate: "$215k+", scope: "Role-binding drift, blast-radius tiering, escalation paths.", evidence: "/dashboard/charter",     evidenceLabel: "autonomy charter" },
   { name: "Compliance Officer",      category: "security_compliance", marketRate: "$200k+", scope: "SOC 2 + GDPR + HIPAA + ISO evidence packets.",              evidence: "/dashboard/compliance-packet",   evidenceLabel: "compliance packet" },
   { name: "Auditor",                 category: "security_compliance", marketRate: "$190k+", scope: "sha-256 rationale rows, hash recomputation, durable rows.", evidence: "/dashboard/audit",               evidenceLabel: "audit log" },
 
