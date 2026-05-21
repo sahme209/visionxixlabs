@@ -15,7 +15,7 @@ export const revalidate = 3600;
 
 export const metadata: Metadata = {
   title: "Pricing — Axiom Agent | Vision XIX Labs",
-  description: "Trial · Starter · Growth · Enterprise. Honest, capped, drift-free pricing for the cross-cloud AGI ops platform.",
+  description: "Starter · Growth · Enterprise. Honest, capped, drift-free pricing for the cross-cloud AGI ops platform.",
 };
 
 const TIER_TONE: Record<BillingTier, string> = {
@@ -56,13 +56,12 @@ export default function PricingPage() {
             Pay for the <span className="text-gradient">surface area</span> you use.
           </h1>
           <p className="text-[15px] text-zinc-400 max-w-2xl mx-auto leading-relaxed">
-            Every tier has hard daily caps shown right here. Start on the 14-day trial — full feature access,
-            no card needed.
+            Every tier has hard daily caps shown right here. Cancel anytime, VAT handled at checkout, invoices on every charge.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 mb-10">
-          {TIER_CATALOG.map((t) => (
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-10">
+          {TIER_CATALOG.filter((t) => t.tier !== "trial").map((t) => (
             <div key={t.tier} className={`rounded-2xl border ${TIER_TONE[t.tier]} bg-white/[0.02] p-5 flex flex-col`}>
               <div className="mb-3">
                 <p className="text-[10px] font-mono uppercase tracking-wider text-zinc-500">{t.tier}</p>
@@ -78,14 +77,7 @@ export default function PricingPage() {
                 <Bullet label="Cloud connectors"    value={formatCap(t.caps.cloudConnectors)} />
               </ul>
 
-              {t.tier === "trial" ? (
-                <Link
-                  href="/dashboard"
-                  className="inline-flex items-center justify-center gap-1.5 text-[12px] font-medium px-3 py-2 rounded-lg bg-zinc-500/15 text-zinc-100 border border-zinc-500/30 hover:bg-zinc-500/20"
-                >
-                  Start free trial <ArrowRightIcon className="h-3 w-3" />
-                </Link>
-              ) : t.tier === "enterprise" ? (
+              {t.tier === "enterprise" ? (
                 <a
                   href="mailto:sales@axiom.dev?subject=Enterprise%20plan"
                   className="inline-flex items-center justify-center gap-1.5 text-[12px] font-medium px-3 py-2 rounded-lg bg-emerald-500/15 text-emerald-200 border border-emerald-500/30 hover:bg-emerald-500/20"
@@ -120,8 +112,7 @@ export default function PricingPage() {
       </main>
 
       <footer className="border-t border-white/[0.06] py-6 mt-16">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-[11px] font-mono text-zinc-500 flex items-center justify-between">
-          <p>Auto-generated from <code>lib/billing/tierCatalog.ts</code>. ISR revalidate: 1h.</p>
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-[11px] font-mono text-zinc-500 flex items-center justify-end">
           <Link href="/docs/surfaces" className="text-cyan-300 hover:text-cyan-200">Browse surface catalog →</Link>
         </div>
       </footer>

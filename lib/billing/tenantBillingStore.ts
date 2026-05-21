@@ -54,6 +54,21 @@ export async function readBillingPlan(organizationId: string): Promise<BillingPl
       where: { organizationId },
     });
     if (row && isBillingTier(row.tier) && isBillingStatus(row.status)) {
+      // Trial product retired: coerce any legacy 'trial' tier or 'trialing'
+      // status row to no_plan on read. We don't write the DB here — old rows
+      // remain as historical artefacts but never surface as an active trial.
+      const isLegacyTrial = row.tier === "trial" || row.status === "trialing";
+      if (isLegacyTrial) {
+        return shape(row.organizationId, {
+          tier: "trial",
+          status: "no_plan",
+          trialEndsAt: null,
+          currentPeriodEndsAt: null,
+          stripeCustomerId: row.stripeCustomerId,
+          stripeSubscriptionId: row.stripeSubscriptionId,
+          cancelAtPeriodEnd: false,
+        });
+      }
       return shape(row.organizationId, {
         tier: row.tier,
         status: row.status,

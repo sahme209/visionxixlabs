@@ -106,7 +106,7 @@ const plans = [
       "Slack + email alerts",
       "Priority support",
     ],
-    cta: "Start 14-day trial",
+    cta: "Get started",
     ctaHref: "/auth/signup?plan=pro&redirect=/operator/onboarding",
     highlighted: true,
   },

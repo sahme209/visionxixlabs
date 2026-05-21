@@ -8,20 +8,20 @@ import { MEMBERSHIP_PLANS, type MembershipPlanId } from "@/lib/pricing/membershi
 
 type BillingPeriod = "monthly" | "annual";
 
-// Tier ids on this page = MEMBERSHIP_PLANS ids + the free "trial" entry.
-type TierId = "trial" | MembershipPlanId;
+// Tier ids on this page = MEMBERSHIP_PLANS ids. Trial product retired —
+// new tenants land on the dashboard with no plan and pick a paid tier.
+type TierId = MembershipPlanId;
 
 interface Tier {
   id: TierId;
   label: string;
   /**
    * Pricing source of truth:
-   *  - "trial"  → free
    *  - "enterprise" → custom
    *  - everything else reads from MEMBERSHIP_PLANS, which matches the
    *    real Stripe Payment Link prices in env.
    */
-  pricing: { kind: "free" } | { kind: "custom" } | { kind: "paid"; planId: MembershipPlanId };
+  pricing: { kind: "custom" } | { kind: "paid"; planId: MembershipPlanId };
   blurb: string;
   highlight?: boolean;
   rows: ReadonlyArray<{ label: string; value: string }>;
@@ -48,8 +48,6 @@ const STRIPE_LINKS: Record<"starter" | "growth" | "scale", { monthly: string; an
 
 function ctaFor(tierId: Tier["id"], period: BillingPeriod): { href: string; label: string; external: boolean } {
   switch (tierId) {
-    case "trial":
-      return { href: "/dashboard/command-center", label: "Start trial →", external: false };
     case "enterprise":
       return { href: "/contact",                   label: "Talk to sales →", external: false };
     case "starter":
@@ -60,20 +58,6 @@ function ctaFor(tierId: Tier["id"], period: BillingPeriod): { href: string; labe
 }
 
 const TIERS: readonly Tier[] = [
-  {
-    id: "trial",
-    label: "Trial",
-    pricing: { kind: "free" },
-    blurb: "Open the cockpit, wire one cloud, run the council against a sandbox.",
-    rows: [
-      { label: "Operators",              value: "1" },
-      { label: "Autonomy cycles / day",  value: "100" },
-      { label: "AI provider chain",      value: "free providers only" },
-      { label: "Integrations",           value: "Slack webhook" },
-      { label: "Compliance packets",     value: "—" },
-      { label: "Approval-only contract", value: "✓" },
-    ],
-  },
   {
     id: "starter",
     label: "Starter",
@@ -142,7 +126,6 @@ interface PricingDisplay {
 }
 
 function pricingFor(tier: Tier, period: BillingPeriod): PricingDisplay {
-  if (tier.pricing.kind === "free") return { display: "Free", suffix: null, saveCopy: null };
   if (tier.pricing.kind === "custom") return { display: "Custom", suffix: null, saveCopy: null };
 
   const plan = MEMBERSHIP_PLANS[tier.pricing.planId];
@@ -286,8 +269,8 @@ export function PricingClient() {
                     : "border border-white/10 text-zinc-200 hover:bg-white/[0.06] hover:border-white/20",
                 ].join(" ");
                 // External Stripe Payment Links open in a new tab so the
-                // operator's pricing-page state is preserved (toggle, scroll).
-                // Internal routes (trial / contact) stay client-routed.
+                // pricing-page state is preserved (toggle, scroll).
+                // Internal routes (enterprise contact) stay client-routed.
                 return cta.external ? (
                   <a
                     href={cta.href}
