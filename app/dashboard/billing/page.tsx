@@ -151,7 +151,7 @@ export default function BillingPage() {
           Plans & <span className="text-gradient">billing.</span>
         </h1>
         <p className="text-[15px] text-zinc-400 max-w-2xl leading-relaxed">
-          Pick a plan that matches your cloud footprint. Trial is honest — full feature access, no card needed.
+          Pick a plan that matches your cloud footprint. Cancel anytime · VAT handled at checkout · invoices on every charge.
         </p>
       </div>
 
@@ -161,7 +161,7 @@ export default function BillingPage() {
         </div>
       )}
 
-      {plan && (
+      {plan && plan.status !== "no_plan" && (
         <div className="rounded-2xl border border-violet-500/[0.18] bg-violet-500/[0.03] p-5 mb-6">
           <div className="flex items-center gap-2 flex-wrap mb-2">
             <span className="text-[10px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border bg-violet-500/15 text-violet-200 border-violet-500/30">
@@ -170,14 +170,8 @@ export default function BillingPage() {
             <p className="text-[15px] font-semibold text-white">{plan.spec.label}</p>
             <span className={`text-[10px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border ${
               plan.status === "active" ? "bg-emerald-500/15 text-emerald-300 border-emerald-500/30"
-              : plan.status === "trialing" ? "bg-amber-500/15 text-amber-300 border-amber-500/30"
               : "bg-zinc-500/15 text-zinc-300 border-zinc-500/30"
             }`}>{plan.status}</span>
-            {plan.status === "trialing" && (
-              <span className="text-[11px] font-mono text-amber-200">
-                {plan.trialDaysRemaining} day{plan.trialDaysRemaining === 1 ? "" : "s"} remaining
-              </span>
-            )}
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mt-3">
             <Cap label="Autonomy/day" value={formatCap(plan.spec.caps.autonomyCyclesPerDay)} />
@@ -185,6 +179,20 @@ export default function BillingPage() {
             <Cap label="Outbound/day" value={formatCap(plan.spec.caps.outboundPerDay)} />
             <Cap label="Cloud connectors" value={formatCap(plan.spec.caps.cloudConnectors)} />
           </div>
+        </div>
+      )}
+
+      {plan && plan.status === "no_plan" && (
+        <div className="rounded-2xl border border-violet-500/[0.18] bg-gradient-to-br from-violet-500/[0.05] via-transparent to-fuchsia-500/[0.03] p-6 mb-6">
+          <p className="text-[10px] font-mono uppercase tracking-wider text-violet-300 mb-2">
+            no plan selected
+          </p>
+          <p className="text-[15px] font-semibold text-white mb-1">
+            Pick a plan to activate your workspace.
+          </p>
+          <p className="text-[13px] text-zinc-400 leading-relaxed">
+            Choose Starter, Growth, or Enterprise below. Stripe handles checkout, VAT, and invoicing. You can change tier anytime.
+          </p>
         </div>
       )}
 
