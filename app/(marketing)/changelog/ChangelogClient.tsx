@@ -24,6 +24,14 @@ interface ChangelogEntry {
 // Newest first. Add to the top when shipping a new batch.
 const ENTRIES: readonly ChangelogEntry[] = [
   {
+    phases: "308-315",
+    title: "Python contract + execution planner + local model invocation + GitHub + incident pipeline",
+    summary:
+      "Seven new pure-function kernels with closed-union types (101 new tests). pythonScriptContract validates Python manifests + inputs. scriptExecutionPlanner composes typed plans with risk verdicts for cloud or desktop mode. localModelInvocation guards every local AI model call with PII redaction + bounded inputs + output validation. githubPipelineRepairer classifies Actions failures into typed PR proposals. githubReleaseNotesDrafter renders conventional-commit release notes with SemVer recommendation. incidentTimelineWeaver phase-tags incident events; postmortemDrafter renders the canonical write-up.",
+    tag: "agent",
+    surface: "all",
+  },
+  {
     phases: "301-307",
     title: "AI marketing + LinkedIn safe foundation + desktop script catalog",
     summary:

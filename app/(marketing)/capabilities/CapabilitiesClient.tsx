@@ -37,11 +37,17 @@ const CAPABILITIES: readonly Capability[] = [
   { name: "Reasoner",            role: "reasoning",    kernel: "lib/agents/reasonerHypothesisWeaver",    proves: "Weaves 1..N signals into a typed hypothesis with a confidence score.",                  evidence: { href: "/dashboard/agent-bus",       label: "agent bus" } },
   { name: "Simulator",           role: "reasoning",    kernel: "lib/agents/simulatorSandboxSpec",        proves: "Sandboxes the proposed action end-to-end and returns a verdict before any approval packet is built." },
 
-  // planning — newly shipped batch
-  { name: "Spec Writer",         role: "planning",     kernel: "lib/agents/specWriter",                  proves: "Drafts a typed engineering spec (goals, non-goals, risks, verification, rollback) from a problem statement.", isNew: true },
-  { name: "Test Coverage Proposer", role: "planning",  kernel: "lib/agents/testCoverageProposer",        proves: "Reads a diff and proposes the must-have, should-have, and nice-to-have tests with rationale per row.",       isNew: true },
-  { name: "Refactor Sequencer",  role: "planning",     kernel: "lib/agents/refactorSequencer",           proves: "Orders a multi-step refactor with per-step verdict (safe / needs-test / needs-review / blocked) and rollback.", isNew: true },
-  { name: "Migration Coordinator", role: "planning",   kernel: "lib/agents/migrationCoordinator",        proves: "Builds a multi-stage migration runbook with backwards-compat window, gate checks, and rollback per stage.",   isNew: true },
+  // planning
+  { name: "Spec Writer",         role: "planning",     kernel: "lib/agents/specWriter",                  proves: "Drafts a typed engineering spec (goals, non-goals, risks, verification, rollback) from a problem statement." },
+  { name: "Test Coverage Proposer", role: "planning",  kernel: "lib/agents/testCoverageProposer",        proves: "Reads a diff and proposes the must-have, should-have, and nice-to-have tests with rationale per row." },
+  { name: "Refactor Sequencer",  role: "planning",     kernel: "lib/agents/refactorSequencer",           proves: "Orders a multi-step refactor with per-step verdict (safe / needs-test / needs-review / blocked) and rollback." },
+  { name: "Migration Coordinator", role: "planning",   kernel: "lib/agents/migrationCoordinator",        proves: "Builds a multi-stage migration runbook with backwards-compat window, gate checks, and rollback per stage." },
+  { name: "GitHub Pipeline Repairer", role: "planning", kernel: "lib/agents/githubPipelineRepairer",     proves: "Classifies a failed Actions run and proposes a typed PR patch (retry, pin, quarantine, raise runner, etc.).", isNew: true },
+  { name: "Release Notes Drafter", role: "planning", kernel: "lib/agents/githubReleaseNotesDrafter",     proves: "Drafts release notes from commits between two tags. Conventional-commit aware, recommends SemVer bump.",      isNew: true },
+  { name: "Incident Timeline Weaver", role: "planning", kernel: "lib/agents/incidentTimelineWeaver",     proves: "Weaves heterogeneous events into a phase-tagged incident timeline with TTD / TTM / TTR durations.",          isNew: true },
+  { name: "Postmortem Drafter",  role: "planning",     kernel: "lib/agents/postmortemDrafter",           proves: "Renders a ready-to-merge postmortem from a timeline + action items. Refuses to draft while incident is ongoing.", isNew: true },
+  { name: "Marketing Content Drafter", role: "planning", kernel: "lib/agents/marketingContentDrafter",   proves: "Drafts multi-channel social posts with closed-union risk tier. Customer mention auto-tiers high; incident → critical." },
+  { name: "Social Post Scheduler", role: "planning",   kernel: "lib/agents/socialPostScheduler",         proves: "Sequences approved drafts under per-channel caps, blackout windows, dedup. Refuses critical+dual-approval on a single track." },
 
   // safety
   { name: "Policy Gate",         role: "safety",       kernel: "lib/agents/policyGateEvaluator",         proves: "Applies the tenant charter to every proposal — refuses anything outside the operator-signed scope.",         evidence: { href: "/dashboard/admin-charters",  label: "tenant charters" } },
