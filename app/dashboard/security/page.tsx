@@ -25,6 +25,8 @@ import { displayFor as credDisplay, materialDisplay } from "@/lib/security/crede
 import type { PairedDesktop } from "@/lib/desktop/desktopSecurity";
 import { displayFor as desktopDisplay } from "@/lib/desktop/desktopSecurity";
 import { id } from "@/lib/domain/ids";
+import { TenantEmptyState } from "@/components/platform/TenantEmptyState";
+import { useTenantFreshness } from "@/components/platform/useTenantFreshness";
 
 // ---------------------------------------------------------------------------
 // Honest preview inputs — no live data wired yet. Source is tagged "preview"
@@ -78,13 +80,15 @@ const SAMPLE_DESKTOPS: PairedDesktop[] = [
 ];
 
 export default function SecurityCenterPage() {
+  const { isFreshOrLoading, loaded } = useTenantFreshness();
+  const showSampleData = loaded && !isFreshOrLoading;
   const posture = buildSecurityPosture({
-    source: "preview",
-    credentials: SAMPLE_CREDS,
-    pairedDesktops: SAMPLE_DESKTOPS,
+    source: showSampleData ? "preview" : "preview",
+    credentials: showSampleData ? SAMPLE_CREDS : [],
+    pairedDesktops: showSampleData ? SAMPLE_DESKTOPS : [],
     crossTenantAttempts30d: 0,
-    policyBlocks30d: 2,
-    openHighRiskFindings: 1,
+    policyBlocks30d: showSampleData ? 2 : 0,
+    openHighRiskFindings: showSampleData ? 1 : 0,
     redactionEnabled: true,
     auditStoreConfigured: true,
     copilotContextSafe: true,
@@ -111,9 +115,11 @@ export default function SecurityCenterPage() {
           <div className="flex items-center gap-3 mb-3">
             <ShieldCheckIcon className="h-4 w-4 text-emerald-400" />
             <p className="text-[10px] font-semibold text-emerald-400 uppercase tracking-widest">Security Center</p>
-            <span className="text-[9px] font-semibold text-amber-400 bg-amber-500/15 border border-amber-500/30 rounded-full px-2 py-0.5 uppercase tracking-wider">
-              {posture.source === "live" ? "Live" : posture.source === "preview" ? "Preview" : "Demo"}
-            </span>
+            {showSampleData && (
+              <span className="text-[9px] font-semibold text-amber-400 bg-amber-500/15 border border-amber-500/30 rounded-full px-2 py-0.5 uppercase tracking-wider">
+                {posture.source === "live" ? "Live" : posture.source === "preview" ? "Preview" : "Demo"}
+              </span>
+            )}
           </div>
           <h1 className="text-3xl md:text-4xl font-bold text-white tracking-[-0.04em] mb-2">
             Enterprise <span className="text-gradient">trust posture.</span>
@@ -124,10 +130,30 @@ export default function SecurityCenterPage() {
         </div>
       </Reveal>
 
+      {!showSampleData && (
+        <Reveal direction="up" delay={0.04}>
+          <div className="mb-8">
+            <TenantEmptyState
+              icon={ShieldCheckIcon}
+              tone="emerald"
+              eyebrow="Trust posture pending"
+              title="Your security posture appears the moment a cloud is linked."
+              description="Once a connector is wired, Axiom inventories credentials, scores rotation hygiene, watches every desktop pairing, and shows you exactly what an enterprise reviewer would ask about."
+              agiNote="AGI will run the first credential, redaction, and tenant-isolation checks automatically — no manual config required."
+              actions={[
+                { href: "/dashboard/connectors", label: "Connect first cloud", variant: "primary" },
+                { href: "/docs/permissions-model", label: "Read the trust model", variant: "ghost" },
+              ]}
+            />
+          </div>
+        </Reveal>
+      )}
+
       {/* Run scanner — clickable POST /api/security-scan with canonical result */}
-      <RunSecurityScannerPanel />
+      {showSampleData && <RunSecurityScannerPanel />}
 
       {/* Posture KPIs */}
+      {showSampleData && (
       <Stagger delay={0.05} interval={0.05} className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
         {[
           { label: "Posture score", value: `${Math.round(posture.score * 100)}%`, sub: posture.semantic === "success" ? "Strong baseline" : posture.semantic === "warning" ? "Action needed" : "Critical gaps", icon: ShieldCheckIcon, semantic: posture.semantic },
@@ -148,8 +174,10 @@ export default function SecurityCenterPage() {
           );
         })}
       </Stagger>
+      )}
 
       {/* Posture checks */}
+      {showSampleData && (
       <Reveal direction="up" delay={0.08}>
         <div className="mb-8 rounded-2xl border border-emerald-500/15 bg-gradient-to-br from-emerald-500/[0.03] via-transparent to-cyan-500/[0.02] p-6 relative overflow-hidden">
           <div className="absolute -top-12 -right-12 w-48 h-48 rounded-full bg-emerald-500/[0.06] blur-[60px] pointer-events-none" aria-hidden />
@@ -171,8 +199,10 @@ export default function SecurityCenterPage() {
           </div>
         </div>
       </Reveal>
+      )}
 
       {/* Credentials */}
+      {showSampleData && (
       <Reveal direction="up" delay={0.12}>
         <div className="mb-8 rounded-2xl border border-white/[0.06] bg-white/[0.02] overflow-hidden">
           <div className="px-5 py-3 border-b border-white/[0.06] flex items-center justify-between flex-wrap gap-2">
@@ -205,6 +235,7 @@ export default function SecurityCenterPage() {
           </div>
         </div>
       </Reveal>
+      )}
 
       {/* RBAC overview */}
       <Reveal direction="up" delay={0.16}>
@@ -271,6 +302,7 @@ export default function SecurityCenterPage() {
       </Reveal>
 
       {/* Desktop trust */}
+      {showSampleData && (
       <Reveal direction="up" delay={0.24}>
         <div className="mb-8 rounded-2xl border border-white/[0.06] bg-white/[0.02] overflow-hidden">
           <div className="px-5 py-3 border-b border-white/[0.06] flex items-center justify-between flex-wrap gap-2">
@@ -301,6 +333,7 @@ export default function SecurityCenterPage() {
           </div>
         </div>
       </Reveal>
+      )}
 
       {/* Trust strip — answers the questions enterprise reviewers ask */}
       <Reveal direction="up" delay={0.28}>

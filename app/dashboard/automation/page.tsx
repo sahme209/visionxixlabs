@@ -19,6 +19,7 @@ import {
   ShieldCheckIcon,
   ComputerDesktopIcon,
   CloudIcon,
+  BoltIcon,
 } from "@heroicons/react/24/outline";
 import {
   DEMO_SCRIPTS,
@@ -34,6 +35,8 @@ import {
   relativeTime,
 } from "@/lib/platform/livePlatformState";
 import { PlatformHero } from "@/components/platform/PlatformHero";
+import { getTenantFreshness } from "@/lib/platform/tenantFreshness";
+import { TenantEmptyState } from "@/components/platform/TenantEmptyState";
 
 export const metadata: Metadata = {
   title: "Automation engine · Axiom",
@@ -79,7 +82,8 @@ export default async function AutomationPage() {
   const cloudScripts   = DEMO_SCRIPTS.filter((s) => s.executionMode === "cloud");
   const desktopScripts = DEMO_SCRIPTS.filter((s) => s.executionMode === "desktop");
   const approvalQueue  = DEMO_AUTOMATION_RUNS.filter((r) => r.status === "awaiting_approval");
-  const live = await getLiveAutomationState();
+  const [live, freshness] = await Promise.all([getLiveAutomationState(), getTenantFreshness()]);
+  const showSampleData = !freshness.freshTenant;
 
   return (
     <div className="relative">
@@ -97,21 +101,41 @@ export default async function AutomationPage() {
             <span className="rounded-full border border-violet-500/30 bg-violet-500/10 text-violet-300 px-2.5 py-1 text-[11px] font-mono">
               {desktopScripts.length} desktop
             </span>
-            <span className="rounded-full border border-amber-500/30 bg-amber-500/10 text-amber-300 px-2.5 py-1 text-[11px] font-mono">
-              {approvalQueue.length} awaiting approval
-            </span>
+            {showSampleData && (
+              <span className="rounded-full border border-amber-500/30 bg-amber-500/10 text-amber-300 px-2.5 py-1 text-[11px] font-mono">
+                {approvalQueue.length} awaiting approval
+              </span>
+            )}
             {live.ok ? (
               <span className="rounded-full border border-emerald-500/30 bg-emerald-500/10 text-emerald-200 px-2.5 py-1 text-[11px] font-mono inline-flex items-center gap-1.5">
                 <LiveBadge />
                 {live.totalRuns24h} runs · 24h
               </span>
             ) : null}
-            <DemoBadge />
+            {showSampleData && <DemoBadge />}
           </>
         }
       />
 
+      {!showSampleData && (
+        <div className="mb-6">
+          <TenantEmptyState
+            icon={BoltIcon}
+            tone="cyan"
+            eyebrow="Automation engine"
+            title="Your script registry and runs appear once a connector is wired."
+            description="The automation engine runs Python scripts and workflows across cloud and desktop targets. Every risky action carries a dry-run, an approval gate, and a rollback plan."
+            agiNote="AGI will recommend the first safe automations the moment we can see your environment — no scripting required to get started."
+            actions={[
+              { href: "/dashboard/connectors", label: "Connect first cloud", variant: "primary" },
+              { href: "/dashboard/desktop-agents", label: "Set up desktop runtime", variant: "ghost" },
+            ]}
+          />
+        </div>
+      )}
+
       {/* Top-level metric strip */}
+      {showSampleData && (
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
         <Stat label="Registered scripts" value={DEMO_SCRIPTS.length} />
         <Stat
@@ -122,6 +146,7 @@ export default async function AutomationPage() {
         <Stat label="Approval-gated" value={DEMO_SCRIPTS.filter((s) => s.approvalRequired).length} />
         <Stat label="Dry-run capable" value={DEMO_SCRIPTS.filter((s) => s.dryRunSupported).length} sub="every risky script supports dry-run" />
       </div>
+      )}
 
       {live.ok && live.recent.length > 0 ? (
         <section className="mb-6 rounded-2xl border border-emerald-500/20 bg-emerald-500/[0.04] p-4 md:p-5">
@@ -162,6 +187,7 @@ export default async function AutomationPage() {
         </section>
       ) : null}
 
+      {showSampleData && (
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         {/* Scripts table — spans 2 cols */}
         <section className="lg:col-span-2 rounded-2xl border border-white/[0.05] bg-white/[0.015] p-4 md:p-5">
@@ -299,14 +325,7 @@ export default async function AutomationPage() {
           </section>
         </aside>
       </div>
-
-      <p className="mt-10 text-[12px] text-zinc-500 max-w-3xl leading-relaxed">
-        Today the script registry is loaded from{" "}
-        <span className="font-mono text-zinc-400">lib/platform/platformSeedData.ts</span>. Each row
-        carries <span className="font-mono text-zinc-400">kind: &quot;seed_demo&quot;</span> so the cockpit
-        can flag it. When the AutomationScript + AutomationRun Prisma rows land, point this page
-        at the live tables — every consumer already uses the same shapes.
-      </p>
+      )}
     </div>
   );
 }

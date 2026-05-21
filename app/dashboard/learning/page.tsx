@@ -28,6 +28,8 @@ import {
 import { getSubTool } from "@/lib/platform/subToolCatalog";
 import { DemoBadge } from "@/components/platform/DemoBadge";
 import { PlatformHero } from "@/components/platform/PlatformHero";
+import { getTenantFreshness } from "@/lib/platform/tenantFreshness";
+import { TenantEmptyState } from "@/components/platform/TenantEmptyState";
 
 export const metadata: Metadata = {
   title: "Learning events · Axiom",
@@ -58,7 +60,9 @@ function formatRelative(iso: string): string {
   return `${d}d ago`;
 }
 
-export default function LearningPage() {
+export default async function LearningPage() {
+  const freshness = await getTenantFreshness();
+  const showSampleData = !freshness.freshTenant;
   const sorted = [...DEMO_LEARNING_EVENTS].sort(
     (a, b) => new Date(b.occurredAt).getTime() - new Date(a.occurredAt).getTime(),
   );
@@ -75,17 +79,39 @@ export default function LearningPage() {
         gradientFromColor="radial-gradient(900px 320px at 14% 0%, rgba(217,70,239,0.10), transparent 60%), radial-gradient(700px 260px at 86% 110%, rgba(99,102,241,0.08), transparent 60%)"
         right={
           <>
-            <span className="rounded-full border border-emerald-500/30 bg-emerald-500/10 text-emerald-300 px-2.5 py-1 text-[11px] font-mono">
-              {applied} applied
-            </span>
-            <span className="rounded-full border border-amber-500/30 bg-amber-500/10 text-amber-300 px-2.5 py-1 text-[11px] font-mono">
-              {stagedOnly} staged only
-            </span>
-            <DemoBadge />
+            {showSampleData && (
+              <>
+                <span className="rounded-full border border-emerald-500/30 bg-emerald-500/10 text-emerald-300 px-2.5 py-1 text-[11px] font-mono">
+                  {applied} applied
+                </span>
+                <span className="rounded-full border border-amber-500/30 bg-amber-500/10 text-amber-300 px-2.5 py-1 text-[11px] font-mono">
+                  {stagedOnly} staged only
+                </span>
+                <DemoBadge />
+              </>
+            )}
           </>
         }
       />
 
+      {!showSampleData && (
+        <div className="mb-6">
+          <TenantEmptyState
+            icon={AcademicCapIcon}
+            tone="fuchsia"
+            eyebrow="No learning events yet"
+            title="AGI starts learning the moment your agents take their first action."
+            description="Every approval, rejection, correction, and incident resolution feeds back into the kernels — turning each operator decision into a calibrated suggestion. Nothing changes behaviour without your sign-off."
+            agiNote="Your team's preferences shape the agents. Reject a suggestion once and AGI remembers; approve a pattern twice and it gets proposed first next time."
+            actions={[
+              { href: "/dashboard/connectors", label: "Connect first cloud", variant: "primary" },
+              { href: "/dashboard/approvals", label: "Approval center", variant: "ghost" },
+            ]}
+          />
+        </div>
+      )}
+
+      {showSampleData && (
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
         <Stat label="Events" value={sorted.length} />
         <Stat label="Applied" value={applied} sub="behaviour change live" />
@@ -98,7 +124,9 @@ export default function LearningPage() {
           sub="%"
         />
       </div>
+      )}
 
+      {showSampleData && (
       <section className="rounded-2xl border border-white/[0.05] bg-white/[0.015] p-4 md:p-5">
         <header className="flex items-center justify-between gap-3 mb-3">
           <h2 className="text-[13px] font-semibold text-zinc-200 flex items-center gap-2">
@@ -167,6 +195,7 @@ export default function LearningPage() {
           })}
         </ul>
       </section>
+      )}
 
       {/* Learning rules */}
       <section className="mt-6 rounded-2xl border border-fuchsia-500/20 bg-fuchsia-500/[0.04] p-5">

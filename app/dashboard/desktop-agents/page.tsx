@@ -28,6 +28,8 @@ import {
 } from "@/lib/platform/platformSeedData";
 import { DemoBadge } from "@/components/platform/DemoBadge";
 import { PlatformHero } from "@/components/platform/PlatformHero";
+import { getTenantFreshness } from "@/lib/platform/tenantFreshness";
+import { TenantEmptyState } from "@/components/platform/TenantEmptyState";
 
 export const metadata: Metadata = {
   title: "Desktop agents · Axiom",
@@ -58,7 +60,9 @@ function formatRelative(iso: string): string {
   return `${d}d ago`;
 }
 
-export default function DesktopAgentsPage() {
+export default async function DesktopAgentsPage() {
+  const freshness = await getTenantFreshness();
+  const showSampleData = !freshness.freshTenant;
   const byOs: Record<DesktopOS, number> = { macos: 0, windows: 0, linux: 0 };
   for (const d of DEMO_DESKTOP_AGENTS) byOs[d.os] += 1;
   const totalPending = DEMO_DESKTOP_AGENTS.reduce((acc, d) => acc + d.pendingTasks, 0);
@@ -74,18 +78,40 @@ export default function DesktopAgentsPage() {
         gradientFromColor="radial-gradient(900px 320px at 14% 0%, rgba(124,58,237,0.12), transparent 60%), radial-gradient(700px 260px at 86% 110%, rgba(217,70,239,0.08), transparent 60%)"
         right={
           <>
-            <span className="rounded-full border border-violet-500/30 bg-violet-500/10 text-violet-300 px-2.5 py-1 text-[11px] font-mono">
-              {DEMO_DESKTOP_AGENTS.length} devices
-            </span>
-            <span className="rounded-full border border-emerald-500/30 bg-emerald-500/10 text-emerald-300 px-2.5 py-1 text-[11px] font-mono">
-              {totalCompletedToday} tasks today
-            </span>
-            <DemoBadge />
+            {showSampleData && (
+              <>
+                <span className="rounded-full border border-violet-500/30 bg-violet-500/10 text-violet-300 px-2.5 py-1 text-[11px] font-mono">
+                  {DEMO_DESKTOP_AGENTS.length} devices
+                </span>
+                <span className="rounded-full border border-emerald-500/30 bg-emerald-500/10 text-emerald-300 px-2.5 py-1 text-[11px] font-mono">
+                  {totalCompletedToday} tasks today
+                </span>
+                <DemoBadge />
+              </>
+            )}
           </>
         }
       />
 
+      {!showSampleData && (
+        <div className="mb-6">
+          <TenantEmptyState
+            icon={ComputerDesktopIcon}
+            tone="violet"
+            eyebrow="No desktop devices yet"
+            title="Pair your first machine to extend AGI to local execution."
+            description="Install the Axiom desktop app on macOS, Windows, or Linux. Once paired, it executes only the tasks your workspace hands off — git, docker, kubectl, terraform, local model inference — with an on-device approval for risky actions."
+            agiNote="The desktop runtime never runs anything autonomously. Every local action is staged, scoped, time-boxed, and logged to both the local and cloud audit trail."
+            actions={[
+              { href: "/download", label: "Download desktop app", variant: "primary" },
+              { href: "/dashboard/desktop", label: "Read the safety contract", variant: "ghost" },
+            ]}
+          />
+        </div>
+      )}
+
       {/* Stat strip */}
+      {showSampleData && (
       <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mb-6">
         <Stat label="macOS"           value={byOs.macos} />
         <Stat label="Windows"         value={byOs.windows} />
@@ -93,8 +119,10 @@ export default function DesktopAgentsPage() {
         <Stat label="Pending tasks"   value={totalPending} />
         <Stat label="Completed today" value={totalCompletedToday} />
       </div>
+      )}
 
       {/* Device fleet */}
+      {showSampleData && (
       <section className="rounded-2xl border border-white/[0.05] bg-white/[0.015] p-4 md:p-5 mb-6">
         <header className="flex items-center justify-between gap-3 mb-3">
           <h2 className="text-[13px] font-semibold text-zinc-200 flex items-center gap-2">
@@ -190,6 +218,7 @@ export default function DesktopAgentsPage() {
           })}
         </div>
       </section>
+      )}
 
       {/* Safety rail */}
       <section className="rounded-2xl border border-emerald-500/20 bg-emerald-500/[0.04] p-5">
@@ -222,13 +251,6 @@ export default function DesktopAgentsPage() {
         </div>
       </section>
 
-      <p className="mt-10 text-[12px] text-zinc-500 max-w-3xl leading-relaxed">
-        The desktop fleet view today is loaded from{" "}
-        <span className="font-mono text-zinc-400">lib/platform/platformSeedData.ts</span>. The
-        Prisma schema already includes <span className="font-mono text-zinc-400">DesktopSessionRecord</span>{" "}
-        and <span className="font-mono text-zinc-400">DesktopHandoffRecord</span> — wiring this
-        page to those tables is the planned follow-up.
-      </p>
     </div>
   );
 }

@@ -22,6 +22,8 @@ import {
 import { getSubTool } from "@/lib/platform/subToolCatalog";
 import { DemoBadge } from "@/components/platform/DemoBadge";
 import { PlatformHero } from "@/components/platform/PlatformHero";
+import { getTenantFreshness } from "@/lib/platform/tenantFreshness";
+import { TenantEmptyState } from "@/components/platform/TenantEmptyState";
 
 export const metadata: Metadata = {
   title: "Gap detection · Axiom",
@@ -49,7 +51,9 @@ function formatRelative(iso: string): string {
   return `${d}d ago`;
 }
 
-export default function GapsPage() {
+export default async function GapsPage() {
+  const freshness = await getTenantFreshness();
+  const showSampleData = !freshness.freshTenant;
   const counts = DEMO_GAPS.reduce<Record<GapSeverity, number>>(
     (acc, g) => {
       acc[g.severity] += 1;
@@ -77,28 +81,52 @@ export default function GapsPage() {
         gradientFromColor="radial-gradient(900px 320px at 14% 0%, rgba(245,158,11,0.10), transparent 60%), radial-gradient(700px 260px at 86% 110%, rgba(244,63,94,0.08), transparent 60%)"
         right={
           <>
-            <span className="rounded-full border border-rose-500/40 bg-rose-500/15 text-rose-200 px-2.5 py-1 text-[11px] font-mono">
-              {counts.critical} critical
-            </span>
-            <span className="rounded-full border border-rose-500/30 bg-rose-500/10 text-rose-300 px-2.5 py-1 text-[11px] font-mono">
-              {counts.high} high
-            </span>
-            <span className="rounded-full border border-amber-500/30 bg-amber-500/10 text-amber-300 px-2.5 py-1 text-[11px] font-mono">
-              {counts.warn} warn
-            </span>
-            <DemoBadge />
+            {showSampleData && (
+              <>
+                <span className="rounded-full border border-rose-500/40 bg-rose-500/15 text-rose-200 px-2.5 py-1 text-[11px] font-mono">
+                  {counts.critical} critical
+                </span>
+                <span className="rounded-full border border-rose-500/30 bg-rose-500/10 text-rose-300 px-2.5 py-1 text-[11px] font-mono">
+                  {counts.high} high
+                </span>
+                <span className="rounded-full border border-amber-500/30 bg-amber-500/10 text-amber-300 px-2.5 py-1 text-[11px] font-mono">
+                  {counts.warn} warn
+                </span>
+                <DemoBadge />
+              </>
+            )}
           </>
         }
       />
 
+      {!showSampleData && (
+        <div className="mb-6">
+          <TenantEmptyState
+            icon={ExclamationTriangleIcon}
+            tone="fuchsia"
+            eyebrow="No gaps detected yet"
+            title="Gap detection starts the moment your environment is visible."
+            description="Axiom scans for missing backups, weak pipelines, public resources, unmonitored services, stale runbooks, and unanswered tickets — across every connector you add. Each finding ships with evidence, a recommended action, and an automation when one is safe to offer."
+            agiNote="AGI prioritises the gaps that are both highest-impact and lowest-risk to fix — you only see actionable findings, not noise."
+            actions={[
+              { href: "/dashboard/connectors", label: "Connect first cloud", variant: "primary" },
+              { href: "/dashboard/automation", label: "Browse automations", variant: "ghost" },
+            ]}
+          />
+        </div>
+      )}
+
+      {showSampleData && (
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
         <Stat label="Total findings" value={DEMO_GAPS.length} />
         <Stat label="Open"        value={openGaps.length}      sub={`${DEMO_GAPS.length - openGaps.length} resolved or scheduled`} />
         <Stat label="Automatable" value={automatableGaps.length} sub="auto-staged remediation available" />
         <Stat label="Approval-gated remediations" value={DEMO_GAPS.filter((g) => g.approvalRequired).length} />
       </div>
+      )}
 
       {/* Findings list */}
+      {showSampleData && (
       <section className="rounded-2xl border border-white/[0.05] bg-white/[0.015] p-4 md:p-5">
         <header className="flex items-center justify-between gap-3 mb-3">
           <h2 className="text-[13px] font-semibold text-zinc-200 flex items-center gap-2">
@@ -181,14 +209,7 @@ export default function GapsPage() {
           })}
         </ul>
       </section>
-
-      <p className="mt-10 text-[12px] text-zinc-500 max-w-3xl leading-relaxed">
-        Gap findings on this page are loaded from{" "}
-        <span className="font-mono text-zinc-400">lib/platform/platformSeedData.ts</span>. Live
-        detectors live in <span className="font-mono text-zinc-400">lib/agents/detectorSignalEmitter.ts</span>;
-        the planned follow-up is to persist findings to a GapFinding Prisma model and wire that
-        into this view.
-      </p>
+      )}
     </div>
   );
 }

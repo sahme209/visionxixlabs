@@ -20,6 +20,8 @@ import type { AuditRecord, AuditAction, AuditOutcome } from "@/lib/audit/secureA
 import { BUNDLE_KIND_LABEL } from "@/lib/audit/auditBundle";
 import type { AuditBundleKind } from "@/lib/audit/auditBundle";
 import { id } from "@/lib/domain/ids";
+import { TenantEmptyState } from "@/components/platform/TenantEmptyState";
+import { useTenantFreshness } from "@/components/platform/useTenantFreshness";
 
 // ---------------------------------------------------------------------------
 // Honest preview records — same shape as the canonical AuditRecord.
@@ -73,10 +75,12 @@ const RECORDS: AuditRecord[] = RAW.map((r, idx) => ({
 const STORIES = buildStoryFeed(RECORDS);
 
 export default function AuditCenterPage() {
-  const totalStories = STORIES.length;
-  const blockedStories = STORIES.filter((s) => s.hasBlockedAction).length;
-  const securityStories = STORIES.filter((s) => s.hasSecurityEvent).length;
-  const userActorStories = STORIES.filter((s) => s.actors.some((a) => a.kind === "user")).length;
+  const { isFreshOrLoading, loaded } = useTenantFreshness();
+  const showSampleData = loaded && !isFreshOrLoading;
+  const totalStories = showSampleData ? STORIES.length : 0;
+  const blockedStories = showSampleData ? STORIES.filter((s) => s.hasBlockedAction).length : 0;
+  const securityStories = showSampleData ? STORIES.filter((s) => s.hasSecurityEvent).length : 0;
+  const userActorStories = showSampleData ? STORIES.filter((s) => s.actors.some((a) => a.kind === "user")).length : 0;
 
   return (
     <div className="relative">
@@ -86,9 +90,11 @@ export default function AuditCenterPage() {
           <div className="flex items-center gap-3 mb-3">
             <DocumentTextIcon className="h-4 w-4 text-fuchsia-400" />
             <p className="text-[10px] font-semibold text-fuchsia-400 uppercase tracking-widest">Audit Center</p>
-            <span className="text-[9px] font-semibold text-amber-400 bg-amber-500/15 border border-amber-500/30 rounded-full px-2 py-0.5 uppercase tracking-wider">
-              Preview
-            </span>
+            {showSampleData && (
+              <span className="text-[9px] font-semibold text-amber-400 bg-amber-500/15 border border-amber-500/30 rounded-full px-2 py-0.5 uppercase tracking-wider">
+                Preview
+              </span>
+            )}
           </div>
           <h1 className="text-3xl md:text-4xl font-bold text-white tracking-[-0.04em] mb-2">
             Evidence-backed <span className="text-gradient">audit stories.</span>
@@ -99,7 +105,27 @@ export default function AuditCenterPage() {
         </div>
       </Reveal>
 
+      {!showSampleData && (
+        <Reveal direction="up" delay={0.04}>
+          <div className="mb-8">
+            <TenantEmptyState
+              icon={DocumentTextIcon}
+              tone="fuchsia"
+              eyebrow="Nothing audited yet"
+              title="Your audit timeline is waiting on its first connection."
+              description="Once a cloud account is linked, every approval, scan, plan, and policy decision is automatically grouped into evidence-backed stories you can export for compliance."
+              agiNote="AGI will assemble your first audit story the moment a connector is wired — no manual logging, no configuration files."
+              actions={[
+                { href: "/dashboard/connectors", label: "Connect first cloud", variant: "primary" },
+                { href: "/dashboard/command-center", label: "Open Command Center", variant: "ghost" },
+              ]}
+            />
+          </div>
+        </Reveal>
+      )}
+
       {/* KPI strip */}
+      {showSampleData && (
       <Stagger delay={0.05} interval={0.05} className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
         {[
           { label: "Audit stories",      value: String(totalStories),       sub: "in the recent window",                            icon: DocumentTextIcon, semantic: "neutral" },
@@ -125,8 +151,10 @@ export default function AuditCenterPage() {
           );
         })}
       </Stagger>
+      )}
 
       {/* Bundle export menu */}
+      {showSampleData && (
       <Reveal direction="up" delay={0.08}>
         <div className="mb-8 rounded-2xl border border-fuchsia-500/15 bg-gradient-to-br from-fuchsia-500/[0.03] via-transparent to-violet-500/[0.02] p-6 relative overflow-hidden">
           <div className="absolute -top-12 -right-12 w-48 h-48 rounded-full bg-fuchsia-500/[0.06] blur-[60px] pointer-events-none" aria-hidden />
@@ -150,22 +178,27 @@ export default function AuditCenterPage() {
           </div>
         </div>
       </Reveal>
+      )}
 
       {/* Story feed */}
-      <Reveal direction="up" delay={0.12}>
-        <div className="mb-4">
-          <p className="text-[10px] font-semibold text-zinc-500 uppercase tracking-widest mb-1">Audit timeline</p>
-          <h2 className="text-xl font-bold text-white">{STORIES.length} stories · grouped by correlation id.</h2>
-        </div>
-      </Reveal>
-
-      <div className="space-y-3 mb-8">
-        {STORIES.map((story) => (
-          <Reveal key={story.correlationId} direction="up" delay={0.04}>
-            <StoryCard story={story} />
+      {showSampleData && (
+        <>
+          <Reveal direction="up" delay={0.12}>
+            <div className="mb-4">
+              <p className="text-[10px] font-semibold text-zinc-500 uppercase tracking-widest mb-1">Audit timeline</p>
+              <h2 className="text-xl font-bold text-white">{STORIES.length} stories · grouped by correlation id.</h2>
+            </div>
           </Reveal>
-        ))}
-      </div>
+
+          <div className="space-y-3 mb-8">
+            {STORIES.map((story) => (
+              <Reveal key={story.correlationId} direction="up" delay={0.04}>
+                <StoryCard story={story} />
+              </Reveal>
+            ))}
+          </div>
+        </>
+      )}
 
       {/* Trust strip */}
       <Reveal direction="up" delay={0.24}>

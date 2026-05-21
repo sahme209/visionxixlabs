@@ -27,6 +27,8 @@ import {
 } from "@/lib/platform/platformSeedData";
 import { DemoBadge } from "@/components/platform/DemoBadge";
 import { PlatformHero } from "@/components/platform/PlatformHero";
+import { getTenantFreshness } from "@/lib/platform/tenantFreshness";
+import { TenantEmptyState } from "@/components/platform/TenantEmptyState";
 
 export const metadata: Metadata = {
   title: "Model registry · Axiom",
@@ -55,7 +57,9 @@ const MODE_ICON = {
   hybrid: CpuChipIcon,
 };
 
-export default function ModelsPage() {
+export default async function ModelsPage() {
+  const freshness = await getTenantFreshness();
+  const showSampleData = !freshness.freshTenant;
   const byStatus = DEMO_LOCAL_MODELS.reduce<Record<ModelStatus, number>>(
     (acc, m) => {
       acc[m.status] += 1;
@@ -74,21 +78,43 @@ export default function ModelsPage() {
         gradientFromColor="radial-gradient(900px 320px at 14% 0%, rgba(45,212,191,0.12), transparent 60%), radial-gradient(700px 260px at 86% 110%, rgba(56,189,248,0.06), transparent 60%)"
         right={
           <>
-            <span className="rounded-full border border-emerald-500/30 bg-emerald-500/10 text-emerald-300 px-2.5 py-1 text-[11px] font-mono">
-              {byStatus.approved} approved
-            </span>
-            <span className="rounded-full border border-cyan-500/30 bg-cyan-500/10 text-cyan-300 px-2.5 py-1 text-[11px] font-mono">
-              {byStatus.candidate} candidate
-            </span>
-            <span className="rounded-full border border-amber-500/30 bg-amber-500/10 text-amber-300 px-2.5 py-1 text-[11px] font-mono">
-              {byStatus.evaluating} evaluating
-            </span>
-            <DemoBadge />
+            {showSampleData && (
+              <>
+                <span className="rounded-full border border-emerald-500/30 bg-emerald-500/10 text-emerald-300 px-2.5 py-1 text-[11px] font-mono">
+                  {byStatus.approved} approved
+                </span>
+                <span className="rounded-full border border-cyan-500/30 bg-cyan-500/10 text-cyan-300 px-2.5 py-1 text-[11px] font-mono">
+                  {byStatus.candidate} candidate
+                </span>
+                <span className="rounded-full border border-amber-500/30 bg-amber-500/10 text-amber-300 px-2.5 py-1 text-[11px] font-mono">
+                  {byStatus.evaluating} evaluating
+                </span>
+                <DemoBadge />
+              </>
+            )}
           </>
         }
       />
 
+      {!showSampleData && (
+        <div className="mb-6">
+          <TenantEmptyState
+            icon={CpuChipIcon}
+            tone="emerald"
+            eyebrow="Model registry empty"
+            title="Curate your AI model fleet once your workspace is live."
+            description="Approve cloud and local models for your team. Only approved models can be invoked by an agent — every other call is refused at the safety gate. Local models install via the desktop runtime; cloud models route through your selected provider with PII redaction applied first."
+            agiNote="AGI proposes a starter shortlist (one general reasoning model, one secure local fallback) the moment a workspace is provisioned — you approve before anything runs."
+            actions={[
+              { href: "/dashboard/connectors", label: "Connect first cloud", variant: "primary" },
+              { href: "/dashboard/ai-settings", label: "AI settings", variant: "ghost" },
+            ]}
+          />
+        </div>
+      )}
+
       {/* Models grid */}
+      {showSampleData && (
       <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 mb-6">
         {DEMO_LOCAL_MODELS.map((m) => {
           const ModeIcon = MODE_ICON[m.mode];
@@ -176,6 +202,7 @@ export default function ModelsPage() {
           );
         })}
       </section>
+      )}
 
       {/* Safety rail */}
       <section className="rounded-2xl border border-emerald-500/20 bg-emerald-500/[0.04] p-5">
@@ -184,11 +211,11 @@ export default function ModelsPage() {
           <h2 className="text-[13px] font-semibold text-emerald-100">Model invocation rules</h2>
         </header>
         <ul className="text-[12.5px] text-emerald-100/85 leading-relaxed space-y-1.5 list-disc list-inside marker:text-emerald-400/80">
-          <li>Only <em>approved</em> or <em>installed</em> models can be invoked by an agent kernel.</li>
-          <li>Cloud-mode models route through the AI provider chain in <span className="font-mono">lib/ai/</span>, with PII redaction applied up front.</li>
-          <li>Local-mode models can only run via the desktop runtime — never auto-installed from this page.</li>
-          <li>Every invocation writes a row to <span className="font-mono">AIInvocation</span> in Prisma; cost + latency tracked per tenant.</li>
-          <li>Rejected models are kept on the registry as durable evidence of the decision.</li>
+          <li>Only <em>approved</em> or <em>installed</em> models can be invoked by an agent — every other call is refused at the safety gate.</li>
+          <li>Cloud models route through your selected provider with PII redaction applied before any prompt leaves your workspace.</li>
+          <li>Local models only run via the paired desktop runtime — never auto-installed from this page.</li>
+          <li>Every invocation is recorded against your workspace with cost and latency tracked per call.</li>
+          <li>Rejected models remain on your registry as durable evidence of the decision.</li>
         </ul>
         <div className="mt-4 flex items-center gap-2">
           <Link
@@ -207,13 +234,6 @@ export default function ModelsPage() {
           </Link>
         </div>
       </section>
-
-      <p className="mt-10 text-[12px] text-zinc-500 max-w-3xl leading-relaxed">
-        Model entries are loaded from{" "}
-        <span className="font-mono text-zinc-400">lib/platform/platformSeedData.ts</span>. The
-        AI provider chain in <span className="font-mono text-zinc-400">lib/ai/</span> is the live
-        invocation path. Wiring this registry into that path is a planned follow-up.
-      </p>
     </div>
   );
 }

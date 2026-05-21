@@ -24,6 +24,9 @@ import { buildObservabilityPosture } from "@/lib/observability/observabilityPost
 import { ComputerDesktopIcon } from "@heroicons/react/24/outline";
 import { assessOnboarding, progressPercent } from "@/lib/onboarding/onboardingState";
 import type { OnboardingProgress } from "@/lib/onboarding/onboardingState";
+import { TenantEmptyState } from "@/components/platform/TenantEmptyState";
+import { useTenantFreshness } from "@/components/platform/useTenantFreshness";
+import { SparklesIcon } from "@heroicons/react/24/outline";
 
 const PROVIDER_COLOR = {
   AWS: "text-amber-400 bg-amber-500/10 border-amber-500/20",
@@ -41,6 +44,8 @@ const APPROVAL_RISK: Record<"low" | "medium" | "high" | "critical", string> = {
 
 export default function CommandCenterPage() {
   const [currentTime, setCurrentTime] = useState<string>("");
+  const { isFreshOrLoading, loaded } = useTenantFreshness();
+  const isFreshTenant = loaded && isFreshOrLoading;
 
   useEffect(() => {
     const update = () =>
@@ -84,13 +89,36 @@ export default function CommandCenterPage() {
         </div>
       </Reveal>
 
+      {/* Welcome card for fresh tenants — replaces noisy KPIs/demo links until
+          the first connector lands. Goal: calm, one clear next step. */}
+      {isFreshTenant && (
+        <Reveal direction="up" delay={0.03}>
+          <div className="mb-8">
+            <TenantEmptyState
+              icon={SparklesIcon}
+              tone="violet"
+              eyebrow={`Welcome — let's get you to value`}
+              title="Connect a cloud and AGI takes the first action for you."
+              description="Pick AWS, Azure, or GCP. Axiom validates the credential, runs the first inventory, surfaces the highest-confidence wins, and assembles your audit story — all before you finish your coffee."
+              agiNote="No SDKs to install, no agents to deploy. One click connects the source, and the loop starts producing real recommendations within minutes."
+              actions={[
+                { href: "/dashboard/connectors", label: "Connect first cloud", variant: "primary" },
+                { href: "/operator/onboarding", label: "Open guided setup", variant: "ghost" },
+              ]}
+            />
+          </div>
+        </Reveal>
+      )}
+
       {/* KPI row — real values from /api/axiom-os/state, no fabricated dollar savings */}
-      <LiveKpiRow />
+      {!isFreshTenant && <LiveKpiRow />}
 
       {/* Demo journey card — entry into the canonical 7-step AWS narrative */}
-      <Reveal direction="up" delay={0.04}>
-        <DemoJourneyCard />
-      </Reveal>
+      {!isFreshTenant && (
+        <Reveal direction="up" delay={0.04}>
+          <DemoJourneyCard />
+        </Reveal>
+      )}
 
       {/* Axiom OS strip — unified product state from /api/axiom-os/state */}
       <Reveal direction="up" delay={0.045}>

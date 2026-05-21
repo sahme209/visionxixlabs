@@ -25,6 +25,8 @@ import type { DeadLetterRecord } from "@/lib/reliability/deadLetter";
 import type { WorkflowDiagnosis } from "@/lib/reliability/workflowRecovery";
 import { CATEGORY_LABEL } from "@/lib/reliability/failureClassifier";
 import { id } from "@/lib/domain/ids";
+import { TenantEmptyState } from "@/components/platform/TenantEmptyState";
+import { useTenantFreshness } from "@/components/platform/useTenantFreshness";
 
 // ---------------------------------------------------------------------------
 // Honest preview inputs — typed shapes from the canonical modules. Source
@@ -82,15 +84,19 @@ const SAMPLE_DIAGNOSES: WorkflowDiagnosis[] = [
 ];
 
 export default function ReliabilityCenterPage() {
+  const { isFreshOrLoading, loaded } = useTenantFreshness();
+  const showSampleData = loaded && !isFreshOrLoading;
   const posture = buildReliabilityPosture({
     source: "preview",
-    components: SAMPLE_COMPONENTS,
-    circuits: SAMPLE_CIRCUITS,
-    deadLetters: SAMPLE_DEADLETTERS,
-    fleet: { total: 12, healthy: 10, stalled: 1, stuck: 0, failed: 0, partial: 1, actionable: SAMPLE_DIAGNOSES },
-    retryingJobs: 3,
-    successfulRetries24h: 17,
-    rateLimitPauses24h: 4,
+    components: showSampleData ? SAMPLE_COMPONENTS : [],
+    circuits: showSampleData ? SAMPLE_CIRCUITS : [],
+    deadLetters: showSampleData ? SAMPLE_DEADLETTERS : [],
+    fleet: showSampleData
+      ? { total: 12, healthy: 10, stalled: 1, stuck: 0, failed: 0, partial: 1, actionable: SAMPLE_DIAGNOSES }
+      : { total: 0,  healthy: 0,  stalled: 0, stuck: 0, failed: 0, partial: 0, actionable: [] },
+    retryingJobs: showSampleData ? 3 : 0,
+    successfulRetries24h: showSampleData ? 17 : 0,
+    rateLimitPauses24h: showSampleData ? 4 : 0,
   });
 
   const tone: Record<ReliabilitySemantic, string> = {
@@ -114,9 +120,11 @@ export default function ReliabilityCenterPage() {
           <div className="flex items-center gap-3 mb-3">
             <BoltIcon className="h-4 w-4 text-cyan-400" />
             <p className="text-[10px] font-semibold text-cyan-400 uppercase tracking-widest">Reliability Center</p>
-            <span className="text-[9px] font-semibold text-amber-400 bg-amber-500/15 border border-amber-500/30 rounded-full px-2 py-0.5 uppercase tracking-wider">
-              {posture.source === "live" ? "Live" : posture.source === "preview" ? "Preview" : "Demo"}
-            </span>
+            {showSampleData && (
+              <span className="text-[9px] font-semibold text-amber-400 bg-amber-500/15 border border-amber-500/30 rounded-full px-2 py-0.5 uppercase tracking-wider">
+                {posture.source === "live" ? "Live" : posture.source === "preview" ? "Preview" : "Demo"}
+              </span>
+            )}
           </div>
           <h1 className="text-3xl md:text-4xl font-bold text-white tracking-[-0.04em] mb-2">
             Production <span className="text-gradient">control plane.</span>
@@ -127,7 +135,27 @@ export default function ReliabilityCenterPage() {
         </div>
       </Reveal>
 
+      {!showSampleData && (
+        <Reveal direction="up" delay={0.04}>
+          <div className="mb-8">
+            <TenantEmptyState
+              icon={BoltIcon}
+              tone="cyan"
+              eyebrow="No reliability data yet"
+              title="Your control plane lights up the moment Axiom starts doing real work."
+              description="Circuit breakers, retries, rate-limit pauses, and dead-letter queues appear here as your workspace runs operations. Every failure carries a safe next action — never a silent retry."
+              agiNote="AGI automatically opens a circuit when a downstream connector misbehaves, drains the queue safely, and offers a one-click resume once the upstream recovers."
+              actions={[
+                { href: "/dashboard/connectors", label: "Connect first cloud", variant: "primary" },
+                { href: "/dashboard/incidents", label: "Incident response", variant: "ghost" },
+              ]}
+            />
+          </div>
+        </Reveal>
+      )}
+
       {/* KPI strip */}
+      {showSampleData && (
       <Stagger delay={0.05} interval={0.05} className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
         {[
           { label: "Reliability score",      value: `${Math.round(posture.score * 100)}%`, sub: posture.semantic === "success" ? "Healthy" : posture.semantic === "warning" ? "Action needed" : "Critical", icon: SignalIcon,           semantic: posture.semantic },
@@ -148,8 +176,10 @@ export default function ReliabilityCenterPage() {
           );
         })}
       </Stagger>
+      )}
 
       {/* Posture checks */}
+      {showSampleData && (
       <Reveal direction="up" delay={0.08}>
         <div className="mb-8 rounded-2xl border border-cyan-500/15 bg-gradient-to-br from-cyan-500/[0.03] via-transparent to-emerald-500/[0.02] p-6 relative overflow-hidden">
           <div className="absolute -top-12 -right-12 w-48 h-48 rounded-full bg-cyan-500/[0.06] blur-[60px] pointer-events-none" aria-hidden />
@@ -169,8 +199,10 @@ export default function ReliabilityCenterPage() {
           </div>
         </div>
       </Reveal>
+      )}
 
       {/* System health */}
+      {showSampleData && (
       <Reveal direction="up" delay={0.12}>
         <div className="mb-8 rounded-2xl border border-white/[0.06] bg-white/[0.02] overflow-hidden">
           <div className="px-5 py-3 border-b border-white/[0.06] flex items-center justify-between flex-wrap gap-2">
@@ -203,8 +235,10 @@ export default function ReliabilityCenterPage() {
           </div>
         </div>
       </Reveal>
+      )}
 
       {/* Circuit breakers */}
+      {showSampleData && (
       <Reveal direction="up" delay={0.16}>
         <div id="circuits" className="mb-8 rounded-2xl border border-white/[0.06] bg-white/[0.02] overflow-hidden">
           <div className="px-5 py-3 border-b border-white/[0.06] flex items-center justify-between flex-wrap gap-2">
@@ -246,8 +280,10 @@ export default function ReliabilityCenterPage() {
           </div>
         </div>
       </Reveal>
+      )}
 
       {/* Stuck workflows */}
+      {showSampleData && (
       <Reveal direction="up" delay={0.2}>
         <div className="mb-8 rounded-2xl border border-white/[0.06] bg-white/[0.02] overflow-hidden">
           <div className="px-5 py-3 border-b border-white/[0.06] flex items-center justify-between flex-wrap gap-2">
@@ -280,8 +316,10 @@ export default function ReliabilityCenterPage() {
           </div>
         </div>
       </Reveal>
+      )}
 
       {/* Dead-letter items */}
+      {showSampleData && (
       <Reveal direction="up" delay={0.24}>
         <div className="mb-8 rounded-2xl border border-white/[0.06] bg-white/[0.02] overflow-hidden">
           <div className="px-5 py-3 border-b border-white/[0.06] flex items-center justify-between flex-wrap gap-2">
@@ -309,6 +347,7 @@ export default function ReliabilityCenterPage() {
           </div>
         </div>
       </Reveal>
+      )}
 
       {/* Enterprise trust strip */}
       <Reveal direction="up" delay={0.28}>

@@ -19,6 +19,8 @@ import { buildObservabilityPosture } from "@/lib/observability/observabilityPost
 import type { ObservabilityCheck, ObservabilitySemantic } from "@/lib/observability/observabilityPosture";
 import type { OperationTrace } from "@/lib/tracing/operationTrace";
 import { id } from "@/lib/domain/ids";
+import { TenantEmptyState } from "@/components/platform/TenantEmptyState";
+import { useTenantFreshness } from "@/components/platform/useTenantFreshness";
 
 // ---------------------------------------------------------------------------
 // Honest preview traces — typed shapes from the canonical OperationTrace.
@@ -169,11 +171,13 @@ const SAMPLE_TRACES: OperationTrace[] = [
 ];
 
 export default function TraceViewerPage() {
+  const { isFreshOrLoading, loaded } = useTenantFreshness();
+  const showSampleData = loaded && !isFreshOrLoading;
   const posture = buildObservabilityPosture({
     source: "preview",
-    traces24h: 287,
-    auditRecords24h: 612,
-    bundlesExported30d: 4,
+    traces24h: showSampleData ? 287 : 0,
+    auditRecords24h: showSampleData ? 612 : 0,
+    bundlesExported30d: showSampleData ? 4 : 0,
     loggerActive: true,
     auditStoreConfigured: true,
     copilotAuditActive: true,
@@ -200,9 +204,11 @@ export default function TraceViewerPage() {
           <div className="flex items-center gap-3 mb-3">
             <ChartBarSquareIcon className="h-4 w-4 text-violet-400" />
             <p className="text-[10px] font-semibold text-violet-400 uppercase tracking-widest">Trace Viewer</p>
-            <span className="text-[9px] font-semibold text-amber-400 bg-amber-500/15 border border-amber-500/30 rounded-full px-2 py-0.5 uppercase tracking-wider">
-              Preview
-            </span>
+            {showSampleData && (
+              <span className="text-[9px] font-semibold text-amber-400 bg-amber-500/15 border border-amber-500/30 rounded-full px-2 py-0.5 uppercase tracking-wider">
+                Preview
+              </span>
+            )}
           </div>
           <h1 className="text-3xl md:text-4xl font-bold text-white tracking-[-0.04em] mb-2">
             Operational <span className="text-gradient">truth.</span>
@@ -213,7 +219,27 @@ export default function TraceViewerPage() {
         </div>
       </Reveal>
 
+      {!showSampleData && (
+        <Reveal direction="up" delay={0.04}>
+          <div className="mb-8">
+            <TenantEmptyState
+              icon={ChartBarSquareIcon}
+              tone="violet"
+              eyebrow="No traces yet"
+              title="Operation traces appear automatically the moment work begins."
+              description="Every connector validation, scan, recommendation, plan, approval, and sync is traced end-to-end with redaction baked in. Once a cloud is connected, your first traces show up here within seconds."
+              agiNote="AGI will start producing spans and evidence chains automatically — there are no SDKs to install and no agents to deploy."
+              actions={[
+                { href: "/dashboard/connectors", label: "Connect first cloud", variant: "primary" },
+                { href: "/dashboard/audit", label: "Audit Center", variant: "ghost" },
+              ]}
+            />
+          </div>
+        </Reveal>
+      )}
+
       {/* Posture KPI strip */}
+      {showSampleData && (
       <Stagger delay={0.05} interval={0.05} className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
         {[
           { label: "Traces · last 24h",       value: "287",                         sub: "operations captured",                            icon: ChartBarSquareIcon, semantic: "success"  as ObservabilitySemantic },
@@ -234,8 +260,10 @@ export default function TraceViewerPage() {
           );
         })}
       </Stagger>
+      )}
 
       {/* Posture checks */}
+      {showSampleData && (
       <Reveal direction="up" delay={0.08}>
         <div className="mb-8 rounded-2xl border border-violet-500/15 bg-gradient-to-br from-violet-500/[0.04] via-transparent to-fuchsia-500/[0.02] p-6 relative overflow-hidden">
           <div className="absolute -top-12 -right-12 w-48 h-48 rounded-full bg-violet-500/[0.06] blur-[60px] pointer-events-none" aria-hidden />
@@ -257,27 +285,32 @@ export default function TraceViewerPage() {
           </div>
         </div>
       </Reveal>
+      )}
 
       {/* Recent traces */}
-      <Reveal direction="up" delay={0.12}>
-        <div className="mb-8">
-          <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
-            <div>
-              <p className="text-[10px] font-semibold text-zinc-500 uppercase tracking-widest mb-1">Recent operation traces</p>
-              <h2 className="text-xl font-bold text-white">{SAMPLE_TRACES.length} traces in the last 24h.</h2>
+      {showSampleData && (
+        <>
+          <Reveal direction="up" delay={0.12}>
+            <div className="mb-8">
+              <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
+                <div>
+                  <p className="text-[10px] font-semibold text-zinc-500 uppercase tracking-widest mb-1">Recent operation traces</p>
+                  <h2 className="text-xl font-bold text-white">{SAMPLE_TRACES.length} traces in the last 24h.</h2>
+                </div>
+                <span className="text-[11px] text-zinc-500">Source-tagged, redacted, tenant-scoped.</span>
+              </div>
             </div>
-            <span className="text-[11px] text-zinc-500">Source-tagged, redacted, tenant-scoped.</span>
-          </div>
-        </div>
-      </Reveal>
-
-      <div className="space-y-3 mb-8">
-        {SAMPLE_TRACES.map((trace) => (
-          <Reveal key={trace.traceId} direction="up" delay={0.05}>
-            <TraceCard trace={trace} />
           </Reveal>
-        ))}
-      </div>
+
+          <div className="space-y-3 mb-8">
+            {SAMPLE_TRACES.map((trace) => (
+              <Reveal key={trace.traceId} direction="up" delay={0.05}>
+                <TraceCard trace={trace} />
+              </Reveal>
+            ))}
+          </div>
+        </>
+      )}
 
       {/* Trust strip */}
       <Reveal direction="up" delay={0.24}>
