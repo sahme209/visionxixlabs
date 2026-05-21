@@ -48,6 +48,14 @@ interface NavGroup {
 
 const GROUPS: NavGroup[] = [
   {
+    label: "Platform",
+    items: [
+      { href: "/dashboard/modules",    label: "Modules",         icon: Squares2X2Icon  },
+      { href: "/dashboard/connectors", label: "Connectors",      icon: PuzzlePieceIcon },
+      { href: "/dashboard/agents",     label: "Agent workforce", icon: CpuChipIcon     },
+    ],
+  },
+  {
     label: "Operator",
     items: [
       { href: "/dashboard/command-center",     label: "Command Center",   icon: Squares2X2Icon       },

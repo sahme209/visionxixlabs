@@ -197,7 +197,7 @@ export default function Home() {
               </h1>
               <Reveal direction="up" delay={0.06}>
                 <p className="text-dim-paragraph text-base sm:text-lg md:text-xl mb-8 sm:mb-10 max-w-lg leading-relaxed">
-                  Axiom is an autonomous agent that scans your AWS infrastructure, <span className="dim-1">reasons about cost and security, generates Terraform execution plans,</span> <span className="dim-2">and applies approved changes — cutting cloud spend by 30–40%.</span>
+                  Axiom is an AI-assisted operations agent that scans your cloud infrastructure, <span className="dim-1">reasons about cost and security, generates Terraform execution plans,</span> <span className="dim-2">and applies operator-approved changes — with cost savings of up to 30–40% reported in optimized cases.</span>
                 </p>
               </Reveal>
               <Stagger delay={0.12}>
@@ -438,7 +438,7 @@ export default function Home() {
                 accentClass: "card-accent-emerald",
                 title: "Governed Execution",
                 icon: ShieldCheckIcon,
-                metric: "99.9% SLA",
+                metric: "Audited",
                 desc: "Enterprise-grade safety — approval gates, blast radius limits, verified rollback, and immutable audit trail.",
                 items: [
                   { dot: "bg-emerald-400/60", text: "Human approval for high-risk changes" },

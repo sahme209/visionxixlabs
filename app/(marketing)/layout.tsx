@@ -114,8 +114,8 @@ export default function MarketingLayout({ children }: { children: ReactNode }) {
               <span className="text-[13px] font-semibold">Axiom</span>
             </div>
             <p className="mt-3 text-[12px] text-zinc-500 leading-relaxed max-w-[24ch]">
-              The AGI ops platform that replaces a million-dollar engineering team.
-              Approval-only-no-execution.
+              An AI-assisted operations platform for cloud, DevOps, security, and
+              business operations. Human approval required for every action.
             </p>
           </div>
 

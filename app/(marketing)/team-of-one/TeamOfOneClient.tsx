@@ -178,10 +178,10 @@ export function TeamOfOneClient() {
           transition={{ duration: 0.9, delay: 0.3 }}
           className="mt-6 max-w-2xl text-[17px] leading-relaxed text-zinc-400"
         >
-          Twenty-five engineering disciplines. Ten specialist agents talking to each other. Three
-          surfaces — web, mobile, desktop. Nine free AI providers with deterministic fallback. Axiom
-          gives a single operator the throughput of a million-dollar team — without ever applying a
-          change on its own.
+          Twenty-five engineering disciplines. Ten specialist agents that coordinate over a typed
+          bus. Three surfaces — web, mobile, desktop. Nine free AI providers with deterministic
+          fallback. Axiom amplifies a single operator across cloud, DevOps, security, observability,
+          and business operations — and never applies a change without an approval.
         </motion.p>
 
         <motion.div

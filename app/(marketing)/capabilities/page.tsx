@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import { CapabilitiesClient } from "./CapabilitiesClient";
 
 export const metadata: Metadata = {
-  title: "Capabilities — the AGI Engineers behind Axiom",
-  description: "Every AGI Engineer kernel Axiom ships, mapped to the lib/ module that proves it. Approval-only-no-execution applies to every one.",
+  title: "Capabilities — the AI agent kernels behind Axiom",
+  description: "Every agent kernel Axiom ships, mapped to the lib/ module that implements it. Human approval is required before any action runs.",
 };
 
 export default function CapabilitiesPage() {

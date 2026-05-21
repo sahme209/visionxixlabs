@@ -5,10 +5,11 @@
  *
  * Each card is a discipline that an enterprise would normally fill with a
  * dedicated engineer or team. The `kernel` link points to the actual module
- * in the cockpit that implements that role, so the page doubles as proof
+ * in the cockpit that assists that discipline, so the page doubles as proof
  * rather than marketing slogan.
  *
- * Selling angle: this is the million-dollar team in one platform.
+ * Positioning: one operator, AI-assisted across every engineering discipline.
+ * Axiom does not replace your team — it amplifies them with audited automation.
  */
 
 import { motion } from "framer-motion";
@@ -116,7 +117,7 @@ export function DisciplinesClient() {
           animate={{ opacity: 1, y: 0 }}
           className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-3 py-1 text-[10px] font-mono uppercase tracking-widest text-fuchsia-300"
         >
-          the team you would otherwise hire
+          ai-assisted coverage across every discipline
         </motion.span>
         <motion.h1
           initial={{ opacity: 0, y: 16 }}
@@ -135,12 +136,13 @@ export function DisciplinesClient() {
           transition={{ delay: 0.2 }}
           className="mt-5 max-w-2xl text-[16px] text-zinc-400 leading-relaxed"
         >
-          Hiring this team yourself would cost roughly{" "}
+          Hiring a full bench across these disciplines is roughly{" "}
           <span className="font-semibold text-white">
             ${(totalAnnual / 1_000_000).toFixed(1)}M
           </span>{" "}
-          per year, fully loaded. Every card below links to the kernel module that
-          covers that role today — not a roadmap promise.
+          per year, fully loaded. Axiom doesn't replace that team — it gives the
+          team you already have AI-assisted coverage across every discipline,
+          with human approval required before any action runs.
         </motion.p>
       </section>
 

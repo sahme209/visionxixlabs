@@ -1,12 +1,11 @@
 "use client";
 
 /**
- * /capabilities — operator-honest inventory of AGI Engineer kernels.
+ * /capabilities — inventory of the AI agent kernels Axiom ships.
  *
  * Each card maps to a real pure-function kernel in lib/agents/*. The
  * "evidence" link points to the cockpit module that surfaces the
- * kernel's output. Approval-only-no-execution: nothing on this page
- * gets added without an operator-staged update to this file.
+ * kernel's output. Human approval is required before any action runs.
  *
  * If a kernel here is not actually shipped in lib/agents/*, the
  * entry doesn't belong on this page. Marketing follows the build,
@@ -18,7 +17,7 @@ import Link from "next/link";
 import { useMemo, useState } from "react";
 
 interface Capability {
-  /** Display name of the AGI Engineer. */
+  /** Display name of the agent kernel. */
   name: string;
   /** Role in the council. */
   role: "perception" | "reasoning" | "planning" | "safety" | "verification" | "memory";
@@ -60,7 +59,7 @@ const CAPABILITIES: readonly Capability[] = [
 ];
 
 const ROLE_FILTERS: ReadonlyArray<{ id: Capability["role"] | "all"; label: string }> = [
-  { id: "all",          label: "All AGI Engineers" },
+  { id: "all",          label: "All agent kernels" },
   { id: "perception",   label: "Perception" },
   { id: "reasoning",    label: "Reasoning" },
   { id: "planning",     label: "Planning" },
@@ -101,7 +100,7 @@ export function CapabilitiesClient() {
           animate={{ opacity: 1, y: 0 }}
           className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-3 py-1 text-[10px] font-mono uppercase tracking-widest text-fuchsia-300"
         >
-          AGI engineers · shipped, not promised
+          ai agent kernels · shipped, not promised
         </motion.span>
         <motion.h1
           initial={{ opacity: 0, y: 16 }}
@@ -109,7 +108,7 @@ export function CapabilitiesClient() {
           transition={{ delay: 0.1 }}
           className="mt-5 text-4xl md:text-6xl font-bold tracking-[-0.04em] leading-[1.05]"
         >
-          {CAPABILITIES.length} AGI engineers.{" "}
+          {CAPABILITIES.length} AI agent kernels.{" "}
           <span className="bg-gradient-to-r from-fuchsia-300 via-indigo-300 to-cyan-300 bg-clip-text text-transparent">
             One bus.
           </span>
