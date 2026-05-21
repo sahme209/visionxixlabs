@@ -225,7 +225,7 @@ export default async function OrchestrationCenter() {
       <section className="rounded-xl border border-amber-500/20 bg-amber-500/[0.04] p-5">
         <div className="flex items-center gap-2 mb-2">
           <ExclamationTriangleIcon className="h-4 w-4 text-amber-300" />
-          <p className="text-[10px] font-mono text-amber-300 uppercase tracking-[0.22em]">// honest limitations</p>
+          <p className="text-[10px] font-mono text-amber-300 uppercase tracking-[0.22em]">Known limitations</p>
         </div>
         <ul className="space-y-1 text-xs text-zinc-300">
           <li>• Live Terraform apply is disabled by default. The boundary refuses apply across every provider until governance + signed audit + signed binaries are wired.</li>

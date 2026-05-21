@@ -161,7 +161,7 @@ export default function OutboundNotificationsPage() {
           <span className="inline-flex items-center gap-2 rounded-full border border-white/[0.06] bg-white/[0.02] px-2.5 py-1">
             <BellAlertIcon className="h-3.5 w-3.5 text-cyan-300" />
             <span className="text-[10px] font-semibold uppercase tracking-widest text-cyan-300">
-              Outbound notifications · notification_read_only
+              Outbound notifications
             </span>
           </span>
         </div>
@@ -358,7 +358,7 @@ export default function OutboundNotificationsPage() {
           <div className="rounded-2xl border border-emerald-500/15 bg-emerald-500/[0.04] p-5 mb-8 flex items-start gap-3">
             <ShieldCheckIcon className="h-5 w-5 text-emerald-300 mt-0.5 shrink-0" />
             <div>
-              <p className="text-[11px] font-mono text-emerald-300/80 uppercase tracking-[0.18em] mb-1">// honest delivery contract</p>
+              <p className="text-[11px] font-mono text-emerald-300/80 uppercase tracking-[0.18em] mb-1">Delivery promises</p>
               <p className="text-[13px] text-emerald-100 font-semibold leading-snug">
                 safetyContract = <code className="font-mono text-[12px] bg-black/30 border border-white/[0.06] rounded px-1.5 py-px">notification_read_only</code>
               </p>

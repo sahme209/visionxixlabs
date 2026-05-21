@@ -50,6 +50,24 @@ export default async function AdminLayout({
                 Tenants
               </Link>
               <Link
+                href="/admin/flags"
+                className="text-sm text-zinc-400 hover:text-violet-400 transition-colors"
+              >
+                Feature flags
+              </Link>
+              <Link
+                href="/admin/self-diagnostic"
+                className="text-sm text-zinc-400 hover:text-violet-400 transition-colors"
+              >
+                Diagnostics
+              </Link>
+              <Link
+                href="/admin/cron-health"
+                className="text-sm text-zinc-400 hover:text-violet-400 transition-colors"
+              >
+                Cron health
+              </Link>
+              <Link
                 href="/admin/plan-debug"
                 className="text-sm text-zinc-400 hover:text-violet-400 transition-colors"
               >

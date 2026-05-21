@@ -142,7 +142,7 @@ export default function ScheduledScansPage() {
           <span className="inline-flex items-center gap-2 rounded-full border border-white/[0.06] bg-white/[0.02] px-2.5 py-1">
             <ClockIcon className="h-3.5 w-3.5 text-cyan-300" />
             <span className="text-[10px] font-semibold uppercase tracking-widest text-cyan-300">
-              Scheduled scans · scheduled_tasks_read_only_only
+              Scheduled scans_only
             </span>
           </span>
           {report?.generatedAt && (
@@ -221,7 +221,7 @@ export default function ScheduledScansPage() {
 
                   {t.missingConfig.length > 0 && (
                     <div className="rounded-md border border-amber-500/[0.18] bg-amber-500/[0.04] p-2.5 mt-2">
-                      <p className="text-[10px] font-mono text-amber-300/80 uppercase tracking-wider mb-1">// missing config</p>
+                      <p className="text-[10px] font-mono text-amber-300/80 uppercase tracking-wider mb-1">Setup needed</p>
                       <ul className="space-y-0.5">
                         {t.missingConfig.map((m, i) => (
                           <li key={i} className="text-[11px] font-mono text-zinc-300">{m}</li>

@@ -137,7 +137,7 @@ export default function CharterPage() {
           <span className="inline-flex items-center gap-2 rounded-full border border-white/[0.06] bg-white/[0.02] px-2.5 py-1">
             <CpuChipIcon className="h-3.5 w-3.5 text-violet-300" />
             <span className="text-[10px] font-semibold uppercase tracking-widest text-violet-300">
-              Autonomy Charter · policy_governance_read_only
+              Autonomy charter
             </span>
           </span>
           {savedAt && <span className="text-[10px] font-mono text-emerald-300">saved {savedAt}</span>}
@@ -160,7 +160,7 @@ export default function CharterPage() {
       {!loading && (
         <>
           <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 mb-6">
-            <p className="text-[11px] font-mono text-violet-300/80 uppercase tracking-wider mb-3">// mode</p>
+            <p className="text-[11px] font-mono text-violet-300/80 uppercase tracking-wider mb-3">Autonomy mode</p>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               {MODES.map((m) => (
                 <button

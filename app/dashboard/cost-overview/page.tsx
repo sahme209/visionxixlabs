@@ -91,7 +91,7 @@ export default function CostOverviewPage() {
           <span className="inline-flex items-center gap-2 rounded-full border border-white/[0.06] bg-white/[0.02] px-2.5 py-1">
             <CurrencyDollarIcon className="h-3.5 w-3.5 text-emerald-300" />
             <span className="text-[10px] font-semibold uppercase tracking-widest text-emerald-300">
-              Cost Overview · billing_summary_read_only
+              Cloud cost overview
             </span>
           </span>
           {report?.generatedAt && (
@@ -120,7 +120,7 @@ export default function CostOverviewPage() {
         )}
       </div>
 
-      {loading && <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 mb-6 text-[11px] font-mono text-zinc-500 uppercase tracking-[0.18em]">// fetching billing across 6 providers…</div>}
+      {loading && <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 mb-6 text-[12px] text-zinc-400">Loading your cloud cost data…</div>}
       {!loading && error && <div className="rounded-2xl border border-amber-500/[0.18] bg-amber-500/[0.04] p-5 mb-6 text-[13px] text-zinc-300">{error}</div>}
 
       {!loading && !error && report && (
@@ -188,7 +188,7 @@ export default function CostOverviewPage() {
                     )}
                     {p.missingRequirements.length > 0 && (
                       <div className="rounded-md border border-amber-500/[0.12] bg-amber-500/[0.03] p-2">
-                        <p className="text-[9px] font-mono text-amber-300/80 uppercase tracking-wider mb-0.5">// missing</p>
+                        <p className="text-[9px] font-mono text-amber-300/80 uppercase tracking-wider mb-0.5">Setup needed</p>
                         {p.missingRequirements.slice(0, 2).map((m, i) => (
                           <p key={i} className="text-[10px] text-zinc-300">{m}</p>
                         ))}
@@ -203,9 +203,9 @@ export default function CostOverviewPage() {
           <div className="rounded-2xl border border-emerald-500/15 bg-emerald-500/[0.04] p-5 mb-8 flex items-start gap-3">
             <ShieldCheckIcon className="h-5 w-5 text-emerald-300 mt-0.5 shrink-0" />
             <div>
-              <p className="text-[11px] font-mono text-emerald-300/80 uppercase tracking-[0.18em] mb-1">// honest cost contract</p>
+              <p className="text-[11px] font-mono text-emerald-300/80 uppercase tracking-[0.18em] mb-1">How we calculate this</p>
               <p className="text-[13px] text-emerald-100 font-semibold leading-snug">
-                safetyContract = <code className="font-mono text-[12px] bg-black/30 border border-white/[0.06] rounded px-1.5 py-px">{report.safetyContract}</code>
+                Cost data is read-only — we never modify your cloud bills or apply changes without your approval.
               </p>
               <p className="text-[12px] text-zinc-300 leading-relaxed mt-1">
                 {report.limitations.join(" ")}

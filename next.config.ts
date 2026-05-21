@@ -14,6 +14,11 @@ const nextConfig: NextConfig = {
       // VisionXIXLabs internal marketing cockpit moved out of /dashboard
       // (client layer) and into /admin (internal layer).
       { source: "/dashboard/marketing", destination: "/admin/marketing", permanent: true },
+      // Operator-only debug surfaces moved from /dashboard (client layer)
+      // to /admin (internal layer) in the product-layer separation pass.
+      { source: "/dashboard/flags",            destination: "/admin/flags",            permanent: true },
+      { source: "/dashboard/self-diagnostic",  destination: "/admin/self-diagnostic",  permanent: true },
+      { source: "/dashboard/cron-health",      destination: "/admin/cron-health",      permanent: true },
 
       // Removed pages → homepage
       { source: "/builder", destination: "/", permanent: true },

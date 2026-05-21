@@ -213,7 +213,7 @@ export default async function RemediationCenter() {
 
       {/* Honest limitations */}
       <section className="rounded-xl border border-amber-500/20 bg-amber-500/[0.04] p-5">
-        <p className="text-[10px] font-mono text-amber-300 uppercase tracking-[0.22em] mb-2">// honest limitations</p>
+        <p className="text-[10px] font-mono text-amber-300 uppercase tracking-[0.22em] mb-2">Known limitations</p>
         <ul className="space-y-1 text-xs text-zinc-300">
           <li>• This page renders prepared remediation work. It does not apply changes.</li>
           <li>• Live cloud apply is only enabled when broker credentials + approvals + policy + signed audit are all green.</li>

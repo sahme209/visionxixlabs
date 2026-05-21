@@ -111,7 +111,7 @@ export default function AISettingsPage() {
           <span className="inline-flex items-center gap-2 rounded-full border border-white/[0.06] bg-white/[0.02] px-2.5 py-1">
             <SparklesIcon className="h-3.5 w-3.5 text-indigo-300" />
             <span className="text-[10px] font-semibold uppercase tracking-widest text-indigo-300">
-              AI Settings · free_providers_only
+              AI providers
             </span>
           </span>
           <button
@@ -160,9 +160,9 @@ export default function AISettingsPage() {
                   <span className={`text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border ${
                     p.configured
                       ? "bg-emerald-500/15 text-emerald-300 border-emerald-500/30"
-                      : "bg-zinc-500/15 text-zinc-400 border-zinc-500/30"
+                      : "bg-amber-500/15 text-amber-300 border-amber-500/30"
                   }`}>
-                    {p.configured ? "configured" : "not configured"}
+                    {p.configured ? "Ready" : "Setup required"}
                   </span>
                   <span className="text-[10px] font-mono text-zinc-400 ml-auto">default: {p.defaultModel}</span>
                 </div>

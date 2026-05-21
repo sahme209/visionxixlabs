@@ -263,7 +263,7 @@ export default function ExecutiveSummaryPage() {
           {/* Honest limitations */}
           {report.honestLimitations.length > 0 && (
             <div className="rounded-2xl border border-amber-500/[0.18] bg-amber-500/[0.04] p-5 mb-8">
-              <p className="text-[10px] font-mono text-amber-300/80 uppercase tracking-[0.18em] mb-2">// honest limitations</p>
+              <p className="text-[10px] font-mono text-amber-300/80 uppercase tracking-[0.18em] mb-2">Known limitations</p>
               <ul className="space-y-1">
                 {report.honestLimitations.map((l, i) => (
                   <li key={i} className="text-[12px] text-zinc-300 leading-relaxed flex items-start gap-2">

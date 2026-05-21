@@ -153,7 +153,7 @@ export default function OnboardingPage() {
                   <p className="text-[11px] text-zinc-400 leading-relaxed">{s.description}</p>
                   {s.missingHint && (
                     <div className="mt-2 rounded-md border border-amber-500/15 bg-amber-500/[0.04] p-2">
-                      <p className="text-[10px] font-mono text-amber-300/80 uppercase tracking-wider mb-0.5">// missing</p>
+                      <p className="text-[10px] font-mono text-amber-300/80 uppercase tracking-wider mb-0.5">Setup needed</p>
                       <p className="text-[11px] text-amber-100">{s.missingHint}</p>
                     </div>
                   )}

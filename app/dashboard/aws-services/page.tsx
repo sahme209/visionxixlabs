@@ -106,7 +106,7 @@ export default function AwsServicesPage() {
           <span className="inline-flex items-center gap-2 rounded-full border border-white/[0.06] bg-white/[0.02] px-2.5 py-1">
             <CloudIcon className="h-3.5 w-3.5 text-amber-300" />
             <span className="text-[10px] font-semibold uppercase tracking-widest text-amber-300">
-              AWS Service Inventory · aws_service_inventory_read_only
+              AWS Service Inventory
             </span>
           </span>
           {report?.generatedAt && (

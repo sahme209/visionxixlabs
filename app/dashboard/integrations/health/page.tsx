@@ -213,7 +213,7 @@ export default function IntegrationHealthPage() {
 
                 {e.missingConfig.length > 0 && (
                   <div className="rounded-md border border-amber-500/[0.18] bg-amber-500/[0.04] p-2.5 mb-3">
-                    <p className="text-[10px] font-mono text-amber-300/80 uppercase tracking-wider mb-1">// missing config</p>
+                    <p className="text-[10px] font-mono text-amber-300/80 uppercase tracking-wider mb-1">Setup needed</p>
                     <ul className="space-y-0.5">
                       {e.missingConfig.slice(0, 4).map((c, i) => (
                         <li key={i} className="text-[11px] text-zinc-300 font-mono leading-snug">{c}</li>

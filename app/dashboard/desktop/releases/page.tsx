@@ -166,7 +166,7 @@ export default function DesktopReleasesPage() {
 
       {loading && (
         <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 mb-6">
-          <p className="text-[11px] font-mono text-zinc-500 uppercase tracking-[0.18em]">// fetching release manifest…</p>
+          <p className="text-[11px] font-mono text-zinc-500 uppercase tracking-[0.18em]">Loading desktop release info…</p>
         </div>
       )}
       {!loading && error && (

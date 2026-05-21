@@ -137,7 +137,7 @@ export default async function SimulationsCenter() {
 
       {/* Honest footer */}
       <section className="rounded-xl border border-amber-500/20 bg-amber-500/[0.04] p-5">
-        <p className="text-[10px] font-mono text-amber-300 uppercase tracking-[0.22em] mb-2">// honest limitations</p>
+        <p className="text-[10px] font-mono text-amber-300 uppercase tracking-[0.22em] mb-2">Known limitations</p>
         <ul className="space-y-1 text-xs text-zinc-300">
           <li>• Nothing on this page applies a change. Apply is gated by approvals + signed audit + governance.</li>
           <li>• Preview-mode twins yield <span className="font-mono">preview_only</span> simulations regardless of how favourable the diff looks.</li>

@@ -129,7 +129,7 @@ export default function GithubIntegrationPage() {
 
           {github.missingRequirements.length > 0 && (
             <div className="mt-4 rounded-lg border border-amber-500/[0.18] bg-amber-500/[0.04] p-3">
-              <p className="text-[10px] font-mono text-amber-300/80 uppercase tracking-wider mb-2">// missing requirements</p>
+              <p className="text-[10px] font-mono text-amber-300/80 uppercase tracking-wider mb-2">Setup needed</p>
               <ul className="space-y-1">
                 {github.missingRequirements.map((req, i) => (
                   <li key={i} className="text-[12px] text-zinc-300 font-mono">{req}</li>

@@ -77,7 +77,7 @@ export default function CronHealthPage() {
           <span className="inline-flex items-center gap-2 rounded-full border border-white/[0.06] bg-white/[0.02] px-2.5 py-1">
             <ClockIcon className="h-3.5 w-3.5 text-cyan-300" />
             <span className="text-[10px] font-semibold uppercase tracking-widest text-cyan-300">
-              Cron Health · trust_center_read_only
+              Cron Health
             </span>
           </span>
           <button

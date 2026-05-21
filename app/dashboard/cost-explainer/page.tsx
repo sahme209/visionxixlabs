@@ -114,7 +114,7 @@ export default function CostExplainerPage() {
           <span className="inline-flex items-center gap-2 rounded-full border border-white/[0.06] bg-white/[0.02] px-2.5 py-1">
             <CurrencyDollarIcon className="h-3.5 w-3.5 text-emerald-300" />
             <span className="text-[10px] font-semibold uppercase tracking-widest text-emerald-300">
-              Cost Explainer · billing_summary_read_only
+              Cost explainer
             </span>
           </span>
           {report && (

@@ -137,7 +137,7 @@ export default function AutonomyCockpitPage() {
           <span className="inline-flex items-center gap-2 rounded-full border border-white/[0.06] bg-white/[0.02] px-2.5 py-1">
             <CpuChipIcon className="h-3.5 w-3.5 text-violet-300" />
             <span className="text-[10px] font-semibold uppercase tracking-widest text-violet-300">
-              Closed Autonomy Loop · autonomy_gated_no_unsafe_execution
+              Closed Autonomy Loop
             </span>
           </span>
         </div>

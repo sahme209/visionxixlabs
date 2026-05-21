@@ -72,7 +72,7 @@ export default function AdminChartersPage() {
           <span className="inline-flex items-center gap-2 rounded-full border border-white/[0.06] bg-white/[0.02] px-2.5 py-1">
             <ShieldCheckIcon className="h-3.5 w-3.5 text-indigo-300" />
             <span className="text-[10px] font-semibold uppercase tracking-widest text-indigo-300">
-              Admin · policy_governance_read_only
+              Admin
             </span>
           </span>
         </div>

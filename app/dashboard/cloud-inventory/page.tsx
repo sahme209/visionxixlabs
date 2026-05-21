@@ -93,7 +93,7 @@ export default function CloudInventoryPage() {
           <span className="inline-flex items-center gap-2 rounded-full border border-white/[0.06] bg-white/[0.02] px-2.5 py-1">
             <ServerStackIcon className="h-3.5 w-3.5 text-violet-300" />
             <span className="text-[10px] font-semibold uppercase tracking-widest text-violet-300">
-              Cloud Inventory · aws_service_inventory_read_only
+              Cloud Inventory
             </span>
           </span>
           {report?.generatedAt && (

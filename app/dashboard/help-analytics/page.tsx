@@ -71,7 +71,7 @@ export default function HelpAnalyticsPage() {
           <span className="inline-flex items-center gap-2 rounded-full border border-white/[0.06] bg-white/[0.02] px-2.5 py-1">
             <MagnifyingGlassIcon className="h-3.5 w-3.5 text-cyan-300" />
             <span className="text-[10px] font-semibold uppercase tracking-widest text-cyan-300">
-              Help Analytics · trust_center_read_only
+              Help Analytics
             </span>
           </span>
         </div>

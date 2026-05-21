@@ -229,7 +229,7 @@ export default function SourcesPage() {
 
                   {p.missingRequirements.length > 0 && (
                     <div className="rounded-lg border border-amber-500/[0.12] bg-amber-500/[0.03] px-2.5 py-2 mb-3">
-                      <p className="text-[10px] font-mono text-amber-300/80 uppercase tracking-wider mb-1">// missing</p>
+                      <p className="text-[10px] font-mono text-amber-300/80 uppercase tracking-wider mb-1">Setup needed</p>
                       <ul className="space-y-0.5">
                         {p.missingRequirements.slice(0, 3).map((r, i) => (
                           <li key={i} className="text-[11px] text-zinc-300 font-mono leading-snug">{r}</li>

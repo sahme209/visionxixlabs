@@ -118,7 +118,7 @@ export default function CicdOpsPage() {
           <span className="inline-flex items-center gap-2 rounded-full border border-white/[0.06] bg-white/[0.02] px-2.5 py-1">
             <CodeBracketIcon className="h-3.5 w-3.5 text-violet-300" />
             <span className="text-[10px] font-semibold uppercase tracking-widest text-violet-300">
-              CI/CD · cicd_ops_gated_no_unsafe_execution
+              CI/CD
             </span>
           </span>
         </div>
@@ -170,7 +170,7 @@ export default function CicdOpsPage() {
                 <p className="text-[11.5px] text-zinc-300 leading-snug">{p.headline}</p>
                 {p.missingRequirements.length > 0 && (
                   <div className="mt-2 rounded-md border border-amber-500/[0.12] bg-amber-500/[0.03] p-2">
-                    <p className="text-[9px] font-mono text-amber-300/80 uppercase tracking-wider mb-0.5">// missing</p>
+                    <p className="text-[9px] font-mono text-amber-300/80 uppercase tracking-wider mb-0.5">Setup needed</p>
                     {p.missingRequirements.map((m, i) => (
                       <p key={i} className="text-[10.5px] font-mono text-zinc-300">{m}</p>
                     ))}

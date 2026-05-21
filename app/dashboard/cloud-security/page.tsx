@@ -116,7 +116,7 @@ export default function CloudSecurityPage() {
           <span className="inline-flex items-center gap-2 rounded-full border border-white/[0.06] bg-white/[0.02] px-2.5 py-1">
             <ShieldExclamationIcon className="h-3.5 w-3.5 text-rose-300" />
             <span className="text-[10px] font-semibold uppercase tracking-widest text-rose-300">
-              Cloud Security · multi_cloud_security_read_only
+              Cloud Security
             </span>
           </span>
           {report?.generatedAt && (
@@ -141,7 +141,7 @@ export default function CloudSecurityPage() {
         )}
       </div>
 
-      {loading && <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 mb-6 text-[11px] font-mono text-zinc-500 uppercase tracking-[0.18em]">// fetching findings from 3 clouds in parallel…</div>}
+      {loading && <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 mb-6 text-[11px] font-mono text-zinc-500 uppercase tracking-[0.18em]">Loading findings from your clouds…</div>}
       {!loading && error && <div className="rounded-2xl border border-amber-500/[0.18] bg-amber-500/[0.04] p-5 mb-6 text-[13px] text-zinc-300">{error}</div>}
 
       {!loading && !error && report && (

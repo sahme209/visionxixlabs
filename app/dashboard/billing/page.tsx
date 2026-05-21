@@ -143,7 +143,7 @@ export default function BillingPage() {
           <span className="inline-flex items-center gap-2 rounded-full border border-white/[0.06] bg-white/[0.02] px-2.5 py-1">
             <CreditCardIcon className="h-3.5 w-3.5 text-violet-300" />
             <span className="text-[10px] font-semibold uppercase tracking-widest text-violet-300">
-              Billing · billing_summary_read_only
+              Plans &amp; billing
             </span>
           </span>
         </div>
@@ -230,19 +230,20 @@ export default function BillingPage() {
         })}
       </div>
 
-      {stripe && (
-        <div className={`rounded-2xl border ${stripe.configured ? "border-emerald-500/15 bg-emerald-500/[0.04]" : "border-amber-500/[0.18] bg-amber-500/[0.04]"} p-5 mb-8 flex items-start gap-3`}>
-          <ShieldCheckIcon className={`h-5 w-5 ${stripe.configured ? "text-emerald-300" : "text-amber-300"} mt-0.5 shrink-0`} />
-          <div>
-            <p className="text-[11px] font-mono uppercase tracking-[0.18em] mb-1 text-zinc-300">// stripe status</p>
-            <p className="text-[13px] font-semibold text-white leading-snug">{stripe.hint}</p>
-            <p className="text-[11px] font-mono text-zinc-400 mt-1">
-              secret_key {stripe.configured ? "✓" : "—"} · webhook_secret {stripe.webhookConfigured ? "✓" : "—"}
-              · priced_tiers [{Object.keys(stripe.pricedTiers).join(", ") || "none"}]
-            </p>
-          </div>
+      {/* Client-facing trust strip. The Stripe configuration debug panel
+          previously shown here (secret_key / webhook_secret status) is
+          operator-only and was moved to /admin/billing-ops. */}
+      <div className="rounded-2xl border border-emerald-500/15 bg-emerald-500/[0.04] p-5 mb-8 flex items-start gap-3">
+        <ShieldCheckIcon className="h-5 w-5 text-emerald-300 mt-0.5 shrink-0" />
+        <div>
+          <p className="text-[13px] font-semibold text-emerald-100 leading-snug">
+            Secure checkout via Stripe
+          </p>
+          <p className="text-[11.5px] text-emerald-100/80 mt-1">
+            Cancel anytime · no setup fee · VAT handled at checkout · invoices emailed on every charge.
+          </p>
         </div>
-      )}
+      </div>
     </div>
   );
 }
