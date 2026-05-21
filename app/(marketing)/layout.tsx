@@ -13,6 +13,7 @@ import Link from "next/link";
 const NAV: ReadonlyArray<{ href: string; label: string }> = [
   { href: "/team-of-one",   label: "Overview" },
   { href: "/how-it-works",  label: "How it works" },
+  { href: "/disciplines",   label: "Disciplines" },
   { href: "/platforms",     label: "Platforms" },
   { href: "/trust",         label: "Trust" },
   { href: "/plans",         label: "Plans" },
@@ -27,6 +28,7 @@ const FOOTER_GROUPS: ReadonlyArray<{
     links: [
       { href: "/team-of-one",  label: "Overview" },
       { href: "/how-it-works", label: "How it works" },
+      { href: "/disciplines",  label: "Disciplines" },
       { href: "/platforms",    label: "Platforms" },
       { href: "/plans",        label: "Plans" },
     ],
@@ -36,6 +38,7 @@ const FOOTER_GROUPS: ReadonlyArray<{
     links: [
       { href: "/trust",        label: "Safety + compliance" },
       { href: "/status",       label: "Live status" },
+      { href: "/changelog",    label: "Changelog" },
     ],
   },
   {

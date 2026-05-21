@@ -1,0 +1,260 @@
+"use client";
+
+/**
+ * /changelog — public phase history.
+ *
+ * Each row reflects a real shipped phase batch (5 phases at a time, by
+ * convention). The page is a static narrative — entries here should be
+ * appended on every phase batch so visitors can see velocity without a
+ * blog system. Approval-only-no-execution applies here too: nothing on
+ * the page changes without an operator-staged update to this file.
+ */
+
+import { motion } from "framer-motion";
+import Link from "next/link";
+
+interface ChangelogEntry {
+  phases: string;              // "282-285"
+  title: string;
+  summary: string;
+  tag: "marketing" | "kernel" | "agent" | "platform" | "safety" | "ops";
+  surface: "web" | "mobile" | "desktop" | "all";
+}
+
+// Newest first. Add to the top when shipping a new batch.
+const ENTRIES: readonly ChangelogEntry[] = [
+  {
+    phases: "282-285",
+    title: "Disciplines + changelog + nav polish",
+    summary:
+      "Public /disciplines maps every role Axiom replaces to the kernel module that proves it. Public /changelog documents shipped velocity. Marketing nav + footer + sitemap updated.",
+    tag: "marketing",
+    surface: "web",
+  },
+  {
+    phases: "277-281",
+    title: "How-it-works · trust · plans · platforms",
+    summary:
+      "Animated 10-agent walkthrough, 6-contract trust matrix, 5-tier pricing with annual toggle, three-surface platform page. Vercel build hardened against literal-type inference.",
+    tag: "marketing",
+    surface: "web",
+  },
+  {
+    phases: "272-276",
+    title: "/team-of-one Huly-flavored landing + ROI calculator",
+    summary:
+      "Cursor-tracking aurora, scroll-revealed sections, IntersectionObserver count-ups, interactive ROI calculator. Headline number: the team you'd hire would cost ≈ $2.96M/year.",
+    tag: "marketing",
+    surface: "web",
+  },
+  {
+    phases: "267-271",
+    title: "a11y · Web Vitals · DR · GDPR DSR · AI code review",
+    summary:
+      "Accessibility audit kernel, Web Vitals collector, disaster-recovery runbook generator, GDPR Article-12 data-subject request handler, AI code-review prioritizer (free-tier provider chain with fallback).",
+    tag: "kernel",
+    surface: "all",
+  },
+  {
+    phases: "262-266",
+    title: "Helpdesk + SCIM + observability + customer success + i18n",
+    summary:
+      "Help-ticket router, SCIM provisioning sync, log-aggregator with bucket inference fix, customer-success health score, i18n catalog with closed-union locale.",
+    tag: "kernel",
+    surface: "web",
+  },
+  {
+    phases: "257-261",
+    title: "Desktop companion — macOS + Windows + Linux",
+    summary:
+      "OS detection + capability map, per-OS notifications (UNNotificationContent / Toast XML / libnotify), cross-platform keychain, auto-updater manifest validator, tray-icon state machine.",
+    tag: "platform",
+    surface: "desktop",
+  },
+  {
+    phases: "252-256",
+    title: "QA visual regression + ML drift + network + crash fingerprint",
+    summary:
+      "Snapshot differ, drift detector with severity tiers, network reachability state, crash-report fingerprinting, freshness monitor for ML predictions.",
+    tag: "kernel",
+    surface: "all",
+  },
+  {
+    phases: "247-251",
+    title: "Mobile companion surface",
+    summary:
+      "Typed mobileApiClient (closed-union error kinds), APNS + FCM push payload builder, offline-queue store with conflict detection, axiom:// deep links, biometric re-auth + session security.",
+    tag: "platform",
+    surface: "mobile",
+  },
+  {
+    phases: "242-246",
+    title: "Detector + approver + auditor + improver + data-eng kernels",
+    summary:
+      "Five agent kernels added to the bus. Approver stages approval packets, auditor writes sha-256 rationale rows, improver proposes method improvements.",
+    tag: "agent",
+    surface: "web",
+  },
+  {
+    phases: "237-241",
+    title: "Reasoner + simulator + policy + boundary + verifier kernels",
+    summary:
+      "Hypothesis formation, sandboxed simulation, tenant-charter policy gate, blast-radius boundary gate, post-execution verifier.",
+    tag: "agent",
+    surface: "web",
+  },
+  {
+    phases: "232-236",
+    title: "Slack + MS Teams + Outlook integrations",
+    summary:
+      "Outbound payload validators, inbound webhook signature checks, channel/team/inbox routing tables with closed-union surfaces.",
+    tag: "platform",
+    surface: "all",
+  },
+  {
+    phases: "227-231",
+    title: "Escalation + deploy windows + backup RPO + runbook + post-mortem",
+    summary:
+      "Operator escalation chain, deploy-window enforcement, backup RPO/RTO calculator, runbook validator with link health, post-mortem template generator.",
+    tag: "ops",
+    surface: "web",
+  },
+  {
+    phases: "222-226",
+    title: "Idempotency + rate-limit + auto-tagger + cost normalizer + webhook validator",
+    summary:
+      "Request-idempotency keystore, distributed rate-limit gate, resource auto-tagger, cross-cloud cost normalizer, signed-webhook validator.",
+    tag: "kernel",
+    surface: "web",
+  },
+  {
+    phases: "217-221",
+    title: "Baseline differ + lint summary + PR risk + AI PR writer + export estimator",
+    summary:
+      "Cloud baseline differ, lint findings summarizer, PR-risk scorer, AI PR description writer (free-tier chain), export size estimator.",
+    tag: "kernel",
+    surface: "web",
+  },
+  {
+    phases: "151-216",
+    title: "Foundations — multi-agent bus + safety contract + free AI provider chain",
+    summary:
+      "Established the bus, council voting, approval packets, durable rationale rows, free-AI provider routing (GitHub Models → Ollama → LM Studio → Groq → HuggingFace → OpenRouter → Gemini → Cloudflare → Mock).",
+    tag: "safety",
+    surface: "all",
+  },
+];
+
+const TAG_STYLE: Record<ChangelogEntry["tag"], string> = {
+  marketing: "bg-fuchsia-500/15 text-fuchsia-200 border-fuchsia-500/30",
+  kernel:    "bg-indigo-500/15 text-indigo-200 border-indigo-500/30",
+  agent:     "bg-emerald-500/15 text-emerald-200 border-emerald-500/30",
+  platform:  "bg-cyan-500/15 text-cyan-200 border-cyan-500/30",
+  safety:    "bg-amber-500/15 text-amber-200 border-amber-500/30",
+  ops:       "bg-rose-500/15 text-rose-200 border-rose-500/30",
+};
+
+const SURFACE_LABEL: Record<ChangelogEntry["surface"], string> = {
+  web: "web",
+  mobile: "mobile",
+  desktop: "desktop",
+  all: "all surfaces",
+};
+
+export function ChangelogClient() {
+  return (
+    <div className="relative">
+      {/* Ambient aurora */}
+      <div className="pointer-events-none fixed inset-0 z-0 opacity-50">
+        <div className="absolute -top-1/4 left-1/4 h-[70vh] w-[60vw] rounded-full bg-gradient-to-br from-indigo-500/15 via-fuchsia-500/8 to-transparent blur-3xl" />
+      </div>
+
+      {/* ===== HERO ===== */}
+      <section className="relative z-10 mx-auto max-w-4xl px-6 md:px-10 pt-20 pb-10">
+        <motion.span
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-3 py-1 text-[10px] font-mono uppercase tracking-widest text-indigo-300"
+        >
+          shipped, not promised
+        </motion.span>
+        <motion.h1
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+          className="mt-5 text-4xl md:text-5xl font-bold tracking-[-0.04em] leading-[1.05]"
+        >
+          Changelog —{" "}
+          <span className="bg-gradient-to-r from-indigo-300 to-fuchsia-300 bg-clip-text text-transparent">
+            phase by phase.
+          </span>
+        </motion.h1>
+        <motion.p
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          className="mt-5 max-w-2xl text-[15px] text-zinc-400 leading-relaxed"
+        >
+          A platform shipping every batch of 5 phases. Every entry below is a real
+          commit that landed in production. Approval-only-no-execution applies here
+          too — including to this page itself.
+        </motion.p>
+      </section>
+
+      {/* ===== TIMELINE ===== */}
+      <section className="relative z-10 mx-auto max-w-4xl px-6 md:px-10 pb-16">
+        <div className="space-y-3">
+          {ENTRIES.map((e, i) => (
+            <motion.article
+              key={e.phases}
+              initial={{ opacity: 0, y: 12 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.2 }}
+              transition={{ duration: 0.45, delay: Math.min(i * 0.03, 0.25) }}
+              className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 md:p-6 hover:border-indigo-500/30 hover:bg-white/[0.04] transition"
+            >
+              <div className="flex flex-wrap items-center gap-2 mb-2">
+                <span className="text-[10px] font-mono uppercase tracking-widest text-zinc-500">
+                  phase {e.phases}
+                </span>
+                <span className={["text-[10px] font-mono uppercase tracking-widest px-2 py-0.5 rounded-full border", TAG_STYLE[e.tag]].join(" ")}>
+                  {e.tag}
+                </span>
+                <span className="text-[10px] font-mono uppercase tracking-widest text-zinc-500">
+                  · {SURFACE_LABEL[e.surface]}
+                </span>
+              </div>
+              <h2 className="text-[15px] font-semibold text-white">{e.title}</h2>
+              <p className="mt-2 text-[13px] text-zinc-400 leading-relaxed">{e.summary}</p>
+            </motion.article>
+          ))}
+        </div>
+      </section>
+
+      {/* ===== CLOSER ===== */}
+      <section className="relative z-10 mx-auto max-w-3xl px-6 md:px-10 py-12 text-center">
+        <h3 className="text-xl md:text-2xl font-semibold tracking-tight">
+          Want to see what shipped this week?
+        </h3>
+        <p className="mt-3 text-zinc-400 text-[14px]">
+          The cockpit's audit log shows every approval packet — including the one
+          that staged this page.
+        </p>
+        <div className="mt-6 flex items-center justify-center gap-2">
+          <Link
+            href="/dashboard/audit"
+            className="inline-flex items-center gap-2 rounded-full bg-indigo-500 px-4 py-2 text-[12.5px] font-medium text-white shadow-[0_0_20px_rgba(99,102,241,0.45)] hover:bg-indigo-400 transition"
+          >
+            Open audit log
+          </Link>
+          <Link
+            href="/disciplines"
+            className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-4 py-2 text-[12.5px] font-medium text-zinc-200 hover:bg-white/[0.07] transition"
+          >
+            Browse disciplines
+          </Link>
+        </div>
+      </section>
+    </div>
+  );
+}
