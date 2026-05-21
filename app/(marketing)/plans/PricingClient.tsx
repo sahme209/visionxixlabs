@@ -16,6 +16,36 @@ interface Tier {
   rows: ReadonlyArray<{ label: string; value: string }>;
 }
 
+// Real Stripe checkout links — overridable per environment, with the
+// production fallbacks that were previously held by /operator/pricing.
+const STRIPE_LINKS: Record<"starter" | "growth" | "scale", { monthly: string; annual: string }> = {
+  starter: {
+    monthly: process.env.NEXT_PUBLIC_STRIPE_STARTER_MONTHLY || "https://buy.stripe.com/8x25kE1ARe7gbGrcNX6c000",
+    annual:  process.env.NEXT_PUBLIC_STRIPE_STARTER_YEARLY  || "https://buy.stripe.com/bJe14o0wNgfofWH8xH6c003",
+  },
+  growth: {
+    monthly: process.env.NEXT_PUBLIC_STRIPE_GROWTH_MONTHLY  || "https://buy.stripe.com/bJe28s3IZ7ISbGr29j6c001",
+    annual:  process.env.NEXT_PUBLIC_STRIPE_GROWTH_YEARLY   || "https://buy.stripe.com/cNidRa4N3fbk5i301b6c004",
+  },
+  scale: {
+    monthly: process.env.NEXT_PUBLIC_STRIPE_SCALE_MONTHLY   || "https://buy.stripe.com/aFa28scfv9R0cKv9BL6c002",
+    annual:  process.env.NEXT_PUBLIC_STRIPE_SCALE_YEARLY    || "https://buy.stripe.com/bJeaEY5R77IS8uf5lv6c005",
+  },
+};
+
+function ctaFor(tierId: Tier["id"], period: BillingPeriod): { href: string; label: string; external: boolean } {
+  switch (tierId) {
+    case "trial":
+      return { href: "/dashboard/command-center", label: "Start trial →", external: false };
+    case "enterprise":
+      return { href: "/contact",                   label: "Talk to sales →", external: false };
+    case "starter":
+    case "growth":
+    case "scale":
+      return { href: STRIPE_LINKS[tierId][period], label: "Choose plan →",   external: true };
+  }
+}
+
 const TIERS: readonly Tier[] = [
   {
     id: "trial",
@@ -189,17 +219,27 @@ export function PricingClient() {
                 ))}
               </ul>
 
-              <Link
-                href={t.id === "enterprise" ? "/contact" : "/dashboard/command-center"}
-                className={[
+              {(() => {
+                const cta = ctaFor(t.id, period);
+                const className = [
                   "mt-5 inline-flex items-center justify-center gap-2 rounded-full px-3 py-2 text-[12px] font-medium transition",
                   t.highlight
                     ? "bg-indigo-500 text-white hover:bg-indigo-400"
                     : "border border-white/10 text-zinc-200 hover:bg-white/[0.06]",
-                ].join(" ")}
-              >
-                {t.id === "enterprise" ? "Talk to sales →" : t.id === "trial" ? "Start trial →" : "Choose plan →"}
-              </Link>
+                ].join(" ");
+                // External Stripe checkout opens in the same tab so the
+                // browser back-button returns to the pricing page; internal
+                // routes (trial / contact) stay client-routed.
+                return cta.external ? (
+                  <a href={cta.href} className={className} rel="noopener">
+                    {cta.label}
+                  </a>
+                ) : (
+                  <Link href={cta.href} className={className}>
+                    {cta.label}
+                  </Link>
+                );
+              })()}
             </motion.div>
           ))}
         </div>

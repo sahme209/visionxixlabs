@@ -179,7 +179,7 @@ export function Navigation() {
 
             {/* Direct links */}
             <Link
-              href="/operator/pricing"
+              href="/plans"
               className="nav-link-underline relative px-4 py-2 text-zinc-400 hover:text-white rounded-lg transition-colors text-sm font-medium"
             >
               Pricing
@@ -307,7 +307,7 @@ export function Navigation() {
                     More
                   </div>
                   <Link
-                    href="/operator/pricing"
+                    href="/plans"
                     onClick={() => setMobileMenuOpen(false)}
                     className="px-4 py-2.5 text-zinc-400 font-medium hover:text-white hover:bg-white/5 rounded-lg text-sm transition-colors"
                   >

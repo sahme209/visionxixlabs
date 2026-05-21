@@ -6,8 +6,10 @@ const nextConfig: NextConfig = {
     return [
       // Canonical routing
       { source: "/operator", destination: "/operator/onboarding", permanent: true },
-      { source: "/pricing", destination: "/operator/pricing", permanent: false },
-      { source: "/axiom/pricing", destination: "/operator/pricing", permanent: true },
+      // /operator/pricing replaced by the glowy /plans surface; keep the URL alive.
+      { source: "/operator/pricing", destination: "/plans", permanent: true },
+      { source: "/pricing", destination: "/plans", permanent: false },
+      { source: "/axiom/pricing", destination: "/plans", permanent: true },
       { source: "/request", destination: "/contact", permanent: true },
 
       // Removed pages → homepage

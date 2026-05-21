@@ -388,6 +388,99 @@ export default function Home() {
       {/* ── Section Divider ────────────────────────────────────────── */}
       <SectionDivider />
 
+      {/* ── What you'd otherwise be paying for ─────────────────────── */}
+      {/* Visceral cost-of-team visualization. Mirrors /disciplines but
+          curated to the 12 highest-impact roles so the home page hits
+          quickly. Total is summed from the rates below so it stays
+          honest. */}
+      <section className="py-24 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+        {/* Aurora glow */}
+        <div className="pointer-events-none absolute inset-0 -z-10 opacity-80">
+          <div className="absolute -top-1/3 left-1/4 h-[60vh] w-[55vw] rounded-full bg-gradient-to-br from-violet-500/15 via-fuchsia-500/8 to-transparent blur-3xl" />
+          <div className="absolute bottom-0 right-1/4 h-[50vh] w-[45vw] rounded-full bg-gradient-to-tl from-cyan-500/10 to-transparent blur-3xl" />
+        </div>
+
+        <div className="max-w-6xl mx-auto">
+          <Reveal direction="up" blur>
+            <div className="text-center mb-10 sm:mb-12">
+              <p className="text-[11px] sm:text-xs font-semibold text-fuchsia-300/80 mb-3 sm:mb-4 tracking-[0.18em] uppercase">
+                the team you'd otherwise be paying for
+              </p>
+              <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-[-0.03em] sm:tracking-[-0.04em] leading-[1.05]">
+                A{" "}
+                <span className="bg-gradient-to-r from-fuchsia-300 via-violet-300 to-indigo-300 bg-clip-text text-transparent tabular-nums">
+                  $<CountUp to={5.27} duration={2000} decimals={2} />M
+                </span>
+                {" "}per year team.{" "}
+                <span className="text-zinc-500 block sm:inline">Most teams don't have it.</span>
+              </h2>
+              <p className="mt-5 sm:mt-6 max-w-2xl mx-auto text-zinc-400 text-[15px] sm:text-base leading-relaxed">
+                The fully-loaded annual cost of hiring the engineering and operations bench
+                most companies need but never ship. Axiom doesn't replace that team —{" "}
+                <span className="text-zinc-200">it gives the team you already have AI-assisted coverage across every discipline below</span>,
+                with a human approval before any change runs.
+              </p>
+            </div>
+          </Reveal>
+
+          {/* Discipline grid — curated 12 to fit a compact home-page block */}
+          <Stagger delay={0.1} interval={0.04} className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2.5 sm:gap-3">
+            {[
+              { name: "Cloud Architect",     rate: "$260k+/yr", scope: "Multi-cloud topology + boundaries" },
+              { name: "Security Engineer",   rate: "$240k+/yr", scope: "Threat model + secret hygiene" },
+              { name: "ML Engineer",         rate: "$245k+/yr", scope: "Provider routing + fallback" },
+              { name: "AI Researcher",       rate: "$260k+/yr", scope: "Council weighting + drift" },
+              { name: "Kubernetes Engineer", rate: "$225k+/yr", scope: "Workload + control-plane drift" },
+              { name: "SRE / On-call",       rate: "$225k+/yr", scope: "Error budgets + paging" },
+              { name: "AWS Specialist",      rate: "$220k+/yr", scope: "CloudTrail + IAM least-priv" },
+              { name: "Mobile Engineer",     rate: "$220k+/yr", scope: "Push + offline + deep-link" },
+              { name: "Incident Commander",  rate: "$220k+/yr", scope: "Approval staging + rollback" },
+              { name: "Compliance Officer",  rate: "$200k+/yr", scope: "SOC 2 + GDPR evidence" },
+              { name: "Build / CI Engineer", rate: "$195k+/yr", scope: "Gating + deploy windows" },
+              { name: "Customer Success",    rate: "$170k+/yr", scope: "Trial → growth conversion" },
+            ].map((d) => (
+              <div
+                key={d.name}
+                className="group rounded-xl border border-white/[0.06] bg-white/[0.015] p-3.5 sm:p-4 hover:border-fuchsia-500/30 hover:bg-white/[0.03] transition"
+              >
+                <div className="flex items-start justify-between gap-2">
+                  <p className="text-[12.5px] sm:text-[13px] font-semibold text-white leading-tight">{d.name}</p>
+                  <span className="text-[10px] font-mono text-fuchsia-300/80 whitespace-nowrap flex-shrink-0">{d.rate}</span>
+                </div>
+                <p className="mt-1.5 text-[11px] sm:text-[11.5px] text-zinc-500 leading-snug">{d.scope}</p>
+              </div>
+            ))}
+          </Stagger>
+
+          <Reveal direction="up" delay={0.1}>
+            <div className="mt-10 sm:mt-12 text-center">
+              <p className="text-[11px] sm:text-xs text-zinc-500 mb-5">
+                Twelve of twenty-six disciplines shown. See the full list, each linked to the
+                cockpit module that supports it.
+              </p>
+              <div className="inline-flex flex-wrap items-center justify-center gap-3">
+                <Link
+                  href="/disciplines"
+                  className="inline-flex items-center gap-2 rounded-full bg-violet-500 px-5 py-2.5 text-[13px] font-medium text-white shadow-[0_0_24px_rgba(139,92,246,0.45)] hover:bg-violet-400 transition"
+                >
+                  See all 26 disciplines
+                  <ArrowRightIcon className="h-3.5 w-3.5" />
+                </Link>
+                <Link
+                  href="/plans"
+                  className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.02] px-5 py-2.5 text-[13px] font-medium text-zinc-200 hover:bg-white/[0.06] transition"
+                >
+                  See pricing
+                </Link>
+              </div>
+            </div>
+          </Reveal>
+        </div>
+      </section>
+
+      {/* ── Section Divider ────────────────────────────────────────── */}
+      <SectionDivider />
+
       {/* ── Capabilities ───────────────────────────────────────────── */}
       <section className="py-24 px-4 sm:px-6 lg:px-8">
         <div className="max-w-6xl mx-auto">
