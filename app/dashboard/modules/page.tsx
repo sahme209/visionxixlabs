@@ -26,6 +26,7 @@ import {
   ArrowRightIcon,
   ArrowTopRightOnSquareIcon,
 } from "@heroicons/react/24/outline";
+import { PlatformHealthStrip } from "@/components/platform/PlatformHealthStrip";
 
 export const metadata: Metadata = {
   title: "Platform modules · Axiom",
@@ -267,6 +268,8 @@ export default function ModulesPage() {
           </span>
         </div>
       </div>
+
+      <PlatformHealthStrip />
 
       {/* Module cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

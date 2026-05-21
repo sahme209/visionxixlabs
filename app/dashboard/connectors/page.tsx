@@ -26,6 +26,11 @@ import {
   PuzzlePieceIcon,
   ArrowTopRightOnSquareIcon,
 } from "@heroicons/react/24/outline";
+import {
+  getLiveConnectorState,
+  relativeTime,
+} from "@/lib/platform/livePlatformState";
+import { LiveBadge } from "@/components/platform/LiveBadge";
 
 export const metadata: Metadata = {
   title: "Connectors · Axiom",
@@ -333,7 +338,7 @@ const CATEGORIES_ORDER: readonly ConnectorCategory[] = [
   "billing",
 ];
 
-export default function ConnectorsPage() {
+export default async function ConnectorsPage() {
   const counts = CONNECTORS.reduce(
     (acc, c) => {
       acc[c.status] += 1;
@@ -341,6 +346,9 @@ export default function ConnectorsPage() {
     },
     { connected: 0, available: 0, coming_soon: 0 } as Record<ConnectorStatus, number>,
   );
+
+  const live = await getLiveConnectorState();
+  const liveConnectedCount = live.accounts.length;
 
   return (
     <div className="relative">
@@ -364,6 +372,12 @@ export default function ConnectorsPage() {
           act behind an approval packet — read-only connectors never mutate.
         </p>
         <div className="mt-5 flex flex-wrap items-center gap-2 text-[11px] font-mono">
+          {live.ok ? (
+            <span className="rounded-full border border-emerald-500/40 bg-emerald-500/15 text-emerald-200 px-2.5 py-1 inline-flex items-center gap-1.5">
+              <LiveBadge />
+              {liveConnectedCount} live in your tenant
+            </span>
+          ) : null}
           <span className="rounded-full border border-emerald-500/30 bg-emerald-500/10 text-emerald-300 px-2.5 py-1">
             {counts.connected} connected
           </span>
@@ -395,27 +409,52 @@ export default function ConnectorsPage() {
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
                 {inCat.map((c) => {
                   const status = STATUS_STYLE[c.status];
+                  // Live overlay: if the operator has a CloudAccount row for
+                  // this connector id (aws / azure / gcp), surface its alias
+                  // + last-scanned time so the card shows tenant truth.
+                  const liveAccount = live.byProvider[c.id];
                   return (
                     <article
                       key={c.id}
-                      className="rounded-2xl border border-white/[0.06] bg-white/[0.015] p-4 md:p-5 hover:border-violet-500/30 hover:bg-white/[0.025] transition flex flex-col"
+                      className={[
+                        "rounded-2xl border bg-white/[0.015] p-4 md:p-5 hover:bg-white/[0.025] transition flex flex-col",
+                        liveAccount
+                          ? "border-emerald-500/30 hover:border-emerald-500/50"
+                          : "border-white/[0.06] hover:border-violet-500/30",
+                      ].join(" ")}
                     >
                       <header className="flex items-start justify-between gap-3">
-                        <div>
+                        <div className="min-w-0">
                           <h3 className="text-[14px] font-semibold text-white">{c.name}</h3>
                           <p className="mt-0.5 text-[10.5px] font-mono uppercase tracking-widest text-zinc-500">
                             {AUTH_LABEL[c.auth]}
                           </p>
                         </div>
-                        <span
-                          className={[
-                            "text-[10px] font-mono uppercase tracking-widest px-2 py-0.5 rounded-full border whitespace-nowrap",
-                            status.tone,
-                          ].join(" ")}
-                        >
-                          {status.label}
-                        </span>
+                        <div className="flex flex-col items-end gap-1">
+                          <span
+                            className={[
+                              "text-[10px] font-mono uppercase tracking-widest px-2 py-0.5 rounded-full border whitespace-nowrap",
+                              status.tone,
+                            ].join(" ")}
+                          >
+                            {status.label}
+                          </span>
+                          {liveAccount ? <LiveBadge hint={`Last scan ${relativeTime(liveAccount.lastScannedAt)}`} /> : null}
+                        </div>
                       </header>
+
+                      {liveAccount ? (
+                        <div className="mt-3 rounded-lg border border-emerald-500/20 bg-emerald-500/[0.05] px-3 py-2 text-[11px] text-emerald-100/85 leading-snug">
+                          <p className="font-mono uppercase tracking-widest text-[9.5px] text-emerald-300/80 mb-0.5">
+                            wired in your tenant
+                          </p>
+                          {liveAccount.alias ? (
+                            <p>Account: <span className="font-mono text-white">{liveAccount.alias}</span></p>
+                          ) : null}
+                          <p>Regions: <span className="font-mono text-white">{liveAccount.regions}</span> · autopilot: <span className="font-mono text-white">{liveAccount.autopilotMode}</span></p>
+                          <p>Last scan: <span className="font-mono text-white">{relativeTime(liveAccount.lastScannedAt)}</span></p>
+                        </div>
+                      ) : null}
 
                       <div className="mt-3 text-[12px] text-zinc-400 leading-relaxed">
                         <p>

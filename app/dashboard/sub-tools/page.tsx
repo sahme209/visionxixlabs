@@ -16,6 +16,7 @@ import {
   type SubToolCategory,
 } from "@/lib/platform/subToolCatalog";
 import { PlatformHero } from "@/components/platform/PlatformHero";
+import { PlatformHealthStrip } from "@/components/platform/PlatformHealthStrip";
 
 export const metadata: Metadata = {
   title: "Sub-tools · Axiom",
@@ -80,6 +81,8 @@ export default function SubToolsCenterPage() {
           </>
         }
       />
+
+      <PlatformHealthStrip />
 
       {/* Sub-tool category rails */}
       {CATEGORY_ORDER.map((cat) => {
