@@ -190,12 +190,18 @@ export function PricingClient() {
               viewport={{ once: true, amount: 0.3 }}
               transition={{ duration: 0.5, delay: i * 0.05 }}
               className={[
-                "rounded-2xl border p-5 flex flex-col",
+                "relative rounded-2xl border p-5 md:p-6 flex flex-col",
                 t.highlight
                   ? "border-indigo-500/40 bg-indigo-500/[0.06] shadow-[0_0_28px_rgba(99,102,241,0.18)]"
                   : "border-white/[0.06] bg-white/[0.02]",
               ].join(" ")}
             >
+              {t.highlight ? (
+                <span className="absolute -top-2.5 left-5 inline-flex items-center gap-1 rounded-full bg-indigo-500 px-2.5 py-0.5 text-[9.5px] font-mono uppercase tracking-widest text-white shadow-[0_0_18px_rgba(99,102,241,0.45)]">
+                  most popular
+                </span>
+              ) : null}
+
               <p className="text-[10px] font-mono uppercase tracking-widest text-zinc-500">{t.label}</p>
               <p className="mt-3 text-2xl md:text-3xl font-bold tabular-nums">
                 {t.monthlyUsd === "contact"
@@ -207,14 +213,22 @@ export function PricingClient() {
                   <span className="text-[12px] text-zinc-500 font-normal ml-1">/ month</span>
                 )}
               </p>
-              <p className="mt-2 text-[12px] text-zinc-400 leading-snug">{t.blurb}</p>
+              {period === "annual" && typeof t.monthlyUsd === "number" && t.monthlyUsd > 0 ? (
+                <p className="mt-1 text-[10.5px] font-mono uppercase tracking-widest text-emerald-300/80">
+                  billed annually · save 15%
+                </p>
+              ) : null}
+              <p className="mt-3 text-[12px] text-zinc-400 leading-snug">{t.blurb}</p>
 
-              <ul className="mt-4 space-y-1.5 flex-1">
+              <ul className="mt-5 space-y-3 flex-1">
                 {t.rows.map((r) => (
-                  <li key={r.label} className="text-[12px] flex items-start gap-2">
-                    <span className="text-emerald-300 mt-[1px]">·</span>
-                    <span className="text-zinc-400 w-32 flex-shrink-0">{r.label}</span>
-                    <span className="text-zinc-200 font-mono">{r.value}</span>
+                  <li key={r.label}>
+                    <p className="text-[9.5px] font-mono uppercase tracking-[0.16em] text-zinc-500">
+                      {r.label}
+                    </p>
+                    <p className="mt-1 text-[12.5px] text-zinc-200 leading-snug">
+                      {r.value}
+                    </p>
                   </li>
                 ))}
               </ul>
@@ -222,16 +236,23 @@ export function PricingClient() {
               {(() => {
                 const cta = ctaFor(t.id, period);
                 const className = [
-                  "mt-5 inline-flex items-center justify-center gap-2 rounded-full px-3 py-2 text-[12px] font-medium transition",
+                  "mt-6 inline-flex items-center justify-center gap-2 rounded-full px-4 py-2.5 text-[12.5px] font-medium transition",
                   t.highlight
-                    ? "bg-indigo-500 text-white hover:bg-indigo-400"
-                    : "border border-white/10 text-zinc-200 hover:bg-white/[0.06]",
+                    ? "bg-indigo-500 text-white hover:bg-indigo-400 shadow-[0_0_22px_rgba(99,102,241,0.45)]"
+                    : "border border-white/10 text-zinc-200 hover:bg-white/[0.06] hover:border-white/20",
                 ].join(" ");
-                // External Stripe checkout opens in the same tab so the
-                // browser back-button returns to the pricing page; internal
-                // routes (trial / contact) stay client-routed.
+                // External Stripe Payment Links open in a new tab so the
+                // operator's pricing-page state is preserved (toggle, scroll).
+                // Internal routes (trial / contact) stay client-routed.
                 return cta.external ? (
-                  <a href={cta.href} className={className} rel="noopener">
+                  <a
+                    href={cta.href}
+                    className={className}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    data-stripe-tier={t.id}
+                    data-stripe-period={period}
+                  >
                     {cta.label}
                   </a>
                 ) : (
@@ -242,6 +263,17 @@ export function PricingClient() {
               })()}
             </motion.div>
           ))}
+        </div>
+
+        {/* Trust strip — clarify checkout vendor + safety contract */}
+        <div className="mt-6 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-[11px] font-mono uppercase tracking-widest text-zinc-500">
+          <span className="inline-flex items-center gap-1.5">
+            <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
+            secure checkout via stripe
+          </span>
+          <span>cancel anytime</span>
+          <span>no setup fee</span>
+          <span>vat handled at checkout</span>
         </div>
       </section>
 
