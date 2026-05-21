@@ -86,8 +86,11 @@ export function aggregateLogs(records: readonly LogRecord[]): LogAggregateReport
   for (const r of records) {
     if (windowStart === null || r.ts < windowStart) windowStart = r.ts;
     if (windowEnd === null || r.ts > windowEnd) windowEnd = r.ts;
-    const b = perService.get(r.service) ?? {
-      total: 0, byLevel: zeroByLevel(), latencies: [], errorPrints: new Map(),
+    const b: Bucket = perService.get(r.service) ?? {
+      total: 0,
+      byLevel: zeroByLevel(),
+      latencies: [] as number[],
+      errorPrints: new Map<string, { count: number; example: string }>(),
     };
     b.total += 1;
     b.byLevel[r.level] += 1;
