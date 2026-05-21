@@ -24,6 +24,14 @@ interface ChangelogEntry {
 // Newest first. Add to the top when shipping a new batch.
 const ENTRIES: readonly ChangelogEntry[] = [
   {
+    phases: "336-341",
+    title: "Intent · anomaly · risk · secrets · compliance — five new kernels",
+    summary:
+      "Five pure-function kernels (73 new tests). intentParser turns natural-language operator input into a typed ActionSpec. anomalyDetector uses MAD-based z-scores for robust time-series anomaly classification. changeRiskAssessor scores blast radius of a proposed change against the service topology graph. secretsHygieneScanner detects AWS / Stripe / GitHub / OpenAI / Anthropic / Slack / PEM secrets with redacted previews. complianceControlMapper turns the audit stream into per-control evidence for SOC 2 / ISO 27001 / GDPR / HIPAA + a per-framework readiness %.",
+    tag: "agent",
+    surface: "all",
+  },
+  {
     phases: "329-335",
     title: "Product-layer separation — client app vs VisionXIXLabs admin",
     summary:
