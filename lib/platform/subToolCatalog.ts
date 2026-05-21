@@ -260,6 +260,24 @@ export const SUB_TOOLS: readonly SubToolDefinition[] = [
     automationCategories: ["status_report", "process_audit"],
   },
   {
+    slug: "marketing-ops",
+    name: "Marketing Operations",
+    category: "business_ops",
+    maturity: "partial",
+    purpose: "AGI-drafted posts, risk-tier review, approval gating, schedule preview, outbound history.",
+    description:
+      "Marketing content drafted by agent kernels, every post staged for approval. Scheduler enforces daily caps, blackout windows, and dedup. LinkedIn payload preview shows the exact bytes that would POST.",
+    ownedRoutes: [
+      { href: "/dashboard/marketing", label: "Marketing cockpit" },
+    ],
+    agentKernels: ["marketingContentDrafter", "socialPostScheduler", "axiomAssistantAgent"],
+    connectors: ["linkedin", "slack", "outlook"],
+    gapCategories: ["stale_draft", "missed_milestone_post", "incident_silence"],
+    automationCategories: ["draft_from_changelog", "scheduled_post_send", "incident_announcement"],
+    notCoveredYet:
+      "Live LinkedIn POST + per-tenant token storage is scoped — today the cockpit previews bytes only. X / blog publishing is planned.",
+  },
+  {
     slug: "sales",
     name: "Sales Operations",
     category: "business_ops",

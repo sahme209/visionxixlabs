@@ -24,6 +24,22 @@ interface ChangelogEntry {
 // Newest first. Add to the top when shipping a new batch.
 const ENTRIES: readonly ChangelogEntry[] = [
   {
+    phases: "301-307",
+    title: "AI marketing + LinkedIn safe foundation + desktop script catalog",
+    summary:
+      "Two new agent kernels — marketingContentDrafter (typed multi-channel drafts with risk tiering) and socialPostScheduler (caps + blackout + dedup). Typed LinkedIn UGC post builder with OAuth scope guardrails — no live POST, payload preview only. Desktop script catalog wired for macOS / Windows / Linux runtimes. New /dashboard/marketing cockpit shipped as a business-ops sub-tool.",
+    tag: "marketing",
+    surface: "all",
+  },
+  {
+    phases: "296-300",
+    title: "Liveness pass · platform shell reads real Prisma data",
+    summary:
+      "/dashboard/connectors, /dashboard/agents, /dashboard/automation, /dashboard/modules, /dashboard/sub-tools all read live CloudAccount + AxiomAgentRun + AgentBusMessage + AxiomApprovalItem rows. <LiveBadge/> + <PlatformHealthStrip/> primitives ship. No new Prisma models — existing schema covers the domain.",
+    tag: "platform",
+    surface: "web",
+  },
+  {
     phases: "291-295",
     title: "AGI Engineers — spec writer + test coverage + refactor sequencer + migration coordinator",
     summary:
