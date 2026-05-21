@@ -38,10 +38,16 @@ export default async function AdminLayout({
                 Leads
               </Link>
               <Link
+                href="/admin/marketing"
+                className="text-sm text-zinc-400 hover:text-violet-400 transition-colors"
+              >
+                Marketing
+              </Link>
+              <Link
                 href="/admin/enterprise-dashboard"
                 className="text-sm text-zinc-400 hover:text-violet-400 transition-colors"
               >
-                Enterprise Dashboard
+                Tenants
               </Link>
               <Link
                 href="/admin/plan-debug"
@@ -67,7 +73,7 @@ export default async function AdminLayout({
           </div>
         </div>
       </header>
-      <main className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">{children}</main>
+      <main className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">{children}</main>
     </div>
   );
 }

@@ -1,10 +1,17 @@
 /**
- * Pure AGI-Engineer marketing content drafter.
+ * Marketing content drafter — VisionXIXLabs INTERNAL kernel.
  *
- * Input: a typed event the operator wants to broadcast — a shipped
- * changelog batch, a milestone, an incident resolved publicly. Output:
- * a typed multi-channel draft (LinkedIn / X / blog) with risk tier,
- * recommended scheduling window, and an explicit gate state.
+ * **Product layer: internal_admin.** This kernel is consumed by the
+ * /admin/marketing cockpit to draft posts for VisionXIXLabs' OWN
+ * LinkedIn / X / blog channels. It is **not exposed to client
+ * tenants** — a client business signed into /dashboard/* must never
+ * see "draft a LinkedIn post for our company" UI.
+ *
+ * Input: a typed event the VisionXIXLabs operator team wants to
+ * broadcast — a shipped changelog batch, a milestone, an incident
+ * resolved publicly. Output: a typed multi-channel draft (LinkedIn /
+ * X / blog) with risk tier, recommended scheduling window, and an
+ * explicit gate state.
  *
  * Why this kernel exists: marketing posts are write-to-the-world
  * actions. The same approval-only-no-execution contract that gates

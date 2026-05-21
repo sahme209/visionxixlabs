@@ -10,11 +10,16 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { ArrowRightIcon, PlusIcon } from "@heroicons/react/24/outline";
 import {
-  SUB_TOOLS,
+  clientSubTools,
   SUB_TOOL_CATEGORY_META,
   SUB_TOOL_MATURITY_META,
   type SubToolCategory,
 } from "@/lib/platform/subToolCatalog";
+
+// Client tenants only see the client-layer slice. VisionXIXLabs
+// internal tools (marketing, sales, etc.) live at /admin/* and
+// never appear here.
+const SUB_TOOLS = clientSubTools();
 import { PlatformHero } from "@/components/platform/PlatformHero";
 import { PlatformHealthStrip } from "@/components/platform/PlatformHealthStrip";
 

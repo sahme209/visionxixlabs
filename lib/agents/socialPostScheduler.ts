@@ -1,5 +1,10 @@
 /**
- * Pure AGI-Engineer social post scheduler.
+ * Social post scheduler — VisionXIXLabs INTERNAL kernel.
+ *
+ * **Product layer: internal_admin.** Paired with marketingContentDrafter
+ * inside the /admin/marketing cockpit. Schedules VisionXIXLabs' own
+ * outbound posts under operator approval. Not exposed to client
+ * tenants.
  *
  * Input: a list of drafted social posts (from marketingContentDrafter)
  * + a schedule policy (caps per day / blackout windows / minimum gap).

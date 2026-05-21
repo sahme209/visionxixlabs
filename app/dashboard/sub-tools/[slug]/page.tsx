@@ -24,8 +24,9 @@ import {
   ArrowTopRightOnSquareIcon,
 } from "@heroicons/react/24/outline";
 import {
-  SUB_TOOLS,
+  clientSubTools,
   getSubTool,
+  getSubToolLayer,
   SUB_TOOL_CATEGORY_META,
   SUB_TOOL_MATURITY_META,
 } from "@/lib/platform/subToolCatalog";
@@ -45,7 +46,9 @@ interface Params {
 }
 
 export async function generateStaticParams() {
-  return SUB_TOOLS.map((s) => ({ slug: s.slug }));
+  // Only pre-render client-layer slugs. Internal admin sub-tools have
+  // their own /admin/* routes and must not be reachable from this path.
+  return clientSubTools().map((s) => ({ slug: s.slug }));
 }
 
 export async function generateMetadata({ params }: Params): Promise<Metadata> {
@@ -82,6 +85,11 @@ export default async function SubToolDetailPage({ params }: Params) {
   const { slug } = await params;
   const tool = getSubTool(slug);
   if (!tool) notFound();
+  // Defense in depth: a client navigating directly to an internal slug
+  // sees a not-found, never the page. The /admin layout's
+  // isAdminEmail() guard is the canonical access check; this is
+  // belt-and-braces in case a stale link is shared.
+  if (getSubToolLayer(tool) !== "client") notFound();
 
   const scripts = DEMO_SCRIPTS.filter((s) => s.subToolSlug === tool.slug);
   const gaps    = DEMO_GAPS.filter((g) => g.subToolSlug === tool.slug);

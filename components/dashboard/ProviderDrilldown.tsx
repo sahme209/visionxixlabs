@@ -16,7 +16,17 @@ import {
   CloudIcon,
   CodeBracketIcon,
   ShieldCheckIcon,
+  LockClosedIcon,
+  KeyIcon,
+  IdentificationIcon,
+  GlobeAltIcon,
+  QuestionMarkCircleIcon,
 } from "@heroicons/react/24/outline";
+import {
+  resolveSetupSteps,
+  GROUP_LABEL,
+  type ConnectorSetupStep,
+} from "@/lib/cloud/connectorSetupSteps";
 
 interface ProviderPostureLite {
   provider: string;
@@ -166,14 +176,7 @@ export function ProviderDrilldown({ providerId }: { providerId: "aws" | "azure" 
             </div>
 
             {provider.missingRequirements.length > 0 && (
-              <div className="mt-4 rounded-lg border border-amber-500/[0.18] bg-amber-500/[0.04] p-3">
-                <p className="text-[10px] font-mono text-amber-300/80 uppercase tracking-wider mb-2">// missing requirements</p>
-                <ul className="space-y-1">
-                  {provider.missingRequirements.map((r, i) => (
-                    <li key={i} className="text-[12px] text-zinc-300 font-mono">{r}</li>
-                  ))}
-                </ul>
-              </div>
+              <ProviderSetupGuide rawRequirements={provider.missingRequirements} />
             )}
 
             <div className="flex items-center gap-4 mt-4">
@@ -247,6 +250,104 @@ export function ProviderDrilldown({ providerId }: { providerId: "aws" | "azure" 
           </div>
         </div>
       </div>
+    </div>
+  );
+}
+
+/**
+ * Guided setup card — replaces the bare AZURE_TENANT_ID / etc. list
+ * with a labeled step list. Operators see "Azure directory (tenant) ID"
+ * with a short description and a help link. The raw env-var name is
+ * still surfaced in a small monospace line so engineers wiring the
+ * back-end env still know what to set.
+ */
+function ProviderSetupGuide({ rawRequirements }: { rawRequirements: readonly string[] }) {
+  const steps = resolveSetupSteps(rawRequirements);
+  if (steps.length === 0) return null;
+
+  // Group steps by their category so identity / credential / scope cards
+  // are visually clustered, not interleaved.
+  const byGroup: Record<string, ConnectorSetupStep[]> = {};
+  for (const s of steps) {
+    (byGroup[s.group] ??= []).push(s);
+  }
+  const groupOrder = Object.keys(byGroup) as Array<ConnectorSetupStep["group"]>;
+
+  return (
+    <div className="mt-4 rounded-xl border border-amber-500/[0.18] bg-amber-500/[0.04] p-4">
+      <div className="flex items-start gap-2 mb-3">
+        <KeyIcon className="h-4 w-4 text-amber-300 mt-0.5 shrink-0" />
+        <div>
+          <p className="text-[11px] font-mono text-amber-300/80 uppercase tracking-[0.18em]">
+            connection required · {steps.length} step{steps.length === 1 ? "" : "s"}
+          </p>
+          <p className="text-[12.5px] text-amber-100 mt-1 leading-snug">
+            Provide the items below to switch this connector from preview to live.
+            Secrets are stored encrypted; nothing is written without an approval packet.
+          </p>
+        </div>
+      </div>
+
+      <div className="space-y-3">
+        {groupOrder.map((group) => {
+          const items = byGroup[group];
+          const GroupIcon =
+            group === "credential" ? LockClosedIcon
+            : group === "identity"   ? IdentificationIcon
+            : group === "scope"      ? GlobeAltIcon
+            : QuestionMarkCircleIcon;
+          return (
+            <div key={group} className="rounded-lg border border-white/[0.06] bg-white/[0.02] p-3">
+              <p className="text-[10px] font-mono uppercase tracking-[0.18em] text-zinc-400 mb-2 inline-flex items-center gap-1.5">
+                <GroupIcon className="h-3 w-3" />
+                {GROUP_LABEL[group]}
+              </p>
+              <ul className="space-y-2">
+                {items.map((step) => (
+                  <li key={step.envVar} className="flex items-start gap-2.5">
+                    <span className="mt-1 h-1.5 w-1.5 rounded-full bg-amber-400/80 shrink-0" />
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <p className="text-[12.5px] font-semibold text-white">{step.label}</p>
+                        {step.isSecret && (
+                          <span className="rounded-full border border-rose-500/30 bg-rose-500/10 px-1.5 py-0.5 text-[9.5px] font-mono uppercase tracking-widest text-rose-300">
+                            secret
+                          </span>
+                        )}
+                      </div>
+                      <p className="mt-0.5 text-[11.5px] text-zinc-400 leading-snug">{step.description}</p>
+                      <div className="mt-1 flex items-center gap-3 flex-wrap">
+                        <code className="text-[10px] font-mono text-zinc-500" title="Environment variable name">
+                          env · {step.envVar}
+                        </code>
+                        {step.helpHref && (
+                          <Link
+                            href={step.helpHref}
+                            className="text-[10.5px] font-medium text-violet-300 hover:text-violet-200 transition inline-flex items-center gap-0.5"
+                          >
+                            where do I find this? <ArrowRightIcon className="h-2.5 w-2.5" />
+                          </Link>
+                        )}
+                      </div>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          );
+        })}
+      </div>
+
+      <details className="mt-3">
+        <summary className="text-[10.5px] font-mono uppercase tracking-[0.18em] text-zinc-500 cursor-pointer hover:text-zinc-300 transition">
+          // advanced · raw env var names
+        </summary>
+        <ul className="mt-2 space-y-0.5">
+          {steps.map((s) => (
+            <li key={s.envVar} className="text-[11px] text-zinc-400 font-mono">{s.envVar}</li>
+          ))}
+        </ul>
+      </details>
     </div>
   );
 }

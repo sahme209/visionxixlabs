@@ -1,5 +1,12 @@
 /**
- * Pure sales lead enricher.
+ * Sales lead enricher — VisionXIXLabs INTERNAL kernel.
+ *
+ * **Product layer: internal_admin.** Used by /admin/leads to classify
+ * inbound prospects landing on visionxixlabs.com /contact and
+ * /book-demo. Routes leads to AE / AM / welcome flow. Not exposed
+ * to client tenants — a client business gets their own
+ * customer-support kernels under /dashboard/* for triaging THEIR
+ * customers.
  *
  * Input: a raw lead — name, email, optional company / role / message.
  * Output: a typed enrichment proposal — inferred segment, ICP-fit

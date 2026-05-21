@@ -11,6 +11,9 @@ const nextConfig: NextConfig = {
       { source: "/pricing", destination: "/plans", permanent: false },
       { source: "/axiom/pricing", destination: "/plans", permanent: true },
       { source: "/request", destination: "/contact", permanent: true },
+      // VisionXIXLabs internal marketing cockpit moved out of /dashboard
+      // (client layer) and into /admin (internal layer).
+      { source: "/dashboard/marketing", destination: "/admin/marketing", permanent: true },
 
       // Removed pages → homepage
       { source: "/builder", destination: "/", permanent: true },

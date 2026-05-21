@@ -1,15 +1,19 @@
 /**
- * /dashboard/marketing — AI marketing operations cockpit.
+ * /admin/marketing — VisionXIXLabs INTERNAL marketing cockpit.
+ *
+ * This surface is for the VisionXIXLabs operator team only. It runs
+ * the company's own LinkedIn / X content pipeline — it is NOT shown
+ * to client tenants. Access is gated by isAdminEmail() in the parent
+ * /admin layout.
  *
  * Drafts queue + approval gate + schedule preview + outbound history.
- * Pure server component today. Live publishing (LinkedIn/X) is staged
- * via the approval engine in a follow-up — this page only previews
- * what WOULD be posted and at what schedule.
+ * Pure server component. Live publishing (LinkedIn / X) is staged via
+ * the approval engine in a follow-up — this page only previews what
+ * WOULD be posted and at what schedule.
  *
- * Drafts here are produced live by lib/agents/marketingContentDrafter
- * against a seeded preview event so operators can see the kernel in
- * action without waiting for a real changelog event. Per-tenant
- * drafts will arrive when MarketingDraft persistence lands.
+ * Layer separation: a client business signed into /dashboard/* never
+ * sees this. They get their own client-scoped surfaces — none of
+ * which include outbound social posting on behalf of VisionXIXLabs.
  */
 
 import Link from "next/link";
@@ -36,9 +40,10 @@ import { DemoBadge } from "@/components/platform/DemoBadge";
 import { PlatformHero } from "@/components/platform/PlatformHero";
 
 export const metadata: Metadata = {
-  title: "AI marketing · Axiom",
+  title: "VisionXIXLabs marketing · Admin",
   description:
-    "AGI-drafted social posts with risk-tier review, approval gating, schedule preview, and outbound history. Approval-only-no-execution applies to every post.",
+    "Internal-only cockpit for VisionXIXLabs operator team. Drafts LinkedIn / X content for the company's own channels with risk-tier review + approval gating. Not exposed to client tenants.",
+  robots: { index: false, follow: false },
 };
 
 const RISK_TONE: Record<RiskTier, string> = {
@@ -107,10 +112,10 @@ export default function MarketingPage() {
   return (
     <div className="relative">
       <PlatformHero
-        eyebrow="Sub-tool · marketing operations"
+        eyebrow="visionxixlabs admin · internal marketing"
         eyebrowTone="fuchsia"
-        title="AI marketing"
-        description="Agent kernels draft posts, classify their risk, and stage them for approval. Nothing goes out without an operator signature. Scheduler enforces daily caps, blackout windows, and dedup so the brand never spams."
+        title="VisionXIXLabs marketing"
+        description="Internal cockpit for the VisionXIXLabs operator team. Agent kernels draft posts for OUR LinkedIn / X channels, classify risk, and stage for approval. Not visible to client tenants. Nothing goes out without an operator signature."
         gradientFromColor="radial-gradient(900px 320px at 14% 0%, rgba(217,70,239,0.10), transparent 60%), radial-gradient(700px 260px at 86% 110%, rgba(99,102,241,0.08), transparent 60%)"
         right={
           <>

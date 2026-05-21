@@ -18,13 +18,39 @@ export type SubToolCategory = "technical_ops" | "business_ops" | "ai_ops";
 
 export type SubToolMaturity = "active" | "partial" | "planned";
 
+/**
+ * Hard product-layer separation.
+ *
+ *   "client"          — shown to client tenants inside /dashboard/*.
+ *                       This is the SaaS product clients pay for.
+ *   "internal_admin"  — shown ONLY to VisionXIXLabs operators inside
+ *                       /admin/*. Never leaks into a client workspace.
+ *
+ * Adding a sub-tool means deciding which layer it belongs in. The
+ * sub-tools center filters by layer; marketing-ops + sales-ops
+ * (running OUR LinkedIn / OUR sales pipeline) live in internal_admin,
+ * while cloud-ops / devops / security / observability (running the
+ * CLIENT's surfaces) live in client.
+ */
+export type ProductLayer = "client" | "internal_admin";
+
 export interface SubToolDefinition {
-  /** URL slug under /dashboard/sub-tools/[slug]. */
+  /** URL slug under /dashboard/sub-tools/[slug] (client) or /admin/sub-tools/[slug] (internal). */
   slug: string;
   /** Display name. */
   name: string;
   category: SubToolCategory;
   maturity: SubToolMaturity;
+  /**
+   * Which product layer this sub-tool belongs to. The client sub-tools
+   * center filters by layer === "client"; internal admin tools live
+   * under /admin/* and are never shown to client tenants.
+   *
+   * Default for legacy entries (no explicit layer) is "client", because
+   * the historical catalog only covered the client product. Adding a
+   * new sub-tool should always set this explicitly.
+   */
+  productLayer?: ProductLayer;
   /** One-line positioning. */
   purpose: string;
   /** Two-sentence operator-facing description. */
@@ -261,32 +287,36 @@ export const SUB_TOOLS: readonly SubToolDefinition[] = [
   },
   {
     slug: "marketing-ops",
-    name: "Marketing Operations",
+    name: "VisionXIXLabs Marketing (internal)",
     category: "business_ops",
     maturity: "partial",
-    purpose: "AGI-drafted posts, risk-tier review, approval gating, schedule preview, outbound history.",
+    productLayer: "internal_admin",
+    purpose: "Internal-only cockpit for VisionXIXLabs' OWN LinkedIn / X marketing pipeline.",
     description:
-      "Marketing content drafted by agent kernels, every post staged for approval. Scheduler enforces daily caps, blackout windows, and dedup. LinkedIn payload preview shows the exact bytes that would POST.",
+      "Surfaces VisionXIXLabs' company-side marketing automation — drafts for OUR LinkedIn / X / blog channels, scheduler, payload preview. Lives at /admin/marketing. Not exposed to client tenants. Each client gets their own outbound automation under /dashboard/automation, scoped to their workspace.",
     ownedRoutes: [
-      { href: "/dashboard/marketing", label: "Marketing cockpit" },
+      { href: "/admin/marketing", label: "Internal marketing cockpit" },
     ],
     agentKernels: ["marketingContentDrafter", "socialPostScheduler", "axiomAssistantAgent"],
     connectors: ["linkedin", "slack", "outlook"],
     gapCategories: ["stale_draft", "missed_milestone_post", "incident_silence"],
     automationCategories: ["draft_from_changelog", "scheduled_post_send", "incident_announcement"],
     notCoveredYet:
-      "Live LinkedIn POST + per-tenant token storage is scoped — today the cockpit previews bytes only. X / blog publishing is planned.",
+      "Live LinkedIn POST + token storage is scoped — today the cockpit previews bytes only. X / blog publishing planned.",
   },
   {
     slug: "sales",
-    name: "Sales Operations",
+    name: "VisionXIXLabs Sales (internal)",
     category: "business_ops",
     maturity: "partial",
-    purpose: "Leads, proposals, follow-ups, meeting summaries.",
+    productLayer: "internal_admin",
+    purpose: "VisionXIXLabs' OWN sales pipeline — leads, proposals, follow-ups, meeting summaries.",
     description:
-      "Lead capture, AI-drafted proposals + follow-up emails, meeting summaries with action items. Approvals required before any outbound client contact.",
-    ownedRoutes: [],
-    agentKernels: ["contactResolutionAgent", "axiomAssistantAgent"],
+      "Lead capture, AI-drafted proposals + follow-up emails, meeting summaries with action items, all for VisionXIXLabs' own outbound sales. Lives at /admin/sales. Approval-gated before any external contact. Client tenants do NOT see this — they have their own customer-support tools under /dashboard/customer-support.",
+    ownedRoutes: [
+      { href: "/admin/leads", label: "Lead pipeline" },
+    ],
+    agentKernels: ["contactResolutionAgent", "salesLeadEnricher", "axiomAssistantAgent"],
     connectors: ["stripe", "outlook"],
     gapCategories: ["overdue_followup", "missing_proposal", "unsigned_contract"],
     automationCategories: ["proposal_drafter", "followup_reminder", "meeting_summary"],
@@ -401,6 +431,21 @@ export function getSubTool(slug: string): SubToolDefinition | undefined {
 
 export function subToolsByCategory(category: SubToolCategory): readonly SubToolDefinition[] {
   return SUB_TOOLS.filter((s) => s.category === category);
+}
+
+/** Layer defaults to "client" for legacy entries that pre-date the field. */
+export function getSubToolLayer(t: SubToolDefinition): ProductLayer {
+  return t.productLayer ?? "client";
+}
+
+/** Client tenants only ever see this slice of the catalog. */
+export function clientSubTools(): readonly SubToolDefinition[] {
+  return SUB_TOOLS.filter((s) => getSubToolLayer(s) === "client");
+}
+
+/** VisionXIXLabs admins see this slice under /admin/*. */
+export function internalAdminSubTools(): readonly SubToolDefinition[] {
+  return SUB_TOOLS.filter((s) => getSubToolLayer(s) === "internal_admin");
 }
 
 export const SUB_TOOL_CATEGORY_META: Record<

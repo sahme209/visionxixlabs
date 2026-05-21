@@ -24,6 +24,14 @@ interface ChangelogEntry {
 // Newest first. Add to the top when shipping a new batch.
 const ENTRIES: readonly ChangelogEntry[] = [
   {
+    phases: "329-335",
+    title: "Product-layer separation — client app vs VisionXIXLabs admin",
+    summary:
+      "Hard separation of client-facing surfaces from VisionXIXLabs internal tools. /dashboard/marketing moved to /admin/marketing (operator-only). Typed productLayer field added to subToolCatalog; client sub-tools center filters out internal entries; defense-in-depth notFound on the dynamic detail route. Marketing / sales / lead-enricher kernels marked as internal_admin in their headers. Azure connector setup UX rebuilt — replaced the bare \"AZURE_TENANT_ID, AZURE_CLIENT_ID\" env-var dump with a guided card list (label + description + secret pill + help link), with the raw env names tucked into an Advanced section.",
+    tag: "platform",
+    surface: "web",
+  },
+  {
     phases: "323-328",
     title: "Top AGI — workflow orchestrator + meta-reasoner + calibrator + debate + memory",
     summary:
