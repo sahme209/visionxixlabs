@@ -37,6 +37,9 @@ export const metadata: Metadata = {
     "What the agent kernels learned from operator approvals, rejections, incidents, and automation outcomes — with confidence, evidence, and an approval gate before any behaviour change.",
 };
 
+// Reads per-tenant freshness via currentContext(); must run per-request.
+export const dynamic = "force-dynamic";
+
 const SOURCE_META: Record<
   LearningSource,
   { label: string; tone: string; icon: typeof AcademicCapIcon }

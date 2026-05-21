@@ -44,6 +44,9 @@ export const metadata: Metadata = {
     "Python + workflow registry with risk levels, dry-run support, approval gates, and execution mode (cloud / desktop).",
 };
 
+// Reads per-tenant freshness via currentContext(); must run per-request.
+export const dynamic = "force-dynamic";
+
 const RISK_TONE: Record<RiskLevel, string> = {
   low:      "border-emerald-500/30 bg-emerald-500/10 text-emerald-300",
   medium:   "border-amber-500/30   bg-amber-500/10   text-amber-300",

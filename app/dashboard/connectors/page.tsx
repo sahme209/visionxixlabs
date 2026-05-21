@@ -38,6 +38,9 @@ export const metadata: Metadata = {
     "Every connector Axiom integrates with — cloud, source control, communication, observability, databases, IaC — with status, category, and audit boundaries.",
 };
 
+// Reads live connector state per request; must run dynamic.
+export const dynamic = "force-dynamic";
+
 type ConnectorStatus = "connected" | "available" | "coming_soon";
 type ConnectorCategory =
   | "cloud"

@@ -36,6 +36,9 @@ export const metadata: Metadata = {
     "Local and cloud AI models, with license, evaluation score, risk level, and an approved-vs-candidate gate. Only approved models can be invoked.",
 };
 
+// Reads per-tenant freshness via currentContext(); must run per-request.
+export const dynamic = "force-dynamic";
+
 const STATUS_TONE: Record<ModelStatus, string> = {
   approved:   "border-emerald-500/30 bg-emerald-500/10 text-emerald-300",
   candidate:  "border-cyan-500/30    bg-cyan-500/10    text-cyan-300",

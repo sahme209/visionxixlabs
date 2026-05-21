@@ -37,6 +37,9 @@ export const metadata: Metadata = {
     "Registered macOS / Windows / Linux desktop agents, their local capabilities, sync state, pending tasks, and installed local models.",
 };
 
+// Reads per-tenant freshness via currentContext(); must run per-request.
+export const dynamic = "force-dynamic";
+
 const OS_LABEL: Record<DesktopOS, string> = {
   macos:   "macOS",
   windows: "Windows",

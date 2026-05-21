@@ -31,6 +31,9 @@ export const metadata: Metadata = {
     "Detected gaps across cloud, security, DevOps, observability, databases, HR, customer support, finance, procurement, and documentation. Each finding ships with evidence and a recommended action.",
 };
 
+// Reads per-tenant freshness via currentContext(); must run per-request.
+export const dynamic = "force-dynamic";
+
 const SEVERITY_TONE: Record<GapSeverity, string> = {
   info:     "border-zinc-500/30    bg-zinc-500/10    text-zinc-300",
   warn:     "border-amber-500/30   bg-amber-500/10   text-amber-300",

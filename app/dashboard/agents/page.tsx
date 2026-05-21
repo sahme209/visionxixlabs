@@ -25,6 +25,9 @@ export const metadata: Metadata = {
     "The AI agent workforce that powers Axiom — perception, reasoning, planning, safety, verification, memory. Each agent maps to a typed pure-function kernel in lib/agents/.",
 };
 
+// Reads live agent activity per request; must run dynamic.
+export const dynamic = "force-dynamic";
+
 type AgentRole =
   | "perception"
   | "reasoning"
