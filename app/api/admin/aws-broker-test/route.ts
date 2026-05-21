@@ -14,10 +14,28 @@ export async function GET(req: NextRequest) {
   const auth = await requireAdmin(req);
   if ("error" in auth) return auth.error;
 
-  const accessKeySet = !!(process.env.AWS_CONNECTOR_BROKER_ACCESS_KEY_ID ?? "").trim();
-  const secretKeySet = !!(process.env.AWS_CONNECTOR_BROKER_SECRET_ACCESS_KEY ?? "").trim();
+  const rawKey = process.env.AWS_CONNECTOR_BROKER_ACCESS_KEY_ID ?? "";
+  const rawSecret = process.env.AWS_CONNECTOR_BROKER_SECRET_ACCESS_KEY ?? "";
+  const accessKeySet = !!rawKey.trim();
+  const secretKeySet = !!rawSecret.trim();
   const regionSet = (process.env.AWS_CONNECTOR_BROKER_REGION ?? "").trim() || "(default)";
-  console.log(`${LOG_PREFIX} Env detected: AWS_CONNECTOR_BROKER_ACCESS_KEY_ID=${!!accessKeySet}, AWS_CONNECTOR_BROKER_SECRET_ACCESS_KEY=${!!secretKeySet}, AWS_CONNECTOR_BROKER_REGION=${regionSet}`);
+
+  // Safe metadata about loaded env vars — exposes shape only, never the secret.
+  // accessKeyPrefix shows first 4 chars (e.g. "AKIA") to confirm it's an AWS key,
+  // not a quote, not whitespace, not a session token (ASIA).
+  const envDebug = {
+    accessKeySet,
+    accessKeyLength: rawKey.length,                        // expect 20
+    accessKeyPrefix: rawKey.slice(0, 4),                   // expect "AKIA"
+    accessKeyHasWhitespace: /\s/.test(rawKey),
+    accessKeyHasQuotes: rawKey.includes('"') || rawKey.includes("'"),
+    secretSet: secretKeySet,
+    secretLength: rawSecret.length,                        // expect 40
+    secretHasWhitespace: /\s/.test(rawSecret),
+    secretHasQuotes: rawSecret.includes('"') || rawSecret.includes("'"),
+    region: regionSet,
+  };
+  console.log(`${LOG_PREFIX} Env shape:`, envDebug);
 
   let result: TestBrokerResult;
   try {
@@ -31,6 +49,7 @@ export async function GET(req: NextRequest) {
       brokerAccountId: "",
       brokerArn: "",
       failureReason: `UNEXPECTED: ${redacted}`,
+      envDebug,
     });
   }
 
@@ -45,5 +64,6 @@ export async function GET(req: NextRequest) {
     brokerAccountId: result.brokerAccountId,
     brokerArn: result.brokerArn,
     ...(result.failureReason && { failureReason: result.failureReason }),
+    envDebug,
   });
 }
