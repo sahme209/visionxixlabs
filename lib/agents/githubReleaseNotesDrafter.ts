@@ -72,7 +72,10 @@ export interface ReleaseNotesOutput {
 }
 
 // Conventional-commit subject pattern: type(scope?)!?: subject
-const SUBJECT_PATTERN = /^(?<type>\w+)(?:\((?<scope>[^)]+)\))?(?<bang>!)?:\s*(?<rest>.+)$/;
+// Uses unnamed groups so the regex compiles under ES2017 targets
+// (Vercel's TS config rejects named capture groups). Indices:
+//   1 = type, 2 = scope (optional), 3 = bang (optional), 4 = rest.
+const SUBJECT_PATTERN = /^(\w+)(?:\(([^)]+)\))?(!)?:\s*(.+)$/;
 
 const KNOWN_TYPES: ReadonlyArray<ConventionalCommitType> = [
   "feat", "fix", "perf", "refactor", "docs", "test", "chore", "build", "ci", "style", "revert",
@@ -80,7 +83,7 @@ const KNOWN_TYPES: ReadonlyArray<ConventionalCommitType> = [
 
 export function parseCommit(c: Commit): ParsedCommit {
   const m = SUBJECT_PATTERN.exec(c.subject);
-  if (!m || !m.groups) {
+  if (!m) {
     return {
       ...c,
       type: "unknown",
@@ -89,17 +92,18 @@ export function parseCommit(c: Commit): ParsedCommit {
       cleanedSubject: c.subject,
     };
   }
-  const rawType = m.groups.type.toLowerCase();
+  const [, rawTypeRaw, scopeRaw, bangRaw, restRaw] = m;
+  const rawType = rawTypeRaw.toLowerCase();
   const type: ConventionalCommitType = (KNOWN_TYPES as readonly string[]).includes(rawType)
     ? (rawType as ConventionalCommitType)
     : "unknown";
-  const breaking = Boolean(m.groups.bang) || /BREAKING[\s_]CHANGE/i.test(c.body ?? "");
+  const breaking = Boolean(bangRaw) || /BREAKING[\s_]CHANGE/i.test(c.body ?? "");
   return {
     ...c,
     type,
-    scope: m.groups.scope ?? null,
+    scope: scopeRaw ?? null,
     breaking,
-    cleanedSubject: m.groups.rest,
+    cleanedSubject: restRaw,
   };
 }
 
