@@ -45,3 +45,6 @@ prisma/dev.db-journal
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Stripe sync artifacts (Payment Link URLs are public; the file is per-run record-keeping)
+/stripe-sync.*.json

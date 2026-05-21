@@ -27,20 +27,22 @@ interface Tier {
   rows: ReadonlyArray<{ label: string; value: string }>;
 }
 
-// Real Stripe checkout links — overridable per environment, with the
-// production fallbacks that were previously held by /operator/pricing.
+// Real Stripe Payment Link URLs synced via scripts/sync-stripe-pricing.mjs
+// on 2026-05-21. Each fallback points at the live link for $149 / $899 /
+// $3,499 monthly + $1,188 / $7,188 / $29,988 yearly. Env-overridable so
+// staging can use test-mode links without code changes.
 const STRIPE_LINKS: Record<"starter" | "growth" | "scale", { monthly: string; annual: string }> = {
   starter: {
-    monthly: process.env.NEXT_PUBLIC_STRIPE_STARTER_MONTHLY || "https://buy.stripe.com/8x25kE1ARe7gbGrcNX6c000",
-    annual:  process.env.NEXT_PUBLIC_STRIPE_STARTER_YEARLY  || "https://buy.stripe.com/bJe14o0wNgfofWH8xH6c003",
+    monthly: process.env.NEXT_PUBLIC_STRIPE_STARTER_MONTHLY || "https://buy.stripe.com/3cI4gAcfv6EO7qb15f6c006",
+    annual:  process.env.NEXT_PUBLIC_STRIPE_STARTER_YEARLY  || "https://buy.stripe.com/3cI8wQ93j0gq7qb6pz6c007",
   },
   growth: {
-    monthly: process.env.NEXT_PUBLIC_STRIPE_GROWTH_MONTHLY  || "https://buy.stripe.com/bJe28s3IZ7ISbGr29j6c001",
-    annual:  process.env.NEXT_PUBLIC_STRIPE_GROWTH_YEARLY   || "https://buy.stripe.com/cNidRa4N3fbk5i301b6c004",
+    monthly: process.env.NEXT_PUBLIC_STRIPE_GROWTH_MONTHLY  || "https://buy.stripe.com/6oU28sbbre7gaCn7tD6c008",
+    annual:  process.env.NEXT_PUBLIC_STRIPE_GROWTH_YEARLY   || "https://buy.stripe.com/00w6oI7ZffbkdOz9BL6c009",
   },
   scale: {
-    monthly: process.env.NEXT_PUBLIC_STRIPE_SCALE_MONTHLY   || "https://buy.stripe.com/aFa28scfv9R0cKv9BL6c002",
-    annual:  process.env.NEXT_PUBLIC_STRIPE_SCALE_YEARLY    || "https://buy.stripe.com/bJeaEY5R77IS8uf5lv6c005",
+    monthly: process.env.NEXT_PUBLIC_STRIPE_SCALE_MONTHLY   || "https://buy.stripe.com/7sY9AUfrH0gqfWH6pz6c00a",
+    annual:  process.env.NEXT_PUBLIC_STRIPE_SCALE_YEARLY    || "https://buy.stripe.com/eVqdRaa7nd3ceSD4hr6c00b",
   },
 };
 
