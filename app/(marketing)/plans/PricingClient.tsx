@@ -4,13 +4,24 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import { useState } from "react";
 import { SocialProofRail } from "../_components/SocialProofRail";
+import { MEMBERSHIP_PLANS, type MembershipPlanId } from "@/lib/pricing/membership";
 
 type BillingPeriod = "monthly" | "annual";
 
+// Tier ids on this page = MEMBERSHIP_PLANS ids + the free "trial" entry.
+type TierId = "trial" | MembershipPlanId;
+
 interface Tier {
-  id: "trial" | "starter" | "growth" | "scale" | "enterprise";
+  id: TierId;
   label: string;
-  monthlyUsd: number | "contact";
+  /**
+   * Pricing source of truth:
+   *  - "trial"  → free
+   *  - "enterprise" → custom
+   *  - everything else reads from MEMBERSHIP_PLANS, which matches the
+   *    real Stripe Payment Link prices in env.
+   */
+  pricing: { kind: "free" } | { kind: "custom" } | { kind: "paid"; planId: MembershipPlanId };
   blurb: string;
   highlight?: boolean;
   rows: ReadonlyArray<{ label: string; value: string }>;
@@ -50,7 +61,7 @@ const TIERS: readonly Tier[] = [
   {
     id: "trial",
     label: "Trial",
-    monthlyUsd: 0,
+    pricing: { kind: "free" },
     blurb: "Open the cockpit, wire one cloud, run the council against a sandbox.",
     rows: [
       { label: "Operators",              value: "1" },
@@ -64,68 +75,96 @@ const TIERS: readonly Tier[] = [
   {
     id: "starter",
     label: "Starter",
-    monthlyUsd: 990,
+    pricing: { kind: "paid", planId: "starter" },
     blurb: "One workspace, one human approver, every safety contract.",
     rows: [
-      { label: "Operators",              value: "3" },
-      { label: "Autonomy cycles / day",  value: "1,000" },
-      { label: "AI provider chain",      value: "free providers + GitHub Models" },
-      { label: "Integrations",           value: "Slack + Teams webhooks" },
-      { label: "Compliance packets",     value: "monthly" },
+      { label: "Operators",              value: "1" },
+      { label: "AI operations / month",  value: "6,000" },
+      { label: "AI provider chain",      value: "free providers only" },
+      { label: "Integrations",           value: "Slack + embed" },
+      { label: "Refresh cadence",        value: "manual" },
       { label: "Approval-only contract", value: "✓" },
     ],
   },
   {
     id: "growth",
     label: "Growth",
-    monthlyUsd: 2900,
-    blurb: "Multi-tenant, multi-cloud, SSO, full Outlook + Teams integrations.",
+    pricing: { kind: "paid", planId: "growth" },
+    blurb: "Phased execution plans, Terraform generation, GitHub connector — the operator's tier.",
     highlight: true,
     rows: [
-      { label: "Operators",              value: "10" },
-      { label: "Autonomy cycles / day",  value: "10,000" },
-      { label: "AI provider chain",      value: "all 9 free providers + BYO key" },
-      { label: "Integrations",           value: "Slack + Teams + Outlook + Gmail + PagerDuty" },
-      { label: "Compliance packets",     value: "weekly + on-demand" },
+      { label: "Operators",              value: "up to 5 team members" },
+      { label: "AI operations / month",  value: "15,000" },
+      { label: "AI provider chain",      value: "all 9 free providers" },
+      { label: "Integrations",           value: "Slack + Teams + Zendesk + Intercom" },
+      { label: "Refresh cadence",        value: "auto · monthly" },
       { label: "Approval-only contract", value: "✓" },
     ],
   },
   {
     id: "scale",
     label: "Scale",
-    monthlyUsd: 7900,
-    blurb: "Strict-all-roles boundary defaults, data-plane workflows, signed Terraform required.",
+    pricing: { kind: "paid", planId: "scale" },
+    blurb: "AWS + Azure + GCP connectors, weekly auto-refresh, daily scan, API + webhooks.",
     rows: [
-      { label: "Operators",              value: "50" },
-      { label: "Autonomy cycles / day",  value: "unlimited" },
-      { label: "AI provider chain",      value: "all + Cloudflare Workers AI" },
-      { label: "Integrations",           value: "all + custom webhook signer" },
-      { label: "Compliance packets",     value: "real-time stream" },
-      { label: "Approval-only contract", value: "✓ + signed Terraform required" },
+      { label: "Operators",              value: "up to 15 team members" },
+      { label: "AI operations / month",  value: "60,000" },
+      { label: "AI provider chain",      value: "all + BYO key" },
+      { label: "Integrations",           value: "all + API + webhooks" },
+      { label: "Refresh cadence",        value: "auto · weekly + daily scan" },
+      { label: "Approval-only contract", value: "✓ · signed Terraform" },
     ],
   },
   {
     id: "enterprise",
     label: "Enterprise",
-    monthlyUsd: "contact",
-    blurb: "Self-host, FedRAMP path, dedicated tenant isolation, audit log streaming.",
+    pricing: { kind: "custom" },
+    blurb: "Self-host, SOC2-ready, RBAC, audit logs, dedicated success manager + SLA.",
     rows: [
       { label: "Operators",              value: "unlimited" },
-      { label: "Autonomy cycles / day",  value: "unlimited" },
+      { label: "AI operations / month",  value: "custom volume" },
       { label: "AI provider chain",      value: "self-host any provider" },
-      { label: "Integrations",           value: "everything + air-gapped option" },
-      { label: "Compliance packets",     value: "continuous + signed by your KMS key" },
+      { label: "Integrations",           value: "everything + custom" },
+      { label: "Refresh cadence",        value: "auto · daily" },
       { label: "Approval-only contract", value: "✓ + dual-control gate" },
     ],
   },
 ];
 
-const ANNUAL_DISCOUNT = 0.85; // 15% off when billed annually
 const usd = (n: number): string => `$${n.toLocaleString("en-US")}`;
+
+interface PricingDisplay {
+  display: string;            // "Free" | "Custom" | "$35" | "$21"
+  suffix: string | null;      // "/ month" | null
+  saveCopy: string | null;    // "billed annually · save 40%" when relevant
+}
+
+function pricingFor(tier: Tier, period: BillingPeriod): PricingDisplay {
+  if (tier.pricing.kind === "free") return { display: "Free", suffix: null, saveCopy: null };
+  if (tier.pricing.kind === "custom") return { display: "Custom", suffix: null, saveCopy: null };
+
+  const plan = MEMBERSHIP_PLANS[tier.pricing.planId];
+  const monthly = plan.monthlyPrice ?? 0;
+  const yearly = plan.yearlyPrice ?? monthly * 12;
+
+  if (period === "monthly") {
+    return { display: usd(monthly), suffix: "/ month", saveCopy: null };
+  }
+  // Annual mode: show the effective monthly cost so the comparison is
+  // honest, plus a "billed annually · save X%" badge that reflects the
+  // ACTUAL discount baked into the yearly Stripe price.
+  const monthlyAnnualEquiv = Math.round(yearly / 12);
+  const fullYear = monthly * 12;
+  const savePct = fullYear > 0 ? Math.round(((fullYear - yearly) / fullYear) * 100) : 0;
+  return {
+    display: usd(monthlyAnnualEquiv),
+    suffix: "/ month",
+    saveCopy: savePct > 0 ? `${usd(yearly)} billed annually · save ${savePct}%` : `${usd(yearly)} billed annually`,
+  };
+}
 
 export function PricingClient() {
   const [period, setPeriod] = useState<BillingPeriod>("monthly");
-  const factor = period === "annual" ? ANNUAL_DISCOUNT : 1;
 
   return (
     <div className="relative">
@@ -174,7 +213,7 @@ export function PricingClient() {
                 period === p ? "bg-indigo-500 text-white" : "text-zinc-400 hover:text-white",
               ].join(" ")}
             >
-              {p === "annual" ? "annual · −15%" : "monthly"}
+              {p === "annual" ? "annual · save 40%" : "monthly"}
             </button>
           ))}
         </div>
@@ -203,21 +242,24 @@ export function PricingClient() {
               ) : null}
 
               <p className="text-[10px] font-mono uppercase tracking-widest text-zinc-500">{t.label}</p>
-              <p className="mt-3 text-2xl md:text-3xl font-bold tabular-nums">
-                {t.monthlyUsd === "contact"
-                  ? "Custom"
-                  : t.monthlyUsd === 0
-                  ? "Free"
-                  : usd(Math.round(t.monthlyUsd * factor))}
-                {typeof t.monthlyUsd === "number" && t.monthlyUsd > 0 && (
-                  <span className="text-[12px] text-zinc-500 font-normal ml-1">/ month</span>
-                )}
-              </p>
-              {period === "annual" && typeof t.monthlyUsd === "number" && t.monthlyUsd > 0 ? (
-                <p className="mt-1 text-[10.5px] font-mono uppercase tracking-widest text-emerald-300/80">
-                  billed annually · save 15%
-                </p>
-              ) : null}
+              {(() => {
+                const p = pricingFor(t, period);
+                return (
+                  <>
+                    <p className="mt-3 text-2xl md:text-3xl font-bold tabular-nums">
+                      {p.display}
+                      {p.suffix ? (
+                        <span className="text-[12px] text-zinc-500 font-normal ml-1">{p.suffix}</span>
+                      ) : null}
+                    </p>
+                    {p.saveCopy ? (
+                      <p className="mt-1 text-[10.5px] font-mono uppercase tracking-widest text-emerald-300/80">
+                        {p.saveCopy}
+                      </p>
+                    ) : null}
+                  </>
+                );
+              })()}
               <p className="mt-3 text-[12px] text-zinc-400 leading-snug">{t.blurb}</p>
 
               <ul className="mt-5 space-y-3 flex-1">
