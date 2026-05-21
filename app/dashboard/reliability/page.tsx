@@ -139,7 +139,7 @@ export default function ReliabilityCenterPage() {
         <Reveal direction="up" delay={0.04}>
           <div className="mb-8">
             <TenantEmptyState
-              icon={BoltIcon}
+              icon={<BoltIcon className="h-5 w-5" />}
               tone="cyan"
               eyebrow="No reliability data yet"
               title="Your control plane lights up the moment Axiom starts doing real work."

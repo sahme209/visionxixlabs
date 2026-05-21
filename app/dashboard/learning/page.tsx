@@ -100,7 +100,7 @@ export default async function LearningPage() {
       {!showSampleData && (
         <div className="mb-6">
           <TenantEmptyState
-            icon={AcademicCapIcon}
+            icon={<AcademicCapIcon className="h-5 w-5" />}
             tone="fuchsia"
             eyebrow="No learning events yet"
             title="AGI starts learning the moment your agents take their first action."

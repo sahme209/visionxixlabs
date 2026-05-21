@@ -105,7 +105,7 @@ export default async function GapsPage() {
       {!showSampleData && (
         <div className="mb-6">
           <TenantEmptyState
-            icon={ExclamationTriangleIcon}
+            icon={<ExclamationTriangleIcon className="h-5 w-5" />}
             tone="fuchsia"
             eyebrow="No gaps detected yet"
             title="Gap detection starts the moment your environment is visible."

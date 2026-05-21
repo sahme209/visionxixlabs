@@ -12,7 +12,7 @@
  * No fabricated counts. No fake records. Just a clear next step.
  */
 
-import type { ComponentType, SVGProps } from "react";
+import type { ReactNode } from "react";
 import Link from "next/link";
 import {
   ArrowRightIcon,
@@ -28,7 +28,13 @@ export interface TenantEmptyStateAction {
 }
 
 export interface TenantEmptyStateProps {
-  icon: ComponentType<SVGProps<SVGSVGElement>>;
+  /**
+   * Already-rendered icon element. Server-component callers pass a
+   * pre-rendered JSX node so we don't try to serialize a component
+   * function across the server→client boundary.
+   * Example: `icon={<BoltIcon className="h-5 w-5" />}`
+   */
+  icon: ReactNode;
   eyebrow: string;
   title: string;
   description: string;
@@ -69,7 +75,7 @@ const TONE_GHOST_CTA: Record<NonNullable<TenantEmptyStateProps["tone"]>, string>
 };
 
 export function TenantEmptyState({
-  icon: Icon,
+  icon,
   eyebrow,
   title,
   description,
@@ -91,7 +97,7 @@ export function TenantEmptyState({
       />
       <div className="relative max-w-xl">
         <div className={`inline-flex items-center justify-center w-12 h-12 rounded-2xl border ${TONE_ICON_BG[tone]} mb-5`}>
-          <Icon className="h-5 w-5" />
+          {icon}
         </div>
         <p className={`text-[10px] font-semibold uppercase tracking-widest mb-2 ${TONE_GHOST_CTA[tone]}`}>
           {eyebrow}

@@ -102,7 +102,7 @@ export default async function ModelsPage() {
       {!showSampleData && (
         <div className="mb-6">
           <TenantEmptyState
-            icon={CpuChipIcon}
+            icon={<CpuChipIcon className="h-5 w-5" />}
             tone="emerald"
             eyebrow="Model registry empty"
             title="Curate your AI model fleet once your workspace is live."

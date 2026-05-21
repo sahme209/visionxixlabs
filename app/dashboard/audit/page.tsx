@@ -109,7 +109,7 @@ export default function AuditCenterPage() {
         <Reveal direction="up" delay={0.04}>
           <div className="mb-8">
             <TenantEmptyState
-              icon={DocumentTextIcon}
+              icon={<DocumentTextIcon className="h-5 w-5" />}
               tone="fuchsia"
               eyebrow="Nothing audited yet"
               title="Your audit timeline is waiting on its first connection."

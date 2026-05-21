@@ -123,7 +123,7 @@ export default async function AutomationPage() {
       {!showSampleData && (
         <div className="mb-6">
           <TenantEmptyState
-            icon={BoltIcon}
+            icon={<BoltIcon className="h-5 w-5" />}
             tone="cyan"
             eyebrow="Automation engine"
             title="Your script registry and runs appear once a connector is wired."

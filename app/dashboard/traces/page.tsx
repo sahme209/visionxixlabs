@@ -223,7 +223,7 @@ export default function TraceViewerPage() {
         <Reveal direction="up" delay={0.04}>
           <div className="mb-8">
             <TenantEmptyState
-              icon={ChartBarSquareIcon}
+              icon={<ChartBarSquareIcon className="h-5 w-5" />}
               tone="violet"
               eyebrow="No traces yet"
               title="Operation traces appear automatically the moment work begins."

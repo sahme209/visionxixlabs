@@ -134,7 +134,7 @@ export default function SecurityCenterPage() {
         <Reveal direction="up" delay={0.04}>
           <div className="mb-8">
             <TenantEmptyState
-              icon={ShieldCheckIcon}
+              icon={<ShieldCheckIcon className="h-5 w-5" />}
               tone="emerald"
               eyebrow="Trust posture pending"
               title="Your security posture appears the moment a cloud is linked."

@@ -95,7 +95,7 @@ export default function CommandCenterPage() {
         <Reveal direction="up" delay={0.03}>
           <div className="mb-8">
             <TenantEmptyState
-              icon={SparklesIcon}
+              icon={<SparklesIcon className="h-5 w-5" />}
               tone="violet"
               eyebrow={`Welcome — let's get you to value`}
               title="Connect a cloud and AGI takes the first action for you."

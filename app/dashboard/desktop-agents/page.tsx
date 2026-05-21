@@ -99,7 +99,7 @@ export default async function DesktopAgentsPage() {
       {!showSampleData && (
         <div className="mb-6">
           <TenantEmptyState
-            icon={ComputerDesktopIcon}
+            icon={<ComputerDesktopIcon className="h-5 w-5" />}
             tone="violet"
             eyebrow="No desktop devices yet"
             title="Pair your first machine to extend AGI to local execution."
