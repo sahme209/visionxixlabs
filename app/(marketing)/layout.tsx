@@ -17,6 +17,8 @@ const NAV: ReadonlyArray<{ href: string; label: string }> = [
   { href: "/platforms",     label: "Platforms" },
   { href: "/trust",         label: "Trust" },
   { href: "/plans",         label: "Plans" },
+  { href: "/compare",       label: "Compare" },
+  { href: "/faq",           label: "FAQ" },
 ];
 
 const FOOTER_GROUPS: ReadonlyArray<{
@@ -31,6 +33,14 @@ const FOOTER_GROUPS: ReadonlyArray<{
       { href: "/disciplines",  label: "Disciplines" },
       { href: "/platforms",    label: "Platforms" },
       { href: "/plans",        label: "Plans" },
+    ],
+  },
+  {
+    title: "Decide",
+    links: [
+      { href: "/compare",      label: "Compare" },
+      { href: "/faq",          label: "FAQ" },
+      { href: "/contact",      label: "Book a walkthrough" },
     ],
   },
   {
@@ -95,7 +105,7 @@ export default function MarketingLayout({ children }: { children: ReactNode }) {
       <main>{children}</main>
 
       <footer className="relative z-10 border-t border-white/[0.04] mt-12">
-        <div className="mx-auto max-w-6xl px-6 md:px-10 py-12 grid grid-cols-2 md:grid-cols-4 gap-8">
+        <div className="mx-auto max-w-6xl px-6 md:px-10 py-12 grid grid-cols-2 md:grid-cols-5 gap-8">
           <div>
             <div className="flex items-center gap-2">
               <span className="h-2 w-2 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.6)]" />

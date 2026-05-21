@@ -14,6 +14,7 @@
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { useMemo, useState } from "react";
+import { SocialProofRail } from "../_components/SocialProofRail";
 
 interface Discipline {
   name: string;
@@ -194,6 +195,9 @@ export function DisciplinesClient() {
           ))}
         </div>
       </section>
+
+      {/* ===== SOCIAL PROOF ===== */}
+      <SocialProofRail />
 
       {/* ===== CLOSER ===== */}
       <section className="relative z-10 mx-auto max-w-3xl px-6 md:px-10 py-16 text-center">

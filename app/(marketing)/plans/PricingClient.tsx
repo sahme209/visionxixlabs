@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { useState } from "react";
+import { SocialProofRail } from "../_components/SocialProofRail";
 
 type BillingPeriod = "monthly" | "annual";
 
@@ -203,6 +204,8 @@ export function PricingClient() {
           ))}
         </div>
       </section>
+
+      <SocialProofRail />
 
       <section className="relative z-10 mx-auto max-w-3xl px-6 md:px-10 pb-20 text-center">
         <h3 className="text-xl md:text-2xl font-semibold tracking-tight">

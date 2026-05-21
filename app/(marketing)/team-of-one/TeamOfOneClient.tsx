@@ -12,6 +12,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 // `useRef` is used by the AnimatedNumber sub-component below.
 import Link from "next/link";
 import { RoiCalculatorClient } from "./RoiCalculatorClient";
+import { SocialProofRail } from "../_components/SocialProofRail";
 
 const DISCIPLINES: ReadonlyArray<{ label: string; tagline: string; emoji?: never; symbol: string }> = [
   { label: "DevOps",            tagline: "Runbooks + IaC drift + auto-rollback",        symbol: "△" },
@@ -312,6 +313,9 @@ export function TeamOfOneClient() {
       <section className="relative z-10 mx-auto max-w-6xl px-6 md:px-10 py-12">
         <RoiCalculatorClient />
       </section>
+
+      {/* ===== SOCIAL PROOF ===== */}
+      <SocialProofRail />
 
       {/* ===== CLOSER ===== */}
       <section className="relative z-10 mx-auto max-w-4xl px-6 md:px-10 py-24 text-center">
