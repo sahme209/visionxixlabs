@@ -50,9 +50,20 @@ const GROUPS: NavGroup[] = [
   {
     label: "Platform",
     items: [
-      { href: "/dashboard/modules",    label: "Modules",         icon: Squares2X2Icon  },
-      { href: "/dashboard/connectors", label: "Connectors",      icon: PuzzlePieceIcon },
-      { href: "/dashboard/agents",     label: "Agent workforce", icon: CpuChipIcon     },
+      { href: "/dashboard/modules",    label: "Modules",          icon: Squares2X2Icon  },
+      { href: "/dashboard/sub-tools",  label: "Sub-tools",        icon: Squares2X2Icon  },
+      { href: "/dashboard/connectors", label: "Connectors",       icon: PuzzlePieceIcon },
+    ],
+  },
+  {
+    label: "AI Ops",
+    items: [
+      { href: "/dashboard/agents",         label: "Agent workforce", icon: CpuChipIcon           },
+      { href: "/dashboard/automation",     label: "Automation",      icon: BoltIcon              },
+      { href: "/dashboard/desktop-agents", label: "Desktop agents",  icon: ComputerDesktopIcon   },
+      { href: "/dashboard/models",         label: "Model registry",  icon: SparklesIcon          },
+      { href: "/dashboard/gaps",           label: "Gap detection",   icon: BellAlertIcon         },
+      { href: "/dashboard/learning",       label: "Learning",        icon: BeakerIcon            },
     ],
   },
   {
