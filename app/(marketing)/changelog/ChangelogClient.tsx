@@ -24,6 +24,14 @@ interface ChangelogEntry {
 // Newest first. Add to the top when shipping a new batch.
 const ENTRIES: readonly ChangelogEntry[] = [
   {
+    phases: "286-290",
+    title: "/compare · /faq · social proof · /contact rebuild",
+    summary:
+      "Three-tab coverage matrix vs hire-team / AI tools / SaaS stack. Thirteen-question FAQ with category filter. Shared social-proof rail wired into team-of-one, plans, and disciplines closers. /contact moved into the unified marketing layout with an Axiom-flavored form posting to the existing /api/contact endpoint.",
+    tag: "marketing",
+    surface: "web",
+  },
+  {
     phases: "282-285",
     title: "Disciplines + changelog + nav polish",
     summary:
