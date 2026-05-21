@@ -15,7 +15,7 @@ const NAV: ReadonlyArray<{ href: string; label: string }> = [
   { href: "/how-it-works",  label: "How it works" },
   { href: "/platforms",     label: "Platforms" },
   { href: "/trust",         label: "Trust" },
-  { href: "/pricing",       label: "Pricing" },
+  { href: "/plans",         label: "Plans" },
 ];
 
 const FOOTER_GROUPS: ReadonlyArray<{
@@ -28,7 +28,7 @@ const FOOTER_GROUPS: ReadonlyArray<{
       { href: "/team-of-one",  label: "Overview" },
       { href: "/how-it-works", label: "How it works" },
       { href: "/platforms",    label: "Platforms" },
-      { href: "/pricing",      label: "Pricing" },
+      { href: "/plans",        label: "Plans" },
     ],
   },
   {

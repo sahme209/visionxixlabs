@@ -347,10 +347,10 @@ export function TeamOfOneClient() {
             Open the cockpit →
           </Link>
           <Link
-            href="/pricing"
+            href="/plans"
             className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.02] px-6 py-3 text-sm text-zinc-300 hover:bg-white/[0.06] transition"
           >
-            See pricing
+            See plans
           </Link>
         </motion.div>
       </section>
