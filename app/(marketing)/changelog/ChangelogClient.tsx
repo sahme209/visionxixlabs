@@ -24,6 +24,14 @@ interface ChangelogEntry {
 // Newest first. Add to the top when shipping a new batch.
 const ENTRIES: readonly ChangelogEntry[] = [
   {
+    phases: "316-322",
+    title: "Operations breadth — database, cloud cost, observability, HR, sales kernels",
+    summary:
+      "Six new pure-function kernels covering the operations domains the platform hadn't deeply hit yet (73 new tests). databaseSchemaReviewer audits tables for missing indexes / FKs / naming drift. slowQueryProposer emits add_index DDL or rewrite proposals. idleCloudResourceDetector finds idle EBS/EIP/Lambda/Snapshot/RDS/ELB with $/mo savings. alertNoiseReducer proposes threshold/window/pairing changes. hrOnboardingPlanner builds 4-phase onboarding plans. salesLeadEnricher classifies inbound leads with ICP fit score + plan suggestion + next action.",
+    tag: "agent",
+    surface: "all",
+  },
+  {
     phases: "308-315",
     title: "Python contract + execution planner + local model invocation + GitHub + incident pipeline",
     summary:
