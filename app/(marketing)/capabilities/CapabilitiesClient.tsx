@@ -53,7 +53,10 @@ const CAPABILITIES: readonly Capability[] = [
   { name: "Idle Cloud Resource Detector", role: "planning", kernel: "lib/agents/idleCloudResourceDetector", proves: "Finds idle EBS / EIP / Lambda / Snapshot / RDS / ELB / empty S3. Production-tag refuses auto-delete; surfaces $/mo savings.",       isNew: true },
   { name: "Alert Noise Reducer",   role: "planning",   kernel: "lib/agents/alertNoiseReducer",           proves: "Analyzes alert fire / ack / incident rates, proposes raise_threshold / widen_window / require_paired_metric / mute / split_routing.",  isNew: true },
   { name: "HR Onboarding Planner", role: "planning",   kernel: "lib/agents/hrOnboardingPlanner",         proves: "Builds a 4-phase onboarding plan (pre-start / day-one / week-one / month-one). Refuses interns with elevated access.",                isNew: true },
-  { name: "Sales Lead Enricher",   role: "planning",   kernel: "lib/agents/salesLeadEnricher",           proves: "Classifies an inbound lead — segment (enterprise / mid-market / startup / personal / education), ICP fit score, suggested plan + next action.", isNew: true },
+  { name: "Sales Lead Enricher",   role: "planning",   kernel: "lib/agents/salesLeadEnricher",           proves: "Classifies an inbound lead — segment (enterprise / mid-market / startup / personal / education), ICP fit score, suggested plan + next action." },
+  { name: "Workflow Orchestrator", role: "planning",   kernel: "lib/agents/agentWorkflowOrchestrator",   proves: "Chains kernels into typed workflows with per-step gate handoff. Closed-union step states; safety-tier rejection blocks downstream dispatch.", isNew: true },
+  { name: "Meta-Reasoner",         role: "planning",   kernel: "lib/agents/metaReasonerKernel",          proves: "The agent that picks agents. Ranks the kernel catalog against an operator problem with closed-union pick / ambiguous / no_kernel verdict.",   isNew: true },
+  { name: "Multi-Agent Debate",    role: "planning",   kernel: "lib/agents/multiAgentDebate",            proves: "N kernels propose, council reconciles, dissent surfaced explicitly. Safety-tier reject is a hard veto.",                                         isNew: true },
 
   // safety
   { name: "Policy Gate",         role: "safety",       kernel: "lib/agents/policyGateEvaluator",         proves: "Applies the tenant charter to every proposal — refuses anything outside the operator-signed scope.",         evidence: { href: "/dashboard/admin-charters",  label: "tenant charters" } },
@@ -65,9 +68,11 @@ const CAPABILITIES: readonly Capability[] = [
   { name: "Verifier",            role: "verification", kernel: "lib/agents/verifierPostExecChecker",     proves: "Post-execution check — confirms the action achieved the expected outcome.",                                  evidence: { href: "/dashboard/audit",           label: "audit log" } },
   { name: "Auditor",             role: "verification", kernel: "lib/agents/auditorRationaleWriter",      proves: "Writes the durable sha-256 rationale row that makes the action replayable and provable.",                    evidence: { href: "/dashboard/audit",           label: "audit log" } },
   { name: "Improver",            role: "verification", kernel: "lib/agents/improverProposalSynthesizer", proves: "Proposes method improvements from the audit trail — the loop that turns evidence into a better proposal.",     evidence: { href: "/dashboard/agent-proposals", label: "method proposals" } },
+  { name: "Confidence Calibrator", role: "verification", kernel: "lib/agents/confidenceCalibrator",      proves: "Wilson-lower-bound calibration of kernel accuracy from approval / reject / rollback outcomes. Recommends trust_more / pause / trust_less.", isNew: true },
 
   // memory
   { name: "Activity Aggregator", role: "memory",       kernel: "lib/agents/agentActivityAggregator",     proves: "Aggregates per-agent activity into the operator-visible cockpit timeline.",                                  evidence: { href: "/dashboard/agent-activity",  label: "agent activity" } },
+  { name: "Memory Consolidator", role: "memory",       kernel: "lib/agents/agentMemoryConsolidator",     proves: "Compresses raw observations into episodic / semantic / procedural records. Recurrent observations promote to semantic. Prunes by relevance + age.", isNew: true },
 ];
 
 const ROLE_FILTERS: ReadonlyArray<{ id: Capability["role"] | "all"; label: string }> = [

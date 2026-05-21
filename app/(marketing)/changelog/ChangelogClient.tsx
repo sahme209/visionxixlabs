@@ -24,6 +24,14 @@ interface ChangelogEntry {
 // Newest first. Add to the top when shipping a new batch.
 const ENTRIES: readonly ChangelogEntry[] = [
   {
+    phases: "323-328",
+    title: "Top AGI — workflow orchestrator + meta-reasoner + calibrator + debate + memory",
+    summary:
+      "Five keystone kernels that separate \"tools that call AI\" from a real autonomous agent workforce (64 new tests). agentWorkflowOrchestrator chains kernels into typed multi-step workflows with per-step gates. metaReasonerKernel picks the right kernel for an operator problem. confidenceCalibrator computes Wilson-lower-bound accuracy + recommends trust_more / pause / trust_less. multiAgentDebate reconciles N proposals with safety-tier veto. agentMemoryConsolidator promotes recurrent episodes to semantic memory.",
+    tag: "agent",
+    surface: "all",
+  },
+  {
     phases: "316-322",
     title: "Operations breadth — database, cloud cost, observability, HR, sales kernels",
     summary:
