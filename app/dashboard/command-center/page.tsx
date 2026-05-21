@@ -1507,7 +1507,7 @@ function OnboardingPanel() {
 // Replaces a static demo PROVIDERS array that fabricated AWS account IDs
 // (123456789012), resource counts (142), and finding counts (14). This
 // component renders **only** what canonical state reports — including the
-Data source, real missing-requirements text, and the typed
+// honest source mode, real missing-requirements text, and the typed
 // safeNextAction. If no providers are connected the panel shows the empty
 // state with a Connect provider CTA rather than fake demo data.
 // ---------------------------------------------------------------------------
