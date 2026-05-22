@@ -40,16 +40,42 @@ const ENGINEER_LOOKUP: Map<string, AgentEngineer> = new Map(
   AGENT_WORKFORCE_REGISTRY.filter((e) => e.productLayer === "client").map((e) => [e.id, e] as const),
 );
 
-export default async function EngineerApprovalsPage() {
+const STATUS_FILTERS = ["all", "pending", "approved", "rejected", "expired"] as const;
+type StatusFilter = (typeof STATUS_FILTERS)[number];
+
+function parseStatusFilter(raw: string | string[] | undefined): StatusFilter {
+  const v = Array.isArray(raw) ? raw[0] : raw;
+  return STATUS_FILTERS.includes(v as StatusFilter) ? (v as StatusFilter) : "all";
+}
+
+function parseEngineerFilter(raw: string | string[] | undefined): string | null {
+  const v = Array.isArray(raw) ? raw[0] : raw;
+  if (!v) return null;
+  return ENGINEER_LOOKUP.has(v) ? v : null;
+}
+
+export default async function EngineerApprovalsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ status?: string | string[]; engineer?: string | string[] }>;
+}) {
   const ctx = await currentContext();
   if (!ctx.isAuthenticated || !ctx.organizationId) {
     return <div className="p-8 text-sm text-zinc-300">Sign in required.</div>;
   }
 
+  const sp = await searchParams;
+  const statusFilter = parseStatusFilter(sp.status);
+  const engineerFilter = parseEngineerFilter(sp.engineer);
+
   // Read the durable Prisma snapshot + per-approver vote rows. Survives
   // deploys; no dependency on the engine's in-memory state.
   const snapshots = await prisma.engineerApprovalSnapshot.findMany({
-    where: { organizationId: String(ctx.organizationId) },
+    where: {
+      organizationId: String(ctx.organizationId),
+      ...(statusFilter !== "all" ? { status: statusFilter } : {}),
+      ...(engineerFilter ? { engineerId: engineerFilter } : {}),
+    },
     orderBy: { createdAt: "desc" },
     take: 50,
     include: {
@@ -82,9 +108,21 @@ export default async function EngineerApprovalsPage() {
     };
   }).filter((r): r is NonNullable<typeof r> => r !== null);
 
-  const pendingCount  = rows.filter((r) => r.snapshot.status === "pending").length;
-  const approvedCount = rows.filter((r) => r.snapshot.status === "approved").length;
-  const rejectedCount = rows.filter((r) => r.snapshot.status === "rejected").length;
+  // Unfiltered status counts — stats row stays meaningful regardless of
+  // the active filter, and the pills can show counts per state.
+  const statusGroups = await prisma.engineerApprovalSnapshot.groupBy({
+    by: ["status"],
+    where: { organizationId: String(ctx.organizationId) },
+    _count: { _all: true },
+  }).catch(() => [] as Array<{ status: string; _count: { _all: number } }>);
+  const countByStatus = new Map<string, number>(
+    statusGroups.map((g) => [g.status, g._count._all]),
+  );
+  const pendingCount  = countByStatus.get("pending")  ?? 0;
+  const approvedCount = countByStatus.get("approved") ?? 0;
+  const rejectedCount = countByStatus.get("rejected") ?? 0;
+  const expiredCount  = countByStatus.get("expired")  ?? 0;
+  const totalCount    = pendingCount + approvedCount + rejectedCount + expiredCount;
 
   return (
     <div className="relative">
@@ -108,18 +146,40 @@ export default async function EngineerApprovalsPage() {
         </p>
       </div>
 
-      <section className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-8">
+      <section className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-6">
         <Stat label="Pending" value={pendingCount} icon={ClockIcon} tone="text-amber-300" />
-        <Stat label="Approved · last 50" value={approvedCount} icon={CheckCircleIcon} tone="text-emerald-300" />
-        <Stat label="Rejected · last 50" value={rejectedCount} icon={ExclamationTriangleIcon} tone="text-rose-300" />
+        <Stat label="Approved · all-time" value={approvedCount} icon={CheckCircleIcon} tone="text-emerald-300" />
+        <Stat label="Rejected · all-time" value={rejectedCount} icon={ExclamationTriangleIcon} tone="text-rose-300" />
+      </section>
+
+      <section className="flex items-center gap-1.5 flex-wrap mb-6">
+        <FilterPill href={buildFilterHref(null, engineerFilter)} active={statusFilter === "all"}      label={`all · ${totalCount}`} />
+        <FilterPill href={buildFilterHref("pending",  engineerFilter)} active={statusFilter === "pending"}  label={`pending · ${pendingCount}`}  tone="amber" />
+        <FilterPill href={buildFilterHref("approved", engineerFilter)} active={statusFilter === "approved"} label={`approved · ${approvedCount}`} tone="emerald" />
+        <FilterPill href={buildFilterHref("rejected", engineerFilter)} active={statusFilter === "rejected"} label={`rejected · ${rejectedCount}`} tone="rose" />
+        <FilterPill href={buildFilterHref("expired",  engineerFilter)} active={statusFilter === "expired"}  label={`expired · ${expiredCount}`}  tone="zinc" />
+        {engineerFilter && (
+          <FilterPill
+            href={buildFilterHref(statusFilter === "all" ? null : statusFilter, null)}
+            active
+            tone="violet"
+            label={`engineer · ${ENGINEER_LOOKUP.get(engineerFilter)?.displayName ?? engineerFilter} ✕`}
+          />
+        )}
       </section>
 
       {rows.length === 0 ? (
         <section className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-8 text-center">
           <CpuChipIcon className="h-6 w-6 text-zinc-500 mx-auto mb-3" />
-          <p className="text-[13px] font-semibold text-white">No engineer-sourced approvals yet.</p>
+          <p className="text-[13px] font-semibold text-white">
+            {statusFilter === "all" && !engineerFilter
+              ? "No engineer-sourced approvals yet."
+              : "No approvals match this filter."}
+          </p>
           <p className="text-[11.5px] text-zinc-500 mt-1 max-w-md mx-auto leading-snug">
-            When AGI stages an action that needs approval, the request lands here with the engineer, audit correlation id, and effective policy in plain view.
+            {statusFilter === "all" && !engineerFilter
+              ? "When AGI stages an action that needs approval, the request lands here with the engineer, audit correlation id, and effective policy in plain view."
+              : "Try removing the filter or pick a different status."}
           </p>
         </section>
       ) : (
@@ -170,6 +230,34 @@ function Stat({ label, value, icon: Icon, tone, sub }: { label: string; value: n
       <p className="text-[11px] text-zinc-400 mt-0.5">{label}</p>
       {sub && <p className="text-[10px] text-zinc-500 mt-1 leading-snug">{sub}</p>}
     </div>
+  );
+}
+
+function buildFilterHref(status: StatusFilter | null, engineerId: string | null): string {
+  const params = new URLSearchParams();
+  if (status && status !== "all") params.set("status", status);
+  if (engineerId) params.set("engineer", engineerId);
+  const q = params.toString();
+  return q ? `/dashboard/workforce/approvals?${q}` : "/dashboard/workforce/approvals";
+}
+
+function FilterPill({
+  href, active, label, tone = "zinc",
+}: { href: string; active: boolean; label: string; tone?: "zinc" | "amber" | "emerald" | "rose" | "violet" }) {
+  const toneClass = {
+    zinc:    active ? "bg-white/[0.08] text-white border-white/[0.12]"               : "bg-white/[0.02] text-zinc-400 border-white/[0.06] hover:text-zinc-200",
+    amber:   active ? "bg-amber-500/15 text-amber-200 border-amber-500/40"           : "bg-white/[0.02] text-zinc-400 border-white/[0.06] hover:text-amber-200",
+    emerald: active ? "bg-emerald-500/15 text-emerald-200 border-emerald-500/40"     : "bg-white/[0.02] text-zinc-400 border-white/[0.06] hover:text-emerald-200",
+    rose:    active ? "bg-rose-500/15 text-rose-200 border-rose-500/40"              : "bg-white/[0.02] text-zinc-400 border-white/[0.06] hover:text-rose-200",
+    violet:  active ? "bg-violet-500/15 text-violet-200 border-violet-500/40"        : "bg-white/[0.02] text-zinc-400 border-white/[0.06] hover:text-violet-200",
+  }[tone];
+  return (
+    <Link
+      href={href}
+      className={`text-[10px] font-mono uppercase tracking-wider border rounded-full px-2.5 py-1 transition ${toneClass}`}
+    >
+      {label}
+    </Link>
   );
 }
 
