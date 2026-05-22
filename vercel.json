@@ -36,6 +36,10 @@
     {
       "path": "/api/cron/rebuild-usage-summary",
       "schedule": "0 */4 * * *"
+    },
+    {
+      "path": "/api/cron/check-billing-alerts",
+      "schedule": "*/30 * * * *"
     }
   ]
 }

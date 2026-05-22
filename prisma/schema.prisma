@@ -1157,6 +1157,30 @@ model UsageEvent {
   @@index([correlationId])
 }
 
+model BillingAlert {
+  id               String   @id @default(cuid())
+  organizationId   String
+  /// ai_credits | agent_runs_per_month | connectors | etc. (matches EntitlementDimension + ai_credits)
+  dimension        String
+  /// 70 | 90 | 100
+  threshold        Int
+  /// YYYY-MM — same threshold can re-fire next month.
+  periodMonth      String
+  planTier         String
+  ratioAtTrigger   Float
+  limitAtTrigger   Int?
+  currentAtTrigger Int
+  deliveredAt      DateTime?
+  /// "dashboard" | "email" | "slack" — for future delivery wiring.
+  deliveryChannel  String   @default("dashboard")
+  correlationId    String
+  createdAt        DateTime @default(now())
+
+  @@unique([organizationId, dimension, threshold, periodMonth])
+  @@index([organizationId, createdAt])
+  @@index([periodMonth])
+}
+
 model WorkspaceUsageSummary {
   id                  String   @id @default(cuid())
   organizationId      String
