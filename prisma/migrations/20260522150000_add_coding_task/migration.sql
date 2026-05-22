@@ -12,7 +12,7 @@ CREATE TABLE "CodingTask" (
   "instruction" TEXT NOT NULL,
   "repoRef" TEXT NOT NULL,
   "branchHint" TEXT,
-  /// queued | running | succeeded | failed | cancelled — mirrors PipelineRun.status.
+  -- status: queued | running | succeeded | failed | cancelled — mirrors PipelineRun.status.
   "status" TEXT NOT NULL DEFAULT 'queued',
   "createdBy" TEXT NOT NULL,
   "correlationId" TEXT NOT NULL,

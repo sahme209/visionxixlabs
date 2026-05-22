@@ -19,12 +19,12 @@ CREATE TABLE "AIProviderRate" (
   "displayName" TEXT NOT NULL,
   "inputCentsPerMillion" INTEGER NOT NULL,
   "outputCentsPerMillion" INTEGER NOT NULL,
-  /// Nullable — many models have no cached read pricing.
+  -- Nullable — many models have no cached read pricing.
   "cachedReadCentsPerMillion" INTEGER,
-  /// Nullable — batch APIs offer ~50% discount; null when not applicable.
+  -- Nullable — batch APIs offer ~50% discount; null when not applicable.
   "batchInputCentsPerMillion" INTEGER,
   "batchOutputCentsPerMillion" INTEGER,
-  /// Negotiated enterprise rate, null on list price rows.
+  -- Negotiated enterprise rate, null on list price rows.
   "enterpriseRateNote" TEXT,
   "currency" TEXT NOT NULL DEFAULT 'USD',
   "effectiveFrom" TIMESTAMP(3) NOT NULL,
@@ -43,19 +43,19 @@ CREATE INDEX "AIProviderRate_isActive_idx" ON "AIProviderRate"("isActive");
 CREATE TABLE "UsageEvent" (
   "id" TEXT NOT NULL,
   "organizationId" TEXT NOT NULL,
-  /// "ai_invocation" | "agent_run" | "automation_run" | "connector_sync"
-  /// | "cloud_scan" | "report_generated" | "monitoring_event" | "desktop_task"
+  -- eventKind: ai_invocation | agent_run | automation_run | connector_sync
+  -- | cloud_scan | report_generated | monitoring_event | desktop_task
   "eventKind" TEXT NOT NULL,
   "provider" TEXT,
   "model" TEXT,
   "inputTokens" INTEGER NOT NULL DEFAULT 0,
   "outputTokens" INTEGER NOT NULL DEFAULT 0,
   "cachedReadTokens" INTEGER NOT NULL DEFAULT 0,
-  /// Cost attributed to VisionXIXLabs in cents (USD). Integer — no float.
+  -- Cost attributed to VisionXIXLabs in cents (USD). Integer — no float.
   "costCents" INTEGER NOT NULL DEFAULT 0,
-  /// Operator/agent that triggered the event.
+  -- Operator/agent that triggered the event.
   "triggeredBy" TEXT,
-  /// Optional join keys to existing telemetry (PII-safe).
+  -- Optional join keys to existing telemetry (PII-safe).
   "aiInvocationId" TEXT,
   "correlationId" TEXT,
   "metadata" JSONB,
@@ -72,7 +72,7 @@ CREATE INDEX "UsageEvent_correlationId_idx" ON "UsageEvent"("correlationId");
 CREATE TABLE "WorkspaceUsageSummary" (
   "id" TEXT NOT NULL,
   "organizationId" TEXT NOT NULL,
-  /// Period key in YYYY-MM format. One row per workspace per month.
+  -- Period key in YYYY-MM format. One row per workspace per month.
   "periodMonth" TEXT NOT NULL,
   "totalCostCents" INTEGER NOT NULL DEFAULT 0,
   "aiCostCents" INTEGER NOT NULL DEFAULT 0,
