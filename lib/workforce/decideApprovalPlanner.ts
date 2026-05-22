@@ -104,7 +104,11 @@ export function planDecideApproval(input: PlanDecideInput): DecidePlan {
   }
 
   // 6. accept — project quorum with the new decision appended.
-  const projected = [
+  // Annotate explicitly: spreading a ReadonlyArray<QuorumDecision> into a
+  // fresh array widens the inferred element type, and the inline object
+  // literal { approverUserId, decision } loses the "approved" | "rejected"
+  // narrowing on `decision` if not annotated.
+  const projected: QuorumDecision[] = [
     ...input.existingDecisions,
     { approverUserId: input.newApproverUserId, decision },
   ];
