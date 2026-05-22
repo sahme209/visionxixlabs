@@ -101,7 +101,13 @@ export async function planAndRequestIndexApply(input: IndexApplyInput): Promise<
     connector: input.connector ?? "postgres",
     requestedBy: input.requestedBy,
     correlationId: input.correlationId,
-    metadata: { proposalId: proposal.id, table: tableLabel, expectedGain: proposal.expectedGain },
+    metadata: {
+      proposalId: proposal.id,
+      table: tableLabel,
+      proposalKind: proposal.kind,
+      riskTier: proposal.riskTier,
+      confidence: proposal.confidence,
+    },
   });
   return {
     ok: true,
