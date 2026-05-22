@@ -73,6 +73,7 @@ export type AuditAction =
   | "engineer.action_blocked"
   | "engineer.approval_created"
   | "engineer.approval_voted"
+  | "engineer.approval_expired"
   | "engineer.policy_override_updated"
   | "engineer.registry_synced"
   // Generic

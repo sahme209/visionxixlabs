@@ -28,6 +28,10 @@
     {
       "path": "/api/notifications/cron-drain-retries",
       "schedule": "*/5 * * * *"
+    },
+    {
+      "path": "/api/cron/sweep-engineer-approvals",
+      "schedule": "*/15 * * * *"
     }
   ]
 }
