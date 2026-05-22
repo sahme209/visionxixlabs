@@ -18,6 +18,8 @@ import { decideApproval, getApproval } from "@/lib/approvals/approvalEngine";
 import { record as recordAudit } from "@/lib/audit/secureAudit";
 import { id as idFactory } from "@/lib/domain/ids";
 import { planDecideApproval, type DecideRejectReason } from "@/lib/workforce/decideApprovalPlanner";
+import { resumePipelineStageFromApproval, type ApprovalTerminalStatus } from "@/lib/workforce/pipelines/resumeFromApproval";
+import { advancePipelineRun } from "@/lib/workforce/pipelines/pipelineRunner";
 
 export const dynamic = "force-dynamic";
 
@@ -148,6 +150,36 @@ export async function POST(req: NextRequest, ctx: { params: Promise<{ id: string
         reason,
       });
       engineAccepted = outcome.allowed;
+    }
+
+    // Pipeline-source resume — when this snapshot was minted from a
+    // pipeline approval gate, propagate the terminal status to the
+    // stage row and advance the pipeline run. Best-effort: if the
+    // resume fails the snapshot is still terminal; operator can
+    // re-trigger via the pipeline detail page.
+    if (snap.sourceKind === "pipeline_stage" && snap.pipelineStageRunId) {
+      try {
+        const plan = resumePipelineStageFromApproval(quorum.status as ApprovalTerminalStatus);
+        if (plan.stageStatus !== "no_change") {
+          const stageUpdate = await prisma.pipelineStageRun.updateMany({
+            where: { id: snap.pipelineStageRunId, status: "awaiting_approval" },
+            data: {
+              status: plan.stageStatus,
+              completedAt: new Date(),
+              errorMessage: plan.errorMessage ?? null,
+            },
+          });
+          if (plan.shouldAdvanceRun && stageUpdate.count > 0) {
+            const stageRow = await prisma.pipelineStageRun.findUnique({
+              where: { id: snap.pipelineStageRunId },
+              select: { runId: true },
+            });
+            if (stageRow) await advancePipelineRun(stageRow.runId);
+          }
+        }
+      } catch {
+        // Best-effort. Pipeline run can be advanced manually.
+      }
     }
   }
 

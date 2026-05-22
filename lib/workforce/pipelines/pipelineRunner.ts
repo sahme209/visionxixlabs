@@ -27,6 +27,7 @@ import {
   bootstrapStageExecutorRegistry,
   getStageExecutor,
 } from "./stageExecutorRegistry";
+import { mintPipelineStageApproval } from "./mintPipelineStageApproval";
 
 export interface StartPipelineInput {
   organizationId: string;
@@ -145,15 +146,44 @@ export async function advancePipelineRun(runId: string): Promise<void> {
       return;
     }
     if (plan.kind === "await_approval") {
-      // Mark the stage as awaiting_approval (no approval mint yet — that's
-      // a follow-up phase) and stop. Run stays "running".
       const stage = run.stages.find((s) => s.ordering === plan.ordering);
-      if (stage && stage.status !== "awaiting_approval") {
-        await prisma.pipelineStageRun.update({
-          where: { id: stage.id },
-          data: { status: "awaiting_approval", startedAt: new Date() },
-        });
+      if (!stage) return;
+
+      // Idempotent: if the stage already has an approval, just stop.
+      if (stage.status === "awaiting_approval" && stage.approvalRequestId) {
+        return;
       }
+
+      // Atomic CAS into awaiting_approval so concurrent advances don't
+      // double-mint snapshots.
+      const claim = await prisma.pipelineStageRun.updateMany({
+        where: { id: stage.id, status: "queued", approvalRequestId: null },
+        data: { status: "awaiting_approval", startedAt: new Date() },
+      });
+      if (claim.count === 0) {
+        // Another caller already minted; nothing to do.
+        return;
+      }
+
+      const def = findPipelineDefinition(run.pipelineId);
+      const stageDef = def?.stages.find((s) => s.id === stage.stageId);
+      const stageName = stageDef?.name ?? stage.stageId;
+
+      const minted = await mintPipelineStageApproval({
+        organizationId: run.organizationId,
+        pipelineId: run.pipelineId,
+        runId: run.id,
+        stageRunId: stage.id,
+        stageId: stage.stageId,
+        stageName,
+        requestedBy: run.triggeredBy,
+        correlationId: run.correlationId,
+      });
+
+      await prisma.pipelineStageRun.update({
+        where: { id: stage.id },
+        data: { approvalRequestId: minted.approvalRequestId },
+      });
       return;
     }
     if (plan.kind === "in_flight") {

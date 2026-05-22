@@ -28,6 +28,7 @@ import {
 } from "@/lib/workforce/agentWorkforceRegistry";
 import { ApprovalDecisionButtons } from "@/components/workforce/ApprovalDecisionButtons";
 import { ExecuteApprovalButton } from "@/components/workforce/ExecuteApprovalButton";
+import { findPipelineDefinition } from "@/lib/workforce/pipelines/pipelineRegistry";
 
 export const metadata: Metadata = {
   title: "Approval detail · Axiom",
@@ -60,6 +61,14 @@ export default async function ApprovalDetailPage({ params }: { params: Promise<{
           decidedAt: true,
         },
       },
+      pipelineStageRun: {
+        select: {
+          id: true,
+          stageId: true,
+          runId: true,
+          run: { select: { id: true, pipelineId: true } },
+        },
+      },
     },
   }).catch(() => null);
 
@@ -69,6 +78,13 @@ export default async function ApprovalDetailPage({ params }: { params: Promise<{
   if (snapshot.organizationId !== String(ctx.organizationId)) notFound();
 
   const engineer = ENGINEER_LOOKUP.get(snapshot.engineerId);
+  const isPipelineSourced = snapshot.sourceKind === "pipeline_stage";
+  const pipelineDef = isPipelineSourced && snapshot.pipelineStageRun?.run
+    ? findPipelineDefinition(snapshot.pipelineStageRun.run.pipelineId)
+    : null;
+  const pipelineStageDef = pipelineDef && snapshot.pipelineStageRun
+    ? pipelineDef.stages.find((s) => s.id === snapshot.pipelineStageRun?.stageId) ?? null
+    : null;
 
   const approvedBy = Array.from(
     new Set(snapshot.decisions.filter((d) => d.decision === "approved").map((d) => d.approverUserId)),
@@ -100,21 +116,43 @@ export default async function ApprovalDetailPage({ params }: { params: Promise<{
       <div className="mb-6">
         <div className="flex items-center gap-3 mb-3">
           <ShieldCheckIcon className="h-4 w-4 text-amber-400" />
-          <p className="text-[10px] font-semibold text-amber-400 uppercase tracking-widest">Approval snapshot</p>
+          <p className="text-[10px] font-semibold text-amber-400 uppercase tracking-widest">
+            {isPipelineSourced ? "Pipeline approval gate" : "Approval snapshot"}
+          </p>
         </div>
-        <h1 className="text-2xl md:text-3xl font-bold text-white tracking-[-0.04em] mb-2">
-          {engineer?.displayName ?? snapshot.engineerId} · <span className="text-gradient">{snapshot.action}</span>
-        </h1>
-        <p className="text-[13px] text-zinc-400 max-w-2xl leading-relaxed">
-          Source engineer staged this action; the runtime gate required approval. Every approver vote is recorded below with audit correlation intact.
-        </p>
+        {isPipelineSourced ? (
+          <>
+            <h1 className="text-2xl md:text-3xl font-bold text-white tracking-[-0.04em] mb-2">
+              {pipelineDef?.name ?? snapshot.pipelineStageRun?.run?.pipelineId} · <span className="text-gradient">{pipelineStageDef?.name ?? snapshot.pipelineStageRun?.stageId}</span>
+            </h1>
+            <p className="text-[13px] text-zinc-400 max-w-2xl leading-relaxed">
+              A pipeline run paused at this approval gate. Approve to resume the run; reject to fail it. Two approvers required — same quorum machinery as engineer-sourced approvals.
+            </p>
+          </>
+        ) : (
+          <>
+            <h1 className="text-2xl md:text-3xl font-bold text-white tracking-[-0.04em] mb-2">
+              {engineer?.displayName ?? snapshot.engineerId} · <span className="text-gradient">{snapshot.action}</span>
+            </h1>
+            <p className="text-[13px] text-zinc-400 max-w-2xl leading-relaxed">
+              Source engineer staged this action; the runtime gate required approval. Every approver vote is recorded below with audit correlation intact.
+            </p>
+          </>
+        )}
       </div>
 
       <section className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 mb-6">
         <div className="flex items-center justify-between gap-3 flex-wrap mb-3">
           <div className="flex items-center gap-2 min-w-0">
             <CpuChipIcon className="h-4 w-4 text-violet-300 shrink-0" />
-            {engineer ? (
+            {isPipelineSourced && snapshot.pipelineStageRun?.runId ? (
+              <Link
+                href={`/dashboard/workforce/pipelines/runs/${snapshot.pipelineStageRun.runId}`}
+                className="text-[13px] font-semibold text-white hover:text-violet-200 truncate"
+              >
+                {pipelineDef?.name ?? "Pipeline run"} → {pipelineStageDef?.name ?? "stage"}
+              </Link>
+            ) : engineer ? (
               <Link
                 href={`/dashboard/workforce/${engineer.id}`}
                 className="text-[13px] font-semibold text-white hover:text-violet-200 truncate"

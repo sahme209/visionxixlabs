@@ -967,6 +967,13 @@ model EngineerApprovalSnapshot {
   executionResultSummary String?
   executionResultDetail  Json?
   executionError         String?
+  // Phase 378 — pipeline-source discriminator.
+  /// "engineer_action" | "pipeline_stage". Distinguishes how the snapshot was minted.
+  sourceKind             String   @default("engineer_action")
+  /// FK to PipelineStageRun when sourceKind="pipeline_stage". Null for engineer_action rows.
+  pipelineStageRunId     String?
+  pipelineStageRun       PipelineStageRun? @relation(fields: [pipelineStageRunId], references: [id], onDelete: SetNull)
+
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
 
@@ -976,6 +983,7 @@ model EngineerApprovalSnapshot {
   @@index([organizationId, engineerId, createdAt])
   @@index([organizationId, executionStatus])
   @@index([correlationId])
+  @@index([pipelineStageRunId])
 }
 
 // ---------------------------------------------------------------------------
@@ -1055,6 +1063,7 @@ model PipelineStageRun {
   updatedAt        DateTime @updatedAt
 
   run              PipelineRun @relation(fields: [runId], references: [id], onDelete: Cascade)
+  approvals        EngineerApprovalSnapshot[]
 
   @@unique([runId, ordering])
   @@index([runId, status])
