@@ -28,6 +28,7 @@ import {
   AGENT_WORKFORCE_REGISTRY,
   type AgentEngineer,
 } from "@/lib/workforce/agentWorkforceRegistry";
+import { ApprovalDecisionButtons } from "@/components/workforce/ApprovalDecisionButtons";
 
 export const metadata: Metadata = {
   title: "Engineer approvals · Axiom",
@@ -111,7 +112,7 @@ export default async function EngineerApprovalsPage() {
           {rows.map(({ attempt, engineer, approval }) => (
             <ApprovalRow
               key={attempt.id}
-              attemptId={attempt.id}
+              approvalId={attempt.approvalRequestId ?? null}
               action={attempt.action}
               engineerId={engineer.id}
               engineerName={engineer.displayName}
@@ -152,7 +153,7 @@ function Stat({ label, value, icon: Icon, tone, sub }: { label: string; value: n
 }
 
 function ApprovalRow(props: {
-  attemptId: string;
+  approvalId: string | null;
   action: string;
   engineerId: string;
   engineerName: string;
@@ -186,14 +187,26 @@ function ApprovalRow(props: {
 
       <p className="text-[11.5px] font-mono text-zinc-200 mb-1 truncate">{props.action}</p>
 
-      <div className="flex items-center gap-3 flex-wrap text-[10px] font-mono text-zinc-500">
+      <div className="flex items-center gap-3 flex-wrap text-[10px] font-mono text-zinc-500 mb-2">
         <span>risk · {props.riskLevel}</span>
         <span>rule · {props.effectiveRule}</span>
         <span>{props.requiredApprovers} approver{props.requiredApprovers === 1 ? "" : "s"}</span>
         {props.connector && <span>connector · {props.connector}</span>}
         <span className="ml-auto">{props.createdAt.toISOString()}</span>
       </div>
-      <p className="mt-1 text-[10px] font-mono text-zinc-600">correlation · {props.correlationId}</p>
+      <p className="text-[10px] font-mono text-zinc-600 mb-2">correlation · {props.correlationId}</p>
+
+      {/* Decision actions — only shown when the approval is reachable + still pending. */}
+      <div className="pt-2 border-t border-white/[0.04] flex items-center justify-between gap-2">
+        <span className="text-[10px] font-mono text-zinc-500">
+          {props.approvalId ? `approval · ${props.approvalId}` : "approval not reachable"}
+        </span>
+        {props.approvalId ? (
+          <ApprovalDecisionButtons approvalId={props.approvalId} status={props.approvalStatus} />
+        ) : (
+          <span className="text-[10px] font-mono text-zinc-500">no buttons · approval expired or in-memory store cleared</span>
+        )}
+      </div>
     </article>
   );
 }
