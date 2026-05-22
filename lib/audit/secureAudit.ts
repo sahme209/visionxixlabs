@@ -78,6 +78,10 @@ export type AuditAction =
   | "engineer.action_execution_failed"
   | "engineer.policy_override_updated"
   | "engineer.registry_synced"
+  // Billing — Phase 382.
+  | "billing.usage_recorded"
+  | "billing.credit_pool_exhausted"
+  | "billing.summary_rebuilt"
   // Pipelines — Phase 377.
   | "pipeline.run_started"
   | "pipeline.stage_started"

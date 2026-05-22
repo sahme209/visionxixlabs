@@ -35,6 +35,10 @@ import {
   CODE_PROPOSE_SYSTEM_PROMPT,
 } from "./buildCodeProposeMessages";
 import type { StageExecutorFn, StageExecutorResult } from "./stageExecutorRegistry";
+import { checkWorkspaceAICredits } from "@/lib/billing/checkWorkspaceAICredits";
+import { recordAIUsageEvent } from "@/lib/billing/recordAIUsageEvent";
+import { record as recordAudit } from "@/lib/audit/secureAudit";
+import { id as idFactory } from "@/lib/domain/ids";
 
 /** Operator-chosen model. Per the user request, Sonnet 4.6 for the coding loop. */
 const CODE_PROPOSE_MODEL = "claude-sonnet-4-6";
@@ -97,7 +101,42 @@ export const codeProposeRealExecutor: StageExecutorFn = async (ctx) => {
     return dryRunFallback("missing_metadata", ctx);
   }
 
-  // 3. Build messages (pure — testable).
+  // 3. Pre-flight AI credit gate — Phase 382. Block hard_stop plans whose
+  //    monthly AI credit pool is exhausted. Soft-warn thresholds (70/90%)
+  //    don't block but get reflected in the response detail. Metered-billing
+  //    and custom-contract plans always pass.
+  const preflight = await checkWorkspaceAICredits(ctx.organizationId);
+  if (preflight.kind === "block") {
+    try {
+      await recordAudit({
+        organizationId: idFactory.organization(ctx.organizationId),
+        actorKind: "system",
+        action: "billing.credit_pool_exhausted",
+        outcome: "blocked",
+        entityRef: `coding_task:${ctx.runId}`,
+        correlationId: idFactory.correlation(ctx.correlationId),
+        source: "live",
+        detail: {
+          stageId: ctx.stageId,
+          threshold: preflight.threshold,
+          projectedRatio: preflight.projectedRatio,
+        },
+      });
+    } catch { /* best-effort */ }
+    return {
+      ok: false,
+      error: "AI credit pool exhausted on this plan. Upgrade or wait for next month's reset.",
+      detail: {
+        stageId: ctx.stageId,
+        creditPoolExhausted: true,
+        threshold: preflight.threshold,
+        remainingCents: preflight.remainingCents,
+        projectedRatio: preflight.projectedRatio,
+      },
+    };
+  }
+
+  // 4. Build messages (pure — testable).
   const built = buildCodeProposeMessages({
     instruction: meta.instruction,
     repoRef: meta.repoRef,
@@ -139,6 +178,48 @@ export const codeProposeRealExecutor: StageExecutorFn = async (ctx) => {
     }
 
     const firstLine = text.split("\n").find((l) => l.trim().length > 0) ?? "Patch proposed.";
+
+    // 6. Cost attribution — Phase 382. Write a UsageEvent so the meter
+    //    dashboards reflect this invocation. Best-effort; never blocks
+    //    the response on a Prisma failure.
+    const usageWrite = await recordAIUsageEvent({
+      organizationId: ctx.organizationId,
+      provider: "anthropic",
+      model: CODE_PROPOSE_MODEL,
+      inputTokens: final.usage.input_tokens,
+      outputTokens: final.usage.output_tokens,
+      cachedReadTokens: final.usage.cache_read_input_tokens ?? 0,
+      triggeredBy: ctx.triggeredBy,
+      correlationId: ctx.correlationId,
+      metadata: {
+        stage: "code_propose",
+        stageRunId: ctx.stageRunId,
+        runId: ctx.runId,
+        pipelineId: ctx.pipelineId,
+      },
+    });
+
+    if (usageWrite.recorded) {
+      try {
+        await recordAudit({
+          organizationId: idFactory.organization(ctx.organizationId),
+          actorKind: "system",
+          action: "billing.usage_recorded",
+          outcome: "success",
+          entityRef: `usage_event:${usageWrite.usageEventId}`,
+          correlationId: idFactory.correlation(ctx.correlationId),
+          source: "live",
+          detail: {
+            provider: "anthropic",
+            model: CODE_PROPOSE_MODEL,
+            costCents: usageWrite.cost?.totalCents ?? 0,
+            inputTokens: final.usage.input_tokens,
+            outputTokens: final.usage.output_tokens,
+          },
+        });
+      } catch { /* best-effort */ }
+    }
+
     return {
       ok: true,
       summary: firstLine.length > 200 ? firstLine.slice(0, 197) + "..." : firstLine,
@@ -154,6 +235,12 @@ export const codeProposeRealExecutor: StageExecutorFn = async (ctx) => {
           cache_read_input_tokens: final.usage.cache_read_input_tokens ?? 0,
           cache_creation_input_tokens: final.usage.cache_creation_input_tokens ?? 0,
         },
+        cost: {
+          totalCents: usageWrite.cost?.totalCents ?? null,
+          recorded: usageWrite.recorded,
+          reason: usageWrite.reason ?? null,
+        },
+        creditPoolThreshold: preflight.threshold,
         stopReason: final.stop_reason ?? "unknown",
       },
     };

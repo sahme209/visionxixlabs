@@ -32,6 +32,10 @@
     {
       "path": "/api/cron/sweep-engineer-approvals",
       "schedule": "*/15 * * * *"
+    },
+    {
+      "path": "/api/cron/rebuild-usage-summary",
+      "schedule": "0 */4 * * *"
     }
   ]
 }
