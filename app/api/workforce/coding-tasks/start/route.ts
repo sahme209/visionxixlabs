@@ -15,6 +15,9 @@ import { currentContext } from "@/lib/auth/currentContext";
 import { startPipelineRun } from "@/lib/workforce/pipelines/pipelineRunner";
 import { parseCodingTaskBody } from "@/lib/workforce/pipelines/parseCodingTaskBody";
 import { registerCodingDryRunExecutors } from "@/lib/workforce/pipelines/codingDryRunExecutors";
+import { enforceEntitlement } from "@/lib/billing/enforceEntitlement";
+import { record as recordAudit } from "@/lib/audit/secureAudit";
+import { id as idFactory } from "@/lib/domain/ids";
 
 export const dynamic = "force-dynamic";
 
@@ -35,6 +38,43 @@ export async function POST(req: NextRequest) {
 
   const orgId = String(session.organizationId);
   const triggeredBy = session.userId ?? session.email ?? "unknown";
+
+  // Phase 384 — entitlement gate. Each coding task counts as an agent
+  // run for plan limit purposes. Hard-block when the workspace has hit
+  // its monthly cap; soft thresholds (70%, 90%) pass through and surface
+  // in the response detail for the client to render warnings.
+  const entitlement = await enforceEntitlement({
+    organizationId: orgId,
+    dimension: "agent_runs_per_month",
+    attemptedDelta: 1,
+  });
+  if (entitlement.kind === "block") {
+    try {
+      await recordAudit({
+        organizationId: idFactory.organization(orgId),
+        actorUserId: session.userId ? session.userId : idFactory.user(session.email ?? "unknown"),
+        actorKind: "user",
+        action: "billing.entitlement_blocked",
+        outcome: "blocked",
+        entityRef: `entitlement:${entitlement.dimension}`,
+        correlationId: idFactory.correlation(`entitlement_block_${Date.now().toString(36)}`),
+        source: "live",
+        detail: {
+          dimension: entitlement.dimension,
+          threshold: entitlement.threshold,
+          limit: entitlement.limit,
+        },
+      });
+    } catch { /* best-effort */ }
+    return NextResponse.json({
+      ok: false,
+      reason: "entitlement_exhausted",
+      detail: `Monthly agent-run quota reached for your plan (limit ${entitlement.limit}). Upgrade to keep running.`,
+      dimension: entitlement.dimension,
+      threshold: entitlement.threshold,
+      limit: entitlement.limit,
+    }, { status: 402 });   // 402 Payment Required — fits "your plan needs more"
+  }
 
   const runResult = await startPipelineRun({
     organizationId: orgId,
@@ -74,10 +114,41 @@ export async function POST(req: NextRequest) {
     // Soft-fail — the pipeline run is the source of truth.
   }
 
+  // Phase 384 — emit an `agent_run` UsageEvent so the entitlement counter
+  // increments per task. Cost is 0 here — the real AI cost lands later
+  // via Phase 382's recordAIUsageEvent when code_propose actually fires.
+  try {
+    await prisma.usageEvent.create({
+      data: {
+        organizationId: orgId,
+        eventKind: "agent_run",
+        provider: null,
+        model: null,
+        inputTokens: 0,
+        outputTokens: 0,
+        cachedReadTokens: 0,
+        costCents: 0,
+        triggeredBy,
+        correlationId: runResult.correlationId,
+        metadata: {
+          taskKind: "ai_coding",
+          codingTaskId,
+          runId: runResult.runId,
+        },
+      },
+    });
+  } catch { /* best-effort */ }
+
   return NextResponse.json({
     ok: true,
     codingTaskId,
     runId: runResult.runId,
     correlationId: runResult.correlationId,
+    entitlement: {
+      dimension: entitlement.dimension,
+      threshold: entitlement.threshold,
+      remaining: entitlement.remaining === Number.POSITIVE_INFINITY ? null : entitlement.remaining,
+      limit: entitlement.limit,
+    },
   });
 }

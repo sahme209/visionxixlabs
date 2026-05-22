@@ -82,6 +82,8 @@ export type AuditAction =
   | "billing.usage_recorded"
   | "billing.credit_pool_exhausted"
   | "billing.summary_rebuilt"
+  // Entitlements — Phase 384.
+  | "billing.entitlement_blocked"
   // Pipelines — Phase 377.
   | "pipeline.run_started"
   | "pipeline.stage_started"
