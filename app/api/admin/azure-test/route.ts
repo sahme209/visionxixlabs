@@ -52,7 +52,7 @@ export async function GET(req: NextRequest) {
 
     // Step 1: subscription metadata
     const subClient = new SubscriptionClient(credential);
-    const sub = await subClient.subscriptions.get(subscriptionId);
+    const sub = await subClient.subscription.get(subscriptionId);
 
     // Step 2: resource-group read (proves Reader RBAC)
     const resClient = new ResourceManagementClient(credential, subscriptionId);
