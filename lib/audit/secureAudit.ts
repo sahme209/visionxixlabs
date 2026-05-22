@@ -115,6 +115,9 @@ export type AuditAction =
   // Static lint — Phase 391.
   | "workforce.code_lint_passed"
   | "workforce.code_lint_failed"
+  // Assertion integrity — Phase 392.
+  | "workforce.code_test_passed"
+  | "workforce.code_test_failed"
   // Generic
   | "system.error";
 

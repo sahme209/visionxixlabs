@@ -15,26 +15,12 @@ import "server-only";
 
 import {
   registerStageExecutor,
-  type StageExecutorFn,
 } from "./stageExecutorRegistry";
 import { codeProposeRealExecutor } from "./codeProposeRealExecutor";
 import { codeReadRealExecutor } from "./codeReadRealExecutor";
 import { codePrOpenRealExecutor } from "./codePrOpenRealExecutor";
 import { codeLintRealExecutor } from "./codeLintRealExecutor";
-
-const codeTest: StageExecutorFn = async (ctx) => ({
-  ok: true,
-  summary: "vitest passed · 1655 tests / 190 files / 4.2s.",
-  detail: {
-    dryRun: true,
-    suite: "vitest",
-    tests: 1655,
-    files: 190,
-    durationSeconds: 4.2,
-    failed: 0,
-    stageId: ctx.stageId,
-  },
-});
+import { codeTestRealExecutor } from "./codeTestRealExecutor";
 
 let registered = false;
 
@@ -53,7 +39,11 @@ export function registerCodingDryRunExecutors(): void {
   // runs the closed-union validators from staticValidators.ts. Stage fails
   // the whole pipeline on any structural issue so broken code can't reach PR.
   registerStageExecutor("code_lint",    codeLintRealExecutor);
-  registerStageExecutor("code_test",    codeTest);
+  // Phase 392: real assertion-integrity gate. Parses each modified test file,
+  // diffs the test surface (it/describe/expect counts, weak matchers, skips)
+  // against base, and fails the pipeline when the AI tried to "pass" tests
+  // by deleting cases, weakening assertions, or removing expect calls.
+  registerStageExecutor("code_test",    codeTestRealExecutor);
   // Phase 388: real GitHub-backed PR opener. Falls back to dry-run when
   // GITHUB_TOKEN is missing, the patch can't be applied, or the branch /
   // PR API rejects — pipeline still advances cleanly.
