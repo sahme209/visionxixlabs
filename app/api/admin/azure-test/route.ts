@@ -13,7 +13,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/admin/auth";
 import { ClientSecretCredential } from "@azure/identity";
-import { SubscriptionClient } from "@azure/arm-subscriptions";
 import { ResourceManagementClient } from "@azure/arm-resources";
 
 export const dynamic = "force-dynamic";
@@ -50,11 +49,7 @@ export async function GET(req: NextRequest) {
   try {
     const credential = new ClientSecretCredential(tenantId, clientId, clientSecret);
 
-    // Step 1: subscription metadata
-    const subClient = new SubscriptionClient(credential);
-    const sub = await subClient.subscription.get(subscriptionId);
-
-    // Step 2: resource-group read (proves Reader RBAC)
+    // ResourceGroups.list — proves auth chain + Reader RBAC end-to-end.
     const resClient = new ResourceManagementClient(credential, subscriptionId);
     const groups: { name?: string; location?: string }[] = [];
     for await (const g of resClient.resourceGroups.list()) {
@@ -64,13 +59,8 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json({
       ok: true,
-      stage: "azure_subscription_read",
-      subscription: {
-        id: sub.subscriptionId ?? subscriptionId,
-        displayName: sub.displayName ?? "",
-        state: sub.state ?? "",
-        tenantId: sub.tenantId ?? "",
-      },
+      stage: "azure_resource_groups_list",
+      subscriptionId,
       resourceGroupCount: groups.length,
       resourceGroupSample: groups,
       envDebug,
