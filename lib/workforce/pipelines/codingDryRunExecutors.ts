@@ -20,19 +20,7 @@ import {
 import { codeProposeRealExecutor } from "./codeProposeRealExecutor";
 import { codeReadRealExecutor } from "./codeReadRealExecutor";
 import { codePrOpenRealExecutor } from "./codePrOpenRealExecutor";
-
-const codeLint: StageExecutorFn = async (ctx) => ({
-  ok: true,
-  summary: "Lint passed · eslint 0 errors · tsc --noEmit clean · prettier formatted.",
-  detail: {
-    dryRun: true,
-    eslintErrors: 0,
-    eslintWarnings: 2,
-    tscErrors: 0,
-    prettierChanged: 0,
-    stageId: ctx.stageId,
-  },
-});
+import { codeLintRealExecutor } from "./codeLintRealExecutor";
 
 const codeTest: StageExecutorFn = async (ctx) => ({
   ok: true,
@@ -60,7 +48,11 @@ export function registerCodingDryRunExecutors(): void {
   // ANTHROPIC_API_KEY is not configured — see codeProposeRealExecutor.ts.
   // Phase 387: now also reads the prior code_read stage's repoContext.
   registerStageExecutor("code_propose", codeProposeRealExecutor);
-  registerStageExecutor("code_lint",    codeLint);
+  // Phase 391: real static-validator lint. Parses the propose stage's patch,
+  // fetches base content per modified file, applies the diff in-memory, and
+  // runs the closed-union validators from staticValidators.ts. Stage fails
+  // the whole pipeline on any structural issue so broken code can't reach PR.
+  registerStageExecutor("code_lint",    codeLintRealExecutor);
   registerStageExecutor("code_test",    codeTest);
   // Phase 388: real GitHub-backed PR opener. Falls back to dry-run when
   // GITHUB_TOKEN is missing, the patch can't be applied, or the branch /

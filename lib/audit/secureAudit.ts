@@ -112,6 +112,9 @@ export type AuditAction =
   // Multi-turn refinement — Phase 390.
   | "workforce.proposal_refined"
   | "workforce.proposal_gave_up"
+  // Static lint — Phase 391.
+  | "workforce.code_lint_passed"
+  | "workforce.code_lint_failed"
   // Generic
   | "system.error";
 
