@@ -147,7 +147,12 @@ export default async function WorkforcePage() {
         </div>
       </section>
 
-      <section className="mt-6 grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
+      <section className="mt-6 grid sm:grid-cols-2 lg:grid-cols-5 gap-3">
+        <Link href="/dashboard/workforce/pipelines" className="block rounded-xl border border-violet-500/30 bg-violet-500/[0.04] p-4 hover:border-violet-500/40 transition-colors">
+          <PuzzlePieceIcon className="h-4 w-4 text-violet-300 mb-2" />
+          <p className="text-sm font-semibold text-white">Pipelines</p>
+          <p className="text-[11px] text-zinc-400 mt-1">Multi-stage CI/CD, DB-migrate, security sweeps — one click.</p>
+        </Link>
         <Link href="/dashboard/agent-tools" className="block rounded-xl border border-white/[0.06] bg-white/[0.02] p-4 hover:border-violet-500/25 transition-colors">
           <ShieldCheckIcon className="h-4 w-4 text-violet-400 mb-2" />
           <p className="text-sm font-semibold text-white">Agent tool access matrix</p>

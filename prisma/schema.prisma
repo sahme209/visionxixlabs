@@ -1005,6 +1005,62 @@ model EngineerApprovalDecision {
 }
 
 // ---------------------------------------------------------------------------
+// Pipeline runs — Phase 377.
+//
+// A PipelineRun is one execution of a registered pipeline definition
+// (CI/CD, db-migrate, etc.) for a workspace. PipelineStageRuns are
+// the per-stage lifecycle rows. Stages advance through a closed-union
+// status machine (queued → running → succeeded | failed | skipped),
+// with optional pause at "awaiting_approval".
+// ---------------------------------------------------------------------------
+
+model PipelineRun {
+  id             String   @id @default(cuid())
+  organizationId String
+  pipelineId     String
+  /// queued | running | succeeded | failed | cancelled
+  status         String   @default("queued")
+  triggeredBy    String
+  correlationId  String
+  metadata       Json?
+  startedAt      DateTime @default(now())
+  completedAt    DateTime?
+  errorSummary   String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  stages         PipelineStageRun[]
+
+  @@index([organizationId, pipelineId, startedAt])
+  @@index([organizationId, status, startedAt])
+  @@index([correlationId])
+}
+
+model PipelineStageRun {
+  id               String   @id @default(cuid())
+  runId            String
+  stageId          String
+  stageKind        String
+  ordering         Int
+  /// queued | running | succeeded | failed | skipped | awaiting_approval
+  status           String   @default("queued")
+  requiresApproval Boolean  @default(false)
+  approvalRequestId String?
+  startedAt        DateTime?
+  completedAt      DateTime?
+  outputSummary    String?
+  outputDetail     Json?
+  errorMessage     String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  run              PipelineRun @relation(fields: [runId], references: [id], onDelete: Cascade)
+
+  @@unique([runId, ordering])
+  @@index([runId, status])
+}
+
+// ---------------------------------------------------------------------------
 // Axiom — Autopilot Audit Trail
 //
 // Immutable log of every autopilot mode change and every action the agent

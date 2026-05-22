@@ -78,6 +78,13 @@ export type AuditAction =
   | "engineer.action_execution_failed"
   | "engineer.policy_override_updated"
   | "engineer.registry_synced"
+  // Pipelines — Phase 377.
+  | "pipeline.run_started"
+  | "pipeline.stage_started"
+  | "pipeline.stage_completed"
+  | "pipeline.stage_failed"
+  | "pipeline.run_completed"
+  | "pipeline.run_failed"
   // Generic
   | "system.error";
 
