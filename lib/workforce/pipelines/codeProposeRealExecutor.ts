@@ -167,7 +167,7 @@ export const codeProposeRealExecutor: StageExecutorFn = async (ctx) => {
     if (err instanceof Anthropic.RateLimitError) {
       return {
         ok: false,
-        error: `Anthropic rate-limited the request. Retry-After: ${err.headers?.["retry-after"] ?? "unknown"}.`,
+        error: `Anthropic rate-limited the request. Retry-After: ${err.headers?.get("retry-after") ?? "unknown"}.`,
         detail: { stageId: ctx.stageId, status: err.status ?? 429 },
       };
     }
