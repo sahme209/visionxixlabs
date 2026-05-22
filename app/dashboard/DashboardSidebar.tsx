@@ -57,6 +57,7 @@ const GROUPS: NavGroup[] = [
       { href: "/dashboard/alerts",             label: "Alerts",              icon: BellAlertIcon         },
       { href: "/dashboard/developer-tools",    label: "Developer Tools",     icon: CodeBracketIcon       },
       { href: "/dashboard/agent-tools",        label: "Agent Tool Access",   icon: ShieldCheckIcon       },
+      { href: "/dashboard/workforce",          label: "AI Workforce",        icon: CpuChipIcon           },
     ],
   },
   {

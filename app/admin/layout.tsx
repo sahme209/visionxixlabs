@@ -50,6 +50,12 @@ export default async function AdminLayout({
                 Growth
               </Link>
               <Link
+                href="/admin/workforce-audit"
+                className="text-sm text-zinc-400 hover:text-violet-400 transition-colors"
+              >
+                Workforce
+              </Link>
+              <Link
                 href="/admin/enterprise-dashboard"
                 className="text-sm text-zinc-400 hover:text-violet-400 transition-colors"
               >
