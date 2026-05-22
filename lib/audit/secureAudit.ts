@@ -74,6 +74,8 @@ export type AuditAction =
   | "engineer.approval_created"
   | "engineer.approval_voted"
   | "engineer.approval_expired"
+  | "engineer.action_executed"
+  | "engineer.action_execution_failed"
   | "engineer.policy_override_updated"
   | "engineer.registry_synced"
   // Generic

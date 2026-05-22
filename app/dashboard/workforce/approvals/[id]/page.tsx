@@ -27,6 +27,7 @@ import {
   type AgentEngineer,
 } from "@/lib/workforce/agentWorkforceRegistry";
 import { ApprovalDecisionButtons } from "@/components/workforce/ApprovalDecisionButtons";
+import { ExecuteApprovalButton } from "@/components/workforce/ExecuteApprovalButton";
 
 export const metadata: Metadata = {
   title: "Approval detail · Axiom",
@@ -163,6 +164,33 @@ export default async function ApprovalDetailPage({ params }: { params: Promise<{
           </p>
         )}
       </section>
+
+      {/* Execution section — only renders for terminal-approved snapshots. */}
+      {snapshot.status === "approved" && (
+        <section className="rounded-2xl border border-amber-500/20 bg-amber-500/[0.03] p-5 mb-6">
+          <p className="text-[10px] font-semibold text-amber-300 uppercase tracking-widest mb-3">// execution</p>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-[11px] mb-4">
+            <Meta label="Status" value={snapshot.executionStatus} mono />
+            {snapshot.executedAt && <Meta label="Executed" value={snapshot.executedAt.toISOString()} mono />}
+            {snapshot.executedByUserId && <Meta label="Executed by" value={snapshot.executedByUserId} mono />}
+          </div>
+          {snapshot.executionResultSummary && (
+            <p className="text-[12px] text-emerald-200 mb-3 leading-relaxed">
+              {snapshot.executionResultSummary}
+            </p>
+          )}
+          {snapshot.executionError && (
+            <p className="text-[12px] text-rose-200 mb-3 leading-relaxed">
+              error · {snapshot.executionError}
+            </p>
+          )}
+          <ExecuteApprovalButton
+            approvalId={snapshot.approvalRequestId}
+            snapshotStatus={snapshot.status}
+            executionStatus={snapshot.executionStatus}
+          />
+        </section>
+      )}
 
       <section className="mb-6">
         <p className="text-[10px] font-semibold text-zinc-400 uppercase tracking-widest mb-3">// vote history</p>
