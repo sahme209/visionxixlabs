@@ -58,7 +58,7 @@ export async function planAndRequestSchemaApply(input: SchemaApplyInput): Promis
   const recorded = await recordEngineerActionAttempt({
     workspaceId: input.workspaceId,
     engineerId: ENGINEER_ID,
-    action: `apply_schema_change:${finding.kind}:${finding.table}`,
+    action: `apply_schema_change:${finding.category}:${finding.table}`,
     riskLevel: "critical",
     isReadOnly: false,
     module: "database",
@@ -67,7 +67,7 @@ export async function planAndRequestSchemaApply(input: SchemaApplyInput): Promis
     correlationId: input.correlationId,
     metadata: {
       findingId: finding.id,
-      findingKind: finding.kind,
+      findingCategory: finding.category,
       table: finding.table,
       severity: finding.severity,
     },
