@@ -26,7 +26,13 @@ export type PipelineStageKind =
   | "smoke_test"
   | "rollback"
   | "approval_gate"
-  | "notify";
+  | "notify"
+  // AI coding loop — Phase 379.
+  | "code_read"
+  | "code_propose"
+  | "code_lint"
+  | "code_test"
+  | "code_pr_open";
 
 export interface PipelineStage {
   id: string;
@@ -39,7 +45,7 @@ export interface PipelineStage {
   expectedDurationSeconds: number;
 }
 
-export type PipelineCategory = "ci_cd" | "database" | "security" | "observability";
+export type PipelineCategory = "ci_cd" | "database" | "security" | "observability" | "coding";
 
 export interface PipelineDefinition {
   id: string;
@@ -99,10 +105,28 @@ const SECURITY_SWEEP: PipelineDefinition = {
   ],
 };
 
+const AI_CODING: PipelineDefinition = {
+  id: "ai_coding",
+  name: "AI coding loop",
+  category: "coding",
+  description: "Operator instruction → repo scan → patch proposal → lint → tests → two-step approval → PR open.",
+  tagline: "Describe the change. We propose, gate, and ship the PR.",
+  stages: [
+    { id: "code_read",     kind: "code_read",     name: "Read repo",            description: "Scan the target branch, build the working context (file tree, recent commits, related symbols).", requiresApproval: false, expectedDurationSeconds: 30 },
+    { id: "code_propose",  kind: "code_propose",  name: "Propose patch",        description: "AI engineer drafts a minimal patch that satisfies the operator instruction.",                       requiresApproval: false, expectedDurationSeconds: 60 },
+    { id: "code_lint",     kind: "code_lint",     name: "Lint the patch",       description: "Run eslint + tsc --noEmit + prettier on the proposed patch.",                                       requiresApproval: false, expectedDurationSeconds: 20 },
+    { id: "code_test",     kind: "code_test",     name: "Run tests",            description: "Run the vitest suite against the patched tree.",                                                     requiresApproval: false, expectedDurationSeconds: 60 },
+    { id: "code_gate",     kind: "approval_gate", name: "PR approval",          description: "Two-step human review before any code leaves the platform's working branch.",                       requiresApproval: true,  expectedDurationSeconds: 0  },
+    { id: "code_pr_open",  kind: "code_pr_open",  name: "Open PR",              description: "Push the branch and open the pull request with the patch + audit correlation in the description.", requiresApproval: false, expectedDurationSeconds: 10 },
+    { id: "notify",        kind: "notify",        name: "Notify channel",       description: "Post the PR link + summary to the operator's channel.",                                              requiresApproval: false, expectedDurationSeconds: 5  },
+  ],
+};
+
 export const PIPELINE_REGISTRY: ReadonlyArray<PipelineDefinition> = [
   BACKEND_DEPLOY,
   DB_MIGRATE,
   SECURITY_SWEEP,
+  AI_CODING,
 ];
 
 export function findPipelineDefinition(id: string): PipelineDefinition | null {

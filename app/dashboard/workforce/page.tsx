@@ -17,6 +17,7 @@ import {
   CpuChipIcon,
   ShieldCheckIcon,
   CodeBracketIcon,
+  CodeBracketSquareIcon,
   CommandLineIcon,
   ComputerDesktopIcon,
   ExclamationTriangleIcon,
@@ -147,7 +148,12 @@ export default async function WorkforcePage() {
         </div>
       </section>
 
-      <section className="mt-6 grid sm:grid-cols-2 lg:grid-cols-5 gap-3">
+      <section className="mt-6 grid sm:grid-cols-2 lg:grid-cols-6 gap-3">
+        <Link href="/dashboard/workforce/coding" className="block rounded-xl border border-violet-500/30 bg-violet-500/[0.04] p-4 hover:border-violet-500/40 transition-colors">
+          <CodeBracketSquareIcon className="h-4 w-4 text-violet-300 mb-2" />
+          <p className="text-sm font-semibold text-white">AI coding</p>
+          <p className="text-[11px] text-zinc-400 mt-1">Describe a change · we propose, gate, and ship the PR.</p>
+        </Link>
         <Link href="/dashboard/workforce/pipelines" className="block rounded-xl border border-violet-500/30 bg-violet-500/[0.04] p-4 hover:border-violet-500/40 transition-colors">
           <PuzzlePieceIcon className="h-4 w-4 text-violet-300 mb-2" />
           <p className="text-sm font-semibold text-white">Pipelines</p>

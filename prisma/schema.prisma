@@ -1038,6 +1038,7 @@ model PipelineRun {
   updatedAt      DateTime @updatedAt
 
   stages         PipelineStageRun[]
+  codingTask     CodingTask?
 
   @@index([organizationId, pipelineId, startedAt])
   @@index([organizationId, status, startedAt])
@@ -1067,6 +1068,35 @@ model PipelineStageRun {
 
   @@unique([runId, ordering])
   @@index([runId, status])
+}
+
+// ---------------------------------------------------------------------------
+// AI coding task — Phase 379.
+//
+// One operator-initiated AI coding request, bound 1:1 to a PipelineRun
+// of the ai_coding pipeline definition. The pipeline stages do the work
+// (read, propose, lint, test, approval gate, PR open); this row carries
+// the operator's intent + repo target.
+// ---------------------------------------------------------------------------
+
+model CodingTask {
+  id             String   @id @default(cuid())
+  organizationId String
+  runId          String   @unique
+  instruction    String   @db.Text
+  repoRef        String
+  branchHint     String?
+  /// queued | running | succeeded | failed | cancelled — mirrors PipelineRun.status.
+  status         String   @default("queued")
+  createdBy      String
+  correlationId  String
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  run            PipelineRun @relation(fields: [runId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId, status, createdAt])
+  @@index([correlationId])
 }
 
 // ---------------------------------------------------------------------------

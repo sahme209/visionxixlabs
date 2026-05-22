@@ -69,6 +69,8 @@ const ALL_KINDS: readonly PipelineStageKind[] = [
   "build", "unit_test", "integration_test", "security_scan", "lint",
   "schema_plan", "schema_apply", "schema_verify",
   "deploy", "smoke_test", "rollback", "approval_gate", "notify",
+  // Phase 379 — AI coding loop.
+  "code_read", "code_propose", "code_lint", "code_test", "code_pr_open",
 ];
 
 export function bootstrapStageExecutorRegistry(): void {
