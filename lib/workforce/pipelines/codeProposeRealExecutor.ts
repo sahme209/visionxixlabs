@@ -40,6 +40,7 @@ import { recordAIUsageEvent } from "@/lib/billing/recordAIUsageEvent";
 import { record as recordAudit } from "@/lib/audit/secureAudit";
 import { id as idFactory } from "@/lib/domain/ids";
 import { routeAITask } from "@/lib/ai/providerRouter";
+import { prisma } from "@/lib/db";
 
 /** Route via the provider router (Phase 383) — single source of truth for which model the code-propose stage uses. */
 const PROPOSE_ROUTE = routeAITask("code_propose");
@@ -136,12 +137,31 @@ export const codeProposeRealExecutor: StageExecutorFn = async (ctx) => {
     };
   }
 
+  // 3.5. Pull repo context from the prior code_read stage (Phase 387).
+  //      The real codeReadRealExecutor stores prompt-ready text in its
+  //      outputDetail.repoContext. Best-effort: any Prisma blip leaves
+  //      repoContext as null and the propose runs from instruction alone.
+  let priorRepoContext: string | undefined = meta.repoContext;
+  if (!priorRepoContext) {
+    try {
+      const priorRead = await prisma.pipelineStageRun.findFirst({
+        where: { runId: ctx.runId, stageKind: "code_read", status: "succeeded" },
+        orderBy: { completedAt: "desc" },
+        select: { outputDetail: true },
+      });
+      const detail = priorRead?.outputDetail as { repoContext?: unknown } | null;
+      if (detail && typeof detail.repoContext === "string" && detail.repoContext.length > 0) {
+        priorRepoContext = detail.repoContext;
+      }
+    } catch { /* best-effort */ }
+  }
+
   // 4. Build messages (pure — testable).
   const built = buildCodeProposeMessages({
     instruction: meta.instruction,
     repoRef: meta.repoRef,
     branchHint: meta.branchHint,
-    repoContext: meta.repoContext,
+    repoContext: priorRepoContext,
   });
 
   const client = new Anthropic();

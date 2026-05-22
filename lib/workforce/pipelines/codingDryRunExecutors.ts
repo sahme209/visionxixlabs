@@ -18,18 +18,7 @@ import {
   type StageExecutorFn,
 } from "./stageExecutorRegistry";
 import { codeProposeRealExecutor } from "./codeProposeRealExecutor";
-
-const codeRead: StageExecutorFn = async (ctx) => ({
-  ok: true,
-  summary: "Scanned 1,247 files across the target branch — context window assembled.",
-  detail: {
-    dryRun: true,
-    filesScanned: 1247,
-    relatedSymbolsResolved: 28,
-    contextTokens: 12_500,
-    stageId: ctx.stageId,
-  },
-});
+import { codeReadRealExecutor } from "./codeReadRealExecutor";
 
 const codeLint: StageExecutorFn = async (ctx) => ({
   ok: true,
@@ -75,9 +64,12 @@ let registered = false;
 /** Idempotent — call from any entrypoint that may run a coding pipeline. */
 export function registerCodingDryRunExecutors(): void {
   if (registered) return;
-  registerStageExecutor("code_read",    codeRead);
+  // Phase 387: real GitHub-backed reader. Falls back to a successful
+  // dry-run on any fetch failure so the pipeline still advances.
+  registerStageExecutor("code_read",    codeReadRealExecutor);
   // Phase 380: real Anthropic-backed proposer. Falls back to dry-run when
   // ANTHROPIC_API_KEY is not configured — see codeProposeRealExecutor.ts.
+  // Phase 387: now also reads the prior code_read stage's repoContext.
   registerStageExecutor("code_propose", codeProposeRealExecutor);
   registerStageExecutor("code_lint",    codeLint);
   registerStageExecutor("code_test",    codeTest);

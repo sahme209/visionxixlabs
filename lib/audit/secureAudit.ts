@@ -97,6 +97,9 @@ export type AuditAction =
   | "pipeline.stage_failed"
   | "pipeline.run_completed"
   | "pipeline.run_failed"
+  // Repo context — Phase 387.
+  | "workforce.repo_context_fetched"
+  | "workforce.repo_context_fetch_failed"
   // Generic
   | "system.error";
 
