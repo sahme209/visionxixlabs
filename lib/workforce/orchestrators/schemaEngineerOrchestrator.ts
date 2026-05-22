@@ -87,17 +87,21 @@ export async function planAndRequestIndexApply(input: IndexApplyInput): Promise<
   const proposal = proposals.find((p) => p.id === input.proposalId);
   if (!proposal) return { ok: false, reason: "proposal_not_found" };
 
+  // SlowQueryProposal.table is `string | null` — coerce to a sentinel so the
+  // action label + metadata stay deterministic (and pass the
+  // recordEngineerActionAttempt metadata type, which rejects null).
+  const tableLabel = proposal.table ?? "unknown";
   const recorded = await recordEngineerActionAttempt({
     workspaceId: input.workspaceId,
     engineerId: ENGINEER_ID,
-    action: `apply_index_change:${proposal.table}`,
+    action: `apply_index_change:${tableLabel}`,
     riskLevel: "high",
     isReadOnly: false,
     module: "database",
     connector: input.connector ?? "postgres",
     requestedBy: input.requestedBy,
     correlationId: input.correlationId,
-    metadata: { proposalId: proposal.id, table: proposal.table, expectedGain: proposal.expectedGain },
+    metadata: { proposalId: proposal.id, table: tableLabel, expectedGain: proposal.expectedGain },
   });
   return {
     ok: true,
