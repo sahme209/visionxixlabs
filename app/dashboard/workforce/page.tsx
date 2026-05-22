@@ -152,10 +152,10 @@ export default async function WorkforcePage() {
           <p className="text-sm font-semibold text-white">Agent tool access matrix</p>
           <p className="text-[11px] text-zinc-500 mt-1">Per-action read / write / approval rules.</p>
         </Link>
-        <Link href="/dashboard/approvals" className="block rounded-xl border border-white/[0.06] bg-white/[0.02] p-4 hover:border-violet-500/25 transition-colors">
+        <Link href="/dashboard/workforce/approvals" className="block rounded-xl border border-white/[0.06] bg-white/[0.02] p-4 hover:border-violet-500/25 transition-colors">
           <ExclamationTriangleIcon className="h-4 w-4 text-violet-400 mb-2" />
-          <p className="text-sm font-semibold text-white">Approvals queue</p>
-          <p className="text-[11px] text-zinc-500 mt-1">Risky agent actions stage here for sign-off.</p>
+          <p className="text-sm font-semibold text-white">Engineer approvals</p>
+          <p className="text-[11px] text-zinc-500 mt-1">Engineer-sourced risky actions awaiting sign-off.</p>
         </Link>
         <Link href="/dashboard/audit" className="block rounded-xl border border-white/[0.06] bg-white/[0.02] p-4 hover:border-violet-500/25 transition-colors">
           <CheckCircleIcon className="h-4 w-4 text-violet-400 mb-2" />
