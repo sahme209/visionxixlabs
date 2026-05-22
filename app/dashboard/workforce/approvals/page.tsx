@@ -239,10 +239,19 @@ function ApprovalRow(props: {
       )}
 
       {/* Decision actions — only shown when the snapshot is still pending. */}
-      <div className="pt-2 border-t border-white/[0.04] flex items-center justify-between gap-2">
-        <span className="text-[10px] font-mono text-zinc-500">
-          {props.approvalId ? `approval · ${props.approvalId}` : "approval not reachable"}
-        </span>
+      <div className="pt-2 border-t border-white/[0.04] flex items-center justify-between gap-2 flex-wrap">
+        <div className="flex items-center gap-2 min-w-0">
+          {props.approvalId ? (
+            <Link
+              href={`/dashboard/workforce/approvals/${props.approvalId}`}
+              className="text-[10px] font-mono text-zinc-400 hover:text-violet-200 truncate"
+            >
+              approval · {props.approvalId} →
+            </Link>
+          ) : (
+            <span className="text-[10px] font-mono text-zinc-500">approval not reachable</span>
+          )}
+        </div>
         {props.approvalId ? (
           <ApprovalDecisionButtons
             approvalId={props.approvalId}
