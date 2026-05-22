@@ -66,6 +66,14 @@ export type AuditAction =
   // Copilot
   | "copilot.query"
   | "copilot.blocked"
+  // AI Workforce — runtime enforcement (Phase 362)
+  | "engineer.action_attempted"
+  | "engineer.action_allowed"
+  | "engineer.action_requires_approval"
+  | "engineer.action_blocked"
+  | "engineer.approval_created"
+  | "engineer.policy_override_updated"
+  | "engineer.registry_synced"
   // Generic
   | "system.error";
 

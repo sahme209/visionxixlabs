@@ -99,15 +99,15 @@ enum NotificationType {
 }
 
 enum RiskTolerance {
-  conservative     // never auto-apply, approval for everything
-  moderate         // auto-apply low-risk, approve medium+
-  aggressive       // auto-apply low+medium, approve high only
+  conservative // never auto-apply, approval for everything
+  moderate // auto-apply low-risk, approve medium+
+  aggressive // auto-apply low+medium, approve high only
 }
 
 enum ApprovalPolicy {
-  require_all      // every action needs human sign-off
-  auto_low_risk    // auto-apply low-risk, approve medium+
-  auto_safe        // auto-apply auto_fix_candidates, approve the rest
+  require_all // every action needs human sign-off
+  auto_low_risk // auto-apply low-risk, approve medium+
+  auto_safe // auto-apply auto_fix_candidates, approve the rest
 }
 
 enum OutputFormat {
@@ -128,10 +128,10 @@ enum BusinessContext {
 }
 
 enum AutopilotMode {
-  observe_only         // scan + report, no plans or actions
-  recommend            // scan + plan + recommendations, no apply
-  assisted_apply       // apply approved low/medium-risk fixes
-  full_guarded         // auto-apply pre-approved low-risk fixes, approve medium
+  observe_only // scan + report, no plans or actions
+  recommend // scan + plan + recommendations, no apply
+  assisted_apply // apply approved low/medium-risk fixes
+  full_guarded // auto-apply pre-approved low-risk fixes, approve medium
 }
 
 enum ApprovalItemStatus {
@@ -183,42 +183,42 @@ enum ApprovalChainStatus {
 }
 
 model User {
-  id            String    @id @default(cuid())
-  email         String    @unique
-  name          String?
-  passwordHash  String?   // for credentials auth
-  image         String?
-  stripeCustomerId String? @unique
+  id                   String    @id @default(cuid())
+  email                String    @unique
+  name                 String?
+  passwordHash         String? // for credentials auth
+  image                String?
+  stripeCustomerId     String?   @unique
   stripeSubscriptionId String?
-  plan          String?   // starter | growth | scale | enterprise
-  planExpiresAt DateTime?
-  modules       Json? // { builder, axiom, chatbot, plugins: [plugin_ids] } - chatbot add-on, plugins as paid add-ons
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-  bots          Bot[]
+  plan                 String? // starter | growth | scale | enterprise
+  planExpiresAt        DateTime?
+  modules              Json? // { builder, axiom, chatbot, plugins: [plugin_ids] } - chatbot add-on, plugins as paid add-ons
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
+  bots                 Bot[]
 }
 
 model Bot {
-  id          String   @id @default(cuid())
-  name        String   // e.g. "My Support Bot"
-  userId      String
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  messageCount Int     @default(0)
-  messageLimit Int     @default(6000) // per month, reset monthly
-  pageCount   Int      @default(0)
-  pageLimit   Int      @default(2500)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  sources     KnowledgeSource[]
+  id           String            @id @default(cuid())
+  name         String // e.g. "My Support Bot"
+  userId       String
+  user         User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  messageCount Int               @default(0)
+  messageLimit Int               @default(6000) // per month, reset monthly
+  pageCount    Int               @default(0)
+  pageLimit    Int               @default(2500)
+  createdAt    DateTime          @default(now())
+  updatedAt    DateTime          @updatedAt
+  sources      KnowledgeSource[]
 }
 
 model KnowledgeSource {
   id        String   @id @default(cuid())
   botId     String
   bot       Bot      @relation(fields: [botId], references: [id], onDelete: Cascade)
-  type      String   // url | file | text
-  url       String?  // for url type
-  content   String?  // scraped/stored text
+  type      String // url | file | text
+  url       String? // for url type
+  content   String? // scraped/stored text
   charCount Int      @default(0)
   createdAt DateTime @default(now())
 }
@@ -226,18 +226,18 @@ model KnowledgeSource {
 // AI Website Build — New Website Request leads
 // Phase 7: Optional userId for identity tie-in
 model Lead {
-  id         String   @id @default(cuid())
-  email      String
-  name       String?
-  userId     String?  // Optional: bind to authenticated user
-  source     String   @default("website-request") // website-request, etc.
-  status     String   @default("created") // created, package_generating, package_ready, deploy_generating, deploy_ready, published
-  fullPayload Json    @default("{}") // form data, aiPackage, previewUrl, vercelDeploymentId, etc.
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  id          String   @id @default(cuid())
+  email       String
+  name        String?
+  userId      String? // Optional: bind to authenticated user
+  source      String   @default("website-request") // website-request, etc.
+  status      String   @default("created") // created, package_generating, package_ready, deploy_generating, deploy_ready, published
+  fullPayload Json     @default("{}") // form data, aiPackage, previewUrl, vercelDeploymentId, etc.
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
-  AxiomScoreSnapshots  AxiomScoreSnapshot[]
-  RecurringAnalyses    RecurringAnalysis[]
+  AxiomScoreSnapshots AxiomScoreSnapshot[]
+  RecurringAnalyses   RecurringAnalysis[]
 
   @@index([source])
   @@index([status])
@@ -254,16 +254,16 @@ model AxiomScoreSnapshot {
   lead      Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
 
-  tier   String
+  tier     String
   provider String?
 
-  infrastructureScore     Int?
-  estimatedAnnualSavings  Int?
-  riskExposureLevel       String?
-  deploymentFrictionIndex Int?
-  complexityTier          String?
+  infrastructureScore      Int?
+  estimatedAnnualSavings   Int?
+  riskExposureLevel        String?
+  deploymentFrictionIndex  Int?
+  complexityTier           String?
   automationReadinessScore Int?
-  scoringVersion          String?
+  scoringVersion           String?
 
   raw Json?
 
@@ -272,12 +272,12 @@ model AxiomScoreSnapshot {
 
 // Phase 9: Sales pipeline snapshots (admin dashboard)
 model SalesPipelineSnapshot {
-  id                    String   @id @default(cuid())
-  createdAt             DateTime @default(now())
-  highUrgencyCount      Int
+  id                      String   @id @default(cuid())
+  createdAt               DateTime @default(now())
+  highUrgencyCount        Int
   enterpriseLikelihoodAvg Float
   expansionProbabilityAvg Float
-  avgStrategicReadiness Float
+  avgStrategicReadiness   Float
 
   @@index([createdAt])
 }
@@ -286,16 +286,16 @@ model SalesPipelineSnapshot {
 // jobType: "iam_scan" (daily) | "infra_discovery" (weekly) | null (legacy snapshot-only)
 // Structural Stabilization: FK to Lead with onDelete Cascade
 model RecurringAnalysis {
-  id         String   @id @default(cuid())
-  leadId     String
-  lead       Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
-  frequency  String   // "daily" | "weekly" | "monthly"
-  jobType    String?  // "iam_scan" | "infra_discovery" | null (legacy)
-  lastRunAt  DateTime?
-  nextRunAt  DateTime
-  enabled    Boolean  @default(true)
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  id        String    @id @default(cuid())
+  leadId    String
+  lead      Lead      @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  frequency String // "daily" | "weekly" | "monthly"
+  jobType   String? // "iam_scan" | "infra_discovery" | null (legacy)
+  lastRunAt DateTime?
+  nextRunAt DateTime
+  enabled   Boolean   @default(true)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 
   @@index([leadId])
   @@index([nextRunAt])
@@ -310,7 +310,7 @@ model ExecutionLog {
   leadId        String?
   action        String
   pluginId      String
-  status        String    // pending | success | failed | rolled_back
+  status        String // pending | success | failed | rolled_back
   dryRun        Boolean   @default(false)
   params        Json?
   result        Json?
@@ -331,20 +331,20 @@ model ExecutionLog {
 
 // AI invocation log — PII-safe, for tracing and cost attribution
 model AIInvocation {
-  id           String   @id @default(cuid())
-  userId       String?
-  taskType     String
-  provider     String
-  model        String
-  latencyMs    Int?
-  success      Boolean
-  errorMessage String?
-  tokensIn     Int?
-  tokensOut    Int?
-  promptHash   String?
-  promptPreview String? @db.VarChar(200)
-  requestId    String?
-  createdAt    DateTime @default(now())
+  id            String   @id @default(cuid())
+  userId        String?
+  taskType      String
+  provider      String
+  model         String
+  latencyMs     Int?
+  success       Boolean
+  errorMessage  String?
+  tokensIn      Int?
+  tokensOut     Int?
+  promptHash    String?
+  promptPreview String?  @db.VarChar(200)
+  requestId     String?
+  createdAt     DateTime @default(now())
 
   @@index([userId])
   @@index([taskType])
@@ -355,12 +355,12 @@ model AIInvocation {
 model AgentJob {
   id        String   @id @default(cuid())
   leadId    String
-  type      String   // CONTACT_RESOLUTION
+  type      String // CONTACT_RESOLUTION
   status    String   @default("pending") // pending | running | completed | failed
   attempts  Int      @default(0)
   lastError String?
   runAt     DateTime @default(now())
-  result    Json?    // RESOLVED | NEEDS_INFO | ESCALATED + actionsTaken, etc.
+  result    Json? // RESOLVED | NEEDS_INFO | ESCALATED + actionsTaken, etc.
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -375,7 +375,7 @@ model AuditLog {
   createdAt DateTime @default(now())
   leadId    String?
   action    String
-  actor     String   // "system" | "user" | "admin"
+  actor     String // "system" | "user" | "admin"
   metadata  Json?
 
   @@index([leadId])
@@ -385,19 +385,19 @@ model AuditLog {
 
 // Multi-Cloud Readiness Report — Phase 3 Magic Moment
 model MultiCloudReadinessReport {
-  id                String   @id @default(cuid())
-  leadId            String
-  userId            String?
-  score             Int      // 0-100 resilience score
-  providerSummary   Json     // { primary: "aws", regions: [...], resourceCounts: {...} }
-  risks             Json     // [{ category, severity, description }]
-  recommendations   Json     // { architecture, secondaryProvider, components, nextSteps }
-  estimatedCostImpact Json   // { currentMonthlyCost, additionalCost, percentIncrease }
-  rto               String   // e.g. "5 minutes"
-  rpo               String   // e.g. "5 minutes"
-  rawScanData       Json?    // normalized scan results from all plugins
-  aiAnalysis        String?  // raw AI-generated analysis text
-  createdAt         DateTime @default(now())
+  id                  String   @id @default(cuid())
+  leadId              String
+  userId              String?
+  score               Int // 0-100 resilience score
+  providerSummary     Json // { primary: "aws", regions: [...], resourceCounts: {...} }
+  risks               Json // [{ category, severity, description }]
+  recommendations     Json // { architecture, secondaryProvider, components, nextSteps }
+  estimatedCostImpact Json // { currentMonthlyCost, additionalCost, percentIncrease }
+  rto                 String // e.g. "5 minutes"
+  rpo                 String // e.g. "5 minutes"
+  rawScanData         Json? // normalized scan results from all plugins
+  aiAnalysis          String? // raw AI-generated analysis text
+  createdAt           DateTime @default(now())
 
   @@index([leadId])
   @@index([userId])
@@ -406,24 +406,24 @@ model MultiCloudReadinessReport {
 
 // Phase 4: Terraform Controlled Execution
 model TerraformExecutionJob {
-  id                  String    @id @default(cuid())
-  leadId              String
-  userId              String?
-  readinessReportId   String?
-  status              String    @default("queued") // queued | generating | validating | planned | awaiting_approval | applying | succeeded | failed | cancelled
-  mode                String    @default("active_passive") // active_passive
-  primaryCloud        String    @default("aws")
-  secondaryCloud      String    @default("azure")
-  workingDirectory    String?
-  generatedFiles      Json?     // { "main.tf": "...", "variables.tf": "...", ... }
-  planSummary         Json?     // { add: N, change: N, destroy: N, resources: [...] }
-  planOutput          String?   @db.Text
-  applyOutput         String?   @db.Text
-  errorMessage        String?
-  approvedAt          DateTime?
-  approvedBy          String?
-  createdAt           DateTime  @default(now())
-  updatedAt           DateTime  @updatedAt
+  id                String    @id @default(cuid())
+  leadId            String
+  userId            String?
+  readinessReportId String?
+  status            String    @default("queued") // queued | generating | validating | planned | awaiting_approval | applying | succeeded | failed | cancelled
+  mode              String    @default("active_passive") // active_passive
+  primaryCloud      String    @default("aws")
+  secondaryCloud    String    @default("azure")
+  workingDirectory  String?
+  generatedFiles    Json? // { "main.tf": "...", "variables.tf": "...", ... }
+  planSummary       Json? // { add: N, change: N, destroy: N, resources: [...] }
+  planOutput        String?   @db.Text
+  applyOutput       String?   @db.Text
+  errorMessage      String?
+  approvedAt        DateTime?
+  approvedBy        String?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
 
   @@index([leadId])
   @@index([userId])
@@ -433,12 +433,12 @@ model TerraformExecutionJob {
 
 // Cloud Operator "Ask Axiom" chat persistence
 model AxiomConversation {
-  id        String   @id @default(cuid())
+  id        String         @id @default(cuid())
   userId    String?
   leadId    String?
   title     String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
   messages  AxiomMessage[]
 
   @@index([userId])
@@ -448,13 +448,14 @@ model AxiomConversation {
 model AxiomMessage {
   id             String   @id @default(cuid())
   conversationId String
-  role           String   // "user" | "assistant" | "system"
+  role           String // "user" | "assistant" | "system"
   content        String
   toolCalls      Json?
   toolResults    Json?
   createdAt      DateTime @default(now())
 
   conversation AxiomConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
   @@index([conversationId])
 }
 
@@ -467,9 +468,9 @@ model CloudAccount {
   id                String        @id @default(cuid())
   organizationId    String
   provider          CloudProvider
-  externalAccountId String        // AWS account ID, Azure subscription ID, GCP project ID
+  externalAccountId String // AWS account ID, Azure subscription ID, GCP project ID
   alias             String?
-  credentialRef     String?       // pointer to encrypted credential vault entry
+  credentialRef     String? // pointer to encrypted credential vault entry
   regions           String[]      @default([])
   autopilotMode     AutopilotMode @default(observe_only)
   connectedAt       DateTime      @default(now())
@@ -492,20 +493,20 @@ model CloudAccount {
 // ---------------------------------------------------------------------------
 
 model AxiomAgentRun {
-  id              String         @id @default(cuid())
-  userId          String
-  organizationId  String
-  cloudAccountId  String
-  cloudAccount    CloudAccount   @relation(fields: [cloudAccountId], references: [id])
-  trigger         AgentTrigger
-  status          AgentRunStatus @default(pending)
-  snapshotData    Json?
-  summary         String?        @db.Text
-  errorMessage    String?
-  startedAt       DateTime?
-  completedAt     DateTime?
-  createdAt       DateTime       @default(now())
-  updatedAt       DateTime       @updatedAt
+  id             String         @id @default(cuid())
+  userId         String
+  organizationId String
+  cloudAccountId String
+  cloudAccount   CloudAccount   @relation(fields: [cloudAccountId], references: [id])
+  trigger        AgentTrigger
+  status         AgentRunStatus @default(pending)
+  snapshotData   Json?
+  summary        String?        @db.Text
+  errorMessage   String?
+  startedAt      DateTime?
+  completedAt    DateTime?
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
 
   findings        AxiomFinding[]
   recommendations AxiomRecommendation[]
@@ -534,10 +535,10 @@ model AxiomFinding {
   severity          FindingSeverity
   title             String
   description       String          @db.Text
-  affectedResources Json            // string[]
+  affectedResources Json // string[]
   region            String
   provider          CloudProvider
-  confidence        String          // "low" | "medium" | "high"
+  confidence        String // "low" | "medium" | "high"
   monthlyLow        Float           @default(0)
   monthlyHigh       Float           @default(0)
   yearlyLow         Float           @default(0)
@@ -588,15 +589,15 @@ model AxiomRecommendation {
 // ---------------------------------------------------------------------------
 
 model AxiomExecutionPlan {
-  id                 String         @id @default(cuid())
-  runId              String         @unique
-  run                AxiomAgentRun  @relation(fields: [runId], references: [id], onDelete: Cascade)
-  totalItems         Int            @default(0)
-  safeToApply        Boolean        @default(false)
+  id                 String        @id @default(cuid())
+  runId              String        @unique
+  run                AxiomAgentRun @relation(fields: [runId], references: [id], onDelete: Cascade)
+  totalItems         Int           @default(0)
+  safeToApply        Boolean       @default(false)
   downtimeEstimate   String?
-  rollbackComplexity String?        // "trivial" | "moderate" | "complex"
+  rollbackComplexity String? // "trivial" | "moderate" | "complex"
   dryRunResult       Json?
-  createdAt          DateTime       @default(now())
+  createdAt          DateTime      @default(now())
 
   items AxiomExecutionPlanItem[]
 
@@ -606,25 +607,25 @@ model AxiomExecutionPlan {
 model AxiomExecutionPlanItem {
   id               String               @id @default(cuid())
   planId           String
-  plan             AxiomExecutionPlan    @relation(fields: [planId], references: [id], onDelete: Cascade)
+  plan             AxiomExecutionPlan   @relation(fields: [planId], references: [id], onDelete: Cascade)
   recommendationId String?
-  recommendation   AxiomRecommendation?  @relation(fields: [recommendationId], references: [id])
+  recommendation   AxiomRecommendation? @relation(fields: [recommendationId], references: [id])
   actionType       ActionType
   provider         CloudProvider
   region           String
-  resourceIds      Json                  // string[]
+  resourceIds      Json // string[]
   currentState     String
   recommendedState String
   riskLevel        RiskLevel
   disposition      ActionDisposition
-  monthlyLow       Float                 @default(0)
-  monthlyHigh      Float                 @default(0)
-  yearlyLow        Float                 @default(0)
-  yearlyHigh       Float                 @default(0)
+  monthlyLow       Float                @default(0)
+  monthlyHigh      Float                @default(0)
+  yearlyLow        Float                @default(0)
+  yearlyHigh       Float                @default(0)
   rollbackPlan     Json?
   precheckResult   Json?
-  sortOrder        Int                   @default(0)
-  createdAt        DateTime              @default(now())
+  sortOrder        Int                  @default(0)
+  createdAt        DateTime             @default(now())
 
   @@index([planId])
   @@index([disposition])
@@ -640,8 +641,8 @@ model AxiomApprovalRequest {
   run             AxiomAgentRun    @relation(fields: [runId], references: [id], onDelete: Cascade)
   userId          String
   decision        ApprovalDecision
-  approvedItemIds Json             // string[]
-  rejectedItemIds Json?            // string[]
+  approvedItemIds Json // string[]
+  rejectedItemIds Json? // string[]
   note            String?          @db.Text
   decidedAt       DateTime         @default(now())
 
@@ -663,35 +664,35 @@ model AxiomApprovalRequest {
 // ---------------------------------------------------------------------------
 
 model AxiomApprovalItem {
-  id              String             @id @default(cuid())
-  organizationId  String
-  runId           String
-  planItemId      String
-  status          ApprovalItemStatus @default(pending)
-  title           String
-  actionType      ActionType
-  provider        CloudProvider
-  region          String
-  resourceIds     Json               // string[]
-  currentState    String
-  recommendedState String
-  riskLevel       RiskLevel
-  disposition     ActionDisposition
-  dispositionReason String
-  monthlyLow      Float              @default(0)
-  monthlyHigh     Float              @default(0)
-  yearlyLow       Float              @default(0)
-  yearlyHigh      Float              @default(0)
-  rollbackAvailable Boolean          @default(false)
-  rollbackComplexity String?         // "trivial" | "moderate" | "complex"
-  precheckPassed  Boolean            @default(true)
-  decidedBy       String?
-  decidedAt       DateTime?
-  note            String?            @db.Text
-  snoozedUntil    DateTime?
-  errorMessage    String?
-  createdAt       DateTime           @default(now())
-  updatedAt       DateTime           @updatedAt
+  id                 String             @id @default(cuid())
+  organizationId     String
+  runId              String
+  planItemId         String
+  status             ApprovalItemStatus @default(pending)
+  title              String
+  actionType         ActionType
+  provider           CloudProvider
+  region             String
+  resourceIds        Json // string[]
+  currentState       String
+  recommendedState   String
+  riskLevel          RiskLevel
+  disposition        ActionDisposition
+  dispositionReason  String
+  monthlyLow         Float              @default(0)
+  monthlyHigh        Float              @default(0)
+  yearlyLow          Float              @default(0)
+  yearlyHigh         Float              @default(0)
+  rollbackAvailable  Boolean            @default(false)
+  rollbackComplexity String? // "trivial" | "moderate" | "complex"
+  precheckPassed     Boolean            @default(true)
+  decidedBy          String?
+  decidedAt          DateTime?
+  note               String?            @db.Text
+  snoozedUntil       DateTime?
+  errorMessage       String?
+  createdAt          DateTime           @default(now())
+  updatedAt          DateTime           @updatedAt
 
   @@unique([runId, planItemId])
   @@index([organizationId, status])
@@ -713,7 +714,7 @@ model AxiomAuditEvent {
   planItemId     String?
   provider       CloudProvider
   actionType     ActionType
-  resourceIds    Json             // string[]
+  resourceIds    Json // string[]
   region         String
   beforeState    Json
   afterState     Json?
@@ -743,21 +744,21 @@ model AxiomAuditEvent {
 // ---------------------------------------------------------------------------
 
 model AxiomScheduledRun {
-  id             String            @id @default(cuid())
-  organizationId String
-  cloudAccountId String
-  cloudAccount   CloudAccount      @relation(fields: [cloudAccountId], references: [id])
-  trigger        AgentTrigger      @default(scheduled)
-  frequency      ScheduleFrequency @default(daily)
-  cronExpression String            // e.g. "0 9 * * 1" (Monday 9am UTC)
-  timezone       String            @default("UTC")
-  nextRunAt      DateTime
-  lastRunId      String?
-  lastDiffSummary String?
-  consecutiveFailures Int          @default(0)
-  enabled        Boolean           @default(true)
-  createdAt      DateTime          @default(now())
-  updatedAt      DateTime          @updatedAt
+  id                  String            @id @default(cuid())
+  organizationId      String
+  cloudAccountId      String
+  cloudAccount        CloudAccount      @relation(fields: [cloudAccountId], references: [id])
+  trigger             AgentTrigger      @default(scheduled)
+  frequency           ScheduleFrequency @default(daily)
+  cronExpression      String // e.g. "0 9 * * 1" (Monday 9am UTC)
+  timezone            String            @default("UTC")
+  nextRunAt           DateTime
+  lastRunId           String?
+  lastDiffSummary     String?
+  consecutiveFailures Int               @default(0)
+  enabled             Boolean           @default(true)
+  createdAt           DateTime          @default(now())
+  updatedAt           DateTime          @updatedAt
 
   @@index([organizationId])
   @@index([cloudAccountId])
@@ -795,19 +796,19 @@ model AxiomNotification {
 // ---------------------------------------------------------------------------
 
 model AxiomOrgPreferences {
-  id                String          @id @default(cuid())
-  organizationId    String          @unique
-  preferredProviders String[]       @default([])          // empty = all
-  riskTolerance     RiskTolerance   @default(conservative)
-  approvalPolicy    ApprovalPolicy  @default(require_all)
-  autoApplyEnabled  Boolean         @default(false)
-  outputFormat      OutputFormat    @default(terraform)
-  businessContext   BusinessContext @default(other)
-  ignoredFindingTitles String[]    @default([])
-  priorityCategories String[]      @default([])           // empty = default ordering
-  notes             String?        @db.Text               // freeform context from user
-  createdAt         DateTime        @default(now())
-  updatedAt         DateTime        @updatedAt
+  id                   String          @id @default(cuid())
+  organizationId       String          @unique
+  preferredProviders   String[]        @default([]) // empty = all
+  riskTolerance        RiskTolerance   @default(conservative)
+  approvalPolicy       ApprovalPolicy  @default(require_all)
+  autoApplyEnabled     Boolean         @default(false)
+  outputFormat         OutputFormat    @default(terraform)
+  businessContext      BusinessContext @default(other)
+  ignoredFindingTitles String[]        @default([])
+  priorityCategories   String[]        @default([]) // empty = default ordering
+  notes                String?         @db.Text // freeform context from user
+  createdAt            DateTime        @default(now())
+  updatedAt            DateTime        @updatedAt
 }
 
 // ---------------------------------------------------------------------------
@@ -832,7 +833,7 @@ model AxiomAgentTask {
   inputJson      Json?
   outputJson     Json?
   errorMessage   String?
-  dependsOn      String[]        @default([])   // task type names that must complete first
+  dependsOn      String[]        @default([]) // task type names that must complete first
   idempotencyKey String?         @unique
   startedAt      DateTime?
   completedAt    DateTime?
@@ -846,6 +847,82 @@ model AxiomAgentTask {
 }
 
 // ---------------------------------------------------------------------------
+// AI Workforce — workspace-scoped engineer state.
+//
+// One AgentEngineerRecord per (organizationId, engineerId) — the workspace's
+// view of a canonical engineer from lib/workforce/agentWorkforceRegistry.ts.
+// Holds the workspace-tightened approval rule (never looser than canonical),
+// the enabled flag, optional operator notes, and timestamps.
+//
+// AgentEngineerActionAttempt is appended every time an engineer attempts a
+// gated action. Closes the loop between "engineer exists" and "engineer
+// actually ran something" with the runtime verdict + audit correlation id.
+// ---------------------------------------------------------------------------
+
+model AgentEngineerRecord {
+  id                  String   @id @default(cuid())
+  organizationId      String
+  /// Stable id from agentWorkforceRegistry — e.g. "spec_writer_engineer".
+  engineerId          String
+  /// Sync-time copy of the canonical default approval rule. Used as the floor
+  /// for tightening — overrides may only move strictly tighter.
+  defaultApprovalRule String
+  /// Workspace-tightened rule. NULL means "use canonical default".
+  currentApprovalRule String?
+  /// Whether the workspace admin has disabled this engineer entirely.
+  isEnabled           Boolean  @default(true)
+  /// Free-text operator notes — visible only to workspace admins.
+  notes               String?  @db.Text
+  /// Optional per-engineer JSON config (future use; never holds secrets).
+  config              Json?
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  attempts AgentEngineerActionAttempt[]
+
+  @@unique([organizationId, engineerId])
+  @@index([organizationId, isEnabled])
+  @@index([organizationId, createdAt])
+}
+
+model AgentEngineerActionAttempt {
+  id                String              @id @default(cuid())
+  organizationId    String
+  /// Foreign key to the engineer record this attempt belongs to.
+  recordId          String
+  record            AgentEngineerRecord @relation(fields: [recordId], references: [id], onDelete: Cascade)
+  engineerId        String
+  /// Free-text action label — e.g. "scan_repo", "apply_terraform".
+  action            String
+  /// Closed-union risk level the caller declared.
+  riskLevel         String
+  /// Whether the caller declared this action as read-only.
+  isReadOnly        Boolean
+  module            String?
+  connector         String?
+  /// Runtime verdict from evaluateEngineerActionAttempt.
+  runtimeDecision   String // "allowed" | "requires_approval" | "blocked"
+  effectiveRule     String // approval rule in force at decision time
+  policySource      String // canonical_default | workspace_override | ...
+  requiredApprovers Int                 @default(0)
+  /// Operator/agent who attempted the action.
+  requestedBy       String
+  /// Correlation id stitched into the audit fabric.
+  correlationId     String
+  /// Reason copy surfaced in the UI + audit row.
+  reason            String              @db.Text
+  /// Optional approval-request id when decision === "requires_approval".
+  approvalRequestId String?
+  metadata          Json?
+  createdAt         DateTime            @default(now())
+
+  @@index([organizationId, createdAt])
+  @@index([recordId, createdAt])
+  @@index([organizationId, runtimeDecision, createdAt])
+  @@index([correlationId])
+}
+
+// ---------------------------------------------------------------------------
 // Axiom — Autopilot Audit Trail
 //
 // Immutable log of every autopilot mode change and every action the agent
@@ -854,22 +931,22 @@ model AxiomAgentTask {
 // ---------------------------------------------------------------------------
 
 model AxiomAutopilotEvent {
-  id             String        @id @default(cuid())
+  id             String             @id @default(cuid())
   cloudAccountId String
-  cloudAccount   CloudAccount  @relation(fields: [cloudAccountId], references: [id])
+  cloudAccount   CloudAccount       @relation(fields: [cloudAccountId], references: [id])
   organizationId String
   userId         String
-  eventType      String        // "mode_change" | "auto_applied" | "auto_blocked"
+  eventType      String // "mode_change" | "auto_applied" | "auto_blocked"
   previousMode   AutopilotMode?
   newMode        AutopilotMode?
   runId          String?
   actionType     ActionType?
   riskLevel      RiskLevel?
   disposition    ActionDisposition?
-  resourceIds    Json?         // string[]
-  reason         String        @db.Text
+  resourceIds    Json? // string[]
+  reason         String             @db.Text
   metadata       Json?
-  createdAt      DateTime      @default(now())
+  createdAt      DateTime           @default(now())
 
   @@index([cloudAccountId])
   @@index([organizationId])
@@ -886,7 +963,7 @@ model OrgMembership {
   userId         String
   organizationId String
   role           OrgRole   @default(read_only)
-  providerScopes String[]  @default([])            // empty = all providers; ["aws","gcp"] = restricted
+  providerScopes String[]  @default([]) // empty = all providers; ["aws","gcp"] = restricted
   invitedBy      String?
   acceptedAt     DateTime?
   createdAt      DateTime  @default(now())
@@ -898,51 +975,51 @@ model OrgMembership {
 }
 
 model AxiomApprovalPolicy {
-  id                  String    @id @default(cuid())
-  organizationId      String
-  name                String
-  description         String?   @db.Text
-  enabled             Boolean   @default(true)
-  priority            Int       @default(0)         // higher = evaluated first
+  id             String  @id @default(cuid())
+  organizationId String
+  name           String
+  description    String? @db.Text
+  enabled        Boolean @default(true)
+  priority       Int     @default(0) // higher = evaluated first
 
   // Matching criteria — which actions this policy applies to
-  matchRiskLevels     String[]  @default([])        // empty = all
-  matchActionTypes    String[]  @default([])        // empty = all
-  matchProviders      String[]  @default([])        // empty = all
-  matchCategories     String[]  @default([])        // empty = all
-  matchMinSavings     Float?                        // only match if yearly savings >= this
+  matchRiskLevels  String[] @default([]) // empty = all
+  matchActionTypes String[] @default([]) // empty = all
+  matchProviders   String[] @default([]) // empty = all
+  matchCategories  String[] @default([]) // empty = all
+  matchMinSavings  Float? // only match if yearly savings >= this
 
   // Approval requirements
-  requiredApprovals   Int       @default(1)         // how many approvals needed
-  requiredRoles       String[]  @default([])        // which roles can approve (empty = any with permission)
-  escalateAfterHours  Int?                          // auto-escalate if no decision in N hours
-  escalateToRoles     String[]  @default([])        // who gets the escalation
-  autoExpireHours     Int?                          // auto-expire if no decision in N hours
-  blockAction         Boolean   @default(false)     // true = hard-block, no approval path
+  requiredApprovals  Int      @default(1) // how many approvals needed
+  requiredRoles      String[] @default([]) // which roles can approve (empty = any with permission)
+  escalateAfterHours Int? // auto-escalate if no decision in N hours
+  escalateToRoles    String[] @default([]) // who gets the escalation
+  autoExpireHours    Int? // auto-expire if no decision in N hours
+  blockAction        Boolean  @default(false) // true = hard-block, no approval path
 
-  createdBy           String
-  createdAt           DateTime  @default(now())
-  updatedAt           DateTime  @updatedAt
+  createdBy String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([organizationId, enabled])
   @@index([priority])
 }
 
 model AxiomApprovalChain {
-  id               String              @id @default(cuid())
-  organizationId   String
-  approvalItemId   String
-  policyId         String              // which policy triggered this chain
-  status           ApprovalChainStatus @default(pending_approvals)
-  requiredCount    Int                 // how many approvals needed
-  currentCount     Int                 @default(0)  // how many received
-  escalatedAt      DateTime?
-  expiresAt        DateTime?
-  resolvedAt       DateTime?
-  createdAt        DateTime            @default(now())
-  updatedAt        DateTime            @updatedAt
+  id             String              @id @default(cuid())
+  organizationId String
+  approvalItemId String
+  policyId       String // which policy triggered this chain
+  status         ApprovalChainStatus @default(pending_approvals)
+  requiredCount  Int // how many approvals needed
+  currentCount   Int                 @default(0) // how many received
+  escalatedAt    DateTime?
+  expiresAt      DateTime?
+  resolvedAt     DateTime?
+  createdAt      DateTime            @default(now())
+  updatedAt      DateTime            @updatedAt
 
-  votes            AxiomApprovalVote[]
+  votes AxiomApprovalVote[]
 
   @@unique([approvalItemId, policyId])
   @@index([organizationId, status])
@@ -951,17 +1028,17 @@ model AxiomApprovalChain {
 }
 
 model AxiomApprovalVote {
-  id          String   @id @default(cuid())
-  chainId     String
-  userId      String
-  role        OrgRole
-  decision    String                               // "approve" | "reject" | "escalate"
-  reason      String?  @db.Text
-  createdAt   DateTime @default(now())
+  id        String   @id @default(cuid())
+  chainId   String
+  userId    String
+  role      OrgRole
+  decision  String // "approve" | "reject" | "escalate"
+  reason    String?  @db.Text
+  createdAt DateTime @default(now())
 
-  chain       AxiomApprovalChain @relation(fields: [chainId], references: [id], onDelete: Cascade)
+  chain AxiomApprovalChain @relation(fields: [chainId], references: [id], onDelete: Cascade)
 
-  @@unique([chainId, userId])                      // one vote per user per chain
+  @@unique([chainId, userId]) // one vote per user per chain
   @@index([chainId])
   @@index([userId])
 }
@@ -971,8 +1048,8 @@ model AxiomRbacAuditEvent {
   organizationId String
   actorId        String
   actorRole      OrgRole
-  action         String                            // "role_assigned", "policy_created", "approval_voted", etc.
-  targetType     String                            // "membership", "policy", "chain", "item"
+  action         String // "role_assigned", "policy_created", "approval_voted", etc.
+  targetType     String // "membership", "policy", "chain", "item"
   targetId       String
   before         Json?
   after          Json?
@@ -999,9 +1076,9 @@ model SecureAuditRecord {
   id             String   @id
   organizationId String
   actorUserId    String?
-  actorKind      String   // "user" | "agent" | "system"
+  actorKind      String // "user" | "agent" | "system"
   action         String
-  outcome        String   // "success" | "failure" | "blocked"
+  outcome        String // "success" | "failure" | "blocked"
   entityRef      String?
   correlationId  String
   source         String
@@ -1021,14 +1098,14 @@ model OperationalMemoryRecord {
   id             String   @id
   organizationId String
   actorId        String
-  kind           String   // MemoryRecordKind
+  kind           String // MemoryRecordKind
   provider       String?
-  resources      Json     // ResourceRef[]
+  resources      Json // ResourceRef[]
   summary        String   @db.Text
-  evidence       Json     // { name, value }[]
-  outcome        String   // "positive" | "negative" | "neutral" | "pending"
-  impact         Json     // { costDeltaUsd?, confidenceDelta?, riskDelta? }
-  links          Json     // { auditEventIds, executionPlanIds, ... }
+  evidence       Json // { name, value }[]
+  outcome        String // "positive" | "negative" | "neutral" | "pending"
+  impact         Json // { costDeltaUsd?, confidenceDelta?, riskDelta? }
+  links          Json // { auditEventIds, executionPlanIds, ... }
   nextAction     Json?
   occurredAt     DateTime
   recordedAt     DateTime
@@ -1042,19 +1119,19 @@ model OperationalMemoryRecord {
 /// user and a Tauri desktop instance. Backs lib/desktop/desktopSession.ts
 /// → DesktopSessionStore.
 model DesktopSessionRecord {
-  id                 String    @id
-  userId             String
-  organizationId     String
-  deviceFingerprint  String
-  deviceLabel        String
-  platform           String
-  desktopVersion     String?
-  issuedAt           DateTime
-  expiresAt          DateTime
-  lastSeenAt         DateTime
-  revokedAt          DateTime?
-  revokeReason       String?
-  createdAt          DateTime  @default(now())
+  id                String    @id
+  userId            String
+  organizationId    String
+  deviceFingerprint String
+  deviceLabel       String
+  platform          String
+  desktopVersion    String?
+  issuedAt          DateTime
+  expiresAt         DateTime
+  lastSeenAt        DateTime
+  revokedAt         DateTime?
+  revokeReason      String?
+  createdAt         DateTime  @default(now())
 
   @@index([userId])
   @@index([organizationId])
@@ -1069,7 +1146,7 @@ model DesktopHandoffRecord {
   userId          String
   executionPlanId String
   approver        String
-  status          String    // "ready" | "delivered" | "rejected_by_desktop" | "expired"
+  status          String // "ready" | "delivered" | "rejected_by_desktop" | "expired"
   rejectionReason String?
   manifest        Json
   payload         Json
@@ -1098,7 +1175,7 @@ model OperationTraceSpan {
   startedAt      DateTime
   endedAt        DateTime?
   durationMs     Int?
-  status         String    // "ok" | "error" | "in_progress"
+  status         String // "ok" | "error" | "in_progress"
   attributes     Json?
   errorMessage   String?
   createdAt      DateTime  @default(now())
@@ -1114,23 +1191,23 @@ model OperationTraceSpan {
 /// answer "did we page anyone last night?" weeks later. Backs
 /// lib/notifications/outboundNotificationLane + /api/notifications/history.
 model OutboundNotificationRecord {
-  id              String    @id
-  organizationId  String
-  dedupeKey       String
-  kind            String    // OutboundNotificationKind literal
-  severity        String    // OutboundSeverity literal
-  headline        String
-  body            String
+  id                String   @id
+  organizationId    String
+  dedupeKey         String
+  kind              String // OutboundNotificationKind literal
+  severity          String // OutboundSeverity literal
+  headline          String
+  body              String
   /// "ok" — at least one channel succeeded
   /// "deduped" — suppressed by the 10-min dedupe window
   /// "failed" — every attempted channel returned non-2xx
   /// "skipped" — no channels configured
-  outcome         String
-  channelsSucceeded String[]  // {"slack","microsoft_teams","generic_webhook"} subset
-  channelsSkipped String[]    // human-readable skip reasons
-  evidenceRefs   String[]
-  correlationId  String?
-  createdAt      DateTime  @default(now())
+  outcome           String
+  channelsSucceeded String[] // {"slack","microsoft_teams","generic_webhook"} subset
+  channelsSkipped   String[] // human-readable skip reasons
+  evidenceRefs      String[]
+  correlationId     String?
+  createdAt         DateTime @default(now())
 
   @@index([organizationId, createdAt])
   @@index([organizationId, dedupeKey, createdAt])
@@ -1144,21 +1221,21 @@ model OutboundNotificationRecord {
 /// second failure. Status is three-valued so operators can audit
 /// which notifications gave up and which recovered.
 model OutboundNotificationRetry {
-  id                String    @id
-  organizationId    String
-  dedupeKey         String
-  kind              String
-  severity          String
-  headline          String
-  body              String
-  evidenceRefs      String[]
-  safeActionLabel   String?
-  safeActionHref    String?
-  status            String    // "pending" | "succeeded" | "failed_terminal"
-  attemptCount      Int       @default(0)
-  lastError         String?
-  enqueuedAt        DateTime  @default(now())
-  retriedAt         DateTime?
+  id              String    @id
+  organizationId  String
+  dedupeKey       String
+  kind            String
+  severity        String
+  headline        String
+  body            String
+  evidenceRefs    String[]
+  safeActionLabel String?
+  safeActionHref  String?
+  status          String // "pending" | "succeeded" | "failed_terminal"
+  attemptCount    Int       @default(0)
+  lastError       String?
+  enqueuedAt      DateTime  @default(now())
+  retriedAt       DateTime?
 
   @@index([status, enqueuedAt])
   @@index([organizationId, status])
@@ -1170,14 +1247,14 @@ model OutboundNotificationRetry {
 /// missing or under-keyworded. Best-effort write — the search hot
 /// path never blocks on this table.
 model HelpQueryRecord {
-  id              String   @id
-  organizationId  String?
-  query           String
-  totalTokens     Int
-  verdict         String
-  primaryEntryId  String?
-  topHitScore     Float?
-  createdAt       DateTime @default(now())
+  id             String   @id
+  organizationId String?
+  query          String
+  totalTokens    Int
+  verdict        String
+  primaryEntryId String?
+  topHitScore    Float?
+  createdAt      DateTime @default(now())
 
   @@index([createdAt])
   @@index([verdict, createdAt])
@@ -1207,23 +1284,23 @@ model TenantFeatureFlag {
 /// per-stage reasoning + final outcome. The audit-readable spine of
 /// "why did the AGI do that?" — never trimmed for space.
 model AutonomyDecisionRationale {
-  id              String   @id
-  organizationId  String
-  cycleId         String?
-  candidateId     String
-  title           String
-  charterMode     String   // AutonomyMode literal
-  boundaryClass   String
+  id             String   @id
+  organizationId String
+  cycleId        String?
+  candidateId    String
+  title          String
+  charterMode    String // AutonomyMode literal
+  boundaryClass  String
   /// "passed" | "approval_packet_prepared" | "halted_at_gate" | "policy_blocked" | "unsafe_blocked" | "credential_blocked"
-  outcome         String
-  haltedAtStage   String?  // when outcome is halted_*
-  haltReason      String?
-  proposedIntent  String
+  outcome        String
+  haltedAtStage  String? // when outcome is halted_*
+  haltReason     String?
+  proposedIntent String
   /// Each stage transcript serialized — { stage, status, summary, evidenceRef, reason? }[]
-  stages          Json
-  evidenceRefs    String[]
-  durationMs      Int
-  createdAt       DateTime @default(now())
+  stages         Json
+  evidenceRefs   String[]
+  durationMs     Int
+  createdAt      DateTime @default(now())
 
   @@index([organizationId, createdAt])
   @@index([organizationId, outcome, createdAt])
@@ -1236,27 +1313,27 @@ model AutonomyDecisionRationale {
 /// human decision so the IaC pipeline can pick it up. Read-only by
 /// design; the lane that actually applies a change is out of scope.
 model StagedRemediationRunbook {
-  id                String   @id
-  organizationId    String
-  runbookId         String   // From RemediationRunbook.id
-  sourceEventId     String   // CloudTrail event id
-  eventName         String
-  severity          String
-  rootCause         String
-  affectedResource  String
-  reversalLabel     String
-  reversalRisk      String
-  reversalApi       String?
-  hardeningLabel    String
-  hardeningApi      String?
-  confidence        Float
-  evidenceRefs      String[]
-  status            String   // "staged" | "approved" | "rejected" | "expired"
-  decision          String?
-  stagedBy          String?
-  stagedAt          DateTime @default(now())
-  decidedAt         DateTime?
-  decidedBy         String?
+  id               String    @id
+  organizationId   String
+  runbookId        String // From RemediationRunbook.id
+  sourceEventId    String // CloudTrail event id
+  eventName        String
+  severity         String
+  rootCause        String
+  affectedResource String
+  reversalLabel    String
+  reversalRisk     String
+  reversalApi      String?
+  hardeningLabel   String
+  hardeningApi     String?
+  confidence       Float
+  evidenceRefs     String[]
+  status           String // "staged" | "approved" | "rejected" | "expired"
+  decision         String?
+  stagedBy         String?
+  stagedAt         DateTime  @default(now())
+  decidedAt        DateTime?
+  decidedBy        String?
 
   @@index([organizationId, status, stagedAt])
   @@index([organizationId, runbookId])
@@ -1267,21 +1344,21 @@ model StagedRemediationRunbook {
 /// for fan-out; Prisma is the durable spine so operators can answer
 /// "who told what to whom" weeks later.
 model AgentBusMessage {
-  id              String   @id
-  organizationId  String
+  id             String   @id
+  organizationId String
   /// Sender agent role (closed AgentRole union literal).
-  sender          String
+  sender         String
   /// Optional named recipient; null = broadcast.
-  recipient       String?
+  recipient      String?
   /// Closed AgentMessageKind union literal.
-  kind            String
+  kind           String
   /// Operator-readable summary (≤500 chars).
-  summary         String
+  summary        String
   /// Structured payload (kind-specific).
-  payload         Json
+  payload        Json
   /// Stable correlation id linking related back-and-forth.
-  threadId        String?
-  createdAt       DateTime @default(now())
+  threadId       String?
+  createdAt      DateTime @default(now())
 
   @@index([organizationId, createdAt])
   @@index([threadId, createdAt])
@@ -1294,29 +1371,29 @@ model AgentBusMessage {
 /// Status is intentionally three-valued so operators can see which
 /// proposals were considered + rejected.
 model MethodProposal {
-  id              String   @id
-  organizationId  String
+  id             String    @id
+  organizationId String
   /// Author agent role.
-  authorAgent     String
+  authorAgent    String
   /// Target subsystem (closed ProposalTarget union literal):
   /// "runbook_recipe" | "policy_template" | "charter_default" |
   /// "help_entry" | "tier_cap"
-  target          String
+  target         String
   /// Short human-readable label.
-  label           String
+  label          String
   /// Operator-readable rationale (≤2000 chars).
-  rationale       String
+  rationale      String
   /// Proposed diff (kind-specific JSON shape).
-  proposedDiff    Json
+  proposedDiff   Json
   /// 0..1 confidence the author has in the change.
-  confidence      Float
+  confidence     Float
   /// "pending" | "approved" | "rejected" | "applied" | "superseded"
-  status          String   @default("pending")
-  decidedBy       String?
-  decidedAt       DateTime?
-  decisionReason  String?
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  status         String    @default("pending")
+  decidedBy      String?
+  decidedAt      DateTime?
+  decisionReason String?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
 
   @@index([organizationId, status, createdAt])
   @@index([target, status])
@@ -1329,12 +1406,12 @@ model MethodProposal {
 /// dateKey is a string (not a DateTime) so a UNIQUE index on
 /// (tenant, capName, dateKey) is a cheap rollover boundary.
 model TenantUsageCounter {
-  organizationId  String
-  capName         String   // matches CapName literal: autonomyCyclesPerDay | outboundPerDay | ...
-  dateKey         String   // YYYY-MM-DD UTC
-  count           Int      @default(0)
-  updatedAt       DateTime @updatedAt
-  createdAt       DateTime @default(now())
+  organizationId String
+  capName        String // matches CapName literal: autonomyCyclesPerDay | outboundPerDay | ...
+  dateKey        String // YYYY-MM-DD UTC
+  count          Int      @default(0)
+  updatedAt      DateTime @updatedAt
+  createdAt      DateTime @default(now())
 
   @@id([organizationId, capName, dateKey])
   @@index([organizationId, dateKey])
@@ -1346,19 +1423,19 @@ model TenantUsageCounter {
 /// are nullable so the platform works without Stripe configured
 /// (defaults to 'trial' with a 14-day expiry).
 model TenantBillingPlan {
-  organizationId        String    @id
-  tier                  String
-  status                String
-  trialEndsAt           DateTime?
-  currentPeriodEndsAt   DateTime?
-  stripeCustomerId      String?
-  stripeSubscriptionId  String?
-  cancelAtPeriodEnd     Boolean   @default(false)
+  organizationId       String    @id
+  tier                 String
+  status               String
+  trialEndsAt          DateTime?
+  currentPeriodEndsAt  DateTime?
+  stripeCustomerId     String?
+  stripeSubscriptionId String?
+  cancelAtPeriodEnd    Boolean   @default(false)
   /// Last raw Stripe event id consumed by the webhook handler.
   /// Used for idempotency: re-receiving the same id is a no-op.
-  lastStripeEventId     String?
-  updatedAt             DateTime  @updatedAt
-  createdAt             DateTime  @default(now())
+  lastStripeEventId    String?
+  updatedAt            DateTime  @updatedAt
+  createdAt            DateTime  @default(now())
 
   @@index([status, currentPeriodEndsAt])
   @@index([tier, status])
@@ -1368,14 +1445,14 @@ model TenantBillingPlan {
 /// blocking the dashboard — the form is fire-and-forget. Stored
 /// for follow-up + optionally mirrored to Slack via the outbound lane.
 model FeedbackRecord {
-  id              String   @id
-  organizationId  String?
-  email           String?
-  sentiment       String   // "happy" | "neutral" | "frustrated"
-  pagePath        String?
-  message         String
-  userAgent       String?
-  createdAt       DateTime @default(now())
+  id             String   @id
+  organizationId String?
+  email          String?
+  sentiment      String // "happy" | "neutral" | "frustrated"
+  pagePath       String?
+  message        String
+  userAgent      String?
+  createdAt      DateTime @default(now())
 
   @@index([createdAt])
   @@index([sentiment, createdAt])
@@ -1388,7 +1465,7 @@ model FeedbackRecord {
 /// the API boundary. Backs lib/autonomy/tenantCharterStore.
 model TenantAutonomyCharter {
   organizationId       String   @id
-  mode                 String   // AutonomyMode literal: observer | review | assisted | autonomous
+  mode                 String // AutonomyMode literal: observer | review | assisted | autonomous
   perCycleActionLimit  Int?
   rationale            String?
   slackWebhookOverride String?
