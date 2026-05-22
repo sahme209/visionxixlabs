@@ -1191,6 +1191,59 @@ model AddOnPurchase {
   @@index([correlationId])
 }
 
+// ---------------------------------------------------------------------------
+// AI coding loop eval harness — Phase 389.
+// EvalRun is one batch; EvalCase is one synthetic task within the batch.
+// Without this, every model update / dependency bump / prompt tweak breaks
+// the AGI loop invisibly.
+// ---------------------------------------------------------------------------
+model EvalRun {
+  id              String   @id @default(cuid())
+  /// "manual" | "cron_daily" | "ci_smoke"
+  runKind         String
+  /// pending | running | completed | failed
+  status          String   @default("pending")
+  totalCases      Int      @default(0)
+  passCount       Int      @default(0)
+  failCount       Int      @default(0)
+  skippedCount    Int      @default(0)
+  totalCostCents  Int      @default(0)
+  modelUsed       String?
+  triggeredBy     String
+  correlationId   String
+  errorSummary    String?
+  startedAt       DateTime @default(now())
+  completedAt     DateTime?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  cases           EvalCase[]
+
+  @@index([runKind, startedAt])
+  @@index([status])
+}
+
+model EvalCase {
+  id            String   @id @default(cuid())
+  evalRunId     String
+  taskKey       String
+  instruction   String   @db.Text
+  codingTaskId  String?
+  /// pass | fail | skipped | errored
+  outcome       String
+  score         Float    @default(0)
+  /// JSON array of FailureKind strings.
+  failures      Json
+  durationMs    Int      @default(0)
+  notes         String?
+  createdAt     DateTime @default(now())
+
+  run           EvalRun @relation(fields: [evalRunId], references: [id], onDelete: Cascade)
+
+  @@index([evalRunId, outcome])
+  @@index([taskKey])
+}
+
 model BillingAlert {
   id               String   @id @default(cuid())
   organizationId   String

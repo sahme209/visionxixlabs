@@ -104,6 +104,11 @@ export type AuditAction =
   | "workforce.pr_branch_pushed"
   | "workforce.pr_opened"
   | "workforce.pr_open_failed"
+  // Eval harness — Phase 389.
+  | "eval.run_started"
+  | "eval.case_recorded"
+  | "eval.run_completed"
+  | "eval.run_failed"
   // Generic
   | "system.error";
 

@@ -40,6 +40,10 @@
     {
       "path": "/api/cron/check-billing-alerts",
       "schedule": "*/30 * * * *"
+    },
+    {
+      "path": "/api/cron/run-coding-eval",
+      "schedule": "0 7 * * *"
     }
   ]
 }
