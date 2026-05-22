@@ -22,6 +22,7 @@ import {
   ExclamationTriangleIcon,
   ArrowRightIcon,
   CheckCircleIcon,
+  ClockIcon,
   PuzzlePieceIcon,
 } from "@heroicons/react/24/outline";
 import {
@@ -146,7 +147,7 @@ export default async function WorkforcePage() {
         </div>
       </section>
 
-      <section className="mt-6 grid sm:grid-cols-3 gap-3">
+      <section className="mt-6 grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
         <Link href="/dashboard/agent-tools" className="block rounded-xl border border-white/[0.06] bg-white/[0.02] p-4 hover:border-violet-500/25 transition-colors">
           <ShieldCheckIcon className="h-4 w-4 text-violet-400 mb-2" />
           <p className="text-sm font-semibold text-white">Agent tool access matrix</p>
@@ -156,6 +157,11 @@ export default async function WorkforcePage() {
           <ExclamationTriangleIcon className="h-4 w-4 text-violet-400 mb-2" />
           <p className="text-sm font-semibold text-white">Engineer approvals</p>
           <p className="text-[11px] text-zinc-500 mt-1">Engineer-sourced risky actions awaiting sign-off.</p>
+        </Link>
+        <Link href="/dashboard/workforce/activity" className="block rounded-xl border border-white/[0.06] bg-white/[0.02] p-4 hover:border-violet-500/25 transition-colors">
+          <ClockIcon className="h-4 w-4 text-violet-400 mb-2" />
+          <p className="text-sm font-semibold text-white">Activity feed</p>
+          <p className="text-[11px] text-zinc-500 mt-1">Every gated attempt — allowed, requires approval, or blocked.</p>
         </Link>
         <Link href="/dashboard/audit" className="block rounded-xl border border-white/[0.06] bg-white/[0.02] p-4 hover:border-violet-500/25 transition-colors">
           <CheckCircleIcon className="h-4 w-4 text-violet-400 mb-2" />
