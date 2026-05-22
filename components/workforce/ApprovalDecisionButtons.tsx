@@ -19,6 +19,10 @@ interface Props {
   approvalId: string;
   /** Current status — buttons hide when already decided. */
   status: string;
+  /** Viewer's existing vote, if any. When set, buttons short-circuit. */
+  myVote?: "approved" | "rejected" | null;
+  approvedCount?: number;
+  requiredApprovers?: number;
 }
 
 type SaveState =
@@ -27,7 +31,7 @@ type SaveState =
   | { kind: "saving"; decision: "approved" | "rejected" }
   | { kind: "error"; message: string };
 
-export function ApprovalDecisionButtons({ approvalId, status }: Props) {
+export function ApprovalDecisionButtons({ approvalId, status, myVote, approvedCount, requiredApprovers }: Props) {
   const router = useRouter();
   const [state, setState] = useState<SaveState>({ kind: "idle" });
   const [reason, setReason] = useState("");
@@ -36,6 +40,17 @@ export function ApprovalDecisionButtons({ approvalId, status }: Props) {
     return (
       <span className="text-[10px] font-mono text-zinc-500">
         decided · no action needed
+      </span>
+    );
+  }
+
+  if (myVote) {
+    return (
+      <span className={`text-[10px] font-mono ${myVote === "approved" ? "text-emerald-300" : "text-rose-300"}`}>
+        already voted · {myVote}
+        {typeof approvedCount === "number" && typeof requiredApprovers === "number" && requiredApprovers > 0 && (
+          <span className="text-zinc-500"> · waiting for {Math.max(requiredApprovers - approvedCount, 0)} more</span>
+        )}
       </span>
     );
   }

@@ -46,18 +46,40 @@ export default async function EngineerApprovalsPage() {
     return <div className="p-8 text-sm text-zinc-300">Sign in required.</div>;
   }
 
-  // Read the durable Prisma snapshot. Survives deploys; no dependency
-  // on the engine's in-memory state.
+  // Read the durable Prisma snapshot + per-approver vote rows. Survives
+  // deploys; no dependency on the engine's in-memory state.
   const snapshots = await prisma.engineerApprovalSnapshot.findMany({
     where: { organizationId: String(ctx.organizationId) },
     orderBy: { createdAt: "desc" },
     take: 50,
-  }).catch(() => []);
+    include: {
+      decisions: {
+        select: { approverUserId: true, decision: true },
+      },
+    },
+  }).catch(() => [] as Array<never>);
+
+  const viewerUserId = ctx.userId ? String(ctx.userId) : (ctx.email ?? "unknown");
 
   const rows = snapshots.map((s) => {
     const engineer = ENGINEER_LOOKUP.get(s.engineerId);
     if (!engineer) return null;
-    return { snapshot: s, engineer };
+    const approvedBy = Array.from(
+      new Set(
+        s.decisions
+          .filter((d) => d.decision === "approved")
+          .map((d) => d.approverUserId),
+      ),
+    );
+    const rejectedCount = s.decisions.filter((d) => d.decision === "rejected").length;
+    const myVote = s.decisions.find((d) => d.approverUserId === viewerUserId)?.decision ?? null;
+    return {
+      snapshot: s,
+      engineer,
+      approvedCount: approvedBy.length,
+      rejectedCount,
+      myVote: myVote as "approved" | "rejected" | null,
+    };
   }).filter((r): r is NonNullable<typeof r> => r !== null);
 
   const pendingCount  = rows.filter((r) => r.snapshot.status === "pending").length;
@@ -102,7 +124,7 @@ export default async function EngineerApprovalsPage() {
         </section>
       ) : (
         <section className="space-y-2.5">
-          {rows.map(({ snapshot, engineer }) => (
+          {rows.map(({ snapshot, engineer, approvedCount, rejectedCount, myVote }) => (
             <ApprovalRow
               key={snapshot.id}
               approvalId={snapshot.approvalRequestId}
@@ -111,6 +133,9 @@ export default async function EngineerApprovalsPage() {
               engineerName={engineer.displayName}
               effectiveRule={snapshot.effectiveRule}
               requiredApprovers={snapshot.requiredApprovers}
+              approvedCount={approvedCount}
+              rejectedCount={rejectedCount}
+              myVote={myVote}
               correlationId={snapshot.correlationId}
               approvalStatus={snapshot.status}
               riskLevel={snapshot.riskLevel}
@@ -155,6 +180,9 @@ function ApprovalRow(props: {
   engineerName: string;
   effectiveRule: string;
   requiredApprovers: number;
+  approvedCount: number;
+  rejectedCount: number;
+  myVote: "approved" | "rejected" | null;
   correlationId: string;
   approvalStatus: string;
   riskLevel: string;
@@ -189,7 +217,15 @@ function ApprovalRow(props: {
       <div className="flex items-center gap-3 flex-wrap text-[10px] font-mono text-zinc-500 mb-2">
         <span>risk · {props.riskLevel}</span>
         <span>rule · {props.effectiveRule}</span>
-        <span>{props.requiredApprovers} approver{props.requiredApprovers === 1 ? "" : "s"}</span>
+        <span className={props.approvedCount >= props.requiredApprovers && props.requiredApprovers > 0 ? "text-emerald-300" : ""}>
+          {props.approvedCount}/{Math.max(props.requiredApprovers, 1)} approver{props.requiredApprovers === 1 ? "" : "s"}
+        </span>
+        {props.rejectedCount > 0 && <span className="text-rose-300">{props.rejectedCount} reject{props.rejectedCount === 1 ? "" : "s"}</span>}
+        {props.myVote && (
+          <span className={`uppercase tracking-wider ${props.myVote === "approved" ? "text-emerald-300" : "text-rose-300"}`}>
+            your vote · {props.myVote}
+          </span>
+        )}
         {props.connector && <span>connector · {props.connector}</span>}
         <span className="ml-auto">{props.createdAt.toISOString()}</span>
       </div>
@@ -208,7 +244,13 @@ function ApprovalRow(props: {
           {props.approvalId ? `approval · ${props.approvalId}` : "approval not reachable"}
         </span>
         {props.approvalId ? (
-          <ApprovalDecisionButtons approvalId={props.approvalId} status={props.approvalStatus} />
+          <ApprovalDecisionButtons
+            approvalId={props.approvalId}
+            status={props.approvalStatus}
+            myVote={props.myVote}
+            approvedCount={props.approvedCount}
+            requiredApprovers={props.requiredApprovers}
+          />
         ) : (
           <span className="text-[10px] font-mono text-zinc-500">no buttons · snapshot missing approval id</span>
         )}

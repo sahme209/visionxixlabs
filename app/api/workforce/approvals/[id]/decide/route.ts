@@ -1,9 +1,11 @@
 /**
  * POST /api/workforce/approvals/[id]/decide
  *
- * Routes an operator decision (approve | reject) into the approval
- * engine, then writes an audit row tying the decision back to the
- * engineer-sourced attempt.
+ * Phase 369 — quorum-aware. Each call inserts a vote row; the snapshot
+ * status is recomputed from the full set of vote rows via the pure
+ * `computeQuorumStatus()` reducer. A second distinct approver is
+ * required for two-step (requiredApprovers >= 2) snapshots before the
+ * terminal "approved" transition. A single rejection short-circuits.
  *
  * Body: { decision: "approved" | "rejected", reason?: string }
  * Auth: requires an authenticated workspace member.
@@ -11,11 +13,13 @@
 
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/db";
 import { currentContext } from "@/lib/auth/currentContext";
 import { decideApproval, getApproval } from "@/lib/approvals/approvalEngine";
 import { record as recordAudit } from "@/lib/audit/secureAudit";
 import { id as idFactory } from "@/lib/domain/ids";
+import { computeQuorumStatus } from "@/lib/workforce/approvalQuorum";
 
 export const dynamic = "force-dynamic";
 
@@ -41,9 +45,9 @@ export async function POST(req: NextRequest, ctx: { params: Promise<{ id: string
   }
 
   const orgId = String(session.organizationId);
+  const approverUserId = session.userId ?? session.email ?? "unknown";
 
-  // Look up durable snapshot first — it survives deploys; the engine's
-  // in-memory state may have cleared.
+  // Snapshot is the source of truth for engineer-sourced approvals.
   const snapshot = await prisma.engineerApprovalSnapshot.findUnique({
     where: { approvalRequestId: id },
   }).catch(() => null);
@@ -62,71 +66,111 @@ export async function POST(req: NextRequest, ctx: { params: Promise<{ id: string
     }, { status: 409 });
   }
 
-  // Try to route the decision into the live engine. The engine MAY no
-  // longer have the request (post-restart). When that happens we
-  // accept the decision against the snapshot only.
+  // If the engine still has the request in memory, verify it's
+  // engineer-sourced. Post-restart the engine may not have the row;
+  // we accept that and trust the durable snapshot.
   const engineRow = getApproval(id);
-  let engineAccepted = false;
-  if (engineRow) {
-    if (!engineRow.sourceId.startsWith("engineer:")) {
-      return NextResponse.json({
-        ok: false,
-        reason: "not_engineer_sourced",
-        detail: "This endpoint only handles engineer-sourced approvals. Use /dashboard/approvals for other types.",
-      }, { status: 422 });
-    }
-    const outcome = decideApproval({
-      approvalId: id,
-      decision,
-      approverUserId: session.userId,
-      approverRole: "approver",
-      reason,
-    });
-    if (!outcome.allowed) {
-      return NextResponse.json({ ok: false, reason: "decision_rejected", detail: outcome.reason }, { status: 422 });
-    }
-    engineAccepted = true;
-  }
-
-  // Update durable snapshot. This is the source of truth for the
-  // workforce approvals queue going forward.
-  const decidedAt = new Date();
-  try {
-    await prisma.engineerApprovalSnapshot.update({
-      where: { approvalRequestId: id },
-      data: {
-        status: decision,
-        decidedByUserId: session.userId ?? session.email ?? "unknown",
-        decidedAt,
-        decisionReason: reason,
-      },
-    });
-  } catch {
-    // Snapshot update failure — surface a 500 since persistence is
-    // load-bearing here.
+  if (engineRow && !engineRow.sourceId.startsWith("engineer:")) {
     return NextResponse.json({
       ok: false,
-      reason: "snapshot_persist_failed",
-      detail: "Approval decision recorded in engine but snapshot did not update.",
+      reason: "not_engineer_sourced",
+      detail: "This endpoint only handles engineer-sourced approvals. Use /dashboard/approvals for other types.",
+    }, { status: 422 });
+  }
+
+  // Record this approver's vote. Unique (snapshotId, approverUserId)
+  // prevents the same user from voting twice.
+  try {
+    await prisma.engineerApprovalDecision.create({
+      data: {
+        snapshotId: snapshot.id,
+        organizationId: orgId,
+        approverUserId,
+        decision,
+        reason,
+      },
+    });
+  } catch (err) {
+    if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === "P2002") {
+      return NextResponse.json({
+        ok: false,
+        reason: "already_voted",
+        detail: "You have already voted on this approval.",
+      }, { status: 409 });
+    }
+    return NextResponse.json({
+      ok: false,
+      reason: "decision_persist_failed",
+      detail: "Vote was not recorded — please retry.",
     }, { status: 500 });
   }
 
-  // Audit row tying the decision back to the engineer.
+  // Recompute quorum from durable votes.
+  const decisions = await prisma.engineerApprovalDecision.findMany({
+    where: { snapshotId: snapshot.id },
+    select: { approverUserId: true, decision: true },
+  });
+  const quorum = computeQuorumStatus({
+    decisions: decisions.map((d) => ({
+      approverUserId: d.approverUserId,
+      decision: d.decision as "approved" | "rejected",
+    })),
+    requiredApprovers: snapshot.requiredApprovers,
+  });
+
+  // Terminal transition — only when quorum says so.
+  const decidedAt = new Date();
+  let engineAccepted = false;
+  if (quorum.isTerminal) {
+    try {
+      await prisma.engineerApprovalSnapshot.update({
+        where: { id: snapshot.id },
+        data: {
+          status: quorum.status,
+          decidedAt,
+          decidedByUserId: approverUserId,
+          decisionReason: reason,
+        },
+      });
+    } catch {
+      return NextResponse.json({
+        ok: false,
+        reason: "snapshot_persist_failed",
+        detail: "Vote recorded but snapshot terminal update failed.",
+      }, { status: 500 });
+    }
+
+    // Sync the engine when present. Best-effort — snapshot is authoritative.
+    if (engineRow) {
+      const outcome = decideApproval({
+        approvalId: id,
+        decision: quorum.status === "approved" ? "approved" : "rejected",
+        approverUserId: session.userId,
+        approverRole: "approver",
+        reason,
+      });
+      engineAccepted = outcome.allowed;
+    }
+  }
+
+  // Audit: always record the vote.
   try {
     await recordAudit({
       organizationId: idFactory.organization(orgId),
       actorUserId: session.userId ?? idFactory.user(session.email ?? "unknown"),
       actorKind: "user",
-      action: decision === "approved" ? "approval.grant" : "approval.deny",
+      action: "engineer.approval_voted",
       outcome: "success",
       entityRef: `approval:${id}`,
       correlationId: idFactory.correlation(snapshot.correlationId),
       source: "live",
       detail: {
         approvalId: id,
-        decision,
-        engineerSourceId: `engineer:${snapshot.engineerId}:${snapshot.action}`,
-        engineAccepted,
+        vote: decision,
+        approvedCount: quorum.approvedCount,
+        rejectedCount: quorum.rejectedCount,
+        requiredApprovers: snapshot.requiredApprovers,
+        snapshotStatus: quorum.status,
         ...(reason ? { reason } : {}),
       },
     });
@@ -134,12 +178,44 @@ export async function POST(req: NextRequest, ctx: { params: Promise<{ id: string
     // Best-effort.
   }
 
+  // Audit: terminal grant/deny when quorum tipped over.
+  if (quorum.isTerminal) {
+    try {
+      await recordAudit({
+        organizationId: idFactory.organization(orgId),
+        actorUserId: session.userId ?? idFactory.user(session.email ?? "unknown"),
+        actorKind: "user",
+        action: quorum.status === "approved" ? "approval.grant" : "approval.deny",
+        outcome: "success",
+        entityRef: `approval:${id}`,
+        correlationId: idFactory.correlation(snapshot.correlationId),
+        source: "live",
+        detail: {
+          approvalId: id,
+          decision: quorum.status,
+          engineerSourceId: `engineer:${snapshot.engineerId}:${snapshot.action}`,
+          engineAccepted,
+          approvedCount: quorum.approvedCount,
+          rejectedCount: quorum.rejectedCount,
+          requiredApprovers: snapshot.requiredApprovers,
+          ...(reason ? { reason } : {}),
+        },
+      });
+    } catch {
+      // Best-effort.
+    }
+  }
+
   return NextResponse.json({
     ok: true,
     approvalId: id,
-    decision,
-    status: decision,
-    decidedAt: decidedAt.toISOString(),
+    vote: decision,
+    snapshotStatus: quorum.status,
+    approvedCount: quorum.approvedCount,
+    rejectedCount: quorum.rejectedCount,
+    requiredApprovers: snapshot.requiredApprovers,
+    isTerminal: quorum.isTerminal,
+    decidedAt: quorum.isTerminal ? decidedAt.toISOString() : null,
     engineAccepted,
   });
 }

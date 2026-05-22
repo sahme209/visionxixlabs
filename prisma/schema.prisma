@@ -962,9 +962,37 @@ model EngineerApprovalSnapshot {
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
 
+  decisions         EngineerApprovalDecision[]
+
   @@index([organizationId, status, createdAt])
   @@index([organizationId, engineerId, createdAt])
   @@index([correlationId])
+}
+
+// ---------------------------------------------------------------------------
+// EngineerApprovalDecision — Phase 369 (two-step approval quorum).
+// One row per approver vote on an EngineerApprovalSnapshot. The snapshot's
+// status is recomputed from these rows by computeQuorumStatus(). The unique
+// constraint on (snapshotId, approverUserId) is the integrity lock that
+// prevents a single user from rubber-stamping a critical action twice.
+// ---------------------------------------------------------------------------
+
+model EngineerApprovalDecision {
+  id              String   @id @default(cuid())
+  snapshotId      String
+  organizationId  String
+  approverUserId  String
+  /// "approved" | "rejected"
+  decision        String
+  reason          String?
+  decidedAt       DateTime @default(now())
+  createdAt       DateTime @default(now())
+
+  snapshot        EngineerApprovalSnapshot @relation(fields: [snapshotId], references: [id], onDelete: Cascade)
+
+  @@unique([snapshotId, approverUserId])
+  @@index([snapshotId])
+  @@index([organizationId, decidedAt])
 }
 
 // ---------------------------------------------------------------------------
