@@ -16,7 +16,6 @@ import { notFound } from "next/navigation";
 import {
   ArrowRightIcon,
   ShieldCheckIcon,
-  CheckCircleIcon,
   ExclamationTriangleIcon,
   LockClosedIcon,
 } from "@heroicons/react/24/outline";
@@ -26,21 +25,13 @@ import {
   AGENT_WORKFORCE_REGISTRY,
   type ApprovalRule,
 } from "@/lib/workforce/agentWorkforceRegistry";
-import { canTightenApprovalRule } from "@/lib/workforce/runtimeActionGate";
+import { PolicyOverrideForm } from "@/components/workforce/PolicyOverrideForm";
 
 export const metadata: Metadata = {
   title: "Edit engineer policy · Axiom",
 };
 
 export const dynamic = "force-dynamic";
-
-const RULE_OPTIONS: readonly ApprovalRule[] = [
-  "no_approval_needed",
-  "single_approver",
-  "two_step_approval",
-  "incident_commander_only",
-  "blocked_always",
-];
 
 const RULE_LABEL: Record<ApprovalRule, string> = {
   no_approval_needed:      "Auto-OK (no approval)",
@@ -107,65 +98,14 @@ export default async function EditEngineerPolicyPage({ params }: { params: Promi
         </p>
       </section>
 
-      {/* Override form scaffolding */}
+      {/* Override form — client component, posts to /api/workforce/[id]/policy */}
       <section className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 mb-6">
-        <header className="mb-3">
-          <p className="text-[10px] font-semibold uppercase tracking-widest text-zinc-400">Current rule</p>
-          <p className="text-[14px] font-semibold text-white mt-1">{RULE_LABEL[current]}</p>
-        </header>
-
-        <div className="grid gap-2">
-          {RULE_OPTIONS.map((rule) => {
-            const allowed = canTightenApprovalRule(canonical, rule);
-            const isCurrent = rule === current;
-            return (
-              <label
-                key={rule}
-                className={`flex items-center justify-between gap-3 rounded-lg border px-4 py-3 cursor-default ${
-                  isCurrent
-                    ? "border-violet-500/40 bg-violet-500/[0.05]"
-                    : allowed
-                      ? "border-white/[0.06] bg-white/[0.01] opacity-100"
-                      : "border-rose-500/15 bg-rose-500/[0.03] opacity-70"
-                }`}
-              >
-                <div>
-                  <p className="text-[12.5px] font-semibold text-white">{RULE_LABEL[rule]}</p>
-                  <p className="text-[10.5px] text-zinc-500 mt-0.5">
-                    {!allowed
-                      ? "Loosening below the canonical baseline — not allowed."
-                      : isCurrent
-                        ? "Currently in force in this workspace."
-                        : "Tightening allowed."}
-                  </p>
-                </div>
-                <input
-                  type="radio"
-                  name="rule"
-                  value={rule}
-                  defaultChecked={isCurrent}
-                  disabled={!allowed}
-                  className="accent-violet-500"
-                />
-              </label>
-            );
-          })}
-        </div>
-
-        <div className="mt-5 flex items-center justify-between gap-3 flex-wrap">
-          <label className="flex items-center gap-2">
-            <input type="checkbox" defaultChecked={isEnabled} className="accent-violet-500" />
-            <span className="text-[12px] text-zinc-300">Engineer enabled in this workspace</span>
-          </label>
-          <button
-            disabled
-            className="inline-flex items-center gap-1.5 text-[12px] font-medium px-3 py-1.5 rounded-lg bg-violet-500/15 text-violet-100 border border-violet-500/30 disabled:opacity-60"
-            title="Save handler ships in the next phase — schema decision under review."
-          >
-            <CheckCircleIcon className="h-3.5 w-3.5" />
-            Save policy — coming next phase
-          </button>
-        </div>
+        <PolicyOverrideForm
+          engineerId={engineer.id}
+          canonical={canonical}
+          initialRule={current}
+          initialEnabled={isEnabled}
+        />
       </section>
 
       <section className="rounded-2xl border border-amber-500/15 bg-amber-500/[0.04] p-5">

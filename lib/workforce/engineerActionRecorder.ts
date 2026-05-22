@@ -23,6 +23,7 @@ import { prisma } from "@/lib/db";
 import { record as recordAudit } from "@/lib/audit/secureAudit";
 import { id as idFactory } from "@/lib/domain/ids";
 import type { OrganizationId, UserId, CorrelationId } from "@/lib/domain/ids";
+import { requestApproval } from "@/lib/approvals/approvalEngine";
 import {
   AGENT_WORKFORCE_REGISTRY,
   type ApprovalRule,
@@ -31,6 +32,7 @@ import {
   evaluateEngineerActionAttempt,
   type ActionVerdict,
   type EngineerActionAttempt,
+  type ActionRiskLevel,
 } from "./runtimeActionGate";
 import { loadWorkspaceEngineerMap } from "./workspaceRegistrySync";
 
@@ -45,6 +47,8 @@ export interface RecorderOutput {
   correlationId: string;
   /** Set when verdict.decision === "requires_approval" — the caller should create the approval. */
   approvalRequestNeeded: boolean;
+  /** Id of the ApprovalRequest the engine minted, if any. */
+  approvalRequestId?: string;
 }
 
 const APPROVAL_RULES: ReadonlySet<ApprovalRule> = new Set([
@@ -89,6 +93,40 @@ export async function recordEngineerActionAttempt(input: RecorderInput): Promise
     workspaceEnabled,
   });
 
+  // If the gate says approval is required, ask the approval engine to
+  // mint an ApprovalRequest. We don't let the engine's own policy
+  // decide approval-needed — our gate already decided.
+  let approvalRequestId: string | undefined;
+  if (verdict.decision === "requires_approval") {
+    try {
+      const outcome = requestApproval({
+        tenantId: input.workspaceId,
+        requesterUserId: input.requestedBy,
+        sourceType: "remediation_candidate",
+        sourceId: `engineer:${input.engineerId}:${input.action}`,
+        provider: "platform",
+        risk: mapRiskForApprovalEngine(input.riskLevel, verdict.requiredApprovers),
+        changeSummary: `${engineer?.displayName ?? input.engineerId}: ${input.action}`,
+        affectedResources: input.connector ? [input.connector] : undefined,
+        policyInput: {
+          sourceType: "remediation_candidate",
+          changeType: "configuration_change",
+          risk: mapRiskForApprovalEngine(input.riskLevel, verdict.requiredApprovers),
+          touchesProduction: verdict.requiredApprovers >= 2,
+          unknownImpact: false,
+          sourceModeLive: true,
+        },
+      });
+      if (outcome.approvalRequired) {
+        approvalRequestId = outcome.request.id;
+      }
+    } catch {
+      // Engine failure must not break enforcement. Our gate already
+      // refused execution; the caller still gets the verdict and
+      // should NOT proceed without an approval id.
+    }
+  }
+
   // Append the attempt row (best-effort — never fails the caller).
   let attemptId = `attempt_${Date.now().toString(36)}`;
   if (recordRowId) {
@@ -110,6 +148,7 @@ export async function recordEngineerActionAttempt(input: RecorderInput): Promise
           requestedBy: input.requestedBy,
           correlationId,
           reason: verdict.reason,
+          approvalRequestId,
           metadata: (input.metadata ?? null) as never,
         },
         select: { id: true },
@@ -153,5 +192,23 @@ export async function recordEngineerActionAttempt(input: RecorderInput): Promise
     attemptId,
     correlationId,
     approvalRequestNeeded: verdict.decision === "requires_approval",
+    approvalRequestId,
   };
+}
+
+/**
+ * Map the workforce risk vocabulary to the approval engine's narrower
+ * risk vocabulary. `read_only` collapses to `low` for the engine since
+ * the engine doesn't model read-only as its own band — our gate would
+ * have allowed read-only fast-path before reaching this code anyway.
+ */
+function mapRiskForApprovalEngine(risk: ActionRiskLevel, requiredApprovers: number): "low" | "medium" | "high" | "critical" {
+  if (requiredApprovers >= 2) return "high";
+  switch (risk) {
+    case "critical": return "critical";
+    case "high":     return "high";
+    case "medium":   return "medium";
+    case "low":      return "low";
+    case "read_only": return "low";
+  }
 }

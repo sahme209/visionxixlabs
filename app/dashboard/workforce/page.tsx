@@ -31,6 +31,8 @@ import {
   type ApprovalRule,
   type WorkforceDepartment,
 } from "@/lib/workforce/agentWorkforceRegistry";
+import { currentContext } from "@/lib/auth/currentContext";
+import { syncAgentEngineerRegistryForWorkspace } from "@/lib/workforce/workspaceRegistrySync";
 
 export const metadata: Metadata = {
   title: "AI Workforce · Axiom",
@@ -65,9 +67,22 @@ const APPROVAL_TONE: Record<ApprovalRule, { label: string; tone: string }> = {
   blocked_always:          { label: "Policy gate",       tone: "text-zinc-300 bg-zinc-500/10 border-zinc-500/30" },
 };
 
-export default function WorkforcePage() {
+export default async function WorkforcePage() {
   const groups = engineersByDepartment("client");
   const summary = workforceSummary();
+
+  // Idempotent on every load — registers any new canonical engineers into
+  // this workspace's record table. Safe to run on every page load; no
+  // overrides ever get overwritten.
+  const ctx = await currentContext();
+  if (ctx.isAuthenticated && ctx.organizationId) {
+    try {
+      await syncAgentEngineerRegistryForWorkspace(String(ctx.organizationId));
+    } catch {
+      // Never block the page render on a sync hiccup — sync is idempotent
+      // and the canonical registry remains the source of truth.
+    }
+  }
 
   return (
     <div className="relative">
