@@ -15,6 +15,10 @@ import {
   ArrowRightIcon,
   CheckCircleIcon,
   ClockIcon,
+  SignalIcon,
+  CircleStackIcon,
+  ServerStackIcon,
+  GlobeAltIcon,
 } from "@heroicons/react/24/outline";
 import { Reveal } from "@/components/motion/Reveal";
 import { Stagger } from "@/components/motion/Stagger";
@@ -37,6 +41,12 @@ const CATEGORY_LABEL: Record<ConnectorCategory, string> = {
   desktop: "Desktop runtime",
   audit: "Audit & export",
   identity: "Identity",
+  observability: "Observability",
+  logging: "Logging",
+  security_posture: "Security posture",
+  database: "Databases",
+  container: "Containers",
+  edge: "Edge / DNS",
 };
 
 const CATEGORY_ICON: Record<ConnectorCategory, typeof CloudIcon> = {
@@ -50,6 +60,12 @@ const CATEGORY_ICON: Record<ConnectorCategory, typeof CloudIcon> = {
   desktop: CommandLineIcon,
   audit: DocumentCheckIcon,
   identity: ShieldCheckIcon,
+  observability: SignalIcon,
+  logging: DocumentCheckIcon,
+  security_posture: ShieldCheckIcon,
+  database: CircleStackIcon,
+  container: ServerStackIcon,
+  edge: GlobeAltIcon,
 };
 
 const STATUS_COLOR: Record<ConnectorStatus, { text: string; bg: string; label: string }> = {
