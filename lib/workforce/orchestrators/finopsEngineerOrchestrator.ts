@@ -32,10 +32,9 @@ export type FinopsApplyResult =
 
 function riskFor(finding: IdleResourceFinding): ActionRiskLevel {
   switch (finding.riskTier) {
-    case "low":      return "low";
-    case "medium":   return "medium";
-    case "high":     return "high";
-    case "critical": return "critical";
+    case "low":    return "low";
+    case "medium": return "medium";
+    case "high":   return "high";
   }
 }
 
