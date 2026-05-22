@@ -113,13 +113,25 @@ export default async function EngineerDetailPage({ params }: { params: Promise<{
               disabled in workspace
             </span>
           )}
-          <Link
-            href={`/dashboard/workforce/${engineer.id}/edit`}
-            className="ml-auto inline-flex items-center gap-1.5 text-[12px] font-medium px-3 py-1.5 rounded-lg bg-violet-500/15 text-violet-100 border border-violet-500/30 hover:bg-violet-500/25 transition"
-          >
-            Tighten rule
-            <ArrowRightIcon className="h-3 w-3" />
-          </Link>
+          <div className="ml-auto flex items-center gap-2 flex-wrap">
+            {engineer.id === "migration_engineer" && (
+              <Link
+                href={`/dashboard/workforce/${engineer.id}/stage`}
+                className="inline-flex items-center gap-1.5 text-[12px] font-medium px-3 py-1.5 rounded-lg bg-amber-500/15 text-amber-100 border border-amber-500/40 hover:bg-amber-500/25 transition"
+              >
+                <ShieldCheckIcon className="h-3 w-3" />
+                Stage migration
+                <ArrowRightIcon className="h-3 w-3" />
+              </Link>
+            )}
+            <Link
+              href={`/dashboard/workforce/${engineer.id}/edit`}
+              className="inline-flex items-center gap-1.5 text-[12px] font-medium px-3 py-1.5 rounded-lg bg-violet-500/15 text-violet-100 border border-violet-500/30 hover:bg-violet-500/25 transition"
+            >
+              Tighten rule
+              <ArrowRightIcon className="h-3 w-3" />
+            </Link>
+          </div>
         </div>
       </section>
 
