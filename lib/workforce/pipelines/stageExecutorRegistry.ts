@@ -20,6 +20,8 @@ export interface StageExecutionContext {
   stageKind: PipelineStageKind;
   correlationId: string;
   triggeredBy: string;
+  /** PipelineRun.metadata at the time the executor fires — operator inputs (e.g., coding-task instruction). */
+  runMetadata: Record<string, unknown>;
 }
 
 export interface StageExecutorOk {

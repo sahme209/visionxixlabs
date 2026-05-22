@@ -17,6 +17,7 @@ import {
   registerStageExecutor,
   type StageExecutorFn,
 } from "./stageExecutorRegistry";
+import { codeProposeRealExecutor } from "./codeProposeRealExecutor";
 
 const codeRead: StageExecutorFn = async (ctx) => ({
   ok: true,
@@ -26,19 +27,6 @@ const codeRead: StageExecutorFn = async (ctx) => ({
     filesScanned: 1247,
     relatedSymbolsResolved: 28,
     contextTokens: 12_500,
-    stageId: ctx.stageId,
-  },
-});
-
-const codePropose: StageExecutorFn = async (ctx) => ({
-  ok: true,
-  summary: "Drafted a 3-file patch: 27 added / 14 removed lines.",
-  detail: {
-    dryRun: true,
-    filesTouched: 3,
-    linesAdded: 27,
-    linesRemoved: 14,
-    rationale: "Minimal diff that satisfies the operator instruction without widening surface area.",
     stageId: ctx.stageId,
   },
 });
@@ -88,7 +76,9 @@ let registered = false;
 export function registerCodingDryRunExecutors(): void {
   if (registered) return;
   registerStageExecutor("code_read",    codeRead);
-  registerStageExecutor("code_propose", codePropose);
+  // Phase 380: real Anthropic-backed proposer. Falls back to dry-run when
+  // ANTHROPIC_API_KEY is not configured — see codeProposeRealExecutor.ts.
+  registerStageExecutor("code_propose", codeProposeRealExecutor);
   registerStageExecutor("code_lint",    codeLint);
   registerStageExecutor("code_test",    codeTest);
   registerStageExecutor("code_pr_open", codePrOpen);

@@ -236,6 +236,7 @@ export async function advancePipelineRun(runId: string): Promise<void> {
         stageKind: stage.stageKind as never,
         correlationId: run.correlationId,
         triggeredBy: run.triggeredBy,
+        runMetadata: (run.metadata && typeof run.metadata === "object" ? run.metadata as Record<string, unknown> : {}),
       });
     } catch (err) {
       result = { ok: false, error: err instanceof Error ? err.message : "unknown executor error" };
