@@ -21,6 +21,7 @@ import { prisma } from "@/lib/db";
 import { readBillingPlan } from "./tenantBillingStore";
 import { planForStripeTier } from "./planRegistry";
 import { preflightAICreditCheck, type PreflightDecision } from "./preflightAICreditCheck";
+import { effectiveEntitlements } from "./effectiveEntitlements";
 
 const periodStart = (d: Date) => new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), 1));
 
@@ -54,8 +55,20 @@ export async function checkWorkspaceAICredits(
     currentAICostCents = 0;
   }
 
+  // Phase 386 — fold paid AI-credit add-ons into the effective pool
+  // before the gate runs. Permanent + current-month purchases both
+  // count via effectiveEntitlements().
+  const eff = await effectiveEntitlements(organizationId, plan);
+  const effectivePlan: typeof plan = {
+    ...plan,
+    entitlements: {
+      ...plan.entitlements,
+      includedAICreditsCents: eff.includedAICreditsCents,
+    },
+  };
+
   return preflightAICreditCheck({
-    plan,
+    plan: effectivePlan,
     currentAICostCents,
     expectedAdditionalCostCents,
   });

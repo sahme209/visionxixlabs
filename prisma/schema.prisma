@@ -1157,6 +1157,40 @@ model UsageEvent {
   @@index([correlationId])
 }
 
+// ---------------------------------------------------------------------------
+// Add-on purchase ledger — Phase 386.
+// Catalog (ADD_ON_CATALOG) lives in code; this table tracks workspace purchases.
+// ---------------------------------------------------------------------------
+model AddOnPurchase {
+  id                        String   @id @default(cuid())
+  organizationId            String
+  /// Catalog SKU: ai_credits_small | ai_credits_medium | ai_credits_large | seat_addon | connector_addon
+  sku                       String
+  pricePaidCents            Int
+  deliveredAICreditsCents   Int      @default(0)
+  deliveredSeats            Int      @default(0)
+  deliveredConnectors       Int      @default(0)
+  /// "current_month" rolls off at month boundary; "permanent" persists.
+  validFor                  String
+  /// YYYY-MM
+  periodMonth               String
+  /// pending | paid | refunded | failed
+  status                    String   @default("pending")
+  stripeCheckoutSessionId   String?
+  stripePaymentIntentId     String?
+  purchasedBy               String
+  correlationId             String
+  appliedAt                 DateTime?
+  refundedAt                DateTime?
+  createdAt                 DateTime @default(now())
+  updatedAt                 DateTime @updatedAt
+
+  @@index([organizationId, periodMonth, status])
+  @@index([organizationId, createdAt])
+  @@index([stripeCheckoutSessionId])
+  @@index([correlationId])
+}
+
 model BillingAlert {
   id               String   @id @default(cuid())
   organizationId   String

@@ -197,6 +197,27 @@ export default async function BillingUsagePage() {
         )}
       </section>
 
+      {/* Add-ons CTA — surfaces when approaching the credit pool ceiling */}
+      {plan.tier !== "enterprise" && usedRatio >= 0.5 && (
+        <section className="rounded-2xl border border-violet-500/20 bg-violet-500/[0.04] p-5 mb-4">
+          <div className="flex items-center justify-between gap-3 flex-wrap">
+            <div>
+              <p className="text-[12px] font-semibold text-white mb-1">Don't want to upgrade? Buy a top-up.</p>
+              <p className="text-[11.5px] text-zinc-400 leading-snug">
+                Add-on packs deliver more AI credits or extra seats this month — usually a better fit than jumping to the next tier when you only need a temporary boost.
+              </p>
+            </div>
+            <Link
+              href="/dashboard/billing/add-ons"
+              className="inline-flex items-center gap-1.5 text-[12px] font-medium px-3 py-1.5 rounded-lg bg-violet-500/20 text-violet-100 border border-violet-500/40 hover:bg-violet-500/30 transition"
+            >
+              Browse add-ons
+              <ArrowRightIcon className="h-3 w-3" />
+            </Link>
+          </div>
+        </section>
+      )}
+
       {/* Plan upgrade hint */}
       {plan.tier !== "enterprise" && (
         <section className="rounded-2xl border border-violet-500/20 bg-violet-500/[0.04] p-5">

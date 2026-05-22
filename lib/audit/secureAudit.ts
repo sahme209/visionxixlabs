@@ -86,6 +86,10 @@ export type AuditAction =
   | "billing.entitlement_blocked"
   // Alerts — Phase 385.
   | "billing.alert_fired"
+  // Add-ons — Phase 386.
+  | "billing.addon_purchase_initiated"
+  | "billing.addon_purchase_completed"
+  | "billing.addon_purchase_refunded"
   // Pipelines — Phase 377.
   | "pipeline.run_started"
   | "pipeline.stage_started"
