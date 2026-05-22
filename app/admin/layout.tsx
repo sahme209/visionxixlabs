@@ -44,6 +44,12 @@ export default async function AdminLayout({
                 Marketing
               </Link>
               <Link
+                href="/admin/growth"
+                className="text-sm text-zinc-400 hover:text-violet-400 transition-colors"
+              >
+                Growth
+              </Link>
+              <Link
                 href="/admin/enterprise-dashboard"
                 className="text-sm text-zinc-400 hover:text-violet-400 transition-colors"
               >

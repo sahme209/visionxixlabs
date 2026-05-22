@@ -27,6 +27,7 @@ import { DrippingBeam } from "@/components/motion/DrippingBeam";
 import { TestimonialsCarousel } from "@/components/TestimonialsCarousel";
 import { FAQAccordion } from "@/components/FAQAccordion";
 import { DesktopShowcase } from "@/components/home/DesktopShowcase";
+import { HomepageDemoAnimation } from "@/components/marketing/HomepageDemoAnimation";
 import { Footer } from "@/components/Footer";
 import {
   CurrencyDollarIcon,
@@ -235,64 +236,10 @@ export default function Home() {
               </Reveal>
             </div>
 
-            {/* Right: Product Frame with Scan Preview */}
+            {/* Right: Animated product walkthrough — 9-step cursor-driven demo */}
             <Reveal direction="up" delay={0.15}>
               <div className="relative hidden lg:block">
-                <div className="product-frame-glow" aria-hidden />
-                <div className="product-frame rounded-xl">
-                  <div className="bg-[#0c0c0e] p-5 rounded-lg space-y-4">
-                    {/* Demo preview header — illustrative only; real scan UI is /dashboard/aws */}
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <span className="w-2 h-2 rounded-full bg-amber-400" />
-                        <span className="text-xs font-semibold text-zinc-300">Axiom Scan — Preview</span>
-                      </div>
-                      <span className="text-[9px] font-mono uppercase tracking-wider px-1.5 py-px rounded bg-amber-500/15 text-amber-300 border border-amber-500/30">demo preview</span>
-                    </div>
-                    <div className="h-px bg-white/[0.06]" />
-                    {/* Findings */}
-                    <div className="space-y-3">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <span className="w-1.5 h-1.5 rounded-full bg-red-400" />
-                          <span className="text-xs text-zinc-400">Public S3 bucket detected</span>
-                        </div>
-                        <span className="text-[10px] px-2 py-0.5 rounded-full bg-red-500/10 text-red-400 border border-red-500/20">Critical</span>
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
-                          <span className="text-xs text-zinc-400">Oversized EC2 instances (3)</span>
-                        </div>
-                        <span className="text-[10px] px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/20">$2,400/mo</span>
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
-                          <span className="text-xs text-zinc-400">Unused EBS volumes (7)</span>
-                        </div>
-                        <span className="text-[10px] px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/20">$380/mo</span>
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <span className="w-1.5 h-1.5 rounded-full bg-violet-400" />
-                          <span className="text-xs text-zinc-400">Security group drift (2 rules)</span>
-                        </div>
-                        <span className="text-[10px] px-2 py-0.5 rounded-full bg-violet-500/10 text-violet-400 border border-violet-500/20">Drift</span>
-                      </div>
-                    </div>
-                    <div className="h-px bg-white/[0.06]" />
-                    {/* Summary bar */}
-                    <div className="flex items-center justify-between text-[10px]">
-                      <span className="text-zinc-500">14 findings · 4 critical</span>
-                      <span className="text-emerald-400 font-medium">Est. savings: $4,200/mo</span>
-                    </div>
-                    {/* Progress bar */}
-                    <div className="h-1 bg-white/[0.06] rounded-full overflow-hidden">
-                      <div className="h-full bg-gradient-to-r from-emerald-500 via-amber-500 to-red-500 rounded-full" style={{ width: "72%" }} />
-                    </div>
-                  </div>
-                </div>
+                <HomepageDemoAnimation />
               </div>
             </Reveal>
           </div>
