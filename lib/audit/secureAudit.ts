@@ -100,6 +100,10 @@ export type AuditAction =
   // Repo context — Phase 387.
   | "workforce.repo_context_fetched"
   | "workforce.repo_context_fetch_failed"
+  // PR open — Phase 388.
+  | "workforce.pr_branch_pushed"
+  | "workforce.pr_opened"
+  | "workforce.pr_open_failed"
   // Generic
   | "system.error";
 

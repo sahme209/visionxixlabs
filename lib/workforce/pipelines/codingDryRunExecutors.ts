@@ -19,6 +19,7 @@ import {
 } from "./stageExecutorRegistry";
 import { codeProposeRealExecutor } from "./codeProposeRealExecutor";
 import { codeReadRealExecutor } from "./codeReadRealExecutor";
+import { codePrOpenRealExecutor } from "./codePrOpenRealExecutor";
 
 const codeLint: StageExecutorFn = async (ctx) => ({
   ok: true,
@@ -47,18 +48,6 @@ const codeTest: StageExecutorFn = async (ctx) => ({
   },
 });
 
-const codePrOpen: StageExecutorFn = async (ctx) => ({
-  ok: true,
-  summary: "[dry-run] would push branch + open PR with the patch + audit correlation.",
-  detail: {
-    dryRun: true,
-    plannedBranch: `ai/${ctx.runId.slice(-8)}`,
-    plannedPrTitle: "[ai-coding] auto-staged patch",
-    plannedPrBody: "This PR was staged by the AI coding loop. Correlation: " + ctx.correlationId,
-    stageId: ctx.stageId,
-  },
-});
-
 let registered = false;
 
 /** Idempotent — call from any entrypoint that may run a coding pipeline. */
@@ -73,6 +62,9 @@ export function registerCodingDryRunExecutors(): void {
   registerStageExecutor("code_propose", codeProposeRealExecutor);
   registerStageExecutor("code_lint",    codeLint);
   registerStageExecutor("code_test",    codeTest);
-  registerStageExecutor("code_pr_open", codePrOpen);
+  // Phase 388: real GitHub-backed PR opener. Falls back to dry-run when
+  // GITHUB_TOKEN is missing, the patch can't be applied, or the branch /
+  // PR API rejects — pipeline still advances cleanly.
+  registerStageExecutor("code_pr_open", codePrOpenRealExecutor);
   registered = true;
 }
