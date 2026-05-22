@@ -48,11 +48,24 @@ interface NavGroup {
 
 const GROUPS: NavGroup[] = [
   {
+    label: "Engineer",
+    items: [
+      { href: "/dashboard/engineer-workspace", label: "Engineer Workspace", icon: CpuChipIcon           },
+      { href: "/dashboard/services",           label: "Services",            icon: ServerStackIcon       },
+      { href: "/dashboard/observability",      label: "Observability",       icon: ChartBarIcon          },
+      { href: "/dashboard/incidents",          label: "Incidents",           icon: BellAlertIcon         },
+      { href: "/dashboard/alerts",             label: "Alerts",              icon: BellAlertIcon         },
+      { href: "/dashboard/developer-tools",    label: "Developer Tools",     icon: CodeBracketIcon       },
+      { href: "/dashboard/agent-tools",        label: "Agent Tool Access",   icon: ShieldCheckIcon       },
+    ],
+  },
+  {
     label: "Platform",
     items: [
-      { href: "/dashboard/modules",    label: "Modules",          icon: Squares2X2Icon  },
-      { href: "/dashboard/sub-tools",  label: "Sub-tools",        icon: Squares2X2Icon  },
-      { href: "/dashboard/connectors", label: "Connectors",       icon: PuzzlePieceIcon },
+      { href: "/dashboard/modules",         label: "Modules",          icon: Squares2X2Icon  },
+      { href: "/dashboard/sub-tools",       label: "Sub-tools",        icon: Squares2X2Icon  },
+      { href: "/dashboard/connector-store", label: "Connector Store",  icon: PuzzlePieceIcon },
+      { href: "/dashboard/connectors",      label: "Connectors",       icon: PuzzlePieceIcon },
     ],
   },
   {
