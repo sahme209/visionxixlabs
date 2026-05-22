@@ -14,6 +14,7 @@ import {
   BoltIcon,
   ClockIcon,
   CheckCircleIcon,
+  CodeBracketIcon,
   ExclamationTriangleIcon,
   ServerStackIcon,
   ShieldCheckIcon,
@@ -38,6 +39,7 @@ const CATEGORY_META: Record<PipelineCategory, { label: string; icon: typeof Bolt
   database:      { label: "Database",      icon: CircleStackIcon, tone: "text-blue-300" },
   security:      { label: "Security",      icon: ShieldCheckIcon, tone: "text-amber-300" },
   observability: { label: "Observability", icon: EyeIcon,         tone: "text-cyan-300"  },
+  coding:        { label: "AI coding",     icon: CodeBracketIcon, tone: "text-violet-300" },
 };
 
 const RUN_STATUS_TONE: Record<string, string> = {
