@@ -1100,6 +1100,88 @@ model CodingTask {
 }
 
 // ---------------------------------------------------------------------------
+// Pricing economics foundation — Phase 381.
+//
+// Three additive tables. Stripe/TenantBillingPlan/TenantUsageCounter/
+// AIInvocation untouched.
+//   AIProviderRate  — configurable per-(provider, model, effective_date)
+//   UsageEvent      — per-invocation usage log with cost attribution
+//   WorkspaceUsageSummary — month-to-date aggregate per workspace
+// ---------------------------------------------------------------------------
+
+model AIProviderRate {
+  id                          String   @id @default(cuid())
+  provider                    String
+  modelId                     String
+  displayName                 String
+  /// Cents per million tokens (integer — no float drift).
+  inputCentsPerMillion        Int
+  outputCentsPerMillion       Int
+  cachedReadCentsPerMillion   Int?
+  batchInputCentsPerMillion   Int?
+  batchOutputCentsPerMillion  Int?
+  enterpriseRateNote          String?
+  currency                    String   @default("USD")
+  effectiveFrom               DateTime
+  effectiveTo                 DateTime?
+  isActive                    Boolean  @default(true)
+  notes                       String?
+  createdAt                   DateTime @default(now())
+  updatedAt                   DateTime @updatedAt
+
+  @@index([provider, modelId, effectiveFrom])
+  @@index([isActive])
+}
+
+model UsageEvent {
+  id              String   @id @default(cuid())
+  organizationId  String
+  /// "ai_invocation" | "agent_run" | "automation_run" | "connector_sync"
+  /// | "cloud_scan" | "report_generated" | "monitoring_event" | "desktop_task"
+  eventKind       String
+  provider        String?
+  model           String?
+  inputTokens     Int      @default(0)
+  outputTokens    Int      @default(0)
+  cachedReadTokens Int     @default(0)
+  /// Cost attributed to VisionXIXLabs in cents (USD).
+  costCents       Int      @default(0)
+  triggeredBy     String?
+  aiInvocationId  String?
+  correlationId   String?
+  metadata        Json?
+  createdAt       DateTime @default(now())
+
+  @@index([organizationId, createdAt])
+  @@index([organizationId, eventKind, createdAt])
+  @@index([correlationId])
+}
+
+model WorkspaceUsageSummary {
+  id                  String   @id @default(cuid())
+  organizationId      String
+  /// YYYY-MM
+  periodMonth         String
+  totalCostCents      Int      @default(0)
+  aiCostCents         Int      @default(0)
+  aiInvocationCount   Int      @default(0)
+  aiInputTokens       BigInt   @default(0)
+  aiOutputTokens      BigInt   @default(0)
+  aiCachedReadTokens  BigInt   @default(0)
+  agentRunCount       Int      @default(0)
+  automationRunCount  Int      @default(0)
+  connectorSyncCount  Int      @default(0)
+  cloudScanCount      Int      @default(0)
+  reportCount         Int      @default(0)
+  lastRebuiltAt       DateTime @default(now())
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  @@unique([organizationId, periodMonth])
+  @@index([periodMonth])
+}
+
+// ---------------------------------------------------------------------------
 // Axiom — Autopilot Audit Trail
 //
 // Immutable log of every autopilot mode change and every action the agent
