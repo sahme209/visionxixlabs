@@ -109,6 +109,9 @@ export type AuditAction =
   | "eval.case_recorded"
   | "eval.run_completed"
   | "eval.run_failed"
+  // Multi-turn refinement — Phase 390.
+  | "workforce.proposal_refined"
+  | "workforce.proposal_gave_up"
   // Generic
   | "system.error";
 

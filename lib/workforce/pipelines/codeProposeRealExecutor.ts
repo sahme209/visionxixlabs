@@ -41,6 +41,9 @@ import { record as recordAudit } from "@/lib/audit/secureAudit";
 import { id as idFactory } from "@/lib/domain/ids";
 import { routeAITask } from "@/lib/ai/providerRouter";
 import { prisma } from "@/lib/db";
+import { validateProposal } from "./validateProposal";
+import { planRefinementAction } from "./planRefinementAction";
+import { buildRefinementMessages } from "./buildRefinementMessages";
 
 /** Route via the provider router (Phase 383) — single source of truth for which model the code-propose stage uses. */
 const PROPOSE_ROUTE = routeAITask("code_propose");
@@ -200,18 +203,122 @@ export const codeProposeRealExecutor: StageExecutorFn = async (ctx) => {
       };
     }
 
-    const firstLine = text.split("\n").find((l) => l.trim().length > 0) ?? "Patch proposed.";
+    // 5.5. Phase 390 — multi-turn refinement. Validate the diff locally;
+    //      if it doesn't parse, give the AI ONE more shot with the parser
+    //      error as feedback. Bounded by Vercel's 60s ceiling (≤2 Anthropic
+    //      calls per stage). Apply-mismatch retries only happen when bases
+    //      are pre-sampled (future phase wires this); for now we validate
+    //      parse only — the PR-open stage (Phase 388) catches apply errors
+    //      with its own retry path.
+    let finalText = text;
+    let finalUsageInput = final.usage.input_tokens;
+    let finalUsageOutput = final.usage.output_tokens;
+    let finalCacheRead = final.usage.cache_read_input_tokens ?? 0;
+    let finalCacheCreate = final.usage.cache_creation_input_tokens ?? 0;
+    let finalStopReason = final.stop_reason ?? "unknown";
+    let refinementAttempts = 0;
+    let refinementDecision: string | null = null;
+
+    const initialValidation = validateProposal({ proposedPatchText: text, sampledBases: [] });
+    const initialDecision = planRefinementAction({
+      parseOk: initialValidation.parseOk,
+      applyOk: initialValidation.applyOk,
+      attemptCount: 0,
+    });
+
+    if (initialDecision.kind === "retry_parse" || initialDecision.kind === "retry_apply") {
+      refinementAttempts = 1;
+      refinementDecision = initialDecision.kind;
+      try {
+        const refinementBuilt = buildRefinementMessages({
+          instruction: meta.instruction,
+          repoRef: meta.repoRef,
+          branchHint: meta.branchHint,
+          repoContext: priorRepoContext,
+          brokenPatchText: text,
+          validation: initialValidation,
+        });
+        const refStream = client.messages.stream({
+          model: CODE_PROPOSE_MODEL,
+          max_tokens: CODE_PROPOSE_MAX_TOKENS,
+          system: refinementBuilt.system as unknown as Anthropic.TextBlockParam[],
+          messages: refinementBuilt.messages as unknown as Anthropic.MessageParam[],
+          thinking: { type: "adaptive" },
+          output_config: { effort: CODE_PROPOSE_EFFORT as "low" | "medium" | "high" | "max" },
+        });
+        const refFinal = await refStream.finalMessage();
+        const refText = refFinal.content
+          .filter((b): b is Anthropic.TextBlock => b.type === "text")
+          .map((b) => b.text)
+          .join("\n");
+
+        // Add the refinement usage on top so the cost is honest.
+        finalUsageInput += refFinal.usage.input_tokens;
+        finalUsageOutput += refFinal.usage.output_tokens;
+        finalCacheRead += refFinal.usage.cache_read_input_tokens ?? 0;
+        finalCacheCreate += refFinal.usage.cache_creation_input_tokens ?? 0;
+        finalStopReason = refFinal.stop_reason ?? "unknown";
+
+        // Validate the refined output too — only swap if it's actually better.
+        const refinedValidation = validateProposal({ proposedPatchText: refText, sampledBases: [] });
+        if (refText.length > 0 && refinedValidation.parseOk) {
+          finalText = refText;
+          refinementDecision = "ship_refined";
+        } else {
+          refinementDecision = "refined_still_broken";
+        }
+
+        try {
+          await recordAudit({
+            organizationId: idFactory.organization(ctx.organizationId),
+            actorKind: "system",
+            action: "workforce.proposal_refined",
+            outcome: refinementDecision === "ship_refined" ? "success" : "failure",
+            entityRef: `pipeline_stage_run:${ctx.stageRunId}`,
+            correlationId: idFactory.correlation(ctx.correlationId),
+            source: "live",
+            detail: {
+              initialReason: initialDecision.kind,
+              refinedParseOk: refinedValidation.parseOk,
+              finalDecision: refinementDecision,
+              refinedInputTokens: refFinal.usage.input_tokens,
+              refinedOutputTokens: refFinal.usage.output_tokens,
+            },
+          });
+        } catch { /* best-effort */ }
+      } catch (refErr) {
+        // Refinement call itself failed (rate limit, etc.). Ship the original.
+        refinementDecision = "refinement_call_failed";
+        try {
+          await recordAudit({
+            organizationId: idFactory.organization(ctx.organizationId),
+            actorKind: "system",
+            action: "workforce.proposal_gave_up",
+            outcome: "failure",
+            entityRef: `pipeline_stage_run:${ctx.stageRunId}`,
+            correlationId: idFactory.correlation(ctx.correlationId),
+            source: "live",
+            detail: {
+              initialReason: initialDecision.kind,
+              refinementError: refErr instanceof Error ? refErr.message : "unknown",
+            },
+          });
+        } catch { /* best-effort */ }
+      }
+    }
+
+    const firstLine = finalText.split("\n").find((l) => l.trim().length > 0) ?? "Patch proposed.";
 
     // 6. Cost attribution — Phase 382. Write a UsageEvent so the meter
-    //    dashboards reflect this invocation. Best-effort; never blocks
-    //    the response on a Prisma failure.
+    //    dashboards reflect this invocation (now includes refinement
+    //    tokens when the second call fired).
     const usageWrite = await recordAIUsageEvent({
       organizationId: ctx.organizationId,
       provider: "anthropic",
       model: CODE_PROPOSE_MODEL,
-      inputTokens: final.usage.input_tokens,
-      outputTokens: final.usage.output_tokens,
-      cachedReadTokens: final.usage.cache_read_input_tokens ?? 0,
+      inputTokens: finalUsageInput,
+      outputTokens: finalUsageOutput,
+      cachedReadTokens: finalCacheRead,
       triggeredBy: ctx.triggeredBy,
       correlationId: ctx.correlationId,
       metadata: {
@@ -219,6 +326,8 @@ export const codeProposeRealExecutor: StageExecutorFn = async (ctx) => {
         stageRunId: ctx.stageRunId,
         runId: ctx.runId,
         pipelineId: ctx.pipelineId,
+        refinementAttempts,
+        refinementDecision,
       },
     });
 
@@ -251,12 +360,14 @@ export const codeProposeRealExecutor: StageExecutorFn = async (ctx) => {
         dryRun: false,
         model: CODE_PROPOSE_MODEL,
         effort: CODE_PROPOSE_EFFORT,
-        proposedPatchText: text,
+        proposedPatchText: finalText,
+        refinementAttempts,
+        refinementDecision,
         usage: {
-          input_tokens: final.usage.input_tokens,
-          output_tokens: final.usage.output_tokens,
-          cache_read_input_tokens: final.usage.cache_read_input_tokens ?? 0,
-          cache_creation_input_tokens: final.usage.cache_creation_input_tokens ?? 0,
+          input_tokens: finalUsageInput,
+          output_tokens: finalUsageOutput,
+          cache_read_input_tokens: finalCacheRead,
+          cache_creation_input_tokens: finalCacheCreate,
         },
         cost: {
           totalCents: usageWrite.cost?.totalCents ?? null,
@@ -264,7 +375,7 @@ export const codeProposeRealExecutor: StageExecutorFn = async (ctx) => {
           reason: usageWrite.reason ?? null,
         },
         creditPoolThreshold: preflight.threshold,
-        stopReason: final.stop_reason ?? "unknown",
+        stopReason: finalStopReason,
       },
     };
   } catch (err) {
