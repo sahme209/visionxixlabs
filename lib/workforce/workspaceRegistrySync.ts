@@ -23,6 +23,8 @@
 import "server-only";
 
 import { prisma } from "@/lib/db";
+import { record as recordAudit } from "@/lib/audit/secureAudit";
+import { id as idFactory } from "@/lib/domain/ids";
 import {
   AGENT_WORKFORCE_REGISTRY,
   type AgentEngineer,
@@ -96,6 +98,26 @@ export async function syncAgentEngineerRegistryForWorkspace(
       updatedDefault++;
     } else {
       unchanged++;
+    }
+  }
+
+  // Emit a single summary audit row when the sync actually changed
+  // something. No row when nothing was created/updated — keeps the
+  // audit fabric tight on a no-op.
+  if (created > 0 || updatedDefault > 0) {
+    try {
+      await recordAudit({
+        organizationId: idFactory.organization(organizationId),
+        actorKind: "system",
+        action: "engineer.registry_synced",
+        outcome: "success",
+        entityRef: `workspace:${organizationId}`,
+        correlationId: idFactory.correlation(`registry_sync_${Date.now().toString(36)}`),
+        source: "live",
+        detail: { created, updatedDefault, unchanged, skippedInternal },
+      });
+    } catch {
+      // Best-effort — sync persistence already happened.
     }
   }
 

@@ -923,6 +923,51 @@ model AgentEngineerActionAttempt {
 }
 
 // ---------------------------------------------------------------------------
+// Engineer-sourced approval snapshot.
+//
+// Mirrors the in-memory ApprovalRequest minted by the approval engine for
+// engineer-sourced actions. Survives deploys / restarts so the
+// /dashboard/workforce/approvals queue keeps history intact. The engine's
+// in-memory store remains authoritative for live decision flow (17 other
+// callers still use it sync); this snapshot is the durable copy for
+// workforce surfaces specifically.
+// ---------------------------------------------------------------------------
+
+model EngineerApprovalSnapshot {
+  id                String   @id @default(cuid())
+  organizationId    String
+  /// Mirrors approvalEngine.ApprovalRequest.id — the join key back to the engine.
+  approvalRequestId String   @unique
+  /// Canonical engineer id from agentWorkforceRegistry.
+  engineerId        String
+  /// Action label the orchestrator passed to the recorder.
+  action            String
+  /// Linked AgentEngineerActionAttempt row id.
+  attemptId         String?
+  /// Closed-union risk vocabulary from the recorder.
+  riskLevel         String
+  /// Effective approval rule at decision time.
+  effectiveRule     String
+  requiredApprovers Int      @default(0)
+  /// Workforce correlation id stitched into the audit fabric.
+  correlationId     String
+  /// Lifecycle: pending → approved | rejected | expired.
+  status            String   @default("pending")
+  /// User who requested (typically the agent/operator that triggered).
+  requestedBy       String
+  /// Set when a workspace admin decides the approval.
+  decidedByUserId   String?
+  decidedAt         DateTime?
+  decisionReason    String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@index([organizationId, status, createdAt])
+  @@index([organizationId, engineerId, createdAt])
+  @@index([correlationId])
+}
+
+// ---------------------------------------------------------------------------
 // Axiom — Autopilot Audit Trail
 //
 // Immutable log of every autopilot mode change and every action the agent

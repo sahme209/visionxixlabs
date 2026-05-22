@@ -127,6 +127,50 @@ export async function recordEngineerActionAttempt(input: RecorderInput): Promise
     }
   }
 
+  // Durable Prisma snapshot of the approval — survives deploys. The
+  // engine's in-memory store remains authoritative for live decision
+  // flow (17 other callers still use it sync); this mirror is the
+  // load-bearing read for /dashboard/workforce/approvals.
+  if (approvalRequestId) {
+    try {
+      await prisma.engineerApprovalSnapshot.create({
+        data: {
+          organizationId: input.workspaceId,
+          approvalRequestId,
+          engineerId: input.engineerId,
+          action: input.action,
+          riskLevel: input.riskLevel,
+          effectiveRule: verdict.effectiveRule,
+          requiredApprovers: verdict.requiredApprovers,
+          correlationId,
+          status: "pending",
+          requestedBy: input.requestedBy,
+        },
+      });
+    } catch {
+      // Snapshot persist failure must not break enforcement.
+    }
+    // Bridging audit row — links engineer attempt to its approval.
+    try {
+      await recordAudit({
+        organizationId: idFactory.organization(input.workspaceId) as OrganizationId,
+        actorUserId: idFactory.user(input.requestedBy) as UserId,
+        actorKind: "system",
+        action: "engineer.approval_created",
+        outcome: "success",
+        entityRef: `approval:${approvalRequestId}`,
+        correlationId,
+        source: "live",
+        detail: {
+          engineerId: input.engineerId,
+          action: input.action,
+          requiredApprovers: verdict.requiredApprovers,
+          effectiveRule: verdict.effectiveRule,
+        },
+      });
+    } catch { /* best-effort */ }
+  }
+
   // Append the attempt row (best-effort — never fails the caller).
   let attemptId = `attempt_${Date.now().toString(36)}`;
   if (recordRowId) {
@@ -154,6 +198,15 @@ export async function recordEngineerActionAttempt(input: RecorderInput): Promise
         select: { id: true },
       });
       attemptId = created.id;
+      // Backfill the snapshot with the attempt id so the queue can join cleanly.
+      if (approvalRequestId) {
+        try {
+          await prisma.engineerApprovalSnapshot.update({
+            where: { approvalRequestId },
+            data: { attemptId },
+          });
+        } catch { /* best-effort */ }
+      }
     } catch {
       // Persistence failure must not break enforcement. Verdict already
       // computed; audit row will still attempt to write below.

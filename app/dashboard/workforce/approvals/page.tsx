@@ -23,7 +23,6 @@ import {
 } from "@heroicons/react/24/outline";
 import { currentContext } from "@/lib/auth/currentContext";
 import { prisma } from "@/lib/db";
-import { getApproval } from "@/lib/approvals/approvalEngine";
 import {
   AGENT_WORKFORCE_REGISTRY,
   type AgentEngineer,
@@ -47,28 +46,23 @@ export default async function EngineerApprovalsPage() {
     return <div className="p-8 text-sm text-zinc-300">Sign in required.</div>;
   }
 
-  // Pull the last 50 attempts that requested approval.
-  const attempts = await prisma.agentEngineerActionAttempt.findMany({
-    where: {
-      organizationId: String(ctx.organizationId),
-      runtimeDecision: "requires_approval",
-    },
+  // Read the durable Prisma snapshot. Survives deploys; no dependency
+  // on the engine's in-memory state.
+  const snapshots = await prisma.engineerApprovalSnapshot.findMany({
+    where: { organizationId: String(ctx.organizationId) },
     orderBy: { createdAt: "desc" },
     take: 50,
   }).catch(() => []);
 
-  // Join with the live approval engine in-memory store. Items whose
-  // approval is gone (expired / cleared) just render with no joined row.
-  const rows = attempts.map((a) => {
-    const engineer = ENGINEER_LOOKUP.get(a.engineerId);
+  const rows = snapshots.map((s) => {
+    const engineer = ENGINEER_LOOKUP.get(s.engineerId);
     if (!engineer) return null;
-    const approval = a.approvalRequestId ? getApproval(a.approvalRequestId) : undefined;
-    return { attempt: a, engineer, approval };
+    return { snapshot: s, engineer };
   }).filter((r): r is NonNullable<typeof r> => r !== null);
 
-  const pendingCount = rows.filter((r) => r.approval?.status === "pending").length;
-  const decidedCount = rows.filter((r) => r.approval && r.approval.status !== "pending").length;
-  const noApprovalCount = rows.filter((r) => !r.approval).length;
+  const pendingCount  = rows.filter((r) => r.snapshot.status === "pending").length;
+  const approvedCount = rows.filter((r) => r.snapshot.status === "approved").length;
+  const rejectedCount = rows.filter((r) => r.snapshot.status === "rejected").length;
 
   return (
     <div className="relative">
@@ -94,9 +88,8 @@ export default async function EngineerApprovalsPage() {
 
       <section className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-8">
         <Stat label="Pending" value={pendingCount} icon={ClockIcon} tone="text-amber-300" />
-        <Stat label="Decided · last 50" value={decidedCount} icon={CheckCircleIcon} tone="text-emerald-300" />
-        <Stat label="Without approval row" value={noApprovalCount} icon={ExclamationTriangleIcon} tone="text-zinc-400"
-              sub="Approval expired or in-memory store cleared after restart." />
+        <Stat label="Approved · last 50" value={approvedCount} icon={CheckCircleIcon} tone="text-emerald-300" />
+        <Stat label="Rejected · last 50" value={rejectedCount} icon={ExclamationTriangleIcon} tone="text-rose-300" />
       </section>
 
       {rows.length === 0 ? (
@@ -109,20 +102,23 @@ export default async function EngineerApprovalsPage() {
         </section>
       ) : (
         <section className="space-y-2.5">
-          {rows.map(({ attempt, engineer, approval }) => (
+          {rows.map(({ snapshot, engineer }) => (
             <ApprovalRow
-              key={attempt.id}
-              approvalId={attempt.approvalRequestId ?? null}
-              action={attempt.action}
+              key={snapshot.id}
+              approvalId={snapshot.approvalRequestId}
+              action={snapshot.action}
               engineerId={engineer.id}
               engineerName={engineer.displayName}
-              effectiveRule={attempt.effectiveRule}
-              requiredApprovers={attempt.requiredApprovers}
-              correlationId={attempt.correlationId}
-              approvalStatus={approval?.status ?? "unknown"}
-              riskLevel={attempt.riskLevel}
-              connector={attempt.connector ?? null}
-              createdAt={attempt.createdAt}
+              effectiveRule={snapshot.effectiveRule}
+              requiredApprovers={snapshot.requiredApprovers}
+              correlationId={snapshot.correlationId}
+              approvalStatus={snapshot.status}
+              riskLevel={snapshot.riskLevel}
+              connector={null}
+              createdAt={snapshot.createdAt}
+              decidedAt={snapshot.decidedAt}
+              decidedByUserId={snapshot.decidedByUserId}
+              decisionReason={snapshot.decisionReason}
             />
           ))}
         </section>
@@ -164,6 +160,9 @@ function ApprovalRow(props: {
   riskLevel: string;
   connector: string | null;
   createdAt: Date;
+  decidedAt?: Date | null;
+  decidedByUserId?: string | null;
+  decisionReason?: string | null;
 }) {
   const statusTone =
     props.approvalStatus === "pending"   ? "text-amber-300 bg-amber-500/10 border-amber-500/30" :
@@ -196,7 +195,14 @@ function ApprovalRow(props: {
       </div>
       <p className="text-[10px] font-mono text-zinc-600 mb-2">correlation · {props.correlationId}</p>
 
-      {/* Decision actions — only shown when the approval is reachable + still pending. */}
+      {props.decidedAt && (
+        <p className="text-[10px] font-mono text-zinc-500 mb-2">
+          decided · {props.decidedAt.toISOString()}{props.decidedByUserId ? ` · by ${props.decidedByUserId}` : ""}
+          {props.decisionReason ? ` · "${props.decisionReason}"` : ""}
+        </p>
+      )}
+
+      {/* Decision actions — only shown when the snapshot is still pending. */}
       <div className="pt-2 border-t border-white/[0.04] flex items-center justify-between gap-2">
         <span className="text-[10px] font-mono text-zinc-500">
           {props.approvalId ? `approval · ${props.approvalId}` : "approval not reachable"}
@@ -204,7 +210,7 @@ function ApprovalRow(props: {
         {props.approvalId ? (
           <ApprovalDecisionButtons approvalId={props.approvalId} status={props.approvalStatus} />
         ) : (
-          <span className="text-[10px] font-mono text-zinc-500">no buttons · approval expired or in-memory store cleared</span>
+          <span className="text-[10px] font-mono text-zinc-500">no buttons · snapshot missing approval id</span>
         )}
       </div>
     </article>

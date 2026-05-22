@@ -11,6 +11,7 @@
 
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import { prisma } from "@/lib/db";
 import { currentContext } from "@/lib/auth/currentContext";
 import { decideApproval, getApproval } from "@/lib/approvals/approvalEngine";
 import { record as recordAudit } from "@/lib/audit/secureAudit";
@@ -39,49 +40,93 @@ export async function POST(req: NextRequest, ctx: { params: Promise<{ id: string
     }, { status: 400 });
   }
 
-  // Sanity-check the approval exists and belongs to this workspace.
-  const existing = getApproval(id);
-  if (!existing) {
+  const orgId = String(session.organizationId);
+
+  // Look up durable snapshot first — it survives deploys; the engine's
+  // in-memory state may have cleared.
+  const snapshot = await prisma.engineerApprovalSnapshot.findUnique({
+    where: { approvalRequestId: id },
+  }).catch(() => null);
+
+  if (!snapshot) {
     return NextResponse.json({ ok: false, reason: "approval_not_found" }, { status: 404 });
   }
-  if (existing.tenantId && existing.tenantId !== String(session.organizationId)) {
+  if (snapshot.organizationId !== orgId) {
     return NextResponse.json({ ok: false, reason: "cross_tenant_attempt" }, { status: 403 });
   }
-  if (!existing.sourceId.startsWith("engineer:")) {
+  if (snapshot.status !== "pending") {
     return NextResponse.json({
       ok: false,
-      reason: "not_engineer_sourced",
-      detail: "This endpoint only handles engineer-sourced approvals. Use /dashboard/approvals for other types.",
-    }, { status: 422 });
+      reason: "already_decided",
+      detail: `Approval already ${snapshot.status} at ${snapshot.decidedAt?.toISOString() ?? "unknown time"}.`,
+    }, { status: 409 });
   }
 
-  const outcome = decideApproval({
-    approvalId: id,
-    decision,
-    approverUserId: session.userId,
-    approverRole: "approver",
-    reason,
-  });
+  // Try to route the decision into the live engine. The engine MAY no
+  // longer have the request (post-restart). When that happens we
+  // accept the decision against the snapshot only.
+  const engineRow = getApproval(id);
+  let engineAccepted = false;
+  if (engineRow) {
+    if (!engineRow.sourceId.startsWith("engineer:")) {
+      return NextResponse.json({
+        ok: false,
+        reason: "not_engineer_sourced",
+        detail: "This endpoint only handles engineer-sourced approvals. Use /dashboard/approvals for other types.",
+      }, { status: 422 });
+    }
+    const outcome = decideApproval({
+      approvalId: id,
+      decision,
+      approverUserId: session.userId,
+      approverRole: "approver",
+      reason,
+    });
+    if (!outcome.allowed) {
+      return NextResponse.json({ ok: false, reason: "decision_rejected", detail: outcome.reason }, { status: 422 });
+    }
+    engineAccepted = true;
+  }
 
-  if (!outcome.allowed) {
-    return NextResponse.json({ ok: false, reason: "decision_rejected", detail: outcome.reason }, { status: 422 });
+  // Update durable snapshot. This is the source of truth for the
+  // workforce approvals queue going forward.
+  const decidedAt = new Date();
+  try {
+    await prisma.engineerApprovalSnapshot.update({
+      where: { approvalRequestId: id },
+      data: {
+        status: decision,
+        decidedByUserId: session.userId ?? session.email ?? "unknown",
+        decidedAt,
+        decisionReason: reason,
+      },
+    });
+  } catch {
+    // Snapshot update failure — surface a 500 since persistence is
+    // load-bearing here.
+    return NextResponse.json({
+      ok: false,
+      reason: "snapshot_persist_failed",
+      detail: "Approval decision recorded in engine but snapshot did not update.",
+    }, { status: 500 });
   }
 
   // Audit row tying the decision back to the engineer.
   try {
     await recordAudit({
-      organizationId: idFactory.organization(String(session.organizationId)),
+      organizationId: idFactory.organization(orgId),
       actorUserId: session.userId ?? idFactory.user(session.email ?? "unknown"),
       actorKind: "user",
       action: decision === "approved" ? "approval.grant" : "approval.deny",
       outcome: "success",
       entityRef: `approval:${id}`,
-      correlationId: idFactory.correlation(`decide_${Date.now().toString(36)}`),
+      correlationId: idFactory.correlation(snapshot.correlationId),
       source: "live",
       detail: {
         approvalId: id,
         decision,
-        engineerSourceId: existing.sourceId,
+        engineerSourceId: `engineer:${snapshot.engineerId}:${snapshot.action}`,
+        engineAccepted,
         ...(reason ? { reason } : {}),
       },
     });
@@ -93,7 +138,8 @@ export async function POST(req: NextRequest, ctx: { params: Promise<{ id: string
     ok: true,
     approvalId: id,
     decision,
-    status: outcome.request?.status ?? "unknown",
-    decidedAt: outcome.request?.decidedAt ?? null,
+    status: decision,
+    decidedAt: decidedAt.toISOString(),
+    engineAccepted,
   });
 }
