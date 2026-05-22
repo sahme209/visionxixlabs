@@ -39,15 +39,15 @@ import { checkWorkspaceAICredits } from "@/lib/billing/checkWorkspaceAICredits";
 import { recordAIUsageEvent } from "@/lib/billing/recordAIUsageEvent";
 import { record as recordAudit } from "@/lib/audit/secureAudit";
 import { id as idFactory } from "@/lib/domain/ids";
+import { routeAITask } from "@/lib/ai/providerRouter";
 
-/** Operator-chosen model. Per the user request, Sonnet 4.6 for the coding loop. */
-const CODE_PROPOSE_MODEL = "claude-sonnet-4-6";
+/** Route via the provider router (Phase 383) — single source of truth for which model the code-propose stage uses. */
+const PROPOSE_ROUTE = routeAITask("code_propose");
+const CODE_PROPOSE_MODEL = PROPOSE_ROUTE.model;
+const CODE_PROPOSE_EFFORT = PROPOSE_ROUTE.effort;
 
 /** Cap on output tokens. Sonnet 4.6 maxes at 64K with streaming. */
 const CODE_PROPOSE_MAX_TOKENS = 32_000;
-
-/** Effort level — high for intelligence-sensitive coding work. */
-const CODE_PROPOSE_EFFORT = "high" as const;
 
 interface CodeProposeRunMetadata {
   instruction?: unknown;
@@ -155,7 +155,10 @@ export const codeProposeRealExecutor: StageExecutorFn = async (ctx) => {
       system: built.system as unknown as Anthropic.TextBlockParam[],
       messages: built.messages as unknown as Anthropic.MessageParam[],
       thinking: { type: "adaptive" },
-      output_config: { effort: CODE_PROPOSE_EFFORT },
+      // CODE_PROPOSE_EFFORT comes from the AI router (Phase 383). The router's
+      // AIEffort union includes "xhigh" (Opus 4.7 only) which the SDK doesn't
+      // accept on Sonnet — cast narrowly since this route is always "high".
+      output_config: { effort: CODE_PROPOSE_EFFORT as "low" | "medium" | "high" | "max" },
     });
     const final = await stream.finalMessage();
 

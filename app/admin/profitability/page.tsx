@@ -29,6 +29,7 @@ import {
   estimateStripeFee,
   type MarginWarningKind,
 } from "@/lib/billing/computePlanMargin";
+import { computeOverageRevenue } from "@/lib/billing/computeOverageRevenue";
 import { formatCents } from "@/lib/billing/computeInvocationCost";
 
 export const metadata: Metadata = {
@@ -97,21 +98,24 @@ export default async function AdminProfitabilityPage() {
     const supportCostCents = ALLOCATED_SUPPORT_CENTS_BY_TIER[plan.tier] ?? 0;
     const planPriceForFee = plan.monthlyPriceCents ?? 0;
     const paymentProcessingCents = planPriceForFee > 0 ? estimateStripeFee(planPriceForFee) : 0;
+    // Phase 383 — derive overage revenue from AI cost vs plan pool.
+    const overage = computeOverageRevenue({ plan, totalAICostCents: s.aiCostCents });
     const margin = computePlanMargin({
       plan,
       aiCostCents: s.aiCostCents,
       infraCostCents: ALLOCATED_INFRA_CENTS,
       paymentProcessingCents,
       supportCostCents,
-      overageRevenueCents: 0,  // Not yet wired; surfaces in a follow-up
+      overageRevenueCents: overage.overageRevenueCents,
     });
-    return { summary: s, plan, margin };
+    return { summary: s, plan, margin, overage };
   });
 
   // Aggregate totals.
   const totalRevenue = rows.reduce((acc, r) => acc + (r.margin.monthlyRevenueCents ?? 0), 0);
   const totalAICost = rows.reduce((acc, r) => acc + r.summary.aiCostCents, 0);
   const totalGrossMargin = rows.reduce((acc, r) => acc + (r.margin.grossMarginCents ?? 0), 0);
+  const totalOverageRevenue = rows.reduce((acc, r) => acc + r.overage.overageRevenueCents, 0);
   const atRiskCount = rows.filter((r) =>
     r.margin.warnings.includes("negative_gross_margin") || r.margin.warnings.includes("ai_cost_above_plan_price")
   ).length;
@@ -138,8 +142,9 @@ export default async function AdminProfitabilityPage() {
         </p>
       </div>
 
-      <section className="grid grid-cols-1 md:grid-cols-4 gap-3 mb-8">
+      <section className="grid grid-cols-1 md:grid-cols-5 gap-3 mb-8">
         <SummaryStat label="Total revenue (MTD)" value={formatCents(totalRevenue)} tone="text-emerald-300" />
+        <SummaryStat label="Overage revenue (MTD)" value={formatCents(totalOverageRevenue)} tone="text-violet-300" />
         <SummaryStat label="Total AI cost (MTD)" value={formatCents(totalAICost)} tone="text-amber-300" />
         <SummaryStat label="Total gross margin" value={formatCents(totalGrossMargin)} tone={totalGrossMargin >= 0 ? "text-emerald-300" : "text-rose-300"} />
         <SummaryStat label="Workspaces at risk" value={String(atRiskCount)} tone={atRiskCount > 0 ? "text-rose-300" : "text-zinc-300"} icon={ExclamationTriangleIcon} />
@@ -156,7 +161,7 @@ export default async function AdminProfitabilityPage() {
         </section>
       ) : (
         <section className="space-y-2">
-          {rows.map(({ summary, plan, margin }) => (
+          {rows.map(({ summary, plan, margin, overage }) => (
             <article key={summary.id} className="rounded-xl border border-white/[0.06] bg-white/[0.02] px-4 py-3">
               <header className="flex items-center justify-between gap-3 flex-wrap mb-2">
                 <div className="flex items-center gap-2 min-w-0">
@@ -164,6 +169,11 @@ export default async function AdminProfitabilityPage() {
                   <span className="text-[9px] font-mono uppercase tracking-wider border rounded-full px-1.5 py-0.5 text-violet-300 bg-violet-500/10 border-violet-500/30">
                     {plan.displayName}
                   </span>
+                  {overage.overageRevenueCents > 0 && (
+                    <span className="text-[9px] font-mono uppercase tracking-wider border rounded-full px-1.5 py-0.5 text-violet-200 bg-violet-500/15 border-violet-500/40">
+                      overage · {formatCents(overage.overageRevenueCents)}
+                    </span>
+                  )}
                 </div>
                 <div className="flex items-center gap-3 text-[10px] font-mono">
                   {margin.warnings.length === 0 ? (
@@ -180,8 +190,9 @@ export default async function AdminProfitabilityPage() {
                 </div>
               </header>
 
-              <div className="grid grid-cols-2 md:grid-cols-5 gap-3 text-[10.5px] mb-2">
+              <div className="grid grid-cols-2 md:grid-cols-6 gap-3 text-[10.5px] mb-2">
                 <Field label="Revenue" value={margin.monthlyRevenueCents === null ? "Custom" : formatCents(margin.monthlyRevenueCents)} />
+                <Field label="Overage rev" value={formatCents(overage.overageRevenueCents)} tone={overage.overageRevenueCents > 0 ? "text-violet-300" : "text-zinc-300"} />
                 <Field label="AI cost" value={formatCents(summary.aiCostCents)} />
                 <Field label="Infra+support" value={formatCents(ALLOCATED_INFRA_CENTS + (ALLOCATED_SUPPORT_CENTS_BY_TIER[plan.tier] ?? 0))} />
                 <Field
@@ -215,7 +226,7 @@ export default async function AdminProfitabilityPage() {
         <ul className="text-[12px] text-zinc-300 leading-relaxed list-disc list-inside marker:text-amber-400/70 space-y-1">
           <li>Infra cost is allocated at $20/workspace/month — adjust in <code className="text-zinc-200">app/admin/profitability/page.tsx</code> when the per-tenant model lands.</li>
           <li>Support cost is allocated by plan tier: Starter $5, Growth $25, Business $100, Enterprise $250.</li>
-          <li>Stripe fees are estimated at 2.9% + 30¢ on the plan-price charge. Overage revenue not yet wired — will surface here in the follow-up phase.</li>
+          <li>Stripe fees estimated at 2.9% + 30¢ on the plan-price charge. Overage revenue is derived from MTD AI cost over the plan's included pool, multiplied by the plan's implicit markup (Growth ~2x, Business ~1.67x). Starter (hard_stop) and Enterprise (custom_contract) do not generate metered overage revenue here.</li>
           <li>Vendor rates (OpenAI / Anthropic) live in the AIProviderRate table; warning thresholds fire automatically when a tenant exceeds 50% or 100% of plan price in AI cost.</li>
         </ul>
       </section>
