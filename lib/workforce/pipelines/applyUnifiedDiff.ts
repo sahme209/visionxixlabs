@@ -19,9 +19,14 @@
 
 import type { FileDiff, FileHunk, FileChangeKind } from "./parseUnifiedDiff";
 
+export type ApplyHunkFailureReason =
+  | "context_mismatch"
+  | "delete_mismatch"
+  | "hunk_overran_base";
+
 export type ApplyHunkResult =
   | { ok: true; newContent: string }
-  | { ok: false; reason: "context_mismatch" | "delete_mismatch" | "hunk_overran_base"; detail: string };
+  | { ok: false; reason: ApplyHunkFailureReason; detail: string };
 
 export interface ApplyDiffResultFileEntry {
   path: string;
@@ -29,9 +34,16 @@ export interface ApplyDiffResultFileEntry {
   newContent: string | null; // null when changeKind="deleted"
 }
 
+export type ApplyDiffFailureReason =
+  | "missing_base_for_modified"
+  | "context_mismatch"
+  | "delete_mismatch"
+  | "hunk_overran_base"
+  | "added_file_with_no_content";
+
 export type ApplyDiffResult =
   | { ok: true; files: ReadonlyArray<ApplyDiffResultFileEntry> }
-  | { ok: false; reason: "missing_base_for_modified" | "context_mismatch" | "delete_mismatch" | "hunk_overran_base" | "added_file_with_no_content"; detail: string };
+  | { ok: false; reason: ApplyDiffFailureReason; detail: string };
 
 /** Split content into lines, preserving any trailing empty line. */
 function splitLines(content: string): string[] {
@@ -117,7 +129,7 @@ export interface ApplyDiffInput {
   baseContent: string | null;
 }
 
-export function applyDiff(input: ApplyDiffInput): { ok: true; entry: ApplyDiffResultFileEntry } | { ok: false; reason: ApplyDiffResult extends { ok: false; reason: infer R } ? R : never; detail: string } {
+export function applyDiff(input: ApplyDiffInput): { ok: true; entry: ApplyDiffResultFileEntry } | { ok: false; reason: ApplyDiffFailureReason; detail: string } {
   const { diff, baseContent } = input;
 
   if (diff.changeKind === "deleted") {
