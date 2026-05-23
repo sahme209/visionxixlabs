@@ -99,6 +99,33 @@ export interface PipelineRunResponse {
   };
 }
 
+export type ConnectorHealthStatus = "healthy" | "degraded" | "stale" | "auth_failed" | "rate_limited";
+
+export interface ConnectorHealthEntry {
+  name: string;
+  category: "cloud" | "vcs" | "db" | "monitoring" | "ide";
+  status: ConnectorHealthStatus;
+  stage: "auth" | "rate_limit" | "staleness" | "ratio" | "ok";
+  reason: string;
+  successRatio: number | null;
+  ageMs: number | null;
+  recentSuccessCount: number;
+  recentErrorCount: number;
+}
+
+export interface ConnectorHealthResponse {
+  ok: true;
+  generatedAt: string;
+  summary: {
+    healthy: number;
+    degraded: number;
+    stale: number;
+    auth_failed: number;
+    rate_limited: number;
+  };
+  connectors: ReadonlyArray<ConnectorHealthEntry>;
+}
+
 export interface DecideApprovalInput {
   decision: "approved" | "rejected";
   reason?: string;
@@ -170,6 +197,15 @@ export class VisionXIXLabs {
 
   pipelineRun(runId: string): Promise<PipelineRunResponse> {
     return this.get<PipelineRunResponse>(`/api/v1/pipelines/runs/${encodeURIComponent(runId)}`);
+  }
+
+  /**
+   * GET /api/v1/connectors/health — Phase 407. Per-connector health
+   * telemetry: status (closed-union), reason, success ratio, age.
+   * Required scope: pipeline:read.
+   */
+  connectorsHealth(): Promise<ConnectorHealthResponse> {
+    return this.get<ConnectorHealthResponse>("/api/v1/connectors/health");
   }
 
   /**

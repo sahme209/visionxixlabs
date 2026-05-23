@@ -215,6 +215,7 @@ Every subcommand supports `--json` for piping into `jq`.
 | `POST /api/v1/pipelines/runs`     | `pipeline:trigger`    | `startCodingRun()`    |
 | `GET  /api/v1/pipelines/runs/{id}`| `pipeline:read`       | `pipelineRun(id)`     |
 | `POST /api/v1/pipelines/runs/{id}/decide` | `pipeline:trigger` | `decideApproval(id, ...)` |
+| `GET  /api/v1/connectors/health`  | `pipeline:read`       | `connectorsHealth()`  |
 
 ### Approval decide — quorum semantics
 

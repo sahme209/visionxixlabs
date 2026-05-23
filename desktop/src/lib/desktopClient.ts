@@ -339,6 +339,35 @@ export class DesktopClient {
   }
 
   /**
+   * GET /api/v1/connectors/health — Phase 407.
+   * Per-connector health (closed-union status + reason + ratio + age).
+   * Required scope: pipeline:read.
+   */
+  async v1ConnectorsHealth(): Promise<ApiResult<{
+    generatedAt: string;
+    summary: {
+      healthy: number;
+      degraded: number;
+      stale: number;
+      auth_failed: number;
+      rate_limited: number;
+    };
+    connectors: ReadonlyArray<{
+      name: string;
+      category: "cloud" | "vcs" | "db" | "monitoring" | "ide";
+      status: "healthy" | "degraded" | "stale" | "auth_failed" | "rate_limited";
+      stage: "auth" | "rate_limit" | "staleness" | "ratio" | "ok";
+      reason: string;
+      successRatio: number | null;
+      ageMs: number | null;
+      recentSuccessCount: number;
+      recentErrorCount: number;
+    }>;
+  }>> {
+    return this.getV1("/api/v1/connectors/health");
+  }
+
+  /**
    * POST /api/v1/pipelines/runs/[id]/decide — Phase 406-decide.
    * Records a vote on a pipeline run paused at an awaiting_approval
    * stage. Required scope: pipeline:trigger.

@@ -199,6 +199,39 @@ export const API_ENDPOINTS: ReadonlyArray<ApiEndpoint> = [
   },
   {
     method: "GET",
+    path: "/api/v1/connectors/health",
+    scope: "pipeline:read",
+    oneLine: "Per-connector health telemetry (Phase 407).",
+    detail:
+      "Closed-union status (healthy · degraded · stale · auth_failed · rate_limited) computed by a pure kernel from per-connector telemetry (last sync time, recent success / error counts, auth probe, rate-limit cooldown). Same inputs → same status, unit-tested against a fixture set.",
+    resBody: `{
+  "ok": true,
+  "generatedAt": "2026-05-23T18:00:00.000Z",
+  "summary": {
+    "healthy": 3, "degraded": 0,
+    "stale": 1, "auth_failed": 0, "rate_limited": 0
+  },
+  "connectors": [
+    {
+      "name": "AWS", "category": "cloud",
+      "status": "healthy", "stage": "ok",
+      "reason": "Connector is syncing successfully.",
+      "successRatio": 0.947, "ageMs": 78420,
+      "recentSuccessCount": 18, "recentErrorCount": 1
+    },
+    {
+      "name": "Postgres", "category": "db",
+      "status": "stale", "stage": "staleness",
+      "reason": "Last successful sync was 10m ago (window for db: 5m).",
+      "successRatio": 0.857, "ageMs": 600000,
+      "recentSuccessCount": 6, "recentErrorCount": 1
+    }
+  ]
+}`,
+    errorCodes: ["missing_scope", "quota_exhausted"],
+  },
+  {
+    method: "GET",
     path: "/api/v1/webhooks/jwks",
     scope: "(public — no auth)",
     oneLine: "Public ES256 verification keys.",
@@ -431,6 +464,17 @@ export const CLOSED_UNIONS: ReadonlyArray<ClosedUnionSpec> = [
       { value: "succeeded",           meaning: "All stages succeeded; terminal." },
       { value: "failed",              meaning: "One stage failed terminally; terminal." },
       { value: "cancelled",           meaning: "Operator cancelled mid-run." },
+    ],
+  },
+  {
+    name: "ConnectorHealthStatus",
+    source: "lib/connectors/connectorHealth.ts (Phase 407)",
+    members: [
+      { value: "healthy",      meaning: "Connector is syncing successfully within bounds." },
+      { value: "degraded",     meaning: "Recent success ratio below threshold (default 85%) with at least 5 samples." },
+      { value: "stale",        meaning: "Last successful sync older than the category window (cloud 30m · vcs 10m · db 5m · monitoring 15m). 'Never synced' counts as stale." },
+      { value: "auth_failed",  meaning: "Credentials rejected on the most recent auth probe — beats every other signal." },
+      { value: "rate_limited", meaning: "Provider is throttling us right now; scanner is backing off." },
     ],
   },
   {
