@@ -92,6 +92,34 @@ class VisionXIXLabs:
         """GET /api/v1/pipelines/runs/{id} — poll a run's status."""
         return self._get(f"/api/v1/pipelines/runs/{run_id}")
 
+    def list_pipeline_runs(
+        self,
+        limit: Optional[int] = None,
+        cursor: Optional[str] = None,
+        status: Optional[str] = None,
+    ) -> Dict[str, Any]:
+        """
+        GET /api/v1/pipelines/runs — list recent pipeline runs.
+
+        Args:
+            limit:  1..100, default 25.
+            cursor: paginate by runId (descending creation order).
+            status: filter by status ('running' | 'succeeded' | 'failed' |
+                    'awaiting_approval').
+
+        Returns the raw JSON: {ok, runs[], nextCursor}.
+        """
+        params: Dict[str, str] = {}
+        if limit is not None:
+            params["limit"] = str(limit)
+        if cursor:
+            params["cursor"] = cursor
+        if status:
+            params["status"] = status
+        qs = "&".join(f"{k}={v}" for k, v in params.items())
+        path = "/api/v1/pipelines/runs" + (f"?{qs}" if qs else "")
+        return self._get(path)
+
     def start_coding_run(
         self,
         instruction: str,

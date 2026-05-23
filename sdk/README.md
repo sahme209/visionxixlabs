@@ -143,6 +143,69 @@ curl -X POST https://visionxixlabs.com/api/v1/pipelines/runs \
 This is critical for CI runners where a transient network failure
 could otherwise fire two pipeline runs.
 
+## Python CLI (`vxl`)
+
+The Python SDK ships with a full command-line tool — single-file, stdlib-only,
+designed to drop into CI:
+
+```bash
+# One-time install
+chmod +x sdk/python/vxl_cli.py
+ln -s "$(pwd)/sdk/python/vxl_cli.py" /usr/local/bin/vxl
+
+# Auth
+export VXL_API_KEY="vxlk_live_…"
+```
+
+### Subcommands
+
+```bash
+vxl whoami                                # confirm key + workspace + quota
+vxl gate                                  # release-gate; exit 1 on BLOCKED
+vxl trigger --repo acme/example "Add /healthz route"
+vxl runs list --status running --limit 5
+vxl runs get <runId>
+vxl listen --port 8080 --secret <endpoint-secret>
+```
+
+### Stable exit codes (for CI scripts)
+
+| Code | Meaning |
+|------|---------|
+| 0 | success |
+| 1 | command-level failure (gate blocked, run failed) |
+| 2 | bad CLI invocation (missing args) |
+| 3 | API error (4xx/5xx — message printed to stderr) |
+| 4 | network / transport error |
+| 5 | webhook signature verification failed |
+
+### CI deploy-gate recipe
+
+```bash
+# Refuse to deploy when the eval-gate is blocked.
+if ! vxl gate; then
+    echo "::error::Quality gate blocked deployment."
+    exit 1
+fi
+```
+
+### Local webhook receiver
+
+`vxl listen` runs a local HTTPS-capable listener that verifies every inbound
+delivery's HMAC-SHA256 signature. Useful when developing your webhook handler:
+
+```bash
+vxl listen --port 8080 --secret <endpoint-secret> --verbose
+# → [14:32:18]  VALID   pipeline.run_completed   attempt=1   event_id=evt_abc
+#     runId: run_xyz123
+#     pipelineId: ai_coding
+#     status: succeeded
+```
+
+The listener emits VALID/INVALID badges per delivery; invalid signatures get a 401 response (so misconfigured secrets get caught immediately).
+
+Every subcommand supports `--json` for piping into `jq`.
+
 ## Endpoints covered
 
 | Endpoint                          | Required scope        | SDK method            |
