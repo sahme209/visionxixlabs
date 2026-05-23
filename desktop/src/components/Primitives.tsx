@@ -196,6 +196,81 @@ export function EmptyState({
 // Loading skeleton
 // ---------------------------------------------------------------------------
 
+// ---------------------------------------------------------------------------
+// DataSourceBanner — closed-union of the three states every desktop view
+// can be in. Replaces the silent mock-data fallback with an honest signal:
+//
+//   "preview"          — no API key paired; view is showing mock data
+//   "authenticated_no_data" — key paired, but the upstream endpoint
+//                             returned nothing (legacy /api/* not
+//                             implemented yet on the platform)
+//   "live"             — key paired AND the call returned real data
+//
+// Drop this at the top of any view that historically falls back to mock
+// so the user always knows what they're looking at.
+// ---------------------------------------------------------------------------
+
+export type DataSourceMode = "preview" | "authenticated_no_data" | "live";
+
+export function DataSourceBanner({
+  mode,
+  webPath,
+  surfaceName,
+}: {
+  mode: DataSourceMode;
+  webPath: string;
+  surfaceName: string;
+}) {
+  if (mode === "live") {
+    return (
+      <div className="rounded-lg border border-emerald-500/20 bg-emerald-500/[0.06] px-3 py-2 text-[11px] font-mono flex items-center gap-2">
+        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+        <span className="text-emerald-300 uppercase tracking-[0.18em]">live</span>
+        <span className="text-zinc-500">· {surfaceName} populated from your authenticated workspace.</span>
+      </div>
+    );
+  }
+  if (mode === "authenticated_no_data") {
+    return (
+      <div className="rounded-lg border border-amber-500/25 bg-amber-500/[0.06] px-3 py-2.5 text-[11px] font-mono">
+        <div className="flex items-center gap-2 mb-1">
+          <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
+          <span className="text-amber-300 uppercase tracking-[0.18em]">no live data yet</span>
+        </div>
+        <p className="text-zinc-400 leading-relaxed font-sans text-[12px]">
+          API key paired, but the {surfaceName} surface isn&apos;t implemented for this workspace yet.
+          Showing realistic mock data so the UI stays useful while the backend catches up.
+          <a
+            href={`https://visionxixlabs.com${webPath}`}
+            target="_blank"
+            rel="noreferrer"
+            className="text-violet-300 hover:text-violet-200 ml-1 underline-offset-2 hover:underline"
+          >Open the web view →</a>
+        </p>
+      </div>
+    );
+  }
+  // "preview"
+  return (
+    <div className="rounded-lg border border-violet-500/25 bg-violet-500/[0.06] px-3 py-2.5 text-[11px] font-mono">
+      <div className="flex items-center gap-2 mb-1">
+        <span className="w-1.5 h-1.5 rounded-full bg-violet-400 animate-pulse" />
+        <span className="text-violet-300 uppercase tracking-[0.18em]">preview · mock data</span>
+      </div>
+      <p className="text-zinc-400 leading-relaxed font-sans text-[12px]">
+        No API key configured. Paste a <span className="font-mono text-zinc-300">vxlk_live_…</span> key in
+        <span className="font-mono text-zinc-300"> Settings → VisionXIXLabs API key</span> to load real {surfaceName} from your workspace.
+        <a
+          href={`https://visionxixlabs.com${webPath}`}
+          target="_blank"
+          rel="noreferrer"
+          className="text-violet-300 hover:text-violet-200 ml-1 underline-offset-2 hover:underline"
+        >Open in web →</a>
+      </p>
+    </div>
+  );
+}
+
 export function LoadingState({ label = "Loading…" }: { label?: string }) {
   return (
     <div className="flex items-center justify-center py-20">

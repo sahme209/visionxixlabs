@@ -5,7 +5,7 @@
 
 import { useEffect, useState } from "react";
 import { desktopClient, type RemediationPipelineLite } from "../lib/desktopClient";
-import { Card, SectionHeader, ViewShell, LoadingState, EmptyState, Badge, riskToneFor, statusToneFor, Kpi } from "../components/Primitives";
+import { Card, DataSourceBanner, SectionHeader, ViewShell, LoadingState, EmptyState, Badge, riskToneFor, statusToneFor, Kpi } from "../components/Primitives";
 
 export function RemediationView() {
   const [pipeline, setPipeline] = useState<RemediationPipelineLite | null>(null);
@@ -40,6 +40,13 @@ export function RemediationView() {
 
   return (
     <ViewShell>
+      <DataSourceBanner
+        mode={desktopClient.isPreviewMode
+          ? (desktopClient.hasAuth() ? "authenticated_no_data" : "preview")
+          : "live"}
+        surfaceName="remediation candidates"
+        webPath="/dashboard/remediation"
+      />
       <SectionHeader
         kicker="// remediation"
         title="Governed fixes from every finding."

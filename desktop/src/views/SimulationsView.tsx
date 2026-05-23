@@ -5,7 +5,7 @@
 
 import { useEffect, useState } from "react";
 import { desktopClient, type SimulationsBatchLite } from "../lib/desktopClient";
-import { Card, SectionHeader, ViewShell, LoadingState, EmptyState, Badge, Kpi, statusToneFor } from "../components/Primitives";
+import { Card, DataSourceBanner, SectionHeader, ViewShell, LoadingState, EmptyState, Badge, Kpi, statusToneFor } from "../components/Primitives";
 
 export function SimulationsView() {
   const [batch, setBatch] = useState<SimulationsBatchLite | null>(null);
@@ -39,6 +39,13 @@ export function SimulationsView() {
 
   return (
     <ViewShell>
+      <DataSourceBanner
+        mode={desktopClient.isPreviewMode
+          ? (desktopClient.hasAuth() ? "authenticated_no_data" : "preview")
+          : "live"}
+        surfaceName="change-set simulations"
+        webPath="/dashboard/simulations"
+      />
       <SectionHeader
         kicker="// simulations"
         title="Preflight every change against the digital twin."

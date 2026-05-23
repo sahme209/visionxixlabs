@@ -8,7 +8,8 @@
  */
 
 import { useState } from "react";
-import { ViewShell } from "../components/Primitives";
+import { DataSourceBanner, ViewShell } from "../components/Primitives";
+import { desktopClient } from "../lib/desktopClient";
 
 type HandoffState =
   | "not_available"
@@ -82,6 +83,11 @@ export function HandoffsView() {
 
   return (
     <ViewShell>
+      <DataSourceBanner
+        mode={desktopClient.hasAuth() ? "authenticated_no_data" : "preview"}
+        surfaceName="handoff inbox"
+        webPath="/dashboard/handoffs"
+      />
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
           <h1 className="text-xl font-bold tracking-tight">Handoff Inbox</h1>

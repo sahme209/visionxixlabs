@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { invoke } from "@tauri-apps/api/core";
-import { ViewShell } from "../components/Primitives";
+import { DataSourceBanner, ViewShell } from "../components/Primitives";
+import { desktopClient } from "../lib/desktopClient";
 
 interface ScanResult {
   provider: string;
@@ -43,6 +44,11 @@ export function ScansView() {
 
   return (
     <ViewShell>
+      <DataSourceBanner
+        mode={desktopClient.hasAuth() ? "authenticated_no_data" : "preview"}
+        surfaceName="cloud scans"
+        webPath="/dashboard/scans"
+      />
       <div>
         <h1 className="text-xl font-bold tracking-tight">Cloud Scans</h1>
         <p className="text-sm text-zinc-500 mt-0.5">
