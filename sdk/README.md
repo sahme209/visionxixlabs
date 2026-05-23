@@ -264,12 +264,21 @@ Every SDK raises a typed error on non-2xx responses with:
 The platform delivers these closed-union `X-VXL-Event-Type` values:
 
 ```
-release_gate.passed         pipeline.run_started        api_key.created
-release_gate.blocked        pipeline.run_completed      api_key.revoked
-eval.regression_detected    pipeline.run_failed         billing.threshold_crossed
-eval.run_completed          pipeline.stage_failed       billing.quota_exhausted
-coding.pr_opened            coding.lint_failed          coding.test_failed
+release_gate.passed                pipeline.run_started        api_key.created
+release_gate.blocked               pipeline.run_completed      api_key.revoked
+eval.regression_detected           pipeline.run_failed         billing.threshold_crossed
+eval.run_completed                 pipeline.stage_failed       billing.quota_exhausted
+pipeline.stage_decision_recorded   coding.pr_opened
+coding.lint_failed                 coding.test_failed
 ```
+
+`pipeline.stage_decision_recorded` fires once per vote on a paused
+awaiting_approval stage — terminal or partial. Payload includes
+`{ runId, pipelineId, approvalId, stageId, vote, approverUserId,
+approvedCount, rejectedCount, requiredApprovers, isTerminal,
+snapshotStatus, stageTransitioned, decidedAt }`. Subscribe to this to
+react to quorum progression (e.g. tag a build "ready to merge" once
+both reviewers vote approve).
 
 ## Versioning
 

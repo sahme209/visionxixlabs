@@ -25,6 +25,7 @@ import { listen } from "@tauri-apps/api/event";
 import { desktopClient } from "./desktopClient";
 import { notifyResult } from "./notifications";
 import { recordVote } from "./voteHistory";
+import { enqueueVote } from "./voteQueue";
 
 type Decision = "approved" | "rejected";
 
@@ -72,10 +73,28 @@ export function useTrayDecisions(): void {
           });
 
           if (!res.ok) {
-            void notifyResult({
-              title: `${decision === "approved" ? "Approve" : "Reject"} failed`,
-              body: res.error,
-            });
+            // Transport-ish failures (no closed-union v1 error name) are
+            // queued for retry on the next ambient tick. A typed v1 error
+            // (missing_scope, run_not_found, etc.) is reported as-is and
+            // not retried — replaying won't help.
+            if (looksLikeTransportError(res.error)) {
+              await enqueueVote({
+                runId,
+                decision,
+                approverUserId: "desktop_tray",
+                reason: "Voted from menubar tray",
+                source: "tray",
+              });
+              void notifyResult({
+                title: `Vote queued · ${decision}`,
+                body: `Network looks offline — will retry automatically (${res.error}).`,
+              });
+            } else {
+              void notifyResult({
+                title: `${decision === "approved" ? "Approve" : "Reject"} failed`,
+                body: res.error,
+              });
+            }
             return;
           }
 
@@ -125,4 +144,25 @@ export function useTrayDecisions(): void {
 
 function shortId(s: string): string {
   return s.length <= 10 ? s : `${s.slice(0, 10)}…`;
+}
+
+/**
+ * Distinguish a transport blip (DNS, ETIMEDOUT, ECONNREFUSED, "Failed to
+ * fetch") from a structured v1 error (closed-union snake_case string).
+ * The desktopClient surfaces network errors as the raw thrown message,
+ * which is never a v1 snake_case code, so a `_`-less / multi-word string
+ * is our heuristic.
+ */
+function looksLikeTransportError(err: string): boolean {
+  const lower = err.toLowerCase();
+  return lower.includes("fetch")
+      || lower.includes("network")
+      || lower.includes("timeout")
+      || lower.includes("offline")
+      || lower.includes("dns")
+      || lower.includes("connection")
+      || lower.includes("econn")
+      || lower.includes("etimedout")
+      // HTTP 5xx surfacing as "HTTP 502"/"HTTP 503"/etc — retryable.
+      || /^http\s*5\d\d/.test(lower);
 }

@@ -16,6 +16,7 @@ import { useEffect, useRef } from "react";
 import { desktopClient } from "./desktopClient";
 import { ensureNotificationPermission, notifyNewApproval, setTrayApprovalBadge, setTrayPendingList } from "./notifications";
 import { clearPendingApprovals, setPendingApprovals } from "./approvalsStore";
+import { drainVoteQueue } from "./voteQueue";
 
 const AMBIENT_POLL_MS = 15_000;
 
@@ -69,6 +70,11 @@ export function useTrayApprovalsBadge(): void {
         schedule();
         return;
       }
+
+      // Drain any queued-for-retry votes from prior offline ticks. Runs
+      // BEFORE the list fetch so a freshly-cleared queue is reflected in
+      // the same poll cycle.
+      void drainVoteQueue();
 
       const res = await desktopClient.v1ListPipelineRuns({
         limit: 100,

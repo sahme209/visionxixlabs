@@ -84,6 +84,7 @@ const GROUPS: NavGroup[] = [
     kind: "automation",
     label: "Automation",
     items: [
+      { id: "activity",      label: "Activity",      Icon: IconWorkflows },
       { id: "workflows",     label: "Workflows",     Icon: IconWorkflows },
       { id: "approvals",     label: "Approvals",     Icon: IconApprovals },
       { id: "orchestration", label: "Orchestration", Icon: IconOrchestration },

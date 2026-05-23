@@ -18,6 +18,7 @@ import { AuditView } from "./views/AuditView";
 import { BillingView } from "./views/BillingView";
 import { TrustView } from "./views/TrustView";
 import { DocsView } from "./views/DocsView";
+import { ActivityView } from "./views/ActivityView";
 import { useTrayApprovalsBadge } from "./lib/useTrayApprovalsBadge";
 import { useNativeMenuActions } from "./lib/useNativeMenuActions";
 import { useTrayPendingSelectionBootstrap } from "./lib/useTrayPendingSelection";
@@ -38,6 +39,7 @@ export type View =
   | "security"
   | "scans"
   // Automation
+  | "activity"
   | "workflows"
   | "approvals"
   | "remediation"
@@ -93,6 +95,7 @@ export default function App() {
           {activeView === "multi-cloud"   && <MultiCloudView />}
           {activeView === "security"      && <SecurityView />}
           {activeView === "scans"         && <ScansView />}
+          {activeView === "activity"      && <ActivityView />}
           {activeView === "workflows"     && <WorkflowsView />}
           {activeView === "approvals"     && <ApprovalsView />}
           {activeView === "remediation"   && <RemediationView />}

@@ -25,6 +25,7 @@ export type WebhookEventKind =
   | "pipeline.run_completed"
   | "pipeline.run_failed"
   | "pipeline.stage_failed"
+  | "pipeline.stage_decision_recorded"
   // PR / Coding loop
   | "coding.pr_opened"
   | "coding.lint_failed"
@@ -45,6 +46,7 @@ const ALL_KINDS: ReadonlySet<string> = new Set<WebhookEventKind>([
   "pipeline.run_completed",
   "pipeline.run_failed",
   "pipeline.stage_failed",
+  "pipeline.stage_decision_recorded",
   "coding.pr_opened",
   "coding.lint_failed",
   "coding.test_failed",

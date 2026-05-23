@@ -59,6 +59,7 @@ import {
   type ApprovalTerminalStatus,
 } from "@/lib/workforce/pipelines/resumeFromApproval";
 import { advancePipelineRun } from "@/lib/workforce/pipelines/pipelineRunner";
+import { dispatchWebhookEvent } from "@/lib/webhooks/dispatchWebhookEvent";
 
 export const dynamic = "force-dynamic";
 
@@ -278,7 +279,33 @@ export async function POST(
     });
   } catch { /* best-effort */ }
 
-  // 7b. Terminal grant/deny audit only when quorum tipped over.
+  // 7b. Outbound webhook — fires on every vote (terminal or partial)
+  // so integrators see the quorum progression. Best-effort: a webhook
+  // outage never blocks the API response.
+  try {
+    await dispatchWebhookEvent({
+      organizationId: auth.organizationId,
+      eventKind: "pipeline.stage_decision_recorded",
+      data: {
+        runId: run.id,
+        pipelineId: run.pipelineId,
+        approvalId: stage.approvalRequestId,
+        stageId: stage.stageId,
+        vote: decision,
+        approverUserId,
+        approvedCount: quorum.approvedCount,
+        rejectedCount: quorum.rejectedCount,
+        requiredApprovers: snap.requiredApprovers,
+        isTerminal: quorum.isTerminal,
+        snapshotStatus: quorum.status,
+        stageTransitioned,
+        decidedAt: quorum.isTerminal ? decidedAt.toISOString() : null,
+      },
+      correlationId: run.correlationId,
+    });
+  } catch { /* best-effort */ }
+
+  // 7c. Terminal grant/deny audit only when quorum tipped over.
   if (quorum.isTerminal) {
     try {
       await recordAudit({

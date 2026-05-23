@@ -15,6 +15,7 @@ const VIEW_TITLES: Record<View, { title: string; subtitle: string }> = {
   "multi-cloud": { title: "Multi-cloud",   subtitle: "AWS · Azure · GCP" },
   security:      { title: "Security",      subtitle: "Posture + checks + diagnoses" },
   scans:         { title: "Scans",         subtitle: "Run cloud + security scans" },
+  activity:      { title: "Activity",      subtitle: "Runs + your votes + queue health" },
   workflows:     { title: "Workflows",     subtitle: "Recent + active pipeline runs" },
   approvals:     { title: "Approvals",     subtitle: "Runs awaiting human review" },
   remediation:   { title: "Remediation",   subtitle: "Governed fixes from findings" },
