@@ -127,6 +127,14 @@ export type AuditAction =
   | "workforce.api_key_revoked"
   | "workforce.api_key_authenticated"
   | "workforce.api_key_denied"
+  // Outbound webhook delivery — Phase 395.
+  | "workforce.webhook_endpoint_created"
+  | "workforce.webhook_endpoint_revoked"
+  | "workforce.webhook_event_dispatched"
+  | "workforce.webhook_delivered"
+  | "workforce.webhook_retry_scheduled"
+  | "workforce.webhook_deadlettered"
+  | "workforce.webhook_queue_processed"
   // Generic
   | "system.error";
 

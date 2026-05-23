@@ -1883,3 +1883,86 @@ model ApiKey {
   @@index([organizationId, createdAt])
   @@index([revokedAt])
 }
+
+/// Outbound webhook endpoint — Phase 395.
+/// A workspace registers one (or many) HTTPS URLs that should receive
+/// signed event deliveries. `secret` is the HMAC-SHA256 shared secret;
+/// the integrator side uses the existing webhookSignatureValidator to
+/// verify each delivery.
+model WebhookEndpoint {
+  id                   String    @id @default(cuid())
+  organizationId       String
+  /// Human-readable label.
+  name                 String
+  /// Destination URL — validated at register time (https-only by default,
+  /// no private IPs unless explicitly opted in).
+  url                  String
+  /// HMAC-SHA256 shared secret. Shown ONCE at registration time + on
+  /// secret rotation; otherwise never revealed back to the operator.
+  secret               String
+  /// JSON array of WebhookEventKind strings ("*" allowed as catch-all).
+  subscribedEvents     Json
+  /// Running counter of consecutive failed deliveries. Auto-resets to 0
+  /// on each successful delivery.
+  consecutiveFailures  Int       @default(0)
+  /// After this many consecutive failures, deliveries skip with
+  /// `auto_disabled_too_many_failures`. Operator must rotate URL or
+  /// reset to re-enable.
+  autoDisableThreshold Int       @default(50)
+  createdBy            String
+  revokedAt            DateTime?
+  revokedReason        String?
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
+
+  deliveries           WebhookDelivery[]
+
+  @@index([organizationId, createdAt])
+  @@index([revokedAt])
+}
+
+/// Outbound webhook delivery attempt — Phase 395.
+/// One row PER ATTEMPT (not per event), so the operator can see the
+/// full retry timeline. Closed-union `outcome` mirrors
+/// `DeliveryOutcomeKind` from the pure kernel.
+model WebhookDelivery {
+  id                  String    @id @default(cuid())
+  endpointId          String
+  organizationId      String
+  /// Same eventId across all retries for one logical event — used by
+  /// integrators to dedup.
+  eventId             String
+  /// WebhookEventKind literal.
+  eventKind           String
+  /// 1-based attempt number.
+  attemptNumber       Int
+  /// "queued" | "delivering" | "delivered" | "retry" | "deadletter"
+  status              String    @default("queued")
+  /// DeliveryOutcomeKind literal — null until classifyDeliveryOutcome runs.
+  outcomeKind         String?
+  /// HTTP status from the integrator (null on network failure).
+  httpStatus          Int?
+  /// Response body (truncated to 2KB for storage; full body kept in audit).
+  responseBodySnippet String?   @db.Text
+  /// Operator-visible failure reason for retry / deadletter rows.
+  errorMessage        String?
+  /// Time we sent the request.
+  attemptedAt         DateTime?
+  /// Time we got the response back (or null on timeout).
+  respondedAt         DateTime?
+  /// For retry rows — when the next attempt should fire.
+  nextAttemptAt       DateTime?
+  /// JSON: the full envelope that was sent (or planned to be sent).
+  payload             Json
+  /// JSON: the headers we sent (for audit / replay).
+  requestHeaders      Json?
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+
+  endpoint            WebhookEndpoint @relation(fields: [endpointId], references: [id], onDelete: Cascade)
+
+  @@index([endpointId, attemptNumber])
+  @@index([organizationId, createdAt])
+  @@index([status, nextAttemptAt])
+  @@index([eventId])
+}
