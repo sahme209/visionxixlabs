@@ -44,20 +44,23 @@ export async function GET() {
     rows = [];
   }
 
-  const keys = rows
-    .map((r) => {
-      if (r.publicJwk === null || typeof r.publicJwk !== "object") return null;
-      // Narrow to the JWK shape we know the generator produced.
-      const jwk = r.publicJwk as Record<string, unknown>;
-      if (jwk.kty !== "EC" || jwk.crv !== "P-256") return null;
-      return {
-        ...jwk,
-        kid: r.kid,
-        use: "sig",
-        alg: "ES256",
-      };
-    })
-    .filter((k): k is Record<string, unknown> => k !== null);
+  // Build the JWKS keys array via an explicit loop instead of a map+filter
+  // chain so the inferred shape ({ ...jwk, kid, use, alg } & Record<string,
+  // unknown>) stays compatible with a typed result array. The type-
+  // predicate-based filter would WIDEN the type back to Record<string,
+  // unknown>, which TS 5.9 rejects under strict mode.
+  const keys: Array<Record<string, unknown>> = [];
+  for (const r of rows) {
+    if (r.publicJwk === null || typeof r.publicJwk !== "object") continue;
+    const jwk = r.publicJwk as Record<string, unknown>;
+    if (jwk.kty !== "EC" || jwk.crv !== "P-256") continue;
+    keys.push({
+      ...jwk,
+      kid: r.kid,
+      use: "sig",
+      alg: "ES256",
+    });
+  }
 
   return NextResponse.json(
     { keys },
