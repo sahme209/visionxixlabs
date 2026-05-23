@@ -135,6 +135,10 @@ export type AuditAction =
   | "workforce.webhook_retry_scheduled"
   | "workforce.webhook_deadlettered"
   | "workforce.webhook_queue_processed"
+  // Per-org budget config — Phase 401.
+  | "workforce.budget_config_created"
+  | "workforce.budget_config_updated"
+  | "workforce.budget_config_deleted"
   // Generic
   | "system.error";
 

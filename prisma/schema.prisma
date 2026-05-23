@@ -1835,6 +1835,27 @@ model FeedbackRecord {
   @@index([organizationId, createdAt])
 }
 
+/// Per-organization pipeline budget config — Phase 401.
+/// Overrides the platform's DEFAULT_RUN_MAX_CENTS for this workspace.
+/// `defaultMaxCostCents = null` means unlimited at the workspace level
+/// (Enterprise). `pipelineOverrides` is a JSON array of
+/// `{ pipelineId, maxCostCents }` records — null cents within a
+/// pipeline override also means unlimited for that one pipeline.
+/// Resolution priority (high → low):
+///   run metadata > pipelineOverrides > defaultMaxCostCents > platform default
+model OrganizationBudgetConfig {
+  organizationId       String   @id
+  /// null = unlimited at the workspace level.
+  defaultMaxCostCents  Int?
+  /// JSON array of `{ pipelineId, maxCostCents }` entries.
+  pipelineOverrides    Json     @default("[]")
+  /// Free-form rationale for the audit trail.
+  rationale            String?
+  updatedBy            String
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+}
+
 /// Per-tenant override of the autonomy charter. When a row exists,
 /// the scheduler and on-demand cockpit use this charter instead of
 /// the global default. Mode is an AutonomyMode literal validated at

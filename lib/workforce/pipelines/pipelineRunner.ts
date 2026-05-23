@@ -30,7 +30,9 @@ import {
 import { mintPipelineStageApproval } from "./mintPipelineStageApproval";
 import { dispatchWebhookEvent } from "@/lib/webhooks/dispatchWebhookEvent";
 import { extractStageTelemetry } from "./extractStageTelemetry";
-import { assertRunCostBudget, DEFAULT_RUN_MAX_CENTS } from "./assertRunCostBudget";
+import { assertRunCostBudget } from "./assertRunCostBudget";
+import { resolveRunBudgetCap } from "./resolveRunBudgetCap";
+import { loadBudgetConfig } from "./budgetConfigStore";
 
 export interface StartPipelineInput {
   organizationId: string;
@@ -280,36 +282,49 @@ export async function advancePipelineRun(runId: string): Promise<void> {
       continue;
     }
 
-    // Phase 400: cumulative cost budget gate. Halt the run if prior
-    // stages have already burned the configured budget, before we let
-    // the next (potentially-expensive) stage fire. Reads the cap from
-    // run metadata (operator-supplied) or falls back to the default.
+    // Phase 400 + 401: cumulative cost budget gate. Halt the run if
+    // prior stages have already burned the configured budget, before we
+    // let the next (potentially-expensive) stage fire.
+    //
+    // Cap resolution (Phase 401): metadata > per-pipeline org override >
+    // org default > platform default. Workspace-level config loads
+    // fail-soft so a billing-DB blip falls through to the platform
+    // default rather than halting valid runs.
     const spentBefore = await prisma.pipelineStageRun.aggregate({
       where: { runId: run.id },
       _sum: { costCents: true },
     }).catch(() => ({ _sum: { costCents: 0 } }));
-    const maxCents = readBudgetCapFromMetadata(run.metadata);
+    const orgConfig = await loadBudgetConfig(run.organizationId);
+    const capResolution = resolveRunBudgetCap({
+      pipelineId: run.pipelineId,
+      runMetadata: (run.metadata && typeof run.metadata === "object" ? run.metadata as Record<string, unknown> : {}),
+      orgConfig,
+    });
     const budget = assertRunCostBudget({
       spentCents: spentBefore._sum.costCents ?? 0,
-      maxCents,
+      maxCents: capResolution.maxCents,
     });
     if (!budget.allowed) {
       // Mark THIS stage row as failed with the budget reason; emit a
       // pipeline.stage_failed audit. The outer planNextStage loop will
       // see the failure and transition the run to status=failed on the
-      // next iteration.
+      // next iteration. Source of the cap is recorded for debugging.
       await prisma.pipelineStageRun.update({
         where: { id: stage.id },
         data: {
           status: "failed",
           completedAt: new Date(),
           errorMessage: budget.message,
-          outputDetail: { budgetHalt: budget } as unknown as object,
+          outputDetail: {
+            budgetHalt: budget,
+            capSource: capResolution.source,
+          } as unknown as object,
         },
       });
       await emitStageAudit(run, stage, "pipeline.stage_failed", "failure", {
         error: budget.message,
         budgetHalt: true,
+        capSource: capResolution.source,
       });
       try {
         await dispatchWebhookEvent({
@@ -323,6 +338,7 @@ export async function advancePipelineRun(runId: string): Promise<void> {
             reason: "budget_exceeded",
             spentCents: budget.spentCents,
             maxCents: budget.maxCents,
+            capSource: capResolution.source,
           },
           correlationId: run.correlationId,
         });
@@ -392,21 +408,6 @@ export async function advancePipelineRun(runId: string): Promise<void> {
   }
 }
 
-/**
- * Read the per-run cost cap from operator-supplied metadata. Looks for
- * `maxCostCents: number` (or explicit `unlimited: true`). Falls back to
- * the platform-wide DEFAULT_RUN_MAX_CENTS so no run can silently spend
- * unbounded tokens.
- */
-function readBudgetCapFromMetadata(metadata: unknown): number | null {
-  if (metadata === null || typeof metadata !== "object") return DEFAULT_RUN_MAX_CENTS;
-  const m = metadata as Record<string, unknown>;
-  if (m.unlimitedBudget === true) return null;
-  if (typeof m.maxCostCents === "number" && Number.isFinite(m.maxCostCents) && m.maxCostCents > 0) {
-    return Math.floor(m.maxCostCents);
-  }
-  return DEFAULT_RUN_MAX_CENTS;
-}
 
 type RunRow = { id: string; organizationId: string; pipelineId: string; correlationId: string; triggeredBy: string };
 type StageRow = { id: string; stageId: string; stageKind: string; ordering: number };
