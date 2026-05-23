@@ -30,6 +30,53 @@ export function OrchestrationView() {
   const [v1Runs, setV1Runs] = useState<ReadonlyArray<V1PipelineRun> | null>(null);
   const [v1RunsError, setV1RunsError] = useState<string | null>(null);
 
+  // Trigger-run form state (Phase 396 POST surface + Phase 402 idempotency).
+  const [triggerInstruction, setTriggerInstruction] = useState("");
+  const [triggerRepoRef,     setTriggerRepoRef]     = useState("");
+  const [triggerBranchHint,  setTriggerBranchHint]  = useState("main");
+  const [triggering,         setTriggering]         = useState(false);
+  const [triggerResult,      setTriggerResult]      = useState<
+    | { kind: "ok"; runId: string; correlationId: string; pollUrl: string }
+    | { kind: "err"; message: string }
+    | null
+  >(null);
+
+  /** Generate a Phase-402-compliant idempotency key per click. */
+  function newIdempotencyKey(): string {
+    try {
+      if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
+        return crypto.randomUUID();
+      }
+    } catch { /* fall through */ }
+    // Fallback: timestamp + 32 chars of randomness (matches the
+    // [A-Za-z0-9_\-./:]{8,255} server regex).
+    const r = Math.random().toString(36).slice(2) + Math.random().toString(36).slice(2);
+    return `desktop_${Date.now().toString(36)}_${r.slice(0, 24)}`;
+  }
+
+  const handleTrigger = async () => {
+    if (!triggerInstruction.trim() || !triggerRepoRef.trim()) return;
+    setTriggering(true);
+    setTriggerResult(null);
+    const res = await desktopClient.v1TriggerCodingRun({
+      instruction: triggerInstruction.trim(),
+      repoRef:     triggerRepoRef.trim(),
+      branchHint:  triggerBranchHint.trim() || undefined,
+      metadata:    { _via: "desktop_orchestration_view" },
+      idempotencyKey: newIdempotencyKey(),
+    });
+    if (res.ok) {
+      const d = res.data as { runId: string; correlationId: string; pollUrl: string };
+      setTriggerResult({ kind: "ok", runId: d.runId, correlationId: d.correlationId, pollUrl: d.pollUrl });
+      setTriggerInstruction("");
+      // Refresh the list so the new run appears at the top.
+      refresh();
+    } else {
+      setTriggerResult({ kind: "err", message: res.error });
+    }
+    setTriggering(false);
+  };
+
   const refresh = () => {
     setLoading(true);
     desktopClient.orchestration().then((res) => {
@@ -86,6 +133,81 @@ export function OrchestrationView() {
         title="The operations control tower."
         subtitle={`Every remediation passes through simulated → policy → approval → preflight → execution-ready → verification → audit.`}
       />
+
+      {/* Trigger pipeline run — Phase 396 POST + Phase 402 idempotency.
+          Only renders when an API key is paired (otherwise the call would
+          just 401 and the form would be a tease). */}
+      {desktopClient.hasAuth() && (
+        <section className="space-y-3">
+          <h2 className="text-xs font-mono text-zinc-500 uppercase tracking-[0.22em]">// trigger a coding run</h2>
+          <Card className="p-5 space-y-3">
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="block text-[10px] font-mono text-zinc-500 uppercase tracking-[0.18em] mb-1">repository</label>
+                <input
+                  type="text"
+                  value={triggerRepoRef}
+                  onChange={(e) => setTriggerRepoRef(e.target.value)}
+                  placeholder="owner/repo"
+                  className="w-full bg-zinc-800/60 border border-zinc-700/50 rounded-lg px-3 py-2 text-sm font-mono text-zinc-200 placeholder-zinc-600 focus:outline-none focus:border-violet-500/50"
+                />
+              </div>
+              <div>
+                <label className="block text-[10px] font-mono text-zinc-500 uppercase tracking-[0.18em] mb-1">branch</label>
+                <input
+                  type="text"
+                  value={triggerBranchHint}
+                  onChange={(e) => setTriggerBranchHint(e.target.value)}
+                  placeholder="main"
+                  className="w-full bg-zinc-800/60 border border-zinc-700/50 rounded-lg px-3 py-2 text-sm font-mono text-zinc-200 placeholder-zinc-600 focus:outline-none focus:border-violet-500/50"
+                />
+              </div>
+            </div>
+            <div>
+              <label className="block text-[10px] font-mono text-zinc-500 uppercase tracking-[0.18em] mb-1">instruction</label>
+              <textarea
+                rows={3}
+                value={triggerInstruction}
+                onChange={(e) => setTriggerInstruction(e.target.value)}
+                placeholder="e.g. Add a /healthz route that returns { status: 'ok' } and write a vitest test for it."
+                className="w-full bg-zinc-800/60 border border-zinc-700/50 rounded-lg px-3 py-2 text-sm text-zinc-200 placeholder-zinc-600 focus:outline-none focus:border-violet-500/50 resize-none"
+              />
+            </div>
+
+            {triggerResult?.kind === "ok" && (
+              <div className="rounded-lg border border-emerald-500/20 bg-emerald-500/[0.08] p-3 text-[12px] space-y-1">
+                <p className="text-emerald-300 font-mono">
+                  ✓ Run started · <span className="text-zinc-200">{triggerResult.runId}</span>
+                </p>
+                <p className="text-[11px] text-zinc-500 font-mono">
+                  correlation id · {triggerResult.correlationId}
+                </p>
+                <p className="text-[11px] text-zinc-500 font-mono">
+                  poll · {triggerResult.pollUrl}
+                </p>
+              </div>
+            )}
+            {triggerResult?.kind === "err" && (
+              <div className="rounded-lg border border-red-500/25 bg-red-500/[0.08] p-3 text-[12px] text-red-300">
+                ✗ Trigger failed: <span className="font-mono">{triggerResult.message}</span>
+              </div>
+            )}
+
+            <div className="flex items-center justify-between gap-2">
+              <p className="text-[10px] font-mono text-zinc-500">
+                Scope required: <span className="text-zinc-400">pipeline:trigger</span> · sends a fresh Idempotency-Key per click so retries are safe.
+              </p>
+              <button
+                onClick={handleTrigger}
+                disabled={triggering || !triggerInstruction.trim() || !triggerRepoRef.trim()}
+                className="px-4 py-2 rounded-lg bg-violet-600 hover:bg-violet-500 disabled:opacity-50 disabled:cursor-not-allowed text-white text-[12px] font-medium transition-colors"
+              >
+                {triggering ? "Triggering…" : "Trigger run →"}
+              </button>
+            </div>
+          </Card>
+        </section>
+      )}
 
       {/* Recent pipeline runs — Phase 396 v1 surface. Only renders when
           an API key is paired AND the list endpoint returns rows. */}

@@ -275,6 +275,40 @@ export class DesktopClient {
   }
 
   /**
+   * POST /api/v1/pipelines/runs — trigger a new coding pipeline run.
+   * Required scope: pipeline:trigger.
+   *
+   * When `idempotencyKey` is supplied, the platform deduplicates retries
+   * Stripe-style (Phase 402): same key + same body returns the cached
+   * response, same key + different body returns 422, in-flight returns
+   * 409. Pass a UUID generated client-side per click.
+   */
+  async v1TriggerCodingRun(args: {
+    instruction: string;
+    repoRef: string;
+    branchHint?: string;
+    metadata?: Record<string, string>;
+    idempotencyKey?: string;
+  }): Promise<ApiResult<{
+    runId: string;
+    correlationId: string;
+    status: string;
+    pollUrl: string;
+  }>> {
+    return this.postV1(
+      "/api/v1/pipelines/runs",
+      {
+        pipelineId: "ai_coding",
+        instruction: args.instruction,
+        repoRef: args.repoRef,
+        ...(args.branchHint ? { branchHint: args.branchHint } : {}),
+        ...(args.metadata ? { metadata: args.metadata } : {}),
+      },
+      args.idempotencyKey ? { "Idempotency-Key": args.idempotencyKey } : undefined,
+    );
+  }
+
+  /**
    * GET /api/v1/pipelines/runs — list recent pipeline runs for the
    * authenticated workspace. Required scope: pipeline:read.
    * Default page size 25, max 100. Filter by status with `status`.
@@ -413,9 +447,36 @@ export class DesktopClient {
    * routes return the payload at the top level (see app/api/v1/*).
    */
   private async getV1<T>(path: string): Promise<ApiResult<T>> {
+    return this.executeV1<T>("GET", path);
+  }
+
+  /**
+   * POST variant of getV1. Accepts a JSON body + optional extra headers
+   * (e.g. `Idempotency-Key` for Phase 402's deduplication).
+   */
+  private async postV1<T>(
+    path: string,
+    body: Record<string, unknown>,
+    extraHeaders?: Record<string, string>,
+  ): Promise<ApiResult<T>> {
+    return this.executeV1<T>("POST", path, JSON.stringify(body), extraHeaders);
+  }
+
+  private async executeV1<T>(
+    method: "GET" | "POST",
+    path: string,
+    body?: string,
+    extraHeaders?: Record<string, string>,
+  ): Promise<ApiResult<T>> {
     try {
       const res = await fetch(`${this.config.apiBase}${path}`, {
-        headers: this.headers(),
+        method,
+        headers: {
+          ...this.headers(),
+          ...(body ? { "Content-Type": "application/json" } : {}),
+          ...(extraHeaders ?? {}),
+        },
+        body,
       });
       const text = await res.text();
       let parsed: Record<string, unknown> = {};
