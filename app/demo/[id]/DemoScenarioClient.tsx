@@ -28,6 +28,7 @@ import {
   invariantsForStep,
   knowledgeForStep,
 } from "@/lib/demo/scenarioKnowledge";
+import { endpointForStep } from "@/lib/demo/technicalReference";
 import { StepVisual } from "./StepVisual";
 
 const APPROVAL_TONE: Record<DemoStep["approval"], { label: string; cls: string }> = {
@@ -44,6 +45,12 @@ export function DemoScenarioClient({ scenario }: { scenario: DemoScenario }) {
   const primaryDoc = SCENARIO_PRIMARY_DOCS[scenario.id];
   const knowledge = useMemo(() => knowledgeForStep(scenario, step), [scenario, step]);
   const invariants = useMemo(() => invariantsForStep(step), [step]);
+  const endpoint = useMemo(() => endpointForStep({
+    title: step.title,
+    description: step.description,
+    route: step.route,
+    relatedConnector: step.relatedConnector,
+  }), [step]);
 
   const next = useCallback(
     () => setActiveOrd((o) => Math.min(o + 1, scenario.steps.length - 1)),
@@ -189,6 +196,46 @@ export function DemoScenarioClient({ scenario }: { scenario: DemoScenario }) {
           {/* Visual stage */}
           <StepVisual step={step} ord={activeOrd + 1} />
 
+          {/* API endpoint exercised — pulled from the technical reference */}
+          {endpoint && (
+            <div className="rounded-xl border border-cyan-500/15 bg-cyan-500/[0.03] p-4 space-y-2">
+              <div className="flex items-baseline gap-2 flex-wrap">
+                <p className="text-[10px] font-mono text-cyan-300/90 uppercase tracking-[0.22em]">api exercised</p>
+                <span className={`text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border ${
+                  endpoint.method === "GET"
+                    ? "bg-cyan-500/15 text-cyan-200 border-cyan-500/25"
+                    : "bg-violet-500/15 text-violet-200 border-violet-500/25"
+                }`}>{endpoint.method}</span>
+                <code className="text-[12px] font-mono text-zinc-100">{endpoint.path}</code>
+                <span className="text-[10px] font-mono text-zinc-500">scope · {endpoint.scope}</span>
+              </div>
+              <p className="text-[12px] text-zinc-400 leading-relaxed">{endpoint.oneLine}</p>
+              {endpoint.reqBody && (
+                <div>
+                  <p className="text-[10px] font-mono text-zinc-500 uppercase tracking-[0.18em] mb-1">request body</p>
+                  <pre className="rounded-lg bg-black/50 border border-white/[0.06] p-2.5 text-[10.5px] font-mono leading-relaxed overflow-x-auto text-zinc-200">{endpoint.reqBody}</pre>
+                </div>
+              )}
+              <div>
+                <p className="text-[10px] font-mono text-zinc-500 uppercase tracking-[0.18em] mb-1">response</p>
+                <pre className="rounded-lg bg-black/50 border border-emerald-500/15 p-2.5 text-[10.5px] font-mono leading-relaxed overflow-x-auto text-emerald-100">{endpoint.resBody}</pre>
+              </div>
+              {endpoint.errorCodes.length > 0 && (
+                <div>
+                  <p className="text-[10px] font-mono text-zinc-500 uppercase tracking-[0.18em] mb-1.5">closed-union errors</p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {endpoint.errorCodes.map((c) => (
+                      <code key={c} className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-red-500/10 text-red-200 border border-red-500/20">{c}</code>
+                    ))}
+                  </div>
+                </div>
+              )}
+              <p className="text-[10px] font-mono text-zinc-600 pt-1">
+                Full schema · <Link href="/demo/reference#endpoints" className="text-cyan-300/80 hover:text-cyan-200 underline-offset-2 hover:underline">platform reference →</Link>
+              </p>
+            </div>
+          )}
+
           {/* Knowledge card — "behind the scenes" educational copy */}
           <div className="rounded-xl border border-violet-500/15 bg-violet-500/[0.03] p-4 space-y-1.5">
             <p className="text-[10px] font-mono text-violet-300/90 uppercase tracking-[0.22em]">{knowledge.title}</p>
@@ -313,6 +360,9 @@ export function DemoScenarioClient({ scenario }: { scenario: DemoScenario }) {
         <p className="text-[10px] font-mono text-zinc-500 uppercase tracking-[0.22em]">engineering principle</p>
         <p className="text-[14px] text-zinc-200 leading-relaxed max-w-3xl">{closer}</p>
         <div className="flex flex-wrap gap-3 pt-2">
+          <Link href="/demo/reference" className="text-[12px] text-violet-300/90 hover:text-violet-200 underline-offset-2 hover:underline">
+            Platform reference →
+          </Link>
           <Link href="/docs/architecture" className="text-[12px] text-violet-300/90 hover:text-violet-200 underline-offset-2 hover:underline">
             Architecture overview →
           </Link>

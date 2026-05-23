@@ -33,12 +33,18 @@ export default function DemoLanding() {
           or burns AI credits. Pick a scenario to walk through one of the {scenarios.length} core
           product flows.
         </p>
-        <div className="flex items-center gap-2 pt-4">
+        <div className="flex items-center gap-2 pt-4 flex-wrap">
           <Link
             href="/dashboard/start-here"
             className="inline-flex items-center gap-1.5 px-4 py-2 rounded-md bg-violet-600 hover:bg-violet-500 text-white text-[13px] font-medium transition-colors"
           >
             Ready to set up your real workspace? →
+          </Link>
+          <Link
+            href="/demo/reference"
+            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-md bg-white/[0.04] text-zinc-200 text-[13px] font-medium border border-white/[0.08] hover:bg-white/[0.08] transition-colors"
+          >
+            Platform reference →
           </Link>
           <Link
             href="/docs"
