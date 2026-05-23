@@ -19,7 +19,9 @@ import { BillingView } from "./views/BillingView";
 import { TrustView } from "./views/TrustView";
 import { DocsView } from "./views/DocsView";
 import { ActivityView } from "./views/ActivityView";
+import { ConnectorHealthView } from "./views/ConnectorHealthView";
 import { useTrayApprovalsBadge } from "./lib/useTrayApprovalsBadge";
+import { useConnectorHealthAmbientPoll } from "./lib/connectorHealthStore";
 import { useNativeMenuActions } from "./lib/useNativeMenuActions";
 import { useTrayPendingSelectionBootstrap } from "./lib/useTrayPendingSelection";
 import { useTrayDecisions } from "./lib/useTrayDecisions";
@@ -49,6 +51,7 @@ export type View =
   | "audit"
   // Integrations
   | "connectors"
+  | "connector-health"
   // Business / Admin
   | "billing"
   | "trust"
@@ -81,6 +84,12 @@ export default function App() {
   // operator never has to open the main window.
   useTrayDecisions();
 
+  // Phase 408 — ambient connector-health poll. One producer at App
+  // level; ConnectorHealthView + TopBar pill subscribe via the shared
+  // store. 30s cadence (slower than approvals because connector status
+  // changes on the minute scale, not the second).
+  useConnectorHealthAmbientPoll();
+
   if (!booted) return <BootScreen />;
 
   return (
@@ -103,7 +112,8 @@ export default function App() {
           {activeView === "orchestration" && <OrchestrationView />}
           {activeView === "handoffs"      && <HandoffsView />}
           {activeView === "audit"         && <AuditView />}
-          {activeView === "connectors"    && <ConnectorsView />}
+          {activeView === "connectors"        && <ConnectorsView />}
+          {activeView === "connector-health"  && <ConnectorHealthView />}
           {activeView === "billing"       && <BillingView />}
           {activeView === "trust"         && <TrustView />}
           {activeView === "settings"      && <SettingsView />}

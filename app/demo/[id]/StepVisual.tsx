@@ -15,6 +15,7 @@ import type { DemoStep } from "@/lib/demo/demoScenarios";
 
 type StepKind =
   | "connector"
+  | "connector_health"
   | "scan"
   | "risk"
   | "recommendation"
@@ -45,6 +46,7 @@ function detectStepKind(step: DemoStep): StepKind {
   if (t.includes("recommend") || t.includes("terraform") || t.includes("diff") || t.includes("rollback")) return "recommendation";
   if (t.includes("risk") || t.includes("finding") || t.includes("detected") || t.includes("severity")) return "risk";
   if (t.includes("scan")) return "scan";
+  if (t.includes("connector health") || t.includes("connector status") || t.includes("stale connector")) return "connector_health";
   if (step.relatedConnector || t.includes("connect")) return "connector";
   if (step.relatedAgent || t.includes("engineer") || t.includes("agent")) return "engineer";
   return "generic";
@@ -82,7 +84,8 @@ export function StepVisual({ step, ord }: { step: DemoStep; ord: number }) {
 
 function render(kind: StepKind, step: DemoStep, ord: number) {
   switch (kind) {
-    case "connector":      return <ConnectorMock step={step} />;
+    case "connector":         return <ConnectorMock step={step} />;
+    case "connector_health":  return <ConnectorHealthMock />;
     case "scan":           return <ScanMock step={step} />;
     case "risk":           return <RiskMock step={step} ord={ord} />;
     case "recommendation": return <RecommendationMock step={step} />;
@@ -854,6 +857,51 @@ NO live API calls made. To execute, click Promote → Live.`}
         <Stat label="Audit rows"  value="0 / 12 planned" tone="amber" />
       </div>
       <CalloutLine label="default-safe" body="Every automation defaults to dry-run. The plan output enumerates every side-effect. Live mode requires explicit promotion and emits a stage of awaiting_approval if any action is change-class." />
+    </div>
+  );
+}
+
+function ConnectorHealthMock() {
+  // Stylized mirror of GET /api/v1/connectors/health — same shape the
+  // real endpoint returns. Closed-union statuses are tinted statically
+  // so Tailwind's purge picks them up.
+  const rows = [
+    { name: "AWS",        cat: "cloud",      status: "healthy",      stage: "ok",         reason: "Connector is syncing successfully.",                                              ratio: "94.7%", age: "78s ago", dot: "bg-emerald-400", pill: "bg-emerald-500/15 text-emerald-200" },
+    { name: "GitHub",     cat: "vcs",        status: "healthy",      stage: "ok",         reason: "Connector is syncing successfully.",                                              ratio: "100%",  age: "5m ago",  dot: "bg-emerald-400", pill: "bg-emerald-500/15 text-emerald-200" },
+    { name: "Postgres",   cat: "db",         status: "stale",        stage: "staleness",  reason: "Last successful sync was 10m ago (window for db: 5m).",                            ratio: "85.7%", age: "10m ago", dot: "bg-amber-400",   pill: "bg-amber-500/15 text-amber-200"     },
+    { name: "CloudWatch", cat: "monitoring", status: "healthy",      stage: "ok",         reason: "Connector is syncing successfully.",                                              ratio: "88.2%", age: "1m ago",  dot: "bg-emerald-400", pill: "bg-emerald-500/15 text-emerald-200" },
+  ];
+  return (
+    <div className="space-y-4">
+      <SectionLabel>connector health · GET /api/v1/connectors/health</SectionLabel>
+      <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
+        <Stat label="Healthy"      value="3" tone="emerald" />
+        <Stat label="Degraded"     value="0" />
+        <Stat label="Stale"        value="1" tone="amber" />
+        <Stat label="Auth failed"  value="0" />
+        <Stat label="Rate limited" value="0" />
+      </div>
+      <ul className="rounded-lg border border-white/[0.06] bg-black/30 divide-y divide-white/[0.04]">
+        {rows.map((r) => (
+          <li key={r.name} className="px-3 py-2 flex items-start gap-3">
+            <span className={`w-1.5 h-1.5 rounded-full shrink-0 mt-1.5 ${r.dot}`} />
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2 mb-0.5 flex-wrap">
+                <span className="text-[12px] font-semibold text-zinc-100">{r.name}</span>
+                <span className="text-[9px] font-mono text-zinc-500 px-1.5 py-0.5 rounded border border-white/[0.06] bg-white/[0.02]">{r.cat}</span>
+                <span className={`text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded ${r.pill}`}>{r.status}</span>
+                <span className="text-[10px] font-mono text-zinc-500">stage · {r.stage}</span>
+              </div>
+              <p className="text-[11px] text-zinc-300 leading-relaxed">{r.reason}</p>
+              <div className="flex items-center gap-3 mt-0.5 text-[10px] font-mono text-zinc-500">
+                <span>age · {r.age}</span>
+                <span>ratio · {r.ratio}</span>
+              </div>
+            </div>
+          </li>
+        ))}
+      </ul>
+      <CalloutLine label="kernel" body="Status is a pure function of telemetry. Priority: auth_failed > rate_limited > stale > degraded > healthy. Same inputs → same output, unit-tested against a fixture set in lib/connectors/__tests__/connectorHealth.test.ts." />
     </div>
   );
 }

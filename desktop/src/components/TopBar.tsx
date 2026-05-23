@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import type { View } from "../App";
 import { desktopClient } from "../lib/desktopClient";
 import { usePendingApprovals } from "../lib/approvalsStore";
+import { useConnectorHealthSnapshot } from "../lib/connectorHealthStore";
 
 const VIEW_TITLES: Record<View, { title: string; subtitle: string }> = {
   "start-here":  { title: "Start Here",    subtitle: "Setup guide + product tour" },
@@ -23,7 +24,8 @@ const VIEW_TITLES: Record<View, { title: string; subtitle: string }> = {
   orchestration: { title: "Orchestration", subtitle: "Approval + execution control" },
   handoffs:      { title: "Handoffs",      subtitle: "Signed plan inbox" },
   audit:         { title: "Audit log",     subtitle: "Every action attributed + signed" },
-  connectors:    { title: "Connectors",    subtitle: "Provider authentication" },
+  connectors:        { title: "Connectors",        subtitle: "Provider authentication" },
+  "connector-health":{ title: "Connector health",  subtitle: "Per-connector status + telemetry" },
   billing:       { title: "Billing & usage", subtitle: "Plan + quota + AI credits" },
   trust:         { title: "Trust center",  subtitle: "Policies + approval boundaries" },
   settings:      { title: "Settings",      subtitle: "Workstation preferences" },
@@ -46,6 +48,7 @@ export function TopBar({ activeView, onNavigate }: { activeView: View; onNavigat
   const meta = VIEW_TITLES[activeView];
   const [badge, setBadge] = useState<AuthBadgeState>({ kind: "loading" });
   const pending = usePendingApprovals();
+  const connectorHealth = useConnectorHealthSnapshot();
 
   useEffect(() => {
     let cancelled = false;
@@ -88,6 +91,24 @@ export function TopBar({ activeView, onNavigate }: { activeView: View; onNavigat
             <span>{pending.count} awaiting</span>
           </button>
         )}
+        {connectorHealth.hasPolled && connectorHealth.alertCount > 0 && activeView !== "connector-health" && (() => {
+          const hasCritical = connectorHealth.summary.auth_failed > 0;
+          const cls = hasCritical
+            ? "border-red-500/30 bg-red-500/[0.08] text-red-200 hover:bg-red-500/[0.14] hover:border-red-500/50"
+            : "border-amber-500/30 bg-amber-500/[0.08] text-amber-200 hover:bg-amber-500/[0.14] hover:border-amber-500/50";
+          const dotCls = hasCritical ? "bg-red-400" : "bg-amber-400";
+          return (
+            <button
+              type="button"
+              onClick={() => onNavigate?.("connector-health")}
+              title={`${connectorHealth.alertCount} connector${connectorHealth.alertCount === 1 ? "" : "s"} needing attention`}
+              className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full border text-[11px] font-mono transition-colors ${cls}`}
+            >
+              <span className={`w-1.5 h-1.5 rounded-full animate-pulse ${dotCls}`} />
+              <span>{connectorHealth.alertCount} connector{connectorHealth.alertCount === 1 ? "" : "s"}</span>
+            </button>
+          );
+        })()}
         <AuthBadge badge={badge} />
       </div>
     </header>

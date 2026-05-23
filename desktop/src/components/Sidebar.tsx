@@ -99,7 +99,8 @@ const GROUPS: NavGroup[] = [
     kind: "integrations",
     label: "Integrations",
     items: [
-      { id: "connectors", label: "Connectors", Icon: IconConnectors },
+      { id: "connectors",        label: "Connectors",        Icon: IconConnectors },
+      { id: "connector-health",  label: "Connector health",  Icon: IconConnectors },
     ],
   },
   {
