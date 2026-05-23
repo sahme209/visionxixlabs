@@ -10,6 +10,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useState } from "react";
 import {
   Squares2X2Icon,
   CloudIcon,
@@ -39,154 +40,195 @@ interface NavLink {
   href: string;
   label: string;
   icon: typeof CloudIcon;
+  /** Phase 405: when true, link is only visible in the expanded "more" section. */
+  power?: boolean;
 }
 
 interface NavGroup {
+  /** Plain-English label shown in the sidebar. */
   label: string;
+  /** Closed-union grouping key — matches the 7 groups specified in Phase 405. */
+  kind:
+    | "start_here"
+    | "operations"
+    | "team_workflows"
+    | "ai_workforce"
+    | "automation"
+    | "integrations"
+    | "admin";
   items: NavLink[];
+  /**
+   * When true, the group is collapsed by default and the user expands it.
+   * Reduces the visible-at-rest nav from 60+ entries to ~25.
+   */
+  defaultCollapsed?: boolean;
 }
 
+/**
+ * Phase 405 — 7-group portal reorganization.
+ *
+ * Reduces the visible-at-rest sidebar from 60+ entries to ~25 by:
+ *   - Collapsing power-user routes under a `power: true` flag (hidden
+ *     until the user clicks "show more" inside each group).
+ *   - Mapping every existing /dashboard/* route into exactly one of
+ *     7 plain-English groups instead of 9 implementation-oriented ones.
+ *   - Putting "Start Here" at the top so a brand-new user sees the
+ *     setup guide + product tour BEFORE any feature surface.
+ *
+ * Every route in the previous structure remains reachable — power
+ * routes are demoted, not deleted.
+ */
 const GROUPS: NavGroup[] = [
   {
-    label: "Engineer",
+    label: "Start Here",
+    kind: "start_here",
     items: [
-      { href: "/dashboard/engineer-workspace", label: "Engineer Workspace", icon: CpuChipIcon           },
-      { href: "/dashboard/services",           label: "Services",            icon: ServerStackIcon       },
-      { href: "/dashboard/observability",      label: "Observability",       icon: ChartBarIcon          },
-      { href: "/dashboard/incidents",          label: "Incidents",           icon: BellAlertIcon         },
-      { href: "/dashboard/alerts",             label: "Alerts",              icon: BellAlertIcon         },
-      { href: "/dashboard/developer-tools",    label: "Developer Tools",     icon: CodeBracketIcon       },
-      { href: "/dashboard/agent-tools",        label: "Agent Tool Access",   icon: ShieldCheckIcon       },
-      { href: "/dashboard/workforce",          label: "AI Workforce",        icon: CpuChipIcon           },
+      { href: "/dashboard/command-center", label: "Command Center",  icon: Squares2X2Icon   },
+      { href: "/dashboard/start-here",     label: "Setup Guide",     icon: RocketLaunchIcon },
+      { href: "/dashboard/onboarding",     label: "First-run checklist", icon: SparklesIcon },
+      { href: "/demo",                     label: "Product Tour / Sandbox", icon: BeakerIcon },
+      { href: "/docs",                     label: "What is VisionXIXLabs?", icon: QuestionMarkCircleIcon },
+      // Power-user routes — visible behind "more".
+      { href: "/dashboard/setup",            label: "Setup wizard (advanced)", icon: RocketLaunchIcon, power: true },
+      { href: "/dashboard/help",             label: "Help & Docs",     icon: QuestionMarkCircleIcon, power: true },
+      { href: "/dashboard/readiness",        label: "Readiness checks",icon: RocketLaunchIcon, power: true },
     ],
   },
   {
-    label: "Platform",
+    label: "Operations",
+    kind: "operations",
     items: [
-      { href: "/dashboard/modules",         label: "Modules",          icon: Squares2X2Icon  },
-      { href: "/dashboard/sub-tools",       label: "Sub-tools",        icon: Squares2X2Icon  },
-      { href: "/dashboard/connector-store", label: "Connector Store",  icon: PuzzlePieceIcon },
-      { href: "/dashboard/connectors",      label: "Connectors",       icon: PuzzlePieceIcon },
+      // Cloud + multi-cloud first — most-clicked.
+      { href: "/dashboard/multi-cloud",      label: "Cloud overview",    icon: ServerStackIcon },
+      { href: "/dashboard/observability",    label: "Monitoring",        icon: ChartBarIcon    },
+      { href: "/dashboard/security",         label: "Security",          icon: ShieldCheckIcon },
+      { href: "/dashboard/incidents",        label: "Incidents",         icon: BellAlertIcon   },
+      { href: "/dashboard/alerts",           label: "Alerts",            icon: BellAlertIcon   },
+      { href: "/dashboard/services",         label: "Services",          icon: ServerStackIcon },
+      // Per-provider drill-downs — power-user.
+      { href: "/dashboard/aws",              label: "AWS",               icon: CloudIcon, power: true        },
+      { href: "/dashboard/aws-services",     label: "AWS services",      icon: ServerStackIcon, power: true  },
+      { href: "/dashboard/azure",            label: "Azure",             icon: CloudIcon, power: true        },
+      { href: "/dashboard/gcp",              label: "GCP",               icon: CloudIcon, power: true        },
+      { href: "/dashboard/github",           label: "GitHub",            icon: CodeBracketIcon, power: true  },
+      { href: "/dashboard/cloud-inventory",  label: "Cloud inventory",   icon: ServerStackIcon, power: true  },
+      { href: "/dashboard/network-topology", label: "Network topology",  icon: ArrowsRightLeftIcon, power: true },
+      { href: "/dashboard/cloudtrail",       label: "CloudTrail",        icon: EyeIcon, power: true          },
+      { href: "/dashboard/containers",       label: "Containers",        icon: ServerStackIcon, power: true  },
+      { href: "/dashboard/k8s-eol",          label: "K8s EOL",           icon: RocketLaunchIcon, power: true },
+      { href: "/dashboard/cloud-security",   label: "Cloud security",    icon: ShieldCheckIcon, power: true  },
+      { href: "/dashboard/cicd",             label: "CI/CD operations",  icon: CodeBracketIcon, power: true  },
+      { href: "/dashboard/releaseops",       label: "ReleaseOps",        icon: RocketLaunchIcon, power: true },
+      { href: "/dashboard/risks",            label: "Risk queue",        icon: ShieldCheckIcon, power: true  },
+      { href: "/dashboard/topology",         label: "Topology",          icon: ServerStackIcon, power: true  },
     ],
   },
   {
-    label: "AI Ops",
+    label: "Team Workflows",
+    kind: "team_workflows",
+    defaultCollapsed: true,
     items: [
-      { href: "/dashboard/agents",         label: "Agent workforce", icon: CpuChipIcon           },
-      { href: "/dashboard/automation",     label: "Automation",      icon: BoltIcon              },
-      { href: "/dashboard/desktop-agents", label: "Desktop agents",  icon: ComputerDesktopIcon   },
-      { href: "/dashboard/models",         label: "Model registry",  icon: SparklesIcon          },
-      { href: "/dashboard/gaps",           label: "Gap detection",   icon: BellAlertIcon         },
-      { href: "/dashboard/learning",       label: "Learning",        icon: BeakerIcon            },
+      // The team-workflow modules (Knowledge Base, Customer Support,
+      // IT Support, Employee Ops) live alongside existing surfaces.
+      { href: "/dashboard/notifications",        label: "Notifications",       icon: BellAlertIcon  },
+      { href: "/dashboard/notifications-outbound", label: "Outbound · Slack / Teams", icon: BellAlertIcon },
+      { href: "/dashboard/outbound-digest",      label: "Outbound digest",     icon: BellAlertIcon, power: true },
+      { href: "/dashboard/executive-summary",    label: "Executive summary",   icon: DocumentTextIcon },
+      { href: "/dashboard/priorities",           label: "Priorities",          icon: ChartBarIcon, power: true },
+      { href: "/dashboard/next-actions",         label: "Next actions",        icon: BoltIcon, power: true },
+      { href: "/dashboard/root-causes",          label: "Root causes",         icon: PuzzlePieceIcon, power: true },
     ],
   },
   {
-    label: "Operator",
+    label: "AI Workforce",
+    kind: "ai_workforce",
     items: [
-      { href: "/dashboard/command-center",     label: "Command Center",   icon: Squares2X2Icon       },
-      { href: "/dashboard/agi",                label: "AGI Cockpit",      icon: CpuChipIcon          },
-      { href: "/dashboard/autonomy",           label: "Autonomy Cockpit", icon: CpuChipIcon          },
-      { href: "/dashboard/charter",            label: "Autonomy Charter", icon: CpuChipIcon          },
-      { href: "/dashboard/rationale",          label: "Decision Rationale",icon: DocumentMagnifyingGlassIcon },
-      { href: "/dashboard/decision-heatmap",   label: "Decision Heatmap", icon: ChartBarIcon          },
-      { href: "/dashboard/help",               label: "Help & Docs",      icon: QuestionMarkCircleIcon },
-      { href: "/dashboard/help-analytics",     label: "Help Analytics",   icon: ChartBarIcon          },
-      { href: "/dashboard/help-suggestions",   label: "Doc Suggestions",  icon: ChartBarIcon          },
-      { href: "/dashboard/agent-bus",          label: "Agent Bus",        icon: CpuChipIcon           },
-      { href: "/dashboard/agent-proposals",    label: "Method Proposals", icon: CpuChipIcon           },
-      { href: "/dashboard/agent-activity",     label: "Agent Activity",   icon: ChartBarIcon          },
-      { href: "/dashboard/ai-settings",        label: "AI Settings",      icon: SparklesIcon          },
-      { href: "/dashboard/ai-usage",           label: "AI Usage",         icon: ChartBarIcon          },
-      { href: "/dashboard/tenant-insights",    label: "Tenant Insights",  icon: SparklesIcon          },
-      { href: "/dashboard/workflow-translator",label: "Workflow Translator", icon: SparklesIcon       },
-      { href: "/dashboard/executive-summary",  label: "Executive summary",icon: DocumentTextIcon     },
-      { href: "/dashboard/priorities",         label: "Priorities",       icon: ChartBarIcon         },
-      { href: "/dashboard/next-actions",       label: "Next actions",     icon: BoltIcon             },
-      { href: "/dashboard/root-causes",        label: "Root causes",      icon: PuzzlePieceIcon      },
-      { href: "/dashboard/graph",              label: "Operating Graph",  icon: ArrowsRightLeftIcon  },
-      { href: "/dashboard/sources",            label: "Sources",          icon: CloudIcon            },
-      { href: "/dashboard/surfaces",           label: "Product surfaces", icon: PuzzlePieceIcon      },
-      { href: "/dashboard/readiness",          label: "Readiness",        icon: RocketLaunchIcon     },
+      { href: "/dashboard/workforce",            label: "AI engineers",        icon: CpuChipIcon },
+      { href: "/dashboard/agents",               label: "Agent registry",      icon: CpuChipIcon },
+      { href: "/dashboard/agent-tools",          label: "Tool access",         icon: ShieldCheckIcon },
+      { href: "/dashboard/agent-activity",       label: "Activity",            icon: ChartBarIcon },
+      { href: "/dashboard/learning",             label: "Learning",            icon: BeakerIcon },
+      { href: "/dashboard/gaps",                 label: "Gaps",                icon: BellAlertIcon },
+      // Power-user routes — internal agent plumbing.
+      { href: "/dashboard/agi",                  label: "AGI Cockpit",         icon: CpuChipIcon, power: true },
+      { href: "/dashboard/autonomy",             label: "Autonomy Cockpit",    icon: CpuChipIcon, power: true },
+      { href: "/dashboard/charter",              label: "Autonomy Charter",    icon: CpuChipIcon, power: true },
+      { href: "/dashboard/rationale",            label: "Decision rationale",  icon: DocumentMagnifyingGlassIcon, power: true },
+      { href: "/dashboard/decision-heatmap",     label: "Decision heatmap",    icon: ChartBarIcon, power: true },
+      { href: "/dashboard/agent-bus",            label: "Agent bus",           icon: CpuChipIcon, power: true },
+      { href: "/dashboard/agent-proposals",      label: "Method proposals",    icon: CpuChipIcon, power: true },
+      { href: "/dashboard/engineer-workspace",   label: "Engineer workspace",  icon: CpuChipIcon, power: true },
+      { href: "/dashboard/tenant-insights",      label: "Tenant insights",     icon: SparklesIcon, power: true },
+      { href: "/dashboard/workflow-translator",  label: "Workflow translator", icon: SparklesIcon, power: true },
     ],
   },
   {
-    label: "Providers",
+    label: "Automation",
+    kind: "automation",
     items: [
-      { href: "/dashboard/aws",          label: "AWS",            icon: CloudIcon       },
-      { href: "/dashboard/aws-services", label: "AWS Services",   icon: ServerStackIcon },
-      { href: "/dashboard/cloud-security",label: "Cloud Security",icon: ShieldCheckIcon },
-      { href: "/dashboard/cost-overview", label: "Cost Overview",  icon: ChartBarIcon    },
-      { href: "/dashboard/cost-explainer", label: "Cost Explainer", icon: ChartBarIcon   },
-      { href: "/dashboard/azure",        label: "Azure",          icon: CloudIcon       },
-      { href: "/dashboard/gcp",        label: "GCP",      icon: CloudIcon      },
-      { href: "/dashboard/github",     label: "GitHub",   icon: CodeBracketIcon},
-      { href: "/dashboard/multi-cloud",label: "Multi-cloud", icon: ServerStackIcon },
-      { href: "/dashboard/cloud-inventory", label: "Cloud Inventory", icon: ServerStackIcon },
-      { href: "/dashboard/network-topology", label: "Network Topology", icon: ArrowsRightLeftIcon },
-      { href: "/dashboard/cloudtrail", label: "CloudTrail",    icon: EyeIcon         },
-      { href: "/dashboard/containers", label: "Containers",  icon: ServerStackIcon },
-      { href: "/dashboard/k8s-eol",    label: "K8s EOL",      icon: RocketLaunchIcon },
+      { href: "/dashboard/workflows",            label: "Workflows",           icon: ChartBarIcon },
+      { href: "/dashboard/automation",           label: "Automations",         icon: BoltIcon },
+      { href: "/dashboard/approvals",            label: "Approvals",           icon: LockClosedIcon },
+      { href: "/dashboard/runbooks",             label: "Runbooks",            icon: WrenchScrewdriverIcon },
+      { href: "/dashboard/audit",                label: "Audit log",           icon: DocumentTextIcon },
+      // Power-user routes — internal pipeline plumbing.
+      { href: "/dashboard/remediation",          label: "Remediation",         icon: WrenchScrewdriverIcon, power: true },
+      { href: "/dashboard/runbooks/queue",       label: "Runbook queue",       icon: WrenchScrewdriverIcon, power: true },
+      { href: "/dashboard/orchestration",        label: "Orchestration",       icon: ArrowsRightLeftIcon, power: true },
+      { href: "/dashboard/autonomous-ops",       label: "Autonomous ops",      icon: CpuChipIcon, power: true },
+      { href: "/dashboard/scheduled-scans",      label: "Scheduled scans",     icon: ClockIcon, power: true },
+      { href: "/dashboard/simulations",          label: "Simulations",         icon: BeakerIcon, power: true },
+      { href: "/dashboard/scp-simulator",        label: "SCP simulator",       icon: BeakerIcon, power: true },
+      { href: "/dashboard/policy-previews",      label: "Policy previews",     icon: LockClosedIcon, power: true },
+      { href: "/dashboard/approval-packets",     label: "Approval packets",    icon: LockClosedIcon, power: true },
+      { href: "/dashboard/traces",               label: "Traces",              icon: EyeIcon, power: true },
+      { href: "/dashboard/memory",               label: "Memory",              icon: CpuChipIcon, power: true },
     ],
   },
   {
-    label: "Engines",
+    label: "Integrations",
+    kind: "integrations",
     items: [
-      { href: "/dashboard/risks",          label: "Risk Queue",     icon: ShieldCheckIcon       },
-      { href: "/dashboard/cicd",           label: "CI/CD Operations",icon: CodeBracketIcon      },
-      { href: "/dashboard/notifications",  label: "Notifications",  icon: ShieldCheckIcon       },
-      { href: "/dashboard/notifications-outbound", label: "Outbound (Slack/Teams)", icon: BellAlertIcon },
-      { href: "/dashboard/outbound-digest",  label: "Outbound digest",  icon: BellAlertIcon },
-      { href: "/dashboard/security",       label: "Security",       icon: ShieldCheckIcon       },
-      { href: "/dashboard/releaseops",     label: "ReleaseOps",     icon: RocketLaunchIcon      },
-      { href: "/dashboard/remediation",    label: "Remediation",    icon: WrenchScrewdriverIcon },
-      { href: "/dashboard/runbooks",       label: "Runbooks",       icon: WrenchScrewdriverIcon },
-      { href: "/dashboard/runbooks/queue", label: "Runbook Queue",  icon: WrenchScrewdriverIcon },
-      { href: "/dashboard/policy-previews",label: "Policy Previews",icon: LockClosedIcon        },
-      { href: "/dashboard/scp-simulator",  label: "SCP Simulator",  icon: BeakerIcon            },
-      { href: "/dashboard/simulations",    label: "Simulations",    icon: BeakerIcon            },
-      { href: "/dashboard/approvals",         label: "Approvals",        icon: LockClosedIcon        },
-      { href: "/dashboard/approval-packets",  label: "Approval packets", icon: LockClosedIcon        },
-      { href: "/dashboard/orchestration",  label: "Orchestration",  icon: ArrowsRightLeftIcon   },
-      { href: "/dashboard/autonomous-ops", label: "Autonomous ops", icon: CpuChipIcon           },
-      { href: "/dashboard/scheduled-scans",label: "Scheduled scans",icon: ClockIcon             },
-      { href: "/dashboard/workflows",      label: "Workflows",      icon: ChartBarIcon          },
+      { href: "/dashboard/connectors",           label: "Connectors",          icon: PuzzlePieceIcon },
+      { href: "/dashboard/connector-store",      label: "Connector store",    icon: PuzzlePieceIcon },
+      { href: "/dashboard/developer-tools",      label: "Developer tools",     icon: CodeBracketIcon },
+      { href: "/dashboard/integrations",         label: "All integrations",    icon: PuzzlePieceIcon },
+      { href: "/dashboard/desktop",              label: "Desktop app",         icon: ComputerDesktopIcon },
+      { href: "/dashboard/models",               label: "Model registry",      icon: SparklesIcon },
+      // Power-user routes.
+      { href: "/dashboard/desktop-agents",       label: "Desktop agents",      icon: ComputerDesktopIcon, power: true },
+      { href: "/dashboard/desktop/intelligence", label: "Intelligence workstation", icon: CpuChipIcon, power: true },
+      { href: "/dashboard/desktop/releases",     label: "Desktop release mgmt",icon: RocketLaunchIcon, power: true },
+      { href: "/dashboard/integrations/health",  label: "Integration health",  icon: ServerStackIcon, power: true },
+      { href: "/dashboard/integrations/github",  label: "GitHub setup",        icon: CodeBracketIcon, power: true },
+      { href: "/dashboard/modules",              label: "Modules",             icon: Squares2X2Icon, power: true },
+      { href: "/dashboard/sub-tools",            label: "Sub-tools",           icon: Squares2X2Icon, power: true },
+      { href: "/dashboard/sources",              label: "Sources",             icon: CloudIcon, power: true },
+      { href: "/dashboard/surfaces",             label: "Product surfaces",    icon: PuzzlePieceIcon, power: true },
+      { href: "/dashboard/graph",                label: "Operating graph",     icon: ArrowsRightLeftIcon, power: true },
+      { href: "/download",                       label: "Download desktop",    icon: ComputerDesktopIcon },
     ],
   },
   {
-    label: "Desktop",
+    label: "Business / Admin",
+    kind: "admin",
     items: [
-      { href: "/dashboard/desktop",              label: "Runtime status",             icon: ComputerDesktopIcon },
-      { href: "/dashboard/desktop/intelligence", label: "Intelligence workstation",   icon: CpuChipIcon         },
-      { href: "/dashboard/desktop/releases",     label: "Release management",         icon: RocketLaunchIcon    },
-      { href: "/download",                       label: "Download",                   icon: ComputerDesktopIcon },
-    ],
-  },
-  {
-    label: "Trust & evidence",
-    items: [
-      { href: "/dashboard/trust",                  label: "Trust Center",         icon: ShieldCheckIcon   },
-      { href: "/dashboard/policies",               label: "Policies",             icon: LockClosedIcon    },
-      { href: "/dashboard/automation-boundaries",  label: "Automation boundaries",icon: ShieldCheckIcon   },
-      { href: "/dashboard/evidence",         label: "Evidence",          icon: DocumentTextIcon  },
-      { href: "/dashboard/evidence-library", label: "Evidence library",  icon: DocumentTextIcon  },
-      { href: "/dashboard/compliance-packet",label: "Compliance packet", icon: DocumentTextIcon  },
-      { href: "/dashboard/audit",    label: "Audit",         icon: DocumentTextIcon  },
-      { href: "/dashboard/traces",   label: "Traces",        icon: EyeIcon           },
-      { href: "/dashboard/memory",   label: "Memory",        icon: CpuChipIcon       },
-    ],
-  },
-  {
-    label: "Setup",
-    items: [
-      { href: "/dashboard/setup",               label: "Setup wizard",       icon: RocketLaunchIcon },
-      { href: "/dashboard/onboarding",          label: "First-run checklist",icon: RocketLaunchIcon },
-      { href: "/dashboard/billing",             label: "Billing & plans",    icon: BoltIcon         },
-      { href: "/dashboard/settings/workspace",  label: "Workspace + roles",  icon: ShieldCheckIcon  },
-      { href: "/dashboard/finops",              label: "FinOps",             icon: PuzzlePieceIcon  },
-      { href: "/dashboard/integrations",        label: "Integrations",       icon: PuzzlePieceIcon  },
-      { href: "/dashboard/integrations/health", label: "Integration health", icon: ServerStackIcon  },
-      { href: "/dashboard/integrations/github", label: "GitHub setup",       icon: CodeBracketIcon  },
-      { href: "/dashboard/topology",            label: "Topology",           icon: ServerStackIcon  },
+      { href: "/dashboard/billing",              label: "Billing & usage",     icon: BoltIcon },
+      { href: "/dashboard/ai-usage",             label: "AI usage",            icon: ChartBarIcon },
+      { href: "/dashboard/settings/workspace",   label: "Users & roles",       icon: ShieldCheckIcon },
+      { href: "/dashboard/trust",                label: "Trust center",        icon: ShieldCheckIcon },
+      { href: "/dashboard/policies",             label: "Policies",            icon: LockClosedIcon },
+      // Power-user routes — internal/admin.
+      { href: "/dashboard/cost-overview",        label: "Cost overview",       icon: ChartBarIcon, power: true },
+      { href: "/dashboard/cost-explainer",       label: "Cost explainer",      icon: ChartBarIcon, power: true },
+      { href: "/dashboard/finops",               label: "FinOps",              icon: PuzzlePieceIcon, power: true },
+      { href: "/dashboard/ai-settings",          label: "AI settings",         icon: SparklesIcon, power: true },
+      { href: "/dashboard/help-analytics",       label: "Help analytics",      icon: ChartBarIcon, power: true },
+      { href: "/dashboard/help-suggestions",     label: "Doc suggestions",     icon: ChartBarIcon, power: true },
+      { href: "/dashboard/automation-boundaries",label: "Automation boundaries", icon: ShieldCheckIcon, power: true },
+      { href: "/dashboard/evidence",             label: "Evidence",            icon: DocumentTextIcon, power: true },
+      { href: "/dashboard/evidence-library",     label: "Evidence library",    icon: DocumentTextIcon, power: true },
+      { href: "/dashboard/compliance-packet",    label: "Compliance packet",   icon: DocumentTextIcon, power: true },
     ],
   },
 ];
@@ -202,45 +244,96 @@ function isActive(pathname: string, href: string): boolean {
 
 export function DashboardSidebar() {
   const pathname = usePathname();
+  // Phase 405 — per-group expand state. `expanded[label] = true` means
+  // show power-user routes inside that group. Groups marked
+  // defaultCollapsed start fully hidden until clicked.
+  const [expanded, setExpanded] = useState<Record<string, boolean>>(() => {
+    // Auto-expand the group containing the active route so deep links
+    // never land on an empty-looking sidebar.
+    const out: Record<string, boolean> = {};
+    for (const g of GROUPS) {
+      if (g.items.some((it) => isActive(pathname, it.href) && it.power)) {
+        out[g.label] = true;
+      }
+    }
+    return out;
+  });
+  const [openGroups, setOpenGroups] = useState<Record<string, boolean>>(() => {
+    const out: Record<string, boolean> = {};
+    for (const g of GROUPS) {
+      out[g.label] = !g.defaultCollapsed ||
+        g.items.some((it) => isActive(pathname, it.href));
+    }
+    return out;
+  });
 
   return (
     <>
       {/* Desktop sidebar */}
       <aside className="hidden lg:flex lg:flex-col lg:w-60 lg:shrink-0 lg:sticky lg:top-[57px] lg:self-start lg:h-[calc(100vh-57px)] lg:overflow-y-auto border-r border-white/[0.06] py-6 pr-2">
-        <nav className="space-y-6 pl-2">
-          {GROUPS.map((group) => (
-            <div key={group.label}>
-              <p className="text-[10px] font-mono text-zinc-500 uppercase tracking-[0.18em] px-3 mb-2">{group.label}</p>
-              <ul className="space-y-0.5">
-                {group.items.map((item) => {
-                  const Icon = item.icon;
-                  const active = isActive(pathname, item.href);
-                  return (
-                    <li key={item.href}>
-                      <Link
-                        href={item.href}
-                        className={`flex items-center gap-2.5 rounded-lg px-3 py-1.5 text-[12.5px] transition-all ${
-                          active
-                            ? "bg-violet-500/[0.10] text-white border border-violet-500/[0.22]"
-                            : "text-zinc-400 hover:text-white hover:bg-white/[0.03] border border-transparent"
-                        }`}
-                      >
-                        <Icon className={`h-3.5 w-3.5 shrink-0 ${active ? "text-violet-300" : "text-zinc-500"}`} />
-                        <span className="truncate">{item.label}</span>
-                      </Link>
-                    </li>
-                  );
-                })}
-              </ul>
-            </div>
-          ))}
+        <nav className="space-y-5 pl-2">
+          {GROUPS.map((group) => {
+            const isOpen = openGroups[group.label] !== false;
+            const isExpanded = expanded[group.label] === true;
+            const visibleItems = group.items.filter((it) => isExpanded || !it.power);
+            const hiddenCount = group.items.filter((it) => it.power).length;
+            return (
+              <div key={group.label}>
+                <button
+                  onClick={() => setOpenGroups((s) => ({ ...s, [group.label]: !isOpen }))}
+                  className="flex items-center gap-1.5 px-3 mb-2 w-full text-left group"
+                >
+                  <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-[0.18em] group-hover:text-zinc-300 transition-colors">
+                    {group.label}
+                  </span>
+                  <span className={`text-[8px] text-zinc-700 ml-auto transition-transform ${isOpen ? "rotate-0" : "-rotate-90"}`}>
+                    ▼
+                  </span>
+                </button>
+                {isOpen && (
+                  <ul className="space-y-0.5">
+                    {visibleItems.map((item) => {
+                      const Icon = item.icon;
+                      const active = isActive(pathname, item.href);
+                      return (
+                        <li key={item.href}>
+                          <Link
+                            href={item.href}
+                            className={`flex items-center gap-2.5 rounded-lg px-3 py-1.5 text-[12.5px] transition-all ${
+                              active
+                                ? "bg-violet-500/[0.10] text-white border border-violet-500/[0.22]"
+                                : "text-zinc-400 hover:text-white hover:bg-white/[0.03] border border-transparent"
+                            }`}
+                          >
+                            <Icon className={`h-3.5 w-3.5 shrink-0 ${active ? "text-violet-300" : "text-zinc-500"}`} />
+                            <span className="truncate">{item.label}</span>
+                          </Link>
+                        </li>
+                      );
+                    })}
+                    {hiddenCount > 0 && (
+                      <li>
+                        <button
+                          onClick={() => setExpanded((s) => ({ ...s, [group.label]: !isExpanded }))}
+                          className="w-full text-left flex items-center gap-2 rounded-lg px-3 py-1 text-[11px] text-zinc-500 hover:text-zinc-300 transition-colors"
+                        >
+                          <span>{isExpanded ? "− show less" : `+ show ${hiddenCount} more`}</span>
+                        </button>
+                      </li>
+                    )}
+                  </ul>
+                )}
+              </div>
+            );
+          })}
         </nav>
       </aside>
 
-      {/* Mobile horizontal nav strip */}
+      {/* Mobile horizontal nav strip — show non-power items only (the
+          power-user routes are hidden on mobile to keep the strip short). */}
       <div className="lg:hidden border-b border-white/[0.06] -mx-4 sm:-mx-6 mb-4 overflow-x-auto">
         <nav className="flex items-center gap-1 px-4 sm:px-6 py-2 whitespace-nowrap">
-          {GROUPS.flatMap((g) => g.items).map((item) => {
+          {GROUPS.flatMap((g) => g.items.filter((it) => !it.power)).map((item) => {
             const Icon = item.icon;
             const active = isActive(pathname, item.href);
             return (
