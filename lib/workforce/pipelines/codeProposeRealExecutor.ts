@@ -44,14 +44,25 @@ import { prisma } from "@/lib/db";
 import { validateProposal } from "./validateProposal";
 import { planRefinementAction } from "./planRefinementAction";
 import { buildRefinementMessages } from "./buildRefinementMessages";
+import { pickCostAwareModel } from "@/lib/ai/pickCostAwareModel";
+import { resolveRunBudgetCap } from "./resolveRunBudgetCap";
+import { loadBudgetConfig } from "./budgetConfigStore";
 
 /** Route via the provider router (Phase 383) — single source of truth for which model the code-propose stage uses. */
 const PROPOSE_ROUTE = routeAITask("code_propose");
-const CODE_PROPOSE_MODEL = PROPOSE_ROUTE.model;
+const CODE_PROPOSE_DEFAULT_MODEL = PROPOSE_ROUTE.model;
 const CODE_PROPOSE_EFFORT = PROPOSE_ROUTE.effort;
 
 /** Cap on output tokens. Sonnet 4.6 maxes at 64K with streaming. */
 const CODE_PROPOSE_MAX_TOKENS = 32_000;
+
+/**
+ * Anticipated cost of a single code_propose call at the default model
+ * (claude-sonnet-4-6). Based on observed averages: ~10K input + ~3K
+ * output → ~30¢ input + ~45¢ output ≈ 75¢. We round up to 100¢ to give
+ * the cost-aware kernel (Phase 403) a conservative-but-honest estimate.
+ */
+const CODE_PROPOSE_ANTICIPATED_CENTS = 100;
 
 interface CodeProposeRunMetadata {
   instruction?: unknown;
@@ -167,13 +178,65 @@ export const codeProposeRealExecutor: StageExecutorFn = async (ctx) => {
     repoContext: priorRepoContext,
   });
 
+  // Phase 403: cost-aware model picker. Looks at cumulative spend on
+  // this run + resolved per-org cap to decide whether to downgrade the
+  // default Sonnet model to Haiku before firing what would otherwise
+  // push us over budget. Best-effort wrapped — any lookup failure
+  // falls back to the default model.
+  let modelToUse: string = CODE_PROPOSE_DEFAULT_MODEL;
+  let modelDecisionForAudit: ReturnType<typeof pickCostAwareModel> | null = null;
+  try {
+    const spentAgg = await prisma.pipelineStageRun.aggregate({
+      where: { runId: ctx.runId },
+      _sum: { costCents: true },
+    });
+    const orgConfig = await loadBudgetConfig(ctx.organizationId);
+    const cap = resolveRunBudgetCap({
+      pipelineId: ctx.pipelineId,
+      runMetadata: ctx.runMetadata,
+      orgConfig,
+    });
+    modelDecisionForAudit = pickCostAwareModel({
+      defaultModel: CODE_PROPOSE_DEFAULT_MODEL,
+      spentCents: spentAgg._sum.costCents ?? 0,
+      capCents: cap.maxCents,
+      anticipatedCostCentsAtDefault: CODE_PROPOSE_ANTICIPATED_CENTS,
+    });
+    modelToUse = modelDecisionForAudit.model;
+    if (modelDecisionForAudit.kind === "downgrade_to_cheaper") {
+      try {
+        await recordAudit({
+          organizationId: idFactory.organization(ctx.organizationId),
+          actorKind: "system",
+          action: "workforce.model_downgraded",
+          outcome: "success",
+          entityRef: `pipeline_stage_run:${ctx.stageRunId}`,
+          correlationId: idFactory.correlation(ctx.correlationId),
+          source: "live",
+          detail: {
+            stageId: ctx.stageId,
+            defaultModel: CODE_PROPOSE_DEFAULT_MODEL,
+            chosenModel: modelToUse,
+            spentCents: spentAgg._sum.costCents ?? 0,
+            capCents: cap.maxCents,
+            anticipatedCostCentsAtDefault: CODE_PROPOSE_ANTICIPATED_CENTS,
+            estimatedCostCentsAtChosen: modelDecisionForAudit.estimatedCostCents,
+            savedCents: modelDecisionForAudit.savedCents,
+            rationale: modelDecisionForAudit.rationale,
+            capSource: cap.source,
+          },
+        });
+      } catch { /* best-effort */ }
+    }
+  } catch { /* fail-open with default model */ }
+
   const client = new Anthropic();
 
   try {
     // 4. Stream — required at this max_tokens to dodge the SDK timeout guard.
     //    finalMessage() resolves with the complete Message; no manual event wiring.
     const stream = client.messages.stream({
-      model: CODE_PROPOSE_MODEL,
+      model: modelToUse,
       max_tokens: CODE_PROPOSE_MAX_TOKENS,
       system: built.system as unknown as Anthropic.TextBlockParam[],
       messages: built.messages as unknown as Anthropic.MessageParam[],
@@ -239,7 +302,7 @@ export const codeProposeRealExecutor: StageExecutorFn = async (ctx) => {
           validation: initialValidation,
         });
         const refStream = client.messages.stream({
-          model: CODE_PROPOSE_MODEL,
+          model: modelToUse,
           max_tokens: CODE_PROPOSE_MAX_TOKENS,
           system: refinementBuilt.system as unknown as Anthropic.TextBlockParam[],
           messages: refinementBuilt.messages as unknown as Anthropic.MessageParam[],
@@ -315,7 +378,7 @@ export const codeProposeRealExecutor: StageExecutorFn = async (ctx) => {
     const usageWrite = await recordAIUsageEvent({
       organizationId: ctx.organizationId,
       provider: "anthropic",
-      model: CODE_PROPOSE_MODEL,
+      model: modelToUse,
       inputTokens: finalUsageInput,
       outputTokens: finalUsageOutput,
       cachedReadTokens: finalCacheRead,
@@ -343,7 +406,7 @@ export const codeProposeRealExecutor: StageExecutorFn = async (ctx) => {
           source: "live",
           detail: {
             provider: "anthropic",
-            model: CODE_PROPOSE_MODEL,
+            model: modelToUse,
             costCents: usageWrite.cost?.totalCents ?? 0,
             inputTokens: final.usage.input_tokens,
             outputTokens: final.usage.output_tokens,
@@ -358,7 +421,10 @@ export const codeProposeRealExecutor: StageExecutorFn = async (ctx) => {
       detail: {
         stageId: ctx.stageId,
         dryRun: false,
-        model: CODE_PROPOSE_MODEL,
+        model: modelToUse,
+        defaultModel: CODE_PROPOSE_DEFAULT_MODEL,
+        modelDecisionKind: modelDecisionForAudit?.kind ?? "use_default",
+        modelDecisionRationale: modelDecisionForAudit?.rationale,
         effort: CODE_PROPOSE_EFFORT,
         proposedPatchText: finalText,
         refinementAttempts,

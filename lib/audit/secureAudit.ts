@@ -141,6 +141,8 @@ export type AuditAction =
   | "workforce.budget_config_deleted"
   // Idempotency — Phase 402.
   | "workforce.idempotency_slot_completed"
+  // Cost-aware model routing — Phase 403.
+  | "workforce.model_downgraded"
   // Generic
   | "system.error";
 
