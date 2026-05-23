@@ -118,6 +118,10 @@ export type AuditAction =
   // Assertion integrity — Phase 392.
   | "workforce.code_test_passed"
   | "workforce.code_test_failed"
+  // Eval regression + release gating — Phase 393.
+  | "eval.regression_detected"
+  | "eval.release_gate_passed"
+  | "eval.release_gate_blocked"
   // Generic
   | "system.error";
 

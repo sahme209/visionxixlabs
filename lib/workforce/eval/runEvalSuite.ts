@@ -26,6 +26,9 @@ import { startPipelineRun } from "@/lib/workforce/pipelines/pipelineRunner";
 import { registerCodingDryRunExecutors } from "@/lib/workforce/pipelines/codingDryRunExecutors";
 import { parseUnifiedDiff } from "@/lib/workforce/pipelines/parseUnifiedDiff";
 import { findPlan } from "@/lib/billing/planRegistry";
+import { compareEvalRuns } from "./compareEvalRuns";
+import { assertEvalReleaseHealthy, type GateDecision } from "./assertEvalReleaseHealthy";
+import { loadEvalRunSnapshot, findPreviousCompletedRun } from "./loadEvalRunSnapshot";
 
 const INTERNAL_WORKSPACE_ID = "ws_internal_admin_visionxixlabs";
 
@@ -46,6 +49,11 @@ export interface RunEvalSuiteResult {
   failCount: number;
   skippedCount: number;
   totalCostCents: number;
+  /** Phase 393 — release-gate decision after the run completes (null when run failed). */
+  gate?: GateDecision | null;
+  /** Phase 393 — counts from comparing against the previous completed run. */
+  regressionCount?: number;
+  improvementCount?: number;
 }
 
 export async function runEvalSuite(input: RunEvalSuiteInput): Promise<RunEvalSuiteResult> {
@@ -193,6 +201,70 @@ export async function runEvalSuite(input: RunEvalSuiteInput): Promise<RunEvalSui
       },
     });
   } catch { /* best-effort */ }
+
+  // Phase 393 — regression detection + release gate. Done after the run is
+  // marked completed so the comparator can re-read the canonical row. Both
+  // halves are best-effort — a regression-detector outage must not corrupt
+  // the run record itself.
+  try {
+    const current = await loadEvalRunSnapshot(run.id);
+    if (current) {
+      const previous = await findPreviousCompletedRun(current.startedAt, run.id);
+      const diff = compareEvalRuns(previous, current);
+      result.regressionCount = diff.counts.regressionCount;
+      result.improvementCount = diff.counts.improvementCount;
+
+      if (diff.regressions.length > 0) {
+        await recordAudit({
+          organizationId: idFactory.organization(INTERNAL_WORKSPACE_ID),
+          actorKind: "system",
+          action: "eval.regression_detected",
+          outcome: "failure",
+          entityRef: `eval_run:${run.id}`,
+          correlationId: idFactory.correlation(correlationId),
+          source: "live",
+          detail: {
+            runKind: input.runKind,
+            previousRunId: previous?.runId ?? null,
+            counts: diff.counts,
+            regressions: diff.regressions,
+            improvements: diff.improvements,
+          },
+        });
+      }
+
+      const gate = assertEvalReleaseHealthy({
+        current,
+        diff,
+        runStatus: "completed",
+        // Cron daily uses the strict default thresholds. CI smoke
+        // relaxes to "don't block on a single score-drop" so smoke
+        // runs from feature branches don't block merges on noise.
+        thresholds: input.runKind === "ci_smoke"
+          ? { maxScoreDrops: 3, maxNewFailures: 1 }
+          : undefined,
+      });
+      result.gate = gate;
+
+      await recordAudit({
+        organizationId: idFactory.organization(INTERNAL_WORKSPACE_ID),
+        actorKind: "system",
+        action: gate.passed ? "eval.release_gate_passed" : "eval.release_gate_blocked",
+        outcome: gate.passed ? "success" : "blocked",
+        entityRef: `eval_run:${run.id}`,
+        correlationId: idFactory.correlation(correlationId),
+        source: "live",
+        detail: {
+          runKind: input.runKind,
+          passRate: gate.passRate,
+          averageScore: gate.averageScore,
+          blockers: gate.blockers,
+          summary: gate.summary,
+          regressionCount: diff.counts.regressionCount,
+        },
+      });
+    }
+  } catch { /* best-effort — never block the run on the gate's plumbing */ }
 
   return result;
 }
