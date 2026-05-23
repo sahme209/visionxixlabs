@@ -9,11 +9,22 @@ import { Card, SectionHeader, ViewShell, LoadingState, EmptyState, Badge, Kpi, s
 
 const SEVERITY_TONE = { critical: "danger", high: "warning", medium: "cyan", low: "neutral", info: "neutral" } as const;
 
+interface ReleaseGateSummary {
+  passed: boolean;
+  passRate: number;
+  averageScore: number;
+  summary: string;
+  blockers: ReadonlyArray<{ kind: string; message: string }>;
+}
+
 export function SecurityView() {
   const [scan, setScan] = useState<SecurityScanLite | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [filter, setFilter] = useState<"all" | "fail" | "warn" | "preview">("all");
+  // Phase 393 release-gate summary — drives the new "Quality gate findings"
+  // section above the legacy cloud-security checks.
+  const [gate, setGate] = useState<ReleaseGateSummary | null>(null);
 
   const run = () => {
     setLoading(true);
@@ -23,6 +34,18 @@ export function SecurityView() {
       else setError(res.error);
       setLoading(false);
     });
+    if (desktopClient.hasAuth()) {
+      desktopClient.v1ReleaseGate().then((res) => {
+        if (res.ok) {
+          const d = res.data as { gate?: ReleaseGateSummary };
+          setGate(d.gate ?? null);
+        } else {
+          setGate(null);
+        }
+      });
+    } else {
+      setGate(null);
+    }
   };
 
   useEffect(() => { run(); }, []);
@@ -52,6 +75,40 @@ export function SecurityView() {
         subtitle={scan ? `Score ${scan.summary.score}/100 across ${scan.summary.total} typed checks.` : ""}
         action={<button onClick={run} className="btn-secondary text-[12px]">Re-run scan</button>}
       />
+
+      {/* Release-gate (Phase 393) summary — only renders when an API key
+          is paired AND there's a recent eval run. Shows the gate verdict
+          and any blockers as security findings. */}
+      {gate && (
+        <section className="space-y-3">
+          <h2 className="text-xs font-mono text-zinc-500 uppercase tracking-[0.22em]">// quality gate · live</h2>
+          <Card className={`p-5 border ${gate.passed ? "border-emerald-500/20" : "border-amber-500/30"}`}>
+            <div className="flex items-start justify-between gap-4">
+              <div className="min-w-0">
+                <div className="flex items-center gap-2 mb-1.5">
+                  <Badge tone={gate.passed ? "success" : "warning"}>{gate.passed ? "PASSED" : "BLOCKED"}</Badge>
+                  <span className="text-[10px] font-mono text-zinc-500">pass rate · {(gate.passRate * 100).toFixed(1)}%</span>
+                  <span className="text-[10px] font-mono text-zinc-500">· avg score · {gate.averageScore.toFixed(2)}</span>
+                </div>
+                <p className="text-sm text-white">{gate.summary}</p>
+              </div>
+            </div>
+            {gate.blockers.length > 0 && (
+              <div className="mt-4 space-y-2">
+                <p className="text-[10px] font-mono text-zinc-500 uppercase tracking-[0.18em]">blockers · {gate.blockers.length}</p>
+                <ul className="space-y-1.5">
+                  {gate.blockers.map((b, idx) => (
+                    <li key={idx} className="flex items-start gap-2 text-[12px]">
+                      <Badge tone="warning">{b.kind}</Badge>
+                      <span className="text-zinc-300">{b.message}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </Card>
+        </section>
+      )}
 
       {scan && (
         <>

@@ -8,12 +8,27 @@ import { useEffect, useState } from "react";
 import { desktopClient, type OrchestrationListLite } from "../lib/desktopClient";
 import { Card, SectionHeader, ViewShell, LoadingState, EmptyState, Badge, Kpi, statusToneFor, riskToneFor } from "../components/Primitives";
 
+interface V1PipelineRun {
+  id: string;
+  pipelineId: string;
+  status: string;
+  triggeredBy: string;
+  correlationId: string;
+  startedAt: string;
+  completedAt: string | null;
+  errorSummary: string | null;
+  stageCount: number;
+}
+
 export function OrchestrationView() {
   const [data, setData] = useState<OrchestrationListLite | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [busyId, setBusyId] = useState<string | null>(null);
   const [decisionMsg, setDecisionMsg] = useState<string | null>(null);
+  // v1 pipeline runs from Phase 396 — live data when an API key is paired.
+  const [v1Runs, setV1Runs] = useState<ReadonlyArray<V1PipelineRun> | null>(null);
+  const [v1RunsError, setV1RunsError] = useState<string | null>(null);
 
   const refresh = () => {
     setLoading(true);
@@ -22,6 +37,21 @@ export function OrchestrationView() {
       else setError(res.error);
       setLoading(false);
     });
+    if (desktopClient.hasAuth()) {
+      desktopClient.v1ListPipelineRuns({ limit: 10 }).then((res) => {
+        if (res.ok) {
+          const d = res.data as { runs: ReadonlyArray<V1PipelineRun> };
+          setV1Runs(d.runs);
+          setV1RunsError(null);
+        } else {
+          setV1Runs(null);
+          setV1RunsError(res.error);
+        }
+      });
+    } else {
+      setV1Runs(null);
+      setV1RunsError(null);
+    }
   };
 
   useEffect(() => { refresh(); }, []);
@@ -56,6 +86,52 @@ export function OrchestrationView() {
         title="The operations control tower."
         subtitle={`Every remediation passes through simulated → policy → approval → preflight → execution-ready → verification → audit.`}
       />
+
+      {/* Recent pipeline runs — Phase 396 v1 surface. Only renders when
+          an API key is paired AND the list endpoint returns rows. */}
+      {v1Runs && v1Runs.length > 0 && (
+        <section className="space-y-3">
+          <h2 className="text-xs font-mono text-zinc-500 uppercase tracking-[0.22em]">// recent pipeline runs · v1</h2>
+          <Card className="p-0 overflow-hidden">
+            <table className="w-full text-[11px]">
+              <thead className="bg-zinc-900/40 text-zinc-500">
+                <tr>
+                  <th className="text-left font-mono uppercase tracking-wider px-4 py-2">run id</th>
+                  <th className="text-left font-mono uppercase tracking-wider px-3 py-2">pipeline</th>
+                  <th className="text-left font-mono uppercase tracking-wider px-3 py-2">status</th>
+                  <th className="text-left font-mono uppercase tracking-wider px-3 py-2">stages</th>
+                  <th className="text-left font-mono uppercase tracking-wider px-3 py-2">started</th>
+                  <th className="text-left font-mono uppercase tracking-wider px-3 py-2">triggered by</th>
+                </tr>
+              </thead>
+              <tbody className="font-mono">
+                {v1Runs.map((r) => (
+                  <tr key={r.id} className="border-t border-axiom-border hover:bg-white/[0.02] transition-colors">
+                    <td className="px-4 py-2 text-zinc-200">{r.id.slice(0, 18)}…</td>
+                    <td className="px-3 py-2 text-zinc-300">{r.pipelineId}</td>
+                    <td className="px-3 py-2">
+                      <Badge tone={
+                        r.status === "succeeded" ? "success" :
+                        r.status === "failed"    ? "danger" :
+                        r.status === "running"   ? "cyan" :
+                                                   "warning"
+                      }>{r.status}</Badge>
+                    </td>
+                    <td className="px-3 py-2 text-zinc-400">{r.stageCount}</td>
+                    <td className="px-3 py-2 text-zinc-500">{new Date(r.startedAt).toLocaleString()}</td>
+                    <td className="px-3 py-2 text-zinc-400 truncate max-w-[160px]" title={r.triggeredBy}>{r.triggeredBy}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </Card>
+        </section>
+      )}
+      {v1RunsError && (
+        <div className="rounded-lg border border-amber-500/30 bg-amber-500/[0.08] p-3 text-[11px] text-amber-200">
+          v1 pipeline runs unavailable: <span className="font-mono">{v1RunsError}</span>
+        </div>
+      )}
 
       {data && (
         <>

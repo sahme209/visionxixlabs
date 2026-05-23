@@ -7,10 +7,23 @@ import { useEffect, useState } from "react";
 import { desktopClient, type ControlPlaneStateLite } from "../lib/desktopClient";
 import { Card, SectionHeader, ViewShell, LoadingState, EmptyState, Badge, statusToneFor } from "../components/Primitives";
 
+interface WorkspaceInfo {
+  organizationId: string;
+  planTier: string;
+  monthlyLimit: number | null;
+  currentCalls: number;
+  remaining: number | null;
+  ratio: number | null;
+  nearLimit: boolean;
+}
+
 export function MultiCloudView() {
   const [state, setState] = useState<ControlPlaneStateLite | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  // Phase 399 whoami — workspace + quota header. Renders only when an
+  // API key is paired.
+  const [workspace, setWorkspace] = useState<WorkspaceInfo | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -20,6 +33,30 @@ export function MultiCloudView() {
       else setError(res.error);
       setLoading(false);
     });
+    if (desktopClient.hasAuth()) {
+      desktopClient.v1Whoami().then((res) => {
+        if (cancelled || !res.ok) return;
+        const d = res.data as {
+          organization: { id: string; planTier: string };
+          quota: {
+            monthlyLimit: number | null;
+            currentCalls: number;
+            remaining: number | null;
+            ratio: number | null;
+            nearLimit: boolean;
+          };
+        };
+        setWorkspace({
+          organizationId: d.organization.id,
+          planTier: d.organization.planTier,
+          monthlyLimit: d.quota.monthlyLimit,
+          currentCalls: d.quota.currentCalls,
+          remaining: d.quota.remaining,
+          ratio: d.quota.ratio,
+          nearLimit: d.quota.nearLimit,
+        });
+      });
+    }
     return () => { cancelled = true; };
   }, []);
 
@@ -46,6 +83,40 @@ export function MultiCloudView() {
         title="AWS · Azure · GCP — one view."
         subtitle={`Source mode · ${state.sourceMode} · ${state.cloudInventory.totalResources} resources across ${state.providers.length} provider(s).`}
       />
+
+      {/* Phase 399 whoami header — workspace + monthly v1 API quota.
+          Only renders when an API key is paired. */}
+      {workspace && (
+        <Card className={`p-4 border ${workspace.nearLimit ? "border-amber-500/30" : "border-emerald-500/20"}`}>
+          <div className="flex items-center justify-between gap-6 flex-wrap">
+            <div>
+              <p className="text-[10px] font-mono text-zinc-500 uppercase tracking-[0.18em] mb-1">workspace</p>
+              <p className="text-sm font-mono text-violet-200">{workspace.organizationId}</p>
+            </div>
+            <div>
+              <p className="text-[10px] font-mono text-zinc-500 uppercase tracking-[0.18em] mb-1">plan tier</p>
+              <p className="text-sm font-mono text-zinc-200">{workspace.planTier}</p>
+            </div>
+            <div>
+              <p className="text-[10px] font-mono text-zinc-500 uppercase tracking-[0.18em] mb-1">monthly v1 calls</p>
+              <p className="text-sm font-mono text-zinc-200">
+                {workspace.currentCalls.toLocaleString()}
+                {workspace.monthlyLimit !== null
+                  ? <> / <span className="text-zinc-400">{workspace.monthlyLimit.toLocaleString()}</span></>
+                  : <> / <span className="text-emerald-400">unlimited</span></>}
+              </p>
+            </div>
+            <div>
+              <p className="text-[10px] font-mono text-zinc-500 uppercase tracking-[0.18em] mb-1">quota status</p>
+              <Badge tone={workspace.nearLimit ? "warning" : "success"}>
+                {workspace.nearLimit
+                  ? `${((workspace.ratio ?? 0) * 100).toFixed(0)}% — near limit`
+                  : workspace.monthlyLimit === null ? "unlimited" : "healthy"}
+              </Badge>
+            </div>
+          </div>
+        </Card>
+      )}
 
       <section className="grid grid-cols-3 gap-3">
         {state.providers.map((p) => (

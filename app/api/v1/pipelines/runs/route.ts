@@ -42,6 +42,7 @@ import {
   claimIdempotencySlot,
   completeIdempotencySlot,
 } from "@/lib/security/idempotencyStore";
+import { prisma } from "@/lib/db";
 
 export const dynamic = "force-dynamic";
 
@@ -223,4 +224,113 @@ export async function POST(req: NextRequest) {
   }
 
   return NextResponse.json(okBody, { status: 202 });
+}
+
+/**
+ * GET /api/v1/pipelines/runs — list recent pipeline runs for the
+ * workspace identified by the API key. Required scope: pipeline:read.
+ *
+ * Query params:
+ *   ?limit=<1..100>  — page size; default 25
+ *   ?cursor=<runId>  — paginate by run id (descending creation order)
+ *   ?status=<one>    — filter by status: running | succeeded | failed | awaiting_approval
+ *
+ * Response:
+ *   {
+ *     ok: true,
+ *     runs: [
+ *       { id, pipelineId, status, triggeredBy, correlationId,
+ *         startedAt, completedAt, errorSummary, stageCount }
+ *     ],
+ *     nextCursor: string | null
+ *   }
+ *
+ * Cross-tenant safety: every row is filtered by auth.organizationId
+ * (workspace context derived from the API key — no spoofing).
+ */
+export async function GET(req: NextRequest) {
+  const correlationId = `v1_pipeline_list_${Date.now().toString(36)}`;
+
+  const auth = await authenticateApiKey({
+    authorizationHeader: req.headers.get("authorization"),
+    sourceIp: getSourceIp(req),
+    requiredScope: "pipeline:read",
+    correlationId,
+    route: "GET /api/v1/pipelines/runs",
+  });
+  if (!auth.ok) {
+    const headers: Record<string, string> = {};
+    if (typeof auth.retryAfterSeconds === "number") {
+      headers["Retry-After"] = String(auth.retryAfterSeconds);
+    }
+    return NextResponse.json(
+      {
+        ok: false,
+        error: auth.reason,
+        ...(auth.requiredScope ? { requiredScope: auth.requiredScope } : {}),
+        ...(typeof auth.retryAfterSeconds === "number" ? { retryAfterSeconds: auth.retryAfterSeconds } : {}),
+      },
+      { status: auth.httpStatus, headers },
+    );
+  }
+
+  const url = req.nextUrl;
+  const rawLimit = Number(url.searchParams.get("limit"));
+  const limit = Number.isFinite(rawLimit)
+    ? Math.max(1, Math.min(100, Math.floor(rawLimit)))
+    : 25;
+  const cursor = url.searchParams.get("cursor");
+  const statusFilter = url.searchParams.get("status");
+
+  const where: {
+    organizationId: string;
+    status?: string;
+  } = { organizationId: auth.organizationId };
+  if (
+    statusFilter === "running" ||
+    statusFilter === "succeeded" ||
+    statusFilter === "failed" ||
+    statusFilter === "awaiting_approval"
+  ) {
+    where.status = statusFilter;
+  }
+
+  // Fetch limit+1 so we know whether there's a next page.
+  const rows = await prisma.pipelineRun.findMany({
+    where,
+    orderBy: { startedAt: "desc" },
+    take: limit + 1,
+    ...(cursor ? { cursor: { id: cursor }, skip: 1 } : {}),
+    select: {
+      id: true,
+      pipelineId: true,
+      status: true,
+      triggeredBy: true,
+      correlationId: true,
+      startedAt: true,
+      completedAt: true,
+      errorSummary: true,
+      _count: { select: { stages: true } },
+    },
+  });
+
+  const hasMore = rows.length > limit;
+  const page = hasMore ? rows.slice(0, limit) : rows;
+  const nextCursor = hasMore ? page[page.length - 1].id : null;
+
+  return NextResponse.json({
+    ok: true,
+    runs: page.map((r) => ({
+      id: r.id,
+      pipelineId: r.pipelineId,
+      status: r.status,
+      triggeredBy: r.triggeredBy,
+      correlationId: r.correlationId,
+      startedAt: r.startedAt,
+      completedAt: r.completedAt,
+      errorSummary: r.errorSummary,
+      stageCount: r._count.stages,
+    })),
+    nextCursor,
+  });
 }

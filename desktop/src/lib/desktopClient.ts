@@ -274,6 +274,37 @@ export class DesktopClient {
     return this.getV1("/api/v1/release-gate");
   }
 
+  /**
+   * GET /api/v1/pipelines/runs — list recent pipeline runs for the
+   * authenticated workspace. Required scope: pipeline:read.
+   * Default page size 25, max 100. Filter by status with `status`.
+   */
+  async v1ListPipelineRuns(args?: {
+    limit?: number;
+    cursor?: string;
+    status?: "running" | "succeeded" | "failed" | "awaiting_approval";
+  }): Promise<ApiResult<{
+    runs: ReadonlyArray<{
+      id: string;
+      pipelineId: string;
+      status: string;
+      triggeredBy: string;
+      correlationId: string;
+      startedAt: string;
+      completedAt: string | null;
+      errorSummary: string | null;
+      stageCount: number;
+    }>;
+    nextCursor: string | null;
+  }>> {
+    const params = new URLSearchParams();
+    if (args?.limit)  params.set("limit",  String(args.limit));
+    if (args?.cursor) params.set("cursor", args.cursor);
+    if (args?.status) params.set("status", args.status);
+    const qs = params.toString();
+    return this.getV1(`/api/v1/pipelines/runs${qs ? "?" + qs : ""}`);
+  }
+
   // ── Command center / control plane ────────────────────────────────
   commandCenterState():  Promise<ApiResult<CommandCenterStateLite>>   { return this.get("/api/command-center"); }
 
