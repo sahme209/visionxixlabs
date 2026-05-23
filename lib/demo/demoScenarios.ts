@@ -86,7 +86,12 @@ export interface DemoScenario {
 
 // ============================ the 13 scenarios ============================
 
-const REVIEWED = "2026-05-23"; // initial seed date.
+// Living-docs rule (CLAUDE.md): every scenario carries a lastReviewed
+// date. Bumped to mark the Phase 406-desktop expansion (new desktop
+// views: Approvals, Workflows, Audit, Billing, Trust, Docs, StartHere)
+// — scenarios that previously only deep-linked to /dashboard/* on web
+// now also describe the matching desktop view.
+const REVIEWED = "2026-05-23"; // Phase 406-desktop content sweep.
 
 export const DEMO_SCENARIOS: Readonly<Record<DemoScenarioId, DemoScenario>> = {
   first_time_workspace_setup: {

@@ -8,15 +8,22 @@ import type { View } from "../App";
 import { desktopClient } from "../lib/desktopClient";
 
 const VIEW_TITLES: Record<View, { title: string; subtitle: string }> = {
+  "start-here":  { title: "Start Here",    subtitle: "Setup guide + product tour" },
   dashboard:     { title: "Dashboard",     subtitle: "Control plane snapshot" },
+  docs:          { title: "Documentation", subtitle: "Platform guides + references" },
   "multi-cloud": { title: "Multi-cloud",   subtitle: "AWS · Azure · GCP" },
+  security:      { title: "Security",      subtitle: "Posture + checks + diagnoses" },
+  scans:         { title: "Scans",         subtitle: "Run cloud + security scans" },
+  workflows:     { title: "Workflows",     subtitle: "Recent + active pipeline runs" },
+  approvals:     { title: "Approvals",     subtitle: "Runs awaiting human review" },
   remediation:   { title: "Remediation",   subtitle: "Governed fixes from findings" },
   simulations:   { title: "Simulations",   subtitle: "Preflight against the digital twin" },
   orchestration: { title: "Orchestration", subtitle: "Approval + execution control" },
   handoffs:      { title: "Handoffs",      subtitle: "Signed plan inbox" },
-  scans:         { title: "Scans",         subtitle: "Run cloud + security scans" },
-  security:      { title: "Security",      subtitle: "Posture + checks + diagnoses" },
+  audit:         { title: "Audit log",     subtitle: "Every action attributed + signed" },
   connectors:    { title: "Connectors",    subtitle: "Provider authentication" },
+  billing:       { title: "Billing & usage", subtitle: "Plan + quota + AI credits" },
+  trust:         { title: "Trust center",  subtitle: "Policies + approval boundaries" },
   settings:      { title: "Settings",      subtitle: "Workstation preferences" },
 };
 

@@ -11,21 +11,45 @@ import { MultiCloudView } from "./views/MultiCloudView";
 import { RemediationView } from "./views/RemediationView";
 import { SimulationsView } from "./views/SimulationsView";
 import { OrchestrationView } from "./views/OrchestrationView";
+import { StartHereView } from "./views/StartHereView";
+import { ApprovalsView } from "./views/ApprovalsView";
+import { WorkflowsView } from "./views/WorkflowsView";
+import { AuditView } from "./views/AuditView";
+import { BillingView } from "./views/BillingView";
+import { TrustView } from "./views/TrustView";
+import { DocsView } from "./views/DocsView";
 
+/**
+ * Closed-union of every desktop view. Phase 406-desktop expands the
+ * surface to mirror the web's 7-group structure: Start Here, Operations,
+ * Team Workflows, AI Workforce, Automation, Integrations, Admin.
+ */
 export type View =
+  // Start Here
+  | "start-here"
   | "dashboard"
+  | "docs"
+  // Operations
   | "multi-cloud"
+  | "security"
+  | "scans"
+  // Automation
+  | "workflows"
+  | "approvals"
   | "remediation"
   | "simulations"
   | "orchestration"
   | "handoffs"
-  | "scans"
-  | "security"
+  | "audit"
+  // Integrations
   | "connectors"
+  // Business / Admin
+  | "billing"
+  | "trust"
   | "settings";
 
 export default function App() {
-  const [activeView, setActiveView] = useState<View>("dashboard");
+  const [activeView, setActiveView] = useState<View>("start-here");
   const [booted, setBooted] = useState(false);
 
   useEffect(() => {
@@ -40,23 +64,23 @@ export default function App() {
       <Sidebar activeView={activeView} onNavigate={setActiveView} />
       <main className="flex-1 flex flex-col min-w-0 min-h-0">
         <TopBar activeView={activeView} />
-        {/*
-          Scroll fix: `min-h-0` lets the child establish a real flex height so
-          the nested `overflow-y-auto` on ViewShell can compute its viewport.
-          Without min-h-0 the parent's `flex-1` would grow to content size,
-          and the inner scroll container never gets a bounded height — which
-          is what was producing the "scroll doesn't work" bug.
-        */}
         <div className="flex-1 min-h-0 flex flex-col">
+          {activeView === "start-here"    && <StartHereView onNavigate={setActiveView} />}
           {activeView === "dashboard"     && <DashboardView />}
+          {activeView === "docs"          && <DocsView />}
           {activeView === "multi-cloud"   && <MultiCloudView />}
+          {activeView === "security"      && <SecurityView />}
+          {activeView === "scans"         && <ScansView />}
+          {activeView === "workflows"     && <WorkflowsView />}
+          {activeView === "approvals"     && <ApprovalsView />}
           {activeView === "remediation"   && <RemediationView />}
           {activeView === "simulations"   && <SimulationsView />}
           {activeView === "orchestration" && <OrchestrationView />}
           {activeView === "handoffs"      && <HandoffsView />}
-          {activeView === "scans"         && <ScansView />}
-          {activeView === "security"      && <SecurityView />}
+          {activeView === "audit"         && <AuditView />}
           {activeView === "connectors"    && <ConnectorsView />}
+          {activeView === "billing"       && <BillingView />}
+          {activeView === "trust"         && <TrustView />}
           {activeView === "settings"      && <SettingsView />}
         </div>
       </main>
