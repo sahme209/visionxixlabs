@@ -29,6 +29,8 @@ import {
 } from "./stageExecutorRegistry";
 import { mintPipelineStageApproval } from "./mintPipelineStageApproval";
 import { dispatchWebhookEvent } from "@/lib/webhooks/dispatchWebhookEvent";
+import { extractStageTelemetry } from "./extractStageTelemetry";
+import { assertRunCostBudget, DEFAULT_RUN_MAX_CENTS } from "./assertRunCostBudget";
 
 export interface StartPipelineInput {
   organizationId: string;
@@ -278,9 +280,60 @@ export async function advancePipelineRun(runId: string): Promise<void> {
       continue;
     }
 
+    // Phase 400: cumulative cost budget gate. Halt the run if prior
+    // stages have already burned the configured budget, before we let
+    // the next (potentially-expensive) stage fire. Reads the cap from
+    // run metadata (operator-supplied) or falls back to the default.
+    const spentBefore = await prisma.pipelineStageRun.aggregate({
+      where: { runId: run.id },
+      _sum: { costCents: true },
+    }).catch(() => ({ _sum: { costCents: 0 } }));
+    const maxCents = readBudgetCapFromMetadata(run.metadata);
+    const budget = assertRunCostBudget({
+      spentCents: spentBefore._sum.costCents ?? 0,
+      maxCents,
+    });
+    if (!budget.allowed) {
+      // Mark THIS stage row as failed with the budget reason; emit a
+      // pipeline.stage_failed audit. The outer planNextStage loop will
+      // see the failure and transition the run to status=failed on the
+      // next iteration.
+      await prisma.pipelineStageRun.update({
+        where: { id: stage.id },
+        data: {
+          status: "failed",
+          completedAt: new Date(),
+          errorMessage: budget.message,
+          outputDetail: { budgetHalt: budget } as unknown as object,
+        },
+      });
+      await emitStageAudit(run, stage, "pipeline.stage_failed", "failure", {
+        error: budget.message,
+        budgetHalt: true,
+      });
+      try {
+        await dispatchWebhookEvent({
+          organizationId: run.organizationId,
+          eventKind: "pipeline.stage_failed",
+          data: {
+            runId: run.id,
+            stageRunId: stage.id,
+            stageKind: stage.stageKind,
+            ordering: stage.ordering,
+            reason: "budget_exceeded",
+            spentCents: budget.spentCents,
+            maxCents: budget.maxCents,
+          },
+          correlationId: run.correlationId,
+        });
+      } catch { /* best-effort */ }
+      continue;
+    }
+
     await emitStageAudit(run, stage, "pipeline.stage_started", "success", {});
 
     let result: Awaited<ReturnType<typeof executor>>;
+    const stageStart = Date.now();
     try {
       result = await executor({
         organizationId: run.organizationId,
@@ -296,6 +349,8 @@ export async function advancePipelineRun(runId: string): Promise<void> {
     } catch (err) {
       result = { ok: false, error: err instanceof Error ? err.message : "unknown executor error" };
     }
+    const latencyMs = Date.now() - stageStart;
+    const telemetry = extractStageTelemetry(result.detail, latencyMs);
 
     if (result.ok) {
       await prisma.pipelineStageRun.update({
@@ -305,9 +360,16 @@ export async function advancePipelineRun(runId: string): Promise<void> {
           completedAt: new Date(),
           outputSummary: result.summary,
           outputDetail: (result.detail ?? {}) as object,
+          costCents: telemetry.costCents,
+          tokensInput: telemetry.tokensInput,
+          tokensOutput: telemetry.tokensOutput,
+          latencyMs: telemetry.latencyMs,
         },
       });
-      await emitStageAudit(run, stage, "pipeline.stage_completed", "success", { summary: result.summary });
+      await emitStageAudit(run, stage, "pipeline.stage_completed", "success", {
+        summary: result.summary,
+        telemetry,
+      });
     } else {
       await prisma.pipelineStageRun.update({
         where: { id: stage.id },
@@ -316,11 +378,34 @@ export async function advancePipelineRun(runId: string): Promise<void> {
           completedAt: new Date(),
           errorMessage: result.error,
           outputDetail: (result.detail ?? {}) as object,
+          costCents: telemetry.costCents,
+          tokensInput: telemetry.tokensInput,
+          tokensOutput: telemetry.tokensOutput,
+          latencyMs: telemetry.latencyMs,
         },
       });
-      await emitStageAudit(run, stage, "pipeline.stage_failed", "failure", { error: result.error });
+      await emitStageAudit(run, stage, "pipeline.stage_failed", "failure", {
+        error: result.error,
+        telemetry,
+      });
     }
   }
+}
+
+/**
+ * Read the per-run cost cap from operator-supplied metadata. Looks for
+ * `maxCostCents: number` (or explicit `unlimited: true`). Falls back to
+ * the platform-wide DEFAULT_RUN_MAX_CENTS so no run can silently spend
+ * unbounded tokens.
+ */
+function readBudgetCapFromMetadata(metadata: unknown): number | null {
+  if (metadata === null || typeof metadata !== "object") return DEFAULT_RUN_MAX_CENTS;
+  const m = metadata as Record<string, unknown>;
+  if (m.unlimitedBudget === true) return null;
+  if (typeof m.maxCostCents === "number" && Number.isFinite(m.maxCostCents) && m.maxCostCents > 0) {
+    return Math.floor(m.maxCostCents);
+  }
+  return DEFAULT_RUN_MAX_CENTS;
 }
 
 type RunRow = { id: string; organizationId: string; pipelineId: string; correlationId: string; triggeredBy: string };
