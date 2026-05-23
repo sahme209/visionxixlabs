@@ -1,0 +1,71 @@
+name: Axiom · release-gate check (reusable)
+
+# Reusable workflow that fails any caller pipeline if the platform's
+# release-gate is blocked. Designed to drop into any repo's existing CI
+# without extra deps — uses the Python CLI checked into the SDK and
+# nothing else.
+#
+# Usage from a caller workflow:
+#
+#   jobs:
+#     gate:
+#       uses: visionxixlabs/visionxixlabs/.github/workflows/_axiom-release-gate.yml@main
+#       secrets:
+#         VXL_API_KEY: ${{ secrets.VXL_API_KEY }}
+#       with:
+#         # Optional — defaults to https://visionxixlabs.com.
+#         base-url: https://visionxixlabs.com
+
+on:
+  workflow_call:
+    inputs:
+      base-url:
+        description: "Override platform base URL"
+        type: string
+        required: false
+        default: "https://visionxixlabs.com"
+    secrets:
+      VXL_API_KEY:
+        description: "vxlk_live_* API key with release_gate:read scope"
+        required: true
+
+jobs:
+  gate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout SDK
+        # We pull the CLI directly from this repo (sparse checkout to
+        # keep it tiny — only the sdk/python tree).
+        uses: actions/checkout@v4
+        with:
+          repository: sahme209/visionxixlabs
+          ref: main
+          sparse-checkout: sdk/python
+          sparse-checkout-cone-mode: false
+          path: vxl-cli-checkout
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Run release-gate check
+        env:
+          VXL_API_KEY: ${{ secrets.VXL_API_KEY }}
+          VXL_API_BASE: ${{ inputs.base-url }}
+        run: |
+          set -e
+          chmod +x vxl-cli-checkout/sdk/python/vxl_cli.py
+          # Exit code 1 = gate blocked → workflow fails the caller.
+          vxl-cli-checkout/sdk/python/vxl_cli.py gate
+
+      - name: Connector health check
+        env:
+          VXL_API_KEY: ${{ secrets.VXL_API_KEY }}
+          VXL_API_BASE: ${{ inputs.base-url }}
+        # Soft check — does NOT fail the workflow. Surfaces a warning
+        # in the GitHub Actions summary if any connector is degraded.
+        continue-on-error: true
+        run: |
+          vxl-cli-checkout/sdk/python/vxl_cli.py connectors || \
+            echo "::warning::One or more connectors are not healthy — see vxl connectors output above."

@@ -143,6 +143,8 @@ export type AuditAction =
   | "workforce.idempotency_slot_completed"
   // Cost-aware model routing — Phase 403.
   | "workforce.model_downgraded"
+  // Connector health scan — Phase 410.
+  | "workforce.connector_health_polled"
   // Generic
   | "system.error";
 

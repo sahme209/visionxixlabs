@@ -270,7 +270,7 @@ release_gate.passed                pipeline.run_started        api_key.created
 release_gate.blocked               pipeline.run_completed      api_key.revoked
 eval.regression_detected           pipeline.run_failed         billing.threshold_crossed
 eval.run_completed                 pipeline.stage_failed       billing.quota_exhausted
-pipeline.stage_decision_recorded   coding.pr_opened
+pipeline.stage_decision_recorded   coding.pr_opened            connector.health_changed
 coding.lint_failed                 coding.test_failed
 ```
 

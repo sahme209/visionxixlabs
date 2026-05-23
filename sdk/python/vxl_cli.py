@@ -315,6 +315,130 @@ def cmd_runs_get(args: argparse.Namespace) -> None:
 # ============================ webhook listener ============================
 
 
+def cmd_connectors(args: argparse.Namespace) -> None:
+    """`vxl connectors` — Phase 410. Print per-connector health.
+
+    Exit codes:
+      0  every connector healthy
+      1  one or more connectors in any non-healthy status
+    """
+    client = make_client(args.api_key, args.base_url)
+    # The SDK doesn't have a typed connectorsHealth() helper yet on the
+    # Python side; call the raw endpoint via the private _get hook.
+    data = handle_api_call(lambda: client._get("/api/v1/connectors/health"))  # noqa: SLF001
+    if args.json:
+        emit_json(data)
+    else:
+        summary = data.get("summary", {})
+        connectors = data.get("connectors", [])
+        print(color("Connector health", ANSI_BOLD))
+        print(
+            "  "
+            + color(f"healthy={summary.get('healthy', 0)}", ANSI_GREEN) + "  "
+            + color(f"degraded={summary.get('degraded', 0)}", ANSI_AMBER) + "  "
+            + color(f"stale={summary.get('stale', 0)}", ANSI_AMBER) + "  "
+            + color(f"auth_failed={summary.get('auth_failed', 0)}", ANSI_RED) + "  "
+            + color(f"rate_limited={summary.get('rate_limited', 0)}", ANSI_AMBER),
+        )
+        print()
+        for c in connectors:
+            status = c.get("status", "?")
+            tone = (
+                ANSI_GREEN if status == "healthy"
+                else ANSI_RED if status == "auth_failed"
+                else ANSI_AMBER
+            )
+            print(f"  {color(status.ljust(13), tone)} {c.get('name', '?')}  {color(c.get('category', '?'), ANSI_DIM)}")
+            print(f"    {color(c.get('reason', ''), ANSI_DIM)}")
+        print()
+    alerts = sum(
+        int(data.get("summary", {}).get(k, 0))
+        for k in ("degraded", "stale", "auth_failed", "rate_limited")
+    )
+    sys.exit(EXIT_COMMAND_FAILED if alerts > 0 else EXIT_OK)
+
+
+def cmd_events_tail(args: argparse.Namespace) -> None:
+    """`vxl events tail` — Phase 410. Stream live SSE frames to stdout.
+
+    Subscribes to /api/v1/events/stream using stdlib http.client so we
+    don't take a `requests` dependency. Exits cleanly on Ctrl-C; otherwise
+    runs forever, reconnecting on connection drop.
+    """
+    import http.client
+    import urllib.parse
+
+    base = (args.base_url or os.environ.get("VXL_API_BASE", "https://visionxixlabs.com"))
+    parsed = urllib.parse.urlparse(base)
+    if parsed.scheme not in ("http", "https"):
+        die(f"bad base URL: {base}")
+    host = parsed.hostname or "visionxixlabs.com"
+    port = parsed.port or (443 if parsed.scheme == "https" else 80)
+    path = "/api/v1/events/stream"
+    if args.subscribe:
+        path += f"?subscribe={urllib.parse.quote(args.subscribe)}"
+
+    api_key = resolve_api_key(args.api_key)
+
+    def stream_once() -> None:
+        conn = (
+            http.client.HTTPSConnection(host, port, timeout=300)
+            if parsed.scheme == "https"
+            else http.client.HTTPConnection(host, port, timeout=300)
+        )
+        try:
+            conn.request("GET", path, headers={
+                "Authorization": f"Bearer {api_key}",
+                "Accept": "text/event-stream",
+            })
+            res = conn.getresponse()
+            if res.status != 200:
+                sys.stderr.write(color(f"vxl: stream open failed: HTTP {res.status}\n", ANSI_RED))
+                sys.exit(EXIT_API_ERROR)
+
+            buffer = ""
+            while True:
+                chunk = res.read1(4096) if hasattr(res, "read1") else res.read(4096)
+                if not chunk:
+                    break
+                buffer += chunk.decode("utf-8", errors="replace")
+                while "\n\n" in buffer:
+                    frame, _, buffer = buffer.partition("\n\n")
+                    event = "message"
+                    data_lines: list = []
+                    for line in frame.split("\n"):
+                        if line.startswith("event: "):
+                            event = line[7:]
+                        elif line.startswith("data: "):
+                            data_lines.append(line[6:])
+                    if not data_lines:
+                        continue
+                    raw = "\n".join(data_lines)
+                    if args.json:
+                        print(json.dumps({"event": event, "data": json.loads(raw)}))
+                    else:
+                        tone = ANSI_GREEN if event == "stream.ready" else (
+                            ANSI_CYAN if event == "heartbeat" else ANSI_AMBER
+                        )
+                        ts = time.strftime("%H:%M:%S")
+                        print(f"[{color(ts, ANSI_DIM)}] {color(event.ljust(28), tone)}{raw}")
+                    sys.stdout.flush()
+        finally:
+            conn.close()
+
+    backoff = 1
+    while True:
+        try:
+            stream_once()
+            backoff = 1  # clean close — reset backoff
+        except KeyboardInterrupt:
+            sys.exit(EXIT_OK)
+        except OSError as e:
+            sys.stderr.write(color(f"vxl: stream dropped ({e}); reconnecting in {backoff}s\n", ANSI_AMBER))
+            time.sleep(backoff)
+            backoff = min(30, backoff * 2)
+
+
 def cmd_listen(args: argparse.Namespace) -> None:
     """
     Run a local HTTP server that receives webhook deliveries from the
@@ -441,6 +565,23 @@ def build_parser() -> argparse.ArgumentParser:
     p_runs_get = p_runs_sub.add_parser("get", help="Show one run + its stages.")
     p_runs_get.add_argument("run_id", help="Run id (vxl runs list to find one).")
 
+    sub.add_parser(
+        "connectors",
+        help="Phase 410 — per-connector health. Exits 1 if any non-healthy.",
+    )
+
+    p_events = sub.add_parser("events", help="Live event stream commands.")
+    p_events_sub = p_events.add_subparsers(dest="events_cmd", required=True)
+    p_events_tail = p_events_sub.add_parser(
+        "tail",
+        help="Subscribe to the SSE stream (Phase 409) and print frames to stdout.",
+    )
+    p_events_tail.add_argument(
+        "--subscribe",
+        default=None,
+        help="Comma-separated StreamEventKind filter, e.g. 'approvals.snapshot,heartbeat'.",
+    )
+
     p_listen = sub.add_parser(
         "listen",
         help="Run a local HTTP server that verifies inbound webhook signatures.",
@@ -464,6 +605,11 @@ def dispatch(args: argparse.Namespace) -> None:
             return cmd_runs_list(args)
         if args.runs_cmd == "get":
             return cmd_runs_get(args)
+    if args.cmd == "connectors":
+        return cmd_connectors(args)
+    if args.cmd == "events":
+        if args.events_cmd == "tail":
+            return cmd_events_tail(args)
     if args.cmd == "listen":
         return cmd_listen(args)
     die(f"unknown command: {args.cmd}")

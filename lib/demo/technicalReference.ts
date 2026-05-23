@@ -381,6 +381,15 @@ export const WEBHOOK_EVENTS: ReadonlyArray<WebhookEventSpec> = [
     payload: `{ "apiKeyId": "ak_…", "revokedAt": "2026-05-23T17:58:00Z" }`,
   },
   {
+    kind: "connector.health_changed",
+    oneLine: "A connector transitioned between health states.",
+    emittedFrom: "app/api/cron/connector-health-scan/route.ts (Phase 410)",
+    payload: `{ "connectorName": "Postgres", "kind": "degraded",
+  "previousStatus": "healthy", "currentStatus": "stale",
+  "reason": "Last successful sync was 10m ago (window for db: 5m).",
+  "detectedAt": "2026-05-23T19:45:00.000Z" }`,
+  },
+  {
     kind: "billing.threshold_crossed",
     oneLine: "Usage crossed a 70 / 90 / 100 % bucket.",
     emittedFrom: "lib/billing/alertScanner.ts",
@@ -552,6 +561,7 @@ export const AUDIT_CATEGORIES: ReadonlyArray<AuditCategory> = [
   { name: "Webhook delivery",     actions: ["workforce.webhook_endpoint_created", "workforce.webhook_endpoint_revoked", "workforce.webhook_event_dispatched", "workforce.webhook_delivered", "workforce.webhook_retry_scheduled", "workforce.webhook_deadlettered", "workforce.webhook_queue_processed"] },
   { name: "Budget / idempotency", actions: ["workforce.budget_config_created", "workforce.budget_config_updated", "workforce.budget_config_deleted", "workforce.idempotency_slot_completed"] },
   { name: "Model routing",        actions: ["workforce.model_downgraded"] },
+  { name: "Connector health",     actions: ["workforce.connector_health_polled"] },
   { name: "Generic",              actions: ["system.error"] },
 ];
 
