@@ -117,6 +117,32 @@ ok := visionxixlabs.VerifyWebhookSignature(
 )
 ```
 
+## Idempotency
+
+`POST /api/v1/pipelines/runs` accepts an optional **`Idempotency-Key`**
+header. When supplied, the platform deduplicates retries:
+
+| Scenario | Response |
+|----------|----------|
+| First call with key `K` | 202 + new run; result cached for 24h |
+| Same key `K` + same body | 200 with `X-VXL-Idempotent-Replay: true` |
+| Same key `K` + different body | 422 `body_mismatch` |
+| Same key `K` while first call still processing | 409 `in_flight` |
+| After 24h, same key `K` | 202 + new run (cache expired) |
+
+Key format: 8–255 characters from `[A-Za-z0-9_\-./:]` (UUIDs, ULIDs,
+nanoid, namespaced like `ci_job:12345`).
+
+```bash
+curl -X POST https://visionxixlabs.com/api/v1/pipelines/runs \
+  -H "Authorization: Bearer vxlk_live_..." \
+  -H "Idempotency-Key: 9c5b94b1-35ad-49bb-b118-8e8fc24abf80" \
+  -d '{ "pipelineId": "ai_coding", ... }'
+```
+
+This is critical for CI runners where a transient network failure
+could otherwise fire two pipeline runs.
+
 ## Endpoints covered
 
 | Endpoint                          | Required scope        | SDK method            |

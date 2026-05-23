@@ -104,6 +104,12 @@ export interface StartCodingRunInput {
   repoRef: string;
   branchHint?: string;
   metadata?: Record<string, string>;
+  /**
+   * Optional Stripe-style idempotency key. When set, a duplicate
+   * call with the same key + body returns the cached response
+   * instead of firing a second pipeline run. 24h TTL.
+   */
+  idempotencyKey?: string;
 }
 
 export class VXLApiError extends Error {
@@ -145,13 +151,17 @@ export class VisionXIXLabs {
   }
 
   startCodingRun(input: StartCodingRunInput): Promise<StartRunResponse> {
-    return this.post<StartRunResponse>("/api/v1/pipelines/runs", {
-      pipelineId: "ai_coding",
-      instruction: input.instruction,
-      repoRef: input.repoRef,
-      ...(input.branchHint ? { branchHint: input.branchHint } : {}),
-      ...(input.metadata ? { metadata: input.metadata } : {}),
-    });
+    return this.post<StartRunResponse>(
+      "/api/v1/pipelines/runs",
+      {
+        pipelineId: "ai_coding",
+        instruction: input.instruction,
+        repoRef: input.repoRef,
+        ...(input.branchHint ? { branchHint: input.branchHint } : {}),
+        ...(input.metadata ? { metadata: input.metadata } : {}),
+      },
+      input.idempotencyKey ? { "Idempotency-Key": input.idempotencyKey } : undefined,
+    );
   }
 
   // ---------------------------------------------------------------- HTTP
@@ -160,11 +170,20 @@ export class VisionXIXLabs {
     return this.execute<T>("GET", path);
   }
 
-  private async post<T>(path: string, body: Record<string, unknown>): Promise<T> {
-    return this.execute<T>("POST", path, JSON.stringify(body));
+  private async post<T>(
+    path: string,
+    body: Record<string, unknown>,
+    extraHeaders?: Record<string, string>,
+  ): Promise<T> {
+    return this.execute<T>("POST", path, JSON.stringify(body), extraHeaders);
   }
 
-  private async execute<T>(method: "GET" | "POST", path: string, body?: string): Promise<T> {
+  private async execute<T>(
+    method: "GET" | "POST",
+    path: string,
+    body?: string,
+    extraHeaders?: Record<string, string>,
+  ): Promise<T> {
     const url = `${this.baseUrl}${path}`;
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), this.timeoutMs);
@@ -175,6 +194,7 @@ export class VisionXIXLabs {
           "Authorization": `Bearer ${this.apiKey}`,
           "User-Agent": "VisionXIXLabs-TS/1.0",
           ...(body ? { "Content-Type": "application/json" } : {}),
+          ...(extraHeaders ?? {}),
         },
         body,
         signal: controller.signal,

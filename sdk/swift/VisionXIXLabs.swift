@@ -79,11 +79,16 @@ public struct VisionXIXLabs {
     }
 
     /// POST /api/v1/pipelines/runs — trigger a coding pipeline run.
+    ///
+    /// Pass `idempotencyKey` (UUID or any 8-255 char ASCII id) to make
+    /// the call safely retryable: a duplicate call with the same key
+    /// and body returns the cached response instead of firing twice.
     public func startCodingRun(
         instruction: String,
         repoRef: String,
         branchHint: String? = nil,
-        metadata: [String: String] = [:]
+        metadata: [String: String] = [:],
+        idempotencyKey: String? = nil
     ) async throws -> StartRunResponse {
         var body: [String: Any] = [
             "pipelineId": "ai_coding",
@@ -92,7 +97,9 @@ public struct VisionXIXLabs {
         ]
         if let branchHint { body["branchHint"] = branchHint }
         if !metadata.isEmpty { body["metadata"] = metadata }
-        return try await post("/api/v1/pipelines/runs", body: body)
+        var extra: [String: String] = [:]
+        if let idempotencyKey { extra["Idempotency-Key"] = idempotencyKey }
+        return try await post("/api/v1/pipelines/runs", body: body, extraHeaders: extra)
     }
 
     // MARK: - Webhook signature verification
@@ -135,12 +142,17 @@ public struct VisionXIXLabs {
         return try await execute(req)
     }
 
-    private func post<T: Decodable>(_ path: String, body: [String: Any]) async throws -> T {
+    private func post<T: Decodable>(
+        _ path: String,
+        body: [String: Any],
+        extraHeaders: [String: String] = [:]
+    ) async throws -> T {
         var req = URLRequest(url: baseUrl.appendingPathComponent(path))
         req.httpMethod = "POST"
         req.setValue("Bearer \(apiKey)", forHTTPHeaderField: "Authorization")
         req.setValue("application/json", forHTTPHeaderField: "Content-Type")
         req.setValue("VisionXIXLabs-Swift/1.0", forHTTPHeaderField: "User-Agent")
+        for (k, v) in extraHeaders { req.setValue(v, forHTTPHeaderField: k) }
         req.httpBody = try JSONSerialization.data(withJSONObject: body)
         return try await execute(req)
     }

@@ -1,5 +1,5 @@
 /**
- * POST /api/v1/pipelines/runs — Phase 396.
+ * POST /api/v1/pipelines/runs — Phase 396 + 402.
  *
  * Public, machine-to-machine pipeline-trigger endpoint. External
  * clients with an API key carrying `pipeline:trigger` scope can
@@ -9,9 +9,18 @@
  * Body:
  *   { pipelineId, instruction, repoRef, branchHint?, metadata? }
  *
+ * Optional headers:
+ *   Idempotency-Key: <client-uuid>     — Phase 402, Stripe-style. When
+ *     present, a duplicate POST with the same key + body returns the
+ *     cached response instead of firing a second pipeline run. A
+ *     duplicate POST with the same key but a DIFFERENT body returns
+ *     422. A duplicate POST while the first call is still processing
+ *     returns 409.
+ *
  * Response (202 Accepted):
  *   { ok: true, runId, correlationId, status: "running",
- *     pollUrl: "/api/v1/pipelines/runs/<id>" }
+ *     pollUrl: "/api/v1/pipelines/runs/<id>",
+ *     idempotent?: true }
  *
  * On validation failure → 400 with closed-union `error` code.
  * On scope/auth failure → 401/403 (handled by authenticateApiKey).
@@ -25,8 +34,18 @@ import { NextResponse, type NextRequest } from "next/server";
 import { authenticateApiKey } from "@/lib/security/authenticateApiKey";
 import { validateTriggerRunInput } from "@/lib/workforce/pipelines/validateTriggerRunInput";
 import { startPipelineRun } from "@/lib/workforce/pipelines/pipelineRunner";
+import {
+  parseIdempotencyKeyHeader,
+  hashRequestBody,
+} from "@/lib/security/idempotency";
+import {
+  claimIdempotencySlot,
+  completeIdempotencySlot,
+} from "@/lib/security/idempotencyStore";
 
 export const dynamic = "force-dynamic";
+
+const ROUTE_PATH = "POST /api/v1/pipelines/runs";
 
 function getSourceIp(req: NextRequest): string | null {
   return req.headers.get("x-forwarded-for")?.split(",")[0]?.trim()
@@ -42,7 +61,7 @@ export async function POST(req: NextRequest) {
     sourceIp: getSourceIp(req),
     requiredScope: "pipeline:trigger",
     correlationId,
-    route: "POST /api/v1/pipelines/runs",
+    route: ROUTE_PATH,
   });
   if (!auth.ok) {
     const headers: Record<string, string> = {};
@@ -60,22 +79,100 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  let body: unknown;
-  try { body = await req.json(); } catch {
-    return NextResponse.json({ ok: false, error: "invalid_json" }, { status: 400 });
+  // Read the raw body ONCE so we can hash it for idempotency and parse
+  // it for the validator without consuming the stream twice.
+  let rawBody: string;
+  try {
+    rawBody = await req.text();
+  } catch {
+    return NextResponse.json({ ok: false, error: "invalid_body_read" }, { status: 400 });
   }
 
-  const validation = validateTriggerRunInput(body);
-  if (!validation.ok) {
+  // ---------- Idempotency gate ----------
+  const idemHeader = req.headers.get("idempotency-key") ?? req.headers.get("Idempotency-Key");
+  const keyParse = parseIdempotencyKeyHeader(idemHeader);
+  let idempotencyRecordId: string | null = null;
+
+  if (keyParse.ok) {
+    const claim = await claimIdempotencySlot({
+      organizationId: auth.organizationId,
+      idempotencyKey: keyParse.key,
+      routePath: ROUTE_PATH,
+      requestBodyHash: hashRequestBody(rawBody),
+    });
+
+    if (claim.decision.kind === "replay_completed" && claim.decision.cachedResponse) {
+      const cached = claim.decision.cachedResponse;
+      return NextResponse.json(
+        cached.body as Record<string, unknown>,
+        {
+          status: cached.httpStatus,
+          headers: { "X-VXL-Idempotent-Replay": "true" },
+        },
+      );
+    }
+    if (claim.decision.kind === "in_flight" || claim.decision.kind === "body_mismatch") {
+      return NextResponse.json(
+        {
+          ok: false,
+          error: claim.decision.kind,
+          message: claim.decision.message,
+        },
+        { status: claim.decision.httpStatus ?? 409 },
+      );
+    }
+    // "no_record" or "expired" (overwritten) — proceed with fresh processing.
+    idempotencyRecordId = claim.recordId;
+  } else if (idemHeader !== null) {
+    // Header was supplied but malformed — refuse rather than silently
+    // ignore, since the client believed they had idempotency protection.
     return NextResponse.json(
       {
         ok: false,
-        error: validation.error,
-        message: validation.message,
-        ...(validation.field ? { field: validation.field } : {}),
+        error: "idempotency_key_invalid",
+        message: `Idempotency-Key header invalid: ${keyParse.reason}.`,
       },
       { status: 400 },
     );
+  }
+
+  // ---------- Validation ----------
+  let parsedJson: unknown;
+  try { parsedJson = rawBody.length > 0 ? JSON.parse(rawBody) : null; }
+  catch {
+    const resp = { ok: false as const, error: "invalid_json" };
+    if (idempotencyRecordId) {
+      await completeIdempotencySlot({
+        recordId: idempotencyRecordId,
+        status: "failed",
+        responseStatus: 400,
+        responseBody: resp,
+        organizationId: auth.organizationId,
+        correlationId,
+      });
+    }
+    return NextResponse.json(resp, { status: 400 });
+  }
+
+  const validation = validateTriggerRunInput(parsedJson);
+  if (!validation.ok) {
+    const resp = {
+      ok: false as const,
+      error: validation.error,
+      message: validation.message,
+      ...(validation.field ? { field: validation.field } : {}),
+    };
+    if (idempotencyRecordId) {
+      await completeIdempotencySlot({
+        recordId: idempotencyRecordId,
+        status: "failed",
+        responseStatus: 400,
+        responseBody: resp,
+        organizationId: auth.organizationId,
+        correlationId,
+      });
+    }
+    return NextResponse.json(resp, { status: 400 });
   }
 
   const result = await startPipelineRun({
@@ -86,8 +183,6 @@ export async function POST(req: NextRequest) {
       instruction: validation.instruction,
       repoRef: validation.repoRef,
       branchHint: validation.branchHint,
-      // Round-trip operator-supplied metadata so webhook listeners
-      // can correlate the run back to its originating context.
       ...validation.metadata,
       _triggeredVia: "api_v1",
       _apiKeyEnv: auth.env,
@@ -95,20 +190,37 @@ export async function POST(req: NextRequest) {
   });
 
   if (!result.ok) {
-    return NextResponse.json(
-      { ok: false, error: result.reason },
-      { status: 404 },
-    );
+    const resp = { ok: false as const, error: result.reason };
+    if (idempotencyRecordId) {
+      await completeIdempotencySlot({
+        recordId: idempotencyRecordId,
+        status: "failed",
+        responseStatus: 404,
+        responseBody: resp,
+        organizationId: auth.organizationId,
+        correlationId,
+      });
+    }
+    return NextResponse.json(resp, { status: 404 });
   }
 
-  return NextResponse.json(
-    {
-      ok: true,
-      runId: result.runId,
-      correlationId: result.correlationId,
-      status: "running",
-      pollUrl: `/api/v1/pipelines/runs/${result.runId}`,
-    },
-    { status: 202 },
-  );
+  const okBody = {
+    ok: true as const,
+    runId: result.runId,
+    correlationId: result.correlationId,
+    status: "running" as const,
+    pollUrl: `/api/v1/pipelines/runs/${result.runId}`,
+  };
+  if (idempotencyRecordId) {
+    await completeIdempotencySlot({
+      recordId: idempotencyRecordId,
+      status: "completed",
+      responseStatus: 202,
+      responseBody: okBody,
+      organizationId: auth.organizationId,
+      correlationId,
+    });
+  }
+
+  return NextResponse.json(okBody, { status: 202 });
 }

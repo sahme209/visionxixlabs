@@ -1835,6 +1835,34 @@ model FeedbackRecord {
   @@index([organizationId, createdAt])
 }
 
+/// Idempotency record — Phase 402.
+/// Caches v1 API responses keyed by (organizationId, idempotencyKey,
+/// routePath) so a client's network retry doesn't fire the same
+/// pipeline run twice. Stripe-style semantics:
+///   · same hash + completed → replay cached response
+///   · same hash + in_flight → 409 (still processing)
+///   · diff hash             → 422 (key reuse with different body)
+/// Expires 24h after creation to bound storage growth.
+model IdempotencyRecord {
+  id                String   @id @default(cuid())
+  organizationId    String
+  idempotencyKey    String
+  routePath         String
+  /// SHA-256 hex of the raw request body — detects key reuse with
+  /// a different body.
+  requestBodyHash   String
+  /// "in_flight" | "completed" | "failed"
+  status            String   @default("in_flight")
+  responseStatus    Int?
+  responseBody      Json?
+  expiresAt         DateTime
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@unique([organizationId, idempotencyKey, routePath])
+  @@index([expiresAt])
+}
+
 /// Per-organization pipeline budget config — Phase 401.
 /// Overrides the platform's DEFAULT_RUN_MAX_CENTS for this workspace.
 /// `defaultMaxCostCents = null` means unlimited at the workspace level

@@ -139,6 +139,8 @@ export type AuditAction =
   | "workforce.budget_config_created"
   | "workforce.budget_config_updated"
   | "workforce.budget_config_deleted"
+  // Idempotency — Phase 402.
+  | "workforce.idempotency_slot_completed"
   // Generic
   | "system.error";
 
