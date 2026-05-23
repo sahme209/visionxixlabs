@@ -42,6 +42,7 @@ import {
   type FileChange,
   type OpenPRResult,
 } from "./githubWriteClient";
+import { dispatchWebhookEvent } from "@/lib/webhooks/dispatchWebhookEvent";
 
 interface ReadMetadata {
   repoRef?: unknown;
@@ -206,6 +207,27 @@ export const codePrOpenRealExecutor: StageExecutorFn = async (ctx) => {
         prNumber: result.prNumber,
         prUrl: result.prUrl,
       },
+    });
+  } catch { /* best-effort */ }
+
+  // Phase 397: fire coding.pr_opened webhook so integrators get notified
+  // the moment a PR is opened — typical use is posting to Slack/Linear/etc.
+  try {
+    await dispatchWebhookEvent({
+      organizationId: ctx.organizationId,
+      eventKind: "coding.pr_opened",
+      data: {
+        owner: coords.owner,
+        repo: coords.repo,
+        prNumber: result.prNumber,
+        prUrl: result.prUrl,
+        baseBranch: meta.branchHint ?? "main",
+        headBranch: newBranch,
+        headSha: result.headSha,
+        fileCount: fileChanges.length,
+        stageRunId: ctx.stageRunId,
+      },
+      correlationId: ctx.correlationId,
     });
   } catch { /* best-effort */ }
 

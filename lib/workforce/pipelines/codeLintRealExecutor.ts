@@ -31,6 +31,7 @@ import { parseUnifiedDiff } from "./parseUnifiedDiff";
 import { applyDiff } from "./applyUnifiedDiff";
 import { dispatchValidator, type ValidationFailure } from "./staticValidators";
 import { fetchFileContent } from "./githubWriteClient";
+import { dispatchWebhookEvent } from "@/lib/webhooks/dispatchWebhookEvent";
 
 interface MetaShape {
   repoRef?: unknown;
@@ -228,6 +229,28 @@ export const codeLintRealExecutor: StageExecutorFn = async (ctx) => {
           failures: e.failures,
         })),
       },
+    });
+  } catch { /* best-effort */ }
+
+  // Phase 397: fire coding.lint_failed webhook so the team gets paged
+  // the moment the AI shipped structurally broken code.
+  try {
+    await dispatchWebhookEvent({
+      organizationId: ctx.organizationId,
+      eventKind: "coding.lint_failed",
+      data: {
+        stageId: ctx.stageId,
+        stageRunId: ctx.stageRunId,
+        failingFileCount: failingEntries.length,
+        firstFailingPath: firstFail.path,
+        firstFailureMessage: firstFailureMsg,
+        failures: failingEntries.map((e) => ({
+          path: e.path,
+          changeKind: e.changeKind,
+          failures: e.failures,
+        })),
+      },
+      correlationId: ctx.correlationId,
     });
   } catch { /* best-effort */ }
 

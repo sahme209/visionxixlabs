@@ -38,6 +38,7 @@ import { parseUnifiedDiff } from "./parseUnifiedDiff";
 import { applyDiff } from "./applyUnifiedDiff";
 import { analyzeTestChange, isTestFilePath, type TestFinding } from "./testAssertionAnalyzer";
 import { fetchFileContent } from "./githubWriteClient";
+import { dispatchWebhookEvent } from "@/lib/webhooks/dispatchWebhookEvent";
 
 interface MetaShape {
   repoRef?: unknown;
@@ -255,6 +256,29 @@ export const codeTestRealExecutor: StageExecutorFn = async (ctx) => {
           findings: e.findings,
         })),
       },
+    });
+  } catch { /* best-effort */ }
+
+  // Phase 397: fire coding.test_failed webhook so integrators can route on
+  // "AI tried to cheat the tests" — typical use is paging the engineer
+  // on call before the PR even gets reviewed.
+  try {
+    await dispatchWebhookEvent({
+      organizationId: ctx.organizationId,
+      eventKind: "coding.test_failed",
+      data: {
+        stageId: ctx.stageId,
+        stageRunId: ctx.stageRunId,
+        failingFileCount: failingEntries.length,
+        firstFailingPath: firstFail.path,
+        firstFindingMessage: firstFinding,
+        findings: failingEntries.map((e) => ({
+          path: e.path,
+          changeKind: e.changeKind,
+          findings: e.findings,
+        })),
+      },
+      correlationId: ctx.correlationId,
     });
   } catch { /* best-effort */ }
 

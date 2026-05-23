@@ -24,6 +24,7 @@ import { planForStripeTier, type PricingPlan } from "./planRegistry";
 import { whichAlertsToFire, type AlertThreshold } from "./whichAlertsToFire";
 import { record as recordAudit } from "@/lib/audit/secureAudit";
 import { id as idFactory } from "@/lib/domain/ids";
+import { dispatchWebhookEvent } from "@/lib/webhooks/dispatchWebhookEvent";
 
 const periodKey = (d: Date) => `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, "0")}`;
 const periodStart = (d: Date) => new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), 1));
@@ -175,6 +176,45 @@ export async function scanBillingAlerts(now: Date = new Date()): Promise<ScanBil
               },
             });
           } catch { /* best-effort */ }
+
+          // Phase 397: fire billing webhook events. At 70/90% we send
+          // billing.threshold_crossed (heads-up). At 100% we additionally
+          // send billing.quota_exhausted so PagerDuty/Slack integrators
+          // can route the harder severity separately.
+          try {
+            await dispatchWebhookEvent({
+              organizationId: org.organizationId,
+              eventKind: "billing.threshold_crossed",
+              data: {
+                dimension: probe.dimension,
+                threshold,
+                ratio,
+                current,
+                limit,
+                planTier: plan.tier,
+                periodMonth: period,
+              },
+              correlationId,
+            });
+          } catch { /* best-effort */ }
+
+          if (threshold === 100) {
+            try {
+              await dispatchWebhookEvent({
+                organizationId: org.organizationId,
+                eventKind: "billing.quota_exhausted",
+                data: {
+                  dimension: probe.dimension,
+                  ratio,
+                  current,
+                  limit,
+                  planTier: plan.tier,
+                  periodMonth: period,
+                },
+                correlationId,
+              });
+            } catch { /* best-effort */ }
+          }
         } catch {
           // Race: another concurrent cron tick already fired this threshold.
           // The unique index swallowed our insert. Safe to ignore.

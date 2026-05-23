@@ -17,6 +17,7 @@ import { record as recordAudit } from "@/lib/audit/secureAudit";
 import { id as idFactory } from "@/lib/domain/ids";
 import { mintApiKey as mintCrypto, type ApiKeyEnv } from "./apiKeyCrypto";
 import { normalizeScopes, type ApiKeyScope } from "./apiKeyScope";
+import { dispatchWebhookEvent } from "@/lib/webhooks/dispatchWebhookEvent";
 
 export interface MintInput {
   organizationId: string;
@@ -83,6 +84,25 @@ export async function mintApiKeyRecord(input: MintInput): Promise<MintResult> {
     });
   } catch { /* best-effort */ }
 
+  // Phase 397: fire api_key.created webhook (plaintext NEVER included in
+  // the payload — only id, prefix, scopes, env, createdBy).
+  try {
+    await dispatchWebhookEvent({
+      organizationId: input.organizationId,
+      eventKind: "api_key.created",
+      data: {
+        apiKeyId: row.id,
+        name: input.name,
+        prefix: minted.prefix,
+        env,
+        scopes,
+        createdBy: input.createdBy,
+        expiresAt: input.expiresAt ?? null,
+      },
+      correlationId: input.correlationId,
+    });
+  } catch { /* best-effort */ }
+
   return {
     apiKeyId: row.id,
     plaintext: minted.plaintext,
@@ -136,6 +156,23 @@ export async function revokeApiKey(input: RevokeInput): Promise<{ ok: boolean; r
           reason: input.reason,
           revokedBy: input.revokedBy,
         },
+      });
+    } catch { /* best-effort */ }
+
+    // Phase 397: fire api_key.revoked webhook so external monitoring can
+    // route on the security event (e.g., a key was compromised and rotated).
+    try {
+      await dispatchWebhookEvent({
+        organizationId: row.organizationId,
+        eventKind: "api_key.revoked",
+        data: {
+          apiKeyId: input.apiKeyId,
+          name: row.name,
+          prefix: row.prefix,
+          reason: input.reason,
+          revokedBy: input.revokedBy,
+        },
+        correlationId: input.correlationId,
       });
     } catch { /* best-effort */ }
   }
