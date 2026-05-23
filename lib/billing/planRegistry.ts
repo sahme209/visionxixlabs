@@ -40,6 +40,8 @@ export interface PlanEntitlements {
   monthlySecurityScans: number | null;
   monthlyReports: number | null;
   monthlyPdfExports: number | null;
+  /** Phase 398 — external v1 API calls per month. null = unlimited. */
+  monthlyApiV1Calls: number | null;
 
   /** Monitoring + retention. */
   monitoringEventsPerMonth: number | null;
@@ -113,6 +115,7 @@ const STARTER: PricingPlan = {
     monthlySecurityScans: 30,
     monthlyReports: 10,
     monthlyPdfExports: 20,
+    monthlyApiV1Calls: 10_000,            // Starter
     monitoringEventsPerMonth: 100_000,
     logRetentionDays: 30,
     auditLogRetentionDays: 30,
@@ -165,6 +168,7 @@ const GROWTH: PricingPlan = {
     monthlySecurityScans: 100,
     monthlyReports: 50,
     monthlyPdfExports: 100,
+    monthlyApiV1Calls: 100_000,            // Growth
     monitoringEventsPerMonth: 1_000_000,
     logRetentionDays: 90,
     auditLogRetentionDays: 90,
@@ -217,6 +221,7 @@ const BUSINESS: PricingPlan = {
     monthlySecurityScans: 500,
     monthlyReports: 250,
     monthlyPdfExports: 500,
+    monthlyApiV1Calls: 1_000_000,          // Business
     monitoringEventsPerMonth: 10_000_000,
     logRetentionDays: 365,
     auditLogRetentionDays: 365,
@@ -268,6 +273,7 @@ const ENTERPRISE: PricingPlan = {
     monthlySecurityScans: null,
     monthlyReports: null,
     monthlyPdfExports: null,
+    monthlyApiV1Calls: null,               // Enterprise — unlimited
     monitoringEventsPerMonth: null,
     logRetentionDays: 730,
     auditLogRetentionDays: 2555,         // 7 years for compliance

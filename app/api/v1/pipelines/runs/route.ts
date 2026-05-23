@@ -45,13 +45,18 @@ export async function POST(req: NextRequest) {
     route: "POST /api/v1/pipelines/runs",
   });
   if (!auth.ok) {
+    const headers: Record<string, string> = {};
+    if (typeof auth.retryAfterSeconds === "number") {
+      headers["Retry-After"] = String(auth.retryAfterSeconds);
+    }
     return NextResponse.json(
       {
         ok: false,
         error: auth.reason,
         ...(auth.requiredScope ? { requiredScope: auth.requiredScope } : {}),
+        ...(typeof auth.retryAfterSeconds === "number" ? { retryAfterSeconds: auth.retryAfterSeconds } : {}),
       },
-      { status: auth.httpStatus },
+      { status: auth.httpStatus, headers },
     );
   }
 

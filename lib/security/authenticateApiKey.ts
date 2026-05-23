@@ -32,6 +32,9 @@ import {
   type RequiredScope,
 } from "./apiKeyScope";
 import { checkRateLimit } from "@/lib/rateLimit";
+import { computeApiQuota, currentMonthStartUtc } from "./computeApiQuota";
+import { readBillingPlan } from "@/lib/billing/tenantBillingStore";
+import { planForStripeTier } from "@/lib/billing/planRegistry";
 
 export type AuthFailureKind =
   | "no_bearer_token"
@@ -40,13 +43,16 @@ export type AuthFailureKind =
   | "token_expired"
   | "token_revoked"
   | "missing_scope"
-  | "rate_limited";
+  | "rate_limited"
+  | "quota_exhausted";  // Phase 398 — monthly plan quota
 
 export interface AuthFailure {
   ok: false;
   reason: AuthFailureKind;
   /** When reason="missing_scope" — which scope was required. */
   requiredScope?: RequiredScope;
+  /** When reason="quota_exhausted" or "rate_limited" — seconds until retry is sensible. */
+  retryAfterSeconds?: number;
   /** HTTP status the caller should return. */
   httpStatus: 401 | 403 | 429;
 }
@@ -182,6 +188,43 @@ export async function authenticateApiKey(input: AuthenticateInput): Promise<Auth
     };
   }
 
+  // Phase 398: monthly v1 quota gate. Reads the workspace's plan, counts
+  // this month's api_v1_call UsageEvents, runs the pure quota kernel.
+  // Best-effort wrapped: any plan/usage lookup failure FAILS OPEN (allows
+  // the request) so a billing DB outage cannot lock every customer out
+  // of their integration. The audit row still records the issue.
+  try {
+    const monthStart = currentMonthStartUtc();
+    let monthlyLimit: number | null = null;
+    try {
+      const billing = await readBillingPlan(matched.organizationId);
+      const plan = planForStripeTier(billing.tier);
+      monthlyLimit = plan.entitlements.monthlyApiV1Calls;
+    } catch {
+      // Fall back to "starter" defaults rather than locking out.
+      monthlyLimit = 10_000;
+    }
+
+    const currentCalls = await prisma.usageEvent.count({
+      where: {
+        organizationId: matched.organizationId,
+        eventKind: "api_v1_call",
+        createdAt: { gte: monthStart },
+      },
+    }).catch(() => 0);
+
+    const quota = computeApiQuota({ currentCalls, monthlyLimit });
+    if (!quota.allowed) {
+      await emitDeniedAudit("quota_exhausted", input, matched.id, matched.organizationId);
+      return {
+        ok: false,
+        reason: "quota_exhausted",
+        retryAfterSeconds: quota.retryAfterSeconds,
+        httpStatus: 429,
+      };
+    }
+  } catch { /* fail-open — never block valid auth on quota plumbing */ }
+
   // Best-effort usage tracking. Failures here NEVER block auth.
   try {
     await prisma.apiKey.update({
@@ -190,6 +233,26 @@ export async function authenticateApiKey(input: AuthenticateInput): Promise<Auth
         lastUsedAt: new Date(),
         lastUsedIp: input.sourceIp ?? null,
         useCount: { increment: 1 },
+      },
+    });
+  } catch { /* best-effort */ }
+
+  // Phase 398: persist a UsageEvent for this v1 call. The cron-driven
+  // billing alert scanner already aggregates UsageEvent by eventKind, so
+  // this row participates in budget telemetry automatically — no new
+  // scanner code needed.
+  try {
+    await prisma.usageEvent.create({
+      data: {
+        organizationId: matched.organizationId,
+        eventKind: "api_v1_call",
+        costCents: 0,                    // v1 calls don't burn AI credits
+        metadata: {
+          apiKeyId: matched.id,
+          route: input.route,
+          requiredScope: input.requiredScope,
+          env: matched.env,
+        } as unknown as object,
       },
     });
   } catch { /* best-effort */ }
