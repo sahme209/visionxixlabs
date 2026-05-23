@@ -29,6 +29,7 @@ import { findPlan } from "@/lib/billing/planRegistry";
 import { compareEvalRuns } from "./compareEvalRuns";
 import { assertEvalReleaseHealthy, type GateDecision } from "./assertEvalReleaseHealthy";
 import { loadEvalRunSnapshot, findPreviousCompletedRun } from "./loadEvalRunSnapshot";
+import { dispatchWebhookEvent } from "@/lib/webhooks/dispatchWebhookEvent";
 
 const INTERNAL_WORKSPACE_ID = "ws_internal_admin_visionxixlabs";
 
@@ -231,6 +232,25 @@ export async function runEvalSuite(input: RunEvalSuiteInput): Promise<RunEvalSui
             improvements: diff.improvements,
           },
         });
+
+        // Phase 396: fire eval.regression_detected webhook so integrators
+        // can page on quality regression the second it's detected.
+        try {
+          await dispatchWebhookEvent({
+            organizationId: INTERNAL_WORKSPACE_ID,
+            eventKind: "eval.regression_detected",
+            data: {
+              runId: run.id,
+              previousRunId: previous?.runId ?? null,
+              runKind: input.runKind,
+              counts: diff.counts,
+              regressionCount: diff.counts.regressionCount,
+              newFailures: diff.counts.newFailures,
+              newErrors: diff.counts.newErrors,
+            },
+            correlationId,
+          });
+        } catch { /* best-effort */ }
       }
 
       const gate = assertEvalReleaseHealthy({
@@ -263,6 +283,44 @@ export async function runEvalSuite(input: RunEvalSuiteInput): Promise<RunEvalSui
           regressionCount: diff.counts.regressionCount,
         },
       });
+
+      // Phase 396: fire release_gate.passed / release_gate.blocked +
+      // eval.run_completed webhook events. All best-effort.
+      try {
+        await dispatchWebhookEvent({
+          organizationId: INTERNAL_WORKSPACE_ID,
+          eventKind: gate.passed ? "release_gate.passed" : "release_gate.blocked",
+          data: {
+            runId: run.id,
+            runKind: input.runKind,
+            passRate: gate.passRate,
+            averageScore: gate.averageScore,
+            blockers: gate.blockers,
+            summary: gate.summary,
+            regressionCount: diff.counts.regressionCount,
+            improvementCount: diff.counts.improvementCount,
+          },
+          correlationId,
+        });
+      } catch { /* best-effort */ }
+
+      try {
+        await dispatchWebhookEvent({
+          organizationId: INTERNAL_WORKSPACE_ID,
+          eventKind: "eval.run_completed",
+          data: {
+            runId: run.id,
+            runKind: input.runKind,
+            totalCases: result.totalCases,
+            passCount: result.passCount,
+            failCount: result.failCount,
+            skippedCount: result.skippedCount,
+            totalCostCents: result.totalCostCents,
+            gatePassed: gate.passed,
+          },
+          correlationId,
+        });
+      } catch { /* best-effort */ }
     }
   } catch { /* best-effort — never block the run on the gate's plumbing */ }
 

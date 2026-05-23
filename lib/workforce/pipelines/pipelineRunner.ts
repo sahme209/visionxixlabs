@@ -28,6 +28,7 @@ import {
   getStageExecutor,
 } from "./stageExecutorRegistry";
 import { mintPipelineStageApproval } from "./mintPipelineStageApproval";
+import { dispatchWebhookEvent } from "@/lib/webhooks/dispatchWebhookEvent";
 
 export interface StartPipelineInput {
   organizationId: string;
@@ -88,6 +89,24 @@ export async function startPipelineRun(input: StartPipelineInput): Promise<Start
     });
   } catch { /* best-effort */ }
 
+  // Phase 396: fire pipeline.run_started webhook.
+  try {
+    await dispatchWebhookEvent({
+      organizationId: input.organizationId,
+      eventKind: "pipeline.run_started",
+      data: {
+        runId: run.id,
+        pipelineId: input.pipelineId,
+        pipelineName: def.name,
+        correlationId,
+        triggeredBy: input.triggeredBy,
+        startedAt: run.startedAt.toISOString(),
+        stageCount: def.stages.length,
+      },
+      correlationId,
+    });
+  } catch { /* best-effort */ }
+
   // Advance synchronously through dry-run stages until pause / terminal.
   await advancePipelineRun(run.id);
 
@@ -131,18 +150,54 @@ export async function advancePipelineRun(runId: string): Promise<void> {
         data: { status: "succeeded", completedAt: new Date() },
       });
       await emitRunAudit(run, "pipeline.run_completed", "success", { runId, finalStatus: "succeeded" });
+      // Phase 396: fire pipeline.run_completed webhook. Best-effort —
+      // a webhook outage never blocks the pipeline's terminal write.
+      try {
+        await dispatchWebhookEvent({
+          organizationId: run.organizationId,
+          eventKind: "pipeline.run_completed",
+          data: {
+            runId,
+            pipelineId: run.pipelineId,
+            correlationId: run.correlationId,
+            triggeredBy: run.triggeredBy,
+            startedAt: run.startedAt.toISOString(),
+            completedAt: new Date().toISOString(),
+            stageCount: run.stages.length,
+          },
+          correlationId: run.correlationId,
+        });
+      } catch { /* best-effort */ }
       return;
     }
     if (plan.kind === "failed") {
+      const errorSummary = `Stage ordering=${plan.failedOrdering} failed.`;
       await prisma.pipelineRun.update({
         where: { id: runId },
         data: {
           status: "failed",
           completedAt: new Date(),
-          errorSummary: `Stage ordering=${plan.failedOrdering} failed.`,
+          errorSummary,
         },
       });
       await emitRunAudit(run, "pipeline.run_failed", "failure", { runId, failedOrdering: plan.failedOrdering });
+      try {
+        await dispatchWebhookEvent({
+          organizationId: run.organizationId,
+          eventKind: "pipeline.run_failed",
+          data: {
+            runId,
+            pipelineId: run.pipelineId,
+            correlationId: run.correlationId,
+            triggeredBy: run.triggeredBy,
+            startedAt: run.startedAt.toISOString(),
+            completedAt: new Date().toISOString(),
+            failedOrdering: plan.failedOrdering,
+            errorSummary,
+          },
+          correlationId: run.correlationId,
+        });
+      } catch { /* best-effort */ }
       return;
     }
     if (plan.kind === "await_approval") {
