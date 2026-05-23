@@ -36,7 +36,10 @@ const nextConfig: NextConfig = {
       { source: "/solutions-for-growing-teams", destination: "/", permanent: true },
       { source: "/cloud-studio", destination: "/", permanent: true },
       { source: "/cloud-studio/:path*", destination: "/", permanent: true },
-      { source: "/demo/:path*", destination: "/", permanent: true },
+      // NOTE: /demo and /demo/:path* are the Phase 405 sandbox + per-scenario
+      // walkthrough — keep them live. The old catch-all redirect that 301'd
+      // /demo/* → / used to make sense before the sandbox existed; today it
+      // would break every scenario card on /platform-demo.
       { source: "/products", destination: "/operator/pricing", permanent: true },
       { source: "/free-review", destination: "/", permanent: true },
       { source: "/cloud-review", destination: "/", permanent: true },

@@ -181,7 +181,7 @@ export function Navigation() {
             {/* Direct links */}
             <Link
               href="/platform-demo"
-              className="nav-link-underline relative flex items-center gap-1.5 px-4 py-2 text-zinc-300 hover:text-white rounded-lg transition-colors text-sm font-medium"
+              className="nav-link-underline relative flex items-center gap-1.5 px-4 py-2 text-zinc-300 hover:text-white rounded-lg transition-colors text-sm font-medium whitespace-nowrap"
             >
               <PlayCircleIcon className="h-4 w-4 text-violet-400" />
               Demo
@@ -222,7 +222,7 @@ export function Navigation() {
               href="https://github.com/visionxixlabs"
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-1.5 border border-white/[0.08] rounded-full px-3 py-1 text-xs text-zinc-400 hover:text-white hover:border-white/[0.15] transition-all duration-200 ml-2"
+              className="flex items-center gap-1.5 border border-white/[0.08] rounded-full px-3 py-1 text-xs text-zinc-400 hover:text-white hover:border-white/[0.15] transition-all duration-200 ml-2 whitespace-nowrap"
             >
               <StarIcon className="h-3.5 w-3.5" />
               GitHub
@@ -231,16 +231,16 @@ export function Navigation() {
             <div className="w-px h-5 bg-white/[0.08] mx-2" aria-hidden />
             <Link
               href="/auth/signin"
-              className="px-4 py-1.5 text-zinc-400 hover:text-white rounded-full border border-white/[0.1] hover:border-white/[0.2] transition-all text-sm font-medium uppercase tracking-wide"
+              className="px-4 py-1.5 text-zinc-400 hover:text-white rounded-full border border-white/[0.1] hover:border-white/[0.2] transition-all text-sm font-medium whitespace-nowrap"
             >
               Sign in
             </Link>
             <Link
               href="/operator/onboarding"
-              className="btn-amber-shimmer inline-flex items-center gap-2 px-5 py-2 rounded-full text-sm font-semibold ml-2"
+              className="btn-amber-shimmer inline-flex items-center gap-2 px-5 py-2 rounded-full text-sm font-semibold ml-2 whitespace-nowrap"
             >
               Start Free
-              <ArrowRightIcon className="h-3.5 w-3.5" />
+              <ArrowRightIcon className="h-3.5 w-3.5 shrink-0" />
             </Link>
           </div>
 
