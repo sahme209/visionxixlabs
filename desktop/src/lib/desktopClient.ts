@@ -309,6 +309,36 @@ export class DesktopClient {
   }
 
   /**
+   * GET /api/v1/pipelines/runs/[id] — single pipeline run + stages.
+   * Required scope: pipeline:read. 404 when the runId doesn't exist
+   * OR belongs to a different workspace (both collapsed to
+   * "run_not_found" to prevent cross-tenant probing).
+   */
+  async v1GetPipelineRun(runId: string): Promise<ApiResult<{
+    run: {
+      id: string;
+      pipelineId: string;
+      status: "queued" | "running" | "succeeded" | "failed" | "awaiting_approval";
+      triggeredBy: string;
+      correlationId: string;
+      startedAt: string;
+      completedAt: string | null;
+      errorSummary: string | null;
+      stages: ReadonlyArray<{
+        id: string;
+        stageId: string;
+        stageKind: string;
+        ordering: number;
+        status: string;
+        completedAt: string | null;
+        errorMessage: string | null;
+      }>;
+    };
+  }>> {
+    return this.getV1(`/api/v1/pipelines/runs/${encodeURIComponent(runId)}`);
+  }
+
+  /**
    * GET /api/v1/pipelines/runs — list recent pipeline runs for the
    * authenticated workspace. Required scope: pipeline:read.
    * Default page size 25, max 100. Filter by status with `status`.

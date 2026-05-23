@@ -20,6 +20,29 @@ interface V1PipelineRun {
   stageCount: number;
 }
 
+interface V1PipelineRunDetail {
+  id: string;
+  pipelineId: string;
+  status: string;
+  triggeredBy: string;
+  correlationId: string;
+  startedAt: string;
+  completedAt: string | null;
+  errorSummary: string | null;
+  stages: ReadonlyArray<{
+    id: string;
+    stageId: string;
+    stageKind: string;
+    ordering: number;
+    status: string;
+    completedAt: string | null;
+    errorMessage: string | null;
+  }>;
+}
+
+/** How often to poll the runs list while any row is still in flight. */
+const LIVE_POLL_MS = 5_000;
+
 export function OrchestrationView() {
   const [data, setData] = useState<OrchestrationListLite | null>(null);
   const [loading, setLoading] = useState(true);
@@ -40,6 +63,13 @@ export function OrchestrationView() {
     | { kind: "err"; message: string }
     | null
   >(null);
+
+  // Drill-down panel state: clicking a row opens the per-run detail
+  // (stages + errors). Fetched lazily via v1GetPipelineRun.
+  const [drillOpenRunId, setDrillOpenRunId] = useState<string | null>(null);
+  const [drillDetail,    setDrillDetail]    = useState<V1PipelineRunDetail | null>(null);
+  const [drillLoading,   setDrillLoading]   = useState(false);
+  const [drillError,     setDrillError]     = useState<string | null>(null);
 
   /** Generate a Phase-402-compliant idempotency key per click. */
   function newIdempotencyKey(): string {
@@ -102,6 +132,63 @@ export function OrchestrationView() {
   };
 
   useEffect(() => { refresh(); }, []);
+
+  /**
+   * Live polling: when any v1 run is still in flight, refresh the list
+   * every LIVE_POLL_MS. Effect re-runs whenever v1Runs changes — once
+   * everything terminates, the interval clears itself.
+   */
+  useEffect(() => {
+    if (!v1Runs) return;
+    const hasInFlight = v1Runs.some(
+      (r) => r.status === "running" || r.status === "queued" || r.status === "awaiting_approval",
+    );
+    if (!hasInFlight) return;
+    if (!desktopClient.hasAuth()) return;
+    const interval = setInterval(() => {
+      desktopClient.v1ListPipelineRuns({ limit: 10 }).then((res) => {
+        if (!res.ok) return;
+        const d = res.data as { runs: ReadonlyArray<V1PipelineRun> };
+        setV1Runs(d.runs);
+      });
+      // If a drill-down is open and its run is still in flight, refresh
+      // that too so the stages panel reflects live progress.
+      if (drillOpenRunId) {
+        const stillRunning = v1Runs.find((r) => r.id === drillOpenRunId);
+        if (stillRunning && (stillRunning.status === "running" || stillRunning.status === "queued")) {
+          loadDrillDetail(drillOpenRunId);
+        }
+      }
+    }, LIVE_POLL_MS);
+    return () => clearInterval(interval);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [v1Runs, drillOpenRunId]);
+
+  const loadDrillDetail = async (runId: string) => {
+    setDrillLoading(true);
+    setDrillError(null);
+    const res = await desktopClient.v1GetPipelineRun(runId);
+    if (res.ok) {
+      const d = res.data as { run: V1PipelineRunDetail };
+      setDrillDetail(d.run);
+    } else {
+      setDrillDetail(null);
+      setDrillError(res.error);
+    }
+    setDrillLoading(false);
+  };
+
+  const openDrill = (runId: string) => {
+    setDrillOpenRunId(runId);
+    setDrillDetail(null);
+    loadDrillDetail(runId);
+  };
+
+  const closeDrill = () => {
+    setDrillOpenRunId(null);
+    setDrillDetail(null);
+    setDrillError(null);
+  };
 
   const handleDecision = async (id: string, decision: "approved" | "rejected") => {
     setBusyId(id);
@@ -227,23 +314,39 @@ export function OrchestrationView() {
                 </tr>
               </thead>
               <tbody className="font-mono">
-                {v1Runs.map((r) => (
-                  <tr key={r.id} className="border-t border-axiom-border hover:bg-white/[0.02] transition-colors">
-                    <td className="px-4 py-2 text-zinc-200">{r.id.slice(0, 18)}…</td>
-                    <td className="px-3 py-2 text-zinc-300">{r.pipelineId}</td>
-                    <td className="px-3 py-2">
-                      <Badge tone={
-                        r.status === "succeeded" ? "success" :
-                        r.status === "failed"    ? "danger" :
-                        r.status === "running"   ? "cyan" :
-                                                   "warning"
-                      }>{r.status}</Badge>
-                    </td>
-                    <td className="px-3 py-2 text-zinc-400">{r.stageCount}</td>
-                    <td className="px-3 py-2 text-zinc-500">{new Date(r.startedAt).toLocaleString()}</td>
-                    <td className="px-3 py-2 text-zinc-400 truncate max-w-[160px]" title={r.triggeredBy}>{r.triggeredBy}</td>
-                  </tr>
-                ))}
+                {v1Runs.map((r) => {
+                  const isOpen = drillOpenRunId === r.id;
+                  const isInFlight = r.status === "running" || r.status === "queued" || r.status === "awaiting_approval";
+                  return (
+                    <tr
+                      key={r.id}
+                      onClick={() => (isOpen ? closeDrill() : openDrill(r.id))}
+                      className={`border-t border-axiom-border cursor-pointer transition-colors ${
+                        isOpen ? "bg-violet-500/[0.06]" : "hover:bg-white/[0.02]"
+                      }`}
+                    >
+                      <td className="px-4 py-2 text-zinc-200 flex items-center gap-2">
+                        <span className={`text-[10px] ${isOpen ? "text-violet-300" : "text-zinc-600"}`}>{isOpen ? "▼" : "▶"}</span>
+                        {r.id.slice(0, 18)}…
+                        {isInFlight && (
+                          <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" title="live · auto-refreshing" />
+                        )}
+                      </td>
+                      <td className="px-3 py-2 text-zinc-300">{r.pipelineId}</td>
+                      <td className="px-3 py-2">
+                        <Badge tone={
+                          r.status === "succeeded" ? "success" :
+                          r.status === "failed"    ? "danger" :
+                          r.status === "running"   ? "cyan" :
+                                                     "warning"
+                        }>{r.status}</Badge>
+                      </td>
+                      <td className="px-3 py-2 text-zinc-400">{r.stageCount}</td>
+                      <td className="px-3 py-2 text-zinc-500">{new Date(r.startedAt).toLocaleString()}</td>
+                      <td className="px-3 py-2 text-zinc-400 truncate max-w-[160px]" title={r.triggeredBy}>{r.triggeredBy}</td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </Card>
@@ -253,6 +356,111 @@ export function OrchestrationView() {
         <div className="rounded-lg border border-amber-500/30 bg-amber-500/[0.08] p-3 text-[11px] text-amber-200">
           v1 pipeline runs unavailable: <span className="font-mono">{v1RunsError}</span>
         </div>
+      )}
+
+      {/* Run drill-down — populated lazily when a row is clicked. */}
+      {drillOpenRunId && (
+        <section className="space-y-3">
+          <div className="flex items-center justify-between gap-2">
+            <h2 className="text-xs font-mono text-zinc-500 uppercase tracking-[0.22em]">
+              // run detail · <span className="text-violet-300">{drillOpenRunId.slice(0, 18)}…</span>
+            </h2>
+            <button
+              onClick={closeDrill}
+              className="text-[11px] font-mono text-zinc-500 hover:text-zinc-200 transition-colors"
+            >
+              close ✕
+            </button>
+          </div>
+          <Card className="p-5 border border-violet-500/15">
+            {drillLoading && !drillDetail && (
+              <p className="text-[12px] font-mono text-zinc-500">Loading stages…</p>
+            )}
+            {drillError && !drillDetail && (
+              <p className="text-[12px] text-red-300">
+                ✗ Failed to load run: <span className="font-mono">{drillError}</span>
+              </p>
+            )}
+            {drillDetail && (
+              <div className="space-y-4">
+                {/* Header row — status + key timestamps + correlation id. */}
+                <div className="flex items-start justify-between gap-4 flex-wrap">
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2">
+                      <Badge tone={
+                        drillDetail.status === "succeeded" ? "success" :
+                        drillDetail.status === "failed"    ? "danger" :
+                        drillDetail.status === "running"   ? "cyan" :
+                                                             "warning"
+                      }>{drillDetail.status}</Badge>
+                      <span className="text-[11px] font-mono text-zinc-500">
+                        {drillDetail.pipelineId}
+                      </span>
+                    </div>
+                    <p className="text-[11px] font-mono text-zinc-500">
+                      triggered by · <span className="text-zinc-300">{drillDetail.triggeredBy}</span>
+                    </p>
+                    <p className="text-[11px] font-mono text-zinc-500">
+                      correlation · <span className="text-zinc-400">{drillDetail.correlationId}</span>
+                    </p>
+                  </div>
+                  <div className="text-[11px] font-mono text-zinc-500 text-right space-y-1">
+                    <p>started · <span className="text-zinc-300">{new Date(drillDetail.startedAt).toLocaleString()}</span></p>
+                    <p>completed · <span className="text-zinc-300">{drillDetail.completedAt ? new Date(drillDetail.completedAt).toLocaleString() : "—"}</span></p>
+                  </div>
+                </div>
+
+                {drillDetail.errorSummary && (
+                  <div className="rounded-lg border border-red-500/25 bg-red-500/[0.06] p-3 text-[12px] text-red-300">
+                    <span className="text-[10px] font-mono uppercase tracking-[0.18em] text-red-400 mr-2">error</span>
+                    {drillDetail.errorSummary}
+                  </div>
+                )}
+
+                {/* Stages timeline */}
+                <div>
+                  <p className="text-[10px] font-mono text-zinc-500 uppercase tracking-[0.18em] mb-2">
+                    stages · {drillDetail.stages.length}
+                  </p>
+                  <ol className="space-y-1.5">
+                    {drillDetail.stages.map((s) => (
+                      <li
+                        key={s.id}
+                        className="flex items-start gap-3 rounded-md border border-axiom-border bg-white/[0.02] px-3 py-2"
+                      >
+                        <span className="text-[10px] font-mono text-zinc-600 tabular-nums w-6 mt-0.5">
+                          {String(s.ordering).padStart(2, "0")}
+                        </span>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <span className="text-[12px] font-mono text-zinc-200">{s.stageKind}</span>
+                            <Badge tone={
+                              s.status === "succeeded" ? "success" :
+                              s.status === "failed"    ? "danger" :
+                              s.status === "running"   ? "cyan" :
+                              s.status === "awaiting_approval" ? "warning" :
+                                                         "neutral"
+                            }>{s.status}</Badge>
+                            {s.completedAt && (
+                              <span className="text-[10px] font-mono text-zinc-600">
+                                · {new Date(s.completedAt).toLocaleTimeString()}
+                              </span>
+                            )}
+                          </div>
+                          {s.errorMessage && (
+                            <p className="text-[11px] text-red-300 mt-1 font-mono break-words">
+                              {s.errorMessage}
+                            </p>
+                          )}
+                        </div>
+                      </li>
+                    ))}
+                  </ol>
+                </div>
+              </div>
+            )}
+          </Card>
+        </section>
       )}
 
       {data && (
