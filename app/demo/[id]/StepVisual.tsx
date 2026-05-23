@@ -52,6 +52,24 @@ function detectStepKind(step: DemoStep): StepKind {
 
 export function StepVisual({ step, ord }: { step: DemoStep; ord: number }) {
   const kind = detectStepKind(step);
+  // Desktop-kind steps render inside a Tauri window frame; every other
+  // step that targets a /dashboard/* route renders inside a web-app
+  // frame with sidebar + topbar. The rest (homepage, /demo, /download)
+  // get the simple browser chrome.
+  if (kind === "desktop") {
+    return (
+      <MockDesktopFrame route={step.route}>
+        {render(kind, step, ord)}
+      </MockDesktopFrame>
+    );
+  }
+  if (step.route?.startsWith("/dashboard/")) {
+    return (
+      <MockDashboardFrame route={step.route}>
+        {render(kind, step, ord)}
+      </MockDashboardFrame>
+    );
+  }
   return (
     <div className="rounded-2xl border border-white/[0.08] bg-gradient-to-br from-zinc-900/60 to-zinc-950/60 backdrop-blur-sm overflow-hidden">
       <MockBrowserChrome route={step.route} />
@@ -99,33 +117,217 @@ function MockBrowserChrome({ route }: { route?: string }) {
   );
 }
 
+// ─── Web dashboard frame ─────────────────────────────────────────────
+//
+// Stylized HTML "screenshot" of the real /dashboard layout: header strip
+// (workspace label · email · sign-out) + 7-group sidebar nav + main
+// content area. The sidebar entry whose href matches step.route lights
+// up in violet so the user instantly sees WHERE in the app this happens.
+
+interface SidebarItem { label: string; route: string }
+interface SidebarGroup { kind: string; label: string; items: ReadonlyArray<SidebarItem> }
+
+const DASHBOARD_NAV: ReadonlyArray<SidebarGroup> = [
+  { kind: "start_here",   label: "Start here",   items: [
+    { label: "Start Here",        route: "/dashboard/start-here"     },
+    { label: "Command Center",    route: "/dashboard/command-center" },
+    { label: "Onboarding",        route: "/dashboard/onboarding"     },
+  ]},
+  { kind: "operations",   label: "Operations",   items: [
+    { label: "AWS",               route: "/dashboard/aws"            },
+    { label: "Cloud Security",    route: "/dashboard/cloud-security" },
+    { label: "Security",          route: "/dashboard/security"       },
+    { label: "Observability",     route: "/dashboard/observability"  },
+    { label: "Incidents",         route: "/dashboard/incidents"      },
+  ]},
+  { kind: "automation",   label: "Automation",   items: [
+    { label: "Pipelines",         route: "/dashboard/workforce/pipelines" },
+    { label: "Approvals",         route: "/dashboard/approvals"     },
+    { label: "Automation",        route: "/dashboard/automation"    },
+    { label: "Policies",          route: "/dashboard/policies"      },
+    { label: "Audit log",         route: "/dashboard/audit"         },
+  ]},
+  { kind: "workforce",    label: "AI workforce", items: [
+    { label: "Workforce",         route: "/dashboard/workforce"     },
+    { label: "Agent tools",       route: "/dashboard/agent-tools"   },
+    { label: "Agent activity",    route: "/dashboard/agent-activity"},
+  ]},
+  { kind: "integrations", label: "Integrations", items: [
+    { label: "Connectors",        route: "/dashboard/connectors"    },
+    { label: "GitHub",            route: "/dashboard/integrations/github" },
+    { label: "CI/CD",             route: "/dashboard/cicd"          },
+    { label: "Desktop",           route: "/dashboard/desktop"       },
+  ]},
+  { kind: "business",     label: "Business",     items: [
+    { label: "Billing",           route: "/dashboard/billing"       },
+    { label: "AI Usage",          route: "/dashboard/ai-usage"      },
+    { label: "Settings",          route: "/dashboard/settings/workspace" },
+    { label: "Executive Summary", route: "/dashboard/executive-summary"  },
+  ]},
+];
+
+function MockDashboardFrame({ route, children }: { route?: string; children: React.ReactNode }) {
+  return (
+    <div className="rounded-2xl border border-white/[0.08] bg-gradient-to-br from-zinc-900/60 to-zinc-950/70 backdrop-blur-sm overflow-hidden shadow-[0_20px_60px_-30px_rgba(139,92,246,0.25)]">
+      <MockBrowserChrome route={route} />
+      {/* Dashboard top header */}
+      <div className="flex items-center justify-between border-b border-white/[0.05] px-4 py-2 bg-white/[0.015]">
+        <div className="flex items-center gap-2">
+          <span className="w-5 h-5 rounded bg-gradient-to-br from-violet-500 to-fuchsia-500 flex items-center justify-center text-[10px] font-bold text-white">A</span>
+          <span className="text-[12px] font-semibold text-white tracking-tight">Axiom</span>
+          <span className="text-[10px] font-mono text-zinc-500 hidden sm:inline">· ws_acme_prod</span>
+        </div>
+        <div className="flex items-center gap-3">
+          <span className="text-[10px] font-mono text-zinc-500 hidden md:inline">alice@acme.com</span>
+          <span className="text-[10px] font-mono text-zinc-600 px-2 py-0.5 rounded border border-white/[0.08] bg-white/[0.02]">Sign out</span>
+        </div>
+      </div>
+      <div className="flex">
+        {/* Sidebar */}
+        <aside className="hidden sm:block w-44 shrink-0 border-r border-white/[0.05] bg-black/20 p-2 space-y-2">
+          {DASHBOARD_NAV.map((g) => (
+            <div key={g.kind}>
+              <p className="text-[9px] font-mono text-zinc-600 uppercase tracking-[0.18em] px-2 mb-0.5">{g.label}</p>
+              <ul className="space-y-0.5">
+                {g.items.map((it) => {
+                  const active = it.route === route;
+                  return (
+                    <li key={it.route}>
+                      <div className={`text-[10.5px] px-2 py-0.5 rounded ${active ? "bg-violet-500/15 text-violet-200 font-medium" : "text-zinc-400"}`}>
+                        {it.label}
+                      </div>
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+          ))}
+        </aside>
+        {/* Main content */}
+        <div className="flex-1 min-w-0 p-4 sm:p-5">
+          {children}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── Desktop (Tauri) frame ───────────────────────────────────────────
+//
+// Stylized HTML "screenshot" of the real Axiom Agent desktop window:
+// macOS traffic-light dots + title bar showing a "3 awaiting" tray
+// badge + left sidebar mirroring desktop/src/components/Sidebar.tsx +
+// content area on the right.
+
+const DESKTOP_NAV: ReadonlyArray<{ kind: string; label: string; items: ReadonlyArray<{ label: string; active?: boolean }> }> = [
+  { kind: "start_here",   label: "Start here",   items: [
+    { label: "Start Here" }, { label: "Dashboard" }, { label: "Docs" },
+  ]},
+  { kind: "operations",   label: "Operations",   items: [
+    { label: "Multi-cloud" }, { label: "Security" }, { label: "Scans" },
+  ]},
+  { kind: "automation",   label: "Automation",   items: [
+    { label: "Activity" }, { label: "Workflows" }, { label: "Approvals" },
+    { label: "Orchestration" }, { label: "Remediation" }, { label: "Audit log" },
+  ]},
+  { kind: "integrations", label: "Integrations", items: [
+    { label: "Connectors" },
+  ]},
+  { kind: "business",     label: "Business",     items: [
+    { label: "Billing" }, { label: "Trust" }, { label: "Settings" },
+  ]},
+];
+
+function MockDesktopFrame({ route: _route, children }: { route?: string; children: React.ReactNode }) {
+  return (
+    <div className="rounded-2xl border border-white/[0.10] bg-gradient-to-br from-zinc-900/70 to-zinc-950/80 overflow-hidden shadow-[0_25px_70px_-30px_rgba(139,92,246,0.30)]">
+      {/* Tauri window title bar */}
+      <div className="relative flex items-center gap-2 px-3 py-2 border-b border-white/[0.06] bg-black/40">
+        <div className="flex items-center gap-1.5">
+          <span className="w-2.5 h-2.5 rounded-full bg-red-500/70" />
+          <span className="w-2.5 h-2.5 rounded-full bg-amber-500/70" />
+          <span className="w-2.5 h-2.5 rounded-full bg-emerald-500/70" />
+        </div>
+        <div className="flex-1 text-center text-[11px] font-mono text-zinc-400 truncate">
+          Axiom Agent
+        </div>
+        {/* Tray-badge hint at the right edge */}
+        <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-amber-500/15 text-amber-300 border border-amber-500/30">⌘ 3 awaiting</span>
+      </div>
+      <div className="flex">
+        {/* Desktop sidebar */}
+        <aside className="hidden sm:block w-40 shrink-0 border-r border-white/[0.05] bg-black/30 p-2 space-y-2">
+          {DESKTOP_NAV.map((g) => (
+            <div key={g.kind}>
+              <p className="text-[9px] font-mono text-zinc-600 uppercase tracking-[0.18em] px-2 mb-0.5">{g.label}</p>
+              <ul className="space-y-0.5">
+                {g.items.map((it) => (
+                  <li key={it.label}>
+                    <div className={`text-[10.5px] px-2 py-0.5 rounded ${it.active ? "bg-violet-500/15 text-violet-200 font-medium" : "text-zinc-400"}`}>
+                      {it.label}
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </aside>
+        {/* Main content */}
+        <div className="flex-1 min-w-0 p-4 sm:p-5">
+          {children}
+        </div>
+      </div>
+      {/* Honest footer that ties back to the real Tauri app */}
+      <div className="px-3 py-1.5 border-t border-white/[0.06] bg-black/30 flex items-center justify-between text-[9px] font-mono text-zinc-600">
+        <span>Tauri 2 · React 19 · ~95kB gzipped</span>
+        <span>menubar · notifications · offline-vote queue · hide-to-tray</span>
+      </div>
+    </div>
+  );
+}
+
 // ─── Per-kind mock panels ────────────────────────────────────────────
 
 function ConnectorMock({ step }: { step: DemoStep }) {
-  const providers = (step.relatedConnector ?? "AWS").split("|");
+  const providers = (step.relatedConnector ?? "AWS").split("|").map((p) => p.trim());
+  const details: Record<string, { auth: string; region: string; resources: string }> = {
+    AWS:      { auth: "cross-account IAM role · sts:AssumeRole · externalId set",      region: "us-east-1",      resources: "142 resources visible" },
+    Azure:    { auth: "service principal · Reader role on subscription",                 region: "eastus",         resources: "—" },
+    GCP:      { auth: "service account · roles/iam.securityReviewer",                    region: "us-central1",    resources: "—" },
+    GitHub:   { auth: "OAuth app · repo + workflow scopes (read-only at install)",       region: "—",              resources: "12 repos linked" },
+    Postgres: { auth: "read-only DB user · pg_monitor + pg_read_server_files",           region: "—",              resources: "142 tables" },
+    MySQL:    { auth: "read-only DB user · SELECT on information_schema.*",              region: "—",              resources: "—" },
+    MongoDB:  { auth: "read-only DB user · listDatabases + collStats",                    region: "—",              resources: "—" },
+    "VS Code":{ auth: "API key (same as desktop) · workspace-scoped",                    region: "—",              resources: "1 repo open" },
+    CloudWatch:{auth: "ingest webhook · HMAC-SHA256 signed",                              region: "us-east-1",      resources: "—" },
+    Grafana:  { auth: "ingest webhook · HMAC-SHA256 signed",                              region: "—",              resources: "—" },
+    Dynatrace:{ auth: "ingest webhook · HMAC-SHA256 signed",                              region: "—",              resources: "—" },
+  };
   return (
     <div className="space-y-4">
-      <SectionLabel>connectors</SectionLabel>
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
-        {providers.slice(0, 3).map((p, i) => (
-          <div key={p} className={`rounded-lg border ${i === 0 ? "border-emerald-500/30 bg-emerald-500/[0.05]" : "border-white/[0.06] bg-white/[0.015]"} p-3`}>
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-[11px] font-mono text-zinc-300 uppercase tracking-wider">{p.trim()}</span>
-              {i === 0 ? (
-                <span className="text-[9px] font-mono text-emerald-300 uppercase tracking-wider">live</span>
-              ) : (
-                <span className="text-[9px] font-mono text-zinc-500 uppercase tracking-wider">ready</span>
-              )}
+      <SectionLabel>connectors · {providers[0]} primary</SectionLabel>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+        {providers.slice(0, 4).map((p, i) => {
+          const d = details[p] ?? { auth: "—", region: "—", resources: "—" };
+          return (
+            <div key={p} className={`rounded-lg border ${i === 0 ? "border-emerald-500/25 bg-emerald-500/[0.04]" : "border-white/[0.06] bg-white/[0.015]"} p-3`}>
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-[12px] font-semibold text-zinc-100">{p}</span>
+                <span className={`text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded ${i === 0 ? "bg-emerald-500/20 text-emerald-100" : "bg-zinc-700/40 text-zinc-400"}`}>
+                  {i === 0 ? "live" : "ready"}
+                </span>
+              </div>
+              <div className="space-y-1 text-[10px] font-mono text-zinc-500">
+                <div>· auth · <span className="text-zinc-300">{d.auth}</span></div>
+                <div>· region · <span className="text-zinc-300">{d.region}</span></div>
+                <div>· {d.resources}</div>
+                <div>· last sync · <span className="text-zinc-300">{i === 0 ? "12s ago" : "—"}</span></div>
+              </div>
             </div>
-            <div className="space-y-1 text-[10px] font-mono text-zinc-500">
-              <div>· cross-account role: {i === 0 ? "assumed ✓" : "pending"}</div>
-              <div>· scopes: read-only</div>
-              <div>· region: us-east-1</div>
-            </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
-      <CalloutLine label="next" body="Connector flips from preview → connected. Inventory scan starts read-only." />
+      <CalloutLine label="invariant" body="No long-lived access keys stored. AWS assumes a role you create with an externalId we generate; Azure uses a service principal you control. You can revoke from the provider console without telling us." />
     </div>
   );
 }
@@ -321,24 +523,42 @@ function EngineerMock({ step }: { step: DemoStep }) {
 function ReportMock({ step: _step }: { step: DemoStep }) {
   return (
     <div className="space-y-4">
-      <SectionLabel>executive summary · preview</SectionLabel>
+      <SectionLabel>executive summary · auto-generated · sharable</SectionLabel>
       <div className="rounded-lg border border-white/[0.06] bg-white/[0.015] p-4 space-y-3">
         <div className="flex items-center justify-between">
-          <h4 className="text-sm font-semibold text-white">Acme Corp · cloud posture</h4>
+          <div>
+            <h4 className="text-sm font-semibold text-white">Acme Corp · cloud posture</h4>
+            <p className="text-[10px] font-mono text-zinc-500">covers · last 30 days · all 3 providers</p>
+          </div>
           <span className="text-[10px] font-mono text-zinc-500">{new Date().toLocaleDateString()}</span>
         </div>
-        <div className="grid grid-cols-4 gap-2">
-          <Stat label="Spend MTD"  value="$48k" />
-          <Stat label="Findings"   value="14"  tone="amber" />
-          <Stat label="Approved"   value="22"  tone="emerald" />
-          <Stat label="Pending"    value="3"   tone="amber" />
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+          <Stat label="Spend MTD"     value="$48k"    />
+          <Stat label="Optimizations" value="$11k/mo" tone="emerald" />
+          <Stat label="Findings"      value="14"      tone="amber" />
+          <Stat label="Approved"      value="22"      tone="emerald" />
         </div>
-        <p className="text-[11px] text-zinc-400 leading-relaxed">
-          Top 3 risks: <span className="text-zinc-200">public S3 bucket</span> ·{" "}
-          <span className="text-zinc-200">over-privileged IAM role</span> ·{" "}
-          <span className="text-zinc-200">backup gap on prod-db</span>. Remediation plans ready,
-          awaiting human approval.
-        </p>
+        <div className="rounded-md border border-white/[0.06] bg-black/30 p-3 space-y-2">
+          <p className="text-[10px] font-mono text-zinc-500 uppercase tracking-wider">top 3 risks</p>
+          <ul className="space-y-1 text-[11px]">
+            {[
+              { sev: "critical", svc: "IAM",   txt: "Role 'ci-deploy' has AdministratorAccess",   pill: "bg-rose-500/20 text-rose-100" },
+              { sev: "high",     svc: "S3",    txt: "Bucket 'acme-logs-prod' grants public-read", pill: "bg-red-500/15 text-red-100"   },
+              { sev: "high",     svc: "RDS",   txt: "prod-orders-db backup gap · 36h",            pill: "bg-red-500/15 text-red-100"   },
+            ].map((r) => (
+              <li key={r.txt} className="flex items-center gap-2">
+                <span className={`text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded ${r.pill}`}>{r.sev}</span>
+                <span className="text-zinc-500 w-10 font-mono">{r.svc}</span>
+                <span className="text-zinc-300 truncate">{r.txt}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+        <div className="flex items-center gap-2 text-[10px] font-mono text-zinc-500">
+          <span className="px-2 py-0.5 rounded border border-white/[0.06] bg-white/[0.02]">Export PDF</span>
+          <span className="px-2 py-0.5 rounded border border-white/[0.06] bg-white/[0.02]">Export Markdown</span>
+          <span className="px-2 py-0.5 rounded border border-white/[0.06] bg-white/[0.02]">Share link</span>
+        </div>
       </div>
     </div>
   );
@@ -386,27 +606,34 @@ function AuditMock({ step: _step }: { step: DemoStep }) {
 }
 
 function IncidentMock({ step: _step }: { step: DemoStep }) {
-  // Static class names so Tailwind's purge keeps them — never use
-  // template-literal class concatenation here, the safelist would drop it.
-  const rows = [
-    { t: "T-0",   label: "Alert fired",                              dot: "bg-red-400"    },
-    { t: "T+12s", label: "Promoted to incident",                     dot: "bg-amber-400"  },
-    { t: "T+34s", label: "Deploy correlation hit",                   dot: "bg-violet-400" },
-    { t: "T+1m",  label: "Root-cause hypothesis",                    dot: "bg-violet-400" },
-    { t: "T+2m",  label: "Mitigation proposed · awaiting approval", dot: "bg-amber-400"  },
+  const rows: Array<{ t: string; label: string; src: string; dot: string }> = [
+    { t: "T-0",    label: "Alert fired · cpu_p95 > 92% for 5m",                src: "cloudwatch",   dot: "bg-red-400"    },
+    { t: "T+12s",  label: "Promoted to incident · severity=high",              src: "platform",     dot: "bg-amber-400"  },
+    { t: "T+22s",  label: "Recent deploys queried · 3 in last 30m",            src: "github",       dot: "bg-zinc-400"   },
+    { t: "T+34s",  label: "Deploy correlation hit · sha 4a2b8c (12m ago)",     src: "incident eng", dot: "bg-violet-400" },
+    { t: "T+58s",  label: "Trace surge identified · /orders @ 4.1s p95",       src: "incident eng", dot: "bg-violet-400" },
+    { t: "T+1m",   label: "Root-cause hypothesis · missing index on user_id",  src: "incident eng", dot: "bg-violet-400" },
+    { t: "T+2m",   label: "Mitigation proposed · awaiting approval",           src: "platform",     dot: "bg-amber-400"  },
   ];
   return (
     <div className="space-y-4">
-      <SectionLabel>incident timeline</SectionLabel>
+      <SectionLabel>incident timeline · corr_ck98zxa9</SectionLabel>
+      <div className="grid grid-cols-3 gap-2">
+        <Stat label="Severity"       value="high"      tone="amber" />
+        <Stat label="Duration"       value="2m 14s"    tone="amber" />
+        <Stat label="Hypothesis"     value="83% conf"  tone="emerald" />
+      </div>
       <ol className="space-y-2">
         {rows.map((r) => (
           <li key={r.t} className="flex items-center gap-3 rounded-md border border-white/[0.06] bg-white/[0.015] px-3 py-2">
-            <span className="text-[10px] font-mono text-zinc-500 w-12 tabular-nums">{r.t}</span>
+            <span className="text-[10px] font-mono text-zinc-500 w-14 tabular-nums">{r.t}</span>
             <span className={`w-1.5 h-1.5 rounded-full ${r.dot}`} />
-            <span className="text-[12px] text-zinc-200">{r.label}</span>
+            <span className="text-[12px] text-zinc-200 flex-1 min-w-0 truncate">{r.label}</span>
+            <span className="text-[10px] font-mono text-zinc-500 hidden sm:inline">{r.src}</span>
           </li>
         ))}
       </ol>
+      <CalloutLine label="stitched" body="Timelines are built from real platform rows — alert ingestion, deploys, configs, traces — joined on correlationId. The hypothesis cites the specific rows it's built from, not a hand-wavy summary." />
     </div>
   );
 }
@@ -450,29 +677,54 @@ function QuotaMock({ step: _step }: { step: DemoStep }) {
 }
 
 function PipelineMock({ step: _step }: { step: DemoStep }) {
-  // Static class strings per status — Tailwind purges anything it can't
-  // see as a literal, so don't build these with template literals.
-  const rows: Array<{ id: string; pid: string; st: string; dot: string; pill: string }> = [
-    { id: "ck98zxa", pid: "ai_coding",       st: "succeeded",         dot: "bg-emerald-400", pill: "bg-emerald-500/15 text-emerald-300" },
-    { id: "ck98zwb", pid: "deploy_pipeline", st: "awaiting_approval", dot: "bg-amber-400",   pill: "bg-amber-500/15 text-amber-300"     },
-    { id: "ck98zvc", pid: "infra_update",    st: "running",           dot: "bg-cyan-400",    pill: "bg-cyan-500/15 text-cyan-300"       },
-    { id: "ck98zud", pid: "deploy_pipeline", st: "failed",            dot: "bg-red-400",     pill: "bg-red-500/15 text-red-300"         },
-    { id: "ck98zte", pid: "ai_coding",       st: "succeeded",         dot: "bg-emerald-400", pill: "bg-emerald-500/15 text-emerald-300" },
+  const rows: Array<{ id: string; pid: string; st: string; dot: string; pill: string; stages: string; trig: string; t: string }> = [
+    { id: "ck98zxa", pid: "ai_coding",       st: "succeeded",         dot: "bg-emerald-400", pill: "bg-emerald-500/15 text-emerald-300", stages: "6/6", trig: "alice@acme.com", t: "2m" },
+    { id: "ck98zwb", pid: "deploy_pipeline", st: "awaiting_approval", dot: "bg-amber-400",   pill: "bg-amber-500/15 text-amber-300",     stages: "4/7", trig: "bob@acme.com",   t: "5m" },
+    { id: "ck98zvc", pid: "infra_update",    st: "running",           dot: "bg-cyan-400",    pill: "bg-cyan-500/15 text-cyan-300",       stages: "2/5", trig: "api_key:vxlk…", t: "8m" },
+    { id: "ck98zud", pid: "deploy_pipeline", st: "failed",            dot: "bg-red-400",     pill: "bg-red-500/15 text-red-300",         stages: "3/7", trig: "alice@acme.com", t: "27m"},
+    { id: "ck98zte", pid: "ai_coding",       st: "succeeded",         dot: "bg-emerald-400", pill: "bg-emerald-500/15 text-emerald-300", stages: "6/6", trig: "api_key:vxlk…", t: "41m"},
   ];
   return (
     <div className="space-y-4">
-      <SectionLabel>pipeline runs · last 5</SectionLabel>
-      <ul className="rounded-lg border border-white/[0.06] bg-black/30 divide-y divide-white/[0.04]">
-        {rows.map((r) => (
-          <li key={r.id} className="flex items-center justify-between px-3 py-2">
-            <div className="flex items-center gap-2 min-w-0">
-              <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${r.dot}`} />
-              <span className="text-[11px] font-mono text-zinc-300 truncate">{r.pid} · {r.id}…</span>
-            </div>
-            <span className={`text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded ${r.pill}`}>{r.st}</span>
-          </li>
-        ))}
-      </ul>
+      <SectionLabel>pipeline runs · scoped to your org</SectionLabel>
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+        <Stat label="In flight"  value="2"  tone="amber" />
+        <Stat label="Succeeded"  value="14" tone="emerald" />
+        <Stat label="Failed"     value="1"  tone="red" />
+        <Stat label="Awaiting"   value="1"  tone="amber" />
+      </div>
+      <div className="rounded-lg border border-white/[0.06] bg-black/30 overflow-hidden">
+        <table className="w-full text-[11px] font-mono">
+          <thead className="bg-white/[0.02] text-zinc-500">
+            <tr>
+              <th className="text-left px-3 py-1.5 uppercase tracking-wider">pipeline</th>
+              <th className="text-left px-3 py-1.5 uppercase tracking-wider hidden sm:table-cell">triggered by</th>
+              <th className="text-left px-3 py-1.5 uppercase tracking-wider">stages</th>
+              <th className="text-right px-3 py-1.5 uppercase tracking-wider">status</th>
+              <th className="text-right px-3 py-1.5 uppercase tracking-wider">age</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-white/[0.04]">
+            {rows.map((r) => (
+              <tr key={r.id} className="text-zinc-300">
+                <td className="px-3 py-2">
+                  <div className="flex items-center gap-2 min-w-0">
+                    <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${r.dot}`} />
+                    <span className="truncate">{r.pid} · {r.id}…</span>
+                  </div>
+                </td>
+                <td className="px-3 py-2 text-zinc-500 hidden sm:table-cell truncate">{r.trig}</td>
+                <td className="px-3 py-2 text-zinc-400">{r.stages}</td>
+                <td className="px-3 py-2 text-right">
+                  <span className={`text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded ${r.pill}`}>{r.st}</span>
+                </td>
+                <td className="px-3 py-2 text-zinc-500 text-right">{r.t}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <CalloutLine label="durability" body="Every stage transition is persisted before the next stage runs. A process restart resumes from the last PipelineStageRun row — no in-memory state can silently drop a run." />
     </div>
   );
 }
@@ -480,42 +732,95 @@ function PipelineMock({ step: _step }: { step: DemoStep }) {
 function DatabaseMock({ step: _step }: { step: DemoStep }) {
   return (
     <div className="space-y-4">
-      <SectionLabel>database · prod-orders-db</SectionLabel>
-      <div className="grid grid-cols-3 gap-2">
-        <Stat label="Schema"     value="142 tables" />
-        <Stat label="Slow query" value="2.4s avg"  tone="amber" />
-        <Stat label="Backup"     value="36h ago"   tone="red" />
+      <SectionLabel>database · prod-orders-db · postgres 15</SectionLabel>
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+        <Stat label="Schema"        value="142 tables" />
+        <Stat label="Slow query"    value="2.4s avg"   tone="amber" />
+        <Stat label="Last backup"   value="36h ago"    tone="red" />
+        <Stat label="Connections"   value="48/100"     tone="emerald" />
       </div>
-      <pre className="rounded-lg bg-black/50 border border-white/[0.06] p-3 text-[11px] font-mono leading-relaxed overflow-x-auto">
-{`-- Proposed index (sample DDL)
-CREATE INDEX CONCURRENTLY idx_orders_user_created
+      <div className="rounded-lg border border-white/[0.06] bg-black/30 p-3 space-y-2">
+        <p className="text-[10px] font-mono text-zinc-500 uppercase tracking-wider">slow query · /orders endpoint</p>
+        <pre className="text-[11px] font-mono leading-relaxed overflow-x-auto text-zinc-300">
+{`SELECT id, status, total_cents, created_at
+FROM orders
+WHERE user_id = $1
+ORDER BY created_at DESC
+LIMIT 50;
+
+-- explain (analyze, buffers):
+--   Seq Scan on orders  (cost=0..198432.10 rows=49 width=46)
+--     (actual time=2387.40..2392.05 rows=12 loops=1)
+--     Filter: (user_id = '...'::uuid)`}
+        </pre>
+      </div>
+      <div className="rounded-lg border border-emerald-500/20 bg-emerald-500/[0.04] p-3 space-y-2">
+        <p className="text-[10px] font-mono text-emerald-300/90 uppercase tracking-wider">proposed index · DDL preview</p>
+        <pre className="text-[11px] font-mono leading-relaxed overflow-x-auto text-emerald-100">
+{`CREATE INDEX CONCURRENTLY idx_orders_user_created
   ON orders (user_id, created_at DESC);
--- Two-person approval required before any DDL runs.`}
-      </pre>
+
+-- expected impact: seq scan → index scan
+-- expected latency: 2.4s → ~12ms
+-- rollback: DROP INDEX CONCURRENTLY idx_orders_user_created;
+-- two-person approval required before this runs.`}
+        </pre>
+      </div>
+      <CalloutLine label="invariant" body="Database Engineer has NO write tools by default. Every DDL proposal generates a sample HCL + rollback + projected impact on connected services before the approval packet is minted." />
     </div>
   );
 }
 
 function DesktopMock({ step: _step }: { step: DemoStep }) {
+  // The outer MockDesktopFrame already provides window chrome + sidebar.
+  // The content here is the right-hand panel of the desktop — pairing
+  // state + approvals queue snapshot.
   return (
     <div className="space-y-4">
-      <SectionLabel>axiom agent desktop</SectionLabel>
-      <div className="rounded-lg border border-white/[0.06] bg-white/[0.015] p-4 space-y-3">
-        <div className="flex items-center gap-2 mb-1">
-          <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_8px_rgba(52,211,153,0.7)]" />
-          <span className="text-[11px] font-mono text-emerald-300">paired</span>
-          <span className="text-[10px] font-mono text-zinc-500">· macOS 14.4 · v0.1.0</span>
+      <SectionLabel>approvals queue · live · polling every 5s</SectionLabel>
+      <div className="rounded-lg border border-emerald-500/20 bg-emerald-500/[0.04] p-3 flex items-center justify-between gap-3">
+        <div className="flex items-center gap-2 min-w-0">
+          <span className="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.6)]" />
+          <span className="text-[11px] font-mono text-emerald-200">paired · ws_acme_prod · alice@acme.com</span>
         </div>
-        <div className="grid grid-cols-3 gap-2 text-[11px]">
-          <Stat label="Workspace"  value="ws_acme_prod" />
-          <Stat label="Scopes"     value="pipeline:trigger" />
-          <Stat label="Last sync"  value="14s ago" tone="emerald" />
-        </div>
-        <p className="text-[11px] text-zinc-400 leading-relaxed">
-          Native menubar badge ({"3 awaiting"}) · OS notifications on new approvals ·
-          quick-approve from the tray submenu · offline vote queue with auto-retry.
-        </p>
+        <span className="text-[10px] font-mono text-zinc-500 hidden sm:inline">scopes · pipeline:trigger, pipeline:read</span>
       </div>
+      <div className="rounded-lg border border-white/[0.06] bg-black/30 overflow-hidden">
+        <table className="w-full text-[11px] font-mono">
+          <thead className="bg-white/[0.02] text-zinc-500">
+            <tr>
+              <th className="text-left px-3 py-1.5 uppercase tracking-wider">run</th>
+              <th className="text-left px-3 py-1.5 uppercase tracking-wider hidden sm:table-cell">started</th>
+              <th className="text-right px-3 py-1.5 uppercase tracking-wider w-40">decide</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-white/[0.04]">
+            {[
+              { id: "ck98zxm9q", pid: "ai_coding",       t: "2m ago"  },
+              { id: "ck98zw3py", pid: "deploy_pipeline", t: "11m ago" },
+              { id: "ck98ztr5h", pid: "infra_update",    t: "1h ago"  },
+            ].map((r) => (
+              <tr key={r.id} className="text-zinc-300">
+                <td className="px-3 py-2 truncate">{r.pid} · {r.id}…</td>
+                <td className="px-3 py-2 text-zinc-500 hidden sm:table-cell">{r.t}</td>
+                <td className="px-3 py-2 text-right">
+                  <div className="inline-flex items-center gap-1.5">
+                    <span className="text-[9px] font-semibold px-2 py-0.5 rounded bg-emerald-500/15 text-emerald-200 border border-emerald-500/25">✓ approve</span>
+                    <span className="text-[9px] font-semibold px-2 py-0.5 rounded bg-red-500/15 text-red-200 border border-red-500/25">✗ reject</span>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[11px]">
+        <Stat label="Tray badge"     value="3 awaiting" tone="amber" />
+        <Stat label="Notifications"  value="enabled"    tone="emerald" />
+        <Stat label="Offline queue"  value="0"          tone="emerald" />
+        <Stat label="Last vote"      value="14s ago"    tone="emerald" />
+      </div>
+      <CalloutLine label="native" body="Hide-to-tray on window close · OS notifications on new arrivals · quick-approve from the tray submenu · offline vote queue with 30s back-off retry · window state restored across launches." />
     </div>
   );
 }
@@ -523,13 +828,32 @@ function DesktopMock({ step: _step }: { step: DemoStep }) {
 function AutomationMock({ step: _step }: { step: DemoStep }) {
   return (
     <div className="space-y-4">
-      <SectionLabel>automation · dry-run output</SectionLabel>
+      <SectionLabel>automation · dry-run output · no side effects</SectionLabel>
       <pre className="rounded-lg bg-black/50 border border-emerald-500/20 p-3 text-[11px] font-mono leading-relaxed overflow-x-auto text-emerald-200">
-{`[dry-run] would tag 12 EC2 instances with cost-center=platform
-[dry-run] would notify slack #platform with 12-line summary
-[dry-run] would write audit row: execution_plan.create
-[dry-run] no live API calls made · review + approve to execute`}
+{`# script: tag_untagged_ec2.py (curated · lastReviewed: 2026-05-23)
+# mode: dry-run (default)
+# scope: aws/ec2:Tag (read-only describe + simulated tag)
+
+[ 1/4] describing 142 EC2 instances...                      ✓ 142 found
+[ 2/4] filtering untagged...                                ✓ 12 missing CostCenter
+[ 3/4] computing tag plan...                                ✓ 12 actions queued
+[ 4/4] writing dry-run report...                            ✓ done
+
+DRY-RUN SUMMARY
+  · would tag 12 instances with CostCenter=platform
+  · would emit 12 audit rows: execution_plan.create
+  · would notify slack #platform-ops (12-line summary)
+  · estimated cost: $0 (read-only + simulated)
+  · risk class: low · blast radius: 12 metadata-only writes
+
+NO live API calls made. To execute, click Promote → Live.`}
       </pre>
+      <div className="grid grid-cols-3 gap-2">
+        <Stat label="Mode"        value="dry-run" tone="emerald" />
+        <Stat label="Risk class"  value="low"     tone="emerald" />
+        <Stat label="Audit rows"  value="0 / 12 planned" tone="amber" />
+      </div>
+      <CalloutLine label="default-safe" body="Every automation defaults to dry-run. The plan output enumerates every side-effect. Live mode requires explicit promotion and emits a stage of awaiting_approval if any action is change-class." />
     </div>
   );
 }
