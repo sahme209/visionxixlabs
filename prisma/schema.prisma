@@ -1939,6 +1939,38 @@ model ApiKey {
   @@index([revokedAt])
 }
 
+/// Platform-wide ES256 webhook signing key — Phase 404.
+/// Single-row table holding the private + public PEM pair used to sign
+/// every outbound delivery whose endpoint opts in to ES256. The public
+/// key (+ its JWK form + RFC 7638 kid) is exposed at
+/// `/api/v1/webhooks/jwks` so integrators can verify with a public key
+/// instead of a shared secret.
+///
+/// Rotation: store BOTH the current and one prior key when rotating so
+/// in-flight retries can still be verified; expose both via the JWKS
+/// endpoint until the prior key's TTL elapses.
+model WebhookSigningKey {
+  id              String   @id @default(cuid())
+  /// RFC 7638 thumbprint of the public JWK — published in the JWKS
+  /// header so verifiers can pick the right key on rotation.
+  kid             String   @unique
+  /// PEM-encoded PKCS#8 private key. NEVER expose via any API.
+  privateKeyPem   String   @db.Text
+  /// PEM-encoded SubjectPublicKeyInfo. Safe to serve publicly.
+  publicKeyPem    String   @db.Text
+  /// JWK form of the public key — what /jwks emits inside `keys[]`.
+  publicJwk       Json
+  /// "active" = the key the platform CURRENTLY signs with.
+  /// "retiring" = still valid for verifying in-flight deliveries
+  /// during a grace window after rotation.
+  /// "revoked" = no longer accepted; remove from /jwks on next sweep.
+  status          String   @default("active")
+  createdAt       DateTime @default(now())
+  retiredAt       DateTime?
+
+  @@index([status])
+}
+
 /// Outbound webhook endpoint — Phase 395.
 /// A workspace registers one (or many) HTTPS URLs that should receive
 /// signed event deliveries. `secret` is the HMAC-SHA256 shared secret;
@@ -1954,7 +1986,13 @@ model WebhookEndpoint {
   url                  String
   /// HMAC-SHA256 shared secret. Shown ONCE at registration time + on
   /// secret rotation; otherwise never revealed back to the operator.
+  /// Ignored when `signingMode = "es256"` (no shared secret needed).
   secret               String
+  /// Phase 404: signing mode. "hmac" (default, legacy) uses the symmetric
+  /// `secret` column with HMAC-SHA256. "es256" uses the platform's P-256
+  /// private key; integrators verify with the public key from
+  /// /api/v1/webhooks/jwks.
+  signingMode          String    @default("hmac")
   /// JSON array of WebhookEventKind strings ("*" allowed as catch-all).
   subscribedEvents     Json
   /// Running counter of consecutive failed deliveries. Auto-resets to 0
