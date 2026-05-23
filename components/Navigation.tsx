@@ -16,6 +16,7 @@ import {
   BookOpenIcon,
   DocumentTextIcon,
   ShieldCheckIcon,
+  PlayCircleIcon,
 } from "@heroicons/react/24/outline";
 import { AnimatePresence, motion } from "framer-motion";
 
@@ -179,6 +180,13 @@ export function Navigation() {
 
             {/* Direct links */}
             <Link
+              href="/platform-demo"
+              className="nav-link-underline relative flex items-center gap-1.5 px-4 py-2 text-zinc-300 hover:text-white rounded-lg transition-colors text-sm font-medium"
+            >
+              <PlayCircleIcon className="h-4 w-4 text-violet-400" />
+              Demo
+            </Link>
+            <Link
               href="/plans"
               className="nav-link-underline relative px-4 py-2 text-zinc-400 hover:text-white rounded-lg transition-colors text-sm font-medium"
             >
@@ -306,6 +314,14 @@ export function Navigation() {
                   <div className="px-4 pt-3 pb-1 text-xs font-semibold text-zinc-500 uppercase tracking-wider">
                     More
                   </div>
+                  <Link
+                    href="/platform-demo"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="px-4 py-2.5 text-zinc-300 font-medium hover:text-white hover:bg-white/5 rounded-lg text-sm transition-colors flex items-center gap-2"
+                  >
+                    <PlayCircleIcon className="h-4 w-4 text-violet-400" />
+                    Demo
+                  </Link>
                   <Link
                     href="/plans"
                     onClick={() => setMobileMenuOpen(false)}

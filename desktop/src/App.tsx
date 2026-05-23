@@ -18,6 +18,10 @@ import { AuditView } from "./views/AuditView";
 import { BillingView } from "./views/BillingView";
 import { TrustView } from "./views/TrustView";
 import { DocsView } from "./views/DocsView";
+import { useTrayApprovalsBadge } from "./lib/useTrayApprovalsBadge";
+import { useNativeMenuActions } from "./lib/useNativeMenuActions";
+import { useTrayPendingSelectionBootstrap } from "./lib/useTrayPendingSelection";
+import { useTrayDecisions } from "./lib/useTrayDecisions";
 
 /**
  * Closed-union of every desktop view. Phase 406-desktop expands the
@@ -57,13 +61,31 @@ export default function App() {
     return () => clearTimeout(t);
   }, []);
 
+  // Keep the menubar/tray pending-approval badge fresh even when the user
+  // is on a non-Approvals view. Independent of (and slower than) the
+  // 5s per-view poll inside ApprovalsView itself.
+  useTrayApprovalsBadge();
+
+  // macOS app menu / cross-platform shortcuts (Cmd+1..4 jump to views,
+  // Cmd+, opens Settings). Backed by the menu items in `src-tauri/src/menu.rs`.
+  useNativeMenuActions(setActiveView);
+
+  // Capture tray-menu pending-run clicks. ApprovalsView reads the selected
+  // runId via useTrayPendingSelection() and scrolls it into view.
+  useTrayPendingSelectionBootstrap();
+
+  // Quick-approve / quick-reject from the tray submenu. Fires the v1
+  // decide endpoint and surfaces the outcome as a native notification —
+  // operator never has to open the main window.
+  useTrayDecisions();
+
   if (!booted) return <BootScreen />;
 
   return (
     <div className="flex h-screen bg-axiom-bg text-white overflow-hidden">
       <Sidebar activeView={activeView} onNavigate={setActiveView} />
       <main className="flex-1 flex flex-col min-w-0 min-h-0">
-        <TopBar activeView={activeView} />
+        <TopBar activeView={activeView} onNavigate={setActiveView} />
         <div className="flex-1 min-h-0 flex flex-col">
           {activeView === "start-here"    && <StartHereView onNavigate={setActiveView} />}
           {activeView === "dashboard"     && <DashboardView />}

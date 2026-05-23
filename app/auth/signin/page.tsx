@@ -228,6 +228,12 @@ function SignInForm() {
             Sign up
           </Link>
         </p>
+        <p className="mt-2 text-xs text-zinc-500 text-center">
+          Just looking?{" "}
+          <Link href="/platform-demo" className="font-medium text-violet-300 hover:text-violet-200 underline decoration-violet-500/30 hover:decoration-violet-400 underline-offset-2">
+            Try the demo without signing in →
+          </Link>
+        </p>
       </div>
     </div>
   );

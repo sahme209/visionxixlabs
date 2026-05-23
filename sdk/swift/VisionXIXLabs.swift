@@ -78,6 +78,25 @@ public struct VisionXIXLabs {
         try await get("/api/v1/pipelines/runs/\(id)")
     }
 
+    /// POST /api/v1/pipelines/runs/{id}/decide — vote on a paused stage.
+    ///
+    /// Pipeline gates default to `requiredApprovers=2`. A single call
+    /// records ONE vote; `isTerminal` is true only when this call tipped
+    /// the projected quorum and the run advanced.
+    ///
+    /// Required scope: `pipeline:trigger`.
+    public func decideApproval(
+        runId: String,
+        decision: ApprovalDecision,
+        reason: String? = nil,
+        approverUserId: String? = nil
+    ) async throws -> DecideApprovalResponse {
+        var body: [String: Any] = ["decision": decision.rawValue]
+        if let reason { body["reason"] = reason }
+        if let approverUserId { body["approverUserId"] = approverUserId }
+        return try await post("/api/v1/pipelines/runs/\(runId)/decide", body: body, extraHeaders: [:])
+    }
+
     /// POST /api/v1/pipelines/runs — trigger a coding pipeline run.
     ///
     /// Pass `idempotencyKey` (UUID or any 8-255 char ASCII id) to make
@@ -275,6 +294,26 @@ public struct PipelineRunResponse: Decodable {
         public let completedAt: String?
         public let errorMessage: String?
     }
+}
+
+public enum ApprovalDecision: String {
+    case approved
+    case rejected
+}
+
+public struct DecideApprovalResponse: Decodable {
+    public let ok: Bool
+    public let runId: String
+    public let approvalId: String
+    public let vote: String
+    public let snapshotStatus: String
+    public let approvedCount: Int
+    public let rejectedCount: Int
+    public let requiredApprovers: Int
+    /// True only when this call's vote tipped the projected quorum to terminal.
+    public let isTerminal: Bool
+    public let decidedAt: String?
+    public let stageTransitioned: Bool
 }
 
 private struct ErrorEnvelope: Decodable {

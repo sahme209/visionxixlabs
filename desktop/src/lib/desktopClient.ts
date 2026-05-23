@@ -339,6 +339,43 @@ export class DesktopClient {
   }
 
   /**
+   * POST /api/v1/pipelines/runs/[id]/decide — Phase 406-decide.
+   * Records a vote on a pipeline run paused at an awaiting_approval
+   * stage. Required scope: pipeline:trigger.
+   *
+   * Pipeline gates default to requiredApprovers=2: a single call from
+   * the desktop records ONE vote and returns `isTerminal: false` until
+   * a second distinct actor votes. The two-person platform guarantee
+   * holds — the desktop alone never tips a gate.
+   */
+  async v1DecideApproval(args: {
+    runId: string;
+    decision: "approved" | "rejected";
+    reason?: string;
+    approverUserId?: string;
+  }): Promise<ApiResult<{
+    runId: string;
+    approvalId: string;
+    vote: "approved" | "rejected";
+    snapshotStatus: "pending" | "approved" | "rejected" | "expired";
+    approvedCount: number;
+    rejectedCount: number;
+    requiredApprovers: number;
+    isTerminal: boolean;
+    decidedAt: string | null;
+    stageTransitioned: boolean;
+  }>> {
+    return this.postV1(
+      `/api/v1/pipelines/runs/${encodeURIComponent(args.runId)}/decide`,
+      {
+        decision: args.decision,
+        ...(args.reason ? { reason: args.reason } : {}),
+        ...(args.approverUserId ? { approverUserId: args.approverUserId } : {}),
+      },
+    );
+  }
+
+  /**
    * GET /api/v1/pipelines/runs — list recent pipeline runs for the
    * authenticated workspace. Required scope: pipeline:read.
    * Default page size 25, max 100. Filter by status with `status`.

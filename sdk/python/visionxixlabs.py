@@ -120,6 +120,36 @@ class VisionXIXLabs:
         path = "/api/v1/pipelines/runs" + (f"?{qs}" if qs else "")
         return self._get(path)
 
+    def decide_approval(
+        self,
+        run_id: str,
+        decision: str,
+        reason: Optional[str] = None,
+        approver_user_id: Optional[str] = None,
+    ) -> Dict[str, Any]:
+        """POST /api/v1/pipelines/runs/{id}/decide — vote on a paused stage.
+
+        Pipeline gates default to requiredApprovers=2: a single call
+        records ONE vote. The returned dict's ``isTerminal`` is True only
+        when this call tipped the gate to a terminal status.
+
+        Args:
+            run_id: pipeline run id (from start_coding_run).
+            decision: ``"approved"`` or ``"rejected"``.
+            reason: optional free-text rationale (audited).
+            approver_user_id: optional override; defaults to ``api_key:<id>``.
+
+        Required scope: pipeline:trigger.
+        """
+        if decision not in ("approved", "rejected"):
+            raise ValueError('decision must be "approved" or "rejected"')
+        body: Dict[str, Any] = {"decision": decision}
+        if reason:
+            body["reason"] = reason
+        if approver_user_id:
+            body["approverUserId"] = approver_user_id
+        return self._post(f"/api/v1/pipelines/runs/{run_id}/decide", body)
+
     def start_coding_run(
         self,
         instruction: str,

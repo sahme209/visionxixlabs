@@ -214,6 +214,41 @@ Every subcommand supports `--json` for piping into `jq`.
 | `GET  /api/v1/release-gate`       | `release_gate:read`   | `releaseGate()`       |
 | `POST /api/v1/pipelines/runs`     | `pipeline:trigger`    | `startCodingRun()`    |
 | `GET  /api/v1/pipelines/runs/{id}`| `pipeline:read`       | `pipelineRun(id)`     |
+| `POST /api/v1/pipelines/runs/{id}/decide` | `pipeline:trigger` | `decideApproval(id, ...)` |
+
+### Approval decide — quorum semantics
+
+Pipeline approval gates default to **two-person review** (`requiredApprovers=2`).
+A single `decideApproval(...)` call records ONE vote and returns
+`isTerminal: false`. A second distinct `approverUserId` must call the same
+endpoint before the projected quorum tips and the run advances. The
+desktop app and CI integrations both share this contract — no surface
+can single-handedly approve a gate.
+
+```bash
+curl -X POST https://visionxixlabs.com/api/v1/pipelines/runs/$RUN_ID/decide \
+  -H "Authorization: Bearer vxlk_..." \
+  -H "Content-Type: application/json" \
+  -d '{"decision":"approved","reason":"reviewed diff + rollback plan"}'
+```
+
+Response:
+
+```json
+{
+  "ok": true,
+  "runId": "ckpipe...",
+  "approvalId": "apr_pipe_...",
+  "vote": "approved",
+  "snapshotStatus": "pending",
+  "approvedCount": 1,
+  "rejectedCount": 0,
+  "requiredApprovers": 2,
+  "isTerminal": false,
+  "decidedAt": null,
+  "stageTransitioned": false
+}
+```
 
 ## Error handling
 

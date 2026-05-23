@@ -6,7 +6,8 @@
  * add it here.
  */
 
-import { type ReactNode, type ComponentType, type ButtonHTMLAttributes, type HTMLAttributes } from "react";
+import { type ReactNode, type ComponentType, type ButtonHTMLAttributes, type HTMLAttributes, type MouseEvent } from "react";
+import { openExternal } from "../lib/notifications";
 
 // ---------------------------------------------------------------------------
 // Card
@@ -212,6 +213,17 @@ export function EmptyState({
 
 export type DataSourceMode = "preview" | "authenticated_no_data" | "live";
 
+function openInWebClick(webPath: string): (e: MouseEvent) => void {
+  // Anchor clicks inside a Tauri webview can sometimes navigate the app
+  // itself (depending on platform + webview policy). Always route through
+  // tauri-plugin-shell so the link reliably opens in the OS browser, then
+  // suppress the default to avoid the in-app navigation race.
+  return (e) => {
+    e.preventDefault();
+    void openExternal(`https://visionxixlabs.com${webPath}`);
+  };
+}
+
 export function DataSourceBanner({
   mode,
   webPath,
@@ -242,6 +254,7 @@ export function DataSourceBanner({
           Showing realistic mock data so the UI stays useful while the backend catches up.
           <a
             href={`https://visionxixlabs.com${webPath}`}
+            onClick={openInWebClick(webPath)}
             target="_blank"
             rel="noreferrer"
             className="text-violet-300 hover:text-violet-200 ml-1 underline-offset-2 hover:underline"
@@ -262,6 +275,7 @@ export function DataSourceBanner({
         <span className="font-mono text-zinc-300"> Settings → VisionXIXLabs API key</span> to load real {surfaceName} from your workspace.
         <a
           href={`https://visionxixlabs.com${webPath}`}
+          onClick={openInWebClick(webPath)}
           target="_blank"
           rel="noreferrer"
           className="text-violet-300 hover:text-violet-200 ml-1 underline-offset-2 hover:underline"

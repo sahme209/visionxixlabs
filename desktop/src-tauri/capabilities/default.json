@@ -1,0 +1,12 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "default",
+  "description": "Default capability for the main webview — grants the plugins the desktop needs: shell.open (open links in the OS browser), store (persist API key + prefs), notifications (new-approval alerts), and the core IPC surface for the tray badge command.",
+  "windows": ["main"],
+  "permissions": [
+    "core:default",
+    "shell:default",
+    "store:default",
+    "notification:default"
+  ]
+}

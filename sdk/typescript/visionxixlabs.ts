@@ -99,6 +99,28 @@ export interface PipelineRunResponse {
   };
 }
 
+export interface DecideApprovalInput {
+  decision: "approved" | "rejected";
+  reason?: string;
+  /** Override the vote actor; defaults to `api_key:<keyId>`. */
+  approverUserId?: string;
+}
+
+export interface DecideApprovalResponse {
+  ok: true;
+  runId: string;
+  approvalId: string;
+  vote: "approved" | "rejected";
+  snapshotStatus: "pending" | "approved" | "rejected" | "expired";
+  approvedCount: number;
+  rejectedCount: number;
+  requiredApprovers: number;
+  /** True only when the projected quorum tipped this call to terminal. */
+  isTerminal: boolean;
+  decidedAt: string | null;
+  stageTransitioned: boolean;
+}
+
 export interface StartCodingRunInput {
   instruction: string;
   repoRef: string;
@@ -148,6 +170,25 @@ export class VisionXIXLabs {
 
   pipelineRun(runId: string): Promise<PipelineRunResponse> {
     return this.get<PipelineRunResponse>(`/api/v1/pipelines/runs/${encodeURIComponent(runId)}`);
+  }
+
+  /**
+   * Vote on a pipeline run currently paused at an awaiting_approval
+   * stage. Pipeline gates default to requiredApprovers=2 — a single
+   * call records ONE vote; a second distinct approver still has to
+   * vote before the gate tips and the run advances.
+   *
+   * Required scope: pipeline:trigger.
+   */
+  decideApproval(runId: string, input: DecideApprovalInput): Promise<DecideApprovalResponse> {
+    return this.post<DecideApprovalResponse>(
+      `/api/v1/pipelines/runs/${encodeURIComponent(runId)}/decide`,
+      {
+        decision: input.decision,
+        ...(input.reason ? { reason: input.reason } : {}),
+        ...(input.approverUserId ? { approverUserId: input.approverUserId } : {}),
+      },
+    );
   }
 
   startCodingRun(input: StartCodingRunInput): Promise<StartRunResponse> {

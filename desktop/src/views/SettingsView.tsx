@@ -9,6 +9,8 @@ import {
   saveApiKey,
 } from "../lib/apiKeyStore";
 import { desktopClient } from "../lib/desktopClient";
+import { markNotificationPrefDirty, notifyResult } from "../lib/notifications";
+import { useVoteHistory } from "../lib/voteHistory";
 
 interface Preferences {
   theme: string;
@@ -25,6 +27,7 @@ export function SettingsView() {
   const workspace = useWorkspaceState();
   const [pasteValue, setPasteValue] = useState("");
   const [pasteError, setPasteError] = useState<string | null>(null);
+  const voteHistory = useVoteHistory();
 
   // Phase 399+ vxlk_* API key state.
   const [storedKey, setStoredKey] = useState<string | undefined>(undefined);
@@ -47,6 +50,10 @@ export function SettingsView() {
     try {
       await invoke("set_preferences", { prefs });
       await invoke("set_api_endpoint", { endpoint: apiEndpoint });
+      // Notification helper caches the pref between polls — force a re-read
+      // so toggling here takes effect on the very next approval, not on
+      // page reload.
+      markNotificationPrefDirty();
       setSaved(true);
       setTimeout(() => setSaved(false), 2000);
     } catch (err) {
@@ -255,18 +262,35 @@ export function SettingsView() {
             <div className="text-sm text-zinc-200">Desktop notifications</div>
             <div className="text-xs text-zinc-500">Scan results, alerts, and approvals</div>
           </div>
-          <button
-            onClick={() => updatePref("notifications_enabled", !prefs.notifications_enabled)}
-            className={`w-10 h-5 rounded-full transition-colors relative ${
-              prefs.notifications_enabled ? "bg-violet-600" : "bg-zinc-700"
-            }`}
-          >
-            <span
-              className={`absolute top-0.5 w-4 h-4 rounded-full bg-white transition-transform ${
-                prefs.notifications_enabled ? "left-5" : "left-0.5"
+          <div className="flex items-center gap-3">
+            <button
+              onClick={async () => {
+                await notifyResult({
+                  title: "Axiom Agent · test notification",
+                  body: "If you can read this, native OS notifications are working.",
+                });
+              }}
+              disabled={!prefs.notifications_enabled}
+              title={prefs.notifications_enabled
+                ? "Fire a test notification right now"
+                : "Enable notifications first"}
+              className="px-2.5 py-1 rounded-md text-[11px] font-medium border border-white/[0.08] bg-white/[0.03] text-zinc-300 hover:bg-white/[0.06] hover:text-white disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+            >
+              Test
+            </button>
+            <button
+              onClick={() => updatePref("notifications_enabled", !prefs.notifications_enabled)}
+              className={`w-10 h-5 rounded-full transition-colors relative ${
+                prefs.notifications_enabled ? "bg-violet-600" : "bg-zinc-700"
               }`}
-            />
-          </button>
+            >
+              <span
+                className={`absolute top-0.5 w-4 h-4 rounded-full bg-white transition-transform ${
+                  prefs.notifications_enabled ? "left-5" : "left-0.5"
+                }`}
+              />
+            </button>
+          </div>
         </div>
 
         <div className="flex items-center justify-between">
@@ -316,6 +340,53 @@ export function SettingsView() {
           </select>
         </div>
       </section>
+
+      {/* Recent votes — local audit log of approvals/rejections cast from this
+          desktop. Last 25 entries persist across restarts via tauri-plugin-store.
+          Empty state is the silent no-op for first-launch / unpaired sessions. */}
+      {voteHistory.length > 0 && (
+        <section className="glass-card p-5 space-y-3">
+          <div className="flex items-center justify-between gap-2">
+            <h2 className="text-sm font-semibold text-zinc-300">Recent votes from this desktop</h2>
+            <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-wider">{voteHistory.length}/25</span>
+          </div>
+          <ul className="space-y-2">
+            {voteHistory.map((v) => (
+              <li
+                key={`${v.runId}:${v.castAt}`}
+                className="flex items-start justify-between gap-3 px-3 py-2 rounded-lg bg-zinc-900/40 border border-zinc-800/50"
+              >
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-2 mb-0.5">
+                    <span className={`text-[10px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded ${
+                      v.decision === "approved"
+                        ? "bg-emerald-500/15 text-emerald-300"
+                        : "bg-red-500/15 text-red-300"
+                    }`}>
+                      {v.decision}
+                    </span>
+                    <span className="text-[10px] font-mono text-zinc-500">{v.source}</span>
+                    {v.isTerminal && (
+                      <span className="text-[10px] font-mono text-violet-300">→ run {v.snapshotStatus}</span>
+                    )}
+                  </div>
+                  <div className="text-[11px] font-mono text-zinc-400 truncate" title={v.runId}>
+                    {v.runId.slice(0, 24)}…
+                  </div>
+                </div>
+                <div className="text-right shrink-0">
+                  <div className="text-[10px] font-mono text-zinc-500">
+                    {v.approvedCount}/{v.requiredApprovers} approved
+                  </div>
+                  <div className="text-[10px] font-mono text-zinc-600">
+                    {new Date(v.castAt).toLocaleString()}
+                  </div>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
 
       {/* Save button */}
       <button

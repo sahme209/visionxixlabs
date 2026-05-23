@@ -146,6 +146,26 @@ type PipelineRun struct {
 	Stages        []Stage `json:"stages"`
 }
 
+type DecideApprovalInput struct {
+	Decision        string // "approved" | "rejected"
+	Reason          string
+	ApproverUserID  string // optional override; defaults to api_key:<id>
+}
+
+type DecideApprovalResponse struct {
+	OK                bool    `json:"ok"`
+	RunID             string  `json:"runId"`
+	ApprovalID        string  `json:"approvalId"`
+	Vote              string  `json:"vote"`
+	SnapshotStatus    string  `json:"snapshotStatus"`
+	ApprovedCount     int     `json:"approvedCount"`
+	RejectedCount     int     `json:"rejectedCount"`
+	RequiredApprovers int     `json:"requiredApprovers"`
+	IsTerminal        bool    `json:"isTerminal"`
+	DecidedAt         *string `json:"decidedAt"`
+	StageTransitioned bool    `json:"stageTransitioned"`
+}
+
 type Stage struct {
 	ID           string  `json:"id"`
 	StageID      string  `json:"stageId"`
@@ -191,6 +211,28 @@ func (c *Client) PipelineRun(ctx context.Context, runID string) (*PipelineRunRes
 	var out PipelineRunResponse
 	path := "/api/v1/pipelines/runs/" + runID
 	if err := c.do(ctx, "GET", path, nil, &out); err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+// DecideApproval votes on a pipeline run currently paused at an
+// awaiting_approval stage. Pipeline gates default to
+// requiredApprovers=2 — a single call records ONE vote. The response's
+// IsTerminal is true only when this call tipped the projected quorum.
+//
+// Required scope: pipeline:trigger.
+func (c *Client) DecideApproval(ctx context.Context, runID string, in DecideApprovalInput) (*DecideApprovalResponse, error) {
+	body := map[string]any{"decision": in.Decision}
+	if in.Reason != "" {
+		body["reason"] = in.Reason
+	}
+	if in.ApproverUserID != "" {
+		body["approverUserId"] = in.ApproverUserID
+	}
+	var out DecideApprovalResponse
+	path := "/api/v1/pipelines/runs/" + runID + "/decide"
+	if err := c.do(ctx, "POST", path, body, &out); err != nil {
 		return nil, err
 	}
 	return &out, nil

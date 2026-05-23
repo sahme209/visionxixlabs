@@ -6,6 +6,7 @@
 import { useEffect, useState } from "react";
 import type { View } from "../App";
 import { desktopClient } from "../lib/desktopClient";
+import { usePendingApprovals } from "../lib/approvalsStore";
 
 const VIEW_TITLES: Record<View, { title: string; subtitle: string }> = {
   "start-here":  { title: "Start Here",    subtitle: "Setup guide + product tour" },
@@ -40,9 +41,10 @@ type AuthBadgeState =
   | { kind: "preview" }
   | { kind: "auth_failed" };
 
-export function TopBar({ activeView }: { activeView: View }) {
+export function TopBar({ activeView, onNavigate }: { activeView: View; onNavigate?: (v: View) => void }) {
   const meta = VIEW_TITLES[activeView];
   const [badge, setBadge] = useState<AuthBadgeState>({ kind: "loading" });
+  const pending = usePendingApprovals();
 
   useEffect(() => {
     let cancelled = false;
@@ -74,6 +76,17 @@ export function TopBar({ activeView }: { activeView: View }) {
       </div>
 
       <div className="flex items-center gap-2 no-drag">
+        {pending.hasPolled && pending.count > 0 && activeView !== "approvals" && (
+          <button
+            type="button"
+            onClick={() => onNavigate?.("approvals")}
+            title={`${pending.count} pipeline run${pending.count === 1 ? "" : "s"} awaiting approval`}
+            className="flex items-center gap-1.5 px-2.5 py-1 rounded-full border border-amber-500/30 bg-amber-500/[0.08] text-[11px] font-mono text-amber-200 hover:bg-amber-500/[0.14] hover:border-amber-500/50 transition-colors"
+          >
+            <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
+            <span>{pending.count} awaiting</span>
+          </button>
+        )}
         <AuthBadge badge={badge} />
       </div>
     </header>
