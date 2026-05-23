@@ -2,6 +2,13 @@ import { useEffect, useState } from "react";
 import { invoke } from "@tauri-apps/api/core";
 import { ViewShell } from "../components/Primitives";
 import { useWorkspaceState } from "../lib/workspaceState";
+import {
+  apiKeyPrefix,
+  clearApiKey,
+  readPersistedApiKey,
+  saveApiKey,
+} from "../lib/apiKeyStore";
+import { desktopClient } from "../lib/desktopClient";
 
 interface Preferences {
   theme: string;
@@ -19,9 +26,20 @@ export function SettingsView() {
   const [pasteValue, setPasteValue] = useState("");
   const [pasteError, setPasteError] = useState<string | null>(null);
 
+  // Phase 399+ vxlk_* API key state.
+  const [storedKey, setStoredKey] = useState<string | undefined>(undefined);
+  const [keyPasteValue, setKeyPasteValue] = useState("");
+  const [keyPasteError, setKeyPasteError] = useState<string | null>(null);
+  const [keyTestStatus, setKeyTestStatus] = useState<
+    { kind: "ok"; workspace: string; planTier: string; scopes: ReadonlyArray<string> } |
+    { kind: "err"; message: string } |
+    null
+  >(null);
+
   useEffect(() => {
     invoke<Preferences>("get_preferences").then(setPrefs).catch(console.error);
     invoke<string>("get_api_endpoint").then(setApiEndpoint).catch(console.error);
+    readPersistedApiKey().then(setStoredKey).catch(console.error);
   }, []);
 
   const savePrefs = async () => {
@@ -67,6 +85,105 @@ export function SettingsView() {
             className="w-full bg-zinc-800/60 border border-zinc-700/50 rounded-lg px-3 py-2 text-sm font-mono text-zinc-200 focus:outline-none focus:border-violet-500/50"
           />
         </div>
+      </section>
+
+      {/* API Key (vxlk_*) — Phase 399 surface */}
+      <section className="glass-card p-5 space-y-4">
+        <div className="flex items-center justify-between gap-2">
+          <h2 className="text-sm font-semibold text-zinc-300">VisionXIXLabs API key</h2>
+          <span className={`text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded ${
+            storedKey ? "bg-emerald-500/15 text-emerald-300" : "bg-zinc-700/40 text-zinc-400"
+          }`}>{storedKey ? "active" : "not set"}</span>
+        </div>
+
+        {storedKey ? (
+          <div className="space-y-3">
+            <div className="text-xs text-zinc-400">
+              Stored key:{" "}
+              <span className="text-zinc-200 font-mono">{apiKeyPrefix(storedKey)}…</span>{" "}
+              <span className="text-zinc-500">(plaintext never re-shown — mint a new key if lost)</span>
+            </div>
+            {keyTestStatus?.kind === "ok" && (
+              <div className="text-xs rounded-lg border border-emerald-500/20 bg-emerald-500/10 text-emerald-300 px-3 py-2">
+                ✓ Authenticated as <span className="font-mono">{keyTestStatus.workspace}</span> on <span className="font-mono">{keyTestStatus.planTier}</span>.
+                Scopes: <span className="font-mono">{keyTestStatus.scopes.join(", ")}</span>
+              </div>
+            )}
+            {keyTestStatus?.kind === "err" && (
+              <div className="text-xs rounded-lg border border-red-500/20 bg-red-500/10 text-red-300 px-3 py-2">
+                ✗ {keyTestStatus.message}
+              </div>
+            )}
+            <div className="flex gap-2">
+              <button
+                onClick={async () => {
+                  setKeyTestStatus(null);
+                  const r = await desktopClient.v1Whoami();
+                  if (r.ok) {
+                    const d = r.data as {
+                      apiKey: { scopes: ReadonlyArray<string> };
+                      organization: { id: string; planTier: string };
+                    };
+                    setKeyTestStatus({
+                      kind: "ok",
+                      workspace: d.organization.id,
+                      planTier: d.organization.planTier,
+                      scopes: d.apiKey.scopes,
+                    });
+                  } else {
+                    setKeyTestStatus({ kind: "err", message: r.error });
+                  }
+                }}
+                className="px-3 py-1.5 rounded-lg bg-violet-600 hover:bg-violet-500 text-white text-xs font-medium transition-colors"
+              >
+                Test connection
+              </button>
+              <button
+                onClick={async () => {
+                  await clearApiKey();
+                  setStoredKey(undefined);
+                  setKeyTestStatus(null);
+                }}
+                className="px-3 py-1.5 rounded-lg bg-zinc-800/60 hover:bg-zinc-700/60 text-xs text-zinc-200 transition-colors"
+              >
+                Remove key
+              </button>
+            </div>
+          </div>
+        ) : (
+          <div className="space-y-3">
+            <p className="text-xs text-zinc-500">
+              Mint a key on the web admin panel at{" "}
+              <span className="font-mono text-zinc-400">/admin/api-keys</span>{" "}
+              with at least <span className="font-mono text-zinc-400">release_gate:read</span> scope, then paste the <span className="font-mono text-zinc-400">vxlk_live_…</span> string here.
+              The plaintext is shown to you exactly once at mint time.
+            </p>
+            <input
+              type="password"
+              value={keyPasteValue}
+              onChange={(e) => { setKeyPasteValue(e.target.value); setKeyPasteError(null); }}
+              placeholder="vxlk_live_…_……"
+              className="w-full bg-zinc-800/60 border border-zinc-700/50 rounded-lg px-3 py-2 text-xs font-mono text-zinc-200 placeholder-zinc-600 focus:outline-none focus:border-violet-500/50"
+            />
+            {keyPasteError && <div className="text-xs text-red-400">{keyPasteError}</div>}
+            <button
+              onClick={async () => {
+                try {
+                  await saveApiKey(keyPasteValue);
+                  setStoredKey(keyPasteValue.trim());
+                  setKeyPasteValue("");
+                  setKeyTestStatus(null);
+                } catch (err) {
+                  setKeyPasteError(err instanceof Error ? err.message : String(err));
+                }
+              }}
+              disabled={!keyPasteValue.trim()}
+              className="px-3 py-1.5 rounded-lg bg-violet-600 hover:bg-violet-500 text-white text-xs font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Save API key
+            </button>
+          </div>
+        )}
       </section>
 
       {/* Workspace pairing */}

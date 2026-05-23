@@ -32,7 +32,7 @@ export function DashboardView() {
 
   return (
     <ViewShell>
-      {previewMode && <PreviewBanner />}
+      <AuthStatusBanner previewMode={previewMode} />
 
       <SectionHeader
         kicker="// control plane"
@@ -124,7 +124,130 @@ export function DashboardView() {
 // Preview-mode banner — Huly-grade cinematic call-to-connect
 // ---------------------------------------------------------------------------
 
-function PreviewBanner() {
+// ---------------------------------------------------------------------------
+// Auth status banner — three states based on whether a vxlk_* API key is
+// loaded AND whether `/api/v1/whoami` succeeds. Replaces the static
+// "preview mode" call-to-connect with real authenticated context.
+// ---------------------------------------------------------------------------
+
+interface WhoamiSummary {
+  organizationId: string;
+  planTier: string;
+  scopes: ReadonlyArray<string>;
+  gate?: {
+    passed: boolean;
+    passRate: number;
+    summary: string;
+  };
+}
+
+function AuthStatusBanner({ previewMode }: { previewMode: boolean }) {
+  const [whoami, setWhoami] = useState<WhoamiSummary | "loading" | "no_auth" | "auth_failed">("loading");
+
+  useEffect(() => {
+    let cancelled = false;
+    if (!desktopClient.hasAuth()) {
+      setWhoami("no_auth");
+      return;
+    }
+    (async () => {
+      const r = await desktopClient.v1Whoami();
+      if (cancelled) return;
+      if (!r.ok) {
+        setWhoami("auth_failed");
+        return;
+      }
+      const d = r.data as {
+        apiKey: { scopes: ReadonlyArray<string> };
+        organization: { id: string; planTier: string };
+      };
+      const gateRes = await desktopClient.v1ReleaseGate();
+      if (cancelled) return;
+      let gateData: WhoamiSummary["gate"];
+      if (gateRes.ok) {
+        const g = (gateRes.data as { gate?: { passed: boolean; passRate: number; summary: string } }).gate;
+        if (g) gateData = g;
+      }
+      setWhoami({
+        organizationId: d.organization.id,
+        planTier: d.organization.planTier,
+        scopes: d.apiKey.scopes,
+        gate: gateData,
+      });
+    })();
+    return () => { cancelled = true; };
+  }, []);
+
+  // Live state — show the real workspace + release-gate verdict.
+  if (whoami !== "loading" && whoami !== "no_auth" && whoami !== "auth_failed") {
+    const gatePass = whoami.gate?.passed === true;
+    return (
+      <div className="relative rounded-2xl border border-emerald-500/20 bg-gradient-to-br from-emerald-500/[0.08] via-cyan-500/[0.04] to-violet-500/[0.04] p-5 overflow-hidden animate-fade-in-up">
+        <div className="relative flex items-start justify-between gap-6 flex-wrap">
+          <div className="flex items-start gap-4">
+            <div className={`w-10 h-10 rounded-xl ${gatePass ? "bg-emerald-500/20" : "bg-amber-500/20"} flex items-center justify-center shrink-0`}>
+              <svg className={`h-5 w-5 ${gatePass ? "text-emerald-300" : "text-amber-300"}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                {gatePass
+                  ? <><path d="M20 6 9 17l-5-5"/></>
+                  : <><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></>}
+              </svg>
+            </div>
+            <div>
+              <div className="flex items-center gap-2 mb-1.5">
+                <span className="text-[10px] font-mono font-semibold text-emerald-300 uppercase tracking-[0.22em]">live · authenticated</span>
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+              </div>
+              <h3 className="text-base font-bold text-white tracking-tight mb-1">
+                Signed in as <span className="font-mono text-violet-300">{whoami.organizationId}</span>{" "}
+                <span className="text-zinc-500">·</span>{" "}
+                <span className="font-mono text-zinc-300">{whoami.planTier}</span>
+              </h3>
+              {whoami.gate ? (
+                <p className="text-[12px] text-zinc-400 leading-relaxed max-w-2xl">
+                  Release gate: <span className={`font-mono ${gatePass ? "text-emerald-300" : "text-amber-300"}`}>{gatePass ? "PASSED" : "BLOCKED"}</span>{" "}
+                  · pass rate <span className="font-mono text-zinc-300">{(whoami.gate.passRate * 100).toFixed(1)}%</span>{" "}
+                  · {whoami.gate.summary}
+                </p>
+              ) : (
+                <p className="text-[12px] text-zinc-500">No eval run snapshot yet for this workspace.</p>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Loading state (auth in flight).
+  if (whoami === "loading") {
+    return (
+      <div className="rounded-2xl border border-zinc-700/40 bg-zinc-900/40 p-4">
+        <p className="text-[12px] font-mono text-zinc-500">Verifying API key…</p>
+      </div>
+    );
+  }
+
+  // Auth failed — present a recovery path.
+  if (whoami === "auth_failed") {
+    return (
+      <div className="relative rounded-2xl border border-red-500/25 bg-gradient-to-br from-red-500/[0.10] via-rose-500/[0.06] to-zinc-900/0 p-6 overflow-hidden animate-fade-in-up">
+        <div className="relative">
+          <div className="flex items-center gap-2 mb-1.5">
+            <span className="text-[10px] font-mono font-semibold text-red-300 uppercase tracking-[0.22em]">authentication failed</span>
+          </div>
+          <h3 className="text-base font-bold text-white tracking-tight mb-1.5">Stored API key is invalid, revoked, or expired.</h3>
+          <p className="text-[12px] text-zinc-400 leading-relaxed max-w-2xl">
+            The desktop tried to call <span className="font-mono text-zinc-300">/api/v1/whoami</span> with the stored key and was rejected.
+            Open <span className="font-mono text-zinc-300">Settings → VisionXIXLabs API key</span>, remove the existing key, and paste a freshly-minted one.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  // No auth — preview-mode banner (same shape as before, but the buttons
+  // now point the user at the Settings page where they can actually
+  // paste an API key).
   return (
     <div className="relative rounded-2xl border border-violet-500/25 bg-gradient-to-br from-violet-500/[0.10] via-fuchsia-500/[0.06] to-cyan-500/[0.04] p-6 overflow-hidden animate-fade-in-up">
       <div className="absolute -top-20 -right-20 w-64 h-64 rounded-full bg-violet-500/20 blur-[80px] pointer-events-none" aria-hidden />
@@ -139,23 +262,26 @@ function PreviewBanner() {
           </div>
           <div>
             <div className="flex items-center gap-2 mb-1.5">
-              <span className="text-[10px] font-mono font-semibold text-violet-300 uppercase tracking-[0.22em]">preview mode</span>
+              <span className="text-[10px] font-mono font-semibold text-violet-300 uppercase tracking-[0.22em]">{previewMode ? "preview mode" : "not authenticated"}</span>
               <span className="w-1.5 h-1.5 rounded-full bg-violet-400 animate-pulse" />
             </div>
-            <h3 className="text-lg font-bold text-white tracking-tight mb-1.5">Showing realistic mock data — sign in to load live state.</h3>
+            <h3 className="text-lg font-bold text-white tracking-tight mb-1.5">Connect a workspace API key to load live state.</h3>
             <p className="text-[12px] text-zinc-400 leading-relaxed max-w-xl">
-              The desktop runs against <span className="font-mono text-zinc-300">visionxixlabs.com</span> but cross-origin cookies can&apos;t flow from your browser. Sign in via the web first; the desktop will then project your real workspace.
+              Mint a key on the web at{" "}
+              <span className="font-mono text-zinc-300">visionxixlabs.com/admin/api-keys</span>{" "}
+              with scope <span className="font-mono text-zinc-300">release_gate:read</span> (or broader), then paste it in{" "}
+              <span className="font-mono text-zinc-300">Settings → VisionXIXLabs API key</span>. The desktop will switch from mock data to your real workspace immediately.
             </p>
           </div>
         </div>
         <div className="flex items-center gap-2 shrink-0">
           <a
-            href="https://visionxixlabs.com/auth/signin?callbackUrl=/dashboard"
+            href="https://visionxixlabs.com/admin/api-keys"
             target="_blank"
             rel="noreferrer"
             className="inline-flex items-center gap-2 px-4 py-2.5 rounded-full bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500 text-white text-[12px] font-semibold shadow-glow-violet transition-all"
           >
-            Sign in via web →
+            Mint an API key →
           </a>
           <a
             href="https://visionxixlabs.com/dashboard"

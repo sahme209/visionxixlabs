@@ -38,9 +38,16 @@ export default function App() {
   return (
     <div className="flex h-screen bg-axiom-bg text-white overflow-hidden">
       <Sidebar activeView={activeView} onNavigate={setActiveView} />
-      <main className="flex-1 flex flex-col overflow-hidden">
+      <main className="flex-1 flex flex-col min-w-0 min-h-0">
         <TopBar activeView={activeView} />
-        <div className="flex-1 overflow-hidden">
+        {/*
+          Scroll fix: `min-h-0` lets the child establish a real flex height so
+          the nested `overflow-y-auto` on ViewShell can compute its viewport.
+          Without min-h-0 the parent's `flex-1` would grow to content size,
+          and the inner scroll container never gets a bounded height — which
+          is what was producing the "scroll doesn't work" bug.
+        */}
+        <div className="flex-1 min-h-0 flex flex-col">
           {activeView === "dashboard"     && <DashboardView />}
           {activeView === "multi-cloud"   && <MultiCloudView />}
           {activeView === "remediation"   && <RemediationView />}

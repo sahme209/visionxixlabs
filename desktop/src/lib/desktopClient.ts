@@ -225,6 +225,55 @@ export class DesktopClient {
   /** True when the last API call fell back to mock data (cross-origin or 4xx). */
   isPreviewMode = false;
 
+  /**
+   * True when a Bearer token (legacy pairing token OR vxlk_* API key) is
+   * loaded. Used by views to decide whether to render mock-data banners.
+   */
+  hasAuth(): boolean {
+    return Boolean(this.config.sessionToken);
+  }
+
+  /**
+   * Phase 399 — call GET /api/v1/whoami. Returns the workspace + scopes
+   * + quota snapshot, or a precise auth-failure code. Doesn't fall back
+   * to mock — when whoami fails, callers should show the "paste API key"
+   * UI instead of pretending to be authenticated.
+   */
+  async v1Whoami(): Promise<ApiResult<{
+    apiKey: { id: string; env: "live" | "test"; scopes: ReadonlyArray<string> };
+    organization: { id: string; planTier: string };
+    quota: {
+      monthlyLimit: number | null;
+      currentCalls: number;
+      remaining: number | null;
+      ratio: number | null;
+      nearLimit: boolean;
+    };
+    serverTimeSec: number;
+  }>> {
+    return this.getV1("/api/v1/whoami");
+  }
+
+  /**
+   * Phase 393 — call GET /api/v1/release-gate. Returns the current
+   * release-gate verdict so the desktop dashboard can render a deploy-
+   * ready badge.
+   */
+  async v1ReleaseGate(): Promise<ApiResult<{
+    hasRun: boolean;
+    gate?: {
+      passed: boolean;
+      passRate: number;
+      averageScore: number;
+      summary: string;
+      blockers: ReadonlyArray<{ kind: string; message: string }>;
+    };
+    regressionCount?: number;
+    improvementCount?: number;
+  }>> {
+    return this.getV1("/api/v1/release-gate");
+  }
+
   // ── Command center / control plane ────────────────────────────────
   commandCenterState():  Promise<ApiResult<CommandCenterStateLite>>   { return this.get("/api/command-center"); }
 
@@ -322,6 +371,33 @@ export class DesktopClient {
       const json = (await res.json().catch(() => ({}))) as { ok?: boolean; data?: unknown; error?: { userMessage?: string } };
       if (json.ok && json.data !== undefined) return { ok: true, data: json.data as T };
       return { ok: false, error: json.error?.userMessage ?? `HTTP ${res.status}` };
+    } catch (err) {
+      return { ok: false, error: err instanceof Error ? err.message : String(err) };
+    }
+  }
+
+  /**
+   * v1 envelope: { ok, ...payload } on success, { ok: false, error, message?, retryAfterSeconds? }
+   * on failure. Different shape from the legacy { ok, data } wrap — the v1
+   * routes return the payload at the top level (see app/api/v1/*).
+   */
+  private async getV1<T>(path: string): Promise<ApiResult<T>> {
+    try {
+      const res = await fetch(`${this.config.apiBase}${path}`, {
+        headers: this.headers(),
+      });
+      const text = await res.text();
+      let parsed: Record<string, unknown> = {};
+      try { parsed = text.length > 0 ? JSON.parse(text) : {}; } catch { /* leave empty */ }
+      if (res.ok && parsed.ok === true) {
+        return { ok: true, data: parsed as unknown as T };
+      }
+      const error = typeof parsed.error === "string"
+        ? parsed.error
+        : typeof parsed.message === "string"
+        ? parsed.message
+        : `HTTP ${res.status}`;
+      return { ok: false, error };
     } catch (err) {
       return { ok: false, error: err instanceof Error ? err.message : String(err) };
     }

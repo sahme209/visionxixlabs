@@ -10,6 +10,43 @@ pub struct ConnectorStatus {
     pub error: Option<String>,
 }
 
+/// Read the bearer token the JS Settings UI stored. Falls back to the
+/// legacy pairing-token key. Either token attaches to outbound HTTP as
+/// `Authorization: Bearer <token>` so the platform's connector / v1
+/// routes don't reject the call with "Token required".
+fn read_bearer_token(app: &tauri::AppHandle) -> Option<String> {
+    // Phase 399+ vxlk_* API key (modern surface).
+    if let Ok(store) = app.store("axiom-desktop.dat") {
+        if let Some(value) = store.get("desktop.api_key") {
+            if let Some(s) = value.as_str() {
+                if !s.is_empty() {
+                    return Some(s.to_string());
+                }
+            }
+        }
+        // Legacy pairing token (kept for backward compat).
+        if let Some(value) = store.get("desktop.session.token") {
+            if let Some(s) = value.as_str() {
+                if !s.is_empty() {
+                    return Some(s.to_string());
+                }
+            }
+        }
+    }
+    None
+}
+
+/// Build a reqwest builder with the bearer token attached when present.
+fn with_bearer(
+    builder: reqwest::RequestBuilder,
+    token: Option<&String>,
+) -> reqwest::RequestBuilder {
+    match token {
+        Some(t) => builder.bearer_auth(t),
+        None => builder,
+    }
+}
+
 #[derive(Debug, Serialize, Deserialize)]
 pub struct ScanResult {
     pub provider: String,
@@ -33,19 +70,22 @@ pub async fn validate_aws_credentials(
         .get("api_endpoint")
         .and_then(|v| v.as_str().map(String::from))
         .unwrap_or_else(|| "https://visionxixlabs.com".to_string());
+    let token = read_bearer_token(&app);
 
-    let resp = client
-        .post(format!("{}/api/connectors/link", endpoint))
-        .json(&serde_json::json!({
-            "provider": "aws",
-            "credentials": {
-                "roleArn": role_arn,
-                "externalId": external_id,
-            }
-        }))
-        .send()
-        .await
-        .map_err(|e| format!("Network error: {}", e))?;
+    let resp = with_bearer(
+        client.post(format!("{}/api/connectors/link", endpoint)),
+        token.as_ref(),
+    )
+    .json(&serde_json::json!({
+        "provider": "aws",
+        "credentials": {
+            "roleArn": role_arn,
+            "externalId": external_id,
+        }
+    }))
+    .send()
+    .await
+    .map_err(|e| format!("Network error: {}", e))?;
 
     if resp.status().is_success() {
         Ok(ConnectorStatus {
@@ -55,6 +95,10 @@ pub async fn validate_aws_credentials(
             last_validated: Some(chrono::Utc::now().to_rfc3339()),
             error: None,
         })
+    } else if resp.status() == reqwest::StatusCode::UNAUTHORIZED
+        || resp.status() == reqwest::StatusCode::FORBIDDEN
+    {
+        Err("Authentication required. Set a vxlk_* API key in Settings → VisionXIXLabs API key.".to_string())
     } else {
         let body = resp.text().await.unwrap_or_default();
         Err(format!("AWS validation failed: {}", body))
@@ -74,20 +118,23 @@ pub async fn validate_azure_credentials(
         .get("api_endpoint")
         .and_then(|v| v.as_str().map(String::from))
         .unwrap_or_else(|| "https://visionxixlabs.com".to_string());
+    let token = read_bearer_token(&app);
 
-    let resp = client
-        .post(format!("{}/api/connectors/link", endpoint))
-        .json(&serde_json::json!({
-            "provider": "azure",
-            "credentials": {
-                "tenantId": tenant_id,
-                "clientId": client_id,
-                "clientSecret": client_secret,
-            }
-        }))
-        .send()
-        .await
-        .map_err(|e| format!("Network error: {}", e))?;
+    let resp = with_bearer(
+        client.post(format!("{}/api/connectors/link", endpoint)),
+        token.as_ref(),
+    )
+    .json(&serde_json::json!({
+        "provider": "azure",
+        "credentials": {
+            "tenantId": tenant_id,
+            "clientId": client_id,
+            "clientSecret": client_secret,
+        }
+    }))
+    .send()
+    .await
+    .map_err(|e| format!("Network error: {}", e))?;
 
     if resp.status().is_success() {
         Ok(ConnectorStatus {
@@ -97,6 +144,10 @@ pub async fn validate_azure_credentials(
             last_validated: Some(chrono::Utc::now().to_rfc3339()),
             error: None,
         })
+    } else if resp.status() == reqwest::StatusCode::UNAUTHORIZED
+        || resp.status() == reqwest::StatusCode::FORBIDDEN
+    {
+        Err("Authentication required. Set a vxlk_* API key in Settings → VisionXIXLabs API key.".to_string())
     } else {
         let body = resp.text().await.unwrap_or_default();
         Err(format!("Azure validation failed: {}", body))
@@ -115,19 +166,22 @@ pub async fn validate_gcp_credentials(
         .get("api_endpoint")
         .and_then(|v| v.as_str().map(String::from))
         .unwrap_or_else(|| "https://visionxixlabs.com".to_string());
+    let token = read_bearer_token(&app);
 
-    let resp = client
-        .post(format!("{}/api/connectors/link", endpoint))
-        .json(&serde_json::json!({
-            "provider": "gcp",
-            "credentials": {
-                "projectId": project_id,
-                "serviceAccountKey": service_account_key,
-            }
-        }))
-        .send()
-        .await
-        .map_err(|e| format!("Network error: {}", e))?;
+    let resp = with_bearer(
+        client.post(format!("{}/api/connectors/link", endpoint)),
+        token.as_ref(),
+    )
+    .json(&serde_json::json!({
+        "provider": "gcp",
+        "credentials": {
+            "projectId": project_id,
+            "serviceAccountKey": service_account_key,
+        }
+    }))
+    .send()
+    .await
+    .map_err(|e| format!("Network error: {}", e))?;
 
     if resp.status().is_success() {
         Ok(ConnectorStatus {
@@ -137,6 +191,10 @@ pub async fn validate_gcp_credentials(
             last_validated: Some(chrono::Utc::now().to_rfc3339()),
             error: None,
         })
+    } else if resp.status() == reqwest::StatusCode::UNAUTHORIZED
+        || resp.status() == reqwest::StatusCode::FORBIDDEN
+    {
+        Err("Authentication required. Set a vxlk_* API key in Settings → VisionXIXLabs API key.".to_string())
     } else {
         let body = resp.text().await.unwrap_or_default();
         Err(format!("GCP validation failed: {}", body))
@@ -153,12 +211,15 @@ pub async fn get_connector_status(
         .get("api_endpoint")
         .and_then(|v| v.as_str().map(String::from))
         .unwrap_or_else(|| "https://visionxixlabs.com".to_string());
+    let token = read_bearer_token(&app);
 
-    let resp = client
-        .get(format!("{}/api/connectors/status", endpoint))
-        .send()
-        .await
-        .map_err(|e| format!("Network error: {}", e))?;
+    let resp = with_bearer(
+        client.get(format!("{}/api/connectors/status", endpoint)),
+        token.as_ref(),
+    )
+    .send()
+    .await
+    .map_err(|e| format!("Network error: {}", e))?;
 
     if resp.status().is_success() {
         let data: serde_json::Value = resp.json().await.map_err(|e| e.to_string())?;
@@ -201,15 +262,18 @@ pub async fn run_cloud_scan(
         _ => return Err(format!("Unsupported scan: {}:{}", provider, scan_type)),
     };
 
-    let resp = client
-        .post(format!("{}/api/execution/run", endpoint))
-        .json(&serde_json::json!({
-            "pluginId": plugin_id,
-            "dryRun": true,
-        }))
-        .send()
-        .await
-        .map_err(|e| format!("Network error: {}", e))?;
+    let token = read_bearer_token(&app);
+    let resp = with_bearer(
+        client.post(format!("{}/api/execution/run", endpoint)),
+        token.as_ref(),
+    )
+    .json(&serde_json::json!({
+        "pluginId": plugin_id,
+        "dryRun": true,
+    }))
+    .send()
+    .await
+    .map_err(|e| format!("Network error: {}", e))?;
 
     if resp.status().is_success() {
         let data: serde_json::Value = resp.json().await.map_err(|e| e.to_string())?;
