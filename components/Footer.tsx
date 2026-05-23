@@ -28,7 +28,7 @@ function XIcon({ className }: { className?: string }) {
 
 /* ── Footer links data ───────────────────────────────────────── */
 const productLinks = [
-  { href: "/platform-demo", label: "Try the demo" },
+  { href: "/demo", label: "Try the demo" },
   { href: "/operator/onboarding", label: "Run Axiom" },
   { href: "/axiom/releaseops", label: "Axiom ReleaseOps" },
   { href: "/download", label: "Download Desktop" },

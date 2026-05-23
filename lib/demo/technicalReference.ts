@@ -384,7 +384,7 @@ export const CLOSED_UNIONS: ReadonlyArray<ClosedUnionSpec> = [
     name: "DemoAudience",
     source: "lib/demo/demoScenarios.ts",
     members: [
-      { value: "public",        meaning: "Shown on the unauthenticated /platform-demo." },
+      { value: "public",        meaning: "Visible on /demo without an API key (marketing-grade walkthroughs)." },
       { value: "client",        meaning: "Shown to paired workspaces in /demo." },
       { value: "internal_only", meaning: "Admin-only; never surfaced to client workspaces." },
     ],

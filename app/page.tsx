@@ -215,7 +215,7 @@ export default function Home() {
                   </MagneticButton>
                   <MagneticButton strength={6} radius={120}>
                     <AnimatedButton
-                      href="/platform-demo"
+                      href="/demo"
                       variant="ghost"
                       className="border-violet-500/30 bg-violet-500/[0.06] text-violet-100 hover:bg-violet-500/[0.12] hover:border-violet-400/50 relative z-10"
                     >

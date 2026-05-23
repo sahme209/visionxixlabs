@@ -2,7 +2,7 @@
  * Demo scenarios registry — Phase 405.
  *
  * In-memory closed-union of the 13 mandated demo flows. Each scenario
- * is a sequence of typed steps that the /demo, /platform-demo, and
+ * is a sequence of typed steps that the /demo (sandbox landing) and
  * future visual-tour surfaces walk through.
  *
  * Why in-memory instead of a Prisma model:

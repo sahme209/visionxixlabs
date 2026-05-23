@@ -45,8 +45,8 @@ const DOCS: ReadonlyArray<{ section: string; links: DocLink[] }> = [
   {
     section: "Demo + sandbox",
     links: [
-      { title: "Sandbox workspace", body: "13 scripted scenarios with example data.", href: "https://visionxixlabs.com/demo" },
-      { title: "Platform demo",     body: "Public 5-step product story.",              href: "https://visionxixlabs.com/platform-demo" },
+      { title: "Sandbox workspace",  body: "13 scripted scenarios with example data.", href: "https://visionxixlabs.com/demo" },
+      { title: "Platform reference", body: "Every endpoint, event, audit action.",      href: "https://visionxixlabs.com/demo/reference" },
     ],
   },
   {

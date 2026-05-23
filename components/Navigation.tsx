@@ -180,7 +180,7 @@ export function Navigation() {
 
             {/* Direct links */}
             <Link
-              href="/platform-demo"
+              href="/demo"
               className="nav-link-underline relative flex items-center gap-1.5 px-4 py-2 text-zinc-300 hover:text-white rounded-lg transition-colors text-sm font-medium whitespace-nowrap"
             >
               <PlayCircleIcon className="h-4 w-4 text-violet-400" />
@@ -315,7 +315,7 @@ export function Navigation() {
                     More
                   </div>
                   <Link
-                    href="/platform-demo"
+                    href="/demo"
                     onClick={() => setMobileMenuOpen(false)}
                     className="px-4 py-2.5 text-zinc-300 font-medium hover:text-white hover:bg-white/5 rounded-lg text-sm transition-colors flex items-center gap-2"
                   >
