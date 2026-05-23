@@ -8,6 +8,7 @@ import type { View } from "../App";
 import { desktopClient } from "../lib/desktopClient";
 import { usePendingApprovals } from "../lib/approvalsStore";
 import { useConnectorHealthSnapshot } from "../lib/connectorHealthStore";
+import { useSseStatus, type LiveStatus } from "../lib/useSseStream";
 
 const VIEW_TITLES: Record<View, { title: string; subtitle: string }> = {
   "start-here":  { title: "Start Here",    subtitle: "Setup guide + product tour" },
@@ -49,6 +50,7 @@ export function TopBar({ activeView, onNavigate }: { activeView: View; onNavigat
   const [badge, setBadge] = useState<AuthBadgeState>({ kind: "loading" });
   const pending = usePendingApprovals();
   const connectorHealth = useConnectorHealthSnapshot();
+  const liveStatus = useSseStatus();
 
   useEffect(() => {
     let cancelled = false;
@@ -80,6 +82,7 @@ export function TopBar({ activeView, onNavigate }: { activeView: View; onNavigat
       </div>
 
       <div className="flex items-center gap-2 no-drag">
+        <LivePill status={liveStatus} />
         {pending.hasPolled && pending.count > 0 && activeView !== "approvals" && (
           <button
             type="button"
@@ -153,6 +156,32 @@ function AuthBadge({ badge }: { badge: AuthBadgeState }) {
     <div className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-axiom-border bg-white/[0.02] text-[11px] font-mono text-zinc-500">
       <span className="w-1.5 h-1.5 rounded-full bg-zinc-500" />
       <span>verifying…</span>
+    </div>
+  );
+}
+
+/**
+ * Live pill — surfaces the SSE connection state. Phase 409.
+ *   open       → emerald · "live"  (events streaming, no polling penalty)
+ *   connecting → amber   · "linking…"
+ *   fallback   → amber   · "polling"  (3+ failures, polling safety net is active)
+ *   closed     → zinc    · "offline"  (transient between reconnects)
+ *   idle       → hidden  (no auth or first paint)
+ */
+function LivePill({ status }: { status: LiveStatus }) {
+  if (status === "idle") return null;
+  const cfg = (() => {
+    switch (status) {
+      case "open":       return { dot: "bg-emerald-400 animate-pulse-glow", pill: "border-emerald-500/25 bg-emerald-500/[0.05] text-emerald-300", label: "live" };
+      case "connecting": return { dot: "bg-amber-400 animate-pulse",        pill: "border-amber-500/25 bg-amber-500/[0.04] text-amber-200",    label: "linking…" };
+      case "fallback":   return { dot: "bg-amber-400",                      pill: "border-amber-500/25 bg-amber-500/[0.04] text-amber-200",    label: "polling" };
+      case "closed":     return { dot: "bg-zinc-500",                       pill: "border-axiom-border bg-white/[0.02] text-zinc-400",         label: "offline" };
+    }
+  })();
+  return (
+    <div title={`Live event stream · ${status}`} className={`flex items-center gap-2 px-2.5 py-1 rounded-full border text-[11px] font-mono ${cfg.pill}`}>
+      <span className={`w-1.5 h-1.5 rounded-full ${cfg.dot}`} />
+      <span>{cfg.label}</span>
     </div>
   );
 }

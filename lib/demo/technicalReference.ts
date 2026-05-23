@@ -199,6 +199,26 @@ export const API_ENDPOINTS: ReadonlyArray<ApiEndpoint> = [
   },
   {
     method: "GET",
+    path: "/api/v1/events/stream",
+    scope: "pipeline:read",
+    oneLine: "Long-lived SSE event stream (Phase 409).",
+    detail:
+      "Server-Sent Events. Replaces polling with push: approvals snapshots every 5s, connector snapshots every 30s, heartbeats every 25s to defeat any intermediate proxy idle-timeout. Closed-union event kinds: heartbeat · approvals.snapshot · connectors.snapshot · stream.ready · stream.shutdown. Subscribe via `?subscribe=approvals.snapshot,heartbeat` (default = wildcard). Server enforces a 5-minute max connection lifetime + emits stream.shutdown so clients can cleanly reconnect.",
+    resBody: `event: stream.ready
+data: { "correlationId": "v1_events_stream_…", "filter": ["approvals.snapshot","heartbeat"], "scopes": ["pipeline:read"] }
+id: 1
+
+event: approvals.snapshot
+data: { "generatedAt": "2026-05-23T19:00:00.000Z", "count": 3, "runs": [ … ] }
+id: 2
+
+event: heartbeat
+data: { "atSec": 25 }
+id: 3`,
+    errorCodes: ["missing_scope", "token_expired", "token_revoked", "quota_exhausted"],
+  },
+  {
+    method: "GET",
     path: "/api/v1/connectors/health",
     scope: "pipeline:read",
     oneLine: "Per-connector health telemetry (Phase 407).",
@@ -464,6 +484,17 @@ export const CLOSED_UNIONS: ReadonlyArray<ClosedUnionSpec> = [
       { value: "succeeded",           meaning: "All stages succeeded; terminal." },
       { value: "failed",              meaning: "One stage failed terminally; terminal." },
       { value: "cancelled",           meaning: "Operator cancelled mid-run." },
+    ],
+  },
+  {
+    name: "StreamEventKind",
+    source: "lib/events/streamKernel.ts (Phase 409)",
+    members: [
+      { value: "heartbeat",           meaning: "Keep-alive ping every 25s so intermediate proxies don't idle the SSE connection out." },
+      { value: "approvals.snapshot",  meaning: "Full snapshot of awaiting_approval runs (every 5s + on connect)." },
+      { value: "connectors.snapshot", meaning: "Full per-connector health snapshot (every 30s + on connect)." },
+      { value: "stream.ready",        meaning: "First frame sent after a successful subscribe; carries the correlationId + applied filter." },
+      { value: "stream.shutdown",     meaning: "Server-initiated close (max_lifetime_reached / client_disconnect). Client should reconnect cleanly." },
     ],
   },
   {

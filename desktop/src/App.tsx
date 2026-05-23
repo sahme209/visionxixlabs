@@ -22,6 +22,7 @@ import { ActivityView } from "./views/ActivityView";
 import { ConnectorHealthView } from "./views/ConnectorHealthView";
 import { useTrayApprovalsBadge } from "./lib/useTrayApprovalsBadge";
 import { useConnectorHealthAmbientPoll } from "./lib/connectorHealthStore";
+import { useSseStream } from "./lib/useSseStream";
 import { useNativeMenuActions } from "./lib/useNativeMenuActions";
 import { useTrayPendingSelectionBootstrap } from "./lib/useTrayPendingSelection";
 import { useTrayDecisions } from "./lib/useTrayDecisions";
@@ -89,6 +90,21 @@ export default function App() {
   // store. 30s cadence (slower than approvals because connector status
   // changes on the minute scale, not the second).
   useConnectorHealthAmbientPoll();
+
+  // Phase 409 — long-lived SSE connection. Pushes approvals snapshots
+  // into the same approvalsStore the pollers write into, so SSE is the
+  // primary transport and the pollers are the safety net (they keep
+  // running and refresh state on the slower cadence if SSE drops or
+  // falls back). Subscribed to approvals + heartbeat only — the
+  // connector store still uses its own poll for now.
+  const sseStatus = useSseStream({ subscribe: "approvals.snapshot,heartbeat" });
+  // Expose the live status as a body data attribute so TopBar (or any
+  // surface) can render a "live" indicator without prop-drilling.
+  useEffect(() => {
+    if (typeof document !== "undefined") {
+      document.body.dataset.sseStatus = sseStatus;
+    }
+  }, [sseStatus]);
 
   if (!booted) return <BootScreen />;
 

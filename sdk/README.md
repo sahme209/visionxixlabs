@@ -216,6 +216,7 @@ Every subcommand supports `--json` for piping into `jq`.
 | `GET  /api/v1/pipelines/runs/{id}`| `pipeline:read`       | `pipelineRun(id)`     |
 | `POST /api/v1/pipelines/runs/{id}/decide` | `pipeline:trigger` | `decideApproval(id, ...)` |
 | `GET  /api/v1/connectors/health`  | `pipeline:read`       | `connectorsHealth()`  |
+| `GET  /api/v1/events/stream`      | `pipeline:read`       | SSE — use `fetch + ReadableStream` (EventSource doesn't support Bearer auth) |
 
 ### Approval decide — quorum semantics
 
