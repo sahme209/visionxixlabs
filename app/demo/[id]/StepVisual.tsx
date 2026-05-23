@@ -131,51 +131,76 @@ function ConnectorMock({ step }: { step: DemoStep }) {
 }
 
 function ScanMock({ step: _step }: { step: DemoStep }) {
+  const findings = [
+    { id: "iam-001",   svc: "IAM",  title: "Role 'ci-deploy' has AdministratorAccess",      sev: "critical", cls: "text-rose-200 bg-rose-500/20" },
+    { id: "sg-022",    svc: "EC2",  title: "Security group sg-022 allows 0.0.0.0/0 on :22", sev: "critical", cls: "text-rose-200 bg-rose-500/20" },
+    { id: "s3-public", svc: "S3",   title: "Bucket 'acme-logs-prod' grants public-read",    sev: "high",     cls: "text-red-200 bg-red-500/15" },
+    { id: "kms-rot",   svc: "KMS",  title: "Customer key 'data-at-rest' has rotation off",  sev: "medium",   cls: "text-amber-200 bg-amber-500/15" },
+    { id: "rds-noenc", svc: "RDS",  title: "Instance prod-orders-db missing at-rest encryption", sev: "high", cls: "text-red-200 bg-red-500/15" },
+    { id: "ec2-untag", svc: "EC2",  title: "12 instances missing CostCenter tag",           sev: "low",      cls: "text-zinc-400 bg-white/5" },
+  ];
   return (
     <div className="space-y-4">
-      <SectionLabel>scan results</SectionLabel>
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+      <SectionLabel>scan results · prod-acct-001 · us-east-1</SectionLabel>
+      <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
         <Stat label="Resources" value="142" />
         <Stat label="Findings"  value="14" tone="amber" />
-        <Stat label="Critical"  value="4"  tone="red" />
+        <Stat label="Critical"  value="2"  tone="red" />
+        <Stat label="High"      value="4"  tone="amber" />
         <Stat label="Pass"      value="128" tone="emerald" />
       </div>
-      <div className="rounded-lg border border-white/[0.06] bg-black/30 divide-y divide-white/[0.04]">
-        {[
-          { id: "iam-001",    title: "IAM role with AdministratorAccess",   sev: "high",     cls: "text-red-300 bg-red-500/15" },
-          { id: "s3-public",  title: "S3 bucket allows public-read",        sev: "high",     cls: "text-red-300 bg-red-500/15" },
-          { id: "ec2-untag",  title: "12 EC2 instances missing CostCenter", sev: "low",      cls: "text-zinc-400 bg-white/5" },
-          { id: "sg-022",     title: "Security group open to 0.0.0.0/0",    sev: "critical", cls: "text-rose-300 bg-rose-500/20" },
-        ].map((f) => (
-          <div key={f.id} className="flex items-center justify-between px-3 py-2">
-            <div className="text-[11px] font-mono text-zinc-300 truncate">{f.title}</div>
-            <span className={`text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded ${f.cls}`}>{f.sev}</span>
-          </div>
-        ))}
+      <div className="rounded-lg border border-white/[0.06] bg-black/30 overflow-hidden">
+        <table className="w-full text-[11px] font-mono">
+          <thead className="bg-white/[0.02] text-zinc-500">
+            <tr>
+              <th className="text-left px-3 py-1.5 uppercase tracking-wider w-14">svc</th>
+              <th className="text-left px-3 py-1.5 uppercase tracking-wider">finding</th>
+              <th className="text-right px-3 py-1.5 uppercase tracking-wider w-20">severity</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-white/[0.04]">
+            {findings.map((f) => (
+              <tr key={f.id} className="text-zinc-300">
+                <td className="px-3 py-2 text-zinc-500">{f.svc}</td>
+                <td className="px-3 py-2 truncate">{f.title}</td>
+                <td className="px-3 py-2 text-right">
+                  <span className={`text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded ${f.cls}`}>{f.sev}</span>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
+      <CalloutLine label="next" body="Findings travel with provenance: rule id, scan id, resource arn. Severity is computed by a pure kernel — same inputs, same severity, always." />
     </div>
   );
 }
 
 function RiskMock({ step, ord }: { step: DemoStep; ord: number }) {
   const sev = step.description.toLowerCase().includes("admin") ? "critical" : "high";
+  const score = sev === "critical" ? "9.4" : "7.1";
   return (
     <div className="space-y-4">
       <SectionLabel>risk #{ord}</SectionLabel>
-      <div className={`rounded-lg border p-4 ${sev === "critical" ? "border-rose-500/30 bg-rose-500/[0.05]" : "border-amber-500/30 bg-amber-500/[0.05]"}`}>
+      <div className={`rounded-lg border p-4 ${sev === "critical" ? "border-rose-500/25 bg-rose-500/[0.04]" : "border-amber-500/25 bg-amber-500/[0.04]"}`}>
         <div className="flex items-center gap-2 mb-2">
-          <span className={`text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded ${sev === "critical" ? "bg-rose-500/30 text-rose-100" : "bg-amber-500/30 text-amber-100"}`}>{sev}</span>
-          <span className="text-[10px] font-mono text-zinc-500">scored 9.1 / 10</span>
+          <span className={`text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded ${sev === "critical" ? "bg-rose-500/25 text-rose-100" : "bg-amber-500/25 text-amber-100"}`}>{sev}</span>
+          <span className="text-[10px] font-mono text-zinc-500">CVSS-style score · {score} / 10</span>
+          <span className="text-[10px] font-mono text-zinc-500">·</span>
+          <span className="text-[10px] font-mono text-zinc-500">rule · iam-admin-access</span>
         </div>
         <h4 className="text-sm font-semibold text-white mb-1">{step.title}</h4>
         <p className="text-[12px] text-zinc-400 leading-relaxed">{step.description}</p>
         <div className="grid grid-cols-2 gap-2 mt-3 text-[10px] font-mono text-zinc-500">
-          <div>· evidence rows: 4</div>
-          <div>· blast radius: prod-network</div>
-          <div>· compliance: SOC2 CC6.1</div>
-          <div>· owner: platform team</div>
+          <div>· evidence rows: <span className="text-zinc-300">4</span></div>
+          <div>· blast radius: <span className="text-zinc-300">prod account</span></div>
+          <div>· compliance: <span className="text-zinc-300">SOC2 CC6.1</span></div>
+          <div>· owner team: <span className="text-zinc-300">platform-sec</span></div>
+          <div>· exploit reachability: <span className="text-zinc-300">high</span></div>
+          <div>· first seen: <span className="text-zinc-300">14 days ago</span></div>
         </div>
       </div>
+      <CalloutLine label="kernel" body="Severity is a pure function of (exposure, blast radius, compliance binding, exploit reachability). Same inputs always yield the same severity; the function is unit-tested against a fixture set." />
     </div>
   );
 }
@@ -183,21 +208,36 @@ function RiskMock({ step, ord }: { step: DemoStep; ord: number }) {
 function RecommendationMock({ step: _step }: { step: DemoStep }) {
   return (
     <div className="space-y-4">
-      <SectionLabel>recommendation · terraform diff</SectionLabel>
+      <SectionLabel>recommendation · terraform diff · plan-only</SectionLabel>
       <pre className="rounded-lg bg-black/50 border border-white/[0.06] p-3 text-[11px] font-mono leading-relaxed overflow-x-auto">
-{`resource "aws_iam_role_policy" "deploy" {
+{`# proposed by: Security Engineer · 30s ago
+# rule: iam-admin-access · CIS 1.16 · SOC2 CC6.1
+# blast radius: 1 IAM role · prod account
+
+resource "aws_iam_role_policy" "deploy" {
   role = aws_iam_role.ci_deploy.name
 - policy = data.aws_iam_policy_document.admin.json
 + policy = data.aws_iam_policy_document.scoped.json
 }
 
-# rollback ready · 1 atomic change · blast radius ≤ 1 resource`}
+# scoped policy details:
++   actions: ["s3:GetObject", "s3:PutObject", "ecr:*", "ecs:UpdateService"]
++   resources: ["arn:aws:s3:::acme-artifacts/*", "arn:aws:ecr:*:123:*"]
+-   actions: ["*"]
+-   resources: ["*"]
+
+# rollback plan
++   rollback action: terraform apply -target=aws_iam_role_policy.deploy \\
++                    -var-file=rollback.tfvars
++   verified against digital twin: ✓ (60s ago)`}
       </pre>
-      <div className="grid grid-cols-3 gap-2">
-        <Stat label="Risk tier"  value="medium" tone="amber" />
-        <Stat label="Confidence" value="92%" tone="emerald" />
-        <Stat label="Rollback"   value="ready" tone="emerald" />
+      <div className="grid grid-cols-4 gap-2">
+        <Stat label="Risk tier"     value="medium" tone="amber" />
+        <Stat label="Confidence"    value="92%"    tone="emerald" />
+        <Stat label="Rollback"      value="ready"  tone="emerald" />
+        <Stat label="Blast radius"  value="1 res"  tone="emerald" />
       </div>
+      <CalloutLine label="kernel" body="The diff is generated by a pure kernel that takes the current state + the rule's desired state and emits HCL. The runner refuses to enable Apply until the rollback plan has been validated against the digital twin." />
     </div>
   );
 }
@@ -205,23 +245,29 @@ function RecommendationMock({ step: _step }: { step: DemoStep }) {
 function ApprovalMock({ step: _step }: { step: DemoStep }) {
   return (
     <div className="space-y-4">
-      <SectionLabel>two-person approval packet</SectionLabel>
-      <div className="rounded-lg border border-violet-500/30 bg-violet-500/[0.05] p-4 space-y-3">
-        <div className="flex items-center justify-between">
-          <span className="text-[11px] font-mono text-violet-200 uppercase tracking-wider">apr_pipe_ck98zxm…</span>
-          <span className="text-[9px] font-mono text-amber-300 px-1.5 py-0.5 rounded bg-amber-500/15 uppercase tracking-wider">awaiting</span>
+      <SectionLabel>two-person approval packet · awaiting review</SectionLabel>
+      <div className="rounded-lg border border-violet-500/25 bg-violet-500/[0.04] p-4 space-y-3">
+        <div className="flex items-center justify-between flex-wrap gap-2">
+          <span className="text-[11px] font-mono text-violet-200/90 uppercase tracking-wider">apr_pipe_ck98zxm…</span>
+          <span className="text-[9px] font-mono text-amber-200 px-1.5 py-0.5 rounded bg-amber-500/15 uppercase tracking-wider">awaiting</span>
         </div>
         <div className="grid grid-cols-2 gap-2 text-[11px]">
-          <ApproverRow name="alice@acme.com"    role="security-lead"   state="approved" />
-          <ApproverRow name="bob@acme.com"      role="platform-on-call" state="pending"  />
+          <ApproverRow name="alice@acme.com" role="security-lead"     state="approved" />
+          <ApproverRow name="bob@acme.com"   role="platform-on-call"  state="pending"  />
         </div>
-        <div className="text-[10px] font-mono text-zinc-500">1/2 approved · second vote tips the gate</div>
+        <div className="rounded-md border border-white/[0.06] bg-black/30 p-2 space-y-1 text-[10px] font-mono text-zinc-500">
+          <div><span className="text-zinc-400">scope · </span>pipeline:trigger · change-class</div>
+          <div><span className="text-zinc-400">runId · </span>cm2pipe_ck98zxm9q · ai_coding</div>
+          <div><span className="text-zinc-400">effective rule · </span>two_step_approval · requiredApprovers=2</div>
+          <div><span className="text-zinc-400">correlationId · </span>corr_ck98zxa9 (joins audit + webhook + run)</div>
+        </div>
+        <div className="text-[10px] font-mono text-zinc-500">1 / 2 approved · second vote tips the gate</div>
         <div className="flex gap-2 pt-1">
-          <button disabled className="px-2.5 py-1 rounded-md text-[11px] font-semibold bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 cursor-not-allowed">✓ Approve</button>
-          <button disabled className="px-2.5 py-1 rounded-md text-[11px] font-semibold bg-red-500/15 text-red-300 border border-red-500/30 cursor-not-allowed">✗ Reject</button>
+          <button disabled className="px-2.5 py-1 rounded-md text-[11px] font-semibold bg-emerald-500/15 text-emerald-200 border border-emerald-500/25 cursor-not-allowed">✓ Approve</button>
+          <button disabled className="px-2.5 py-1 rounded-md text-[11px] font-semibold bg-red-500/15 text-red-200 border border-red-500/25 cursor-not-allowed">✗ Reject</button>
         </div>
       </div>
-      <CalloutLine label="safety" body="Platform NEVER applies a change without two distinct approver votes for change-class actions." />
+      <CalloutLine label="lock" body="DB-unique constraint on (snapshotId, approverUserId) is the authoritative double-vote lock. Same user voting twice returns already_voted (409); no race between desktop, web, CLI." />
     </div>
   );
 }
@@ -238,31 +284,36 @@ function ApproverRow({ name, role, state }: { name: string; role: string; state:
 
 function EngineerMock({ step }: { step: DemoStep }) {
   const engineers = [
-    { name: "Cloud Engineer",      scope: "scan · plan · recommend",  state: "active" },
-    { name: "DevOps Engineer",     scope: "ci · build · explain",     state: "active" },
-    { name: "Security Engineer",   scope: "iam · findings · advise",  state: "active" },
-    { name: "Database Engineer",   scope: "schema · slow query",      state: "preview" },
-    { name: "Monitoring Engineer", scope: "alerts · correlations",    state: "preview" },
-    { name: "Incident Engineer",   scope: "timeline · root cause",    state: "preview" },
+    { name: "Cloud Engineer",      scope: "scan · plan · recommend",     tools: 7, last: "12m ago", state: "active"  },
+    { name: "DevOps Engineer",     scope: "ci · build · explain",        tools: 5, last: "2h ago",  state: "active"  },
+    { name: "Security Engineer",   scope: "iam · findings · advise",     tools: 6, last: "30m ago", state: "active"  },
+    { name: "Database Engineer",   scope: "schema · slow query · index", tools: 4, last: "1d ago",  state: "preview" },
+    { name: "Monitoring Engineer", scope: "alerts · correlations",       tools: 4, last: "—",       state: "preview" },
+    { name: "Incident Engineer",   scope: "timeline · root cause",       tools: 5, last: "—",       state: "preview" },
   ];
   const focused = (step.relatedAgent ?? "").toLowerCase();
   return (
     <div className="space-y-4">
-      <SectionLabel>AI engineer registry</SectionLabel>
+      <SectionLabel>AI engineer registry · {engineers.length} engineers</SectionLabel>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
         {engineers.map((e) => {
           const hot = focused !== "all" && e.name.toLowerCase().includes(focused.replace(" engineer", ""));
           return (
-            <div key={e.name} className={`rounded-lg border ${hot ? "border-violet-500/40 bg-violet-500/[0.06]" : "border-white/[0.06] bg-white/[0.015]"} p-3`}>
+            <div key={e.name} className={`rounded-lg border ${hot ? "border-violet-500/35 bg-violet-500/[0.05]" : "border-white/[0.06] bg-white/[0.015]"} p-3`}>
               <div className="flex items-center justify-between mb-1">
                 <span className="text-[12px] font-semibold text-white">{e.name}</span>
                 <span className={`text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded ${e.state === "active" ? "bg-emerald-500/15 text-emerald-300" : "bg-zinc-700/40 text-zinc-400"}`}>{e.state}</span>
               </div>
-              <p className="text-[10px] font-mono text-zinc-500">{e.scope}</p>
+              <p className="text-[10px] font-mono text-zinc-500 mb-1">{e.scope}</p>
+              <div className="flex items-center justify-between text-[10px] font-mono text-zinc-600">
+                <span>{e.tools} tools</span>
+                <span>last action · {e.last}</span>
+              </div>
             </div>
           );
         })}
       </div>
+      <CalloutLine label="invariant" body="Each engineer's tool list is a closed set. The runtime gate checks every call against the engineer's scope BEFORE the model can see the tool definition — typos can't widen authority." />
     </div>
   );
 }
@@ -295,35 +346,41 @@ function ReportMock({ step: _step }: { step: DemoStep }) {
 
 function AuditMock({ step: _step }: { step: DemoStep }) {
   const rows = [
-    { actor: "alice@acme.com",       action: "approval.grant",        outcome: "success", t: "2m ago"  },
-    { actor: "system",               action: "pipeline.run_completed", outcome: "success", t: "3m ago"  },
-    { actor: "api_key:vxlk_live_…",  action: "engineer.approval_voted", outcome: "success", t: "5m ago"  },
-    { actor: "bob@acme.com",         action: "execution_plan.execute", outcome: "success", t: "11m ago" },
-    { actor: "system",               action: "scan.success",          outcome: "success", t: "23m ago" },
+    { actor: "alice@acme.com",          action: "approval.grant",            outcome: "success", t: "2m ago",  corr: "corr_ck98zxa9" },
+    { actor: "system",                  action: "pipeline.run_completed",    outcome: "success", t: "3m ago",  corr: "corr_ck98zxa9" },
+    { actor: "api_key:vxlk_live_a1b…",  action: "engineer.approval_voted",   outcome: "success", t: "5m ago",  corr: "corr_ck98zxa9" },
+    { actor: "bob@acme.com",            action: "execution_plan.execute",    outcome: "success", t: "11m ago", corr: "corr_ck98zw3p" },
+    { actor: "system",                  action: "workforce.api_key_authenticated", outcome: "success", t: "12m ago", corr: "corr_ck98zw3p" },
+    { actor: "system",                  action: "pipeline.run_started",      outcome: "success", t: "12m ago", corr: "corr_ck98zw3p" },
+    { actor: "system",                  action: "scan.success",              outcome: "success", t: "23m ago", corr: "corr_ck98zsr1" },
+    { actor: "alice@acme.com",          action: "recommendation.generated",  outcome: "success", t: "25m ago", corr: "corr_ck98zsr1" },
   ];
   return (
     <div className="space-y-3">
-      <SectionLabel>audit log · last 5</SectionLabel>
+      <SectionLabel>audit log · last 8 · scoped to your org</SectionLabel>
       <div className="rounded-lg border border-white/[0.06] bg-black/30 overflow-hidden">
         <table className="w-full text-[11px] font-mono">
           <thead className="bg-white/[0.02] text-zinc-500">
             <tr>
               <th className="text-left px-3 py-1.5 uppercase tracking-wider">actor</th>
               <th className="text-left px-3 py-1.5 uppercase tracking-wider">action</th>
+              <th className="text-left px-3 py-1.5 uppercase tracking-wider hidden sm:table-cell">correlationId</th>
               <th className="text-right px-3 py-1.5 uppercase tracking-wider">when</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-white/[0.04]">
             {rows.map((r, i) => (
               <tr key={i} className="text-zinc-300">
-                <td className="px-3 py-2 truncate">{r.actor}</td>
-                <td className="px-3 py-2 text-violet-300">{r.action}</td>
+                <td className="px-3 py-2 truncate text-zinc-300">{r.actor}</td>
+                <td className="px-3 py-2 text-violet-300/90">{r.action}</td>
+                <td className="px-3 py-2 text-zinc-500 hidden sm:table-cell truncate">{r.corr}</td>
                 <td className="px-3 py-2 text-zinc-500 text-right whitespace-nowrap">{r.t}</td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
+      <CalloutLine label="schema" body="Each row: { organizationId, actorUserId, actorKind, action (closed-union), outcome, entityRef, correlationId, source, detail }. Detail is JSONB for action-specific context." />
     </div>
   );
 }
@@ -355,22 +412,38 @@ function IncidentMock({ step: _step }: { step: DemoStep }) {
 }
 
 function QuotaMock({ step: _step }: { step: DemoStep }) {
+  const dims = [
+    { label: "v1 API calls",    used: "7,420",  cap: "10,000",  pct: 74, tone: "amber"   },
+    { label: "AI credits",      used: "$214",   cap: "$300",    pct: 71, tone: "amber"   },
+    { label: "Scans / month",   used: "48",     cap: "120",     pct: 40, tone: "emerald" },
+    { label: "Connected repos", used: "12",     cap: "25",      pct: 48, tone: "emerald" },
+  ];
   return (
     <div className="space-y-4">
-      <SectionLabel>monthly quota · v1 API calls</SectionLabel>
+      <SectionLabel>plan · pro · billing period day 23/30</SectionLabel>
       <div className="rounded-lg border border-white/[0.06] bg-white/[0.015] p-4 space-y-3">
-        <div className="flex items-center justify-between">
-          <span className="text-[12px] font-mono text-zinc-300">7,420 / 10,000 calls</span>
-          <span className="text-[10px] font-mono text-amber-300">74% used</span>
-        </div>
-        <div className="w-full h-2 rounded-full bg-zinc-800 overflow-hidden">
-          <div className="h-full bg-gradient-to-r from-violet-500 via-fuchsia-500 to-amber-500" style={{ width: "74%" }} />
-        </div>
-        <div className="grid grid-cols-3 gap-2 text-[10px] font-mono text-zinc-500">
-          <div>· tier: pro</div>
-          <div>· nearLimit: 90% trigger</div>
-          <div>· reset: 1st of month</div>
-        </div>
+        {dims.map((d) => {
+          const barCls =
+            d.tone === "amber"   ? "bg-gradient-to-r from-violet-500/70 to-amber-500/70" :
+            d.tone === "emerald" ? "bg-gradient-to-r from-violet-500/70 to-emerald-500/70" :
+                                   "bg-violet-500/70";
+          return (
+            <div key={d.label} className="space-y-1">
+              <div className="flex items-center justify-between text-[11px] font-mono">
+                <span className="text-zinc-300">{d.label}</span>
+                <span className="text-zinc-500">{d.used} / {d.cap} <span className={d.tone === "amber" ? "text-amber-300" : "text-emerald-300"}>· {d.pct}%</span></span>
+              </div>
+              <div className="w-full h-1.5 rounded-full bg-zinc-800/80 overflow-hidden">
+                <div className={`h-full ${barCls}`} style={{ width: `${d.pct}%` }} />
+              </div>
+            </div>
+          );
+        })}
+      </div>
+      <div className="grid grid-cols-3 gap-2 text-[10px] font-mono text-zinc-500">
+        <div>· nearLimit fires at 90%</div>
+        <div>· billing-DB outage = fail-open</div>
+        <div>· reset · 1st of month UTC</div>
       </div>
     </div>
   );
