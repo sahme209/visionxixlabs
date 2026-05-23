@@ -122,6 +122,11 @@ export type AuditAction =
   | "eval.regression_detected"
   | "eval.release_gate_passed"
   | "eval.release_gate_blocked"
+  // Machine-to-machine API keys — Phase 394.
+  | "workforce.api_key_created"
+  | "workforce.api_key_revoked"
+  | "workforce.api_key_authenticated"
+  | "workforce.api_key_denied"
   // Generic
   | "system.error";
 

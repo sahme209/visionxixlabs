@@ -1843,3 +1843,43 @@ model TenantAutonomyCharter {
   updatedBy            String?
   createdAt            DateTime @default(now())
 }
+
+/// Machine-to-machine API key for the v1 surface — Phase 394.
+/// Plaintext is shown ONCE at mint time; we only persist the hash.
+/// `prefix` is indexed for fast lookup; `keyHash` is the canonical
+/// auth column (SHA-256 of the plaintext). `scopes` is a JSON array
+/// of ApiKeyScope strings — normalized + validated at mint time.
+model ApiKey {
+  id               String    @id @default(cuid())
+  organizationId   String
+  /// Human-readable label set by the operator at mint time.
+  name             String
+  /// "vxlk_live_xxxx" — first 14 chars of plaintext. Indexed.
+  prefix           String
+  /// SHA-256 hex of full plaintext. UNIQUE — never collides.
+  keyHash          String    @unique
+  /// "live" | "test"
+  env              String
+  /// JSON array of ApiKeyScope strings.
+  scopes           Json
+  /// Who minted this (admin email or system actor).
+  createdBy        String
+  /// Last successful authentication. Null until first use.
+  lastUsedAt       DateTime?
+  /// Last source IP that authenticated. Null until first use.
+  lastUsedIp       String?
+  /// Total successful authentications. Useful for usage display.
+  useCount         Int       @default(0)
+  /// When set, key auto-expires at this timestamp.
+  expiresAt        DateTime?
+  /// When set, key is revoked and won't authenticate.
+  revokedAt        DateTime?
+  /// Revocation reason for the audit trail.
+  revokedReason    String?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  @@index([prefix])
+  @@index([organizationId, createdAt])
+  @@index([revokedAt])
+}
