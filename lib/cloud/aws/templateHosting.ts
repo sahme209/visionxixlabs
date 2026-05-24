@@ -199,8 +199,8 @@ export async function ensureTemplatePublished(opts: { forceRefresh?: boolean } =
   let url: string;
   try {
     url = await getSignedUrl(
-      s3 as Parameters<typeof getSignedUrl>[0],
-      new GetObjectCommand({ Bucket: bucket, Key: OBJECT_KEY }) as Parameters<typeof getSignedUrl>[1],
+      s3 as unknown as Parameters<typeof getSignedUrl>[0],
+      new GetObjectCommand({ Bucket: bucket, Key: OBJECT_KEY }) as unknown as Parameters<typeof getSignedUrl>[1],
       { expiresIn: URL_TTL_SECONDS },
     );
   } catch (err) {
