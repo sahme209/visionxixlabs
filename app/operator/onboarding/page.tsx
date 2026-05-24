@@ -29,7 +29,6 @@ import {
   ClockIcon,
   CurrencyDollarIcon,
   ExclamationCircleIcon,
-  ChevronDownIcon,
 } from "@heroicons/react/24/outline";
 import { Reveal } from "@/components/motion/Reveal";
 import { Stagger } from "@/components/motion/Stagger";
@@ -389,17 +388,16 @@ function CopyBlock({ label, value, mono = true }: { label: string; value: string
    ═══════════════════════════════════════════════════════════════════ */
 
 function AWSSetupInstructions({ externalId }: { externalId: string }) {
-  const [expandedPolicy, setExpandedPolicy] = useState<"trust" | "permissions" | null>(null);
 
   const steps = [
     {
       num: 1,
-      title: "Open IAM Console",
+      title: "Open IAM Console — pick \"Custom trust policy\"",
       content: (
         <div>
-          <p>Navigate to <strong className="text-zinc-200">IAM → Roles → Create Role</strong>.</p>
-          <p className="mt-1.5">Select <strong className="text-zinc-200">&quot;Another AWS account&quot;</strong> as trusted entity type.</p>
-          <a href="https://console.aws.amazon.com/iam/home#/roles$new?step=type&roleType=crossAccount" target="_blank" rel="noopener noreferrer"
+          <p>In AWS Console → <strong className="text-zinc-200">IAM → Roles → Create role</strong>, pick{" "}
+            <strong className="text-amber-300">&quot;Custom trust policy&quot;</strong> (NOT &quot;Another AWS account&quot; — that wizard makes the externalId condition easy to forget).</p>
+          <a href="https://console.aws.amazon.com/iam/home#/roles$new?step=type" target="_blank" rel="noopener noreferrer"
             className="inline-flex items-center gap-1.5 text-xs font-semibold text-violet-400 hover:text-violet-300 mt-3 transition-colors group">
             Open AWS IAM Console <ArrowTopRightOnSquareIcon className="h-3 w-3 group-hover:translate-x-0.5 transition-transform" />
           </a>
@@ -408,18 +406,18 @@ function AWSSetupInstructions({ externalId }: { externalId: string }) {
     },
     {
       num: 2,
-      title: "Configure trust relationship",
+      title: "Paste this trust policy EXACTLY",
       content: (
         <div className="space-y-3">
-          <p>Enter the Axiom broker account ID and external ID:</p>
-          <CopyBlock label="Account ID" value={BROKER_ACCOUNT_ID} />
-          <CopyBlock label="External ID (required for security)" value={externalId} />
-          <a
-            href="/docs/aws-setup#option-2"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-1 text-[11px] font-medium text-violet-400 hover:text-violet-300 transition-colors"
-          >
+          <p>Copy the whole JSON and paste it as the trust policy. Do <strong className="text-amber-300">not</strong> edit the <code className="font-mono text-amber-200 bg-amber-500/[0.06] px-1 rounded">Principal</code> — it must be the platform&apos;s broker account, not your own.</p>
+          <CopyBlock label="Trust Policy (paste verbatim)" value={IAM_TRUST_POLICY(externalId)} />
+          <div className="rounded-md border border-amber-500/20 bg-amber-500/[0.04] px-3 py-2 text-[11px] text-amber-100/90 leading-relaxed">
+            <strong>Sanity check:</strong> the <code className="font-mono">Principal.AWS</code> should be{" "}
+            <code className="font-mono text-amber-200">arn:aws:iam::{BROKER_ACCOUNT_ID}:root</code>{" "}
+            — that&apos;s the platform&apos;s broker account ({BROKER_ACCOUNT_ID}). If it&apos;s your own account id, the scan will be denied.
+          </div>
+          <a href="/docs/aws-setup#option-2" target="_blank" rel="noopener noreferrer"
+            className="inline-flex items-center gap-1 text-[11px] font-medium text-violet-400 hover:text-violet-300 transition-colors">
             Why External ID? Read more →
           </a>
         </div>
@@ -427,46 +425,36 @@ function AWSSetupInstructions({ externalId }: { externalId: string }) {
     },
     {
       num: 3,
-      title: "Attach read-only policy",
+      title: "Paste this permissions policy",
       content: (
-        <div>
-          <p>Attach the AWS-managed <strong className="text-zinc-200">ReadOnlyAccess</strong> policy, or use our minimal custom policy.</p>
-          <button onClick={() => setExpandedPolicy(expandedPolicy === "permissions" ? null : "permissions")}
-            className="inline-flex items-center gap-1 text-xs font-semibold text-violet-400 hover:text-violet-300 mt-2.5 transition-colors">
-            <ChevronDownIcon className={`h-3 w-3 transition-transform duration-200 ${expandedPolicy === "permissions" ? "rotate-180" : ""}`} />
-            {expandedPolicy === "permissions" ? "Hide" : "View"} custom policy
-          </button>
-          {expandedPolicy === "permissions" && <div className="mt-3"><CopyBlock label="Permissions Policy (JSON)" value={IAM_PERMISSIONS_POLICY} /></div>}
-          <div className="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-[11px]">
-            <a href="/docs/aws-setup#permissions-explained" target="_blank" rel="noopener noreferrer" className="text-violet-400 hover:text-violet-300 transition-colors">
-              What does Axiom access? →
-            </a>
-            <a href="/docs/permissions-model" target="_blank" rel="noopener noreferrer" className="text-violet-400 hover:text-violet-300 transition-colors">
-              Permissions model →
-            </a>
+        <div className="space-y-3">
+          <p>On the next step, paste this as an <strong className="text-zinc-200">inline policy</strong>. Or attach the AWS-managed{" "}
+            <strong className="text-zinc-200">ReadOnlyAccess</strong> policy (broader, but simpler).</p>
+          <CopyBlock label="Permissions Policy (paste verbatim)" value={IAM_PERMISSIONS_POLICY} />
+          <div className="flex flex-wrap gap-x-3 gap-y-1 text-[11px]">
+            <a href="/docs/aws-setup#permissions-explained" target="_blank" rel="noopener noreferrer"
+              className="text-violet-400 hover:text-violet-300 transition-colors">What does Axiom access? →</a>
+            <a href="/docs/permissions-model" target="_blank" rel="noopener noreferrer"
+              className="text-violet-400 hover:text-violet-300 transition-colors">Permissions model →</a>
           </div>
         </div>
       ),
     },
     {
       num: 4,
-      title: "Name and create the role",
-      content: <p>Name the role <strong className="text-zinc-200">AxiomAgentReadOnly</strong> (or any name). Click Create Role.</p>,
+      title: "Name the role + create it",
+      content: <p>Name it <strong className="text-zinc-200">AxiomAgentReadOnly</strong> (or anything else). Click <strong className="text-zinc-200">Create role</strong>.</p>,
     },
     {
       num: 5,
-      title: "Copy the Role ARN",
+      title: "Copy the role ARN back into the form below",
       content: (
-        <div>
-          <p>Open the role summary page and copy the <strong className="text-zinc-200">Role ARN</strong>. Paste it in the validation form below.</p>
-          <a
-            href="/docs/aws-setup"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-1 text-[11px] font-medium text-violet-400 hover:text-violet-300 mt-2 transition-colors"
-          >
-            Full AWS setup guide →
-          </a>
+        <div className="space-y-2">
+          <p>Open the new role&apos;s summary page, copy the <strong className="text-zinc-200">Role ARN</strong>, and paste it into the form below this section. You&apos;ll also need the External ID — it&apos;s already filled in for you.</p>
+          <div className="rounded-md border border-violet-500/15 bg-violet-500/[0.04] px-3 py-2 text-[11px] text-zinc-300 leading-relaxed">
+            <strong className="text-violet-200">External ID for this session:</strong>{" "}
+            <code className="font-mono text-zinc-100">{externalId}</code>
+          </div>
         </div>
       ),
     },
@@ -525,13 +513,10 @@ function AWSSetupInstructions({ externalId }: { externalId: string }) {
           ))}
         </ol>
 
-        <div className="mt-5 pt-4 border-t border-white/[0.04]">
-          <button onClick={() => setExpandedPolicy(expandedPolicy === "trust" ? null : "trust")}
-            className="inline-flex items-center gap-1 text-xs text-zinc-600 hover:text-zinc-400 transition-colors">
-            <ChevronDownIcon className={`h-3 w-3 transition-transform duration-200 ${expandedPolicy === "trust" ? "rotate-180" : ""}`} />
-            {expandedPolicy === "trust" ? "Hide" : "View"} trust policy JSON
-          </button>
-          {expandedPolicy === "trust" && <div className="mt-3"><CopyBlock label="Trust Policy (JSON)" value={IAM_TRUST_POLICY(externalId)} /></div>}
+        <div className="mt-5 pt-4 border-t border-white/[0.04] text-[11px] text-zinc-500 leading-relaxed">
+          The whole flow runs in your AWS account. We never see your access keys —
+          AssumeRole gives us short-lived (1-hour) read-only credentials, and you can
+          revoke access any time by deleting the IAM role.
         </div>
       </div>
     </div>
