@@ -526,15 +526,13 @@ function AWSSetupInstructions({ externalId }: { externalId: string }) {
       </div>
       )}
 
-      {/* When the 1-click button is hidden (AWS_CFN_TEMPLATE_S3_URL not
-          configured by the platform operator), surface a calm banner
-          that points operators at the manual flow directly below.
-          Customers never see a broken button. */}
-      {oneClick?.available === false && (
-        <div className="rounded-xl border border-amber-500/20 bg-amber-500/[0.04] p-3 text-[12px] text-amber-100/90 leading-relaxed">
-          <strong className="text-amber-200">Manual setup mode.</strong>{" "}
-          The 1-click CloudFormation button is disabled on this deployment.
-          Use the step-by-step flow below — copy the trust + permissions JSON into AWS Console manually.
+      {/* Spinner while the platform auto-publishes the CloudFormation
+          template to S3 on the first request (typically ~2s). The 1-click
+          button renders as soon as the publish completes. */}
+      {oneClick === null && (
+        <div className="rounded-xl border border-violet-500/20 bg-violet-500/[0.04] p-3 text-[12px] text-violet-100/90 leading-relaxed flex items-center gap-2">
+          <span className="w-3 h-3 rounded-full border-2 border-violet-300 border-t-transparent animate-spin" />
+          Preparing the 1-click CloudFormation link…
         </div>
       )}
 

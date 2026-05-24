@@ -2,39 +2,31 @@
  * GET /api/aws/quick-deploy-url?externalId=axiom-…
  *
  * Returns the CloudFormation Quick-Create URL the onboarding page
- * should open when the customer clicks the 1-click button — but ONLY
- * when the platform operator has set AWS_CFN_TEMPLATE_S3_URL to a
- * supported S3 URL. Otherwise returns { available: false } so the
- * onboarding UI can hide the button and promote the manual fallback.
+ * should open when the customer clicks the 1-click button. The
+ * template is auto-published to S3 by the platform on the first
+ * request — see lib/cloud/aws/templateHosting.ts. Customer never
+ * does anything. Operator never does anything either, as long as
+ * AWS_CONNECTOR_BROKER_* creds are configured (which is already
+ * required for the scan to work at all).
  *
- * Why this is server-side instead of a hardcoded client URL:
- *   AWS console's Quick-Create deep-link rejects non-S3 templateURLs
- *   ("TemplateURL must be a supported URL"). The S3 URL is platform-
- *   operator config, not customer-facing. Surfacing it through this
- *   tiny endpoint keeps the UI honest about availability.
+ * If broker creds AREN'T configured, the endpoint returns
+ * { available: false } so the UI can show a config-gap banner.
+ * But the customer's path is always exactly: click button → land
+ * in AWS console → click Create stack → copy RoleArn back.
  */
 
 import { NextResponse, type NextRequest } from "next/server";
-import { loadAppEnv } from "@/lib/config/env";
 import { isValidExternalId } from "@/lib/cloud/aws/quickDeploy";
+import { ensureTemplatePublished } from "@/lib/cloud/aws/templateHosting";
 
 export const dynamic = "force-dynamic";
 
+// SDK can take a beat the very first time (bucket create + policy +
+// upload). Give Vercel headroom so we don't 504 on first publish.
+export const maxDuration = 30;
+
 export async function GET(req: NextRequest) {
-  const env = loadAppEnv();
   const externalId = req.nextUrl.searchParams.get("externalId");
-
-  if (!env.awsCfnTemplateS3Url) {
-    return NextResponse.json({
-      available: false,
-      reason: "cfn_template_not_hosted",
-      hint:
-        "The 1-click button is disabled because AWS_CFN_TEMPLATE_S3_URL is not set on this deployment. " +
-        "Upload public/aws/axiom-agent-quick-deploy.yaml to a public S3 bucket and set the env var. " +
-        "See scripts/upload-cfn-template.sh for the helper.",
-    }, { status: 200 });
-  }
-
   if (!externalId || !isValidExternalId(externalId)) {
     return NextResponse.json({
       available: false,
@@ -43,8 +35,17 @@ export async function GET(req: NextRequest) {
     }, { status: 400 });
   }
 
+  const publish = await ensureTemplatePublished();
+  if (!publish.available) {
+    return NextResponse.json({
+      available: false,
+      reason: publish.reason,
+      hint: publish.detail,
+    }, { status: 200 });
+  }
+
   const params = new URLSearchParams({
-    templateURL: env.awsCfnTemplateS3Url,
+    templateURL: publish.url,
     stackName: "axiom-agent",
     param_ExternalId: externalId,
   });
@@ -56,6 +57,8 @@ export async function GET(req: NextRequest) {
   return NextResponse.json({
     available: true,
     url,
-    templateUrl: env.awsCfnTemplateS3Url,
+    templateUrl: publish.url,
+    bucket: publish.bucket,
+    publishedNow: publish.publishedNow,
   }, { status: 200 });
 }
