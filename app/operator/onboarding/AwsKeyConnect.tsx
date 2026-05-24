@@ -40,7 +40,29 @@ interface ValidationErr {
   ok: false;
   error: string;
   hint?: string;
+  brokerArn?: string;
+  bucket?: string;
 }
+
+// IAM policy the broker user needs to host the CloudFormation template
+// in S3. Pasting this once unblocks every future customer connection.
+const BROKER_S3_POLICY = JSON.stringify({
+  Version: "2012-10-17",
+  Statement: [
+    {
+      Sid: "ManageOwnQuickCreateTemplateBucket",
+      Effect: "Allow",
+      Action: ["s3:CreateBucket", "s3:HeadBucket", "s3:PutBucketPolicy", "s3:PutPublicAccessBlock"],
+      Resource: "arn:aws:s3:::axiom-cfn-templates-*",
+    },
+    {
+      Sid: "ManageOwnQuickCreateTemplateObject",
+      Effect: "Allow",
+      Action: ["s3:PutObject", "s3:HeadObject", "s3:GetObject"],
+      Resource: "arn:aws:s3:::axiom-cfn-templates-*/axiom-agent-quick-deploy.yaml",
+    },
+  ],
+}, null, 2);
 
 export function AwsKeyConnect({
   onValidated,
@@ -80,7 +102,7 @@ export function AwsKeyConnect({
     let cancelled = false;
     fetch(`/api/aws/quick-deploy-url?externalId=${encodeURIComponent(externalId)}`)
       .then((r) => r.json())
-      .then((data: { available: boolean; url?: string; hint?: string; reason?: string }) => {
+      .then((data: { available: boolean; url?: string; hint?: string; reason?: string; brokerArn?: string; bucket?: string }) => {
         if (cancelled) return;
         if (data.available && data.url) {
           setCfnUrl(data.url);
@@ -90,6 +112,8 @@ export function AwsKeyConnect({
             ok: false,
             error: data.reason ?? "template_unavailable",
             hint: data.hint ?? "The platform couldn't prepare the CloudFormation template. Try again in a moment.",
+            brokerArn: data.brokerArn,
+            bucket: data.bucket,
           });
           setPhase("failed");
         }
@@ -167,6 +191,54 @@ export function AwsKeyConnect({
   // ─── Failed — calm restart path ─────────────────────────────────────
   if (phase === "failed") {
     const isCfnLoadFail = !cfnUrl;
+    const isBrokerPermFix = result?.ok === false && result.error === "broker_s3_perms_missing";
+
+    const retryLoad = () => {
+      setResult(null);
+      setPhase(cfnUrl ? "ready" : "loading_template");
+      if (!cfnUrl) {
+        fetch(`/api/aws/quick-deploy-url?externalId=${encodeURIComponent(externalId)}`)
+          .then((r) => r.json())
+          .then((data: { available: boolean; url?: string; hint?: string; reason?: string; brokerArn?: string; bucket?: string }) => {
+            if (data.available && data.url) {
+              setCfnUrl(data.url);
+              setPhase("ready");
+            } else {
+              setResult({
+                ok: false,
+                error: data.reason ?? "template_unavailable",
+                hint: data.hint ?? "The platform couldn't prepare the CloudFormation template. Try again in a moment.",
+                brokerArn: data.brokerArn,
+                bucket: data.bucket,
+              });
+              setPhase("failed");
+            }
+          })
+          .catch(() => setPhase("failed"));
+      }
+    };
+
+    // Special case: the platform's broker IAM user is missing the S3
+    // permissions needed to host the CloudFormation template. This is
+    // a one-time fix the platform owner does — paste the policy below
+    // into the broker user, then every future customer connection
+    // works without any setup at all.
+    if (isBrokerPermFix && result?.ok === false) {
+      const brokerArn = result.brokerArn;
+      const iamConsoleUrl = brokerArn
+        ? `https://us-east-1.console.aws.amazon.com/iam/home?region=us-east-1#/users/details/${encodeURIComponent(brokerArn.split("/").slice(1).join("/"))}?section=permissions`
+        : "https://us-east-1.console.aws.amazon.com/iam/home";
+
+      return (
+        <PermissionsFixCard
+          brokerArn={brokerArn}
+          policyJson={BROKER_S3_POLICY}
+          iamConsoleUrl={iamConsoleUrl}
+          onRetry={retryLoad}
+        />
+      );
+    }
+
     return (
       <CalmCard tone="amber">
         <KickerLine tone="amber">aws · needs another try</KickerLine>
@@ -180,28 +252,7 @@ export function AwsKeyConnect({
         </p>
         <button
           type="button"
-          onClick={() => {
-            setResult(null);
-            setPhase(cfnUrl ? "ready" : "loading_template");
-            if (!cfnUrl) {
-              fetch(`/api/aws/quick-deploy-url?externalId=${encodeURIComponent(externalId)}`)
-                .then((r) => r.json())
-                .then((data: { available: boolean; url?: string; hint?: string; reason?: string }) => {
-                  if (data.available && data.url) {
-                    setCfnUrl(data.url);
-                    setPhase("ready");
-                  } else {
-                    setResult({
-                      ok: false,
-                      error: data.reason ?? "template_unavailable",
-                      hint: data.hint ?? "The platform couldn't prepare the CloudFormation template. Try again in a moment.",
-                    });
-                    setPhase("failed");
-                  }
-                })
-                .catch(() => setPhase("failed"));
-            }
-          }}
+          onClick={retryLoad}
           className="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-full bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 text-zinc-100 text-[13px] font-medium transition-colors"
         >
           Try again
@@ -351,6 +402,88 @@ function ScopeRow({ children }: { children: React.ReactNode }) {
     <div className="flex items-center gap-2 text-[12.5px] text-zinc-300">
       <span aria-hidden className="w-1 h-1 rounded-full bg-emerald-400/70 flex-shrink-0" />
       <span>{children}</span>
+    </div>
+  );
+}
+
+/**
+ * One-time IAM permissions fix card. Shown when the platform's broker
+ * user can't host the CloudFormation template in S3. Operator pastes
+ * the policy into the broker user once, every future customer
+ * connection then works without setup.
+ */
+function PermissionsFixCard({
+  brokerArn,
+  policyJson,
+  iamConsoleUrl,
+  onRetry,
+}: {
+  brokerArn?: string;
+  policyJson: string;
+  iamConsoleUrl: string;
+  onRetry: () => void;
+}) {
+  const [copied, setCopied] = useState(false);
+  const copy = async () => {
+    try {
+      await navigator.clipboard.writeText(policyJson);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
+    } catch { /* clipboard blocked */ }
+  };
+
+  return (
+    <div className="space-y-4">
+      <CalmCard tone="amber">
+        <KickerLine tone="amber">aws · one-time setup</KickerLine>
+        <h3 className="text-xl font-semibold text-white tracking-tight mt-1.5">
+          The platform&apos;s broker user needs S3 permissions.
+        </h3>
+        <p className="text-[13px] text-zinc-300 leading-relaxed mt-2 max-w-2xl">
+          AWS Console only accepts CloudFormation templates from an S3 URL, so the platform publishes the template to its own bucket. That requires attaching a small inline policy to the broker user{brokerArn ? <> <code className="font-mono text-zinc-100 break-all">{brokerArn}</code></> : null} — once, then it works forever for every customer.
+        </p>
+      </CalmCard>
+
+      <CalmCard tone="neutral">
+        <KickerLine tone="neutral">step 1 — copy this policy</KickerLine>
+        <pre className="mt-3 rounded-xl border border-zinc-800 bg-zinc-950 p-3 font-mono text-[11.5px] text-zinc-200 leading-relaxed overflow-x-auto whitespace-pre">
+{policyJson}
+        </pre>
+        <button
+          type="button"
+          onClick={copy}
+          className="mt-3 inline-flex items-center gap-2 px-3.5 py-2 rounded-full bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 text-zinc-100 text-[12.5px] font-medium transition-colors"
+        >
+          {copied ? "Copied" : "Copy policy"}
+        </button>
+      </CalmCard>
+
+      <CalmCard tone="neutral">
+        <KickerLine tone="neutral">step 2 — attach it to the broker user</KickerLine>
+        <ol className="mt-3 space-y-3">
+          <TimelineStep n={1} title="Open IAM Console">
+            <a href={iamConsoleUrl} target="_blank" rel="noreferrer" className="text-indigo-300 hover:text-indigo-200 transition-colors underline-offset-2 hover:underline">
+              Open the broker user&apos;s Permissions tab →
+            </a>
+          </TimelineStep>
+          <TimelineStep n={2} title="Add an inline policy">
+            Click <strong className="text-zinc-100">Add permissions → Create inline policy</strong>, switch to the JSON tab, paste what you copied.
+          </TimelineStep>
+          <TimelineStep n={3} title="Name it and save">
+            Call it <code className="font-mono text-zinc-300">AxiomTemplateHosting</code>, click <strong className="text-zinc-100">Create policy</strong>. Done.
+          </TimelineStep>
+        </ol>
+        <div className="mt-5">
+          <button
+            type="button"
+            onClick={onRetry}
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-indigo-600 hover:bg-indigo-500 text-white text-[14px] font-medium shadow-sm transition-colors"
+          >
+            Try again
+            <span aria-hidden className="opacity-70">→</span>
+          </button>
+        </div>
+      </CalmCard>
     </div>
   );
 }

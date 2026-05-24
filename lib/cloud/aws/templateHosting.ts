@@ -55,8 +55,13 @@ export interface PublishError {
     | "broker_account_lookup_failed"
     | "template_read_failed"
     | "bucket_setup_failed"
+    | "broker_s3_perms_missing"
     | "upload_failed";
   detail: string;
+  /** Broker IAM user ARN parsed out of an AccessDenied — lets the UI deep-link the operator to the right IAM page. */
+  brokerArn?: string;
+  /** Bucket name we were trying to create when access was denied. */
+  bucket?: string;
 }
 
 let cached: PublishResult | null = null;
@@ -128,10 +133,27 @@ export async function ensureTemplatePublished(opts: { forceRefresh?: boolean } =
   try {
     await ensureBucket(s3, bucket);
   } catch (err) {
+    const msg = errMessage(err);
+    // The most common failure: broker user is read-only and can't do
+    // s3:CreateBucket / s3:PutBucketPolicy / s3:PutPublicAccessBlock.
+    // Detect this specifically so the UI can show a guided IAM fix.
+    const isS3PermDenied = /s3:(CreateBucket|PutBucketPolicy|PutPublicAccessBlock|PutObject)/i.test(msg)
+      || /AccessDenied|not authorized to perform/i.test(msg);
+    if (isS3PermDenied) {
+      const arnMatch = msg.match(/arn:aws:iam::\d{12}:(user|role)\/[A-Za-z0-9_+=,.@\-/]+/);
+      return {
+        available: false,
+        reason: "broker_s3_perms_missing",
+        detail: msg,
+        brokerArn: arnMatch?.[0],
+        bucket,
+      };
+    }
     return {
       available: false,
       reason: "bucket_setup_failed",
-      detail: `Bucket setup failed (${bucket}): ${errMessage(err)}`,
+      detail: `Bucket setup failed (${bucket}): ${msg}`,
+      bucket,
     };
   }
 

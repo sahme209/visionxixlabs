@@ -41,6 +41,8 @@ export async function GET(req: NextRequest) {
       available: false,
       reason: publish.reason,
       hint: publish.detail,
+      brokerArn: publish.brokerArn,
+      bucket: publish.bucket,
     }, { status: 200 });
   }
 
