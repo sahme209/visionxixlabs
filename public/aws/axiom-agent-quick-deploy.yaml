@@ -31,18 +31,15 @@ Parameters:
     Default: "590183704419"
     AllowedPattern: "^[0-9]{12}$"
 
-  RoleName:
-    Type: String
-    Description: Name for the created IAM role.
-    Default: "AxiomAgentReadOnly"
-    MinLength: 1
-    MaxLength: 64
-
 Resources:
   AxiomAgentReadOnlyRole:
     Type: AWS::IAM::Role
     Properties:
-      RoleName: !Ref RoleName
+      # Role name derives from the session-unique ExternalId so reruns
+      # never collide with a stale role left over from a prior failed
+      # attempt. ExternalId is "axiom-<8-32 alphanumerics>" so the
+      # resulting role name fits well under IAM's 64-char limit.
+      RoleName: !Sub "AxiomAgentReadOnly-${ExternalId}"
       Description: >
         Cross-account read-only role assumed by Axiom Agent
         (VisionXIXLabs). 1-hour session, ExternalId-gated, read-only

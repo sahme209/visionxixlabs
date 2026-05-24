@@ -289,9 +289,40 @@ export function AwsKeyConnect({
               <span aria-hidden className="opacity-70">→</span>
             </a>
           ) : phase === "deploying" ? (
-            <div className="inline-flex items-center gap-2.5 px-5 py-2.5 rounded-full bg-zinc-800/80 border border-zinc-700 text-zinc-200 text-[14px]">
-              <span className="w-3.5 h-3.5 rounded-full border-2 border-indigo-300/70 border-t-transparent animate-spin" />
-              Waiting for AWS Console…
+            <div className="space-y-3">
+              <div className="inline-flex items-center gap-2.5 px-5 py-2.5 rounded-full bg-zinc-800/80 border border-zinc-700 text-zinc-200 text-[14px]">
+                <span className="w-3.5 h-3.5 rounded-full border-2 border-indigo-300/70 border-t-transparent animate-spin" />
+                Waiting for AWS Console…
+              </div>
+              <div className="flex items-center gap-4">
+                {cfnUrl && (
+                  <a
+                    href={cfnUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-[13px] text-indigo-300 hover:text-indigo-200 transition-colors"
+                  >
+                    Re-open AWS Console
+                  </a>
+                )}
+                <button
+                  type="button"
+                  onClick={() => {
+                    // Drop the session-cached externalId so a fresh one
+                    // is minted on the next page load — fresh externalId
+                    // → fresh stack name → no collision with the old
+                    // ROLLBACK_COMPLETE stack still sitting in the
+                    // customer's account.
+                    if (typeof window !== "undefined") {
+                      try { window.sessionStorage.removeItem(SS_EXTERNAL_ID); } catch { /* no-op */ }
+                    }
+                    window.location.reload();
+                  }}
+                  className="text-[13px] text-zinc-400 hover:text-zinc-200 transition-colors"
+                >
+                  Stack failed? Start a fresh attempt →
+                </button>
+              </div>
             </div>
           ) : (
             <div className="inline-flex items-center gap-2.5 px-5 py-2.5 rounded-full bg-zinc-800/60 border border-zinc-800 text-zinc-400 text-[14px]">

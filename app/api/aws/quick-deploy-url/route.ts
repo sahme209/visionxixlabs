@@ -46,9 +46,15 @@ export async function GET(req: NextRequest) {
     }, { status: 200 });
   }
 
+  // Stack name carries the session suffix so reruns after a rollback
+  // never collide with a stale stack. ExternalId is "axiom-<…>" so the
+  // suffix is the part after the prefix — keeps the stack name readable.
+  const suffix = externalId.replace(/^axiom-/, "");
+  const stackName = `axiom-agent-${suffix}`;
+
   const params = new URLSearchParams({
     templateURL: publish.url,
-    stackName: "axiom-agent",
+    stackName,
     param_ExternalId: externalId,
   });
   const region = "us-east-1";
