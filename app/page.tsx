@@ -17,6 +17,7 @@ import { AnimatedButton } from "@/components/ui/AnimatedButton";
 import { RealisticFogBackground } from "@/components/ui/realistic-fog-background";
 import { MotherboardBackdrop } from "@/components/ui/MotherboardBackdrop";
 import { Spotlight } from "@/components/motion/Spotlight";
+import { SpotlightCard } from "@/components/motion/SpotlightCard";
 import { MagneticButton } from "@/components/motion/MagneticButton";
 import { CountUp } from "@/components/motion/CountUp";
 import { TextReveal } from "@/components/motion/TextReveal";
@@ -115,9 +116,13 @@ function AmbientParticles() {
   );
 }
 
-/* ── Section divider ─────────────────────────────────────────── */
+/* ── Section divider — calm huly.io hairline that fades at the edges */
 function SectionDivider() {
-  return <div className="section-divider" />;
+  return (
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="hairline-divider" />
+    </div>
+  );
 }
 
 export default function Home() {
@@ -168,19 +173,20 @@ export default function Home() {
 
         <div className="max-w-6xl mx-auto relative">
           <div className="grid lg:grid-cols-[1.05fr_1fr] gap-12 lg:gap-20 items-center">
-            {/* Left — calm editorial hero. Single column of restrained typography. */}
+            {/* Left — editorial hero, now using the calm design system. */}
             <div className="relative z-10">
               <Reveal direction="up" blur>
-                <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-zinc-500 mb-7">
+                <span className="status-pill mb-8">
+                  <span className="status-dot breathe" />
                   Axiom · cloud operations agent
-                </p>
+                </span>
               </Reveal>
-              <h1 className="text-[44px] sm:text-[58px] md:text-[68px] lg:text-[76px] font-medium mb-7 leading-[1.02] tracking-[-0.035em] text-white break-words">
+              <h1 className="display-headline-lg text-white break-words mb-7">
                 <TextReveal text="Your cloud" splitBy="char" stagger={18} startDelay={120} className="block" />
                 <TextReveal text="runs itself." splitBy="char" stagger={18} startDelay={420} className="block" />
               </h1>
               <Reveal direction="up" delay={0.06}>
-                <p className="text-zinc-400 text-[16px] sm:text-[17px] mb-10 max-w-md leading-relaxed">
+                <p className="body-lede text-zinc-400 mb-10">
                   Axiom scans your infrastructure, reasons about cost and security, drafts Terraform changes, and ships them — with human approval. Up to 30–40% lower cloud spend in optimized accounts.
                 </p>
               </Reveal>
@@ -188,21 +194,22 @@ export default function Home() {
                 <div className="relative z-20 flex flex-wrap items-center gap-x-6 gap-y-3">
                   <Link
                     href="/operator/onboarding"
-                    className="inline-flex items-center gap-2.5 px-7 py-3.5 rounded-full bg-white text-zinc-950 text-[14.5px] font-medium hover:bg-zinc-100 transition-colors shadow-[0_0_30px_-10px_rgba(255,255,255,0.4)]"
+                    className="magnetic-sheen inline-flex items-center gap-2.5 px-7 py-3.5 rounded-full bg-white text-zinc-950 text-[14.5px] font-medium hover:bg-zinc-100 transition-colors shadow-[0_0_30px_-10px_rgba(255,255,255,0.4)]"
                   >
                     See Axiom in action
                     <ArrowRightIcon className="h-4 w-4 opacity-60" />
                   </Link>
                   <Link
                     href="/demo"
-                    className="text-[14px] text-zinc-400 hover:text-white transition-colors"
+                    className="link-underline-soft text-[14px] text-zinc-400 hover:text-white transition-colors"
                   >
                     Try the demo
                   </Link>
                 </div>
               </Reveal>
               <Reveal direction="up" delay={0.2}>
-                <div className="mt-10 pt-7 border-t border-white/[0.05] flex flex-wrap gap-x-8 gap-y-3 text-[12px] text-zinc-500">
+                <div className="mt-10 pt-7 relative flex flex-wrap gap-x-8 gap-y-3 text-[12px] text-zinc-500">
+                  <span className="hairline-divider absolute inset-x-0 top-0" aria-hidden />
                   {["Assume-role model", "Human approval gates", "Immutable audit trail"].map((item) => (
                     <span key={item}>{item}</span>
                   ))}
@@ -210,11 +217,16 @@ export default function Home() {
               </Reveal>
             </div>
 
-            {/* Right — product walkthrough. Lower visual weight, lives under a subtle frame. */}
+            {/* Right — product walkthrough wrapped in a cursor-aware
+                SpotlightCard with a glow-edge top highlight. The demo
+                itself stays unchanged; the frame around it gives the
+                whole composition a 'living card' feel. */}
             <Reveal direction="up" delay={0.15}>
-              <div className="relative hidden lg:block">
+              <SpotlightCard
+                className="glow-edge hidden lg:block rounded-2xl border border-white/[0.04] bg-white/[0.012] p-6 backdrop-blur-sm"
+              >
                 <HomepageDemoAnimation />
-              </div>
+              </SpotlightCard>
             </Reveal>
           </div>
         </div>
@@ -351,16 +363,18 @@ export default function Home() {
               { name: "Build / CI Engineer", rate: "$195k+/yr", scope: "Gating + deploy windows" },
               { name: "Customer Success",    rate: "$170k+/yr", scope: "Trial → growth conversion" },
             ].map((d) => (
-              <div
+              <SpotlightCard
                 key={d.name}
                 className="rounded-xl border border-white/[0.05] bg-white/[0.012] p-4 hover:border-white/[0.1] transition-colors"
               >
-                <div className="flex items-start justify-between gap-2">
-                  <p className="text-[13px] font-medium text-zinc-100 leading-tight">{d.name}</p>
-                  <span className="text-[10px] font-mono text-zinc-500 whitespace-nowrap flex-shrink-0">{d.rate}</span>
+                <div className="relative z-10">
+                  <div className="flex items-start justify-between gap-2">
+                    <p className="text-[13px] font-medium text-zinc-100 leading-tight">{d.name}</p>
+                    <span className="text-[10px] font-mono text-zinc-500 whitespace-nowrap flex-shrink-0">{d.rate}</span>
+                  </div>
+                  <p className="mt-2 text-[11.5px] text-zinc-500 leading-snug">{d.scope}</p>
                 </div>
-                <p className="mt-2 text-[11.5px] text-zinc-500 leading-snug">{d.scope}</p>
-              </div>
+              </SpotlightCard>
             ))}
           </Stagger>
 
@@ -449,19 +463,21 @@ export default function Home() {
               const Icon = card.icon;
               return (
                 <Reveal key={card.title} direction="up" delay={i * 0.06}>
-                  <div className="rounded-2xl border border-white/[0.05] bg-white/[0.012] p-7 h-full hover:border-white/[0.1] transition-colors">
-                    <div className="flex items-center gap-3 mb-5">
-                      <Icon className="h-4 w-4 text-zinc-400" />
-                      <h3 className="text-[15px] font-medium text-white">{card.title}</h3>
-                      <span className="ml-auto text-[10px] font-mono uppercase tracking-[0.22em] text-zinc-500">{card.metric}</span>
+                  <SpotlightCard className="glow-edge rounded-2xl border border-white/[0.05] bg-white/[0.012] p-7 h-full hover:border-white/[0.1] transition-colors">
+                    <div className="relative z-10">
+                      <div className="flex items-center gap-3 mb-5">
+                        <Icon className="h-4 w-4 text-zinc-400" />
+                        <h3 className="text-[15px] font-medium text-white">{card.title}</h3>
+                        <span className="ml-auto kicker-mono">{card.metric}</span>
+                      </div>
+                      <p className="text-[14px] text-zinc-400 mb-6 leading-relaxed">{card.desc}</p>
+                      <ul className="text-[13.5px] text-zinc-500 space-y-2.5">
+                        {card.items.map((item) => (
+                          <li key={item.text}>{item.text}</li>
+                        ))}
+                      </ul>
                     </div>
-                    <p className="text-[14px] text-zinc-400 mb-6 leading-relaxed">{card.desc}</p>
-                    <ul className="text-[13.5px] text-zinc-500 space-y-2.5">
-                      {card.items.map((item) => (
-                        <li key={item.text}>{item.text}</li>
-                      ))}
-                    </ul>
-                  </div>
+                  </SpotlightCard>
                 </Reveal>
               );
             })}
