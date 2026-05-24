@@ -26,9 +26,10 @@ Standard cross-account scanner permissions:
 
 Required for the 1-click button on `/operator/onboarding`. The
 platform auto-creates a bucket named `axiom-cfn-templates-<broker-account-id>`
-the first time a customer hits the endpoint and uploads
-`public/aws/axiom-agent-quick-deploy.yaml` with a public-read policy
-scoped to that one object.
+the first time a customer hits the endpoint, uploads
+`public/aws/axiom-agent-quick-deploy.yaml` to it, and hands the
+customer a *presigned* GET URL signed by the broker. The bucket
+itself stays private — no public access, no bucket policy.
 
 ```json
 {
@@ -39,9 +40,7 @@ scoped to that one object.
       "Effect": "Allow",
       "Action": [
         "s3:CreateBucket",
-        "s3:HeadBucket",
-        "s3:PutBucketPolicy",
-        "s3:PutPublicAccessBlock"
+        "s3:HeadBucket"
       ],
       "Resource": "arn:aws:s3:::axiom-cfn-templates-*"
     },

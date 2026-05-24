@@ -45,14 +45,17 @@ interface ValidationErr {
 }
 
 // IAM policy the broker user needs to host the CloudFormation template
-// in S3. Pasting this once unblocks every future customer connection.
+// in a private S3 bucket. We hand the customer a presigned GET URL —
+// no public access is ever set, so no PutBucketPolicy or
+// PutPublicAccessBlock perms are needed. Pasting this once unblocks
+// every future customer connection.
 const BROKER_S3_POLICY = JSON.stringify({
   Version: "2012-10-17",
   Statement: [
     {
       Sid: "ManageOwnQuickCreateTemplateBucket",
       Effect: "Allow",
-      Action: ["s3:CreateBucket", "s3:HeadBucket", "s3:PutBucketPolicy", "s3:PutPublicAccessBlock"],
+      Action: ["s3:CreateBucket", "s3:HeadBucket"],
       Resource: "arn:aws:s3:::axiom-cfn-templates-*",
     },
     {
