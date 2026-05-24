@@ -158,94 +158,57 @@ export default function Home() {
           }}
         />
 
-        {/* Center DrippingBeam — only one shows on mobile, with fewer drops + smaller height
-            to keep the animation budget low. Two side beams remain hidden on mobile. */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 pointer-events-none" aria-hidden>
-          {/* Mobile config: 3 drops, 460px, slower (less rAF churn). */}
-          <div className="md:hidden">
-            <DrippingBeam tint="violet" dropCount={3} heightClass="h-[460px]" width={3} durationSec={4.2} />
-          </div>
-          {/* Desktop config: full 7 drops, 640px. */}
-          <div className="hidden md:block">
-            <DrippingBeam tint="violet" dropCount={7} heightClass="h-[640px]" width={4} durationSec={3.4} />
-          </div>
-        </div>
-        <div className="hidden md:block absolute top-10 left-[28%] pointer-events-none opacity-50" aria-hidden>
-          <DrippingBeam tint="cyan" dropCount={4} heightClass="h-[500px]" width={3} durationSec={4.6} />
-        </div>
-        <div className="hidden md:block absolute top-20 right-[28%] pointer-events-none opacity-50" aria-hidden>
-          <DrippingBeam tint="fuchsia" dropCount={4} heightClass="h-[520px]" width={3} durationSec={5.2} />
+        {/* Calm ambient glow — single soft pool behind the hero. No animated beams. */}
+        <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
+          <div className="absolute top-[-180px] left-1/2 -translate-x-1/2 w-[900px] h-[520px] rounded-full bg-violet-500/[0.07] blur-[140px]" />
+          <div className="absolute top-[120px] right-[5%] w-[420px] h-[320px] rounded-full bg-fuchsia-500/[0.04] blur-[120px]" />
         </div>
 
         <div className="max-w-6xl mx-auto relative">
-          <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
-            {/* Left: Text Content */}
+          <div className="grid lg:grid-cols-[1.05fr_1fr] gap-12 lg:gap-20 items-center">
+            {/* Left — calm editorial hero. Single column of restrained typography. */}
             <div className="relative z-10">
               <Reveal direction="up" blur>
-                <span className="badge-shimmer badge-shimmer-border inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.08] text-zinc-300 text-sm font-medium mb-8 backdrop-blur-sm cursor-default">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                  Autonomous Cloud Operations
-                </span>
-              </Reveal>
-              <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-6 leading-[1.08] sm:leading-[1.05] tracking-[-0.03em] sm:tracking-[-0.04em] break-words">
-                <TextReveal text="Your cloud" splitBy="char" stagger={22} startDelay={120} className="block" />
-                <span className="block">
-                  <TextReveal text="runs itself " splitBy="char" stagger={22} startDelay={420} />
-                  <span className="text-gradient">
-                    <TextReveal text="now." splitBy="char" stagger={28} startDelay={780} />
-                  </span>
-                </span>
-              </h1>
-              <Reveal direction="up" delay={0.06}>
-                <p className="text-dim-paragraph text-base sm:text-lg md:text-xl mb-8 sm:mb-10 max-w-lg leading-relaxed">
-                  Axiom is an AI-assisted operations agent that scans your cloud infrastructure, <span className="dim-1">reasons about cost and security, generates Terraform execution plans,</span> <span className="dim-2">and applies operator-approved changes — with cost savings of up to 30–40% reported in optimized cases.</span>
+                <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-zinc-500 mb-7">
+                  Axiom · cloud operations agent
                 </p>
               </Reveal>
-              <Stagger delay={0.12}>
-                <div className="relative z-20 flex flex-wrap gap-4 mb-8">
-                  <MagneticButton strength={10} radius={140}>
-                    <AnimatedButton
-                      href="/operator/onboarding"
-                      variant="primary"
-                      className="btn-amber-shimmer cta-glow shadow-lg shadow-violet-500/20 relative z-10 rounded-full text-zinc-900 font-semibold"
-                    >
-                      SEE IN ACTION
-                      <ArrowRightIcon className="ml-2 h-4 w-4" />
-                    </AnimatedButton>
-                  </MagneticButton>
-                  <MagneticButton strength={6} radius={120}>
-                    <AnimatedButton
-                      href="/demo"
-                      variant="ghost"
-                      className="border-violet-500/30 bg-violet-500/[0.06] text-violet-100 hover:bg-violet-500/[0.12] hover:border-violet-400/50 relative z-10"
-                    >
-                      Try the demo
-                    </AnimatedButton>
-                  </MagneticButton>
-                  <MagneticButton strength={6} radius={120}>
-                    <AnimatedButton
-                      href="/axiom"
-                      variant="ghost"
-                      className="border-white/10 text-zinc-300 hover:bg-white/5 hover:border-white/20 relative z-10"
-                    >
-                      How it works
-                    </AnimatedButton>
-                  </MagneticButton>
+              <h1 className="text-[44px] sm:text-[58px] md:text-[68px] lg:text-[76px] font-medium mb-7 leading-[1.02] tracking-[-0.035em] text-white break-words">
+                <TextReveal text="Your cloud" splitBy="char" stagger={18} startDelay={120} className="block" />
+                <TextReveal text="runs itself." splitBy="char" stagger={18} startDelay={420} className="block" />
+              </h1>
+              <Reveal direction="up" delay={0.06}>
+                <p className="text-zinc-400 text-[16px] sm:text-[17px] mb-10 max-w-md leading-relaxed">
+                  Axiom scans your infrastructure, reasons about cost and security, drafts Terraform changes, and ships them — with human approval. Up to 30–40% lower cloud spend in optimized accounts.
+                </p>
+              </Reveal>
+              <Reveal direction="up" delay={0.12}>
+                <div className="relative z-20 flex flex-wrap items-center gap-x-6 gap-y-3">
+                  <Link
+                    href="/operator/onboarding"
+                    className="inline-flex items-center gap-2.5 px-7 py-3.5 rounded-full bg-white text-zinc-950 text-[14.5px] font-medium hover:bg-zinc-100 transition-colors shadow-[0_0_30px_-10px_rgba(255,255,255,0.4)]"
+                  >
+                    See Axiom in action
+                    <ArrowRightIcon className="h-4 w-4 opacity-60" />
+                  </Link>
+                  <Link
+                    href="/demo"
+                    className="text-[14px] text-zinc-400 hover:text-white transition-colors"
+                  >
+                    Try the demo
+                  </Link>
                 </div>
-              </Stagger>
+              </Reveal>
               <Reveal direction="up" delay={0.2}>
-                <div className="flex flex-wrap gap-x-6 gap-y-2 text-xs text-zinc-500">
-                  {["Assume-role model", "Approval enforcement", "Rollback capability", "Immutable audit trail"].map((item) => (
-                    <span key={item} className="flex items-center gap-1.5">
-                      <span className="w-1 h-1 rounded-full bg-emerald-500" />
-                      {item}
-                    </span>
+                <div className="mt-10 pt-7 border-t border-white/[0.05] flex flex-wrap gap-x-8 gap-y-3 text-[12px] text-zinc-500">
+                  {["Assume-role model", "Human approval gates", "Immutable audit trail"].map((item) => (
+                    <span key={item}>{item}</span>
                   ))}
                 </div>
               </Reveal>
             </div>
 
-            {/* Right: Animated product walkthrough — 9-step cursor-driven demo */}
+            {/* Right — product walkthrough. Lower visual weight, lives under a subtle frame. */}
             <Reveal direction="up" delay={0.15}>
               <div className="relative hidden lg:block">
                 <HomepageDemoAnimation />

@@ -216,12 +216,6 @@ export function Navigation() {
             >
               Download
             </Link>
-            <Link
-              href="/contact"
-              className="nav-link-underline relative px-4 py-2 text-zinc-400 hover:text-white rounded-lg transition-colors text-sm font-medium"
-            >
-              Contact
-            </Link>
 
             {/* GitHub star pill */}
             <a
@@ -334,13 +328,6 @@ export function Navigation() {
                     className="px-4 py-2.5 text-zinc-400 font-medium hover:text-white hover:bg-white/5 rounded-lg text-sm transition-colors"
                   >
                     Pricing
-                  </Link>
-                  <Link
-                    href="/contact"
-                    onClick={() => setMobileMenuOpen(false)}
-                    className="px-4 py-2.5 text-zinc-400 font-medium hover:text-white hover:bg-white/5 rounded-lg text-sm transition-colors"
-                  >
-                    Contact
                   </Link>
 
                   {/* GitHub */}
