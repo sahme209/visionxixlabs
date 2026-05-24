@@ -7,7 +7,7 @@
  * search, browser back/forward, and link sharing.
  */
 
-import { Card, DataSourceBanner, ViewShell } from "../components/Primitives";
+import { Card, DataSourceBanner, ExternalLink, ViewShell } from "../components/Primitives";
 
 interface DocLink {
   title: string;
@@ -85,11 +85,9 @@ export function DocsView() {
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
               {sec.links.map((link) => (
-                <a
+                <ExternalLink
                   key={link.href}
                   href={link.href}
-                  target="_blank"
-                  rel="noreferrer"
                   className="block group"
                 >
                   <Card className="p-3 hover:border-violet-500/30 transition-colors">
@@ -98,7 +96,7 @@ export function DocsView() {
                     </p>
                     <p className="text-[11px] text-zinc-500 mt-0.5">{link.body}</p>
                   </Card>
-                </a>
+                </ExternalLink>
               ))}
             </div>
           </section>

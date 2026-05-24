@@ -6,7 +6,7 @@
 
 import { useEffect, useState } from "react";
 import { desktopClient, type OrchestrationListLite } from "../lib/desktopClient";
-import { Card, SectionHeader, ViewShell, LoadingState, EmptyState, Badge, Kpi, statusToneFor, riskToneFor } from "../components/Primitives";
+import { Card, ExternalLink, SectionHeader, ViewShell, LoadingState, EmptyState, Badge, Kpi, statusToneFor, riskToneFor } from "../components/Primitives";
 
 interface V1PipelineRun {
   id: string;
@@ -207,7 +207,7 @@ export function OrchestrationView() {
           Icon={CtrlIcon}
           title="No orchestrations available"
           detail={error}
-          action={<a href="https://visionxixlabs.com/dashboard/orchestration" target="_blank" rel="noreferrer" className="btn-primary">Open in web</a>}
+          action={<ExternalLink href="https://visionxixlabs.com/dashboard/orchestration" className="btn-primary">Open in web</ExternalLink>}
         />
       </ViewShell>
     );
@@ -544,9 +544,9 @@ export function OrchestrationView() {
                           {o.description && <p className="text-[11px] text-zinc-500 line-clamp-1 mt-0.5">{o.description}</p>}
                         </div>
                         {o.safeNextAction?.href && (
-                          <a href={`https://visionxixlabs.com${o.safeNextAction.href}`} target="_blank" rel="noreferrer" className="btn-ghost shrink-0">
+                          <ExternalLink href={`https://visionxixlabs.com${o.safeNextAction.href}`} className="btn-ghost shrink-0">
                             Open ↗
-                          </a>
+                          </ExternalLink>
                         )}
                       </div>
                     </li>

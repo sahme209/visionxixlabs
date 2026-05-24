@@ -6,7 +6,7 @@
  * the web /dashboard/trust + /dashboard/policies pages.
  */
 
-import { Card, DataSourceBanner, ViewShell } from "../components/Primitives";
+import { Card, DataSourceBanner, ExternalLink, ViewShell } from "../components/Primitives";
 import { desktopClient } from "../lib/desktopClient";
 
 const GUARANTEES = [
@@ -75,14 +75,12 @@ export function TrustView() {
         <p className="text-[10px] font-mono text-zinc-500 uppercase tracking-[0.18em] mb-2">audit trail</p>
         <p className="text-[12px] text-zinc-300 leading-relaxed">
           Every action a user OR AI engineer takes is logged via the <code className="font-mono text-zinc-200">secureAudit.record()</code> function with a closed-union <code className="font-mono text-zinc-200">AuditAction</code>. The full trail lives in the web app at{" "}
-          <a
+          <ExternalLink
             href="https://visionxixlabs.com/dashboard/audit"
-            target="_blank"
-            rel="noreferrer"
             className="text-violet-300 hover:text-violet-200 underline-offset-2 hover:underline"
           >
             /dashboard/audit ↗
-          </a>
+          </ExternalLink>
           .
         </p>
       </Card>

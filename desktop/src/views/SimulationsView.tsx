@@ -5,7 +5,7 @@
 
 import { useEffect, useState } from "react";
 import { desktopClient, type SimulationsBatchLite } from "../lib/desktopClient";
-import { Card, DataSourceBanner, SectionHeader, ViewShell, LoadingState, EmptyState, Badge, Kpi, statusToneFor } from "../components/Primitives";
+import { Card, DataSourceBanner, ExternalLink, SectionHeader, ViewShell, LoadingState, EmptyState, Badge, Kpi, statusToneFor } from "../components/Primitives";
 
 export function SimulationsView() {
   const [batch, setBatch] = useState<SimulationsBatchLite | null>(null);
@@ -31,7 +31,7 @@ export function SimulationsView() {
           Icon={LayersIcon}
           title="No simulations yet"
           detail={error ?? "Connect a provider so remediation candidates appear, then this view simulates each one against the digital twin."}
-          action={<a href="https://visionxixlabs.com/dashboard/simulations" target="_blank" rel="noreferrer" className="btn-primary">Open in web</a>}
+          action={<ExternalLink href="https://visionxixlabs.com/dashboard/simulations" className="btn-primary">Open in web</ExternalLink>}
         />
       </ViewShell>
     );
@@ -89,9 +89,9 @@ export function SimulationsView() {
             )}
             {r.safeNextAction?.href && (
               <div className="mt-3 flex items-center justify-end">
-                <a href={`https://visionxixlabs.com${r.safeNextAction.href}`} target="_blank" rel="noreferrer" className="btn-secondary text-[11px]">
+                <ExternalLink href={`https://visionxixlabs.com${r.safeNextAction.href}`} className="btn-secondary text-[11px]">
                   {r.safeNextAction.label} →
-                </a>
+                </ExternalLink>
               </div>
             )}
           </Card>

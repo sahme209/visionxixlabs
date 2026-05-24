@@ -5,7 +5,7 @@
 
 import { useEffect, useState } from "react";
 import { desktopClient, type ControlPlaneStateLite } from "../lib/desktopClient";
-import { Card, SectionHeader, ViewShell, LoadingState, EmptyState, Badge, statusToneFor } from "../components/Primitives";
+import { Card, ExternalLink, SectionHeader, ViewShell, LoadingState, EmptyState, Badge, statusToneFor } from "../components/Primitives";
 
 interface WorkspaceInfo {
   organizationId: string;
@@ -68,7 +68,7 @@ export function MultiCloudView() {
           Icon={CloudIcon}
           title="No cloud state available"
           detail={error ?? "Connect AWS, Azure, or GCP in the web app to populate this view."}
-          action={<a href="https://visionxixlabs.com/operator/onboarding" target="_blank" rel="noreferrer" className="btn-primary">Connect a provider</a>}
+          action={<ExternalLink href="https://visionxixlabs.com/operator/onboarding" className="btn-primary">Connect a provider</ExternalLink>}
         />
       </ViewShell>
     );
@@ -161,14 +161,12 @@ export function MultiCloudView() {
             )}
 
             {p.nextAction && (
-              <a
+              <ExternalLink
                 href={p.nextAction.href ? `https://visionxixlabs.com${p.nextAction.href}` : "https://visionxixlabs.com/operator/onboarding"}
-                target="_blank"
-                rel="noreferrer"
                 className="btn-secondary w-full justify-center text-[12px]"
               >
                 {p.nextAction.label} →
-              </a>
+              </ExternalLink>
             )}
           </Card>
         ))}

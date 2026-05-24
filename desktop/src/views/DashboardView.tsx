@@ -7,7 +7,7 @@
 
 import { useEffect, useState } from "react";
 import { desktopClient, type ControlPlaneStateLite } from "../lib/desktopClient";
-import { Card, Kpi, PostureTile, SectionHeader, ViewShell, LoadingState, Badge, statusToneFor, riskToneFor } from "../components/Primitives";
+import { Card, ExternalLink, Kpi, PostureTile, SectionHeader, ViewShell, LoadingState, Badge, statusToneFor, riskToneFor } from "../components/Primitives";
 
 export function DashboardView() {
   const [state, setState] = useState<ControlPlaneStateLite | null>(null);
@@ -101,14 +101,12 @@ export function DashboardView() {
                     <p className="text-[11px] text-zinc-500 line-clamp-2 mt-0.5">{a.description}</p>
                   </div>
                   {a.route && (
-                    <a
+                    <ExternalLink
                       href={`https://visionxixlabs.com${a.route}`}
-                      target="_blank"
-                      rel="noreferrer"
                       className="shrink-0 btn-ghost"
                     >
                       Open ↗
-                    </a>
+                    </ExternalLink>
                   )}
                 </div>
               </li>
@@ -275,22 +273,18 @@ function AuthStatusBanner({ previewMode }: { previewMode: boolean }) {
           </div>
         </div>
         <div className="flex items-center gap-2 shrink-0">
-          <a
+          <ExternalLink
             href="https://visionxixlabs.com/admin/api-keys"
-            target="_blank"
-            rel="noreferrer"
             className="inline-flex items-center gap-2 px-4 py-2.5 rounded-full bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500 text-white text-[12px] font-semibold shadow-glow-violet transition-all"
           >
             Mint an API key →
-          </a>
-          <a
+          </ExternalLink>
+          <ExternalLink
             href="https://visionxixlabs.com/dashboard"
-            target="_blank"
-            rel="noreferrer"
             className="inline-flex items-center gap-2 px-4 py-2.5 rounded-full border border-white/[0.12] bg-white/[0.03] hover:bg-white/[0.06] text-zinc-200 text-[12px] font-semibold transition-all"
           >
             Open web app
-          </a>
+          </ExternalLink>
         </div>
       </div>
     </div>

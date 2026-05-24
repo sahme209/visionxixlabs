@@ -7,7 +7,7 @@
  * app, or opens the equivalent web page in a browser tab.
  */
 
-import { DataSourceBanner, ViewShell } from "../components/Primitives";
+import { DataSourceBanner, ExternalLink, ViewShell } from "../components/Primitives";
 import type { View } from "../App";
 
 interface SetupStep {
@@ -81,14 +81,12 @@ export function StartHereView({ onNavigate }: { onNavigate: (view: View) => void
                     </button>
                   )}
                   {step.webHref && (
-                    <a
+                    <ExternalLink
                       href={step.webHref}
-                      target="_blank"
-                      rel="noreferrer"
                       className="px-3 py-1.5 rounded-md bg-violet-500/[0.10] text-violet-200 text-[11px] font-medium border border-violet-500/20 hover:bg-violet-500/[0.18] transition-colors"
                     >
                       {step.ctaLabel} ↗
-                    </a>
+                    </ExternalLink>
                   )}
                 </div>
               </div>

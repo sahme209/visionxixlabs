@@ -320,6 +320,46 @@ export function SecondaryButton({ children, ...rest }: ButtonHTMLAttributes<HTML
 // View shell
 // ---------------------------------------------------------------------------
 
+/**
+ * ExternalLink — anchor replacement that ALWAYS opens in the OS browser.
+ *
+ * Inside a Tauri webview, raw `<a target="_blank">` clicks can navigate
+ * the desktop app itself (breaking the app), do nothing silently, or
+ * inconsistently behave per-platform. Every external link in every
+ * view should use this wrapper instead — it intercepts the click,
+ * preventDefaults to stop in-app navigation, and routes through
+ * tauri-plugin-shell so the OS default browser opens the URL.
+ *
+ * Outside Tauri (Vite dev / web embed) it falls back to window.open so
+ * the same component works everywhere.
+ */
+export function ExternalLink({
+  href,
+  className,
+  children,
+  ...rest
+}: {
+  href: string;
+  className?: string;
+  children: ReactNode;
+} & Omit<React.AnchorHTMLAttributes<HTMLAnchorElement>, "href" | "className" | "children">) {
+  return (
+    <a
+      href={href}
+      onClick={(e) => {
+        e.preventDefault();
+        void openExternal(href);
+      }}
+      target="_blank"
+      rel="noreferrer"
+      className={className}
+      {...rest}
+    >
+      {children}
+    </a>
+  );
+}
+
 export function ViewShell({ children }: { children: ReactNode }) {
   return (
     <div className="flex-1 overflow-y-auto bg-axiom-bg">

@@ -5,7 +5,7 @@
 
 import { useEffect, useState } from "react";
 import { desktopClient, type RemediationPipelineLite } from "../lib/desktopClient";
-import { Card, DataSourceBanner, SectionHeader, ViewShell, LoadingState, EmptyState, Badge, riskToneFor, statusToneFor, Kpi } from "../components/Primitives";
+import { Card, DataSourceBanner, ExternalLink, SectionHeader, ViewShell, LoadingState, EmptyState, Badge, riskToneFor, statusToneFor, Kpi } from "../components/Primitives";
 
 export function RemediationView() {
   const [pipeline, setPipeline] = useState<RemediationPipelineLite | null>(null);
@@ -32,7 +32,7 @@ export function RemediationView() {
           Icon={WrenchIcon}
           title="No remediation candidates yet"
           detail={error ?? "Run a security scan or connect a provider — every finding becomes a typed remediation candidate with Terraform / CLI / rollback / verification."}
-          action={<a href="https://visionxixlabs.com/dashboard/remediation" target="_blank" rel="noreferrer" className="btn-primary">Open in web</a>}
+          action={<ExternalLink href="https://visionxixlabs.com/dashboard/remediation" className="btn-primary">Open in web</ExternalLink>}
         />
       </ViewShell>
     );
@@ -121,14 +121,12 @@ export function RemediationView() {
                   <div className="col-span-2 rounded-lg border border-axiom-border bg-axiom-bg-elev/60 p-3 flex items-center justify-between">
                     <span className="text-[11px] text-zinc-300">{b.readiness.reason}</span>
                     {b.readiness.safeNextAction?.href && (
-                      <a
+                      <ExternalLink
                         href={`https://visionxixlabs.com${b.readiness.safeNextAction.href}`}
-                        target="_blank"
-                        rel="noreferrer"
                         className="btn-secondary text-[11px]"
                       >
                         {b.readiness.safeNextAction.label} →
-                      </a>
+                      </ExternalLink>
                     )}
                   </div>
                 </div>
