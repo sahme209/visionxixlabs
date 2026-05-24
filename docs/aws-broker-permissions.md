@@ -2,11 +2,10 @@
 
 The platform's broker IAM user (the one whose access keys are stored
 in `AWS_CONNECTOR_BROKER_ACCESS_KEY_ID` + `AWS_CONNECTOR_BROKER_SECRET_ACCESS_KEY`)
-needs two permission sets:
+needs **one** combined inline policy. Paste this once and every future
+customer connection works automatically — no per-customer setup.
 
-## 1. AssumeRole into customer accounts
-
-Standard cross-account scanner permissions:
+## The policy
 
 ```json
 {
@@ -17,24 +16,7 @@ Standard cross-account scanner permissions:
       "Effect": "Allow",
       "Action": "sts:AssumeRole",
       "Resource": "*"
-    }
-  ]
-}
-```
-
-## 2. Self-publish the CloudFormation Quick-Create template to S3
-
-Required for the 1-click button on `/operator/onboarding`. The
-platform auto-creates a bucket named `axiom-cfn-templates-<broker-account-id>`
-the first time a customer hits the endpoint, uploads
-`public/aws/axiom-agent-quick-deploy.yaml` to it, and hands the
-customer a *presigned* GET URL signed by the broker. The bucket
-itself stays private — no public access, no bucket policy.
-
-```json
-{
-  "Version": "2012-10-17",
-  "Statement": [
+    },
     {
       "Sid": "ManageOwnQuickCreateTemplateBucket",
       "Effect": "Allow",
@@ -58,10 +40,20 @@ itself stays private — no public access, no bucket policy.
 }
 ```
 
-After attaching this policy to the broker user, the platform's
-`lib/cloud/aws/templateHosting.ts` will publish the template on the
-first request to `/api/aws/quick-deploy-url` and cache the resulting
-S3 URL in module memory for the function's lifetime.
+## What each statement does
+
+- **AssumeRoleIntoCustomerAccounts** — lets the broker call
+  `sts:AssumeRole` against the read-only IAM role each customer's
+  CloudFormation stack provisions. Without this, the bounce-back
+  validation fails immediately even though the role exists.
+- **ManageOwnQuickCreateTemplateBucket** — lets the platform create
+  the deterministic bucket `axiom-cfn-templates-<broker-account-id>`
+  the first time anyone hits `/api/aws/quick-deploy-url`. After that
+  the bucket exists and these actions are no-ops.
+- **ManageOwnQuickCreateTemplateObject** — lets the platform upload
+  the CloudFormation YAML to that bucket and sign GET URLs for it.
+  The bucket stays private; AWS Console fetches the template via a
+  presigned URL signed by the broker.
 
 ## Override path (operator-managed bucket)
 

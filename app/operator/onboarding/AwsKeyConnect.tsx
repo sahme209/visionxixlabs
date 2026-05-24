@@ -44,14 +44,19 @@ interface ValidationErr {
   bucket?: string;
 }
 
-// IAM policy the broker user needs to host the CloudFormation template
-// in a private S3 bucket. We hand the customer a presigned GET URL —
-// no public access is ever set, so no PutBucketPolicy or
-// PutPublicAccessBlock perms are needed. Pasting this once unblocks
-// every future customer connection.
-const BROKER_S3_POLICY = JSON.stringify({
+// One combined IAM policy the broker user needs for the platform to
+// host the CloudFormation template in S3 AND assume the role each
+// customer provisions. Pasting this once into the broker user covers
+// every future customer connection — no second trip to IAM later.
+const BROKER_POLICY = JSON.stringify({
   Version: "2012-10-17",
   Statement: [
+    {
+      Sid: "AssumeRoleIntoCustomerAccounts",
+      Effect: "Allow",
+      Action: "sts:AssumeRole",
+      Resource: "*",
+    },
     {
       Sid: "ManageOwnQuickCreateTemplateBucket",
       Effect: "Allow",
@@ -63,22 +68,6 @@ const BROKER_S3_POLICY = JSON.stringify({
       Effect: "Allow",
       Action: ["s3:PutObject", "s3:HeadObject", "s3:GetObject"],
       Resource: "arn:aws:s3:::axiom-cfn-templates-*/axiom-agent-quick-deploy.yaml",
-    },
-  ],
-}, null, 2);
-
-// IAM policy the broker user needs to actually assume the IAM role
-// the customer just provisioned via CloudFormation. STS rejects
-// AssumeRole if this isn't on the broker user's identity policy —
-// independent of how permissive the target role's trust policy is.
-const BROKER_ASSUME_ROLE_POLICY = JSON.stringify({
-  Version: "2012-10-17",
-  Statement: [
-    {
-      Sid: "AssumeRoleIntoCustomerAccounts",
-      Effect: "Allow",
-      Action: "sts:AssumeRole",
-      Resource: "*",
     },
   ],
 }, null, 2);
@@ -278,14 +267,14 @@ export function AwsKeyConnect({
       return (
         <PermissionsFixCard
           brokerArn={brokerArn}
-          policyJson={isAssumeRoleFix ? BROKER_ASSUME_ROLE_POLICY : BROKER_S3_POLICY}
-          policyName={isAssumeRoleFix ? "AxiomAssumeRole" : "AxiomTemplateHosting"}
+          policyJson={BROKER_POLICY}
+          policyName="AxiomBrokerPolicy"
           headline={isAssumeRoleFix
             ? "The broker user needs sts:AssumeRole permission."
-            : "The broker user needs S3 permissions."}
+            : "The broker user needs hosting + AssumeRole permissions."}
           subline={isAssumeRoleFix
-            ? "Customer's CloudFormation stack created the read-only role correctly — but our broker user can't assume it without sts:AssumeRole on its own identity policy. Attach this once and every future customer connection works automatically."
-            : "AWS Console only accepts CloudFormation templates from an S3 URL, so the platform publishes the template to its own bucket. Attaching this policy once unblocks every future customer."}
+            ? "Customer's CloudFormation stack created the read-only role correctly — but our broker user can't assume it without sts:AssumeRole on its own identity policy. Attach this combined policy once and every future customer connection works automatically. (If you already attached an earlier AxiomTemplateHosting policy, you can safely delete it — this one supersedes it.)"
+            : "AWS Console only accepts CloudFormation templates from an S3 URL, so the platform publishes the template to its own bucket and assumes the read-only role each customer provisions. Attaching this combined policy once unblocks every future customer."}
           iamConsoleUrl={iamConsoleUrl}
           onRetry={isAssumeRoleFix ? retryValidate : retryLoad}
         />
