@@ -8,6 +8,7 @@ import AIChatWidget from "@/components/AIChatWidget";
 import { AxiomPanelProvider } from "@/lib/contexts/AxiomPanelContext";
 import { Providers } from "@/components/Providers";
 import { StickyMobileCTA } from "@/components/StickyMobileCTA";
+import { ScrollProgress } from "@/components/motion/ScrollProgress";
 import { SITE_URL, defaultOgImage, primaryKeywords, secondaryKeywords } from "@/lib/seo";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -74,6 +75,7 @@ export default function RootLayout({
           <AxiomPanelProvider>
             <OrganizationJsonLd />
             <WebSiteJsonLd />
+            <ScrollProgress />
             <div className="pb-20 md:pb-0">{children}</div>
             <StickyMobileCTA />
             <AIChatWidget />

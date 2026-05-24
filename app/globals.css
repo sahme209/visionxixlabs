@@ -2620,3 +2620,178 @@ h1, h2, h3, h4, h5, h6 {
 .magnetic-sheen:hover::after {
   animation: magnetic-sweep 900ms ease-out;
 }
+
+/* ──────────────────────────────────────────────────────────────────
+   Huly.io vocabulary — extra textures + structural utilities.
+
+   Quiet patterns the eye registers as 'polish'. Each is white-on-
+   dark, low opacity, no animation unless explicitly stated.
+   ────────────────────────────────────────────────────────────── */
+
+/* Dot grid texture — very subtle, gives sections a substrate. Best
+   used as a background-layer overlay on top of a section. */
+.dot-grid-bg {
+  background-image:
+    radial-gradient(circle at 1px 1px, rgba(255, 255, 255, 0.05) 1px, transparent 0);
+  background-size: 28px 28px;
+}
+.dot-grid-bg-dense {
+  background-image:
+    radial-gradient(circle at 1px 1px, rgba(255, 255, 255, 0.06) 1px, transparent 0);
+  background-size: 16px 16px;
+}
+
+/* Hairline section divider — a single 1px line that fades to nothing
+   at both edges. Use between sections instead of a hard border. */
+.hairline-divider {
+  height: 1px;
+  background: linear-gradient(90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.08) 20%,
+    rgba(255, 255, 255, 0.08) 80%,
+    transparent 100%);
+}
+
+/* Vertical hairline — for sidebars / column separators. */
+.hairline-divider-v {
+  width: 1px;
+  background: linear-gradient(180deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.08) 20%,
+    rgba(255, 255, 255, 0.08) 80%,
+    transparent 100%);
+}
+
+/* Mono kicker — the recurring 'AXIOM · CLOUD OPERATIONS' style
+   pre-headline label. Saves repeating the same Tailwind cluster
+   on every section. */
+.kicker-mono {
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: rgb(113, 113, 122); /* zinc-500 */
+}
+
+/* Display headline — the calm hero/section heading scale used on
+   the homepage. Pair with text-white. */
+.display-headline {
+  font-size: clamp(34px, 5vw, 56px);
+  font-weight: 500;
+  letter-spacing: -0.025em;
+  line-height: 1.05;
+}
+.display-headline-lg {
+  font-size: clamp(44px, 6.5vw, 76px);
+  font-weight: 500;
+  letter-spacing: -0.035em;
+  line-height: 1.02;
+}
+
+/* Soft top-of-card edge highlight — a thin white gradient that
+   gives dark cards a small specular highlight on the top edge.
+   Adds depth without a hard border. */
+.glow-edge {
+  position: relative;
+}
+.glow-edge::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 10%;
+  right: 10%;
+  height: 1px;
+  background: linear-gradient(90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.18) 50%,
+    transparent 100%);
+  pointer-events: none;
+}
+
+/* Scroll-progress bar — fixed-top thin white bar that fills as the
+   user scrolls. Driven by --scroll-progress CSS var, set by the
+   ScrollProgress client component below.
+
+   Width animates via custom property so it's smooth without a
+   per-frame transform thrash. */
+.scroll-progress-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg,
+    rgba(255, 255, 255, 0.0) 0%,
+    rgba(255, 255, 255, 0.7) 100%);
+  transform-origin: 0 50%;
+  transform: scaleX(var(--scroll-progress, 0));
+  transition: transform 80ms linear;
+  z-index: 60;
+  pointer-events: none;
+}
+
+/* Subtle living status pill — used for 'live · workspace' style
+   indicators. Pair with a .breathe dot inside. */
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  font-size: 10px;
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgb(161, 161, 170);
+}
+.status-pill .status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgb(52, 211, 153); /* emerald-400 */
+}
+
+/* Section eyebrow + headline + body combo — a recurring stanza
+   structure. Apply .section-stanza to wrap, child h2 + .kicker-mono
+   + .body-lede get rhythm for free. */
+.section-stanza > .kicker-mono { margin-bottom: 18px; }
+.section-stanza > h2,
+.section-stanza > .display-headline { margin-bottom: 14px; }
+.section-stanza > .body-lede {
+  color: rgb(161, 161, 170);
+  font-size: 15.5px;
+  line-height: 1.6;
+  max-width: 38rem;
+}
+
+/* Letter-stagger reveal — for hero word-by-word entrances. Apply
+   to a span and the contained text characters each fade up with
+   a per-character delay set via inline style or nth-child. */
+@keyframes letter-rise {
+  from { opacity: 0; transform: translateY(0.4em); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.stagger-letters > * {
+  display: inline-block;
+  animation: letter-rise 600ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* Tag pill — for capability/tag rows. Quiet, no neon. */
+.tag-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 11px;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.025);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  color: rgb(212, 212, 216);
+  font-size: 12px;
+  transition: border-color 220ms ease, background-color 220ms ease;
+}
+.tag-pill:hover {
+  border-color: rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.04);
+}
