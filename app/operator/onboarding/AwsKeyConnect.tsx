@@ -264,6 +264,18 @@ export function AwsKeyConnect({
         ? `https://us-east-1.console.aws.amazon.com/iam/home?region=us-east-1#/users/details/${encodeURIComponent(brokerArn.split("/").slice(1).join("/"))}?section=permissions`
         : "https://us-east-1.console.aws.amazon.com/iam/home";
 
+      const startFreshDeploy = () => {
+        // Drop session-cached externalId and any bounce-back URL state
+        // so a clean attempt begins on the connect step.
+        if (typeof window !== "undefined") {
+          try { window.sessionStorage.removeItem(SS_EXTERNAL_ID); } catch { /* no-op */ }
+          // Strip the ?step=scan&roleArn=… params and land on step 2.
+          const url = new URL(window.location.href);
+          url.search = "";
+          window.location.assign(url.toString());
+        }
+      };
+
       return (
         <PermissionsFixCard
           brokerArn={brokerArn}
@@ -277,6 +289,7 @@ export function AwsKeyConnect({
             : "AWS Console only accepts CloudFormation templates from an S3 URL, so the platform publishes the template to its own bucket and assumes the read-only role each customer provisions. Attaching this combined policy once unblocks every future customer."}
           iamConsoleUrl={iamConsoleUrl}
           onRetry={isAssumeRoleFix ? retryValidate : retryLoad}
+          onFreshDeploy={isAssumeRoleFix ? startFreshDeploy : undefined}
         />
       );
     }
@@ -493,6 +506,7 @@ function PermissionsFixCard({
   subline,
   iamConsoleUrl,
   onRetry,
+  onFreshDeploy,
 }: {
   brokerArn?: string;
   policyJson: string;
@@ -501,8 +515,10 @@ function PermissionsFixCard({
   subline: string;
   iamConsoleUrl: string;
   onRetry: () => void;
+  onFreshDeploy?: () => void;
 }) {
   const [copied, setCopied] = useState(false);
+  const [autoChecking, setAutoChecking] = useState(false);
   const copy = async () => {
     try {
       await navigator.clipboard.writeText(policyJson);
@@ -510,6 +526,21 @@ function PermissionsFixCard({
       setTimeout(() => setCopied(false), 1500);
     } catch { /* clipboard blocked */ }
   };
+
+  // Auto-poll: once every 8 seconds, silently re-run onRetry. If the
+  // operator pasted the policy and clicked away, the screen will heal
+  // itself without them needing to click Try again. Stops as soon as
+  // the parent component swaps us out (the effect cleanup handles it).
+  useEffect(() => {
+    if (!onRetry) return;
+    const handle = window.setInterval(() => {
+      setAutoChecking(true);
+      onRetry();
+      // Brief flash so the operator knows the page is checking.
+      window.setTimeout(() => setAutoChecking(false), 1500);
+    }, 8000);
+    return () => window.clearInterval(handle);
+  }, [onRetry]);
 
   return (
     <div className="space-y-4">
@@ -552,7 +583,7 @@ function PermissionsFixCard({
             Call it <code className="font-mono text-zinc-300">{policyName}</code>, click <strong className="text-zinc-100">Create policy</strong>. Done.
           </TimelineStep>
         </ol>
-        <div className="mt-5">
+        <div className="mt-5 flex flex-wrap items-center gap-3">
           <button
             type="button"
             onClick={onRetry}
@@ -561,6 +592,19 @@ function PermissionsFixCard({
             Try again
             <span aria-hidden className="opacity-70">→</span>
           </button>
+          {onFreshDeploy && (
+            <button
+              type="button"
+              onClick={onFreshDeploy}
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 text-zinc-100 text-[14px] font-medium transition-colors"
+            >
+              Start a fresh deployment
+            </button>
+          )}
+          <span className="inline-flex items-center gap-1.5 text-[12px] text-zinc-500">
+            <span className={`w-1.5 h-1.5 rounded-full ${autoChecking ? "bg-emerald-400 animate-pulse" : "bg-zinc-600"}`} />
+            {autoChecking ? "Checking AWS now…" : "Auto-checking every few seconds"}
+          </span>
         </div>
       </CalmCard>
     </div>
