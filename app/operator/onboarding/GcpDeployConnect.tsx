@@ -107,10 +107,13 @@ export function GcpDeployConnect({
     return (
       <CalmCard tone="indigo">
         <KickerLine tone="indigo">gcp · finalizing</KickerLine>
-        <h3 className="text-xl font-semibold text-white tracking-tight mt-1.5">Confirming the key…</h3>
+        <h3 className="text-xl font-semibold text-white tracking-tight mt-1.5">Validating GCP access…</h3>
+        <p className="text-[13px] text-zinc-400 leading-relaxed mt-2">
+          Authenticating the service account and confirming Viewer access on the project. Usually takes a few seconds.
+        </p>
         <div className="mt-4 flex items-center gap-2.5">
           <span className="w-4 h-4 rounded-full border-2 border-indigo-300/70 border-t-transparent animate-spin" />
-          <span className="text-[13px] text-zinc-300">Validating the service-account JSON…</span>
+          <span className="text-[13px] text-zinc-300">Calling Google Cloud Resource Manager…</span>
         </div>
       </CalmCard>
     );

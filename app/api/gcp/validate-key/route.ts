@@ -1,26 +1,31 @@
 /**
  * POST /api/gcp/validate-key
  *
- * Lightweight onboarding-side check for a customer-pasted GCP service
- * account JSON key. Confirms the shape (project_id, client_email,
- * private_key_id, type=service_account) and echoes the project id back
- * so the onboarding flow can advance to scan.
+ * Parses the customer-pasted service-account JSON key, then performs
+ * a REAL provider-side validation:
  *
- * Body:  { serviceAccountJson }   (string — raw JSON pasted by customer)
- * Reply: { ok: true, projectId, clientEmail }
+ *   1. Authenticates with the service account credentials
+ *   2. Calls projects.get() via @google-cloud/resource-manager
+ *
+ * Only returns ok:true if the GCP call succeeds. Never marks a
+ * connection valid on JSON shape alone.
+ *
+ * Body:  { serviceAccountJson, projectId? }
+ *        (projectId optional — falls back to project_id in the JSON)
+ * Reply: { ok: true, projectId, clientEmail, projectName }
  *      | { ok: false, error, hint }
- *
- * No live GCP API calls — that lands in /api/gcp/validate (auth'd) when
- * the scan endpoint actually uses the key. We only need a shape check
- * here to let the flow advance honestly.
  */
 
 import { NextResponse, type NextRequest } from "next/server";
+import { validateGCPConnection } from "@/lib/connectors/gcp";
+import { logAudit } from "@/lib/security/auditLog";
 
 export const dynamic = "force-dynamic";
+export const maxDuration = 30;
 
 interface Body {
   serviceAccountJson?: unknown;
+  projectId?: unknown;
 }
 
 interface ParsedKey {
@@ -35,6 +40,7 @@ export async function POST(req: NextRequest) {
   let body: Body = {};
   try { body = (await req.json()) as Body; } catch { /* empty body */ }
   const raw = typeof body.serviceAccountJson === "string" ? body.serviceAccountJson.trim() : "";
+  const requestedProjectId = typeof body.projectId === "string" ? body.projectId.trim() : "";
 
   if (!raw) {
     return NextResponse.json({
@@ -63,22 +69,63 @@ export async function POST(req: NextRequest) {
     }, { status: 400 });
   }
 
-  const projectId    = typeof parsed.project_id    === "string" ? parsed.project_id.trim()    : "";
-  const clientEmail  = typeof parsed.client_email  === "string" ? parsed.client_email.trim()  : "";
-  const privateKeyId = typeof parsed.private_key_id === "string" ? parsed.private_key_id.trim() : "";
-  const privateKey   = typeof parsed.private_key   === "string" ? parsed.private_key.trim()   : "";
+  const projectId   = requestedProjectId || (typeof parsed.project_id === "string" ? parsed.project_id.trim() : "");
+  const clientEmail = typeof parsed.client_email === "string" ? parsed.client_email.trim() : "";
 
-  if (!projectId || !clientEmail || !privateKeyId || !privateKey) {
+  if (!projectId) {
     return NextResponse.json({
       ok: false,
-      error: "incomplete_key",
-      hint: "The JSON is missing one of project_id, client_email, private_key_id, private_key. Generate a fresh key in Cloud Shell.",
+      error: "missing_project_id",
+      hint: "Service-account JSON has no project_id field. Re-run the Cloud Shell tutorial.",
+    }, { status: 400 });
+  }
+  if (!clientEmail) {
+    return NextResponse.json({
+      ok: false,
+      error: "missing_client_email",
+      hint: "Service-account JSON has no client_email field.",
     }, { status: 400 });
   }
 
+  // Real provider-side validation — authenticate and fetch project metadata.
+  const result = await validateGCPConnection({
+    projectId,
+    serviceAccountJson: raw,
+  });
+
+  if (!result.valid) {
+    await logAudit({
+      action: "gcp.validation_failed",
+      actor: "system",
+      metadata: { errorCode: result.errorCode, projectId, clientEmail },
+    });
+    const hint =
+      result.errorCode === "PROJECT_NOT_FOUND"
+        ? "GCP authenticated the service account but couldn't find this project. Verify the project_id and that the account has Viewer access."
+        : result.errorCode === "FEATURE_DISABLED"
+        ? "GCP connections are temporarily disabled. Contact support if this persists."
+        : "GCP rejected the service-account key. Re-run the Cloud Shell tutorial and paste the fresh JSON.";
+    return NextResponse.json({
+      ok: false,
+      error: result.errorCode ?? "validation_failed",
+      hint,
+    }, { status: 400 });
+  }
+
+  await logAudit({
+    action: "gcp.validation_succeeded",
+    actor: "system",
+    metadata: {
+      projectId: result.projectId ?? projectId,
+      clientEmail: result.serviceAccountEmail ?? clientEmail,
+      projectName: result.projectName,
+    },
+  });
+
   return NextResponse.json({
     ok: true,
-    projectId,
-    clientEmail,
+    projectId: result.projectId ?? projectId,
+    clientEmail: result.serviceAccountEmail ?? clientEmail,
+    projectName: result.projectName,
   }, { status: 200 });
 }

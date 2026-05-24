@@ -15,6 +15,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { STSClient, AssumeRoleCommand, GetCallerIdentityCommand } from "@aws-sdk/client-sts";
 import { loadAppEnv } from "@/lib/config/env";
+import { logAudit } from "@/lib/security/auditLog";
 
 export const dynamic = "force-dynamic";
 
@@ -93,6 +94,11 @@ export async function POST(req: NextRequest) {
       },
     });
     const ident = await tenant.send(new GetCallerIdentityCommand({}));
+    await logAudit({
+      action: "aws.validation_succeeded",
+      actor: "system",
+      metadata: { accountId: ident.Account ?? null, arn: ident.Arn ?? roleArn, externalId },
+    });
     return NextResponse.json({
       ok: true,
       accountId: ident.Account ?? null,
@@ -101,6 +107,11 @@ export async function POST(req: NextRequest) {
     });
   } catch (err) {
     const name = err && typeof err === "object" && "name" in err ? String((err as { name?: string }).name) : "Unknown";
+    await logAudit({
+      action: "aws.validation_failed",
+      actor: "system",
+      metadata: { errorName: name, roleArn, externalId },
+    });
     if (name === "AccessDenied" || name === "AuthFailure") {
       return NextResponse.json({
         ok: false,
