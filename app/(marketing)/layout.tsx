@@ -14,9 +14,6 @@ const NAV: ReadonlyArray<{ href: string; label: string }> = [
   { href: "/team-of-one",   label: "Overview" },
   { href: "/how-it-works",  label: "How it works" },
   { href: "/disciplines",   label: "Disciplines" },
-  { href: "/capabilities",  label: "Capabilities" },
-  { href: "/platforms",     label: "Platforms" },
-  { href: "/trust",         label: "Trust" },
   { href: "/plans",         label: "Plans" },
   { href: "/compare",       label: "Compare" },
   { href: "/faq",           label: "FAQ" },
@@ -66,16 +63,14 @@ export default function MarketingLayout({ children }: { children: ReactNode }) {
   return (
     <div className="min-h-screen bg-[#070713] text-zinc-100">
       <header className="sticky top-0 z-40 backdrop-blur-md bg-[#070713]/80 border-b border-white/[0.04]">
-        <div className="mx-auto max-w-6xl px-6 md:px-10 h-14 flex items-center justify-between">
-          <Link href="/team-of-one" className="flex items-center gap-2">
-            <span className="h-2 w-2 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.6)]" />
-            <span className="text-[13px] font-semibold tracking-tight">Axiom</span>
-            <span className="text-[10px] font-mono uppercase tracking-widest text-zinc-500 hidden sm:inline">
-              · visionxixlabs
-            </span>
+        <div className="mx-auto max-w-6xl px-6 md:px-10 h-14 flex items-center gap-6">
+          <Link href="/team-of-one" className="flex items-center gap-2 shrink-0">
+            <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
+            <span className="text-[13px] font-medium tracking-tight">Axiom</span>
           </Link>
 
-          <nav className="hidden md:flex items-center gap-1">
+          {/* Nav sits next to the brand on the left so the right edge stays clean */}
+          <nav className="hidden md:flex items-center gap-1 flex-1">
             {NAV.map((n) => (
               <Link
                 key={n.href}
@@ -87,18 +82,19 @@ export default function MarketingLayout({ children }: { children: ReactNode }) {
             ))}
           </nav>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-4">
             <Link
               href="/auth/signin"
-              className="hidden sm:inline-flex text-[12.5px] text-zinc-300 hover:text-white px-3 py-1.5 rounded-full hover:bg-white/[0.04] transition"
+              className="hidden sm:inline-flex text-[12.5px] text-zinc-400 hover:text-white transition-colors"
             >
               Sign in
             </Link>
             <Link
               href="/dashboard/command-center"
-              className="inline-flex items-center gap-2 rounded-full bg-indigo-500 px-3.5 py-1.5 text-[12.5px] font-medium text-white shadow-[0_0_20px_rgba(99,102,241,0.45)] hover:bg-indigo-400 transition"
+              className="inline-flex items-center gap-1.5 rounded-full bg-white text-zinc-950 px-4 py-1.5 text-[12.5px] font-medium hover:bg-zinc-100 transition-colors"
             >
               Open cockpit
+              <span aria-hidden className="opacity-50">→</span>
             </Link>
           </div>
         </div>
