@@ -312,32 +312,23 @@ export default function Home() {
           curated to the 12 highest-impact roles so the home page hits
           quickly. Total is summed from the rates below so it stays
           honest. */}
-      <section className="py-24 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
-        {/* Aurora glow */}
-        <div className="pointer-events-none absolute inset-0 -z-10 opacity-80">
-          <div className="absolute -top-1/3 left-1/4 h-[60vh] w-[55vw] rounded-full bg-gradient-to-br from-violet-500/15 via-fuchsia-500/8 to-transparent blur-3xl" />
-          <div className="absolute bottom-0 right-1/4 h-[50vh] w-[45vw] rounded-full bg-gradient-to-tl from-cyan-500/10 to-transparent blur-3xl" />
+      <section className="py-24 px-4 sm:px-6 lg:px-8 relative">
+        {/* Calm ambient — single low-opacity wash, no aurora */}
+        <div className="pointer-events-none absolute inset-0 -z-10" aria-hidden>
+          <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[820px] h-[420px] rounded-full bg-white/[0.015] blur-[140px]" />
         </div>
 
-        <div className="max-w-6xl mx-auto">
+        <div className="max-w-5xl mx-auto">
           <Reveal direction="up" blur>
-            <div className="text-center mb-10 sm:mb-12">
-              <p className="text-[11px] sm:text-xs font-semibold text-fuchsia-300/80 mb-3 sm:mb-4 tracking-[0.18em] uppercase">
-                the team you'd otherwise be paying for
+            <div className="mb-12 sm:mb-14">
+              <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-zinc-500 mb-6">
+                The team you&apos;d otherwise be paying for
               </p>
-              <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-[-0.03em] sm:tracking-[-0.04em] leading-[1.05]">
-                A{" "}
-                <span className="bg-gradient-to-r from-fuchsia-300 via-violet-300 to-indigo-300 bg-clip-text text-transparent tabular-nums">
-                  $<CountUp to={5.27} duration={2000} decimals={2} />M
-                </span>
-                {" "}per year team.{" "}
-                <span className="text-zinc-500 block sm:inline">Most teams don't have it.</span>
+              <h2 className="text-[34px] sm:text-[44px] md:text-[52px] font-medium tracking-[-0.025em] leading-[1.05] text-white max-w-3xl">
+                A $<CountUp to={5.27} duration={2000} decimals={2} />M per year team. <span className="text-zinc-500">Most teams don&apos;t have it.</span>
               </h2>
-              <p className="mt-5 sm:mt-6 max-w-2xl mx-auto text-zinc-400 text-[15px] sm:text-base leading-relaxed">
-                The fully-loaded annual cost of hiring the engineering and operations bench
-                most companies need but never ship. Axiom doesn't replace that team —{" "}
-                <span className="text-zinc-200">it gives the team you already have AI-assisted coverage across every discipline below</span>,
-                with a human approval before any change runs.
+              <p className="mt-6 max-w-2xl text-zinc-400 text-[15px] leading-relaxed">
+                The fully-loaded annual cost of hiring the engineering and operations bench most companies need but never ship. Axiom doesn&apos;t replace that team — it gives the team you already have AI-assisted coverage across every discipline below, with a human approval before any change runs.
               </p>
             </div>
           </Reveal>
@@ -360,38 +351,33 @@ export default function Home() {
             ].map((d) => (
               <div
                 key={d.name}
-                className="group rounded-xl border border-white/[0.06] bg-white/[0.015] p-3.5 sm:p-4 hover:border-fuchsia-500/30 hover:bg-white/[0.03] transition"
+                className="rounded-xl border border-white/[0.05] bg-white/[0.012] p-4 hover:border-white/[0.1] transition-colors"
               >
                 <div className="flex items-start justify-between gap-2">
-                  <p className="text-[12.5px] sm:text-[13px] font-semibold text-white leading-tight">{d.name}</p>
-                  <span className="text-[10px] font-mono text-fuchsia-300/80 whitespace-nowrap flex-shrink-0">{d.rate}</span>
+                  <p className="text-[13px] font-medium text-zinc-100 leading-tight">{d.name}</p>
+                  <span className="text-[10px] font-mono text-zinc-500 whitespace-nowrap flex-shrink-0">{d.rate}</span>
                 </div>
-                <p className="mt-1.5 text-[11px] sm:text-[11.5px] text-zinc-500 leading-snug">{d.scope}</p>
+                <p className="mt-2 text-[11.5px] text-zinc-500 leading-snug">{d.scope}</p>
               </div>
             ))}
           </Stagger>
 
           <Reveal direction="up" delay={0.1}>
-            <div className="mt-10 sm:mt-12 text-center">
-              <p className="text-[11px] sm:text-xs text-zinc-500 mb-5">
-                Twelve of twenty-six disciplines shown. See the full list, each linked to the
-                cockpit module that supports it.
-              </p>
-              <div className="inline-flex flex-wrap items-center justify-center gap-3">
-                <Link
-                  href="/disciplines"
-                  className="inline-flex items-center gap-2 rounded-full bg-violet-500 px-5 py-2.5 text-[13px] font-medium text-white shadow-[0_0_24px_rgba(139,92,246,0.45)] hover:bg-violet-400 transition"
-                >
-                  See all 26 disciplines
-                  <ArrowRightIcon className="h-3.5 w-3.5" />
-                </Link>
-                <Link
-                  href="/plans"
-                  className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.02] px-5 py-2.5 text-[13px] font-medium text-zinc-200 hover:bg-white/[0.06] transition"
-                >
-                  See pricing
-                </Link>
-              </div>
+            <div className="mt-12 flex flex-wrap items-center gap-x-6 gap-y-3">
+              <Link
+                href="/disciplines"
+                className="inline-flex items-center gap-2 rounded-full bg-white text-zinc-950 px-6 py-3 text-[14px] font-medium hover:bg-zinc-100 transition-colors"
+              >
+                See all 26 disciplines
+                <ArrowRightIcon className="h-4 w-4 opacity-60" />
+              </Link>
+              <Link
+                href="/plans"
+                className="text-[14px] text-zinc-400 hover:text-white transition-colors"
+              >
+                See pricing
+              </Link>
+              <p className="text-[12px] text-zinc-500">Twelve of twenty-six shown.</p>
             </div>
           </Reveal>
         </div>
@@ -404,16 +390,15 @@ export default function Home() {
       <section className="py-24 px-4 sm:px-6 lg:px-8">
         <div className="max-w-6xl mx-auto">
           <Reveal direction="up">
-            <div className="mb-12 sm:mb-16">
-              <p className="text-xs sm:text-sm font-semibold text-violet-400 mb-3 sm:mb-4 tracking-wide uppercase">
-                Operational Intelligence
+            <div className="mb-14">
+              <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-zinc-500 mb-6">
+                Operational intelligence
               </p>
-              <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 sm:mb-5 tracking-[-0.03em] sm:tracking-[-0.04em] leading-[1.1]">
-                It doesn&apos;t alert.{" "}
-                <span className="text-zinc-500">It operates.</span>
+              <h2 className="text-[34px] sm:text-[44px] md:text-[52px] font-medium mb-5 tracking-[-0.025em] leading-[1.05] text-white">
+                It doesn&apos;t alert. <span className="text-zinc-500">It operates.</span>
               </h2>
-              <p className="text-dim-paragraph text-base sm:text-lg max-w-2xl leading-relaxed">
-                Axiom scans your infrastructure, reasons about what matters, <span className="dim-1">builds execution plans, and applies approved changes</span> <span className="dim-2">— then learns from outcomes.</span>
+              <p className="text-zinc-400 text-[15.5px] max-w-2xl leading-relaxed">
+                Axiom scans your infrastructure, reasons about what matters, builds execution plans, and applies approved changes — then learns from outcomes.
               </p>
             </div>
           </Reveal>
@@ -462,31 +447,19 @@ export default function Home() {
               const Icon = card.icon;
               return (
                 <Reveal key={card.title} direction="up" delay={i * 0.06}>
-                  <TiltCard maxTilt={6} scale={1.012} glare>
-                  <div className={`group glow-border-card animated-border card-inner-glow card-hover card-shine-sweep card-reactive warm-bottom-glow ${card.accentClass} rounded-xl border border-white/[0.06] bg-white/[0.02] p-6 h-full backdrop-blur-sm hover:border-white/[0.12] transition-colors relative`}>
-                    <div className="card-accent-overlay" />
-                    <div className="relative z-10">
-                      <div className="flex items-center gap-2.5 mb-4">
-                        <span className="relative flex items-center justify-center">
-                          <span className={`w-2 h-2 rounded-full ${card.dot} group-hover:status-dot-pulse`} />
-                          <span className={`absolute inset-[-3px] rounded-full ${card.dot} opacity-0 group-hover:opacity-40 group-hover:animate-ping`} />
-                        </span>
-                        <Icon className={`h-5 w-5 icon-bounce ${card.dot === "bg-violet-500" ? "text-violet-400" : card.dot === "bg-fuchsia-500" ? "text-fuchsia-400" : "text-emerald-400"}`} />
-                        <h3 className="text-base font-semibold">{card.title}</h3>
-                        <span className="metric-counter ml-auto">{card.metric}</span>
-                      </div>
-                      <p className="text-sm text-zinc-400 mb-5 leading-relaxed">{card.desc}</p>
-                      <ul className="text-sm text-zinc-500 space-y-2">
-                        {card.items.map((item) => (
-                          <li key={item.text} className="flex items-center gap-2">
-                            <span className={`w-1 h-1 rounded-full ${item.dot}`} />
-                            {item.text}
-                          </li>
-                        ))}
-                      </ul>
+                  <div className="rounded-2xl border border-white/[0.05] bg-white/[0.012] p-7 h-full hover:border-white/[0.1] transition-colors">
+                    <div className="flex items-center gap-3 mb-5">
+                      <Icon className="h-4 w-4 text-zinc-400" />
+                      <h3 className="text-[15px] font-medium text-white">{card.title}</h3>
+                      <span className="ml-auto text-[10px] font-mono uppercase tracking-[0.22em] text-zinc-500">{card.metric}</span>
                     </div>
+                    <p className="text-[14px] text-zinc-400 mb-6 leading-relaxed">{card.desc}</p>
+                    <ul className="text-[13.5px] text-zinc-500 space-y-2.5">
+                      {card.items.map((item) => (
+                        <li key={item.text}>{item.text}</li>
+                      ))}
+                    </ul>
                   </div>
-                  </TiltCard>
                 </Reveal>
               );
             })}
