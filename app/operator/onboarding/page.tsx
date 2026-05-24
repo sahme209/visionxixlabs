@@ -32,7 +32,6 @@ import {
   ExclamationCircleIcon,
 } from "@heroicons/react/24/outline";
 import { Reveal } from "@/components/motion/Reveal";
-import { Stagger } from "@/components/motion/Stagger";
 import { AnimatedButton } from "@/components/ui/AnimatedButton";
 import { MotherboardBackdrop } from "@/components/ui/MotherboardBackdrop";
 import { MagneticCard } from "@/components/ui/MagneticCard";
@@ -213,47 +212,12 @@ const PROVIDERS: Record<CloudProvider, ProviderInfo> = {
   },
 };
 
-const BROKER_ACCOUNT_ID = "590183704419";
-
 function generateExternalId(): string {
   const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
   let result = "axiom-";
   for (let i = 0; i < 16; i++) result += chars.charAt(Math.floor(Math.random() * chars.length));
   return result;
 }
-
-const IAM_TRUST_POLICY = (externalId: string) => JSON.stringify({
-  Version: "2012-10-17",
-  Statement: [{
-    Effect: "Allow",
-    Principal: { AWS: `arn:aws:iam::${BROKER_ACCOUNT_ID}:root` },
-    Action: "sts:AssumeRole",
-    Condition: { StringEquals: { "sts:ExternalId": externalId } },
-  }],
-}, null, 2);
-
-const IAM_PERMISSIONS_POLICY = JSON.stringify({
-  Version: "2012-10-17",
-  Statement: [{
-    Sid: "AxiomAgentReadOnly",
-    Effect: "Allow",
-    Action: [
-      "ec2:Describe*", "rds:Describe*", "rds:ListTagsForResource",
-      "s3:ListAllMyBuckets", "s3:GetBucketLocation", "s3:GetBucketPolicy",
-      "s3:GetBucketAcl", "s3:GetEncryptionConfiguration", "s3:GetBucketVersioning",
-      "elasticloadbalancing:Describe*", "autoscaling:Describe*",
-      "cloudwatch:GetMetricData", "cloudwatch:ListMetrics", "cloudwatch:GetMetricStatistics",
-      "iam:GetAccountSummary", "iam:ListRoles", "iam:ListUsers", "iam:GetRole",
-      "iam:ListAccessKeys", "iam:GetAccessKeyLastUsed",
-      "ce:GetCostAndUsage", "ce:GetCostForecast",
-      "tag:GetResources", "sts:GetCallerIdentity",
-      "lambda:ListFunctions", "lambda:GetFunction",
-      "dynamodb:ListTables", "dynamodb:DescribeTable",
-      "sns:ListTopics", "sqs:ListQueues",
-    ],
-    Resource: "*",
-  }],
-}, null, 2);
 
 /* ═══════════════════════════════════════════════════════════════════
    SCAN PHASES — Timeline for the agent scan experience
@@ -384,16 +348,6 @@ function CopyBlock({ label, value, mono = true }: { label: string; value: string
   );
 }
 
-/* ═══════════════════════════════════════════════════════════════════
-   AWS SETUP INSTRUCTIONS
-   ═══════════════════════════════════════════════════════════════════ */
-
-function AWSSetupInstructions({ externalId: _externalId }: { externalId: string }) {
-  // Customer-facing AWS setup — paste access keys, no broker, no
-  // CloudFormation, no platform-side AWS config required. See
-  // AwsKeyConnect.tsx for the full UI.
-  return <AwsKeyConnect />;
-}
 /* ═══════════════════════════════════════════════════════════════════
    PROVIDER ADAPTER PREVIEW — Premium modal for Azure/GCP
    ═══════════════════════════════════════════════════════════════════ */
@@ -666,26 +620,16 @@ export default function OnboardingPage() {
   const [step, setStepRaw] = useState<OnboardingStep>(saved.step);
   const [selectedProvider, setSelectedProvider] = useState<CloudProvider | null>(saved.provider);
   const [connectionPhase, setConnectionPhase] = useState<ConnectionPhase>("select");
-  const [roleArn, setRoleArn] = useState("");
-  const [awsAccountId, setAwsAccountId] = useState("");
-  const [externalId] = useState(saved.externalId);
   const [adapterPreview, setAdapterPreview] = useState<CloudProvider | null>(null);
-  const [validating, setValidating] = useState(false);
-  const [connected, setConnected] = useState(false);
   const [analyzing, setAnalyzing] = useState(false);
   const [scanPhaseIndex, setScanPhaseIndex] = useState(0);
   const [scanComplete, setScanComplete] = useState(false);
   const [scanReport, setScanReport] = useState<Record<string, unknown> | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [validationDetail, setValidationDetail] = useState<string | null>(null);
   const [verifiedAccount, setVerifiedAccount] = useState<string | null>(null);
   const [token, setToken] = useState<string | null>(null);
   const [checkingAvailability, setCheckingAvailability] = useState(false);
   const scanInterval = useRef<ReturnType<typeof setInterval> | null>(null);
-
-  const arnRegex = /^arn:aws(?:-cn|-us-gov)?:iam::\d{12}:role\/[\w+=,.@-]+$/;
-  const accountIdRegex = /^\d{12}$/;
-  const arnAccountId = roleArn.match(/:(\d{12}):/)?.[1] ?? "";
 
   const setStep = useCallback((s: OnboardingStep) => {
     setStepRaw(s);
@@ -725,60 +669,6 @@ export default function OnboardingPage() {
       setConnectionPhase("setup");
     } finally {
       setCheckingAvailability(false);
-    }
-  };
-
-  /* ── Validate AWS connection ───────────────────────────────── */
-  const handleValidateConnection = async () => {
-    setError(null);
-    setValidationDetail(null);
-    const trimmedArn = roleArn.trim();
-    const trimmedAccountId = (awsAccountId.trim() || arnAccountId).trim();
-
-    if (!trimmedArn) { setError("Role ARN is required."); return; }
-    if (!arnRegex.test(trimmedArn)) { setError("Invalid Role ARN format. Expected: arn:aws:iam::123456789012:role/RoleName"); return; }
-    if (!trimmedAccountId || !accountIdRegex.test(trimmedAccountId)) { setError("AWS Account ID is required (12 digits)."); return; }
-
-    setValidating(true);
-    try {
-      let currentToken = token;
-      if (!currentToken) {
-        const startRes = await fetch("/api/cloud-operator/start", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ provider: selectedProvider }),
-        });
-        const startData = await startRes.json();
-        if (!startRes.ok) { setError(startData.error ?? "Failed to initialize session."); return; }
-        currentToken = startData.token;
-        setToken(currentToken);
-      }
-
-      const linkRes = await fetch(`/api/connectors/link?token=${currentToken}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ connectorType: "aws", authMethod: "assume-role", roleArn: trimmedArn, awsAccountId: trimmedAccountId, externalId }),
-      });
-      const linkData = await linkRes.json();
-
-      if (!linkRes.ok) {
-        const msg = linkData.error ?? "Connection validation failed.";
-        setError(msg);
-        if (linkRes.status === 403) setValidationDetail("Your session could not be verified. Please refresh and try again.");
-        else if (linkRes.status === 503) setValidationDetail("AWS connector is being configured. Please try again shortly.");
-        else if (msg.includes("Role ARN") || msg.includes("External ID")) setValidationDetail("Verify the Role ARN matches the role you created and the External ID matches.");
-        return;
-      }
-
-      setConnected(true);
-      setVerifiedAccount(linkData.account ?? trimmedAccountId);
-      setConnectionPhase("validate");
-      try { localStorage.removeItem(STORAGE_KEY); } catch { /* no-op */ }
-      setTimeout(() => setStep(3), 1200);
-    } catch {
-      setError("Network error. Please check your connection and try again.");
-    } finally {
-      setValidating(false);
     }
   };
 
@@ -1172,18 +1062,49 @@ export default function OnboardingPage() {
               {connectionPhase === "setup" && selectedProvider === "aws" && (
                 <>
                   <div className="mb-6">
-                    <h1 className="text-2xl sm:text-3xl font-bold mb-2 tracking-[-0.04em]">
-                      Set up <span className="text-gradient">AWS access</span>
+                    <h1 className="text-2xl sm:text-3xl font-semibold mb-1.5 tracking-[-0.03em]">
+                      Connect your <span className="text-gradient">AWS account</span>
                     </h1>
-                    <p className="text-zinc-500 text-sm">Create a read-only IAM Role, then validate below.</p>
+                    <p className="text-zinc-500 text-[13.5px] leading-relaxed">One click in AWS, one click back — no copy-paste.</p>
                   </div>
 
                   <AwsKeyConnect
-                    onValidated={({ accountId }) => {
-                      setConnected(true);
+                    onValidated={async ({ accountId, roleArn, externalId: validatedExternalId }) => {
                       setVerifiedAccount(accountId ?? null);
-                      // Advance to the scan step on success.
-                      setTimeout(() => setStep(3), 1200);
+                      // Provision a scanner session + register the connector before advancing to scan.
+                      try {
+                        const startRes = await fetch("/api/cloud-operator/start", {
+                          method: "POST",
+                          headers: { "Content-Type": "application/json" },
+                          body: JSON.stringify({ provider: "aws" }),
+                        });
+                        const startData = await startRes.json();
+                        if (!startRes.ok || !startData.token) {
+                          setError(startData.error ?? "Could not start a scan session. Try again in a moment.");
+                          return;
+                        }
+                        setToken(startData.token);
+                        const linkRes = await fetch(`/api/connectors/link?token=${startData.token}`, {
+                          method: "POST",
+                          headers: { "Content-Type": "application/json" },
+                          body: JSON.stringify({
+                            connectorType: "aws",
+                            authMethod: "assume-role",
+                            roleArn,
+                            awsAccountId: accountId ?? "",
+                            externalId: validatedExternalId,
+                          }),
+                        });
+                        if (!linkRes.ok) {
+                          const linkData = await linkRes.json().catch(() => ({}));
+                          setError(linkData.error ?? "Could not register the AWS connector. Try again in a moment.");
+                          return;
+                        }
+                        try { localStorage.removeItem(STORAGE_KEY); } catch { /* no-op */ }
+                        setTimeout(() => setStep(3), 1200);
+                      } catch {
+                        setError("Network error while finishing the AWS connection. Please try again.");
+                      }
                     }}
                   />
                 </>
