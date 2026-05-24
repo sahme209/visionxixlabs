@@ -105,21 +105,33 @@ h1, h2, h3, h4, h5, h6 {
   background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
 }
 
-/* Text gradient — neutralized to plain off-white for the huly.io
-   calm pass. The old violet→fuchsia animated gradient appeared on
-   every hero headline + many emphasis words across the site and
-   was the single loudest visual element. Keeping the class so all
-   the JSX that references it still works; the visual treatment is
-   now a flat off-white at neutral weight. */
+/* Text gradient — calm huly.io vocabulary. Subtle white→zinc-300
+   sheen that slowly drifts. No violet/fuchsia, no carnival, but
+   not flat either — there is motion, just quiet. */
 .text-gradient {
-  color: rgb(244, 244, 245); /* zinc-100 — quietly distinguishes from the body text without the carnival */
+  background: linear-gradient(110deg, #ffffff 0%, #e4e4e7 35%, #ffffff 70%, #e4e4e7 100%);
+  background-size: 250% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: gradient-shift 12s ease-in-out infinite;
 }
 
-/* Shimmer text — neutralized for the same reason. */
+/* Shimmer text — same neutral palette, slow sweep so it never
+   competes with content. */
 .text-shimmer {
-  color: rgb(244, 244, 245);
-  background: none;
-  animation: none;
+  background: linear-gradient(
+    90deg,
+    rgb(244, 244, 245) 0%,
+    #ffffff 45%,
+    rgb(228, 228, 231) 55%,
+    rgb(244, 244, 245) 100%
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shimmer-flow 8s linear infinite;
 }
 
 /* Luminous icon — gradient fill */
@@ -429,16 +441,43 @@ h1, h2, h3, h4, h5, h6 {
 /* ── Glow Effects ──────────────────────────────────────────────── */
 
 /* CTA glow animation */
-/* Calm pass: was an infinite 2.5s glow pulse on every primary CTA. Off. */
+/* Calm pass: was a 2.5s loud violet glow pulse. Now a slow,
+   restrained off-white halo — barely perceptible, still alive. */
 .cta-glow {
-  animation: none;
+  box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.06);
+  animation: cta-glow-calm 4s ease-in-out infinite;
+}
+@keyframes cta-glow-calm {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.06); }
+  50%      { box-shadow: 0 0 22px 2px rgba(255, 255, 255, 0.10); }
 }
 
-/* Calm pass: animated gradient border on hover felt like a debug
-   highlight. Now a no-op so cards stay quiet. */
-.glow-border-card { position: relative; overflow: hidden; }
-.glow-border-card::before { content: none; }
-.glow-border-card:hover::before { content: none; }
+/* Calm pass: was a multi-color rainbow border. Now a single quiet
+   white edge that fades in on hover — subtle, refined. */
+.glow-border-card {
+  position: relative;
+  overflow: hidden;
+}
+.glow-border-card::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.18) 0%, rgba(255, 255, 255, 0.04) 50%, rgba(255, 255, 255, 0.18) 100%);
+  background-size: 200% 200%;
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  animation: gradient-shift 10s ease infinite;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  pointer-events: none;
+}
+.glow-border-card:hover::before {
+  opacity: 1;
+}
 
 /* Pipeline glow — connecting ribbon */
 .pipeline-glow {
@@ -1799,25 +1838,42 @@ h1, h2, h3, h4, h5, h6 {
   50% { box-shadow: 0 4px 30px rgba(245, 158, 11, 0.35), 0 0 60px rgba(251, 191, 36, 0.15); }
 }
 
-/* Calm pass: was an animated amber shimmer + glow pulse + double
-   box-shadow. Now a flat white pill matching the huly.io vocabulary
-   used on the hero and marketing nav. Keeping the class so the
-   hundreds of buttons that reference it pick up the new style
-   automatically. */
+/* Calm pass: was a loud amber shimmer with glow-pulse + drop-shadow
+   stack. Now a clean white pill that gains a soft white halo + a
+   tiny scale on hover — refined huly.io vocabulary, not flat dead.
+   The ::after pseudo runs a slow sheen sweep across the pill so it
+   still feels alive even at rest. */
 .btn-amber-shimmer {
   position: relative;
+  overflow: hidden;
   background: #ffffff;
   color: #09090b !important;
   -webkit-text-fill-color: #09090b;
   border: 1px solid transparent;
   animation: none;
   text-shadow: none;
-  transition: background-color 150ms ease;
+  transition: background-color 220ms ease, transform 220ms ease, box-shadow 220ms ease;
 }
-
+.btn-amber-shimmer::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(
+    115deg,
+    transparent 30%,
+    rgba(255, 255, 255, 0.85) 50%,
+    transparent 70%
+  );
+  background-size: 250% 100%;
+  animation: amber-shimmer-sweep 6s ease-in-out infinite;
+  mix-blend-mode: overlay;
+  pointer-events: none;
+}
 .btn-amber-shimmer:hover {
-  background: #f4f4f5; /* zinc-100 */
-  box-shadow: none;
+  background: #fafafa;
+  transform: translateY(-1px);
+  box-shadow: 0 12px 30px -12px rgba(255, 255, 255, 0.25);
   border-color: transparent;
 }
 
@@ -1841,20 +1897,21 @@ h1, h2, h3, h4, h5, h6 {
 
 /* ── Progressive Text Dimming (Huly pricing-style) ────────────── */
 .text-progressive-dim > *:nth-child(1) { color: #fafafa; }
-/* Calm pass: progressive-dim spans used to fade body copy out to
-   0.2 opacity by the third clause, which read as broken. All three
-   tiers now resolve to a single zinc-400 tone so paragraphs read
-   at one voice. */
-.text-progressive-dim > *:nth-child(2),
-.text-progressive-dim > *:nth-child(3),
-.text-progressive-dim > *:nth-child(4) { color: rgb(161, 161, 170); /* zinc-400 */ }
+/* Calm pass: progressive dim, but with a much closer range so the
+   paragraph reads as one voice that gently fades rather than
+   collapsing into invisible by clause three. Subtle emphasis,
+   not a broken sentence. */
+.text-progressive-dim > *:nth-child(1) { color: rgba(244, 244, 245, 1); }
+.text-progressive-dim > *:nth-child(2) { color: rgba(244, 244, 245, 0.82); }
+.text-progressive-dim > *:nth-child(3) { color: rgba(244, 244, 245, 0.66); }
+.text-progressive-dim > *:nth-child(4) { color: rgba(244, 244, 245, 0.52); }
 
 .text-dim-paragraph {
-  color: rgb(161, 161, 170); /* zinc-400 — unified paragraph tone */
+  color: rgba(244, 244, 245, 0.9);
 }
-.text-dim-paragraph .dim-1,
-.text-dim-paragraph .dim-2,
-.text-dim-paragraph .dim-3 { color: inherit; }
+.text-dim-paragraph .dim-1 { color: rgba(244, 244, 245, 0.72); }
+.text-dim-paragraph .dim-2 { color: rgba(244, 244, 245, 0.55); }
+.text-dim-paragraph .dim-3 { color: rgba(244, 244, 245, 0.42); }
 
 /* ── Auth Glassmorphism (Huly sign-in/sign-up style) ──────────── */
 .auth-glass-card {
@@ -2329,49 +2386,78 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* ──────────────────────────────────────────────────────────────────
-   Calm pass — site-wide overrides (huly.io vocabulary).
+   Calm pass — site-wide motion overrides (huly.io vocabulary).
 
    Earlier sections of this stylesheet build a library of decorative
    utilities (animated borders, shine sweeps, warm bottom glows,
-   coloured card accents) that get composed onto cards via many
-   className strings. Editing every call site is impractical, so
-   this block neutralises the *visible effect* of those utilities
-   in one place. The utilities keep their names so existing JSX
-   doesn't break — they just paint nothing now.
-
-   Re-introduce any individual effect by overriding it below.
+   colour-tinted card overlays). The old defaults were too loud —
+   neon gradients, rainbow shimmer, multi-color drop-shadows. The
+   overrides below repaint those same utilities with restrained,
+   monochrome huly.io-style motion: white-on-dark, slow ease-out,
+   low opacity. Hover effects remain — they just whisper now.
    ────────────────────────────────────────────────────────────── */
 
-.animated-border::before,
-.animated-border:hover::before,
-.card-shine-sweep::before,
-.card-shine-sweep:hover::before,
-.warm-bottom-glow::before,
-.warm-bottom-glow:hover::before,
-.card-inner-glow::after,
-.card-inner-glow:hover::after,
-.card-accent-overlay {
-  content: none !important;
-  background: none !important;
-  opacity: 0 !important;
-}
-
-/* The four colour-accent card variants used to tint card borders
-   with a wash of violet/fuchsia/emerald/red. Keep them as plain
-   neutral cards for the calm pass. */
+/* Card-accent washes: single neutral tone instead of four
+   competing colour casts. */
 .card-accent-violet,
 .card-accent-fuchsia,
 .card-accent-emerald,
 .card-accent-red {
-  border-color: rgba(255, 255, 255, 0.06) !important;
-  background-image: none !important;
+  border-color: rgba(255, 255, 255, 0.06);
+}
+.card-accent-violet > .card-accent-overlay,
+.card-accent-fuchsia > .card-accent-overlay,
+.card-accent-emerald > .card-accent-overlay,
+.card-accent-red > .card-accent-overlay {
+  background: radial-gradient(120% 80% at 50% 0%, rgba(255, 255, 255, 0.04) 0%, transparent 60%);
+  opacity: 0.6;
 }
 
-/* Kill the hover-jitter motion that several "card-hover" /
-   "card-reactive" / "card-shine-sweep" utilities composite together.
-   Cards still get a faint border lift, nothing more. */
+/* Card hover: tiny 1px lift + soft inner edge. No more violet
+   drop-shadow halos. */
+.card-hover,
+.card-reactive {
+  transition: transform 280ms ease, border-color 280ms ease, box-shadow 280ms ease;
+}
 .card-hover:hover,
 .card-reactive:hover {
-  transform: none !important;
-  box-shadow: none !important;
+  transform: translateY(-1px);
+  box-shadow: 0 12px 36px -16px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
+/* Repaint the loud decorative pseudo-elements with monochrome
+   versions. The motion still happens — slow sweep, slow glow,
+   gentle warm-bottom — just in white-on-dark instead of
+   violet/fuchsia/cyan. The original utilities defined earlier
+   in this file still apply their keyframes and timings; we only
+   override the colour, opacity, and final intensity. */
+
+.animated-border::before {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.16) 0%, rgba(255, 255, 255, 0.02) 50%, rgba(255, 255, 255, 0.16) 100%) !important;
+  opacity: 0;
+}
+.animated-border:hover::before {
+  opacity: 0.75 !important;
+}
+
+.card-shine-sweep::before {
+  background: linear-gradient(115deg, transparent 0%, transparent 40%, rgba(255, 255, 255, 0.07) 50%, transparent 60%, transparent 100%) !important;
+  animation-duration: 6s !important;
+}
+
+.warm-bottom-glow::before {
+  background: radial-gradient(120% 80% at 50% 110%, rgba(255, 255, 255, 0.06) 0%, transparent 65%) !important;
+  opacity: 0.7 !important;
+}
+.warm-bottom-glow:hover::before {
+  opacity: 1 !important;
+}
+
+.card-inner-glow::after {
+  background: radial-gradient(80% 80% at 50% 0%, rgba(255, 255, 255, 0.05) 0%, transparent 60%) !important;
+  opacity: 0;
+}
+.card-inner-glow:hover::after {
+  opacity: 1 !important;
 }
