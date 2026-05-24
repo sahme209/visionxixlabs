@@ -1,0 +1,120 @@
+# Axiom Agent · CloudFormation Quick-Create template
+# ----------------------------------------------------------------------
+# One-click IAM role provisioning for the VisionXIXLabs platform.
+#
+# Drop this template into AWS Console via the personalized Quick-Create
+# URL that visionxixlabs.com/operator/onboarding mints per session. The
+# customer never copies JSON or fills out the Create Role wizard — they
+# click "Create stack" and get a correctly-shaped role back.
+#
+# Outputs the RoleArn the platform needs.
+
+AWSTemplateFormatVersion: "2010-09-09"
+Description: >
+  Provisions a read-only IAM role for the Axiom Agent (VisionXIXLabs)
+  cloud scanner. The role trusts the platform's broker account
+  (590183704419) and requires the session-specific ExternalId.
+
+Parameters:
+  ExternalId:
+    Type: String
+    Description: >
+      Session-specific external id minted by visionxixlabs.com. Prevents
+      the confused-deputy problem — even if someone learned the role
+      name they could not assume it without this value.
+    AllowedPattern: "^axiom-[a-zA-Z0-9]{8,32}$"
+    ConstraintDescription: Must look like axiom-<8-32 alphanumerics>.
+
+  BrokerAccountId:
+    Type: String
+    Description: VisionXIXLabs broker account that will assume this role.
+    Default: "590183704419"
+    AllowedPattern: "^[0-9]{12}$"
+
+  RoleName:
+    Type: String
+    Description: Name for the created IAM role.
+    Default: "AxiomAgentReadOnly"
+    MinLength: 1
+    MaxLength: 64
+
+Resources:
+  AxiomAgentReadOnlyRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Ref RoleName
+      Description: >
+        Cross-account read-only role assumed by Axiom Agent
+        (VisionXIXLabs). 1-hour session, ExternalId-gated, read-only
+        permissions across the AWS surfaces the scanner needs.
+      MaxSessionDuration: 3600
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              AWS: !Sub "arn:aws:iam::${BrokerAccountId}:root"
+            Action: "sts:AssumeRole"
+            Condition:
+              StringEquals:
+                "sts:ExternalId": !Ref ExternalId
+      Policies:
+        - PolicyName: AxiomAgentReadOnlyInline
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Sid: AxiomAgentReadOnly
+                Effect: Allow
+                Action:
+                  # Compute + networking inventory
+                  - "ec2:Describe*"
+                  - "elasticloadbalancing:Describe*"
+                  - "autoscaling:Describe*"
+                  # Storage / databases
+                  - "rds:Describe*"
+                  - "rds:ListTagsForResource"
+                  - "s3:ListAllMyBuckets"
+                  - "s3:GetBucketLocation"
+                  - "s3:GetBucketPolicy"
+                  - "s3:GetBucketAcl"
+                  - "s3:GetEncryptionConfiguration"
+                  - "s3:GetBucketVersioning"
+                  # Metrics
+                  - "cloudwatch:GetMetricData"
+                  - "cloudwatch:ListMetrics"
+                  - "cloudwatch:GetMetricStatistics"
+                  # IAM posture
+                  - "iam:GetAccountSummary"
+                  - "iam:ListRoles"
+                  - "iam:ListUsers"
+                  - "iam:GetRole"
+                  - "iam:ListAccessKeys"
+                  - "iam:GetAccessKeyLastUsed"
+                  # Cost
+                  - "ce:GetCostAndUsage"
+                  - "ce:GetCostForecast"
+                  # Tagging
+                  - "tag:GetResources"
+                  # Identity probe
+                  - "sts:GetCallerIdentity"
+                Resource: "*"
+      Tags:
+        - Key: ManagedBy
+          Value: VisionXIXLabs
+        - Key: Purpose
+          Value: AxiomAgent-CrossAccount-ReadOnly
+
+Outputs:
+  RoleArn:
+    Description: >
+      Paste this Role ARN back into the visionxixlabs.com onboarding
+      form to finish the connection.
+    Value: !GetAtt AxiomAgentReadOnlyRole.Arn
+
+  RoleName:
+    Description: Name of the created IAM role.
+    Value: !Ref AxiomAgentReadOnlyRole
+
+  AccountId:
+    Description: Your AWS account id.
+    Value: !Ref AWS::AccountId

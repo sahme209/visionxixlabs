@@ -388,6 +388,15 @@ function CopyBlock({ label, value, mono = true }: { label: string; value: string
    ═══════════════════════════════════════════════════════════════════ */
 
 function AWSSetupInstructions({ externalId }: { externalId: string }) {
+  // One-click CloudFormation URL — built per-session so the externalId
+  // is pre-filled. Customer never copies JSON. The fallback "manual
+  // steps" below is for operators who want auditability.
+  const oneClickUrl = `https://us-east-1.console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/quickcreate?` + new URLSearchParams({
+    templateURL: `${typeof window !== "undefined" ? window.location.origin : "https://visionxixlabs.com"}/aws/axiom-agent-quick-deploy.yaml`,
+    stackName: "axiom-agent",
+    param_ExternalId: externalId,
+  }).toString();
+
 
   const steps = [
     {
@@ -462,6 +471,43 @@ function AWSSetupInstructions({ externalId }: { externalId: string }) {
 
   return (
     <div className="space-y-5">
+      {/* ★ ONE-CLICK SETUP — primary path. Everything below is a fallback
+          for operators who want full auditability. */}
+      <div className="rounded-2xl border border-violet-500/30 bg-gradient-to-br from-violet-500/[0.12] via-fuchsia-500/[0.08] to-amber-500/[0.04] p-5 relative overflow-hidden">
+        <div className="absolute -top-16 -right-16 w-48 h-48 rounded-full bg-violet-500/20 blur-[60px] pointer-events-none" aria-hidden />
+        <div className="absolute -bottom-16 -left-16 w-48 h-48 rounded-full bg-fuchsia-500/15 blur-[60px] pointer-events-none" aria-hidden />
+        <div className="relative">
+          <div className="flex items-center gap-2 mb-2">
+            <span className="text-[10px] font-mono uppercase tracking-[0.22em] font-semibold text-violet-300">
+              ★ recommended · one click
+            </span>
+          </div>
+          <h3 className="text-lg font-bold text-white tracking-tight mb-1">
+            Connect AWS in one click with CloudFormation.
+          </h3>
+          <p className="text-[13px] text-zinc-300 leading-relaxed max-w-2xl mb-4">
+            We&apos;ve pre-filled a CloudFormation template with the correct trust policy + read-only permissions +
+            your session&apos;s external id. Click below, click <strong className="text-zinc-100">Create stack</strong>{" "}
+            in AWS, then copy the resulting <strong className="text-zinc-100">RoleArn</strong> back here.
+            No JSON to copy, no wizard to navigate.
+          </p>
+          <a
+            href={oneClickUrl}
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex items-center gap-2 px-5 py-3 rounded-full bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500 text-white text-[13px] font-semibold shadow-glow-violet transition-all"
+          >
+            🚀 Open AWS CloudFormation (1 click) →
+          </a>
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 mt-4 text-[11px] text-zinc-400">
+            <span className="flex items-center gap-1"><span className="w-1 h-1 rounded-full bg-emerald-400" /> Trust policy pre-filled</span>
+            <span className="flex items-center gap-1"><span className="w-1 h-1 rounded-full bg-emerald-400" /> External ID pre-filled</span>
+            <span className="flex items-center gap-1"><span className="w-1 h-1 rounded-full bg-emerald-400" /> Read-only permissions</span>
+            <span className="flex items-center gap-1"><span className="w-1 h-1 rounded-full bg-emerald-400" /> Revoke = delete stack</span>
+          </div>
+        </div>
+      </div>
+
       {/* Security card */}
       <div className="rounded-xl border border-emerald-500/15 bg-emerald-500/[0.03] p-5">
         <div className="flex items-start gap-3">
@@ -496,9 +542,13 @@ function AWSSetupInstructions({ externalId }: { externalId: string }) {
         </div>
       </div>
 
-      {/* Steps */}
-      <div className="rounded-xl border border-white/[0.06] bg-white/[0.015] p-5">
-        <h3 className="text-sm font-semibold text-zinc-200 mb-5">Create the IAM Role</h3>
+      {/* Manual steps — fallback for operators who don't want CloudFormation. */}
+      <details className="rounded-xl border border-white/[0.06] bg-white/[0.015] p-5">
+        <summary className="text-[12px] font-semibold text-zinc-400 cursor-pointer select-none hover:text-zinc-200 transition-colors mb-0 list-none flex items-center justify-between">
+          <span>Or set it up manually (5 steps, JSON copy-paste) →</span>
+          <span className="text-[10px] font-mono text-zinc-600 ml-2">prefer the 1-click button above unless you need audit trail</span>
+        </summary>
+        <h3 className="text-sm font-semibold text-zinc-200 mt-5 mb-5">Create the IAM Role manually</h3>
         <ol className="space-y-5 text-sm text-zinc-400">
           {steps.map((s) => (
             <li key={s.num} className="flex gap-3.5">
@@ -518,7 +568,7 @@ function AWSSetupInstructions({ externalId }: { externalId: string }) {
           AssumeRole gives us short-lived (1-hour) read-only credentials, and you can
           revoke access any time by deleting the IAM role.
         </div>
-      </div>
+      </details>
     </div>
   );
 }
