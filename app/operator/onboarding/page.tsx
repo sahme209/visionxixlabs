@@ -1178,82 +1178,14 @@ export default function OnboardingPage() {
                     <p className="text-zinc-500 text-sm">Create a read-only IAM Role, then validate below.</p>
                   </div>
 
-                  <AWSSetupInstructions externalId={externalId} />
-
-                  {/* Validation form */}
-                  <div className="mt-6">
-                    <div className="rounded-xl border border-white/[0.06] bg-white/[0.015] p-5">
-                      <h3 className="text-sm font-semibold text-zinc-200 mb-5">Validate connection</h3>
-                      <div className="space-y-4">
-                        <div>
-                          <label className="block text-xs font-medium text-zinc-500 mb-1.5">Role ARN <span className="text-red-400/80">*</span></label>
-                          <input type="text" value={roleArn}
-                            onChange={(e) => { setRoleArn(e.target.value); setError(null); const m = e.target.value.match(/:(\d{12}):/); if (m) setAwsAccountId(m[1]); }}
-                            placeholder="arn:aws:iam::123456789012:role/AxiomAgentReadOnly"
-                            className="w-full rounded-lg border border-white/[0.08] bg-[#0a0a0c] px-4 py-3 text-slate-100 placeholder:text-zinc-700 focus:outline-none focus:ring-2 focus:ring-violet-500/25 focus:border-violet-500/40 text-sm font-mono transition-all" />
-                        </div>
-                        <div>
-                          <label className="block text-xs font-medium text-zinc-500 mb-1.5">AWS Account ID <span className="text-red-400/80">*</span></label>
-                          <input type="text" value={awsAccountId}
-                            onChange={(e) => { setAwsAccountId(e.target.value.replace(/\D/g, "").slice(0, 12)); setError(null); }}
-                            placeholder="123456789012"
-                            className="w-full rounded-lg border border-white/[0.08] bg-[#0a0a0c] px-4 py-3 text-slate-100 placeholder:text-zinc-700 focus:outline-none focus:ring-2 focus:ring-violet-500/25 focus:border-violet-500/40 text-sm font-mono transition-all" />
-                          {arnAccountId && awsAccountId && arnAccountId !== awsAccountId && (
-                            <p className="text-xs text-amber-400/80 mt-1.5">Account ID in ARN ({arnAccountId}) differs from field. We&apos;ll use the field value.</p>
-                          )}
-                        </div>
-                      </div>
-
-                      {error && (
-                        <div className="mt-4 text-sm text-red-400 bg-red-500/[0.06] border border-red-500/15 rounded-lg px-4 py-3">
-                          <div className="flex items-start gap-2">
-                            <ExclamationTriangleIcon className="h-4 w-4 flex-shrink-0 mt-0.5" />
-                            <div className="flex-1">
-                              {error}
-                              {validationDetail && <p className="text-xs text-red-300/60 mt-1.5">{validationDetail}</p>}
-                              <div className="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-[11px]">
-                                <a
-                                  href="/docs/troubleshooting#aws-connection"
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="text-red-300 hover:text-red-200 underline underline-offset-2 font-medium"
-                                >
-                                  Troubleshoot this error →
-                                </a>
-                                <a
-                                  href="/docs/aws-setup"
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="text-red-300 hover:text-red-200 underline underline-offset-2 font-medium"
-                                >
-                                  Review AWS setup steps →
-                                </a>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      )}
-
-                      {connected && verifiedAccount && (
-                        <div className="mt-4 flex items-center gap-2 text-sm text-emerald-400 bg-emerald-500/[0.06] border border-emerald-500/15 rounded-lg px-4 py-3">
-                          <CheckCircleIcon className="h-4 w-4 flex-shrink-0" />
-                          Connection verified — AWS Account {verifiedAccount}
-                        </div>
-                      )}
-
-                      <div className="mt-5 flex gap-3">
-                        <AnimatedButton onClick={handleValidateConnection} disabled={validating || connected || !roleArn.trim()} variant="primary" className="flex-1 justify-center py-3.5">
-                          {validating ? (
-                            <><span className="w-4 h-4 border-2 border-white/30 border-t-zinc-900 rounded-full animate-spin" /> Validating...</>
-                          ) : connected ? (
-                            <><CheckCircleIcon className="h-4 w-4" /> Connected</>
-                          ) : (
-                            <><ShieldCheckIcon className="h-4 w-4" /> Validate Connection</>
-                          )}
-                        </AnimatedButton>
-                      </div>
-                    </div>
-                  </div>
+                  <AwsKeyConnect
+                    onValidated={({ accountId }) => {
+                      setConnected(true);
+                      setVerifiedAccount(accountId ?? null);
+                      // Advance to the scan step on success.
+                      setTimeout(() => setStep(3), 1200);
+                    }}
+                  />
                 </>
               )}
             </div>
