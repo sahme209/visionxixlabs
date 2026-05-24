@@ -1,0 +1,41 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "description": "Axiom Agent · Azure Reader role assignment. Grants the platform's service principal the built-in Reader role over the selected subscription so the scanner can do inventory + posture analysis. Pure ARM template — no resources are created, only a role assignment is bound."
+  },
+  "parameters": {
+    "axiomPrincipalObjectId": {
+      "type": "string",
+      "metadata": {
+        "description": "Object ID of the VisionXIXLabs service principal in your Azure AD tenant. Get this value from visionxixlabs.com/operator/onboarding after picking Azure."
+      }
+    }
+  },
+  "variables": {
+    "readerRoleId": "[concat('/providers/Microsoft.Authorization/roleDefinitions/', 'acdd72a7-3385-48ef-bd42-f606fba81ae7')]"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Authorization/roleAssignments",
+      "apiVersion": "2022-04-01",
+      "name": "[guid(subscription().id, parameters('axiomPrincipalObjectId'), 'AxiomAgentReader')]",
+      "properties": {
+        "roleDefinitionId": "[variables('readerRoleId')]",
+        "principalId": "[parameters('axiomPrincipalObjectId')]",
+        "principalType": "ServicePrincipal",
+        "description": "Read-only Reader role for Axiom Agent (VisionXIXLabs)."
+      }
+    }
+  ],
+  "outputs": {
+    "subscriptionId": {
+      "type": "string",
+      "value": "[subscription().subscriptionId]"
+    },
+    "tenantId": {
+      "type": "string",
+      "value": "[subscription().tenantId]"
+    }
+  }
+}

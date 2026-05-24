@@ -187,6 +187,12 @@ export function Navigation() {
               Demo
             </Link>
             <Link
+              href="/integrations"
+              className="nav-link-underline relative px-4 py-2 text-zinc-400 hover:text-white rounded-lg transition-colors text-sm font-medium whitespace-nowrap"
+            >
+              Integrations
+            </Link>
+            <Link
               href="/plans"
               className="nav-link-underline relative px-4 py-2 text-zinc-400 hover:text-white rounded-lg transition-colors text-sm font-medium"
             >

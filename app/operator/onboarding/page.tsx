@@ -508,6 +508,52 @@ function AWSSetupInstructions({ externalId }: { externalId: string }) {
         </div>
       </div>
 
+      {/* Azure + GCP siblings — Phase 412. Same visual language so the
+          customer knows every cloud is just one button. */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+        <div className="rounded-xl border border-blue-500/25 bg-gradient-to-br from-blue-500/[0.08] via-cyan-500/[0.04] to-transparent p-4 relative overflow-hidden">
+          <div className="absolute -top-12 -right-12 w-32 h-32 rounded-full bg-blue-500/15 blur-[40px] pointer-events-none" aria-hidden />
+          <div className="relative">
+            <p className="text-[10px] font-mono uppercase tracking-[0.22em] font-semibold text-blue-300 mb-1">azure · 1 click</p>
+            <h4 className="text-[14px] font-bold text-white mb-1">Deploy to Azure</h4>
+            <p className="text-[12px] text-zinc-400 leading-relaxed mb-3">
+              ARM template grants the platform service principal the built-in <strong className="text-zinc-200">Reader</strong> role on the subscription you pick.
+            </p>
+            <a
+              href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fvisionxixlabs.com%2Fazure%2Faxiom-agent-reader.json"
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-blue-600 hover:bg-blue-500 text-white text-[12px] font-semibold transition-colors"
+            >
+              Deploy to Azure →
+            </a>
+          </div>
+        </div>
+        <div className="rounded-xl border border-red-500/25 bg-gradient-to-br from-red-500/[0.08] via-amber-500/[0.04] to-transparent p-4 relative overflow-hidden">
+          <div className="absolute -top-12 -right-12 w-32 h-32 rounded-full bg-red-500/15 blur-[40px] pointer-events-none" aria-hidden />
+          <div className="relative">
+            <p className="text-[10px] font-mono uppercase tracking-[0.22em] font-semibold text-red-300 mb-1">gcp · 1 click</p>
+            <h4 className="text-[14px] font-bold text-white mb-1">Open in Cloud Shell</h4>
+            <p className="text-[12px] text-zinc-400 leading-relaxed mb-3">
+              Cloud Shell tutorial walks through creating a service account with <strong className="text-zinc-200">roles/iam.securityReviewer</strong>. Click the buttons in the tutorial pane — no commands to type.
+            </p>
+            <a
+              href="https://shell.cloud.google.com/?cloudshell_git_repo=https%3A%2F%2Fgithub.com%2Fsahme209%2Fvisionxixlabs&cloudshell_tutorial=docs%2Fgcp-cloud-shell-tutorial.md&cloudshell_workspace=."
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-red-600 hover:bg-red-500 text-white text-[12px] font-semibold transition-colors"
+            >
+              Open in Cloud Shell →
+            </a>
+          </div>
+        </div>
+      </div>
+
+      {/* Hint to the full catalog */}
+      <div className="text-[11px] text-zinc-500">
+        Need more than clouds? See the full <Link href="/integrations" className="text-violet-300 hover:text-violet-200 underline-offset-2 hover:underline">integrations catalog</Link> — GitHub, Slack, Linear, monitoring webhooks, VS Code extension.
+      </div>
+
       {/* Security card */}
       <div className="rounded-xl border border-emerald-500/15 bg-emerald-500/[0.03] p-5">
         <div className="flex items-start gap-3">
