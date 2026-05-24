@@ -55,10 +55,15 @@ async function handle(req: NextRequest): Promise<NextResponse> {
     return NextResponse.json({ ok: false, reason: "cron_unauthorized" }, { status: 401 });
   }
 
-  const orgs = await prisma.organization.findMany({
-    where: { /* every active org */ },
-    select: { id: true },
-  });
+  // There's no Organization model — orgs are derived. Same pattern as
+  // lib/billing/scanBillingAlerts.ts: groupBy on a tenant-scoped table.
+  // PipelineRun covers every workspace that's actively using the
+  // platform. Best-effort: if the query fails, the cron silently skips
+  // this tick rather than 500-ing.
+  const orgGroups = await prisma.pipelineRun.groupBy({
+    by: ["organizationId"],
+  }).catch(() => [] as Array<{ organizationId: string }>);
+  const orgs = orgGroups.map((g) => ({ id: g.organizationId }));
   const now = new Date();
   let scanned = 0;
   let transitionsTotal = 0;
