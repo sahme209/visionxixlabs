@@ -1,36 +1,37 @@
 "use client";
 
 /**
- * Azure one-click connect — calm, single-action ARM-template flow.
+ * Azure one-click connect — calm, self-service Cloud Shell flow.
  *
  * Phases:
- *   loading_template → ready → deploying (in portal.azure.com) →
- *                      enter_ids → validating → connected
- *                                            ↘ failed → restart
+ *   loading_url → ready → deploying (Cloud Shell open) →
+ *                 paste_json → validating → connected
+ *                                       ↘ failed → restart
  *
- * The customer clicks Deploy → Azure Portal opens with the ARM
- * template prefilled (no parameters to type) → they click Review +
- * create → role assignment lands → they bounce back here and the
- * deployment success page in Azure shows the Subscription + Tenant
- * IDs as outputs. They paste those two GUIDs once, we validate and
- * advance.
+ * No platform-side ENV is required. The customer clicks Open Cloud
+ * Shell → runs one az command that creates a Reader-role service
+ * principal in their own tenant → pastes the JSON output back here.
+ * We validate the shape and advance.
  */
 
 import { useEffect, useState } from "react";
 
 type Phase =
-  | "loading_template"
+  | "loading_url"
   | "ready"
   | "deploying"
-  | "enter_ids"
+  | "paste_json"
   | "validating"
   | "connected"
   | "failed";
 
+const AZ_COMMAND = `az ad sp create-for-rbac --name axiom-agent-reader --role Reader --scopes /subscriptions/$(az account show --query id -o tsv) --sdk-auth`;
+
 interface ValidationOk {
   ok: true;
-  subscriptionId: string;
   tenantId: string;
+  subscriptionId: string;
+  clientId: string;
 }
 interface ValidationErr {
   ok: false;
@@ -41,30 +42,24 @@ interface ValidationErr {
 export function AzureDeployConnect({
   onValidated,
 }: {
-  onValidated?: (info: { subscriptionId: string; tenantId: string }) => void;
+  onValidated?: (info: { tenantId: string; subscriptionId: string; clientId: string; credentialsJson: string }) => void;
 }) {
-  const [phase, setPhase] = useState<Phase>("loading_template");
-  const [deployUrl, setDeployUrl] = useState<string | null>(null);
-  const [subscriptionId, setSubscriptionId] = useState("");
-  const [tenantId, setTenantId] = useState("");
+  const [phase, setPhase] = useState<Phase>("loading_url");
+  const [shellUrl, setShellUrl] = useState<string | null>(null);
+  const [credsJson, setCredsJson] = useState("");
   const [result, setResult] = useState<ValidationOk | ValidationErr | null>(null);
+  const [copied, setCopied] = useState(false);
 
-  // Load the deploy URL once.
   useEffect(() => {
     let cancelled = false;
     fetch("/api/azure/quick-deploy-url")
       .then((r) => r.json())
-      .then((data: { available: boolean; url?: string; hint?: string; reason?: string }) => {
+      .then((data: { available: boolean; url?: string }) => {
         if (cancelled) return;
         if (data.available && data.url) {
-          setDeployUrl(data.url);
+          setShellUrl(data.url);
           setPhase("ready");
         } else {
-          setResult({
-            ok: false,
-            error: data.reason ?? "azure_unavailable",
-            hint: data.hint ?? "Azure connections aren't ready yet. Try again in a few minutes.",
-          });
           setPhase("failed");
         }
       })
@@ -78,20 +73,33 @@ export function AzureDeployConnect({
       const res = await fetch("/api/azure/validate-subscription", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ subscriptionId, tenantId }),
+        body: JSON.stringify({ credentialsJson: credsJson }),
       });
       const data = (await res.json()) as ValidationOk | ValidationErr;
       setResult(data);
       if (data.ok) {
         setPhase("connected");
-        if (onValidated) onValidated({ subscriptionId: data.subscriptionId, tenantId: data.tenantId });
+        if (onValidated) onValidated({
+          tenantId: data.tenantId,
+          subscriptionId: data.subscriptionId,
+          clientId: data.clientId,
+          credentialsJson: credsJson,
+        });
       } else {
-        setPhase("enter_ids");
+        setPhase("paste_json");
       }
     } catch (err) {
       setResult({ ok: false, error: "network_error", hint: err instanceof Error ? err.message : String(err) });
-      setPhase("enter_ids");
+      setPhase("paste_json");
     }
+  }
+
+  async function copyCommand() {
+    try {
+      await navigator.clipboard.writeText(AZ_COMMAND);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
+    } catch { /* clipboard blocked — customer can still hand-copy */ }
   }
 
   // ─── Connected ────────────────────────────────────────────────────
@@ -101,7 +109,7 @@ export function AzureDeployConnect({
         <KickerLine tone="emerald">azure · connected</KickerLine>
         <h3 className="text-xl font-semibold text-white tracking-tight mt-1.5">Azure is verified.</h3>
         <p className="text-[13px] text-zinc-300 leading-relaxed mt-2">
-          Subscription <code className="font-mono text-emerald-200">{result.subscriptionId}</code> is bound to the Reader role assignment you just created. We&apos;ll start the inventory in a moment.
+          Subscription <code className="font-mono text-emerald-200">{result.subscriptionId}</code> is bound to the read-only service principal you just created. We&apos;ll start the inventory in a moment.
         </p>
       </CalmCard>
     );
@@ -112,10 +120,10 @@ export function AzureDeployConnect({
     return (
       <CalmCard tone="indigo">
         <KickerLine tone="indigo">azure · finalizing</KickerLine>
-        <h3 className="text-xl font-semibold text-white tracking-tight mt-1.5">Confirming the deployment…</h3>
+        <h3 className="text-xl font-semibold text-white tracking-tight mt-1.5">Confirming the credentials…</h3>
         <div className="mt-4 flex items-center gap-2.5">
           <span className="w-4 h-4 rounded-full border-2 border-indigo-300/70 border-t-transparent animate-spin" />
-          <span className="text-[13px] text-zinc-300">Validating the subscription binding…</span>
+          <span className="text-[13px] text-zinc-300">Validating the service-principal JSON…</span>
         </div>
       </CalmCard>
     );
@@ -126,20 +134,13 @@ export function AzureDeployConnect({
     return (
       <CalmCard tone="amber">
         <KickerLine tone="amber">azure · needs another try</KickerLine>
-        <h3 className="text-xl font-semibold text-white tracking-tight mt-1.5">
-          {deployUrl ? "Azure didn't accept the deployment yet." : "Couldn't open the deploy link."}
-        </h3>
+        <h3 className="text-xl font-semibold text-white tracking-tight mt-1.5">Couldn&apos;t open Azure Cloud Shell.</h3>
         <p className="text-[13px] text-zinc-300 leading-relaxed mt-2">
-          {result?.ok === false && result.hint
-            ? result.hint
-            : "Azure may still be propagating the role assignment. Wait a moment and try again."}
+          Check your connection and try again.
         </p>
         <button
           type="button"
-          onClick={() => {
-            setResult(null);
-            setPhase(deployUrl ? "ready" : "loading_template");
-          }}
+          onClick={() => { setResult(null); setPhase(shellUrl ? "ready" : "loading_url"); }}
           className="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-full bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 text-zinc-100 text-[13px] font-medium transition-colors"
         >
           Try again
@@ -148,71 +149,54 @@ export function AzureDeployConnect({
     );
   }
 
-  // ─── Enter IDs (after they deployed in portal) ────────────────────
-  if (phase === "enter_ids") {
+  // ─── Paste JSON (after Cloud Shell) ──────────────────────────────
+  if (phase === "paste_json") {
     return (
       <div className="space-y-4">
         <CalmCard tone="indigo">
           <KickerLine tone="indigo">azure · finish connecting</KickerLine>
           <h3 className="text-xl font-semibold text-white tracking-tight mt-1.5">
-            Paste the IDs from the Azure success page.
+            Paste the JSON output from Cloud Shell.
           </h3>
           <p className="text-[13px] text-zinc-300 leading-relaxed mt-2 max-w-2xl">
-            After the deployment, Azure shows your <strong className="text-zinc-100">Subscription ID</strong> and <strong className="text-zinc-100">Tenant ID</strong> on the success screen. Paste them here and we&apos;ll finish the connection.
+            The az command prints a JSON block at the end. Copy the entire block (including the <code className="font-mono text-zinc-100">{"{"}</code> and <code className="font-mono text-zinc-100">{"}"}</code>) and paste it below.
           </p>
 
-          <div className="mt-5 space-y-3 max-w-lg">
-            <label className="block">
-              <span className="text-[11px] uppercase tracking-wider text-zinc-400 font-mono">Subscription ID</span>
-              <input
-                type="text"
-                value={subscriptionId}
-                onChange={(e) => setSubscriptionId(e.target.value)}
-                placeholder="00000000-0000-0000-0000-000000000000"
-                className="mt-1.5 w-full px-3 py-2 rounded-lg bg-zinc-900 border border-zinc-800 text-zinc-100 text-[13px] font-mono placeholder:text-zinc-600 focus:border-indigo-500/50 focus:outline-none transition-colors"
-                autoComplete="off"
-                spellCheck={false}
-              />
-            </label>
-            <label className="block">
-              <span className="text-[11px] uppercase tracking-wider text-zinc-400 font-mono">Tenant ID</span>
-              <input
-                type="text"
-                value={tenantId}
-                onChange={(e) => setTenantId(e.target.value)}
-                placeholder="00000000-0000-0000-0000-000000000000"
-                className="mt-1.5 w-full px-3 py-2 rounded-lg bg-zinc-900 border border-zinc-800 text-zinc-100 text-[13px] font-mono placeholder:text-zinc-600 focus:border-indigo-500/50 focus:outline-none transition-colors"
-                autoComplete="off"
-                spellCheck={false}
-              />
-            </label>
-          </div>
+          <textarea
+            value={credsJson}
+            onChange={(e) => setCredsJson(e.target.value)}
+            placeholder={'{\n  "clientId": "...",\n  "clientSecret": "...",\n  "subscriptionId": "...",\n  "tenantId": "..."\n}'}
+            rows={8}
+            className="mt-4 w-full px-3 py-2.5 rounded-lg bg-zinc-900 border border-zinc-800 text-zinc-100 text-[12.5px] font-mono placeholder:text-zinc-600 focus:border-indigo-500/50 focus:outline-none transition-colors resize-y"
+            spellCheck={false}
+            autoComplete="off"
+          />
 
-          <div className="mt-5 flex items-center gap-3">
+          <div className="mt-4 flex items-center gap-3">
             <button
               type="button"
               onClick={handleValidate}
-              disabled={!subscriptionId || !tenantId}
+              disabled={!credsJson.trim()}
               className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-indigo-600 hover:bg-indigo-500 disabled:bg-indigo-600/40 disabled:cursor-not-allowed text-white text-[14px] font-medium shadow-sm transition-colors"
             >
               Finish connection
               <span aria-hidden className="opacity-70">→</span>
             </button>
-            {deployUrl && (
+            {shellUrl && (
               <a
-                href={deployUrl}
+                href={shellUrl}
                 target="_blank"
                 rel="noreferrer"
                 className="text-[13px] text-zinc-400 hover:text-zinc-200 transition-colors"
               >
-                Re-open Azure deployment
+                Re-open Cloud Shell
               </a>
             )}
           </div>
 
           {result?.ok === false && (
             <div className="mt-4 rounded-xl border border-amber-500/25 bg-amber-500/[0.04] p-3 text-[12.5px] text-amber-100/90 leading-relaxed">
-              {result.hint ?? "Couldn't validate those IDs."}
+              {result.hint ?? "Couldn't validate that JSON."}
             </div>
           )}
         </CalmCard>
@@ -220,64 +204,81 @@ export function AzureDeployConnect({
     );
   }
 
-  // ─── Ready / loading_template / deploying ─────────────────────────
+  // ─── Ready / loading_url / deploying — primary connect screen ────
   return (
     <div className="space-y-4">
       <CalmCard tone="indigo">
         <KickerLine tone="indigo">azure · one click connect</KickerLine>
         <h3 className="text-xl font-semibold text-white tracking-tight mt-1.5">
-          Connect Azure through ARM Templates.
+          Connect Azure through Cloud Shell.
         </h3>
         <p className="text-[13px] text-zinc-300 leading-relaxed mt-2 max-w-2xl">
-          We&apos;ll open the Azure Portal with a Reader-role assignment pre-configured for your subscription. No JSON, no client secret to copy — just click Review + create in Azure, then paste two IDs back here.
+          We&apos;ll open Azure Cloud Shell in a new tab. Paste one <code className="font-mono text-zinc-100">az</code> command to create a Reader-role service principal in your own tenant — then paste the JSON output back here. No portal wizard, no client secret to email around.
         </p>
 
         <div className="mt-5">
-          {phase === "ready" && deployUrl ? (
+          {phase === "ready" && shellUrl ? (
             <a
-              href={deployUrl}
+              href={shellUrl}
               target="_blank"
               rel="noreferrer"
               onClick={() => setPhase("deploying")}
               className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-indigo-600 hover:bg-indigo-500 text-white text-[14px] font-medium shadow-sm transition-colors"
             >
-              Open Azure Portal
+              Open Azure Cloud Shell
               <span aria-hidden className="opacity-70">→</span>
             </a>
           ) : phase === "deploying" ? (
             <div className="space-y-3">
               <div className="inline-flex items-center gap-2.5 px-5 py-2.5 rounded-full bg-zinc-800/80 border border-zinc-700 text-zinc-200 text-[14px]">
                 <span className="w-3.5 h-3.5 rounded-full border-2 border-indigo-300/70 border-t-transparent animate-spin" />
-                Waiting for Azure Portal…
+                Waiting for Cloud Shell…
               </div>
               <button
                 type="button"
-                onClick={() => setPhase("enter_ids")}
+                onClick={() => setPhase("paste_json")}
                 className="block text-[13px] text-indigo-300 hover:text-indigo-200 transition-colors"
               >
-                I finished the deployment — enter my IDs →
+                I have the JSON — paste it now →
               </button>
             </div>
           ) : (
             <div className="inline-flex items-center gap-2.5 px-5 py-2.5 rounded-full bg-zinc-800/60 border border-zinc-800 text-zinc-400 text-[14px]">
               <span className="w-3.5 h-3.5 rounded-full border-2 border-zinc-500 border-t-transparent animate-spin" />
-              Preparing your connect link…
+              Preparing your Cloud Shell link…
             </div>
           )}
         </div>
       </CalmCard>
 
       <CalmCard tone="neutral">
+        <KickerLine tone="neutral">paste this in Cloud Shell</KickerLine>
+        <p className="text-[12.5px] text-zinc-400 leading-relaxed mt-2">
+          One command. It creates a service principal scoped to your active subscription, prints the JSON, and exits.
+        </p>
+        <div className="mt-3 rounded-xl border border-zinc-800 bg-zinc-950 p-3 font-mono text-[12px] text-zinc-200 leading-relaxed break-all">
+          {AZ_COMMAND}
+        </div>
+        <button
+          type="button"
+          onClick={copyCommand}
+          className="mt-3 inline-flex items-center gap-2 px-3.5 py-2 rounded-full bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 text-zinc-100 text-[12.5px] font-medium transition-colors"
+        >
+          {copied ? "Copied" : "Copy command"}
+        </button>
+      </CalmCard>
+
+      <CalmCard tone="neutral">
         <KickerLine tone="neutral">what happens next</KickerLine>
         <ol className="mt-3 space-y-3">
-          <TimelineStep n={1} title="Azure Portal opens">
-            The Reader role-assignment template is pre-filled. Pick your subscription, click <strong className="text-zinc-100">Review + create</strong>.
+          <TimelineStep n={1} title="Cloud Shell opens">
+            Azure Cloud Shell loads in a new tab. If it&apos;s your first time, accept the storage prompt.
           </TimelineStep>
-          <TimelineStep n={2} title="Azure provisions the role">
-            Takes about 30 seconds. The portal shows a success page with your subscription and tenant IDs as outputs.
+          <TimelineStep n={2} title="Paste + run the az command">
+            The command creates <code className="font-mono text-zinc-300">axiom-agent-reader</code> in your tenant with the built-in <strong className="text-zinc-100">Reader</strong> role on your active subscription, then prints a JSON block.
           </TimelineStep>
-          <TimelineStep n={3} title="Paste the two IDs back">
-            Copy <strong className="text-zinc-100">Subscription ID</strong> + <strong className="text-zinc-100">Tenant ID</strong> from the success screen into the fields here. You&apos;re connected.
+          <TimelineStep n={3} title="Paste the JSON back">
+            Copy the entire JSON (including braces) into the field that appears here. You&apos;re connected.
           </TimelineStep>
         </ol>
       </CalmCard>
@@ -296,7 +297,7 @@ export function AzureDeployConnect({
           <ScopeRow>Tags · resource tags across the subscription</ScopeRow>
         </div>
         <p className="text-[12px] text-zinc-500 leading-relaxed mt-4">
-          Revoke instantly: remove the role assignment from the subscription in Azure Portal → Access control (IAM).
+          Revoke instantly: <code className="font-mono">az ad sp delete --id axiom-agent-reader</code> in Cloud Shell.
         </p>
       </CalmCard>
     </div>
@@ -304,8 +305,7 @@ export function AzureDeployConnect({
 }
 
 /* ────────────────────────────────────────────────────────────────────
-   Local calm primitives — kept private to this file so it can ship
-   without coupling to AwsKeyConnect's internal helpers.
+   Local calm primitives.
    ──────────────────────────────────────────────────────────────────── */
 
 type Tone = "emerald" | "indigo" | "amber" | "neutral";

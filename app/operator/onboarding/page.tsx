@@ -970,7 +970,7 @@ export default function OnboardingPage() {
                   </div>
 
                   <AzureDeployConnect
-                    onValidated={async ({ subscriptionId, tenantId }) => {
+                    onValidated={async ({ subscriptionId, tenantId, clientId, credentialsJson }) => {
                       setVerifiedAccount(subscriptionId);
                       try {
                         const startRes = await fetch("/api/cloud-operator/start", {
@@ -992,6 +992,8 @@ export default function OnboardingPage() {
                             authMethod: "service-principal",
                             tenantId,
                             subscriptionId,
+                            clientId,
+                            credentialsJson,
                           }),
                         });
                         if (!linkRes.ok) {
