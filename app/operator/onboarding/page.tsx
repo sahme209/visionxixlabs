@@ -910,12 +910,6 @@ export default function OnboardingPage() {
               {/* AWS IAM Role Setup */}
               {connectionPhase === "setup" && selectedProvider === "aws" && (
                 <>
-                  <div className="mb-6">
-                    <h1 className="text-2xl sm:text-3xl font-semibold mb-1.5 tracking-[-0.03em]">
-                      Connect your <span className="text-gradient">AWS account</span>
-                    </h1>
-                    <p className="text-zinc-500 text-[13.5px] leading-relaxed">One click in AWS, one click back — no copy-paste.</p>
-                  </div>
 
                   <AwsKeyConnect
                     onValidated={async ({ accountId, roleArn, externalId: validatedExternalId }) => {
@@ -962,12 +956,6 @@ export default function OnboardingPage() {
               {/* Azure ARM Template Setup */}
               {connectionPhase === "setup" && selectedProvider === "azure" && (
                 <>
-                  <div className="mb-6">
-                    <h1 className="text-2xl sm:text-3xl font-semibold mb-1.5 tracking-[-0.03em]">
-                      Connect your <span className="text-gradient">Azure subscription</span>
-                    </h1>
-                    <p className="text-zinc-500 text-[13.5px] leading-relaxed">One click in Azure Portal, two IDs pasted back — no client secret.</p>
-                  </div>
 
                   <AzureDeployConnect
                     onValidated={async ({ subscriptionId, tenantId, clientId, credentialsJson }) => {
@@ -1014,12 +1002,6 @@ export default function OnboardingPage() {
               {/* GCP Cloud Shell Setup */}
               {connectionPhase === "setup" && selectedProvider === "gcp" && (
                 <>
-                  <div className="mb-6">
-                    <h1 className="text-2xl sm:text-3xl font-semibold mb-1.5 tracking-[-0.03em]">
-                      Connect your <span className="text-gradient">GCP project</span>
-                    </h1>
-                    <p className="text-zinc-500 text-[13.5px] leading-relaxed">Cloud Shell does the gcloud commands — you just paste the JSON key back.</p>
-                  </div>
 
                   <GcpDeployConnect
                     onValidated={async ({ projectId, serviceAccountJson, clientEmail }) => {

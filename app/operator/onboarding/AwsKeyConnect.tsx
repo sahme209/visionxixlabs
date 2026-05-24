@@ -168,31 +168,35 @@ export function AwsKeyConnect({
   // ─── Connected ──────────────────────────────────────────────────────
   if (phase === "connected" && result?.ok) {
     return (
-      <CalmCard tone="emerald">
-        <KickerLine tone="emerald">aws · connected</KickerLine>
-        <h3 className="text-xl font-semibold text-white tracking-tight mt-1.5">AWS is verified.</h3>
-        <p className="text-[13px] text-zinc-300 leading-relaxed mt-2">
-          Account <code className="font-mono text-emerald-200">{result.accountId ?? "—"}</code>
-          {" "}is connected through the read-only role you just created. We&apos;ll start the inventory in a moment.
+      <div className="rounded-[28px] border border-emerald-500/15 bg-[#0a0a0c]/70 px-8 sm:px-12 py-12">
+        <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-emerald-400/80">aws · connected</p>
+        <h2 className="mt-3 text-[24px] sm:text-[28px] leading-[1.15] font-medium text-white tracking-[-0.02em]">
+          AWS is verified.
+        </h2>
+        <p className="mt-3 text-[14px] text-zinc-400 leading-relaxed max-w-xl">
+          Account <code className="font-mono text-emerald-200/90">{result.accountId ?? "—"}</code>
+          {" "}is connected through the read-only role you just created. Starting the inventory.
         </p>
-      </CalmCard>
+      </div>
     );
   }
 
   // ─── Validating (bounce-back from AWS) ──────────────────────────────
   if (phase === "validating") {
     return (
-      <CalmCard tone="indigo">
-        <KickerLine tone="indigo">aws · finalizing</KickerLine>
-        <h3 className="text-xl font-semibold text-white tracking-tight mt-1.5">Confirming the role…</h3>
-        <p className="text-[13px] text-zinc-400 leading-relaxed mt-2">
-          AWS just bounced you back. We&apos;re verifying the role can be assumed and that the trust policy is correct. Usually takes a few seconds.
+      <div className="rounded-[28px] border border-white/[0.06] bg-[#0a0a0c]/70 px-8 sm:px-12 py-12">
+        <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-zinc-500">aws · finalizing</p>
+        <h2 className="mt-3 text-[24px] sm:text-[28px] leading-[1.15] font-medium text-white tracking-[-0.02em]">
+          Confirming the role.
+        </h2>
+        <p className="mt-3 text-[14px] text-zinc-400 leading-relaxed max-w-xl">
+          Verifying the role can be assumed and that the trust policy is correct. A few seconds.
         </p>
-        <div className="mt-4 flex items-center gap-2.5">
-          <span className="w-4 h-4 rounded-full border-2 border-indigo-300/70 border-t-transparent animate-spin" />
-          <span className="text-[13px] text-zinc-300">Calling sts:AssumeRole…</span>
+        <div className="mt-6 flex items-center gap-2.5">
+          <span className="w-4 h-4 rounded-full border-2 border-zinc-400 border-t-transparent animate-spin" />
+          <span className="text-[13px] text-zinc-400">Calling sts:AssumeRole</span>
         </div>
-      </CalmCard>
+      </div>
     );
   }
 
@@ -295,128 +299,122 @@ export function AwsKeyConnect({
     }
 
     return (
-      <CalmCard tone="amber">
-        <KickerLine tone="amber">aws · needs another try</KickerLine>
-        <h3 className="text-xl font-semibold text-white tracking-tight mt-1.5">
+      <div className="rounded-[28px] border border-white/[0.06] bg-[#0a0a0c]/70 px-8 sm:px-12 py-12">
+        <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-zinc-500">aws · couldn&apos;t finish</p>
+        <h2 className="mt-3 text-[24px] sm:text-[28px] leading-[1.15] font-medium text-white tracking-[-0.02em]">
           {isCfnLoadFail ? "Couldn't load the template." : "AWS didn't accept the role yet."}
-        </h3>
-        <p className="text-[13px] text-zinc-300 leading-relaxed mt-2">
+        </h2>
+        <p className="mt-3 text-[14px] text-zinc-400 leading-relaxed max-w-xl">
           {result?.ok === false && result.hint
             ? result.hint
-            : "This usually means the CloudFormation stack is still creating. Wait 30 seconds and try the connect button again."}
+            : "This usually means the CloudFormation stack is still creating. Wait a moment and try again."}
         </p>
         <button
           type="button"
           onClick={retryLoad}
-          className="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-full bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 text-zinc-100 text-[13px] font-medium transition-colors"
+          className="mt-7 inline-flex items-center gap-2.5 px-6 py-3 rounded-full bg-white text-zinc-950 text-[14px] font-medium hover:bg-zinc-100 transition-colors"
         >
           Try again
+          <span aria-hidden className="opacity-60">→</span>
         </button>
-      </CalmCard>
+      </div>
     );
   }
 
-  // ─── Ready / loading_template / deploying — primary connect screen ──
+  // ─── Ready / loading_template / deploying — calm hero screen ─────────
+  const ctaState: "ready" | "deploying" | "loading" =
+    phase === "ready" && cfnUrl ? "ready"
+    : phase === "deploying"     ? "deploying"
+    : "loading";
+
   return (
-    <div className="space-y-4">
-      <CalmCard tone="indigo">
-        <KickerLine tone="indigo">aws · one click connect</KickerLine>
-        <h3 className="text-xl font-semibold text-white tracking-tight mt-1.5">
-          Connect AWS through CloudFormation.
-        </h3>
-        <p className="text-[13px] text-zinc-300 leading-relaxed mt-2 max-w-2xl">
-          We&apos;ll open the AWS Console with a read-only role pre-configured for your session. No JSON, no Role ARN, no access keys — just two clicks in AWS, then you&apos;re back here.
+    <div className="relative">
+      {/* Soft ambient glow — quiet huly.io style */}
+      <div aria-hidden className="pointer-events-none absolute inset-0 -z-10 overflow-hidden rounded-[28px]">
+        <div className="absolute -top-32 left-1/2 -translate-x-1/2 w-[680px] h-[420px] rounded-full bg-indigo-500/[0.08] blur-[120px]" />
+        <div className="absolute bottom-0 left-1/3 w-[420px] h-[260px] rounded-full bg-violet-500/[0.05] blur-[100px]" />
+      </div>
+
+      <div className="rounded-[28px] border border-white/[0.06] bg-[#0a0a0c]/70 backdrop-blur-sm px-8 sm:px-12 py-12 sm:py-16">
+        <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-zinc-500">aws · cloud connection</p>
+        <h2 className="mt-3 text-[28px] sm:text-[32px] leading-[1.1] font-medium text-white tracking-[-0.02em]">
+          One click in AWS Console, one click back.
+        </h2>
+        <p className="mt-3 text-[14.5px] text-zinc-400 leading-relaxed max-w-xl">
+          We open AWS with a read-only role pre-configured for this session. No JSON, no ARN paste, no access keys — Axiom assumes the role only when it&apos;s scanning, for one hour at a time.
         </p>
 
-        <div className="mt-5">
-          {phase === "ready" && cfnUrl ? (
+        <div className="mt-9">
+          {ctaState === "ready" && cfnUrl ? (
             <a
               href={cfnUrl}
               target="_blank"
               rel="noreferrer"
               onClick={() => setPhase("deploying")}
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-indigo-600 hover:bg-indigo-500 text-white text-[14px] font-medium shadow-sm transition-colors"
+              className="inline-flex items-center gap-2.5 px-7 py-3.5 rounded-full bg-white text-zinc-950 text-[14.5px] font-medium hover:bg-zinc-100 transition-colors shadow-[0_0_30px_-10px_rgba(255,255,255,0.4)]"
             >
               Open AWS Console
-              <span aria-hidden className="opacity-70">→</span>
+              <span aria-hidden className="opacity-60">→</span>
             </a>
-          ) : phase === "deploying" ? (
-            <div className="space-y-3">
-              <div className="inline-flex items-center gap-2.5 px-5 py-2.5 rounded-full bg-zinc-800/80 border border-zinc-700 text-zinc-200 text-[14px]">
-                <span className="w-3.5 h-3.5 rounded-full border-2 border-indigo-300/70 border-t-transparent animate-spin" />
+          ) : ctaState === "deploying" ? (
+            <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
+              <span className="inline-flex items-center gap-2.5 text-[14px] text-zinc-300">
+                <span className="w-3.5 h-3.5 rounded-full border-2 border-zinc-400 border-t-transparent animate-spin" />
                 Waiting for AWS Console…
-              </div>
-              <div className="flex items-center gap-4">
-                {cfnUrl && (
-                  <a
-                    href={cfnUrl}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="text-[13px] text-indigo-300 hover:text-indigo-200 transition-colors"
-                  >
-                    Re-open AWS Console
-                  </a>
-                )}
-                <button
-                  type="button"
-                  onClick={() => {
-                    // Drop the session-cached externalId so a fresh one
-                    // is minted on the next page load — fresh externalId
-                    // → fresh stack name → no collision with the old
-                    // ROLLBACK_COMPLETE stack still sitting in the
-                    // customer's account.
-                    if (typeof window !== "undefined") {
-                      try { window.sessionStorage.removeItem(SS_EXTERNAL_ID); } catch { /* no-op */ }
-                    }
-                    window.location.reload();
-                  }}
-                  className="text-[13px] text-zinc-400 hover:text-zinc-200 transition-colors"
+              </span>
+              {cfnUrl && (
+                <a
+                  href={cfnUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-[13px] text-zinc-400 hover:text-white transition-colors"
                 >
-                  Stack failed? Start a fresh attempt →
-                </button>
-              </div>
+                  Re-open
+                </a>
+              )}
+              <button
+                type="button"
+                onClick={() => {
+                  if (typeof window !== "undefined") {
+                    try { window.sessionStorage.removeItem(SS_EXTERNAL_ID); } catch { /* no-op */ }
+                  }
+                  window.location.reload();
+                }}
+                className="text-[13px] text-zinc-400 hover:text-white transition-colors"
+              >
+                Start a fresh attempt
+              </button>
             </div>
           ) : (
-            <div className="inline-flex items-center gap-2.5 px-5 py-2.5 rounded-full bg-zinc-800/60 border border-zinc-800 text-zinc-400 text-[14px]">
-              <span className="w-3.5 h-3.5 rounded-full border-2 border-zinc-500 border-t-transparent animate-spin" />
+            <span className="inline-flex items-center gap-2.5 text-[14px] text-zinc-500">
+              <span className="w-3.5 h-3.5 rounded-full border-2 border-zinc-600 border-t-transparent animate-spin" />
               Preparing your connect link…
-            </div>
+            </span>
           )}
         </div>
-      </CalmCard>
 
-      <CalmCard tone="neutral">
-        <KickerLine tone="neutral">what happens next</KickerLine>
-        <ol className="mt-3 space-y-3">
-          <TimelineStep n={1} title="AWS Console opens">
-            The template is pre-filled. Review the role, click <strong className="text-zinc-100">Create stack</strong>.
-          </TimelineStep>
-          <TimelineStep n={2} title="AWS provisions the role">
-            Takes about 30 seconds. The stack&apos;s status moves to <code className="font-mono text-zinc-300">CREATE_COMPLETE</code>.
-          </TimelineStep>
-          <TimelineStep n={3} title="Click Finish setup">
-            In the stack&apos;s <strong className="text-zinc-100">Outputs</strong> tab, click <strong className="text-zinc-100">FinishUrl</strong>. You bounce back here, verified.
-          </TimelineStep>
-        </ol>
-      </CalmCard>
-
-      <CalmCard tone="neutral">
-        <KickerLine tone="neutral">what we can see</KickerLine>
-        <p className="text-[13px] text-zinc-400 leading-relaxed mt-2">
-          The role grants read-only access to inventory and configuration — never to your data, never to write actions.
-        </p>
-        <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-x-5 gap-y-1.5">
-          <ScopeRow>Compute · EC2, autoscaling, load balancers</ScopeRow>
-          <ScopeRow>Storage · S3 buckets, configuration, policies</ScopeRow>
-          <ScopeRow>Databases · RDS metadata and tags</ScopeRow>
-          <ScopeRow>Identity · IAM users, roles, key freshness</ScopeRow>
-          <ScopeRow>Metrics · CloudWatch usage signals</ScopeRow>
-          <ScopeRow>Cost · Cost Explorer summary</ScopeRow>
+        {/* Sparse trust line. Three plain facts, no badges, no chips. */}
+        <div className="mt-12 pt-8 border-t border-white/[0.05] grid grid-cols-1 sm:grid-cols-3 gap-y-5 gap-x-10">
+          <TrustFact label="Read-only">
+            Inventory + posture only. Never your data, never write actions.
+          </TrustFact>
+          <TrustFact label="One-hour sessions">
+            STS credentials expire automatically. Refreshed only when scanning.
+          </TrustFact>
+          <TrustFact label="Revoke any time">
+            Delete the CloudFormation stack in AWS — access ends instantly.
+          </TrustFact>
         </div>
-        <p className="text-[12px] text-zinc-500 leading-relaxed mt-4">
-          Sessions are short-lived — one hour, refreshed only when we scan. Delete the CloudFormation stack to revoke instantly.
-        </p>
-      </CalmCard>
+      </div>
+    </div>
+  );
+}
+
+function TrustFact({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <div>
+      <p className="text-[10px] font-mono uppercase tracking-[0.22em] text-zinc-500">{label}</p>
+      <p className="mt-2 text-[13px] text-zinc-400 leading-relaxed">{children}</p>
     </div>
   );
 }
@@ -545,32 +543,36 @@ function PermissionsFixCard({
   const [showAdvanced, setShowAdvanced] = useState(false);
 
   return (
-    <div className="space-y-4">
-      {/* Lead with the human-readable summary + the single most useful action. */}
-      <CalmCard tone="amber">
-        <KickerLine tone="amber">aws · couldn&apos;t finish the connection</KickerLine>
-        <h3 className="text-xl font-semibold text-white tracking-tight mt-1.5">
+    <div className="relative">
+      <div aria-hidden className="pointer-events-none absolute inset-0 -z-10 overflow-hidden rounded-[28px]">
+        <div className="absolute -top-32 left-1/2 -translate-x-1/2 w-[680px] h-[420px] rounded-full bg-indigo-500/[0.06] blur-[120px]" />
+      </div>
+
+      {/* Lead — calm hero. Single primary action. No JSON in sight. */}
+      <div className="rounded-[28px] border border-white/[0.06] bg-[#0a0a0c]/70 backdrop-blur-sm px-8 sm:px-12 py-12 sm:py-14">
+        <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-zinc-500">aws · couldn&apos;t finish the connection</p>
+        <h2 className="mt-3 text-[26px] sm:text-[30px] leading-[1.15] font-medium text-white tracking-[-0.02em]">
           {headline}
-        </h3>
-        <p className="text-[13px] text-zinc-300 leading-relaxed mt-2 max-w-2xl">
-          Most often this means the previous CloudFormation stack was deleted or never finished. Start a fresh deployment and we&apos;ll generate a brand-new stack with unique names — usually the fastest way past this.
+        </h2>
+        <p className="mt-3 text-[14.5px] text-zinc-400 leading-relaxed max-w-xl">
+          Most often this means the previous CloudFormation stack was deleted or never finished. Start a fresh deployment and we&apos;ll generate a brand-new stack with unique names.
         </p>
 
-        <div className="mt-5 flex flex-wrap items-center gap-3">
+        <div className="mt-9 flex flex-wrap items-center gap-x-5 gap-y-3">
           {onFreshDeploy && (
             <button
               type="button"
               onClick={onFreshDeploy}
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-indigo-600 hover:bg-indigo-500 text-white text-[14px] font-medium shadow-sm transition-colors"
+              className="inline-flex items-center gap-2.5 px-7 py-3.5 rounded-full bg-white text-zinc-950 text-[14.5px] font-medium hover:bg-zinc-100 transition-colors shadow-[0_0_30px_-10px_rgba(255,255,255,0.4)]"
             >
               Start a fresh deployment
-              <span aria-hidden className="opacity-70">→</span>
+              <span aria-hidden className="opacity-60">→</span>
             </button>
           )}
           <button
             type="button"
             onClick={onRetry}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 text-zinc-100 text-[13px] font-medium transition-colors"
+            className="text-[14px] text-zinc-400 hover:text-white transition-colors"
           >
             Try again
           </button>
@@ -579,17 +581,17 @@ function PermissionsFixCard({
             {autoChecking ? "Checking AWS now…" : "Auto-checking every few seconds"}
           </span>
         </div>
-      </CalmCard>
 
-      {/* Advanced — the underlying IAM-policy fix, hidden by default. */}
-      <button
-        type="button"
-        onClick={() => setShowAdvanced((s) => !s)}
-        className="inline-flex items-center gap-2 text-[12.5px] text-zinc-400 hover:text-zinc-200 transition-colors"
-      >
-        <span aria-hidden>{showAdvanced ? "▾" : "▸"}</span>
-        {showAdvanced ? "Hide advanced setup" : "Advanced: one-time IAM permission fix"}
-      </button>
+        {/* Subtle "Advanced" toggle — sits inside the same hero so it doesn't feel like a separate section */}
+        <button
+          type="button"
+          onClick={() => setShowAdvanced((s) => !s)}
+          className="mt-10 inline-flex items-center gap-2 text-[12px] text-zinc-500 hover:text-zinc-300 transition-colors"
+        >
+          <span aria-hidden>{showAdvanced ? "−" : "+"}</span>
+          {showAdvanced ? "Hide one-time IAM setup" : "One-time IAM setup for the platform owner"}
+        </button>
+      </div>
 
       {showAdvanced && (
       <>
