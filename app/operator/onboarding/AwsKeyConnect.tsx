@@ -289,7 +289,7 @@ export function AwsKeyConnect({
             : "AWS Console only accepts CloudFormation templates from an S3 URL, so the platform publishes the template to its own bucket and assumes the read-only role each customer provisions. Attaching this combined policy once unblocks every future customer."}
           iamConsoleUrl={iamConsoleUrl}
           onRetry={isAssumeRoleFix ? retryValidate : retryLoad}
-          onFreshDeploy={isAssumeRoleFix ? startFreshDeploy : undefined}
+          onFreshDeploy={startFreshDeploy}
         />
       );
     }
@@ -542,13 +542,59 @@ function PermissionsFixCard({
     return () => window.clearInterval(handle);
   }, [onRetry]);
 
+  const [showAdvanced, setShowAdvanced] = useState(false);
+
   return (
     <div className="space-y-4">
+      {/* Lead with the human-readable summary + the single most useful action. */}
       <CalmCard tone="amber">
-        <KickerLine tone="amber">aws · one-time setup</KickerLine>
+        <KickerLine tone="amber">aws · couldn&apos;t finish the connection</KickerLine>
         <h3 className="text-xl font-semibold text-white tracking-tight mt-1.5">
           {headline}
         </h3>
+        <p className="text-[13px] text-zinc-300 leading-relaxed mt-2 max-w-2xl">
+          Most often this means the previous CloudFormation stack was deleted or never finished. Start a fresh deployment and we&apos;ll generate a brand-new stack with unique names — usually the fastest way past this.
+        </p>
+
+        <div className="mt-5 flex flex-wrap items-center gap-3">
+          {onFreshDeploy && (
+            <button
+              type="button"
+              onClick={onFreshDeploy}
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-indigo-600 hover:bg-indigo-500 text-white text-[14px] font-medium shadow-sm transition-colors"
+            >
+              Start a fresh deployment
+              <span aria-hidden className="opacity-70">→</span>
+            </button>
+          )}
+          <button
+            type="button"
+            onClick={onRetry}
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 text-zinc-100 text-[13px] font-medium transition-colors"
+          >
+            Try again
+          </button>
+          <span className="inline-flex items-center gap-1.5 text-[12px] text-zinc-500">
+            <span className={`w-1.5 h-1.5 rounded-full ${autoChecking ? "bg-emerald-400 animate-pulse" : "bg-zinc-600"}`} />
+            {autoChecking ? "Checking AWS now…" : "Auto-checking every few seconds"}
+          </span>
+        </div>
+      </CalmCard>
+
+      {/* Advanced — the underlying IAM-policy fix, hidden by default. */}
+      <button
+        type="button"
+        onClick={() => setShowAdvanced((s) => !s)}
+        className="inline-flex items-center gap-2 text-[12.5px] text-zinc-400 hover:text-zinc-200 transition-colors"
+      >
+        <span aria-hidden>{showAdvanced ? "▾" : "▸"}</span>
+        {showAdvanced ? "Hide advanced setup" : "Advanced: one-time IAM permission fix"}
+      </button>
+
+      {showAdvanced && (
+      <>
+      <CalmCard tone="neutral">
+        <KickerLine tone="neutral">what&apos;s missing</KickerLine>
         <p className="text-[13px] text-zinc-300 leading-relaxed mt-2 max-w-2xl">
           {subline}{brokerArn ? <> The broker user is <code className="font-mono text-zinc-100 break-all">{brokerArn}</code>.</> : null}
         </p>
@@ -607,6 +653,8 @@ function PermissionsFixCard({
           </span>
         </div>
       </CalmCard>
+      </>
+      )}
     </div>
   );
 }
