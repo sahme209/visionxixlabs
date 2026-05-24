@@ -192,11 +192,15 @@ export async function ensureTemplatePublished(opts: { forceRefresh?: boolean } =
   }
 
   // 6. Sign a GET URL the customer's browser (and AWS Console) can use.
+  // Cast is needed because @aws-sdk/s3-request-presigner ships its own
+  // copy of @smithy/types whose Client interface differs structurally
+  // from the one client-s3 was compiled against. Runtime contract is
+  // identical — the cast is purely a TS structural-typing escape.
   let url: string;
   try {
     url = await getSignedUrl(
-      s3,
-      new GetObjectCommand({ Bucket: bucket, Key: OBJECT_KEY }),
+      s3 as Parameters<typeof getSignedUrl>[0],
+      new GetObjectCommand({ Bucket: bucket, Key: OBJECT_KEY }) as Parameters<typeof getSignedUrl>[1],
       { expiresIn: URL_TTL_SECONDS },
     );
   } catch (err) {
