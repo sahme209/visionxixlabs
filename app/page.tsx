@@ -158,10 +158,12 @@ export default function Home() {
           }}
         />
 
-        {/* Calm ambient glow — single soft pool behind the hero. No animated beams. */}
+        {/* Calm ambient atmosphere — two soft pools that slowly drift,
+            giving the hero a 'living dark' feel without a parade of
+            animated beams. */}
         <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
-          <div className="absolute top-[-180px] left-1/2 -translate-x-1/2 w-[900px] h-[520px] rounded-full bg-violet-500/[0.07] blur-[140px]" />
-          <div className="absolute top-[120px] right-[5%] w-[420px] h-[320px] rounded-full bg-fuchsia-500/[0.04] blur-[120px]" />
+          <div className="ambient-drift absolute top-[-180px] left-1/2 -translate-x-1/2 w-[900px] h-[520px] rounded-full bg-violet-500/[0.06] blur-[140px]" />
+          <div className="ambient-drift absolute top-[120px] right-[5%] w-[420px] h-[320px] rounded-full bg-fuchsia-500/[0.035] blur-[120px]" style={{ animationDelay: "-12s" }} />
         </div>
 
         <div className="max-w-6xl mx-auto relative">
