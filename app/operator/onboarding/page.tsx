@@ -484,61 +484,50 @@ function AWSSetupInstructions({ externalId }: { externalId: string }) {
 
   return (
     <div className="space-y-5">
-      {/* ★ ONE-CLICK SETUP — only when the platform operator has hosted
-          the CloudFormation YAML on S3 (AWS_CFN_TEMPLATE_S3_URL). AWS
-          console rejects arbitrary HTTPS template URLs, so when the
-          env var is unset we hide this card and the manual flow below
-          becomes the primary surface. */}
-      {oneClick?.available && (
-      <div className="rounded-2xl border border-violet-500/30 bg-gradient-to-br from-violet-500/[0.12] via-fuchsia-500/[0.08] to-amber-500/[0.04] p-5 relative overflow-hidden">
-        <div className="absolute -top-16 -right-16 w-48 h-48 rounded-full bg-violet-500/20 blur-[60px] pointer-events-none" aria-hidden />
-        <div className="absolute -bottom-16 -left-16 w-48 h-48 rounded-full bg-fuchsia-500/15 blur-[60px] pointer-events-none" aria-hidden />
-        <div className="relative">
-          <div className="flex items-center gap-2 mb-2">
-            <span className="text-[10px] font-mono uppercase tracking-[0.22em] font-semibold text-violet-300">
-              ★ recommended · one click
-            </span>
-          </div>
-          <h3 className="text-lg font-bold text-white tracking-tight mb-1">
-            Connect AWS in one click with CloudFormation.
-          </h3>
-          <p className="text-[13px] text-zinc-300 leading-relaxed max-w-2xl mb-4">
-            We&apos;ve pre-filled a CloudFormation template with the correct trust policy + read-only permissions +
-            your session&apos;s external id. Click below, click <strong className="text-zinc-100">Create stack</strong>{" "}
-            in AWS, then copy the resulting <strong className="text-zinc-100">RoleArn</strong> back here.
-            No JSON to copy, no wizard to navigate.
-          </p>
-          <a
-            href={oneClick.url}
-            target="_blank"
-            rel="noreferrer"
-            className="inline-flex items-center gap-2 px-5 py-3 rounded-full bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500 text-white text-[13px] font-semibold shadow-glow-violet transition-all"
-          >
-            🚀 Open AWS CloudFormation (1 click) →
-          </a>
-          <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 mt-4 text-[11px] text-zinc-400">
-            <span className="flex items-center gap-1"><span className="w-1 h-1 rounded-full bg-emerald-400" /> Trust policy pre-filled</span>
-            <span className="flex items-center gap-1"><span className="w-1 h-1 rounded-full bg-emerald-400" /> External ID pre-filled</span>
-            <span className="flex items-center gap-1"><span className="w-1 h-1 rounded-full bg-emerald-400" /> Read-only permissions</span>
-            <span className="flex items-center gap-1"><span className="w-1 h-1 rounded-full bg-emerald-400" /> Revoke = delete stack</span>
+      {/* 3-up cloud one-click grid — AWS · Azure · GCP, always visible,
+          consistent visual language. The AWS card has 3 button states
+          (loading / live S3-hosted CFN / fallback to IAM console) so
+          the card itself is NEVER hidden regardless of platform-side
+          config. Customer always sees all three options. */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+        {/* AWS — always visible. */}
+        <div className="rounded-xl border border-amber-500/25 bg-gradient-to-br from-amber-500/[0.08] via-orange-500/[0.04] to-transparent p-4 relative overflow-hidden">
+          <div className="absolute -top-12 -right-12 w-32 h-32 rounded-full bg-amber-500/15 blur-[40px] pointer-events-none" aria-hidden />
+          <div className="relative">
+            <p className="text-[10px] font-mono uppercase tracking-[0.22em] font-semibold text-amber-300 mb-1">aws · 1 click</p>
+            <h4 className="text-[14px] font-bold text-white mb-1">Deploy with CloudFormation</h4>
+            <p className="text-[12px] text-zinc-400 leading-relaxed mb-3">
+              Pre-filled CloudFormation template provisions a read-only IAM role with the correct trust policy + external id.
+            </p>
+            {oneClick === null ? (
+              <span className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-amber-600/30 text-amber-100/80 text-[12px] font-semibold cursor-wait">
+                <span className="w-3 h-3 rounded-full border-2 border-amber-200 border-t-transparent animate-spin" />
+                Preparing 1-click link…
+              </span>
+            ) : oneClick.available ? (
+              <a
+                href={oneClick.url}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-amber-600 hover:bg-amber-500 text-white text-[12px] font-semibold transition-colors"
+              >
+                Open in CloudFormation →
+              </a>
+            ) : (
+              <a
+                href="https://console.aws.amazon.com/iam/home#/roles$new?step=type"
+                target="_blank"
+                rel="noreferrer"
+                title="1-click setup unavailable on this deployment. Opening AWS IAM Console — use the manual flow below."
+                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-amber-700/60 hover:bg-amber-600/80 text-white text-[12px] font-semibold transition-colors"
+              >
+                Open AWS Console →
+              </a>
+            )}
           </div>
         </div>
-      </div>
-      )}
 
-      {/* Spinner while the platform auto-publishes the CloudFormation
-          template to S3 on the first request (typically ~2s). The 1-click
-          button renders as soon as the publish completes. */}
-      {oneClick === null && (
-        <div className="rounded-xl border border-violet-500/20 bg-violet-500/[0.04] p-3 text-[12px] text-violet-100/90 leading-relaxed flex items-center gap-2">
-          <span className="w-3 h-3 rounded-full border-2 border-violet-300 border-t-transparent animate-spin" />
-          Preparing the 1-click CloudFormation link…
-        </div>
-      )}
-
-      {/* Azure + GCP siblings — Phase 412. Same visual language so the
-          customer knows every cloud is just one button. */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+        {/* Azure — always available; ARM templates are public. */}
         <div className="rounded-xl border border-blue-500/25 bg-gradient-to-br from-blue-500/[0.08] via-cyan-500/[0.04] to-transparent p-4 relative overflow-hidden">
           <div className="absolute -top-12 -right-12 w-32 h-32 rounded-full bg-blue-500/15 blur-[40px] pointer-events-none" aria-hidden />
           <div className="relative">
