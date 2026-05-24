@@ -107,11 +107,28 @@ export async function POST(req: NextRequest) {
     });
   } catch (err) {
     const name = err && typeof err === "object" && "name" in err ? String((err as { name?: string }).name) : "Unknown";
+    const msg  = err instanceof Error ? err.message : String(err);
     await logAudit({
       action: "aws.validation_failed",
       actor: "system",
-      metadata: { errorName: name, roleArn, externalId },
+      metadata: { errorName: name, message: msg.slice(0, 200), roleArn, externalId },
     });
+
+    // Distinguish "broker IAM user lacks sts:AssumeRole" from "trust
+    // policy / externalId mismatch / stack still creating". The first
+    // is a one-time operator fix; the others are customer-side timing.
+    const isBrokerAssumeRoleDenied =
+      /is not authorized to perform:?\s*sts:AssumeRole/i.test(msg);
+    if (isBrokerAssumeRoleDenied) {
+      const arnMatch = msg.match(/arn:aws:iam::\d{12}:(user|role)\/[A-Za-z0-9_+=,.@\-/]+/);
+      return NextResponse.json({
+        ok: false,
+        error: "broker_assume_role_perms_missing",
+        hint: msg.slice(0, 300),
+        brokerArn: arnMatch?.[0],
+      }, { status: 403 });
+    }
+
     if (name === "AccessDenied" || name === "AuthFailure") {
       return NextResponse.json({
         ok: false,
@@ -122,7 +139,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({
       ok: false,
       error: "validation_failed",
-      hint: err instanceof Error ? err.message.slice(0, 200) : "Unknown error",
+      hint: msg.slice(0, 200),
     }, { status: 400 });
   }
 }

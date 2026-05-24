@@ -67,6 +67,22 @@ const BROKER_S3_POLICY = JSON.stringify({
   ],
 }, null, 2);
 
+// IAM policy the broker user needs to actually assume the IAM role
+// the customer just provisioned via CloudFormation. STS rejects
+// AssumeRole if this isn't on the broker user's identity policy —
+// independent of how permissive the target role's trust policy is.
+const BROKER_ASSUME_ROLE_POLICY = JSON.stringify({
+  Version: "2012-10-17",
+  Statement: [
+    {
+      Sid: "AssumeRoleIntoCustomerAccounts",
+      Effect: "Allow",
+      Action: "sts:AssumeRole",
+      Resource: "*",
+    },
+  ],
+}, null, 2);
+
 export function AwsKeyConnect({
   onValidated,
   externalId: externalIdProp,
@@ -193,8 +209,9 @@ export function AwsKeyConnect({
 
   // ─── Failed — calm restart path ─────────────────────────────────────
   if (phase === "failed") {
-    const isCfnLoadFail = !cfnUrl;
-    const isBrokerPermFix = result?.ok === false && result.error === "broker_s3_perms_missing";
+    const isCfnLoadFail   = !cfnUrl;
+    const isS3PermFix     = result?.ok === false && result.error === "broker_s3_perms_missing";
+    const isAssumeRoleFix = result?.ok === false && result.error === "broker_assume_role_perms_missing";
 
     const retryLoad = () => {
       setResult(null);
@@ -221,12 +238,38 @@ export function AwsKeyConnect({
       }
     };
 
-    // Special case: the platform's broker IAM user is missing the S3
-    // permissions needed to host the CloudFormation template. This is
-    // a one-time fix the platform owner does — paste the policy below
-    // into the broker user, then every future customer connection
-    // works without any setup at all.
-    if (isBrokerPermFix && result?.ok === false) {
+    const retryValidate = () => {
+      if (!urlRoleArn || !urlExternalId) { retryLoad(); return; }
+      setResult(null);
+      setPhase("validating");
+      fetch("/api/aws/validate-role", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ roleArn: urlRoleArn, externalId: urlExternalId }),
+      })
+        .then((r) => r.json())
+        .then((data: ValidationOk | ValidationErr) => {
+          setResult(data);
+          if (data.ok) {
+            setPhase("connected");
+            if (onValidated) onValidated({
+              accountId: data.accountId, roleArn: data.arn, externalId: data.externalId,
+            });
+          } else {
+            setPhase("failed");
+          }
+        })
+        .catch((err) => {
+          setResult({ ok: false, error: "network_error", hint: err instanceof Error ? err.message : String(err) });
+          setPhase("failed");
+        });
+    };
+
+    // Special cases: the platform's broker IAM user is missing a
+    // specific permission. One-time operator fix — paste the policy
+    // once, every future customer connection then works without any
+    // setup at all.
+    if ((isS3PermFix || isAssumeRoleFix) && result?.ok === false) {
       const brokerArn = result.brokerArn;
       const iamConsoleUrl = brokerArn
         ? `https://us-east-1.console.aws.amazon.com/iam/home?region=us-east-1#/users/details/${encodeURIComponent(brokerArn.split("/").slice(1).join("/"))}?section=permissions`
@@ -235,9 +278,16 @@ export function AwsKeyConnect({
       return (
         <PermissionsFixCard
           brokerArn={brokerArn}
-          policyJson={BROKER_S3_POLICY}
+          policyJson={isAssumeRoleFix ? BROKER_ASSUME_ROLE_POLICY : BROKER_S3_POLICY}
+          policyName={isAssumeRoleFix ? "AxiomAssumeRole" : "AxiomTemplateHosting"}
+          headline={isAssumeRoleFix
+            ? "The broker user needs sts:AssumeRole permission."
+            : "The broker user needs S3 permissions."}
+          subline={isAssumeRoleFix
+            ? "Customer's CloudFormation stack created the read-only role correctly — but our broker user can't assume it without sts:AssumeRole on its own identity policy. Attach this once and every future customer connection works automatically."
+            : "AWS Console only accepts CloudFormation templates from an S3 URL, so the platform publishes the template to its own bucket. Attaching this policy once unblocks every future customer."}
           iamConsoleUrl={iamConsoleUrl}
-          onRetry={retryLoad}
+          onRetry={isAssumeRoleFix ? retryValidate : retryLoad}
         />
       );
     }
@@ -442,18 +492,24 @@ function ScopeRow({ children }: { children: React.ReactNode }) {
 
 /**
  * One-time IAM permissions fix card. Shown when the platform's broker
- * user can't host the CloudFormation template in S3. Operator pastes
- * the policy into the broker user once, every future customer
- * connection then works without setup.
+ * user is missing a specific permission (S3 hosting OR sts:AssumeRole).
+ * Operator pastes the policy once, every future customer connection
+ * then works without any setup.
  */
 function PermissionsFixCard({
   brokerArn,
   policyJson,
+  policyName,
+  headline,
+  subline,
   iamConsoleUrl,
   onRetry,
 }: {
   brokerArn?: string;
   policyJson: string;
+  policyName: string;
+  headline: string;
+  subline: string;
   iamConsoleUrl: string;
   onRetry: () => void;
 }) {
@@ -471,10 +527,10 @@ function PermissionsFixCard({
       <CalmCard tone="amber">
         <KickerLine tone="amber">aws · one-time setup</KickerLine>
         <h3 className="text-xl font-semibold text-white tracking-tight mt-1.5">
-          The platform&apos;s broker user needs S3 permissions.
+          {headline}
         </h3>
         <p className="text-[13px] text-zinc-300 leading-relaxed mt-2 max-w-2xl">
-          AWS Console only accepts CloudFormation templates from an S3 URL, so the platform publishes the template to its own bucket. That requires attaching a small inline policy to the broker user{brokerArn ? <> <code className="font-mono text-zinc-100 break-all">{brokerArn}</code></> : null} — once, then it works forever for every customer.
+          {subline}{brokerArn ? <> The broker user is <code className="font-mono text-zinc-100 break-all">{brokerArn}</code>.</> : null}
         </p>
       </CalmCard>
 
@@ -504,7 +560,7 @@ function PermissionsFixCard({
             Click <strong className="text-zinc-100">Add permissions → Create inline policy</strong>, switch to the JSON tab, paste what you copied.
           </TimelineStep>
           <TimelineStep n={3} title="Name it and save">
-            Call it <code className="font-mono text-zinc-300">AxiomTemplateHosting</code>, click <strong className="text-zinc-100">Create policy</strong>. Done.
+            Call it <code className="font-mono text-zinc-300">{policyName}</code>, click <strong className="text-zinc-100">Create policy</strong>. Done.
           </TimelineStep>
         </ol>
         <div className="mt-5">
