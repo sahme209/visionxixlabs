@@ -388,14 +388,27 @@ function CopyBlock({ label, value, mono = true }: { label: string; value: string
    ═══════════════════════════════════════════════════════════════════ */
 
 function AWSSetupInstructions({ externalId }: { externalId: string }) {
-  // One-click CloudFormation URL — built per-session so the externalId
-  // is pre-filled. Customer never copies JSON. The fallback "manual
-  // steps" below is for operators who want auditability.
-  const oneClickUrl = `https://us-east-1.console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/quickcreate?` + new URLSearchParams({
-    templateURL: `${typeof window !== "undefined" ? window.location.origin : "https://visionxixlabs.com"}/aws/axiom-agent-quick-deploy.yaml`,
-    stackName: "axiom-agent",
-    param_ExternalId: externalId,
-  }).toString();
+  // Ask the server whether the CloudFormation Quick-Create button is
+  // safe to show. AWS console rejects non-S3 templateURLs, so we only
+  // surface the 1-click button when AWS_CFN_TEMPLATE_S3_URL is
+  // configured. Otherwise the manual JSON copy-paste flow runs as
+  // the primary surface — no broken buttons.
+  const [oneClick, setOneClick] = useState<{ available: false } | { available: true; url: string } | null>(null);
+  useEffect(() => {
+    let cancelled = false;
+    fetch(`/api/aws/quick-deploy-url?externalId=${encodeURIComponent(externalId)}`)
+      .then((r) => r.json())
+      .then((data: { available: boolean; url?: string }) => {
+        if (cancelled) return;
+        if (data.available && typeof data.url === "string") {
+          setOneClick({ available: true, url: data.url });
+        } else {
+          setOneClick({ available: false });
+        }
+      })
+      .catch(() => { if (!cancelled) setOneClick({ available: false }); });
+    return () => { cancelled = true; };
+  }, [externalId]);
 
 
   const steps = [
@@ -471,8 +484,12 @@ function AWSSetupInstructions({ externalId }: { externalId: string }) {
 
   return (
     <div className="space-y-5">
-      {/* ★ ONE-CLICK SETUP — primary path. Everything below is a fallback
-          for operators who want full auditability. */}
+      {/* ★ ONE-CLICK SETUP — only when the platform operator has hosted
+          the CloudFormation YAML on S3 (AWS_CFN_TEMPLATE_S3_URL). AWS
+          console rejects arbitrary HTTPS template URLs, so when the
+          env var is unset we hide this card and the manual flow below
+          becomes the primary surface. */}
+      {oneClick?.available && (
       <div className="rounded-2xl border border-violet-500/30 bg-gradient-to-br from-violet-500/[0.12] via-fuchsia-500/[0.08] to-amber-500/[0.04] p-5 relative overflow-hidden">
         <div className="absolute -top-16 -right-16 w-48 h-48 rounded-full bg-violet-500/20 blur-[60px] pointer-events-none" aria-hidden />
         <div className="absolute -bottom-16 -left-16 w-48 h-48 rounded-full bg-fuchsia-500/15 blur-[60px] pointer-events-none" aria-hidden />
@@ -492,7 +509,7 @@ function AWSSetupInstructions({ externalId }: { externalId: string }) {
             No JSON to copy, no wizard to navigate.
           </p>
           <a
-            href={oneClickUrl}
+            href={oneClick.url}
             target="_blank"
             rel="noreferrer"
             className="inline-flex items-center gap-2 px-5 py-3 rounded-full bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500 text-white text-[13px] font-semibold shadow-glow-violet transition-all"
@@ -507,6 +524,19 @@ function AWSSetupInstructions({ externalId }: { externalId: string }) {
           </div>
         </div>
       </div>
+      )}
+
+      {/* When the 1-click button is hidden (AWS_CFN_TEMPLATE_S3_URL not
+          configured by the platform operator), surface a calm banner
+          that points operators at the manual flow directly below.
+          Customers never see a broken button. */}
+      {oneClick?.available === false && (
+        <div className="rounded-xl border border-amber-500/20 bg-amber-500/[0.04] p-3 text-[12px] text-amber-100/90 leading-relaxed">
+          <strong className="text-amber-200">Manual setup mode.</strong>{" "}
+          The 1-click CloudFormation button is disabled on this deployment.
+          Use the step-by-step flow below — copy the trust + permissions JSON into AWS Console manually.
+        </div>
+      )}
 
       {/* Azure + GCP siblings — Phase 412. Same visual language so the
           customer knows every cloud is just one button. */}

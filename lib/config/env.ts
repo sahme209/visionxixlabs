@@ -54,6 +54,16 @@ export interface AppEnv {
   awsCostExplorerEnabled: boolean;
   /** Skip AssumeRole and use broker credentials directly (single-account / test setups). */
   awsUseDirectCreds: boolean;
+  /**
+   * Public S3 URL of the CloudFormation Quick-Create template. AWS console's
+   * Quick-Create deep-link only accepts S3-hosted templates ("TemplateURL must
+   * be a supported URL"); arbitrary HTTPS URLs (Vercel static assets, GitHub
+   * raw) are rejected by the client-side validator. Set this once after
+   * uploading public/aws/axiom-agent-quick-deploy.yaml to an S3 bucket you
+   * control. When unset, the onboarding page hides the 1-click button and
+   * shows the manual JSON copy-paste flow as primary.
+   */
+  awsCfnTemplateS3Url?: string;
   /** Azure Cost Management extractor opt-in. */
   azureCostMgmtEnabled: boolean;
   /** Telemetry webhook shared secret — required for inbound /api/webhooks/telemetry. */
@@ -215,6 +225,7 @@ export function loadAppEnv(): AppEnv {
     awsAmbientRegion:         env.AWS_REGION?.trim() || undefined,
     awsCostExplorerEnabled:   bool(env.AWS_COST_EXPLORER_ENABLED, false),
     awsUseDirectCreds:        bool(env.AWS_USE_DIRECT_CREDS, false),
+    awsCfnTemplateS3Url:      env.AWS_CFN_TEMPLATE_S3_URL?.trim() || undefined,
     azureCostMgmtEnabled:     bool(env.AZURE_COST_MGMT_ENABLED, false),
     telemetryWebhookSecret:   env.TELEMETRY_WEBHOOK_SECRET?.trim() || undefined,
     incidentWebhookSecret:    env.INCIDENT_WEBHOOK_SECRET?.trim() || undefined,
