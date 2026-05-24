@@ -106,9 +106,7 @@ Resources:
 
 Outputs:
   RoleArn:
-    Description: >
-      Paste this Role ARN back into the visionxixlabs.com onboarding
-      form to finish the connection.
+    Description: ARN of the read-only role Axiom assumes when it scans.
     Value: !GetAtt AxiomAgentReadOnlyRole.Arn
 
   RoleName:
@@ -118,3 +116,10 @@ Outputs:
   AccountId:
     Description: Your AWS account id.
     Value: !Ref AWS::AccountId
+
+  FinishUrl:
+    Description: >
+      Click this link to finish the connection — opens visionxixlabs.com
+      with the Role ARN already filled in, validates the connection,
+      and advances to the scan step. No copy-paste required.
+    Value: !Sub "https://visionxixlabs.com/operator/onboarding?step=scan&roleArn=${AxiomAgentReadOnlyRole.Arn}&accountId=${AWS::AccountId}&externalId=${ExternalId}"
