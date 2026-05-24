@@ -291,6 +291,7 @@ export function AwsKeyConnect({
           subline={isAssumeRoleFix
             ? "Customer's CloudFormation stack created the read-only role correctly — but our broker user can't assume it without sts:AssumeRole on its own identity policy. Attach this combined policy once and every future customer connection works automatically. (If you already attached an earlier AxiomTemplateHosting policy, you can safely delete it — this one supersedes it.)"
             : "AWS Console only accepts CloudFormation templates from an S3 URL, so the platform publishes the template to its own bucket and assumes the read-only role each customer provisions. Attaching this combined policy once unblocks every future customer."}
+          awsErrorMessage={result.hint}
           iamConsoleUrl={iamConsoleUrl}
           onRetry={isAssumeRoleFix ? retryValidate : retryLoad}
           onFreshDeploy={startFreshDeploy}
@@ -502,6 +503,7 @@ function PermissionsFixCard({
   policyName,
   headline,
   subline,
+  awsErrorMessage,
   iamConsoleUrl,
   onRetry,
   onFreshDeploy,
@@ -511,6 +513,7 @@ function PermissionsFixCard({
   policyName: string;
   headline: string;
   subline: string;
+  awsErrorMessage?: string;
   iamConsoleUrl: string;
   onRetry: () => void;
   onFreshDeploy?: () => void;
@@ -600,6 +603,14 @@ function PermissionsFixCard({
         <p className="text-[13px] text-zinc-300 leading-relaxed mt-2 max-w-2xl">
           {subline}{brokerArn ? <> The broker user is <code className="font-mono text-zinc-100 break-all">{brokerArn}</code>.</> : null}
         </p>
+        {awsErrorMessage && (
+          <>
+            <p className="text-[11px] font-mono uppercase tracking-[0.22em] text-zinc-500 mt-5">verbatim error from AWS</p>
+            <pre className="mt-2 rounded-lg border border-zinc-800 bg-zinc-950 p-3 font-mono text-[11px] text-zinc-300 leading-relaxed whitespace-pre-wrap break-words">
+{awsErrorMessage}
+            </pre>
+          </>
+        )}
       </CalmCard>
 
       <CalmCard tone="neutral">
