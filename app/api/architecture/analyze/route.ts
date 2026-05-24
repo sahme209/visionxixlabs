@@ -60,10 +60,45 @@ export async function POST(req: NextRequest) {
     });
   } catch (e) {
     const msg = e instanceof Error ? e.message : "Analysis failed";
+    console.error("[architecture/analyze]", msg);
+
+    // Surface diagnosable failure modes rather than the generic "Please
+    // try again." so operators can actually fix their config. Each
+    // branch is matched against well-known error strings emitted by the
+    // analyzer's AWS / Azure / GCP paths.
     if (msg.includes("No cloud providers connected")) {
       return NextResponse.json({ error: msg }, { status: 400 });
     }
-    console.error("[architecture/analyze]", msg);
-    return NextResponse.json({ error: "Analysis failed. Please try again." }, { status: 500 });
+    if (msg.includes("AccessDenied") || msg.includes("access_denied")) {
+      return NextResponse.json({
+        error:
+          "AWS denied the AssumeRole call. Your trust policy doesn't include the platform's broker as a Principal. " +
+          "Set Principal to `arn:aws:iam::590183704419:root` with the externalId you were given.",
+      }, { status: 403 });
+    }
+    if (msg.includes("InvalidClientTokenId") || msg.includes("SignatureDoesNotMatch")) {
+      return NextResponse.json({
+        error:
+          "Platform broker credentials aren't configured on this deployment. " +
+          "Set AWS_CONNECTOR_BROKER_ACCESS_KEY_ID + AWS_CONNECTOR_BROKER_SECRET_ACCESS_KEY on Vercel.",
+      }, { status: 503 });
+    }
+    if (msg.includes("ExternalId") || msg.includes("InvalidParameterValue")) {
+      return NextResponse.json({
+        error:
+          "AWS rejected the ExternalId condition. Confirm the trust policy's sts:ExternalId matches the externalId on this onboarding session exactly.",
+      }, { status: 403 });
+    }
+    if (msg.includes("UnauthorizedOperation") || msg.includes("not authorized to perform")) {
+      return NextResponse.json({
+        error:
+          "AssumeRole succeeded but the role's permission policy is missing required read-only actions. " +
+          "Attach the IAM permissions policy shown on the onboarding page (ec2:Describe*, s3:List*, etc).",
+      }, { status: 403 });
+    }
+    return NextResponse.json({
+      error: "Analysis failed: " + msg.slice(0, 200) +
+        ". Trust policy Principal must be `arn:aws:iam::590183704419:root`; full troubleshooting at /docs/aws-setup.",
+    }, { status: 500 });
   }
 }
