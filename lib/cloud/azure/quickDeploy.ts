@@ -10,11 +10,21 @@
  * Pure URL builder — no I/O.
  */
 
-const TEMPLATE_PATH = "/azure/axiom-agent-reader.json";
+const DYNAMIC_TEMPLATE_PATH = "/api/azure/template";
+const STATIC_TEMPLATE_PATH  = "/azure/axiom-agent-reader.json";
 
 export interface AzureDeployInput {
-  /** Site origin hosting the public ARM template. */
+  /** Site origin hosting the ARM template. */
   origin: string;
+  /**
+   * Object ID of the platform's Azure AD service principal. When
+   * present we point Azure Portal at the dynamic template endpoint
+   * (`/api/azure/template`) which bakes this value in as the parameter
+   * default, so the customer doesn't have to type anything in the
+   * portal. When omitted we fall back to the static JSON, which means
+   * the customer has to paste an Object ID — kept as an escape hatch.
+   */
+  principalObjectId?: string;
 }
 
 /**
@@ -23,6 +33,7 @@ export interface AzureDeployInput {
  */
 export function buildAzureDeployUrl(input: AzureDeployInput): string {
   const origin = input.origin.replace(/\/$/, "");
-  const templateUri = `${origin}${TEMPLATE_PATH}`;
+  const templatePath = input.principalObjectId ? DYNAMIC_TEMPLATE_PATH : STATIC_TEMPLATE_PATH;
+  const templateUri = `${origin}${templatePath}`;
   return `https://portal.azure.com/#create/Microsoft.Template/uri/${encodeURIComponent(templateUri)}`;
 }

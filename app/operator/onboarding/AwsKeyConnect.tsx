@@ -10,13 +10,16 @@
  * The customer never sees a Role ARN, access key, or JSON. They click
  * one button per screen. Bounce-back from AWS Console (?roleArn=…
  * &externalId=…) auto-validates and advances.
+ *
+ * The CFN deep-link uses an S3-hosted templateURL (the platform
+ * auto-publishes the YAML to its broker bucket the first time anyone
+ * asks). We fetch the URL from /api/aws/quick-deploy-url — AWS Console
+ * rejects templateBody URL fragments with "templateURL is required".
  */
 
 import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 
-const AWS_REGION = "us-east-1";
-const STACK_NAME = "axiom-agent";
 const SS_EXTERNAL_ID = "axiom.aws.externalId";
 
 type Phase =
@@ -70,21 +73,26 @@ export function AwsKeyConnect({
   const [cfnUrl, setCfnUrl] = useState<string | null>(null);
   const [result, setResult] = useState<ValidationOk | ValidationErr | null>(null);
 
-  // Step A — fetch template YAML + build the CloudFormation deep-link.
+  // Step A — fetch the CloudFormation Quick-Create URL from the
+  // platform (which publishes the template to S3 on first use and
+  // returns a console deep-link with templateURL=… filled in).
   useEffect(() => {
     let cancelled = false;
-    fetch("/aws/axiom-agent-quick-deploy.yaml")
-      .then((r) => r.text())
-      .then((yaml) => {
+    fetch(`/api/aws/quick-deploy-url?externalId=${encodeURIComponent(externalId)}`)
+      .then((r) => r.json())
+      .then((data: { available: boolean; url?: string; hint?: string; reason?: string }) => {
         if (cancelled) return;
-        const qs = new URLSearchParams({
-          stackName: STACK_NAME,
-          templateBody: yaml,
-          param_ExternalId: externalId,
-        });
-        setCfnUrl(`https://${AWS_REGION}.console.aws.amazon.com/cloudformation/home?region=${AWS_REGION}#/stacks/create/review?${qs.toString()}`);
-        // Don't downgrade to "ready" if we're already validating a bounce-back.
-        setPhase((p) => (p === "loading_template" ? "ready" : p));
+        if (data.available && data.url) {
+          setCfnUrl(data.url);
+          setPhase((p) => (p === "loading_template" ? "ready" : p));
+        } else {
+          setResult({
+            ok: false,
+            error: data.reason ?? "template_unavailable",
+            hint: data.hint ?? "The platform couldn't prepare the CloudFormation template. Try again in a moment.",
+          });
+          setPhase("failed");
+        }
       })
       .catch(() => {
         if (!cancelled) setPhase("failed");
@@ -176,17 +184,20 @@ export function AwsKeyConnect({
             setResult(null);
             setPhase(cfnUrl ? "ready" : "loading_template");
             if (!cfnUrl) {
-              // Re-fetch template
-              fetch("/aws/axiom-agent-quick-deploy.yaml")
-                .then((r) => r.text())
-                .then((yaml) => {
-                  const qs = new URLSearchParams({
-                    stackName: STACK_NAME,
-                    templateBody: yaml,
-                    param_ExternalId: externalId,
-                  });
-                  setCfnUrl(`https://${AWS_REGION}.console.aws.amazon.com/cloudformation/home?region=${AWS_REGION}#/stacks/create/review?${qs.toString()}`);
-                  setPhase("ready");
+              fetch(`/api/aws/quick-deploy-url?externalId=${encodeURIComponent(externalId)}`)
+                .then((r) => r.json())
+                .then((data: { available: boolean; url?: string; hint?: string; reason?: string }) => {
+                  if (data.available && data.url) {
+                    setCfnUrl(data.url);
+                    setPhase("ready");
+                  } else {
+                    setResult({
+                      ok: false,
+                      error: data.reason ?? "template_unavailable",
+                      hint: data.hint ?? "The platform couldn't prepare the CloudFormation template. Try again in a moment.",
+                    });
+                    setPhase("failed");
+                  }
                 })
                 .catch(() => setPhase("failed"));
             }

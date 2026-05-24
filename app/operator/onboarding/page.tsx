@@ -4,6 +4,8 @@ import { useState, useCallback, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { AwsKeyConnect } from "./AwsKeyConnect";
+import { AzureDeployConnect } from "./AzureDeployConnect";
+import { GcpDeployConnect } from "./GcpDeployConnect";
 import {
   CloudIcon,
   ChartBarIcon,
@@ -16,7 +18,6 @@ import {
   ClipboardDocumentIcon,
   ArrowTopRightOnSquareIcon,
   LockClosedIcon,
-  XMarkIcon,
   EyeIcon,
   BoltIcon,
   CommandLineIcon,
@@ -26,8 +27,6 @@ import {
   ArrowPathIcon,
   SparklesIcon,
   UserIcon,
-  GlobeAltIcon,
-  ClockIcon,
   CurrencyDollarIcon,
   ExclamationCircleIcon,
 } from "@heroicons/react/24/outline";
@@ -297,23 +296,6 @@ function StepIndicator({ current }: { current: OnboardingStep }) {
 }
 
 /* ═══════════════════════════════════════════════════════════════════
-   CAPABILITY DOT
-   ═══════════════════════════════════════════════════════════════════ */
-
-function CapabilityDot({ status }: { status: CapabilityStatus }) {
-  if (status === "active") {
-    return (
-      <span className="relative flex items-center justify-center">
-        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-        <span className="absolute w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping opacity-30" />
-      </span>
-    );
-  }
-  if (status === "building") return <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />;
-  return <span className="w-1.5 h-1.5 rounded-full bg-zinc-700" />;
-}
-
-/* ═══════════════════════════════════════════════════════════════════
    COPY BLOCK
    ═══════════════════════════════════════════════════════════════════ */
 
@@ -343,135 +325,6 @@ function CopyBlock({ label, value, mono = true }: { label: string; value: string
         <pre className={`bg-[#0a0a0c] border border-white/[0.06] rounded-lg px-4 py-3 text-xs text-zinc-300 overflow-x-auto whitespace-pre-wrap break-all group-hover:border-white/[0.12] transition-colors duration-200 ${mono ? "font-mono" : ""}`}>
           {value}
         </pre>
-      </div>
-    </div>
-  );
-}
-
-/* ═══════════════════════════════════════════════════════════════════
-   PROVIDER ADAPTER PREVIEW — Premium modal for Azure/GCP
-   ═══════════════════════════════════════════════════════════════════ */
-
-function ProviderAdapterPreview({ provider, onClose }: { provider: CloudProvider; onClose: () => void }) {
-  const info = PROVIDERS[provider];
-  const activeCount = info.capabilities.filter((c) => c.status === "active").length;
-  const buildingCount = info.capabilities.filter((c) => c.status === "building").length;
-  const totalCaps = info.capabilities.length;
-  const completedMilestones = info.roadmapMilestones.filter((m) => m.done).length;
-
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4" onClick={onClose}>
-      <div className="fixed inset-0 bg-black/70 backdrop-blur-sm" aria-hidden />
-      <div className="relative max-w-lg w-full rounded-2xl border border-white/[0.08] bg-[#0a0a0c] shadow-[0_20px_60px_rgba(0,0,0,0.8)]"
-        onClick={(e) => e.stopPropagation()}>
-
-        {/* Header with gradient accent */}
-        <div className={`relative rounded-t-2xl border-b border-white/[0.06] p-6 overflow-hidden`}>
-          <div className={`absolute inset-0 ${info.accentBg} opacity-30`} />
-          <div className="relative flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className={`w-11 h-11 rounded-xl ${info.accentBg} border ${info.accentBorder} flex items-center justify-center`}>
-                <span className={`text-sm font-bold ${info.accentColor}`}>{info.shortName}</span>
-              </div>
-              <div>
-                <h3 className="text-base font-bold text-white tracking-tight">{info.name}</h3>
-                <div className="flex items-center gap-1.5 mt-0.5">
-                  <span className={`w-1.5 h-1.5 rounded-full ${info.statusColor} animate-pulse`} />
-                  <span className="text-xs font-semibold text-zinc-400">{info.statusLabel}</span>
-                  <span className="text-[10px] text-zinc-600 ml-1">{info.backendReadiness}% ready</span>
-                </div>
-              </div>
-            </div>
-            <button onClick={onClose} className="text-zinc-500 hover:text-white transition-colors p-1">
-              <XMarkIcon className="h-5 w-5" />
-            </button>
-          </div>
-        </div>
-
-        <div className="p-6 space-y-5">
-          {/* Connection method */}
-          <div className="rounded-lg border border-white/[0.06] bg-white/[0.02] p-4">
-            <div className="flex items-center gap-2 mb-2">
-              <LockClosedIcon className="h-3.5 w-3.5 text-emerald-400" />
-              <span className="text-xs font-semibold text-zinc-300">Security Model</span>
-            </div>
-            <p className="text-xs text-zinc-500">{info.connectionMethod}</p>
-            <p className="text-xs text-zinc-600 mt-1">{info.securityModel}</p>
-          </div>
-
-          {/* Capability matrix */}
-          <div>
-            <div className="flex items-center justify-between text-xs mb-3">
-              <span className="font-semibold text-zinc-300">Capabilities</span>
-              <span className="text-zinc-600">{activeCount} active · {buildingCount} building · {totalCaps - activeCount - buildingCount} planned</span>
-            </div>
-            <div className="grid grid-cols-2 gap-2">
-              {info.capabilities.map((cap) => (
-                <div key={cap.label} className="rounded-lg border border-white/[0.04] bg-white/[0.02] p-3 hover:border-white/[0.08] transition-colors">
-                  <div className="flex items-center gap-2 mb-1">
-                    <CapabilityDot status={cap.status} />
-                    <span className={`text-xs font-medium ${cap.status === "active" ? "text-zinc-200" : cap.status === "building" ? "text-zinc-400" : "text-zinc-600"}`}>
-                      {cap.label}
-                    </span>
-                  </div>
-                  <p className="text-[10px] text-zinc-600 leading-relaxed">{cap.description}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Roadmap milestones */}
-          <div>
-            <div className="flex items-center justify-between text-xs mb-3">
-              <span className="font-semibold text-zinc-300">Roadmap</span>
-              <span className="text-zinc-600">{completedMilestones}/{info.roadmapMilestones.length} milestones</span>
-            </div>
-            <div className="flex gap-1.5 mb-2">
-              {info.roadmapMilestones.map((m, i) => (
-                <div key={i} className={`flex-1 h-1.5 rounded-full transition-colors ${m.done ? "bg-emerald-500/60" : "bg-zinc-800"}`} />
-              ))}
-            </div>
-            <div className="grid grid-cols-3 gap-1.5">
-              {info.roadmapMilestones.map((m, i) => (
-                <div key={i} className="flex items-center gap-1.5 text-[10px]">
-                  {m.done ? <CheckCircleIcon className="h-3 w-3 text-emerald-400 flex-shrink-0" /> : <ClockIcon className="h-3 w-3 text-zinc-700 flex-shrink-0" />}
-                  <span className={m.done ? "text-zinc-400" : "text-zinc-600"}>{m.label}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Architecture info */}
-          <div className="flex items-center gap-2 text-xs text-zinc-500 bg-white/[0.02] border border-white/[0.04] rounded-lg px-3 py-2.5">
-            <GlobeAltIcon className="h-3.5 w-3.5 flex-shrink-0 text-zinc-600" />
-            <span>Same agent architecture as AWS — provider adapters share the scan → reason → plan → execute pipeline.</span>
-          </div>
-
-          {/* Docs links */}
-          <div className="flex flex-wrap gap-x-3 gap-y-1 text-[11px] pt-1">
-            <Link href={provider === "azure" ? "/docs/azure-setup" : provider === "gcp" ? "/docs/gcp-setup" : "/docs"} target="_blank" className="text-violet-400 hover:text-violet-300 transition-colors font-medium">
-              Read {info.shortName} setup guide →
-            </Link>
-            <Link href="/docs/permissions-model" target="_blank" className="text-violet-400 hover:text-violet-300 transition-colors font-medium">
-              Permissions model →
-            </Link>
-            <Link href="/docs/security-model" target="_blank" className="text-violet-400 hover:text-violet-300 transition-colors font-medium">
-              Security model →
-            </Link>
-          </div>
-        </div>
-
-        {/* Actions */}
-        <div className="flex gap-3 p-6 pt-0">
-          <button onClick={onClose}
-            className="flex-1 px-4 py-2.5 rounded-xl border border-white/[0.08] text-sm font-medium text-zinc-300 hover:bg-white/[0.04] hover:border-white/[0.15] transition-all">
-            Close
-          </button>
-          <Link href="/contact"
-            className={`flex-1 px-4 py-2.5 rounded-xl ${info.accentBg} border ${info.accentBorder} text-sm font-semibold ${info.accentColor} text-center hover:opacity-80 transition-opacity`}>
-            Join {info.shortName} rollout
-          </Link>
-        </div>
       </div>
     </div>
   );
@@ -620,7 +473,6 @@ export default function OnboardingPage() {
   const [step, setStepRaw] = useState<OnboardingStep>(saved.step);
   const [selectedProvider, setSelectedProvider] = useState<CloudProvider | null>(saved.provider);
   const [connectionPhase, setConnectionPhase] = useState<ConnectionPhase>("select");
-  const [adapterPreview, setAdapterPreview] = useState<CloudProvider | null>(null);
   const [analyzing, setAnalyzing] = useState(false);
   const [scanPhaseIndex, setScanPhaseIndex] = useState(0);
   const [scanComplete, setScanComplete] = useState(false);
@@ -648,19 +500,18 @@ export default function OnboardingPage() {
   const handleProviderNext = async () => {
     if (!selectedProvider) return;
     setError(null);
-
-    if (selectedProvider !== "aws") {
-      setAdapterPreview(selectedProvider);
-      return;
-    }
-
+    // All three providers (aws / azure / gcp) advance straight into
+    // their own one-click connect surfaces. The availability check is
+    // best-effort: if the API is up and reports the provider as down,
+    // surface that honestly — otherwise advance and let the connect
+    // component report any platform-side config gap itself.
     setCheckingAvailability(true);
     try {
       const res = await fetch("/api/connectors/availability");
       if (res.ok) {
-        const data = await res.json();
-        if (!data.aws) {
-          setError("AWS connector is being configured. Please try again shortly.");
+        const data = (await res.json()) as Record<string, boolean | undefined>;
+        if (data[selectedProvider] === false) {
+          setError(`${selectedProvider.toUpperCase()} connector is being configured. Please try again shortly.`);
           return;
         }
       }
@@ -1049,8 +900,6 @@ export default function OnboardingPage() {
                   <AnimatedButton onClick={handleProviderNext} disabled={!selectedProvider || checkingAvailability} variant="primary" className="w-full justify-center py-3.5">
                     {checkingAvailability ? (
                       <><span className="w-4 h-4 border-2 border-white/30 border-t-zinc-900 rounded-full animate-spin" /> Checking availability...</>
-                    ) : selectedProvider && selectedProvider !== "aws" ? (
-                      <>View {PROVIDERS[selectedProvider].shortName} Architecture <ArrowRightIcon className="h-4 w-4" /></>
                     ) : (
                       <>Continue with {selectedProvider ? PROVIDERS[selectedProvider].shortName : "provider"} <ArrowRightIcon className="h-4 w-4" /></>
                     )}
@@ -1104,6 +953,107 @@ export default function OnboardingPage() {
                         setTimeout(() => setStep(3), 1200);
                       } catch {
                         setError("Network error while finishing the AWS connection. Please try again.");
+                      }
+                    }}
+                  />
+                </>
+              )}
+
+              {/* Azure ARM Template Setup */}
+              {connectionPhase === "setup" && selectedProvider === "azure" && (
+                <>
+                  <div className="mb-6">
+                    <h1 className="text-2xl sm:text-3xl font-semibold mb-1.5 tracking-[-0.03em]">
+                      Connect your <span className="text-gradient">Azure subscription</span>
+                    </h1>
+                    <p className="text-zinc-500 text-[13.5px] leading-relaxed">One click in Azure Portal, two IDs pasted back — no client secret.</p>
+                  </div>
+
+                  <AzureDeployConnect
+                    onValidated={async ({ subscriptionId, tenantId }) => {
+                      setVerifiedAccount(subscriptionId);
+                      try {
+                        const startRes = await fetch("/api/cloud-operator/start", {
+                          method: "POST",
+                          headers: { "Content-Type": "application/json" },
+                          body: JSON.stringify({ provider: "azure" }),
+                        });
+                        const startData = await startRes.json();
+                        if (!startRes.ok || !startData.token) {
+                          setError(startData.error ?? "Could not start a scan session. Try again in a moment.");
+                          return;
+                        }
+                        setToken(startData.token);
+                        const linkRes = await fetch(`/api/connectors/link?token=${startData.token}`, {
+                          method: "POST",
+                          headers: { "Content-Type": "application/json" },
+                          body: JSON.stringify({
+                            connectorType: "azure",
+                            authMethod: "service-principal",
+                            tenantId,
+                            subscriptionId,
+                          }),
+                        });
+                        if (!linkRes.ok) {
+                          const linkData = await linkRes.json().catch(() => ({}));
+                          setError(linkData.error ?? "Could not register the Azure connector. Try again in a moment.");
+                          return;
+                        }
+                        try { localStorage.removeItem(STORAGE_KEY); } catch { /* no-op */ }
+                        setTimeout(() => setStep(3), 1200);
+                      } catch {
+                        setError("Network error while finishing the Azure connection. Please try again.");
+                      }
+                    }}
+                  />
+                </>
+              )}
+
+              {/* GCP Cloud Shell Setup */}
+              {connectionPhase === "setup" && selectedProvider === "gcp" && (
+                <>
+                  <div className="mb-6">
+                    <h1 className="text-2xl sm:text-3xl font-semibold mb-1.5 tracking-[-0.03em]">
+                      Connect your <span className="text-gradient">GCP project</span>
+                    </h1>
+                    <p className="text-zinc-500 text-[13.5px] leading-relaxed">Cloud Shell does the gcloud commands — you just paste the JSON key back.</p>
+                  </div>
+
+                  <GcpDeployConnect
+                    onValidated={async ({ projectId, serviceAccountJson, clientEmail }) => {
+                      setVerifiedAccount(projectId);
+                      try {
+                        const startRes = await fetch("/api/cloud-operator/start", {
+                          method: "POST",
+                          headers: { "Content-Type": "application/json" },
+                          body: JSON.stringify({ provider: "gcp" }),
+                        });
+                        const startData = await startRes.json();
+                        if (!startRes.ok || !startData.token) {
+                          setError(startData.error ?? "Could not start a scan session. Try again in a moment.");
+                          return;
+                        }
+                        setToken(startData.token);
+                        const linkRes = await fetch(`/api/connectors/link?token=${startData.token}`, {
+                          method: "POST",
+                          headers: { "Content-Type": "application/json" },
+                          body: JSON.stringify({
+                            connectorType: "gcp",
+                            authMethod: "service-account-key",
+                            projectId,
+                            clientEmail,
+                            serviceAccountKeyJson: serviceAccountJson,
+                          }),
+                        });
+                        if (!linkRes.ok) {
+                          const linkData = await linkRes.json().catch(() => ({}));
+                          setError(linkData.error ?? "Could not register the GCP connector. Try again in a moment.");
+                          return;
+                        }
+                        try { localStorage.removeItem(STORAGE_KEY); } catch { /* no-op */ }
+                        setTimeout(() => setStep(3), 1200);
+                      } catch {
+                        setError("Network error while finishing the GCP connection. Please try again.");
                       }
                     }}
                   />
@@ -1353,10 +1303,6 @@ export default function OnboardingPage() {
         )}
       </div>
 
-      {/* Adapter preview modal */}
-      {adapterPreview && (
-        <ProviderAdapterPreview provider={adapterPreview} onClose={() => setAdapterPreview(null)} />
-      )}
     </div>
   );
 }
