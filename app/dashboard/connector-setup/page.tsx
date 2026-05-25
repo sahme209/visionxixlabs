@@ -103,6 +103,27 @@ const PROVIDER_LABEL: Record<string, string> = {
   gcp: "GCP",
 };
 
+/**
+ * Status → the operator-allowed event kind a CTA click should emit.
+ * Returns null when the CTA is informational (in-flight, needs_attention),
+ * meaning the button stays purely visual.
+ */
+function ctaEventKindFor(status: string): string | null {
+  switch (status) {
+    case "not_connected":
+    case "failed":
+    case "disconnected":
+    case "revoked":
+      return "operator_started";
+    case "connected":
+      return "operator_disconnected";
+    default:
+      // setup_started / waiting_for_provider / validating / needs_attention —
+      // either in-flight (server-driven) or only-cron-resolvable.
+      return null;
+  }
+}
+
 function humanAge(seconds: number): string {
   if (seconds < 60) return `${seconds}s ago`;
   const m = Math.floor(seconds / 60);
@@ -116,6 +137,14 @@ export default function ConnectorSetupPage() {
   const [resp, setResp] = useState<RespBody | null>(null);
   const [loading, setLoading] = useState(true);
   const [networkError, setNetworkError] = useState<string | null>(null);
+  const [pendingProvider, setPendingProvider] = useState<string | null>(null);
+  const [actionError, setActionError] = useState<string | null>(null);
+
+  const refresh = async () => {
+    const r = await fetch("/api/dashboard/connector-setup-digest", { credentials: "include" });
+    const json = (await r.json()) as RespBody;
+    setResp(json);
+  };
 
   useEffect(() => {
     let cancelled = false;
@@ -126,6 +155,31 @@ export default function ConnectorSetupPage() {
       .finally(() => { if (!cancelled) setLoading(false); });
     return () => { cancelled = true; };
   }, []);
+
+  const emit = async (provider: string, status: string) => {
+    const eventKind = ctaEventKindFor(status);
+    if (!eventKind) return;
+    setPendingProvider(provider);
+    setActionError(null);
+    try {
+      const r = await fetch("/api/dashboard/connector-setup-event", {
+        method: "POST",
+        credentials: "include",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ provider, eventKind }),
+      });
+      const body = await r.json() as { ok: boolean; error?: string; hint?: string };
+      if (!body.ok) {
+        setActionError(body.hint ?? body.error ?? `Request failed (${r.status})`);
+      } else {
+        await refresh();
+      }
+    } catch (err) {
+      setActionError(err instanceof Error ? err.message : "Network error.");
+    } finally {
+      setPendingProvider(null);
+    }
+  };
 
   const data = resp?.ok ? resp.data : null;
   const errorBody = resp && !resp.ok ? resp : null;
@@ -183,6 +237,12 @@ export default function ConnectorSetupPage() {
         </div>
       )}
 
+      {actionError && (
+        <div className="rounded-2xl border border-amber-500/[0.18] bg-amber-500/[0.04] p-3 mb-4 text-[12.5px] text-zinc-300">
+          {actionError}
+        </div>
+      )}
+
       {data && (
         <>
           {/* Summary ribbon */}
@@ -200,7 +260,12 @@ export default function ConnectorSetupPage() {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-8">
               {data.providers.map((p) => (
-                <ProviderCard key={p.provider} p={p} />
+                <ProviderCard
+                  key={p.provider}
+                  p={p}
+                  pending={pendingProvider === p.provider}
+                  onCta={() => emit(p.provider, p.status)}
+                />
               ))}
             </div>
           )}
@@ -221,8 +286,10 @@ export default function ConnectorSetupPage() {
   );
 }
 
-function ProviderCard({ p }: { p: ProviderDigest }) {
+function ProviderCard({ p, pending, onCta }: { p: ProviderDigest; pending: boolean; onCta: () => void }) {
   const errorBadge = renderErrorBadge(p.errorClass);
+  const eventKindForCta = ctaEventKindFor(p.status);
+  const ctaClickable = p.suggested.tone !== "none" && eventKindForCta !== null;
   return (
     <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-4">
       <div className="flex items-start justify-between gap-2 mb-3">
@@ -251,8 +318,11 @@ function ProviderCard({ p }: { p: ProviderDigest }) {
       {p.suggested.tone !== "none" && (
         <button
           type="button"
-          className={`mb-3 inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[12px] font-medium transition ${TONE_BTN[p.suggested.tone]}`}
+          disabled={pending || !ctaClickable}
+          onClick={ctaClickable ? onCta : undefined}
+          className={`mb-3 inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[12px] font-medium transition disabled:opacity-60 ${TONE_BTN[p.suggested.tone]}`}
         >
+          {pending && <ArrowPathIcon className="h-3 w-3 animate-spin" />}
           {p.suggested.ctaLabel}
         </button>
       )}
