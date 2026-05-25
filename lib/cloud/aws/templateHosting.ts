@@ -47,6 +47,16 @@ export interface PublishResult {
   url: string;
   bucket: string;
   publishedNow: boolean;
+  /**
+   * The AWS account id of the broker IAM user the platform is signed in
+   * as. Returned so the quick-deploy-url endpoint can inject it into
+   * the CFN deep-link as `param_BrokerAccountId=…` — that's the value
+   * the role's trust policy uses to gate AssumeRole, so it MUST match
+   * the account the broker actually lives in. Hardcoding it in the
+   * YAML default was the source of a long-running "AssumeRole keeps
+   * failing" bug.
+   */
+  brokerAccountId: string;
 }
 
 export interface PublishError {
@@ -77,14 +87,10 @@ let uploadCache: UploadCache | null = null;
  * stays within its TTL even if the cache is warm.
  */
 export async function ensureTemplatePublished(opts: { forceRefresh?: boolean } = {}): Promise<PublishResult | PublishError> {
-  // 0. Operator override — if AWS_CFN_TEMPLATE_S3_URL is explicitly set,
-  //    use it verbatim. Lets an operator self-host on a CDN.
-  const override = process.env.AWS_CFN_TEMPLATE_S3_URL?.trim();
-  if (override) {
-    return { available: true, url: override, bucket: "(operator-managed)", publishedNow: false };
-  }
-
-  // 1. Need broker credentials.
+  // 1. Need broker credentials. Have to look up the broker account id
+  //    from them BEFORE checking the override — because the role's
+  //    trust policy keys off this account id, and we have to inject it
+  //    as a CFN parameter regardless of where the template body lives.
   const accessKeyId = process.env.AWS_CONNECTOR_BROKER_ACCESS_KEY_ID?.trim();
   const secretAccessKey = process.env.AWS_CONNECTOR_BROKER_SECRET_ACCESS_KEY?.trim();
   if (!accessKeyId || !secretAccessKey) {
@@ -108,6 +114,14 @@ export async function ensureTemplatePublished(opts: { forceRefresh?: boolean } =
       reason: "broker_account_lookup_failed",
       detail: `sts:GetCallerIdentity failed: ${errMessage(err)}`,
     };
+  }
+
+  // Operator override path — template body already self-hosted, but we
+  // still need to return the discovered broker account id so the URL
+  // builder can inject it into the CFN trust-policy parameter.
+  const override = process.env.AWS_CFN_TEMPLATE_S3_URL?.trim();
+  if (override) {
+    return { available: true, url: override, bucket: "(operator-managed)", publishedNow: false, brokerAccountId };
   }
 
   const bucket = `axiom-cfn-templates-${brokerAccountId}`;
@@ -212,7 +226,7 @@ export async function ensureTemplatePublished(opts: { forceRefresh?: boolean } =
     };
   }
 
-  return { available: true, url, bucket, publishedNow };
+  return { available: true, url, bucket, publishedNow, brokerAccountId };
 }
 
 async function ensureBucket(s3: S3Client, bucket: string): Promise<void> {

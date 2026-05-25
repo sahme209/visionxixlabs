@@ -27,8 +27,18 @@ Parameters:
 
   BrokerAccountId:
     Type: String
-    Description: VisionXIXLabs broker account that will assume this role.
-    Default: "590183704419"
+    Description: >
+      VisionXIXLabs broker account that will assume this role. The
+      onboarding flow injects this via the CFN Quick-Create URL based
+      on the broker user's actual STS GetCallerIdentity, so the
+      default below is only a fallback for someone deploying this
+      template by hand.
+    # Default matches the broker user's AWS account
+    # (arn:aws:iam::595842668406:user/visionxixlabs-readonly). Old
+    # value 590183704419 was a stale ID baked in early — it caused a
+    # silent AssumeRole-denied loop for every customer because the
+    # role's trust policy then allowed the wrong account.
+    Default: "595842668406"
     AllowedPattern: "^[0-9]{12}$"
 
 Resources:

@@ -52,10 +52,18 @@ export async function GET(req: NextRequest) {
   const suffix = externalId.replace(/^axiom-/, "");
   const stackName = `axiom-agent-${suffix}`;
 
+  // CRITICAL: inject BrokerAccountId derived from the actual broker
+  // credentials. The role's trust policy keys off this — if the
+  // template default (590183704419) doesn't match the real broker
+  // account, every AssumeRole call from the platform fails. That was
+  // the source of the "broker user needs sts:AssumeRole" loop that
+  // resisted every IAM policy paste — the IAM was right, the trust
+  // policy was wrong.
   const params = new URLSearchParams({
     templateURL: publish.url,
     stackName,
     param_ExternalId: externalId,
+    param_BrokerAccountId: publish.brokerAccountId,
   });
   const region = "us-east-1";
   const url =
