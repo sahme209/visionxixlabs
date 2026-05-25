@@ -111,8 +111,13 @@ export function classifyTransitionHistory(
     };
   }
 
-  // Sticky check — look for the longest tail of consecutive same-errorCode
-  // failures ending at the most recent event.
+  // Sticky check — look for the longest tail of same-errorCode failures
+  // ending at the most recent failure. Retry-chain events (operator_started,
+  // provider_link_opened, bounce_back_received) are treated as non-breaking
+  // because the kernel forces them between every validation_failed: there is
+  // no way to express "two back-to-back failures" without those in between.
+  // A recovery event (validation_succeeded, health_check_recovered) DOES
+  // break the streak — that's a real reset.
   const tailStreak = takeTrailingFailureStreak(inWindow);
   if (tailStreak.length >= stickyThreshold && tailStreak[0].errorCode !== null) {
     const codes = new Set(tailStreak.map((s) => s.errorCode));
@@ -161,15 +166,23 @@ function extractErrorCode(t: TransitionForClassify): string | null {
 
 /**
  * Walk backwards from the most recent transition, collecting failure
- * events until we hit a non-failure (or run out). Returns the streak
- * in chronological order.
+ * events. Retry-chain events (operator_started, provider_link_opened,
+ * bounce_back_received) are skipped — they're not failures and they're
+ * not recoveries, just the kernel's mandatory path back to `validating`.
+ * A recovery event (validation_succeeded, health_check_recovered) IS a
+ * streak-breaker. Returns failures in chronological order.
  */
 function takeTrailingFailureStreak(inWindow: ReadonlyArray<TransitionForClassify>): Array<{ at: Date; errorCode: string | null }> {
   const out: Array<{ at: Date; errorCode: string | null }> = [];
   for (let i = inWindow.length - 1; i >= 0; i--) {
     const t = inWindow[i];
-    if (!isFailureEvent(t)) break;
-    out.unshift({ at: t.createdAt, errorCode: extractErrorCode(t) });
+    if (isFailureEvent(t)) {
+      out.unshift({ at: t.createdAt, errorCode: extractErrorCode(t) });
+      continue;
+    }
+    if (isRecoveryEvent(t)) break;
+    // Retry-chain events (operator_started / provider_link_opened /
+    // bounce_back_received) — skip without breaking the streak.
   }
   return out;
 }

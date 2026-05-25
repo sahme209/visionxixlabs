@@ -115,15 +115,35 @@ describe("classifyTransitionHistory — sticky_error", () => {
     expect(r.lastSeenAt.getTime()).toBe(minutesAgo(10).getTime());
   });
 
-  it("non-failure event breaks the streak — only the tail counts", () => {
+  it("retry-chain events (operator_started, provider_link_opened, bounce_back_received) do NOT break the streak — the kernel forces them between every validation_failed", () => {
     const transitions = [
-      tx({ eventKind: "validation_failed",    eventPayload: { errorCode: "AccessDenied" }, createdAt: minutesAgo(60) }),
-      tx({ eventKind: "validation_failed",    eventPayload: { errorCode: "AccessDenied" }, createdAt: minutesAgo(50) }),
-      tx({ eventKind: "operator_started",                                                    createdAt: minutesAgo(40) }), // breaks streak
-      tx({ eventKind: "validation_failed",    eventPayload: { errorCode: "AccessDenied" }, createdAt: minutesAgo(10) }),
+      tx({ eventKind: "validation_failed",     eventPayload: { errorCode: "AccessDenied" }, createdAt: minutesAgo(60) }),
+      tx({ eventKind: "operator_started",                                                    createdAt: minutesAgo(55) }),
+      tx({ eventKind: "provider_link_opened",                                                createdAt: minutesAgo(50) }),
+      tx({ eventKind: "bounce_back_received",                                                createdAt: minutesAgo(45) }),
+      tx({ eventKind: "validation_failed",     eventPayload: { errorCode: "AccessDenied" }, createdAt: minutesAgo(30) }),
+      tx({ eventKind: "operator_started",                                                    createdAt: minutesAgo(25) }),
+      tx({ eventKind: "provider_link_opened",                                                createdAt: minutesAgo(20) }),
+      tx({ eventKind: "bounce_back_received",                                                createdAt: minutesAgo(15) }),
+      tx({ eventKind: "validation_failed",     eventPayload: { errorCode: "AccessDenied" }, createdAt: minutesAgo(10) }),
     ];
     const r = classifyTransitionHistory(transitions, { now: NOW });
-    expect(r.kind).toBe("transient_failure"); // tail streak is just 1
+    expect(r.kind).toBe("sticky_error");
+    if (r.kind !== "sticky_error") return;
+    expect(r.consecutiveCount).toBe(3);
+  });
+
+  it("recovery event (validation_succeeded) DOES break the streak", () => {
+    const transitions = [
+      tx({ eventKind: "validation_failed",     eventPayload: { errorCode: "AccessDenied" }, createdAt: minutesAgo(60) }),
+      tx({ eventKind: "validation_failed",     eventPayload: { errorCode: "AccessDenied" }, createdAt: minutesAgo(50) }),
+      tx({ eventKind: "validation_succeeded",                                                createdAt: minutesAgo(40) }), // resets
+      tx({ eventKind: "validation_failed",     eventPayload: { errorCode: "AccessDenied" }, createdAt: minutesAgo(10) }),
+    ];
+    const r = classifyTransitionHistory(transitions, { now: NOW });
+    // last event is failure, last legal event before that is success, so
+    // "last_event_was_recovery" is false. Tail streak is 1. → transient.
+    expect(r.kind).toBe("transient_failure");
   });
 
   it("default threshold can be tightened via stickyThreshold", () => {
