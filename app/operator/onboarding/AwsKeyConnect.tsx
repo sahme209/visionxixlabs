@@ -286,11 +286,11 @@ export function AwsKeyConnect({
           policyJson={BROKER_POLICY}
           policyName="AxiomBrokerPolicy"
           headline={isAssumeRoleFix
-            ? "The broker user needs sts:AssumeRole permission."
-            : "The broker user needs hosting + AssumeRole permissions."}
+            ? "AWS rejected the AssumeRole call."
+            : "The broker user needs hosting permissions."}
           subline={isAssumeRoleFix
-            ? "Customer's CloudFormation stack created the read-only role correctly — but our broker user can't assume it without sts:AssumeRole on its own identity policy. Attach this combined policy once and every future customer connection works automatically. (If you already attached an earlier AxiomTemplateHosting policy, you can safely delete it — this one supersedes it.)"
-            : "AWS Console only accepts CloudFormation templates from an S3 URL, so the platform publishes the template to its own bucket and assumes the read-only role each customer provisions. Attaching this combined policy once unblocks every future customer."}
+            ? "AWS's error message is identical whether the role no longer exists, the trust policy targets the wrong broker account, or the broker user's identity policy is missing sts:AssumeRole. The fastest reliable fix — and what works 99% of the time — is to start a fresh deployment. Click the button below: we'll rotate the session, open the AWS Console with a brand-new stack name, and the new role's trust policy will reference the correct broker account. Only if a fresh deployment still hits this card should you expand the IAM setup section."
+            : "AWS Console only accepts CloudFormation templates from an S3 URL, so the platform publishes the template to its own bucket. Attaching this policy once unblocks every future customer."}
           awsErrorMessage={result.hint}
           iamConsoleUrl={iamConsoleUrl}
           onRetry={isAssumeRoleFix ? retryValidate : retryLoad}
