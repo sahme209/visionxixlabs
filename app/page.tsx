@@ -18,6 +18,7 @@ import { RealisticFogBackground } from "@/components/ui/realistic-fog-background
 import { MotherboardBackdrop } from "@/components/ui/MotherboardBackdrop";
 import { Spotlight } from "@/components/motion/Spotlight";
 import { SpotlightCard } from "@/components/motion/SpotlightCard";
+import { ScrollRevealText } from "@/components/motion/ScrollRevealText";
 import { MagneticButton } from "@/components/motion/MagneticButton";
 import { CountUp } from "@/components/motion/CountUp";
 import { TextReveal } from "@/components/motion/TextReveal";
@@ -341,9 +342,11 @@ export default function Home() {
               <h2 className="text-[34px] sm:text-[44px] md:text-[52px] font-medium tracking-[-0.025em] leading-[1.05] text-white max-w-3xl">
                 A $<CountUp to={5.27} duration={2000} decimals={2} />M per year team. <span className="text-zinc-500">Most teams don&apos;t have it.</span>
               </h2>
-              <p className="mt-6 max-w-2xl text-zinc-400 text-[15px] leading-relaxed">
-                The fully-loaded annual cost of hiring the engineering and operations bench most companies need but never ship. Axiom doesn&apos;t replace that team — it gives the team you already have AI-assisted coverage across every discipline below, with a human approval before any change runs.
-              </p>
+              <ScrollRevealText
+                as="p"
+                className="mt-6 max-w-2xl text-[15px] leading-relaxed"
+                text="The fully-loaded annual cost of hiring the engineering and operations bench most companies need but never ship. Axiom doesn't replace that team — it gives the team you already have AI-assisted coverage across every discipline below, with a human approval before any change runs."
+              />
             </div>
           </Reveal>
 
@@ -413,9 +416,11 @@ export default function Home() {
               <h2 className="text-[34px] sm:text-[44px] md:text-[52px] font-medium mb-5 tracking-[-0.025em] leading-[1.05] text-white">
                 It doesn&apos;t alert. <span className="text-zinc-500">It operates.</span>
               </h2>
-              <p className="text-zinc-400 text-[15.5px] max-w-2xl leading-relaxed">
-                Axiom scans your infrastructure, reasons about what matters, builds execution plans, and applies approved changes — then learns from outcomes.
-              </p>
+              <ScrollRevealText
+                as="p"
+                className="text-[15.5px] max-w-2xl leading-relaxed"
+                text="Axiom scans your infrastructure, reasons about what matters, builds execution plans, and applies approved changes — then learns from outcomes."
+              />
             </div>
           </Reveal>
           <div className="grid md:grid-cols-3 gap-5">
@@ -992,9 +997,11 @@ export default function Home() {
           <h2 className="display-headline-lg text-white">
             Your first scan takes 5 minutes.
           </h2>
-          <p className="body-lede text-zinc-400 mt-6 mx-auto">
-            Connect a read-only IAM role. Axiom delivers your infrastructure intelligence report — cost savings, security findings, and execution plan — before your coffee gets cold.
-          </p>
+          <ScrollRevealText
+            as="p"
+            className="body-lede mt-6 mx-auto"
+            text="Connect a read-only IAM role. Axiom delivers your infrastructure intelligence report — cost savings, security findings, and execution plan — before your coffee gets cold."
+          />
 
           <div className="mt-10 mb-10 max-w-md mx-auto">
             <div className="hairline-divider" />

@@ -208,13 +208,16 @@ export function PricingClient() {
         <div className="hairline-divider" />
       </div>
 
-      {/* ── Tiers — huly.io vertical full-width row layout ────────── */}
-      <section className="relative z-10 mx-auto max-w-5xl px-6 md:px-10 py-12">
-        <div className="flex flex-col gap-3">
+      {/* ── Tiers — vertical 4-up grid, featured tier carries the
+            huly.io electric-purple glow ───────────────────────────── */}
+      <section className="relative z-10 mx-auto max-w-6xl px-6 md:px-10 py-16">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 md:gap-6 items-stretch">
           {TIERS.map((t, i) => {
             const p = pricingFor(t, period);
             const cta = ctaFor(t.id, period);
-            const ctaClass = "magnetic-sheen inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-[14px] font-medium bg-white text-zinc-950 hover:bg-zinc-100 transition-colors whitespace-nowrap";
+            const ctaClass = t.highlight
+              ? "magnetic-sheen w-full inline-flex items-center justify-center gap-2 rounded-full px-5 py-3 text-[13.5px] font-medium bg-white text-zinc-950 hover:bg-zinc-100 transition-colors"
+              : "w-full inline-flex items-center justify-center gap-2 rounded-full px-5 py-3 text-[13.5px] font-medium border border-white/[0.1] text-zinc-200 hover:bg-white/[0.04] hover:border-white/[0.18] transition-colors";
             return (
               <motion.div
                 key={t.id}
@@ -222,73 +225,79 @@ export function PricingClient() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, amount: 0.25 }}
                 transition={{ duration: 0.5, delay: i * 0.06 }}
+                className={t.highlight ? "md:scale-[1.03] md:z-10" : ""}
+                style={t.highlight ? { ["--card-radius" as string]: "20px" } : undefined}
               >
                 <SpotlightCard
                   className={[
-                    "glow-edge relative rounded-2xl border bg-white/[0.012] px-6 md:px-8 py-7 md:py-8 transition-colors hover:border-white/[0.12]",
-                    t.highlight ? "border-white/[0.14]" : "border-white/[0.05]",
+                    "relative h-full rounded-[20px] bg-[#0a0a0c] flex flex-col p-7",
+                    t.highlight
+                      ? "pricing-featured-glow"
+                      : "border border-white/[0.06] glow-edge",
                   ].join(" ")}
                 >
                   {t.highlight ? (
-                    <span className="absolute -top-3 left-8 inline-flex items-center px-3 py-1 rounded-full bg-white text-zinc-950 text-[9.5px] font-mono uppercase tracking-[0.22em] font-medium">
+                    <span className="absolute -top-3 left-1/2 -translate-x-1/2 inline-flex items-center px-3 py-1 rounded-full bg-white text-zinc-950 text-[9.5px] font-mono uppercase tracking-[0.22em] font-medium z-10">
                       Most popular
                     </span>
                   ) : null}
 
-                  <div className="grid grid-cols-1 lg:grid-cols-[260px_minmax(0,1fr)_220px] gap-x-10 gap-y-6 items-start relative z-10">
-                    {/* Column 1 — name + blurb */}
-                    <div>
-                      <p className="kicker-mono">{t.label}</p>
-                      <p className="mt-3 text-[14.5px] text-zinc-300 leading-relaxed">
-                        {t.blurb}
-                      </p>
-                    </div>
+                  <div className="relative z-10 flex-1 flex flex-col">
+                    <p className="kicker-mono">{t.label}</p>
 
-                    {/* Column 2 — features in 2-column dense grid */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3.5 lg:border-l lg:border-white/[0.05] lg:pl-10">
-                      {t.rows.map((r) => (
-                        <div key={r.label}>
-                          <p className="text-[9.5px] font-mono uppercase tracking-[0.18em] text-zinc-500">
-                            {r.label}
-                          </p>
-                          <p className="mt-1 text-[12.5px] text-zinc-200 leading-snug">
-                            {r.value}
-                          </p>
-                        </div>
-                      ))}
-                    </div>
-
-                    {/* Column 3 — price + CTA */}
-                    <div className="lg:text-right lg:border-l lg:border-white/[0.05] lg:pl-10 flex flex-col lg:items-end">
-                      <p className="text-[34px] md:text-[38px] font-medium tabular-nums text-white leading-none">
+                    <div className="mt-5">
+                      <p className="text-[40px] md:text-[44px] font-medium tabular-nums text-white leading-none">
                         {p.display}
                         {p.suffix ? (
-                          <span className="text-[12px] text-zinc-500 font-normal ml-1">{p.suffix}</span>
+                          <span className="text-[13px] text-zinc-500 font-normal ml-1">{p.suffix}</span>
                         ) : null}
                       </p>
                       {p.saveCopy ? (
-                        <p className="mt-1.5 text-[10.5px] font-mono uppercase tracking-[0.18em] text-zinc-500">
+                        <p className="mt-2 text-[10.5px] font-mono uppercase tracking-[0.18em] text-zinc-500">
                           {p.saveCopy}
                         </p>
                       ) : null}
-                      <div className="mt-5 w-full lg:w-auto">
-                        {cta.external ? (
-                          <a
-                            href={cta.href}
-                            className={ctaClass}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            data-stripe-tier={t.id}
-                            data-stripe-period={period}
-                          >
-                            {cta.label}
-                          </a>
-                        ) : (
-                          <Link href={cta.href} className={ctaClass}>
-                            {cta.label}
-                          </Link>
-                        )}
-                      </div>
+                    </div>
+
+                    <p className="mt-5 text-[13px] text-zinc-400 leading-relaxed">
+                      {t.blurb}
+                    </p>
+
+                    <div className="my-6 hairline-divider" />
+
+                    <ul className="space-y-3.5 flex-1">
+                      {t.rows.map((r) => (
+                        <li key={r.label} className="flex items-start gap-2.5">
+                          <span aria-hidden className="mt-1.5 w-1 h-1 rounded-full bg-white/40 flex-shrink-0" />
+                          <div className="flex-1">
+                            <p className="text-[9.5px] font-mono uppercase tracking-[0.18em] text-zinc-500">
+                              {r.label}
+                            </p>
+                            <p className="mt-0.5 text-[12.5px] text-zinc-200 leading-snug">
+                              {r.value}
+                            </p>
+                          </div>
+                        </li>
+                      ))}
+                    </ul>
+
+                    <div className="mt-7">
+                      {cta.external ? (
+                        <a
+                          href={cta.href}
+                          className={ctaClass}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          data-stripe-tier={t.id}
+                          data-stripe-period={period}
+                        >
+                          {cta.label}
+                        </a>
+                      ) : (
+                        <Link href={cta.href} className={ctaClass}>
+                          {cta.label}
+                        </Link>
+                      )}
                     </div>
                   </div>
                 </SpotlightCard>
