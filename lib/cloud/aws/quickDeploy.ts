@@ -24,6 +24,15 @@ export interface QuickDeployUrlInput {
   region?: string;
   /** Name to give the CloudFormation stack. Defaults to "axiom-agent". */
   stackName?: string;
+  /**
+   * AWS account id of the platform's broker IAM user. Injected into the
+   * CFN URL as `param_BrokerAccountId` so the role's trust policy is
+   * scoped to the actual broker. Skipping this lets the YAML template
+   * fall back to its baked-in default — which has historically been
+   * wrong and caused silent AssumeRole-denied loops. Always pass this
+   * in production; the parameter is only optional for unit tests.
+   */
+  brokerAccountId?: string;
 }
 
 /**
@@ -49,6 +58,12 @@ export function buildAwsQuickDeployUrl(input: QuickDeployUrlInput): string {
   params.set("templateURL", templateUrl);
   params.set("stackName", stackName);
   params.set("param_ExternalId", input.externalId);
+  if (input.brokerAccountId) {
+    if (!/^[0-9]{12}$/.test(input.brokerAccountId)) {
+      throw new Error(`Invalid brokerAccountId for quick-deploy: ${input.brokerAccountId}`);
+    }
+    params.set("param_BrokerAccountId", input.brokerAccountId);
+  }
   return `https://${region}.console.aws.amazon.com/cloudformation/home?region=${encodeURIComponent(region)}#/stacks/quickcreate?${params.toString()}`;
 }
 
