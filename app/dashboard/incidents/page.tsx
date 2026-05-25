@@ -21,6 +21,7 @@ import {
   DocumentTextIcon,
 } from "@heroicons/react/24/outline";
 import { getTenantFreshness } from "@/lib/platform/tenantFreshness";
+import { PageIntro } from "@/components/dashboard/PageIntro";
 import { TenantEmptyState } from "@/components/platform/TenantEmptyState";
 
 export const metadata: Metadata = {
@@ -37,18 +38,20 @@ export default async function IncidentsPage() {
 
   return (
     <div className="relative">
-      <div className="mb-8">
-        <div className="flex items-center gap-3 mb-3">
-          <ExclamationTriangleIcon className="h-4 w-4 text-rose-400" />
-          <p className="text-[10px] font-semibold text-rose-400 uppercase tracking-widest">Incidents</p>
-        </div>
-        <h1 className="text-3xl md:text-4xl font-bold text-white tracking-[-0.04em] mb-2">
-          When something breaks, <span className="text-gradient">AGI runs the playbook.</span>
-        </h1>
-        <p className="text-[15px] text-zinc-400 max-w-3xl leading-relaxed">
-          Open incidents land here with severity, owner, affected services, evidence, and an AI-built timeline. Native — works without PagerDuty or Opsgenie — but mirrors from them when you connect them.
-        </p>
-      </div>
+      <PageIntro
+        kicker="Operations · incidents"
+        title={<>When something breaks, <span className="text-zinc-500">AGI runs the playbook.</span></>}
+        description="Open incidents land here with severity, owner, affected services, evidence, and an AI-built timeline. Native — works without PagerDuty or Opsgenie — but mirrors from them when you connect them."
+        helps="See active incidents, the AI-generated timeline, the proposed remediation, and what's blocked on approval."
+        connectFirst="Optional: PagerDuty or Opsgenie for two-way sync. Otherwise incidents are detected from your monitoring + cloud signals."
+        engineers={["Incident Engineer", "SRE / On-call", "Cloud Engineer"]}
+        requiresApproval="Any remediation that changes infrastructure. AGI proposes; you approve."
+        actions={[
+          { label: "Configure monitoring", href: "/dashboard/observability" },
+          { label: "View pending approvals", href: "/dashboard/approvals" },
+        ]}
+        safetyNote="Remediations are proposed, never auto-executed · Every action audit-logged"
+      />
 
       {isFresh && (
         <div className="mb-8">

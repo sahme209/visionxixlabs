@@ -18,6 +18,7 @@ import type { Metadata } from "next";
 import { ArrowRightIcon, BookOpenIcon } from "@heroicons/react/24/outline";
 import { getLiveAgentActivity, relativeTime } from "@/lib/platform/livePlatformState";
 import { LiveBadge } from "@/components/platform/LiveBadge";
+import { PageIntro } from "@/components/dashboard/PageIntro";
 
 export const metadata: Metadata = {
   title: "Agent workforce · Axiom",
@@ -128,56 +129,28 @@ export default async function AgentsPage() {
 
   return (
     <div className="relative">
-      {/* Hero */}
-      <div className="mb-8 rounded-3xl border border-white/[0.05] bg-gradient-to-br from-white/[0.03] via-white/[0.015] to-transparent p-6 md:p-8 relative overflow-hidden">
-        <div
-          className="absolute inset-0 -z-10 opacity-90 pointer-events-none"
-          style={{
-            background:
-              "radial-gradient(900px 320px at 14% 0%, rgba(217,70,239,0.10), transparent 60%), radial-gradient(700px 260px at 86% 110%, rgba(99,102,241,0.10), transparent 60%)",
-          }}
-          aria-hidden
-        />
-        <p className="text-[10px] font-mono uppercase tracking-[0.22em] text-fuchsia-300/80">
-          Platform · agent workforce
-        </p>
-        <h1 className="mt-3 text-3xl md:text-4xl font-bold tracking-[-0.03em]">
-          The agent workforce
-        </h1>
-        <p className="mt-3 max-w-2xl text-[14px] text-zinc-400 leading-relaxed">
-          {total} agent kernels live on the bus, grouped by role. Each is a typed
-          pure-function module in <span className="font-mono">lib/agents/</span> with
-          a vitest suite. Only the agents marked as <em>can mutate</em> stage actions
-          that touch external systems — and those still require an operator approval.
-        </p>
-        <div className="mt-5 flex flex-wrap items-center gap-2 text-[11px] font-mono">
-          <span className="rounded-full border border-violet-500/30 bg-violet-500/10 text-violet-300 px-2.5 py-1">
-            {total} agents
-          </span>
-          <span className="rounded-full border border-amber-500/30 bg-amber-500/10 text-amber-300 px-2.5 py-1">
-            {mutating} can mutate (approval-gated)
-          </span>
-          {live.ok ? (
-            <>
-              <span className="rounded-full border border-emerald-500/30 bg-emerald-500/10 text-emerald-200 px-2.5 py-1 inline-flex items-center gap-1.5">
-                <LiveBadge />
-                {live.totalMessages} bus messages · 24h
-              </span>
-              <span className="rounded-full border border-emerald-500/30 bg-emerald-500/10 text-emerald-200 px-2.5 py-1 inline-flex items-center gap-1.5">
-                <LiveBadge />
-                {live.totalRuns} agent runs · 24h
-              </span>
-            </>
-          ) : null}
-          <Link
-            href="/dashboard/agent-bus"
-            className="ml-auto inline-flex items-center gap-1 text-[11px] text-violet-300 hover:text-violet-200 transition"
-          >
-            Live bus
-            <ArrowRightIcon className="h-3 w-3" />
-          </Link>
+      <PageIntro
+        kicker="Platform · agent registry"
+        title="The agent workforce"
+        description={`${total} agent kernels live on the bus, grouped by role. Each is a typed pure-function module in lib/agents/ with a vitest suite. Only ${mutating} can mutate — and those still require operator approval.`}
+        helps="See which agents are deployed, what they can do, and watch the live bus traffic in real time."
+        connectFirst="No setup needed. Agents are platform-wide; once a connector is wired they start producing real proposals."
+        engineers={["Council", "Cloud", "Security", "Incident", "DevOps", "FinOps"]}
+        requiresApproval={`${mutating} mutating agents — every proposed action requires human approval before execution.`}
+        actions={[
+          { label: "View live bus", href: "/dashboard/agent-bus" },
+          { label: "Agent activity", href: "/dashboard/agent-activity" },
+          { label: "Tool access", href: "/dashboard/agent-tools" },
+        ]}
+        safetyNote="Pure-function kernels · 100% test coverage · Approval-gated mutations · Immutable audit trail"
+      />
+
+      {live.ok ? (
+        <div className="mb-8 -mt-4 flex flex-wrap items-center gap-2 text-[11px] font-mono">
+          <span className="status-pill"><span className="status-dot breathe" />{live.totalMessages} bus messages · 24h</span>
+          <span className="status-pill"><span className="status-dot breathe" />{live.totalRuns} agent runs · 24h</span>
         </div>
-      </div>
+      ) : null}
 
       {live.ok && live.recentRuns.length > 0 ? (
         <section className="mb-8 rounded-2xl border border-emerald-500/20 bg-emerald-500/[0.04] p-4 md:p-5">

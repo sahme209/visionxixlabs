@@ -27,6 +27,7 @@ import {
 } from "@heroicons/react/24/outline";
 import { getTenantFreshness } from "@/lib/platform/tenantFreshness";
 import { TenantEmptyState } from "@/components/platform/TenantEmptyState";
+import { PageIntro } from "@/components/dashboard/PageIntro";
 
 export const metadata: Metadata = {
   title: "Observability · Axiom",
@@ -70,18 +71,20 @@ export default async function ObservabilityPage() {
 
   return (
     <div className="relative">
-      <div className="mb-8">
-        <div className="flex items-center gap-3 mb-3">
-          <SignalIcon className="h-4 w-4 text-cyan-400" />
-          <p className="text-[10px] font-semibold text-cyan-400 uppercase tracking-widest">Observability</p>
-        </div>
-        <h1 className="text-3xl md:text-4xl font-bold text-white tracking-[-0.04em] mb-2">
-          Native service health, <span className="text-gradient">honestly sourced.</span>
-        </h1>
-        <p className="text-[15px] text-zinc-400 max-w-3xl leading-relaxed">
-          Connect your existing observability tools, ingest cloud-native telemetry, or run our built-in pingers and desktop agent. Every signal carries a source-of-truth pill so you always know where it came from.
-        </p>
-      </div>
+      <PageIntro
+        kicker="Operations · observability"
+        title={<>Native service health, <span className="text-zinc-500">honestly sourced.</span></>}
+        description="Connect your existing observability tools, ingest cloud-native telemetry, or run our built-in pingers and desktop agent. Every signal carries a source-of-truth pill so you always know where it came from."
+        helps="See service health, error budgets, and SLO breaches across every connected source in one place."
+        connectFirst="Grafana, Datadog, Prometheus, or Dynatrace — or rely on cloud-native CloudWatch / Azure Monitor / GCP Cloud Monitoring once a cloud connector is wired."
+        engineers={["Monitoring Engineer", "Incident Engineer", "SRE / On-call"]}
+        requiresApproval="Alert routing edits, SLO definition changes, on-call rotation updates."
+        actions={[
+          { label: "Connect a monitoring source", href: "/dashboard/connectors" },
+          { label: "View incidents", href: "/dashboard/incidents" },
+        ]}
+        safetyNote="Read-only ingestion · Every signal labeled with source mode + freshness"
+      />
 
       {!hasAnything && (
         <div className="mb-8">

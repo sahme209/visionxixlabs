@@ -16,6 +16,7 @@ import {
   ArrowPathIcon,
   ScaleIcon,
 } from "@heroicons/react/24/outline";
+import { PageIntro } from "@/components/dashboard/PageIntro";
 
 interface ActivityRow {
   agent: string;
@@ -78,46 +79,44 @@ export default function AgentActivityPage() {
 
   return (
     <div className="relative">
-      <div className="relative mb-8 rounded-3xl border border-white/[0.05] bg-gradient-to-br from-white/[0.025] via-white/[0.015] to-transparent p-6 md:p-8 overflow-hidden">
-        <div className="flex items-center gap-2 mb-3 flex-wrap">
-          <span className="inline-flex items-center gap-2 rounded-full border border-white/[0.06] bg-white/[0.02] px-2.5 py-1">
-            <ChartBarIcon className="h-3.5 w-3.5 text-indigo-300" />
-            <span className="text-[10px] font-semibold uppercase tracking-widest text-indigo-300">
-              Agent Activity · throughput_plus_calibration
-            </span>
-          </span>
-          <button
-            onClick={() => load(windowHours)}
-            disabled={loading}
-            className="ml-2 inline-flex items-center gap-1.5 text-[11px] font-mono px-2.5 py-1 rounded-full border bg-white/[0.02] text-zinc-300 border-white/[0.06] hover:text-white disabled:opacity-50"
-          >
-            <ArrowPathIcon className={`h-3 w-3 ${loading ? "animate-spin" : ""}`} />
-            Refresh
-          </button>
-        </div>
-        <h1 className="text-4xl md:text-5xl font-bold text-white tracking-[-0.045em] leading-[1.05] mb-3">
-          How busy are <span className="text-gradient">your agents?</span>
-        </h1>
-        <p className="text-[15px] text-zinc-400 max-w-2xl leading-relaxed">
-          Per-role throughput on the message bus, plus a calibration scorecard that compares each agent&apos;s self-declared
-          confidence against the operator-decided approval rate.
-        </p>
+      <PageIntro
+        kicker="AI workforce · agent activity"
+        title={<>How busy are <span className="text-zinc-500">your agents?</span></>}
+        description="Per-role throughput on the message bus, plus a calibration scorecard that compares each agent's self-declared confidence against the operator-decided approval rate."
+        helps="See which agents are doing the most work, which ones over-state confidence, and where calibration is drifting."
+        connectFirst="No setup needed. Activity populates the moment your first connector triggers an agent run."
+        engineers={["All agent roles"]}
+        requiresApproval="Read-only. Calibration is observational, not actionable."
+        actions={[
+          { label: "View agent registry", href: "/dashboard/agents" },
+          { label: "Live bus", href: "/dashboard/agent-bus" },
+        ]}
+        safetyNote="Read-only metrics · Calibration is observational · Source data: AgentBusMessage rows"
+      />
 
-        <div className="mt-5 flex items-center gap-1.5 flex-wrap">
-          {[1, 6, 24, 168, 720].map((h) => (
-            <button
-              key={h}
-              onClick={() => setWindowHours(h)}
-              className={`text-[10px] font-mono px-2 py-0.5 rounded-full border transition ${
-                windowHours === h
-                  ? "bg-indigo-500/15 text-indigo-200 border-indigo-500/30"
-                  : "bg-white/[0.02] text-zinc-400 border-white/[0.06] hover:text-white"
-              }`}
-            >
-              {h < 24 ? `${h}h` : h === 24 ? "24h" : h === 168 ? "7d" : "30d"}
-            </button>
-          ))}
-        </div>
+      <div className="mb-6 flex items-center gap-1.5 flex-wrap">
+        <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-wider mr-1">Window:</span>
+        {[1, 6, 24, 168, 720].map((h) => (
+          <button
+            key={h}
+            onClick={() => setWindowHours(h)}
+            className={`text-[10px] font-mono px-2 py-0.5 rounded-full border transition ${
+              windowHours === h
+                ? "bg-indigo-500/15 text-indigo-200 border-indigo-500/30"
+                : "bg-white/[0.02] text-zinc-400 border-white/[0.06] hover:text-white"
+            }`}
+          >
+            {h < 24 ? `${h}h` : h === 24 ? "24h" : h === 168 ? "7d" : "30d"}
+          </button>
+        ))}
+        <button
+          onClick={() => load(windowHours)}
+          disabled={loading}
+          className="ml-2 inline-flex items-center gap-1.5 text-[11px] font-mono px-2.5 py-1 rounded-full border bg-white/[0.02] text-zinc-300 border-white/[0.06] hover:text-white disabled:opacity-50"
+        >
+          <ArrowPathIcon className={`h-3 w-3 ${loading ? "animate-spin" : ""}`} />
+          Refresh
+        </button>
       </div>
 
       {error && (

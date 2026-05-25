@@ -18,6 +18,7 @@ import {
   ShieldCheckIcon,
   ArrowRightIcon,
 } from "@heroicons/react/24/outline";
+import { PageIntro } from "@/components/dashboard/PageIntro";
 
 interface ProviderPosture {
   provider: string;
@@ -83,27 +84,20 @@ export default function CostOverviewPage() {
 
   return (
     <div className="relative">
-      <div className="relative mb-8 rounded-3xl border border-white/[0.05] bg-gradient-to-br from-white/[0.025] via-white/[0.015] to-transparent p-6 md:p-8 overflow-hidden">
-        <div className="absolute inset-0 -z-10 opacity-90 pointer-events-none" style={{ background: "radial-gradient(900px 320px at 12% 0%, rgba(16,185,129,0.10), transparent 60%), radial-gradient(700px 260px at 88% 110%, rgba(245,158,11,0.06), transparent 60%)" }} aria-hidden />
-        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/[0.08] to-transparent" aria-hidden />
-
-        <div className="flex items-center gap-2 mb-3 flex-wrap">
-          <span className="inline-flex items-center gap-2 rounded-full border border-white/[0.06] bg-white/[0.02] px-2.5 py-1">
-            <CurrencyDollarIcon className="h-3.5 w-3.5 text-emerald-300" />
-            <span className="text-[10px] font-semibold uppercase tracking-widest text-emerald-300">
-              Cloud cost overview
-            </span>
-          </span>
-          {report?.generatedAt && (
-            <span className="text-[10px] font-mono text-zinc-500">last sync {new Date(report.generatedAt).toLocaleTimeString()}</span>
-          )}
-        </div>
-        <h1 className="text-4xl md:text-5xl font-bold text-white tracking-[-0.045em] leading-[1.05] mb-3">
-          Every cloud. <span className="text-gradient">Every dollar.</span>
-        </h1>
-        <p className="text-[15px] text-zinc-400 max-w-2xl leading-relaxed">
-          AWS + Azure + GCP + GitHub + Stripe + Vercel — confirmed cost numbers only. Zero fabricated savings, ever.
-        </p>
+      <PageIntro
+        kicker={`FinOps · cost overview${report?.generatedAt ? ` · last sync ${new Date(report.generatedAt).toLocaleTimeString()}` : ""}`}
+        title={<>Every cloud. <span className="text-zinc-500">Every dollar.</span></>}
+        description="AWS + Azure + GCP + GitHub + Stripe + Vercel — confirmed cost numbers only. Zero fabricated savings, ever."
+        helps="See spend by provider, period-over-period delta, rightsizing candidates, and unused-resource cleanup queues."
+        connectFirst="A cloud connector to start. Stripe + Vercel + GitHub round out the picture for full operational spend."
+        engineers={["FinOps Engineer", "Cloud Engineer"]}
+        requiresApproval="Rightsizing changes · reservation purchases · unused-resource deletions. All staged, not auto-applied."
+        actions={[
+          { label: "Connect a cloud", href: "/dashboard/connectors" },
+          { label: "View approvals", href: "/dashboard/approvals" },
+        ]}
+        safetyNote="Read-only · No fabricated savings · Every recommendation cites the source line item"
+      />
 
         {report && (
           <div className="mt-5 grid grid-cols-2 md:grid-cols-4 gap-3">

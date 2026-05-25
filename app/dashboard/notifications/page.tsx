@@ -27,6 +27,7 @@ import {
   DocumentTextIcon,
   ClockIcon,
 } from "@heroicons/react/24/outline";
+import { PageIntro } from "@/components/dashboard/PageIntro";
 
 type Severity = "info" | "warning" | "critical";
 type SourceMode = "live" | "partial_live" | "preview" | "foundation" | "planned" | "blocked" | "disabled" | "unknown";
@@ -109,41 +110,26 @@ export default function NotificationsPage() {
 
   return (
     <div className="relative">
-      {/* Hero */}
-      <div className="relative mb-8 rounded-3xl border border-white/[0.05] bg-gradient-to-br from-white/[0.025] via-white/[0.015] to-transparent p-6 md:p-8 overflow-hidden">
-        <div
-          className="absolute inset-0 -z-10 opacity-90 pointer-events-none"
-          style={{
-            background:
-              "radial-gradient(900px 320px at 12% 0%, rgba(99,102,241,0.10), transparent 60%), radial-gradient(700px 260px at 88% 110%, rgba(45,212,191,0.06), transparent 60%)",
-          }}
-          aria-hidden
-        />
-        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/[0.08] to-transparent" aria-hidden />
+      <PageIntro
+        kicker={`Team workflows · notifications${report?.generatedAt ? ` · last sync ${new Date(report.generatedAt).toLocaleTimeString()}` : ""}`}
+        title={<>What needs <span className="text-zinc-500">attention.</span></>}
+        description="Every notification is derived from a real canonical event. No random noise, no fake alerts — review only, no action taken."
+        helps="See critical, warning, and informational signals derived from cloud + monitoring + agent activity, with the source link for every one."
+        connectFirst="Connectors that produce events: cloud, monitoring, GitHub. Slack/Teams downstream for outbound digests."
+        engineers={["Notification routing", "Incident Engineer"]}
+        requiresApproval="Notification routing rules + Slack/Teams outbound digest configuration."
+        actions={[
+          { label: "Configure outbound digest", href: "/dashboard/outbound-digest" },
+          { label: "Manage connectors", href: "/dashboard/connectors" },
+        ]}
+        safetyNote="Review-only · Every signal cites its canonical source event"
+      />
 
-        <div className="grid md:grid-cols-[1fr_auto] items-end gap-6">
-          <div className="min-w-0">
-            <div className="flex items-center gap-2 flex-wrap">
-              <span className="inline-flex items-center gap-2 rounded-full border border-white/[0.06] bg-white/[0.02] px-2.5 py-1">
-                <BellAlertIcon className="h-3.5 w-3.5 text-amber-300" />
-                <span className="text-[10px] font-semibold uppercase tracking-widest text-amber-300">
-                  Notifications · notifications_review_only_no_action_taken
-                </span>
-              </span>
-              {report?.generatedAt && (
-                <span className="text-[10px] font-mono text-zinc-500">last sync {new Date(report.generatedAt).toLocaleTimeString()}</span>
-              )}
-            </div>
-            <h1 className="text-4xl md:text-5xl font-bold text-white tracking-[-0.045em] leading-[1.05] mt-3 mb-3">
-              What needs <span className="text-gradient">attention.</span>
-            </h1>
-            <p className="text-[15px] text-zinc-400 max-w-2xl leading-relaxed">
-              Every notification is derived from a real canonical event. <span className="text-zinc-500">No random noise. No fake alerts.</span>
-            </p>
-          </div>
-
+      {/* Hidden md+ summary card kept for layout — Stat is still useful here */}
+      <div className="hidden md:flex items-end gap-4 rounded-2xl border border-white/[0.06] bg-white/[0.025] backdrop-blur-sm px-5 py-4 mb-6">
+        <div className="min-w-0">
           {report && (
-            <div className="hidden md:flex items-end gap-4 rounded-2xl border border-white/[0.06] bg-white/[0.025] backdrop-blur-sm px-5 py-4">
+            <div className="flex items-end gap-4">
               <Stat label="Critical" value={report.summary.critical} tone={report.summary.critical > 0 ? "text-rose-300" : "text-zinc-500"} />
               <div className="w-px h-9 bg-white/[0.08]" />
               <Stat label="Warning" value={report.summary.warning} tone={report.summary.warning > 0 ? "text-amber-300" : "text-zinc-500"} />

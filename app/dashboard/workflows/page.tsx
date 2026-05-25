@@ -15,6 +15,7 @@ import {
   ArrowRightIcon,
 } from "@heroicons/react/24/outline";
 import { Reveal } from "@/components/motion/Reveal";
+import { PageIntro } from "@/components/dashboard/PageIntro";
 import { Stagger } from "@/components/motion/Stagger";
 import { WorkflowOrchestrator } from "@/components/operations/WorkflowOrchestrator";
 
@@ -77,23 +78,20 @@ export default function WorkflowsPage() {
 
   return (
     <div className="relative">
-      {/* Hero */}
-      <Reveal direction="up" blur>
-        <div className="mb-8">
-          <div className="flex items-center gap-3 mb-3">
-            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_10px_rgba(52,211,153,0.6)]" />
-            <p className="text-[10px] font-semibold text-emerald-400 uppercase tracking-widest">
-              Continuous operations · Always on
-            </p>
-          </div>
-          <h1 className="text-3xl md:text-4xl font-bold text-white tracking-[-0.04em] mb-2">
-            Continuous <span className="text-gradient">Workflows.</span>
-          </h1>
-          <p className="text-dim-paragraph text-base max-w-2xl leading-relaxed">
-            What Axiom is doing right now and what it will do next. <span className="dim-1">Recurring scans, drift detection, execution queues, and post-execution verification run continuously in the background — without you watching.</span>
-          </p>
-        </div>
-      </Reveal>
+      <PageIntro
+        kicker="Automation · continuous workflows"
+        title={<>Continuous <span className="text-zinc-500">workflows.</span></>}
+        description="What Axiom is doing right now and what it will do next. Recurring scans, drift detection, execution queues, and post-execution verification run continuously — without you watching."
+        helps="See active scans, drift alarms, queued executions, and verified rollback paths in one continuous stream."
+        connectFirst="A cloud connector so there's something to watch. Then add monitoring + IaC sources for richer triggers."
+        engineers={["DevOps Engineer", "SRE / On-call", "Cloud Engineer"]}
+        requiresApproval="Workflow definitions, trigger schedules, post-execution remediation actions."
+        actions={[
+          { label: "View approvals", href: "/dashboard/approvals" },
+          { label: "Configure scans", href: "/dashboard/scheduled-scans" },
+        ]}
+        safetyNote="Background runs are read-only · Any write requires explicit approval"
+      />
 
       {/* Past / Present / Future triad */}
       <Reveal direction="up" delay={0.06}>

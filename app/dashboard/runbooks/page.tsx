@@ -18,6 +18,7 @@ import {
   ClockIcon,
   ExclamationTriangleIcon,
 } from "@heroicons/react/24/outline";
+import { PageIntro } from "@/components/dashboard/PageIntro";
 
 type Severity = "critical" | "high" | "medium" | "low" | "info";
 type ActionRisk = "safe_revert" | "policy_change" | "needs_human_triage";
@@ -133,39 +134,22 @@ export default function RunbooksPage() {
 
   return (
     <div className="relative">
-      <div className="relative mb-8 rounded-3xl border border-white/[0.05] bg-gradient-to-br from-white/[0.025] via-white/[0.015] to-transparent p-6 md:p-8 overflow-hidden">
-        <div
-          className="absolute inset-0 -z-10 opacity-90 pointer-events-none"
-          style={{
-            background:
-              "radial-gradient(900px 320px at 12% 0%, rgba(124,58,237,0.10), transparent 60%), radial-gradient(700px 260px at 88% 110%, rgba(16,185,129,0.06), transparent 60%)",
-          }}
-          aria-hidden
-        />
-        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/[0.08] to-transparent" aria-hidden />
+      <PageIntro
+        kicker={`Automation · runbooks${report ? ` · ${new Date(report.generatedAt).toLocaleTimeString()}` : ""}`}
+        title={<>AGI proposes. <span className="text-zinc-500">Humans approve.</span></>}
+        description="For every high/critical CloudTrail event, Axiom auto-drafts a typed runbook with a reversal action and a hardening policy. Nothing executes — operators review and push to Approval Packets."
+        helps="See drafted remediation runbooks, the events that triggered them, and the reversal/hardening steps proposed."
+        connectFirst="AWS connector with CloudTrail access. Azure + GCP equivalents land as those connectors mature."
+        engineers={["Incident Engineer", "Security Engineer", "Cloud Engineer"]}
+        requiresApproval="Every runbook execution. Drafting is automatic; execution is human-gated via Approval Packets."
+        actions={[
+          { label: "View approvals", href: "/dashboard/approvals" },
+          { label: "Manage cloud connectors", href: "/dashboard/connectors" },
+        ]}
+        safetyNote="Drafts only · approval_only_no_execution contract · reversible by design"
+      />
 
-        <div className="flex items-center gap-2 mb-3 flex-wrap">
-          <span className="inline-flex items-center gap-2 rounded-full border border-white/[0.06] bg-white/[0.02] px-2.5 py-1">
-            <WrenchScrewdriverIcon className="h-3.5 w-3.5 text-violet-300" />
-            <span className="text-[10px] font-semibold uppercase tracking-widest text-violet-300">
-              Remediation Runbooks · approval_only_no_execution
-            </span>
-          </span>
-          {report && (
-            <span className="text-[10px] font-mono text-zinc-500">
-              {new Date(report.generatedAt).toLocaleTimeString()} · {report.durationMs}ms
-            </span>
-          )}
-        </div>
-        <h1 className="text-4xl md:text-5xl font-bold text-white tracking-[-0.045em] leading-[1.05] mb-3">
-          AGI proposes. <span className="text-gradient">Humans approve.</span>
-        </h1>
-        <p className="text-[15px] text-zinc-400 max-w-2xl leading-relaxed">
-          For every high/critical CloudTrail event, Axiom auto-drafts a typed runbook with a reversal action and a
-          hardening policy. Nothing executes — operators review and push to Approval Packets.
-        </p>
-
-        <div className="mt-5 flex items-center gap-2 flex-wrap">
+      <div className="mb-4 flex items-center gap-2 flex-wrap">
           <ClockIcon className="h-4 w-4 text-zinc-500" />
           {LOOKBACK_OPTIONS.map((o) => (
             <button
@@ -190,20 +174,19 @@ export default function RunbooksPage() {
           </button>
         </div>
 
-        {report && (
-          <div className="mt-5 grid grid-cols-2 md:grid-cols-4 gap-3">
-            <Stat label="Events inspected" value={report.totalEventsInspected.toLocaleString()} tone="zinc" />
-            <Stat label="Runbooks drafted" value={report.totalRunbooks.toLocaleString()} tone="violet" icon={WrenchScrewdriverIcon} />
-            <Stat
-              label="High / critical"
-              value={report.highOrCriticalCount.toLocaleString()}
-              tone={report.highOrCriticalCount > 0 ? "rose" : "emerald"}
-              icon={ExclamationTriangleIcon}
-            />
-            <Stat label="Lookback" value={`${report.lookbackMinutes}m`} tone="zinc" />
-          </div>
-        )}
-      </div>
+      {report && (
+        <div className="mb-6 grid grid-cols-2 md:grid-cols-4 gap-3">
+          <Stat label="Events inspected" value={report.totalEventsInspected.toLocaleString()} tone="zinc" />
+          <Stat label="Runbooks drafted" value={report.totalRunbooks.toLocaleString()} tone="violet" icon={WrenchScrewdriverIcon} />
+          <Stat
+            label="High / critical"
+            value={report.highOrCriticalCount.toLocaleString()}
+            tone={report.highOrCriticalCount > 0 ? "rose" : "emerald"}
+            icon={ExclamationTriangleIcon}
+          />
+          <Stat label="Lookback" value={`${report.lookbackMinutes}m`} tone="zinc" />
+        </div>
+      )}
 
       {loading && (
         <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 mb-6 text-[11px] font-mono text-zinc-500 uppercase tracking-[0.18em]">
