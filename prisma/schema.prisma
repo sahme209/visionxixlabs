@@ -2091,7 +2091,11 @@ model WebhookDelivery {
 model ConnectorSetupSession {
   id              String               @id @default(cuid())
   organizationId  String
-  provider        CloudProvider
+  /// Plain string (not CloudProvider enum) — the existing CloudProvider
+  /// type isn't declared in any migration file, so referencing it here
+  /// would break the new-table migration on prod. The application layer
+  /// gates allowed values via ALLOWED_PROVIDERS in connectorSetupEventEmit.
+  provider        String
   status          ConnectorSetupStatus @default(not_connected)
   /// Last legal transition's event kind, for fast "what just happened" reads.
   lastEventKind   String?
