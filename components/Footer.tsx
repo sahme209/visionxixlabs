@@ -33,7 +33,7 @@ const productLinks = [
   { href: "/operator/onboarding", label: "Run Axiom" },
   { href: "/axiom/releaseops", label: "Axiom ReleaseOps" },
   { href: "/download", label: "Download Desktop" },
-  { href: "/operator/pricing", label: "Pricing" },
+  { href: "/plans", label: "Pricing" },
   { href: "/axiom", label: "About Axiom" },
   { href: "/cloud-solutions", label: "Multi-Cloud" },
 ];
