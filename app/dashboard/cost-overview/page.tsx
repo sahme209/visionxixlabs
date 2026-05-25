@@ -99,20 +99,19 @@ export default function CostOverviewPage() {
         safetyNote="Read-only · No fabricated savings · Every recommendation cites the source line item"
       />
 
-        {report && (
-          <div className="mt-5 grid grid-cols-2 md:grid-cols-4 gap-3">
-            <Stat label="Providers reporting" value={`${report.summary.liveProviderCount}/${report.summary.providerCount}`} tone={report.summary.liveProviderCount > 0 ? "emerald" : "amber"} />
-            <Stat label="Last 30 days" value={fmt(report.summary.totalConfirmedDollarsLast30d)} tone="emerald" />
-            <Stat label="Prev 30 days" value={fmt(report.summary.totalConfirmedDollarsPrev30d)} tone="zinc" />
-            <Stat
-              label="Δ vs prior"
-              value={deltaPct !== undefined ? `${deltaPct >= 0 ? "+" : ""}${deltaPct.toFixed(1)}%` : "—"}
-              tone={deltaPct === undefined ? "zinc" : deltaPct >= 20 ? "rose" : deltaPct <= -10 ? "emerald" : "amber"}
-              icon={deltaPct === undefined ? undefined : deltaPct >= 0 ? ArrowTrendingUpIcon : ArrowTrendingDownIcon}
-            />
-          </div>
-        )}
-      </div>
+      {report && (
+        <div className="mb-6 grid grid-cols-2 md:grid-cols-4 gap-3">
+          <Stat label="Providers reporting" value={`${report.summary.liveProviderCount}/${report.summary.providerCount}`} tone={report.summary.liveProviderCount > 0 ? "emerald" : "amber"} />
+          <Stat label="Last 30 days" value={fmt(report.summary.totalConfirmedDollarsLast30d)} tone="emerald" />
+          <Stat label="Prev 30 days" value={fmt(report.summary.totalConfirmedDollarsPrev30d)} tone="zinc" />
+          <Stat
+            label="Δ vs prior"
+            value={deltaPct !== undefined ? `${deltaPct >= 0 ? "+" : ""}${deltaPct.toFixed(1)}%` : "—"}
+            tone={deltaPct === undefined ? "zinc" : deltaPct >= 20 ? "rose" : deltaPct <= -10 ? "emerald" : "amber"}
+            icon={deltaPct === undefined ? undefined : deltaPct >= 0 ? ArrowTrendingUpIcon : ArrowTrendingDownIcon}
+          />
+        </div>
+      )}
 
       {loading && <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 mb-6 text-[12px] text-zinc-400">Loading your cloud cost data…</div>}
       {!loading && error && <div className="rounded-2xl border border-amber-500/[0.18] bg-amber-500/[0.04] p-5 mb-6 text-[13px] text-zinc-300">{error}</div>}
