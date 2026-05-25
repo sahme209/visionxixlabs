@@ -88,10 +88,32 @@ function humanAge(seconds: number): string {
   return `${Math.floor(h / 24)}d ago`;
 }
 
+/**
+ * Maps a status + ctaLabel to the operator-allowed event kind the
+ * /api/dashboard/alert-event POST expects. Returns null for non-actionable
+ * CTAs (resolved/auto_resolved/expired/quiet).
+ */
+function ctaEventKindFor(status: string): string | null {
+  switch (status) {
+    case "fired":
+    case "escalated":     return "operator_acknowledged";
+    case "acknowledged":  return "operator_resolved";
+    case "snoozed":       return "operator_resolved";
+    default:              return null;
+  }
+}
+
 export default function AlertEscalationsPage() {
   const [resp, setResp] = useState<RespBody | null>(null);
   const [loading, setLoading] = useState(true);
   const [networkError, setNetworkError] = useState<string | null>(null);
+  const [pendingSignal, setPendingSignal] = useState<string | null>(null);
+  const [actionError, setActionError] = useState<string | null>(null);
+
+  const refresh = async () => {
+    const r = await fetch("/api/dashboard/alert-digest", { credentials: "include" });
+    setResp((await r.json()) as RespBody);
+  };
 
   useEffect(() => {
     let cancelled = false;
@@ -102,6 +124,48 @@ export default function AlertEscalationsPage() {
       .finally(() => { if (!cancelled) setLoading(false); });
     return () => { cancelled = true; };
   }, []);
+
+  const emit = async (signalRef: string, status: string) => {
+    const eventKind = ctaEventKindFor(status);
+    if (!eventKind) return;
+    setPendingSignal(signalRef);
+    setActionError(null);
+    try {
+      const r = await fetch("/api/dashboard/alert-event", {
+        method: "POST",
+        credentials: "include",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ signalRef, eventKind }),
+      });
+      const body = await r.json() as { ok: boolean; error?: string; hint?: string };
+      if (!body.ok) setActionError(body.hint ?? body.error ?? `Request failed (${r.status})`);
+      else await refresh();
+    } catch (err) {
+      setActionError(err instanceof Error ? err.message : "Network error.");
+    } finally {
+      setPendingSignal(null);
+    }
+  };
+
+  const snooze = async (signalRef: string, snoozeMinutes: number) => {
+    setPendingSignal(signalRef);
+    setActionError(null);
+    try {
+      const r = await fetch("/api/dashboard/alert-event", {
+        method: "POST",
+        credentials: "include",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ signalRef, eventKind: "operator_snoozed", snoozeMinutes }),
+      });
+      const body = await r.json() as { ok: boolean; error?: string; hint?: string };
+      if (!body.ok) setActionError(body.hint ?? body.error ?? `Request failed (${r.status})`);
+      else await refresh();
+    } catch (err) {
+      setActionError(err instanceof Error ? err.message : "Network error.");
+    } finally {
+      setPendingSignal(null);
+    }
+  };
 
   const data = resp?.ok ? resp.data : null;
   const errorBody = resp && !resp.ok ? resp : null;
@@ -157,6 +221,12 @@ export default function AlertEscalationsPage() {
         </div>
       )}
 
+      {actionError && (
+        <div className="rounded-2xl border border-amber-500/[0.18] bg-amber-500/[0.04] p-3 mb-4 text-[12.5px] text-zinc-300">
+          {actionError}
+        </div>
+      )}
+
       {data && (
         <>
           <div className="mb-6 grid grid-cols-2 md:grid-cols-4 gap-3">
@@ -172,7 +242,15 @@ export default function AlertEscalationsPage() {
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-8">
-              {data.alerts.map((a) => <AlertCard key={a.signalRef} a={a} />)}
+              {data.alerts.map((a) => (
+                <AlertCard
+                  key={a.signalRef}
+                  a={a}
+                  pending={pendingSignal === a.signalRef}
+                  onCta={() => emit(a.signalRef, a.status)}
+                  onSnooze={(minutes) => snooze(a.signalRef, minutes)}
+                />
+              ))}
             </div>
           )}
 
@@ -191,7 +269,18 @@ export default function AlertEscalationsPage() {
   );
 }
 
-function AlertCard({ a }: { a: AlertDigest }) {
+function AlertCard({
+  a, pending, onCta, onSnooze,
+}: {
+  a: AlertDigest;
+  pending: boolean;
+  onCta: () => void;
+  onSnooze: (minutes: number) => void;
+}) {
+  const eventKindForCta = ctaEventKindFor(a.status);
+  const ctaClickable = a.suggested.tone !== "none" && eventKindForCta !== null;
+  const canSnooze = a.open && a.status !== "snoozed";
+
   return (
     <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-4">
       <div className="flex items-start justify-between gap-2 mb-3">
@@ -216,16 +305,28 @@ function AlertCard({ a }: { a: AlertDigest }) {
         <p className="text-[11.5px] text-amber-200/90 leading-snug mb-3 italic">{a.suggested.hint}</p>
       )}
 
-      {a.suggested.tone !== "none" && (
-        <button
-          type="button"
-          disabled
-          className={`mb-3 inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[12px] font-medium transition opacity-60 ${TONE_BTN[a.suggested.tone]}`}
-          title="CTAs are wired in Phase 433"
-        >
-          {a.suggested.ctaLabel}
-        </button>
-      )}
+      <div className="flex flex-wrap items-center gap-2 mb-3">
+        {a.suggested.tone !== "none" && (
+          <button
+            type="button"
+            disabled={pending || !ctaClickable}
+            onClick={ctaClickable ? onCta : undefined}
+            className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[12px] font-medium transition disabled:opacity-60 ${TONE_BTN[a.suggested.tone]}`}
+          >
+            {a.suggested.ctaLabel}
+          </button>
+        )}
+        {canSnooze && (
+          <button
+            type="button"
+            disabled={pending}
+            onClick={() => onSnooze(15)}
+            className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[12px] font-medium transition disabled:opacity-60 ${TONE_BTN.secondary}`}
+          >
+            Snooze 15m
+          </button>
+        )}
+      </div>
 
       {a.timeline.length > 0 && (
         <div className="border-t border-white/[0.04] pt-2 mt-1">
