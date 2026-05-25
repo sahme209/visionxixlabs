@@ -182,6 +182,20 @@ enum ApprovalChainStatus {
   bypassed
 }
 
+// Phase 414 — connector onboarding state machine. Mirrors the closed-union
+// ConnectorSetupStatus in lib/connectors/connectorSetupSession.ts.
+enum ConnectorSetupStatus {
+  not_connected
+  setup_started
+  waiting_for_provider
+  validating
+  connected
+  failed
+  disconnected
+  revoked
+  needs_attention
+}
+
 model User {
   id                   String    @id @default(cuid())
   email                String    @unique
@@ -2058,4 +2072,73 @@ model WebhookDelivery {
   @@index([organizationId, createdAt])
   @@index([status, nextAttemptAt])
   @@index([eventId])
+}
+
+// ---------------------------------------------------------------------------
+// Phase 414 — connector onboarding state machine, persisted.
+//
+// One row per (organization, provider). The kernel in
+// lib/connectors/connectorSetupSession.ts is the source of truth for legal
+// transitions; this row stores the *current* status. Every transition attempt
+// — legal or illegal — emits an append-only ConnectorSetupTransition row so
+// the dashboard sidebar dot, cron health check, and audit log can read the
+// same canonical history.
+//
+// Why no relation to User: org-scoped. The actorUserId on the transition row
+// captures *who* did it; the org owns the connector lifecycle.
+// ---------------------------------------------------------------------------
+
+model ConnectorSetupSession {
+  id              String               @id @default(cuid())
+  organizationId  String
+  provider        CloudProvider
+  status          ConnectorSetupStatus @default(not_connected)
+  /// Last legal transition's event kind, for fast "what just happened" reads.
+  lastEventKind   String?
+  /// Last error code from a validation_failed event — surfaced in UI.
+  lastErrorCode   String?
+  /// When the connector last reached `connected` (for "live for X days" pills).
+  firstConnectedAt DateTime?
+  /// Updated on every successful transition for sidebar staleness checks.
+  lastTransitionAt DateTime             @default(now())
+  createdAt       DateTime             @default(now())
+  updatedAt       DateTime             @updatedAt
+
+  transitions ConnectorSetupTransition[]
+
+  @@unique([organizationId, provider])
+  @@index([organizationId])
+  @@index([status])
+}
+
+model ConnectorSetupTransition {
+  id             String               @id @default(cuid())
+  sessionId      String
+  /// Status the session was in when the event arrived.
+  fromStatus     ConnectorSetupStatus
+  /// Status the session moved to. Equal to fromStatus when the transition was illegal.
+  toStatus       ConnectorSetupStatus
+  /// Closed-union event kind from ConnectorSetupEvent. Stored as String so the
+  /// audit row can record illegal events (e.g. event kinds added in a future
+  /// kernel version) without a schema migration.
+  eventKind      String
+  /// True iff the kernel returned ok:true. False rows are illegal-transition
+  /// attempts — kept for debugging "why didn't my Connect button work".
+  isLegal        Boolean
+  /// If !isLegal, the kernel's rejection reason ("illegal_transition"). Null otherwise.
+  rejectionReason String?
+  /// Optional event-payload fields (e.g. validation_failed.errorCode). JSON
+  /// so we don't need a column for every event variant.
+  eventPayload   Json?
+  /// The user who triggered the transition (operator click, OAuth callback, cron).
+  /// Null when the trigger was a system actor (cron, webhook).
+  actorUserId    String?
+  /// Human-readable actor label for system actors: "cron:health-check", "webhook:aws".
+  actorLabel     String?
+  createdAt      DateTime             @default(now())
+
+  session ConnectorSetupSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  @@index([sessionId, createdAt])
+  @@index([isLegal, createdAt])
 }
