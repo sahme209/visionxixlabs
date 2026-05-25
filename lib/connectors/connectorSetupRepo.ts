@@ -85,6 +85,8 @@ export interface ApplyEventInput {
   provider: string;
   event: ConnectorSetupEvent;
   actor: { userId: string } | { systemLabel: string };
+  /** Override the wallclock used for lastTransitionAt + firstConnectedAt. Tests only. */
+  now?: Date;
 }
 
 export type ApplyEventResult =
@@ -146,7 +148,7 @@ export async function applyConnectorSetupEvent(
       };
     }
 
-    const now = new Date();
+    const now = input.now ?? new Date();
     const reachedConnected = result.next === "connected" && session.firstConnectedAt === null;
 
     const updated = await tx.connectorSetupSession.update({
