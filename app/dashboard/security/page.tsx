@@ -17,6 +17,7 @@ import {
 } from "@heroicons/react/24/outline";
 import { Reveal } from "@/components/motion/Reveal";
 import { Stagger } from "@/components/motion/Stagger";
+import { PageIntro } from "@/components/dashboard/PageIntro";
 import { RunSecurityScannerPanel } from "@/components/dashboard/RunSecurityScannerPanel";
 import { buildSecurityPosture } from "@/lib/security/securityPosture";
 import type { PostureCheck, PostureSemantic } from "@/lib/security/securityPosture";
@@ -109,26 +110,20 @@ export default function SecurityCenterPage() {
 
   return (
     <div className="relative">
-      {/* Hero */}
-      <Reveal direction="up" blur>
-        <div className="mb-8">
-          <div className="flex items-center gap-3 mb-3">
-            <ShieldCheckIcon className="h-4 w-4 text-emerald-400" />
-            <p className="text-[10px] font-semibold text-emerald-400 uppercase tracking-widest">Security Center</p>
-            {showSampleData && (
-              <span className="text-[9px] font-semibold text-amber-400 bg-amber-500/15 border border-amber-500/30 rounded-full px-2 py-0.5 uppercase tracking-wider">
-                {posture.source === "live" ? "Live" : posture.source === "preview" ? "Preview" : "Demo"}
-              </span>
-            )}
-          </div>
-          <h1 className="text-3xl md:text-4xl font-bold text-white tracking-[-0.04em] mb-2">
-            Enterprise <span className="text-gradient">trust posture.</span>
-          </h1>
-          <p className="text-dim-paragraph text-base max-w-3xl leading-relaxed">
-            What Axiom protects, how it protects it, and what is still on the roadmap. <span className="dim-1">No hidden controls, no faked claims — the matrix below reflects real implementation state.</span>
-          </p>
-        </div>
-      </Reveal>
+      <PageIntro
+        kicker={`Security Center · ${posture.source === "live" ? "Live" : posture.source === "preview" ? "Preview" : "Demo"}`}
+        title={<>Enterprise <span className="text-zinc-500">trust posture.</span></>}
+        description="What Axiom protects, how it protects it, and what is still on the roadmap. The matrix below reflects real implementation state — no hidden controls, no faked claims."
+        helps="See credential hygiene, IAM drift, tenant isolation, and audit-log coverage in one place."
+        connectFirst="A cloud connector so we can read IAM policies, access keys, and least-privilege gaps."
+        engineers={["Security Engineer", "Cloud Engineer", "Incident Engineer"]}
+        requiresApproval="Any policy edit, key rotation, or role modification surfaced as a remediation."
+        actions={[
+          { label: "Connect first cloud", href: "/dashboard/connectors" },
+          { label: "Read the trust model", href: "/docs/permissions-model" },
+        ]}
+        safetyNote="Read-only by default · Findings are surfaced, never auto-applied"
+      />
 
       {!showSampleData && (
         <Reveal direction="up" delay={0.04}>

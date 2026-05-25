@@ -17,6 +17,7 @@ import {
 } from "@heroicons/react/24/outline";
 
 import { buildControlPlaneState } from "@/lib/controlPlane/controlPlaneBuilder";
+import { PageIntro } from "@/components/dashboard/PageIntro";
 
 export const dynamic = "force-dynamic";
 
@@ -40,19 +41,21 @@ export default async function MultiCloudPage() {
 
   return (
     <div className="space-y-10">
-      {/* Header */}
-      <header>
-        <div className="flex items-center gap-3 mb-3">
-          <CloudIcon className="h-4 w-4 text-cyan-300" />
-          <span className="text-[10px] font-mono font-semibold text-cyan-300 uppercase tracking-[0.22em]">Multi-Cloud Operating View</span>
-        </div>
-        <h1 className="text-3xl md:text-4xl font-bold tracking-[-0.04em] mb-2">
-          One <span className="bg-gradient-to-r from-cyan-300 via-violet-300 to-amber-300 bg-clip-text text-transparent">multi-cloud</span> operating system.
-        </h1>
-        <p className="text-sm text-zinc-400 max-w-3xl leading-relaxed">
-          AWS, Azure, and GCP rendered side-by-side from the canonical control plane state. Every value carries its source mode and confidence. No console-bouncing required.
-        </p>
-      </header>
+      <PageIntro
+        kicker="Cloud operations"
+        title={<>One multi-cloud <span className="text-zinc-500">operating system.</span></>}
+        description="Connect AWS, Azure, or Google Cloud so Axiom can discover resources, check resilience, detect security risks, and prepare human-approved remediation plans."
+        helps="Discover every resource across providers, compare posture side-by-side, and route findings to the right AI engineer."
+        connectFirst="At least one cloud connector — AWS via CloudFormation, Azure via service principal, or GCP via Cloud Shell."
+        engineers={["Cloud Engineer", "Security Engineer", "FinOps Engineer", "Incident Engineer"]}
+        requiresApproval="Any write action (rightsizing, role change, policy edit). Read-only scans run without approval once a cloud is connected."
+        actions={[
+          { label: "Connect a cloud", href: "/operator/onboarding" },
+          { label: "Run a read-only scan", href: "/dashboard/scheduled-scans" },
+          { label: "View demo", href: "/demo" },
+        ]}
+        safetyNote="Read-only by default · Sessions are short-lived · Every action is audit-logged"
+      />
 
       {/* Cloud inventory headline */}
       <section className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">

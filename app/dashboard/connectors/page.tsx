@@ -31,6 +31,7 @@ import {
   relativeTime,
 } from "@/lib/platform/livePlatformState";
 import { LiveBadge } from "@/components/platform/LiveBadge";
+import { PageIntro } from "@/components/dashboard/PageIntro";
 
 export const metadata: Metadata = {
   title: "Connectors · Axiom",
@@ -355,42 +356,38 @@ export default async function ConnectorsPage() {
 
   return (
     <div className="relative">
-      {/* Hero */}
-      <div className="mb-8 rounded-3xl border border-white/[0.05] bg-gradient-to-br from-white/[0.03] via-white/[0.015] to-transparent p-6 md:p-8 relative overflow-hidden">
-        <div
-          className="absolute inset-0 -z-10 opacity-90 pointer-events-none"
-          style={{
-            background:
-              "radial-gradient(900px 320px at 14% 0%, rgba(56,189,248,0.12), transparent 60%), radial-gradient(700px 260px at 86% 110%, rgba(124,58,237,0.08), transparent 60%)",
-          }}
-          aria-hidden
-        />
-        <p className="text-[10px] font-mono uppercase tracking-[0.22em] text-cyan-300/80">
-          Platform · connector hub
-        </p>
-        <h1 className="mt-3 text-3xl md:text-4xl font-bold tracking-[-0.03em]">Connectors</h1>
-        <p className="mt-3 max-w-2xl text-[14px] text-zinc-400 leading-relaxed">
-          Every integration Axiom speaks to today, with what it reads, what it can
-          write, and the audit boundary it carries. Write-capable connectors only
-          act behind an approval packet — read-only connectors never mutate.
-        </p>
-        <div className="mt-5 flex flex-wrap items-center gap-2 text-[11px] font-mono">
-          {live.ok ? (
-            <span className="rounded-full border border-emerald-500/40 bg-emerald-500/15 text-emerald-200 px-2.5 py-1 inline-flex items-center gap-1.5">
-              <LiveBadge />
-              {liveConnectedCount} live in your tenant
-            </span>
-          ) : null}
-          <span className="rounded-full border border-emerald-500/30 bg-emerald-500/10 text-emerald-300 px-2.5 py-1">
-            {counts.connected} connected
+      <PageIntro
+        kicker="Platform · connector hub"
+        title="Connectors"
+        description="Every integration Axiom speaks to today — with what each one reads, what it can write, and the audit boundary it carries. Write-capable connectors only act behind an approval packet."
+        helps="Wire your cloud, code, monitoring, chat, and ticketing tools so AI engineers can see context across the stack."
+        connectFirst="Start with a cloud connector (AWS, Azure, or GCP), then add code (GitHub/GitLab) and monitoring (Grafana/Datadog) for richer reasoning."
+        engineers={["Cloud Engineer", "DevOps Engineer", "Security Engineer", "Monitoring Engineer"]}
+        requiresApproval="Any write action a connector exposes — IAM edits, repo merges, ticket transitions, runbook executions."
+        actions={[
+          { label: "Add a connector", href: "/operator/onboarding" },
+          { label: "View setup docs", href: "/docs" },
+        ]}
+        safetyNote="Read-only by default · Sessions short-lived · Every action audit-logged"
+      />
+
+      {/* Status counts — quiet row, no neon chips */}
+      <div className="mb-8 -mt-4 flex flex-wrap items-center gap-2 text-[11px] font-mono">
+        {live.ok ? (
+          <span className="status-pill">
+            <span className="status-dot breathe" />
+            {liveConnectedCount} live in your tenant
           </span>
-          <span className="rounded-full border border-violet-500/30 bg-violet-500/10 text-violet-300 px-2.5 py-1">
-            {counts.available} available
-          </span>
-          <span className="rounded-full border border-zinc-500/30 bg-zinc-500/10 text-zinc-400 px-2.5 py-1">
-            {counts.coming_soon} coming soon
-          </span>
-        </div>
+        ) : null}
+        <span className="rounded-full border border-white/[0.08] bg-white/[0.025] text-zinc-300 px-3 py-1">
+          {counts.connected} connected
+        </span>
+        <span className="rounded-full border border-white/[0.06] bg-white/[0.015] text-zinc-400 px-3 py-1">
+          {counts.available} available
+        </span>
+        <span className="rounded-full border border-white/[0.05] bg-white/[0.01] text-zinc-500 px-3 py-1">
+          {counts.coming_soon} coming soon
+        </span>
       </div>
 
       {/* Cards grouped by category */}
