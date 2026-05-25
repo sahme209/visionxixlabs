@@ -26,6 +26,7 @@ import {
   ClockIcon,
   PuzzlePieceIcon,
 } from "@heroicons/react/24/outline";
+import { PageIntro } from "@/components/dashboard/PageIntro";
 import {
   engineersByDepartment,
   workforceSummary,
@@ -88,18 +89,20 @@ export default async function WorkforcePage() {
 
   return (
     <div className="relative">
-      <div className="mb-8">
-        <div className="flex items-center gap-3 mb-3">
-          <UserGroupIcon className="h-4 w-4 text-violet-400" />
-          <p className="text-[10px] font-semibold text-violet-400 uppercase tracking-widest">AI Workforce</p>
-        </div>
-        <h1 className="text-3xl md:text-4xl font-bold text-white tracking-[-0.04em] mb-2">
-          Your AI engineering team, <span className="text-gradient">by department.</span>
-        </h1>
-        <p className="text-[15px] text-zinc-400 max-w-3xl leading-relaxed">
-          Every engineer the platform ships — what they do, what they need to do it, and what's still missing. Each engineer is a typed kernel that operates under the approval policy on the right.
-        </p>
-      </div>
+      <PageIntro
+        kicker="AI workforce"
+        title={<>Your AI engineering team, <span className="text-zinc-500">by department.</span></>}
+        description="Every engineer the platform ships — what they do, what they need to do it, and what's still missing. Each engineer is a typed kernel that operates under the approval policy."
+        helps="Understand which AI engineer owns which surface, what tools they have, and whether they're operating at full capacity yet."
+        connectFirst="The relevant connector for each engineer — Cloud Engineer needs AWS/Azure/GCP, DevOps needs GitHub/GitLab, etc."
+        engineers={["Cloud", "DevOps", "Security", "Monitoring", "Database", "Incident", "FinOps", "Compliance"]}
+        requiresApproval="Every write action proposed by an engineer surfaces as an approval packet. Engineers never execute autonomously."
+        actions={[
+          { label: "Manage connectors", href: "/dashboard/connectors" },
+          { label: "View agent activity", href: "/dashboard/agent-activity" },
+        ]}
+        safetyNote="Engineers are read-only by default · Tool access is per-engineer + per-cloud · Every action audit-logged"
+      />
 
       {/* Summary KPIs */}
       <section className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">

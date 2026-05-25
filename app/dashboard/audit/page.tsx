@@ -13,6 +13,7 @@ import {
   ComputerDesktopIcon,
 } from "@heroicons/react/24/outline";
 import { Reveal } from "@/components/motion/Reveal";
+import { PageIntro } from "@/components/dashboard/PageIntro";
 import { Stagger } from "@/components/motion/Stagger";
 import { buildStoryFeed } from "@/lib/audit/auditIntelligence";
 import type { AuditStory, StoryRiskLevel } from "@/lib/audit/auditIntelligence";
@@ -84,26 +85,20 @@ export default function AuditCenterPage() {
 
   return (
     <div className="relative">
-      {/* Hero */}
-      <Reveal direction="up" blur>
-        <div className="mb-8">
-          <div className="flex items-center gap-3 mb-3">
-            <DocumentTextIcon className="h-4 w-4 text-fuchsia-400" />
-            <p className="text-[10px] font-semibold text-fuchsia-400 uppercase tracking-widest">Audit Center</p>
-            {showSampleData && (
-              <span className="text-[9px] font-semibold text-amber-400 bg-amber-500/15 border border-amber-500/30 rounded-full px-2 py-0.5 uppercase tracking-wider">
-                Preview
-              </span>
-            )}
-          </div>
-          <h1 className="text-3xl md:text-4xl font-bold text-white tracking-[-0.04em] mb-2">
-            Evidence-backed <span className="text-gradient">audit stories.</span>
-          </h1>
-          <p className="text-dim-paragraph text-base max-w-3xl leading-relaxed">
-            Every action grouped into a coherent story — actors, policies, approvals, artifacts, outcomes. <span className="dim-1">Exportable as JSON, CSV, or NDJSON for compliance review.</span>
-          </p>
-        </div>
-      </Reveal>
+      <PageIntro
+        kicker={`Audit center${showSampleData ? " · preview" : ""}`}
+        title={<>Evidence-backed <span className="text-zinc-500">audit stories.</span></>}
+        description="Every action grouped into a coherent story — actors, policies, approvals, artifacts, outcomes. Exportable as JSON, CSV, or NDJSON for compliance review."
+        helps="Reconstruct who did what and why, end-to-end, for any change Axiom executed in your workspace."
+        connectFirst="Already covered — every action across the platform writes to the audit log automatically."
+        engineers={["Security", "Compliance", "Cloud"]}
+        requiresApproval="Read-only. Audit records are immutable; nothing on this page mutates state."
+        actions={[
+          { label: "Configure approval policy", href: "/dashboard/automation-boundaries" },
+          { label: "Read audit model docs", href: "/docs" },
+        ]}
+        safetyNote="Immutable · SHA-256 rationale rows · Tamper-evident exports"
+      />
 
       {!showSampleData && (
         <Reveal direction="up" delay={0.04}>

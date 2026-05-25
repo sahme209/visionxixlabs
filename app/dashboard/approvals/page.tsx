@@ -18,6 +18,7 @@ import {
 } from "@heroicons/react/24/outline";
 import { Reveal } from "@/components/motion/Reveal";
 import { Stagger } from "@/components/motion/Stagger";
+import { PageIntro } from "@/components/dashboard/PageIntro";
 
 // ---------------------------------------------------------------------------
 // Demo approval queue (placeholder until backend wiring)
@@ -183,26 +184,20 @@ export default function ApprovalsPage() {
 
   return (
     <div className="relative">
-      {/* Header */}
-      <Reveal direction="up" blur>
-        <div className="mb-8">
-          <div className="flex items-center gap-3 mb-3">
-            <LockClosedIcon className="h-4 w-4 text-amber-400" />
-            <p className="text-[10px] font-semibold text-amber-400 uppercase tracking-widest">
-              Approval Center
-            </p>
-            <span className="text-[9px] font-semibold text-violet-400 bg-violet-500/15 border border-violet-500/30 rounded-full px-2 py-0.5 uppercase tracking-wider">
-              Enterprise · Human-in-the-loop
-            </span>
-          </div>
-          <h1 className="text-3xl md:text-4xl font-bold text-white tracking-[-0.04em] mb-2">
-            Pending <span className="text-gradient">Approvals.</span>
-          </h1>
-          <p className="text-dim-paragraph text-base max-w-3xl leading-relaxed">
-            Every change Axiom proposes lands here first. <span className="dim-1">You see the reasoning, the policy decision, the rollback strategy, and the verification checklist before approving.</span> <span className="dim-2">No silent execution. No silent escalation.</span>
-          </p>
-        </div>
-      </Reveal>
+      <PageIntro
+        kicker="Safety · approval center"
+        title={<>Pending <span className="text-zinc-500">approvals.</span></>}
+        description="Every change Axiom proposes lands here first. You see the reasoning, the policy decision, the rollback strategy, and the verification checklist before approving."
+        helps="Approve or reject each proposed write action with full context. Nothing executes silently."
+        connectFirst="Approvals appear automatically once at least one connector is wired and the AI workforce starts proposing changes."
+        engineers={["Cloud", "Security", "DevOps", "Incident"]}
+        requiresApproval={<>This <em>is</em> the approval surface. Workspace owners + designated approvers can act on packets.</>}
+        actions={[
+          { label: "View audit log", href: "/dashboard/audit" },
+          { label: "Configure approval policy", href: "/dashboard/automation-boundaries" },
+        ]}
+        safetyNote="No silent execution · No silent escalation · Every action audit-logged with SHA-256 rationale"
+      />
 
       {/* KPI strip */}
       <Stagger delay={0.05} interval={0.05} className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-6">

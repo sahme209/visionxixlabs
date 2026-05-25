@@ -27,6 +27,7 @@ import type { OnboardingProgress } from "@/lib/onboarding/onboardingState";
 import { TenantEmptyState } from "@/components/platform/TenantEmptyState";
 import { useTenantFreshness } from "@/components/platform/useTenantFreshness";
 import { SparklesIcon } from "@heroicons/react/24/outline";
+import { PageIntro } from "@/components/dashboard/PageIntro";
 
 const PROVIDER_COLOR = {
   AWS: "text-amber-400 bg-amber-500/10 border-amber-500/20",
@@ -59,35 +60,21 @@ export default function CommandCenterPage() {
 
   return (
     <div className="relative">
-      {/* Hero header — premium operator zone. Calm radial depth, honest
-          source-mode eyebrow from canonical state, refined typography. */}
-      <Reveal direction="up" blur>
-        <div className="relative mb-10 rounded-3xl border border-white/[0.05] bg-gradient-to-br from-white/[0.025] via-white/[0.015] to-transparent p-6 md:p-8 overflow-hidden">
-          {/* Calm depth — radial glow behind the heading, never on top of content */}
-          <div
-            className="absolute inset-0 -z-10 opacity-90 pointer-events-none"
-            style={{
-              background:
-                "radial-gradient(900px 320px at 12% 0%, rgba(99,102,241,0.10), transparent 60%), radial-gradient(700px 260px at 88% 110%, rgba(45,212,191,0.06), transparent 60%)",
-            }}
-            aria-hidden
-          />
-          <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/[0.08] to-transparent" aria-hidden />
-
-          <div className="grid md:grid-cols-[1fr_auto] items-end gap-6">
-            <div className="min-w-0">
-              <HeroEyebrow currentTime={currentTime} />
-              <h1 className="text-4xl md:text-5xl font-bold text-white tracking-[-0.045em] leading-[1.05] mt-3 mb-3">
-                Operational <span className="text-gradient">Command Center.</span>
-              </h1>
-              <p className="text-dim-paragraph text-[15px] max-w-2xl leading-relaxed">
-                One canonical view of every source, finding, plan, and execution. <span className="dim-1">Agent reasoning is auditable. Every action is approval-gated. Execution is disabled by default.</span>
-              </p>
-            </div>
-            <HeroStateRibbon />
-          </div>
-        </div>
-      </Reveal>
+      <PageIntro
+        kicker="Workspace · command center"
+        title={<>Operational <span className="text-zinc-500">command center.</span></>}
+        description="One canonical view of every source, finding, plan, and execution. Agent reasoning is auditable, every action approval-gated, execution disabled by default."
+        helps="See what AI engineers found overnight, which approvals are waiting on you, and where to focus next."
+        connectFirst="A cloud connector — AWS, Azure, or GCP. The dashboard fills in the moment your first scan completes."
+        engineers={["Cloud Engineer", "Security Engineer", "DevOps Engineer", "Incident Engineer", "FinOps Engineer"]}
+        requiresApproval="All write actions. The command center surfaces them as approval packets — nothing runs until you sign off."
+        actions={[
+          { label: "Connect a cloud", href: "/dashboard/connectors" },
+          { label: "Open setup guide", href: "/dashboard/start-here" },
+          { label: "View demo", href: "/demo" },
+        ]}
+        safetyNote="Read-only by default · Approval-gated execution · Immutable audit trail"
+      />
 
       {/* Welcome card for fresh tenants — replaces noisy KPIs/demo links until
           the first connector lands. Goal: calm, one clear next step. */}

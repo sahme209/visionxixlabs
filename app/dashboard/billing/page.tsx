@@ -16,6 +16,7 @@ import {
   ArrowRightIcon,
   ShieldCheckIcon,
 } from "@heroicons/react/24/outline";
+import { PageIntro } from "@/components/dashboard/PageIntro";
 
 interface TierCap {
   autonomyCyclesPerDay: number;
@@ -128,32 +129,19 @@ export default function BillingPage() {
 
   return (
     <div className="relative">
-      <div className="relative mb-8 rounded-3xl border border-white/[0.05] bg-gradient-to-br from-white/[0.025] via-white/[0.015] to-transparent p-6 md:p-8 overflow-hidden">
-        <div
-          className="absolute inset-0 -z-10 opacity-90 pointer-events-none"
-          style={{
-            background:
-              "radial-gradient(900px 320px at 12% 0%, rgba(168,85,247,0.10), transparent 60%), radial-gradient(700px 260px at 88% 110%, rgba(34,211,238,0.06), transparent 60%)",
-          }}
-          aria-hidden
-        />
-        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/[0.08] to-transparent" aria-hidden />
-
-        <div className="flex items-center gap-2 mb-3 flex-wrap">
-          <span className="inline-flex items-center gap-2 rounded-full border border-white/[0.06] bg-white/[0.02] px-2.5 py-1">
-            <CreditCardIcon className="h-3.5 w-3.5 text-violet-300" />
-            <span className="text-[10px] font-semibold uppercase tracking-widest text-violet-300">
-              Plans &amp; billing
-            </span>
-          </span>
-        </div>
-        <h1 className="text-4xl md:text-5xl font-bold text-white tracking-[-0.045em] leading-[1.05] mb-3">
-          Plans & <span className="text-gradient">billing.</span>
-        </h1>
-        <p className="text-[15px] text-zinc-400 max-w-2xl leading-relaxed">
-          Pick a plan that matches your cloud footprint. Cancel anytime · VAT handled at checkout · invoices on every charge.
-        </p>
-      </div>
+      <PageIntro
+        kicker="Workspace · billing"
+        title={<>Plans &amp; <span className="text-zinc-500">billing.</span></>}
+        description="Pick a plan that matches your cloud footprint. Cancel anytime, VAT handled at checkout, invoices on every charge."
+        helps="See your current usage against the plan you're on, upgrade or downgrade in a click, and download invoices for accounting."
+        connectFirst={<>Already covered — your workspace is linked to a Stripe customer automatically.</>}
+        requiresApproval="Workspace owner. Plan changes apply immediately; the next invoice is pro-rated."
+        actions={[
+          { label: "Compare plans", href: "/plans" },
+          { label: "Talk to sales", href: "/contact" },
+        ]}
+        safetyNote="No fake unlimited claims · Concrete monthly + annual numbers · Honest overage rates on /plans"
+      />
 
       {error && (
         <div className="rounded-2xl border border-amber-500/[0.18] bg-amber-500/[0.04] p-5 mb-6 text-[13px] text-amber-100">
