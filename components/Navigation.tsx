@@ -231,15 +231,15 @@ export function Navigation() {
             <div className="w-px h-5 bg-white/[0.08] mx-2" aria-hidden />
             <Link
               href="/auth/signin"
-              className="px-4 py-1.5 text-zinc-400 hover:text-white rounded-full border border-white/[0.1] hover:border-white/[0.2] transition-all text-sm font-medium whitespace-nowrap"
+              className="text-zinc-400 hover:text-white transition-colors text-sm font-medium whitespace-nowrap px-2"
             >
               Sign in
             </Link>
             <Link
-              href="/operator/onboarding"
-              className="btn-amber-shimmer inline-flex items-center gap-2 px-5 py-2 rounded-full text-sm font-semibold ml-2 whitespace-nowrap"
+              href="/auth/signup"
+              className="btn-amber-shimmer inline-flex items-center gap-2 px-5 py-2 rounded-full text-sm font-semibold ml-1 whitespace-nowrap"
             >
-              Start Free
+              Sign up
               <ArrowRightIcon className="h-3.5 w-3.5 shrink-0" />
             </Link>
           </div>

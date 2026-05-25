@@ -128,7 +128,7 @@ function SectionDivider() {
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-[#09090b] text-white relative">
+    <div className="min-h-screen bg-[#0a0a0d] text-white relative">
       <div className="absolute inset-0 bg-grid-mesh opacity-40 pointer-events-none" aria-hidden />
       <div className="relative z-10">
       <Navigation />

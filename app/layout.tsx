@@ -14,7 +14,7 @@ import { SITE_URL, defaultOgImage, primaryKeywords, secondaryKeywords } from "@/
 const inter = Inter({ subsets: ["latin"] });
 
 export const viewport: Viewport = {
-  themeColor: "#7c3aed",
+  themeColor: "#0a0a0d",
   width: "device-width",
   initialScale: 1,
 };

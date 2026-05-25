@@ -6,12 +6,15 @@
 
 /* ── Design Tokens ─────────────────────────────────────────────── */
 :root {
-  --black: #09090b;
-  --bg-primary: #09090b;
-  --bg-secondary: #111113;
-  --bg-surface: #18181b;
-  --bg-surface-alt: #1c1c1f;
-  --bg-elevated: #27272a;
+  /* huly.io page tone is #303236-adjacent — atmospheric not pitch
+     black. Adopting a near-black with a tiny blue lift so dark areas
+     read as 'depth' rather than 'void'. */
+  --black: #0a0a0d;
+  --bg-primary: #0a0a0d;
+  --bg-secondary: #131316;
+  --bg-surface: #1a1a1e;
+  --bg-surface-alt: #1e1e22;
+  --bg-elevated: #2a2a2f;
   --text-primary: #fafafa;
   --text-secondary: #a1a1aa;
   --text-tertiary: #71717a;
