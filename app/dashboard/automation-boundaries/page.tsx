@@ -23,6 +23,7 @@ import {
   ExclamationTriangleIcon,
   XCircleIcon,
 } from "@heroicons/react/24/outline";
+import { PageIntro } from "@/components/dashboard/PageIntro";
 
 type BoundaryClassification =
   | "readonly_allowed" | "preview_allowed" | "simulation_allowed"
@@ -110,36 +111,20 @@ export default function AutomationBoundariesPage() {
 
   return (
     <div className="relative">
-      {/* Hero */}
-      <div className="relative mb-8 rounded-3xl border border-white/[0.05] bg-gradient-to-br from-white/[0.025] via-white/[0.015] to-transparent p-6 md:p-8 overflow-hidden">
-        <div
-          className="absolute inset-0 -z-10 opacity-90 pointer-events-none"
-          style={{
-            background:
-              "radial-gradient(900px 320px at 12% 0%, rgba(99,102,241,0.10), transparent 60%), radial-gradient(700px 260px at 88% 110%, rgba(45,212,191,0.06), transparent 60%)",
-          }}
-          aria-hidden
-        />
-        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/[0.08] to-transparent" aria-hidden />
-
-        <div className="flex items-center gap-2 mb-3 flex-wrap">
-          <span className="inline-flex items-center gap-2 rounded-full border border-white/[0.06] bg-white/[0.02] px-2.5 py-1">
-            <ShieldExclamationIcon className="h-3.5 w-3.5 text-rose-300" />
-            <span className="text-[10px] font-semibold uppercase tracking-widest text-rose-300">
-              Automation boundaries · boundaries_declared_no_action_taken
-            </span>
-          </span>
-          {report?.generatedAt && (
-            <span className="text-[10px] font-mono text-zinc-500">declared {new Date(report.generatedAt).toLocaleTimeString()}</span>
-          )}
-        </div>
-        <h1 className="text-4xl md:text-5xl font-bold text-white tracking-[-0.045em] leading-[1.05] mb-3">
-          What Axiom can <span className="text-gradient">and cannot</span> automate.
-        </h1>
-        <p className="text-[15px] text-zinc-400 max-w-2xl leading-relaxed">
-          Every action class is declared here with its hard-literal classification. The closed TypeScript union prevents unsafe actions from being added without explicit review — <span className="text-zinc-500">there is no "default to unsafe" path.</span>
-        </p>
-      </div>
+      <PageIntro
+        kicker={`Business / admin · automation boundaries${report?.generatedAt ? ` · declared ${new Date(report.generatedAt).toLocaleTimeString()}` : ""}`}
+        title={<>What Axiom can <span className="text-zinc-500">and cannot</span> automate.</>}
+        description={'Every action class is declared here with its hard-literal classification. The closed TypeScript union prevents unsafe actions from being added without explicit review — there is no "default to unsafe" path.'}
+        helps="See exactly which write actions are allowed, which require approval, and which are hard-blocked at the type level."
+        connectFirst="Already in effect — boundaries apply to every connector. No setup required."
+        engineers={["Council / Safety", "Compliance Officer"]}
+        requiresApproval="Boundary edits are admin-only and require dual control. The table on this page is read-only."
+        actions={[
+          { label: "View approval policy", href: "/dashboard/policies" },
+          { label: "Audit log", href: "/dashboard/audit" },
+        ]}
+        safetyNote="boundaries_declared_no_action_taken · Closed-union enforcement · Source-of-truth: lib/autonomy/boundaries.ts"
+      />
 
       {loading && (
         <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 mb-6">

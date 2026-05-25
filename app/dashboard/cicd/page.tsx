@@ -22,6 +22,7 @@ import {
   ShieldCheckIcon,
   MinusCircleIcon,
 } from "@heroicons/react/24/outline";
+import { PageIntro } from "@/components/dashboard/PageIntro";
 
 type Provider = "github_actions" | "gitlab_ci" | "aws_codepipeline" | "gcp_cloud_build" | "azure_devops" | "circleci" | "jenkins";
 type Classification = "readonly_allowed" | "policy_gated" | "approval_required" | "desktop_review_required" | "unsafe_never_automate" | "disabled_until_policy" | "disabled_until_credentials";
@@ -110,35 +111,30 @@ export default function CicdOpsPage() {
 
   return (
     <div className="relative">
-      <div className="relative mb-8 rounded-3xl border border-white/[0.05] bg-gradient-to-br from-white/[0.025] via-white/[0.015] to-transparent p-6 md:p-8 overflow-hidden">
-        <div className="absolute inset-0 -z-10 opacity-90 pointer-events-none" style={{ background: "radial-gradient(900px 320px at 12% 0%, rgba(139,92,246,0.10), transparent 60%), radial-gradient(700px 260px at 88% 110%, rgba(45,212,191,0.06), transparent 60%)" }} aria-hidden />
-        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/[0.08] to-transparent" aria-hidden />
+      <PageIntro
+        kicker="Operations · CI/CD"
+        title={<>Every pipeline. <span className="text-zinc-500">Every gate.</span></>}
+        description="GitHub Actions, GitLab CI, AWS CodePipeline, GCP Cloud Build, Azure DevOps, CircleCI, Jenkins — one closed operation catalog. Force-merge, push-to-protected-ref, signing-key rotation, and workflow YAML edits are hard-blocked at the type level."
+        helps="See pipeline state across every provider, with policy-gated vs hard-blocked operations called out per pipeline."
+        connectFirst="A code/CI connector — GitHub, GitLab, Azure DevOps, or any of the cloud-native pipeline runners."
+        engineers={["DevOps Engineer", "Build / CI Engineer", "Security Engineer"]}
+        requiresApproval="Every write action — deploy, force-merge, secret rotation. Hard-blocked actions never run."
+        actions={[
+          { label: "Manage connectors", href: "/dashboard/connectors" },
+          { label: "View approvals", href: "/dashboard/approvals" },
+        ]}
+        safetyNote="Hard-blocked operations are unreachable at the type level · approval_only_no_execution"
+      />
 
-        <div className="flex items-center gap-2 mb-3 flex-wrap">
-          <span className="inline-flex items-center gap-2 rounded-full border border-white/[0.06] bg-white/[0.02] px-2.5 py-1">
-            <CodeBracketIcon className="h-3.5 w-3.5 text-violet-300" />
-            <span className="text-[10px] font-semibold uppercase tracking-widest text-violet-300">
-              CI/CD
-            </span>
-          </span>
+      {report && (
+        <div className="mb-6 grid grid-cols-2 md:grid-cols-5 gap-3">
+          <Stat label="Providers" value={String(report.summary.providerCount)} tone="zinc" />
+          <Stat label="Live" value={String(report.summary.liveProviderCount)} tone={report.summary.liveProviderCount > 0 ? "emerald" : "amber"} />
+          <Stat label="Operations" value={String(report.summary.operationsTotal)} tone="cyan" />
+          <Stat label="Policy-gated" value={String(report.summary.operationsPolicyGated)} tone="cyan" />
+          <Stat label="Hard-blocked" value={String(report.summary.operationsHardBlocked)} tone="rose" />
         </div>
-        <h1 className="text-4xl md:text-5xl font-bold text-white tracking-[-0.045em] leading-[1.05] mb-3">
-          Every pipeline. <span className="text-gradient">Every gate.</span>
-        </h1>
-        <p className="text-[15px] text-zinc-400 max-w-2xl leading-relaxed">
-          GitHub Actions, GitLab CI, AWS CodePipeline, GCP Cloud Build, Azure DevOps, CircleCI, Jenkins — one closed operation catalog. Force-merge, push-to-protected-ref, signing-key rotation, and workflow YAML edits are hard-blocked at the type level.
-        </p>
-
-        {report && (
-          <div className="mt-5 grid grid-cols-2 md:grid-cols-5 gap-3">
-            <Stat label="Providers" value={String(report.summary.providerCount)} tone="zinc" />
-            <Stat label="Live" value={String(report.summary.liveProviderCount)} tone={report.summary.liveProviderCount > 0 ? "emerald" : "amber"} />
-            <Stat label="Operations" value={String(report.summary.operationsTotal)} tone="cyan" />
-            <Stat label="Policy-gated" value={String(report.summary.operationsPolicyGated)} tone="cyan" />
-            <Stat label="Hard-blocked" value={String(report.summary.operationsHardBlocked)} tone="rose" />
-          </div>
-        )}
-      </div>
+      )}
 
       {loading && (
         <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 mb-6">

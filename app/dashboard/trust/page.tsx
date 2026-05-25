@@ -17,6 +17,7 @@ import {
   BoltIcon,
 } from "@heroicons/react/24/outline";
 import { Reveal } from "@/components/motion/Reveal";
+import { PageIntro } from "@/components/dashboard/PageIntro";
 import { Stagger } from "@/components/motion/Stagger";
 import {
   CONTROL_REGISTRY,
@@ -46,33 +47,20 @@ export default function TrustCenterPage() {
 
   return (
     <div className="relative">
-      {/* Premium hero — calm depth, sourceMode-honest from /api/trust/summary */}
-      <Reveal direction="up" blur>
-        <div className="relative mb-8 rounded-3xl border border-white/[0.05] bg-gradient-to-br from-white/[0.025] via-white/[0.015] to-transparent p-6 md:p-8 overflow-hidden">
-          <div
-            className="absolute inset-0 -z-10 opacity-90 pointer-events-none"
-            style={{
-              background:
-                "radial-gradient(900px 320px at 12% 0%, rgba(16,185,129,0.08), transparent 60%), radial-gradient(700px 260px at 88% 110%, rgba(99,102,241,0.06), transparent 60%)",
-            }}
-            aria-hidden
-          />
-          <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/[0.08] to-transparent" aria-hidden />
-          <div className="flex items-center gap-3 mb-3 flex-wrap">
-            <span className="inline-flex items-center gap-2 rounded-full border border-white/[0.06] bg-white/[0.02] px-2.5 py-1">
-              <ShieldCheckIcon className="h-3.5 w-3.5 text-emerald-300" />
-              <span className="text-[10px] font-semibold uppercase tracking-widest text-emerald-300">Trust Center · evidence-backed</span>
-            </span>
-            <Link href="/dashboard/evidence" className="text-[10px] text-zinc-500 hover:text-white transition-colors">Inspect raw evidence →</Link>
-          </div>
-          <h1 className="text-4xl md:text-5xl font-bold text-white tracking-[-0.045em] leading-[1.05] mb-3">
-            Enterprise <span className="bg-gradient-to-r from-emerald-300 to-cyan-300 bg-clip-text text-transparent">trust + controls.</span>
-          </h1>
-          <p className="text-[15px] text-zinc-400 max-w-2xl leading-relaxed">
-            Controls are listed only when they exist in code. Status is honest: <span className="text-emerald-300">implemented</span>, <span className="text-amber-300">partial</span>, or <span className="text-zinc-400">planned</span>. <span className="text-zinc-500">No SOC 2 / ISO certifications claimed without backing records.</span>
-          </p>
-        </div>
-      </Reveal>
+      <PageIntro
+        kicker="Business / admin · trust center · evidence-backed"
+        title={<>Enterprise <span className="text-zinc-500">trust + controls.</span></>}
+        description="Controls are listed only when they exist in code. Status is honest: implemented, partial, or planned. No SOC 2 / ISO certifications claimed without backing records."
+        helps="Review every control with evidence refs to the canonical code path that enforces it. Export the lot as a compliance bundle."
+        connectFirst="Read-only. Trust posture surfaces controls + tests across the platform — no setup needed."
+        engineers={["Compliance Officer", "Security Engineer", "Council / Safety"]}
+        requiresApproval="Read-only. Evidence exports are signed but don't mutate state."
+        actions={[
+          { label: "Inspect raw evidence", href: "/dashboard/evidence" },
+          { label: "Audit log", href: "/dashboard/audit" },
+        ]}
+        safetyNote="Honest status only · Implemented / partial / planned · No unbacked compliance claims"
+      />
 
       {/* Canonical Trust strip — sources of truth from /api/trust/summary */}
       <CanonicalTrustStrip />

@@ -27,6 +27,7 @@ import {
   GROUP_LABEL,
   type ConnectorSetupStep,
 } from "@/lib/cloud/connectorSetupSteps";
+import { PageIntro } from "@/components/dashboard/PageIntro";
 
 interface ProviderPostureLite {
   provider: string;
@@ -115,33 +116,20 @@ export function ProviderDrilldown({ providerId }: { providerId: "aws" | "azure" 
 
   return (
     <div className="relative">
-      {/* Hero */}
-      <div className="relative mb-8 rounded-3xl border border-white/[0.05] bg-gradient-to-br from-white/[0.025] via-white/[0.015] to-transparent p-6 md:p-8 overflow-hidden">
-        <div
-          className="absolute inset-0 -z-10 opacity-90 pointer-events-none"
-          style={{
-            background:
-              "radial-gradient(900px 320px at 12% 0%, rgba(99,102,241,0.10), transparent 60%), radial-gradient(700px 260px at 88% 110%, rgba(45,212,191,0.06), transparent 60%)",
-          }}
-          aria-hidden
-        />
-        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/[0.08] to-transparent" aria-hidden />
-        <div className="flex items-center gap-3 flex-wrap mb-3">
-          <span className="inline-flex items-center gap-2 rounded-full border border-white/[0.06] bg-white/[0.02] px-2.5 py-1">
-            <Icon className="h-3.5 w-3.5 text-cyan-300" />
-            <span className="text-[10px] font-semibold uppercase tracking-widest text-cyan-300">
-              {meta.label} · {(provider?.mode ?? (loading ? "composing…" : "preview")).replace(/_/g, " ")}
-            </span>
-          </span>
-          {state?.generatedAt && (
-            <span className="text-[10px] font-mono text-zinc-500">last sync {new Date(state.generatedAt).toLocaleTimeString()}</span>
-          )}
-        </div>
-        <h1 className="text-4xl md:text-5xl font-bold text-white tracking-[-0.045em] leading-[1.05] mb-3">
-          {meta.label} <span className="text-gradient">connector.</span>
-        </h1>
-        <p className="text-[15px] text-zinc-400 max-w-2xl leading-relaxed">{meta.tagline}</p>
-      </div>
+      <PageIntro
+        kicker={`Cloud · ${meta.label.toLowerCase()} · ${(provider?.mode ?? (loading ? "composing…" : "preview")).replace(/_/g, " ")}${state?.generatedAt ? ` · last sync ${new Date(state.generatedAt).toLocaleTimeString()}` : ""}`}
+        title={<>{meta.label} <span className="text-zinc-500">connector.</span></>}
+        description={meta.tagline}
+        helps={`See inventory, posture, cost, and findings specific to ${meta.label}. Per-region resource counts, top recommendations, and connection mode are surfaced from canonical state.`}
+        connectFirst={`${meta.label} credentials wired via /dashboard/connectors. The drill-down fills in the moment your first scan completes.`}
+        engineers={["Cloud", "Security", "FinOps", "Incident"]}
+        requiresApproval={`Any write action proposed against your ${meta.label} resources. Read-only scans run automatically.`}
+        actions={[
+          { label: "Manage cloud connectors", href: "/dashboard/connectors" },
+          { label: "Compare across providers", href: "/dashboard/multi-cloud" },
+        ]}
+        safetyNote="Read-only by default · Approval-gated execution · Sessions short-lived"
+      />
 
       {loading && (
         <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 mb-6">

@@ -20,6 +20,7 @@ import {
 } from "@heroicons/react/24/outline";
 import { Reveal } from "@/components/motion/Reveal";
 import { Stagger } from "@/components/motion/Stagger";
+import { PageIntro } from "@/components/dashboard/PageIntro";
 import { ActivityFeed, type ActivityEvent } from "@/components/operations/ActivityFeed";
 import { ReleasePipelineGrid } from "@/components/operations/ReleasePipelineGrid";
 import { ReadinessScoreCard } from "@/components/operations/ReadinessScoreCard";
@@ -171,31 +172,20 @@ export default function ReleaseOpsCommandCenterPage() {
 
   return (
     <div className="relative">
-      {/* Hero header */}
-      <Reveal direction="up" blur>
-        <div className="mb-8">
-          <div className="flex items-center justify-between flex-wrap gap-4 mb-3">
-            <div className="flex items-center gap-3">
-              <span className="w-2 h-2 rounded-full bg-zinc-500" />
-              <p className="text-[10px] font-semibold text-zinc-400 uppercase tracking-widest">
-                ReleaseOps · source mode reported by /api/releaseops/state
-              </p>
-              <span className="text-[9px] font-semibold text-violet-300 bg-violet-500/10 border border-violet-500/20 rounded-full px-2 py-0.5 uppercase tracking-wider">
-                Axiom · Capability surface
-              </span>
-            </div>
-            <span className="text-[10px] font-mono text-zinc-500">
-              {currentTime || "—:—:—"} local
-            </span>
-          </div>
-          <h1 className="text-3xl md:text-4xl font-bold text-white tracking-[-0.04em] mb-2">
-            ReleaseOps <span className="text-gradient">Command Center.</span>
-          </h1>
-          <p className="text-dim-paragraph text-base max-w-3xl leading-relaxed">
-            Deployment intelligence across every connected CI/CD system. <span className="dim-1">Live pipelines · readiness scoring · approval orchestration · drift detection · rollback readiness.</span> <span className="dim-2">Axiom orchestrates above your existing tooling — it does not replace it.</span>
-          </p>
-        </div>
-      </Reveal>
+      <PageIntro
+        kicker={`Operations · ReleaseOps · ${currentTime || "—:—:—"} local`}
+        title={<>ReleaseOps <span className="text-zinc-500">command center.</span></>}
+        description="Deployment intelligence across every connected CI/CD system. Live pipelines, readiness scoring, approval orchestration, drift detection, rollback readiness — Axiom orchestrates above your existing tooling, never replacing it."
+        helps="See every active release, their readiness score, who's blocking, and what the rollback looks like."
+        connectFirst="GitHub Actions, GitLab CI, AWS CodePipeline, GCP Cloud Build, Azure DevOps, CircleCI, or Jenkins."
+        engineers={["DevOps Engineer", "Release Engineer", "Build / CI Engineer", "SRE / On-call"]}
+        requiresApproval="Deployment gating, force-merge, signing-key rotation. Drift detection is read-only."
+        actions={[
+          { label: "View pipelines", href: "/dashboard/cicd" },
+          { label: "Approvals queue", href: "/dashboard/approvals" },
+        ]}
+        safetyNote="Orchestration only · Underlying CI/CD systems remain source-of-truth · Every action audit-logged"
+      />
 
       {/* Top metrics row */}
       <Stagger delay={0.05} interval={0.05} className="grid sm:grid-cols-2 lg:grid-cols-5 gap-3 mb-6">

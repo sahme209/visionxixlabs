@@ -20,6 +20,7 @@ import {
   ExclamationTriangleIcon,
   DocumentCheckIcon,
 } from "@heroicons/react/24/outline";
+import { PageIntro } from "@/components/dashboard/PageIntro";
 
 type Enforcement = "enforced_always" | "enforced_with_audit" | "advisory" | "disabled";
 type Severity = "critical" | "high" | "medium" | "low";
@@ -127,36 +128,20 @@ export default function PoliciesPage() {
 
   return (
     <div className="relative">
-      {/* Hero */}
-      <div className="relative mb-8 rounded-3xl border border-white/[0.05] bg-gradient-to-br from-white/[0.025] via-white/[0.015] to-transparent p-6 md:p-8 overflow-hidden">
-        <div
-          className="absolute inset-0 -z-10 opacity-90 pointer-events-none"
-          style={{
-            background:
-              "radial-gradient(900px 320px at 12% 0%, rgba(99,102,241,0.10), transparent 60%), radial-gradient(700px 260px at 88% 110%, rgba(45,212,191,0.06), transparent 60%)",
-          }}
-          aria-hidden
-        />
-        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/[0.08] to-transparent" aria-hidden />
-
-        <div className="flex items-center gap-2 mb-3 flex-wrap">
-          <span className="inline-flex items-center gap-2 rounded-full border border-white/[0.06] bg-white/[0.02] px-2.5 py-1">
-            <LockClosedIcon className="h-3.5 w-3.5 text-emerald-300" />
-            <span className="text-[10px] font-semibold uppercase tracking-widest text-emerald-300">
-              Policy registry · policies_declared_no_action_taken
-            </span>
-          </span>
-          {report?.generatedAt && (
-            <span className="text-[10px] font-mono text-zinc-500">declared {new Date(report.generatedAt).toLocaleTimeString()}</span>
-          )}
-        </div>
-        <h1 className="text-4xl md:text-5xl font-bold text-white tracking-[-0.045em] leading-[1.05] mb-3">
-          What governs <span className="text-gradient">every action.</span>
-        </h1>
-        <p className="text-[15px] text-zinc-400 max-w-2xl leading-relaxed">
-          Every policy Axiom enforces — declarative, auditable, with canonical evidence refs. <span className="text-zinc-500">The registry declares; the underlying engines enforce.</span>
-        </p>
-      </div>
+      <PageIntro
+        kicker={`Business / admin · policy registry${report?.generatedAt ? ` · declared ${new Date(report.generatedAt).toLocaleTimeString()}` : ""}`}
+        title={<>What governs <span className="text-zinc-500">every action.</span></>}
+        description="Every policy Axiom enforces — declarative, auditable, with canonical evidence refs. The registry declares; the underlying engines enforce."
+        helps="Read every policy in plain English, see its current enforcement state, and the canonical source-of-truth it points at."
+        connectFirst="Already in effect — policies apply platform-wide, no setup required."
+        engineers={["Council / Safety", "Compliance Officer", "Security Engineer"]}
+        requiresApproval="Policy edits are admin-only and require dual control."
+        actions={[
+          { label: "Automation boundaries", href: "/dashboard/automation-boundaries" },
+          { label: "Audit log", href: "/dashboard/audit" },
+        ]}
+        safetyNote="policies_declared_no_action_taken · Read-only registry · Tamper-evident evidence refs"
+      />
 
       {loading && (
         <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 mb-6">
