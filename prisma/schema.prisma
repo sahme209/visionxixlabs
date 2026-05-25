@@ -196,6 +196,19 @@ enum ConnectorSetupStatus {
   needs_attention
 }
 
+// Phase 426 — alert escalation state machine. Mirrors the closed-union
+// AlertEscalationStatus in lib/alerts/alertEscalationSession.ts.
+enum AlertEscalationStatus {
+  quiet
+  fired
+  escalated
+  acknowledged
+  snoozed
+  resolved
+  auto_resolved
+  expired
+}
+
 model User {
   id                   String    @id @default(cuid())
   email                String    @unique
@@ -2142,6 +2155,67 @@ model ConnectorSetupTransition {
   createdAt      DateTime             @default(now())
 
   session ConnectorSetupSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  @@index([sessionId, createdAt])
+  @@index([isLegal, createdAt])
+}
+
+// ---------------------------------------------------------------------------
+// Phase 427 — alert escalation persistence (kernel in Phase 426).
+//
+// One row per (organization, signalRef) — each unique signal gets its own
+// session. signalRef is the application-level identifier (e.g.
+// "connector_setup:aws:org_42") so the bridge from Phase 418's sticky-error
+// classifier can route to the right session deterministically.
+// ---------------------------------------------------------------------------
+
+model AlertEscalationSession {
+  id                   String                @id @default(cuid())
+  organizationId       String
+  /// Application-level signal identifier — opaque to the kernel, but the
+  /// dashboard reads it to know which connector / service / metric is firing.
+  signalRef            String
+  status               AlertEscalationStatus @default(quiet)
+  /// Last legal event kind, for fast "what just happened" reads.
+  lastEventKind        String?
+  /// First time this session entered `fired`. Set once and never updated —
+  /// drives "open for X minutes" pills on the dashboard.
+  firstFiredAt         DateTime?
+  /// Timestamps for the most-recent human interactions, for surfacing on the card.
+  acknowledgedAt       DateTime?
+  acknowledgedByUserId String?
+  /// When the current snooze (if any) ends — drives the "snoozed for N more minutes" pill.
+  snoozedUntilAt       DateTime?
+  resolvedAt           DateTime?
+  resolvedByUserId     String?
+  lastTransitionAt     DateTime              @default(now())
+  createdAt            DateTime              @default(now())
+  updatedAt            DateTime              @updatedAt
+
+  transitions AlertEscalationTransition[]
+
+  @@unique([organizationId, signalRef])
+  @@index([organizationId])
+  @@index([status])
+}
+
+model AlertEscalationTransition {
+  id              String                @id @default(cuid())
+  sessionId       String
+  fromStatus      AlertEscalationStatus
+  toStatus        AlertEscalationStatus
+  eventKind       String
+  isLegal         Boolean
+  rejectionReason String?
+  /// JSON event payload — signalRef for signal_fired, snoozeMinutes for
+  /// operator_snoozed, etc. Schemaless on purpose so future event variants
+  /// don't need a migration.
+  eventPayload    Json?
+  actorUserId     String?
+  actorLabel      String?
+  createdAt       DateTime              @default(now())
+
+  session AlertEscalationSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
 
   @@index([sessionId, createdAt])
   @@index([isLegal, createdAt])
