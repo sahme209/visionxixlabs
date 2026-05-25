@@ -977,76 +977,72 @@ export default function Home() {
       {/* ── Section Divider ────────────────────────────────────────── */}
       <SectionDivider />
 
-      {/* ── CTA ────────────────────────────────────────────────────── */}
+      {/* ── Closing CTA banner — huly.io 'Join the Movement' style ───── */}
       <section className="py-32 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
-        <div className="absolute inset-0 diagonal-streak opacity-40 pointer-events-none" aria-hidden />
-        <div className="absolute -top-20 -right-20 w-[500px] h-[500px] rounded-full bg-violet-600/12 blur-[150px] pointer-events-none" aria-hidden />
-        <div className="absolute -bottom-20 -left-20 w-[500px] h-[500px] rounded-full bg-fuchsia-600/12 blur-[150px] pointer-events-none" aria-hidden />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[300px] rounded-full bg-violet-500/5 blur-[100px] pointer-events-none" aria-hidden />
+        {/* Single ambient pool, slow drift, no aurora carnival */}
+        <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden>
+          <div className="ambient-drift absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[820px] h-[520px] rounded-full bg-white/[0.04] blur-[140px]" />
+        </div>
 
-        <div className="relative max-w-4xl mx-auto flex flex-col md:flex-row items-center gap-12">
-          {/* Glowing orb — Huly-style */}
-          <div className="relative w-48 h-48 md:w-64 md:h-64 shrink-0">
-            <div className="absolute inset-0 rounded-full bg-gradient-to-br from-violet-600/20 via-blue-500/15 to-fuchsia-600/20 blur-[40px] animate-pulse" />
-            <div className="absolute inset-4 rounded-full bg-gradient-to-br from-violet-500/30 via-blue-400/20 to-fuchsia-500/30 blur-[20px]" />
-            <div className="absolute inset-8 rounded-full border border-white/[0.08] bg-[#09090b]/60 backdrop-blur-xl flex items-center justify-center">
-              <BoltIcon className="h-12 w-12 text-violet-400/80" />
-            </div>
-            <div className="ripple-ring" />
-            <div className="ripple-ring" />
-            <div className="ripple-ring" />
+        <div className="relative max-w-3xl mx-auto text-center">
+          <span className="status-pill mx-auto mb-8">
+            <span className="status-dot breathe" />
+            5 minutes to first scan
+          </span>
+          <h2 className="display-headline-lg text-white">
+            Your first scan takes 5 minutes.
+          </h2>
+          <p className="body-lede text-zinc-400 mt-6 mx-auto">
+            Connect a read-only IAM role. Axiom delivers your infrastructure intelligence report — cost savings, security findings, and execution plan — before your coffee gets cold.
+          </p>
+
+          <div className="mt-10 mb-10 max-w-md mx-auto">
+            <div className="hairline-divider" />
           </div>
 
-          {/* Content */}
-          <div className="text-center md:text-left">
-            <h2 className="text-4xl md:text-5xl font-bold mb-5 tracking-[-0.04em]">
-              Your first scan<br />takes <span className="text-gradient">5 minutes.</span>
-            </h2>
-            <p className="text-zinc-400 text-lg mb-4 max-w-md leading-relaxed">
-              Connect a read-only IAM role. Axiom delivers your infrastructure intelligence report — cost savings, security findings, and execution plan — before your coffee gets cold.
-            </p>
-            <div className="flex flex-wrap gap-x-6 gap-y-1.5 text-sm text-zinc-500 mb-8 justify-center md:justify-start">
-              <span className="flex items-center gap-1.5"><span className="w-1 h-1 rounded-full bg-emerald-500" />No credit card</span>
-              <span className="flex items-center gap-1.5"><span className="w-1 h-1 rounded-full bg-emerald-500" />Read-only access</span>
-              <span className="flex items-center gap-1.5"><span className="w-1 h-1 rounded-full bg-emerald-500" />Revoke anytime</span>
-            </div>
-            <div className="flex flex-wrap justify-center md:justify-start gap-4">
-              {(() => {
-                const primary = primaryCta("homepage_cta");
-                const secondary = secondaryCta("homepage_cta");
-                const fallback = fallbackCta("homepage_cta");
-                return (
-                  <>
-                    {primary && (
-                      <Link
-                        href={primary.href}
-                        className="btn-amber-shimmer inline-flex items-center gap-2 px-7 py-3.5 rounded-full font-semibold text-sm transition-colors"
-                      >
-                        {primary.label}
-                        <ArrowRightIcon className="h-4 w-4" />
-                      </Link>
-                    )}
-                    {secondary && (
-                      <Link
-                        href={secondary.href}
-                        className="inline-flex items-center gap-2 px-7 py-3.5 border border-white/[0.12] text-zinc-300 rounded-full font-semibold text-sm hover:bg-white/5 hover:border-white/20 transition-colors"
-                      >
-                        {secondary.label}
-                        <ArrowRightIcon className="h-4 w-4" />
-                      </Link>
-                    )}
-                    {fallback && (
-                      <Link
-                        href={fallback.href}
-                        className="inline-flex items-center gap-2 px-4 py-3.5 text-zinc-500 hover:text-zinc-300 text-sm transition-colors"
-                      >
-                        {fallback.label}
-                      </Link>
-                    )}
-                  </>
-                );
-              })()}
-            </div>
+          <div className="flex flex-col md:flex-row items-center justify-center gap-x-8 gap-y-3 mb-10 text-[12px] font-mono uppercase tracking-[0.22em] text-zinc-500">
+            <span>No credit card</span>
+            <span className="hidden md:inline text-zinc-700">·</span>
+            <span>Read-only access</span>
+            <span className="hidden md:inline text-zinc-700">·</span>
+            <span>Revoke anytime</span>
+          </div>
+
+          <div className="flex flex-wrap justify-center items-center gap-x-6 gap-y-3">
+            {(() => {
+              const primary = primaryCta("homepage_cta");
+              const secondary = secondaryCta("homepage_cta");
+              const fallback = fallbackCta("homepage_cta");
+              return (
+                <>
+                  {primary && (
+                    <Link
+                      href={primary.href}
+                      className="magnetic-sheen inline-flex items-center gap-2.5 px-7 py-3.5 rounded-full bg-white text-zinc-950 text-[14.5px] font-medium hover:bg-zinc-100 transition-colors shadow-[0_0_30px_-10px_rgba(255,255,255,0.4)]"
+                    >
+                      {primary.label}
+                      <ArrowRightIcon className="h-4 w-4 opacity-60" />
+                    </Link>
+                  )}
+                  {secondary && (
+                    <Link
+                      href={secondary.href}
+                      className="link-underline-soft text-[14px] text-zinc-400 hover:text-white transition-colors"
+                    >
+                      {secondary.label}
+                    </Link>
+                  )}
+                  {fallback && (
+                    <Link
+                      href={fallback.href}
+                      className="link-underline-soft text-[13px] text-zinc-500 hover:text-zinc-200 transition-colors"
+                    >
+                      {fallback.label}
+                    </Link>
+                  )}
+                </>
+              );
+            })()}
           </div>
         </div>
       </section>

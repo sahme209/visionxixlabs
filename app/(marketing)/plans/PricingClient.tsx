@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { SocialProofRail } from "../_components/SocialProofRail";
 import { MEMBERSHIP_PLANS, type MembershipPlanId } from "@/lib/pricing/membership";
+import { SpotlightCard } from "@/components/motion/SpotlightCard";
 
 type BillingPeriod = "monthly" | "annual";
 
@@ -153,165 +154,174 @@ export function PricingClient() {
 
   return (
     <div className="relative">
-      <div className="pointer-events-none fixed inset-0 z-0 opacity-50">
-        <div className="absolute -top-1/4 left-1/4 h-[70vh] w-[55vw] rounded-full bg-gradient-to-br from-violet-500/15 via-indigo-500/10 to-transparent blur-3xl" />
+      {/* Calm ambient atmosphere — single drifting white pool, no aurora. */}
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-[600px] z-0 overflow-hidden">
+        <div className="ambient-drift absolute -top-32 left-1/2 -translate-x-1/2 w-[900px] h-[480px] rounded-full bg-white/[0.04] blur-[140px]" />
       </div>
 
-      <section className="relative z-10 mx-auto max-w-6xl px-6 md:px-10 pt-20 pb-8">
-        <motion.span
+      {/* ── Hero ──────────────────────────────────────────────────── */}
+      <section className="relative z-10 mx-auto max-w-5xl px-6 md:px-10 pt-24 pb-12">
+        <motion.p
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
-          className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-3 py-1 text-[10px] font-mono uppercase tracking-widest text-indigo-300"
+          className="kicker-mono"
         >
-          pricing
-        </motion.span>
+          Pricing
+        </motion.p>
         <motion.h1
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="mt-5 text-4xl md:text-6xl font-bold tracking-[-0.04em] leading-[1.05]"
+          className="display-headline-lg text-white mt-5"
         >
-          One team.{" "}
-          <span className="bg-gradient-to-r from-indigo-300 to-violet-300 bg-clip-text text-transparent">
-            One bill.
-          </span>
+          One team. One bill.
         </motion.h1>
         <motion.p
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="mt-5 max-w-2xl text-[16px] text-zinc-400 leading-relaxed"
+          className="body-lede text-zinc-400 mt-6 max-w-2xl"
         >
-          Every tier ships with the full safety contract — approval-only-no-execution,
-          closed-union safety, sha-256 rationale rows. Higher tiers unlock more
-          operators, more integrations, and stricter approver-role policies.
+          Every tier ships with the full safety contract — approval-only-no-execution, closed-union safety, sha-256 rationale rows. Higher tiers unlock more operators, more integrations, and stricter approver-role policies.
         </motion.p>
 
-        <div className="mt-8 inline-flex items-center rounded-full border border-white/10 bg-white/[0.02] p-1">
+        {/* Billing toggle — calm pill, white selected state, no indigo glow */}
+        <div className="mt-10 inline-flex items-center rounded-full border border-white/[0.08] bg-white/[0.015] p-1">
           {(["monthly", "annual"] as const).map((p) => (
             <button
               key={p}
               onClick={() => setPeriod(p)}
               aria-pressed={period === p}
               className={[
-                "px-3 py-1.5 text-[12px] font-mono uppercase tracking-widest rounded-full transition",
-                period === p ? "bg-indigo-500 text-white" : "text-zinc-400 hover:text-white",
+                "px-4 py-1.5 text-[12px] font-mono uppercase tracking-[0.22em] rounded-full transition-colors",
+                period === p ? "bg-white text-zinc-950" : "text-zinc-400 hover:text-white",
               ].join(" ")}
             >
-              {p === "annual" ? "annual · save 40%" : "monthly"}
+              {p === "annual" ? "Annual · save 40%" : "Monthly"}
             </button>
           ))}
         </div>
       </section>
 
-      <section className="relative z-10 mx-auto max-w-6xl px-6 md:px-10 pb-16">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-3">
-          {TIERS.map((t, i) => (
-            <motion.div
-              key={t.id}
-              initial={{ opacity: 0, y: 16 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, amount: 0.3 }}
-              transition={{ duration: 0.5, delay: i * 0.05 }}
-              className={[
-                "relative rounded-2xl border p-5 md:p-6 flex flex-col",
-                t.highlight
-                  ? "border-indigo-500/40 bg-indigo-500/[0.06] shadow-[0_0_28px_rgba(99,102,241,0.18)]"
-                  : "border-white/[0.06] bg-white/[0.02]",
-              ].join(" ")}
-            >
-              {t.highlight ? (
-                <span className="absolute -top-2.5 left-5 inline-flex items-center gap-1 rounded-full bg-indigo-500 px-2.5 py-0.5 text-[9.5px] font-mono uppercase tracking-widest text-white shadow-[0_0_18px_rgba(99,102,241,0.45)]">
-                  most popular
-                </span>
-              ) : null}
+      {/* ── Hairline before the tiers ─────────────────────────────── */}
+      <div className="relative z-10 mx-auto max-w-5xl px-6 md:px-10">
+        <div className="hairline-divider" />
+      </div>
 
-              <p className="text-[10px] font-mono uppercase tracking-widest text-zinc-500">{t.label}</p>
-              {(() => {
-                const p = pricingFor(t, period);
-                return (
-                  <>
-                    <p className="mt-3 text-2xl md:text-3xl font-bold tabular-nums">
-                      {p.display}
-                      {p.suffix ? (
-                        <span className="text-[12px] text-zinc-500 font-normal ml-1">{p.suffix}</span>
-                      ) : null}
-                    </p>
-                    {p.saveCopy ? (
-                      <p className="mt-1 text-[10.5px] font-mono uppercase tracking-widest text-emerald-300/80">
-                        {p.saveCopy}
+      {/* ── Tiers — huly.io vertical full-width row layout ────────── */}
+      <section className="relative z-10 mx-auto max-w-5xl px-6 md:px-10 py-12">
+        <div className="flex flex-col gap-3">
+          {TIERS.map((t, i) => {
+            const p = pricingFor(t, period);
+            const cta = ctaFor(t.id, period);
+            const ctaClass = "magnetic-sheen inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-[14px] font-medium bg-white text-zinc-950 hover:bg-zinc-100 transition-colors whitespace-nowrap";
+            return (
+              <motion.div
+                key={t.id}
+                initial={{ opacity: 0, y: 14 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.25 }}
+                transition={{ duration: 0.5, delay: i * 0.06 }}
+              >
+                <SpotlightCard
+                  className={[
+                    "glow-edge relative rounded-2xl border bg-white/[0.012] px-6 md:px-8 py-7 md:py-8 transition-colors hover:border-white/[0.12]",
+                    t.highlight ? "border-white/[0.14]" : "border-white/[0.05]",
+                  ].join(" ")}
+                >
+                  {t.highlight ? (
+                    <span className="absolute -top-3 left-8 inline-flex items-center px-3 py-1 rounded-full bg-white text-zinc-950 text-[9.5px] font-mono uppercase tracking-[0.22em] font-medium">
+                      Most popular
+                    </span>
+                  ) : null}
+
+                  <div className="grid grid-cols-1 lg:grid-cols-[260px_minmax(0,1fr)_220px] gap-x-10 gap-y-6 items-start relative z-10">
+                    {/* Column 1 — name + blurb */}
+                    <div>
+                      <p className="kicker-mono">{t.label}</p>
+                      <p className="mt-3 text-[14.5px] text-zinc-300 leading-relaxed">
+                        {t.blurb}
                       </p>
-                    ) : null}
-                  </>
-                );
-              })()}
-              <p className="mt-3 text-[12px] text-zinc-400 leading-snug">{t.blurb}</p>
+                    </div>
 
-              <ul className="mt-5 space-y-3 flex-1">
-                {t.rows.map((r) => (
-                  <li key={r.label}>
-                    <p className="text-[9.5px] font-mono uppercase tracking-[0.16em] text-zinc-500">
-                      {r.label}
-                    </p>
-                    <p className="mt-1 text-[12.5px] text-zinc-200 leading-snug">
-                      {r.value}
-                    </p>
-                  </li>
-                ))}
-              </ul>
+                    {/* Column 2 — features in 2-column dense grid */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3.5 lg:border-l lg:border-white/[0.05] lg:pl-10">
+                      {t.rows.map((r) => (
+                        <div key={r.label}>
+                          <p className="text-[9.5px] font-mono uppercase tracking-[0.18em] text-zinc-500">
+                            {r.label}
+                          </p>
+                          <p className="mt-1 text-[12.5px] text-zinc-200 leading-snug">
+                            {r.value}
+                          </p>
+                        </div>
+                      ))}
+                    </div>
 
-              {(() => {
-                const cta = ctaFor(t.id, period);
-                const className = [
-                  "mt-6 inline-flex items-center justify-center gap-2 rounded-full px-4 py-2.5 text-[12.5px] font-medium transition",
-                  t.highlight
-                    ? "bg-indigo-500 text-white hover:bg-indigo-400 shadow-[0_0_22px_rgba(99,102,241,0.45)]"
-                    : "border border-white/10 text-zinc-200 hover:bg-white/[0.06] hover:border-white/20",
-                ].join(" ");
-                // External Stripe Payment Links open in a new tab so the
-                // pricing-page state is preserved (toggle, scroll).
-                // Internal routes (enterprise contact) stay client-routed.
-                return cta.external ? (
-                  <a
-                    href={cta.href}
-                    className={className}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    data-stripe-tier={t.id}
-                    data-stripe-period={period}
-                  >
-                    {cta.label}
-                  </a>
-                ) : (
-                  <Link href={cta.href} className={className}>
-                    {cta.label}
-                  </Link>
-                );
-              })()}
-            </motion.div>
-          ))}
+                    {/* Column 3 — price + CTA */}
+                    <div className="lg:text-right lg:border-l lg:border-white/[0.05] lg:pl-10 flex flex-col lg:items-end">
+                      <p className="text-[34px] md:text-[38px] font-medium tabular-nums text-white leading-none">
+                        {p.display}
+                        {p.suffix ? (
+                          <span className="text-[12px] text-zinc-500 font-normal ml-1">{p.suffix}</span>
+                        ) : null}
+                      </p>
+                      {p.saveCopy ? (
+                        <p className="mt-1.5 text-[10.5px] font-mono uppercase tracking-[0.18em] text-zinc-500">
+                          {p.saveCopy}
+                        </p>
+                      ) : null}
+                      <div className="mt-5 w-full lg:w-auto">
+                        {cta.external ? (
+                          <a
+                            href={cta.href}
+                            className={ctaClass}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            data-stripe-tier={t.id}
+                            data-stripe-period={period}
+                          >
+                            {cta.label}
+                          </a>
+                        ) : (
+                          <Link href={cta.href} className={ctaClass}>
+                            {cta.label}
+                          </Link>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </SpotlightCard>
+              </motion.div>
+            );
+          })}
         </div>
 
-        {/* Trust strip — clarify checkout vendor + safety contract */}
-        <div className="mt-6 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-[11px] font-mono uppercase tracking-widest text-zinc-500">
-          <span className="inline-flex items-center gap-1.5">
-            <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
-            secure checkout via stripe
+        {/* Trust strip — quieter mono row, no green dot */}
+        <div className="mt-10 flex flex-wrap items-center justify-center gap-x-8 gap-y-2 text-[11px] font-mono uppercase tracking-[0.22em] text-zinc-500">
+          <span className="inline-flex items-center gap-2">
+            <span className="status-dot breathe" />
+            Secure checkout via Stripe
           </span>
-          <span>cancel anytime</span>
-          <span>no setup fee</span>
-          <span>vat handled at checkout</span>
+          <span>Cancel anytime</span>
+          <span>No setup fee</span>
+          <span>VAT handled at checkout</span>
         </div>
       </section>
 
+      <div className="relative z-10 mx-auto max-w-5xl px-6 md:px-10">
+        <div className="hairline-divider" />
+      </div>
+
       <SocialProofRail />
 
-      <section className="relative z-10 mx-auto max-w-3xl px-6 md:px-10 pb-20 text-center">
-        <h3 className="text-xl md:text-2xl font-semibold tracking-tight">
+      <section className="relative z-10 mx-auto max-w-3xl px-6 md:px-10 pb-24 pt-16 text-center">
+        <p className="kicker-mono">Always included</p>
+        <h3 className="display-headline text-white mt-4">
           Every tier ships with the full safety contract.
         </h3>
-        <p className="mt-2 text-[14px] text-zinc-400">
-          We don't unlock safety guarantees behind a paywall. If you can sign in, you get approval-only-no-execution.
+        <p className="mt-5 text-[15px] text-zinc-400 leading-relaxed">
+          We don&apos;t unlock safety guarantees behind a paywall. If you can sign in, you get approval-only-no-execution.
         </p>
       </section>
     </div>
