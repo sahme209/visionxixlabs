@@ -1,134 +1,225 @@
 "use client";
 
 /**
- * Phase 438 — public pricing pivot.
+ * Public pricing page — explanatory, not card-gated.
  *
- * REPLACED the prior fixed-plan SaaS cards (Starter $149 / Growth $899
- * / Scale $3,499 + Stripe Payment Links) with engagement-options copy.
+ * Phase 438 first removed the misleading fixed numbers. This pass
+ * removes the "book a demo to find out" wall: visitors get a full
+ * explanation of the pricing model right here, with optional CTAs
+ * (not required gates).
  *
- * Real client cost depends on actual cloud usage, AI volume, automation
- * runs, monitoring fan-out, and support level — none of which we can
- * promise on a marketing page. Showing a hard-coded number was at best
- * confusing, at worst misleading once cloud-connected reality didn't
- * match.
+ * The model: client pays (1) their actual cloud provider bill,
+ * unchanged, billed by the provider — plus (2) a usage-aware
+ * VisionXIXLabs operations fee. This page explains both buckets
+ * in plain language and lists exactly what we charge for.
  *
- * Public pricing now:
- *   - explains the model (your cloud cost + VisionXIXLabs ops layer)
- *   - offers three engagement shapes WITHOUT hard prices
- *   - routes every CTA to demo / contact / estimate-after-login
- *
- * Stripe Payment Links + MEMBERSHIP_PLANS are NOT removed from the
- * codebase — they still power internal upgrade flows, but no longer
- * appear publicly with a fake hard number.
+ * No hard numbers on this page — every dollar amount depends on
+ * scanned usage. But every category is named, every charge basis is
+ * explained, and the estimate flow is described step-by-step so a
+ * visitor can decide whether to engage without a sales call.
  */
 
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { SocialProofRail } from "../_components/SocialProofRail";
-import { SpotlightCard } from "@/components/motion/SpotlightCard";
 
-interface EngagementOption {
-  id: "starter-assessment" | "growth-operations" | "enterprise-operations";
+/* ──────────────────────────────────────────────────────────────────
+   Content tables.
+   ────────────────────────────────────────────────────────────── */
+
+interface ChargeCategory {
   label: string;
-  /** One-line value claim — what the operator gets out of it. */
-  blurb: string;
-  /** Best-fit copy — when this option makes sense. */
-  bestFor: string;
-  /** What's included at a high level — no SLAs, no SKUs. */
-  includes: ReadonlyArray<string>;
-  /** Visible price strap — never a number. */
-  priceStrap: string;
-  highlight?: boolean;
+  basis: string;
+  example: string;
 }
 
-const OPTIONS: ReadonlyArray<EngagementOption> = [
+const VXL_CHARGES: ReadonlyArray<ChargeCategory> = [
   {
-    id: "starter-assessment",
-    label: "Starter Assessment",
-    blurb: "Connect one cloud, get an estimate, see your savings surface.",
-    bestFor: "Teams kicking the tires — first AWS / Azure / GCP scan, first read of where money is leaking.",
-    includes: [
-      "Read-only cloud scan",
-      "Cost + posture report",
-      "Estimate after connection",
-      "No commit — exit any time",
-    ],
-    priceStrap: "Free during trial · usage-aware after",
+    label: "Platform base",
+    basis: "Monthly fee for access to the platform.",
+    example: "Covers dashboard, audit log, security baseline, and read-only scans.",
   },
   {
-    id: "growth-operations",
+    label: "Workspace seats",
+    basis: "Per active operator on the workspace.",
+    example: "Only counted on humans who actually sign in during the billing period.",
+  },
+  {
+    label: "AI engineers enabled",
+    basis: "Per AI engineer (Cloud, Incident, Security, FinOps, etc.) you activate.",
+    example: "You only pay for the agents you turn on; unused agents are zero.",
+  },
+  {
+    label: "Automation runs",
+    basis: "Per workflow / remediation script / Terraform plan execution.",
+    example: "First N runs included at each engagement level; overage metered.",
+  },
+  {
+    label: "AI usage",
+    basis: "Per million tokens to OpenAI / Anthropic / your-own provider.",
+    example: "Included quota covers normal operations; heavy use is metered and capped.",
+  },
+  {
+    label: "Monitoring volume",
+    basis: "Per GB of logs / metrics / traces ingested by the platform.",
+    example: "Scoped to what we actually store; you can exclude noisy sources.",
+  },
+  {
+    label: "Cloud management",
+    basis: "Percentage of cloud spend OR per managed resource — whichever is lower.",
+    example: "We never charge more than the rule that benefits you more.",
+  },
+  {
+    label: "Support / managed ops",
+    basis: "Tier-based: self-serve, business hours, 24/7, dedicated success manager.",
+    example: "You pick the level. No hidden minimums.",
+  },
+  {
+    label: "Enterprise custom",
+    basis: "Bespoke line items for self-host, dual-control, custom retention.",
+    example: "Only on enterprise engagements; everything is itemized.",
+  },
+];
+
+interface EstimateStep {
+  n: number;
+  label: string;
+  detail: string;
+}
+
+const ESTIMATE_FLOW: ReadonlyArray<EstimateStep> = [
+  { n: 1, label: "Sign in",                 detail: "Create a workspace. No card required to look around." },
+  { n: 2, label: "Connect a cloud (read-only)", detail: "AWS / Azure / GCP — read-only, no write scopes ever asked for." },
+  { n: 3, label: "Discovery scan",          detail: "We scan resources, services, regions, and recent usage. No data leaves your control." },
+  { n: 4, label: "Estimate appears",        detail: "Cloud provider line items + VisionXIXLabs operations layer, side by side." },
+  { n: 5, label: "Pick a service level",    detail: "Adjust what's enabled — AI engineers, automation depth, monitoring scope, support tier." },
+  { n: 6, label: "Approve the quote",       detail: "Usage caps and approval gates land before activation. No surprise overruns." },
+];
+
+interface EngagementShape {
+  label: string;
+  whoFor: string;
+  typical: string;
+  whatYouGet: ReadonlyArray<string>;
+  charge: string;
+}
+
+const ENGAGEMENTS: ReadonlyArray<EngagementShape> = [
+  {
+    label: "Starter Assessment",
+    whoFor: "Single team, one cloud, kicking the tires.",
+    typical: "First scan, find the wasted-spend surface, see what observability looks like.",
+    whatYouGet: [
+      "Read-only AWS / Azure / GCP scan",
+      "Cost + posture report",
+      "FinOps recommendations queue (drafts only)",
+      "Slack integration",
+    ],
+    charge: "Free during trial · usage-aware after activation.",
+  },
+  {
     label: "Growth Operations",
-    blurb: "Multi-cloud, scheduled scans, automation runs, and the on-call escalation loop.",
-    bestFor: "Operators running multiple workloads — sticky errors page on-call, drafts go through Approval Packets, audit log everywhere.",
-    includes: [
+    whoFor: "Operators running multiple workloads or multiple clouds.",
+    typical: "Scheduled scans, automation runs, on-call alerting, approval-gated remediation.",
+    whatYouGet: [
       "AWS + Azure + GCP connectors",
       "Scheduled scans + drift detection",
-      "Approval-gated automation runs",
-      "Alert escalation w/ on-call routing",
-      "Slack + email integrations",
+      "Approval-gated automation",
+      "Sticky-error → on-call alert escalation",
+      "Slack + email + webhook integrations",
     ],
-    priceStrap: "Custom — estimate after cloud connection",
-    highlight: true,
+    charge: "Custom — estimate after cloud connection. Platform base + metered VxL line items.",
   },
   {
-    id: "enterprise-operations",
     label: "Enterprise Operations",
-    blurb: "Self-host, SOC2-aligned, dedicated success manager, signed Terraform.",
-    bestFor: "Org-wide rollouts with compliance constraints — RBAC, dual-control gates, dedicated SLA, BYO AI provider.",
-    includes: [
+    whoFor: "Compliance-constrained org-wide rollouts.",
+    typical: "Self-hosted, dual-control, signed Terraform, dedicated success manager, SLA contract.",
+    whatYouGet: [
       "Self-host option",
       "Dual-control approvals",
       "Custom retention + audit export",
-      "Dedicated success manager",
-      "SLA + escalation contract",
+      "RBAC and SAML",
+      "Dedicated SLA + escalation contract",
     ],
-    priceStrap: "Quoted per engagement",
+    charge: "Quoted per engagement. Itemized bespoke line items.",
   },
 ];
 
-type CtaKind = "primary" | "secondary";
-
-interface Cta {
-  href: string;
+interface SafetyRule {
   label: string;
-  kind: CtaKind;
+  detail: string;
 }
 
-const PRIMARY_CTAS: ReadonlyArray<Cta> = [
-  { href: "/demo", label: "Book a demo", kind: "primary" },
-  { href: "/contact?topic=quote", label: "Request a quote", kind: "secondary" },
-  { href: "/login", label: "Estimate after login", kind: "secondary" },
+const SAFETY_RULES: ReadonlyArray<SafetyRule> = [
+  {
+    label: "Cloud bill never marked up",
+    detail: "Your AWS / Azure / GCP charges are billed by the provider, full stop. We never touch your provider bill or add a percentage.",
+  },
+  {
+    label: "Usage caps with approval gates",
+    detail: "Every metered category has a configurable cap. When usage approaches the cap, we surface a warning. You approve any bump before it lands.",
+  },
+  {
+    label: "No unlimited AI claims",
+    detail: "AI usage is metered. You can see exactly how many tokens were consumed, by which agent, for which task. Heavy use has a hard cap.",
+  },
+  {
+    label: "No silent overruns",
+    detail: "If a forecast risks exceeding your cap, the platform pauses the metered category and asks for approval before continuing.",
+  },
+  {
+    label: "Quotes are itemized",
+    detail: "Every quote breaks out cloud line items, VxL line items, and assumptions. You see how each number was reached.",
+  },
+  {
+    label: "Estimates are clearly labeled",
+    detail: "Prices pulled from cached or estimated catalogs are flagged. Sandbox-only prices can never be used in a real quote.",
+  },
 ];
 
-function ctaFor(option: EngagementOption): { href: string; label: string; external: boolean } {
-  if (option.id === "enterprise-operations") {
-    return { href: "/contact?topic=enterprise", label: "Talk to sales →", external: false };
-  }
-  return { href: "/demo", label: "Book a demo →", external: false };
+interface FaqEntry {
+  q: string;
+  a: string;
 }
 
-const FAQ: ReadonlyArray<{ q: string; a: string }> = [
+const FAQ: ReadonlyArray<FaqEntry> = [
   {
     q: "Why no public price list?",
-    a: "Your real cost depends on actual cloud usage, AI volume, automation runs, monitoring fan-out, and support level. A fake fixed number on this page would be wrong the moment you connect a cloud. We'd rather show you a real estimate after a read-only scan.",
+    a: "Real cost depends on actual cloud usage, AI volume, automation runs, monitoring fan-out, and support level. A fixed number on this page would be wrong the moment you connected a cloud. So we let you connect first and see the real estimate.",
   },
   {
     q: "What do I actually pay?",
-    a: "Two things: (1) your cloud provider charges you for AWS / Azure / GCP usage directly — that bill is between you and the provider, never marked up by us; (2) VisionXIXLabs charges a platform + operations fee based on what you actually run with us.",
+    a: "Two line items. (1) Your cloud provider bill — AWS, Azure, or GCP — paid directly to them, never marked up by us. (2) A VisionXIXLabs operations bill from us, which is a usage-aware sum of the categories listed above.",
   },
   {
-    q: "Can I see the numbers before committing?",
-    a: "Yes. Connect one cloud account in read-only mode, let us run a scan, and the estimator surfaces your projected monthly cost — split into the provider line item and our operations layer. No commit required to see it.",
+    q: "Can I see numbers without talking to sales?",
+    a: "Yes. Sign in, connect a cloud in read-only mode, let the discovery scan run. The estimator inside the app shows your projected monthly cost split by line item.",
+  },
+  {
+    q: "Do I have to commit to see the estimate?",
+    a: "No. The trial supports a read-only scan with no card. You see the estimate, decide whether the operations layer is worth it, then activate the service tiers you want.",
+  },
+  {
+    q: "What's the smallest realistic VxL operations bill?",
+    a: "Platform base + minimal AI usage + a single connector. Real number depends on your workspace, but it's the same shape: platform base, then metered categories at low volume.",
+  },
+  {
+    q: "What's the most expensive line item usually?",
+    a: "It varies. For small workloads, the platform base dominates. For high-traffic accounts with large log/metric volumes, monitoring tends to be the biggest VxL line. For automation-heavy workflows, it's automation runs + AI usage.",
+  },
+  {
+    q: "What if my usage spikes?",
+    a: "Every metered category has a cap. The platform warns you before approaching it and pauses the metered category if a forecast would breach it. You always approve any bump.",
   },
   {
     q: "Is there an enterprise tier?",
-    a: "Yes — self-host, dual-control approvals, SOC2-aligned controls, dedicated success manager, signed Terraform. Quoted per engagement.",
-  },
-  {
-    q: "What if I outgrow the estimate?",
-    a: "Usage caps are configurable. We warn before you cross a threshold and require approval for the bump — no silent overruns.",
+    a: "Yes — self-host, dual-control approvals, custom retention, SAML/RBAC, dedicated success manager. Quoted per engagement and every line item is itemized.",
   },
 ];
+
+/* ──────────────────────────────────────────────────────────────────
+   Component.
+   ────────────────────────────────────────────────────────────── */
 
 export function PricingClient() {
   return (
@@ -139,189 +230,213 @@ export function PricingClient() {
       </div>
 
       {/* Hero ────────────────────────────────────────────────────── */}
-      <section className="relative z-10 mx-auto max-w-5xl px-6 md:px-10 pt-24 pb-12">
-        <motion.p
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="kicker-mono"
-        >
+      <section className="relative z-10 mx-auto max-w-4xl px-6 md:px-10 pt-24 pb-12">
+        <motion.p initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="kicker-mono">
           Pricing
         </motion.p>
         <motion.h1
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
+          initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
           className="display-headline-lg text-white mt-5"
         >
           Custom pricing,<br />based on your cloud.
         </motion.h1>
         <motion.p
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-          className="body-lede text-zinc-400 mt-6 max-w-2xl"
+          initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
+          className="body-lede text-zinc-400 mt-6"
         >
-          Your real cost depends on what you run. Connect AWS, Azure, or GCP in read-only mode and we&apos;ll show you the actual numbers — your cloud provider bill plus our operations layer, split out line-by-line.
+          We don&apos;t publish hard SaaS prices because the real number depends on what you run. This page explains exactly how the pricing model works, what we charge for, and how the estimate is calculated — no demo required.
         </motion.p>
-        <motion.div
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
-          className="mt-10 flex flex-wrap items-center gap-3"
-        >
-          {PRIMARY_CTAS.map((cta) => (
-            <Link
-              key={cta.href}
-              href={cta.href}
-              className={
-                cta.kind === "primary"
-                  ? "magnetic-sheen inline-flex items-center gap-2 rounded-full px-5 py-3 text-[13.5px] font-medium bg-white text-zinc-950 hover:bg-zinc-100 transition-colors"
-                  : "inline-flex items-center gap-2 rounded-full px-5 py-3 text-[13.5px] font-medium border border-white/[0.1] text-zinc-200 hover:bg-white/[0.04] hover:border-white/[0.18] transition-colors"
-              }
-            >
-              {cta.label} →
-            </Link>
-          ))}
-        </motion.div>
       </section>
 
-      {/* Cost model strip ────────────────────────────────────────── */}
-      <section className="relative z-10 mx-auto max-w-5xl px-6 md:px-10 pb-12">
-        <div className="rounded-2xl border border-white/[0.06] bg-white/[0.015] p-6 md:p-8">
-          <p className="kicker-mono">// what you actually pay</p>
-          <h2 className="display-headline text-white mt-4">Two line items. Nothing hidden.</h2>
-          <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-5">
-              <p className="text-[11px] font-mono uppercase tracking-[0.18em] text-zinc-500 mb-2">1. Your cloud provider</p>
-              <p className="text-[14px] text-white font-semibold mb-1">AWS / Azure / GCP usage</p>
-              <p className="text-[12.5px] text-zinc-400 leading-relaxed">
-                Billed directly by the provider. We never mark this up, and we never re-bill you for it.
-              </p>
+      {/* The model — two-bucket explanation ──────────────────────── */}
+      <section className="relative z-10 mx-auto max-w-4xl px-6 md:px-10 pb-16">
+        <p className="kicker-mono">// the pricing model</p>
+        <h2 className="display-headline text-white mt-4">Two buckets. Nothing hidden.</h2>
+        <p className="mt-4 text-[14px] text-zinc-400 leading-relaxed">
+          Your monthly cost is the sum of two clean line items. We make it visually obvious so you can audit it line by line.
+        </p>
+
+        <div className="mt-8 space-y-4">
+          <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-6">
+            <div className="flex items-baseline gap-3 mb-2">
+              <span className="text-[11px] font-mono uppercase tracking-[0.18em] text-zinc-500">Bucket 1</span>
+              <h3 className="text-[16px] text-white font-semibold">Your cloud provider</h3>
             </div>
-            <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-5">
-              <p className="text-[11px] font-mono uppercase tracking-[0.18em] text-zinc-500 mb-2">2. VisionXIXLabs operations</p>
-              <p className="text-[14px] text-white font-semibold mb-1">Platform + AI + automation + support</p>
-              <p className="text-[12.5px] text-zinc-400 leading-relaxed">
-                One usage-aware bill from us. Platform fee + AI runs + automation runs + monitoring + your support tier.
-              </p>
+            <p className="text-[13.5px] text-zinc-300 leading-relaxed">
+              AWS, Azure, or GCP charges you directly for the compute, storage, networking, and managed services you actually use. That bill is between you and the provider. <span className="text-white font-medium">We never mark it up. We never re-bill it. We never touch your provider invoice.</span>
+            </p>
+          </div>
+
+          <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-6">
+            <div className="flex items-baseline gap-3 mb-2">
+              <span className="text-[11px] font-mono uppercase tracking-[0.18em] text-zinc-500">Bucket 2</span>
+              <h3 className="text-[16px] text-white font-semibold">VisionXIXLabs operations</h3>
             </div>
+            <p className="text-[13.5px] text-zinc-300 leading-relaxed">
+              One usage-aware bill from us — platform access, AI engineers, automation runs, monitoring volume, and your chosen support tier. Each category is metered separately so you see exactly what drives the total.
+            </p>
           </div>
         </div>
       </section>
 
-      <div className="relative z-10 mx-auto max-w-5xl px-6 md:px-10">
+      <div className="relative z-10 mx-auto max-w-4xl px-6 md:px-10">
         <div className="hairline-divider" />
       </div>
 
-      {/* Engagement options — NO PRICES ─────────────────────────── */}
-      <section className="relative z-10 mx-auto max-w-6xl px-6 md:px-10 py-16">
-        <div className="text-center mb-12">
-          <p className="kicker-mono">Engagement options</p>
-          <h2 className="display-headline text-white mt-3">Three shapes. One pricing model.</h2>
-          <p className="mt-4 text-[14px] text-zinc-400 max-w-2xl mx-auto">
-            Every engagement is usage-aware. The shape changes the depth of automation, the integrations available, and the support contract — not the way you&apos;re billed.
-          </p>
-        </div>
+      {/* What VxL charges for — full breakdown ───────────────────── */}
+      <section className="relative z-10 mx-auto max-w-4xl px-6 md:px-10 py-16">
+        <p className="kicker-mono">// what visionxixlabs charges for</p>
+        <h2 className="display-headline text-white mt-4">Every line item, explained.</h2>
+        <p className="mt-4 text-[14px] text-zinc-400 leading-relaxed">
+          The VxL operations bill is the sum of these nine categories. You only pay for the ones you actually use; unused categories are zero.
+        </p>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-5 md:gap-6 items-stretch">
-          {OPTIONS.map((opt, i) => {
-            const cta = ctaFor(opt);
-            const ctaClass = opt.highlight
-              ? "magnetic-sheen w-full inline-flex items-center justify-center gap-2 rounded-full px-5 py-3 text-[13.5px] font-medium bg-white text-zinc-950 hover:bg-zinc-100 transition-colors"
-              : "w-full inline-flex items-center justify-center gap-2 rounded-full px-5 py-3 text-[13.5px] font-medium border border-white/[0.1] text-zinc-200 hover:bg-white/[0.04] hover:border-white/[0.18] transition-colors";
-            return (
-              <motion.div
-                key={opt.id}
-                initial={{ opacity: 0, y: 14 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, amount: 0.25 }}
-                transition={{ duration: 0.5, delay: i * 0.06 }}
-                className={opt.highlight ? "md:scale-[1.03] md:z-10" : ""}
-              >
-                <SpotlightCard
-                  className={[
-                    "relative h-full rounded-[20px] bg-[#0a0a0c] flex flex-col p-7",
-                    opt.highlight ? "pricing-featured-glow" : "border border-white/[0.06] glow-edge",
-                  ].join(" ")}
-                >
-                  {opt.highlight && (
-                    <span className="absolute -top-3 left-1/2 -translate-x-1/2 inline-flex items-center px-3 py-1 rounded-full bg-white text-zinc-950 text-[9.5px] font-mono uppercase tracking-[0.22em] font-medium z-10">
-                      Most common
-                    </span>
-                  )}
-
-                  <div className="relative z-10 flex-1 flex flex-col">
-                    <p className="kicker-mono">{opt.label}</p>
-
-                    <p className="mt-5 text-[15px] text-white leading-snug font-medium">
-                      {opt.blurb}
-                    </p>
-
-                    <div className="mt-4 inline-flex">
-                      <span className="text-[10.5px] font-mono uppercase tracking-[0.18em] text-zinc-500 border border-white/[0.08] rounded-full px-2.5 py-1">
-                        {opt.priceStrap}
-                      </span>
-                    </div>
-
-                    <p className="mt-5 text-[12.5px] text-zinc-400 leading-relaxed">
-                      <span className="text-zinc-300">Best for —</span> {opt.bestFor}
-                    </p>
-
-                    <div className="my-6 hairline-divider" />
-
-                    <ul className="space-y-3 flex-1">
-                      {opt.includes.map((line) => (
-                        <li key={line} className="flex items-start gap-2.5">
-                          <span aria-hidden className="mt-1.5 w-1 h-1 rounded-full bg-white/40 flex-shrink-0" />
-                          <p className="text-[12.5px] text-zinc-200 leading-snug">{line}</p>
-                        </li>
-                      ))}
-                    </ul>
-
-                    <div className="mt-7">
-                      <Link href={cta.href} className={ctaClass}>
-                        {cta.label}
-                      </Link>
-                    </div>
-                  </div>
-                </SpotlightCard>
-              </motion.div>
-            );
-          })}
-        </div>
-
-        {/* Trust strip */}
-        <div className="mt-10 flex flex-wrap items-center justify-center gap-x-8 gap-y-2 text-[11px] font-mono uppercase tracking-[0.22em] text-zinc-500">
-          <span className="inline-flex items-center gap-2">
-            <span className="status-dot breathe" />
-            Read-only cloud connection
-          </span>
-          <span>No commit during trial</span>
-          <span>Usage caps + approval gates</span>
-          <span>Cloud bill never marked up</span>
+        <div className="mt-8 rounded-2xl border border-white/[0.06] bg-white/[0.015] overflow-hidden">
+          {VXL_CHARGES.map((c, i) => (
+            <div
+              key={c.label}
+              className={[
+                "p-5 md:p-6 grid grid-cols-1 md:grid-cols-[200px_1fr] gap-3 md:gap-6",
+                i > 0 ? "border-t border-white/[0.05]" : "",
+              ].join(" ")}
+            >
+              <div>
+                <p className="text-[13.5px] text-white font-semibold">{c.label}</p>
+              </div>
+              <div>
+                <p className="text-[13px] text-zinc-300 leading-relaxed">{c.basis}</p>
+                <p className="mt-1.5 text-[12px] text-zinc-500 leading-relaxed">{c.example}</p>
+              </div>
+            </div>
+          ))}
         </div>
       </section>
 
-      <div className="relative z-10 mx-auto max-w-5xl px-6 md:px-10">
+      <div className="relative z-10 mx-auto max-w-4xl px-6 md:px-10">
+        <div className="hairline-divider" />
+      </div>
+
+      {/* How the estimate works — numbered flow ──────────────────── */}
+      <section className="relative z-10 mx-auto max-w-4xl px-6 md:px-10 py-16">
+        <p className="kicker-mono">// how the estimate works</p>
+        <h2 className="display-headline text-white mt-4">Sign in. Connect. See real numbers.</h2>
+        <p className="mt-4 text-[14px] text-zinc-400 leading-relaxed">
+          Six steps. No sales call required. The whole flow is reversible — disconnect any time, and the read-only scope means we never had write access in the first place.
+        </p>
+
+        <ol className="mt-8 space-y-4">
+          {ESTIMATE_FLOW.map((s) => (
+            <motion.li
+              key={s.n}
+              initial={{ opacity: 0, y: 8 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.4 }}
+              transition={{ duration: 0.4, delay: s.n * 0.04 }}
+              className="rounded-xl border border-white/[0.06] bg-white/[0.015] p-5 flex items-start gap-4"
+            >
+              <span className="text-[11px] font-mono text-zinc-500 mt-1 shrink-0 w-6 text-center tabular-nums">
+                {String(s.n).padStart(2, "0")}
+              </span>
+              <div className="flex-1">
+                <p className="text-[14px] text-white font-medium">{s.label}</p>
+                <p className="mt-1 text-[12.5px] text-zinc-400 leading-relaxed">{s.detail}</p>
+              </div>
+            </motion.li>
+          ))}
+        </ol>
+      </section>
+
+      <div className="relative z-10 mx-auto max-w-4xl px-6 md:px-10">
+        <div className="hairline-divider" />
+      </div>
+
+      {/* Engagement shapes — explanatory paragraphs, not cards ───── */}
+      <section className="relative z-10 mx-auto max-w-4xl px-6 md:px-10 py-16">
+        <p className="kicker-mono">// engagement shapes</p>
+        <h2 className="display-headline text-white mt-4">Three common shapes.</h2>
+        <p className="mt-4 text-[14px] text-zinc-400 leading-relaxed">
+          Same pricing model for all three — the shape only changes how deep the operations layer goes and how strict the support contract is.
+        </p>
+
+        <div className="mt-8 space-y-6">
+          {ENGAGEMENTS.map((e) => (
+            <motion.div
+              key={e.label}
+              initial={{ opacity: 0, y: 10 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.3 }}
+              transition={{ duration: 0.45 }}
+              className="rounded-2xl border border-white/[0.06] bg-white/[0.015] p-6"
+            >
+              <div className="flex flex-wrap items-baseline justify-between gap-3 mb-4">
+                <h3 className="text-[16px] text-white font-semibold">{e.label}</h3>
+                <span className="text-[10.5px] font-mono uppercase tracking-[0.18em] text-zinc-500 border border-white/[0.08] rounded-full px-2.5 py-1">
+                  {e.charge}
+                </span>
+              </div>
+              <p className="text-[13px] text-zinc-300 leading-relaxed">
+                <span className="text-zinc-400">Who it&apos;s for —</span> {e.whoFor}
+              </p>
+              <p className="mt-2 text-[13px] text-zinc-300 leading-relaxed">
+                <span className="text-zinc-400">Typical use —</span> {e.typical}
+              </p>
+              <div className="mt-4">
+                <p className="text-[10.5px] font-mono uppercase tracking-[0.18em] text-zinc-500 mb-2">// what's included</p>
+                <ul className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-1.5">
+                  {e.whatYouGet.map((line) => (
+                    <li key={line} className="flex items-start gap-2.5 text-[12.5px] text-zinc-200">
+                      <span aria-hidden className="mt-1.5 w-1 h-1 rounded-full bg-white/40 flex-shrink-0" />
+                      <span className="leading-snug">{line}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+      </section>
+
+      <div className="relative z-10 mx-auto max-w-4xl px-6 md:px-10">
+        <div className="hairline-divider" />
+      </div>
+
+      {/* Pricing safety — usage caps, no-overrun rules ───────────── */}
+      <section className="relative z-10 mx-auto max-w-4xl px-6 md:px-10 py-16">
+        <p className="kicker-mono">// pricing safety</p>
+        <h2 className="display-headline text-white mt-4">Six rules we don&apos;t break.</h2>
+        <p className="mt-4 text-[14px] text-zinc-400 leading-relaxed">
+          The pricing model only works if it&apos;s predictable. These are the guarantees the platform enforces, audited per workspace.
+        </p>
+
+        <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-4">
+          {SAFETY_RULES.map((r) => (
+            <div key={r.label} className="rounded-xl border border-white/[0.06] bg-white/[0.015] p-5">
+              <p className="text-[13.5px] text-white font-semibold mb-1.5">{r.label}</p>
+              <p className="text-[12.5px] text-zinc-400 leading-relaxed">{r.detail}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <div className="relative z-10 mx-auto max-w-4xl px-6 md:px-10">
         <div className="hairline-divider" />
       </div>
 
       <SocialProofRail />
 
       {/* FAQ ──────────────────────────────────────────────────────── */}
-      <section className="relative z-10 mx-auto max-w-3xl px-6 md:px-10 pb-24 pt-16">
-        <p className="kicker-mono text-center">Common questions</p>
-        <h3 className="display-headline text-white mt-3 text-center">
-          What people ask before booking a demo.
-        </h3>
-        <div className="mt-10 space-y-5">
+      <section className="relative z-10 mx-auto max-w-4xl px-6 md:px-10 pb-16 pt-16">
+        <p className="kicker-mono">// common questions</p>
+        <h2 className="display-headline text-white mt-4">What people ask first.</h2>
+
+        <div className="mt-8 space-y-4">
           {FAQ.map((f, i) => (
             <motion.div
               key={i}
-              initial={{ opacity: 0, y: 8 }}
+              initial={{ opacity: 0, y: 6 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, amount: 0.4 }}
-              transition={{ duration: 0.45, delay: i * 0.04 }}
+              viewport={{ once: true, amount: 0.5 }}
+              transition={{ duration: 0.35, delay: i * 0.025 }}
               className="rounded-xl border border-white/[0.06] bg-white/[0.015] p-5"
             >
               <p className="text-[13.5px] text-white font-medium">{f.q}</p>
@@ -331,27 +446,37 @@ export function PricingClient() {
         </div>
       </section>
 
-      <section className="relative z-10 mx-auto max-w-3xl px-6 md:px-10 pb-24 text-center">
-        <p className="kicker-mono">Always included</p>
-        <h3 className="display-headline text-white mt-4">
-          Every engagement ships with the full safety contract.
-        </h3>
-        <p className="mt-5 text-[15px] text-zinc-400 leading-relaxed">
-          Approval-only-no-execution. Closed-union safety. Audited every transition. Never hidden behind a tier.
-        </p>
-        <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
-          <Link
-            href="/demo"
-            className="magnetic-sheen inline-flex items-center gap-2 rounded-full px-5 py-3 text-[13.5px] font-medium bg-white text-zinc-950 hover:bg-zinc-100 transition-colors"
-          >
-            Book a demo →
-          </Link>
-          <Link
-            href="/contact?topic=quote"
-            className="inline-flex items-center gap-2 rounded-full px-5 py-3 text-[13.5px] font-medium border border-white/[0.1] text-zinc-200 hover:bg-white/[0.04] hover:border-white/[0.18] transition-colors"
-          >
-            Request a quote →
-          </Link>
+      {/* Soft footer — optional next steps, not gates ────────────── */}
+      <section className="relative z-10 mx-auto max-w-4xl px-6 md:px-10 pb-24 pt-8">
+        <div className="rounded-2xl border border-white/[0.06] bg-white/[0.015] p-6 md:p-8">
+          <p className="kicker-mono">// when you&apos;re ready</p>
+          <h3 className="display-headline text-white mt-3">No pressure. Pick whichever fits.</h3>
+          <p className="mt-4 text-[13.5px] text-zinc-400 leading-relaxed">
+            Three paths. None of them are required to read this page.
+          </p>
+          <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-3 text-[13px]">
+            <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
+              <p className="text-white font-medium mb-1">See your real estimate</p>
+              <p className="text-zinc-400 text-[12.5px] leading-relaxed mb-3">Sign in, connect a cloud read-only, let the scan run.</p>
+              <Link href="/login" className="text-[12.5px] text-zinc-200 hover:text-white underline underline-offset-4 decoration-white/30">
+                Estimate after login →
+              </Link>
+            </div>
+            <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
+              <p className="text-white font-medium mb-1">Want a tailored quote</p>
+              <p className="text-zinc-400 text-[12.5px] leading-relaxed mb-3">Tell us your stack, we&apos;ll write a quote you can audit.</p>
+              <Link href="/contact?topic=quote" className="text-[12.5px] text-zinc-200 hover:text-white underline underline-offset-4 decoration-white/30">
+                Request a quote →
+              </Link>
+            </div>
+            <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
+              <p className="text-white font-medium mb-1">Walk through with us</p>
+              <p className="text-zinc-400 text-[12.5px] leading-relaxed mb-3">Live demo on a real workspace. Optional.</p>
+              <Link href="/demo" className="text-[12.5px] text-zinc-200 hover:text-white underline underline-offset-4 decoration-white/30">
+                Book a demo →
+              </Link>
+            </div>
+          </div>
         </div>
       </section>
     </div>
