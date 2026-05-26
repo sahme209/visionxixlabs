@@ -20,6 +20,7 @@ const VIEW_TITLES: Record<View, { title: string; subtitle: string }> = {
   releases:      { title: "Releases",      subtitle: "Per-release status, readiness, evidence" },
   sops:          { title: "SOPs",           subtitle: "10 deployment types · 16 sections each" },
   repositories:  { title: "Repositories",   subtitle: "GitHub / GitLab / Azure DevOps inventory" },
+  "branch-validation": { title: "Branch validation", subtitle: "18 checks per release · pass / fail / N/A / unknown" },
   activity:      { title: "Activity",      subtitle: "Runs + your votes + queue health" },
   workflows:     { title: "Workflows",     subtitle: "Recent + active pipeline runs" },
   approvals:     { title: "Approvals",     subtitle: "Runs awaiting human review" },
