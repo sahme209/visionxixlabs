@@ -203,8 +203,7 @@ CREATE TABLE "PolicyViolation" (
     CONSTRAINT "PolicyViolation_pkey" PRIMARY KEY ("id")
 );
 
--- CreateTable
-CREATE TABLE "GrowthCampaign" (
+-- CreateIndex
 CREATE INDEX "Application_organizationId_idx" ON "Application"("organizationId");
 
 -- CreateIndex
