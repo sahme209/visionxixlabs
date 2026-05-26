@@ -224,21 +224,29 @@ const FAQ: ReadonlyArray<FaqEntry> = [
 export function PricingClient() {
   return (
     <div className="relative">
-      {/* Calm ambient atmosphere */}
-      <div className="pointer-events-none absolute inset-x-0 top-0 h-[600px] z-0 overflow-hidden">
-        <div className="ambient-drift absolute -top-32 left-1/2 -translate-x-1/2 w-[900px] h-[480px] rounded-full bg-white/[0.04] blur-[140px]" />
+      {/* Coral × violet aurora — Huly-style warm/cool mix behind the hero */}
+      <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-[700px] z-0 overflow-hidden">
+        <div className="ambient-drift absolute -top-32 left-1/2 -translate-x-1/2 w-[900px] h-[480px] rounded-full bg-brand-violet/[0.07] blur-[140px]" />
+        <div className="ambient-drift absolute top-12 right-[5%] w-[480px] h-[360px] rounded-full bg-brand-coral/[0.06] blur-[130px]" style={{ animationDelay: "-8s" }} />
+        <div className="ambient-drift absolute top-32 left-[5%] w-[380px] h-[300px] rounded-full bg-cyan-500/[0.035] blur-[120px]" style={{ animationDelay: "-14s" }} />
       </div>
 
       {/* Hero ────────────────────────────────────────────────────── */}
       <section className="relative z-10 mx-auto max-w-6xl px-6 md:px-10 pt-24 pb-12">
-        <motion.p initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="kicker-mono">
+        <motion.p initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="text-[10px] font-mono uppercase tracking-[0.28em] text-zinc-500 inline-flex items-center gap-3">
+          <span className="text-brand-coral/90 tabular-nums">07</span>
+          <span className="h-px w-6 bg-gradient-to-r from-brand-coral/60 to-transparent" />
           Pricing
         </motion.p>
         <motion.h1
           initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
           className="display-headline-lg text-white mt-5"
         >
-          Custom pricing,<br />based on your cloud.
+          Custom pricing,<br />
+          <span className="relative inline-block">
+            based on your cloud.
+            <span aria-hidden className="absolute left-0 -bottom-1 h-[3px] w-[64%] rounded-full bg-gradient-to-r from-brand-coral via-fuchsia-400 to-transparent opacity-90" />
+          </span>
         </motion.h1>
         <motion.p
           initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}

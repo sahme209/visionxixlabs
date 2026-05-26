@@ -293,15 +293,27 @@ export default function Home() {
       <SectionDivider />
 
       {/* ── Trust Marquee ──────────────────────────────────────────── */}
-      <section className="py-8 overflow-hidden relative">
+      <section className="py-12 overflow-hidden relative">
         <div className="absolute inset-0 bg-white/[0.01] pointer-events-none" aria-hidden />
-        <div className="relative overflow-hidden">
-          <div className="marquee-track">
-            {[...TRUST_LOGOS, ...TRUST_LOGOS].map((logo, i) => (
-              <span key={i} className="text-sm font-medium text-zinc-600 whitespace-nowrap tracking-wide">
-                {logo}
-              </span>
-            ))}
+        {/* Coral hairlines at top + bottom of the marquee, fading at edges */}
+        <div aria-hidden className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-brand-coral/25 to-transparent" />
+        <div aria-hidden className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-brand-violet/25 to-transparent" />
+        <div className="relative">
+          <p className="text-center text-[10px] font-mono uppercase tracking-[0.22em] text-zinc-500 mb-5">
+            Trust posture <span className="text-zinc-700 mx-1">·</span> baked-in safety primitives
+          </p>
+          <div className="relative overflow-hidden">
+            {/* Fade masks on left/right so the marquee scrolls in/out softly */}
+            <div aria-hidden className="absolute left-0 top-0 bottom-0 w-24 z-10 bg-gradient-to-r from-[#0a0a0d] to-transparent pointer-events-none" />
+            <div aria-hidden className="absolute right-0 top-0 bottom-0 w-24 z-10 bg-gradient-to-l from-[#0a0a0d] to-transparent pointer-events-none" />
+            <div className="marquee-track">
+              {[...TRUST_LOGOS, ...TRUST_LOGOS].map((logo, i) => (
+                <span key={i} className="inline-flex items-center gap-2 text-[12.5px] font-medium text-zinc-400 whitespace-nowrap tracking-wide">
+                  <span className="h-1 w-1 rounded-full bg-brand-coral/60" aria-hidden />
+                  {logo}
+                </span>
+              ))}
+            </div>
           </div>
         </div>
       </section>

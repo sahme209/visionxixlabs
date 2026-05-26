@@ -1,5 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
+import { ArrowRightIcon } from "@heroicons/react/24/outline";
 
 /* ── Social icon SVGs ────────────────────────────────────────── */
 function GitHubIcon({ className }: { className?: string }) {
@@ -61,12 +62,56 @@ const resourceLinks = [
 
 export function Footer() {
   return (
-    <footer className="py-16 px-4 sm:px-6 lg:px-8">
-      {/* Gradient line divider */}
-      <div className="gradient-line mb-16" />
+    <footer className="relative pt-24 pb-12 px-4 sm:px-6 lg:px-8 overflow-hidden">
+      {/* Coral × violet aurora behind the Huly-style footer composition. */}
+      <div aria-hidden className="pointer-events-none absolute inset-0">
+        <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-brand-coral/30 to-transparent" />
+        <div className="absolute -top-32 left-1/4 w-[520px] h-[420px] rounded-full bg-brand-coral/[0.06] blur-[140px] ambient-drift" />
+        <div className="absolute top-1/3 right-[10%] w-[460px] h-[360px] rounded-full bg-brand-violet/[0.07] blur-[130px] ambient-drift" style={{ animationDelay: "-9s" }} />
+        <div className="absolute bottom-0 left-[5%] w-[380px] h-[280px] rounded-full bg-cyan-500/[0.04] blur-[120px] ambient-drift" style={{ animationDelay: "-15s" }} />
+      </div>
+
       <div className="relative">
-        <div className="footer-amber-orb absolute -bottom-20 right-10 orb-drift" aria-hidden />
       <div className="max-w-7xl mx-auto">
+
+        {/* Huly-style Join CTA — big, gradient text, numbered marker */}
+        <div className="relative mb-20">
+          <div className="text-center max-w-3xl mx-auto">
+            <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-zinc-500 mb-6 inline-flex items-center gap-3">
+              <span className="text-brand-coral/90 tabular-nums">10</span>
+              <span className="h-px w-6 bg-gradient-to-r from-brand-coral/60 to-transparent" />
+              Begin
+            </p>
+            <h2 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-[-0.04em] leading-[1.02] mb-5">
+              <span className="text-white">Join the </span>
+              <span className="bg-clip-text text-transparent bg-gradient-to-r from-brand-coral via-fuchsia-400 to-brand-violet">
+                movement
+              </span>
+              <span className="text-white">.</span>
+            </h2>
+            <p className="text-[15px] text-zinc-400 mb-9 max-w-xl mx-auto leading-relaxed">
+              Connect your cloud once. Let approval-gated AI engineers do the rest.
+              Five minutes to first scan. Cancel anytime.
+            </p>
+            <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-3">
+              <Link
+                href="/operator/onboarding"
+                className="magnetic-sheen inline-flex items-center gap-2 px-7 py-3.5 rounded-full bg-white text-zinc-950 text-[14.5px] font-semibold transition-all hover:bg-zinc-100 shadow-[0_0_40px_-10px_rgba(244,114,182,0.45)]"
+              >
+                Run Axiom
+                <ArrowRightIcon className="h-4 w-4 opacity-70" />
+              </Link>
+              <a
+                href="mailto:support@visionxixlabs.com"
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-full border border-brand-coral/30 bg-brand-coral/[0.06] text-zinc-200 text-[14px] font-medium transition-all hover:bg-brand-coral/[0.10] hover:border-brand-coral/50"
+              >
+                Talk to us
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <div className="gradient-line mb-16" />
         {/* Width aligned to Navigation (max-w-7xl). The layout audit
             found chrome width inconsistency was the most visible
             "feels disconnected" cue. Top + bottom chrome share one
@@ -125,7 +170,7 @@ export function Footer() {
 
           {/* Product links */}
           <div>
-            <h4 className="font-semibold mb-4 text-sm">Product</h4>
+            <h4 className="text-[10px] font-mono uppercase tracking-[0.22em] text-brand-coral/80 mb-4">Product</h4>
             <ul className="space-y-2.5 text-sm text-zinc-500">
               {productLinks.map((link) => (
                 <li key={link.href}>
@@ -142,7 +187,7 @@ export function Footer() {
 
           {/* Company links */}
           <div>
-            <h4 className="font-semibold mb-4 text-sm">Company</h4>
+            <h4 className="text-[10px] font-mono uppercase tracking-[0.22em] text-brand-coral/80 mb-4">Company</h4>
             <ul className="space-y-2.5 text-sm text-zinc-500">
               {companyLinks.map((link) => (
                 <li key={link.href}>
@@ -159,7 +204,7 @@ export function Footer() {
 
           {/* Resources links */}
           <div>
-            <h4 className="font-semibold mb-4 text-sm">Resources</h4>
+            <h4 className="text-[10px] font-mono uppercase tracking-[0.22em] text-brand-coral/80 mb-4">Resources</h4>
             <ul className="space-y-2.5 text-sm text-zinc-500">
               {resourceLinks.map((link) => (
                 <li key={link.href}>
@@ -183,31 +228,11 @@ export function Footer() {
           </div>
         </div>
 
-        {/* Huly-style CTA */}
-        <div className="text-center mb-16 relative">
-          <h2 className="text-3xl font-bold mb-3 tracking-[-0.04em]">Join the Movement</h2>
-          <p className="text-zinc-500 text-sm mb-6 max-w-md mx-auto">
-            Unlock the future of cloud operations with Axiom. This journey is just getting started.
-          </p>
-          <div className="flex items-center justify-center gap-4">
-            <Link
-              href="/operator/onboarding"
-              className="btn-amber-shimmer inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-semibold text-zinc-900 shadow-[0_0_20px_rgba(255,255,255,0.08)] transition-all hover:shadow-[0_0_30px_rgba(255,255,255,0.12)]"
-            >
-              Run Axiom
-            </Link>
-            <a
-              href="mailto:support@visionxixlabs.com"
-              className="inline-flex items-center gap-2 rounded-full border border-white/[0.1] px-6 py-3 text-sm font-semibold text-zinc-400 hover:text-white hover:border-white/[0.2] transition-all"
-            >
-              Contact us
-            </a>
-          </div>
-        </div>
-
-        {/* Made with passion tagline */}
+        {/* Tagline */}
         <div className="text-center mb-8">
-          <p className="text-xs text-zinc-600">Made with <span className="text-red-400">♥</span> and passion in NYC</p>
+          <p className="text-[11px] font-mono uppercase tracking-[0.22em] text-zinc-600">
+            Made in NYC <span className="text-zinc-700 mx-2">·</span> shipped from the cloud
+          </p>
         </div>
 
         {/* Bottom bar with dot separators */}
