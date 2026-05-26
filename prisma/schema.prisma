@@ -2220,3 +2220,176 @@ model AlertEscalationTransition {
   @@index([sessionId, createdAt])
   @@index([isLegal, createdAt])
 }
+
+// ---------------------------------------------------------------------------
+// Phase 441 — ReleaseOps foundation entities.
+//
+// Application / Component / Repository / Environment + BranchEnvironmentPolicy.
+// These are the bottom-of-stack models that every later ReleaseOps phase
+// (release readiness snapshots, branch validation, evidence packs, drift
+// findings, manual-change reconciliation, etc.) hangs off of.
+//
+// Migration is intentionally NOT generated in this phase — same gradual
+// rollout pattern Phases 414/427 used. The application layer reads through
+// graceful-degradation paths until a dedicated migration phase lands.
+// ---------------------------------------------------------------------------
+
+enum ComponentKind {
+  app                // user-facing application service
+  infra              // infrastructure-as-code module
+  data_pipeline      // ETL/ELT/ADF/Databricks pipeline
+  connector          // integration / connector config
+  database           // schema / Liquibase / Flyway target
+  dag                // Airflow / orchestration DAG
+  iac                // Terraform / Pulumi module (alternative to infra when distinct)
+  artifact           // build artifact / container image source
+}
+
+enum GitProvider {
+  github
+  gitlab
+  azuredevops
+  other
+}
+
+enum EnvironmentTier {
+  dev
+  test
+  qa
+  uat
+  stage
+  preprod
+  prod
+}
+
+model Application {
+  id              String   @id @default(cuid())
+  organizationId  String
+  /// URL-safe slug. (organizationId, slug) must be unique.
+  slug            String
+  /// Operator-readable name.
+  name            String
+  /// Optional team owner (string for now — will become FK when Team model lands).
+  ownerTeamLabel  String?
+  /// Free-form business tier label ("tier_1" | "tier_2" | "internal" | ...).
+  /// Not an enum on purpose — every org defines their own tiering.
+  businessTier    String?
+  /// Optional description for the dashboard card.
+  description     String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  components Component[]
+
+  @@unique([organizationId, slug])
+  @@index([organizationId])
+}
+
+model Component {
+  id              String          @id @default(cuid())
+  organizationId  String
+  applicationId   String
+  /// Stable slug within the application.
+  slug            String
+  name            String
+  kind            ComponentKind
+  /// Optional repository where source lives. Components can be infra-only
+  /// (manifest in a different repo than the app) or fully repo-less.
+  repositoryId    String?
+  /// Explicit dependency graph — IDs of other Components this depends on.
+  /// Resolved at query time; no FK so cross-org accidents are impossible.
+  dependsOnIds    String[]        @default([])
+  ownerTeamLabel  String?
+  description     String?
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+
+  application Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  repository  Repository? @relation(fields: [repositoryId], references: [id], onDelete: SetNull)
+
+  @@unique([applicationId, slug])
+  @@index([organizationId])
+  @@index([kind])
+}
+
+model Repository {
+  id                  String      @id @default(cuid())
+  organizationId      String
+  provider            GitProvider
+  /// Organization or group on the provider (e.g. "my-org").
+  remoteOwner         String
+  /// Repo slug on the provider (e.g. "checkout-frontend").
+  remoteName          String
+  /// Full clone URL — convenience field; can be derived from owner/name.
+  remoteUrl           String
+  defaultBranch       String      @default("main")
+  /// Branch patterns that the provider enforces as protected.
+  /// Discovered later by the GitHub/GitLab/ADO adapters.
+  protectedBranches   String[]    @default([])
+  codeownersPresent   Boolean     @default(false)
+  prTemplatePresent   Boolean     @default(false)
+  /// Free-form tag — "monorepo" | "service" | "infra" | "data-pipeline" etc.
+  /// Used by the dashboard to filter inventories.
+  repoFlavor          String?
+  createdAt           DateTime    @default(now())
+  updatedAt           DateTime    @updatedAt
+
+  components Component[]
+  branchEnvironmentPolicies BranchEnvironmentPolicy[]
+
+  @@unique([organizationId, provider, remoteOwner, remoteName])
+  @@index([organizationId])
+  @@index([provider])
+}
+
+model Environment {
+  id              String          @id @default(cuid())
+  organizationId  String
+  /// Stable slug within the org. "dev" | "uat" | "prod" etc.
+  slug            String
+  name            String
+  tier            EnvironmentTier
+  /// Optional ordering hint — lower values surface higher in the dashboard.
+  displayOrder    Int             @default(0)
+  /// Free-form JSON for change-window rules. Validated by the application
+  /// layer, not the schema. Example shape:
+  ///   { "weekdays": ["Mon","Tue"], "utcWindows": [{"start":"22:00","end":"06:00"}] }
+  changeWindowRuleJson Json?
+  /// Optional AxiomApprovalPolicy ID that gates production deploys here.
+  /// Soft reference (no FK) so policy lifecycle is independent.
+  approvalPolicyId String?
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+
+  branchEnvironmentPolicies BranchEnvironmentPolicy[]
+
+  @@unique([organizationId, slug])
+  @@index([organizationId])
+  @@index([tier])
+}
+
+model BranchEnvironmentPolicy {
+  id              String      @id @default(cuid())
+  organizationId  String
+  repositoryId    String
+  environmentId   String
+  /// Branch / tag pattern (glob) — e.g. "release/*", "main", "v[0-9]+.*".
+  branchPattern   String
+  /// Hard requirements for deploys matching this (repo, env, branch) triple.
+  requireReleaseTag   Boolean @default(false)
+  requireCodeowners   Boolean @default(false)
+  requirePrLink       Boolean @default(false)
+  requireChangeTicket Boolean @default(false)
+  /// Priority — lowest wins when multiple rules match. Default 100.
+  priority        Int         @default(100)
+  enabled         Boolean     @default(true)
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  repository  Repository  @relation(fields: [repositoryId], references: [id], onDelete: Cascade)
+  environment Environment @relation(fields: [environmentId], references: [id], onDelete: Cascade)
+
+  @@unique([repositoryId, environmentId, branchPattern])
+  @@index([organizationId])
+  @@index([environmentId])
+}
