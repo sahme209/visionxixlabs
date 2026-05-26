@@ -147,6 +147,7 @@ export function CherryPicksView() {
                   {e.decisionReason && (
                     <p className="text-[11px] text-zinc-400 mt-1.5 italic">"{e.decisionReason}"</p>
                   )}
+                  {e.status === "requested" && <DecideControls exceptionId={e.id} onDecided={loadList} />}
                 </div>
               ))}
             </div>
@@ -154,6 +155,95 @@ export function CherryPicksView() {
         </>
       )}
     </ViewShell>
+  );
+}
+
+type DecideState =
+  | { kind: "idle" }
+  | { kind: "denying" }
+  | { kind: "submitting"; which: "approve" | "deny" }
+  | { kind: "ok"; which: "approve" | "deny" }
+  | { kind: "error"; message: string };
+
+function DecideControls({ exceptionId, onDecided }: { exceptionId: string; onDecided: () => void }) {
+  const [state, setState] = useState<DecideState>({ kind: "idle" });
+  const [reason, setReason] = useState("");
+
+  async function decide(which: "approve" | "deny", reasonText?: string) {
+    setState({ kind: "submitting", which });
+    try {
+      const res = await fetch("/api/dashboard/cherry-pick-decide", {
+        method: "POST", credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ exceptionId, decision: which, ...(reasonText ? { reason: reasonText } : {}) }),
+      });
+      const j = await res.json();
+      if (j.ok) {
+        setState({ kind: "ok", which });
+        setTimeout(onDecided, 600);
+      } else {
+        setState({ kind: "error", message: j.hint ?? j.error });
+      }
+    } catch (e) {
+      setState({ kind: "error", message: e instanceof Error ? e.message : "network error" });
+    }
+  }
+
+  if (state.kind === "denying") {
+    const reasonValid = reason.trim().length >= 10;
+    return (
+      <div className="mt-2 pt-2 border-t border-white/[0.04]">
+        <span className="block text-[9px] font-mono uppercase tracking-wider text-zinc-400 mb-1">Deny reason ({reason.trim().length}/10 min)</span>
+        <textarea
+          value={reason}
+          onChange={(e) => setReason(e.target.value)}
+          placeholder="Why is this exception being denied?"
+          rows={2}
+          className="w-full rounded-lg border border-zinc-700/40 bg-zinc-900/40 px-2.5 py-1.5 text-[12px] text-zinc-100 placeholder:text-zinc-600 focus:border-rose-500/40 focus:outline-none"
+        />
+        <div className="mt-1.5 flex items-center gap-1.5">
+          <button
+            type="button"
+            disabled={!reasonValid}
+            onClick={() => decide("deny", reason.trim())}
+            className="px-2 py-1 rounded border border-rose-500/40 bg-rose-500/[0.10] text-[10px] font-semibold text-rose-200 hover:bg-rose-500/[0.18] disabled:opacity-50 transition-colors"
+          >
+            Confirm deny
+          </button>
+          <button
+            type="button"
+            onClick={() => { setReason(""); setState({ kind: "idle" }); }}
+            className="px-2 py-1 rounded border border-zinc-700/40 bg-zinc-800/40 text-[10px] text-zinc-300 hover:bg-zinc-800/60 transition-colors"
+          >
+            Cancel
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  const busy = state.kind === "submitting";
+  return (
+    <div className="mt-2 pt-2 border-t border-white/[0.04] flex items-center gap-1.5 flex-wrap text-[10px] font-mono">
+      <button
+        type="button"
+        disabled={busy}
+        onClick={() => decide("approve")}
+        className="px-2 py-1 rounded border border-emerald-500/30 bg-emerald-500/[0.08] text-emerald-200 hover:bg-emerald-500/[0.15] disabled:opacity-50 transition-colors"
+      >
+        {state.kind === "submitting" && state.which === "approve" ? "…" : "Approve"}
+      </button>
+      <button
+        type="button"
+        disabled={busy}
+        onClick={() => setState({ kind: "denying" })}
+        className="px-2 py-1 rounded border border-rose-500/30 bg-rose-500/[0.06] text-rose-200 hover:bg-rose-500/[0.12] disabled:opacity-50 transition-colors"
+      >
+        Deny…
+      </button>
+      {state.kind === "ok" && <span className="text-emerald-300">✓ {state.which === "approve" ? "approved" : "denied"}</span>}
+      {state.kind === "error" && <span className="text-rose-300">✗ {state.message}</span>}
+    </div>
   );
 }
 
