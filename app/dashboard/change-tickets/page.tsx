@@ -78,15 +78,17 @@ export default function ChangeTicketsPage() {
   const [loading, setLoading] = useState(true);
   const [networkError, setNetworkError] = useState<string | null>(null);
 
-  useEffect(() => {
-    let cancelled = false;
+  function loadList() {
+    setLoading(true);
+    setNetworkError(null);
     fetch("/api/dashboard/change-ticket-list", { credentials: "include" })
       .then((r) => r.json())
-      .then((j: RespBody) => { if (!cancelled) setResp(j); })
-      .catch((e) => { if (!cancelled) setNetworkError(e instanceof Error ? e.message : "Network error."); })
-      .finally(() => { if (!cancelled) setLoading(false); });
-    return () => { cancelled = true; };
-  }, []);
+      .then((j: RespBody) => setResp(j))
+      .catch((e) => setNetworkError(e instanceof Error ? e.message : "Network error."))
+      .finally(() => setLoading(false));
+  }
+
+  useEffect(() => { loadList(); }, []);
 
   const data = resp?.ok ? resp.data : null;
   const errorBody = resp && !resp.ok ? resp : null;
@@ -105,8 +107,10 @@ export default function ChangeTicketsPage() {
           { label: "Releases",     href: "/dashboard/releases" },
           { label: "Connectors",   href: "/dashboard/connectors" },
         ]}
-        safetyNote="Read-only · per-org isolation · 6-status closed-union enforced application-side"
+        safetyNote="Per-org isolation · 6-status closed-union enforced application-side"
       />
+
+      <ProviderSyncControls onSynced={loadList} />
 
       {loading && (
         <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 mb-6 text-[12px] text-zinc-400">
@@ -194,6 +198,71 @@ export default function ChangeTicketsPage() {
             </div>
           )}
         </>
+      )}
+    </div>
+  );
+}
+
+type SyncProvider = "linear" | "jira" | "servicenow";
+
+type SyncOutcome =
+  | { kind: "idle" }
+  | { kind: "running"; which: SyncProvider }
+  | { kind: "ok"; which: SyncProvider; fetched: number; upserted: number; skipped: number }
+  | { kind: "error"; which: SyncProvider; message: string };
+
+function ProviderSyncControls({ onSynced }: { onSynced: () => void }) {
+  const [outcome, setOutcome] = useState<SyncOutcome>({ kind: "idle" });
+
+  async function trigger(which: SyncProvider) {
+    setOutcome({ kind: "running", which });
+    try {
+      const res = await fetch("/api/dashboard/change-ticket-sync", {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ provider: which }),
+      });
+      const json = await res.json();
+      if (json.ok) {
+        setOutcome({
+          kind: "ok", which,
+          fetched: json.data.fetched, upserted: json.data.upserted, skipped: json.data.skipped,
+        });
+        onSynced();
+      } else {
+        setOutcome({ kind: "error", which, message: json.hint ?? json.error });
+      }
+    } catch (e) {
+      setOutcome({ kind: "error", which, message: e instanceof Error ? e.message : "network error" });
+    }
+  }
+
+  const busy = outcome.kind === "running";
+  return (
+    <div className="mb-6 rounded-2xl border border-white/[0.06] bg-white/[0.02] p-3 flex items-center gap-2 flex-wrap text-[10px] font-mono">
+      <span className="text-zinc-500 uppercase tracking-[0.18em]">Sync from</span>
+      {(["linear", "jira", "servicenow"] as const).map((p) => (
+        <button
+          key={p}
+          type="button"
+          disabled={busy}
+          onClick={() => trigger(p)}
+          className="px-2 py-1 rounded border border-white/[0.08] bg-white/[0.02] text-zinc-300 hover:border-violet-500/40 hover:text-violet-200 disabled:opacity-50 disabled:cursor-wait transition-colors"
+        >
+          {outcome.kind === "running" && outcome.which === p
+            ? `${p}…`
+            : p === "linear" ? "Linear" : p === "jira" ? "Jira" : "ServiceNow"}
+        </button>
+      ))}
+      {outcome.kind === "ok" && (
+        <span className="text-emerald-300">
+          ✓ {outcome.which} · fetched {outcome.fetched} · upserted {outcome.upserted}
+          {outcome.skipped > 0 && ` · skipped ${outcome.skipped}`}
+        </span>
+      )}
+      {outcome.kind === "error" && (
+        <span className="text-rose-300">✗ {outcome.which} · {outcome.message}</span>
       )}
     </div>
   );
