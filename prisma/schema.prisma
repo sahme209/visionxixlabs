@@ -2500,3 +2500,248 @@ model ReleaseEvidencePack {
 
   @@index([organizationId, generatedAt])
 }
+
+// ---------------------------------------------------------------------------
+// Phase 443 — Policy engine.
+//
+// PolicyRule is the configurable per-org registry. Seed rules live in
+// lib/releaseops/policies/seed.ts and are upserted on org bootstrap.
+// PolicyViolation is the per-release record produced by evaluating the
+// active rule set against a release.
+//
+// Closed-union severity/blocking/exception fields are application-layer
+// enforced — keeps the schema migration-light.
+// ---------------------------------------------------------------------------
+
+model PolicyRule {
+  id              String   @id @default(cuid())
+  organizationId  String
+  /// Stable key — matches the seed catalog. (org, key) is unique.
+  key             String
+  /// Operator-readable label for the dashboard.
+  label           String
+  /// Closed-union severity: low | medium | high | critical (string at the schema layer).
+  severity        String
+  /// If true, a violation BLOCKS the release transition out of draft/ready.
+  blocking        Boolean  @default(false)
+  /// If true, the rule can be waived via an approver role.
+  exceptionAllowed Boolean @default(false)
+  /// Role required to grant the exception ("manager" | "release_captain" | "emergency_change" | null).
+  approverRole    String?
+  /// If true, evidence must be attached to grant the exception.
+  evidenceRequired Boolean @default(false)
+  /// Optional auto-remediation key the recommendation engine can suggest.
+  autoRemediationKey String?
+  /// Free-form description shown in the policy registry UI.
+  description     String?
+  /// If false, the engine skips this rule entirely.
+  enabled         Boolean  @default(true)
+  /// Source — "seed" | "operator" | "imported" — for audit-of-audit purposes.
+  source          String   @default("seed")
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  violations PolicyViolation[]
+
+  @@unique([organizationId, key])
+  @@index([organizationId])
+  @@index([severity])
+}
+
+model PolicyViolation {
+  id              String   @id @default(cuid())
+  organizationId  String
+  ruleId          String
+  releaseId       String
+  detectedAt      DateTime @default(now())
+  /// Closed-union status: open | exception_pending | exception_granted | resolved.
+  status          String   @default("open")
+  /// Free-form, engine-emitted message explaining what tripped the rule.
+  message         String
+  /// Optional remediation suggestion the engine attached at detection time.
+  remediation     String?
+  /// User who granted the exception, if any.
+  exceptionGrantedByUserId String?
+  exceptionGrantedAt DateTime?
+  /// JSON for any extra context the engine wants to keep (e.g. observed value).
+  contextJson     Json?
+
+  rule PolicyRule @relation(fields: [ruleId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId, status])
+  @@index([releaseId])
+  @@index([ruleId, status])
+}
+
+// ---------------------------------------------------------------------------
+// Internal VisionXIXLabs growth automation (LinkedIn) — Phase 1
+//
+// All rows below are INTERNAL-ONLY. They are written by admin operators
+// (gated by ADMIN_EMAILS) and by internal cron jobs. No client tenant
+// row references these. Nothing here gets surfaced under /dashboard/*.
+// ---------------------------------------------------------------------------
+
+model GrowthCampaign {
+  id          String   @id @default(cuid())
+  name        String
+  hypothesis  String
+  /// Closed-union ContentTopicCategory from lib/growth/growthModels.ts.
+  theme       String
+  startsAt    DateTime
+  endsAt      DateTime
+  /// Closed-union: planned | active | paused | completed | cancelled.
+  status      String   @default("planned")
+  /// Performance targets (JSON: impressions/engagements/visits/qualifiedLeads).
+  targetsJson Json?
+  /// Free-form notes / weekly summary.
+  notes       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  drafts LinkedInPostDraft[]
+
+  @@index([status])
+  @@index([startsAt])
+}
+
+model LinkedInPostDraft {
+  id              String   @id @default(cuid())
+  /// Optional campaign membership.
+  campaignId      String?
+  /// Short editor-facing title (often the hook).
+  title           String
+  /// Opening hook — first 1-2 lines.
+  hook            String
+  /// Main body of the post.
+  body            String
+  /// Optional call-to-action line.
+  cta             String?
+  /// Hashtags (without '#' prefix is OK; rendered as-is).
+  hashtags        String[] @default([])
+  /// Closed-union ContentTopicCategory.
+  category        String
+  /// Free-text target audience descriptor.
+  targetAudience  String?
+  /// Closed-union DraftStatus: idea | drafted | in_review | approved | scheduled | published | rejected | needs_revision | failed.
+  status          String   @default("drafted")
+  /// 0..1 confidence the generator emitted.
+  confidence      Float?
+  /// ISO timestamp the operator wants this published at (only set when status=scheduled).
+  scheduledFor    DateTime?
+  publishedAt     DateTime?
+  /// LinkedIn URN returned by the share / UGC API (urn:li:share:... or urn:li:ugcPost:...).
+  linkedinPostUrn String?
+  /// Public LinkedIn URL once known.
+  linkedinPostUrl String?
+  /// Agent / workflow that drafted this row.
+  createdByAgent  String   @default("marketingContentDrafter")
+  /// Operator email that approved (when status >= approved).
+  approvedByEmail String?
+  approvedAt      DateTime?
+  rejectionReason String?
+  /// Free-text performance notes manually entered by operator.
+  performanceNotes String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  campaign     GrowthCampaign?                  @relation(fields: [campaignId], references: [id], onDelete: SetNull)
+  publishRuns  LinkedInPostPublishRun[]
+  analytics    LinkedInPostAnalyticsSnapshot[]
+
+  @@index([status])
+  @@index([scheduledFor])
+  @@index([campaignId])
+}
+
+model LinkedInAccountConnection {
+  id                 String   @id @default(cuid())
+  /// Operator email that performed the OAuth connect.
+  ownerEmail         String   @unique
+  /// LinkedIn member URN (e.g. urn:li:person:abc).
+  linkedinUrn        String
+  /// LinkedIn member display name (cached at connect-time).
+  linkedinName       String?
+  /// Optional organization URN if posting to a company page.
+  organizationUrn    String?
+  /// Encrypted-at-rest access token (today: stored plain — TODO: wrap with platform secret helper).
+  accessToken        String
+  /// Refresh token if returned (some scope combos return one).
+  refreshToken       String?
+  /// Scopes granted at connect-time, comma-joined.
+  scopes             String
+  /// When the access token expires.
+  expiresAt          DateTime
+  /// Last time we attempted to use the token.
+  lastUsedAt         DateTime?
+  /// Closed-union: connected | expired | revoked | error.
+  status             String   @default("connected")
+  /// Free-form error detail when status != connected.
+  lastError          String?
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  @@index([status])
+}
+
+model LinkedInPostPublishRun {
+  id              String   @id @default(cuid())
+  draftId         String
+  /// Operator email that triggered the publish (or "cron" for scheduler).
+  triggeredBy     String
+  /// Closed-union: pending | success | failed | skipped_disabled | skipped_not_connected.
+  outcome         String
+  /// LinkedIn URN returned on success.
+  linkedinPostUrn String?
+  /// HTTP status from LinkedIn, when applicable.
+  httpStatus      Int?
+  /// Error message / response body excerpt when outcome=failed.
+  errorDetail     String?
+  /// Request/response sample (truncated) for diagnostics.
+  diagnosticsJson Json?
+  startedAt       DateTime @default(now())
+  finishedAt      DateTime?
+
+  draft LinkedInPostDraft @relation(fields: [draftId], references: [id], onDelete: Cascade)
+
+  @@index([draftId])
+  @@index([outcome])
+  @@index([startedAt])
+}
+
+model LinkedInPostAnalyticsSnapshot {
+  id              String   @id @default(cuid())
+  draftId         String
+  collectedAt     DateTime @default(now())
+  impressions     Int      @default(0)
+  reactions       Int      @default(0)
+  comments        Int      @default(0)
+  shares          Int      @default(0)
+  clicks          Int?
+  /// True when this was entered manually (analytics API not yet wired).
+  manualEntry     Boolean  @default(false)
+  enteredByEmail  String?
+  notes           String?
+
+  draft LinkedInPostDraft @relation(fields: [draftId], references: [id], onDelete: Cascade)
+
+  @@index([draftId, collectedAt])
+}
+
+model GrowthAuditLog {
+  id          String   @id @default(cuid())
+  /// Operator email or agent id ("cron:linkedin-publish", "marketingContentDrafter", etc.).
+  actor       String
+  /// Short verb — closed-union not enforced at DB layer; enforced in lib/growth/audit.ts.
+  action      String
+  /// Target kind (e.g. "linkedin_draft", "linkedin_connection", "campaign").
+  targetKind  String?
+  targetId    String?
+  /// Arbitrary detail bag (status transitions, response excerpts, etc.).
+  detail      Json?
+  occurredAt  DateTime @default(now())
+
+  @@index([actor])
+  @@index([action])
+  @@index([targetKind, targetId])
+  @@index([occurredAt])
+}
