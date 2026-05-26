@@ -2859,3 +2859,47 @@ model WorkflowRunRecord {
   @@index([commitSha])
   @@index([runKind])
 }
+
+// ---------------------------------------------------------------------------
+// Phase 457 — Cherry-pick exception workflow.
+//
+// When a release's diff against the previous prod tag drops PRs
+// (long-running features sitting in non-prod branches that should
+// NOT ship yet), the platform requires an explicit cherry-pick
+// exception with: rationale, approvedPrIds, excludedPrIds, approver,
+// final-commit-validation flag.
+//
+// Closed-union status string enforced application-side.
+// ---------------------------------------------------------------------------
+
+model CherryPickException {
+  id                       String   @id @default(cuid())
+  organizationId           String
+  releaseId                String
+  repositoryId             String
+  /// Closed-union: requested | approved | denied | superseded.
+  status                   String   @default("requested")
+  /// Operator-readable explanation of why the cherry-pick is needed.
+  rationale                String
+  /// PR ids the operator explicitly approved for inclusion.
+  approvedPrIds            String[] @default([])
+  /// PR ids the operator explicitly excluded (would otherwise be in scope).
+  excludedPrIds            String[] @default([])
+  /// True when the operator has verified the final release tag only
+  /// contains approved commits.
+  hasFinalCommitValidation Boolean  @default(false)
+  /// User who requested the exception.
+  requestedByUserId        String
+  requestedAt              DateTime @default(now())
+  /// User who approved / denied (null while requested).
+  decidedByUserId          String?
+  decidedAt                DateTime?
+  /// Reason the approver gave; surfaced in audit.
+  decisionReason           String?
+  createdAt                DateTime @default(now())
+  updatedAt                DateTime @updatedAt
+
+  @@index([organizationId, status])
+  @@index([releaseId])
+  @@index([repositoryId])
+}
