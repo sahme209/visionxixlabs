@@ -30,6 +30,14 @@ import {
   type GitlabPipelinePayload,
 } from "./providers/gitlabProjectors";
 import {
+  projectAdoPullRequest,
+  projectAdoReleaseTag,
+  projectAdoPipelineRun,
+  type AdoPullRequestPayload,
+  type AdoReleaseTagPayload,
+  type AdoPipelineRunPayload,
+} from "./providers/azureDevOpsProjectors";
+import {
   upsertPullRequestRecord,
   upsertReleaseTagRecord,
   upsertWorkflowRunRecord,
@@ -54,6 +62,9 @@ export interface SyncRepositoryRow {
   provider: string;
   remoteOwner: string;
   remoteName: string;
+  /** Canonical remote URL — required for ADO since org/project/repo
+   *  is a 3-level hierarchy that doesn't fit owner+name alone. */
+  remoteUrl?: string;
 }
 
 export interface RepositorySyncRepo extends GitDiscoveryRepo {
@@ -92,9 +103,31 @@ export interface GitLabFetcher {
   ): Promise<GitlabPipelinePayload[]>;
 }
 
+export interface AzureDevOpsRepoLocator {
+  org: string;
+  project: string;
+  repo: string;
+}
+
+export interface AzureDevOpsFetcher {
+  listPullRequests(
+    repo: AzureDevOpsRepoLocator,
+    opts: { top?: number; status?: "active" | "abandoned" | "completed" | "all" },
+  ): Promise<AdoPullRequestPayload[]>;
+  listReleases(
+    repo: AzureDevOpsRepoLocator,
+    opts: { top?: number },
+  ): Promise<AdoReleaseTagPayload[]>;
+  listPipelineRuns(
+    repo: AzureDevOpsRepoLocator,
+    opts: { top?: number },
+  ): Promise<AdoPipelineRunPayload[]>;
+}
+
 export interface ProviderFetchers {
   github?: GitHubFetcher;
   gitlab?: GitLabFetcher;
+  azuredevops?: AzureDevOpsFetcher;
 }
 
 /* ──────────────────────────────────────────────────────────────────
@@ -171,9 +204,26 @@ export async function buildRepositorySyncResponse(
           return await syncWorkflowRunsGitlab(repo, fetchers.gitlab, repoRow, input, opts);
       }
     }
+    if (repoRow.provider === "azuredevops") {
+      if (!fetchers.azuredevops) {
+        return { status: 501, body: { ok: false, error: "fetcher_not_configured", hint: "Azure DevOps fetcher missing — check AZURE_DEVOPS_PAT (+ AZURE_DEVOPS_ORG) env." } };
+      }
+      const locator = parseAzureDevOpsLocator(repoRow);
+      if (!locator) {
+        return { status: 400, body: { ok: false, error: "invalid_repository_url", hint: "Repository.remoteUrl must be a dev.azure.com URL with org / project / repo path." } };
+      }
+      switch (input.kind) {
+        case "pull_requests":
+          return await syncPullRequestsAdo(repo, fetchers.azuredevops, repoRow, locator, input, opts);
+        case "releases":
+          return await syncReleasesAdo(repo, fetchers.azuredevops, repoRow, locator, input, opts);
+        case "workflow_runs":
+          return await syncWorkflowRunsAdo(repo, fetchers.azuredevops, repoRow, locator, input, opts);
+      }
+    }
     return {
       status: 400,
-      body: { ok: false, error: "unsupported_provider", hint: `Sync supports github and gitlab; this repository is ${repoRow.provider}.` },
+      body: { ok: false, error: "unsupported_provider", hint: `Sync supports github, gitlab, and azuredevops; this repository is ${repoRow.provider}.` },
     };
   } catch (err) {
     if (isMissingTable(err)) {
@@ -359,4 +409,102 @@ async function projectAndUpsert<Raw, Upsert>(
       },
     },
   };
+}
+
+/* ──────────────────────────────────────────────────────────────────
+   Azure DevOps slices.
+   ────────────────────────────────────────────────────────────── */
+
+async function syncPullRequestsAdo(
+  repo: RepositorySyncRepo,
+  fetcher: AzureDevOpsFetcher,
+  repoRow: SyncRepositoryRow,
+  locator: AzureDevOpsRepoLocator,
+  input: BuildRepositorySyncInput,
+  opts: { now?: Date },
+): Promise<ResponderResult> {
+  const prs = await fetcher.listPullRequests(locator, { top: input.perPage ?? 100, status: "all" });
+  return await projectAndUpsert(
+    prs,
+    (p) => `${repoRow.remoteOwner}/${repoRow.remoteName}!${p.pullRequestId}`,
+    (p) => projectAdoPullRequest(p, { organizationId: input.organizationId, repositoryId: repoRow.id }),
+    (upsert) => upsertPullRequestRecord(repo, { ...upsert, observedAt: opts.now }),
+    { repositoryId: repoRow.id, kind: "pull_requests", now: opts.now ?? new Date() },
+  );
+}
+
+async function syncReleasesAdo(
+  repo: RepositorySyncRepo,
+  fetcher: AzureDevOpsFetcher,
+  repoRow: SyncRepositoryRow,
+  locator: AzureDevOpsRepoLocator,
+  input: BuildRepositorySyncInput,
+  opts: { now?: Date },
+): Promise<ResponderResult> {
+  const releases = await fetcher.listReleases(locator, { top: input.perPage ?? 100 });
+  return await projectAndUpsert(
+    releases,
+    (r) => `${repoRow.remoteOwner}/${repoRow.remoteName}@${r.tagName}`,
+    (r) => projectAdoReleaseTag(r, { organizationId: input.organizationId, repositoryId: repoRow.id }),
+    (upsert) => upsertReleaseTagRecord(repo, { ...upsert, observedAt: opts.now }),
+    { repositoryId: repoRow.id, kind: "releases", now: opts.now ?? new Date() },
+  );
+}
+
+async function syncWorkflowRunsAdo(
+  repo: RepositorySyncRepo,
+  fetcher: AzureDevOpsFetcher,
+  repoRow: SyncRepositoryRow,
+  locator: AzureDevOpsRepoLocator,
+  input: BuildRepositorySyncInput,
+  opts: { now?: Date },
+): Promise<ResponderResult> {
+  const runs = await fetcher.listPipelineRuns(locator, { top: input.perPage ?? 100 });
+  return await projectAndUpsert(
+    runs,
+    (r) => `${repoRow.remoteOwner}/${repoRow.remoteName}:run:${r.id}`,
+    (r) => projectAdoPipelineRun(r, { organizationId: input.organizationId, repositoryId: repoRow.id }),
+    (upsert) => upsertWorkflowRunRecord(repo, { ...upsert, observedAt: opts.now }),
+    { repositoryId: repoRow.id, kind: "workflow_runs", now: opts.now ?? new Date() },
+  );
+}
+
+/* ──────────────────────────────────────────────────────────────────
+   URL → AzureDevOpsRepoLocator parser (exported for testing).
+   ────────────────────────────────────────────────────────────── */
+
+/**
+ * Pulls (org, project, repo) out of a dev.azure.com URL.
+ *
+ * Supported shapes:
+ *   https://dev.azure.com/{org}/{project}/_git/{repo}
+ *   https://{org}.visualstudio.com/{project}/_git/{repo}      (legacy)
+ *
+ * Returns null when the URL doesn't match or is missing.
+ */
+export function parseAzureDevOpsLocator(row: { remoteUrl?: string; remoteOwner: string; remoteName: string }): AzureDevOpsRepoLocator | null {
+  if (!row.remoteUrl) return null;
+  try {
+    const u = new URL(row.remoteUrl);
+    // dev.azure.com/{org}/{project}/_git/{repo}
+    if (u.hostname === "dev.azure.com" || u.hostname.endsWith(".dev.azure.com")) {
+      const parts = u.pathname.split("/").filter(Boolean);
+      const gitIdx = parts.indexOf("_git");
+      if (gitIdx >= 2 && gitIdx + 1 < parts.length) {
+        return { org: parts[0], project: parts.slice(1, gitIdx).join("/"), repo: parts[gitIdx + 1] };
+      }
+    }
+    // legacy {org}.visualstudio.com/{project}/_git/{repo}
+    if (u.hostname.endsWith(".visualstudio.com")) {
+      const org = u.hostname.split(".")[0];
+      const parts = u.pathname.split("/").filter(Boolean);
+      const gitIdx = parts.indexOf("_git");
+      if (gitIdx >= 1 && gitIdx + 1 < parts.length) {
+        return { org, project: parts.slice(0, gitIdx).join("/"), repo: parts[gitIdx + 1] };
+      }
+    }
+  } catch {
+    /* fall through */
+  }
+  return null;
 }

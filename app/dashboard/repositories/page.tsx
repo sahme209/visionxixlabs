@@ -175,7 +175,7 @@ export default function RepositoriesPage() {
                       )}
                     </div>
                   </div>
-                  {(r.provider === "github" || r.provider === "gitlab") && <SyncControls repositoryId={r.id} />}
+                  {(r.provider === "github" || r.provider === "gitlab" || r.provider === "azuredevops") && <SyncControls repositoryId={r.id} />}
                 </div>
               ))}
             </div>

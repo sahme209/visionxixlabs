@@ -20,6 +20,7 @@ import {
 } from "@/lib/releaseops/repositorySyncResponder";
 import { createGitHubFetcher } from "@/lib/releaseops/githubFetcher";
 import { createGitLabFetcher } from "@/lib/releaseops/gitlabFetcher";
+import { createAzureDevOpsFetcher } from "@/lib/releaseops/azureDevOpsFetcher";
 
 export const dynamic = "force-dynamic";
 
@@ -51,6 +52,7 @@ export async function POST(req: NextRequest) {
   const fetchers: ProviderFetchers = {};
   if (process.env.GITHUB_PAT) fetchers.github = createGitHubFetcher();
   if (process.env.GITLAB_TOKEN) fetchers.gitlab = createGitLabFetcher();
+  if (process.env.AZURE_DEVOPS_PAT) fetchers.azuredevops = createAzureDevOpsFetcher();
 
   const r = await buildRepositorySyncResponse(
     prisma as unknown as RepositorySyncRepo,

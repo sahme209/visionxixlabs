@@ -1,9 +1,11 @@
 import { describe, expect, it } from "vitest";
 import {
   buildRepositorySyncResponse,
+  parseAzureDevOpsLocator,
   type RepositorySyncRepo,
   type SyncRepositoryRow,
   type GitHubFetcher,
+  type AzureDevOpsFetcher,
 } from "../repositorySyncResponder";
 import type {
   GithubPrPayload,
@@ -141,8 +143,8 @@ describe("buildRepositorySyncResponse", () => {
     expect(r.body.error).toBe("cross_org_repository");
   });
 
-  it("400 unsupported_provider when row is azuredevops (no dispatch arm yet)", async () => {
-    const repo = makeRepoStub({ ...REPO_ROW, provider: "azuredevops" });
+  it("400 unsupported_provider for 'other' (no dispatch arm)", async () => {
+    const repo = makeRepoStub({ ...REPO_ROW, provider: "other" });
     const r = await buildRepositorySyncResponse(repo, { github: fetcherStub() }, {
       organizationId: "o", repositoryId: REPO_ROW.id, kind: "pull_requests",
     });
@@ -384,5 +386,149 @@ describe("buildRepositorySyncResponse", () => {
     if (!r.body.ok) throw new Error("expected ok");
     expect(r.body.data.upserted).toBe(0);
     expect(r.body.data.skipped).toBe(1);
+  });
+
+  /* ─── Azure DevOps ─── */
+
+  it("400 invalid_repository_url when ADO row has no remoteUrl", async () => {
+    const repo = makeRepoStub({ ...REPO_ROW, provider: "azuredevops" });
+    const adoFetcher: AzureDevOpsFetcher = {
+      async listPullRequests() { return []; },
+      async listReleases() { return []; },
+      async listPipelineRuns() { return []; },
+    };
+    const r = await buildRepositorySyncResponse(repo, { azuredevops: adoFetcher }, {
+      organizationId: "o", repositoryId: REPO_ROW.id, kind: "pull_requests",
+    });
+    expect(r.status).toBe(400);
+    if (r.body.ok) throw new Error("expected error");
+    expect(r.body.error).toBe("invalid_repository_url");
+  });
+
+  it("501 fetcher_not_configured for azuredevops when no fetcher present", async () => {
+    const repo = makeRepoStub({
+      ...REPO_ROW, provider: "azuredevops",
+      remoteUrl: "https://dev.azure.com/acme/checkout/_git/api",
+    });
+    const r = await buildRepositorySyncResponse(repo, { github: fetcherStub() }, {
+      organizationId: "o", repositoryId: REPO_ROW.id, kind: "pull_requests",
+    });
+    expect(r.status).toBe(501);
+    if (r.body.ok) throw new Error("expected error");
+    expect(r.body.error).toBe("fetcher_not_configured");
+  });
+
+  it("ADO PR slice: parses locator + projects + upserts", async () => {
+    const repo = makeRepoStub({
+      ...REPO_ROW, provider: "azuredevops",
+      remoteOwner: "acme", remoteName: "api",
+      remoteUrl: "https://dev.azure.com/acme/checkout/_git/api",
+    });
+    const adoFetcher: AzureDevOpsFetcher = {
+      async listPullRequests(locator) {
+        // assert the URL parser produced the right locator
+        expect(locator).toEqual({ org: "acme", project: "checkout", repo: "api" });
+        return [{
+          pullRequestId: 42, title: "Hotfix",
+          status: "completed", isDraft: false,
+          sourceRefName: "refs/heads/hotfix/x", targetRefName: "refs/heads/main",
+          lastMergeSourceCommit: { commitId: "abcdef" },
+          closedDate: "2026-05-20T10:00:00Z",
+          closedBy: { uniqueName: "bob" },
+          createdBy: { uniqueName: "alice" },
+          webUrl: "https://dev.azure.com/acme/checkout/_git/api/pullrequest/42",
+          labels: [],
+        }];
+      },
+      async listReleases() { return []; },
+      async listPipelineRuns() { return []; },
+    };
+    const r = await buildRepositorySyncResponse(repo, { azuredevops: adoFetcher }, {
+      organizationId: "o", repositoryId: REPO_ROW.id, kind: "pull_requests",
+    }, { now: new Date("2026-05-25T12:00:00Z") });
+    if (!r.body.ok) throw new Error("expected ok");
+    expect(r.body.data.upserted).toBe(1);
+    const pr = repo._prs.get("repo_1#42")!;
+    expect(pr.state).toBe("merged");
+    expect(pr.sourceBranch).toBe("hotfix/x");
+    expect(pr.targetBranch).toBe("main");
+  });
+
+  it("ADO releases slice: tag refs project to release rows", async () => {
+    const repo = makeRepoStub({
+      ...REPO_ROW, provider: "azuredevops",
+      remoteUrl: "https://dev.azure.com/acme/checkout/_git/api",
+    });
+    const adoFetcher: AzureDevOpsFetcher = {
+      async listPullRequests() { return []; },
+      async listReleases() {
+        return [{ tagName: "v1.0.0", resolvedCommitSha: "abc123" }];
+      },
+      async listPipelineRuns() { return []; },
+    };
+    const r = await buildRepositorySyncResponse(repo, { azuredevops: adoFetcher }, {
+      organizationId: "o", repositoryId: REPO_ROW.id, kind: "releases",
+    });
+    if (!r.body.ok) throw new Error("expected ok");
+    expect(r.body.data.upserted).toBe(1);
+    expect(repo._tags.size).toBe(1);
+  });
+
+  it("ADO workflow_runs slice: pipeline runs project to workflow rows", async () => {
+    const repo = makeRepoStub({
+      ...REPO_ROW, provider: "azuredevops",
+      remoteUrl: "https://dev.azure.com/acme/checkout/_git/api",
+    });
+    const adoFetcher: AzureDevOpsFetcher = {
+      async listPullRequests() { return []; },
+      async listReleases() { return []; },
+      async listPipelineRuns() {
+        return [{
+          id: 777, name: "Deploy prod", yamlPath: "azure-pipelines-deploy.yml",
+          state: "completed", result: "succeeded",
+          sourceBranch: "refs/heads/main", sourceSha: "abc",
+          createdDate: "2026-05-20T08:00:00Z", finishedDate: "2026-05-20T08:05:00Z",
+          webUrl: "https://dev.azure.com/acme/checkout/_build/results?buildId=777",
+        }];
+      },
+    };
+    const r = await buildRepositorySyncResponse(repo, { azuredevops: adoFetcher }, {
+      organizationId: "o", repositoryId: REPO_ROW.id, kind: "workflow_runs",
+    });
+    if (!r.body.ok) throw new Error("expected ok");
+    const run = repo._runs.get("repo_1#777")!;
+    expect(run.status).toBe("completed");
+    expect(run.conclusion).toBe("success");
+    expect(run.runKind).toBe("deploy");
+  });
+});
+
+describe("parseAzureDevOpsLocator", () => {
+  it("parses modern dev.azure.com URLs", () => {
+    expect(parseAzureDevOpsLocator({
+      remoteUrl: "https://dev.azure.com/acme/checkout/_git/api",
+      remoteOwner: "acme", remoteName: "api",
+    })).toEqual({ org: "acme", project: "checkout", repo: "api" });
+  });
+  it("parses legacy visualstudio.com URLs", () => {
+    expect(parseAzureDevOpsLocator({
+      remoteUrl: "https://acme.visualstudio.com/checkout/_git/api",
+      remoteOwner: "acme", remoteName: "api",
+    })).toEqual({ org: "acme", project: "checkout", repo: "api" });
+  });
+  it("returns null for non-ADO URLs", () => {
+    expect(parseAzureDevOpsLocator({
+      remoteUrl: "https://github.com/acme/api",
+      remoteOwner: "acme", remoteName: "api",
+    })).toBeNull();
+  });
+  it("returns null when remoteUrl is missing", () => {
+    expect(parseAzureDevOpsLocator({ remoteOwner: "acme", remoteName: "api" })).toBeNull();
+  });
+  it("handles project paths with slashes in them", () => {
+    expect(parseAzureDevOpsLocator({
+      remoteUrl: "https://dev.azure.com/acme/team-a/sub/_git/api",
+      remoteOwner: "acme", remoteName: "api",
+    })).toEqual({ org: "acme", project: "team-a/sub", repo: "api" });
   });
 });
