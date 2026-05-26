@@ -60,14 +60,18 @@ export default function CherryPicksPage() {
   const [loading, setLoading] = useState(true);
   const [networkError, setNetworkError] = useState<string | null>(null);
 
-  useEffect(() => {
-    let cancelled = false;
+  function loadList() {
+    setLoading(true);
+    setNetworkError(null);
     fetch("/api/dashboard/cherry-pick-list", { credentials: "include" })
       .then((r) => r.json())
-      .then((j: RespBody) => { if (!cancelled) setResp(j); })
-      .catch((e) => { if (!cancelled) setNetworkError(e instanceof Error ? e.message : "Network error."); })
-      .finally(() => { if (!cancelled) setLoading(false); });
-    return () => { cancelled = true; };
+      .then((j: RespBody) => setResp(j))
+      .catch((e) => setNetworkError(e instanceof Error ? e.message : "Network error."))
+      .finally(() => setLoading(false));
+  }
+
+  useEffect(() => {
+    loadList();
   }, []);
 
   const data = resp?.ok ? resp.data : null;
@@ -87,8 +91,10 @@ export default function CherryPicksPage() {
           { label: "Releases",   href: "/dashboard/releases" },
           { label: "Activity",   href: "/dashboard/activity" },
         ]}
-        safetyNote="Read-only · per-org isolation · approved exceptions land in audit log + evidence pack"
+        safetyNote="Per-org isolation · approved exceptions land in audit log + evidence pack"
       />
+
+      <NewCherryPickPanel onCreated={loadList} />
 
       {loading && (
         <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 mb-6 text-[12px] text-zinc-400">
@@ -175,6 +181,143 @@ export default function CherryPicksPage() {
         </>
       )}
     </div>
+  );
+}
+
+type SubmitState =
+  | { kind: "closed" }
+  | { kind: "open" }
+  | { kind: "submitting" }
+  | { kind: "ok"; id: string }
+  | { kind: "error"; message: string };
+
+function NewCherryPickPanel({ onCreated }: { onCreated: () => void }) {
+  const [state, setState] = useState<SubmitState>({ kind: "closed" });
+  const [releaseId, setReleaseId] = useState("");
+  const [repositoryId, setRepositoryId] = useState("");
+  const [rationale, setRationale] = useState("");
+  const [approvedPrs, setApprovedPrs] = useState("");
+  const [excludedPrs, setExcludedPrs] = useState("");
+
+  const open = state.kind !== "closed";
+  function reset() {
+    setReleaseId(""); setRepositoryId(""); setRationale(""); setApprovedPrs(""); setExcludedPrs("");
+    setState({ kind: "closed" });
+  }
+
+  async function submit() {
+    setState({ kind: "submitting" });
+    const approved = approvedPrs.split(/[\s,]+/).filter(Boolean);
+    const excluded = excludedPrs.split(/[\s,]+/).filter(Boolean);
+    try {
+      const res = await fetch("/api/dashboard/cherry-pick-create", {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          releaseId, repositoryId, rationale,
+          approvedPrIds: approved, excludedPrIds: excluded,
+        }),
+      });
+      const j = await res.json();
+      if (j.ok) {
+        setState({ kind: "ok", id: j.data.id });
+        onCreated();
+        setTimeout(reset, 1200);
+      } else {
+        setState({ kind: "error", message: j.hint ?? j.error });
+      }
+    } catch (e) {
+      setState({ kind: "error", message: e instanceof Error ? e.message : "network error" });
+    }
+  }
+
+  if (!open) {
+    return (
+      <div className="mb-6 flex justify-end">
+        <button
+          type="button"
+          onClick={() => setState({ kind: "open" })}
+          className="px-3 py-1.5 rounded-lg border border-violet-500/30 bg-violet-500/[0.06] text-[12px] font-semibold text-violet-200 hover:bg-violet-500/[0.12] transition-colors"
+        >
+          + Request cherry-pick exception
+        </button>
+      </div>
+    );
+  }
+
+  const busy = state.kind === "submitting";
+  return (
+    <div className="mb-6 rounded-2xl border border-violet-500/[0.18] bg-violet-500/[0.03] p-5">
+      <div className="flex items-center justify-between mb-3">
+        <p className="text-[13px] font-semibold text-violet-100">New cherry-pick exception</p>
+        <button type="button" onClick={reset} className="text-[11px] font-mono text-zinc-400 hover:text-zinc-200" disabled={busy}>
+          cancel
+        </button>
+      </div>
+      <div className="grid grid-cols-2 gap-3 mb-3">
+        <Field label="Release ID" value={releaseId} onChange={setReleaseId} placeholder="rel_..." disabled={busy} />
+        <Field label="Repository ID" value={repositoryId} onChange={setRepositoryId} placeholder="repo_..." disabled={busy} />
+      </div>
+      <Field
+        label={`Rationale (${rationale.trim().length}/20 min)`}
+        value={rationale}
+        onChange={setRationale}
+        placeholder="Explain why this scope change is needed — operator + approver both read this."
+        multiline
+        disabled={busy}
+      />
+      <div className="grid grid-cols-2 gap-3 mt-3">
+        <Field label="Approved PR IDs (comma/space-separated)" value={approvedPrs} onChange={setApprovedPrs} placeholder="pr_abc, pr_def" disabled={busy} />
+        <Field label="Excluded PR IDs (optional)" value={excludedPrs} onChange={setExcludedPrs} placeholder="pr_xyz" disabled={busy} />
+      </div>
+      <div className="mt-4 flex items-center gap-3">
+        <button
+          type="button"
+          onClick={submit}
+          disabled={busy}
+          className="px-3 py-1.5 rounded-lg border border-violet-500/40 bg-violet-500/[0.12] text-[12px] font-semibold text-violet-100 hover:bg-violet-500/[0.20] disabled:opacity-50 disabled:cursor-wait transition-colors"
+        >
+          {busy ? "Submitting…" : "Submit request"}
+        </button>
+        {state.kind === "ok" && (
+          <span className="text-[11.5px] font-mono text-emerald-300">✓ created · {state.id}</span>
+        )}
+        {state.kind === "error" && (
+          <span className="text-[11.5px] font-mono text-rose-300">✗ {state.message}</span>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function Field({ label, value, onChange, placeholder, multiline, disabled }: {
+  label: string; value: string; onChange: (v: string) => void;
+  placeholder?: string; multiline?: boolean; disabled?: boolean;
+}) {
+  return (
+    <label className="block">
+      <span className="block text-[10px] font-mono uppercase tracking-wider text-zinc-400 mb-1">{label}</span>
+      {multiline ? (
+        <textarea
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          placeholder={placeholder}
+          disabled={disabled}
+          rows={3}
+          className="w-full rounded-lg border border-white/[0.08] bg-black/30 px-3 py-2 text-[12.5px] text-zinc-100 placeholder:text-zinc-600 focus:border-violet-500/40 focus:outline-none disabled:opacity-50"
+        />
+      ) : (
+        <input
+          type="text"
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          placeholder={placeholder}
+          disabled={disabled}
+          className="w-full rounded-lg border border-white/[0.08] bg-black/30 px-3 py-2 text-[12.5px] text-zinc-100 placeholder:text-zinc-600 focus:border-violet-500/40 focus:outline-none disabled:opacity-50"
+        />
+      )}
+    </label>
   );
 }
 
