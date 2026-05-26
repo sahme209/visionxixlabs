@@ -24,6 +24,7 @@ import {
 } from "@heroicons/react/24/outline";
 import { prisma } from "@/lib/db";
 import { loadLinkedInConfig, isPostingEnabled } from "@/lib/growth/linkedin/oauth";
+import { loadAutopilotPolicy } from "@/lib/growth/autopilot";
 
 export const metadata: Metadata = {
   title: "LinkedIn integration · VisionXIXLabs internal",
@@ -43,8 +44,9 @@ export default async function LinkedInAdminPage({ searchParams }: PageProps) {
   const configured = cfg.kind === "configured";
   const missing = cfg.kind === "missing" ? cfg.missing : [];
   const postingEnabled = isPostingEnabled();
+  const autopilotPolicy = loadAutopilotPolicy();
 
-  const [connection, drafts, recentRuns] = await Promise.all([
+  const [connection, drafts, recentRuns, recentAutopilot] = await Promise.all([
     prisma.linkedInAccountConnection.findFirst({
       where: { status: { in: ["connected", "expired", "error"] } },
       orderBy: { updatedAt: "desc" },
@@ -58,6 +60,10 @@ export default async function LinkedInAdminPage({ searchParams }: PageProps) {
       orderBy: { startedAt: "desc" },
       take: 10,
     }).catch(() => [] as Awaited<ReturnType<typeof prisma.linkedInPostPublishRun.findMany>>),
+    prisma.growthAutopilotDecision.findMany({
+      orderBy: { ranAt: "desc" },
+      take: 7,
+    }).catch(() => [] as Awaited<ReturnType<typeof prisma.growthAutopilotDecision.findMany>>),
   ]);
 
   const expired = connection ? connection.expiresAt.getTime() < Date.now() : false;
@@ -189,6 +195,62 @@ LINKEDIN_POSTING_ENABLED=false    # flip to true ONLY when you're ready`}
         )}
       </section>
 
+      {/* 2.5 · Autopilot */}
+      <section className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 mb-4">
+        <header className="flex items-center justify-between gap-2 mb-3 flex-wrap">
+          <div className="flex items-center gap-2">
+            <span className="relative flex h-1.5 w-1.5">
+              {autopilotPolicy.enabled && <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-rose-400 opacity-70" />}
+              <span className={`relative inline-flex h-1.5 w-1.5 rounded-full ${autopilotPolicy.enabled ? "bg-rose-300" : "bg-zinc-500"}`} />
+            </span>
+            <p className="text-[10px] font-semibold uppercase tracking-widest text-rose-300">
+              Autopilot · {autopilotPolicy.enabled ? "ON" : "OFF"}
+            </p>
+            <span className="text-[10px] font-mono uppercase tracking-wider text-zinc-500">
+              threshold {autopilotPolicy.confidenceThreshold} · {String(autopilotPolicy.postHourUtc).padStart(2, "0")}:00 UTC
+            </span>
+          </div>
+          <span className="text-[10px] font-mono text-zinc-500">
+            Kill switch: <span className="text-rose-300">LINKEDIN_AUTOPILOT_ENABLED=false</span>
+          </span>
+        </header>
+
+        {recentAutopilot.length === 0 ? (
+          <EmptyState
+            title="Autopilot hasn't run yet"
+            detail="The daily cron writes one decision row per run. When it fires (weekdays 09:00 UTC), you'll see what it picked and why."
+          />
+        ) : (
+          <ul className="space-y-2">
+            {recentAutopilot.map((d) => (
+              <li key={d.id} className="flex items-start justify-between gap-3 text-[11.5px]">
+                <div className="min-w-0">
+                  <p className="text-zinc-200 truncate">
+                    <span className="font-mono text-zinc-500">{d.ranAt.toISOString().slice(0, 16).replace("T", " ")}</span>
+                    {"  "}
+                    {d.draftId && (
+                      <>
+                        draft <span className="font-mono text-zinc-400">{d.draftId.slice(0, 10)}</span>
+                        {"  "}
+                      </>
+                    )}
+                    {d.scheduledFor && (
+                      <>
+                        → posts <span className="text-violet-300 font-mono">{d.scheduledFor.toISOString().slice(0, 16).replace("T", " ")}</span>
+                      </>
+                    )}
+                  </p>
+                  {d.reason && <p className="text-zinc-500 mt-0.5 truncate">{d.reason}</p>}
+                </div>
+                <span className={`text-[9.5px] font-mono uppercase tracking-wider border rounded-full px-1.5 py-px shrink-0 ${autopilotChip(d.decision)}`}>
+                  {d.decision}
+                </span>
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
+
       {/* 3 · Publish runs */}
       <section className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 mb-4">
         <header className="flex items-center gap-2 mb-3">
@@ -292,6 +354,14 @@ function outcomeChip(s: string): string {
   if (s.startsWith("skipped"))      return "text-amber-300 bg-amber-500/10 border-amber-500/30";
   if (s === "failed")               return "text-rose-300 bg-rose-500/10 border-rose-500/30";
   return                                   "text-zinc-300 bg-white/[0.04] border-white/[0.08]";
+}
+
+function autopilotChip(s: string): string {
+  if (s === "published" || s === "scheduled")  return "text-emerald-300 bg-emerald-500/10 border-emerald-500/30";
+  if (s === "queued_for_review")               return "text-cyan-300 bg-cyan-500/10 border-cyan-500/30";
+  if (s === "killed")                          return "text-rose-300 bg-rose-500/10 border-rose-500/30";
+  if (s === "disabled")                        return "text-zinc-300 bg-white/[0.04] border-white/[0.08]";
+  return                                              "text-amber-300 bg-amber-500/10 border-amber-500/30";
 }
 
 function DraftRow({

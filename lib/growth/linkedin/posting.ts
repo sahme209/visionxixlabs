@@ -83,7 +83,7 @@ export async function publishDraft(input: PublishInput): Promise<PublishOutcome>
   const author = connection.organizationUrn || connection.linkedinUrn;
   const text = renderPostText(draft);
 
-  const payload = {
+  const payload: Record<string, unknown> = {
     author,
     commentary: text,
     visibility: "PUBLIC",
@@ -95,6 +95,16 @@ export async function publishDraft(input: PublishInput): Promise<PublishOutcome>
     lifecycleState: "PUBLISHED",
     isReshareDisabledByAuthor: false,
   };
+
+  // Attach image if the draft has one already uploaded to LinkedIn.
+  if (draft.imageUrn) {
+    payload.content = {
+      media: {
+        id: draft.imageUrn,
+        altText: draft.title.slice(0, 200),
+      },
+    };
+  }
 
   try {
     const res = await fetch(POSTS_URL, {

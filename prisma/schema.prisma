@@ -2641,6 +2641,18 @@ model LinkedInPostDraft {
   rejectionReason String?
   /// Free-text performance notes manually entered by operator.
   performanceNotes String?
+  /// Public URL of generated brand image (R2 / S3 / Vercel Blob).
+  imageUrl         String?
+  /// LinkedIn-side image URN once uploaded via /rest/images.
+  imageUrn         String?
+  /// Prompt sent to the image model — kept for reproducibility / audit.
+  imagePrompt      String?
+  /// 0..1 score from the secondary brand-safety pass.
+  hallucinationScore Float?
+  /// Free-text explanation of the score from the secondary pass.
+  hallucinationNotes String?
+  /// True only when both confidence + hallucinationScore beat the autopilot threshold.
+  autopilotEligible Boolean @default(false)
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 
@@ -2651,6 +2663,30 @@ model LinkedInPostDraft {
   @@index([status])
   @@index([scheduledFor])
   @@index([campaignId])
+}
+
+model GrowthAutopilotDecision {
+  id                      String   @id @default(cuid())
+  ranAt                   DateTime @default(now())
+  /// Closed-union: published | queued_for_review | killed | disabled | error.
+  decision                String
+  /// The draft chosen for action (or considered best). Null when no drafts generated.
+  draftId                 String?
+  draftsConsidered        Int      @default(0)
+  bestConfidence          Float?
+  bestHallucinationScore  Float?
+  /// Threshold in force at decision time. Lets us reconstruct decisions if policy changes.
+  threshold               Float
+  /// When the auto-scheduled draft will publish (null when not scheduled).
+  scheduledFor            DateTime?
+  /// Free-text reason — useful for "queued_for_review" / "killed" / "error".
+  reason                  String?
+  /// Arbitrary detail bag (scores per draft, prompt versions, etc.).
+  detail                  Json?
+
+  @@index([ranAt])
+  @@index([decision])
+  @@index([draftId])
 }
 
 model LinkedInAccountConnection {
