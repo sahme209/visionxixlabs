@@ -123,6 +123,7 @@ export function BranchValidationView() {
           )}
           {detail?.ok && (
             <>
+              <EvidencePackButton releaseId={detail.data.releaseId} />
               <div className="grid grid-cols-4 gap-3">
                 <Stat label="Passing"  value={String(detail.data.summary.passing)}        tone="emerald" />
                 <Stat label="Failing"  value={String(detail.data.summary.failing)}        tone={detail.data.summary.failing > 0 ? "rose" : "zinc"} />
@@ -161,6 +162,62 @@ function Stat({ label, value, tone = "zinc" }: { label: string; value: string; t
     <div className={`glass-card p-3 border ${cls}`}>
       <p className="text-[9px] font-mono uppercase tracking-wider opacity-70">{label}</p>
       <p className="text-lg font-bold mt-0.5">{value}</p>
+    </div>
+  );
+}
+
+type EvidenceOutcome =
+  | { kind: "idle" }
+  | { kind: "running" }
+  | { kind: "ok"; contentHash: string; prCount: number; cherryPickCount: number; linkedTicketCount: number }
+  | { kind: "error"; message: string };
+
+function EvidencePackButton({ releaseId }: { releaseId: string }) {
+  const [outcome, setOutcome] = useState<EvidenceOutcome>({ kind: "idle" });
+
+  async function trigger() {
+    setOutcome({ kind: "running" });
+    try {
+      const res = await fetch("/api/dashboard/release-evidence-generate", {
+        method: "POST", credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ releaseId }),
+      });
+      const j = await res.json();
+      if (j.ok) {
+        setOutcome({
+          kind: "ok",
+          contentHash: j.data.contentHash,
+          prCount: j.data.summary.prCount,
+          cherryPickCount: j.data.summary.cherryPickCount,
+          linkedTicketCount: j.data.summary.linkedTicketCount,
+        });
+      } else {
+        setOutcome({ kind: "error", message: j.hint ?? j.error });
+      }
+    } catch (e) {
+      setOutcome({ kind: "error", message: e instanceof Error ? e.message : "network error" });
+    }
+  }
+
+  const busy = outcome.kind === "running";
+  return (
+    <div className="glass-card p-3 border border-violet-500/20 flex items-center gap-2 flex-wrap text-[11px] font-mono">
+      <span className="text-violet-300/70 uppercase tracking-[0.18em] text-[9px]">Evidence pack</span>
+      <button
+        type="button"
+        disabled={busy}
+        onClick={trigger}
+        className="px-2.5 py-1 rounded border border-violet-500/40 bg-violet-500/[0.12] font-semibold text-violet-100 hover:bg-violet-500/[0.20] disabled:opacity-50 disabled:cursor-wait transition-colors"
+      >
+        {busy ? "Generating…" : "Generate / refresh"}
+      </button>
+      {outcome.kind === "ok" && (
+        <span className="text-emerald-300">
+          ✓ {outcome.prCount} PRs · {outcome.cherryPickCount} cherry · {outcome.linkedTicketCount} tickets · sha {outcome.contentHash.slice(0, 12)}…
+        </span>
+      )}
+      {outcome.kind === "error" && <span className="text-rose-300">✗ {outcome.message}</span>}
     </div>
   );
 }

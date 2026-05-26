@@ -101,6 +101,8 @@ export default function BranchDetailPage() {
         safetyNote="Read-only · per-check audit trail · exception kernel-gated"
       />
 
+      <EvidencePackButton releaseId={releaseId} repositoryId={repositoryId} />
+
       {loading && <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 mb-6 text-[12px] text-zinc-400">Loading branch validation…</div>}
       {!loading && networkError && (
         <div className="rounded-2xl border border-rose-500/[0.18] bg-rose-500/[0.04] p-5 mb-6 text-[13px] text-zinc-300">{networkError}</div>
@@ -172,6 +174,69 @@ function Stat({ label, value, tone }: { label: string; value: string; tone: "eme
     <div className={`rounded-xl border ${cls} p-3`}>
       <p className="text-[9px] font-mono uppercase tracking-wider opacity-70">{label}</p>
       <p className="text-[20px] font-bold mt-1">{value}</p>
+    </div>
+  );
+}
+
+/* ──────────────────────────────────────────────────────────────────
+   Phase 475 — Evidence pack generator button.
+   ────────────────────────────────────────────────────────────── */
+
+type EvidenceOutcome =
+  | { kind: "idle" }
+  | { kind: "running" }
+  | { kind: "ok"; contentHash: string; prCount: number; cherryPickCount: number; linkedTicketCount: number }
+  | { kind: "error"; message: string };
+
+function EvidencePackButton({ releaseId, repositoryId }: { releaseId: string; repositoryId: string }) {
+  const [outcome, setOutcome] = useState<EvidenceOutcome>({ kind: "idle" });
+
+  async function trigger() {
+    setOutcome({ kind: "running" });
+    try {
+      const res = await fetch("/api/dashboard/release-evidence-generate", {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ releaseId, ...(repositoryId ? { repositoryId } : {}) }),
+      });
+      const j = await res.json();
+      if (j.ok) {
+        setOutcome({
+          kind: "ok",
+          contentHash: j.data.contentHash,
+          prCount: j.data.summary.prCount,
+          cherryPickCount: j.data.summary.cherryPickCount,
+          linkedTicketCount: j.data.summary.linkedTicketCount,
+        });
+      } else {
+        setOutcome({ kind: "error", message: j.hint ?? j.error });
+      }
+    } catch (e) {
+      setOutcome({ kind: "error", message: e instanceof Error ? e.message : "network error" });
+    }
+  }
+
+  const busy = outcome.kind === "running";
+  return (
+    <div className="mb-6 rounded-2xl border border-violet-500/[0.18] bg-violet-500/[0.03] p-4 flex items-center gap-3 flex-wrap text-[12px]">
+      <span className="text-[10px] font-mono uppercase tracking-wider text-violet-300/70">Evidence pack</span>
+      <button
+        type="button"
+        disabled={busy}
+        onClick={trigger}
+        className="px-3 py-1.5 rounded-lg border border-violet-500/40 bg-violet-500/[0.12] font-semibold text-violet-100 hover:bg-violet-500/[0.20] disabled:opacity-50 disabled:cursor-wait transition-colors"
+      >
+        {busy ? "Generating…" : "Generate / refresh pack"}
+      </button>
+      {outcome.kind === "ok" && (
+        <span className="font-mono text-emerald-300 text-[11.5px]">
+          ✓ sealed · {outcome.prCount} PRs · {outcome.cherryPickCount} cherry-picks · {outcome.linkedTicketCount} tickets · sha {outcome.contentHash.slice(0, 12)}…
+        </span>
+      )}
+      {outcome.kind === "error" && (
+        <span className="font-mono text-rose-300 text-[11.5px]">✗ {outcome.message}</span>
+      )}
     </div>
   );
 }
