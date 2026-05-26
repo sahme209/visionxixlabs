@@ -16,6 +16,8 @@ import {
   type ChangeTicketFetcherSet,
 } from "@/lib/releaseops/changeTicketSyncResponder";
 import { createLinearFetcher } from "@/lib/releaseops/linearFetcher";
+import { createJiraFetcher } from "@/lib/releaseops/jiraFetcher";
+import { createServiceNowFetcher } from "@/lib/releaseops/serviceNowFetcher";
 import {
   ALL_CHANGE_TICKET_PROVIDERS,
   type ChangeTicketProvider,
@@ -48,13 +50,21 @@ export async function POST(req: NextRequest) {
   const fetchers: ChangeTicketFetcherSet = {};
   if (provider === "linear" && process.env.LINEAR_API_KEY) {
     fetchers.linear = createLinearFetcher();
+  } else if (provider === "jira" && process.env.JIRA_BASE_URL && process.env.JIRA_EMAIL && process.env.JIRA_API_TOKEN) {
+    fetchers.jira = createJiraFetcher();
+  } else if (provider === "servicenow" && process.env.SERVICENOW_INSTANCE && process.env.SERVICENOW_USER && process.env.SERVICENOW_PASS) {
+    fetchers.servicenow = createServiceNowFetcher();
   }
-  // jira / servicenow fetchers land in follow-on phases.
 
   const r = await buildChangeTicketSyncResponse(
     prisma as unknown as ChangeTicketSyncRepo,
     fetchers,
-    { organizationId: ctx.organizationId, provider },
+    {
+      organizationId: ctx.organizationId,
+      provider,
+      ...(process.env.JIRA_BASE_URL ? { jiraBrowseBaseUrl: process.env.JIRA_BASE_URL } : {}),
+      ...(process.env.SERVICENOW_INSTANCE ? { serviceNowInstanceUrl: process.env.SERVICENOW_INSTANCE } : {}),
+    },
   );
   return NextResponse.json(r.body, { status: r.status });
 }
