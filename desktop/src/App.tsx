@@ -22,6 +22,7 @@ import { ActivityView } from "./views/ActivityView";
 import { ConnectorHealthView } from "./views/ConnectorHealthView";
 import { ConnectorSetupView } from "./views/ConnectorSetupView";
 import { AlertEscalationsView } from "./views/AlertEscalationsView";
+import { ReleasesView } from "./views/ReleasesView";
 import { useTrayApprovalsBadge } from "./lib/useTrayApprovalsBadge";
 import { useConnectorHealthAmbientPoll } from "./lib/connectorHealthStore";
 import { useSseStream } from "./lib/useSseStream";
@@ -43,6 +44,8 @@ export type View =
   | "multi-cloud"
   | "security"
   | "scans"
+  // Operations — release management
+  | "releases"
   // Automation
   | "activity"
   | "workflows"
@@ -124,6 +127,7 @@ export default function App() {
           {activeView === "multi-cloud"   && <MultiCloudView />}
           {activeView === "security"      && <SecurityView />}
           {activeView === "scans"         && <ScansView />}
+          {activeView === "releases"      && <ReleasesView />}
           {activeView === "activity"      && <ActivityView />}
           {activeView === "workflows"     && <WorkflowsView />}
           {activeView === "approvals"     && <ApprovalsView />}
