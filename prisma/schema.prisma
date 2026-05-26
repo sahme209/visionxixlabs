@@ -2745,3 +2745,117 @@ model GrowthAuditLog {
   @@index([targetKind, targetId])
   @@index([occurredAt])
 }
+
+// ---------------------------------------------------------------------------
+// Phase 451 — Git / CI-CD discovery models.
+//
+// Adapter-populated rows that mirror what GitHub / GitLab / Azure DevOps
+// surface. The platform stores enough to evaluate branch validation
+// rules + render release-tag diffs without calling out to the provider
+// API on every page load. Discovery happens via a sync job (later
+// phase); these tables are the persisted projection.
+//
+// Closed-union states (PR state, CI status, run kind/status/conclusion)
+// stored as String — application layer validates, schema migration
+// stays light. Same pattern Phase 414 / 427 / 442 use.
+// ---------------------------------------------------------------------------
+
+model PullRequestRecord {
+  id                     String   @id @default(cuid())
+  organizationId         String
+  repositoryId           String
+  /// PR / MR number on the provider side.
+  number                 Int
+  title                  String
+  /// Closed-union: open | merged | closed.
+  state                  String
+  sourceBranch           String
+  targetBranch           String
+  /// HEAD commit SHA at observation time.
+  commitShaHead          String
+  mergedAt               DateTime?
+  mergedByUserId         String?
+  /// Linked story / defect IDs extracted from PR body or labels.
+  linkedStories          String[]  @default([])
+  /// Linked change ticket IDs.
+  linkedTickets          String[]  @default([])
+  /// Required approval count from branch protection at observation time.
+  approvalsRequiredCount Int       @default(0)
+  /// Approvals observed at last sync.
+  approvalsObservedCount Int       @default(0)
+  codeownersApproved     Boolean   @default(false)
+  /// Closed-union: pending | passing | failing | not_run.
+  ciStatus               String    @default("not_run")
+  /// Absolute provider URL.
+  webUrl                 String?
+  lastSyncedAt           DateTime  @default(now())
+  createdAt              DateTime  @default(now())
+  updatedAt              DateTime  @updatedAt
+
+  @@unique([repositoryId, number])
+  @@index([organizationId])
+  @@index([state])
+  @@index([commitShaHead])
+}
+
+model ReleaseTagRecord {
+  id                          String   @id @default(cuid())
+  organizationId              String
+  repositoryId                String
+  /// Tag name (e.g. "v2.7.0"). Unique within a repository.
+  tagName                     String
+  commitSha                   String
+  createdAt                   DateTime @default(now())
+  /// User who pushed the tag, if known.
+  taggerUserId                String?
+  /// JSON array of PullRequestRecord ids the tag includes since the
+  /// previous tag — computed at sync time.
+  prListJson                  Json?
+  /// JSON array of commit SHAs the tag includes since the previous tag.
+  commitListJson              Json?
+  /// JSON projection of the diff against the previous prod tag.
+  diffAgainstPreviousProdJson Json?
+  /// Operator-readable release notes — computed by
+  /// aiReleaseNoteGenerator.ts when enabled.
+  notes                       String?
+  lastSyncedAt                DateTime @default(now())
+  updatedAt                   DateTime @updatedAt
+
+  @@unique([repositoryId, tagName])
+  @@index([organizationId])
+  @@index([commitSha])
+}
+
+model WorkflowRunRecord {
+  id              String   @id @default(cuid())
+  organizationId  String
+  repositoryId    String
+  /// Workflow file / display name (e.g. ".github/workflows/deploy.yml").
+  workflowName    String
+  /// Provider-side run id (string to accommodate GitHub numerics + GitLab IDs).
+  externalRunId   String
+  /// Closed-union: queued | in_progress | completed.
+  status          String
+  /// Closed-union when status=completed: success | failure | cancelled | skipped | neutral.
+  conclusion      String?
+  /// Closed-union: build | deploy | check | other — derived at sync time.
+  runKind         String   @default("other")
+  /// Commit the workflow ran against.
+  commitSha       String?
+  /// Branch / tag ref the workflow ran against.
+  ref             String?
+  startedAt       DateTime?
+  completedAt     DateTime?
+  /// Provider URL for the run page.
+  webUrl          String?
+  /// JSON snapshot of attached artifact metadata (names + paths + sizes).
+  artifactsJson   Json?
+  lastSyncedAt    DateTime @default(now())
+  createdAt       DateTime @default(now())
+
+  @@unique([repositoryId, externalRunId])
+  @@index([organizationId])
+  @@index([status])
+  @@index([commitSha])
+  @@index([runKind])
+}
