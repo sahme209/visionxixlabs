@@ -79,6 +79,7 @@ const GROUPS: NavGroup[] = [
       { id: "security",    label: "Security",    Icon: IconSecurity },
       { id: "scans",       label: "Scans",       Icon: IconScans },
       { id: "releases",    label: "Releases",    Icon: IconWorkflows },
+      { id: "sops",        label: "SOPs",        Icon: IconWorkflows },
     ],
   },
   {

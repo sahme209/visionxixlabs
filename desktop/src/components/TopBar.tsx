@@ -18,6 +18,7 @@ const VIEW_TITLES: Record<View, { title: string; subtitle: string }> = {
   security:      { title: "Security",      subtitle: "Posture + checks + diagnoses" },
   scans:         { title: "Scans",         subtitle: "Run cloud + security scans" },
   releases:      { title: "Releases",      subtitle: "Per-release status, readiness, evidence" },
+  sops:          { title: "SOPs",           subtitle: "10 deployment types · 16 sections each" },
   activity:      { title: "Activity",      subtitle: "Runs + your votes + queue health" },
   workflows:     { title: "Workflows",     subtitle: "Recent + active pipeline runs" },
   approvals:     { title: "Approvals",     subtitle: "Runs awaiting human review" },
