@@ -22,6 +22,7 @@ const VIEW_TITLES: Record<View, { title: string; subtitle: string }> = {
   repositories:  { title: "Repositories",   subtitle: "GitHub / GitLab / Azure DevOps inventory" },
   "branch-validation": { title: "Branch validation", subtitle: "18 checks per release · pass / fail / N/A / unknown" },
   "cherry-picks": { title: "Cherry-pick exceptions", subtitle: "Out-of-train fixes · rationale + approver decision" },
+  "release-freeze": { title: "Release freeze", subtitle: "Draft · frozen · deploying · 3 buckets per release" },
   activity:      { title: "Activity",      subtitle: "Runs + your votes + queue health" },
   workflows:     { title: "Workflows",     subtitle: "Recent + active pipeline runs" },
   approvals:     { title: "Approvals",     subtitle: "Runs awaiting human review" },
