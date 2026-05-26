@@ -165,12 +165,14 @@ export default function Home() {
           }}
         />
 
-        {/* Calm ambient atmosphere — two soft pools that slowly drift,
-            giving the hero a 'living dark' feel without a parade of
-            animated beams. */}
+        {/* Calm ambient atmosphere — three drifting pools (violet · coral · cyan)
+            giving the hero a 'living dark' Huly-style aurora without an
+            animated beam parade. The coral pool is the new accent. */}
         <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
-          <div className="ambient-drift absolute top-[-180px] left-1/2 -translate-x-1/2 w-[900px] h-[520px] rounded-full bg-violet-500/[0.06] blur-[140px]" />
-          <div className="ambient-drift absolute top-[120px] right-[5%] w-[420px] h-[320px] rounded-full bg-fuchsia-500/[0.035] blur-[120px]" style={{ animationDelay: "-12s" }} />
+          <div className="ambient-drift absolute top-[-180px] left-1/2 -translate-x-1/2 w-[900px] h-[520px] rounded-full bg-violet-500/[0.07] blur-[140px]" />
+          <div className="ambient-drift absolute top-[60px] right-[2%] w-[520px] h-[400px] rounded-full bg-rose-500/[0.06] blur-[130px]" style={{ animationDelay: "-8s" }} />
+          <div className="ambient-drift absolute top-[260px] left-[-6%] w-[380px] h-[300px] rounded-full bg-cyan-500/[0.035] blur-[120px]" style={{ animationDelay: "-16s" }} />
+          <div className="ambient-drift absolute top-[120px] right-[40%] w-[320px] h-[260px] rounded-full bg-fuchsia-500/[0.035] blur-[120px]" style={{ animationDelay: "-12s" }} />
         </div>
 
         <div className="max-w-6xl mx-auto relative">
@@ -178,14 +180,26 @@ export default function Home() {
             {/* Left — editorial hero, now using the calm design system. */}
             <div className="relative z-10">
               <Reveal direction="up" blur>
-                <span className="status-pill mb-8">
-                  <span className="status-dot breathe" />
+                <span className="inline-flex items-center gap-2 mb-8 px-3 py-1.5 rounded-full border border-rose-400/30 bg-gradient-to-r from-rose-500/[0.10] via-fuchsia-500/[0.06] to-violet-500/[0.10] text-[11.5px] font-medium text-zinc-200 backdrop-blur-sm">
+                  <span className="relative flex h-1.5 w-1.5">
+                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-rose-400 opacity-70" />
+                    <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-rose-300" />
+                  </span>
+                  <span className="font-mono text-[10px] tracking-[0.18em] uppercase text-rose-200/90">01 / 09</span>
+                  <span className="text-zinc-500">·</span>
                   Axiom · cloud operations agent
                 </span>
               </Reveal>
               <h1 className="display-headline-lg text-white break-words mb-7">
                 <TextReveal text="Your cloud" splitBy="char" stagger={18} startDelay={120} className="block" />
-                <TextReveal text="runs itself." splitBy="char" stagger={18} startDelay={420} className="block" />
+                <span className="block relative">
+                  <TextReveal text="runs itself." splitBy="char" stagger={18} startDelay={420} className="relative inline-block" />
+                  {/* Coral underline accent — Huly's signature warm hairline under the punch word */}
+                  <span
+                    aria-hidden
+                    className="absolute left-0 -bottom-1 h-[3px] w-[58%] rounded-full bg-gradient-to-r from-rose-400 via-fuchsia-400 to-transparent opacity-90"
+                  />
+                </span>
               </h1>
               <Reveal direction="up" delay={0.06}>
                 <p className="body-lede text-zinc-400 mb-10">
@@ -220,15 +234,50 @@ export default function Home() {
             </div>
 
             {/* Right — product walkthrough wrapped in a cursor-aware
-                SpotlightCard with a glow-edge top highlight. The demo
-                itself stays unchanged; the frame around it gives the
-                whole composition a 'living card' feel. */}
+                SpotlightCard with a glow-edge top highlight. A small
+                floating audit card overlaps the top-right corner —
+                Huly's "detail floats out of the product" composition. */}
             <Reveal direction="up" delay={0.15}>
-              <SpotlightCard
-                className="glow-edge hidden lg:block rounded-2xl border border-white/[0.04] bg-white/[0.012] p-6 backdrop-blur-sm"
-              >
-                <HomepageDemoAnimation />
-              </SpotlightCard>
+              <div className="relative hidden lg:block">
+                <SpotlightCard
+                  className="glow-edge rounded-2xl border border-white/[0.04] bg-white/[0.012] p-6 backdrop-blur-sm"
+                >
+                  <HomepageDemoAnimation />
+                </SpotlightCard>
+
+                {/* Floating audit overlay — top-right, breaks out of the frame */}
+                <div
+                  className="absolute -top-5 -right-5 z-20 w-[220px] rounded-xl border border-white/[0.08] bg-[#0b0b0e]/95 backdrop-blur-xl p-3 shadow-[0_20px_50px_-15px_rgba(244,114,182,0.25)] hidden xl:block"
+                  style={{ animation: "ambient-drift 9s ease-in-out infinite" }}
+                >
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="relative flex h-1.5 w-1.5">
+                      <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-70" />
+                      <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-300" />
+                    </span>
+                    <p className="text-[9.5px] font-mono uppercase tracking-[0.16em] text-emerald-300/90">Audit · live</p>
+                  </div>
+                  <p className="text-[12px] font-semibold text-white leading-tight">Plan #142 approved</p>
+                  <p className="text-[10.5px] text-zinc-400 mt-1 leading-snug">Rollback verified · sha-256 rationale persisted · blast radius 1 service.</p>
+                  <div className="mt-2 flex items-center gap-1.5 text-[9.5px] font-mono text-zinc-500">
+                    <span>18:42 UTC</span>
+                    <span>·</span>
+                    <span className="text-rose-300/90">payments-api</span>
+                  </div>
+                </div>
+
+                {/* Floating metric chip — bottom-left, breaks out the other side */}
+                <div
+                  className="absolute -bottom-4 -left-5 z-20 rounded-full border border-white/[0.08] bg-[#0b0b0e]/95 backdrop-blur-xl px-3.5 py-1.5 shadow-[0_15px_40px_-15px_rgba(168,85,247,0.35)] hidden xl:flex items-center gap-2"
+                  style={{ animation: "ambient-drift 11s ease-in-out infinite", animationDelay: "-4s" }}
+                >
+                  <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-violet-300/90">MTTR</span>
+                  <span className="font-semibold text-white text-[12.5px] tabular-nums">11 min</span>
+                  <span className="text-zinc-600">·</span>
+                  <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-cyan-300/80">Spend ↓</span>
+                  <span className="font-semibold text-white text-[12.5px] tabular-nums">37%</span>
+                </div>
+              </div>
             </Reveal>
           </div>
         </div>
@@ -265,31 +314,23 @@ export default function Home() {
       <section className="py-10 sm:py-14 px-4 sm:px-6 lg:px-8">
         <div className="max-w-5xl mx-auto">
           <Reveal direction="up" delay={0.05}>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-x-4 sm:gap-x-6 gap-y-6 sm:gap-y-8 text-center">
-              <div>
-                <p className="text-3xl sm:text-4xl md:text-5xl font-bold text-white tracking-[-0.04em]">
-                  <CountUp to={35} suffix="%" duration={1600} />
-                </p>
-                <p className="text-[10px] sm:text-[11px] text-zinc-500 uppercase tracking-[0.16em] sm:tracking-[0.18em] mt-2 leading-tight">Avg cloud spend cut</p>
-              </div>
-              <div>
-                <p className="text-3xl sm:text-4xl md:text-5xl font-bold text-white tracking-[-0.04em]">
-                  <CountUp to={60} suffix="s" duration={1400} />
-                </p>
-                <p className="text-[10px] sm:text-[11px] text-zinc-500 uppercase tracking-[0.16em] sm:tracking-[0.18em] mt-2 leading-tight">First findings report</p>
-              </div>
-              <div>
-                <p className="text-3xl sm:text-4xl md:text-5xl font-bold text-white tracking-[-0.04em]">
-                  <CountUp to={3} duration={1200} />
-                </p>
-                <p className="text-[10px] sm:text-[11px] text-zinc-500 uppercase tracking-[0.16em] sm:tracking-[0.18em] mt-2 leading-tight">Clouds wired today</p>
-              </div>
-              <div>
-                <p className="text-3xl sm:text-4xl md:text-5xl font-bold text-white tracking-[-0.04em]">
-                  <CountUp to={100} suffix="%" duration={1500} />
-                </p>
-                <p className="text-[10px] sm:text-[11px] text-zinc-500 uppercase tracking-[0.16em] sm:tracking-[0.18em] mt-2 leading-tight">Approval-gated execution</p>
-              </div>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-x-4 sm:gap-x-6 gap-y-8 sm:gap-y-10">
+              {[
+                { idx: "01", value: 35,  suffix: "%", duration: 1600, label: "Avg cloud spend cut" },
+                { idx: "02", value: 60,  suffix: "s", duration: 1400, label: "First findings report" },
+                { idx: "03", value: 3,   suffix: "",  duration: 1200, label: "Clouds wired today" },
+                { idx: "04", value: 100, suffix: "%", duration: 1500, label: "Approval-gated execution" },
+              ].map((s) => (
+                <div key={s.idx} className="relative pl-3 sm:pl-4 border-l border-white/[0.06]">
+                  <p className="text-[10px] sm:text-[11px] font-mono tabular-nums text-rose-300/85 tracking-[0.2em] mb-2">
+                    {s.idx} <span className="text-zinc-700">/</span> <span className="text-zinc-600">04</span>
+                  </p>
+                  <p className="text-3xl sm:text-4xl md:text-5xl font-bold text-white tracking-[-0.04em] tabular-nums">
+                    <CountUp to={s.value} suffix={s.suffix} duration={s.duration} />
+                  </p>
+                  <p className="text-[10px] sm:text-[11px] text-zinc-500 uppercase tracking-[0.16em] sm:tracking-[0.18em] mt-2 leading-tight">{s.label}</p>
+                </div>
+              ))}
             </div>
           </Reveal>
         </div>
@@ -337,7 +378,9 @@ export default function Home() {
         <div className="max-w-5xl mx-auto">
           <Reveal direction="up" blur>
             <div className="mb-12 sm:mb-14">
-              <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-zinc-500 mb-6">
+              <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-zinc-500 mb-6 inline-flex items-center gap-3">
+                <span className="text-rose-300/90 tabular-nums">02</span>
+                <span className="h-px w-6 bg-gradient-to-r from-rose-400/60 to-transparent" />
                 The team you&apos;d otherwise be paying for
               </p>
               <h2 className="text-[34px] sm:text-[44px] md:text-[52px] font-medium tracking-[-0.025em] leading-[1.05] text-white max-w-3xl">
@@ -411,7 +454,9 @@ export default function Home() {
         <div className="max-w-6xl mx-auto">
           <Reveal direction="up">
             <div className="mb-14">
-              <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-zinc-500 mb-6">
+              <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-zinc-500 mb-6 inline-flex items-center gap-3">
+                <span className="text-rose-300/90 tabular-nums">03</span>
+                <span className="h-px w-6 bg-gradient-to-r from-rose-400/60 to-transparent" />
                 Operational intelligence
               </p>
               <h2 className="text-[34px] sm:text-[44px] md:text-[52px] font-medium mb-5 tracking-[-0.025em] leading-[1.05] text-white">
@@ -501,7 +546,7 @@ export default function Home() {
 
       {/* ── How it works — huly.io FeatureRow ───────────────────────── */}
       <FeatureRow
-        kicker="How Axiom operates"
+        kicker={<><span className="text-rose-300/90 tabular-nums">04</span><span className="mx-2 inline-block h-px w-6 align-middle bg-gradient-to-r from-rose-400/60 to-transparent" />How Axiom operates</>}
         headline={<>Twelve steps from <span className="text-zinc-500">scan to ship</span>.</>}
         body={
           <>Axiom runs a 12-step cognitive loop: observe the cloud, interpret findings, reason about priority, plan dependency-aware execution, and learn from outcomes. Every step is auditable.</>
@@ -525,7 +570,7 @@ export default function Home() {
 
       {/* ── Multi-cloud — huly.io FeatureRow (alternates, media on left) ── */}
       <FeatureRow
-        kicker="Multi-cloud intelligence"
+        kicker={<><span className="text-rose-300/90 tabular-nums">05</span><span className="mx-2 inline-block h-px w-6 align-middle bg-gradient-to-r from-rose-400/60 to-transparent" />Multi-cloud intelligence</>}
         headline={<>One agent. <span className="text-zinc-500">Every cloud.</span></>}
         body={
           <>Axiom&apos;s provider-abstraction layer normalizes AWS, Azure, and GCP into a unified operational model. One scan, one reasoning loop, one execution plan — no matter where your workloads live.</>
@@ -566,7 +611,7 @@ export default function Home() {
 
       {/* ── Governance + safety — huly.io FeatureRow ────────────────── */}
       <FeatureRow
-        kicker="Governance & safety"
+        kicker={<><span className="text-rose-300/90 tabular-nums">06</span><span className="mx-2 inline-block h-px w-6 align-middle bg-gradient-to-r from-rose-400/60 to-transparent" />Governance & safety</>}
         headline={<>Approval-gated. <span className="text-zinc-500">Always.</span></>}
         body={
           <>Every change passes a human approval gate. Blast radius is capped, compliance policy enforced, rollback pre-verified, and every action recorded in an immutable audit trail.</>
@@ -627,14 +672,21 @@ export default function Home() {
 
       {/* ── Closing CTA banner — huly.io 'Join the Movement' style ───── */}
       <section className="py-32 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
-        {/* Single ambient pool, slow drift, no aurora carnival */}
+        {/* Coral + white drifting pools — the warm bookend to the cool hero */}
         <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden>
           <div className="ambient-drift absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[820px] h-[520px] rounded-full bg-white/[0.04] blur-[140px]" />
+          <div className="ambient-drift absolute top-[20%] left-[10%] w-[420px] h-[320px] rounded-full bg-rose-500/[0.06] blur-[130px]" style={{ animationDelay: "-7s" }} />
+          <div className="ambient-drift absolute bottom-[10%] right-[8%] w-[360px] h-[280px] rounded-full bg-violet-500/[0.05] blur-[120px]" style={{ animationDelay: "-13s" }} />
         </div>
 
         <div className="relative max-w-3xl mx-auto text-center">
-          <span className="status-pill mx-auto mb-8">
-            <span className="status-dot breathe" />
+          <span className="inline-flex items-center gap-2 mx-auto mb-8 px-3 py-1.5 rounded-full border border-rose-400/30 bg-gradient-to-r from-rose-500/[0.10] via-fuchsia-500/[0.06] to-violet-500/[0.10] text-[11.5px] font-medium text-zinc-200 backdrop-blur-sm">
+            <span className="relative flex h-1.5 w-1.5">
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-rose-400 opacity-70" />
+              <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-rose-300" />
+            </span>
+            <span className="font-mono text-[10px] tracking-[0.18em] uppercase text-rose-200/90">09 / 09</span>
+            <span className="text-zinc-500">·</span>
             5 minutes to first scan
           </span>
           <h2 className="display-headline-lg text-white">

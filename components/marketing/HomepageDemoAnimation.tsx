@@ -3,18 +3,21 @@
 /**
  * HomepageDemoAnimation — premium animated product walkthrough.
  *
- * Renders a browser-style product frame and cycles through 10 typed
- * app-states: connect → scan → IAM risk → alert linked → deploy check
- * → approval requested → human approved → report generated → healthy.
- * A virtual cursor moves to a target, a click flash plays, and the
- * "app body" updates to reflect the new state.
+ * Cursor precision: each step's primary action element carries a
+ * `data-cursor-target="true"` attribute. After the AppStateBody mounts
+ * (post framer-motion mode="wait" enter), the cursor reads the target's
+ * bounding rect relative to the viewport container and animates to its
+ * centre — so the cursor actually clicks on real UI, not a fixed %.
  *
- * Self-contained — no fake-data leak into client surfaces. Lives on
- * the public marketing homepage only.
+ * Re-measures on window resize. Falls back to viewport centre if no
+ * target is found.
+ *
+ * Self-contained — no fake-data leak into client surfaces. Public
+ * marketing homepage only.
  */
 
 import { motion, AnimatePresence } from "framer-motion";
-import { useEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import {
   CloudIcon,
   ShieldExclamationIcon,
@@ -41,26 +44,28 @@ interface Step {
   id: number;
   label: string;
   description: string;
-  cursor: { xPct: number; yPct: number };
   state: AppState;
   holdMs: number;
 }
 
 const STEPS: readonly Step[] = [
-  { id: 1, label: "Connect AWS",         description: "Cursor clicks Connect → IAM role validated.",                 cursor: { xPct: 18, yPct: 16 }, state: "connector_validating", holdMs: 2200 },
-  { id: 2, label: "Scan environment",    description: "Cloud Agent inventories resources in 3 regions.",             cursor: { xPct: 50, yPct: 38 }, state: "scan_running",         holdMs: 2400 },
-  { id: 3, label: "IAM risk detected",   description: "Security Agent flags over-privileged role.",                   cursor: { xPct: 70, yPct: 56 }, state: "iam_risk_detected",    holdMs: 2400 },
-  { id: 4, label: "Alert linked",        description: "Monitoring Agent attaches alert to the affected service.",     cursor: { xPct: 32, yPct: 70 }, state: "alert_linked",         holdMs: 2200 },
-  { id: 5, label: "Check deployment",    description: "DevOps Agent reviews the most recent deploy.",                  cursor: { xPct: 58, yPct: 78 }, state: "deployment_checked",   holdMs: 2200 },
-  { id: 6, label: "Approval requested",  description: "Risky remediation staged — waiting for human sign-off.",       cursor: { xPct: 80, yPct: 30 }, state: "approval_requested",   holdMs: 2400 },
-  { id: 7, label: "Human approves",      description: "One click — the loop continues with audit row written.",       cursor: { xPct: 82, yPct: 32 }, state: "approval_granted",     holdMs: 2000 },
-  { id: 8, label: "Report generated",    description: "Operator gets a one-page summary with linked evidence.",       cursor: { xPct: 40, yPct: 22 }, state: "report_generated",     holdMs: 2400 },
-  { id: 9, label: "Dashboard healthy",   description: "All services back to green. Cycle loops.",                     cursor: { xPct: 12, yPct: 12 }, state: "dashboard_healthy",    holdMs: 2400 },
+  { id: 1, label: "Connect AWS",        description: "Cursor clicks Connect → IAM role validated.",                state: "connector_validating", holdMs: 2400 },
+  { id: 2, label: "Scan environment",   description: "Cloud Agent inventories resources in 3 regions.",            state: "scan_running",         holdMs: 2400 },
+  { id: 3, label: "IAM risk detected",  description: "Security Agent flags an over-privileged role.",              state: "iam_risk_detected",    holdMs: 2400 },
+  { id: 4, label: "Alert linked",       description: "Monitoring Agent attaches an alert to the affected service.",state: "alert_linked",         holdMs: 2200 },
+  { id: 5, label: "Check deployment",   description: "DevOps Agent reviews the most recent deploy.",               state: "deployment_checked",   holdMs: 2200 },
+  { id: 6, label: "Approval requested", description: "Risky remediation staged — waiting for human sign-off.",     state: "approval_requested",   holdMs: 2600 },
+  { id: 7, label: "Human approves",     description: "One click — the loop continues with an audit row written.",  state: "approval_granted",     holdMs: 2200 },
+  { id: 8, label: "Report generated",   description: "Operator gets a one-page summary with linked evidence.",     state: "report_generated",     holdMs: 2400 },
+  { id: 9, label: "Dashboard healthy",  description: "All services back to green. Cycle loops.",                   state: "dashboard_healthy",    holdMs: 2400 },
 ];
 
 export function HomepageDemoAnimation() {
   const [stepIdx, setStepIdx] = useState(0);
+  const [cursorXY, setCursorXY] = useState<{ x: number; y: number } | null>(null);
+  const viewportRef = useRef<HTMLDivElement>(null);
 
+  // Advance steps.
   useEffect(() => {
     const t = setTimeout(() => setStepIdx((i) => (i + 1) % STEPS.length), STEPS[stepIdx].holdMs);
     return () => clearTimeout(t);
@@ -68,8 +73,54 @@ export function HomepageDemoAnimation() {
 
   const step = STEPS[stepIdx];
 
+  // Measure the active target element and pin the cursor to its centre.
+  // Runs after the AnimatePresence enter (~400ms), then again on resize.
+  useLayoutEffect(() => {
+    let raf = 0;
+    const measure = () => {
+      const vp = viewportRef.current;
+      if (!vp) return;
+      const target = vp.querySelector<HTMLElement>('[data-cursor-target="true"]');
+      const vpRect = vp.getBoundingClientRect();
+      if (target) {
+        const tRect = target.getBoundingClientRect();
+        setCursorXY({
+          x: tRect.left - vpRect.left + tRect.width / 2,
+          y: tRect.top  - vpRect.top  + tRect.height / 2,
+        });
+      } else {
+        // Fallback — viewport centre.
+        setCursorXY({ x: vpRect.width / 2, y: vpRect.height / 2 });
+      }
+    };
+
+    // Wait for body enter animation (~400ms) before locking onto the new target.
+    const t = setTimeout(() => { raf = requestAnimationFrame(measure); }, 420);
+
+    const onResize = () => { raf = requestAnimationFrame(measure); };
+    window.addEventListener("resize", onResize, { passive: true });
+
+    return () => {
+      clearTimeout(t);
+      cancelAnimationFrame(raf);
+      window.removeEventListener("resize", onResize);
+    };
+  }, [step.state]);
+
   return (
     <div className="relative">
+      {/* Soft coral × violet gradient mesh behind the frame — Huly-style */}
+      <div
+        aria-hidden
+        className="absolute -inset-8 -z-10 blur-3xl opacity-60"
+        style={{
+          background:
+            "radial-gradient(40% 50% at 20% 30%, rgba(168,85,247,0.35), transparent 60%)," +
+            "radial-gradient(35% 40% at 80% 60%, rgba(244,114,182,0.28), transparent 60%)," +
+            "radial-gradient(30% 30% at 50% 90%, rgba(56,189,248,0.20), transparent 60%)",
+        }}
+      />
+
       <div className="product-frame-glow" aria-hidden />
       <div className="product-frame rounded-xl overflow-hidden">
         {/* Browser chrome */}
@@ -82,14 +133,14 @@ export function HomepageDemoAnimation() {
           </div>
         </div>
 
-        {/* App viewport — relative for cursor positioning */}
-        <div className="relative bg-[#0c0c0e] aspect-[16/11] overflow-hidden">
-          {/* Step label ribbon */}
+        {/* App viewport — ref-tracked for cursor positioning */}
+        <div ref={viewportRef} className="relative bg-[#0c0c0e] aspect-[16/11] overflow-hidden">
+          {/* Step label ribbon — Huly-style 01 / 09 numerals + coral hairline */}
           <div className="absolute top-3 left-3 right-3 z-20 flex items-center gap-2">
-            <span className="text-[9px] font-mono uppercase tracking-widest text-emerald-300 bg-emerald-500/15 border border-emerald-500/30 rounded-full px-2 py-0.5">
-              Step {step.id} / {STEPS.length}
+            <span className="text-[9px] font-mono uppercase tracking-[0.18em] text-rose-200/90 bg-rose-500/[0.12] border border-rose-400/30 rounded-full px-2 py-0.5 tabular-nums">
+              {String(step.id).padStart(2, "0")} / {String(STEPS.length).padStart(2, "0")}
             </span>
-            <span className="text-[10.5px] font-medium text-zinc-200">{step.label}</span>
+            <span className="text-[10.5px] font-medium text-zinc-100 tracking-tight">{step.label}</span>
           </div>
 
           {/* App body — content swaps based on state */}
@@ -108,35 +159,35 @@ export function HomepageDemoAnimation() {
             </AnimatePresence>
           </div>
 
-          {/* Animated cursor */}
-          <motion.div
-            className="absolute z-30 pointer-events-none"
-            animate={{
-              left: `${step.cursor.xPct}%`,
-              top: `${step.cursor.yPct}%`,
-            }}
-            transition={{ duration: 1.2, ease: "easeInOut" }}
-            style={{ translateX: "-50%", translateY: "-50%" }}
-          >
-            <CursorIcon />
-            {/* Click flash */}
-            <motion.span
-              className="absolute -translate-x-1/2 -translate-y-1/2 left-0 top-0 rounded-full border border-violet-400"
-              initial={{ width: 0, height: 0, opacity: 0 }}
-              animate={{ width: 36, height: 36, opacity: [0, 0.6, 0] }}
-              transition={{ duration: 0.9, ease: "easeOut", repeat: Infinity, repeatDelay: 1.1 }}
-              aria-hidden
-            />
-          </motion.div>
+          {/* Animated cursor — only render once we have a real target. */}
+          {cursorXY && (
+            <motion.div
+              className="absolute z-30 pointer-events-none"
+              animate={{ left: cursorXY.x, top: cursorXY.y }}
+              transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
+              style={{ translateX: "-50%", translateY: "-50%" }}
+            >
+              <CursorIcon />
+              {/* Click flash — coral, pulses once mid-hold */}
+              <motion.span
+                className="absolute -translate-x-1/2 -translate-y-1/2 left-0 top-0 rounded-full border"
+                style={{ borderColor: "rgba(244,114,182,0.65)" }}
+                initial={{ width: 0, height: 0, opacity: 0 }}
+                animate={{ width: 38, height: 38, opacity: [0, 0.85, 0] }}
+                transition={{ duration: 1.0, ease: "easeOut", repeat: Infinity, repeatDelay: 1.1 }}
+                aria-hidden
+              />
+            </motion.div>
+          )}
         </div>
 
         {/* Description footer */}
         <div className="bg-[#0a0a0c] border-t border-white/[0.05] px-4 py-2.5 min-h-[44px] flex items-center">
-          <p className="text-[11.5px] text-zinc-400 leading-snug">{step.description}</p>
+          <p className="text-[11.5px] text-zinc-300/85 leading-snug">{step.description}</p>
         </div>
       </div>
 
-      {/* Step pips below */}
+      {/* Step pips — coral active, white rest */}
       <div className="mt-3 flex items-center justify-center gap-1.5">
         {STEPS.map((s, i) => (
           <button
@@ -144,7 +195,7 @@ export function HomepageDemoAnimation() {
             onClick={() => setStepIdx(i)}
             aria-label={`Jump to ${s.label}`}
             className={`h-1 rounded-full transition-all ${
-              i === stepIdx ? "w-6 bg-violet-400" : "w-1.5 bg-white/15 hover:bg-white/25"
+              i === stepIdx ? "w-7 bg-gradient-to-r from-rose-400 to-violet-400" : "w-1.5 bg-white/15 hover:bg-white/25"
             }`}
           />
         ))}
@@ -155,23 +206,35 @@ export function HomepageDemoAnimation() {
 
 function CursorIcon() {
   return (
-    <svg width="22" height="22" viewBox="0 0 22 22" fill="none" className="drop-shadow-[0_2px_8px_rgba(168,85,247,0.4)]">
+    <svg width="22" height="22" viewBox="0 0 22 22" fill="none" className="drop-shadow-[0_2px_10px_rgba(244,114,182,0.55)]">
       <path
         d="M3 2 L3 17 L7 13 L10 19 L13 18 L10 12 L17 12 Z"
         fill="white"
-        stroke="rgba(168,85,247,0.85)"
+        stroke="rgba(244,114,182,0.9)"
         strokeWidth="1.2"
       />
     </svg>
   );
 }
 
+// ---------------------------------------------------------------------------
+// Per-state bodies — each one MARKS its primary action element with
+// `data-cursor-target="true"`. The outer component locks the cursor to
+// that element's centre. Bodies also wrap the target in a soft coral
+// highlight ring so the click visibly lands on a "real" UI affordance.
+// ---------------------------------------------------------------------------
+
+const targetRing =
+  "rounded-md ring-2 ring-rose-400/35 ring-offset-2 ring-offset-[#0c0c0e] shadow-[0_0_20px_rgba(244,114,182,0.18)]";
+
 function AppStateBody({ state }: { state: AppState }) {
   switch (state) {
     case "connector_validating":
       return (
         <div className="space-y-2.5">
-          <Row icon={CloudIcon} tone="text-amber-300" title="Connect AWS" detail="Verifying IAM role… STS GetCallerIdentity OK · GetCallerIdentity OK." />
+          <div data-cursor-target="true" className={targetRing}>
+            <Row icon={CloudIcon} tone="text-amber-300" title="Connect AWS" detail="Verifying IAM role… STS GetCallerIdentity OK." />
+          </div>
           <Row icon={CloudIcon} tone="text-zinc-500" title="Connect Azure" detail="Not yet connected." muted />
           <Row icon={CloudIcon} tone="text-zinc-500" title="Connect GCP"   detail="Not yet connected." muted />
           <Progress label="Validating credentials" pct={68} tone="amber" />
@@ -180,7 +243,9 @@ function AppStateBody({ state }: { state: AppState }) {
     case "scan_running":
       return (
         <div className="space-y-2.5">
-          <Row icon={CpuChipIcon} tone="text-cyan-300" title="Cloud Agent · scanning" detail="3 regions · 412 resources discovered · 17 candidate findings." />
+          <div data-cursor-target="true" className={targetRing}>
+            <Row icon={CpuChipIcon} tone="text-cyan-300" title="Cloud Agent · scanning" detail="3 regions · 412 resources · 17 candidate findings." />
+          </div>
           <Progress label="Scan progress" pct={72} tone="cyan" />
           <div className="grid grid-cols-3 gap-2">
             <Stat label="EC2" value="148" />
@@ -192,7 +257,9 @@ function AppStateBody({ state }: { state: AppState }) {
     case "iam_risk_detected":
       return (
         <div className="space-y-2.5">
-          <Row icon={ShieldExclamationIcon} tone="text-rose-300" title="IAM risk · ProductionAdmin role" detail="Over-privileged · 17 services granted unused. Suggested fix ready." />
+          <div data-cursor-target="true" className={targetRing}>
+            <Row icon={ShieldExclamationIcon} tone="text-rose-300" title="IAM risk · ProductionAdmin role" detail="17 services granted unused. Suggested fix ready." />
+          </div>
           <Row icon={ShieldExclamationIcon} tone="text-amber-300" title="Public S3 bucket" detail="prod-static-assets · suggested fix: enable block-public." muted />
           <Pill text="Severity · critical" tone="rose" />
         </div>
@@ -200,7 +267,9 @@ function AppStateBody({ state }: { state: AppState }) {
     case "alert_linked":
       return (
         <div className="space-y-2.5">
-          <Row icon={SignalIcon} tone="text-cyan-300" title="Alert linked → payments-api"  detail="Latency p95 ↑ 240ms → 950ms · 3 alerts merged into one incident." />
+          <div data-cursor-target="true" className={targetRing}>
+            <Row icon={SignalIcon} tone="text-cyan-300" title="Alert linked → payments-api"  detail="p95 ↑ 240ms → 950ms · 3 alerts merged into one incident." />
+          </div>
           <Row icon={SignalIcon} tone="text-zinc-300" title="2 related alerts suppressed"  detail="Same root cause — noise reducer combined them." muted />
         </div>
       );
@@ -208,7 +277,9 @@ function AppStateBody({ state }: { state: AppState }) {
       return (
         <div className="space-y-2.5">
           <Row icon={RocketLaunchIcon} tone="text-violet-300" title="payments-api · deploy 18:42 UTC" detail="Suspect change · IAM policy diff in same window." />
-          <Pill text="Rollback drafted · awaiting approval" tone="amber" />
+          <span data-cursor-target="true" className={`inline-block ${targetRing}`}>
+            <Pill text="Rollback drafted · awaiting approval" tone="amber" />
+          </span>
         </div>
       );
     case "approval_requested":
@@ -216,7 +287,12 @@ function AppStateBody({ state }: { state: AppState }) {
         <div className="space-y-2.5">
           <Row icon={BoltIcon} tone="text-amber-300" title="Approval request · scoped rollback" detail="Risk: medium · Blast radius: payments-api only · Diff included." />
           <div className="flex items-center gap-2">
-            <button className="text-[11px] px-2.5 py-1 rounded-md bg-emerald-500/20 text-emerald-200 border border-emerald-500/40">Approve</button>
+            <button
+              data-cursor-target="true"
+              className={`text-[11px] px-3 py-1.5 rounded-md bg-emerald-500/25 text-emerald-100 border border-emerald-400/50 font-medium ${targetRing}`}
+            >
+              Approve
+            </button>
             <button className="text-[11px] px-2.5 py-1 rounded-md bg-white/[0.04] text-zinc-300 border border-white/[0.10]">Edit</button>
             <button className="text-[11px] px-2.5 py-1 rounded-md bg-rose-500/10 text-rose-300 border border-rose-500/30">Reject</button>
           </div>
@@ -225,18 +301,22 @@ function AppStateBody({ state }: { state: AppState }) {
     case "approval_granted":
       return (
         <div className="space-y-2.5">
-          <Row icon={CheckCircleIcon} tone="text-emerald-300" title="Approved · executing rollback" detail="Audit row written · sha-256 rationale persisted · 3-step plan running." />
+          <div data-cursor-target="true" className={targetRing}>
+            <Row icon={CheckCircleIcon} tone="text-emerald-300" title="Approved · executing rollback" detail="Audit row written · sha-256 rationale persisted · 3-step plan running." />
+          </div>
           <Progress label="Applying rollback" pct={94} tone="emerald" />
         </div>
       );
     case "report_generated":
       return (
         <div className="space-y-2.5">
-          <Row icon={DocumentTextIcon} tone="text-violet-300" title="Incident report · ready" detail="Timeline · root cause · 6 follow-up tasks · postmortem draft attached." />
+          <div data-cursor-target="true" className={targetRing}>
+            <Row icon={DocumentTextIcon} tone="text-violet-300" title="Incident report · ready" detail="Timeline · root cause · 6 follow-up tasks · postmortem attached." />
+          </div>
           <div className="grid grid-cols-3 gap-2">
-            <Stat label="MTTR" value="11m" />
-            <Stat label="Tasks" value="6" />
-            <Stat label="Audit rows" value="42" />
+            <Stat label="MTTR"       value="11m" />
+            <Stat label="Tasks"      value="6"   />
+            <Stat label="Audit rows" value="42"  />
           </div>
         </div>
       );
@@ -245,8 +325,12 @@ function AppStateBody({ state }: { state: AppState }) {
         <div className="space-y-2.5">
           <Row icon={CheckCircleIcon} tone="text-emerald-300" title="All services healthy" detail="payments-api · search-api · jobs-worker · auth-svc · all green." />
           <div className="grid grid-cols-4 gap-2">
-            {["payments", "search", "jobs", "auth"].map((s) => (
-              <div key={s} className="rounded-md border border-emerald-500/20 bg-emerald-500/[0.05] px-2 py-1.5">
+            {["payments", "search", "jobs", "auth"].map((s, i) => (
+              <div
+                key={s}
+                data-cursor-target={i === 0 ? "true" : undefined}
+                className={`rounded-md border border-emerald-500/20 bg-emerald-500/[0.05] px-2 py-1.5 ${i === 0 ? targetRing : ""}`}
+              >
                 <p className="text-[10px] font-mono text-emerald-200">{s}</p>
                 <p className="text-[9px] text-zinc-400">healthy</p>
               </div>

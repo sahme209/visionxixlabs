@@ -37,8 +37,8 @@ export function FeatureRow({
   mediaSide = "right",
   className,
 }: {
-  /** Tiny mono uppercase label above the headline. */
-  kicker: string;
+  /** Tiny mono uppercase label above the headline. ReactNode so callers can prefix a numbered Huly-style marker. */
+  kicker: ReactNode;
   /** The big section headline. */
   headline: ReactNode;
   /** Lede paragraph. */
