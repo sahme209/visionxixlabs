@@ -2393,3 +2393,110 @@ model BranchEnvironmentPolicy {
   @@index([organizationId])
   @@index([environmentId])
 }
+
+// ---------------------------------------------------------------------------
+// Phase 442 — Release lifecycle entities.
+//
+// Release is the aggregate every other ReleaseOps concern hangs off of:
+// readiness scores, evidence packs, branch validations, change tickets,
+// manual-fix reconciliation, drift findings, communications. The
+// per-domain state machines (BranchValidationSession, ChangeTicketSession,
+// HelmDeploymentSession, etc.) compose to ONE release via signalRef.
+//
+// Status is intentionally NOT a Postgres enum here — a closed-union kernel
+// for Release transitions lands as a focused future phase. Plain String
+// with application-layer validation keeps Phase 442 mergeable today.
+// ---------------------------------------------------------------------------
+
+model Release {
+  id              String   @id @default(cuid())
+  organizationId  String
+  applicationId   String
+  /// Optional target environment — null until the operator commits a target.
+  targetEnvironmentId String?
+  /// Git release tag (e.g. "v2.7.0"). Required before status leaves "draft".
+  releaseTag      String?
+  /// Commit SHA the release tag points at. Snapshot at scope-finalization time.
+  commitSha       String?
+  /// Closed-union status string. Application layer enforces:
+  ///   draft | ready | deploying | deployed | rolled_back | failed
+  status          String   @default("draft")
+  /// When scope was frozen — null while still mutable.
+  scopeFinalizedAt DateTime?
+  scopeFinalizedByUserId String?
+  /// The Release this one would roll back TO if needed. Soft reference.
+  rollbackReferenceReleaseId String?
+  /// Planned deploy window (ISO timestamps in UTC).
+  plannedWindowStart DateTime?
+  plannedWindowEnd   DateTime?
+  /// Actual deploy start / end stamps populated by the runtime.
+  actualDeployStart DateTime?
+  actualDeployEnd   DateTime?
+  /// Free-form notes — operator-facing summary the dashboard surfaces.
+  summary           String?
+  createdAt       DateTime @default(now())
+  createdByUserId String?
+  updatedAt       DateTime @updatedAt
+
+  readinessSnapshots ReleaseReadinessSnapshot[]
+  evidencePack       ReleaseEvidencePack?
+
+  @@unique([organizationId, applicationId, releaseTag])
+  @@index([organizationId])
+  @@index([applicationId])
+  @@index([status])
+  @@index([targetEnvironmentId])
+}
+
+model ReleaseReadinessSnapshot {
+  id               String   @id @default(cuid())
+  organizationId   String
+  releaseId        String
+  evaluatedAt      DateTime @default(now())
+  /// 0-100 scoring per dimension. Application layer validates the range.
+  branchGovernance    Int
+  changeCompliance    Int
+  artifactTraceability Int
+  secretTraceability  Int
+  rollbackReadiness   Int
+  communicationReadiness Int
+  driftRisk           Int
+  manualReconciliation Int
+  /// Aggregate score the dashboard headline uses.
+  overallScore        Int
+  /// Closed-union risk level string: low | medium | high | critical.
+  riskLevel           String
+  /// Typed blocker list — schemaless JSON keeps the engine free to evolve
+  /// shape without a migration. Application layer validates.
+  blockersJson        Json
+  /// Evaluation provenance — "manual" | "auto" | "cron:<jobId>" etc.
+  evaluationSource    String
+
+  release Release @relation(fields: [releaseId], references: [id], onDelete: Cascade)
+
+  @@index([releaseId, evaluatedAt])
+  @@index([organizationId, evaluatedAt])
+}
+
+model ReleaseEvidencePack {
+  id              String   @id @default(cuid())
+  organizationId  String
+  releaseId       String   @unique
+  generatedAt     DateTime @default(now())
+  /// Set once the pack is sealed against further edits.
+  signedAt        DateTime?
+  /// Hex SHA-256 of contentJson at the moment of signedAt — tamper-evidence.
+  contentHash     String?
+  /// Full typed evidence payload — provider line items, change ticket,
+  /// approvals, validations, etc. Engine writes; UI reads.
+  contentJson     Json
+  /// Map of pre-generated exports: { pdf: "/.../release-v2.7.0.pdf", md: "..." }
+  /// Soft references — actual file storage is external.
+  exportRefsJson  Json?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  release Release @relation(fields: [releaseId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId, generatedAt])
+}
