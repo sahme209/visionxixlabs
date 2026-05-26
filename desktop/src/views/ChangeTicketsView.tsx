@@ -86,7 +86,10 @@ export function ChangeTicketsView() {
         </div>
       </div>
 
-      <ProviderSyncControls onSynced={loadList} />
+      <div className="flex items-start gap-2 flex-wrap">
+        <ProviderSyncControls onSynced={loadList} />
+        <PrTicketEnrichButton onEnriched={loadList} />
+      </div>
 
       {loading && <div className="glass-card p-4 text-sm text-zinc-400">Loading change tickets…</div>}
 
@@ -153,6 +156,66 @@ export function ChangeTicketsView() {
         </>
       )}
     </ViewShell>
+  );
+}
+
+type EnrichOutcome =
+  | { kind: "idle" }
+  | { kind: "running" }
+  | { kind: "ok"; prsScanned: number; ticketsUpdated: number; linksAdded: number; linksRemoved: number; unresolvedKeys: string[] }
+  | { kind: "error"; message: string };
+
+function PrTicketEnrichButton({ onEnriched }: { onEnriched: () => void }) {
+  const [outcome, setOutcome] = useState<EnrichOutcome>({ kind: "idle" });
+
+  async function trigger() {
+    setOutcome({ kind: "running" });
+    try {
+      const res = await fetch("/api/dashboard/pr-ticket-enrich", { method: "POST", credentials: "include" });
+      const json = await res.json();
+      if (json.ok) {
+        setOutcome({
+          kind: "ok",
+          prsScanned: json.data.prsScanned,
+          ticketsUpdated: json.data.ticketsUpdated,
+          linksAdded: json.data.linksAdded,
+          linksRemoved: json.data.linksRemoved,
+          unresolvedKeys: json.data.unresolvedKeys,
+        });
+        onEnriched();
+      } else {
+        setOutcome({ kind: "error", message: json.hint ?? json.error });
+      }
+    } catch (e) {
+      setOutcome({ kind: "error", message: e instanceof Error ? e.message : "network error" });
+    }
+  }
+
+  const busy = outcome.kind === "running";
+  return (
+    <div className="glass-card p-3 flex items-center gap-2 flex-wrap text-[10px] font-mono">
+      <button
+        type="button"
+        disabled={busy}
+        onClick={trigger}
+        className="px-2 py-1 rounded border border-violet-500/30 bg-violet-500/[0.06] text-violet-200 hover:bg-violet-500/[0.12] disabled:opacity-50 disabled:cursor-wait transition-colors"
+      >
+        {busy ? "scanning…" : "Refresh PR ↔ ticket links"}
+      </button>
+      {outcome.kind === "ok" && (
+        <span className="text-emerald-300">
+          ✓ {outcome.prsScanned} PRs · {outcome.ticketsUpdated} updated
+          {outcome.linksAdded > 0 && ` · +${outcome.linksAdded}`}
+          {outcome.linksRemoved > 0 && ` · -${outcome.linksRemoved}`}
+          {outcome.unresolvedKeys.length > 0 && (
+            <span className="text-amber-300 ml-1" title={outcome.unresolvedKeys.join(", ")}>
+              · {outcome.unresolvedKeys.length} unresolved
+            </span>
+          )}
+        </span>
+      )}
+      {outcome.kind === "error" && <span className="text-rose-300">✗ {outcome.message}</span>}
+    </div>
   );
 }
 

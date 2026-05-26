@@ -110,7 +110,10 @@ export default function ChangeTicketsPage() {
         safetyNote="Per-org isolation · 6-status closed-union enforced application-side"
       />
 
-      <ProviderSyncControls onSynced={loadList} />
+      <div className="mb-6 flex items-start gap-3 flex-wrap">
+        <ProviderSyncControls onSynced={loadList} />
+        <PrTicketEnrichButton onEnriched={loadList} />
+      </div>
 
       {loading && (
         <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 mb-6 text-[12px] text-zinc-400">
@@ -203,6 +206,66 @@ export default function ChangeTicketsPage() {
   );
 }
 
+type EnrichOutcome =
+  | { kind: "idle" }
+  | { kind: "running" }
+  | { kind: "ok"; prsScanned: number; ticketsUpdated: number; linksAdded: number; linksRemoved: number; unresolvedKeys: string[] }
+  | { kind: "error"; message: string };
+
+function PrTicketEnrichButton({ onEnriched }: { onEnriched: () => void }) {
+  const [outcome, setOutcome] = useState<EnrichOutcome>({ kind: "idle" });
+
+  async function trigger() {
+    setOutcome({ kind: "running" });
+    try {
+      const res = await fetch("/api/dashboard/pr-ticket-enrich", { method: "POST", credentials: "include" });
+      const json = await res.json();
+      if (json.ok) {
+        setOutcome({
+          kind: "ok",
+          prsScanned: json.data.prsScanned,
+          ticketsUpdated: json.data.ticketsUpdated,
+          linksAdded: json.data.linksAdded,
+          linksRemoved: json.data.linksRemoved,
+          unresolvedKeys: json.data.unresolvedKeys,
+        });
+        onEnriched();
+      } else {
+        setOutcome({ kind: "error", message: json.hint ?? json.error });
+      }
+    } catch (e) {
+      setOutcome({ kind: "error", message: e instanceof Error ? e.message : "network error" });
+    }
+  }
+
+  const busy = outcome.kind === "running";
+  return (
+    <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-3 flex items-center gap-2 flex-wrap text-[10px] font-mono">
+      <button
+        type="button"
+        disabled={busy}
+        onClick={trigger}
+        className="px-2 py-1 rounded border border-violet-500/30 bg-violet-500/[0.06] text-violet-200 hover:bg-violet-500/[0.12] disabled:opacity-50 disabled:cursor-wait transition-colors"
+      >
+        {busy ? "scanning…" : "Refresh PR ↔ ticket links"}
+      </button>
+      {outcome.kind === "ok" && (
+        <span className="text-emerald-300">
+          ✓ {outcome.prsScanned} PRs · {outcome.ticketsUpdated} updated
+          {outcome.linksAdded > 0 && ` · +${outcome.linksAdded}`}
+          {outcome.linksRemoved > 0 && ` · -${outcome.linksRemoved}`}
+          {outcome.unresolvedKeys.length > 0 && (
+            <span className="text-amber-300 ml-1.5" title={outcome.unresolvedKeys.join(", ")}>
+              · {outcome.unresolvedKeys.length} unresolved
+            </span>
+          )}
+        </span>
+      )}
+      {outcome.kind === "error" && <span className="text-rose-300">✗ {outcome.message}</span>}
+    </div>
+  );
+}
+
 type SyncProvider = "linear" | "jira" | "servicenow";
 
 type SyncOutcome =
@@ -240,7 +303,7 @@ function ProviderSyncControls({ onSynced }: { onSynced: () => void }) {
 
   const busy = outcome.kind === "running";
   return (
-    <div className="mb-6 rounded-2xl border border-white/[0.06] bg-white/[0.02] p-3 flex items-center gap-2 flex-wrap text-[10px] font-mono">
+    <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-3 flex items-center gap-2 flex-wrap text-[10px] font-mono flex-1 min-w-[300px]">
       <span className="text-zinc-500 uppercase tracking-[0.18em]">Sync from</span>
       {(["linear", "jira", "servicenow"] as const).map((p) => (
         <button
