@@ -77,6 +77,8 @@ async function handle(req: NextRequest): Promise<NextResponse> {
 }
 
 function firstSentence(text: string): string {
-  const m = text.match(/^(.{20,160}?[.!?])(\s|$)/s);
+  // [\s\S] instead of . so we don't need the regex /s (dotAll) flag,
+  // which requires TS target ES2018+ (this project targets lower).
+  const m = text.match(/^([\s\S]{20,160}?[.!?])(\s|$)/);
   return (m?.[1] ?? text.slice(0, 140)).trim();
 }
