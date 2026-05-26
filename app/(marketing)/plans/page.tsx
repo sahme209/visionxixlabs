@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import { PricingClient } from "./PricingClient";
 
 export const metadata: Metadata = {
-  title: "Pricing — Axiom",
-  description: "Free starter. Growth. Scale. Enterprise. Approval-only-no-execution at every tier.",
+  title: "Pricing — VisionXIXLabs",
+  description: "Custom pricing based on your actual cloud usage. Connect AWS, Azure, or GCP for a real estimate. Cloud bill never marked up.",
 };
 
 export default function PricingPage() {
