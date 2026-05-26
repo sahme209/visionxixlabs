@@ -175,11 +175,79 @@ export default function RepositoriesPage() {
                       )}
                     </div>
                   </div>
+                  {r.provider === "github" && <SyncControls repositoryId={r.id} />}
                 </div>
               ))}
             </div>
           )}
         </>
+      )}
+    </div>
+  );
+}
+
+type SyncKind = "pull_requests" | "releases" | "workflow_runs";
+
+type SyncOutcome =
+  | { kind: "idle" }
+  | { kind: "running"; which: SyncKind }
+  | { kind: "ok"; which: SyncKind; fetched: number; upserted: number; skipped: number }
+  | { kind: "error"; which: SyncKind; message: string };
+
+function SyncControls({ repositoryId }: { repositoryId: string }) {
+  const [outcome, setOutcome] = useState<SyncOutcome>({ kind: "idle" });
+
+  async function trigger(which: SyncKind) {
+    setOutcome({ kind: "running", which });
+    try {
+      const res = await fetch("/api/dashboard/repository-sync", {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ repositoryId, kind: which }),
+      });
+      const json = await res.json();
+      if (json.ok) {
+        setOutcome({
+          kind: "ok",
+          which,
+          fetched: json.data.fetched,
+          upserted: json.data.upserted,
+          skipped: json.data.skipped,
+        });
+      } else {
+        setOutcome({ kind: "error", which, message: json.error });
+      }
+    } catch (e) {
+      setOutcome({ kind: "error", which, message: e instanceof Error ? e.message : "network error" });
+    }
+  }
+
+  const isRunning = outcome.kind === "running";
+  return (
+    <div className="mt-3 pt-3 border-t border-white/[0.04] flex items-center gap-2 flex-wrap text-[10px] font-mono">
+      <span className="text-zinc-500 uppercase tracking-[0.18em]">Sync from GitHub</span>
+      {(["pull_requests", "releases", "workflow_runs"] as const).map((k) => (
+        <button
+          key={k}
+          type="button"
+          disabled={isRunning}
+          onClick={() => trigger(k)}
+          className="px-2 py-1 rounded border border-white/[0.08] bg-white/[0.02] text-zinc-300 hover:border-violet-500/40 hover:text-violet-200 disabled:opacity-50 disabled:cursor-wait transition-colors"
+        >
+          {outcome.kind === "running" && outcome.which === k
+            ? "syncing…"
+            : k === "pull_requests" ? "PRs" : k === "releases" ? "Releases" : "Workflow runs"}
+        </button>
+      ))}
+      {outcome.kind === "ok" && (
+        <span className="text-emerald-300">
+          ✓ {outcome.which.replace("_", " ")} · fetched {outcome.fetched} · upserted {outcome.upserted}
+          {outcome.skipped > 0 && ` · skipped ${outcome.skipped}`}
+        </span>
+      )}
+      {outcome.kind === "error" && (
+        <span className="text-rose-300">✗ {outcome.which.replace("_", " ")} · {outcome.message}</span>
       )}
     </div>
   );
