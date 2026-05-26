@@ -2903,3 +2903,47 @@ model CherryPickException {
   @@index([releaseId])
   @@index([repositoryId])
 }
+
+/// Phase 463 — change-ticket bridge.
+///
+/// One row per Jira issue, Linear issue, or ServiceNow change request.
+/// Application layer enforces closed-union strings on provider, status,
+/// ticketType, priority. Linked PRs/releases use soft-reference id
+/// arrays so a ticket can span multiple repos.
+model ChangeTicket {
+  id                String   @id @default(cuid())
+  organizationId    String
+  /// Closed-union provider: jira | linear | servicenow | other.
+  provider          String
+  /// Provider-side key (Jira "PROJ-123", Linear "ENG-456", ServiceNow "CHG0012345").
+  externalKey       String
+  externalId        String?
+  title             String
+  /// Closed-union ticket type: story | bug | task | change_request | incident | epic.
+  ticketType        String
+  /// Normalized status closed-union: pending | in_progress | approved | implemented | rejected | cancelled.
+  status            String
+  /// Closed-union priority: trivial | low | normal | high | critical.
+  priority          String   @default("normal")
+  assigneeUserId    String?
+  reporterUserId    String?
+  /// Free-form labels from the provider (component, version, custom field).
+  labels            String[] @default([])
+  /// Provider-side URL for one-click jump.
+  webUrl            String?
+  /// Soft reference: PRs linked to this ticket. Closed-string id list.
+  linkedPrRecordIds String[] @default([])
+  /// Soft reference: Releases that included this ticket.
+  linkedReleaseIds  String[] @default([])
+  openedAt          DateTime?
+  closedAt          DateTime?
+  /// Last time the connector pulled this row.
+  lastSyncedAt      DateTime @default(now())
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@unique([organizationId, provider, externalKey])
+  @@index([organizationId, status])
+  @@index([organizationId, provider])
+  @@index([assigneeUserId])
+}
