@@ -132,11 +132,10 @@ export async function buildCherryPickDecideResponse(
     }
     const current = row.status as CherryPickStatus;
 
-    const transition = transitionCherryPick(current, {
-      kind: input.decision === "approve" ? "approver_granted" : "approver_denied",
-      approverUserId: input.approverUserId,
-      ...(input.decision === "deny" ? { reason: (input.reason ?? "").trim() } : {}),
-    });
+    const event = input.decision === "approve"
+      ? { kind: "approver_granted" as const, approverUserId: input.approverUserId }
+      : { kind: "approver_denied" as const, approverUserId: input.approverUserId, reason: (input.reason ?? "").trim() };
+    const transition = transitionCherryPick(current, event);
     if (!transition.ok) {
       return {
         status: 409,
