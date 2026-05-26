@@ -24,6 +24,7 @@ import { ConnectorSetupView } from "./views/ConnectorSetupView";
 import { AlertEscalationsView } from "./views/AlertEscalationsView";
 import { ReleasesView } from "./views/ReleasesView";
 import { SopsView } from "./views/SopsView";
+import { RepositoriesView } from "./views/RepositoriesView";
 import { useTrayApprovalsBadge } from "./lib/useTrayApprovalsBadge";
 import { useConnectorHealthAmbientPoll } from "./lib/connectorHealthStore";
 import { useSseStream } from "./lib/useSseStream";
@@ -48,6 +49,7 @@ export type View =
   // Operations — release management
   | "releases"
   | "sops"
+  | "repositories"
   // Automation
   | "activity"
   | "workflows"
@@ -131,6 +133,7 @@ export default function App() {
           {activeView === "scans"         && <ScansView />}
           {activeView === "releases"      && <ReleasesView />}
           {activeView === "sops"          && <SopsView />}
+          {activeView === "repositories"  && <RepositoriesView />}
           {activeView === "activity"      && <ActivityView />}
           {activeView === "workflows"     && <WorkflowsView />}
           {activeView === "approvals"     && <ApprovalsView />}
