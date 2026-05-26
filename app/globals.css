@@ -2665,6 +2665,70 @@ h1, h2, h3, h4, h5, h6 {
     transparent 100%);
 }
 
+/* Huly-style coral-tinted hairline with a center diamond — used between
+   sections to add a touch of warmth without shouting. */
+.hairline-divider-coral {
+  position: relative;
+  height: 1px;
+  background: linear-gradient(90deg,
+    transparent 0%,
+    rgba(244, 114, 182, 0.18) 25%,
+    rgba(139, 92, 246, 0.18) 50%,
+    rgba(244, 114, 182, 0.18) 75%,
+    transparent 100%);
+}
+.hairline-divider-coral::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 6px;
+  height: 6px;
+  transform: translate(-50%, -50%) rotate(45deg);
+  background: linear-gradient(135deg, #F472B6 0%, #8B5CF6 100%);
+  box-shadow: 0 0 12px rgba(244, 114, 182, 0.45);
+  border-radius: 1px;
+}
+
+/* Scribe-in variant — the hairline draws itself in on first paint via
+   CSS animation (good enough; doesn't need IntersectionObserver JS). */
+.hairline-divider-scribe {
+  position: relative;
+  height: 1px;
+  background: linear-gradient(90deg,
+    transparent 0%,
+    rgba(244, 114, 182, 0.20) 50%,
+    transparent 100%);
+  transform: scaleX(0);
+  transform-origin: center;
+  animation: hairline-scribe 1.2s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+@keyframes hairline-scribe {
+  to { transform: scaleX(1); }
+}
+
+/* Coral-glow primary button — the Huly warm CTA variant.
+   White pill base with a coral halo on the outside.
+   Use on hero / closing-CTA primary actions. */
+.btn-coral-glow {
+  position: relative;
+  background: #ffffff;
+  color: #09090b;
+  box-shadow:
+    0 0 0 1px rgba(244, 114, 182, 0.18) inset,
+    0 12px 40px -10px rgba(244, 114, 182, 0.45),
+    0 0 0 0 rgba(244, 114, 182, 0.0);
+  transition: box-shadow 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+              transform 0.25s ease;
+}
+.btn-coral-glow:hover {
+  box-shadow:
+    0 0 0 1px rgba(244, 114, 182, 0.30) inset,
+    0 18px 60px -10px rgba(244, 114, 182, 0.60),
+    0 0 0 6px rgba(244, 114, 182, 0.08);
+  transform: translateY(-1px);
+}
+
 /* Mono kicker — the recurring 'AXIOM · CLOUD OPERATIONS' style
    pre-headline label. Saves repeating the same Tailwind cluster
    on every section. */

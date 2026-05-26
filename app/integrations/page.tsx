@@ -29,13 +29,26 @@ export default function IntegrationsCatalog() {
     planned: INTEGRATIONS.filter((i) => i.status === "planned").length,
   };
   return (
-    <main className="max-w-6xl mx-auto py-12 px-4 sm:px-6 space-y-10">
-      <header className="space-y-3">
-        <p className="text-[10px] font-mono text-violet-300 uppercase tracking-[0.22em]">
-          integrations · {INTEGRATIONS.length} total
+    <main className="relative max-w-6xl mx-auto py-16 px-4 sm:px-6 space-y-10">
+      {/* Coral × violet aurora — Huly-style warm wash behind the hero */}
+      <div aria-hidden className="pointer-events-none absolute inset-x-0 -top-8 h-[480px] -z-10 overflow-hidden">
+        <div className="ambient-drift absolute -top-24 left-1/2 -translate-x-1/2 w-[820px] h-[420px] rounded-full bg-brand-violet/[0.07] blur-[140px]" />
+        <div className="ambient-drift absolute top-12 right-[5%] w-[440px] h-[320px] rounded-full bg-brand-coral/[0.06] blur-[130px]" style={{ animationDelay: "-8s" }} />
+        <div className="ambient-drift absolute top-20 left-[5%] w-[360px] h-[280px] rounded-full bg-cyan-500/[0.035] blur-[120px]" style={{ animationDelay: "-14s" }} />
+      </div>
+
+      <header className="space-y-4">
+        <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-zinc-500 inline-flex items-center gap-3">
+          <span className="text-brand-coral/90 tabular-nums">08</span>
+          <span className="h-px w-6 bg-gradient-to-r from-brand-coral/60 to-transparent" />
+          Integrations · {INTEGRATIONS.length} total
         </p>
-        <h1 className="text-3xl md:text-4xl font-bold text-white tracking-tight leading-tight">
-          Connect anything in one click.
+        <h1 className="text-3xl md:text-5xl font-bold text-white tracking-[-0.04em] leading-[1.04]">
+          Connect anything in{" "}
+          <span className="relative inline-block">
+            one click.
+            <span aria-hidden className="absolute left-0 -bottom-1 h-[3px] w-full rounded-full bg-gradient-to-r from-brand-coral via-fuchsia-400 to-transparent opacity-90" />
+          </span>
         </h1>
         <p className="text-zinc-300 leading-relaxed max-w-3xl text-[15px]">
           Every connection here activates with a single button. No JSON copy-paste, no wizard

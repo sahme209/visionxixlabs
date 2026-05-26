@@ -118,11 +118,11 @@ function AmbientParticles() {
   );
 }
 
-/* ── Section divider — calm huly.io hairline that fades at the edges */
+/* ── Section divider — coral-tinted hairline with center diamond, Huly-style */
 function SectionDivider() {
   return (
-    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div className="hairline-divider" />
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-2">
+      <div className="hairline-divider-coral" />
     </div>
   );
 }
@@ -210,14 +210,14 @@ export default function Home() {
                 <div className="relative z-20 flex flex-wrap items-center gap-x-6 gap-y-3">
                   <Link
                     href="/operator/onboarding"
-                    className="magnetic-sheen inline-flex items-center gap-2.5 px-7 py-3.5 rounded-full bg-white text-zinc-950 text-[14.5px] font-medium hover:bg-zinc-100 transition-colors shadow-[0_0_30px_-10px_rgba(255,255,255,0.4)]"
+                    className="btn-coral-glow magnetic-sheen inline-flex items-center gap-2.5 px-7 py-3.5 rounded-full text-[14.5px] font-medium"
                   >
                     See Axiom in action
                     <ArrowRightIcon className="h-4 w-4 opacity-60" />
                   </Link>
                   <Link
                     href="/demo"
-                    className="link-underline-soft text-[14px] text-zinc-400 hover:text-white transition-colors"
+                    className="link-underline-soft text-[14px] text-zinc-400 hover:text-brand-coral transition-colors"
                   >
                     Try the demo
                   </Link>
@@ -229,6 +229,21 @@ export default function Home() {
                   {["Assume-role model", "Human approval gates", "Immutable audit trail"].map((item) => (
                     <span key={item}>{item}</span>
                   ))}
+                </div>
+              </Reveal>
+
+              {/* Mobile-only live indicator — lighter version of the desktop overlay cards.
+                  Sits below the hero on phones so mobile visitors get the "live audit"
+                  signal too, without the heavy two-card composition that needs xl+. */}
+              <Reveal direction="up" delay={0.28}>
+                <div className="lg:hidden mt-6 inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-brand-coral/25 bg-brand-coral/[0.05] backdrop-blur-sm">
+                  <span className="relative flex h-1.5 w-1.5">
+                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-70" />
+                    <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-300" />
+                  </span>
+                  <span className="text-[10.5px] font-mono uppercase tracking-[0.16em] text-emerald-300/90">Audit · live</span>
+                  <span className="text-zinc-600">·</span>
+                  <span className="text-[11.5px] text-zinc-200">Plan #142 approved</span>
                 </div>
               </Reveal>
             </div>
@@ -732,7 +747,7 @@ export default function Home() {
                   {primary && (
                     <Link
                       href={primary.href}
-                      className="magnetic-sheen inline-flex items-center gap-2.5 px-7 py-3.5 rounded-full bg-white text-zinc-950 text-[14.5px] font-medium hover:bg-zinc-100 transition-colors shadow-[0_0_30px_-10px_rgba(255,255,255,0.4)]"
+                      className="btn-coral-glow magnetic-sheen inline-flex items-center gap-2.5 px-7 py-3.5 rounded-full text-[14.5px] font-medium"
                     >
                       {primary.label}
                       <ArrowRightIcon className="h-4 w-4 opacity-60" />
