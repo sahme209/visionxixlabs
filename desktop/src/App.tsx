@@ -26,6 +26,7 @@ import { ReleasesView } from "./views/ReleasesView";
 import { SopsView } from "./views/SopsView";
 import { RepositoriesView } from "./views/RepositoriesView";
 import { BranchValidationView } from "./views/BranchValidationView";
+import { CherryPicksView } from "./views/CherryPicksView";
 import { useTrayApprovalsBadge } from "./lib/useTrayApprovalsBadge";
 import { useConnectorHealthAmbientPoll } from "./lib/connectorHealthStore";
 import { useSseStream } from "./lib/useSseStream";
@@ -52,6 +53,7 @@ export type View =
   | "sops"
   | "repositories"
   | "branch-validation"
+  | "cherry-picks"
   // Automation
   | "activity"
   | "workflows"
@@ -137,6 +139,7 @@ export default function App() {
           {activeView === "sops"          && <SopsView />}
           {activeView === "repositories"  && <RepositoriesView />}
           {activeView === "branch-validation" && <BranchValidationView />}
+          {activeView === "cherry-picks"  && <CherryPicksView />}
           {activeView === "activity"      && <ActivityView />}
           {activeView === "workflows"     && <WorkflowsView />}
           {activeView === "approvals"     && <ApprovalsView />}

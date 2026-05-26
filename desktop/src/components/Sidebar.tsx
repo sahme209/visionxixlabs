@@ -82,6 +82,7 @@ const GROUPS: NavGroup[] = [
       { id: "sops",        label: "SOPs",        Icon: IconWorkflows },
       { id: "repositories", label: "Repositories", Icon: IconWorkflows },
       { id: "branch-validation", label: "Branch validation", Icon: IconWorkflows },
+      { id: "cherry-picks", label: "Cherry-picks", Icon: IconWorkflows },
     ],
   },
   {
