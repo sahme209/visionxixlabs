@@ -20,6 +20,8 @@ import { TrustView } from "./views/TrustView";
 import { DocsView } from "./views/DocsView";
 import { ActivityView } from "./views/ActivityView";
 import { ConnectorHealthView } from "./views/ConnectorHealthView";
+import { ConnectorSetupView } from "./views/ConnectorSetupView";
+import { AlertEscalationsView } from "./views/AlertEscalationsView";
 import { useTrayApprovalsBadge } from "./lib/useTrayApprovalsBadge";
 import { useConnectorHealthAmbientPoll } from "./lib/connectorHealthStore";
 import { useSseStream } from "./lib/useSseStream";
@@ -53,6 +55,8 @@ export type View =
   // Integrations
   | "connectors"
   | "connector-health"
+  | "connector-setup"
+  | "alert-escalations"
   // Business / Admin
   | "billing"
   | "trust"
@@ -130,6 +134,8 @@ export default function App() {
           {activeView === "audit"         && <AuditView />}
           {activeView === "connectors"        && <ConnectorsView />}
           {activeView === "connector-health"  && <ConnectorHealthView />}
+          {activeView === "connector-setup"   && <ConnectorSetupView />}
+          {activeView === "alert-escalations" && <AlertEscalationsView />}
           {activeView === "billing"       && <BillingView />}
           {activeView === "trust"         && <TrustView />}
           {activeView === "settings"      && <SettingsView />}
