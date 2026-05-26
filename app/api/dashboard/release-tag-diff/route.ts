@@ -34,7 +34,6 @@ export async function GET(req: NextRequest) {
       {
         async findByIds(ids: ReadonlyArray<string>) {
           if (ids.length === 0) return [];
-          // @ts-expect-error — Prisma's findMany accepts { id: { in: [...] } }
           return prisma.pullRequestRecord.findMany({
             where: { id: { in: Array.from(ids) } },
             select: { id: true, title: true, webUrl: true },
