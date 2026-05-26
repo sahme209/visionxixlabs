@@ -19,6 +19,7 @@ import {
   CommandLineIcon,
   ArrowRightIcon,
   SparklesIcon,
+  CloudIcon,
 } from "@heroicons/react/24/outline";
 
 export const metadata: Metadata = {
@@ -38,8 +39,11 @@ const WORKFLOWS: ReadonlyArray<{
   tone: string;
   status: "live" | "scaffold" | "planned";
 }> = [
+  { slug: "linkedin",       name: "LinkedIn integration",        cadence: "On-demand + daily cron",  description: "Connect LinkedIn, review drafts, schedule + publish via the official OAuth + Posts API. Draft-only until you flip LINKEDIN_POSTING_ENABLED.", icon: CloudIcon,        tone: "text-violet-300",  status: "live" },
+  { slug: "post-drafts",    name: "Post drafts",                 cadence: "Daily generation",        description: "Every persisted LinkedIn draft, grouped by status. Approve, schedule, or publish each one inline.", icon: PencilSquareIcon, tone: "text-violet-300", status: "live" },
+  { slug: "content-calendar", name: "Content calendar",          cadence: "Rolling 7 days",          description: "Week view of scheduled + published posts. Highlights gaps where the week needs another post.",      icon: CalendarDaysIcon, tone: "text-cyan-300",   status: "live" },
+  { slug: "campaigns",      name: "Campaigns",                   cadence: "Weekly themes",           description: "Group drafts under a named campaign + date window — used by analytics roll-ups.",                    icon: MegaphoneIcon,    tone: "text-cyan-300",   status: "live" },
   { slug: "content",        name: "Daily content planner",       cadence: "Every weekday 09:00 UTC", description: "Generates 3–5 post ideas + drafts a LinkedIn + X post per cycle. Always goes to approval queue.", icon: PencilSquareIcon,   tone: "text-violet-300",  status: "live" },
-  { slug: "campaigns",      name: "Weekly campaign planner",     cadence: "Monday 08:00 UTC",        description: "Plans a 5–7 post campaign for the week, picks a blog topic, drafts website copy suggestions.",      icon: CalendarDaysIcon,    tone: "text-cyan-300",    status: "scaffold" },
   { slug: "approval-queue", name: "Publishing approval queue",   cadence: "On-demand",               description: "Human review surface — approve / edit / reject every external publish before it goes live.",         icon: ShieldCheckIcon,     tone: "text-emerald-300", status: "live" },
   { slug: "outreach",       name: "Outreach drafter",            cadence: "Ad-hoc",                  description: "Drafts personalized email / LinkedIn DM outreach. Approval-gated; never auto-sent.",                  icon: UserGroupIcon,       tone: "text-fuchsia-300", status: "planned" },
   { slug: "leads",          name: "Lead research",               cadence: "Weekly",                  description: "Identifies target verticals + buyer personas, captures pain points + outreach angles.",                icon: UserGroupIcon,       tone: "text-amber-300",   status: "planned" },
