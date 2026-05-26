@@ -21,7 +21,7 @@ export default function DemoLanding() {
   const scenarios = listScenarios("client");
 
   return (
-    <main className="max-w-5xl mx-auto px-6 py-10 space-y-8">
+    <main className="max-w-6xl mx-auto px-6 md:px-10 py-10 space-y-8">
       <section className="rounded-2xl border border-violet-500/25 bg-gradient-to-br from-violet-500/[0.12] via-fuchsia-500/[0.06] to-cyan-500/[0.04] p-6 overflow-hidden">
         <div className="flex items-center gap-2 mb-2">
           <span className="text-[10px] font-mono text-violet-300 uppercase tracking-[0.22em] font-semibold">sandbox · example only</span>

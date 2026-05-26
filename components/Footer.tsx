@@ -66,7 +66,11 @@ export function Footer() {
       <div className="gradient-line mb-16" />
       <div className="relative">
         <div className="footer-amber-orb absolute -bottom-20 right-10 orb-drift" aria-hidden />
-      <div className="max-w-6xl mx-auto">
+      <div className="max-w-7xl mx-auto">
+        {/* Width aligned to Navigation (max-w-7xl). The layout audit
+            found chrome width inconsistency was the most visible
+            "feels disconnected" cue. Top + bottom chrome share one
+            container width now. */}
         <div className="grid md:grid-cols-5 gap-10 mb-12">
           {/* Brand column */}
           <div className="md:col-span-2">

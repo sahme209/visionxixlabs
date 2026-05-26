@@ -230,7 +230,7 @@ export function PricingClient() {
       </div>
 
       {/* Hero ────────────────────────────────────────────────────── */}
-      <section className="relative z-10 mx-auto max-w-4xl px-6 md:px-10 pt-24 pb-12">
+      <section className="relative z-10 mx-auto max-w-6xl px-6 md:px-10 pt-24 pb-12">
         <motion.p initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="kicker-mono">
           Pricing
         </motion.p>
@@ -249,7 +249,7 @@ export function PricingClient() {
       </section>
 
       {/* The model — two-bucket explanation ──────────────────────── */}
-      <section className="relative z-10 mx-auto max-w-4xl px-6 md:px-10 pb-16">
+      <section className="relative z-10 mx-auto max-w-6xl px-6 md:px-10 pb-16">
         <p className="kicker-mono">// the pricing model</p>
         <h2 className="display-headline text-white mt-4">Two buckets. Nothing hidden.</h2>
         <p className="mt-4 text-[14px] text-zinc-400 leading-relaxed">
@@ -279,12 +279,12 @@ export function PricingClient() {
         </div>
       </section>
 
-      <div className="relative z-10 mx-auto max-w-4xl px-6 md:px-10">
+      <div className="relative z-10 mx-auto max-w-6xl px-6 md:px-10">
         <div className="hairline-divider" />
       </div>
 
       {/* What VxL charges for — full breakdown ───────────────────── */}
-      <section className="relative z-10 mx-auto max-w-4xl px-6 md:px-10 py-16">
+      <section className="relative z-10 mx-auto max-w-6xl px-6 md:px-10 py-16">
         <p className="kicker-mono">// what visionxixlabs charges for</p>
         <h2 className="display-headline text-white mt-4">Every line item, explained.</h2>
         <p className="mt-4 text-[14px] text-zinc-400 leading-relaxed">
@@ -312,12 +312,12 @@ export function PricingClient() {
         </div>
       </section>
 
-      <div className="relative z-10 mx-auto max-w-4xl px-6 md:px-10">
+      <div className="relative z-10 mx-auto max-w-6xl px-6 md:px-10">
         <div className="hairline-divider" />
       </div>
 
       {/* How the estimate works — numbered flow ──────────────────── */}
-      <section className="relative z-10 mx-auto max-w-4xl px-6 md:px-10 py-16">
+      <section className="relative z-10 mx-auto max-w-6xl px-6 md:px-10 py-16">
         <p className="kicker-mono">// how the estimate works</p>
         <h2 className="display-headline text-white mt-4">Sign in. Connect. See real numbers.</h2>
         <p className="mt-4 text-[14px] text-zinc-400 leading-relaxed">
@@ -346,12 +346,12 @@ export function PricingClient() {
         </ol>
       </section>
 
-      <div className="relative z-10 mx-auto max-w-4xl px-6 md:px-10">
+      <div className="relative z-10 mx-auto max-w-6xl px-6 md:px-10">
         <div className="hairline-divider" />
       </div>
 
       {/* Engagement shapes — explanatory paragraphs, not cards ───── */}
-      <section className="relative z-10 mx-auto max-w-4xl px-6 md:px-10 py-16">
+      <section className="relative z-10 mx-auto max-w-6xl px-6 md:px-10 py-16">
         <p className="kicker-mono">// engagement shapes</p>
         <h2 className="display-headline text-white mt-4">Three common shapes.</h2>
         <p className="mt-4 text-[14px] text-zinc-400 leading-relaxed">
@@ -396,12 +396,12 @@ export function PricingClient() {
         </div>
       </section>
 
-      <div className="relative z-10 mx-auto max-w-4xl px-6 md:px-10">
+      <div className="relative z-10 mx-auto max-w-6xl px-6 md:px-10">
         <div className="hairline-divider" />
       </div>
 
       {/* Pricing safety — usage caps, no-overrun rules ───────────── */}
-      <section className="relative z-10 mx-auto max-w-4xl px-6 md:px-10 py-16">
+      <section className="relative z-10 mx-auto max-w-6xl px-6 md:px-10 py-16">
         <p className="kicker-mono">// pricing safety</p>
         <h2 className="display-headline text-white mt-4">Six rules we don&apos;t break.</h2>
         <p className="mt-4 text-[14px] text-zinc-400 leading-relaxed">
@@ -418,14 +418,14 @@ export function PricingClient() {
         </div>
       </section>
 
-      <div className="relative z-10 mx-auto max-w-4xl px-6 md:px-10">
+      <div className="relative z-10 mx-auto max-w-6xl px-6 md:px-10">
         <div className="hairline-divider" />
       </div>
 
       <SocialProofRail />
 
       {/* FAQ ──────────────────────────────────────────────────────── */}
-      <section className="relative z-10 mx-auto max-w-4xl px-6 md:px-10 pb-16 pt-16">
+      <section className="relative z-10 mx-auto max-w-6xl px-6 md:px-10 pb-16 pt-16">
         <p className="kicker-mono">// common questions</p>
         <h2 className="display-headline text-white mt-4">What people ask first.</h2>
 
@@ -447,7 +447,7 @@ export function PricingClient() {
       </section>
 
       {/* Soft footer — optional next steps, not gates ────────────── */}
-      <section className="relative z-10 mx-auto max-w-4xl px-6 md:px-10 pb-24 pt-8">
+      <section className="relative z-10 mx-auto max-w-6xl px-6 md:px-10 pb-24 pt-8">
         <div className="rounded-2xl border border-white/[0.06] bg-white/[0.015] p-6 md:p-8">
           <p className="kicker-mono">// when you&apos;re ready</p>
           <h3 className="display-headline text-white mt-3">No pressure. Pick whichever fits.</h3>
