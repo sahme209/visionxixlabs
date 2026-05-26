@@ -137,7 +137,7 @@ export function RepositoriesView() {
                       )}
                     </div>
                   </div>
-                  {r.provider === "github" && <SyncControls repositoryId={r.id} />}
+                  {(r.provider === "github" || r.provider === "gitlab") && <SyncControls repositoryId={r.id} />}
                 </div>
               ))}
             </div>

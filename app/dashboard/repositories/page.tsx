@@ -175,7 +175,7 @@ export default function RepositoriesPage() {
                       )}
                     </div>
                   </div>
-                  {r.provider === "github" && <SyncControls repositoryId={r.id} />}
+                  {(r.provider === "github" || r.provider === "gitlab") && <SyncControls repositoryId={r.id} />}
                 </div>
               ))}
             </div>
@@ -226,7 +226,7 @@ function SyncControls({ repositoryId }: { repositoryId: string }) {
   const isRunning = outcome.kind === "running";
   return (
     <div className="mt-3 pt-3 border-t border-white/[0.04] flex items-center gap-2 flex-wrap text-[10px] font-mono">
-      <span className="text-zinc-500 uppercase tracking-[0.18em]">Sync from GitHub</span>
+      <span className="text-zinc-500 uppercase tracking-[0.18em]">Sync from provider</span>
       {(["pull_requests", "releases", "workflow_runs"] as const).map((k) => (
         <button
           key={k}

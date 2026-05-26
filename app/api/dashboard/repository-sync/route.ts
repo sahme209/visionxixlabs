@@ -16,8 +16,10 @@ import {
   ALL_SYNC_KINDS,
   type RepositorySyncRepo,
   type SyncKind,
+  type ProviderFetchers,
 } from "@/lib/releaseops/repositorySyncResponder";
 import { createGitHubFetcher } from "@/lib/releaseops/githubFetcher";
+import { createGitLabFetcher } from "@/lib/releaseops/gitlabFetcher";
 
 export const dynamic = "force-dynamic";
 
@@ -46,10 +48,13 @@ export async function POST(req: NextRequest) {
   }
   const kind = kindRaw as SyncKind;
 
-  const fetcher = createGitHubFetcher();
+  const fetchers: ProviderFetchers = {};
+  if (process.env.GITHUB_PAT) fetchers.github = createGitHubFetcher();
+  if (process.env.GITLAB_TOKEN) fetchers.gitlab = createGitLabFetcher();
+
   const r = await buildRepositorySyncResponse(
     prisma as unknown as RepositorySyncRepo,
-    fetcher,
+    fetchers,
     { organizationId: ctx.organizationId, repositoryId, kind },
   );
   return NextResponse.json(r.body, { status: r.status });

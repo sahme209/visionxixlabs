@@ -22,6 +22,14 @@ import {
   type GithubWorkflowRunPayload,
 } from "./providers/githubProjectors";
 import {
+  projectGitlabMergeRequest,
+  projectGitlabReleaseTag,
+  projectGitlabPipeline,
+  type GitlabMergeRequestPayload,
+  type GitlabReleaseTagPayload,
+  type GitlabPipelinePayload,
+} from "./providers/gitlabProjectors";
+import {
   upsertPullRequestRecord,
   upsertReleaseTagRecord,
   upsertWorkflowRunRecord,
@@ -69,6 +77,26 @@ export interface GitHubFetcher {
   ): Promise<GithubWorkflowRunPayload[]>;
 }
 
+export interface GitLabFetcher {
+  listMergeRequests(
+    repo: { owner: string; name: string },
+    opts: { perPage?: number; state?: "opened" | "closed" | "merged" | "all" },
+  ): Promise<GitlabMergeRequestPayload[]>;
+  listReleases(
+    repo: { owner: string; name: string },
+    opts: { perPage?: number },
+  ): Promise<GitlabReleaseTagPayload[]>;
+  listPipelines(
+    repo: { owner: string; name: string },
+    opts: { perPage?: number },
+  ): Promise<GitlabPipelinePayload[]>;
+}
+
+export interface ProviderFetchers {
+  github?: GitHubFetcher;
+  gitlab?: GitLabFetcher;
+}
+
 /* ──────────────────────────────────────────────────────────────────
    Input + output.
    ────────────────────────────────────────────────────────────── */
@@ -104,7 +132,7 @@ export interface ResponderResult { status: number; body: RepositorySyncBody }
 
 export async function buildRepositorySyncResponse(
   repo: RepositorySyncRepo,
-  fetcher: GitHubFetcher,
+  fetchers: ProviderFetchers,
   input: BuildRepositorySyncInput,
   opts: { now?: Date; correlationId?: string } = {},
 ): Promise<ResponderResult> {
@@ -116,21 +144,37 @@ export async function buildRepositorySyncResponse(
     if (repoRow.organizationId !== input.organizationId) {
       return { status: 403, body: { ok: false, error: "cross_org_repository" } };
     }
-    if (repoRow.provider !== "github") {
-      return {
-        status: 400,
-        body: { ok: false, error: "unsupported_provider", hint: `Sync supports github; this repository is ${repoRow.provider}.` },
-      };
-    }
 
-    switch (input.kind) {
-      case "pull_requests":
-        return await syncPullRequests(repo, fetcher, repoRow, input, opts);
-      case "releases":
-        return await syncReleases(repo, fetcher, repoRow, input, opts);
-      case "workflow_runs":
-        return await syncWorkflowRuns(repo, fetcher, repoRow, input, opts);
+    if (repoRow.provider === "github") {
+      if (!fetchers.github) {
+        return { status: 501, body: { ok: false, error: "fetcher_not_configured", hint: "GitHub fetcher missing — check GITHUB_PAT env." } };
+      }
+      switch (input.kind) {
+        case "pull_requests":
+          return await syncPullRequestsGithub(repo, fetchers.github, repoRow, input, opts);
+        case "releases":
+          return await syncReleasesGithub(repo, fetchers.github, repoRow, input, opts);
+        case "workflow_runs":
+          return await syncWorkflowRunsGithub(repo, fetchers.github, repoRow, input, opts);
+      }
     }
+    if (repoRow.provider === "gitlab") {
+      if (!fetchers.gitlab) {
+        return { status: 501, body: { ok: false, error: "fetcher_not_configured", hint: "GitLab fetcher missing — check GITLAB_TOKEN env." } };
+      }
+      switch (input.kind) {
+        case "pull_requests":
+          return await syncPullRequestsGitlab(repo, fetchers.gitlab, repoRow, input, opts);
+        case "releases":
+          return await syncReleasesGitlab(repo, fetchers.gitlab, repoRow, input, opts);
+        case "workflow_runs":
+          return await syncWorkflowRunsGitlab(repo, fetchers.gitlab, repoRow, input, opts);
+      }
+    }
+    return {
+      status: 400,
+      body: { ok: false, error: "unsupported_provider", hint: `Sync supports github and gitlab; this repository is ${repoRow.provider}.` },
+    };
   } catch (err) {
     if (isMissingTable(err)) {
       return {
@@ -149,17 +193,16 @@ export async function buildRepositorySyncResponse(
    Per-slice implementations.
    ────────────────────────────────────────────────────────────── */
 
-async function syncPullRequests(
+async function syncPullRequestsGithub(
   repo: RepositorySyncRepo,
   fetcher: GitHubFetcher,
   repoRow: SyncRepositoryRow,
   input: BuildRepositorySyncInput,
   opts: { now?: Date },
 ): Promise<ResponderResult> {
-  const perPage = input.perPage ?? 100;
   const prs = await fetcher.listPullRequests(
     { owner: repoRow.remoteOwner, name: repoRow.remoteName },
-    { perPage, state: "all" },
+    { perPage: input.perPage ?? 100, state: "all" },
   );
   return await projectAndUpsert(
     prs,
@@ -170,7 +213,7 @@ async function syncPullRequests(
   );
 }
 
-async function syncReleases(
+async function syncReleasesGithub(
   repo: RepositorySyncRepo,
   fetcher: GitHubFetcher,
   repoRow: SyncRepositoryRow,
@@ -190,7 +233,7 @@ async function syncReleases(
   );
 }
 
-async function syncWorkflowRuns(
+async function syncWorkflowRunsGithub(
   repo: RepositorySyncRepo,
   fetcher: GitHubFetcher,
   repoRow: SyncRepositoryRow,
@@ -205,6 +248,70 @@ async function syncWorkflowRuns(
     runs,
     (r) => `${repoRow.remoteOwner}/${repoRow.remoteName}:run:${r.id}`,
     (r) => projectGithubWorkflowRun(r, { organizationId: input.organizationId, repositoryId: repoRow.id }),
+    (upsert) => upsertWorkflowRunRecord(repo, { ...upsert, observedAt: opts.now }),
+    { repositoryId: repoRow.id, kind: "workflow_runs", now: opts.now ?? new Date() },
+  );
+}
+
+/* ──────────────────────────────────────────────────────────────────
+   GitLab slices.
+   ────────────────────────────────────────────────────────────── */
+
+async function syncPullRequestsGitlab(
+  repo: RepositorySyncRepo,
+  fetcher: GitLabFetcher,
+  repoRow: SyncRepositoryRow,
+  input: BuildRepositorySyncInput,
+  opts: { now?: Date },
+): Promise<ResponderResult> {
+  const mrs = await fetcher.listMergeRequests(
+    { owner: repoRow.remoteOwner, name: repoRow.remoteName },
+    { perPage: input.perPage ?? 100, state: "all" },
+  );
+  return await projectAndUpsert(
+    mrs,
+    (m) => `${repoRow.remoteOwner}/${repoRow.remoteName}!${m.iid}`,
+    (m) => projectGitlabMergeRequest(m, { organizationId: input.organizationId, repositoryId: repoRow.id }),
+    (upsert) => upsertPullRequestRecord(repo, { ...upsert, observedAt: opts.now }),
+    { repositoryId: repoRow.id, kind: "pull_requests", now: opts.now ?? new Date() },
+  );
+}
+
+async function syncReleasesGitlab(
+  repo: RepositorySyncRepo,
+  fetcher: GitLabFetcher,
+  repoRow: SyncRepositoryRow,
+  input: BuildRepositorySyncInput,
+  opts: { now?: Date },
+): Promise<ResponderResult> {
+  const releases = await fetcher.listReleases(
+    { owner: repoRow.remoteOwner, name: repoRow.remoteName },
+    { perPage: input.perPage ?? 100 },
+  );
+  return await projectAndUpsert(
+    releases,
+    (r) => `${repoRow.remoteOwner}/${repoRow.remoteName}@${r.tag_name}`,
+    (r) => projectGitlabReleaseTag(r, { organizationId: input.organizationId, repositoryId: repoRow.id }),
+    (upsert) => upsertReleaseTagRecord(repo, { ...upsert, observedAt: opts.now }),
+    { repositoryId: repoRow.id, kind: "releases", now: opts.now ?? new Date() },
+  );
+}
+
+async function syncWorkflowRunsGitlab(
+  repo: RepositorySyncRepo,
+  fetcher: GitLabFetcher,
+  repoRow: SyncRepositoryRow,
+  input: BuildRepositorySyncInput,
+  opts: { now?: Date },
+): Promise<ResponderResult> {
+  const pipelines = await fetcher.listPipelines(
+    { owner: repoRow.remoteOwner, name: repoRow.remoteName },
+    { perPage: input.perPage ?? 100 },
+  );
+  return await projectAndUpsert(
+    pipelines,
+    (p) => `${repoRow.remoteOwner}/${repoRow.remoteName}:pipeline:${p.id}`,
+    (p) => projectGitlabPipeline(p, { organizationId: input.organizationId, repositoryId: repoRow.id }),
     (upsert) => upsertWorkflowRunRecord(repo, { ...upsert, observedAt: opts.now }),
     { repositoryId: repoRow.id, kind: "workflow_runs", now: opts.now ?? new Date() },
   );

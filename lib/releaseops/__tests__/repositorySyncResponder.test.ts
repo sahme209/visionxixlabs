@@ -123,7 +123,7 @@ function makePr(over: Partial<GithubPrPayload> = {}): GithubPrPayload {
 describe("buildRepositorySyncResponse", () => {
   it("404 when repository not found", async () => {
     const repo = makeRepoStub();
-    const r = await buildRepositorySyncResponse(repo, fetcherStub(), {
+    const r = await buildRepositorySyncResponse(repo, { github: fetcherStub() }, {
       organizationId: "o", repositoryId: "missing", kind: "pull_requests",
     });
     expect(r.status).toBe(404);
@@ -133,7 +133,7 @@ describe("buildRepositorySyncResponse", () => {
 
   it("403 when repository belongs to another org", async () => {
     const repo = makeRepoStub({ ...REPO_ROW, organizationId: "other_org" });
-    const r = await buildRepositorySyncResponse(repo, fetcherStub(), {
+    const r = await buildRepositorySyncResponse(repo, { github: fetcherStub() }, {
       organizationId: "o", repositoryId: REPO_ROW.id, kind: "pull_requests",
     });
     expect(r.status).toBe(403);
@@ -141,14 +141,122 @@ describe("buildRepositorySyncResponse", () => {
     expect(r.body.error).toBe("cross_org_repository");
   });
 
-  it("400 when provider is non-github", async () => {
-    const repo = makeRepoStub({ ...REPO_ROW, provider: "gitlab" });
-    const r = await buildRepositorySyncResponse(repo, fetcherStub(), {
+  it("400 unsupported_provider when row is azuredevops (no dispatch arm yet)", async () => {
+    const repo = makeRepoStub({ ...REPO_ROW, provider: "azuredevops" });
+    const r = await buildRepositorySyncResponse(repo, { github: fetcherStub() }, {
       organizationId: "o", repositoryId: REPO_ROW.id, kind: "pull_requests",
     });
     expect(r.status).toBe(400);
     if (r.body.ok) throw new Error("expected error");
     expect(r.body.error).toBe("unsupported_provider");
+  });
+
+  it("501 fetcher_not_configured for github when no github fetcher present", async () => {
+    const repo = makeRepoStub(REPO_ROW);
+    const r = await buildRepositorySyncResponse(repo, {}, {
+      organizationId: "o", repositoryId: REPO_ROW.id, kind: "pull_requests",
+    });
+    expect(r.status).toBe(501);
+    if (r.body.ok) throw new Error("expected error");
+    expect(r.body.error).toBe("fetcher_not_configured");
+  });
+
+  it("501 fetcher_not_configured for gitlab when no gitlab fetcher present", async () => {
+    const repo = makeRepoStub({ ...REPO_ROW, provider: "gitlab" });
+    const r = await buildRepositorySyncResponse(repo, { github: fetcherStub() }, {
+      organizationId: "o", repositoryId: REPO_ROW.id, kind: "pull_requests",
+    });
+    expect(r.status).toBe(501);
+    if (r.body.ok) throw new Error("expected error");
+    expect(r.body.error).toBe("fetcher_not_configured");
+  });
+
+  it("GitLab PR slice: fetches MRs, projects, and upserts", async () => {
+    const repo = makeRepoStub({ ...REPO_ROW, provider: "gitlab" });
+    const gitlabFetcher = {
+      async listMergeRequests() {
+        return [
+          {
+            iid: 7,
+            title: "Add SSO",
+            description: "Closes PROJ-1",
+            state: "merged" as const,
+            source_branch: "feature/sso",
+            target_branch: "main",
+            sha: "abc1234",
+            merged_at: "2026-05-20T10:00:00Z",
+            merged_by: { username: "bob" },
+            author: { username: "alice" },
+            web_url: "https://gitlab.com/acme/checkout/-/merge_requests/7",
+            labels: ["security"],
+            headPipelineStatus: "success" as const,
+          },
+        ];
+      },
+      async listReleases() { return []; },
+      async listPipelines() { return []; },
+    };
+    const r = await buildRepositorySyncResponse(repo, { gitlab: gitlabFetcher }, {
+      organizationId: "o", repositoryId: REPO_ROW.id, kind: "pull_requests",
+    }, { now: new Date("2026-05-25T12:00:00Z") });
+    if (!r.body.ok) throw new Error("expected ok");
+    expect(r.body.data.fetched).toBe(1);
+    expect(r.body.data.upserted).toBe(1);
+    expect(repo._prs.size).toBe(1);
+    const pr = repo._prs.get("repo_1#7")!;
+    expect(pr.state).toBe("merged");
+    expect(pr.ciStatus).toBe("passing");
+  });
+
+  it("GitLab releases slice: fetches releases, projects, upserts", async () => {
+    const repo = makeRepoStub({ ...REPO_ROW, provider: "gitlab" });
+    const gitlabFetcher = {
+      async listMergeRequests() { return []; },
+      async listReleases() {
+        return [{
+          tag_name: "v1.2.0",
+          commit: { id: "deadbeef" },
+          released_at: "2026-05-01T00:00:00Z",
+          description: "Notes",
+          author: { username: "alice" },
+        }];
+      },
+      async listPipelines() { return []; },
+    };
+    const r = await buildRepositorySyncResponse(repo, { gitlab: gitlabFetcher }, {
+      organizationId: "o", repositoryId: REPO_ROW.id, kind: "releases",
+    });
+    if (!r.body.ok) throw new Error("expected ok");
+    expect(r.body.data.fetched).toBe(1);
+    expect(repo._tags.size).toBe(1);
+  });
+
+  it("GitLab workflow_runs slice: fetches pipelines, projects, upserts", async () => {
+    const repo = makeRepoStub({ ...REPO_ROW, provider: "gitlab" });
+    const gitlabFetcher = {
+      async listMergeRequests() { return []; },
+      async listReleases() { return []; },
+      async listPipelines() {
+        return [{
+          id: 123, ref: "main", sha: "abc", status: "success" as const,
+          pipelineName: "Deploy prod", configPath: ".gitlab-ci.yml",
+          created_at: "2026-05-20T08:00:00Z",
+          started_at: "2026-05-20T08:01:00Z",
+          finished_at: "2026-05-20T08:05:00Z",
+          web_url: "https://gitlab.com/acme/checkout/-/pipelines/123",
+        }];
+      },
+    };
+    const r = await buildRepositorySyncResponse(repo, { gitlab: gitlabFetcher }, {
+      organizationId: "o", repositoryId: REPO_ROW.id, kind: "workflow_runs",
+    });
+    if (!r.body.ok) throw new Error("expected ok");
+    expect(r.body.data.fetched).toBe(1);
+    expect(repo._runs.size).toBe(1);
+    const run = repo._runs.get("repo_1#123")!;
+    expect(run.runKind).toBe("deploy");
+    expect(run.status).toBe("completed");
+    expect(run.conclusion).toBe("success");
   });
 
   it("PR slice: fetches, projects, and upserts every PR", async () => {
@@ -159,7 +267,7 @@ describe("buildRepositorySyncResponse", () => {
       makePr({ number: 3, title: "Third" }),
     ];
     const fetcher = fetcherStub({ async listPullRequests() { return prs; } });
-    const r = await buildRepositorySyncResponse(repo, fetcher, {
+    const r = await buildRepositorySyncResponse(repo, { github: fetcher }, {
       organizationId: "o", repositoryId: REPO_ROW.id, kind: "pull_requests",
     }, { now: new Date("2026-05-25T12:00:00Z") });
     expect(r.status).toBe(200);
@@ -192,7 +300,7 @@ describe("buildRepositorySyncResponse", () => {
         return [makePr({ number: 1 }), makePr({ number: 2 }), makePr({ number: 3 })];
       },
     });
-    const r = await buildRepositorySyncResponse(repo, fetcher, {
+    const r = await buildRepositorySyncResponse(repo, { github: fetcher }, {
       organizationId: "o", repositoryId: REPO_ROW.id, kind: "pull_requests",
     });
     if (!r.body.ok) throw new Error("expected ok");
@@ -220,7 +328,7 @@ describe("buildRepositorySyncResponse", () => {
       },
     ];
     const fetcher = fetcherStub({ async listReleases() { return releases; } });
-    const r = await buildRepositorySyncResponse(repo, fetcher, {
+    const r = await buildRepositorySyncResponse(repo, { github: fetcher }, {
       organizationId: "o", repositoryId: REPO_ROW.id, kind: "releases",
     });
     if (!r.body.ok) throw new Error("expected ok");
@@ -246,7 +354,7 @@ describe("buildRepositorySyncResponse", () => {
       },
     ];
     const fetcher = fetcherStub({ async listWorkflowRuns() { return runs; } });
-    const r = await buildRepositorySyncResponse(repo, fetcher, {
+    const r = await buildRepositorySyncResponse(repo, { github: fetcher }, {
       organizationId: "o", repositoryId: REPO_ROW.id, kind: "workflow_runs",
     });
     if (!r.body.ok) throw new Error("expected ok");
@@ -266,7 +374,7 @@ describe("buildRepositorySyncResponse", () => {
     const fetcher = fetcherStub({
       async listPullRequests() { return [makePr({ number: 1 })]; },
     });
-    const r = await buildRepositorySyncResponse(repo, fetcher, {
+    const r = await buildRepositorySyncResponse(repo, { github: fetcher }, {
       organizationId: "o", repositoryId: REPO_ROW.id, kind: "pull_requests",
     });
     // The per-PR loop captures the upsert error, so it surfaces as
