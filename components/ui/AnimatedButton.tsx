@@ -17,16 +17,24 @@ type BaseProps = {
   disabled?: boolean;
 };
 
+/* Apple-grade base: tactile press physics provided by .btn-press /
+   .btn-ghost-press in globals.css. We layer in focus-ring-animated for
+   keyboard navigation, and switch from uppercase + tracking-wide to
+   tracking-tight (Huly/Apple feel — uppercase reads as software,
+   sentence case reads as product). */
 const baseClasses =
-  "btn-shimmer focus-ring-animated inline-flex items-center justify-center gap-2 rounded-full text-sm font-semibold tracking-wide uppercase transition-all";
+  "focus-ring-animated inline-flex items-center justify-center gap-2 rounded-full text-sm font-semibold tracking-tight";
 
 const variantClasses: Record<Variant, string> = {
+  /* White tactile press with coral aura on hover */
   primary:
-    "px-7 py-3 bg-white text-zinc-900 hover:bg-zinc-100 shadow-lg shadow-white/10 hover:shadow-white/20",
+    "btn-press px-7 py-3",
+  /* Ghost tactile press — same physics, no fill */
   secondary:
-    "px-7 py-3 bg-white/[0.08] text-white border border-white/[0.12] hover:bg-white/[0.12] hover:border-white/[0.20]",
+    "btn-ghost-press px-7 py-3",
+  /* Smaller variant with the same ghost physics */
   ghost:
-    "px-5 py-2.5 border border-white/[0.08] text-zinc-300 bg-white/[0.02] hover:bg-white/[0.05] hover:border-white/[0.16]",
+    "btn-ghost-press px-5 py-2.5",
 };
 
 export function AnimatedButton({ variant = "primary", href, className = "", children, onClick, disabled }: BaseProps) {
@@ -51,8 +59,9 @@ export function AnimatedButton({ variant = "primary", href, className = "", chil
         ) : (
           <motion.span
             className="inline-flex items-center justify-center gap-2"
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.97 }}
+            /* .btn-press already handles hover lift + active press in CSS.
+               framer-motion just adds a subtle tap feedback on touch. */
+            whileTap={{ scale: 0.985 }}
             transition={{ duration: motionConfig.duration, ease: motionConfig.ease }}
           >
             {children}
@@ -72,8 +81,7 @@ export function AnimatedButton({ variant = "primary", href, className = "", chil
 
   return (
     <motion.button
-      whileHover={{ scale: 1.02 }}
-      whileTap={{ scale: 0.97 }}
+      whileTap={{ scale: 0.985 }}
       transition={{ duration: motionConfig.duration, ease: motionConfig.ease }}
       className={cls}
       onClick={onClick as any}

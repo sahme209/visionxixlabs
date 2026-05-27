@@ -33,10 +33,10 @@ export function FAQAccordion({ items }: FAQAccordionProps) {
         return (
           <div
             key={item.question}
-            className={`relative rounded-xl border backdrop-blur-sm transition-all duration-300 ${
+            className={`relative rounded-xl transition-all duration-300 ${
               isOpen
-                ? "faq-expanded border-violet-500/20 bg-violet-500/[0.03]"
-                : "border-white/[0.06] bg-white/[0.02]"
+                ? "faq-expanded surface-frost"
+                : "surface-glass"
             }`}
           >
             {/* Gradient indicator on left side */}
@@ -45,7 +45,7 @@ export function FAQAccordion({ items }: FAQAccordionProps) {
             <button
               type="button"
               onClick={() => setOpenIndex(isOpen ? null : idx)}
-              className="w-full flex items-center justify-between gap-3 px-4 md:px-5 py-3 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 focus-visible:ring-offset-2 focus-visible:ring-offset-[#09090b]"
+              className="w-full flex items-center justify-between gap-3 px-4 md:px-5 py-3 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-coral/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#09090b]"
               aria-expanded={isOpen}
               aria-controls={panelId}
             >

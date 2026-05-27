@@ -181,19 +181,30 @@ const services = [
 export default function ServicesPage() {
   return (
     <div className="min-h-screen bg-[#09090b] relative overflow-hidden">
-      {/* Background effects */}
+      {/* Huly aurora — coral × violet × cyan */}
       <div className="spotlight-orb absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[600px] pointer-events-none" />
       <div className="bg-dots absolute inset-0 pointer-events-none" />
+      <div className="ambient-drift absolute -top-40 left-1/4 w-[520px] h-[460px] rounded-full bg-brand-violet/[0.08] blur-[140px] pointer-events-none" aria-hidden />
+      <div className="ambient-drift absolute top-1/4 right-[5%] w-[420px] h-[340px] rounded-full bg-brand-coral/[0.06] blur-[120px] pointer-events-none" style={{ animationDelay: "-8s" }} aria-hidden />
+      <div className="ambient-drift absolute bottom-32 left-[5%] w-[360px] h-[280px] rounded-full bg-cyan-500/[0.04] blur-[110px] pointer-events-none" style={{ animationDelay: "-14s" }} aria-hidden />
       <Navigation />
 
-      <main className="pt-20 pb-24 px-4 sm:px-6 lg:px-8 relative">
+      <main className="pt-28 pb-24 px-4 sm:px-6 lg:px-8 relative">
         <div className="max-w-5xl mx-auto">
-          {/* 1. Overview */}
+          {/* 1. Overview — Huly numbered + coral underline */}
           <Reveal direction="up" blur>
             <section className="mb-12" aria-labelledby="overview-heading">
-              <h1 id="overview-heading" className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-white mb-6 tracking-[-0.04em] leading-[1.05]">
+              <p className="mono-label mb-4 inline-flex items-center gap-3">
+                <span className="text-brand-coral/90 tabular-nums">SV</span>
+                <span className="h-px w-6 bg-gradient-to-r from-brand-coral/60 to-transparent" />
+                Services
+              </p>
+              <h1 id="overview-heading" className="font-display text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 leading-[1.04]">
                 Cloud &amp; AI Engineering.<br className="hidden sm:block" />
-                <span className="text-zinc-500">Measurable outcomes.</span>
+                <span className="relative inline-block">
+                  Measurable outcomes.
+                  <span aria-hidden className="absolute left-0 -bottom-0.5 h-[2px] w-full rounded-full bg-gradient-to-r from-brand-coral via-fuchsia-400/70 to-transparent" />
+                </span>
               </h1>
               <p className="text-lg text-zinc-400 max-w-3xl">
                 We build AWS landing zones, automate CI/CD with GitHub Actions and Octopus Deploy, harden security posture, and cut cloud spend — with defined deliverables, measurable results, and full handover.
