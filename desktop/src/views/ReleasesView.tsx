@@ -87,15 +87,17 @@ export function ReleasesView({ onNavigate }: { onNavigate?: (v: View) => void } 
     onNavigate?.("release-overview");
   }
 
-  useEffect(() => {
-    let cancelled = false;
+  function loadList() {
+    setLoading(true);
+    setNetworkError(null);
     fetch("/api/dashboard/release-list", { credentials: "include" })
       .then((r) => r.json())
-      .then((j: RespBody) => { if (!cancelled) setResp(j); })
-      .catch((e) => { if (!cancelled) setNetworkError(e instanceof Error ? e.message : "Network error."); })
-      .finally(() => { if (!cancelled) setLoading(false); });
-    return () => { cancelled = true; };
-  }, []);
+      .then((j: RespBody) => setResp(j))
+      .catch((e) => setNetworkError(e instanceof Error ? e.message : "Network error."))
+      .finally(() => setLoading(false));
+  }
+
+  useEffect(() => { loadList(); }, []);
 
   const data = resp?.ok ? resp.data : null;
   const errorBody = resp && !resp.ok ? resp : null;
@@ -111,6 +113,7 @@ export function ReleasesView({ onNavigate }: { onNavigate?: (v: View) => void } 
       </div>
 
       <HealthSummaryTile onNavigate={onNavigate} />
+      <NewReleasePanel onCreated={loadList} />
 
       {loading && (
         <div className="glass-card p-4 text-sm text-zinc-400">Loading releases…</div>
@@ -295,5 +298,183 @@ function SummaryStat({
       <p className="text-[8px] font-mono uppercase tracking-wider opacity-70 mb-0.5">{label}</p>
       <p className={`text-[16px] font-bold ${t}`}>{value}</p>
     </button>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────
+// Phase 498 — new-release panel (desktop sibling).
+// ─────────────────────────────────────────────────────────────────
+
+interface ApplicationOption { id: string; name: string; slug: string }
+
+type NewReleaseState =
+  | { kind: "closed" }
+  | { kind: "open" }
+  | { kind: "submitting" }
+  | { kind: "ok"; releaseTag: string; created: boolean }
+  | { kind: "error"; message: string };
+
+function NewReleasePanel({ onCreated }: { onCreated: () => void }) {
+  const [state, setState] = useState<NewReleaseState>({ kind: "closed" });
+  const [apps, setApps] = useState<ApplicationOption[]>([]);
+  const [appsLoading, setAppsLoading] = useState(false);
+  const [applicationId, setApplicationId] = useState("");
+  const [releaseTag, setReleaseTag] = useState("");
+  const [commitSha, setCommitSha] = useState("");
+  const [windowStart, setWindowStart] = useState("");
+  const [windowEnd, setWindowEnd] = useState("");
+  const [summary, setSummary] = useState("");
+
+  useEffect(() => {
+    if (state.kind !== "open" && state.kind !== "submitting") return;
+    if (apps.length > 0 || appsLoading) return;
+    setAppsLoading(true);
+    fetch("/api/dashboard/application-list", { credentials: "include" })
+      .then((r) => r.json())
+      .then((j) => {
+        if (j.ok && Array.isArray(j.data.applications)) {
+          setApps(j.data.applications.map((a: { id: string; name: string; slug: string }) => ({ id: a.id, name: a.name, slug: a.slug })));
+          if (j.data.applications[0] && !applicationId) setApplicationId(j.data.applications[0].id);
+        }
+      })
+      .finally(() => setAppsLoading(false));
+  }, [state.kind, apps.length, appsLoading, applicationId]);
+
+  function reset() {
+    setApplicationId(""); setReleaseTag(""); setCommitSha(""); setWindowStart(""); setWindowEnd(""); setSummary("");
+    setState({ kind: "closed" });
+  }
+
+  async function submit() {
+    setState({ kind: "submitting" });
+    try {
+      const body: Record<string, unknown> = { applicationId, releaseTag };
+      if (commitSha) body.commitSha = commitSha;
+      if (windowStart) body.plannedWindowStartIso = new Date(windowStart).toISOString();
+      if (windowEnd) body.plannedWindowEndIso = new Date(windowEnd).toISOString();
+      if (summary) body.summary = summary;
+
+      const res = await fetch("/api/dashboard/release-create", {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+      const j = await res.json();
+      if (j.ok) {
+        setState({ kind: "ok", releaseTag: j.data.releaseTag, created: j.data.created });
+        onCreated();
+        setTimeout(reset, 1500);
+      } else {
+        setState({ kind: "error", message: j.hint ?? j.error });
+      }
+    } catch (e) {
+      setState({ kind: "error", message: e instanceof Error ? e.message : "network error" });
+    }
+  }
+
+  if (state.kind === "closed") {
+    return (
+      <div className="flex justify-end">
+        <button
+          type="button"
+          onClick={() => setState({ kind: "open" })}
+          className="px-3 py-1.5 rounded-lg border border-violet-500/30 bg-violet-500/[0.08] text-[12px] font-semibold text-violet-200 hover:bg-violet-500/[0.16] transition-colors"
+        >
+          + New release
+        </button>
+      </div>
+    );
+  }
+
+  const busy = state.kind === "submitting";
+  return (
+    <div className="glass-card p-4 border border-violet-500/20">
+      <div className="flex items-center justify-between mb-3">
+        <p className="text-sm font-semibold text-violet-100">New release</p>
+        <button type="button" onClick={reset} className="text-[11px] font-mono text-zinc-400 hover:text-zinc-200" disabled={busy}>cancel</button>
+      </div>
+      <div className="grid grid-cols-3 gap-2 mb-2">
+        <label className="block">
+          <span className="block text-[10px] font-mono uppercase tracking-wider text-zinc-400 mb-1">Application</span>
+          <select
+            value={applicationId}
+            onChange={(e) => setApplicationId(e.target.value)}
+            disabled={busy || appsLoading}
+            className="w-full rounded-md border border-zinc-700/40 bg-zinc-900/60 px-2 py-1.5 text-[12px] text-zinc-100 disabled:opacity-50"
+          >
+            {appsLoading ? (
+              <option value="">loading…</option>
+            ) : apps.length === 0 ? (
+              <option value="">no applications registered</option>
+            ) : (
+              apps.map((a) => <option key={a.id} value={a.id}>{a.name}</option>)
+            )}
+          </select>
+        </label>
+        <ReleaseField label="Release tag" value={releaseTag} onChange={setReleaseTag} placeholder="v1.2.3" disabled={busy} />
+        <ReleaseField label="Commit SHA" value={commitSha} onChange={setCommitSha} placeholder="abc1234…" disabled={busy} />
+      </div>
+      <div className="grid grid-cols-3 gap-2">
+        <label className="block">
+          <span className="block text-[10px] font-mono uppercase tracking-wider text-zinc-400 mb-1">Planned start</span>
+          <input
+            type="datetime-local"
+            value={windowStart}
+            onChange={(e) => setWindowStart(e.target.value)}
+            disabled={busy}
+            className="w-full rounded-md border border-zinc-700/40 bg-zinc-900/60 px-2 py-1.5 text-[12px] text-zinc-100 disabled:opacity-50"
+          />
+        </label>
+        <label className="block">
+          <span className="block text-[10px] font-mono uppercase tracking-wider text-zinc-400 mb-1">Planned end</span>
+          <input
+            type="datetime-local"
+            value={windowEnd}
+            onChange={(e) => setWindowEnd(e.target.value)}
+            disabled={busy}
+            className="w-full rounded-md border border-zinc-700/40 bg-zinc-900/60 px-2 py-1.5 text-[12px] text-zinc-100 disabled:opacity-50"
+          />
+        </label>
+        <ReleaseField label="Summary" value={summary} onChange={setSummary} placeholder="Patch tuesday hotfix" disabled={busy} />
+      </div>
+      <div className="mt-3 flex items-center gap-3">
+        <button
+          type="button"
+          onClick={submit}
+          disabled={busy || !applicationId || !releaseTag}
+          className="px-3 py-1.5 rounded-md border border-violet-500/40 bg-violet-500/[0.14] text-[12px] font-semibold text-violet-100 hover:bg-violet-500/[0.22] disabled:opacity-50 disabled:cursor-wait transition-colors"
+        >
+          {busy ? "Submitting…" : "Create draft"}
+        </button>
+        {state.kind === "ok" && (
+          <span className="text-[11px] font-mono text-emerald-300">
+            ✓ {state.created ? "created" : "already existed"} · {state.releaseTag}
+          </span>
+        )}
+        {state.kind === "error" && (
+          <span className="text-[11px] font-mono text-rose-300">✗ {state.message}</span>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function ReleaseField({ label, value, onChange, placeholder, disabled }: {
+  label: string; value: string; onChange: (v: string) => void;
+  placeholder?: string; disabled?: boolean;
+}) {
+  return (
+    <label className="block">
+      <span className="block text-[10px] font-mono uppercase tracking-wider text-zinc-400 mb-1">{label}</span>
+      <input
+        type="text"
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder={placeholder}
+        disabled={disabled}
+        className="w-full rounded-md border border-zinc-700/40 bg-zinc-900/60 px-2 py-1.5 text-[12px] text-zinc-100 placeholder:text-zinc-600 focus:border-violet-500/40 focus:outline-none disabled:opacity-50"
+      />
+    </label>
   );
 }
