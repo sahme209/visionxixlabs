@@ -56,13 +56,21 @@ export default function CloudSecurityPage() {
             </ol>
           </nav>
 
-          {/* Hero */}
+          {/* Hero — Huly numbered + coral underline */}
           <Reveal direction="up" blur>
-            <header className="mb-16 text-center">
-              <h1 className="text-3xl md:text-4xl font-bold text-white mb-4 tracking-[-0.04em]">
-                <span className="text-gradient">{cloudSecurityHero.title}</span>
+            <header className="mb-16">
+              <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-zinc-500 mb-4 inline-flex items-center gap-3">
+                <span className="text-brand-coral/90 tabular-nums">SC</span>
+                <span className="h-px w-6 bg-gradient-to-r from-brand-coral/60 to-transparent" />
+                Cloud security
+              </p>
+              <h1 className="text-4xl md:text-5xl font-bold text-white mb-4 tracking-[-0.04em] leading-[1.04]">
+                <span className="relative inline-block">
+                  {cloudSecurityHero.title}
+                  <span aria-hidden className="absolute left-0 -bottom-1 h-[3px] w-full rounded-full bg-gradient-to-r from-brand-coral via-fuchsia-400 to-transparent opacity-85" />
+                </span>
               </h1>
-              <p className="text-lg text-zinc-400 max-w-2xl mx-auto">
+              <p className="text-lg text-zinc-400 max-w-2xl">
                 {cloudSecurityHero.subtitle}
               </p>
             </header>
@@ -149,8 +157,9 @@ export default function CloudSecurityPage() {
       </main>
 
       {/* Floating blur orbs */}
-      <div className="absolute bottom-1/3 left-10 w-72 h-72 bg-violet-600/10 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute top-1/2 right-0 w-80 h-80 bg-fuchsia-600/8 rounded-full blur-3xl pointer-events-none" />
+      <div className="ambient-drift absolute bottom-1/3 left-10 w-[380px] h-[340px] bg-brand-violet/[0.08] rounded-full blur-[120px] pointer-events-none" />
+      <div className="ambient-drift absolute top-1/2 right-0 w-[420px] h-[360px] bg-brand-coral/[0.06] rounded-full blur-[130px] pointer-events-none" style={{ animationDelay: "-8s" }} />
+      <div className="ambient-drift absolute top-1/4 right-1/4 w-[340px] h-[260px] bg-cyan-500/[0.04] rounded-full blur-[110px] pointer-events-none" style={{ animationDelay: "-14s" }} />
     </div>
   );
 }

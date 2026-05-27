@@ -173,9 +173,9 @@ export default function DownloadPage() {
       {/* Cinematic background layers */}
       <div className="absolute inset-0 bg-grid-mesh opacity-30 pointer-events-none" aria-hidden />
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[600px] spotlight-orb opacity-60 pointer-events-none" aria-hidden />
-      <div className="absolute top-[20%] -right-40 w-[500px] h-[500px] rounded-full bg-violet-600/[0.05] blur-[140px] pointer-events-none" aria-hidden />
-      <div className="absolute top-[40%] -left-40 w-[500px] h-[500px] rounded-full bg-blue-600/[0.04] blur-[140px] pointer-events-none" aria-hidden />
-      <div className="absolute bottom-[10%] left-1/2 -translate-x-1/2 w-[600px] h-[300px] rounded-full bg-amber-500/[0.05] blur-[120px] pointer-events-none" aria-hidden />
+      <div className="ambient-drift absolute top-[20%] -right-40 w-[500px] h-[500px] rounded-full bg-brand-violet/[0.07] blur-[140px] pointer-events-none" aria-hidden />
+      <div className="ambient-drift absolute top-[40%] -left-40 w-[480px] h-[460px] rounded-full bg-brand-coral/[0.06] blur-[140px] pointer-events-none" style={{ animationDelay: "-8s" }} aria-hidden />
+      <div className="ambient-drift absolute bottom-[10%] left-1/2 -translate-x-1/2 w-[600px] h-[300px] rounded-full bg-cyan-500/[0.05] blur-[120px] pointer-events-none" style={{ animationDelay: "-14s" }} aria-hidden />
 
       <Navigation />
 

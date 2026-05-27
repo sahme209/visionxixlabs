@@ -144,19 +144,25 @@ export default function AxiomPage() {
       {/* ── Hero ──────────────────────────────────────────────────────── */}
       <section className="relative overflow-hidden">
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[500px] spotlight-orb opacity-50 pointer-events-none" aria-hidden />
-        <div className="absolute -top-40 -left-60 w-[500px] h-[500px] rounded-full bg-indigo-500/[0.07] blur-[120px] pointer-events-none" aria-hidden />
-        <div className="absolute -top-20 -right-40 w-[400px] h-[400px] rounded-full bg-blue-500/[0.05] blur-[100px] pointer-events-none" aria-hidden />
+        <div className="ambient-drift absolute -top-40 -left-60 w-[520px] h-[500px] rounded-full bg-brand-violet/[0.09] blur-[130px] pointer-events-none" aria-hidden />
+        <div className="ambient-drift absolute -top-20 -right-40 w-[480px] h-[440px] rounded-full bg-brand-coral/[0.07] blur-[120px] pointer-events-none" style={{ animationDelay: "-8s" }} aria-hidden />
+        <div className="ambient-drift absolute top-40 left-1/3 w-[380px] h-[300px] rounded-full bg-cyan-500/[0.05] blur-[110px] pointer-events-none" style={{ animationDelay: "-14s" }} aria-hidden />
         <div className="relative max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-20 text-center">
           <Reveal direction="up" blur delay={0}>
-            <div className="inline-flex items-center gap-2 huly-badge px-4 py-1.5 text-sm font-medium text-zinc-300 mb-8">
-              <CpuChipIcon className="h-4 w-4" />
-              Autonomous Cloud Operations
-            </div>
+            <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-zinc-500 mb-6 inline-flex items-center gap-3">
+              <span className="text-brand-coral/90 tabular-nums">AX</span>
+              <span className="h-px w-6 bg-gradient-to-r from-brand-coral/60 to-transparent" />
+              <CpuChipIcon className="h-3.5 w-3.5 text-brand-coral/80" />
+              Autonomous cloud operations
+            </p>
           </Reveal>
           <Reveal direction="up" blur delay={0.1}>
-            <h1 className="text-4xl sm:text-5xl lg:text-7xl font-extrabold tracking-[-0.04em] text-white mb-6 leading-[1.05]">
+            <h1 className="text-4xl sm:text-5xl lg:text-7xl font-bold tracking-[-0.04em] text-white mb-6 leading-[1.04]">
               The agent that<br className="hidden sm:block" />
-              <span className="text-gradient">runs your cloud.</span>
+              <span className="relative inline-block">
+                runs your cloud.
+                <span aria-hidden className="absolute left-0 -bottom-1 h-[3px] w-full rounded-full bg-gradient-to-r from-brand-coral via-fuchsia-400 to-transparent opacity-85" />
+              </span>
             </h1>
           </Reveal>
           <Reveal direction="up" blur delay={0.2}>

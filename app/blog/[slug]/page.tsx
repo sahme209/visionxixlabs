@@ -46,18 +46,20 @@ export default async function BlogPostPage({ params }: Params) {
   return (
     <div className="min-h-screen bg-[#09090b] text-white relative overflow-hidden">
       <div className="absolute inset-0 pointer-events-none" aria-hidden>
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-[500px] rounded-full bg-violet-500/[0.05] blur-[160px]" />
+        <div className="ambient-drift absolute top-0 left-1/2 -translate-x-1/2 w-[760px] h-[500px] rounded-full bg-brand-violet/[0.07] blur-[140px]" />
+        <div className="ambient-drift absolute top-1/4 right-[5%] w-[420px] h-[320px] rounded-full bg-brand-coral/[0.05] blur-[120px]" style={{ animationDelay: "-8s" }} />
+        <div className="ambient-drift absolute top-1/2 left-[5%] w-[340px] h-[260px] rounded-full bg-cyan-500/[0.04] blur-[100px]" style={{ animationDelay: "-14s" }} />
       </div>
 
       <Navigation />
 
       <main className="relative z-10 max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-20">
         {/* Back link */}
-        <Link href="/blog" className="inline-flex items-center gap-1.5 text-[12px] font-mono text-zinc-500 hover:text-violet-300 transition-colors mb-10">
+        <Link href="/blog" className="inline-flex items-center gap-1.5 text-[12px] font-mono text-zinc-500 hover:text-brand-coral transition-colors mb-10">
           ← Back to blog
         </Link>
 
-        {/* Header */}
+        {/* Header — Huly numbered eyebrow + coral underline */}
         <header className="mb-12">
           <div className="flex items-center gap-3 mb-5 text-[11px] font-mono uppercase tracking-[0.18em]">
             <span className={CAT_TONE[post.category] ?? "text-zinc-400"}>{post.category}</span>
@@ -66,7 +68,8 @@ export default async function BlogPostPage({ params }: Params) {
             <span className="text-zinc-700">·</span>
             <span className="text-zinc-500">{post.readMinutes} min read</span>
           </div>
-          <h1 className="text-4xl md:text-5xl font-bold tracking-[-0.04em] leading-[1.05] mb-6">
+          <h1 className="relative text-4xl md:text-5xl font-bold tracking-[-0.04em] leading-[1.05] mb-6 pl-5">
+            <span aria-hidden className="absolute left-0 top-0 bottom-0 w-[3px] rounded-full bg-gradient-to-b from-brand-coral via-fuchsia-400 to-brand-violet opacity-85" />
             {post.title}
           </h1>
           <p className="text-lg text-zinc-400 leading-relaxed mb-8">

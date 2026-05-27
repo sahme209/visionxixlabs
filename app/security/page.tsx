@@ -19,19 +19,34 @@ export default function SecurityPage() {
   return (
     <div className="min-h-screen bg-[#09090b] text-white relative overflow-hidden">
       <div className="absolute inset-0 bg-dots opacity-10 pointer-events-none" aria-hidden />
-      <div className="absolute -top-40 right-0 w-96 h-96 rounded-full bg-emerald-600/5 blur-[120px] pointer-events-none" aria-hidden />
-      <div className="absolute bottom-0 -left-40 w-96 h-96 rounded-full bg-violet-600/5 blur-[120px] pointer-events-none" aria-hidden />
+      {/* Huly aurora */}
+      <div className="ambient-drift absolute -top-40 right-0 w-[480px] h-[480px] rounded-full bg-brand-violet/[0.08] blur-[130px] pointer-events-none" aria-hidden />
+      <div className="ambient-drift absolute top-1/4 left-1/4 w-[420px] h-[340px] rounded-full bg-brand-coral/[0.06] blur-[120px] pointer-events-none" style={{ animationDelay: "-8s" }} aria-hidden />
+      <div className="ambient-drift absolute bottom-0 -left-40 w-[420px] h-[360px] rounded-full bg-emerald-500/[0.05] blur-[120px] pointer-events-none" style={{ animationDelay: "-14s" }} aria-hidden />
       <Navigation />
 
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-16">
         <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] backdrop-blur-sm p-8 md:p-12">
-          {/* Header */}
-          <div className="text-center mb-12">
-            <ShieldCheckIcon className="h-14 w-14 text-emerald-400 mx-auto mb-4" />
-            <h1 className="text-4xl md:text-5xl font-bold mb-4">
+          {/* Header — Huly numbered + coral underline */}
+          <div className="mb-12">
+            <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-zinc-500 mb-4 inline-flex items-center gap-3">
+              <span className="text-brand-coral/90 tabular-nums">S1</span>
+              <span className="h-px w-6 bg-gradient-to-r from-brand-coral/60 to-transparent" />
               Security
-            </h1>
-            <p className="text-lg text-zinc-400 max-w-2xl mx-auto">
+            </p>
+            <div className="flex items-start gap-4 mb-4">
+              <div className="shrink-0 w-12 h-12 rounded-xl border border-brand-coral/30 bg-gradient-to-br from-brand-coral/15 to-brand-violet/15 flex items-center justify-center">
+                <ShieldCheckIcon className="h-6 w-6 text-brand-coral" />
+              </div>
+              <h1 className="text-4xl md:text-5xl font-bold tracking-[-0.04em] leading-[1.04]">
+                Read-only.{" "}
+                <span className="relative inline-block">
+                  Revocable.
+                  <span aria-hidden className="absolute left-0 -bottom-1 h-[3px] w-full rounded-full bg-gradient-to-r from-brand-coral via-fuchsia-400 to-transparent opacity-85" />
+                </span>
+              </h1>
+            </div>
+            <p className="text-lg text-zinc-400 max-w-2xl">
               How we connect to your cloud, what we can see, and what we do with
               your data. No marketing — just the technical details.
             </p>
