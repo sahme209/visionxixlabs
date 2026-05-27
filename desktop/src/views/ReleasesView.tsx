@@ -110,6 +110,8 @@ export function ReleasesView({ onNavigate }: { onNavigate?: (v: View) => void } 
         </p>
       </div>
 
+      <HealthSummaryTile onNavigate={onNavigate} />
+
       {loading && (
         <div className="glass-card p-4 text-sm text-zinc-400">Loading releases…</div>
       )}
@@ -209,5 +211,89 @@ function Stat({ label, value, tone = "zinc" }: { label: string; value: string; t
       <p className="text-[9px] font-mono uppercase tracking-wider opacity-70">{label}</p>
       <p className="text-lg font-bold mt-0.5">{value}</p>
     </div>
+  );
+}
+
+interface HealthSummaryData {
+  generatedAt: string;
+  releases: { total: number; draft: number; ready: number; deploying: number; deployed: number };
+  policy: { blockingOpen: number };
+  drift: { criticalOpen: number };
+  cherryPicks: { requested: number };
+  changeTickets: { inFlight: number };
+  readiness: { evaluated: number; averageScore: number | null };
+  platformHealthScore: number;
+}
+
+type HealthRespBody = { ok: true; data: HealthSummaryData } | { ok: false; error: string; hint?: string };
+
+function HealthSummaryTile({ onNavigate }: { onNavigate?: (v: View) => void }) {
+  const [resp, setResp] = useState<HealthRespBody | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+    fetch("/api/dashboard/releaseops-health", { credentials: "include" })
+      .then((r) => r.json())
+      .then((j: HealthRespBody) => { if (!cancelled) setResp(j); })
+      .catch(() => { /* surface optional */ })
+      .finally(() => { if (!cancelled) setLoading(false); });
+    return () => { cancelled = true; };
+  }, []);
+
+  if (loading) return <div className="glass-card p-3 text-[11px] text-zinc-500">Loading platform health…</div>;
+  if (!resp?.ok) return null;
+
+  const d = resp.data;
+  const scoreColor =
+    d.platformHealthScore >= 80 ? "text-emerald-300" :
+    d.platformHealthScore >= 60 ? "text-amber-300" :
+    d.platformHealthScore >= 40 ? "text-orange-300" : "text-rose-300";
+
+  return (
+    <div className="glass-card p-4 border border-violet-500/[0.18]">
+      <div className="flex items-baseline justify-between mb-2">
+        <div>
+          <p className="text-[9px] font-mono uppercase tracking-wider text-zinc-500">Platform health</p>
+          <p className="text-[22px] font-bold">
+            <span className={scoreColor}>{d.platformHealthScore}</span>
+            <span className="text-[12px] text-zinc-500">/100</span>
+          </p>
+        </div>
+        <p className="text-[9px] font-mono text-zinc-500">
+          {d.readiness.evaluated} scored · avg {d.readiness.averageScore ?? "—"}
+        </p>
+      </div>
+      <div className="grid grid-cols-5 gap-2 text-[10px] font-mono">
+        <SummaryStat label="Blocking" value={d.policy.blockingOpen} tone={d.policy.blockingOpen > 0 ? "rose" : "zinc"} onClick={() => onNavigate?.("policy-violations")} />
+        <SummaryStat label="Crit drift" value={d.drift.criticalOpen} tone={d.drift.criticalOpen > 0 ? "rose" : "zinc"} onClick={() => onNavigate?.("drift")} />
+        <SummaryStat label="CP reqs" value={d.cherryPicks.requested} tone={d.cherryPicks.requested > 0 ? "amber" : "zinc"} onClick={() => onNavigate?.("cherry-picks")} />
+        <SummaryStat label="Tickets" value={d.changeTickets.inFlight} tone="zinc" onClick={() => onNavigate?.("change-tickets")} />
+        <SummaryStat label="Deploying" value={d.releases.deploying} tone={d.releases.deploying > 0 ? "emerald" : "zinc"} onClick={() => onNavigate?.("release-freeze")} />
+      </div>
+    </div>
+  );
+}
+
+function SummaryStat({
+  label, value, tone, onClick,
+}: {
+  label: string; value: number; tone: "emerald" | "amber" | "rose" | "zinc"; onClick?: () => void;
+}) {
+  const t = {
+    emerald: "text-emerald-300",
+    amber:   "text-amber-300",
+    rose:    "text-rose-300",
+    zinc:    "text-zinc-300",
+  }[tone];
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className="rounded-lg border border-zinc-700/40 bg-zinc-800/30 p-2 hover:border-violet-500/30 transition-colors text-left"
+    >
+      <p className="text-[8px] font-mono uppercase tracking-wider opacity-70 mb-0.5">{label}</p>
+      <p className={`text-[16px] font-bold ${t}`}>{value}</p>
+    </button>
   );
 }

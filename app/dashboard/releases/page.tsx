@@ -121,6 +121,7 @@ export default function ReleasesPage() {
         safetyNote="Click any release → full overview · every transition audited"
       />
 
+      <HealthSummaryTile />
       <SubsystemNav />
 
       {loading && (
@@ -271,5 +272,95 @@ function SubsystemNav() {
         </Link>
       ))}
     </div>
+  );
+}
+
+/* ──────────────────────────────────────────────────────────────────
+   Phase 490 — Platform health summary tile.
+   ────────────────────────────────────────────────────────────── */
+
+interface HealthSummaryData {
+  generatedAt: string;
+  releases: { total: number; draft: number; ready: number; deploying: number; deployed: number };
+  policy: { blockingOpen: number };
+  drift: { criticalOpen: number };
+  cherryPicks: { requested: number };
+  changeTickets: { inFlight: number };
+  readiness: { evaluated: number; averageScore: number | null };
+  platformHealthScore: number;
+}
+
+type HealthRespBody = { ok: true; data: HealthSummaryData } | { ok: false; error: string; hint?: string };
+
+function HealthSummaryTile() {
+  const [resp, setResp] = useState<HealthRespBody | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+    fetch("/api/dashboard/releaseops-health", { credentials: "include" })
+      .then((r) => r.json())
+      .then((j: HealthRespBody) => { if (!cancelled) setResp(j); })
+      .catch(() => { /* surface is optional */ })
+      .finally(() => { if (!cancelled) setLoading(false); });
+    return () => { cancelled = true; };
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="mb-6 rounded-2xl border border-white/[0.06] bg-white/[0.02] p-4 text-[12px] text-zinc-500">
+        Loading platform health…
+      </div>
+    );
+  }
+  if (!resp?.ok) return null;
+
+  const d = resp.data;
+  const scoreColor =
+    d.platformHealthScore >= 80 ? "text-emerald-300" :
+    d.platformHealthScore >= 60 ? "text-amber-300" :
+    d.platformHealthScore >= 40 ? "text-orange-300" : "text-rose-300";
+
+  return (
+    <div className="mb-6 rounded-2xl border border-white/[0.06] bg-gradient-to-br from-violet-500/[0.04] via-white/[0.02] to-cyan-500/[0.04] p-5">
+      <div className="flex items-baseline justify-between mb-3">
+        <div>
+          <p className="text-[10px] font-mono uppercase tracking-wider text-zinc-500">Platform health</p>
+          <p className="text-[28px] font-bold text-white">
+            <span className={scoreColor}>{d.platformHealthScore}</span>
+            <span className="text-[14px] text-zinc-500">/100</span>
+          </p>
+        </div>
+        <p className="text-[10px] font-mono text-zinc-500">
+          {d.readiness.evaluated} releases scored · avg {d.readiness.averageScore ?? "—"}
+        </p>
+      </div>
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-3 text-[11px] font-mono">
+        <SummaryStat label="Blocking violations" value={d.policy.blockingOpen} highlight={d.policy.blockingOpen > 0 ? "rose" : "zinc"} href="/dashboard/policy-violations" />
+        <SummaryStat label="Critical drift"      value={d.drift.criticalOpen}   highlight={d.drift.criticalOpen > 0 ? "rose" : "zinc"} href="/dashboard/drift" />
+        <SummaryStat label="Cherry-pick reqs"    value={d.cherryPicks.requested} highlight={d.cherryPicks.requested > 0 ? "amber" : "zinc"} href="/dashboard/cherry-picks" />
+        <SummaryStat label="Tickets in flight"   value={d.changeTickets.inFlight} highlight="zinc" href="/dashboard/change-tickets" />
+        <SummaryStat label="Releases deploying"  value={d.releases.deploying}    highlight={d.releases.deploying > 0 ? "emerald" : "zinc"} href="/dashboard/release-freeze" />
+      </div>
+    </div>
+  );
+}
+
+function SummaryStat({
+  label, value, highlight, href,
+}: {
+  label: string; value: number; highlight: "emerald" | "amber" | "rose" | "zinc"; href: string;
+}) {
+  const tone = {
+    emerald: "text-emerald-300",
+    amber:   "text-amber-300",
+    rose:    "text-rose-300",
+    zinc:    "text-zinc-300",
+  }[highlight];
+  return (
+    <Link href={href} className="block rounded-xl border border-white/[0.06] bg-white/[0.02] p-3 hover:border-violet-500/30 transition-colors">
+      <p className="text-[9px] font-mono uppercase tracking-wider opacity-70 mb-1">{label}</p>
+      <p className={`text-[20px] font-bold ${tone}`}>{value}</p>
+    </Link>
   );
 }
