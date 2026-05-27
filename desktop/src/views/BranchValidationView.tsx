@@ -125,6 +125,7 @@ export function BranchValidationView() {
             <>
               <EvidencePackButton releaseId={detail.data.releaseId} />
               <PolicyEvaluateButton releaseId={detail.data.releaseId} />
+              <ReadinessEvaluateButton releaseId={detail.data.releaseId} branchSummary={detail.data.summary} />
               <div className="grid grid-cols-4 gap-3">
                 <Stat label="Passing"  value={String(detail.data.summary.passing)}        tone="emerald" />
                 <Stat label="Failing"  value={String(detail.data.summary.failing)}        tone={detail.data.summary.failing > 0 ? "rose" : "zinc"} />
@@ -293,6 +294,81 @@ function PolicyEvaluateButton({ releaseId }: { releaseId: string }) {
         <span>
           <span className={verdictTone(outcome.verdict)}>{outcome.verdict.replace("_", " ")}</span>
           <span className="text-zinc-500"> · {outcome.environmentTier} · +{outcome.opened} · {outcome.refreshed} ref · {outcome.resolved} res</span>
+        </span>
+      )}
+      {outcome.kind === "error" && <span className="text-rose-300">✗ {outcome.message}</span>}
+    </div>
+  );
+}
+
+type ReadinessOutcome =
+  | { kind: "idle" }
+  | { kind: "running" }
+  | { kind: "ok"; overallScore: number; riskLevel: string; blockerCount: number; topBlocker: { category: string; severity: string; message: string } | null }
+  | { kind: "error"; message: string };
+
+function ReadinessEvaluateButton({
+  releaseId,
+  branchSummary,
+}: {
+  releaseId: string;
+  branchSummary: DetailData["summary"];
+}) {
+  const [outcome, setOutcome] = useState<ReadinessOutcome>({ kind: "idle" });
+
+  async function trigger() {
+    setOutcome({ kind: "running" });
+    try {
+      const res = await fetch("/api/dashboard/release-readiness-evaluate", {
+        method: "POST", credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          releaseId,
+          branchValidation: {
+            total: branchSummary.total,
+            passing: branchSummary.passing,
+            failing: branchSummary.failing,
+            notApplicable: branchSummary.notApplicable,
+            unknown: branchSummary.unknown,
+          },
+        }),
+      });
+      const j = await res.json();
+      if (j.ok) {
+        setOutcome({
+          kind: "ok",
+          overallScore: j.data.overallScore,
+          riskLevel: j.data.riskLevel,
+          blockerCount: j.data.blockerCount,
+          topBlocker: j.data.topBlocker,
+        });
+      } else {
+        setOutcome({ kind: "error", message: j.hint ?? j.error });
+      }
+    } catch (e) {
+      setOutcome({ kind: "error", message: e instanceof Error ? e.message : "network error" });
+    }
+  }
+
+  const riskTone = (r: string) =>
+    r === "low" ? "text-emerald-300" : r === "medium" ? "text-amber-300" : r === "high" ? "text-orange-300" : "text-rose-300";
+
+  const busy = outcome.kind === "running";
+  return (
+    <div className="glass-card p-3 border border-amber-500/20 flex items-center gap-2 flex-wrap text-[11px] font-mono">
+      <span className="text-amber-300/70 uppercase tracking-[0.18em] text-[9px]">Readiness</span>
+      <button
+        type="button"
+        disabled={busy}
+        onClick={trigger}
+        className="px-2.5 py-1 rounded border border-amber-500/40 bg-amber-500/[0.12] font-semibold text-amber-100 hover:bg-amber-500/[0.20] disabled:opacity-50 disabled:cursor-wait transition-colors"
+      >
+        {busy ? "Scoring…" : "Re-evaluate"}
+      </button>
+      {outcome.kind === "ok" && (
+        <span>
+          <span className={riskTone(outcome.riskLevel)}>{outcome.overallScore}/100 · {outcome.riskLevel}</span>
+          <span className="text-zinc-500"> · {outcome.blockerCount} blocker{outcome.blockerCount === 1 ? "" : "s"}</span>
         </span>
       )}
       {outcome.kind === "error" && <span className="text-rose-300">✗ {outcome.message}</span>}

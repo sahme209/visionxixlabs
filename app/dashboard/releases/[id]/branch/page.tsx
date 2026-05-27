@@ -103,6 +103,7 @@ export default function BranchDetailPage() {
 
       <EvidencePackButton releaseId={releaseId} repositoryId={repositoryId} />
       <PolicyEvaluateButton releaseId={releaseId} />
+      <ReadinessEvaluateButton releaseId={releaseId} branchSummary={data?.summary ?? null} />
 
       {loading && <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 mb-6 text-[12px] text-zinc-400">Loading branch validation…</div>}
       {!loading && networkError && (
@@ -323,6 +324,95 @@ function PolicyEvaluateButton({ releaseId }: { releaseId: string }) {
         <span className="font-mono text-[11.5px]">
           <span className={verdictTone(outcome.verdict)}>{outcome.verdict.replace("_", " ")}</span>
           <span className="text-zinc-500"> · {outcome.environmentTier} · +{outcome.opened} opened · {outcome.refreshed} refreshed · {outcome.resolved} resolved</span>
+        </span>
+      )}
+      {outcome.kind === "error" && (
+        <span className="font-mono text-rose-300 text-[11.5px]">✗ {outcome.message}</span>
+      )}
+    </div>
+  );
+}
+
+/* ──────────────────────────────────────────────────────────────────
+   Phase 480 — Re-evaluate readiness button.
+   ────────────────────────────────────────────────────────────── */
+
+type ReadinessOutcome =
+  | { kind: "idle" }
+  | { kind: "running" }
+  | { kind: "ok"; overallScore: number; riskLevel: string; blockerCount: number; topBlocker: { category: string; severity: string; message: string } | null }
+  | { kind: "error"; message: string };
+
+function ReadinessEvaluateButton({
+  releaseId,
+  branchSummary,
+}: {
+  releaseId: string;
+  branchSummary: DetailData["summary"] | null;
+}) {
+  const [outcome, setOutcome] = useState<ReadinessOutcome>({ kind: "idle" });
+
+  async function trigger() {
+    setOutcome({ kind: "running" });
+    try {
+      const res = await fetch("/api/dashboard/release-readiness-evaluate", {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          releaseId,
+          ...(branchSummary
+            ? {
+                branchValidation: {
+                  total: branchSummary.total,
+                  passing: branchSummary.passing,
+                  failing: branchSummary.failing,
+                  notApplicable: branchSummary.notApplicable,
+                  unknown: branchSummary.unknown,
+                },
+              }
+            : {}),
+        }),
+      });
+      const j = await res.json();
+      if (j.ok) {
+        setOutcome({
+          kind: "ok",
+          overallScore: j.data.overallScore,
+          riskLevel: j.data.riskLevel,
+          blockerCount: j.data.blockerCount,
+          topBlocker: j.data.topBlocker,
+        });
+      } else {
+        setOutcome({ kind: "error", message: j.hint ?? j.error });
+      }
+    } catch (e) {
+      setOutcome({ kind: "error", message: e instanceof Error ? e.message : "network error" });
+    }
+  }
+
+  const riskTone = (r: string) =>
+    r === "low" ? "text-emerald-300" : r === "medium" ? "text-amber-300" : r === "high" ? "text-orange-300" : "text-rose-300";
+
+  const busy = outcome.kind === "running";
+  return (
+    <div className="mb-6 rounded-2xl border border-amber-500/[0.18] bg-amber-500/[0.03] p-4 flex items-center gap-3 flex-wrap text-[12px]">
+      <span className="text-[10px] font-mono uppercase tracking-wider text-amber-300/70">Readiness</span>
+      <button
+        type="button"
+        disabled={busy}
+        onClick={trigger}
+        className="px-3 py-1.5 rounded-lg border border-amber-500/40 bg-amber-500/[0.12] font-semibold text-amber-100 hover:bg-amber-500/[0.20] disabled:opacity-50 disabled:cursor-wait transition-colors"
+      >
+        {busy ? "Scoring…" : "Re-evaluate readiness"}
+      </button>
+      {outcome.kind === "ok" && (
+        <span className="font-mono text-[11.5px]">
+          <span className={riskTone(outcome.riskLevel)}>{outcome.overallScore}/100 · {outcome.riskLevel}</span>
+          <span className="text-zinc-500"> · {outcome.blockerCount} blocker{outcome.blockerCount === 1 ? "" : "s"}</span>
+          {outcome.topBlocker && (
+            <span className="text-zinc-400"> · top: {outcome.topBlocker.message}</span>
+          )}
         </span>
       )}
       {outcome.kind === "error" && (
