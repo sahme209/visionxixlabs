@@ -38,6 +38,7 @@ import { ManualFixesView } from "./views/ManualFixesView";
 import { ReleaseAuditView } from "./views/ReleaseAuditView";
 import { WebhookDeliveriesView } from "./views/WebhookDeliveriesView";
 import { BranchProtectionView } from "./views/BranchProtectionView";
+import { ReleaseNotesView } from "./views/ReleaseNotesView";
 import { useTrayApprovalsBadge } from "./lib/useTrayApprovalsBadge";
 import { useConnectorHealthAmbientPoll } from "./lib/connectorHealthStore";
 import { useSseStream } from "./lib/useSseStream";
@@ -76,6 +77,7 @@ export type View =
   | "release-audit"
   | "webhook-deliveries"
   | "branch-protection"
+  | "release-notes"
   // Automation
   | "activity"
   | "workflows"
@@ -173,6 +175,7 @@ export default function App() {
           {activeView === "release-audit"     && <ReleaseAuditView />}
           {activeView === "webhook-deliveries" && <WebhookDeliveriesView />}
           {activeView === "branch-protection" && <BranchProtectionView />}
+          {activeView === "release-notes"    && <ReleaseNotesView />}
           {activeView === "activity"      && <ActivityView />}
           {activeView === "workflows"     && <WorkflowsView />}
           {activeView === "approvals"     && <ApprovalsView />}

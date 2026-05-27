@@ -3118,6 +3118,39 @@ model AuditEvent {
 /// providers are no-ops. Stores the verified payload so downstream
 /// reducers (release-tag refresh, PR sync, branch validation refresh)
 /// can hydrate themselves without a second HTTP roundtrip.
+/// Phase 500 — Release notes draft.
+///
+/// One row per Release. Bullets are stored as a JSON array so the UI
+/// can render the same shape the AI generator (lib/releaseops/
+/// aiReleaseNoteGenerator.ts) produces. Closed-union status: draft |
+/// reviewed | published — reject-by-default state machine.
+model ReleaseNotesDraft {
+  id              String   @id @default(cuid())
+  organizationId  String
+  releaseId       String   @unique
+  /// Closed-union status: draft | reviewed | published.
+  status          String   @default("draft")
+  /// JSON array of release-note bullets (strings).
+  bulletsJson     Json
+  /// Free-form headline the operator can override.
+  headline        String?
+  /// Source of the draft: ai | manual | imported.
+  source          String   @default("manual")
+  /// User who reviewed the draft (transition draft → reviewed).
+  reviewedByUserId String?
+  reviewedAt      DateTime?
+  /// User who published the draft (transition reviewed → published).
+  publishedByUserId String?
+  publishedAt     DateTime?
+  /// Optional outbound URL where the published notes live.
+  publishedUrl    String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([organizationId, status])
+  @@index([organizationId, releaseId])
+}
+
 /// Phase 499 — branch protection snapshot.
 ///
 /// One row per (repositoryId, branchName). Captures whether merges
