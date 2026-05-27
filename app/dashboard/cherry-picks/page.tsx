@@ -175,6 +175,13 @@ export default function CherryPicksPage() {
                     <p className="text-[11.5px] text-zinc-400 mt-2 italic">"{e.decisionReason}"</p>
                   )}
                   {e.status === "requested" && <DecideControls exceptionId={e.id} onDecided={loadList} />}
+                  {e.status === "approved" && (
+                    <ValidateControls
+                      exceptionId={e.id}
+                      currentlyValidated={e.hasFinalCommitValidation}
+                      onChanged={loadList}
+                    />
+                  )}
                 </div>
               ))}
             </div>
@@ -427,6 +434,81 @@ function Stat({ icon: Icon, label, value, tone }: { icon: typeof ScissorsIcon; l
         <Icon className="h-4 w-4 opacity-80" />
         <p className="text-[20px] font-bold">{value}</p>
       </div>
+    </div>
+  );
+}
+
+/* ──────────────────────────────────────────────────────────────────
+   Phase 492 — Final-commit validation toggle.
+   ────────────────────────────────────────────────────────────── */
+
+type ValidateState =
+  | { kind: "idle" }
+  | { kind: "submitting"; targetState: boolean }
+  | { kind: "ok"; nowValidated: boolean }
+  | { kind: "error"; message: string };
+
+function ValidateControls({
+  exceptionId,
+  currentlyValidated,
+  onChanged,
+}: {
+  exceptionId: string;
+  currentlyValidated: boolean;
+  onChanged: () => void;
+}) {
+  const [state, setState] = useState<ValidateState>({ kind: "idle" });
+
+  async function flip(validated: boolean) {
+    setState({ kind: "submitting", targetState: validated });
+    try {
+      const res = await fetch("/api/dashboard/cherry-pick-validate", {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ exceptionId, validated }),
+      });
+      const j = await res.json();
+      if (j.ok) {
+        setState({ kind: "ok", nowValidated: j.data.hasFinalCommitValidation });
+        setTimeout(onChanged, 500);
+      } else {
+        setState({ kind: "error", message: j.hint ?? j.error });
+      }
+    } catch (e) {
+      setState({ kind: "error", message: e instanceof Error ? e.message : "network error" });
+    }
+  }
+
+  const busy = state.kind === "submitting";
+  return (
+    <div className="mt-3 pt-3 border-t border-white/[0.04] flex items-center gap-2 flex-wrap text-[11px] font-mono">
+      <span className="text-zinc-500 uppercase tracking-[0.18em] text-[10px]">Final-commit validation</span>
+      {currentlyValidated ? (
+        <button
+          type="button"
+          disabled={busy}
+          onClick={() => flip(false)}
+          className="px-3 py-1 rounded border border-zinc-500/40 bg-zinc-500/[0.08] text-zinc-200 hover:bg-zinc-500/[0.15] disabled:opacity-50 transition-colors"
+        >
+          {busy && state.kind === "submitting" && !state.targetState ? "clearing…" : "Clear validation"}
+        </button>
+      ) : (
+        <button
+          type="button"
+          disabled={busy}
+          onClick={() => flip(true)}
+          className="px-3 py-1 rounded border border-emerald-500/30 bg-emerald-500/[0.08] text-emerald-200 hover:bg-emerald-500/[0.15] disabled:opacity-50 transition-colors"
+        >
+          {busy && state.kind === "submitting" && state.targetState ? "validating…" : "Confirm final commits"}
+        </button>
+      )}
+      {state.kind === "ok" && (
+        <span className="text-emerald-300">✓ now {state.nowValidated ? "validated" : "unvalidated"}</span>
+      )}
+      {state.kind === "error" && (
+        <span className="text-rose-300">✗ {state.message}</span>
+      )}
     </div>
   );
 }
