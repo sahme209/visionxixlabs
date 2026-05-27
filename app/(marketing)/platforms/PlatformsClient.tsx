@@ -39,27 +39,32 @@ const SURFACES = [
 export function PlatformsClient() {
   return (
     <div className="relative">
-      <div className="pointer-events-none fixed inset-0 z-0 opacity-50">
-        <div className="absolute top-0 right-0 h-[70vh] w-[55vw] rounded-full bg-gradient-to-br from-cyan-500/15 via-indigo-500/10 to-transparent blur-3xl" />
+      <div aria-hidden className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
+        <div className="ambient-drift absolute top-0 right-0 h-[60vh] w-[50vw] rounded-full bg-brand-violet/[0.08] blur-[140px]" />
+        <div className="ambient-drift absolute top-[15%] left-[5%] h-[50vh] w-[40vw] rounded-full bg-brand-coral/[0.06] blur-[130px]" style={{ animationDelay: "-8s" }} />
+        <div className="ambient-drift absolute bottom-[5%] right-[10%] h-[45vh] w-[35vw] rounded-full bg-cyan-500/[0.05] blur-[120px]" style={{ animationDelay: "-14s" }} />
       </div>
 
-      <section className="relative z-10 mx-auto max-w-6xl px-6 md:px-10 pt-20 pb-12">
-        <motion.span
+      <section className="relative z-10 mx-auto max-w-6xl px-6 md:px-10 pt-24 pb-12">
+        <motion.p
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
-          className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-3 py-1 text-[10px] font-mono uppercase tracking-widest text-cyan-300"
+          className="mono-label inline-flex items-center gap-3"
         >
-          three surfaces · one contract
-        </motion.span>
+          <span className="text-brand-coral/90 tabular-nums">PL</span>
+          <span className="h-px w-6 bg-gradient-to-r from-brand-coral/60 to-transparent" />
+          Three surfaces · one contract
+        </motion.p>
         <motion.h1
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="mt-5 text-4xl md:text-6xl font-bold tracking-[-0.04em] leading-[1.05]"
+          className="font-display mt-5 text-4xl md:text-6xl font-bold leading-[1.04]"
         >
           Where you work,{" "}
-          <span className="bg-gradient-to-r from-cyan-300 to-indigo-300 bg-clip-text text-transparent">
+          <span className="relative inline-block">
             Axiom shows up.
+            <span aria-hidden className="absolute left-0 -bottom-0.5 h-[2px] w-full rounded-full bg-gradient-to-r from-brand-coral via-fuchsia-400/70 to-transparent" />
           </span>
         </motion.h1>
         <motion.p

@@ -126,29 +126,34 @@ export function FaqClient() {
 
   return (
     <div className="relative">
-      {/* Ambient aurora */}
-      <div className="pointer-events-none fixed inset-0 z-0 opacity-50">
-        <div className="absolute -top-1/4 right-1/4 h-[70vh] w-[60vw] rounded-full bg-gradient-to-br from-indigo-500/15 via-fuchsia-500/8 to-transparent blur-3xl" />
+      {/* Huly aurora — coral × violet × cyan */}
+      <div aria-hidden className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
+        <div className="ambient-drift absolute -top-1/4 right-1/4 h-[60vh] w-[50vw] rounded-full bg-brand-violet/[0.08] blur-[140px]" />
+        <div className="ambient-drift absolute top-[15%] left-[5%] h-[50vh] w-[40vw] rounded-full bg-brand-coral/[0.06] blur-[130px]" style={{ animationDelay: "-8s" }} />
+        <div className="ambient-drift absolute bottom-[5%] right-[10%] h-[40vh] w-[35vw] rounded-full bg-cyan-500/[0.04] blur-[120px]" style={{ animationDelay: "-14s" }} />
       </div>
 
       {/* ===== HERO ===== */}
-      <section className="relative z-10 mx-auto max-w-4xl px-6 md:px-10 pt-20 pb-10">
-        <motion.span
+      <section className="relative z-10 mx-auto max-w-4xl px-6 md:px-10 pt-24 pb-10">
+        <motion.p
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
-          className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-3 py-1 text-[10px] font-mono uppercase tracking-widest text-indigo-300"
+          className="mono-label inline-flex items-center gap-3"
         >
-          buyer-first answers
-        </motion.span>
+          <span className="text-brand-coral/90 tabular-nums">FQ</span>
+          <span className="h-px w-6 bg-gradient-to-r from-brand-coral/60 to-transparent" />
+          Buyer-first answers
+        </motion.p>
         <motion.h1
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="mt-5 text-4xl md:text-5xl font-bold tracking-[-0.04em] leading-[1.05]"
+          className="font-display mt-5 text-4xl md:text-5xl font-bold leading-[1.04]"
         >
           The honest{" "}
-          <span className="bg-gradient-to-r from-indigo-300 to-fuchsia-300 bg-clip-text text-transparent">
+          <span className="relative inline-block">
             FAQ.
+            <span aria-hidden className="absolute left-0 -bottom-0.5 h-[2px] w-full rounded-full bg-gradient-to-r from-brand-coral via-fuchsia-400/70 to-transparent" />
           </span>
         </motion.h1>
         <motion.p

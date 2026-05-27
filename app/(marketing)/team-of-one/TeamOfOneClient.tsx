@@ -134,10 +134,11 @@ export function TeamOfOneClient() {
       {/* Cursor-tracking aurora — pointer is hidden when prefers-reduced-motion */}
       {!reduce && <div className="pointer-events-none fixed inset-0 z-0" style={cursorStyle} />}
 
-      {/* Ambient aurora gradient bands */}
-      <div className="pointer-events-none fixed inset-0 z-0 opacity-60">
-        <div className="absolute -top-1/4 left-1/4 h-[80vh] w-[60vw] rounded-full bg-gradient-to-br from-indigo-500/20 via-violet-500/10 to-transparent blur-3xl animate-[aurora-a_18s_ease-in-out_infinite_alternate]" />
-        <div className="absolute -bottom-1/4 right-1/4 h-[80vh] w-[60vw] rounded-full bg-gradient-to-br from-emerald-500/15 via-cyan-500/10 to-transparent blur-3xl animate-[aurora-b_22s_ease-in-out_infinite_alternate]" />
+      {/* Huly aurora — coral × violet × cyan */}
+      <div aria-hidden className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
+        <div className="ambient-drift absolute -top-1/4 left-1/4 h-[70vh] w-[55vw] rounded-full bg-brand-violet/[0.10] blur-[150px]" />
+        <div className="ambient-drift absolute top-[15%] right-[5%] h-[55vh] w-[45vw] rounded-full bg-brand-coral/[0.07] blur-[140px]" style={{ animationDelay: "-8s" }} />
+        <div className="ambient-drift absolute -bottom-1/4 right-1/4 h-[60vh] w-[45vw] rounded-full bg-cyan-500/[0.06] blur-[130px]" style={{ animationDelay: "-14s" }} />
       </div>
 
       <style jsx>{`
@@ -150,25 +151,31 @@ export function TeamOfOneClient() {
         style={{ opacity: heroOpacity, scale: heroScale }}
         className="relative z-10 mx-auto max-w-6xl px-6 md:px-10 pt-28 pb-24"
       >
-        <motion.span
+        <motion.p
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.05 }}
-          className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-3 py-1 text-[10px] font-mono uppercase tracking-widest text-indigo-300"
+          className="mono-label inline-flex items-center gap-3"
         >
-          <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+          <span className="text-brand-coral/90 tabular-nums">T1</span>
+          <span className="h-px w-6 bg-gradient-to-r from-brand-coral/60 to-transparent" />
+          <span className="relative flex h-1.5 w-1.5">
+            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-60" />
+            <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-300" />
+          </span>
           AGI ops · approval_only_no_execution
-        </motion.span>
+        </motion.p>
 
         <motion.h1
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.9, delay: 0.15 }}
-          className="mt-6 text-5xl md:text-7xl font-bold leading-[1.02] tracking-[-0.04em]"
+          className="font-display mt-6 text-5xl md:text-7xl font-bold leading-[1.04]"
         >
           A whole IT team{" "}
-          <span className="bg-gradient-to-r from-indigo-300 via-violet-300 to-emerald-300 bg-clip-text text-transparent">
+          <span className="relative inline-block">
             in one platform.
+            <span aria-hidden className="absolute left-0 -bottom-0.5 h-[2px] w-full rounded-full bg-gradient-to-r from-brand-coral via-fuchsia-400/70 to-transparent" />
           </span>
         </motion.h1>
 
