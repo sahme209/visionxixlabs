@@ -54,15 +54,17 @@ export function RepositoriesView() {
   const [loading, setLoading] = useState(true);
   const [networkError, setNetworkError] = useState<string | null>(null);
 
-  useEffect(() => {
-    let cancelled = false;
+  function loadList() {
+    setLoading(true);
+    setNetworkError(null);
     fetch("/api/dashboard/repository-list", { credentials: "include" })
       .then((r) => r.json())
-      .then((j: RespBody) => { if (!cancelled) setResp(j); })
-      .catch((e) => { if (!cancelled) setNetworkError(e instanceof Error ? e.message : "Network error."); })
-      .finally(() => { if (!cancelled) setLoading(false); });
-    return () => { cancelled = true; };
-  }, []);
+      .then((j: RespBody) => setResp(j))
+      .catch((e) => setNetworkError(e instanceof Error ? e.message : "Network error."))
+      .finally(() => setLoading(false));
+  }
+
+  useEffect(() => { loadList(); }, []);
 
   const data = resp?.ok ? resp.data : null;
   const errorBody = resp && !resp.ok ? resp : null;
@@ -75,6 +77,8 @@ export function RepositoriesView() {
           GitHub / GitLab / Azure DevOps inventory. Drives branch validation + release-tag diffs.
         </p>
       </div>
+
+      <NewRepositoryPanel onCreated={loadList} />
 
       {loading && <div className="glass-card p-4 text-sm text-zinc-400">Loading repositories…</div>}
 
@@ -223,5 +227,142 @@ function Stat({ label, value, tone = "zinc" }: { label: string; value: string; t
       <p className="text-[9px] font-mono uppercase tracking-wider opacity-70">{label}</p>
       <p className="text-lg font-bold mt-0.5">{value}</p>
     </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────
+// Phase 494 — register a new repository (desktop sibling).
+// ─────────────────────────────────────────────────────────────────
+
+type NewRepoState =
+  | { kind: "closed" }
+  | { kind: "open" }
+  | { kind: "submitting" }
+  | { kind: "ok"; created: boolean; displayName: string }
+  | { kind: "error"; message: string };
+
+function NewRepositoryPanel({ onCreated }: { onCreated: () => void }) {
+  const [state, setState] = useState<NewRepoState>({ kind: "closed" });
+  const [provider, setProvider] = useState<"github" | "gitlab" | "azuredevops" | "other">("github");
+  const [owner, setOwner] = useState("");
+  const [name, setName] = useState("");
+  const [url, setUrl] = useState("");
+  const [defaultBranch, setDefaultBranch] = useState("");
+  const [flavor, setFlavor] = useState("");
+
+  function reset() {
+    setProvider("github"); setOwner(""); setName(""); setUrl(""); setDefaultBranch(""); setFlavor("");
+    setState({ kind: "closed" });
+  }
+
+  async function submit() {
+    setState({ kind: "submitting" });
+    try {
+      const res = await fetch("/api/dashboard/repository-create", {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          provider, remoteOwner: owner, remoteName: name,
+          ...(url ? { remoteUrl: url } : {}),
+          ...(defaultBranch ? { defaultBranch } : {}),
+          ...(flavor ? { repoFlavor: flavor } : {}),
+        }),
+      });
+      const j = await res.json();
+      if (j.ok) {
+        setState({ kind: "ok", created: j.data.created, displayName: j.data.displayName });
+        onCreated();
+        setTimeout(reset, 1200);
+      } else {
+        setState({ kind: "error", message: j.hint ?? j.error });
+      }
+    } catch (e) {
+      setState({ kind: "error", message: e instanceof Error ? e.message : "network error" });
+    }
+  }
+
+  if (state.kind === "closed") {
+    return (
+      <div className="flex justify-end">
+        <button
+          type="button"
+          onClick={() => setState({ kind: "open" })}
+          className="px-3 py-1.5 rounded-lg border border-violet-500/30 bg-violet-500/[0.08] text-[12px] font-semibold text-violet-200 hover:bg-violet-500/[0.16] transition-colors"
+        >
+          + Register repository
+        </button>
+      </div>
+    );
+  }
+
+  const busy = state.kind === "submitting";
+  return (
+    <div className="glass-card p-4 border border-violet-500/20">
+      <div className="flex items-center justify-between mb-3">
+        <p className="text-sm font-semibold text-violet-100">New repository</p>
+        <button type="button" onClick={reset} className="text-[11px] font-mono text-zinc-400 hover:text-zinc-200" disabled={busy}>cancel</button>
+      </div>
+      <div className="grid grid-cols-3 gap-2 mb-2">
+        <label className="block">
+          <span className="block text-[10px] font-mono uppercase tracking-wider text-zinc-400 mb-1">Provider</span>
+          <select
+            value={provider}
+            onChange={(e) => setProvider(e.target.value as typeof provider)}
+            disabled={busy}
+            className="w-full rounded-md border border-zinc-700/40 bg-zinc-900/60 px-2 py-1.5 text-[12px] text-zinc-100 disabled:opacity-50"
+          >
+            <option value="github">GitHub</option>
+            <option value="gitlab">GitLab</option>
+            <option value="azuredevops">Azure DevOps</option>
+            <option value="other">Other</option>
+          </select>
+        </label>
+        <Field label="Owner / org" value={owner} onChange={setOwner} placeholder="acme" disabled={busy} />
+        <Field label="Repo name"   value={name}  onChange={setName}  placeholder="checkout" disabled={busy} />
+      </div>
+      <div className="grid grid-cols-3 gap-2">
+        <Field label="Remote URL (optional)" value={url} onChange={setUrl} placeholder="auto-derived if blank" disabled={busy} />
+        <Field label="Default branch"        value={defaultBranch} onChange={setDefaultBranch} placeholder="main" disabled={busy} />
+        <Field label="Flavor tag"            value={flavor} onChange={setFlavor} placeholder="service · infra" disabled={busy} />
+      </div>
+      <div className="mt-3 flex items-center gap-3">
+        <button
+          type="button"
+          onClick={submit}
+          disabled={busy || !owner || !name}
+          className="px-3 py-1.5 rounded-md border border-violet-500/40 bg-violet-500/[0.14] text-[12px] font-semibold text-violet-100 hover:bg-violet-500/[0.22] disabled:opacity-50 disabled:cursor-wait transition-colors"
+        >
+          {busy ? "Submitting…" : "Register"}
+        </button>
+        {state.kind === "ok" && (
+          <span className="text-[11px] font-mono text-emerald-300">
+            ✓ {state.created ? "created" : "already existed"} · {state.displayName}
+          </span>
+        )}
+        {state.kind === "error" && (
+          <span className="text-[11px] font-mono text-rose-300">✗ {state.message}</span>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function Field({ label, value, onChange, placeholder, disabled }: {
+  label: string; value: string; onChange: (v: string) => void;
+  placeholder?: string; disabled?: boolean;
+}) {
+  return (
+    <label className="block">
+      <span className="block text-[10px] font-mono uppercase tracking-wider text-zinc-400 mb-1">{label}</span>
+      <input
+        type="text"
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder={placeholder}
+        disabled={disabled}
+        className="w-full rounded-md border border-zinc-700/40 bg-zinc-900/60 px-2 py-1.5 text-[12px] text-zinc-100 placeholder:text-zinc-600 focus:border-violet-500/40 focus:outline-none disabled:opacity-50"
+      />
+    </label>
   );
 }
