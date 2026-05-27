@@ -68,15 +68,17 @@ export default function PolicyViolationsPage() {
   const [loading, setLoading] = useState(true);
   const [networkError, setNetworkError] = useState<string | null>(null);
 
-  useEffect(() => {
-    let cancelled = false;
+  function loadList() {
+    setLoading(true);
+    setNetworkError(null);
     fetch("/api/dashboard/policy-violation-list", { credentials: "include" })
       .then((r) => r.json())
-      .then((j: RespBody) => { if (!cancelled) setResp(j); })
-      .catch((e) => { if (!cancelled) setNetworkError(e instanceof Error ? e.message : "Network error."); })
-      .finally(() => { if (!cancelled) setLoading(false); });
-    return () => { cancelled = true; };
-  }, []);
+      .then((j: RespBody) => setResp(j))
+      .catch((e) => setNetworkError(e instanceof Error ? e.message : "Network error."))
+      .finally(() => setLoading(false));
+  }
+
+  useEffect(() => { loadList(); }, []);
 
   const data = resp?.ok ? resp.data : null;
   const errorBody = resp && !resp.ok ? resp : null;
@@ -171,6 +173,9 @@ export default function PolicyViolationsPage() {
                       <span>· exception by {v.exceptionGrantedByUserId} at {new Date(v.exceptionGrantedAtIso).toLocaleString()}</span>
                     )}
                   </div>
+                  {v.status === "open" && (
+                    <DecideControls violationId={v.id} exceptionAllowed={v.exceptionAllowed} onDecided={loadList} />
+                  )}
                 </div>
               ))}
             </div>
@@ -196,6 +201,118 @@ function Stat({ icon: Icon, label, value, tone }: { icon: typeof ShieldExclamati
         <Icon className="h-4 w-4 opacity-80" />
         <p className="text-[20px] font-bold">{value}</p>
       </div>
+    </div>
+  );
+}
+
+/* ──────────────────────────────────────────────────────────────────
+   Phase 479 — DecideControls: grant exception or resolve.
+   ────────────────────────────────────────────────────────────── */
+
+type DecideState =
+  | { kind: "idle" }
+  | { kind: "granting" }
+  | { kind: "submitting"; which: "grant_exception" | "resolve" }
+  | { kind: "ok"; which: "grant_exception" | "resolve" }
+  | { kind: "error"; message: string };
+
+function DecideControls({
+  violationId,
+  exceptionAllowed,
+  onDecided,
+}: {
+  violationId: string;
+  exceptionAllowed: boolean;
+  onDecided: () => void;
+}) {
+  const [state, setState] = useState<DecideState>({ kind: "idle" });
+  const [reason, setReason] = useState("");
+
+  async function decide(which: "grant_exception" | "resolve", reasonText?: string) {
+    setState({ kind: "submitting", which });
+    try {
+      const res = await fetch("/api/dashboard/policy-violation-decide", {
+        method: "POST", credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ violationId, action: which, ...(reasonText ? { reason: reasonText } : {}) }),
+      });
+      const j = await res.json();
+      if (j.ok) {
+        setState({ kind: "ok", which });
+        setTimeout(onDecided, 500);
+      } else {
+        setState({ kind: "error", message: j.hint ?? j.error });
+      }
+    } catch (e) {
+      setState({ kind: "error", message: e instanceof Error ? e.message : "network error" });
+    }
+  }
+
+  if (state.kind === "granting") {
+    const valid = reason.trim().length >= 10;
+    return (
+      <div className="mt-3 pt-3 border-t border-white/[0.04]">
+        <span className="block text-[10px] font-mono uppercase tracking-wider text-zinc-400 mb-1">
+          Exception rationale ({reason.trim().length}/10 min)
+        </span>
+        <textarea
+          value={reason}
+          onChange={(e) => setReason(e.target.value)}
+          placeholder="Why is this exception justified? Include approval reference + risk acceptance."
+          rows={2}
+          className="w-full rounded-lg border border-white/[0.08] bg-black/30 px-3 py-2 text-[12.5px] text-zinc-100 placeholder:text-zinc-600 focus:border-violet-500/40 focus:outline-none"
+        />
+        <div className="mt-2 flex items-center gap-2">
+          <button
+            type="button"
+            disabled={!valid}
+            onClick={() => decide("grant_exception", reason.trim())}
+            className="px-3 py-1 rounded border border-violet-500/40 bg-violet-500/[0.12] text-[11.5px] font-semibold text-violet-100 hover:bg-violet-500/[0.20] disabled:opacity-50 transition-colors"
+          >
+            Confirm exception
+          </button>
+          <button
+            type="button"
+            onClick={() => { setReason(""); setState({ kind: "idle" }); }}
+            className="px-3 py-1 rounded border border-white/[0.08] bg-white/[0.02] text-[11.5px] text-zinc-300 hover:bg-white/[0.05] transition-colors"
+          >
+            Cancel
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  const busy = state.kind === "submitting";
+  return (
+    <div className="mt-3 pt-3 border-t border-white/[0.04] flex items-center gap-2 flex-wrap text-[11px] font-mono">
+      {exceptionAllowed && (
+        <button
+          type="button"
+          disabled={busy}
+          onClick={() => setState({ kind: "granting" })}
+          className="px-3 py-1 rounded border border-violet-500/30 bg-violet-500/[0.06] text-violet-200 hover:bg-violet-500/[0.12] disabled:opacity-50 transition-colors"
+        >
+          Grant exception…
+        </button>
+      )}
+      <button
+        type="button"
+        disabled={busy}
+        onClick={() => decide("resolve")}
+        className="px-3 py-1 rounded border border-emerald-500/30 bg-emerald-500/[0.08] text-emerald-200 hover:bg-emerald-500/[0.15] disabled:opacity-50 transition-colors"
+      >
+        {busy && state.kind === "submitting" && state.which === "resolve" ? "resolving…" : "Mark resolved"}
+      </button>
+      {!exceptionAllowed && (
+        <span className="text-[10.5px] text-zinc-500">(exception not eligible for this rule)</span>
+      )}
+      {state.kind === "ok" && (
+        <span className="text-emerald-300">✓ {state.which === "grant_exception" ? "exception granted" : "resolved"}</span>
+      )}
+      {state.kind === "error" && (
+        <span className="text-rose-300">✗ {state.message}</span>
+      )}
     </div>
   );
 }
