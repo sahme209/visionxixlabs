@@ -2983,3 +2983,52 @@ model ChangeTicket {
   @@index([organizationId, provider])
   @@index([assigneeUserId])
 }
+
+/// Phase 485 — drift findings.
+///
+/// One row per resource where declared (IaC) state differs from observed
+/// (cloud / runtime) state. Application layer enforces closed-union
+/// strings on resourceKind, severity, status. The detector that
+/// populates this table reads from IaC providers (Terraform plan,
+/// Helm release, Liquibase changelog) + cloud providers (AWS/Azure/GCP)
+/// — it ships in a follow-on phase.
+model DriftFinding {
+  id              String   @id @default(cuid())
+  organizationId  String
+  /// Resource kind closed-union: aws_resource | azure_resource | gcp_resource | k8s_resource | helm_release | terraform_resource | database_object | runtime_config.
+  resourceKind    String
+  /// Stable identifier (ARN, ResourceID, fully-qualified name).
+  resourceId      String
+  /// Operator-readable display name.
+  displayName     String
+  /// Source application this resource belongs to (FK soft).
+  applicationId   String?
+  /// Environment tier the resource lives in.
+  environmentTier String?
+  /// Closed-union severity: low | medium | high | critical.
+  severity        String
+  /// Closed-union status: open | acknowledged | suppressed | resolved.
+  status          String   @default("open")
+  /// Free-form short summary of the drift ("EBS volume type changed from gp3 to gp2").
+  summary         String
+  /// Declared (IaC) state snapshot at detection time.
+  declaredJson    Json?
+  /// Observed (runtime) state snapshot at detection time.
+  observedJson    Json?
+  /// Optional autocheck remediation key (Terraform module, kubectl patch, etc.).
+  remediationKey  String?
+  /// User who acknowledged or suppressed.
+  decidedByUserId String?
+  decidedAt       DateTime?
+  /// Reason given when suppressed/acknowledged.
+  decisionReason  String?
+  detectedAt      DateTime @default(now())
+  lastSeenAt      DateTime @default(now())
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@unique([organizationId, resourceKind, resourceId])
+  @@index([organizationId, status])
+  @@index([organizationId, severity])
+  @@index([applicationId])
+}
