@@ -3108,13 +3108,17 @@ model AuditEvent {
   @@index([organizationId, kind])
 }
 
-/// Phase 497 — GitHub (and future GitLab/ADO) webhook delivery log.
+/// Phase 497 — GitHub (and future GitLab/ADO) inbound webhook delivery log.
+///
+/// Distinct from the outbound `WebhookDelivery` model (Phase 395) which
+/// tracks attempts the platform makes against integrator endpoints.
+/// This model tracks payloads *received* from upstream providers.
 ///
 /// Idempotent on (provider, deliveryId) — duplicate retries from
 /// providers are no-ops. Stores the verified payload so downstream
 /// reducers (release-tag refresh, PR sync, branch validation refresh)
 /// can hydrate themselves without a second HTTP roundtrip.
-model WebhookDelivery {
+model InboundWebhookDelivery {
   id              String   @id @default(cuid())
   organizationId  String
   /// Closed-union provider: github | gitlab | azuredevops.

@@ -78,7 +78,7 @@ export interface GithubWebhookRepo {
       where: { provider: string; remoteOwner: string; remoteName: string };
     }): Promise<RepoLookupRow | null>;
   };
-  webhookDelivery: {
+  inboundWebhookDelivery: {
     findUnique(args: {
       where: { provider_deliveryId: { provider: string; deliveryId: string } };
     }): Promise<DeliveryRow | null>;
@@ -232,7 +232,7 @@ export async function dispatchGitHubWebhook(
 
   try {
     // Idempotency check.
-    const existing = await repo.webhookDelivery.findUnique({
+    const existing = await repo.inboundWebhookDelivery.findUnique({
       where: { provider_deliveryId: { provider: "github", deliveryId: input.deliveryId } },
     });
     if (existing) {
@@ -288,7 +288,7 @@ export async function dispatchGitHubWebhook(
 
     const summary = summaryFor(input.eventKind, parsed) || `${input.eventKind} delivery`;
 
-    await repo.webhookDelivery.create({
+    await repo.inboundWebhookDelivery.create({
       data: {
         organizationId,
         provider: "github",
@@ -338,7 +338,7 @@ export interface DeliveryView {
 }
 
 export interface DeliveryListRepo {
-  webhookDelivery: {
+  inboundWebhookDelivery: {
     findMany(args: {
       where: { organizationId: string };
       orderBy: { receivedAt: "desc" };
@@ -386,7 +386,7 @@ export async function buildWebhookDeliveryListResponse(
 ): Promise<ListResult> {
   try {
     const now = opts.now ?? new Date();
-    const rows = await repo.webhookDelivery.findMany({
+    const rows = await repo.inboundWebhookDelivery.findMany({
       where: { organizationId },
       orderBy: { receivedAt: "desc" },
       take: 100,

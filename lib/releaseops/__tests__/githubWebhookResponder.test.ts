@@ -28,7 +28,7 @@ function makeRepo(): Stub {
         ) ?? null;
       },
     },
-    webhookDelivery: {
+    inboundWebhookDelivery: {
       async findUnique({ where }) {
         const k = where.provider_deliveryId;
         return stub._deliveries.find((d) => d.provider === k.provider && d.deliveryId === k.deliveryId) ?? null;
@@ -194,7 +194,7 @@ describe("dispatchGitHubWebhook", () => {
   it("503 migration_pending", async () => {
     const repo = makeRepo();
     repo._repos.push({ id: "r1", organizationId: "o1", remoteOwner: "acme", remoteName: "checkout" });
-    repo.webhookDelivery.findUnique = async () => {
+    repo.inboundWebhookDelivery.findUnique = async () => {
       throw Object.assign(new Error("relation does not exist"), { code: "P2021" });
     };
     const r = await dispatchGitHubWebhook(repo, {

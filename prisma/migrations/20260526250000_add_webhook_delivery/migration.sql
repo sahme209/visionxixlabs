@@ -1,10 +1,12 @@
--- Phase 497 — WebhookDelivery scaffold.
+-- Phase 497 — InboundWebhookDelivery scaffold.
 --
--- Idempotent log of every webhook delivery from GitHub / GitLab / ADO.
+-- Distinct from the outbound WebhookDelivery model (Phase 395) which
+-- tracks attempts the platform makes against integrator endpoints.
+-- This table records payloads *received* from upstream providers.
 -- Unique on (provider, deliveryId) — retries collapse to one row.
 
 -- CreateTable
-CREATE TABLE "WebhookDelivery" (
+CREATE TABLE "InboundWebhookDelivery" (
     "id" TEXT NOT NULL,
     "organizationId" TEXT NOT NULL,
     "provider" TEXT NOT NULL,
@@ -16,14 +18,14 @@ CREATE TABLE "WebhookDelivery" (
     "payloadJson" JSONB NOT NULL,
     "receivedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
-    CONSTRAINT "WebhookDelivery_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "InboundWebhookDelivery_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateIndex
-CREATE UNIQUE INDEX "WebhookDelivery_provider_deliveryId_key" ON "WebhookDelivery"("provider", "deliveryId");
+CREATE UNIQUE INDEX "InboundWebhookDelivery_provider_deliveryId_key" ON "InboundWebhookDelivery"("provider", "deliveryId");
 
 -- CreateIndex
-CREATE INDEX "WebhookDelivery_organizationId_receivedAt_idx" ON "WebhookDelivery"("organizationId", "receivedAt");
+CREATE INDEX "InboundWebhookDelivery_organizationId_receivedAt_idx" ON "InboundWebhookDelivery"("organizationId", "receivedAt");
 
 -- CreateIndex
-CREATE INDEX "WebhookDelivery_organizationId_provider_eventKind_idx" ON "WebhookDelivery"("organizationId", "provider", "eventKind");
+CREATE INDEX "InboundWebhookDelivery_organizationId_provider_eventKind_idx" ON "InboundWebhookDelivery"("organizationId", "provider", "eventKind");
