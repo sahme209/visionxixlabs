@@ -181,9 +181,9 @@ export default function ReleaseOpsPage() {
       {/* Background layers */}
       <div className="absolute inset-0 bg-grid-mesh opacity-30 pointer-events-none" aria-hidden />
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[600px] spotlight-orb opacity-60 pointer-events-none" aria-hidden />
-      <div className="absolute top-[20%] -right-40 w-[500px] h-[500px] rounded-full bg-violet-600/[0.05] blur-[140px] pointer-events-none" aria-hidden />
-      <div className="absolute top-[40%] -left-40 w-[500px] h-[500px] rounded-full bg-fuchsia-600/[0.04] blur-[140px] pointer-events-none" aria-hidden />
-      <div className="absolute bottom-[10%] left-1/2 -translate-x-1/2 w-[600px] h-[300px] rounded-full bg-amber-500/[0.05] blur-[120px] pointer-events-none" aria-hidden />
+      <div className="ambient-drift absolute top-[20%] -right-40 w-[520px] h-[480px] rounded-full bg-brand-violet/[0.07] blur-[140px] pointer-events-none" aria-hidden />
+      <div className="ambient-drift absolute top-[40%] -left-40 w-[480px] h-[440px] rounded-full bg-brand-coral/[0.06] blur-[140px] pointer-events-none" style={{ animationDelay: "-8s" }} aria-hidden />
+      <div className="ambient-drift absolute bottom-[10%] left-1/2 -translate-x-1/2 w-[600px] h-[300px] rounded-full bg-cyan-500/[0.05] blur-[120px] pointer-events-none" style={{ animationDelay: "-14s" }} aria-hidden />
 
       <Navigation />
 
@@ -195,21 +195,24 @@ export default function ReleaseOpsPage() {
 
         <div className="max-w-5xl mx-auto relative z-10">
           <Reveal direction="up" blur>
-            <div className="flex items-center gap-3 mb-6">
-              <span className="badge-shimmer badge-shimmer-border inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-violet-500/10 border border-violet-500/20 text-violet-300 text-xs font-semibold backdrop-blur-sm cursor-default">
-                <span className="w-1.5 h-1.5 rounded-full bg-violet-400 animate-pulse" />
-                Axiom · ReleaseOps
+            <p className="mono-label inline-flex items-center gap-3 mb-6">
+              <span className="text-brand-coral/90 tabular-nums">RO</span>
+              <span className="h-px w-6 bg-gradient-to-r from-brand-coral/60 to-transparent" />
+              <span className="relative flex h-1.5 w-1.5">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-brand-coral opacity-60" />
+                <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-brand-coral" />
               </span>
-              <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest">
-                Operational capability · platform-native
-              </span>
-            </div>
+              Axiom <span className="text-zinc-700">·</span> ReleaseOps
+            </p>
           </Reveal>
 
           <Reveal direction="up" blur delay={0.06}>
-            <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold mb-6 leading-[1.05] tracking-[-0.04em]">
+            <h1 className="font-display text-5xl md:text-6xl lg:text-7xl font-bold mb-6 leading-[1.04]">
               Deployment governance.<br />
-              <span className="text-gradient">Operational intelligence.</span>
+              <span className="relative inline-block">
+                Operational intelligence.
+                <span aria-hidden className="absolute left-0 -bottom-0.5 h-[2px] w-full rounded-full bg-gradient-to-r from-brand-coral via-fuchsia-400/70 to-transparent" />
+              </span>
             </h1>
           </Reveal>
 
