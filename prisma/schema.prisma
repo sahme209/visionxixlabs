@@ -3070,3 +3070,40 @@ model ManualFix {
   @@index([organizationId, releaseId])
   @@index([organizationId, fixedAtIso])
 }
+
+/// Phase 496 — release-ops audit event log.
+///
+/// Append-only record of every state-changing action against the
+/// platform: decide approvals, reconcile fixes, transition release,
+/// register repos, evaluate policies, etc. Drives the desktop +
+/// dashboard "audit log" inbox and provides the source of truth for
+/// compliance exports. Closed-union strings on `kind`, `subjectKind`,
+/// `outcome` — application layer enforces.
+model AuditEvent {
+  id              String   @id @default(cuid())
+  organizationId  String
+  /// Closed-union event kind (e.g. cherry_pick.decide, release.transition,
+  /// manual_fix.reconcile, repository.create, policy.evaluate). Stored as
+  /// a free string; the application layer normalizes.
+  kind            String
+  /// Closed-union subject kind (release | cherry_pick | manual_fix |
+  /// repository | application | policy | drift_finding | change_ticket).
+  subjectKind     String
+  /// Stable id of the subject this event refers to.
+  subjectId       String
+  /// Closed-union outcome label (ok | rejected | error | skipped).
+  outcome         String   @default("ok")
+  /// Operator-readable one-line summary.
+  summary         String
+  /// Optional structured detail blob — engine writes, UI may render.
+  detailJson      Json?
+  /// User who took the action (null = system / cron / webhook).
+  actorUserId     String?
+  /// Optional correlation id to tie multiple events from one request.
+  correlationId   String?
+  createdAt       DateTime @default(now())
+
+  @@index([organizationId, createdAt])
+  @@index([organizationId, subjectKind, subjectId])
+  @@index([organizationId, kind])
+}

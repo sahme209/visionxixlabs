@@ -30,6 +30,7 @@ const VIEW_TITLES: Record<View, { title: string; subtitle: string }> = {
   drift:              { title: "Drift", subtitle: "Declared (IaC) vs observed (runtime) state · per-resource diff" },
   applications:       { title: "Applications", subtitle: "Top-level governance unit · register before tracking releases" },
   "manual-fixes":     { title: "Manual fixes", subtitle: "Out-of-band hand-edits · log + reconcile against source-of-truth" },
+  "release-audit":    { title: "Release audit log", subtitle: "Append-only state-change trail · per-org · 500-row page cap" },
   activity:      { title: "Activity",      subtitle: "Runs + your votes + queue health" },
   workflows:     { title: "Workflows",     subtitle: "Recent + active pipeline runs" },
   approvals:     { title: "Approvals",     subtitle: "Runs awaiting human review" },

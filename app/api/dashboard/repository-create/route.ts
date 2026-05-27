@@ -11,6 +11,7 @@ import {
   buildRepositoryCreateResponse,
   type RepositoryCreateRepo,
 } from "@/lib/releaseops/repositoryCreateResponder";
+import { appendAuditEvent, type AuditEventRepo } from "@/lib/releaseops/auditEventResponder";
 
 export const dynamic = "force-dynamic";
 
@@ -42,5 +43,16 @@ export async function POST(req: NextRequest) {
       ...(typeof body.repoFlavor === "string" ? { repoFlavor: body.repoFlavor } : {}),
     },
   );
+
+  if (r.body.ok && r.body.data.created) {
+    await appendAuditEvent(prisma as unknown as AuditEventRepo, {
+      organizationId: ctx.organizationId,
+      kind: "repository.create",
+      subjectKind: "repository",
+      subjectId: r.body.data.id,
+      summary: `Registered ${provider} repo ${r.body.data.displayName}`,
+      actorUserId: ctx.userId ?? null,
+    });
+  }
   return NextResponse.json(r.body, { status: r.status });
 }

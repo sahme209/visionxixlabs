@@ -10,6 +10,7 @@ import {
   buildManualFixReconcileResponse,
   type ManualFixRepo,
 } from "@/lib/releaseops/manualFixResponder";
+import { appendAuditEvent, type AuditEventRepo } from "@/lib/releaseops/auditEventResponder";
 
 export const dynamic = "force-dynamic";
 
@@ -40,5 +41,19 @@ export async function POST(req: NextRequest) {
       ...(typeof body.reconciliationRef === "string" ? { reconciliationRef: body.reconciliationRef } : {}),
     },
   );
+
+  if (r.body.ok) {
+    await appendAuditEvent(prisma as unknown as AuditEventRepo, {
+      organizationId: ctx.organizationId,
+      kind: "manual_fix.reconcile",
+      subjectKind: "manual_fix",
+      subjectId: fixId,
+      summary: outcome === "reconciled"
+        ? `Reconciled manual fix${typeof body.reconciliationRef === "string" && body.reconciliationRef ? ` via ${body.reconciliationRef}` : ""}`
+        : "Marked manual fix as won't fix",
+      outcome: "ok",
+      actorUserId: ctx.userId,
+    });
+  }
   return NextResponse.json(r.body, { status: r.status });
 }
