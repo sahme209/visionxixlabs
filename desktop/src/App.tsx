@@ -158,7 +158,7 @@ export default function App() {
         <TopBar activeView={activeView} onNavigate={setActiveView} />
         <div className="flex-1 min-h-0 flex flex-col">
           {activeView === "start-here"    && <StartHereView onNavigate={setActiveView} />}
-          {activeView === "dashboard"     && <DashboardView />}
+          {activeView === "dashboard"     && <DashboardView onNavigate={setActiveView} />}
           {activeView === "docs"          && <DocsView />}
           {activeView === "multi-cloud"   && <MultiCloudView />}
           {activeView === "security"      && <SecurityView />}

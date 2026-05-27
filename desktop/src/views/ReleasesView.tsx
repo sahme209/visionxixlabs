@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { ViewShell } from "../components/Primitives";
 import type { View } from "../App";
+import { OnboardingChecklist } from "../components/OnboardingChecklist";
 
 /**
  * Phase 447 — desktop sibling for the web /dashboard/releases page.
@@ -112,6 +113,7 @@ export function ReleasesView({ onNavigate }: { onNavigate?: (v: View) => void } 
         </p>
       </div>
 
+      <OnboardingChecklist onNavigate={onNavigate} />
       <HealthSummaryTile onNavigate={onNavigate} />
       <NewReleasePanel onCreated={loadList} />
 

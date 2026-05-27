@@ -6,10 +6,12 @@
  */
 
 import { useEffect, useState } from "react";
+import type { View } from "../App";
 import { desktopClient, type ControlPlaneStateLite } from "../lib/desktopClient";
 import { Card, ExternalLink, Kpi, PostureTile, SectionHeader, ViewShell, LoadingState, Badge, statusToneFor, riskToneFor } from "../components/Primitives";
+import { OnboardingChecklist } from "../components/OnboardingChecklist";
 
-export function DashboardView() {
+export function DashboardView({ onNavigate }: { onNavigate?: (v: View) => void } = {}) {
   const [state, setState] = useState<ControlPlaneStateLite | null>(null);
   const [loading, setLoading] = useState(true);
   const [previewMode, setPreviewMode] = useState(false);
@@ -33,6 +35,8 @@ export function DashboardView() {
   return (
     <ViewShell>
       <AuthStatusBanner previewMode={previewMode} />
+
+      <OnboardingChecklist onNavigate={onNavigate} />
 
       <SectionHeader
         kicker="// control plane"

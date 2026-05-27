@@ -19,6 +19,7 @@ import {
   ArrowPathIcon,
 } from "@heroicons/react/24/outline";
 import { PageIntro } from "@/components/dashboard/PageIntro";
+import { OnboardingChecklist } from "@/components/dashboard/OnboardingChecklist";
 
 type SidebarTone = "emerald" | "amber" | "rose" | "blue" | "zinc";
 type RiskBadge = "low" | "medium" | "high" | "critical" | "unscored";
@@ -123,6 +124,7 @@ export default function ReleasesPage() {
         safetyNote="Click any release → full overview · every transition audited"
       />
 
+      <OnboardingChecklist />
       <HealthSummaryTile />
       <SubsystemNav />
       <NewReleasePanel onCreated={loadList} />

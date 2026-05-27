@@ -28,6 +28,7 @@ import { TenantEmptyState } from "@/components/platform/TenantEmptyState";
 import { useTenantFreshness } from "@/components/platform/useTenantFreshness";
 import { SparklesIcon } from "@heroicons/react/24/outline";
 import { PageIntro } from "@/components/dashboard/PageIntro";
+import { OnboardingChecklist } from "@/components/dashboard/OnboardingChecklist";
 
 const PROVIDER_COLOR = {
   AWS: "text-amber-400 bg-amber-500/10 border-amber-500/20",
@@ -75,6 +76,8 @@ export default function CommandCenterPage() {
         ]}
         safetyNote="Read-only by default · Approval-gated execution · Immutable audit trail"
       />
+
+      <OnboardingChecklist />
 
       {/* Welcome card for fresh tenants — replaces noisy KPIs/demo links until
           the first connector lands. Goal: calm, one clear next step. */}
