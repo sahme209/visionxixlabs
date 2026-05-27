@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
 import { ViewShell } from "../components/Primitives";
+import type { View } from "../App";
 
 /**
  * Phase 447 — desktop sibling for the web /dashboard/releases page.
- * Same endpoint, same render shape, native styling.
+ * Phase 489 — wire each row to the release-overview view with a
+ * pre-selected releaseId via the `releaseops:select-release` event.
  */
 
 type SidebarTone = "emerald" | "amber" | "rose" | "blue" | "zinc";
@@ -71,10 +73,19 @@ function ageStr(iso: string, now: Date): string {
   return `${Math.floor(h / 24)}d ago`;
 }
 
-export function ReleasesView() {
+export function ReleasesView({ onNavigate }: { onNavigate?: (v: View) => void } = {}) {
   const [resp, setResp] = useState<RespBody | null>(null);
   const [loading, setLoading] = useState(true);
   const [networkError, setNetworkError] = useState<string | null>(null);
+
+  function openOverview(releaseId: string) {
+    // Hand off the selected release to ReleaseOverviewView two ways:
+    //  - global window var, picked up on initial mount of the overview
+    //  - dispatched event, picked up if the overview is already mounted
+    (window as unknown as { __releaseopsSelectedReleaseId?: string }).__releaseopsSelectedReleaseId = releaseId;
+    window.dispatchEvent(new CustomEvent("releaseops:select-release", { detail: { releaseId } }));
+    onNavigate?.("release-overview");
+  }
 
   useEffect(() => {
     let cancelled = false;
@@ -136,7 +147,12 @@ export function ReleasesView() {
           ) : (
             <div className="space-y-2">
               {data.releases.map((r) => (
-                <div key={r.id} className="glass-card p-3">
+                <button
+                  key={r.id}
+                  type="button"
+                  onClick={() => openOverview(r.id)}
+                  className="block w-full text-left glass-card p-3 hover:border-violet-500/30 transition-colors"
+                >
                   <div className="flex items-center justify-between gap-2 flex-wrap">
                     <div className="flex items-center gap-2 min-w-0 flex-1">
                       <span className={`w-2 h-2 rounded-full shrink-0 ${DOT_CLASS[r.sidebarTone]}`} />
@@ -163,6 +179,7 @@ export function ReleasesView() {
                           evidence {r.evidencePack.signed ? "signed" : "draft"}
                         </span>
                       )}
+                      <span className="text-[10px] font-mono text-violet-300/70">overview →</span>
                     </div>
                   </div>
                   {r.commitSha && (
@@ -170,7 +187,7 @@ export function ReleasesView() {
                       commit {r.commitSha.slice(0, 12)} · created {ageStr(r.createdAt, now)}
                     </p>
                   )}
-                </div>
+                </button>
               ))}
             </div>
           )}

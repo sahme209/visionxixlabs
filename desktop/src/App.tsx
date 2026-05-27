@@ -147,7 +147,7 @@ export default function App() {
           {activeView === "multi-cloud"   && <MultiCloudView />}
           {activeView === "security"      && <SecurityView />}
           {activeView === "scans"         && <ScansView />}
-          {activeView === "releases"      && <ReleasesView />}
+          {activeView === "releases"      && <ReleasesView onNavigate={setActiveView} />}
           {activeView === "sops"          && <SopsView />}
           {activeView === "repositories"  && <RepositoriesView />}
           {activeView === "branch-validation" && <BranchValidationView />}

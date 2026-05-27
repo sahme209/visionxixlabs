@@ -52,17 +52,36 @@ export function ReleaseOverviewView() {
 
   useEffect(() => {
     let cancelled = false;
+    // Check if a release was pre-selected via the global event-based
+    // hand-off (Phase 489 — ReleasesView dispatches when a row is
+    // clicked).
+    const handoff = (window as unknown as { __releaseopsSelectedReleaseId?: string }).__releaseopsSelectedReleaseId;
+    if (handoff) {
+      setSelected(handoff);
+      delete (window as unknown as { __releaseopsSelectedReleaseId?: string }).__releaseopsSelectedReleaseId;
+    }
     fetch("/api/dashboard/release-list", { credentials: "include" })
       .then((r) => r.json())
       .then((j: ListResp) => {
         if (cancelled) return;
         if (j.ok) {
           setReleases(j.data.releases);
-          if (j.data.releases.length > 0) setSelected(j.data.releases[0].id);
+          // Only auto-select first if no hand-off was already applied.
+          if (!handoff && j.data.releases.length > 0) setSelected(j.data.releases[0].id);
         } else setListError(j.error);
       })
       .catch((e) => { if (!cancelled) setListError(e instanceof Error ? e.message : "Network error."); });
-    return () => { cancelled = true; };
+
+    // Listen for further select-release dispatches while the view is mounted.
+    const handler = (ev: Event) => {
+      const e = ev as CustomEvent<{ releaseId?: string }>;
+      if (e.detail?.releaseId) setSelected(e.detail.releaseId);
+    };
+    window.addEventListener("releaseops:select-release", handler);
+    return () => {
+      cancelled = true;
+      window.removeEventListener("releaseops:select-release", handler);
+    };
   }, []);
 
   useEffect(() => {

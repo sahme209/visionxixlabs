@@ -118,8 +118,10 @@ export default function ReleasesPage() {
           { label: "ReleaseOps command center", href: "/dashboard/releaseops" },
           { label: "Connector setup",            href: "/dashboard/connector-setup" },
         ]}
-        safetyNote="Read-only here · every transition is audited · scope frozen at draft→ready"
+        safetyNote="Click any release → full overview · every transition audited"
       />
+
+      <SubsystemNav />
 
       {loading && (
         <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 mb-6 text-[12px] text-zinc-400">
@@ -178,8 +180,8 @@ export default function ReleasesPage() {
 function ReleaseRow({ r, now }: { r: ReleaseListRow; now: Date }) {
   return (
     <Link
-      href="/dashboard/releaseops"
-      className="block rounded-2xl border border-white/[0.06] bg-white/[0.02] p-4 hover:border-white/[0.12] hover:bg-white/[0.03] transition-all"
+      href={`/dashboard/releases/${r.id}`}
+      className="block rounded-2xl border border-white/[0.06] bg-white/[0.02] p-4 hover:border-violet-500/[0.30] hover:bg-white/[0.03] transition-all"
     >
       <div className="flex items-center justify-between gap-3 flex-wrap">
         <div className="flex items-center gap-2 min-w-0 flex-1">
@@ -207,6 +209,7 @@ function ReleaseRow({ r, now }: { r: ReleaseListRow; now: Date }) {
               evidence {r.evidencePack.signed ? "signed" : "draft"}
             </span>
           )}
+          <span className="text-[10px] font-mono text-violet-300/70">overview →</span>
         </div>
       </div>
       {r.commitSha && (
@@ -232,6 +235,41 @@ function Stat({ icon: Icon, label, value, tone }: { icon: typeof RocketLaunchIco
         <Icon className="h-4 w-4 opacity-80" />
         <p className="text-[20px] font-bold">{value}</p>
       </div>
+    </div>
+  );
+}
+
+/* ──────────────────────────────────────────────────────────────────
+   Phase 489 — subsystem nav. Quick deep-links to the ReleaseOps
+   surfaces from the releases list, so operators don't bounce back
+   to the sidebar to navigate between Cherry-picks, Drift, Readiness,
+   etc.
+   ────────────────────────────────────────────────────────────── */
+
+const SUBSYSTEMS: Array<{ label: string; href: string; tone: string }> = [
+  { label: "Repositories",         href: "/dashboard/repositories",     tone: "border-violet-500/30 text-violet-200" },
+  { label: "Cherry-picks",         href: "/dashboard/cherry-picks",     tone: "border-violet-500/30 text-violet-200" },
+  { label: "Change tickets",       href: "/dashboard/change-tickets",   tone: "border-violet-500/30 text-violet-200" },
+  { label: "Release freeze",       href: "/dashboard/release-freeze",   tone: "border-cyan-500/30 text-cyan-200" },
+  { label: "Release readiness",    href: "/dashboard/release-readiness", tone: "border-emerald-500/30 text-emerald-200" },
+  { label: "Policy violations",    href: "/dashboard/policy-violations", tone: "border-rose-500/30 text-rose-200" },
+  { label: "Drift",                href: "/dashboard/drift",            tone: "border-amber-500/30 text-amber-200" },
+  { label: "SOPs",                 href: "/dashboard/sops",             tone: "border-zinc-500/30 text-zinc-200" },
+];
+
+function SubsystemNav() {
+  return (
+    <div className="mb-6 flex items-center gap-1.5 flex-wrap text-[11px] font-mono">
+      <span className="text-[10px] font-mono uppercase tracking-wider text-zinc-500 mr-1">Subsystems</span>
+      {SUBSYSTEMS.map((s) => (
+        <Link
+          key={s.href}
+          href={s.href}
+          className={`px-2.5 py-1 rounded-lg border bg-white/[0.02] hover:bg-white/[0.06] transition-colors ${s.tone}`}
+        >
+          {s.label}
+        </Link>
+      ))}
     </div>
   );
 }
