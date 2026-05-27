@@ -2859,6 +2859,114 @@ h1, h2, h3, h4, h5, h6 {
     transparent 100%);
 }
 
+/* Article body — Apple-grade prose for /blog/[slug] + /insights/[slug].
+   Don't ship @tailwindcss/typography for one feature; write precise
+   selectors instead. Uses brand-coral for inline code + links,
+   .font-display for headings, generous line-height for body. */
+.article-body {
+  /* Body paragraphs */
+  font-size: 15.5px;
+  line-height: 1.78;
+  color: rgb(212, 212, 216); /* zinc-300 */
+}
+.article-body > * + * {
+  margin-top: 1.2em;
+}
+.article-body p {
+  font-size: 15.5px;
+  line-height: 1.78;
+  color: rgb(212, 212, 216);
+}
+.article-body h2 {
+  font-feature-settings: 'cv11', 'ss03', 'cv09', 'ss01';
+  letter-spacing: -0.035em;
+  font-size: 26px;
+  font-weight: 700;
+  color: #ffffff;
+  line-height: 1.18;
+  margin-top: 2.4em;
+  margin-bottom: 0.7em;
+}
+.article-body h3 {
+  font-feature-settings: 'cv11', 'ss03', 'cv09';
+  letter-spacing: -0.025em;
+  font-size: 19px;
+  font-weight: 600;
+  color: #ffffff;
+  line-height: 1.3;
+  margin-top: 1.8em;
+  margin-bottom: 0.5em;
+}
+.article-body a {
+  color: rgba(244, 114, 182, 0.95); /* brand-coral */
+  text-decoration: none;
+  border-bottom: 1px solid rgba(244, 114, 182, 0.30);
+  transition: border-color 0.2s ease;
+}
+.article-body a:hover {
+  border-bottom-color: rgba(244, 114, 182, 0.85);
+}
+.article-body strong {
+  color: #ffffff;
+  font-weight: 600;
+}
+.article-body code {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  color: rgba(244, 114, 182, 0.90);
+  background: rgba(255, 255, 255, 0.04);
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-size: 13.5px;
+}
+.article-body pre {
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  padding: 18px 20px;
+  overflow-x: auto;
+  font-size: 13px;
+  line-height: 1.6;
+  margin-top: 1.5em;
+  margin-bottom: 1.5em;
+}
+.article-body pre code {
+  background: transparent;
+  padding: 0;
+  border-radius: 0;
+  color: rgb(212, 212, 216);
+}
+.article-body blockquote {
+  border-left: 2px solid rgba(244, 114, 182, 0.50);
+  background: rgba(255, 255, 255, 0.02);
+  padding: 0.6em 1.1em;
+  border-radius: 0 6px 6px 0;
+  color: rgb(212, 212, 216);
+  margin-top: 1.4em;
+  margin-bottom: 1.4em;
+}
+.article-body ul,
+.article-body ol {
+  padding-left: 1.4em;
+}
+.article-body li {
+  margin-top: 0.4em;
+  color: rgb(212, 212, 216);
+}
+.article-body ul > li::marker {
+  color: rgba(244, 114, 182, 0.65);
+}
+.article-body hr {
+  border: 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  margin: 2em 0;
+}
+.article-body img {
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  margin-top: 1.2em;
+  margin-bottom: 1.2em;
+}
+
 /* Mono label — for the small uppercase eyebrows above big headlines */
 .mono-label {
   font-family: var(--font-mono), ui-monospace, "JetBrains Mono", monospace;

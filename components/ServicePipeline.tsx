@@ -132,10 +132,10 @@ export function ServicePipeline() {
             <button
               key={phase.phase}
               onClick={() => setExpandedPhase(isExpanded ? null : pi)}
-              className={`card-hover text-left rounded-xl border p-5 transition-all duration-300 ${
+              className={`text-left rounded-xl p-5 transition-all duration-300 ${
                 isExpanded
-                  ? `${colors.border} ${colors.bg} shadow-lg shadow-black/20`
-                  : "border-white/[0.06] bg-white/[0.02] hover:border-white/[0.12]"
+                  ? "surface-frost shadow-huly-coral-glow"
+                  : "surface-glass hover:border-brand-coral/20"
               }`}
             >
               <div className="flex items-center gap-2 mb-4">

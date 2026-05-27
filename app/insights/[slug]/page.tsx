@@ -89,7 +89,7 @@ export default async function InsightArticlePage({ params }: Props) {
         </Reveal>
 
         <Reveal direction="up" blur delay={0.15}>
-          <div className="prose prose-invert max-w-none">
+          <div className="article-body max-w-none">
             {article.body.map((paragraph, i) => (
               <p key={i} className="mb-4 text-zinc-300 leading-relaxed">
                 {paragraph}

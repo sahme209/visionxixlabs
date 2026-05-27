@@ -16,17 +16,17 @@ export function ArchitectureReferenceCard({
   ];
 
   return (
-    <article className="bg-white/[0.02] rounded-xl border border-white/[0.06] p-5 shadow-sm hover:shadow-md transition-shadow">
-      <h3 className="text-base font-bold text-white mb-4">
+    <article className="surface-glass rounded-xl p-6 hover:border-brand-coral/20 transition-all">
+      <h3 className="font-display text-base font-bold text-white mb-5 tracking-tight">
         {architecture.title}
       </h3>
-      <dl className="space-y-3">
+      <dl className="space-y-4">
         {rows.map(({ label, value }) => (
           <div key={label}>
-            <dt className="text-xs font-semibold text-zinc-500 uppercase tracking-wide mb-0.5">
+            <dt className="mono-label mb-1 text-brand-coral/75">
               {label}
             </dt>
-            <dd className="text-sm text-zinc-300">
+            <dd className="text-[13.5px] text-zinc-300 leading-relaxed">
               {value}
             </dd>
           </div>

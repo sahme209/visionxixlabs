@@ -87,7 +87,7 @@ export default async function BlogPostPage({ params }: Params) {
         </header>
 
         {/* Body */}
-        <article className="prose prose-invert max-w-none">
+        <article className="article-body max-w-none">
           {post.body.map((block, i) => {
             if (block.startsWith("## ")) {
               return (
