@@ -58,18 +58,23 @@ export function EnterpriseTrustSignals() {
 
       <div className="max-w-5xl mx-auto relative">
         <AnimateOnScroll>
-          <div className="text-center mb-12">
-            <p className="text-sm font-semibold text-violet-400 mb-3 tracking-wide uppercase">
-              Enterprise Governance
+          <div className="text-center mb-14">
+            <p className="mono-label inline-flex items-center gap-3 mb-5">
+              <span className="text-brand-coral/90 tabular-nums">EG</span>
+              <span className="h-px w-6 bg-gradient-to-r from-brand-coral/60 to-transparent" />
+              Enterprise governance
             </p>
             <h2
               id="trust-signals-heading"
-              className="text-3xl md:text-4xl font-bold mb-4"
+              className="font-display text-3xl md:text-4xl font-bold mb-4 leading-[1.04]"
             >
               Autonomous operations.<br className="hidden sm:block" />
-              <span className="text-zinc-500">Zero autonomous risk.</span>
+              <span className="relative inline-block">
+                Zero autonomous risk.
+                <span aria-hidden className="absolute left-0 -bottom-0.5 h-[2px] w-full rounded-full bg-gradient-to-r from-brand-coral via-fuchsia-400/70 to-transparent" />
+              </span>
             </h2>
-            <p className="text-zinc-400 max-w-lg mx-auto">
+            <p className="text-zinc-400 max-w-lg mx-auto leading-relaxed">
               The agent enforces governance at every step — approval gates for blast-radius changes, cost visibility per decision, and immutable audit trails that prove compliance.
             </p>
           </div>
@@ -78,20 +83,20 @@ export function EnterpriseTrustSignals() {
         <div className="grid gap-5 md:grid-cols-3">
           {GOVERNANCE.map((block, idx) => (
             <AnimateOnScroll key={block.title} delay={idx * 100}>
-              <div className="animated-border glow-border-card card-hover rounded-xl border border-white/[0.06] bg-white/[0.02] p-6 backdrop-blur-sm hover:border-white/[0.12] hover:-translate-y-1 transition-all duration-300">
+              <div className="surface-glass rounded-xl p-6 hover:border-brand-coral/20 hover:-translate-y-0.5 transition-all duration-300">
                 <div className="flex items-center gap-2.5 mb-4">
-                  <div className="p-1.5 rounded-lg bg-white/[0.04] border border-white/[0.06]">
+                  <div className="p-1.5 rounded-lg bg-brand-coral/[0.08] border border-brand-coral/15">
                     {block.icon}
                   </div>
-                  <h3 className="text-sm font-semibold">
+                  <h3 className="text-sm font-semibold tracking-tight">
                     {block.title}
                   </h3>
                 </div>
                 <ul className="space-y-2.5 text-sm text-zinc-400">
                   {block.items.map((item) => (
                     <li key={item} className="flex items-start gap-2.5">
-                      <span className="w-1 h-1 rounded-full bg-emerald-500 mt-2 shrink-0" />
-                      <span>{item}</span>
+                      <span className="w-1 h-1 rounded-full bg-brand-coral/70 mt-2 shrink-0" />
+                      <span className="leading-relaxed">{item}</span>
                     </li>
                   ))}
                 </ul>

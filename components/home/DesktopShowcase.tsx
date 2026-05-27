@@ -17,55 +17,59 @@ import {
 
 export function DesktopShowcase() {
   return (
-    <section className="relative py-24 px-4 sm:px-6 lg:px-8 overflow-hidden">
-      {/* ── Beam-of-light backdrop ─────────────────────────────────── */}
+    <section className="relative py-28 px-4 sm:px-6 lg:px-8 overflow-hidden">
+      {/* ── Aurora backdrop ─ refined coral × violet × cyan drift ── */}
       <div className="absolute inset-0 pointer-events-none" aria-hidden>
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-px h-[40%] bg-gradient-to-b from-transparent via-violet-400/60 to-transparent" />
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[400px] rounded-full bg-violet-500/[0.10] blur-[120px]" />
-        <div className="absolute top-[20%] left-1/2 -translate-x-1/2 w-[800px] h-[400px] rounded-full bg-fuchsia-500/[0.07] blur-[140px]" />
-        <div className="absolute top-[10%] right-0 w-[400px] h-[400px] rounded-full bg-cyan-500/[0.05] blur-[120px]" />
+        {/* Single hairline beam descending from the top — Apple keynote feel */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-px h-[36%] bg-gradient-to-b from-transparent via-brand-coral/50 to-transparent" />
+        <div className="ambient-drift absolute top-0 left-1/2 -translate-x-1/2 w-[680px] h-[420px] rounded-full bg-brand-violet/[0.10] blur-[130px]" />
+        <div className="ambient-drift absolute top-[20%] left-1/2 -translate-x-1/2 w-[820px] h-[420px] rounded-full bg-brand-coral/[0.08] blur-[140px]" style={{ animationDelay: "-8s" }} />
+        <div className="ambient-drift absolute top-[10%] right-0 w-[460px] h-[440px] rounded-full bg-cyan-500/[0.05] blur-[120px]" style={{ animationDelay: "-14s" }} />
       </div>
 
       <div className="max-w-6xl mx-auto relative z-10">
-        {/* ── Heading ──────────────────────────────────────────────── */}
+        {/* ── Heading — Apple keynote style ─────────────────────── */}
         <div className="text-center mb-16">
-          <p className="text-xs font-mono font-semibold text-violet-400 uppercase tracking-[0.22em] mb-4">
-            // axiom desktop
+          <p className="mono-label inline-flex items-center gap-3 mb-5">
+            <span className="text-brand-coral/90 tabular-nums">DT</span>
+            <span className="h-px w-6 bg-gradient-to-r from-brand-coral/60 to-transparent" />
+            Axiom Desktop
           </p>
-          <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-[-0.045em] leading-[1.05] mb-5">
+          <h2 className="font-display text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-[1.04] mb-5">
             One operating system
             <br />
-            <span className="bg-gradient-to-r from-violet-300 via-fuchsia-300 to-cyan-300 bg-clip-text text-transparent">
+            <span className="relative inline-block">
               for every cloud.
+              <span aria-hidden className="absolute left-0 -bottom-0.5 h-[2px] w-full rounded-full bg-gradient-to-r from-brand-coral via-fuchsia-400/70 to-transparent" />
             </span>
           </h2>
           <p className="text-base md:text-lg text-zinc-400 max-w-2xl mx-auto leading-relaxed">
             Axiom Agent on your workstation — AWS, Azure, GCP, GitHub, security scanner, remediation,
             simulation, approvals and audit, all on one local control plane.
           </p>
-          <div className="mt-8 flex items-center justify-center gap-3 flex-wrap">
+          <div className="mt-9 flex items-center justify-center gap-3 flex-wrap">
             <Link
               href="/download"
-              className="inline-flex items-center gap-2 px-5 py-3 rounded-full bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500 text-white text-sm font-semibold shadow-[0_0_30px_rgba(139,92,246,0.4)] transition-all"
+              className="btn-press inline-flex items-center gap-2 px-6 py-3 rounded-full text-sm font-semibold tracking-tight"
             >
               <ArrowDownTrayIcon className="h-4 w-4" />
               Download desktop app
             </Link>
             <Link
               href="/dashboard"
-              className="inline-flex items-center gap-2 px-5 py-3 rounded-full border border-white/[0.12] bg-white/[0.03] hover:bg-white/[0.06] hover:border-white/[0.22] text-zinc-200 text-sm font-semibold transition-all"
+              className="btn-ghost-press inline-flex items-center gap-2 px-5 py-3 rounded-full text-sm font-medium tracking-tight"
             >
               Open web app <ArrowRightIcon className="h-3.5 w-3.5" />
             </Link>
           </div>
         </div>
 
-        {/* ── Stylized product render ─────────────────────────────── */}
+        {/* ── Stylized product render — surface-frost with restrained coral halo ─ */}
         <div className="relative">
-          {/* Glow + halo */}
-          <div className="absolute -inset-4 rounded-3xl bg-gradient-to-r from-violet-500/20 via-fuchsia-500/15 to-cyan-500/20 blur-2xl opacity-50" />
+          {/* Soft coral halo replacing the loud violet/fuchsia/cyan rainbow */}
+          <div className="absolute -inset-4 rounded-3xl bg-gradient-to-br from-brand-coral/15 via-brand-violet/10 to-transparent blur-3xl opacity-70" />
 
-          <div className="relative rounded-2xl border border-white/[0.08] bg-[#0a0a0e] overflow-hidden shadow-[0_30px_80px_-20px_rgba(139,92,246,0.35),0_0_0_1px_rgba(255,255,255,0.04)]">
+          <div className="surface-frost relative rounded-2xl overflow-hidden shadow-huly-coral-glow">
             {/* macOS window chrome */}
             <div className="h-9 flex items-center px-3 bg-axiom-bg-elev/60 border-b border-white/[0.05]">
               <div className="flex items-center gap-1.5">
@@ -264,7 +268,7 @@ function ProviderCard({ provider, tone, resources }: { provider: string; tone: "
 
 function FeatureTile({ Icon, title, detail }: { Icon: React.ComponentType<{ className?: string }>; title: string; detail: string }) {
   return (
-    <div className="group rounded-2xl border border-white/[0.06] bg-white/[0.015] p-5 hover:border-violet-500/30 transition-all relative overflow-hidden">
+    <div className="group surface-glass rounded-2xl p-5 hover:border-brand-coral/30 transition-all relative overflow-hidden">
       <div aria-hidden className="absolute -top-12 -right-12 w-32 h-32 rounded-full bg-violet-500/20 blur-[40px] opacity-0 group-hover:opacity-100 transition-opacity" />
       <div className="relative">
         <div className="inline-flex w-9 h-9 rounded-lg items-center justify-center mb-3 border border-violet-500/25 bg-violet-500/10">
