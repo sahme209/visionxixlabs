@@ -13,19 +13,41 @@ import {
 interface Stub extends GithubWebhookRepo, DeliveryListRepo {
   _deliveries: DeliveryRow[];
   _repos: RepoLookupRow[];
+  _installations: Array<{ organizationId: string; githubInstallationId: string; status: string }>;
   _nextId: number;
+  _nextRepoId: number;
 }
 
 function makeRepo(): Stub {
   const stub: Stub = {
     _deliveries: [],
     _repos: [],
+    _installations: [],
     _nextId: 1,
+    _nextRepoId: 1,
     repository: {
       async findFirst({ where }) {
         return stub._repos.find(
           (r) => r.remoteOwner === where.remoteOwner && r.remoteName === where.remoteName,
         ) ?? null;
+      },
+      async create({ data }) {
+        const row: RepoLookupRow = {
+          id: `repo_${stub._nextRepoId++}`,
+          organizationId: data.organizationId,
+          remoteOwner: data.remoteOwner,
+          remoteName: data.remoteName,
+        };
+        stub._repos.push(row);
+        return row;
+      },
+    },
+    gitHubInstallation: {
+      async findFirst({ where }) {
+        const match = stub._installations.find(
+          (i) => i.githubInstallationId === where.githubInstallationId && i.status === where.status,
+        );
+        return match ? { organizationId: match.organizationId } : null;
       },
     },
     inboundWebhookDelivery: {
@@ -204,6 +226,105 @@ describe("dispatchGitHubWebhook", () => {
     expect(r.status).toBe(503);
     if (r.body.ok) throw new Error("expected error");
     expect(r.body.error).toBe("migration_pending");
+  });
+
+  // ── Phase 504 — auto-onboard via installation lookup ───────────
+  it("200 auto-onboards an unregistered repo when installation is active", async () => {
+    const repo = makeRepo();
+    repo._installations.push({ organizationId: "o1", githubInstallationId: "99", status: "active" });
+    const r = await dispatchGitHubWebhook(repo, {
+      deliveryId: "d-auto",
+      eventKind: "push",
+      payload: {
+        ref: "refs/heads/main",
+        repository: { full_name: "acme/checkout", default_branch: "main", html_url: "https://github.com/acme/checkout" },
+        installation: { id: 99 },
+      },
+    });
+    expect(r.status).toBe(200);
+    if (!r.body.ok) throw new Error("expected ok");
+    expect(r.body.data.outcome).toBe("accepted");
+    expect(r.body.data.autoOnboardedRepository).toBe(true);
+    expect(repo._repos).toHaveLength(1);
+    expect(repo._repos[0].organizationId).toBe("o1");
+    expect(repo._repos[0].remoteOwner).toBe("acme");
+    expect(repo._repos[0].remoteName).toBe("checkout");
+    expect(repo._deliveries[0].summary).toContain("auto-onboarded acme/checkout");
+  });
+
+  it("200 ignored when installation id present but unknown", async () => {
+    const repo = makeRepo();
+    // no _installations seeded
+    const r = await dispatchGitHubWebhook(repo, {
+      deliveryId: "d-unknown",
+      eventKind: "pull_request",
+      payload: {
+        action: "opened",
+        repository: { full_name: "ghost/repo" },
+        pull_request: { number: 1, title: "x" },
+        installation: { id: 7777 },
+      },
+    });
+    if (!r.body.ok) throw new Error("expected ok");
+    expect(r.body.data.outcome).toBe("ignored");
+    expect(r.body.data.autoOnboardedRepository).toBeUndefined();
+    expect(repo._repos).toHaveLength(0);
+  });
+
+  it("200 ignored when installation is suspended (auto-onboard requires active)", async () => {
+    const repo = makeRepo();
+    repo._installations.push({ organizationId: "o1", githubInstallationId: "99", status: "suspended" });
+    const r = await dispatchGitHubWebhook(repo, {
+      deliveryId: "d-susp",
+      eventKind: "push",
+      payload: {
+        ref: "refs/heads/main",
+        repository: { full_name: "acme/checkout" },
+        installation: { id: 99 },
+      },
+    });
+    if (!r.body.ok) throw new Error("expected ok");
+    expect(r.body.data.outcome).toBe("ignored");
+    expect(repo._repos).toHaveLength(0);
+  });
+
+  it("200 prefers existing repo over auto-onboard (idempotent on register)", async () => {
+    const repo = makeRepo();
+    repo._installations.push({ organizationId: "o-other", githubInstallationId: "99", status: "active" });
+    repo._repos.push({ id: "r1", organizationId: "o1", remoteOwner: "acme", remoteName: "checkout" });
+    const r = await dispatchGitHubWebhook(repo, {
+      deliveryId: "d-exists",
+      eventKind: "push",
+      payload: {
+        ref: "refs/heads/main",
+        repository: { full_name: "acme/checkout" },
+        installation: { id: 99 },
+      },
+    });
+    if (!r.body.ok) throw new Error("expected ok");
+    expect(r.body.data.outcome).toBe("accepted");
+    expect(r.body.data.autoOnboardedRepository).toBeUndefined();
+    // The existing row's org wins — auto-onboard does NOT mutate it.
+    expect(repo._deliveries[0].organizationId).toBe("o1");
+    expect(repo._repos).toHaveLength(1);
+  });
+
+  it("200 auto-onboards on ping when installation known", async () => {
+    const repo = makeRepo();
+    repo._installations.push({ organizationId: "o1", githubInstallationId: "99", status: "active" });
+    const r = await dispatchGitHubWebhook(repo, {
+      deliveryId: "d-ping",
+      eventKind: "ping",
+      payload: {
+        repository: { full_name: "acme/checkout" },
+        installation: { id: 99 },
+        zen: "Anything added dilutes everything else.",
+      },
+    });
+    if (!r.body.ok) throw new Error("expected ok");
+    expect(r.body.data.outcome).toBe("accepted");
+    expect(r.body.data.autoOnboardedRepository).toBe(true);
+    expect(repo._repos[0].organizationId).toBe("o1");
   });
 });
 

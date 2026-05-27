@@ -72,11 +72,41 @@ export interface DeliveryRow {
   receivedAt: Date;
 }
 
+/**
+ * Phase 504 — installation lookup row. When a payload arrives with an
+ * `installation.id` we resolve it to an org via this lookup; if found
+ * and the repo isn't yet registered, we auto-onboard it.
+ */
+export interface InstallationLookupRow {
+  organizationId: string;
+}
+
 export interface GithubWebhookRepo {
   repository: {
     findFirst(args: {
       where: { provider: string; remoteOwner: string; remoteName: string };
     }): Promise<RepoLookupRow | null>;
+    create(args: {
+      data: {
+        organizationId: string;
+        provider: string;
+        remoteOwner: string;
+        remoteName: string;
+        remoteUrl: string;
+        defaultBranch: string;
+        repoFlavor: string | null;
+      };
+    }): Promise<RepoLookupRow>;
+  };
+  /**
+   * Phase 504 — installation lookup. Optional on the interface so older
+   * test stubs still typecheck; when omitted, auto-onboarding is skipped
+   * and we fall back to the Phase 497 'ignored' behaviour.
+   */
+  gitHubInstallation?: {
+    findFirst(args: {
+      where: { githubInstallationId: string; status: "active" };
+    }): Promise<InstallationLookupRow | null>;
   };
   inboundWebhookDelivery: {
     findUnique(args: {
@@ -104,6 +134,11 @@ export interface GithubWebhookRepo {
 interface ParsedPayload {
   fullName: string | null;
   action: string | null;
+  /** Phase 504 — every authenticated GH webhook includes installation.id. */
+  installationId: string | null;
+  /** Phase 504 — pulled when the payload includes a repository block. */
+  defaultBranch: string | null;
+  htmlUrl: string | null;
   // For summary lines, opportunistically pull commonly-useful fields.
   prNumber?: number | null;
   prTitle?: string | null;
@@ -115,13 +150,21 @@ interface ParsedPayload {
 
 function parsePayload(eventKind: string, payload: unknown): ParsedPayload {
   if (!payload || typeof payload !== "object") {
-    return { fullName: null, action: null };
+    return { fullName: null, action: null, installationId: null, defaultBranch: null, htmlUrl: null };
   }
   const p = payload as Record<string, unknown>;
   const repository = p.repository as Record<string, unknown> | undefined;
   const fullName = repository && typeof repository.full_name === "string" ? repository.full_name : null;
+  const defaultBranch = repository && typeof repository.default_branch === "string" ? repository.default_branch : null;
+  const htmlUrl = repository && typeof repository.html_url === "string" ? repository.html_url : null;
   const action = typeof p.action === "string" ? p.action : null;
-  const out: ParsedPayload = { fullName, action };
+  const install = p.installation as Record<string, unknown> | undefined;
+  // installation.id is numeric in the wire format; coerce to string.
+  let installationId: string | null = null;
+  if (install && (typeof install.id === "number" || typeof install.id === "string")) {
+    installationId = String(install.id);
+  }
+  const out: ParsedPayload = { fullName, action, installationId, defaultBranch, htmlUrl };
 
   if (eventKind === "pull_request") {
     const pr = p.pull_request as Record<string, unknown> | undefined;
@@ -171,6 +214,45 @@ function summaryFor(eventKind: string, parsed: ParsedPayload): string {
 }
 
 /* ──────────────────────────────────────────────────────────────────
+   Auto-onboard helper (Phase 504).
+   ────────────────────────────────────────────────────────────── */
+
+/**
+ * When a delivery arrives for a repo that isn't yet registered, but
+ * the payload carries an installation.id that we recognize, create
+ * the Repository row and return its organizationId. Returns null if
+ * we can't resolve an org — caller falls back to outcome=ignored.
+ */
+async function tryAutoOnboardRepo(
+  repo: GithubWebhookRepo,
+  parts: { owner: string; name: string },
+  parsed: ParsedPayload,
+): Promise<RepoLookupRow | null> {
+  if (!parsed.installationId) return null;
+  if (!repo.gitHubInstallation) return null;
+
+  const install = await repo.gitHubInstallation.findFirst({
+    where: { githubInstallationId: parsed.installationId, status: "active" },
+  });
+  if (!install) return null;
+
+  const remoteUrl = parsed.htmlUrl ?? `https://github.com/${parts.owner}/${parts.name}`;
+  const defaultBranch = parsed.defaultBranch ?? "main";
+
+  return repo.repository.create({
+    data: {
+      organizationId: install.organizationId,
+      provider: "github",
+      remoteOwner: parts.owner,
+      remoteName: parts.name,
+      remoteUrl,
+      defaultBranch,
+      repoFlavor: null,
+    },
+  });
+}
+
+/* ──────────────────────────────────────────────────────────────────
    Dispatch.
    ────────────────────────────────────────────────────────────── */
 
@@ -206,6 +288,12 @@ export type GithubWebhookBody =
         idempotent: boolean;
         outcome: "accepted" | "ignored";
         summary: string;
+        /**
+         * Phase 504 — true when the repository row was auto-created
+         * from this delivery (because the installation was known but
+         * the repo wasn't yet registered).
+         */
+        autoOnboardedRepository?: boolean;
       };
     }
   | { ok: false; error: DispatchError | "migration_pending" | "internal_error"; hint?: string; correlationId?: string };
@@ -256,37 +344,54 @@ export async function dispatchGitHubWebhook(
     // operator can confirm the hook works before any repo is registered.
     let organizationId = "system";
     let outcome: "accepted" | "ignored" = "accepted";
+    let autoOnboardedRepository = false;
+
+    const parts = parsed.fullName ? splitFullName(parsed.fullName) : null;
 
     if (input.eventKind === "ping") {
-      // ping has full_name in payload.repository if hook is repo-scoped.
-      if (parsed.fullName) {
-        const parts = splitFullName(parsed.fullName);
-        if (parts) {
-          const row = await repo.repository.findFirst({
-            where: { provider: "github", remoteOwner: parts.owner, remoteName: parts.name },
-          });
-          if (row) organizationId = row.organizationId;
-          else outcome = "ignored";
+      if (parts) {
+        const row = await repo.repository.findFirst({
+          where: { provider: "github", remoteOwner: parts.owner, remoteName: parts.name },
+        });
+        if (row) {
+          organizationId = row.organizationId;
+        } else {
+          // Phase 504 — try auto-onboard from installation.
+          const onboarded = await tryAutoOnboardRepo(repo, parts, parsed);
+          if (onboarded) {
+            organizationId = onboarded.organizationId;
+            autoOnboardedRepository = true;
+          } else {
+            outcome = "ignored";
+          }
         }
       }
     } else {
-      if (!parsed.fullName) {
+      if (!parts) {
         outcome = "ignored";
       } else {
-        const parts = splitFullName(parsed.fullName);
-        if (!parts) {
-          outcome = "ignored";
+        const row = await repo.repository.findFirst({
+          where: { provider: "github", remoteOwner: parts.owner, remoteName: parts.name },
+        });
+        if (row) {
+          organizationId = row.organizationId;
         } else {
-          const row = await repo.repository.findFirst({
-            where: { provider: "github", remoteOwner: parts.owner, remoteName: parts.name },
-          });
-          if (!row) outcome = "ignored";
-          else organizationId = row.organizationId;
+          // Phase 504 — try auto-onboard from installation.
+          const onboarded = await tryAutoOnboardRepo(repo, parts, parsed);
+          if (onboarded) {
+            organizationId = onboarded.organizationId;
+            autoOnboardedRepository = true;
+          } else {
+            outcome = "ignored";
+          }
         }
       }
     }
 
-    const summary = summaryFor(input.eventKind, parsed) || `${input.eventKind} delivery`;
+    const baseSummary = summaryFor(input.eventKind, parsed) || `${input.eventKind} delivery`;
+    const summary = autoOnboardedRepository
+      ? `${baseSummary} · auto-onboarded ${parsed.fullName}`
+      : baseSummary;
 
     await repo.inboundWebhookDelivery.create({
       data: {
@@ -305,7 +410,13 @@ export async function dispatchGitHubWebhook(
       status: 200,
       body: {
         ok: true,
-        data: { deliveryId: input.deliveryId, idempotent: false, outcome, summary },
+        data: {
+          deliveryId: input.deliveryId,
+          idempotent: false,
+          outcome,
+          summary,
+          ...(autoOnboardedRepository ? { autoOnboardedRepository: true } : {}),
+        },
       },
     };
   } catch (err) {
