@@ -42,6 +42,7 @@ const VIEW_TITLES: Record<View, { title: string; subtitle: string }> = {
   orchestration: { title: "Orchestration", subtitle: "Approval + execution control" },
   handoffs:      { title: "Handoffs",      subtitle: "Signed plan inbox" },
   audit:         { title: "Audit log",     subtitle: "Every action attributed + signed" },
+  "github-app":      { title: "GitHub App",        subtitle: "One-click install · zero-touch onboarding · per-org isolated" },
   connectors:        { title: "Connectors",        subtitle: "Provider authentication" },
   "connector-setup": { title: "Connector setup",   subtitle: "Per-provider lifecycle + audit" },
   "connector-health":{ title: "Connector health",  subtitle: "Per-connector status + telemetry" },

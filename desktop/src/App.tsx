@@ -40,6 +40,7 @@ import { WebhookDeliveriesView } from "./views/WebhookDeliveriesView";
 import { BranchProtectionView } from "./views/BranchProtectionView";
 import { ReleaseNotesView } from "./views/ReleaseNotesView";
 import { DeploymentIncidentsView } from "./views/DeploymentIncidentsView";
+import { GitHubAppView } from "./views/GitHubAppView";
 import { useTrayApprovalsBadge } from "./lib/useTrayApprovalsBadge";
 import { useConnectorHealthAmbientPoll } from "./lib/connectorHealthStore";
 import { useSseStream } from "./lib/useSseStream";
@@ -80,6 +81,7 @@ export type View =
   | "branch-protection"
   | "release-notes"
   | "deployment-incidents"
+  | "github-app"
   // Automation
   | "activity"
   | "workflows"
@@ -179,6 +181,7 @@ export default function App() {
           {activeView === "branch-protection" && <BranchProtectionView />}
           {activeView === "release-notes"    && <ReleaseNotesView />}
           {activeView === "deployment-incidents" && <DeploymentIncidentsView />}
+          {activeView === "github-app"       && <GitHubAppView />}
           {activeView === "activity"      && <ActivityView />}
           {activeView === "workflows"     && <WorkflowsView />}
           {activeView === "approvals"     && <ApprovalsView />}

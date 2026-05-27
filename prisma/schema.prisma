@@ -3118,6 +3118,47 @@ model AuditEvent {
 /// providers are no-ops. Stores the verified payload so downstream
 /// reducers (release-tag refresh, PR sync, branch validation refresh)
 /// can hydrate themselves without a second HTTP roundtrip.
+/// Phase 502 — GitHub App installation persistence.
+///
+/// One row per (organizationId, githubInstallationId) — the org's
+/// authorized link to a GitHub account or org. Captured from the
+/// post-install callback. Future phases mint installation access
+/// tokens from this row to call the GitHub REST API.
+///
+/// Closed-union accountType: User | Organization.
+/// Closed-union repositorySelection: all | selected.
+model GitHubInstallation {
+  id                    String   @id @default(cuid())
+  organizationId        String
+  /// Provider-side numeric installation id (cast to string).
+  githubInstallationId  String
+  /// GitHub login (e.g. "acme-corp").
+  accountLogin          String
+  /// User | Organization.
+  accountType           String
+  /// all | selected.
+  repositorySelection   String   @default("selected")
+  /// Closed-union status: active | suspended | revoked.
+  status                String   @default("active")
+  /// Closed-union sourceFlow: install | request | manual.
+  sourceFlow            String   @default("install")
+  /// User who initiated the install handshake.
+  installedByUserId     String?
+  installedAt           DateTime @default(now())
+  suspendedAt           DateTime?
+  revokedAt             DateTime?
+  /// Last time we successfully called GitHub on behalf of this install.
+  lastSeenAt            DateTime?
+  /// Audit raw — the callback URL params, in case GitHub adds fields.
+  rawCallbackJson       Json?
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  @@unique([organizationId, githubInstallationId])
+  @@index([organizationId, status])
+  @@index([githubInstallationId])
+}
+
 /// Phase 501 — Deployment incident linked to a release.
 ///
 /// Captures post-deploy spikes / regressions attributed to a specific

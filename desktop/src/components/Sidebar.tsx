@@ -116,6 +116,7 @@ const GROUPS: NavGroup[] = [
     kind: "integrations",
     label: "Integrations",
     items: [
+      { id: "github-app",        label: "GitHub App",        Icon: IconConnectors },
       { id: "connectors",        label: "Connectors",        Icon: IconConnectors },
       { id: "connector-setup",   label: "Connector setup",   Icon: IconConnectors },
       { id: "connector-health",  label: "Connector health",  Icon: IconConnectors },
