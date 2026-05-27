@@ -24,6 +24,7 @@ const VIEW_TITLES: Record<View, { title: string; subtitle: string }> = {
   "cherry-picks": { title: "Cherry-pick exceptions", subtitle: "Out-of-train fixes · rationale + approver decision" },
   "release-freeze": { title: "Release freeze", subtitle: "Draft · frozen · deploying · 3 buckets per release" },
   "change-tickets": { title: "Change tickets", subtitle: "Jira · Linear · ServiceNow normalized inbox" },
+  "policy-violations": { title: "Policy violations", subtitle: "Engine output · blockers + warnings + advisories" },
   activity:      { title: "Activity",      subtitle: "Runs + your votes + queue health" },
   workflows:     { title: "Workflows",     subtitle: "Recent + active pipeline runs" },
   approvals:     { title: "Approvals",     subtitle: "Runs awaiting human review" },
