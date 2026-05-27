@@ -69,11 +69,19 @@ export default function GcpCloudSolutionsPage() {
             </ol>
           </nav>
 
-          {/* 1. Overview */}
+          {/* 1. Overview — Huly numbered + coral underline */}
           <Reveal direction="up" blur>
             <section id="overview" className="mb-12" aria-labelledby="overview-heading">
-              <h1 id="overview-heading" className="text-3xl md:text-4xl font-extrabold mb-3 tracking-[-0.04em] text-gradient">
-                Google Cloud Platform (GCP) Engineering
+              <p className="mono-label inline-flex items-center gap-3 mb-4">
+                <span className="text-brand-coral/90 tabular-nums">GC</span>
+                <span className="h-px w-6 bg-gradient-to-r from-brand-coral/60 to-transparent" />
+                Google Cloud
+              </p>
+              <h1 id="overview-heading" className="font-display text-4xl md:text-5xl font-bold mb-3 leading-[1.04]">
+                <span className="relative inline-block">
+                  GCP Engineering
+                  <span aria-hidden className="absolute left-0 -bottom-0.5 h-[2px] w-full rounded-full bg-gradient-to-r from-brand-coral via-fuchsia-400/70 to-transparent" />
+                </span>
               </h1>
               <p className="text-lg md:text-xl text-zinc-400 max-w-3xl mb-4">
                 Design, automate, optimize, and operate on GCP with patterns that
@@ -413,8 +421,9 @@ export default function GcpCloudSolutionsPage() {
       </main>
 
       {/* Floating blur orbs */}
-      <div className="absolute bottom-1/4 left-10 w-72 h-72 bg-violet-600/10 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute top-1/2 right-0 w-80 h-80 bg-fuchsia-600/8 rounded-full blur-3xl pointer-events-none" />
+      <div className="ambient-drift absolute bottom-1/4 left-10 w-[380px] h-[340px] bg-brand-violet/[0.08] rounded-full blur-[120px] pointer-events-none" />
+      <div className="ambient-drift absolute top-1/2 right-0 w-[420px] h-[360px] bg-brand-coral/[0.06] rounded-full blur-[130px] pointer-events-none" style={{ animationDelay: "-8s" }} />
+      <div className="ambient-drift absolute top-1/4 right-1/3 w-[340px] h-[260px] bg-cyan-500/[0.04] rounded-full blur-[110px] pointer-events-none" style={{ animationDelay: "-14s" }} />
     </div>
   );
 }

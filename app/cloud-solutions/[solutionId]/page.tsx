@@ -153,11 +153,16 @@ export default async function SolutionDetailPage({
           {/* Hero */}
           <Reveal direction="up" blur delay={0.1}>
             <section className="mb-10">
-              <span className="huly-badge text-violet-400 mb-3">
+              <p className="mono-label inline-flex items-center gap-3 mb-4">
+                <span className="text-brand-coral/90 tabular-nums">CS</span>
+                <span className="h-px w-6 bg-gradient-to-r from-brand-coral/60 to-transparent" />
                 Cloud solution
-              </span>
-              <h1 className="text-3xl md:text-4xl font-extrabold mb-3 text-gradient tracking-[-0.04em]">
-                {detail.title}
+              </p>
+              <h1 className="font-display text-4xl md:text-5xl font-bold mb-3 leading-[1.04]">
+                <span className="relative inline-block">
+                  {detail.title}
+                  <span aria-hidden className="absolute left-0 -bottom-0.5 h-[2px] w-full rounded-full bg-gradient-to-r from-brand-coral via-fuchsia-400/70 to-transparent" />
+                </span>
               </h1>
               <p className="text-sm md:text-base text-zinc-400 max-w-3xl mb-3">
                 {detail.intro}

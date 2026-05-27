@@ -117,8 +117,9 @@ export default async function PreviewPage(props: { searchParams: Promise<{ platf
     <div className="min-h-screen bg-[#09090b] text-white relative overflow-hidden">
       <div className="absolute inset-0 bg-grid-mesh opacity-30 pointer-events-none" aria-hidden />
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-[400px] spotlight-orb opacity-50 pointer-events-none" aria-hidden />
-      <div className="absolute top-[30%] -right-40 w-[400px] h-[400px] rounded-full bg-violet-600/[0.05] blur-[140px] pointer-events-none" aria-hidden />
-      <div className="absolute bottom-[10%] left-1/2 -translate-x-1/2 w-[500px] h-[300px] rounded-full bg-amber-500/[0.04] blur-[120px] pointer-events-none" aria-hidden />
+      <div className="ambient-drift absolute top-[20%] -right-40 w-[460px] h-[440px] rounded-full bg-brand-violet/[0.07] blur-[140px] pointer-events-none" aria-hidden />
+      <div className="ambient-drift absolute top-[40%] -left-40 w-[420px] h-[360px] rounded-full bg-brand-coral/[0.06] blur-[130px] pointer-events-none" style={{ animationDelay: "-8s" }} aria-hidden />
+      <div className="ambient-drift absolute bottom-[10%] left-1/2 -translate-x-1/2 w-[500px] h-[300px] rounded-full bg-cyan-500/[0.05] blur-[120px] pointer-events-none" style={{ animationDelay: "-14s" }} aria-hidden />
 
       <Navigation />
 
@@ -130,16 +131,21 @@ export default async function PreviewPage(props: { searchParams: Promise<{ platf
             Back to download
           </Link>
 
-          {/* Header */}
+          {/* Header — Huly numbered + coral underline */}
           <div className="mb-10">
-            <div className="flex items-center gap-2 flex-wrap mb-4">
-              <span className={`text-[10px] font-bold uppercase tracking-wider border rounded-full px-2 py-0.5 ${status.pillClass}`}>
+            <p className="mono-label inline-flex items-center gap-3 mb-4">
+              <span className="text-brand-coral/90 tabular-nums">DP</span>
+              <span className="h-px w-6 bg-gradient-to-r from-brand-coral/60 to-transparent" />
+              <span className={`text-[10px] font-mono uppercase tracking-[0.22em] border rounded-full px-2 py-0.5 ${status.pillClass}`}>
                 {status.pillLabel}
               </span>
               <span className="text-[10px] text-zinc-500 font-mono">{info.label}</span>
-            </div>
-            <h1 className="text-4xl md:text-5xl font-bold tracking-[-0.04em] mb-3">
-              {status.headline}
+            </p>
+            <h1 className="font-display text-4xl md:text-5xl font-bold mb-3 leading-[1.04]">
+              <span className="relative inline-block">
+                {status.headline}
+                <span aria-hidden className="absolute left-0 -bottom-0.5 h-[2px] w-full rounded-full bg-gradient-to-r from-brand-coral via-fuchsia-400/70 to-transparent" />
+              </span>
             </h1>
             <p className="text-zinc-400 text-base leading-relaxed">
               {info.sublabel} · {info.eta}
