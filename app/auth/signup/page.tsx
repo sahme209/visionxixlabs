@@ -176,7 +176,7 @@ function SignUpForm() {
               <button
                 type="submit"
                 disabled={loading}
-                className="btn-huly btn-amber-shimmer w-full rounded-full bg-white py-3 text-sm font-semibold text-zinc-900 hover:bg-zinc-100 disabled:opacity-50 flex items-center justify-center gap-2 transition-colors shadow-[0_0_20px_rgba(255,255,255,0.08)]"
+                className="btn-press w-full rounded-full py-3 text-sm font-semibold tracking-tight disabled:opacity-50 flex items-center justify-center gap-2"
               >
                 {loading ? "Creating account..." : "Create account"}
                 {!loading && <ArrowRightIcon className="h-4 w-4" />}

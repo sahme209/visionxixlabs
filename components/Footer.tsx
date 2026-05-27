@@ -96,7 +96,7 @@ export function Footer() {
             <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-3">
               <Link
                 href="/operator/onboarding"
-                className="magnetic-sheen inline-flex items-center gap-2 px-7 py-3.5 rounded-full bg-white text-zinc-950 text-[14.5px] font-semibold transition-all hover:bg-zinc-100 shadow-[0_0_40px_-10px_rgba(244,114,182,0.45)]"
+                className="btn-press inline-flex items-center gap-2 px-7 py-3.5 rounded-full text-[14.5px] font-semibold tracking-tight"
               >
                 Run Axiom
                 <ArrowRightIcon className="h-4 w-4 opacity-70" />

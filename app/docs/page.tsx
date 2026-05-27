@@ -152,7 +152,7 @@ export default function DocsIndexPage() {
             <Link
               key={p.href}
               href={p.href}
-              className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 hover:border-white/[0.12] hover:bg-white/[0.03] transition-all group"
+              className="surface-glass rounded-2xl p-5 hover:border-white/[0.12] transition-all group"
             >
               <div className="flex items-start justify-between gap-3 mb-3">
                 <div className={`w-10 h-10 rounded-xl border flex items-center justify-center ${COLOR_MAP[p.color as keyof typeof COLOR_MAP]}`}>
@@ -179,7 +179,7 @@ export default function DocsIndexPage() {
                 <Icon className="h-4 w-4 text-zinc-400" />
                 <h2 className="text-[11px] font-mono font-semibold text-white uppercase tracking-[0.22em]">{group.title}</h2>
               </div>
-              <ul className="rounded-xl border border-white/[0.06] bg-white/[0.015] divide-y divide-white/[0.04] overflow-hidden">
+              <ul className="surface-glass rounded-xl divide-y divide-white/[0.04] overflow-hidden">
                 {group.items.map((item, ii) => (
                   <li key={item.href}>
                     {item.available ? (

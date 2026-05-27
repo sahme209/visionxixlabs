@@ -182,7 +182,7 @@ function SignInForm() {
           <button
             type="submit"
             disabled={loading || oauthLoading !== null}
-            className="w-full inline-flex items-center justify-center gap-2 rounded-full bg-amber-400 px-4 py-3 text-sm font-semibold text-zinc-900 hover:bg-amber-300 disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-[0_8px_24px_-6px_rgba(245,158,11,0.45)]"
+            className="btn-press w-full inline-flex items-center justify-center gap-2 rounded-full px-4 py-3 text-sm font-semibold tracking-tight disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {loading ? "Signing in…" : "Sign in"}
             {!loading && <ArrowRightIcon className="h-4 w-4" />}

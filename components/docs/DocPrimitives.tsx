@@ -123,17 +123,18 @@ export function DocHeader({
       </div>
 
       {kicker && (
-        <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-zinc-500 mb-4 inline-flex items-center gap-3">
+        <p className="mono-label mb-4 inline-flex items-center gap-3">
           <span className="text-brand-coral/90 tabular-nums">{number ?? "—"}</span>
           <span className="h-px w-6 bg-gradient-to-r from-brand-coral/60 to-transparent" />
           {kicker}
         </p>
       )}
-      <h1 className="text-4xl md:text-5xl font-bold text-white tracking-[-0.04em] leading-[1.04] mb-5">
+      <h1 className="font-display text-4xl md:text-5xl font-bold text-white leading-[1.04] mb-5">
         {lead && <>{lead} </>}
         <span className="relative inline-block">
           {lastWord}
-          <span aria-hidden className="absolute left-0 -bottom-1 h-[3px] w-full rounded-full bg-gradient-to-r from-brand-coral via-fuchsia-400 to-transparent opacity-85" />
+          {/* Restrained 2px coral hairline — Apple-grade */}
+          <span aria-hidden className="absolute left-0 -bottom-0.5 h-[2px] w-full rounded-full bg-gradient-to-r from-brand-coral via-fuchsia-400/70 to-transparent" />
         </span>
       </h1>
       <p className="text-[16px] text-zinc-400 leading-relaxed max-w-3xl">{summary}</p>

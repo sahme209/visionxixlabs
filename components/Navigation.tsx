@@ -225,7 +225,7 @@ export function Navigation() {
               </Link>
               <Link
                 href="/auth/signup"
-                className="btn-amber-shimmer inline-flex items-center gap-2 px-5 py-2 rounded-full text-sm font-semibold whitespace-nowrap"
+                className="btn-press inline-flex items-center gap-2 px-5 py-2 rounded-full text-sm font-semibold whitespace-nowrap tracking-tight"
               >
                 Sign up
                 <ArrowRightIcon className="h-3.5 w-3.5 shrink-0" />

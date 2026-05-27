@@ -103,7 +103,7 @@ export default async function LinkedInAdminPage({ searchParams }: PageProps) {
       )}
 
       {/* 1 · Configuration & connection */}
-      <section className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 mb-4">
+      <section className="surface-glass rounded-2xl p-5 mb-4">
         <header className="flex items-center gap-2 mb-3">
           <LinkIcon className="h-4 w-4 text-violet-300" />
           <p className="text-[10px] font-semibold uppercase tracking-widest text-violet-300">Connection</p>
@@ -165,7 +165,7 @@ LINKEDIN_POSTING_ENABLED=false    # flip to true ONLY when you're ready`}
       </section>
 
       {/* 2 · Draft queue */}
-      <section className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 mb-4">
+      <section className="surface-glass rounded-2xl p-5 mb-4">
         <header className="flex items-center justify-between gap-2 mb-3 flex-wrap">
           <div className="flex items-center gap-2">
             <ClipboardDocumentIcon className="h-4 w-4 text-cyan-300" />
@@ -196,7 +196,7 @@ LINKEDIN_POSTING_ENABLED=false    # flip to true ONLY when you're ready`}
       </section>
 
       {/* 2.5 · Autopilot */}
-      <section className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 mb-4">
+      <section className="surface-glass rounded-2xl p-5 mb-4">
         <header className="flex items-center justify-between gap-2 mb-3 flex-wrap">
           <div className="flex items-center gap-2">
             <span className="relative flex h-1.5 w-1.5">
@@ -252,7 +252,7 @@ LINKEDIN_POSTING_ENABLED=false    # flip to true ONLY when you're ready`}
       </section>
 
       {/* 3 · Publish runs */}
-      <section className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 mb-4">
+      <section className="surface-glass rounded-2xl p-5 mb-4">
         <header className="flex items-center gap-2 mb-3">
           <ShieldCheckIcon className="h-4 w-4 text-emerald-300" />
           <p className="text-[10px] font-semibold uppercase tracking-widest text-emerald-300">Recent publish runs</p>
