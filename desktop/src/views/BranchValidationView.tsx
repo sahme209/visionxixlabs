@@ -201,6 +201,8 @@ function EvidencePackButton({ releaseId }: { releaseId: string }) {
   }
 
   const busy = outcome.kind === "running";
+  const exportUrl = (fmt: "json" | "markdown") =>
+    `/api/dashboard/release-evidence-export/${encodeURIComponent(releaseId)}?format=${fmt}`;
   return (
     <div className="glass-card p-3 border border-violet-500/20 flex items-center gap-2 flex-wrap text-[11px] font-mono">
       <span className="text-violet-300/70 uppercase tracking-[0.18em] text-[9px]">Evidence pack</span>
@@ -212,6 +214,20 @@ function EvidencePackButton({ releaseId }: { releaseId: string }) {
       >
         {busy ? "Generating…" : "Generate / refresh"}
       </button>
+      <a
+        href={exportUrl("markdown")}
+        className="px-2.5 py-1 rounded border border-zinc-700/40 bg-zinc-800/40 text-zinc-200 hover:border-violet-500/30 hover:text-violet-200 transition-colors"
+        download
+      >
+        .md
+      </a>
+      <a
+        href={exportUrl("json")}
+        className="px-2.5 py-1 rounded border border-zinc-700/40 bg-zinc-800/40 text-zinc-200 hover:border-violet-500/30 hover:text-violet-200 transition-colors"
+        download
+      >
+        .json
+      </a>
       {outcome.kind === "ok" && (
         <span className="text-emerald-300">
           ✓ {outcome.prCount} PRs · {outcome.cherryPickCount} cherry · {outcome.linkedTicketCount} tickets · sha {outcome.contentHash.slice(0, 12)}…
