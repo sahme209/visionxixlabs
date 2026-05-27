@@ -22,19 +22,29 @@ export const metadata: Metadata = {
 export default function InsightsPage() {
   return (
     <div className="min-h-screen bg-[#09090b] relative overflow-hidden">
-      {/* Background effects */}
+      {/* Huly aurora */}
       <div className="absolute inset-0 bg-grid-mesh opacity-10 pointer-events-none" aria-hidden />
-      <div className="spotlight-orb absolute -top-40 left-1/3 w-[450px] h-[450px] rounded-full bg-violet-600/[0.06] blur-[140px] pointer-events-none" aria-hidden />
-      <div className="absolute bottom-40 right-0 w-72 h-72 rounded-full bg-fuchsia-600/[0.04] blur-[100px] pointer-events-none" aria-hidden />
+      <div className="ambient-drift absolute -top-40 left-1/3 w-[520px] h-[480px] rounded-full bg-brand-violet/[0.08] blur-[140px] pointer-events-none" aria-hidden />
+      <div className="ambient-drift absolute top-1/4 right-[5%] w-[420px] h-[340px] rounded-full bg-brand-coral/[0.06] blur-[120px] pointer-events-none" style={{ animationDelay: "-8s" }} aria-hidden />
+      <div className="ambient-drift absolute bottom-32 left-[5%] w-[360px] h-[280px] rounded-full bg-cyan-500/[0.04] blur-[110px] pointer-events-none" style={{ animationDelay: "-14s" }} aria-hidden />
 
       <Navigation />
-      <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-16 relative">
+      <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-16 relative">
         <Reveal direction="up" blur delay={0.05}>
-          <header className="mb-12 text-center">
-            <h1 className="text-3xl md:text-4xl font-bold text-white mb-3 tracking-[-0.04em]">
-              <span className="text-gradient">Insights</span>
+          <header className="mb-12">
+            <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-zinc-500 mb-4 inline-flex items-center gap-3">
+              <span className="text-brand-coral/90 tabular-nums">I1</span>
+              <span className="h-px w-6 bg-gradient-to-r from-brand-coral/60 to-transparent" />
+              Insights
+            </p>
+            <h1 className="text-4xl md:text-5xl font-bold text-white tracking-[-0.04em] leading-[1.04] mb-4">
+              Field notes from{" "}
+              <span className="relative inline-block">
+                production.
+                <span aria-hidden className="absolute left-0 -bottom-1 h-[3px] w-full rounded-full bg-gradient-to-r from-brand-coral via-fuchsia-400 to-transparent opacity-85" />
+              </span>
             </h1>
-            <p className="text-zinc-400 max-w-2xl mx-auto">
+            <p className="text-zinc-400 max-w-2xl">
               Technical deep-dives on production AI, RAG vs. fine-tuning, AI cost management, internal assistants, cloud security, IAM, and DevOps. No hype — practical guidance for modern infrastructure.
             </p>
           </header>

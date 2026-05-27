@@ -89,11 +89,11 @@ function SignInForm() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#09090b] px-4 relative overflow-hidden">
-      {/* Background — pointer-events strictly disabled so inputs always receive focus. */}
+      {/* Huly-style coral × violet aurora — warm welcome */}
       <div className="absolute inset-0 pointer-events-none" aria-hidden>
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-[500px] rounded-full bg-gradient-to-b from-violet-500/[0.12] via-violet-500/[0.04] to-transparent blur-[80px]" />
-        <div className="absolute -top-32 -left-32 w-72 h-72 rounded-full bg-violet-600/10 blur-[100px]" />
-        <div className="absolute bottom-0 right-0 w-96 h-96 rounded-full bg-blue-600/[0.07] blur-[120px]" />
+        <div className="ambient-drift absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-[500px] rounded-full bg-brand-violet/[0.12] blur-[100px]" />
+        <div className="ambient-drift absolute -top-32 -left-32 w-[420px] h-[420px] rounded-full bg-brand-coral/[0.10] blur-[120px]" style={{ animationDelay: "-8s" }} />
+        <div className="ambient-drift absolute bottom-0 right-0 w-[460px] h-[460px] rounded-full bg-cyan-500/[0.06] blur-[130px]" style={{ animationDelay: "-15s" }} />
         <div
           className="absolute inset-0 opacity-[0.04]"
           style={{
@@ -104,18 +104,29 @@ function SignInForm() {
         />
       </div>
 
-      <Link href="/" className="absolute top-6 left-6 text-sm text-zinc-500 hover:text-white transition-colors z-20">
+      <Link href="/" className="absolute top-6 left-6 text-[12px] font-mono uppercase tracking-[0.18em] text-zinc-500 hover:text-brand-coral transition-colors z-20">
         ← Home
       </Link>
 
-      <div className="w-full max-w-sm relative z-10 rounded-2xl border border-white/[0.08] bg-[#0c0c10]/85 backdrop-blur-xl p-8 shadow-[0_30px_80px_-20px_rgba(0,0,0,0.6)]">
+      <div className="w-full max-w-sm relative z-10 rounded-2xl border border-brand-coral/[0.10] bg-[#0c0c10]/85 backdrop-blur-xl p-8 shadow-huly-card">
+        {/* Subtle coral top-edge hairline on the card */}
+        <span aria-hidden className="absolute inset-x-6 top-0 h-px bg-gradient-to-r from-transparent via-brand-coral/30 to-transparent" />
+
         <Link href="/" className="flex items-center gap-2.5 mb-10">
           <Image src="/vision-xix-logo.png" alt="Vision XIX Labs" width={28} height={28} className="rounded-lg" />
-          <span className="text-sm font-semibold bg-gradient-to-r from-violet-400 to-fuchsia-300 bg-clip-text text-transparent">
+          <span className="text-sm font-semibold bg-gradient-to-r from-brand-coral via-fuchsia-400 to-brand-violet bg-clip-text text-transparent">
             Vision XIX Labs
           </span>
         </Link>
-        <h1 className="text-2xl font-bold mb-1 tracking-[-0.04em]">Sign in</h1>
+        <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-zinc-500 inline-flex items-center gap-2 mb-2">
+          <span className="text-brand-coral/90 tabular-nums">A</span>
+          <span className="h-px w-5 bg-gradient-to-r from-brand-coral/60 to-transparent" />
+          Welcome back
+        </p>
+        <h1 className="text-3xl font-bold mb-2 tracking-[-0.04em]">
+          Sign in.
+          <span aria-hidden className="block h-[3px] w-12 mt-1.5 rounded-full bg-gradient-to-r from-brand-coral via-fuchsia-400 to-transparent opacity-85" />
+        </h1>
         <p className="text-sm text-zinc-500 mb-8">Access your Axiom dashboard and operations.</p>
 
         <form onSubmit={handleSubmit} className="space-y-4" noValidate>

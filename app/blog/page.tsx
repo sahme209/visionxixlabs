@@ -37,23 +37,31 @@ export default function BlogIndex() {
 
   return (
     <div className="min-h-screen bg-[#09090b] text-white relative overflow-hidden">
-      {/* Atmosphere */}
+      {/* Coral × violet × cyan aurora — Huly atmosphere */}
       <div className="absolute inset-0 pointer-events-none" aria-hidden>
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[600px] rounded-full bg-violet-500/[0.06] blur-[160px]" />
-        <div className="absolute top-[30%] -right-40 w-[500px] h-[500px] rounded-full bg-fuchsia-500/[0.04] blur-[140px]" />
+        <div className="ambient-drift absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[600px] rounded-full bg-brand-violet/[0.07] blur-[160px]" />
+        <div className="ambient-drift absolute top-[20%] -right-40 w-[520px] h-[460px] rounded-full bg-brand-coral/[0.06] blur-[140px]" style={{ animationDelay: "-9s" }} />
+        <div className="ambient-drift absolute top-[60%] -left-40 w-[420px] h-[340px] rounded-full bg-cyan-500/[0.04] blur-[120px]" style={{ animationDelay: "-15s" }} />
       </div>
 
       <Navigation />
 
       <main className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-24">
-        {/* Page header */}
+        {/* Page header — Huly numbered + coral underline */}
         <header className="mb-16">
-          <p className="text-[10px] font-mono font-semibold text-violet-400 uppercase tracking-[0.22em] mb-3">// blog</p>
+          <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-zinc-500 mb-4 inline-flex items-center gap-3">
+            <span className="text-brand-coral/90 tabular-nums">B1</span>
+            <span className="h-px w-6 bg-gradient-to-r from-brand-coral/60 to-transparent" />
+            Blog
+          </p>
           <h1 className="text-5xl md:text-6xl font-bold tracking-[-0.045em] leading-[1.05] mb-4">
             Building the autonomous
             <br />
-            <span className="bg-gradient-to-r from-violet-300 via-fuchsia-300 to-cyan-300 bg-clip-text text-transparent">
-              cloud operating system.
+            <span className="relative inline-block">
+              <span className="bg-gradient-to-r from-brand-coral via-fuchsia-400 to-brand-violet bg-clip-text text-transparent">
+                cloud operating system.
+              </span>
+              <span aria-hidden className="absolute left-0 -bottom-1 h-[3px] w-[92%] rounded-full bg-gradient-to-r from-brand-coral via-fuchsia-400 to-transparent opacity-80" />
             </span>
           </h1>
           <p className="text-base md:text-lg text-zinc-400 max-w-2xl leading-relaxed">

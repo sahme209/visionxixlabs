@@ -22,20 +22,30 @@ export const metadata: Metadata = {
 export default function PressPage() {
   return (
     <div className="min-h-screen bg-[#09090b] relative overflow-hidden">
-      {/* Background effects */}
+      {/* Huly aurora */}
       <div className="absolute inset-0 bg-dots opacity-10 pointer-events-none" aria-hidden />
-      <div className="spotlight-orb absolute -top-40 left-1/3 w-96 h-96 rounded-full bg-violet-600/[0.06] blur-[130px] pointer-events-none" aria-hidden />
-      <div className="absolute bottom-20 right-0 w-72 h-72 rounded-full bg-fuchsia-600/[0.04] blur-[100px] pointer-events-none" aria-hidden />
+      <div className="ambient-drift absolute -top-40 left-1/3 w-[480px] h-[420px] rounded-full bg-brand-violet/[0.07] blur-[130px] pointer-events-none" aria-hidden />
+      <div className="ambient-drift absolute top-1/4 right-[5%] w-[360px] h-[300px] rounded-full bg-brand-coral/[0.06] blur-[120px] pointer-events-none" style={{ animationDelay: "-8s" }} aria-hidden />
+      <div className="ambient-drift absolute bottom-20 right-0 w-[300px] h-[280px] rounded-full bg-cyan-500/[0.04] blur-[100px] pointer-events-none" style={{ animationDelay: "-14s" }} aria-hidden />
 
       <Navigation />
 
-      <main className="pt-28 pb-16 px-4 sm:px-6 lg:px-8 relative">
+      <main className="pt-32 pb-16 px-4 sm:px-6 lg:px-8 relative">
         <div className="max-w-3xl mx-auto">
           <Reveal direction="up" blur delay={0.05}>
-            <h1 className="text-3xl md:text-4xl font-bold text-white mb-4 tracking-[-0.04em]">
-              Press &amp; <span className="text-gradient">Media</span>
+            <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-zinc-500 mb-4 inline-flex items-center gap-3">
+              <span className="text-brand-coral/90 tabular-nums">P1</span>
+              <span className="h-px w-6 bg-gradient-to-r from-brand-coral/60 to-transparent" />
+              Press &amp; Media
+            </p>
+            <h1 className="text-4xl md:text-5xl font-bold text-white mb-4 tracking-[-0.04em] leading-[1.04]">
+              Link to{" "}
+              <span className="relative inline-block">
+                VisionXIXLabs.
+                <span aria-hidden className="absolute left-0 -bottom-1 h-[3px] w-full rounded-full bg-gradient-to-r from-brand-coral via-fuchsia-400 to-transparent opacity-85" />
+              </span>
             </h1>
-            <p className="text-lg text-zinc-400 mb-8">
+            <p className="text-lg text-zinc-400 mb-8 max-w-2xl">
               We welcome links from partners, press, and resources pages. Use the information below to link to Vision XIX Labs and help others discover our work.
             </p>
           </Reveal>
