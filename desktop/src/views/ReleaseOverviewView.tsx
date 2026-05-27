@@ -261,6 +261,8 @@ export function ReleaseOverviewView() {
                 </Tile>
               </div>
 
+              <ActivityTimeline releaseId={detail.data.release.id} />
+
               {/* Evidence pack footer */}
               <div className="glass-card p-3">
                 <p className="text-[9px] font-mono uppercase tracking-wider text-zinc-500 mb-1">Evidence pack</p>
@@ -287,6 +289,70 @@ function Tile({ title, children }: { title: string; children: React.ReactNode })
     <div className="glass-card p-3">
       <p className="text-[9px] font-mono uppercase tracking-wider text-zinc-500 mb-1.5">{title}</p>
       {children}
+    </div>
+  );
+}
+
+interface TimelineEvent {
+  kind: string;
+  atIso: string;
+  actorUserId: string | null;
+  summary: string;
+  tone: "info" | "success" | "warning" | "danger";
+}
+
+interface TimelineData {
+  releaseId: string;
+  events: TimelineEvent[];
+}
+
+type TimelineRespBody = { ok: true; data: TimelineData } | { ok: false; error: string; hint?: string };
+
+const TONE_DOT: Record<TimelineEvent["tone"], string> = {
+  info:    "bg-zinc-400",
+  success: "bg-emerald-400",
+  warning: "bg-amber-400",
+  danger:  "bg-rose-400",
+};
+
+function ActivityTimeline({ releaseId }: { releaseId: string }) {
+  const [resp, setResp] = useState<TimelineRespBody | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+    fetch(`/api/dashboard/release-activity/${encodeURIComponent(releaseId)}`, { credentials: "include" })
+      .then((r) => r.json())
+      .then((j: TimelineRespBody) => { if (!cancelled) setResp(j); })
+      .catch(() => { /* swallow */ })
+      .finally(() => { if (!cancelled) setLoading(false); });
+    return () => { cancelled = true; };
+  }, [releaseId]);
+
+  if (loading) return <div className="glass-card p-3 text-[11px] text-zinc-500">Loading activity…</div>;
+  if (!resp?.ok || resp.data.events.length === 0) return null;
+
+  return (
+    <div className="glass-card p-3">
+      <div className="flex items-baseline justify-between mb-2">
+        <p className="text-[9px] font-mono uppercase tracking-wider text-zinc-500">Activity timeline</p>
+        <span className="text-[9px] font-mono text-zinc-500">{resp.data.events.length} events</span>
+      </div>
+      <ol className="space-y-2">
+        {resp.data.events.map((e, idx) => (
+          <li key={idx} className="flex gap-2">
+            <span className={`w-1.5 h-1.5 rounded-full mt-1.5 shrink-0 ${TONE_DOT[e.tone]}`} />
+            <div className="flex-1 min-w-0">
+              <p className="text-[11px] text-zinc-200">{e.summary}</p>
+              <p className="text-[9px] font-mono text-zinc-500 mt-0.5">
+                {new Date(e.atIso).toLocaleString()}
+                {e.actorUserId && <span> · {e.actorUserId}</span>}
+                <span className="text-zinc-600"> · {e.kind}</span>
+              </p>
+            </div>
+          </li>
+        ))}
+      </ol>
     </div>
   );
 }
