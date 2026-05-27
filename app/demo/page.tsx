@@ -60,14 +60,14 @@ export default function DemoLanding() {
         <div className="flex flex-wrap items-center gap-x-4 gap-y-3">
           <Link
             href="/dashboard/start-here"
-            className="btn-coral-glow magnetic-sheen inline-flex items-center gap-2 px-6 py-3 rounded-full text-[14px] font-semibold"
+            className="btn-press inline-flex items-center gap-2 px-7 py-3.5 rounded-full text-[14px] font-semibold tracking-tight"
           >
             Ready for your real workspace?
             <ArrowRightIcon className="h-4 w-4 opacity-60" />
           </Link>
           <Link
             href="/demo/reference"
-            className="inline-flex items-center gap-1.5 px-5 py-3 rounded-full border border-brand-coral/25 bg-brand-coral/[0.05] text-zinc-200 text-[13.5px] font-medium hover:bg-brand-coral/[0.10] hover:border-brand-coral/45 transition-all"
+            className="btn-ghost-press inline-flex items-center gap-2 px-6 py-3.5 rounded-full text-[13.5px] font-medium tracking-tight"
           >
             <BookOpenIcon className="h-4 w-4 text-brand-coral/80" />
             Platform reference

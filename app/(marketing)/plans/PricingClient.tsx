@@ -265,7 +265,7 @@ export function PricingClient() {
         </p>
 
         <div className="mt-8 space-y-4">
-          <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-6">
+          <div className="surface-glass rounded-2xl p-6">
             <div className="flex items-baseline gap-3 mb-2">
               <span className="text-[11px] font-mono uppercase tracking-[0.18em] text-zinc-500">Bucket 1</span>
               <h3 className="text-[16px] text-white font-semibold">Your cloud provider</h3>
@@ -275,7 +275,7 @@ export function PricingClient() {
             </p>
           </div>
 
-          <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-6">
+          <div className="surface-glass rounded-2xl p-6">
             <div className="flex items-baseline gap-3 mb-2">
               <span className="text-[11px] font-mono uppercase tracking-[0.18em] text-zinc-500">Bucket 2</span>
               <h3 className="text-[16px] text-white font-semibold">VisionXIXLabs operations</h3>
@@ -374,7 +374,7 @@ export function PricingClient() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, amount: 0.3 }}
               transition={{ duration: 0.45 }}
-              className="rounded-2xl border border-white/[0.06] bg-white/[0.015] p-6"
+              className="surface-glass rounded-2xl p-6"
             >
               <div className="flex flex-wrap items-baseline justify-between gap-3 mb-4">
                 <h3 className="text-[16px] text-white font-semibold">{e.label}</h3>
@@ -445,7 +445,7 @@ export function PricingClient() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, amount: 0.5 }}
               transition={{ duration: 0.35, delay: i * 0.025 }}
-              className="rounded-xl border border-white/[0.06] bg-white/[0.015] p-5"
+              className="surface-glass rounded-xl p-5"
             >
               <p className="text-[13.5px] text-white font-medium">{f.q}</p>
               <p className="mt-2 text-[13px] text-zinc-400 leading-relaxed">{f.a}</p>

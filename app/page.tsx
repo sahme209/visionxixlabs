@@ -332,21 +332,22 @@ export default function Home() {
       <section className="py-10 sm:py-14 px-4 sm:px-6 lg:px-8">
         <div className="max-w-5xl mx-auto">
           <Reveal direction="up" delay={0.05}>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-x-4 sm:gap-x-6 gap-y-8 sm:gap-y-10">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-x-4 sm:gap-x-6 gap-y-10 sm:gap-y-12">
               {[
                 { idx: "01", value: 35,  suffix: "%", duration: 1600, label: "Avg cloud spend cut" },
                 { idx: "02", value: 60,  suffix: "s", duration: 1400, label: "First findings report" },
                 { idx: "03", value: 3,   suffix: "",  duration: 1200, label: "Clouds wired today" },
                 { idx: "04", value: 100, suffix: "%", duration: 1500, label: "Approval-gated execution" },
               ].map((s) => (
-                <div key={s.idx} className="relative pl-3 sm:pl-4 border-l border-white/[0.06]">
-                  <p className="text-[10px] sm:text-[11px] font-mono tabular-nums text-rose-300/85 tracking-[0.2em] mb-2">
+                <div key={s.idx} className="relative pl-4 sm:pl-5 border-l border-white/[0.05]">
+                  <p className="mono-label text-brand-coral/75 mb-3">
                     {s.idx} <span className="text-zinc-700">/</span> <span className="text-zinc-600">04</span>
                   </p>
-                  <p className="text-3xl sm:text-4xl md:text-5xl font-bold text-white tracking-[-0.04em] tabular-nums">
-                    <CountUp to={s.value} suffix={s.suffix} duration={s.duration} />
+                  <p className="spec-stat-value text-white text-4xl sm:text-5xl md:text-6xl font-display">
+                    <CountUp to={s.value} duration={s.duration} />
+                    {s.suffix && <span className="spec-stat-unit">{s.suffix}</span>}
                   </p>
-                  <p className="text-[10px] sm:text-[11px] text-zinc-500 uppercase tracking-[0.16em] sm:tracking-[0.18em] mt-2 leading-tight">{s.label}</p>
+                  <p className="spec-stat-label mt-3">{s.label}</p>
                 </div>
               ))}
             </div>
@@ -532,7 +533,7 @@ export default function Home() {
               const Icon = card.icon;
               return (
                 <Reveal key={card.title} direction="up" delay={i * 0.06}>
-                  <SpotlightCard className="glow-edge rounded-2xl border border-white/[0.05] bg-white/[0.012] p-7 h-full hover:border-white/[0.1] transition-colors">
+                  <SpotlightCard className="surface-glass rounded-2xl p-7 h-full hover:border-white/[0.10] transition-colors">
                     <div className="relative z-10">
                       <div className="flex items-center gap-3 mb-5">
                         <Icon className="h-4 w-4 text-zinc-400" />
@@ -738,7 +739,7 @@ export default function Home() {
                   {primary && (
                     <Link
                       href={primary.href}
-                      className="btn-coral-glow magnetic-sheen inline-flex items-center gap-2.5 px-7 py-3.5 rounded-full text-[14.5px] font-medium"
+                      className="btn-press inline-flex items-center gap-2.5 px-7 py-3.5 rounded-full text-[14.5px] font-semibold tracking-tight"
                     >
                       {primary.label}
                       <ArrowRightIcon className="h-4 w-4 opacity-60" />
