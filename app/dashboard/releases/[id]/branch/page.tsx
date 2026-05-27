@@ -102,6 +102,7 @@ export default function BranchDetailPage() {
       />
 
       <EvidencePackButton releaseId={releaseId} repositoryId={repositoryId} />
+      <PolicyEvaluateButton releaseId={releaseId} />
 
       {loading && <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 mb-6 text-[12px] text-zinc-400">Loading branch validation…</div>}
       {!loading && networkError && (
@@ -248,6 +249,80 @@ function EvidencePackButton({ releaseId, repositoryId }: { releaseId: string; re
       {outcome.kind === "ok" && (
         <span className="font-mono text-emerald-300 text-[11.5px]">
           ✓ sealed · {outcome.prCount} PRs · {outcome.cherryPickCount} cherry-picks · {outcome.linkedTicketCount} tickets · sha {outcome.contentHash.slice(0, 12)}…
+        </span>
+      )}
+      {outcome.kind === "error" && (
+        <span className="font-mono text-rose-300 text-[11.5px]">✗ {outcome.message}</span>
+      )}
+    </div>
+  );
+}
+
+/* ──────────────────────────────────────────────────────────────────
+   Phase 478 — Re-evaluate policy button.
+   ────────────────────────────────────────────────────────────── */
+
+type PolicyOutcome =
+  | { kind: "idle" }
+  | { kind: "running" }
+  | { kind: "ok"; verdict: "clean" | "warnings_only" | "blocked"; opened: number; refreshed: number; resolved: number; environmentTier: string }
+  | { kind: "error"; message: string };
+
+function PolicyEvaluateButton({ releaseId }: { releaseId: string }) {
+  const [outcome, setOutcome] = useState<PolicyOutcome>({ kind: "idle" });
+
+  async function trigger() {
+    setOutcome({ kind: "running" });
+    try {
+      const res = await fetch("/api/dashboard/release-policy-evaluate", {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ releaseId }),
+      });
+      const j = await res.json();
+      if (j.ok) {
+        setOutcome({
+          kind: "ok",
+          verdict: j.data.verdict,
+          opened: j.data.opened,
+          refreshed: j.data.refreshed,
+          resolved: j.data.resolved,
+          environmentTier: j.data.environmentTier,
+        });
+      } else {
+        setOutcome({ kind: "error", message: j.hint ?? j.error });
+      }
+    } catch (e) {
+      setOutcome({ kind: "error", message: e instanceof Error ? e.message : "network error" });
+    }
+  }
+
+  const verdictTone = (v: "clean" | "warnings_only" | "blocked") =>
+    v === "clean" ? "text-emerald-300" : v === "warnings_only" ? "text-amber-300" : "text-rose-300";
+
+  const busy = outcome.kind === "running";
+  return (
+    <div className="mb-6 rounded-2xl border border-cyan-500/[0.18] bg-cyan-500/[0.03] p-4 flex items-center gap-3 flex-wrap text-[12px]">
+      <span className="text-[10px] font-mono uppercase tracking-wider text-cyan-300/70">Policy</span>
+      <button
+        type="button"
+        disabled={busy}
+        onClick={trigger}
+        className="px-3 py-1.5 rounded-lg border border-cyan-500/40 bg-cyan-500/[0.12] font-semibold text-cyan-100 hover:bg-cyan-500/[0.20] disabled:opacity-50 disabled:cursor-wait transition-colors"
+      >
+        {busy ? "Evaluating…" : "Re-evaluate policy"}
+      </button>
+      <a
+        href="/dashboard/policy-violations"
+        className="px-3 py-1.5 rounded-lg border border-white/[0.08] bg-white/[0.03] font-mono text-[11px] text-zinc-200 hover:border-cyan-500/30 hover:text-cyan-200 transition-colors"
+      >
+        Open inbox
+      </a>
+      {outcome.kind === "ok" && (
+        <span className="font-mono text-[11.5px]">
+          <span className={verdictTone(outcome.verdict)}>{outcome.verdict.replace("_", " ")}</span>
+          <span className="text-zinc-500"> · {outcome.environmentTier} · +{outcome.opened} opened · {outcome.refreshed} refreshed · {outcome.resolved} resolved</span>
         </span>
       )}
       {outcome.kind === "error" && (
