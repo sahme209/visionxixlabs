@@ -94,6 +94,7 @@ const GROUPS: NavGroup[] = [
       { id: "release-audit", label: "Release audit log", Icon: IconAudit },
       { id: "branch-protection", label: "Branch protection", Icon: IconSecurity },
       { id: "release-notes", label: "Release notes", Icon: IconDocs },
+      { id: "deployment-incidents", label: "Deployment incidents", Icon: IconSecurity },
     ],
   },
   {

@@ -3118,6 +3118,47 @@ model AuditEvent {
 /// providers are no-ops. Stores the verified payload so downstream
 /// reducers (release-tag refresh, PR sync, branch validation refresh)
 /// can hydrate themselves without a second HTTP roundtrip.
+/// Phase 501 — Deployment incident linked to a release.
+///
+/// Captures post-deploy spikes / regressions attributed to a specific
+/// Release. Closed-union state machine: open → mitigated → resolved
+/// (or wont_fix). Distinct from any platform-level incident model —
+/// this one is owned by ReleaseOps and is the "effect" side of the
+/// manual-fix "cause" loop.
+model DeploymentIncident {
+  id              String   @id @default(cuid())
+  organizationId  String
+  /// FK soft reference to Release.
+  releaseId       String
+  /// Closed-union severity: low | medium | high | critical.
+  severity        String
+  /// Closed-union status: open | mitigated | resolved | wont_fix.
+  status          String   @default("open")
+  /// Short title the dashboard surfaces.
+  title           String
+  /// Free-form one-paragraph summary.
+  summary         String?
+  /// Soft ref to the manual-fix that addressed this (post-resolution).
+  manualFixId     String?
+  /// User who reported the incident.
+  reportedByUserId String
+  reportedAt      DateTime @default(now())
+  /// User who flipped status from open → mitigated.
+  mitigatedByUserId String?
+  mitigatedAt     DateTime?
+  /// User who flipped status to resolved / wont_fix.
+  resolvedByUserId String?
+  resolvedAt      DateTime?
+  /// Outbound URL — Linear ticket, status-page entry, etc.
+  externalUrl     String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([organizationId, status])
+  @@index([organizationId, releaseId])
+  @@index([organizationId, severity])
+}
+
 /// Phase 500 — Release notes draft.
 ///
 /// One row per Release. Bullets are stored as a JSON array so the UI

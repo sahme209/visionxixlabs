@@ -33,6 +33,7 @@ const VIEW_TITLES: Record<View, { title: string; subtitle: string }> = {
   "release-audit":    { title: "Release audit log", subtitle: "Append-only state-change trail · per-org · 500-row page cap" },
   "branch-protection":{ title: "Branch protection", subtitle: "Per-branch protection snapshots · projected from GitHub API · drives branchGovernance" },
   "release-notes":    { title: "Release notes", subtitle: "Per-release draft → reviewed → published · AI + manual share one shape" },
+  "deployment-incidents":{ title: "Deployment incidents", subtitle: "Post-deploy regressions · open → mitigated → resolved · pinned to release" },
   activity:      { title: "Activity",      subtitle: "Runs + your votes + queue health" },
   workflows:     { title: "Workflows",     subtitle: "Recent + active pipeline runs" },
   approvals:     { title: "Approvals",     subtitle: "Runs awaiting human review" },
