@@ -97,8 +97,10 @@ export default function PolicyViolationsPage() {
           { label: "Releases",      href: "/dashboard/releases" },
           { label: "Cherry-picks",  href: "/dashboard/cherry-picks" },
         ]}
-        safetyNote="Read-only · per-org isolation · 4-status closed-union"
+        safetyNote="Per-org isolation · 4-status closed-union · engine seed bootstrap available"
       />
+
+      <SeedBootstrapButton />
 
       {loading && (
         <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 mb-6 text-[12px] text-zinc-400">
@@ -312,6 +314,65 @@ function DecideControls({
       )}
       {state.kind === "error" && (
         <span className="text-rose-300">✗ {state.message}</span>
+      )}
+    </div>
+  );
+}
+
+/* ──────────────────────────────────────────────────────────────────
+   Phase 484 — SeedBootstrapButton.
+   ────────────────────────────────────────────────────────────── */
+
+type SeedOutcome =
+  | { kind: "idle" }
+  | { kind: "running" }
+  | { kind: "ok"; seeded: number; refreshed: number; skippedOperatorEdited: number; totalCatalog: number }
+  | { kind: "error"; message: string };
+
+function SeedBootstrapButton() {
+  const [outcome, setOutcome] = useState<SeedOutcome>({ kind: "idle" });
+
+  async function trigger() {
+    setOutcome({ kind: "running" });
+    try {
+      const res = await fetch("/api/dashboard/policy-seed-bootstrap", { method: "POST", credentials: "include" });
+      const j = await res.json();
+      if (j.ok) {
+        setOutcome({
+          kind: "ok",
+          seeded: j.data.seeded,
+          refreshed: j.data.refreshed,
+          skippedOperatorEdited: j.data.skippedOperatorEdited,
+          totalCatalog: j.data.totalCatalog,
+        });
+      } else {
+        setOutcome({ kind: "error", message: j.hint ?? j.error });
+      }
+    } catch (e) {
+      setOutcome({ kind: "error", message: e instanceof Error ? e.message : "network error" });
+    }
+  }
+
+  const busy = outcome.kind === "running";
+  return (
+    <div className="mb-6 rounded-2xl border border-cyan-500/[0.18] bg-cyan-500/[0.03] p-4 flex items-center gap-3 flex-wrap text-[12px]">
+      <span className="text-[10px] font-mono uppercase tracking-wider text-cyan-300/70">Engine rules</span>
+      <button
+        type="button"
+        disabled={busy}
+        onClick={trigger}
+        className="px-3 py-1.5 rounded-lg border border-cyan-500/40 bg-cyan-500/[0.12] font-semibold text-cyan-100 hover:bg-cyan-500/[0.20] disabled:opacity-50 disabled:cursor-wait transition-colors"
+      >
+        {busy ? "Seeding…" : "Seed default policy rules"}
+      </button>
+      {outcome.kind === "ok" && (
+        <span className="font-mono text-[11.5px] text-emerald-300">
+          ✓ {outcome.totalCatalog} catalog rules · +{outcome.seeded} new · {outcome.refreshed} refreshed
+          {outcome.skippedOperatorEdited > 0 && ` · ${outcome.skippedOperatorEdited} operator-edited skipped`}
+        </span>
+      )}
+      {outcome.kind === "error" && (
+        <span className="font-mono text-rose-300 text-[11.5px]">✗ {outcome.message}</span>
       )}
     </div>
   );

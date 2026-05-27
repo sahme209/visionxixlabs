@@ -83,6 +83,8 @@ export function PolicyViolationsView() {
         </p>
       </div>
 
+      <SeedBootstrapButton />
+
       {loading && <div className="glass-card p-4 text-sm text-zinc-400">Loading violations…</div>}
 
       {!loading && networkError && (
@@ -270,6 +272,59 @@ function DecideControls({
         <span className="text-emerald-300">✓ {state.which === "grant_exception" ? "exception granted" : "resolved"}</span>
       )}
       {state.kind === "error" && <span className="text-rose-300">✗ {state.message}</span>}
+    </div>
+  );
+}
+
+type SeedOutcome =
+  | { kind: "idle" }
+  | { kind: "running" }
+  | { kind: "ok"; seeded: number; refreshed: number; skippedOperatorEdited: number; totalCatalog: number }
+  | { kind: "error"; message: string };
+
+function SeedBootstrapButton() {
+  const [outcome, setOutcome] = useState<SeedOutcome>({ kind: "idle" });
+
+  async function trigger() {
+    setOutcome({ kind: "running" });
+    try {
+      const res = await fetch("/api/dashboard/policy-seed-bootstrap", { method: "POST", credentials: "include" });
+      const j = await res.json();
+      if (j.ok) {
+        setOutcome({
+          kind: "ok",
+          seeded: j.data.seeded,
+          refreshed: j.data.refreshed,
+          skippedOperatorEdited: j.data.skippedOperatorEdited,
+          totalCatalog: j.data.totalCatalog,
+        });
+      } else {
+        setOutcome({ kind: "error", message: j.hint ?? j.error });
+      }
+    } catch (e) {
+      setOutcome({ kind: "error", message: e instanceof Error ? e.message : "network error" });
+    }
+  }
+
+  const busy = outcome.kind === "running";
+  return (
+    <div className="glass-card p-3 border border-cyan-500/20 flex items-center gap-2 flex-wrap text-[11px] font-mono">
+      <span className="text-cyan-300/70 uppercase tracking-[0.18em] text-[9px]">Engine rules</span>
+      <button
+        type="button"
+        disabled={busy}
+        onClick={trigger}
+        className="px-2.5 py-1 rounded border border-cyan-500/40 bg-cyan-500/[0.12] font-semibold text-cyan-100 hover:bg-cyan-500/[0.20] disabled:opacity-50 disabled:cursor-wait transition-colors"
+      >
+        {busy ? "Seeding…" : "Seed default rules"}
+      </button>
+      {outcome.kind === "ok" && (
+        <span className="text-emerald-300">
+          ✓ {outcome.totalCatalog} catalog · +{outcome.seeded} new · {outcome.refreshed} ref
+          {outcome.skippedOperatorEdited > 0 && ` · ${outcome.skippedOperatorEdited} op-edited skipped`}
+        </span>
+      )}
+      {outcome.kind === "error" && <span className="text-rose-300">✗ {outcome.message}</span>}
     </div>
   );
 }
