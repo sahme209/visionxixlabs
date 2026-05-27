@@ -86,6 +86,7 @@ const GROUPS: NavGroup[] = [
       { id: "release-freeze", label: "Release freeze", Icon: IconWorkflows },
       { id: "change-tickets", label: "Change tickets", Icon: IconWorkflows },
       { id: "policy-violations", label: "Policy violations", Icon: IconWorkflows },
+      { id: "release-readiness", label: "Release readiness", Icon: IconWorkflows },
     ],
   },
   {
