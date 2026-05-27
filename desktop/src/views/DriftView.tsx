@@ -143,6 +143,9 @@ export function DriftView() {
                     {f.applicationId && <span>· {f.applicationId}</span>}
                     <span>· detected {new Date(f.detectedAtIso).toLocaleString()}</span>
                   </div>
+                  {(f.status === "open" || f.status === "acknowledged") && (
+                    <DecideControls findingId={f.id} currentStatus={f.status} onDecided={loadList} />
+                  )}
                 </div>
               ))}
             </div>
@@ -256,6 +259,117 @@ function DemoDetectButton({ onCompleted }: { onCompleted: () => void }) {
         </span>
       )}
       {outcome.kind === "error" && <span className="text-rose-300">✗ {outcome.message}</span>}
+    </div>
+  );
+}
+
+type DecideState =
+  | { kind: "idle" }
+  | { kind: "suppressing" }
+  | { kind: "submitting"; which: "acknowledge" | "suppress" | "resolve" }
+  | { kind: "ok"; which: "acknowledge" | "suppress" | "resolve" }
+  | { kind: "error"; message: string };
+
+function DecideControls({
+  findingId,
+  currentStatus,
+  onDecided,
+}: {
+  findingId: string;
+  currentStatus: "open" | "acknowledged";
+  onDecided: () => void;
+}) {
+  const [state, setState] = useState<DecideState>({ kind: "idle" });
+  const [reason, setReason] = useState("");
+
+  async function decide(which: "acknowledge" | "suppress" | "resolve", reasonText?: string) {
+    setState({ kind: "submitting", which });
+    try {
+      const res = await fetch("/api/dashboard/drift-decide", {
+        method: "POST", credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ findingId, action: which, ...(reasonText ? { reason: reasonText } : {}) }),
+      });
+      const j = await res.json();
+      if (j.ok) {
+        setState({ kind: "ok", which });
+        setTimeout(onDecided, 500);
+      } else {
+        setState({ kind: "error", message: j.hint ?? j.error });
+      }
+    } catch (e) {
+      setState({ kind: "error", message: e instanceof Error ? e.message : "network error" });
+    }
+  }
+
+  if (state.kind === "suppressing") {
+    const valid = reason.trim().length >= 10;
+    return (
+      <div className="mt-2 pt-2 border-t border-white/[0.04]">
+        <span className="block text-[9px] font-mono uppercase tracking-wider text-zinc-400 mb-1">
+          Suppression reason ({reason.trim().length}/10 min)
+        </span>
+        <textarea
+          value={reason}
+          onChange={(e) => setReason(e.target.value)}
+          placeholder="Why is this drift intentional?"
+          rows={2}
+          className="w-full rounded-lg border border-zinc-700/40 bg-zinc-900/40 px-2.5 py-1.5 text-[12px] text-zinc-100 placeholder:text-zinc-600 focus:border-violet-500/40 focus:outline-none"
+        />
+        <div className="mt-1.5 flex items-center gap-1.5">
+          <button
+            type="button"
+            disabled={!valid}
+            onClick={() => decide("suppress", reason.trim())}
+            className="px-2 py-1 rounded border border-zinc-500/40 bg-zinc-500/[0.12] text-[10px] font-semibold text-zinc-100 hover:bg-zinc-500/[0.20] disabled:opacity-50 transition-colors"
+          >
+            Confirm suppress
+          </button>
+          <button
+            type="button"
+            onClick={() => { setReason(""); setState({ kind: "idle" }); }}
+            className="px-2 py-1 rounded border border-zinc-700/40 bg-zinc-800/40 text-[10px] text-zinc-300 hover:bg-zinc-800/60 transition-colors"
+          >
+            Cancel
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  const busy = state.kind === "submitting";
+  return (
+    <div className="mt-2 pt-2 border-t border-white/[0.04] flex items-center gap-1.5 flex-wrap text-[10px] font-mono">
+      {currentStatus === "open" && (
+        <button
+          type="button"
+          disabled={busy}
+          onClick={() => decide("acknowledge")}
+          className="px-2 py-1 rounded border border-amber-500/30 bg-amber-500/[0.08] text-amber-200 hover:bg-amber-500/[0.15] disabled:opacity-50 transition-colors"
+        >
+          {state.kind === "submitting" && state.which === "acknowledge" ? "…" : "Acknowledge"}
+        </button>
+      )}
+      <button
+        type="button"
+        disabled={busy}
+        onClick={() => setState({ kind: "suppressing" })}
+        className="px-2 py-1 rounded border border-zinc-600/40 bg-zinc-600/[0.08] text-zinc-300 hover:bg-zinc-600/[0.15] disabled:opacity-50 transition-colors"
+      >
+        Suppress…
+      </button>
+      <button
+        type="button"
+        disabled={busy}
+        onClick={() => decide("resolve")}
+        className="px-2 py-1 rounded border border-emerald-500/30 bg-emerald-500/[0.08] text-emerald-200 hover:bg-emerald-500/[0.15] disabled:opacity-50 transition-colors"
+      >
+        {state.kind === "submitting" && state.which === "resolve" ? "…" : "Mark resolved"}
+      </button>
+      {state.kind === "ok" && (
+        <span className="text-emerald-300">✓ {state.which === "acknowledge" ? "acknowledged" : state.which === "suppress" ? "suppressed" : "resolved"}</span>
+      )}
+      {state.kind === "error" && <span className="text-rose-300">✗ {state.message}</span>}
     </div>
   );
 }
