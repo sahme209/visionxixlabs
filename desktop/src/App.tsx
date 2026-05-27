@@ -31,6 +31,7 @@ import { ReleaseFreezeView } from "./views/ReleaseFreezeView";
 import { ChangeTicketsView } from "./views/ChangeTicketsView";
 import { PolicyViolationsView } from "./views/PolicyViolationsView";
 import { ReleaseReadinessView } from "./views/ReleaseReadinessView";
+import { ReleaseOverviewView } from "./views/ReleaseOverviewView";
 import { useTrayApprovalsBadge } from "./lib/useTrayApprovalsBadge";
 import { useConnectorHealthAmbientPoll } from "./lib/connectorHealthStore";
 import { useSseStream } from "./lib/useSseStream";
@@ -62,6 +63,7 @@ export type View =
   | "change-tickets"
   | "policy-violations"
   | "release-readiness"
+  | "release-overview"
   // Automation
   | "activity"
   | "workflows"
@@ -152,6 +154,7 @@ export default function App() {
           {activeView === "change-tickets" && <ChangeTicketsView />}
           {activeView === "policy-violations" && <PolicyViolationsView />}
           {activeView === "release-readiness" && <ReleaseReadinessView />}
+          {activeView === "release-overview"  && <ReleaseOverviewView />}
           {activeView === "activity"      && <ActivityView />}
           {activeView === "workflows"     && <WorkflowsView />}
           {activeView === "approvals"     && <ApprovalsView />}

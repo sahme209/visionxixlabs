@@ -1,0 +1,292 @@
+import { useEffect, useState } from "react";
+import { ViewShell } from "../components/Primitives";
+
+/**
+ * Phase 483 — desktop sibling for the web /dashboard/releases/[id]
+ * overview. Left-rail release picker, right-pane summary across
+ * readiness · cherry-picks · violations · tickets · evidence pack.
+ */
+
+interface ListRow { id: string; releaseTag: string | null; applicationId: string }
+type ListResp = { ok: true; data: { releases: ListRow[] } } | { ok: false; error: string };
+
+interface ReleaseData {
+  id: string;
+  releaseTag: string | null;
+  commitSha: string | null;
+  status: string;
+  summary: string | null;
+  scopeFinalizedAtIso: string | null;
+  rollbackReferenceReleaseId: string | null;
+  applicationId: string;
+}
+interface RepositoryData { id: string; displayName: string; provider: string }
+interface ReadinessData { overallScore: number; riskLevel: string; evaluatedAtIso: string; blockerCount: number; topBlocker: string | null }
+interface CherryPickRecent { id: string; status: string; rationaleSnippet: string; approvedCount: number; requestedAtIso: string }
+interface ViolationRecent { id: string; ruleLabel: string; severity: string; status: string; blocking: boolean; message: string }
+interface TicketItem { id: string; provider: string; externalKey: string; title: string; status: string }
+interface EvidencePackData { id: string; generatedAtIso: string; signedAtIso: string | null; contentHash: string | null }
+
+interface DetailData {
+  release: ReleaseData;
+  repository: RepositoryData | null;
+  readiness: ReadinessData | null;
+  cherryPicks: { total: number; byStatus: Record<string, number>; recent: CherryPickRecent[] };
+  policyViolations: { total: number; blockingOpen: number; byStatus: Record<string, number>; recent: ViolationRecent[] };
+  changeTickets: { total: number; byProvider: Record<string, number>; items: TicketItem[] };
+  evidencePack: EvidencePackData | null;
+}
+
+type DetailResp = { ok: true; data: DetailData } | { ok: false; error: string; hint?: string };
+
+const RISK_TONE: Record<string, string> = {
+  low: "text-emerald-300", medium: "text-amber-300", high: "text-orange-300", critical: "text-rose-300",
+};
+
+export function ReleaseOverviewView() {
+  const [releases, setReleases] = useState<ListRow[]>([]);
+  const [selected, setSelected] = useState<string | null>(null);
+  const [detail, setDetail] = useState<DetailResp | null>(null);
+  const [listError, setListError] = useState<string | null>(null);
+  const [loadingDetail, setLoadingDetail] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+    fetch("/api/dashboard/release-list", { credentials: "include" })
+      .then((r) => r.json())
+      .then((j: ListResp) => {
+        if (cancelled) return;
+        if (j.ok) {
+          setReleases(j.data.releases);
+          if (j.data.releases.length > 0) setSelected(j.data.releases[0].id);
+        } else setListError(j.error);
+      })
+      .catch((e) => { if (!cancelled) setListError(e instanceof Error ? e.message : "Network error."); });
+    return () => { cancelled = true; };
+  }, []);
+
+  useEffect(() => {
+    if (!selected) return;
+    let cancelled = false;
+    setLoadingDetail(true);
+    fetch(`/api/dashboard/release-detail/${encodeURIComponent(selected)}`, { credentials: "include" })
+      .then((r) => r.json())
+      .then((j: DetailResp) => { if (!cancelled) setDetail(j); })
+      .catch((e) => { if (!cancelled) setDetail({ ok: false, error: e instanceof Error ? e.message : "Network error." }); })
+      .finally(() => { if (!cancelled) setLoadingDetail(false); });
+    return () => { cancelled = true; };
+  }, [selected]);
+
+  return (
+    <ViewShell>
+      <div>
+        <h1 className="text-xl font-bold tracking-tight">Release overview</h1>
+        <p className="text-sm text-zinc-500 mt-0.5">
+          One screen per release — readiness, cherry-picks, violations, tickets, evidence.
+        </p>
+      </div>
+
+      {listError && <div className="glass-card p-4 text-sm text-rose-300 border border-rose-500/20">{listError}</div>}
+
+      <div className="flex gap-4 min-h-0 flex-1">
+        <aside className="w-64 shrink-0 space-y-1 overflow-y-auto">
+          {releases.length === 0 ? (
+            <p className="text-xs text-zinc-500 px-3 py-2">No releases yet.</p>
+          ) : (
+            releases.map((r) => (
+              <button
+                key={r.id}
+                type="button"
+                onClick={() => setSelected(r.id)}
+                className={`w-full text-left rounded-lg px-3 py-2 transition-colors flex flex-col gap-0.5 ${
+                  selected === r.id
+                    ? "bg-violet-500/15 text-violet-100 border border-violet-500/30"
+                    : "bg-zinc-800/40 hover:bg-zinc-800/60 text-zinc-300 border border-zinc-700/40"
+                }`}
+              >
+                <span className="text-[12px] font-medium truncate">{r.releaseTag ?? "(no tag)"}</span>
+                <span className="text-[10px] font-mono text-zinc-500 truncate">{r.applicationId}</span>
+              </button>
+            ))
+          )}
+        </aside>
+
+        <div className="flex-1 min-w-0 overflow-y-auto space-y-3">
+          {loadingDetail && <div className="glass-card p-4 text-sm text-zinc-400">Loading overview…</div>}
+
+          {detail && !detail.ok && (
+            <div className="glass-card p-4 border border-amber-500/30">
+              <p className="text-sm font-semibold text-amber-300 mb-1">{detail.error}</p>
+              {detail.hint && <p className="text-xs text-zinc-400">{detail.hint}</p>}
+            </div>
+          )}
+
+          {detail?.ok && (
+            <>
+              {/* Header card */}
+              <div className="glass-card p-4">
+                <div className="flex items-center justify-between gap-3 flex-wrap mb-2">
+                  <div>
+                    <p className="text-[9px] font-mono uppercase tracking-wider text-zinc-500">
+                      {detail.data.repository?.displayName ?? detail.data.release.applicationId}
+                    </p>
+                    <h2 className="text-[18px] font-bold tracking-tight text-white">
+                      {detail.data.release.releaseTag ?? "(untagged release)"}
+                    </h2>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded bg-zinc-800/60 text-zinc-300 border border-zinc-700/40">
+                      {detail.data.release.status}
+                    </span>
+                    {detail.data.release.commitSha && (
+                      <span className="text-[9px] font-mono text-zinc-500">sha {detail.data.release.commitSha.slice(0, 10)}…</span>
+                    )}
+                  </div>
+                </div>
+                {detail.data.release.summary && (
+                  <p className="text-[11.5px] text-zinc-300 italic">"{detail.data.release.summary}"</p>
+                )}
+                {detail.data.release.scopeFinalizedAtIso && (
+                  <p className="text-[10px] font-mono text-zinc-500 mt-2">
+                    Scope finalized {new Date(detail.data.release.scopeFinalizedAtIso).toLocaleString()}
+                    {detail.data.release.rollbackReferenceReleaseId && (
+                      <> · rollback to <span className="text-zinc-400">{detail.data.release.rollbackReferenceReleaseId}</span></>
+                    )}
+                  </p>
+                )}
+                <div className="mt-2 flex items-center gap-1.5 flex-wrap">
+                  <a
+                    href={`/api/dashboard/release-evidence-export/${encodeURIComponent(detail.data.release.id)}?format=markdown`}
+                    className="px-2 py-1 rounded border border-zinc-700/40 bg-zinc-800/40 text-[10px] font-mono text-zinc-200 hover:border-violet-500/30 hover:text-violet-200 transition-colors"
+                    download
+                  >
+                    Pack .md
+                  </a>
+                  <a
+                    href={`/api/dashboard/release-evidence-export/${encodeURIComponent(detail.data.release.id)}?format=json`}
+                    className="px-2 py-1 rounded border border-zinc-700/40 bg-zinc-800/40 text-[10px] font-mono text-zinc-200 hover:border-violet-500/30 hover:text-violet-200 transition-colors"
+                    download
+                  >
+                    Pack .json
+                  </a>
+                </div>
+              </div>
+
+              {/* 2x2 tile grid */}
+              <div className="grid grid-cols-2 gap-3">
+                <Tile title="Readiness">
+                  {detail.data.readiness ? (
+                    <>
+                      <div className="flex items-baseline gap-2">
+                        <span className="text-[22px] font-bold text-white">{detail.data.readiness.overallScore}</span>
+                        <span className="text-[11px] text-zinc-500">/100</span>
+                        <span className={`text-[10px] font-mono uppercase tracking-wider ml-1 ${RISK_TONE[detail.data.readiness.riskLevel] ?? "text-zinc-300"}`}>
+                          {detail.data.readiness.riskLevel}
+                        </span>
+                      </div>
+                      <p className="text-[9px] font-mono text-zinc-500 mt-1">Evaluated {new Date(detail.data.readiness.evaluatedAtIso).toLocaleString()}</p>
+                      {detail.data.readiness.topBlocker && (
+                        <p className="text-[11px] text-zinc-400 italic mt-1.5">→ {detail.data.readiness.topBlocker}</p>
+                      )}
+                      <p className="text-[9px] font-mono text-zinc-500 mt-1">{detail.data.readiness.blockerCount} blocker{detail.data.readiness.blockerCount === 1 ? "" : "s"}</p>
+                    </>
+                  ) : (
+                    <p className="text-[11px] text-zinc-500">No snapshot yet.</p>
+                  )}
+                </Tile>
+
+                <Tile title="Policy violations">
+                  <div className="flex items-baseline gap-2">
+                    <span className="text-[22px] font-bold text-white">{detail.data.policyViolations.total}</span>
+                    {detail.data.policyViolations.blockingOpen > 0 && (
+                      <span className="text-[9px] font-mono uppercase tracking-wider text-rose-300 bg-rose-500/15 px-1 py-0.5 rounded border border-rose-500/25">
+                        {detail.data.policyViolations.blockingOpen} blocking open
+                      </span>
+                    )}
+                  </div>
+                  {detail.data.policyViolations.recent.length > 0 && (
+                    <ul className="mt-1.5 space-y-1">
+                      {detail.data.policyViolations.recent.map((v) => (
+                        <li key={v.id} className="text-[10.5px] text-zinc-300">
+                          <span className={`font-mono uppercase tracking-wider mr-1 ${v.severity === "blocker" ? "text-rose-300" : v.severity === "warning" ? "text-amber-300" : "text-zinc-400"}`}>
+                            {v.severity}
+                          </span>
+                          {v.ruleLabel}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </Tile>
+
+                <Tile title="Cherry-picks">
+                  <div className="flex items-baseline gap-2">
+                    <span className="text-[22px] font-bold text-white">{detail.data.cherryPicks.total}</span>
+                    <span className="text-[9px] font-mono text-zinc-500">
+                      {Object.entries(detail.data.cherryPicks.byStatus).map(([k, v]) => `${k}=${v}`).join(" · ") || "—"}
+                    </span>
+                  </div>
+                  {detail.data.cherryPicks.recent.length > 0 ? (
+                    <ul className="mt-1.5 space-y-1">
+                      {detail.data.cherryPicks.recent.map((c) => (
+                        <li key={c.id} className="text-[10.5px] text-zinc-300">
+                          <span className="font-mono uppercase tracking-wider text-zinc-400 mr-1">{c.status}</span>
+                          {c.rationaleSnippet}
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p className="text-[11px] text-zinc-500 mt-1.5">No cherry-picks.</p>
+                  )}
+                </Tile>
+
+                <Tile title="Change tickets">
+                  <div className="flex items-baseline gap-2">
+                    <span className="text-[22px] font-bold text-white">{detail.data.changeTickets.total}</span>
+                    <span className="text-[9px] font-mono text-zinc-500">
+                      {Object.entries(detail.data.changeTickets.byProvider).map(([k, v]) => `${k}=${v}`).join(" · ") || "—"}
+                    </span>
+                  </div>
+                  {detail.data.changeTickets.items.length > 0 ? (
+                    <ul className="mt-1.5 space-y-1">
+                      {detail.data.changeTickets.items.slice(0, 3).map((t) => (
+                        <li key={t.id} className="text-[10.5px] text-zinc-300">
+                          <span className="font-mono text-zinc-400 mr-1">{t.provider}:{t.externalKey}</span>
+                          {t.title}
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p className="text-[11px] text-zinc-500 mt-1.5">No tickets linked.</p>
+                  )}
+                </Tile>
+              </div>
+
+              {/* Evidence pack footer */}
+              <div className="glass-card p-3">
+                <p className="text-[9px] font-mono uppercase tracking-wider text-zinc-500 mb-1">Evidence pack</p>
+                {detail.data.evidencePack ? (
+                  <p className="text-[11px] text-zinc-300">
+                    Generated {new Date(detail.data.evidencePack.generatedAtIso).toLocaleString()}
+                    {detail.data.evidencePack.signedAtIso && <> · sealed</>}
+                    {detail.data.evidencePack.contentHash && <span className="font-mono text-zinc-500"> · sha {detail.data.evidencePack.contentHash.slice(0, 14)}…</span>}
+                  </p>
+                ) : (
+                  <p className="text-[11px] text-zinc-500">No pack generated yet.</p>
+                )}
+              </div>
+            </>
+          )}
+        </div>
+      </div>
+    </ViewShell>
+  );
+}
+
+function Tile({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <div className="glass-card p-3">
+      <p className="text-[9px] font-mono uppercase tracking-wider text-zinc-500 mb-1.5">{title}</p>
+      {children}
+    </div>
+  );
+}
