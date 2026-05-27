@@ -117,6 +117,7 @@ const GROUPS: NavGroup[] = [
       { id: "connector-setup",   label: "Connector setup",   Icon: IconConnectors },
       { id: "connector-health",  label: "Connector health",  Icon: IconConnectors },
       { id: "alert-escalations", label: "Alert escalations", Icon: IconConnectors },
+      { id: "webhook-deliveries", label: "Webhook deliveries", Icon: IconConnectors },
     ],
   },
   {

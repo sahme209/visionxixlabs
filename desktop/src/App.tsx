@@ -36,6 +36,7 @@ import { DriftView } from "./views/DriftView";
 import { ApplicationsView } from "./views/ApplicationsView";
 import { ManualFixesView } from "./views/ManualFixesView";
 import { ReleaseAuditView } from "./views/ReleaseAuditView";
+import { WebhookDeliveriesView } from "./views/WebhookDeliveriesView";
 import { useTrayApprovalsBadge } from "./lib/useTrayApprovalsBadge";
 import { useConnectorHealthAmbientPoll } from "./lib/connectorHealthStore";
 import { useSseStream } from "./lib/useSseStream";
@@ -72,6 +73,7 @@ export type View =
   | "applications"
   | "manual-fixes"
   | "release-audit"
+  | "webhook-deliveries"
   // Automation
   | "activity"
   | "workflows"
@@ -167,6 +169,7 @@ export default function App() {
           {activeView === "applications"      && <ApplicationsView />}
           {activeView === "manual-fixes"      && <ManualFixesView />}
           {activeView === "release-audit"     && <ReleaseAuditView />}
+          {activeView === "webhook-deliveries" && <WebhookDeliveriesView />}
           {activeView === "activity"      && <ActivityView />}
           {activeView === "workflows"     && <WorkflowsView />}
           {activeView === "approvals"     && <ApprovalsView />}

@@ -3107,3 +3107,35 @@ model AuditEvent {
   @@index([organizationId, subjectKind, subjectId])
   @@index([organizationId, kind])
 }
+
+/// Phase 497 — GitHub (and future GitLab/ADO) webhook delivery log.
+///
+/// Idempotent on (provider, deliveryId) — duplicate retries from
+/// providers are no-ops. Stores the verified payload so downstream
+/// reducers (release-tag refresh, PR sync, branch validation refresh)
+/// can hydrate themselves without a second HTTP roundtrip.
+model WebhookDelivery {
+  id              String   @id @default(cuid())
+  organizationId  String
+  /// Closed-union provider: github | gitlab | azuredevops.
+  provider        String
+  /// Provider-side delivery id (X-GitHub-Delivery, etc.). Together
+  /// with provider this is unique — used for idempotency.
+  deliveryId      String
+  /// Closed-union event kind (e.g. "push", "pull_request", "release",
+  /// "workflow_run"). Free-string at schema level.
+  eventKind       String
+  /// Optional action sub-type ("opened", "closed", "synchronize").
+  eventAction     String?
+  /// Outcome of the dispatch: accepted | ignored | error.
+  outcome         String   @default("accepted")
+  /// Free-form summary the dashboard surfaces.
+  summary         String
+  /// Verified raw payload, parsed.
+  payloadJson     Json
+  receivedAt      DateTime @default(now())
+
+  @@unique([provider, deliveryId])
+  @@index([organizationId, receivedAt])
+  @@index([organizationId, provider, eventKind])
+}
