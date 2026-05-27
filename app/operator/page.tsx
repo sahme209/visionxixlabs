@@ -185,26 +185,32 @@ export default function OperatorLandingPage() {
         </div>
       </nav>
 
-      {/* Hero */}
+      {/* Hero — Apple-grade: coral × violet × cyan aurora, mono-label
+          eyebrow, .font-display headline with restrained coral hairline */}
       <section className="relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-violet-950/20 via-transparent to-transparent" />
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[500px] spotlight-orb opacity-40 pointer-events-none" aria-hidden />
-        <div className="absolute -top-40 -right-32 w-80 h-80 rounded-full bg-fuchsia-600/8 blur-[120px] pointer-events-none" aria-hidden />
-        <div className="absolute bottom-0 -left-32 w-64 h-64 rounded-full bg-violet-600/8 blur-[100px] pointer-events-none" aria-hidden />
+        <div className="ambient-drift absolute -top-40 -right-32 w-[460px] h-[420px] rounded-full bg-brand-coral/[0.07] blur-[130px] pointer-events-none" aria-hidden />
+        <div className="ambient-drift absolute top-1/4 left-1/4 w-[400px] h-[320px] rounded-full bg-brand-violet/[0.08] blur-[120px] pointer-events-none" style={{ animationDelay: "-8s" }} aria-hidden />
+        <div className="ambient-drift absolute bottom-0 -left-32 w-[380px] h-[300px] rounded-full bg-cyan-500/[0.05] blur-[110px] pointer-events-none" style={{ animationDelay: "-14s" }} aria-hidden />
         <div className="hero-beam-vertical pointer-events-none" aria-hidden />
-        <div className="hero-beam-flare pointer-events-none" aria-hidden />
-        <div className="hero-beam-converge pointer-events-none" aria-hidden />
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-20 text-center relative">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 pb-20 text-center relative">
           <Reveal>
-            <div className="inline-flex items-center gap-2 huly-badge px-3 py-1 text-violet-300 text-xs font-medium mb-6">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-              Now in public beta
-            </div>
+            <p className="mono-label inline-flex items-center gap-2.5 mb-6">
+              <span className="relative flex h-1.5 w-1.5">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-60" />
+                <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-300" />
+              </span>
+              <span className="text-emerald-300/85">In public beta</span>
+            </p>
           </Reveal>
           <Reveal delay={0.1}>
-            <h1 className="text-4xl sm:text-5xl lg:text-7xl font-extrabold tracking-[-0.04em] leading-[1.05]">
+            <h1 className="font-display text-4xl sm:text-5xl lg:text-7xl font-bold text-white leading-[1.04]">
               Your cloud, operated by<br />
-              <span className="text-zinc-500">an AI agent.</span>
+              <span className="relative inline-block">
+                an AI agent.
+                <span aria-hidden className="absolute left-0 -bottom-1 h-[2px] w-full rounded-full bg-gradient-to-r from-brand-coral via-fuchsia-400/70 to-transparent" />
+              </span>
             </h1>
           </Reveal>
           <Reveal delay={0.2}>

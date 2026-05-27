@@ -53,22 +53,22 @@ export function FeatureRow({
 }) {
   const textCol = (
     <div className="max-w-xl">
-      <p className="kicker-mono">{kicker}</p>
-      <h2 className="display-headline text-white mt-5">{headline}</h2>
-      <div className="body-lede text-zinc-400 mt-6">{body}</div>
+      <p className="mono-label">{kicker}</p>
+      <h2 className="font-display display-headline text-white mt-6">{headline}</h2>
+      <div className="body-lede text-zinc-400 mt-7 leading-relaxed">{body}</div>
       {bullets && bullets.length > 0 ? (
-        <ul className="mt-8 space-y-4">
+        <ul className="mt-10 space-y-5">
           {bullets.map((b, i) => (
-            <li key={i} className="flex items-start gap-3">
+            <li key={i} className="flex items-start gap-3.5">
               {b.icon ? (
-                <span className="mt-0.5 flex-shrink-0 text-zinc-400">{b.icon}</span>
+                <span className="mt-0.5 flex-shrink-0 text-brand-coral/80">{b.icon}</span>
               ) : (
-                <span aria-hidden className="mt-2 w-1 h-1 rounded-full bg-white/40 flex-shrink-0" />
+                <span aria-hidden className="mt-[9px] w-1 h-1 rounded-full bg-brand-coral/70 flex-shrink-0" />
               )}
               <div className="flex-1">
-                <p className="text-[14px] text-zinc-100 font-medium leading-snug">{b.label}</p>
+                <p className="text-[14.5px] text-zinc-100 font-medium leading-snug tracking-tight">{b.label}</p>
                 {b.description ? (
-                  <p className="text-[13px] text-zinc-500 leading-relaxed mt-1">{b.description}</p>
+                  <p className="text-[13px] text-zinc-500 leading-relaxed mt-1.5">{b.description}</p>
                 ) : null}
               </div>
             </li>
@@ -78,16 +78,20 @@ export function FeatureRow({
     </div>
   );
 
+  /* Media column wears the proper frosted-glass material — no more
+     bordered card. Matches the rest of the Apple-grade surface system. */
   const mediaCol = (
-    <SpotlightCard className="glow-edge rounded-2xl border border-white/[0.06] bg-white/[0.012] overflow-hidden">
+    <SpotlightCard className="surface-frost rounded-2xl overflow-hidden">
       {media}
     </SpotlightCard>
   );
 
   return (
-    <section className={`py-24 px-4 sm:px-6 lg:px-8 ${className ?? ""}`}>
+    /* Increased vertical breathing room (py-24 → py-28) — Apple product
+       pages run on a more generous rhythm than typical SaaS. */
+    <section className={`py-28 px-4 sm:px-6 lg:px-8 ${className ?? ""}`}>
       <div className="max-w-6xl mx-auto">
-        <div className={`grid lg:grid-cols-2 gap-12 lg:gap-20 items-center ${
+        <div className={`grid lg:grid-cols-2 gap-14 lg:gap-24 items-center ${
           mediaSide === "left" ? "lg:[direction:rtl]" : ""
         }`}>
           {/* RTL trick reverses the visual order at lg without

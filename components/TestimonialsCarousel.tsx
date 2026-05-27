@@ -113,7 +113,7 @@ export function TestimonialsCarousel() {
         </p>
 
         <div
-          className="card-inner-glow rounded-2xl overflow-hidden border border-white/[0.06]"
+          className="surface-frost rounded-2xl overflow-hidden"
           onMouseEnter={() => setIsPaused(true)}
           onMouseLeave={() => setIsPaused(false)}
         >
@@ -150,7 +150,8 @@ export function TestimonialsCarousel() {
             <div className="p-8 flex flex-col justify-center bg-white/[0.02] relative">
               {/* Decorative large quote mark */}
               <span
-                className="absolute top-4 left-6 text-6xl font-serif text-violet-500/10 select-none pointer-events-none leading-none"
+                className="absolute top-4 left-6 text-7xl font-serif text-brand-coral/12 select-none pointer-events-none leading-none"
+                style={{ color: "rgba(244, 114, 182, 0.10)" }}
                 aria-hidden
               >
                 &ldquo;
@@ -180,7 +181,7 @@ export function TestimonialsCarousel() {
             <button
               type="button"
               onClick={goPrev}
-              className="p-2 rounded-xl text-zinc-400 hover:bg-white/[0.04] hover:text-violet-400 transition-colors"
+              className="p-2 rounded-xl text-zinc-400 hover:bg-white/[0.04] hover:text-brand-coral transition-colors"
               aria-label="Previous testimonial"
             >
               <ChevronLeftIcon className="h-6 w-6" />
@@ -193,8 +194,8 @@ export function TestimonialsCarousel() {
                   onClick={() => goTo(i)}
                   className={`rounded-full transition-all duration-300 ${
                     i === index
-                      ? "w-7 h-2.5 bg-violet-500 scale-125"
-                      : "w-2.5 h-2.5 bg-zinc-700 hover:bg-zinc-600 scale-100"
+                      ? "w-7 h-2 bg-gradient-to-r from-brand-coral via-fuchsia-400 to-brand-violet"
+                      : "w-2 h-2 bg-zinc-700 hover:bg-zinc-600"
                   }`}
                   aria-label={`Go to testimonial ${i + 1}`}
                 />
@@ -203,7 +204,7 @@ export function TestimonialsCarousel() {
             <button
               type="button"
               onClick={goNext}
-              className="p-2 rounded-xl text-zinc-400 hover:bg-white/[0.04] hover:text-violet-400 transition-colors"
+              className="p-2 rounded-xl text-zinc-400 hover:bg-white/[0.04] hover:text-brand-coral transition-colors"
               aria-label="Next testimonial"
             >
               <ChevronRightIcon className="h-6 w-6" />
