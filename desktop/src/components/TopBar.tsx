@@ -12,6 +12,7 @@ import { useSseStatus, type LiveStatus } from "../lib/useSseStream";
 
 const VIEW_TITLES: Record<View, { title: string; subtitle: string }> = {
   "start-here":  { title: "Start Here",    subtitle: "Setup guide + product tour" },
+  "start-here-releaseops": { title: "Start here — ReleaseOps", subtitle: "Zero-touch path from sign-in to first audited release deployed" },
   dashboard:     { title: "Dashboard",     subtitle: "Control plane snapshot" },
   docs:          { title: "Documentation", subtitle: "Platform guides + references" },
   "multi-cloud": { title: "Multi-cloud",   subtitle: "AWS · Azure · GCP" },

@@ -66,6 +66,7 @@ const GROUPS: NavGroup[] = [
     kind: "start_here",
     label: "Start Here",
     items: [
+      { id: "start-here-releaseops", label: "Start here — ReleaseOps", Icon: IconStartHere },
       { id: "start-here", label: "Setup guide",  Icon: IconStartHere },
       { id: "dashboard",  label: "Dashboard",    Icon: IconDashboard },
       { id: "docs",       label: "Docs",         Icon: IconDocs },
