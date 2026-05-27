@@ -3032,3 +3032,41 @@ model DriftFinding {
   @@index([organizationId, severity])
   @@index([applicationId])
 }
+
+/// Phase 495 — manual-fix tracking.
+///
+/// Operators log out-of-band fixes engineers made directly against prod
+/// (or another non-CI/CD path) so the readiness evaluator's
+/// `hasManualProdFixes` signal has a concrete audit trail. One row per
+/// reconciled action — `status` flips from "pending" to "reconciled"
+/// once the fix is captured back into the source-of-truth (PR landed,
+/// IaC catch-up commit, change ticket retroactively filed, etc.).
+model ManualFix {
+  id              String   @id @default(cuid())
+  organizationId  String
+  /// Soft reference to the Release the fix applies to. Null = standalone
+  /// hotfix that didn't trace to a release window.
+  releaseId       String?
+  /// Operator-readable summary of what was changed by hand.
+  summary         String
+  /// Closed-union: status of reconciliation. pending | reconciled | wont_fix.
+  status          String   @default("pending")
+  /// Environment tier the fix was applied in. Closed-union: prod | staging | dev | other.
+  environmentTier String   @default("prod")
+  /// ISO timestamp when the fix actually landed in the environment.
+  fixedAtIso      DateTime
+  /// User who logged the fix.
+  loggedByUserId  String
+  /// User who marked the fix reconciled.
+  reconciledByUserId String?
+  reconciledAt    DateTime?
+  /// Optional pointer back to the source-of-truth commit/PR that
+  /// captured the fix after the fact.
+  reconciliationRef String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([organizationId, status])
+  @@index([organizationId, releaseId])
+  @@index([organizationId, fixedAtIso])
+}
