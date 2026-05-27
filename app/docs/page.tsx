@@ -21,6 +21,13 @@ export const metadata: Metadata = {
 
 const QUICK_PATHS = [
   {
+    href: "/docs/quickstart-checklist",
+    icon: RocketLaunchIcon,
+    title: "Quickstart checklist",
+    desc: "The seven steps from signup to first scan, with time estimates.",
+    color: "violet",
+  },
+  {
     href: "/docs/getting-started",
     icon: RocketLaunchIcon,
     title: "Getting started",
@@ -105,6 +112,14 @@ const TOPIC_GROUPS = [
     ],
   },
   {
+    title: "Production guides",
+    icon: ShieldCheckIcon,
+    items: [
+      { href: "/docs/quickstart-checklist", label: "Quickstart checklist · 5 min onboarding", available: true },
+      { href: "/docs/best-practices", label: "Best practices · production-readiness", available: true },
+    ],
+  },
+  {
     title: "Reference",
     icon: QuestionMarkCircleIcon,
     items: [
@@ -119,6 +134,7 @@ export default function DocsIndexPage() {
   return (
     <>
       <DocHeader
+        number="01"
         kicker="Axiom documentation"
         title="Self-serve guides for the entire platform."
         summary="Every flow Axiom supports — cloud onboarding, scanning, approval, execution, rollback, ReleaseOps, desktop — is documented here. No tickets required to understand how it works."
@@ -151,26 +167,35 @@ export default function DocsIndexPage() {
         })}
       </div>
 
-      {/* Topic groups */}
-      <div className="space-y-8">
-        {TOPIC_GROUPS.map((group) => {
+      {/* Topic groups — Huly-style numbered chapters */}
+      <div className="space-y-10">
+        {TOPIC_GROUPS.map((group, gi) => {
           const Icon = group.icon;
           return (
             <div key={group.title}>
-              <div className="flex items-center gap-2 mb-3">
-                <Icon className="h-4 w-4 text-violet-400" />
-                <h2 className="text-sm font-bold text-white uppercase tracking-widest">{group.title}</h2>
+              <div className="flex items-center gap-3 mb-4">
+                <span className="text-[10px] font-mono tabular-nums text-brand-coral/90">{String(gi + 1).padStart(2, "0")}</span>
+                <span className="h-px w-6 bg-gradient-to-r from-brand-coral/60 to-transparent" />
+                <Icon className="h-4 w-4 text-zinc-400" />
+                <h2 className="text-[11px] font-mono font-semibold text-white uppercase tracking-[0.22em]">{group.title}</h2>
               </div>
-              <ul className="rounded-xl border border-white/[0.06] bg-white/[0.02] divide-y divide-white/[0.04]">
-                {group.items.map((item) => (
+              <ul className="rounded-xl border border-white/[0.06] bg-white/[0.015] divide-y divide-white/[0.04] overflow-hidden">
+                {group.items.map((item, ii) => (
                   <li key={item.href}>
                     {item.available ? (
-                      <Link href={item.href} className="flex items-center justify-between px-4 py-3 hover:bg-white/[0.03] transition-colors group">
-                        <span className="text-sm text-zinc-300 group-hover:text-white transition-colors">{item.label}</span>
-                        <ArrowRightIcon className="h-3.5 w-3.5 text-zinc-700 group-hover:text-zinc-400 group-hover:translate-x-0.5 transition-all" />
+                      <Link href={item.href} className="relative flex items-center justify-between px-5 py-3.5 hover:bg-brand-coral/[0.04] transition-colors group overflow-hidden">
+                        {/* Coral hairline that appears on the left edge on hover */}
+                        <span aria-hidden className="absolute left-0 top-0 bottom-0 w-0.5 bg-gradient-to-b from-brand-coral via-fuchsia-400 to-brand-violet opacity-0 group-hover:opacity-100 transition-opacity" />
+                        <div className="flex items-center gap-3 min-w-0">
+                          <span className="text-[10px] font-mono tabular-nums text-zinc-600 group-hover:text-brand-coral/80 transition-colors">
+                            {String(ii + 1).padStart(2, "0")}
+                          </span>
+                          <span className="text-[13.5px] text-zinc-300 group-hover:text-white transition-colors">{item.label}</span>
+                        </div>
+                        <ArrowRightIcon className="h-3.5 w-3.5 text-zinc-700 group-hover:text-brand-coral group-hover:translate-x-0.5 transition-all" />
                       </Link>
                     ) : (
-                      <span className="flex items-center justify-between px-4 py-3 cursor-not-allowed">
+                      <span className="flex items-center justify-between px-5 py-3.5 cursor-not-allowed">
                         <span className="text-sm text-zinc-600">{item.label}</span>
                         <span className="text-[9px] font-semibold uppercase tracking-wider text-amber-400/70 bg-amber-500/10 border border-amber-500/20 rounded-full px-1.5 py-px">
                           Doc coming

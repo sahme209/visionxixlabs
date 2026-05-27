@@ -93,27 +93,50 @@ export function CodeBlock({ language, children }: { language?: string; children:
   );
 }
 
-/** Standard top of every doc page — kicker, title, summary. */
+/** Standard top of every doc page — Huly-style: numbered eyebrow + coral
+ *  underline on the title's last word + soft coral aurora behind the
+ *  header. Cascades to every /docs/* page.
+ */
 export function DocHeader({
   kicker,
   title,
   summary,
+  number,
 }: {
   kicker?: string;
   title: string;
   summary: string;
+  /** Optional Huly-style index marker — "01", "02", etc. Falls back to "—". */
+  number?: string;
 }) {
+  // Split the title so the last word can get the coral underline.
+  const words = title.trim().split(/\s+/);
+  const lastWord = words.pop() ?? "";
+  const lead = words.join(" ");
+
   return (
-    <header className="mb-10">
+    <header className="relative mb-12">
+      {/* Subtle coral aurora behind the header */}
+      <div aria-hidden className="pointer-events-none absolute -inset-x-8 -top-12 h-[260px] -z-10 overflow-hidden">
+        <div className="absolute top-0 left-[10%] w-[420px] h-[260px] rounded-full bg-brand-coral/[0.05] blur-[120px] ambient-drift" />
+        <div className="absolute top-4 right-[10%] w-[360px] h-[220px] rounded-full bg-brand-violet/[0.06] blur-[110px] ambient-drift" style={{ animationDelay: "-8s" }} />
+      </div>
+
       {kicker && (
-        <p className="text-[10px] font-semibold text-violet-400 uppercase tracking-widest mb-3">
+        <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-zinc-500 mb-4 inline-flex items-center gap-3">
+          <span className="text-brand-coral/90 tabular-nums">{number ?? "—"}</span>
+          <span className="h-px w-6 bg-gradient-to-r from-brand-coral/60 to-transparent" />
           {kicker}
         </p>
       )}
-      <h1 className="text-4xl md:text-5xl font-bold text-white tracking-[-0.04em] mb-4">
-        {title}
+      <h1 className="text-4xl md:text-5xl font-bold text-white tracking-[-0.04em] leading-[1.04] mb-5">
+        {lead && <>{lead} </>}
+        <span className="relative inline-block">
+          {lastWord}
+          <span aria-hidden className="absolute left-0 -bottom-1 h-[3px] w-full rounded-full bg-gradient-to-r from-brand-coral via-fuchsia-400 to-transparent opacity-85" />
+        </span>
       </h1>
-      <p className="text-lg text-zinc-400 leading-relaxed max-w-3xl">{summary}</p>
+      <p className="text-[16px] text-zinc-400 leading-relaxed max-w-3xl">{summary}</p>
     </header>
   );
 }

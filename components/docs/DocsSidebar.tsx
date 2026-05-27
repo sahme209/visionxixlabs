@@ -34,8 +34,10 @@ export const DOC_SECTIONS: DocSection[] = [
     title: "Start here",
     items: [
       { href: "/docs", label: "Overview", icon: BookOpenIcon },
+      { href: "/docs/quickstart-checklist", label: "Quickstart checklist", icon: RocketLaunchIcon },
       { href: "/docs/getting-started", label: "Getting started", icon: RocketLaunchIcon },
       { href: "/docs/architecture", label: "Architecture overview", icon: MapIcon },
+      { href: "/docs/best-practices", label: "Best practices", icon: ShieldCheckIcon },
     ],
   },
   {
