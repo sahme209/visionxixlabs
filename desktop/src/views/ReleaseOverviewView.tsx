@@ -173,6 +173,7 @@ export function ReleaseOverviewView() {
                     )}
                   </p>
                 )}
+                <LifecycleControls releaseId={detail.data.release.id} currentStatus={detail.data.release.status} />
                 <div className="mt-2 flex items-center gap-1.5 flex-wrap">
                   <a
                     href={`/api/dashboard/release-evidence-export/${encodeURIComponent(detail.data.release.id)}?format=markdown`}
@@ -372,6 +373,86 @@ function ActivityTimeline({ releaseId }: { releaseId: string }) {
           </li>
         ))}
       </ol>
+    </div>
+  );
+}
+
+type LifecycleAction = "finalize_scope" | "start_deploy" | "complete_deploy" | "mark_rolled_back" | "mark_failed";
+
+type LifecycleState =
+  | { kind: "idle" }
+  | { kind: "submitting"; action: LifecycleAction }
+  | { kind: "ok"; previousStatus: string; status: string }
+  | { kind: "error"; message: string };
+
+function LifecycleControls({ releaseId, currentStatus }: { releaseId: string; currentStatus: string }) {
+  const [state, setState] = useState<LifecycleState>({ kind: "idle" });
+
+  async function trigger(action: LifecycleAction) {
+    setState({ kind: "submitting", action });
+    try {
+      const res = await fetch("/api/dashboard/release-lifecycle", {
+        method: "POST", credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ releaseId, action }),
+      });
+      const j = await res.json();
+      if (j.ok) {
+        setState({ kind: "ok", previousStatus: j.data.previousStatus, status: j.data.status });
+        // Trigger overview reload by re-dispatching the select event.
+        setTimeout(() => window.dispatchEvent(new CustomEvent("releaseops:select-release", { detail: { releaseId } })), 400);
+      } else {
+        setState({ kind: "error", message: j.hint ?? j.error });
+      }
+    } catch (e) {
+      setState({ kind: "error", message: e instanceof Error ? e.message : "network error" });
+    }
+  }
+
+  const busy = state.kind === "submitting";
+  const buttons: Array<{ action: LifecycleAction; label: string; tone: string }> = [];
+  if (currentStatus === "draft") {
+    buttons.push({ action: "finalize_scope", label: "Finalize scope", tone: "border-violet-500/40 bg-violet-500/[0.12] text-violet-100" });
+  }
+  if (currentStatus === "ready") {
+    buttons.push({ action: "start_deploy", label: "Start deploy", tone: "border-emerald-500/40 bg-emerald-500/[0.12] text-emerald-100" });
+    buttons.push({ action: "mark_failed",  label: "Mark failed",  tone: "border-rose-500/40 bg-rose-500/[0.08] text-rose-200" });
+  }
+  if (currentStatus === "deploying") {
+    buttons.push({ action: "complete_deploy",  label: "Complete deploy",  tone: "border-emerald-500/40 bg-emerald-500/[0.12] text-emerald-100" });
+    buttons.push({ action: "mark_rolled_back", label: "Mark rolled back", tone: "border-amber-500/40 bg-amber-500/[0.10] text-amber-200" });
+    buttons.push({ action: "mark_failed",      label: "Mark failed",      tone: "border-rose-500/40 bg-rose-500/[0.08] text-rose-200" });
+  }
+  if (currentStatus === "deployed") {
+    buttons.push({ action: "mark_rolled_back", label: "Mark rolled back", tone: "border-amber-500/40 bg-amber-500/[0.10] text-amber-200" });
+  }
+
+  if (buttons.length === 0) {
+    return (
+      <div className="mt-2 text-[10px] font-mono text-zinc-500">
+        Status <span className="text-zinc-300">{currentStatus}</span> is terminal.
+      </div>
+    );
+  }
+
+  return (
+    <div className="mt-2 flex items-center gap-1.5 flex-wrap text-[10px] font-mono">
+      <span className="text-zinc-500 uppercase tracking-[0.18em] text-[9px]">Lifecycle</span>
+      {buttons.map((b) => (
+        <button
+          key={b.action}
+          type="button"
+          disabled={busy}
+          onClick={() => trigger(b.action)}
+          className={`px-2.5 py-1 rounded border font-semibold ${b.tone} hover:brightness-110 disabled:opacity-50 disabled:cursor-wait transition-all`}
+        >
+          {busy && state.kind === "submitting" && state.action === b.action ? "…" : b.label}
+        </button>
+      ))}
+      {state.kind === "ok" && (
+        <span className="text-emerald-300">✓ {state.previousStatus} → {state.status}</span>
+      )}
+      {state.kind === "error" && <span className="text-rose-300">✗ {state.message}</span>}
     </div>
   );
 }
