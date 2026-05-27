@@ -60,15 +60,17 @@ export function DriftView() {
   const [loading, setLoading] = useState(true);
   const [networkError, setNetworkError] = useState<string | null>(null);
 
-  useEffect(() => {
-    let cancelled = false;
+  function loadList() {
+    setLoading(true);
+    setNetworkError(null);
     fetch("/api/dashboard/drift-list", { credentials: "include" })
       .then((r) => r.json())
-      .then((j: RespBody) => { if (!cancelled) setResp(j); })
-      .catch((e) => { if (!cancelled) setNetworkError(e instanceof Error ? e.message : "Network error."); })
-      .finally(() => { if (!cancelled) setLoading(false); });
-    return () => { cancelled = true; };
-  }, []);
+      .then((j: RespBody) => setResp(j))
+      .catch((e) => setNetworkError(e instanceof Error ? e.message : "Network error."))
+      .finally(() => setLoading(false));
+  }
+
+  useEffect(() => { loadList(); }, []);
 
   const data = resp?.ok ? resp.data : null;
   const errorBody = resp && !resp.ok ? resp : null;
@@ -81,6 +83,8 @@ export function DriftView() {
           Declared (IaC) vs observed (runtime) state — one row per drifted resource.
         </p>
       </div>
+
+      <DemoDetectButton onCompleted={loadList} />
 
       {loading && <div className="glass-card p-4 text-sm text-zinc-400">Loading drift findings…</div>}
 
@@ -160,6 +164,98 @@ function Stat({ label, value, tone = "zinc" }: { label: string; value: string; t
     <div className={`glass-card p-3 border ${cls}`}>
       <p className="text-[9px] font-mono uppercase tracking-wider opacity-70">{label}</p>
       <p className="text-lg font-bold mt-0.5">{value}</p>
+    </div>
+  );
+}
+
+type DemoOutcome =
+  | { kind: "idle" }
+  | { kind: "running" }
+  | { kind: "ok"; upserted: number; autoResolved: number; bySeverity: Record<string, number> }
+  | { kind: "error"; message: string };
+
+const DEMO_PAYLOAD = {
+  declared: [
+    {
+      resourceKind: "aws_resource",
+      resourceId: "arn:aws:ec2:us-east-1:111:instance/i-prod-web",
+      displayName: "prod-web-1",
+      applicationId: "app_checkout",
+      environmentTier: "prod",
+      attributes: { instance_type: "t3.large", volume_type: "gp3", security_group_ids: ["sg-web", "sg-base"] },
+      sensitiveAttributeKeys: ["security_group_ids"],
+    },
+    {
+      resourceKind: "k8s_resource",
+      resourceId: "deployment/checkout-api",
+      displayName: "checkout-api",
+      applicationId: "app_checkout",
+      environmentTier: "prod",
+      attributes: { replicas: 3, image_tag: "v2.4.0" },
+    },
+  ],
+  observed: [
+    {
+      resourceKind: "aws_resource",
+      resourceId: "arn:aws:ec2:us-east-1:111:instance/i-prod-web",
+      displayName: "prod-web-1",
+      attributes: { instance_type: "t3.large", volume_type: "gp3", security_group_ids: ["sg-web", "sg-base", "sg-shadow-allow-all"] },
+    },
+    {
+      resourceKind: "k8s_resource",
+      resourceId: "deployment/checkout-api",
+      displayName: "checkout-api",
+      attributes: { replicas: 5, image_tag: "v2.4.0-hotfix" },
+    },
+  ],
+};
+
+function DemoDetectButton({ onCompleted }: { onCompleted: () => void }) {
+  const [outcome, setOutcome] = useState<DemoOutcome>({ kind: "idle" });
+
+  async function trigger() {
+    setOutcome({ kind: "running" });
+    try {
+      const res = await fetch("/api/dashboard/drift-evaluate", {
+        method: "POST", credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(DEMO_PAYLOAD),
+      });
+      const j = await res.json();
+      if (j.ok) {
+        setOutcome({
+          kind: "ok",
+          upserted: j.data.upserted,
+          autoResolved: j.data.autoResolved,
+          bySeverity: j.data.bySeverity,
+        });
+        onCompleted();
+      } else {
+        setOutcome({ kind: "error", message: j.hint ?? j.error });
+      }
+    } catch (e) {
+      setOutcome({ kind: "error", message: e instanceof Error ? e.message : "network error" });
+    }
+  }
+
+  const busy = outcome.kind === "running";
+  return (
+    <div className="glass-card p-3 border border-violet-500/20 flex items-center gap-2 flex-wrap text-[11px] font-mono">
+      <span className="text-violet-300/70 uppercase tracking-[0.18em] text-[9px]">Demo</span>
+      <button
+        type="button"
+        disabled={busy}
+        onClick={trigger}
+        className="px-2.5 py-1 rounded border border-violet-500/40 bg-violet-500/[0.12] font-semibold text-violet-100 hover:bg-violet-500/[0.20] disabled:opacity-50 disabled:cursor-wait transition-colors"
+      >
+        {busy ? "Detecting…" : "Run sample detection"}
+      </button>
+      {outcome.kind === "ok" && (
+        <span className="text-emerald-300">
+          ✓ {outcome.upserted} upserted · {outcome.autoResolved} auto-resolved
+        </span>
+      )}
+      {outcome.kind === "error" && <span className="text-rose-300">✗ {outcome.message}</span>}
     </div>
   );
 }

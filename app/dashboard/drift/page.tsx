@@ -69,15 +69,17 @@ export default function DriftPage() {
   const [loading, setLoading] = useState(true);
   const [networkError, setNetworkError] = useState<string | null>(null);
 
-  useEffect(() => {
-    let cancelled = false;
+  function loadList() {
+    setLoading(true);
+    setNetworkError(null);
     fetch("/api/dashboard/drift-list", { credentials: "include" })
       .then((r) => r.json())
-      .then((j: RespBody) => { if (!cancelled) setResp(j); })
-      .catch((e) => { if (!cancelled) setNetworkError(e instanceof Error ? e.message : "Network error."); })
-      .finally(() => { if (!cancelled) setLoading(false); });
-    return () => { cancelled = true; };
-  }, []);
+      .then((j: RespBody) => setResp(j))
+      .catch((e) => setNetworkError(e instanceof Error ? e.message : "Network error."))
+      .finally(() => setLoading(false));
+  }
+
+  useEffect(() => { loadList(); }, []);
 
   const data = resp?.ok ? resp.data : null;
   const errorBody = resp && !resp.ok ? resp : null;
@@ -96,8 +98,10 @@ export default function DriftPage() {
           { label: "Releases", href: "/dashboard/releases" },
           { label: "Multi-cloud", href: "/dashboard/multi-cloud" },
         ]}
-        safetyNote="Read-only · per-org isolation · 4-status closed-union · severity escalates for prod + sensitive attribute changes"
+        safetyNote="Per-org isolation · 4-status closed-union · severity escalates for prod + sensitive attribute changes"
       />
+
+      <DemoDetectButton onCompleted={loadList} />
 
       {loading && (
         <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 mb-6 text-[12px] text-zinc-400">
@@ -200,6 +204,128 @@ function Stat({ icon: Icon, label, value, tone }: { icon: typeof ShieldExclamati
         <Icon className="h-4 w-4 opacity-80" />
         <p className="text-[20px] font-bold">{value}</p>
       </div>
+    </div>
+  );
+}
+
+/* ──────────────────────────────────────────────────────────────────
+   Phase 486 — Demo detect button.
+   Sends a small synthetic {declared, observed} payload so an operator
+   can see the detection + persistence loop end-to-end without wiring
+   a real Terraform/cloud extractor first.
+   ────────────────────────────────────────────────────────────── */
+
+type DemoOutcome =
+  | { kind: "idle" }
+  | { kind: "running" }
+  | { kind: "ok"; upserted: number; autoResolved: number; bySeverity: Record<string, number> }
+  | { kind: "error"; message: string };
+
+const DEMO_PAYLOAD = {
+  declared: [
+    {
+      resourceKind: "aws_resource",
+      resourceId: "arn:aws:ec2:us-east-1:111:instance/i-prod-web",
+      displayName: "prod-web-1",
+      applicationId: "app_checkout",
+      environmentTier: "prod",
+      attributes: { instance_type: "t3.large", volume_type: "gp3", security_group_ids: ["sg-web", "sg-base"] },
+      sensitiveAttributeKeys: ["security_group_ids"],
+    },
+    {
+      resourceKind: "k8s_resource",
+      resourceId: "deployment/checkout-api",
+      displayName: "checkout-api",
+      applicationId: "app_checkout",
+      environmentTier: "prod",
+      attributes: { replicas: 3, image_tag: "v2.4.0" },
+    },
+    {
+      resourceKind: "aws_resource",
+      resourceId: "arn:aws:ec2:us-east-1:111:instance/i-staging-web",
+      displayName: "staging-web-1",
+      applicationId: "app_checkout",
+      environmentTier: "stage",
+      attributes: { instance_type: "t3.medium" },
+    },
+  ],
+  observed: [
+    {
+      resourceKind: "aws_resource",
+      resourceId: "arn:aws:ec2:us-east-1:111:instance/i-prod-web",
+      displayName: "prod-web-1",
+      // Drift: security_group_ids changed (sensitive → critical)
+      attributes: { instance_type: "t3.large", volume_type: "gp3", security_group_ids: ["sg-web", "sg-base", "sg-shadow-allow-all"] },
+    },
+    {
+      resourceKind: "k8s_resource",
+      resourceId: "deployment/checkout-api",
+      displayName: "checkout-api",
+      // Drift: replicas + image tag both changed in prod (multi-field, prod tier → high)
+      attributes: { replicas: 5, image_tag: "v2.4.0-hotfix" },
+    },
+    {
+      resourceKind: "aws_resource",
+      resourceId: "arn:aws:ec2:us-east-1:111:instance/i-staging-web",
+      displayName: "staging-web-1",
+      // No drift.
+      attributes: { instance_type: "t3.medium" },
+    },
+  ],
+};
+
+function DemoDetectButton({ onCompleted }: { onCompleted: () => void }) {
+  const [outcome, setOutcome] = useState<DemoOutcome>({ kind: "idle" });
+
+  async function trigger() {
+    setOutcome({ kind: "running" });
+    try {
+      const res = await fetch("/api/dashboard/drift-evaluate", {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(DEMO_PAYLOAD),
+      });
+      const j = await res.json();
+      if (j.ok) {
+        setOutcome({
+          kind: "ok",
+          upserted: j.data.upserted,
+          autoResolved: j.data.autoResolved,
+          bySeverity: j.data.bySeverity,
+        });
+        onCompleted();
+      } else {
+        setOutcome({ kind: "error", message: j.hint ?? j.error });
+      }
+    } catch (e) {
+      setOutcome({ kind: "error", message: e instanceof Error ? e.message : "network error" });
+    }
+  }
+
+  const busy = outcome.kind === "running";
+  return (
+    <div className="mb-6 rounded-2xl border border-violet-500/[0.18] bg-violet-500/[0.03] p-4 flex items-center gap-3 flex-wrap text-[12px]">
+      <span className="text-[10px] font-mono uppercase tracking-wider text-violet-300/70">Demo detection</span>
+      <button
+        type="button"
+        disabled={busy}
+        onClick={trigger}
+        className="px-3 py-1.5 rounded-lg border border-violet-500/40 bg-violet-500/[0.12] font-semibold text-violet-100 hover:bg-violet-500/[0.20] disabled:opacity-50 disabled:cursor-wait transition-colors"
+      >
+        {busy ? "Detecting…" : "Run sample detection"}
+      </button>
+      <span className="text-[10.5px] font-mono text-zinc-500">
+        Posts a 3-resource sample to /drift-evaluate so you can see the loop without wiring Terraform first.
+      </span>
+      {outcome.kind === "ok" && (
+        <span className="font-mono text-[11.5px] text-emerald-300">
+          ✓ {outcome.upserted} upserted · {outcome.autoResolved} auto-resolved · severities {Object.entries(outcome.bySeverity).filter(([, v]) => v > 0).map(([k, v]) => `${k}=${v}`).join(" ") || "—"}
+        </span>
+      )}
+      {outcome.kind === "error" && (
+        <span className="font-mono text-rose-300 text-[11.5px]">✗ {outcome.message}</span>
+      )}
     </div>
   );
 }
