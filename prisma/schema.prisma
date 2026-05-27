@@ -3118,6 +3118,45 @@ model AuditEvent {
 /// providers are no-ops. Stores the verified payload so downstream
 /// reducers (release-tag refresh, PR sync, branch validation refresh)
 /// can hydrate themselves without a second HTTP roundtrip.
+/// Phase 499 — branch protection snapshot.
+///
+/// One row per (repositoryId, branchName). Captures whether merges
+/// require PR review, status checks, signed commits, etc. The
+/// readiness evaluator's branchGovernance signal reads from here.
+/// Snapshot upsert is idempotent on (repositoryId, branchName).
+model BranchProtectionSnapshot {
+  id                            String   @id @default(cuid())
+  organizationId                String
+  repositoryId                  String
+  /// Branch this protection rule applies to (e.g. "main"). Together with
+  /// repositoryId this is unique.
+  branchName                    String
+  /// Closed-union strength label: strong | weak | none.
+  strength                      String
+  /// Direct signals projected from the provider payload.
+  requiresPullRequest           Boolean
+  requiredReviewCount           Int      @default(0)
+  dismissStaleReviews           Boolean  @default(false)
+  requireCodeOwnerReviews       Boolean  @default(false)
+  requiresStatusChecks          Boolean  @default(false)
+  requiredStatusCheckContexts   String[] @default([])
+  requiresSignedCommits         Boolean  @default(false)
+  requiresLinearHistory         Boolean  @default(false)
+  enforceAdmins                 Boolean  @default(false)
+  allowsForcePushes             Boolean  @default(false)
+  allowsDeletions               Boolean  @default(false)
+  /// Source provenance: "github_api" | "manual" | "import".
+  source                        String   @default("github_api")
+  /// Raw provider payload for audit / re-projection.
+  rawJson                       Json?
+  fetchedAt                     DateTime @default(now())
+  updatedAt                     DateTime @updatedAt
+
+  @@unique([repositoryId, branchName])
+  @@index([organizationId, repositoryId])
+  @@index([organizationId, strength])
+}
+
 model InboundWebhookDelivery {
   id              String   @id @default(cuid())
   organizationId  String
