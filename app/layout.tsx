@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Inter } from "next/font/google";
+import { Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import "../styles/axiom-theme.css";
 import { Analytics } from "@vercel/analytics/next";
@@ -11,7 +11,23 @@ import { StickyMobileCTA } from "@/components/StickyMobileCTA";
 import { ScrollProgress } from "@/components/motion/ScrollProgress";
 import { SITE_URL, defaultOgImage, primaryKeywords, secondaryKeywords } from "@/lib/seo";
 
-const inter = Inter({ subsets: ["latin"] });
+// Inter with the SF-Pro-leaning OpenType features baked in:
+// - `cv02` rounded 'g'  - `cv11` single-storey 'a'  - `ss03` shorter '8'
+// gives Inter the tightened, hardware-grade character of SF Pro Display
+// without shipping a new font payload.
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-inter",
+  display: "swap",
+});
+
+// JetBrains Mono for spec-sheet numerals + monospace labels — tighter
+// rhythm than IBM Plex, more presence than SF Mono on the web.
+const jetbrainsMono = JetBrains_Mono({
+  subsets: ["latin"],
+  variable: "--font-mono",
+  display: "swap",
+});
 
 export const viewport: Viewport = {
   themeColor: "#0a0a0d",
@@ -70,7 +86,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={inter.className}>
+      <body className={`${inter.variable} ${jetbrainsMono.variable} ${inter.className} antialiased`}>
         <Providers>
           <AxiomPanelProvider>
             <OrganizationJsonLd />

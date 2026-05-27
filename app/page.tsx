@@ -179,25 +179,26 @@ export default function Home() {
           <div className="grid lg:grid-cols-[1.05fr_1fr] gap-12 lg:gap-20 items-center">
             {/* Left — editorial hero, now using the calm design system. */}
             <div className="relative z-10">
+              {/* Refined eyebrow — Apple product-page style: mono label, no border, no pill */}
               <Reveal direction="up" blur>
-                <span className="inline-flex items-center gap-2 mb-8 px-3 py-1.5 rounded-full border border-rose-400/30 bg-gradient-to-r from-rose-500/[0.10] via-fuchsia-500/[0.06] to-violet-500/[0.10] text-[11.5px] font-medium text-zinc-200 backdrop-blur-sm">
+                <div className="mb-7 flex items-center gap-3">
                   <span className="relative flex h-1.5 w-1.5">
-                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-rose-400 opacity-70" />
-                    <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-rose-300" />
+                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-brand-coral opacity-60" />
+                    <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-brand-coral" />
                   </span>
-                  <span className="font-mono text-[10px] tracking-[0.18em] uppercase text-rose-200/90">01 / 09</span>
-                  <span className="text-zinc-500">·</span>
-                  Axiom · cloud operations agent
-                </span>
+                  <p className="mono-label text-zinc-400">
+                    Axiom <span className="text-zinc-600 mx-1.5">·</span> Cloud operations agent
+                  </p>
+                </div>
               </Reveal>
-              <h1 className="display-headline-lg text-white break-words mb-7">
-                <TextReveal text="Your cloud" splitBy="char" stagger={18} startDelay={120} className="block" />
+              <h1 className="display-headline-lg font-display text-white break-words mb-7">
+                <TextReveal text="Your cloud" splitBy="char" stagger={22} startDelay={120} className="block" />
                 <span className="block relative">
-                  <TextReveal text="runs itself." splitBy="char" stagger={18} startDelay={420} className="relative inline-block" />
-                  {/* Coral underline accent — Huly's signature warm hairline under the punch word */}
+                  <TextReveal text="runs itself." splitBy="char" stagger={22} startDelay={520} className="relative inline-block" />
+                  {/* Single thin coral hairline — pulled back from the bold 3px gradient */}
                   <span
                     aria-hidden
-                    className="absolute left-0 -bottom-1 h-[3px] w-[58%] rounded-full bg-gradient-to-r from-rose-400 via-fuchsia-400 to-transparent opacity-90"
+                    className="absolute left-0 -bottom-0.5 h-[2px] w-[44%] rounded-full bg-gradient-to-r from-brand-coral via-fuchsia-400/70 to-transparent"
                   />
                 </span>
               </h1>
@@ -207,17 +208,17 @@ export default function Home() {
                 </p>
               </Reveal>
               <Reveal direction="up" delay={0.12}>
-                <div className="relative z-20 flex flex-wrap items-center gap-x-6 gap-y-3">
+                <div className="relative z-20 flex flex-wrap items-center gap-x-5 gap-y-3">
                   <Link
                     href="/operator/onboarding"
-                    className="btn-coral-glow magnetic-sheen inline-flex items-center gap-2.5 px-7 py-3.5 rounded-full text-[14.5px] font-medium"
+                    className="btn-press inline-flex items-center gap-2.5 px-7 py-3.5 rounded-full text-[14.5px] font-semibold tracking-tight"
                   >
                     See Axiom in action
                     <ArrowRightIcon className="h-4 w-4 opacity-60" />
                   </Link>
                   <Link
                     href="/demo"
-                    className="link-underline-soft text-[14px] text-zinc-400 hover:text-brand-coral transition-colors"
+                    className="btn-ghost-press inline-flex items-center gap-2 px-6 py-3.5 rounded-full text-[14px] font-medium tracking-tight"
                   >
                     Try the demo
                   </Link>
@@ -255,42 +256,32 @@ export default function Home() {
             <Reveal direction="up" delay={0.15}>
               <div className="relative hidden lg:block">
                 <SpotlightCard
-                  className="glow-edge rounded-2xl border border-white/[0.04] bg-white/[0.012] p-6 backdrop-blur-sm"
+                  className="surface-frost rounded-2xl p-6"
                 >
                   <HomepageDemoAnimation />
                 </SpotlightCard>
 
-                {/* Floating audit overlay — top-right, breaks out of the frame */}
+                {/* Single floating audit card — material glass surface, breaks
+                    out the top-right corner. Apple product-page sensibility:
+                    one focal accessory, not two. */}
                 <div
-                  className="absolute -top-5 -right-5 z-20 w-[220px] rounded-xl border border-white/[0.08] bg-[#0b0b0e]/95 backdrop-blur-xl p-3 shadow-[0_20px_50px_-15px_rgba(244,114,182,0.25)] hidden xl:block"
-                  style={{ animation: "ambient-drift 9s ease-in-out infinite" }}
+                  className="surface-glass absolute -top-5 -right-5 z-20 w-[240px] rounded-2xl p-4 hidden xl:block"
+                  style={{ animation: "ambient-drift 11s ease-in-out infinite" }}
                 >
-                  <div className="flex items-center gap-2 mb-2">
+                  <div className="flex items-center gap-2 mb-2.5">
                     <span className="relative flex h-1.5 w-1.5">
-                      <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-70" />
+                      <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-60" />
                       <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-300" />
                     </span>
-                    <p className="text-[9.5px] font-mono uppercase tracking-[0.16em] text-emerald-300/90">Audit · live</p>
+                    <p className="mono-label text-emerald-300/90 text-[9.5px]">Audit · live</p>
                   </div>
-                  <p className="text-[12px] font-semibold text-white leading-tight">Plan #142 approved</p>
-                  <p className="text-[10.5px] text-zinc-400 mt-1 leading-snug">Rollback verified · sha-256 rationale persisted · blast radius 1 service.</p>
-                  <div className="mt-2 flex items-center gap-1.5 text-[9.5px] font-mono text-zinc-500">
-                    <span>18:42 UTC</span>
-                    <span>·</span>
-                    <span className="text-rose-300/90">payments-api</span>
+                  <p className="text-[12.5px] font-semibold text-white leading-tight tracking-tight">Plan #142 approved</p>
+                  <p className="text-[10.5px] text-zinc-400 mt-1.5 leading-snug">Rollback verified · sha-256 rationale persisted.</p>
+                  <div className="mt-2.5 pt-2.5 border-t border-white/[0.04] flex items-center gap-2 text-[9.5px] font-mono tabular-nums">
+                    <span className="text-zinc-500">18:42 UTC</span>
+                    <span className="text-zinc-700">·</span>
+                    <span className="text-brand-coral/85">payments-api</span>
                   </div>
-                </div>
-
-                {/* Floating metric chip — bottom-left, breaks out the other side */}
-                <div
-                  className="absolute -bottom-4 -left-5 z-20 rounded-full border border-white/[0.08] bg-[#0b0b0e]/95 backdrop-blur-xl px-3.5 py-1.5 shadow-[0_15px_40px_-15px_rgba(168,85,247,0.35)] hidden xl:flex items-center gap-2"
-                  style={{ animation: "ambient-drift 11s ease-in-out infinite", animationDelay: "-4s" }}
-                >
-                  <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-violet-300/90">MTTR</span>
-                  <span className="font-semibold text-white text-[12.5px] tabular-nums">11 min</span>
-                  <span className="text-zinc-600">·</span>
-                  <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-cyan-300/80">Spend ↓</span>
-                  <span className="font-semibold text-white text-[12.5px] tabular-nums">37%</span>
                 </div>
               </div>
             </Reveal>

@@ -164,17 +164,18 @@ export function HomepageDemoAnimation() {
             <motion.div
               className="absolute z-30 pointer-events-none"
               animate={{ left: cursorXY.x, top: cursorXY.y }}
-              transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
+              /* Slower cinematic ease — Apple product-video feel. */
+              transition={{ duration: 1.2, ease: [0.16, 1, 0.30, 1] }}
               style={{ translateX: "-50%", translateY: "-50%" }}
             >
               <CursorIcon />
-              {/* Click flash — coral, pulses once mid-hold */}
+              {/* Single deliberate click flash — slower, softer, more intentional */}
               <motion.span
                 className="absolute -translate-x-1/2 -translate-y-1/2 left-0 top-0 rounded-full border"
-                style={{ borderColor: "rgba(244,114,182,0.65)" }}
+                style={{ borderColor: "rgba(244,114,182,0.55)" }}
                 initial={{ width: 0, height: 0, opacity: 0 }}
-                animate={{ width: 38, height: 38, opacity: [0, 0.85, 0] }}
-                transition={{ duration: 1.0, ease: "easeOut", repeat: Infinity, repeatDelay: 1.1 }}
+                animate={{ width: 44, height: 44, opacity: [0, 0.7, 0] }}
+                transition={{ duration: 1.4, ease: [0.16, 1, 0.30, 1], repeat: Infinity, repeatDelay: 1.6 }}
                 aria-hidden
               />
             </motion.div>
