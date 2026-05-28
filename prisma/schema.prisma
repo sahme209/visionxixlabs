@@ -3359,6 +3359,46 @@ model AiMemoryChatTurn {
   @@index([organizationId, userId, generatedAt])
 }
 
+/// Phase 531 — AI call log.
+///
+/// One row per AI provider call across every engine (rationale ×3,
+/// voter, summary, chat, suggestion). Powers:
+///   • Per-engine latency p50/p95 stats
+///   • Token usage + cost rollups
+///   • Circuit breaker state machine — opens after N consecutive
+///     errors in a rolling window, half-open after a cooldown
+///   • Engineer-facing AI call log dashboard
+///
+/// Closed-union `outcome`:
+///   ok         — provider returned 2xx with parseable body
+///   error      — provider returned 5xx / parse failed
+///   timeout    — call took longer than configured timeout
+///   short_circuit — caller declined to call because the breaker was open
+///
+/// Closed-union `engineName` (informational, not enforced — engineers
+/// can add new engines without a migration):
+///   council_rationale · triage_rationale · remediation_rationale ·
+///   council_voter · memory_summary · memory_chat ·
+///   proactive_suggestion · ad_hoc
+model AiCallLog {
+  id              String   @id @default(cuid())
+  organizationId  String?
+  engineName      String
+  model           String?
+  outcome         String
+  errorMessage    String?
+  /** Time spent in the provider call, milliseconds. */
+  latencyMs       Int
+  promptTokens    Int?
+  completionTokens Int?
+  totalTokens     Int?
+  startedAt       DateTime @default(now())
+
+  @@index([engineName, startedAt])
+  @@index([organizationId, engineName, startedAt])
+  @@index([outcome, startedAt])
+}
+
 /// Phase 513 — Autonomous Tick log.
 ///
 /// Append-only record of each autonomous cron tick. Operators see

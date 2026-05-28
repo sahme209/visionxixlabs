@@ -78,7 +78,7 @@ export async function POST(_req: NextRequest) {
       organizationId: ctx.organizationId,
       entries,
       summaries,
-      fetcher: makeLiveRationaleFetcher(),
+      fetcher: makeLiveRationaleFetcher({ engineName: "proactive_suggestion", organizationId: ctx.organizationId }),
     },
   );
 

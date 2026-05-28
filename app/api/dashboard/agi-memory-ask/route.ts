@@ -96,7 +96,7 @@ export async function POST(req: NextRequest) {
 
   const answer = await askAgiMemory(
     { question, entries, summaries },
-    makeLiveRationaleFetcher(),
+    makeLiveRationaleFetcher({ engineName: "memory_chat", organizationId: ctx.organizationId }),
   );
 
   // Map citationIds back to (targetKind, targetId) pairs so the UI can

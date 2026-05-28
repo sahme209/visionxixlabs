@@ -188,7 +188,7 @@ export async function GET(req: NextRequest): Promise<Response> {
           organizationId: orgId,
           entries,
           summaries,
-          fetcher: makeLiveRationaleFetcher(),
+          fetcher: makeLiveRationaleFetcher({ engineName: "proactive_suggestion", organizationId: orgId }),
         },
       );
       if (!r.body.ok) return { ok: false, reason: r.body.error };

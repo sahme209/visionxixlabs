@@ -166,7 +166,7 @@ export async function POST(_req: NextRequest) {
           organizationId: orgId,
           entries,
           summaries,
-          fetcher: makeLiveRationaleFetcher(),
+          fetcher: makeLiveRationaleFetcher({ engineName: "proactive_suggestion", organizationId: orgId }),
         },
       );
       return r.body.ok ? { ok: true } : { ok: false, reason: r.body.error };

@@ -53,6 +53,7 @@ import { AdvisorCouncilView } from "./views/AdvisorCouncilView";
 import { SlackNotificationsView } from "./views/SlackNotificationsView";
 import { AgiMemoryView } from "./views/AgiMemoryView";
 import { AgiSuggestionsView } from "./views/AgiSuggestionsView";
+import { AiCallLogView } from "./views/AiCallLogView";
 import { useTrayApprovalsBadge } from "./lib/useTrayApprovalsBadge";
 import { useConnectorHealthAmbientPoll } from "./lib/connectorHealthStore";
 import { useSseStream } from "./lib/useSseStream";
@@ -105,6 +106,7 @@ export type View =
   | "advisor-council"
   | "agi-memory"
   | "agi-suggestions"
+  | "ai-call-log"
   // Automation
   | "activity"
   | "workflows"
@@ -217,6 +219,7 @@ export default function App() {
           {activeView === "advisor-council"  && <AdvisorCouncilView />}
           {activeView === "agi-memory"       && <AgiMemoryView />}
           {activeView === "agi-suggestions"  && <AgiSuggestionsView />}
+          {activeView === "ai-call-log"      && <AiCallLogView />}
           {activeView === "activity"      && <ActivityView />}
           {activeView === "workflows"     && <WorkflowsView />}
           {activeView === "approvals"     && <ApprovalsView />}

@@ -54,7 +54,7 @@ export async function POST(req: NextRequest) {
   const triageOutput = rebuildTriageFromRow(row);
   const triageInputs = rebuildInputsFromRow(row);
 
-  const fetcher = makeLiveRationaleFetcher();
+  const fetcher = makeLiveRationaleFetcher({ engineName: "triage_rationale", organizationId: ctx.organizationId });
   const enrichment = await enrichTriageRationale(triageOutput, triageInputs, fetcher);
 
   try {

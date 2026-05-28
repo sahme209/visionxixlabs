@@ -60,7 +60,7 @@ export async function POST(req: NextRequest) {
   const proposal = rebuildProposalFromRow(row);
   const inputs = rebuildInputsFromRow(row);
 
-  const fetcher = makeLiveRationaleFetcher();
+  const fetcher = makeLiveRationaleFetcher({ engineName: "remediation_rationale", organizationId: ctx.organizationId });
   const enrichment = await enrichRemediationRationale(proposal, inputs, fetcher);
 
   try {

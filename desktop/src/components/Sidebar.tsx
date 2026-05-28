@@ -99,6 +99,7 @@ const GROUPS: NavGroup[] = [
       { id: "advisor-council", label: "Advisor council (AGI)", Icon: IconOrchestration },
       { id: "agi-memory", label: "AGI memory (AGI)", Icon: IconOrchestration },
       { id: "agi-suggestions", label: "AGI suggestions (AGI)", Icon: IconOrchestration },
+      { id: "ai-call-log", label: "AI call log (engineer)", Icon: IconAudit },
       { id: "drift", label: "Drift", Icon: IconSecurity },
       { id: "applications", label: "Applications", Icon: IconDashboard },
       { id: "manual-fixes", label: "Manual fixes", Icon: IconRemediation },

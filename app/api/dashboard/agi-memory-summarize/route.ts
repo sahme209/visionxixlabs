@@ -57,7 +57,7 @@ export async function POST(req: NextRequest) {
     generatedAtIso: e.generatedAtIso,
   }));
 
-  const summary = await summarizeAgiMemory(entries, makeLiveRationaleFetcher());
+  const summary = await summarizeAgiMemory(entries, makeLiveRationaleFetcher({ engineName: "memory_summary", organizationId: ctx.organizationId }));
 
   // Phase 523 — Persist the summary for the timeline view. Best-effort:
   // the route response is unaffected by persistence failure (e.g. when

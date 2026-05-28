@@ -98,7 +98,7 @@ export async function POST(req: NextRequest) {
         inputs: agg.inputs,
         // Only call live AI when the operator asked for it on this run;
         // otherwise persist a deterministic fallback (cheap).
-        fetcher: withAi ? makeLiveRationaleFetcher() : null,
+        fetcher: withAi ? makeLiveRationaleFetcher({ engineName: "council_rationale", organizationId: ctx.organizationId }) : null,
       },
     );
 

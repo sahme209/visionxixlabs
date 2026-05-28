@@ -22,14 +22,14 @@
 
 import "server-only";
 import {
-  getAIProviderManager,
-} from "@/lib/ai/AIProviderManager";
-import {
   ruleBasedVoter,
   type AdvisorVoter,
   type CouncilVote,
 } from "./advisorCouncilEngine";
 import { RECOMMENDATION_KINDS, type AdvisorInputs, type RecommendationKind } from "./releaseAdvisorEngine";
+// Phase 531 — route the voter through the instrumented fetcher so the
+// circuit breaker + call log cover the council voter too.
+import { makeInstrumentedFetcher } from "./instrumentedAiFetcher";
 
 /* ──────────────────────────────────────────────────────────────────
    In-memory cache.
@@ -149,15 +149,15 @@ export async function aiNativeVoterAsync(input: AdvisorInputs): Promise<CouncilV
     return { ...cached.vote, rationale: `${cached.vote.rationale} (cached)` };
   }
 
-  // Build prompt + call AI.
+  // Build prompt + call AI. Phase 531 — the instrumented fetcher
+  // applies the circuit breaker + persists a call log row before
+  // returning. Errors propagate to the catch below (where the rule-
+  // based fallback takes over).
   const prompt = buildPrompt(input);
   let aiText: string | null = null;
   try {
-    const manager = getAIProviderManager();
-    const res = await manager.generateText(prompt, {
-      maxTokens: 200,
-      temperature: 0.2,
-    });
+    const fetcher = makeInstrumentedFetcher({ engineName: "council_voter" });
+    const res = await fetcher(prompt);
     aiText = res.text ?? null;
   } catch (err) {
     return fallbackVote(input, err instanceof Error ? err.message : "ai_provider_error");
