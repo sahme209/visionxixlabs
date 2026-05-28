@@ -19,6 +19,7 @@ export const SLACK_SIGNAL_KINDS = [
   "triage_auto_escalate",
   "learning_loop_signal",
   "remediation_p0",
+  "proactive_suggestion_batch",
 ] as const;
 export type SlackSignalKind = (typeof SLACK_SIGNAL_KINDS)[number];
 
@@ -60,10 +61,11 @@ const SEVERITY_EMOJI: Record<SlackSignal["severity"], string> = {
 };
 
 const KIND_PREFIX: Record<SlackSignalKind, string> = {
-  council_critical:      "AGI council",
-  triage_auto_escalate:  "Triage auto-escalate",
-  learning_loop_signal:  "Learning loop",
-  remediation_p0:        "Remediation",
+  council_critical:           "AGI council",
+  triage_auto_escalate:       "Triage auto-escalate",
+  learning_loop_signal:       "Learning loop",
+  remediation_p0:             "Remediation",
+  proactive_suggestion_batch: "AGI suggestions",
 };
 
 export interface SlackPayload {

@@ -18,7 +18,7 @@ import {
 } from "@heroicons/react/24/outline";
 import { PageIntro } from "@/components/dashboard/PageIntro";
 
-const SIGNAL_KINDS = ["council_critical", "triage_auto_escalate", "learning_loop_signal", "remediation_p0"] as const;
+const SIGNAL_KINDS = ["council_critical", "triage_auto_escalate", "learning_loop_signal", "remediation_p0", "proactive_suggestion_batch"] as const;
 type SignalKind = (typeof SIGNAL_KINDS)[number];
 type Outcome = "sent" | "skipped_not_configured" | "skipped_filtered" | "error" | "unknown";
 
@@ -55,6 +55,7 @@ const KIND_LABEL: Record<string, string> = {
   triage_auto_escalate: "Triage auto-escalate",
   learning_loop_signal: "Learning loop",
   remediation_p0: "Remediation P0",
+  proactive_suggestion_batch: "AGI suggestions",
 };
 
 const OUTCOME_CLASS: Record<Outcome, string> = {
@@ -177,6 +178,7 @@ function ConfigPanel({ current, onSaved }: { current: ConfigView | null; onSaved
     triage_auto_escalate: true,
     learning_loop_signal: true,
     remediation_p0: true,
+    proactive_suggestion_batch: true,
   });
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
@@ -192,6 +194,7 @@ function ConfigPanel({ current, onSaved }: { current: ConfigView | null; onSaved
           triage_auto_escalate: false,
           learning_loop_signal: false,
           remediation_p0: false,
+          proactive_suggestion_batch: false,
         };
         for (const k of current.enabledSignalKinds) next[k] = true;
         setKindsState(next);

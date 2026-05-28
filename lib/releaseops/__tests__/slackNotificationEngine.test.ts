@@ -25,6 +25,7 @@ describe("isSlackSignalKind", () => {
     expect(isSlackSignalKind("triage_auto_escalate")).toBe(true);
     expect(isSlackSignalKind("learning_loop_signal")).toBe(true);
     expect(isSlackSignalKind("remediation_p0")).toBe(true);
+    expect(isSlackSignalKind("proactive_suggestion_batch")).toBe(true);
   });
 
   it("rejects unknown kinds", () => {
@@ -85,6 +86,7 @@ describe("formatSlackPayload", () => {
     expect(formatSlackPayload(baseSignal({ kind: "triage_auto_escalate" })).text).toContain("Triage auto-escalate");
     expect(formatSlackPayload(baseSignal({ kind: "learning_loop_signal" })).text).toContain("Learning loop");
     expect(formatSlackPayload(baseSignal({ kind: "remediation_p0" })).text).toContain("Remediation");
+    expect(formatSlackPayload(baseSignal({ kind: "proactive_suggestion_batch" })).text).toContain("AGI suggestions");
   });
 });
 

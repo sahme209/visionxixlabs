@@ -73,6 +73,12 @@ import {
 } from "@/lib/releaseops/aiMemorySummaryResponder";
 import { makeLiveRationaleFetcher } from "@/lib/releaseops/aiRationaleFetcher";
 
+// Phase 527 — Slack ping when a fresh suggestion batch lands.
+import {
+  sendSlackSignalBestEffort,
+  type SlackRepo,
+} from "@/lib/releaseops/slackNotificationResponder";
+
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 // 5-minute max — Vercel hobby/pro default is 10s, but cron + serverless
@@ -185,7 +191,38 @@ export async function GET(req: NextRequest): Promise<Response> {
           fetcher: makeLiveRationaleFetcher(),
         },
       );
-      return r.body.ok ? { ok: true } : { ok: false, reason: r.body.error };
+      if (!r.body.ok) return { ok: false, reason: r.body.error };
+
+      // Phase 527 — Best-effort Slack ping when the autonomous run
+      // produces a non-trivial suggestion batch. Skip when the only
+      // suggestion is the explicit no_action_needed entry.
+      const fresh = r.body.data.suggestions;
+      const actionable = fresh.filter((s) => s.kind !== "no_action_needed");
+      if (actionable.length > 0) {
+        const dashboardBase = process.env.NEXTAUTH_URL ?? "";
+        const topTitles = actionable.slice(0, 3).map((s) => `• ${s.title}`).join("\n");
+        const summary = `${actionable.length} suggestion${actionable.length === 1 ? "" : "s"} pending · top: ${actionable.slice(0, 1).map((s) => s.title).join("")}`;
+        const detail = `Top items:\n${topTitles}${actionable.length > 3 ? `\n…and ${actionable.length - 3} more` : ""}`;
+        const severity = actionable.some((s) => s.confidence >= 80) ? "high" : "medium";
+        await sendSlackSignalBestEffort(
+          prisma as unknown as SlackRepo,
+          {
+            organizationId: orgId,
+            signal: {
+              kind: "proactive_suggestion_batch",
+              title: `${actionable.length} fresh AGI suggestion${actionable.length === 1 ? "" : "s"}`,
+              summary,
+              detail,
+              severity,
+              subjectKind: "agi_memory",
+              subjectId: "all",
+              ...(dashboardBase ? { dashboardUrl: `${dashboardBase}/dashboard/agi-suggestions` } : {}),
+            },
+          },
+          ((url, init) => fetch(url, init)) as Parameters<typeof sendSlackSignalBestEffort>[2],
+        );
+      }
+      return { ok: true };
     },
   };
 
