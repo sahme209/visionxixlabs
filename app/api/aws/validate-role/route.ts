@@ -18,6 +18,10 @@ import { loadAppEnv } from "@/lib/config/env";
 import { logAudit } from "@/lib/security/auditLog";
 
 export const dynamic = "force-dynamic";
+// Phase 535 — bumped from 10s default so the retry loop has room. Each
+// retry attempts AssumeRole then waits a step in the backoff array; the
+// worst-case path spends ~25s before giving up.
+export const maxDuration = 35;
 
 interface Body {
   roleArn?: unknown;
@@ -71,12 +75,42 @@ export async function POST(req: NextRequest) {
   });
 
   try {
-    const assumed = await broker.send(new AssumeRoleCommand({
-      RoleArn: roleArn,
-      RoleSessionName: `axiom-validate-${Date.now()}`,
-      ExternalId: externalId,
-      DurationSeconds: 900,
-    }));
+    // Phase 535 — Retry AssumeRole with exponential backoff for up to ~20s.
+    // IAM has eventual consistency: a role created by CloudFormation may
+    // not be assumable for 5-30 seconds after CREATE_COMPLETE. Without
+    // retry the first AssumeRole returns AccessDenied even when everything
+    // is wired correctly, and the customer hits the rejected screen for
+    // a reason that would have resolved itself in 10 seconds. Retries
+    // bail early on "is not authorized" since that's a permanent broker-
+    // side fix, not a timing issue.
+    const delaysMs = [0, 2000, 4000, 6000, 8000];
+    let assumed: Awaited<ReturnType<typeof broker.send<AssumeRoleCommand>>> | undefined;
+    let lastRetryErr: unknown = null;
+    for (let attempt = 0; attempt < delaysMs.length; attempt++) {
+      if (delaysMs[attempt] > 0) {
+        await new Promise((r) => setTimeout(r, delaysMs[attempt]));
+      }
+      try {
+        assumed = await broker.send(new AssumeRoleCommand({
+          RoleArn: roleArn,
+          RoleSessionName: `axiom-validate-${Date.now()}`,
+          ExternalId: externalId,
+          DurationSeconds: 900,
+        }));
+        lastRetryErr = null;
+        break;
+      } catch (err) {
+        lastRetryErr = err;
+        const msg = err instanceof Error ? err.message : String(err);
+        if (/is not authorized to perform:?\s*sts:AssumeRole/i.test(msg)) {
+          break;
+        }
+      }
+    }
+    if (lastRetryErr || !assumed) {
+      throw lastRetryErr ?? new Error("AssumeRole returned no credentials.");
+    }
+
     const creds = assumed.Credentials;
     if (!creds?.AccessKeyId || !creds?.SecretAccessKey || !creds?.SessionToken) {
       return NextResponse.json({
@@ -130,10 +164,14 @@ export async function POST(req: NextRequest) {
     }
 
     if (name === "AccessDenied" || name === "AuthFailure") {
+      // Phase 535 — Be honest. We retried 5 times over ~20s. If we're
+      // still here it's not eventual-consistency timing — it's a real
+      // trust-policy mismatch or a broker-side identity-policy gap. The
+      // customer can't fix either, so don't tell them to wait + retry.
       return NextResponse.json({
         ok: false,
         error: "access_denied",
-        hint: "AWS rejected the AssumeRole call. The CloudFormation stack might still be creating — wait 30 seconds and click the Finish setup link again.",
+        hint: "AWS rejected the AssumeRole call after 5 retries. The CloudFormation role exists but our platform's broker credentials can't assume into it. This is a one-time platform-side fix (broker IAM identity policy needs sts:AssumeRole on the role ARN, or the broker Vercel env vars need to be set). While that's being sorted, use the 'See the platform in demo mode' button to explore everything end-to-end.",
       }, { status: 403 });
     }
     return NextResponse.json({
