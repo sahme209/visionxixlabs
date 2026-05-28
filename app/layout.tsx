@@ -9,6 +9,7 @@ import { AxiomPanelProvider } from "@/lib/contexts/AxiomPanelContext";
 import { Providers } from "@/components/Providers";
 import { StickyMobileCTA } from "@/components/StickyMobileCTA";
 import { ScrollProgress } from "@/components/motion/ScrollProgress";
+import { CommandPalette } from "@/components/CommandPalette";
 import { SITE_URL, defaultOgImage, primaryKeywords, secondaryKeywords } from "@/lib/seo";
 
 // Inter with the SF-Pro-leaning OpenType features baked in:
@@ -92,6 +93,7 @@ export default function RootLayout({
             <OrganizationJsonLd />
             <WebSiteJsonLd />
             <ScrollProgress />
+            <CommandPalette />
             <div className="pb-20 md:pb-0">{children}</div>
             <StickyMobileCTA />
             <AIChatWidget />

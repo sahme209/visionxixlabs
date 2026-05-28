@@ -22,6 +22,7 @@ import {
   NewspaperIcon,
   RocketLaunchIcon,
   CommandLineIcon,
+  MagnifyingGlassIcon,
 } from "@heroicons/react/24/outline";
 import { AnimatePresence, motion } from "framer-motion";
 
@@ -41,6 +42,7 @@ const resourcesDropdown = [
   { href: "/changelog",            label: "Changelog",  desc: "What we shipped recently",        icon: RocketLaunchIcon },
   { href: "/manifesto",            label: "Manifesto",  desc: "The seven things we believe",     icon: SparklesIcon },
   { href: "/principles",           label: "Principles", desc: "How we make visual decisions",    icon: SparklesIcon },
+  { href: "/design",               label: "Design system", desc: "Tokens, materials, primitives",icon: SparklesIcon },
   { href: "/handbook",             label: "Handbook",   desc: "How we build it — engineering",   icon: CommandLineIcon },
   { href: "/team",                 label: "Team",       desc: "How a small team ships carefully",icon: SparklesIcon },
   { href: "/insights",             label: "Insights",   desc: "Customer stories + frameworks",   icon: BookOpenIcon },
@@ -217,6 +219,23 @@ export function Navigation() {
                 <span className="text-zinc-400">Shipped</span>
                 <span className="text-brand-coral tabular-nums">489</span>
               </Link>
+
+              {/* ⌘K hint — discoverability for the global command palette */}
+              <button
+                type="button"
+                onClick={() => {
+                  // Synthesize a ⌘K event so the palette opens via the same global listener.
+                  window.dispatchEvent(new KeyboardEvent("keydown", { key: "k", metaKey: true }));
+                }}
+                aria-label="Open command palette (⌘K)"
+                title="Search anywhere — ⌘K"
+                className="hidden xl:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md border border-white/[0.08] bg-white/[0.02] text-[10.5px] font-mono uppercase tracking-[0.14em] text-zinc-400 hover:text-brand-coral hover:border-brand-coral/30 transition-colors"
+              >
+                <MagnifyingGlassIcon className="h-3 w-3" />
+                <span>Search</span>
+                <span className="text-zinc-700">·</span>
+                <kbd className="text-zinc-400 font-normal">⌘K</kbd>
+              </button>
 
               <a
                 href="https://github.com/sahme209/axiom-releases"

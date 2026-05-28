@@ -42,6 +42,7 @@ const productLinks = [
 const companyLinks = [
   { href: "/manifesto", label: "Manifesto" },
   { href: "/principles", label: "Principles" },
+  { href: "/design", label: "Design system" },
   { href: "/handbook", label: "Handbook" },
   { href: "/team", label: "Team" },
   { href: "/contact", label: "Contact" },
