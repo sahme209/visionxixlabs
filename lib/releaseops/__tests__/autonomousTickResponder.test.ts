@@ -292,3 +292,118 @@ describe("runAutonomousTick — degraded", () => {
     expect(r.errorRuns).toBeGreaterThanOrEqual(1); // policy run errored
   });
 });
+
+describe("runAutonomousTick — proactive suggestions (Phase 526)", () => {
+  function makeRepoWithSuggestions(): Stub & { _suggByOrg: Map<string, RecentRow> } {
+    const stub = makeRepo() as Stub & { _suggByOrg: Map<string, RecentRow> };
+    stub._suggByOrg = new Map();
+    stub.proactiveAgiSuggestion = {
+      async findFirst({ where }) { return stub._suggByOrg.get(where.organizationId) ?? null; },
+    };
+    return stub;
+  }
+
+  function makeRunnersWithSuggestion(): { runners: EngineRunners; calls: RunnerCalls & { suggestion: Array<{ org: string }> } } {
+    const calls = { advisor: [] as Array<{ org: string; release: string }>, triage: [] as Array<{ org: string; incident: string }>, remediation: [] as Array<{ org: string; incident: string }>, policy: [] as Array<{ org: string }>, suggestion: [] as Array<{ org: string }> };
+    const runners: EngineRunners = {
+      async runAdvisor(org, releaseId) { calls.advisor.push({ org, release: releaseId }); return { ok: true }; },
+      async runTriage(org, incidentId) { calls.triage.push({ org, incident: incidentId }); return { ok: true }; },
+      async runRemediation(org, incidentId) { calls.remediation.push({ org, incident: incidentId }); return { ok: true }; },
+      async runPolicyProposal(org) { calls.policy.push({ org }); return { ok: true }; },
+      async runProactiveSuggestion(org) { calls.suggestion.push({ org }); return { ok: true }; },
+    };
+    return { runners, calls };
+  }
+
+  it("runs proactive suggestion when no prior exists", async () => {
+    const stub = makeRepoWithSuggestions();
+    stub._orgs.push({ id: "o1" });
+    const { runners, calls } = makeRunnersWithSuggestion();
+    const r = await runAutonomousTick(stub, runners, { now: NOW });
+    expect(calls.suggestion).toEqual([{ org: "o1" }]);
+    if (!r.ok) throw new Error("expected ok");
+    expect(r.perOrg[0].proactiveSuggestionRun?.outcome).toBe("ok");
+  });
+
+  it("skips when recent suggestion present (< proactiveSuggestionMaxAgeHours)", async () => {
+    const stub = makeRepoWithSuggestions();
+    stub._orgs.push({ id: "o1" });
+    stub._suggByOrg.set("o1", { generatedAt: new Date(NOW.getTime() - 30 * 60_000) }); // 30min ago, default 6h threshold
+    const { runners, calls } = makeRunnersWithSuggestion();
+    const r = await runAutonomousTick(stub, runners, { now: NOW });
+    expect(calls.suggestion).toEqual([]);
+    if (!r.ok) throw new Error("expected ok");
+    expect(r.perOrg[0].proactiveSuggestionRun?.outcome).toBe("skipped");
+  });
+
+  it("re-runs when prior is older than threshold", async () => {
+    const stub = makeRepoWithSuggestions();
+    stub._orgs.push({ id: "o1" });
+    stub._suggByOrg.set("o1", { generatedAt: new Date(NOW.getTime() - 7 * 60 * 60_000) }); // 7h ago
+    const { runners, calls } = makeRunnersWithSuggestion();
+    await runAutonomousTick(stub, runners, { now: NOW });
+    expect(calls.suggestion).toEqual([{ org: "o1" }]);
+  });
+
+  it("respects custom proactiveSuggestionMaxAgeHours override", async () => {
+    const stub = makeRepoWithSuggestions();
+    stub._orgs.push({ id: "o1" });
+    stub._suggByOrg.set("o1", { generatedAt: new Date(NOW.getTime() - 30 * 60_000) }); // 30min
+    const { runners, calls } = makeRunnersWithSuggestion();
+    // tighter threshold: 15 minutes
+    await runAutonomousTick(stub, runners, { now: NOW, config: { proactiveSuggestionMaxAgeHours: 0.25 } });
+    expect(calls.suggestion).toEqual([{ org: "o1" }]);
+  });
+
+  it("captures runner errors as 'error' outcome (does not throw)", async () => {
+    const stub = makeRepoWithSuggestions();
+    stub._orgs.push({ id: "o1" });
+    const runners: EngineRunners = {
+      async runAdvisor() { return { ok: true }; },
+      async runTriage() { return { ok: true }; },
+      async runRemediation() { return { ok: true }; },
+      async runPolicyProposal() { return { ok: true }; },
+      async runProactiveSuggestion() { throw new Error("provider down"); },
+    };
+    const r = await runAutonomousTick(stub, runners, { now: NOW });
+    if (!r.ok) throw new Error("expected ok");
+    expect(r.perOrg[0].proactiveSuggestionRun?.outcome).toBe("error");
+    expect(r.perOrg[0].proactiveSuggestionRun?.reason).toContain("provider down");
+  });
+
+  it("skips entirely when no runner is wired (proactiveSuggestionRun stays null)", async () => {
+    const stub = makeRepoWithSuggestions();
+    stub._orgs.push({ id: "o1" });
+    const runners: EngineRunners = {
+      async runAdvisor() { return { ok: true }; },
+      async runTriage() { return { ok: true }; },
+      async runRemediation() { return { ok: true }; },
+      async runPolicyProposal() { return { ok: true }; },
+      // runProactiveSuggestion intentionally omitted
+    };
+    const r = await runAutonomousTick(stub, runners, { now: NOW });
+    if (!r.ok) throw new Error("expected ok");
+    expect(r.perOrg[0].proactiveSuggestionRun).toBeNull();
+  });
+
+  it("skips entirely when proactiveAgiSuggestion repo is not present (legacy schema)", async () => {
+    const stub = makeRepo();
+    stub._orgs.push({ id: "o1" });
+    // proactiveAgiSuggestion intentionally omitted from the repo
+    const { runners } = makeRunnersWithSuggestion();
+    const r = await runAutonomousTick(stub, runners, { now: NOW });
+    if (!r.ok) throw new Error("expected ok");
+    expect(r.perOrg[0].proactiveSuggestionRun).toBeNull();
+  });
+
+  it("totals include the suggestion run", async () => {
+    const stub = makeRepoWithSuggestions();
+    stub._orgs.push({ id: "o1" });
+    const { runners } = makeRunnersWithSuggestion();
+    const r = await runAutonomousTick(stub, runners, { now: NOW });
+    if (!r.ok) throw new Error("expected ok");
+    expect(r.totalRuns).toBe(r.okRuns + r.skippedRuns + r.errorRuns);
+    // 1 policy + 1 suggestion run for one org
+    expect(r.totalRuns).toBeGreaterThanOrEqual(2);
+  });
+});

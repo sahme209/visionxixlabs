@@ -86,6 +86,14 @@ export interface AutonomousTickRepo {
       orderBy: { generatedAt: "desc" };
     }): Promise<RecentRow | null>;
   };
+  /** Phase 526 — Look up the latest proactive suggestion across all
+   *  decisions so we can decide whether to re-run the engine. */
+  proactiveAgiSuggestion?: {
+    findFirst(args: {
+      where: { organizationId: string };
+      orderBy: { generatedAt: "desc" };
+    }): Promise<RecentRow | null>;
+  };
 }
 
 /* ──────────────────────────────────────────────────────────────────
@@ -103,6 +111,10 @@ export interface EngineRunners {
   runTriage: (organizationId: string, incidentId: string) => Promise<EngineRunResult>;
   runRemediation: (organizationId: string, incidentId: string) => Promise<EngineRunResult>;
   runPolicyProposal: (organizationId: string) => Promise<EngineRunResult>;
+  /** Phase 526 — Optional. When present, the tick runs the proactive
+   *  suggestion engine once per org per tick (gated by the
+   *  proactiveSuggestionMaxAgeHours threshold). */
+  runProactiveSuggestion?: (organizationId: string) => Promise<EngineRunResult>;
 }
 
 /* ──────────────────────────────────────────────────────────────────
@@ -115,6 +127,9 @@ export interface OrgTickReport {
   triageRuns: { incidentId: string; outcome: "ok" | "skipped" | "error"; reason?: string }[];
   remediationRuns: { incidentId: string; outcome: "ok" | "skipped" | "error"; reason?: string }[];
   policyProposalRun: { outcome: "ok" | "skipped" | "error"; reason?: string } | null;
+  /** Phase 526 — null when the runner isn't configured or the org's
+   *  suggestion table is unavailable. */
+  proactiveSuggestionRun: { outcome: "ok" | "skipped" | "error"; reason?: string } | null;
 }
 
 export interface TickReport {
@@ -147,6 +162,8 @@ export interface TickConfig {
   remediationMaxAgeHours: number;
   /** Hours since last policy-proposal run before we re-run. Default 24. */
   policyProposalMaxAgeHours: number;
+  /** Hours since last proactive-suggestion run before we re-run. Default 6. */
+  proactiveSuggestionMaxAgeHours: number;
   /** Max active releases to scan per org per tick. Default 10. */
   maxReleasesPerOrg: number;
   /** Max open incidents to scan per org per tick. Default 20. */
@@ -160,6 +177,7 @@ const DEFAULT_CONFIG: TickConfig = {
   triageMaxAgeHours: 1,
   remediationMaxAgeHours: 1,
   policyProposalMaxAgeHours: 24,
+  proactiveSuggestionMaxAgeHours: 6,
   maxReleasesPerOrg: 10,
   maxIncidentsPerOrg: 20,
   maxOrgsPerTick: 100,
@@ -193,6 +211,7 @@ export async function runAutonomousTick(
         triageRuns: [],
         remediationRuns: [],
         policyProposalRun: null,
+        proactiveSuggestionRun: null,
       };
 
       // 1. Advisor for active releases.
@@ -290,6 +309,30 @@ export async function runAutonomousTick(
         orgReport.policyProposalRun = { outcome: "skipped", reason: "recent_run_present" };
         skippedRuns += 1;
         totalRuns += 1;
+      }
+
+      // 5. Phase 526 — Proactive AGI suggestions. Only runs when a
+      //    runner is wired in AND we either have no prior suggestion
+      //    or the last one is older than the configured threshold.
+      if (runners.runProactiveSuggestion && repo.proactiveAgiSuggestion) {
+        const repoSugg = repo.proactiveAgiSuggestion;
+        const recentSugg = await safe(() =>
+          repoSugg.findFirst({
+            where: { organizationId: org.id },
+            orderBy: { generatedAt: "desc" },
+          }),
+          null,
+        );
+        if (!recentSugg || hoursSince(recentSugg.generatedAt, now) >= config.proactiveSuggestionMaxAgeHours) {
+          const result = await safeRun(() => runners.runProactiveSuggestion!(org.id));
+          if (result.ok) { orgReport.proactiveSuggestionRun = { outcome: "ok" }; okRuns += 1; }
+          else { orgReport.proactiveSuggestionRun = { outcome: "error", reason: result.reason }; errorRuns += 1; }
+          totalRuns += 1;
+        } else {
+          orgReport.proactiveSuggestionRun = { outcome: "skipped", reason: "recent_run_present" };
+          skippedRuns += 1;
+          totalRuns += 1;
+        }
       }
 
       perOrg.push(orgReport);
