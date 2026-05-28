@@ -37,6 +37,7 @@ const VIEW_TITLES: Record<View, { title: string; subtitle: string }> = {
   "releaseops-autonomy":   { title: "ReleaseOps autonomy (AGI cron)", subtitle: "Hourly cron · advisor + triage + remediation + policy proposals without operator clicks" },
   "advisor-council":  { title: "Advisor council (AGI)", subtitle: "Three voters · majority consensus + dissent breakdown · operator override captured for learning" },
   "agi-memory":       { title: "AGI memory", subtitle: "Cross-engine Claude rationale feed · council + triage + remediation · audit the AGI's reasoning over time" },
+  "agi-suggestions":  { title: "AGI suggestions", subtitle: "Proactive operator next-actions · Claude scrolls memory + summaries and proposes what to look at" },
   drift:              { title: "Drift", subtitle: "Declared (IaC) vs observed (runtime) state · per-resource diff" },
   applications:       { title: "Applications", subtitle: "Top-level governance unit · register before tracking releases" },
   "manual-fixes":     { title: "Manual fixes", subtitle: "Out-of-band hand-edits · log + reconcile against source-of-truth" },

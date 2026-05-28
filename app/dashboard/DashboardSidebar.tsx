@@ -134,6 +134,7 @@ const GROUPS: NavGroup[] = [
       { href: "/dashboard/notifications-outbound", label: "Outbound · Slack / Teams", icon: BellAlertIcon },
       { href: "/dashboard/slack-notifications",  label: "Slack notifications (AGI)", icon: BellAlertIcon, power: true },
       { href: "/dashboard/agi-memory",            label: "AGI memory (cross-engine)", icon: BellAlertIcon, power: true },
+      { href: "/dashboard/agi-suggestions",       label: "AGI suggestions (proactive)", icon: BellAlertIcon, power: true },
       { href: "/dashboard/outbound-digest",      label: "Outbound digest",     icon: BellAlertIcon, power: true },
       { href: "/dashboard/executive-summary",    label: "Executive summary",   icon: DocumentTextIcon },
       { href: "/dashboard/priorities",           label: "Priorities",          icon: ChartBarIcon, power: true },

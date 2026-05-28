@@ -3274,6 +3274,57 @@ model AiMemorySummaryLog {
   @@index([organizationId, targetKind, generatedAt])
 }
 
+/// Phase 525 — Proactive AGI Suggestion.
+///
+/// The AGI generates concrete "operator next-action" suggestions from
+/// patterns in the rationale memory + persisted summaries + current
+/// release state. Each suggestion is a deep-link to a source object
+/// plus a rationale and confidence.
+///
+/// Closed-union `kind`:
+///   review_release      — check a specific release
+///   tighten_protection  — strengthen branch protection on a repo
+///   reconcile_manual_fix — close out an unreconciled manual fix
+///   investigate_incident — dig into a triage row with low confidence
+///   reduce_fallback_rate — AI provider is flaky, fix configuration
+///   review_pattern       — recurring pattern worth a human read
+///   no_action_needed     — explicit "nothing to do right now"
+///
+/// Closed-union `operatorDecision`: pending | acted | dismissed.
+/// Closed-union `outcome`: ai_generated | fallback_rules | error.
+model ProactiveAgiSuggestion {
+  id              String   @id @default(cuid())
+  organizationId  String
+  kind            String
+  title           String
+  rationale       String
+  /// Optional deep-link target: the surface the operator should open.
+  targetKind      String?
+  /// Optional deep-link target id (release id, repo id, incident id, ...).
+  targetId        String?
+  confidence      Int      // 0-100
+  /// JSON array of citation strings referencing memory entries / summaries.
+  citationsJson   Json
+  /// Closed-union: pending | acted | dismissed.
+  operatorDecision String  @default("pending")
+  decidedByUserId String?
+  decidedAt       DateTime?
+  decisionNote    String?
+  /// Closed-union: ai_generated | fallback_rules | error.
+  outcome         String   @default("ai_generated")
+  errorMessage    String?
+  modelHint       String?
+  engineVersion   String
+  /// Snapshot of the memory window the suggestion came from.
+  windowSize      Int
+  generatedAt     DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([organizationId, operatorDecision, generatedAt])
+  @@index([organizationId, kind])
+  @@index([organizationId, targetKind, targetId])
+}
+
 /// Phase 513 — Autonomous Tick log.
 ///
 /// Append-only record of each autonomous cron tick. Operators see

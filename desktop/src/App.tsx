@@ -52,6 +52,7 @@ import { ReleaseOpsAutonomyView } from "./views/ReleaseOpsAutonomyView";
 import { AdvisorCouncilView } from "./views/AdvisorCouncilView";
 import { SlackNotificationsView } from "./views/SlackNotificationsView";
 import { AgiMemoryView } from "./views/AgiMemoryView";
+import { AgiSuggestionsView } from "./views/AgiSuggestionsView";
 import { useTrayApprovalsBadge } from "./lib/useTrayApprovalsBadge";
 import { useConnectorHealthAmbientPoll } from "./lib/connectorHealthStore";
 import { useSseStream } from "./lib/useSseStream";
@@ -103,6 +104,7 @@ export type View =
   | "releaseops-autonomy"
   | "advisor-council"
   | "agi-memory"
+  | "agi-suggestions"
   // Automation
   | "activity"
   | "workflows"
@@ -214,6 +216,7 @@ export default function App() {
           {activeView === "releaseops-autonomy" && <ReleaseOpsAutonomyView />}
           {activeView === "advisor-council"  && <AdvisorCouncilView />}
           {activeView === "agi-memory"       && <AgiMemoryView />}
+          {activeView === "agi-suggestions"  && <AgiSuggestionsView />}
           {activeView === "activity"      && <ActivityView />}
           {activeView === "workflows"     && <WorkflowsView />}
           {activeView === "approvals"     && <ApprovalsView />}
