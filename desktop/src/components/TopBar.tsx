@@ -30,6 +30,7 @@ const VIEW_TITLES: Record<View, { title: string; subtitle: string }> = {
   "release-overview": { title: "Release overview", subtitle: "One screen per release · readiness + cherry-picks + violations + tickets + evidence" },
   "release-advisor":  { title: "Release advisor (AGI)", subtitle: "Autonomous recommendations · confidence + rationale · operator in the loop" },
   "policy-proposals": { title: "Policy proposals (AGI)", subtitle: "Pattern-matched suggestions · accept upserts a PolicyRule · operator in the loop" },
+  "agi-cockpit":      { title: "AGI cockpit", subtitle: "Fused view of all autonomous engines · severity-aware headline · one hub" },
   drift:              { title: "Drift", subtitle: "Declared (IaC) vs observed (runtime) state · per-resource diff" },
   applications:       { title: "Applications", subtitle: "Top-level governance unit · register before tracking releases" },
   "manual-fixes":     { title: "Manual fixes", subtitle: "Out-of-band hand-edits · log + reconcile against source-of-truth" },
