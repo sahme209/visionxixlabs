@@ -86,7 +86,9 @@ export async function POST(req: NextRequest) {
         decision: {
           engineVersion: r.body.data.decision.engineVersion,
           generatedAtIso: r.body.data.decision.generatedAtIso,
-          consensusKind: r.body.data.decision.consensusKind,
+          // CouncilView's consensusKind can be "unknown" (defensive on
+          // legacy rows); narrow to the engine's closed-union for enrich.
+          consensusKind: r.body.data.decision.consensusKind === "unknown" ? "proceed" : r.body.data.decision.consensusKind,
           agreementScore: r.body.data.decision.agreementScore,
           title: r.body.data.decision.title,
           rationale: r.body.data.decision.rationale,
