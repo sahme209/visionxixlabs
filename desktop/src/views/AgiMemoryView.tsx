@@ -495,11 +495,30 @@ type ChatBody =
   | { ok: false; error: string; hint?: string };
 
 interface ChatTurn {
+  id?: string;
   question: string;
   answer: ChatAnswerView;
   contextSize: { entries: number; summaries: number };
   citationDetails: ChatCitationDetail[];
 }
+
+interface HistoryTurn {
+  id: string;
+  question: string;
+  answer: string;
+  citations: string[];
+  outcome: string;
+  errorMessage: string | null;
+  modelHint: string | null;
+  contextEntriesCount: number;
+  contextSummariesCount: number;
+  engineVersion: string;
+  generatedAtIso: string;
+}
+
+type HistoryBody =
+  | { ok: true; data: { generatedAt: string; turns: HistoryTurn[]; summary: { total: number; aiGenerated: number; fallbackRules: number; errored: number } } }
+  | { ok: false; error: string; hint?: string };
 
 const CHAT_SUGGESTED = [
   "What did the AGI block in the last 24 hours, and why?",
@@ -512,6 +531,41 @@ function ChatPanel({ targetKind }: { targetKind?: string }) {
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
   const [turns, setTurns] = useState<ChatTurn[]>([]);
+  const [scope, setScope] = useState<"user" | "org">("user");
+  const [migrationPending, setMigrationPending] = useState(false);
+  const [historyLoaded, setHistoryLoaded] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+    setHistoryLoaded(false);
+    fetch(`/api/dashboard/agi-memory-chat-history?scope=${scope}&take=30`, { credentials: "include" })
+      .then((r) => r.json())
+      .then((j: HistoryBody) => {
+        if (cancelled) return;
+        if (j.ok) {
+          setTurns(j.data.turns.map((t) => ({
+            id: t.id,
+            question: t.question,
+            answer: {
+              outcome: t.outcome,
+              answer: t.answer,
+              citations: t.citations,
+              modelHint: t.modelHint,
+              errorMessage: t.errorMessage,
+              engineVersion: t.engineVersion,
+            },
+            contextSize: { entries: t.contextEntriesCount, summaries: t.contextSummariesCount },
+            citationDetails: t.citations.map((cid) => ({ citationId: cid, kind: "entry" as const, targetKind: null, targetId: null, narrative: "", generatedAtIso: t.generatedAtIso })),
+          })));
+          setMigrationPending(false);
+        } else if (j.error === "migration_pending") {
+          setMigrationPending(true);
+        }
+      })
+      .catch(() => { /* swallow */ })
+      .finally(() => { if (!cancelled) setHistoryLoaded(true); });
+    return () => { cancelled = true; };
+  }, [scope]);
 
   async function ask(text: string) {
     const trimmed = text.trim();
@@ -533,7 +587,7 @@ function ChatPanel({ targetKind }: { targetKind?: string }) {
         setTurns((prev) => [
           { question: trimmed, answer: j.data.answer, contextSize: j.data.contextSize, citationDetails: j.data.citationDetails },
           ...prev,
-        ].slice(0, 10));
+        ].slice(0, 30));
         setQuestion("");
       } else {
         setErr(j.hint ?? j.error);
@@ -545,11 +599,43 @@ function ChatPanel({ targetKind }: { targetKind?: string }) {
     }
   }
 
+  async function deleteTurn(id: string) {
+    try {
+      const res = await fetch("/api/dashboard/agi-memory-chat-delete", {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ turnId: id }),
+      });
+      const j = await res.json();
+      if (j.ok) setTurns((prev) => prev.filter((t) => t.id !== id));
+      else setErr(j.hint ?? j.error);
+    } catch (e) {
+      setErr(e instanceof Error ? e.message : "network error");
+    }
+  }
+
   return (
     <div className="glass-card p-3 border border-violet-500/20">
-      <div className="flex items-center gap-2 mb-2">
+      <div className="flex items-center gap-2 mb-2 flex-wrap">
         <p className="text-[12px] font-semibold text-violet-100">✦ Ask the AGI</p>
         <span className="text-[10.5px] text-zinc-400">— Claude reads the last 100 entries + 20 summaries.</span>
+        <div className="ml-auto flex items-center gap-1 text-[10px] font-mono">
+          <button
+            type="button"
+            onClick={() => setScope("user")}
+            className={`px-1.5 py-0.5 rounded border ${scope === "user" ? "border-violet-500/40 bg-violet-500/[0.14] text-violet-100" : "border-zinc-700/40 bg-zinc-900/40 text-zinc-300 hover:bg-zinc-800/60"}`}
+          >
+            mine
+          </button>
+          <button
+            type="button"
+            onClick={() => setScope("org")}
+            className={`px-1.5 py-0.5 rounded border ${scope === "org" ? "border-violet-500/40 bg-violet-500/[0.14] text-violet-100" : "border-zinc-700/40 bg-zinc-900/40 text-zinc-300 hover:bg-zinc-800/60"}`}
+          >
+            org
+          </button>
+        </div>
       </div>
 
       <div className="flex items-stretch gap-2 mb-2">
@@ -573,7 +659,7 @@ function ChatPanel({ targetKind }: { targetKind?: string }) {
         </button>
       </div>
 
-      {turns.length === 0 && (
+      {turns.length === 0 && historyLoaded && (
         <div className="flex flex-wrap gap-1.5 mb-2">
           {CHAT_SUGGESTED.map((s) => (
             <button
@@ -589,16 +675,26 @@ function ChatPanel({ targetKind }: { targetKind?: string }) {
         </div>
       )}
 
+      {migrationPending && (
+        <p className="text-[10px] font-mono text-amber-300 mb-1">↳ chat history schema migration pending</p>
+      )}
+
       {err && <p className="text-[10.5px] font-mono text-rose-300 mb-1">✗ {err}</p>}
 
       <div className="space-y-2">
-        {turns.map((turn, i) => <ChatTurnRow key={i} turn={turn} />)}
+        {turns.map((turn, i) => (
+          <ChatTurnRow
+            key={turn.id ?? `local-${i}`}
+            turn={turn}
+            onDelete={turn.id ? () => deleteTurn(turn.id!) : undefined}
+          />
+        ))}
       </div>
     </div>
   );
 }
 
-function ChatTurnRow({ turn }: { turn: ChatTurn }) {
+function ChatTurnRow({ turn, onDelete }: { turn: ChatTurn; onDelete?: () => void }) {
   return (
     <div className="rounded border border-zinc-700/40 bg-zinc-900/30 p-2">
       <p className="text-[11px] font-mono text-zinc-400 mb-1">Q: {turn.question}</p>
@@ -608,6 +704,15 @@ function ChatTurnRow({ turn }: { turn: ChatTurn }) {
         </span>
         {turn.answer.modelHint && <span className="text-[10px] font-mono text-zinc-500">{turn.answer.modelHint}</span>}
         <span className="text-[10px] font-mono text-zinc-500">ctx: {turn.contextSize.entries}e · {turn.contextSize.summaries}s</span>
+        {onDelete && (
+          <button
+            type="button"
+            onClick={onDelete}
+            className="ml-auto text-[10px] font-mono text-zinc-500 hover:text-rose-300"
+          >
+            delete
+          </button>
+        )}
       </div>
       <p className="text-[12px] text-zinc-200 mb-1.5">{turn.answer.answer}</p>
       {turn.citationDetails.length > 0 && (

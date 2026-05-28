@@ -30,6 +30,10 @@ import {
 } from "@/lib/releaseops/aiMemoryChatEngine";
 import { makeLiveRationaleFetcher } from "@/lib/releaseops/aiRationaleFetcher";
 import { appendAuditEvent, type AuditEventRepo } from "@/lib/releaseops/auditEventResponder";
+import {
+  persistChatTurn,
+  type ChatTurnRepo,
+} from "@/lib/releaseops/aiMemoryChatResponder";
 
 export const dynamic = "force-dynamic";
 
@@ -93,6 +97,21 @@ export async function POST(req: NextRequest) {
   const answer = await askAgiMemory(
     { question, entries, summaries },
     makeLiveRationaleFetcher(),
+  );
+
+  // Phase 529 — Persist the turn so the operator's chat archive
+  // survives across sessions. Best-effort: a failure here never
+  // affects the response.
+  await persistChatTurn(
+    prisma as unknown as ChatTurnRepo,
+    {
+      organizationId: ctx.organizationId,
+      userId: ctx.userId ?? null,
+      question,
+      answer,
+      contextEntriesCount: entries.length,
+      contextSummariesCount: summaries.length,
+    },
   );
 
   await appendAuditEvent(prisma as unknown as AuditEventRepo, {

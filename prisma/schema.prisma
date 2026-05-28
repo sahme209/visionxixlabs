@@ -3325,6 +3325,35 @@ model ProactiveAgiSuggestion {
   @@index([organizationId, targetKind, targetId])
 }
 
+/// Phase 529 — Persisted AGI Chat Turn.
+///
+/// Every "Ask the AGI" question + answer pair (from Phase 524) lands
+/// here. Gives operators cross-session recall of what they asked the
+/// AGI about and what it answered. Audit trail for AGI responses.
+///
+/// Closed-union `outcome`: ai_generated | fallback_rules | error.
+model AiMemoryChatTurn {
+  id              String   @id @default(cuid())
+  organizationId  String
+  userId          String?
+  question        String
+  answer          String
+  /// JSON array of citation id strings the model echoed back.
+  citationsJson   Json
+  /// Closed-union outcome of the engine call.
+  outcome         String   @default("ai_generated")
+  errorMessage    String?
+  modelHint       String?
+  /// Snapshot of the context window the chat saw.
+  contextEntriesCount  Int
+  contextSummariesCount Int
+  engineVersion   String
+  generatedAt     DateTime @default(now())
+
+  @@index([organizationId, generatedAt])
+  @@index([organizationId, userId, generatedAt])
+}
+
 /// Phase 513 — Autonomous Tick log.
 ///
 /// Append-only record of each autonomous cron tick. Operators see
