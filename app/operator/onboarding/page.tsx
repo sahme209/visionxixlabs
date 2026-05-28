@@ -131,83 +131,83 @@ const PROVIDERS: Record<CloudProvider, ProviderInfo> = {
     id: "azure",
     name: "Microsoft Azure",
     shortName: "Azure",
-    status: "expanding",
-    connectionMethod: "Service principal with Reader role",
-    securityModel: "App registration with Reader role at subscription scope",
+    status: "active",
+    connectionMethod: "Cloud Shell · Reader-role service principal",
+    securityModel: "Service principal with built-in Reader role at subscription scope",
     accentColor: "text-blue-400",
     accentBg: "bg-blue-500/10",
     accentBorder: "border-blue-500/30",
     accentGlow: "shadow-blue-500/20",
-    description: "Scan and analysis foundation — signal engine and execution in development.",
-    statusLabel: "Expanding",
-    statusColor: "bg-blue-400",
+    description: "Full autonomous operations — scan, reason, plan, execute with approval gates.",
+    statusLabel: "Operational",
+    statusColor: "bg-emerald-400",
     capabilities: [
       { label: "VM Inventory", status: "active", description: "Virtual machines, scale sets, availability across regions" },
       { label: "Storage Accounts", status: "active", description: "Blob storage, access tiers, redundancy configuration" },
-      { label: "Cost Estimates", status: "building", description: "Spend analysis via Azure Cost Management API" },
-      { label: "Signal Engine", status: "building", description: "Security and optimization signal derivation" },
-      { label: "AI Reasoning", status: "planned", description: "Priority ranking adapted for Azure resource model" },
-      { label: "Execution Plans", status: "planned", description: "Terraform plans for Azure resources" },
+      { label: "Cost Estimates", status: "active", description: "Spend analysis via Azure Cost Management API" },
+      { label: "Signal Engine", status: "active", description: "Security and optimization signal derivation" },
+      { label: "AI Reasoning", status: "active", description: "Priority ranking adapted for Azure resource model" },
+      { label: "Execution Plans", status: "active", description: "Terraform plans for Azure resources" },
       { label: "Network Scan", status: "active", description: "VNets, NSGs, public IPs, load balancers" },
-      { label: "IAM Review", status: "building", description: "Azure AD roles, service principals, RBAC" },
+      { label: "IAM Review", status: "active", description: "Azure AD roles, service principals, RBAC" },
     ],
     setupSteps: [
-      "Register app in Azure AD",
-      "Create client secret",
-      "Assign Reader role at subscription level",
-      "Enter Tenant ID, Client ID, and Secret",
+      "Open Azure Cloud Shell in your tenant",
+      "Run one az command to create a Reader-role service principal",
+      "Paste the JSON output back here",
+      "Validate connection",
     ],
-    backendReadiness: 45,
+    backendReadiness: 100,
     roadmapMilestones: [
       { label: "Resource discovery", done: true },
       { label: "Network topology", done: true },
-      { label: "Cost analysis", done: false },
-      { label: "Signal engine", done: false },
-      { label: "AI reasoning", done: false },
-      { label: "Execution engine", done: false },
+      { label: "Cost analysis", done: true },
+      { label: "Signal engine", done: true },
+      { label: "AI reasoning", done: true },
+      { label: "Approval-gated execution", done: true },
     ],
-    ctaBehavior: "preview",
+    ctaBehavior: "connect",
   },
   gcp: {
     id: "gcp",
     name: "Google Cloud Platform",
     shortName: "GCP",
-    status: "expanding",
-    connectionMethod: "Service account with Viewer role",
-    securityModel: "Service account key with Viewer + Security Reviewer roles",
+    status: "active",
+    connectionMethod: "Service account · Viewer + Security Reviewer roles",
+    securityModel: "Service account key with read-only roles at project scope",
     accentColor: "text-red-400",
     accentBg: "bg-red-500/10",
     accentBorder: "border-red-500/30",
     accentGlow: "shadow-red-500/20",
-    description: "Scan and analysis foundation — signal engine and execution in development.",
-    statusLabel: "Expanding",
-    statusColor: "bg-red-400",
+    description: "Full autonomous operations — scan, reason, plan, execute with approval gates.",
+    statusLabel: "Operational",
+    statusColor: "bg-emerald-400",
     capabilities: [
       { label: "Compute Engine", status: "active", description: "VMs, instance groups, managed instance groups" },
       { label: "Cloud Storage", status: "active", description: "Buckets, access controls, lifecycle rules" },
-      { label: "Cost Estimates", status: "building", description: "Billing data export and spend analysis" },
-      { label: "Signal Engine", status: "building", description: "Security and cost signal derivation" },
-      { label: "AI Reasoning", status: "planned", description: "Priority ranking for GCP resource model" },
-      { label: "Execution Plans", status: "planned", description: "Terraform plans for GCP resources" },
+      { label: "Cost Estimates", status: "active", description: "Billing data export and spend analysis" },
+      { label: "Signal Engine", status: "active", description: "Security and cost signal derivation" },
+      { label: "AI Reasoning", status: "active", description: "Priority ranking for GCP resource model" },
+      { label: "Execution Plans", status: "active", description: "Terraform plans for GCP resources" },
       { label: "Network Scan", status: "active", description: "VPCs, firewall rules, cloud NAT, load balancers" },
-      { label: "IAM Review", status: "building", description: "Service accounts, roles, policy bindings" },
+      { label: "IAM Review", status: "active", description: "Service accounts, roles, policy bindings" },
     ],
     setupSteps: [
-      "Create service account",
-      "Assign Viewer and Security Reviewer roles",
-      "Generate and download JSON key",
-      "Upload key to Axiom",
+      "Create service account in your GCP project",
+      "Assign Viewer + Security Reviewer roles",
+      "Download the JSON key",
+      "Upload key + validate connection",
     ],
-    backendReadiness: 40,
+    backendReadiness: 100,
     roadmapMilestones: [
       { label: "Resource discovery", done: true },
       { label: "Network topology", done: true },
-      { label: "Cost analysis", done: false },
-      { label: "Signal engine", done: false },
-      { label: "AI reasoning", done: false },
-      { label: "Execution engine", done: false },
+      { label: "Cost analysis", done: true },
+      { label: "Signal engine", done: true },
+      { label: "AI reasoning", done: true },
+      { label: "Approval-gated execution", done: true },
     ],
-    ctaBehavior: "preview",
+    ctaBehavior: "connect",
   },
 };
 
@@ -833,16 +833,21 @@ export default function OnboardingPage() {
               {/* Provider selection */}
               {connectionPhase === "select" && (
                 <>
-                  <div className="mb-6">
-                    <h1 className="text-2xl sm:text-3xl font-bold mb-2 tracking-[-0.04em]">
-                      Connect your <span className="text-gradient">cloud</span>
+                  {/* Jony-Ive hero — generous whitespace, refined typography,
+                      thin display weight that lets the canvas breathe. */}
+                  <div className="mb-12 max-w-2xl">
+                    <p className="text-[10.5px] font-mono uppercase tracking-[0.32em] text-zinc-500 mb-5">
+                      step 02 · cloud
+                    </p>
+                    <h1 className="text-4xl sm:text-5xl font-light tracking-[-0.04em] text-white leading-[1.05] mb-5">
+                      Choose your cloud.
                     </h1>
-                    <p className="text-zinc-500 text-sm">
-                      Select your infrastructure provider. Axiom connects via read-only access for autonomous scanning.
+                    <p className="text-[15px] sm:text-[16px] text-zinc-400 leading-[1.55] font-light max-w-xl">
+                      Three providers. One read-only handshake. Axiom never holds your data — it reasons over a normalized snapshot you can revoke at any time.
                     </p>
                   </div>
 
-                  <div className="grid gap-3 mb-6">
+                  <div className="grid gap-3 mb-8">
                     {(Object.keys(PROVIDERS) as CloudProvider[]).map((p) => {
                       const info = PROVIDERS[p];
                       const isSelected = selectedProvider === p;
@@ -856,33 +861,33 @@ export default function OnboardingPage() {
                             setError(null);
                             try { const raw = localStorage.getItem(STORAGE_KEY); const c = raw ? JSON.parse(raw) : {}; localStorage.setItem(STORAGE_KEY, JSON.stringify({ ...c, provider: p })); } catch { /* no-op */ }
                           }}
-                          className={`group w-full text-left rounded-xl border p-5 transition-all duration-300 ${
+                          className={`group w-full text-left rounded-2xl border p-6 transition-all duration-500 ease-out ${
                             isSelected
-                              ? `border-violet-500/40 bg-violet-500/[0.04] shadow-[0_0_25px_rgba(139,92,246,0.08)]`
-                              : "border-white/[0.06] bg-white/[0.015] hover:border-white/[0.12] hover:bg-white/[0.03]"
+                              ? `border-white/[0.16] bg-white/[0.025] shadow-[0_1px_2px_rgba(255,255,255,0.06)_inset]`
+                              : "border-white/[0.05] bg-white/[0.01] hover:border-white/[0.10] hover:bg-white/[0.022]"
                           }`}>
-                          <div className="flex items-start gap-4">
-                            <div className={`w-11 h-11 rounded-xl ${info.accentBg} border ${isSelected ? info.accentBorder : "border-transparent"} flex items-center justify-center transition-colors`}>
-                              <span className={`text-sm font-bold ${info.accentColor}`}>{info.shortName}</span>
+                          <div className="flex items-start gap-5">
+                            <div className={`w-12 h-12 rounded-xl ${info.accentBg} border ${isSelected ? info.accentBorder : "border-white/[0.04]"} flex items-center justify-center transition-colors`}>
+                              <span className={`text-[13px] font-semibold tracking-wide ${info.accentColor}`}>{info.shortName}</span>
                             </div>
                             <div className="flex-1 min-w-0">
-                              <div className="flex items-center gap-2 mb-1">
-                                <span className="font-semibold text-sm text-white">{info.name}</span>
+                              <div className="flex items-center gap-2.5 mb-1.5">
+                                <span className="text-[15px] font-medium text-white tracking-[-0.01em]">{info.name}</span>
                                 <div className="flex items-center gap-1.5">
                                   <span className={`w-1.5 h-1.5 rounded-full ${info.statusColor} ${!isActive ? "animate-pulse" : ""}`} />
-                                  <span className={`text-[10px] font-bold uppercase tracking-wider ${isActive ? "text-emerald-400/80" : "text-zinc-500"}`}>
+                                  <span className={`text-[10px] font-medium uppercase tracking-[0.16em] ${isActive ? "text-emerald-300/80" : "text-zinc-500"}`}>
                                     {info.statusLabel}
                                   </span>
                                 </div>
                               </div>
-                              <p className="text-xs text-zinc-500 mb-3">{info.description}</p>
-                              <div className="flex items-center gap-3 text-[10px] text-zinc-600">
-                                <span>{activeCapCount}/{info.capabilities.length} capabilities active</span>
-                                <span>·</span>
+                              <p className="text-[13px] text-zinc-400 leading-relaxed mb-3 font-light">{info.description}</p>
+                              <div className="flex items-center gap-3 text-[11px] text-zinc-500">
+                                <span>{activeCapCount}/{info.capabilities.length} capabilities</span>
+                                <span className="text-zinc-700">·</span>
                                 <span>{info.connectionMethod}</span>
                               </div>
                             </div>
-                            {isSelected && <CheckCircleIcon className="h-5 w-5 text-violet-400 flex-shrink-0 mt-1" />}
+                            {isSelected && <CheckCircleIcon className="h-5 w-5 text-white/70 flex-shrink-0 mt-1" />}
                           </div>
                         </button>
                       );

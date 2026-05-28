@@ -3387,7 +3387,7 @@ model AiCallLog {
   model           String?
   outcome         String
   errorMessage    String?
-  /** Time spent in the provider call, milliseconds. */
+  /// Time spent in the provider call, milliseconds.
   latencyMs       Int
   promptTokens    Int?
   completionTokens Int?
