@@ -313,7 +313,7 @@ export default function OperatorLandingPage() {
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <Reveal>
             <div className="mb-16">
-              <h2 className="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-[-0.04em]">How Axiom works.{" "}<span className="text-zinc-500">Scan to execution in minutes.</span></h2>
+              <h2 className="font-display text-4xl md:text-5xl lg:text-6xl font-bold leading-[1.04]">How Axiom works.{" "}<span className="text-zinc-500">Scan to execution in minutes.</span></h2>
               <p className="mt-4 text-dim-paragraph text-lg max-w-2xl leading-relaxed">
                 From first scan to approved execution plan <span className="dim-1">in under 5 minutes.</span>
               </p>
@@ -322,7 +322,7 @@ export default function OperatorLandingPage() {
           <div className="grid md:grid-cols-3 gap-8">
             <Stagger>
               {steps.map((step) => (
-                <div key={step.number} className="relative animated-border card-inner-glow card-hover rounded-2xl border border-white/[0.06] bg-white/[0.02] p-8 transition-colors">
+                <div key={step.number} className="relative surface-glass rounded-2xl p-8 hover:border-brand-coral/20 transition-all">
                   <div className={`inline-flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-br ${step.color} mb-6`}>
                     <step.icon className="h-6 w-6 text-white" />
                   </div>
@@ -344,7 +344,7 @@ export default function OperatorLandingPage() {
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <Reveal>
             <div className="mb-16">
-              <h2 className="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-[-0.04em]">Built for trust.{" "}<span className="text-zinc-500">Every action is reversible.</span></h2>
+              <h2 className="font-display text-4xl md:text-5xl lg:text-6xl font-bold leading-[1.04]">Built for trust.{" "}<span className="text-zinc-500">Every action is reversible.</span></h2>
               <p className="mt-4 text-dim-paragraph text-lg max-w-2xl leading-relaxed">
                 We never touch your infrastructure without your explicit approval. <span className="dim-1">Every action is logged, every change is reversible.</span>
               </p>
@@ -353,7 +353,7 @@ export default function OperatorLandingPage() {
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
             <Stagger>
               {features.map((f) => (
-                <div key={f.title} className="animated-border card-inner-glow card-hover rounded-xl border border-white/[0.06] bg-white/[0.02] p-6 transition-colors">
+                <div key={f.title} className="surface-glass rounded-xl p-6 hover:border-brand-coral/20 transition-all">
                   <f.icon className="h-6 w-6 text-violet-400 mb-4" />
                   <h3 className="font-semibold mb-2">{f.title}</h3>
                   <p className="text-sm text-zinc-400 leading-relaxed">{f.description}</p>
@@ -396,7 +396,7 @@ export default function OperatorLandingPage() {
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <Reveal>
             <div className="mb-16">
-              <h2 className="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-[-0.04em]">Simple pricing.{" "}<span className="text-zinc-500">Start free, scale when ready.</span></h2>
+              <h2 className="font-display text-4xl md:text-5xl lg:text-6xl font-bold leading-[1.04]">Simple pricing.{" "}<span className="text-zinc-500">Start free, scale when ready.</span></h2>
               <p className="mt-4 text-dim-paragraph text-lg max-w-2xl leading-relaxed">
                 Start with a free scan. <span className="dim-1">Upgrade to the full autonomous agent when you&apos;re ready.</span>
               </p>
@@ -461,7 +461,7 @@ export default function OperatorLandingPage() {
           <div className="space-y-6">
             {faqs.map((faq, i) => (
               <Reveal key={i} delay={i * 0.05}>
-                <details className="group animated-border rounded-xl border border-white/[0.06] bg-white/[0.02] p-6">
+                <details className="group surface-glass rounded-xl p-6">
                   <summary className="font-semibold cursor-pointer list-none flex items-center justify-between">
                     {faq.q}
                     <span className="text-zinc-500 group-open:rotate-45 transition-transform text-xl">+</span>

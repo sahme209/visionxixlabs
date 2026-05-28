@@ -216,7 +216,7 @@ export default function ServicesPage() {
 
           {/* 1b. Common gaps we close */}
           <Reveal direction="up" delay={0.1}>
-            <section className="mb-16 glass-card rounded-xl border border-white/[0.06] p-6 animated-border card-inner-glow card-shine-sweep card-reactive" aria-labelledby="gaps-heading">
+            <section className="mb-16 surface-glass rounded-xl p-6" aria-labelledby="gaps-heading">
               <h2 id="gaps-heading" className="text-lg font-bold text-white mb-4 tracking-[-0.04em]">
                 Where teams get stuck
               </h2>
@@ -235,7 +235,7 @@ export default function ServicesPage() {
           {/* 2. Technical Scope -- service areas */}
           <Reveal direction="up" delay={0.1}>
             <section aria-labelledby="services-heading" className="mb-16">
-              <h2 id="services-heading" className="text-4xl md:text-5xl font-extrabold text-white mb-6 tracking-[-0.04em]">
+              <h2 id="services-heading" className="font-display text-4xl md:text-5xl font-bold text-white mb-6 leading-[1.04]">
                 Technical scope.<br className="hidden sm:block" />
                 <span className="text-zinc-500">Outcome-focused workstreams.</span>
               </h2>
@@ -251,7 +251,7 @@ export default function ServicesPage() {
           {/* AI-focused services overview */}
           <Reveal direction="up" delay={0.1}>
             <section className="mb-16" aria-labelledby="ai-services-heading">
-              <div className="glass-card rounded-2xl p-6 md:p-8 shadow-xl border border-white/[0.06] glow-border-card">
+              <div className="surface-frost rounded-2xl p-6 md:p-8">
                 <h2 id="ai-services-heading" className="text-4xl md:text-5xl font-extrabold text-white mb-3 tracking-[-0.04em]">
                   AI engineering.<br className="hidden sm:block" />
                   <span className="text-zinc-500">As part of your platform.</span>
@@ -318,7 +318,7 @@ export default function ServicesPage() {
           {/* 8. Engagement Model */}
           <Reveal direction="up" delay={0.1}>
             <section className="mb-16" aria-labelledby="engagement-heading">
-              <h2 id="engagement-heading" className="text-4xl md:text-5xl font-extrabold text-white mb-6 tracking-[-0.04em]">
+              <h2 id="engagement-heading" className="font-display text-4xl md:text-5xl font-bold text-white mb-6 leading-[1.04]">
                 Engagement model.<br className="hidden sm:block" />
                 <span className="text-zinc-500">Flexible, scoped, documented.</span>
               </h2>
@@ -361,7 +361,7 @@ export default function ServicesPage() {
           {/* 10. FAQ */}
           <Reveal direction="up" delay={0.1}>
             <section className="mb-16" aria-labelledby="faq-heading">
-              <h2 id="faq-heading" className="text-4xl md:text-5xl font-extrabold text-white mb-6 tracking-[-0.04em]">
+              <h2 id="faq-heading" className="font-display text-4xl md:text-5xl font-bold text-white mb-6 leading-[1.04]">
                 Frequently asked questions.
               </h2>
               <FAQAccordion items={cloudFAQ} />

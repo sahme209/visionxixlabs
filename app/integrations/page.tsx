@@ -80,8 +80,11 @@ export default function IntegrationsCatalog() {
         );
       })}
 
-      <footer className="rounded-2xl border border-white/[0.06] bg-gradient-to-br from-violet-500/[0.04] via-fuchsia-500/[0.02] to-transparent p-6 space-y-3">
-        <p className="text-[10px] font-mono text-violet-300/90 uppercase tracking-[0.22em]">how it stays safe</p>
+      <footer className="surface-frost rounded-2xl p-6 space-y-3">
+        <p className="mono-label inline-flex items-center gap-3 text-brand-coral/85">
+          <span aria-hidden className="h-px w-6 bg-gradient-to-r from-brand-coral/60 to-transparent" />
+          How it stays safe
+        </p>
         <p className="text-[14px] text-zinc-200 leading-relaxed max-w-3xl">
           Auth is never freeform — clouds use assume-role / RBAC / service accounts; third-party
           tools use OAuth; databases run a single SELECT-only GRANT. You never paste a long-lived
@@ -114,15 +117,15 @@ function IntegrationCard({ integration: i }: { integration: Integration }) {
                                           "read-only";
 
   const disabled = i.status === "planned";
-  const ctaCommon = "inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-[12px] font-semibold transition-colors";
+  const ctaCommon = "inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-[12px] font-semibold tracking-tight transition-all";
   const ctaCls = disabled
     ? `${ctaCommon} border border-white/[0.06] bg-white/[0.02] text-zinc-500 cursor-not-allowed`
-    : `${ctaCommon} bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500 text-white shadow-glow-violet`;
+    : `btn-press ${ctaCommon}`;
 
   return (
-    <div className="rounded-xl border border-white/[0.06] bg-white/[0.015] p-4 hover:border-white/[0.12] transition-colors">
+    <div className="surface-glass rounded-xl p-5 hover:border-brand-coral/20 transition-all group">
       <div className="flex items-baseline justify-between gap-2 flex-wrap mb-1.5">
-        <h3 className="text-[15px] font-semibold text-white">{i.name}</h3>
+        <h3 className="text-[15px] font-semibold text-white tracking-tight group-hover:text-white transition-colors">{i.name}</h3>
         <div className="flex items-center gap-1.5">
           <span className={`text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border ${statusTone}`}>{i.status}</span>
           <span className={`text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border ${writeTone}`}>{writeLabel}</span>
