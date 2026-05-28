@@ -20,6 +20,7 @@ import {
   XCircleIcon,
 } from "@heroicons/react/24/outline";
 import { PageIntro } from "@/components/dashboard/PageIntro";
+import { SurfaceExplainer } from "../SurfaceExplainer";
 
 interface CockpitRec {
   id: string; releaseId: string; kind: string; title: string;
@@ -172,6 +173,7 @@ export default function AgiCockpitPage() {
 
   return (
     <div className="relative">
+      <SurfaceExplainer surface="agi-cockpit" />
       <PageIntro
         kicker={`AGI cockpit · all-up · ${data ? data.headline.totalPending : 0} pending`}
         title={<>The AI cockpit. <span className="text-zinc-500">One hub.</span></>}

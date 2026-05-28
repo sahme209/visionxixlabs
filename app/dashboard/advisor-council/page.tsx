@@ -20,6 +20,7 @@ import {
   HandThumbDownIcon,
 } from "@heroicons/react/24/outline";
 import { PageIntro } from "@/components/dashboard/PageIntro";
+import { SurfaceExplainer } from "../SurfaceExplainer";
 
 type Kind =
   | "block_deploy" | "rollback" | "needs_evidence" | "propose_freeze"
@@ -124,6 +125,7 @@ export default function AdvisorCouncilPage() {
 
   return (
     <div className="relative">
+      <SurfaceExplainer surface="advisor-council" />
       <PageIntro
         kicker={`AGI cockpit · advisor council${data ? ` · ${data.summary.pending} pending` : ""}`}
         title={<>Three voters. <span className="text-zinc-500">One decision.</span></>}

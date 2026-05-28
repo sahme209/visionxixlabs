@@ -27,6 +27,8 @@ export interface DemoPopulateOutcome {
   notificationRows: number;
   feedbackRows: number;
   helpQueryRows: number;
+  /** Phase 532 — cloud connector sessions seeded as connected. */
+  cloudConnectorsConnected: number;
   errors: string[];
 }
 
@@ -37,10 +39,44 @@ export async function populateDemoData(opts: { organizationId: string }): Promis
     notificationRows: 0,
     feedbackRows: 0,
     helpQueryRows: 0,
+    cloudConnectorsConnected: 0,
     errors: [],
   };
   const now = new Date();
   const minutesAgo = (m: number) => new Date(now.getTime() - m * 60_000);
+
+  // Phase 532 — Mark AWS / Azure / GCP as connected so dashboards downstream
+  // render the "connected" state and the operator can actually explore the
+  // portal end-to-end without doing the real cloud-credential handshake.
+  // Idempotent — upserts on (organizationId, provider). Cleanup removes only
+  // the rows the populator wrote.
+  const cloudProviders = ["aws", "azure", "gcp"] as const;
+  const connectedAt = minutesAgo(15);
+  for (const provider of cloudProviders) {
+    try {
+      await prisma.connectorSetupSession.upsert({
+        where: { organizationId_provider: { organizationId: opts.organizationId, provider } },
+        update: {
+          status: "connected",
+          lastEventKind: "demo_seed",
+          lastErrorCode: null,
+          firstConnectedAt: connectedAt,
+          lastTransitionAt: now,
+        },
+        create: {
+          organizationId: opts.organizationId,
+          provider,
+          status: "connected",
+          lastEventKind: "demo_seed",
+          firstConnectedAt: connectedAt,
+          lastTransitionAt: now,
+        },
+      });
+      out.cloudConnectorsConnected++;
+    } catch (err) {
+      out.errors.push(`connector ${provider}: ${err instanceof Error ? err.message.slice(0, 120) : "unknown"}`);
+    }
+  }
 
   // Rationale rows — 6 representative candidates across outcomes.
   const rationaleSeeds: Array<{
@@ -293,6 +329,8 @@ export interface DemoCleanupOutcome {
   notificationDeleted: number;
   feedbackDeleted: number;
   helpQueryDeleted: number;
+  /** Phase 532 — connector sessions whose lastEventKind="demo_seed". */
+  cloudConnectorsDisconnected: number;
   errors: string[];
 }
 
@@ -303,6 +341,7 @@ export async function cleanupDemoData(opts: { organizationId: string }): Promise
     notificationDeleted: 0,
     feedbackDeleted: 0,
     helpQueryDeleted: 0,
+    cloudConnectorsDisconnected: 0,
     errors: [],
   };
   const idStartsWith = { startsWith: DEMO_PREFIX };
@@ -345,6 +384,17 @@ export async function cleanupDemoData(opts: { organizationId: string }): Promise
     result.helpQueryDeleted = r.count;
   } catch (err) {
     result.errors.push(`help: ${err instanceof Error ? err.message : "unknown"}`);
+  }
+  // Phase 532 — Undo connector seeding. Only rows whose lastEventKind is
+  // "demo_seed" are touched, so real cloud connections are never disturbed.
+  try {
+    const r = await prisma.connectorSetupSession.updateMany({
+      where: { organizationId: opts.organizationId, lastEventKind: "demo_seed" },
+      data: { status: "not_connected", lastEventKind: "demo_seed_cleanup", firstConnectedAt: null },
+    });
+    result.cloudConnectorsDisconnected = r.count;
+  } catch (err) {
+    result.errors.push(`connectors: ${err instanceof Error ? err.message : "unknown"}`);
   }
   return result;
 }

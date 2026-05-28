@@ -19,6 +19,7 @@ import {
   BoltIcon,
 } from "@heroicons/react/24/outline";
 import { PageIntro } from "@/components/dashboard/PageIntro";
+import { SurfaceExplainer } from "../SurfaceExplainer";
 
 type CircuitState = "closed" | "open" | "half_open";
 
@@ -136,6 +137,7 @@ export default function AiCallLogPage() {
 
   return (
     <div className="relative">
+      <SurfaceExplainer surface="ai-call-log" />
       <PageIntro
         kicker={`Engineer · AI provider observability${data ? ` · ${data.summary.total} calls · ${overallSuccessRate}% success` : ""}`}
         title={<>Every AI call, <span className="text-zinc-500">timed + token-counted + breakered.</span></>}

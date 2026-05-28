@@ -19,6 +19,7 @@ import {
   ArrowRightIcon,
 } from "@heroicons/react/24/outline";
 import { PageIntro } from "@/components/dashboard/PageIntro";
+import { SurfaceExplainer } from "../SurfaceExplainer";
 
 type Kind =
   | "review_release"
@@ -160,6 +161,7 @@ export default function AgiSuggestionsPage() {
 
   return (
     <div className="relative">
+      <SurfaceExplainer surface="agi-suggestions" />
       <PageIntro
         kicker={`AGI cockpit · proactive suggestions${data ? ` · ${data.summary.pending} pending` : ""}`}
         title={<>The AGI proposes <span className="text-zinc-500">your next moves.</span></>}

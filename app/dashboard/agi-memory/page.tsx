@@ -20,6 +20,7 @@ import {
   ArrowPathIcon,
 } from "@heroicons/react/24/outline";
 import { PageIntro } from "@/components/dashboard/PageIntro";
+import { SurfaceExplainer } from "../SurfaceExplainer";
 
 const TARGET_KINDS = ["council", "triage", "remediation"] as const;
 type TargetKind = (typeof TARGET_KINDS)[number];
@@ -99,6 +100,7 @@ export default function AgiMemoryPage() {
 
   return (
     <div className="relative">
+      <SurfaceExplainer surface="agi-memory" />
       <PageIntro
         kicker={`AGI cockpit · cross-engine memory${data ? ` · ${data.summary.total} entries · ${aiShare}% AI` : ""}`}
         title={<>Every reasoning step <span className="text-zinc-500">the AGI has taken.</span></>}
