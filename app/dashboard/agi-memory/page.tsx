@@ -124,6 +124,8 @@ export default function AgiMemoryPage() {
         </div>
       )}
 
+      <SummaryPanel targetKind={filterKind === "all" ? undefined : filterKind} />
+
       <div className="mb-4 flex items-center gap-2 flex-wrap">
         <FilterPill label={`All${data ? ` · ${data.summary.total}` : ""}`} active={filterKind === "all"} onClick={() => setFilterKind("all")} />
         {TARGET_KINDS.map((k) => (
@@ -275,6 +277,119 @@ function Stat({ icon: Icon, label, value, tone }: { icon: typeof SparklesIcon; l
         <Icon className="h-4 w-4 opacity-80" />
         <p className="text-[20px] font-bold">{value}</p>
       </div>
+    </div>
+  );
+}
+
+/* ──────────────────────────────────────────────────────────────────
+   SummaryPanel — Phase 522 (Claude summarizes recent AGI thinking).
+   ────────────────────────────────────────────────────────────── */
+
+interface MemorySummary {
+  outcome: string; // ai_generated | fallback_rules | error
+  narrative: string;
+  themes: string[];
+  notableEntries: string[];
+  aiAvailabilityPct: number;
+  windowSize: number;
+  modelHint: string | null;
+  errorMessage: string | null;
+  engineVersion: string;
+}
+
+type SummaryBody = { ok: true; data: { generatedAt: string; summary: MemorySummary } } | { ok: false; error: string; hint?: string };
+
+function SummaryPanel({ targetKind }: { targetKind?: string }) {
+  const [summary, setSummary] = useState<MemorySummary | null>(null);
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState<string | null>(null);
+
+  async function generate() {
+    setBusy(true);
+    setErr(null);
+    try {
+      const res = await fetch("/api/dashboard/agi-memory-summarize", {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ take: 50, ...(targetKind ? { targetKind } : {}) }),
+      });
+      const j: SummaryBody = await res.json();
+      if (j.ok) setSummary(j.data.summary);
+      else setErr(j.hint ?? j.error);
+    } catch (e) {
+      setErr(e instanceof Error ? e.message : "network error");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  if (!summary) {
+    return (
+      <div className="mb-4 rounded-2xl border border-violet-500/[0.20] bg-violet-500/[0.04] p-4 flex items-center justify-between gap-3">
+        <div className="flex items-center gap-2">
+          <SparklesIcon className="h-4 w-4 text-violet-300" />
+          <p className="text-[12.5px] text-violet-100">
+            <span className="font-semibold">Ask the AGI to summarize itself</span>
+            <span className="text-zinc-400"> — Claude reads the most recent 50 entries and reports patterns + recommendations.</span>
+          </p>
+        </div>
+        <button
+          type="button"
+          onClick={generate}
+          disabled={busy}
+          className="px-3 py-1.5 rounded-md border border-violet-500/40 bg-violet-500/[0.14] text-[12px] font-semibold text-violet-100 hover:bg-violet-500/[0.22] disabled:opacity-50 disabled:cursor-wait transition-colors"
+        >
+          {busy ? "Summarizing…" : "Summarize recent thinking"}
+        </button>
+        {err && <span className="text-[11px] font-mono text-rose-300">✗ {err}</span>}
+      </div>
+    );
+  }
+
+  return (
+    <div className="mb-4 rounded-2xl border border-violet-500/[0.22] bg-violet-500/[0.05] p-4">
+      <div className="flex items-center gap-2 mb-2 flex-wrap">
+        <span className="inline-flex items-center gap-1 text-[10px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border border-violet-500/30 bg-violet-500/[0.10] text-violet-200">
+          <SparklesIcon className="h-3 w-3" /> AGI meta-summary
+        </span>
+        <span className={`text-[10px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border ${OUTCOME_CLASS[summary.outcome] ?? OUTCOME_CLASS.error}`}>
+          {summary.outcome}
+        </span>
+        {summary.modelHint && <span className="text-[10px] font-mono text-zinc-500">model: {summary.modelHint}</span>}
+        <span className="text-[10px] font-mono text-zinc-500">window: {summary.windowSize} entries · {summary.aiAvailabilityPct}% AI</span>
+        <button
+          type="button"
+          onClick={generate}
+          disabled={busy}
+          className="ml-auto text-[11px] font-mono text-violet-300 hover:text-violet-200 disabled:opacity-50 disabled:cursor-wait"
+        >
+          {busy ? "Regenerating…" : "Regenerate"}
+        </button>
+      </div>
+      <p className="text-[13px] text-zinc-200 mb-2.5">{summary.narrative}</p>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+        <div>
+          <p className="text-[9.5px] font-mono uppercase tracking-wider text-zinc-500 mb-1">Themes</p>
+          <ul className="space-y-0.5">
+            {summary.themes.map((t, i) => (
+              <li key={i} className="text-[12px] text-zinc-300 flex gap-1.5"><span className="text-violet-400">◉</span><span>{t}</span></li>
+            ))}
+          </ul>
+        </div>
+        <div>
+          <p className="text-[9.5px] font-mono uppercase tracking-wider text-zinc-500 mb-1">Notable entries / next moves</p>
+          <ul className="space-y-0.5">
+            {summary.notableEntries.map((n, i) => (
+              <li key={i} className="text-[12px] text-zinc-300 flex gap-1.5"><span className="text-emerald-400">→</span><span>{n}</span></li>
+            ))}
+          </ul>
+        </div>
+      </div>
+      {summary.outcome !== "ai_generated" && summary.errorMessage && (
+        <p className="mt-2 text-[10.5px] font-mono text-amber-300">↳ {summary.errorMessage}</p>
+      )}
+      {err && <p className="mt-2 text-[10.5px] font-mono text-rose-300">✗ {err}</p>}
     </div>
   );
 }
