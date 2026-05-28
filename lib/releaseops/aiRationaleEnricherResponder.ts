@@ -131,7 +131,13 @@ function rowToView(row: EnrichmentRow): EnrichmentView {
   };
 }
 
-async function persistEnrichment(
+/**
+ * Persist a pre-built enrichment for any target (council, triage,
+ * remediation, ...). Best-effort: caller chooses whether to surface
+ * errors. Public because Phase 519+ surfaces share this persistence
+ * path.
+ */
+export async function persistEnrichment(
   repo: EnrichmentRepo,
   organizationId: string,
   targetId: string,

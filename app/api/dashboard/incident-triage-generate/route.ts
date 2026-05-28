@@ -15,6 +15,8 @@ import {
   type IncidentTriageAggregateRepo,
 } from "@/lib/releaseops/incidentTriageAggregator";
 import { appendAuditEvent, type AuditEventRepo } from "@/lib/releaseops/auditEventResponder";
+import { enrichTriageRationale } from "@/lib/releaseops/aiTriageRationaleEngine";
+import { persistEnrichment, type EnrichmentRepo } from "@/lib/releaseops/aiRationaleEnricherResponder";
 
 export const dynamic = "force-dynamic";
 
@@ -58,6 +60,39 @@ export async function POST(req: NextRequest) {
       summary: `Incident triage: ${r.body.data.triage.priority} · ${r.body.data.triage.suggestedOwnerTeam} · ETA ${r.body.data.triage.estimatedTimeToMitigateMinutes}min`,
       actorUserId: ctx.userId ?? null,
     });
+
+    // Phase 519 — Auto-enrich every new triage decision with the
+    // fallback (rules-based) rationale. Best-effort: never blocks the
+    // triage response. Operators can click "Regenerate" in the UI to
+    // call the live AI fetcher via /api/dashboard/triage-rationale-enrich.
+    try {
+      const triage = r.body.data.triage;
+      const enrichment = await enrichTriageRationale(
+        {
+          engineVersion: triage.engineVersion,
+          generatedAtIso: triage.generatedAtIso,
+          priority: triage.priority === "unknown" ? "P3" : triage.priority,
+          suggestedOwnerTeam: triage.suggestedOwnerTeam,
+          estimatedTimeToMitigateMinutes: triage.estimatedTimeToMitigateMinutes,
+          recommendedRunbook: triage.recommendedRunbook as Parameters<typeof enrichTriageRationale>[0]["recommendedRunbook"],
+          autoEscalate: triage.autoEscalate,
+          confidence: triage.confidence,
+          rationale: triage.rationale,
+          responseDeadlineIso: triage.generatedAtIso,
+        },
+        aggregated.inputs,
+        null,
+      );
+      await persistEnrichment(
+        prisma as unknown as EnrichmentRepo,
+        ctx.organizationId,
+        triage.id,
+        enrichment,
+        "triage",
+      );
+    } catch {
+      // Never blocks the source action.
+    }
   }
   return NextResponse.json(r.body, { status: r.status });
 }
