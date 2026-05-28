@@ -3118,6 +3118,23 @@ model AuditEvent {
 /// providers are no-ops. Stores the verified payload so downstream
 /// reducers (release-tag refresh, PR sync, branch validation refresh)
 /// can hydrate themselves without a second HTTP roundtrip.
+/// Phase 513 — Autonomous Tick log.
+///
+/// Append-only record of each autonomous cron tick. Operators see
+/// what the AGI did on its own via /dashboard/autonomy.
+model AutonomousTickLog {
+  id              String   @id @default(cuid())
+  organizationId  String
+  totalRuns       Int
+  okRuns          Int
+  errorRuns       Int
+  skippedRuns     Int
+  reportJson      Json
+  generatedAt     DateTime @default(now())
+
+  @@index([organizationId, generatedAt])
+}
+
 /// Phase 512 — Autonomous Remediation Proposals.
 ///
 /// Pairs with IncidentTriage: triage says what's broken + how urgent;
