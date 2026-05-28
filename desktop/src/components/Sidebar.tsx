@@ -92,6 +92,7 @@ const GROUPS: NavGroup[] = [
       { id: "release-overview", label: "Release overview", Icon: IconWorkflows },
       { id: "release-advisor", label: "Release advisor (AGI)", Icon: IconOrchestration },
       { id: "policy-proposals", label: "Policy proposals (AGI)", Icon: IconOrchestration },
+      { id: "incident-triage", label: "Incident triage (AGI)", Icon: IconOrchestration },
       { id: "drift", label: "Drift", Icon: IconSecurity },
       { id: "applications", label: "Applications", Icon: IconDashboard },
       { id: "manual-fixes", label: "Manual fixes", Icon: IconRemediation },

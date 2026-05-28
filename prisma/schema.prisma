@@ -3118,6 +3118,54 @@ model AuditEvent {
 /// providers are no-ops. Stores the verified payload so downstream
 /// reducers (release-tag refresh, PR sync, branch validation refresh)
 /// can hydrate themselves without a second HTTP roundtrip.
+/// Phase 509 — Autonomous Incident Triage.
+///
+/// One row per triage of a DeploymentIncident. The pure triage engine
+/// (releaseAdvisorTriageEngine.ts) reads incident + release + advisor
+/// recs + similar past incidents and projects priority + owner +
+/// ETA + recommended runbook. Operator can accept or override.
+///
+/// Closed-union `priority`: P0 | P1 | P2 | P3.
+/// Closed-union `operatorDecision`:
+///   pending | accepted | overridden | dismissed.
+model IncidentTriage {
+  id              String   @id @default(cuid())
+  organizationId  String
+  /// FK soft reference to DeploymentIncident.
+  incidentId      String
+  /// Closed-union priority. Lower number = more urgent.
+  priority        String
+  /// Suggested owner team (e.g. "platform-sre", "payments", "infra").
+  suggestedOwnerTeam String
+  /// Estimated time-to-mitigate in minutes (rough heuristic).
+  estimatedTimeToMitigateMinutes Int
+  /// Free-form recommended runbook key (matches existing SOP slugs).
+  recommendedRunbook String?
+  /// Suggest auto-escalate to on-call?
+  autoEscalate    Boolean  @default(false)
+  /// 0-100 engine confidence.
+  confidence      Int
+  /// Operator-readable triage summary + rationale.
+  rationale       String
+  /// JSON snapshot of the inputs at triage time (for audit).
+  inputsJson      Json
+  /// Closed-union operatorDecision. Pending until operator acts.
+  operatorDecision String  @default("pending")
+  decidedByUserId String?
+  decidedAt       DateTime?
+  decisionNote    String?
+  /// If the operator overrode, capture their priority choice.
+  overridePriority String?
+  /// Engine version pin.
+  engineVersion   String
+  generatedAt     DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([organizationId, operatorDecision])
+  @@index([organizationId, incidentId])
+  @@index([organizationId, priority])
+}
+
 /// Phase 507 — Autonomous Policy Proposals.
 ///
 /// When patterns emerge across releases (e.g. 3+ releases with open
