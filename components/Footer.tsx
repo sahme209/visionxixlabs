@@ -144,7 +144,7 @@ export function Footer() {
             {/* Social links */}
             <div className="flex items-center gap-3">
               <a
-                href="https://github.com/visionxixlabs/axiom"
+                href="https://github.com/sahme209/axiom-releases"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="social-link card-border-glow-hover"

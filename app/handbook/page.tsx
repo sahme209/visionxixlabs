@@ -165,12 +165,12 @@ export default function HandbookPage() {
               <ArrowRightIcon className="h-3.5 w-3.5" />
             </Link>
             <Link
-              href="https://github.com/visionxixlabs/axiom"
+              href="https://github.com/sahme209/axiom-releases"
               target="_blank"
               rel="noopener noreferrer"
               className="text-[12px] text-zinc-500 hover:text-brand-coral transition-colors font-mono"
             >
-              github.com/visionxixlabs/axiom →
+              github.com/sahme209/axiom-releases →
             </Link>
           </div>
         </div>

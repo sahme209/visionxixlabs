@@ -20,7 +20,7 @@ export const organization = {
   sameAs: [
     "https://www.linkedin.com/company/vision-xix-labs/",
     "https://x.com/visionxixlabs",
-    "https://github.com/visionxixlabs/axiom",
+    "https://github.com/sahme209/axiom-releases",
   ],
 };
 

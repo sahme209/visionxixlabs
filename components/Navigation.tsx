@@ -219,7 +219,7 @@ export function Navigation() {
               </Link>
 
               <a
-                href="https://github.com/visionxixlabs/axiom"
+                href="https://github.com/sahme209/axiom-releases"
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="GitHub"
@@ -333,7 +333,7 @@ export function Navigation() {
                     Pricing
                   </Link>
                   <a
-                    href="https://github.com/visionxixlabs/axiom"
+                    href="https://github.com/sahme209/axiom-releases"
                     target="_blank"
                     rel="noopener noreferrer"
                     onClick={() => setMobileMenuOpen(false)}
