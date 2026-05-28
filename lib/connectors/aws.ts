@@ -195,7 +195,33 @@ export async function validateAWSConnection(
       DurationSeconds: 900,
     });
 
-    const assumeResult = await brokerClient.send(assumeCmd);
+    // Phase 535 — retry to handle IAM eventual consistency. Same pattern
+    // as /api/aws/validate-role. Without this the connector-link path
+    // fails fast on freshly-created roles even after the broker-side
+    // identity policy is correct.
+    const delaysMs = [0, 2000, 4000, 6000, 8000];
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let assumeResult: any;
+    let lastRetryErr: unknown = null;
+    for (let attempt = 0; attempt < delaysMs.length; attempt++) {
+      if (delaysMs[attempt] > 0) {
+        await new Promise((r) => setTimeout(r, delaysMs[attempt]));
+      }
+      try {
+        assumeResult = await brokerClient.send(assumeCmd);
+        lastRetryErr = null;
+        break;
+      } catch (err) {
+        lastRetryErr = err;
+        const msg = err instanceof Error ? err.message : String(err);
+        if (/is not authorized to perform:?\s*sts:AssumeRole/i.test(msg)) {
+          break;
+        }
+      }
+    }
+    if (lastRetryErr || !assumeResult) {
+      throw lastRetryErr ?? new Error("AssumeRole returned no result.");
+    }
     const creds = assumeResult.Credentials;
     if (!creds?.AccessKeyId || !creds?.SecretAccessKey || !creds?.SessionToken) {
       return { valid: false, status: "invalid", errorCode: "ASSUME_FAILED" };
