@@ -3340,6 +3340,11 @@ model AiMemoryChatTurn {
   answer          String
   /// JSON array of citation id strings the model echoed back.
   citationsJson   Json
+  /// Phase 530 — JSON array of CitationDetail objects so chat history
+  /// rehydrates with the same deep-links + narrative previews the
+  /// ephemeral ask response showed. Nullable for forwards-compat
+  /// with Phase 529 rows that predate this column.
+  citationDetailsJson Json?
   /// Closed-union outcome of the engine call.
   outcome         String   @default("ai_generated")
   errorMessage    String?

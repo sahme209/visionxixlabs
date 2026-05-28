@@ -99,32 +99,10 @@ export async function POST(req: NextRequest) {
     makeLiveRationaleFetcher(),
   );
 
-  // Phase 529 — Persist the turn so the operator's chat archive
-  // survives across sessions. Best-effort: a failure here never
-  // affects the response.
-  await persistChatTurn(
-    prisma as unknown as ChatTurnRepo,
-    {
-      organizationId: ctx.organizationId,
-      userId: ctx.userId ?? null,
-      question,
-      answer,
-      contextEntriesCount: entries.length,
-      contextSummariesCount: summaries.length,
-    },
-  );
-
-  await appendAuditEvent(prisma as unknown as AuditEventRepo, {
-    organizationId: ctx.organizationId,
-    kind: "agi_memory.ask",
-    subjectKind: "agi_memory",
-    subjectId: targetKind ?? "all",
-    summary: `AGI chat ${answer.outcome} · question="${question.slice(0, 80)}${question.length > 80 ? "…" : ""}" · ${answer.citations.length} citations`,
-    actorUserId: ctx.userId ?? null,
-  });
-
   // Map citationIds back to (targetKind, targetId) pairs so the UI can
-  // link straight through to the source decision.
+  // link straight through to the source decision. We compute this
+  // BEFORE the persist call so the rich details get archived too —
+  // otherwise reloading chat history loses the deep-link context.
   const entryById = new Map<string, ChatContextEntry>();
   for (const e of entries) entryById.set(e.citationId, e);
   const summaryById = new Map<string, ChatContextSummary>();
@@ -155,6 +133,33 @@ export async function POST(req: NextRequest) {
     }
     return null;
   }).filter((x): x is NonNullable<typeof x> => x !== null);
+
+  // Phase 529 — Persist the turn so the operator's chat archive
+  // survives across sessions. Best-effort: a failure here never
+  // affects the response.
+  // Phase 530 — Also persist citationDetails so reload gives back
+  // the same deep-linkable Q&A row.
+  await persistChatTurn(
+    prisma as unknown as ChatTurnRepo,
+    {
+      organizationId: ctx.organizationId,
+      userId: ctx.userId ?? null,
+      question,
+      answer,
+      contextEntriesCount: entries.length,
+      contextSummariesCount: summaries.length,
+      citationDetails,
+    },
+  );
+
+  await appendAuditEvent(prisma as unknown as AuditEventRepo, {
+    organizationId: ctx.organizationId,
+    kind: "agi_memory.ask",
+    subjectKind: "agi_memory",
+    subjectId: targetKind ?? "all",
+    summary: `AGI chat ${answer.outcome} · question="${question.slice(0, 80)}${question.length > 80 ? "…" : ""}" · ${answer.citations.length} citations`,
+    actorUserId: ctx.userId ?? null,
+  });
 
   return NextResponse.json({
     ok: true,

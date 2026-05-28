@@ -26,6 +26,9 @@ export interface ChatTurnRow {
   question: string;
   answer: string;
   citationsJson: unknown;
+  /** Phase 530 — rich CitationDetail array. Nullable for rows persisted
+   *  before the 20260528180000 migration. */
+  citationDetailsJson?: unknown;
   outcome: string;
   errorMessage: string | null;
   modelHint: string | null;
@@ -44,6 +47,9 @@ export interface ChatTurnRepo {
         question: string;
         answer: string;
         citationsJson: unknown;
+        /** Phase 530 — optional so callers from before this migration
+         *  still type-check; the Prisma client tolerates undefined. */
+        citationDetailsJson?: unknown;
         outcome: string;
         errorMessage: string | null;
         modelHint: string | null;
@@ -66,12 +72,27 @@ export interface ChatTurnRepo {
    Views.
    ────────────────────────────────────────────────────────────── */
 
+/** Phase 530 — rehydrated citation context the dashboard renders
+ *  alongside the answer. Mirrors the shape the /agi-memory-ask
+ *  ephemeral response returns. */
+export interface ChatCitationDetailView {
+  citationId: string;
+  kind: "entry" | "summary";
+  targetKind: string | null;
+  targetId: string | null;
+  narrative: string;
+  generatedAtIso: string;
+}
+
 export interface ChatTurnView {
   id: string;
   userId: string | null;
   question: string;
   answer: string;
   citations: string[];
+  /** Phase 530 — empty array when the row predates the migration
+   *  OR the persist path stored an empty citation list. */
+  citationDetails: ChatCitationDetailView[];
   outcome: string;
   errorMessage: string | null;
   modelHint: string | null;
@@ -109,6 +130,26 @@ function toStringArray(input: unknown): string[] {
   return [];
 }
 
+function toCitationDetails(input: unknown): ChatCitationDetailView[] {
+  if (!Array.isArray(input)) return [];
+  const out: ChatCitationDetailView[] = [];
+  for (const item of input) {
+    if (!item || typeof item !== "object") continue;
+    const obj = item as Record<string, unknown>;
+    if (typeof obj.citationId !== "string") continue;
+    const kind = obj.kind === "summary" ? "summary" : "entry";
+    out.push({
+      citationId: obj.citationId,
+      kind,
+      targetKind: typeof obj.targetKind === "string" ? obj.targetKind : null,
+      targetId: typeof obj.targetId === "string" ? obj.targetId : null,
+      narrative: typeof obj.narrative === "string" ? obj.narrative : "",
+      generatedAtIso: typeof obj.generatedAtIso === "string" ? obj.generatedAtIso : "",
+    });
+  }
+  return out;
+}
+
 function rowToView(row: ChatTurnRow): ChatTurnView {
   return {
     id: row.id,
@@ -116,6 +157,7 @@ function rowToView(row: ChatTurnRow): ChatTurnView {
     question: row.question,
     answer: row.answer,
     citations: toStringArray(row.citationsJson),
+    citationDetails: toCitationDetails(row.citationDetailsJson ?? null),
     outcome: row.outcome,
     errorMessage: row.errorMessage,
     modelHint: row.modelHint,
@@ -137,6 +179,9 @@ export interface PersistInput {
   answer: ChatAnswer;
   contextEntriesCount: number;
   contextSummariesCount: number;
+  /** Phase 530 — optional rich citation details captured at the time
+   *  the route resolved citationIds to (targetKind, targetId) pairs. */
+  citationDetails?: ChatCitationDetailView[];
 }
 
 /**
@@ -155,6 +200,7 @@ export async function persistChatTurn(
         question: input.question,
         answer: input.answer.answer,
         citationsJson: input.answer.citations,
+        ...(input.citationDetails ? { citationDetailsJson: input.citationDetails } : {}),
         outcome: input.answer.outcome,
         errorMessage: input.answer.errorMessage,
         modelHint: input.answer.modelHint,

@@ -507,6 +507,7 @@ interface HistoryTurn {
   question: string;
   answer: string;
   citations: string[];
+  citationDetails: ChatCitationDetail[];
   outcome: string;
   errorMessage: string | null;
   modelHint: string | null;
@@ -555,7 +556,11 @@ function ChatPanel({ targetKind }: { targetKind?: string }) {
               engineVersion: t.engineVersion,
             },
             contextSize: { entries: t.contextEntriesCount, summaries: t.contextSummariesCount },
-            citationDetails: t.citations.map((cid) => ({ citationId: cid, kind: "entry" as const, targetKind: null, targetId: null, narrative: "", generatedAtIso: t.generatedAtIso })),
+            // Phase 530 — Use the persisted rich citation details when
+            // present; fall back to bare ids for pre-migration rows.
+            citationDetails: t.citationDetails && t.citationDetails.length > 0
+              ? t.citationDetails
+              : t.citations.map((cid) => ({ citationId: cid, kind: "entry" as const, targetKind: null, targetId: null, narrative: "", generatedAtIso: t.generatedAtIso })),
           })));
           setMigrationPending(false);
         } else if (j.error === "migration_pending") {

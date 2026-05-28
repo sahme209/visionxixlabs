@@ -35,6 +35,7 @@ function makeRepo(): Stub {
           question: data.question,
           answer: data.answer,
           citationsJson: data.citationsJson,
+          citationDetailsJson: data.citationDetailsJson ?? null,
           outcome: data.outcome,
           errorMessage: data.errorMessage,
           modelHint: data.modelHint,
@@ -153,6 +154,101 @@ describe("persistChatTurn", () => {
     });
     expect(stub._rows[0].contextEntriesCount).toBe(42);
     expect(stub._rows[0].contextSummariesCount).toBe(7);
+  });
+
+  // Phase 530 — citation details persistence
+  it("persists rich citation details when supplied", async () => {
+    const stub = makeRepo();
+    const view = await persistChatTurn(stub, {
+      organizationId: "o", userId: "u1",
+      question: "Q?", answer: answer(),
+      contextEntriesCount: 5, contextSummariesCount: 1,
+      citationDetails: [
+        { citationId: "e1", kind: "entry", targetKind: "council", targetId: "c_1", narrative: "first ep", generatedAtIso: NOW.toISOString() },
+        { citationId: "s1", kind: "summary", targetKind: null, targetId: null, narrative: "first sum", generatedAtIso: NOW.toISOString() },
+      ],
+    });
+    expect(view).not.toBeNull();
+    expect(view!.citationDetails).toHaveLength(2);
+    expect(view!.citationDetails[0].kind).toBe("entry");
+    expect(view!.citationDetails[0].targetKind).toBe("council");
+    expect(view!.citationDetails[1].kind).toBe("summary");
+  });
+
+  it("citationDetails defaults to empty array when not supplied", async () => {
+    const stub = makeRepo();
+    const view = await persistChatTurn(stub, {
+      organizationId: "o", userId: "u1",
+      question: "Q?", answer: answer(),
+      contextEntriesCount: 0, contextSummariesCount: 0,
+    });
+    expect(view!.citationDetails).toEqual([]);
+  });
+
+  it("history rehydration carries citationDetails forward", async () => {
+    const stub = makeRepo();
+    await persistChatTurn(stub, {
+      organizationId: "o", userId: "u1",
+      question: "Q?", answer: answer(),
+      contextEntriesCount: 5, contextSummariesCount: 1,
+      citationDetails: [
+        { citationId: "e1", kind: "entry", targetKind: "triage", targetId: "t_42", narrative: "n", generatedAtIso: NOW.toISOString() },
+      ],
+    });
+    const history = await buildChatHistoryResponse(stub, { organizationId: "o" });
+    if (!history.body.ok) throw new Error("expected ok");
+    expect(history.body.data.turns[0].citationDetails).toHaveLength(1);
+    expect(history.body.data.turns[0].citationDetails[0].targetKind).toBe("triage");
+    expect(history.body.data.turns[0].citationDetails[0].targetId).toBe("t_42");
+  });
+
+  it("tolerates legacy rows with null citationDetailsJson", async () => {
+    const stub = makeRepo();
+    // Inject a pre-Phase-530 row directly.
+    stub._rows.push({
+      id: "turn_legacy",
+      organizationId: "o",
+      userId: "u1",
+      question: "Q?",
+      answer: "A.",
+      citationsJson: ["e1"],
+      citationDetailsJson: null,
+      outcome: "ai_generated",
+      errorMessage: null,
+      modelHint: null,
+      contextEntriesCount: 0,
+      contextSummariesCount: 0,
+      engineVersion: "v1",
+      generatedAt: NOW,
+    });
+    const history = await buildChatHistoryResponse(stub, { organizationId: "o" });
+    if (!history.body.ok) throw new Error("expected ok");
+    expect(history.body.data.turns[0].citationDetails).toEqual([]);
+    expect(history.body.data.turns[0].citations).toEqual(["e1"]);
+  });
+
+  it("tolerates legacy rows with omitted citationDetailsJson column", async () => {
+    const stub = makeRepo();
+    stub._rows.push({
+      id: "turn_legacy2",
+      organizationId: "o",
+      userId: null,
+      question: "Q?",
+      answer: "A.",
+      citationsJson: [],
+      // citationDetailsJson omitted entirely (older rows where the
+      // column doesn't even exist in the Prisma client shape)
+      outcome: "ai_generated",
+      errorMessage: null,
+      modelHint: null,
+      contextEntriesCount: 0,
+      contextSummariesCount: 0,
+      engineVersion: "v1",
+      generatedAt: NOW,
+    });
+    const history = await buildChatHistoryResponse(stub, { organizationId: "o" });
+    if (!history.body.ok) throw new Error("expected ok");
+    expect(history.body.data.turns[0].citationDetails).toEqual([]);
   });
 });
 

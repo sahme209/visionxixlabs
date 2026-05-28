@@ -62,10 +62,27 @@ const SEVERITY_CLASS: Record<string, string> = {
   unknown:  "bg-zinc-700/40 text-zinc-400 border-zinc-700/40",
 };
 
+interface RunNowReport {
+  okRuns: number; errorRuns: number; skippedRuns: number;
+  perOrg: Array<{
+    advisorRuns: Array<{ outcome: string }>;
+    triageRuns: Array<{ outcome: string }>;
+    remediationRuns: Array<{ outcome: string }>;
+    policyProposalRun: { outcome: string } | null;
+    proactiveSuggestionRun: { outcome: string } | null;
+  }>;
+}
+type RunNowBody =
+  | { ok: true; data: { report: RunNowReport; org: RunNowReport["perOrg"][number] | null } }
+  | { ok: false; error: string; hint?: string };
+
 export function AgiCockpitView({ onNavigate }: { onNavigate?: (v: View) => void } = {}) {
   const [resp, setResp] = useState<CockpitBody | null>(null);
   const [loading, setLoading] = useState(true);
   const [networkError, setNetworkError] = useState<string | null>(null);
+  const [runBusy, setRunBusy] = useState(false);
+  const [runResult, setRunResult] = useState<string | null>(null);
+  const [runError, setRunError] = useState<string | null>(null);
 
   function loadCockpit() {
     setLoading(true);
@@ -75,6 +92,38 @@ export function AgiCockpitView({ onNavigate }: { onNavigate?: (v: View) => void 
       .then((j: CockpitBody) => setResp(j))
       .catch((e) => setNetworkError(e instanceof Error ? e.message : "Network error."))
       .finally(() => setLoading(false));
+  }
+
+  async function runNow() {
+    setRunBusy(true);
+    setRunError(null);
+    setRunResult(null);
+    try {
+      const res = await fetch("/api/dashboard/agi-cockpit-run-now", { method: "POST", credentials: "include" });
+      const j: RunNowBody = await res.json();
+      if (j.ok) {
+        const org = j.data.org;
+        if (org) {
+          const counts = [
+            ...org.advisorRuns.map((r) => `advisor:${r.outcome}`),
+            ...org.triageRuns.map((r) => `triage:${r.outcome}`),
+            ...org.remediationRuns.map((r) => `remediation:${r.outcome}`),
+            org.policyProposalRun ? `policy:${org.policyProposalRun.outcome}` : null,
+            org.proactiveSuggestionRun ? `suggestion:${org.proactiveSuggestionRun.outcome}` : null,
+          ].filter(Boolean) as string[];
+          setRunResult(counts.join(" · ") || "no engines fired");
+        } else {
+          setRunResult(`${j.data.report.okRuns} ok · ${j.data.report.errorRuns} err · ${j.data.report.skippedRuns} skipped`);
+        }
+        loadCockpit();
+      } else {
+        setRunError(j.hint ?? j.error);
+      }
+    } catch (e) {
+      setRunError(e instanceof Error ? e.message : "network error");
+    } finally {
+      setRunBusy(false);
+    }
   }
 
   useEffect(() => { loadCockpit(); }, []);
@@ -113,6 +162,14 @@ export function AgiCockpitView({ onNavigate }: { onNavigate?: (v: View) => void 
                 {data.headline.highestSeverity === "none" ? "all clear" : `severity ${data.headline.highestSeverity}`}
               </span>
               <p className="text-sm font-semibold text-white flex-1 min-w-[160px]">{data.headline.callToAction}</p>
+              <button
+                type="button"
+                onClick={runNow}
+                disabled={runBusy}
+                className="px-3 py-1 rounded-md border border-violet-500/40 bg-violet-500/[0.14] text-[12px] font-semibold text-violet-100 hover:bg-violet-500/[0.22] disabled:opacity-50 disabled:cursor-wait"
+              >
+                ✦ {runBusy ? "Running…" : "Run AGI now"}
+              </button>
               {data.headline.totalPending > 0 && onNavigate && (
                 <div className="flex gap-2">
                   <button type="button" onClick={() => onNavigate("release-advisor")}
@@ -126,6 +183,11 @@ export function AgiCockpitView({ onNavigate }: { onNavigate?: (v: View) => void 
                 </div>
               )}
             </div>
+            {(runResult || runError) && (
+              <p className={`mt-2 text-[11px] font-mono ${runError ? "text-rose-300" : "text-emerald-300"}`}>
+                {runError ? `✗ ${runError}` : `✓ ${runResult}`}
+              </p>
+            )}
           </div>
 
           <div className={`grid gap-3 ${data.engines.proactiveSuggestion ? "grid-cols-3" : "grid-cols-2"}`}>
