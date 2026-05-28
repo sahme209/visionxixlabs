@@ -3118,6 +3118,52 @@ model AuditEvent {
 /// providers are no-ops. Stores the verified payload so downstream
 /// reducers (release-tag refresh, PR sync, branch validation refresh)
 /// can hydrate themselves without a second HTTP roundtrip.
+/// Phase 512 — Autonomous Remediation Proposals.
+///
+/// Pairs with IncidentTriage: triage says what's broken + how urgent;
+/// remediation proposals say WHAT TO DO about it. The engine reads
+/// triage priority + release context + similar past resolutions and
+/// emits specific remediations (rollback, flag-disable, restart, etc.)
+/// with prerequisites, expected impact, and rollback-if-fails plans.
+///
+/// Closed-union `kind`:
+///   rollback_release | disable_feature_flag | increase_replicas |
+///   restart_service | redirect_traffic | throttle_requests |
+///   escalate_to_vendor | no_action_recommended
+///
+/// Closed-union `operatorDecision`:
+///   pending | accepted | rejected | implemented | dismissed
+model RemediationProposal {
+  id              String   @id @default(cuid())
+  organizationId  String
+  incidentId      String
+  triageId        String?
+  kind            String
+  title           String
+  description     String
+  confidence      Int
+  severity        String   @default("medium")
+  prerequisitesJson Json
+  expectedImpact  String
+  rollbackPlan    String
+  estimatedMinutes Int
+  reversible      Boolean  @default(true)
+  rationale       String
+  inputsJson      Json
+  operatorDecision String  @default("pending")
+  decidedByUserId String?
+  decidedAt       DateTime?
+  decisionNote    String?
+  linkedManualFixId String?
+  engineVersion   String
+  generatedAt     DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([organizationId, operatorDecision])
+  @@index([organizationId, incidentId])
+  @@index([organizationId, kind])
+}
+
 /// Phase 509 — Autonomous Incident Triage.
 ///
 /// One row per triage of a DeploymentIncident. The pure triage engine

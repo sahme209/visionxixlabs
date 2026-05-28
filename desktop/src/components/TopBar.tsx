@@ -33,6 +33,7 @@ const VIEW_TITLES: Record<View, { title: string; subtitle: string }> = {
   "agi-cockpit":      { title: "AGI cockpit", subtitle: "Fused view of all autonomous engines · severity-aware headline · one hub" },
   "incident-triage":  { title: "Incident triage (AGI)", subtitle: "P0–P3 priority · owner team · ETA · runbook · auto-escalate flag · operator in the loop" },
   "learning-loop":    { title: "Learning loop (AGI)", subtitle: "Engine-improvement queue · clusters operator feedback across all three AGI engines" },
+  "remediation-proposals": { title: "Remediation (AGI)", subtitle: "On-call action proposals · prereqs + impact + rollback plan · reversibility flagged" },
   drift:              { title: "Drift", subtitle: "Declared (IaC) vs observed (runtime) state · per-resource diff" },
   applications:       { title: "Applications", subtitle: "Top-level governance unit · register before tracking releases" },
   "manual-fixes":     { title: "Manual fixes", subtitle: "Out-of-band hand-edits · log + reconcile against source-of-truth" },
