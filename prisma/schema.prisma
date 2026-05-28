@@ -3240,6 +3240,40 @@ model AiRationaleEnrichment {
   @@index([organizationId, targetKind, generatedAt])
 }
 
+/// Phase 523 — Persisted AGI meta-summary.
+///
+/// Each "Summarize recent thinking" call on the AGI Memory dashboard
+/// writes one row here. Operators get a longitudinal view of the AGI's
+/// reasoning trajectory: was the AI provider healthy yesterday, what
+/// themes recurred, what next-actions did the AGI propose?
+///
+/// Closed-union `outcome`: ai_generated | fallback_rules | error.
+/// `targetKind` is null when the summary was over all surfaces;
+/// otherwise it pins to a specific surface ("council", "triage", ...).
+model AiMemorySummaryLog {
+  id                String   @id @default(cuid())
+  organizationId    String
+  /// Surface scope: null means all surfaces, else "council" / "triage" / ...
+  targetKind        String?
+  narrative         String
+  /// JSON array of strings.
+  themesJson        Json
+  /// JSON array of strings — what the operator should review.
+  notableEntriesJson Json
+  outcome           String   @default("ai_generated")
+  errorMessage      String?
+  modelHint         String?
+  /// Number of memory entries the summary covered.
+  windowSize        Int
+  /// 0-100, share of window entries with outcome=ai_generated.
+  aiAvailabilityPct Int
+  engineVersion     String
+  generatedAt       DateTime @default(now())
+
+  @@index([organizationId, generatedAt])
+  @@index([organizationId, targetKind, generatedAt])
+}
+
 /// Phase 513 — Autonomous Tick log.
 ///
 /// Append-only record of each autonomous cron tick. Operators see

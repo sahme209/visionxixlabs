@@ -21,6 +21,7 @@ import {
 import { summarizeAgiMemory, type MemoryEntryForSummary } from "@/lib/releaseops/aiMemorySummaryEngine";
 import { makeLiveRationaleFetcher } from "@/lib/releaseops/aiRationaleFetcher";
 import { appendAuditEvent, type AuditEventRepo } from "@/lib/releaseops/auditEventResponder";
+import { persistMemorySummary, type MemorySummaryRepo } from "@/lib/releaseops/aiMemorySummaryResponder";
 
 export const dynamic = "force-dynamic";
 
@@ -57,6 +58,16 @@ export async function POST(req: NextRequest) {
   }));
 
   const summary = await summarizeAgiMemory(entries, makeLiveRationaleFetcher());
+
+  // Phase 523 — Persist the summary for the timeline view. Best-effort:
+  // the route response is unaffected by persistence failure (e.g. when
+  // the schema migration hasn't been applied yet).
+  await persistMemorySummary(
+    prisma as unknown as MemorySummaryRepo,
+    ctx.organizationId,
+    targetKind ?? null,
+    summary,
+  );
 
   await appendAuditEvent(prisma as unknown as AuditEventRepo, {
     organizationId: ctx.organizationId,

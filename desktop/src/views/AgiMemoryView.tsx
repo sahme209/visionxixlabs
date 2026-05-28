@@ -97,6 +97,8 @@ export function AgiMemoryView() {
 
       <SummaryPanel targetKind={filterKind === "all" ? undefined : filterKind} />
 
+      <SummaryTimeline filterKind={filterKind} />
+
       <div className="flex items-center gap-2 flex-wrap">
         <FilterPill label={`All${data ? ` · ${data.summary.total}` : ""}`} active={filterKind === "all"} onClick={() => setFilterKind("all")} />
         {TARGET_KINDS.map((k) => (
@@ -344,6 +346,122 @@ function SummaryPanel({ targetKind }: { targetKind?: string }) {
         <p className="mt-1.5 text-[10px] font-mono text-amber-300">↳ {summary.errorMessage}</p>
       )}
       {err && <p className="mt-1 text-[10.5px] font-mono text-rose-300">✗ {err}</p>}
+    </div>
+  );
+}
+
+/* ──────────────────────────────────────────────────────────────────
+   SummaryTimeline — Phase 523 desktop sibling.
+   ────────────────────────────────────────────────────────────── */
+
+interface TimelineSummary {
+  id: string;
+  targetKind: string | null;
+  narrative: string;
+  themes: string[];
+  notableEntries: string[];
+  outcome: string;
+  errorMessage: string | null;
+  modelHint: string | null;
+  windowSize: number;
+  aiAvailabilityPct: number;
+  engineVersion: string;
+  generatedAtIso: string;
+}
+
+interface TimelineData {
+  generatedAt: string;
+  entries: TimelineSummary[];
+  summary: { total: number; aiGenerated: number; fallbackRules: number; errored: number };
+}
+
+type TimelineBody = { ok: true; data: TimelineData } | { ok: false; error: string; hint?: string };
+
+function SummaryTimeline({ filterKind }: { filterKind: TargetKind | "all" }) {
+  const [resp, setResp] = useState<TimelineBody | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    setLoading(true);
+    const qs = filterKind === "all" ? "?take=20" : `?targetKind=${encodeURIComponent(filterKind)}&take=20`;
+    fetch(`/api/dashboard/agi-memory-timeline${qs}`, { credentials: "include" })
+      .then((r) => r.json())
+      .then((j: TimelineBody) => setResp(j))
+      .catch(() => { /* swallow */ })
+      .finally(() => setLoading(false));
+  }, [filterKind]);
+
+  const data = resp?.ok ? resp.data : null;
+  const errorBody = resp && !resp.ok ? resp : null;
+
+  if (loading) return null;
+  if (errorBody?.error === "migration_pending") {
+    return (
+      <div className="glass-card p-3 border border-amber-500/20 text-[11.5px] text-amber-200">
+        Timeline schema migration pending — run prisma migrate deploy.
+      </div>
+    );
+  }
+  if (!data || data.entries.length === 0) return null;
+
+  return (
+    <div className="glass-card p-3">
+      <div className="flex items-center gap-2 mb-1.5">
+        <p className="text-[11px] font-semibold text-zinc-300">Summary timeline</p>
+        <span className="text-[10px] font-mono text-zinc-500">
+          {data.summary.total} runs · {data.summary.aiGenerated} AI · {data.summary.fallbackRules} fallback{data.summary.errored > 0 ? ` · ${data.summary.errored} err` : ""}
+        </span>
+      </div>
+      <div className="space-y-1">
+        {data.entries.map((s) => (
+          <TimelineRow key={s.id} entry={s} />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function TimelineRow({ entry }: { entry: TimelineSummary }) {
+  const [open, setOpen] = useState(false);
+  const scope = entry.targetKind ? KIND_LABEL[entry.targetKind] ?? entry.targetKind : "All";
+  return (
+    <div className="rounded border border-zinc-700/40 bg-zinc-900/30 p-2">
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        className="w-full text-left flex items-center gap-2 flex-wrap"
+      >
+        <span className="text-[9px] font-mono uppercase tracking-wider px-1 py-0.5 rounded border border-zinc-700/40 bg-zinc-800/40 text-zinc-300">
+          {scope}
+        </span>
+        <span className={`text-[9px] font-mono uppercase tracking-wider px-1 py-0.5 rounded border ${OUTCOME_CLASS[entry.outcome] ?? OUTCOME_CLASS.error}`}>
+          {entry.outcome}
+        </span>
+        <span className="text-[10px] font-mono text-zinc-500">{entry.windowSize}w · {entry.aiAvailabilityPct}%AI</span>
+        {entry.modelHint && <span className="text-[10px] font-mono text-zinc-500">{entry.modelHint}</span>}
+        <span className="text-[10px] font-mono text-zinc-500 ml-auto">{new Date(entry.generatedAtIso).toLocaleString()}</span>
+      </button>
+      <p className="mt-1 text-[11px] text-zinc-300 line-clamp-2">{entry.narrative}</p>
+      {open && (
+        <div className="mt-1 grid grid-cols-1 md:grid-cols-2 gap-2">
+          <div>
+            <p className="text-[9px] font-mono uppercase tracking-wider text-zinc-500 mb-0.5">Themes</p>
+            <ul>
+              {entry.themes.map((t, i) => (
+                <li key={i} className="text-[11px] text-zinc-300 flex gap-1.5"><span className="text-violet-400">◉</span><span>{t}</span></li>
+              ))}
+            </ul>
+          </div>
+          <div>
+            <p className="text-[9px] font-mono uppercase tracking-wider text-zinc-500 mb-0.5">Notable</p>
+            <ul>
+              {entry.notableEntries.map((n, i) => (
+                <li key={i} className="text-[11px] text-zinc-300 flex gap-1.5"><span className="text-emerald-400">→</span><span>{n}</span></li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
