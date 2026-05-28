@@ -258,7 +258,7 @@ export function HowItWorksClient() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, amount: 0.3 }}
               transition={{ duration: 0.6 }}
-              className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5"
+              className="surface-glass rounded-2xl p-5 hover:border-brand-coral/25 transition-all"
             >
               <p className="text-[13px] font-semibold text-white">{c.title}</p>
               <p className="mt-2 text-[12px] text-zinc-400 leading-relaxed">{c.body}</p>

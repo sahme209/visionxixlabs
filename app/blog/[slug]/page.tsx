@@ -119,18 +119,27 @@ export default async function BlogPostPage({ params }: Params) {
           })}
         </article>
 
-        {/* CTA */}
-        <section className="mt-16 rounded-2xl border border-violet-500/20 bg-gradient-to-br from-violet-500/10 via-fuchsia-500/[0.05] to-cyan-500/[0.05] p-8 text-center">
-          <p className="text-xs font-mono text-violet-300 uppercase tracking-[0.22em] mb-3">// try axiom</p>
-          <h3 className="text-2xl font-bold tracking-tight mb-3">Run the autonomous cloud operating system.</h3>
+        {/* CTA — Huly-grade with coral accent + tactile buttons */}
+        <section className="surface-frost mt-16 rounded-2xl p-8 text-center">
+          <p className="mono-label inline-flex items-center gap-3 mb-4">
+            <span className="text-brand-coral/90 tabular-nums">AX</span>
+            <span className="h-px w-6 bg-gradient-to-r from-brand-coral/60 to-transparent" />
+            Try Axiom
+          </p>
+          <h3 className="font-display text-2xl md:text-3xl font-bold mb-3 leading-[1.04]">
+            <span className="relative inline-block">
+              Run the autonomous cloud operating system.
+              <span aria-hidden className="absolute left-0 -bottom-0.5 h-[2px] w-full rounded-full bg-gradient-to-r from-brand-coral via-fuchsia-400/70 to-transparent" />
+            </span>
+          </h3>
           <p className="text-sm text-zinc-400 max-w-xl mx-auto mb-6">
             Open the web app or download the signed desktop binaries for macOS, Windows, and Linux. No demo call required.
           </p>
           <div className="inline-flex gap-3 flex-wrap justify-center">
-            <Link href="/dashboard" className="inline-flex items-center gap-2 px-5 py-3 rounded-full bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500 text-white text-sm font-semibold shadow-[0_0_24px_rgba(139,92,246,0.4)]">
+            <Link href="/dashboard" className="btn-press inline-flex items-center gap-2 px-5 py-3 rounded-full text-sm font-semibold tracking-tight">
               Open web app
             </Link>
-            <Link href="/download" className="inline-flex items-center gap-2 px-5 py-3 rounded-full border border-white/[0.12] bg-white/[0.03] hover:bg-white/[0.06] text-zinc-200 text-sm font-semibold">
+            <Link href="/download" className="btn-ghost-press inline-flex items-center gap-2 px-5 py-3 rounded-full text-sm font-medium tracking-tight">
               Download desktop
             </Link>
           </div>
@@ -139,13 +148,17 @@ export default async function BlogPostPage({ params }: Params) {
         {/* Other posts */}
         {others.length > 0 && (
           <section className="mt-20">
-            <p className="text-[10px] font-mono text-violet-400 uppercase tracking-[0.22em] mb-5">// keep reading</p>
+            <p className="mono-label inline-flex items-center gap-3 mb-6">
+              <span className="text-brand-coral/90 tabular-nums">→</span>
+              <span className="h-px w-6 bg-gradient-to-r from-brand-coral/60 to-transparent" />
+              Keep reading
+            </p>
             <div className="grid sm:grid-cols-3 gap-3">
               {others.map((p) => (
                 <Link
                   key={p.slug}
                   href={`/blog/${p.slug}`}
-                  className="group block rounded-xl border border-white/[0.06] bg-white/[0.015] p-5 hover:border-violet-500/30 transition-all"
+                  className="group surface-glass block rounded-xl p-5 hover:border-brand-coral/25 transition-all"
                 >
                   <div className="flex items-center gap-2 mb-2 text-[9px] font-mono uppercase tracking-[0.18em]">
                     <span className={CAT_TONE[p.category]}>{p.category}</span>

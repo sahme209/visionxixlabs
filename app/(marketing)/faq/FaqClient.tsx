@@ -200,7 +200,7 @@ export function FaqClient() {
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.3, delay: Math.min(i * 0.025, 0.2) }}
-                className="rounded-2xl border border-white/[0.06] bg-white/[0.02] overflow-hidden"
+                className="surface-glass rounded-2xl overflow-hidden"
               >
                 <button
                   type="button"

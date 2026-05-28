@@ -170,7 +170,7 @@ export function CompareClient() {
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3 }}
-          className="overflow-hidden rounded-2xl border border-white/[0.06] bg-white/[0.02]"
+          className="surface-glass overflow-hidden rounded-2xl"
         >
           {/* header */}
           <div className="grid grid-cols-[1fr_110px_110px] md:grid-cols-[1fr_140px_140px] border-b border-white/[0.06] bg-white/[0.02] px-4 py-3 text-[11px] font-mono uppercase tracking-widest text-zinc-400">

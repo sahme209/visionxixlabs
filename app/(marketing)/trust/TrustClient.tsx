@@ -100,7 +100,7 @@ export function TrustClient() {
               viewport={{ once: true, amount: 0.3 }}
               transition={{ duration: 0.5, delay: Math.min(i * 0.05, 0.3) }}
               whileHover={{ y: -3, transition: { duration: 0.2 } }}
-              className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 hover:border-emerald-500/30 hover:bg-white/[0.04] transition"
+              className="surface-glass rounded-2xl p-5 hover:border-brand-coral/25 transition-all"
             >
               <div className="text-2xl text-emerald-300 mb-2 font-mono">{c.symbol}</div>
               <p className="text-[14px] font-semibold text-white">{c.title}</p>
