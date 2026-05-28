@@ -46,6 +46,7 @@ import { ReleaseAdvisorView } from "./views/ReleaseAdvisorView";
 import { PolicyProposalsView } from "./views/PolicyProposalsView";
 import { AgiCockpitView } from "./views/AgiCockpitView";
 import { IncidentTriageView } from "./views/IncidentTriageView";
+import { LearningLoopView } from "./views/LearningLoopView";
 import { useTrayApprovalsBadge } from "./lib/useTrayApprovalsBadge";
 import { useConnectorHealthAmbientPoll } from "./lib/connectorHealthStore";
 import { useSseStream } from "./lib/useSseStream";
@@ -92,6 +93,7 @@ export type View =
   | "policy-proposals"
   | "agi-cockpit"
   | "incident-triage"
+  | "learning-loop"
   // Automation
   | "activity"
   | "workflows"
@@ -197,6 +199,7 @@ export default function App() {
           {activeView === "policy-proposals" && <PolicyProposalsView />}
           {activeView === "agi-cockpit"      && <AgiCockpitView onNavigate={setActiveView} />}
           {activeView === "incident-triage"  && <IncidentTriageView />}
+          {activeView === "learning-loop"    && <LearningLoopView />}
           {activeView === "activity"      && <ActivityView />}
           {activeView === "workflows"     && <WorkflowsView />}
           {activeView === "approvals"     && <ApprovalsView />}
