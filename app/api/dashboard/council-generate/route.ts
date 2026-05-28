@@ -22,6 +22,11 @@ import {
 import { appendAuditEvent, type AuditEventRepo } from "@/lib/releaseops/auditEventResponder";
 import { aiNativeVoterAsync } from "@/lib/releaseops/aiNativeAdvisorVoter";
 import { sendSlackSignalBestEffort, type SlackRepo } from "@/lib/releaseops/slackNotificationResponder";
+import {
+  enrichDecisionBestEffort,
+  type EnrichmentRepo,
+} from "@/lib/releaseops/aiRationaleEnricherResponder";
+import { makeLiveRationaleFetcher } from "@/lib/releaseops/aiRationaleFetcher";
 
 export const dynamic = "force-dynamic";
 
@@ -70,6 +75,30 @@ export async function POST(req: NextRequest) {
       summary: `Council${withAi ? " (with AI)" : ""} ${r.body.data.decision.consensusKind} · ${r.body.data.decision.agreementScore}% agreement · ${r.body.data.decision.voterCount} voters`,
       actorUserId: ctx.userId ?? null,
     });
+
+    // Phase 518 — Auto-enrich every new decision with an AI rationale.
+    // Best-effort: never blocks the council generate response.
+    await enrichDecisionBestEffort(
+      prisma as unknown as EnrichmentRepo,
+      {
+        organizationId: ctx.organizationId,
+        decisionId: r.body.data.decision.id,
+        decision: {
+          engineVersion: r.body.data.decision.engineVersion,
+          generatedAtIso: r.body.data.decision.generatedAtIso,
+          consensusKind: r.body.data.decision.consensusKind,
+          agreementScore: r.body.data.decision.agreementScore,
+          title: r.body.data.decision.title,
+          rationale: r.body.data.decision.rationale,
+          votes: r.body.data.decision.votes,
+          voterCount: r.body.data.decision.voterCount,
+        },
+        inputs: agg.inputs,
+        // Only call live AI when the operator asked for it on this run;
+        // otherwise persist a deterministic fallback (cheap).
+        fetcher: withAi ? makeLiveRationaleFetcher() : null,
+      },
+    );
 
     // Phase 517 — Slack notify on critical-severity consensus.
     const critical = r.body.data.decision.consensusKind === "block_deploy"
