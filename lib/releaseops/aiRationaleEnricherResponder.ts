@@ -55,6 +55,11 @@ export interface EnrichmentRepo {
     findUnique(args: {
       where: { organizationId_targetKind_targetId: { organizationId: string; targetKind: string; targetId: string } };
     }): Promise<EnrichmentRow | null>;
+    findMany(args: {
+      where: { organizationId: string; targetKind?: string };
+      orderBy: { generatedAt: "desc" };
+      take?: number;
+    }): Promise<EnrichmentRow[]>;
     upsert(args: {
       where: { organizationId_targetKind_targetId: { organizationId: string; targetKind: string; targetId: string } };
       create: {
@@ -258,6 +263,99 @@ export async function enrichDecisionBestEffort(
     return rowToView(row);
   } catch {
     return null;
+  }
+}
+
+/* ──────────────────────────────────────────────────────────────────
+   Phase 521 — AGI Memory cross-engine list.
+   ────────────────────────────────────────────────────────────── */
+
+export interface MemoryListData {
+  generatedAt: string;
+  entries: EnrichmentView[];
+  summary: {
+    total: number;
+    aiGenerated: number;
+    fallbackRules: number;
+    errored: number;
+    byTargetKind: Record<string, number>;
+    modelsUsed: string[];
+  };
+}
+
+export interface MemoryListInput {
+  organizationId: string;
+  targetKind?: string;
+  take?: number;
+}
+
+/**
+ * Lists every persisted rationale enrichment across all AGI surfaces
+ * (council/triage/remediation/...), sorted newest-first. Used by the
+ * AGI Memory cockpit to surface what Claude has been reasoning about.
+ *
+ * Pagination via `take` (default 100, max 500). Optional filter by
+ * `targetKind` to scope to a single surface.
+ */
+export async function buildAgiMemoryListResponse(
+  repo: EnrichmentRepo,
+  input: MemoryListInput,
+): Promise<ApiResponse<MemoryListData>> {
+  const take = Math.max(1, Math.min(500, input.take ?? 100));
+  try {
+    const rows = await repo.aiRationaleEnrichment.findMany({
+      where: {
+        organizationId: input.organizationId,
+        ...(input.targetKind ? { targetKind: input.targetKind } : {}),
+      },
+      orderBy: { generatedAt: "desc" },
+      take,
+    });
+
+    const entries = rows.map(rowToView);
+    const byTargetKind: Record<string, number> = {};
+    const modelsSet = new Set<string>();
+    let aiGenerated = 0;
+    let fallbackRules = 0;
+    let errored = 0;
+
+    for (const row of rows) {
+      byTargetKind[row.targetKind] = (byTargetKind[row.targetKind] ?? 0) + 1;
+      if (row.modelHint) modelsSet.add(row.modelHint);
+      if (row.outcome === "ai_generated") aiGenerated++;
+      else if (row.outcome === "fallback_rules") fallbackRules++;
+      else if (row.outcome === "error") errored++;
+    }
+
+    return {
+      status: 200,
+      body: {
+        ok: true,
+        data: {
+          generatedAt: new Date().toISOString(),
+          entries,
+          summary: {
+            total: entries.length,
+            aiGenerated,
+            fallbackRules,
+            errored,
+            byTargetKind,
+            modelsUsed: Array.from(modelsSet).sort(),
+          },
+        },
+      },
+    };
+  } catch (err) {
+    if (isMissingTable(err)) {
+      return {
+        status: 503,
+        body: { ok: false, error: "migration_pending", hint: "Run prisma migrate deploy for 20260528140000_add_ai_rationale_enrichment." },
+      };
+    }
+    return {
+      status: 500,
+      body: { ok: false, error: "read_failed", hint: err instanceof Error ? err.message : "unknown" },
+    };
   }
 }
 
