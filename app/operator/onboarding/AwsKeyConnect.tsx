@@ -18,7 +18,7 @@
  */
 
 import { useEffect, useState } from "react";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 
 const SS_EXTERNAL_ID = "axiom.aws.externalId";
 
@@ -585,6 +585,12 @@ function PermissionsFixCard({
           </span>
         </div>
 
+        {/* Phase 533 — instant escape hatch. When the IAM dance keeps
+            failing the operator can switch to demo mode in one click
+            and still experience the full platform. */}
+        <SkipToDemoStrip />
+
+
         {/* Subtle "Advanced" toggle — sits inside the same hero so it doesn't feel like a separate section */}
         <button
           type="button"
@@ -668,6 +674,82 @@ function PermissionsFixCard({
       </CalmCard>
       </>
       )}
+    </div>
+  );
+}
+
+/* Phase 533 — Skip-to-demo strip. Shows up inside the AWS-rejected
+   PermissionsFixCard. One click activates demo mode and lands the
+   operator on the start-here dashboard with synthetic data flowing
+   through every surface — no IAM dance, no broker account hassle,
+   no CloudFormation. They can still come back and connect real
+   AWS later. */
+function SkipToDemoStrip() {
+  const router = useRouter();
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState<string | null>(null);
+
+  async function startDemo() {
+    setBusy(true);
+    setErr(null);
+    try {
+      const res = await fetch("/api/demo/populate", {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+      });
+      const j = await res.json();
+      if (!res.ok) {
+        setErr(j?.error?.message ?? j?.error ?? "Could not start the demo.");
+        return;
+      }
+      document.cookie = "axiom_demo_mode=1; path=/; max-age=2592000; SameSite=Lax";
+      router.push("/dashboard/start-here?demo=1");
+    } catch (e) {
+      setErr(e instanceof Error ? e.message : "Network error.");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <div className="mt-8 pt-6 border-t border-white/[0.04]">
+      <div className="flex items-start gap-4">
+        <div className="w-9 h-9 rounded-lg bg-violet-500/10 border border-violet-500/25 flex items-center justify-center flex-shrink-0">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden className="h-4 w-4 text-violet-300">
+            <polygon points="6 4 20 12 6 20 6 4" />
+          </svg>
+        </div>
+        <div className="flex-1 min-w-0">
+          <p className="text-[13.5px] font-medium text-white tracking-[-0.01em] mb-1">
+            Tired of the IAM dance? Try the demo instead.
+          </p>
+          <p className="text-[12.5px] text-zinc-400 leading-relaxed mb-3 font-light max-w-xl">
+            One click and you&apos;re inside the portal — synthetic AWS, Azure, and GCP data flowing through every dashboard. See council decisions, triage routings, remediation proposals, AI rationale, and the whole platform end-to-end. Come back here when you want to connect a real cloud.
+          </p>
+          <button
+            type="button"
+            onClick={startDemo}
+            disabled={busy}
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-violet-500/[0.18] hover:bg-violet-500/[0.28] border border-violet-500/30 text-[12.5px] font-medium text-violet-50 transition-colors disabled:opacity-50 disabled:cursor-wait"
+          >
+            {busy ? (
+              <>
+                <span className="w-3 h-3 border-2 border-violet-200/40 border-t-violet-100 rounded-full animate-spin" />
+                Setting up the demo…
+              </>
+            ) : (
+              <>
+                Start the demo
+                <span aria-hidden className="opacity-70">→</span>
+              </>
+            )}
+          </button>
+          {err && (
+            <p className="mt-2 text-[11.5px] font-mono text-rose-300">✗ {err}</p>
+          )}
+        </div>
+      </div>
     </div>
   );
 }

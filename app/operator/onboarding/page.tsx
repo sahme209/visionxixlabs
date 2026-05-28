@@ -922,16 +922,36 @@ export default function OnboardingPage() {
               {/* Provider selection */}
               {connectionPhase === "select" && (
                 <>
-                  {/* Jony-Ive hero — generous whitespace, refined typography,
-                      thin display weight that lets the canvas breathe. */}
-                  <div className="mb-12 max-w-2xl">
+                  {/* Phase 533 — demo-first hero. The fastest path to seeing
+                      the entire platform is the demo. Real-cloud connect is
+                      now the secondary option for operators who have AWS /
+                      Azure / GCP credentials ready and want their own data. */}
+                  <div className="mb-10 max-w-3xl">
                     <p className="text-[10.5px] font-mono uppercase tracking-[0.32em] text-zinc-500 mb-5">
-                      step 02 · cloud
+                      step 02 · explore
                     </p>
                     <h1 className="text-4xl sm:text-5xl font-light tracking-[-0.04em] text-white leading-[1.05] mb-5">
-                      Choose your cloud.
+                      See everything in one click.
                     </h1>
-                    <p className="text-[15px] sm:text-[16px] text-zinc-400 leading-[1.55] font-light max-w-xl">
+                    <p className="text-[15px] sm:text-[16px] text-zinc-400 leading-[1.55] font-light max-w-2xl">
+                      Start with the demo. Synthetic data flows through every dashboard so you can experience every capability the platform offers — council, triage, remediation, suggestions, memory, chat — without setting up a thing. Bring your real cloud later when you&apos;re ready.
+                    </p>
+                  </div>
+
+                  {/* Demo as the primary hero card */}
+                  <DemoModeCard />
+
+                  {/* Secondary path — real cloud connect, intentionally
+                      visually quieter than the demo so first-timers aren't
+                      forced through the IAM dance. */}
+                  <div className="mb-6 max-w-2xl pt-6 border-t border-white/[0.04]">
+                    <p className="text-[10.5px] font-mono uppercase tracking-[0.28em] text-zinc-500 mb-3">
+                      or · bring your own cloud
+                    </p>
+                    <h2 className="text-[20px] font-medium tracking-[-0.02em] text-white mb-2">
+                      Connect a real provider.
+                    </h2>
+                    <p className="text-[13.5px] text-zinc-400 leading-[1.55] font-light max-w-xl">
                       Three providers. One read-only handshake. Axiom never holds your data — it reasons over a normalized snapshot you can revoke at any time.
                     </p>
                   </div>
@@ -982,11 +1002,6 @@ export default function OnboardingPage() {
                       );
                     })}
                   </div>
-
-                  {/* Phase 532 — Try the demo path. Bypasses the real cloud
-                      credential handshake and seeds AWS+Azure+GCP as connected
-                      so the operator can explore the whole portal end-to-end. */}
-                  <DemoModeCard />
 
                   <div className="mb-6"><AgentCorePanel /></div>
 
