@@ -551,44 +551,49 @@ function PermissionsFixCard({
         <div className="absolute -top-32 left-1/2 -translate-x-1/2 w-[680px] h-[420px] rounded-full bg-indigo-500/[0.06] blur-[120px]" />
       </div>
 
-      {/* Lead — calm hero. Single primary action. No JSON in sight. */}
+      {/* Lead — calm hero. Demo is now the PRIMARY action because the
+          IAM trust chain keeps breaking and fresh deploys don't fix
+          the underlying broker-credential mismatch. Real-AWS retry is
+          still here but demoted to secondary. */}
       <div className="rounded-[28px] border border-white/[0.06] bg-[#0a0a0c]/70 backdrop-blur-sm px-8 sm:px-12 py-12 sm:py-14">
         <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-zinc-500">aws · couldn&apos;t finish the connection</p>
         <h2 className="mt-3 text-[26px] sm:text-[30px] leading-[1.15] font-medium text-white tracking-[-0.02em]">
           {headline}
         </h2>
         <p className="mt-3 text-[14.5px] text-zinc-400 leading-relaxed max-w-xl">
-          Most often this means the previous CloudFormation stack was deleted or never finished. Start a fresh deployment and we&apos;ll generate a brand-new stack with unique names.
+          The CloudFormation stack created the role correctly, but AWS rejected the platform&apos;s AssumeRole call. This is almost always an IAM trust-policy / broker-credential mismatch that needs an operator on the AWS side to resolve. The fastest path to seeing the platform right now is the demo.
         </p>
 
-        <div className="mt-9 flex flex-wrap items-center gap-x-5 gap-y-3">
+        {/* PRIMARY action: demo. One click puts the operator inside the
+            portal with synthetic data flowing through every dashboard. */}
+        <PrimaryDemoCta />
+
+        {/* SECONDARY: keep retrying real AWS. Smaller, quieter — the
+            operator can come back to this once their broker credentials
+            are sorted on the AWS side. */}
+        <div className="mt-7 flex flex-wrap items-center gap-x-5 gap-y-3">
           {onFreshDeploy && (
             <button
               type="button"
               onClick={onFreshDeploy}
-              className="inline-flex items-center gap-2.5 px-7 py-3.5 rounded-full bg-white text-zinc-950 text-[14.5px] font-medium hover:bg-zinc-100 transition-colors shadow-[0_0_30px_-10px_rgba(255,255,255,0.4)]"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-white/[0.10] bg-white/[0.02] text-[13px] text-zinc-300 hover:text-white hover:bg-white/[0.05] transition-colors"
             >
-              Start a fresh deployment
+              Start a fresh AWS deployment
               <span aria-hidden className="opacity-60">→</span>
             </button>
           )}
           <button
             type="button"
             onClick={onRetry}
-            className="text-[14px] text-zinc-400 hover:text-white transition-colors"
+            className="text-[13px] text-zinc-400 hover:text-white transition-colors"
           >
-            Try again
+            Try AWS again
           </button>
-          <span className="inline-flex items-center gap-1.5 text-[12px] text-zinc-500">
+          <span className="inline-flex items-center gap-1.5 text-[11.5px] text-zinc-500">
             <span className={`w-1.5 h-1.5 rounded-full ${autoChecking ? "bg-emerald-400 animate-pulse" : "bg-zinc-600"}`} />
             {autoChecking ? "Checking AWS now…" : "Auto-checking every few seconds"}
           </span>
         </div>
-
-        {/* Phase 533 — instant escape hatch. When the IAM dance keeps
-            failing the operator can switch to demo mode in one click
-            and still experience the full platform. */}
-        <SkipToDemoStrip />
 
 
         {/* Subtle "Advanced" toggle — sits inside the same hero so it doesn't feel like a separate section */}
@@ -678,12 +683,73 @@ function PermissionsFixCard({
   );
 }
 
-/* Phase 533 — Skip-to-demo strip. Shows up inside the AWS-rejected
-   PermissionsFixCard. One click activates demo mode and lands the
-   operator on the start-here dashboard with synthetic data flowing
-   through every surface — no IAM dance, no broker account hassle,
-   no CloudFormation. They can still come back and connect real
-   AWS later. */
+/* Phase 534 — PRIMARY demo CTA. Replaces SkipToDemoStrip when AWS
+   keeps rejecting. Big violet button, the obvious next action. The
+   operator has been trying real AWS for too long; this lands them
+   in the working portal immediately so they can see what they're
+   paying for. */
+function PrimaryDemoCta() {
+  const router = useRouter();
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState<string | null>(null);
+
+  async function startDemo() {
+    setBusy(true);
+    setErr(null);
+    try {
+      const res = await fetch("/api/demo/populate", {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+      });
+      const j = await res.json();
+      if (!res.ok) {
+        setErr(j?.error?.message ?? j?.error ?? "Could not start the demo.");
+        return;
+      }
+      document.cookie = "axiom_demo_mode=1; path=/; max-age=2592000; SameSite=Lax";
+      router.push("/dashboard/start-here?demo=1");
+    } catch (e) {
+      setErr(e instanceof Error ? e.message : "Network error.");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <div className="mt-9">
+      <button
+        type="button"
+        onClick={startDemo}
+        disabled={busy}
+        className="group inline-flex items-center gap-2.5 px-7 py-3.5 rounded-full bg-violet-500 hover:bg-violet-400 text-white text-[14.5px] font-medium transition-colors shadow-[0_0_30px_-8px_rgba(139,92,246,0.6)] disabled:opacity-60 disabled:cursor-wait"
+      >
+        {busy ? (
+          <>
+            <span className="w-3.5 h-3.5 border-2 border-white/40 border-t-white rounded-full animate-spin" />
+            Setting up the demo…
+          </>
+        ) : (
+          <>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden className="h-4 w-4">
+              <polygon points="6 4 20 12 6 20 6 4" />
+            </svg>
+            See the platform in demo mode
+            <span aria-hidden className="opacity-70 transition-transform group-hover:translate-x-0.5">→</span>
+          </>
+        )}
+      </button>
+      <p className="mt-3 text-[12.5px] text-zinc-500 leading-relaxed max-w-xl">
+        Synthetic AWS + Azure + GCP data flowing through every dashboard. Council decisions, triage routings, remediation proposals, AI rationale, chat — the whole platform end-to-end. No IAM dance. Reversible in one click.
+      </p>
+      {err && (
+        <p className="mt-2 text-[12px] font-mono text-rose-300">✗ {err}</p>
+      )}
+    </div>
+  );
+}
+
+/* Phase 533 — Skip-to-demo strip. Kept as a secondary fallback. */
 function SkipToDemoStrip() {
   const router = useRouter();
   const [busy, setBusy] = useState(false);
