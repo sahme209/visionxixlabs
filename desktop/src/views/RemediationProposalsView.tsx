@@ -211,6 +211,8 @@ function ProposalCard({ proposal, onChanged }: { proposal: ProposalView; onChang
 
       <p className="text-[11px] text-zinc-400 mt-2 italic">{proposal.rationale}</p>
 
+      <AiRemediationRationaleCard proposalId={proposal.id} />
+
       {proposal.linkedManualFixId && (
         <p className="text-[11px] font-mono text-emerald-300 mt-1">↳ manual-fix {proposal.linkedManualFixId}</p>
       )}
@@ -357,6 +359,143 @@ function GeneratePanel({ onGenerated }: { onGenerated: () => void }) {
           <span className="text-[11px] font-mono text-rose-300">✗ {state.message}</span>
         )}
       </div>
+    </div>
+  );
+}
+
+/* ──────────────────────────────────────────────────────────────────
+   AI rationale enrichment card — Phase 520 desktop (remediation).
+   ────────────────────────────────────────────────────────────── */
+
+interface RemediationEnrichmentView {
+  targetKind: string;
+  targetId: string;
+  narrative: string;
+  riskFactors: string[];
+  nextActions: string[];
+  outcome: string;
+  errorMessage: string | null;
+  modelHint: string | null;
+  engineVersion: string;
+  generatedAtIso: string;
+}
+
+type RemediationEnrichBody = { ok: true; data: { enrichment: RemediationEnrichmentView | null } } | { ok: false; error: string; hint?: string };
+
+const REM_ENRICH_OUTCOME_CLASS: Record<string, string> = {
+  ai_generated:    "bg-violet-500/15 text-violet-300 border-violet-500/25",
+  fallback_rules:  "bg-amber-500/15 text-amber-300 border-amber-500/25",
+  error:           "bg-rose-500/15 text-rose-300 border-rose-500/25",
+};
+
+function AiRemediationRationaleCard({ proposalId }: { proposalId: string }) {
+  const [enrichment, setEnrichment] = useState<RemediationEnrichmentView | null>(null);
+  const [loaded, setLoaded] = useState(false);
+  const [generating, setGenerating] = useState(false);
+  const [err, setErr] = useState<string | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await fetch(`/api/dashboard/remediation-rationale-read?proposalId=${encodeURIComponent(proposalId)}`, { credentials: "include" });
+        const j: RemediationEnrichBody = await res.json();
+        if (cancelled) return;
+        if (j.ok) setEnrichment(j.data.enrichment);
+      } catch { /* fall through */ }
+      finally {
+        if (!cancelled) setLoaded(true);
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [proposalId]);
+
+  async function generate() {
+    setGenerating(true);
+    setErr(null);
+    try {
+      const res = await fetch("/api/dashboard/remediation-rationale-enrich", {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ proposalId }),
+      });
+      const j: RemediationEnrichBody = await res.json();
+      if (j.ok) setEnrichment(j.data.enrichment);
+      else setErr(j.hint ?? j.error);
+    } catch (e) {
+      setErr(e instanceof Error ? e.message : "network error");
+    } finally {
+      setGenerating(false);
+    }
+  }
+
+  if (!loaded) return null;
+
+  if (!enrichment) {
+    return (
+      <div className="mt-2 rounded border border-violet-500/[0.20] bg-violet-500/[0.04] p-2">
+        <div className="flex items-center justify-between">
+          <span className="text-[10.5px] font-mono uppercase tracking-[0.18em] text-violet-200">⨯ AI rationale not yet generated</span>
+          <button
+            type="button"
+            onClick={generate}
+            disabled={generating}
+            className="px-2 py-0.5 rounded border border-violet-500/40 bg-violet-500/[0.12] text-[10.5px] font-semibold text-violet-100 hover:bg-violet-500/[0.20] disabled:opacity-50 disabled:cursor-wait"
+          >
+            {generating ? "Generating…" : "Generate why-this"}
+          </button>
+        </div>
+        {err && <p className="mt-1 text-[10.5px] font-mono text-rose-300">✗ {err}</p>}
+      </div>
+    );
+  }
+
+  return (
+    <div className="mt-2 rounded border border-violet-500/[0.20] bg-violet-500/[0.04] p-2.5">
+      <div className="flex items-center gap-2 mb-1.5 flex-wrap">
+        <span className="text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border border-violet-500/30 bg-violet-500/[0.10] text-violet-200">
+          ✦ AI rationale
+        </span>
+        <span className={`text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border ${REM_ENRICH_OUTCOME_CLASS[enrichment.outcome] ?? REM_ENRICH_OUTCOME_CLASS.error}`}>
+          {enrichment.outcome}
+        </span>
+        {enrichment.modelHint && (
+          <span className="text-[10px] font-mono text-zinc-500">{enrichment.modelHint}</span>
+        )}
+        <span className="text-[10px] font-mono text-zinc-500 ml-auto">{new Date(enrichment.generatedAtIso).toLocaleString()}</span>
+        <button
+          type="button"
+          onClick={generate}
+          disabled={generating}
+          className="text-[10.5px] font-mono text-violet-300 hover:text-violet-200 disabled:opacity-50 disabled:cursor-wait"
+        >
+          {generating ? "Regen…" : "Regen"}
+        </button>
+      </div>
+      <p className="text-[12px] text-zinc-200 mb-2">{enrichment.narrative}</p>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+        <div>
+          <p className="text-[9px] font-mono uppercase tracking-wider text-zinc-500 mb-1">Risk factors</p>
+          <ul className="space-y-0.5">
+            {enrichment.riskFactors.map((r, i) => (
+              <li key={i} className="text-[11px] text-zinc-300 flex gap-1.5"><span className="text-rose-400">•</span><span>{r}</span></li>
+            ))}
+          </ul>
+        </div>
+        <div>
+          <p className="text-[9px] font-mono uppercase tracking-wider text-zinc-500 mb-1">Next actions</p>
+          <ul className="space-y-0.5">
+            {enrichment.nextActions.map((a, i) => (
+              <li key={i} className="text-[11px] text-zinc-300 flex gap-1.5"><span className="text-emerald-400">→</span><span>{a}</span></li>
+            ))}
+          </ul>
+        </div>
+      </div>
+      {enrichment.outcome !== "ai_generated" && enrichment.errorMessage && (
+        <p className="mt-1.5 text-[10px] font-mono text-amber-300">↳ {enrichment.errorMessage}</p>
+      )}
+      {err && <p className="mt-1 text-[10.5px] font-mono text-rose-300">✗ {err}</p>}
     </div>
   );
 }

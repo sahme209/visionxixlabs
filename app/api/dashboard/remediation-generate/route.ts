@@ -15,6 +15,16 @@ import {
   type RemediationAggregateRepo,
 } from "@/lib/releaseops/remediationProposalAggregator";
 import { appendAuditEvent, type AuditEventRepo } from "@/lib/releaseops/auditEventResponder";
+import { enrichRemediationRationale } from "@/lib/releaseops/aiRemediationRationaleEngine";
+import {
+  persistEnrichment,
+  type EnrichmentRepo,
+} from "@/lib/releaseops/aiRationaleEnricherResponder";
+import type {
+  RemediationKind,
+  RemediationProposal,
+  RemediationSeverity,
+} from "@/lib/releaseops/remediationProposalEngine";
 
 export const dynamic = "force-dynamic";
 
@@ -68,6 +78,37 @@ export async function POST(req: NextRequest) {
         : `Remediation: ${r.body.data.proposalCount} proposal(s) — engine recommends no action`,
       actorUserId: ctx.userId ?? null,
     });
+
+    // Phase 520 — Auto-enrich each new proposal with the deterministic
+    // fallback rationale (cheap, no AI call). Operator clicks
+    // "Regenerate" in the UI for a live Claude pass.
+    for (const view of r.body.data.proposals) {
+      try {
+        const proposalShape: RemediationProposal = {
+          kind: view.kind === "unknown" ? "no_action_recommended" : (view.kind as RemediationKind),
+          title: view.title,
+          description: view.description,
+          confidence: view.confidence,
+          severity: view.severity === "unknown" ? "low" : (view.severity as RemediationSeverity),
+          prerequisites: view.prerequisites,
+          expectedImpact: view.expectedImpact,
+          rollbackPlan: view.rollbackPlan,
+          estimatedMinutes: view.estimatedMinutes,
+          reversible: view.reversible,
+          rationale: view.rationale,
+        };
+        const enrichment = await enrichRemediationRationale(proposalShape, aggregated.inputs, null);
+        await persistEnrichment(
+          prisma as unknown as EnrichmentRepo,
+          ctx.organizationId,
+          view.id,
+          enrichment,
+          "remediation",
+        );
+      } catch {
+        // Never blocks the source action.
+      }
+    }
   }
   return NextResponse.json(r.body, { status: r.status });
 }
