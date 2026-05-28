@@ -56,6 +56,7 @@ const VIEW_TITLES: Record<View, { title: string; subtitle: string }> = {
   "connector-setup": { title: "Connector setup",   subtitle: "Per-provider lifecycle + audit" },
   "connector-health":{ title: "Connector health",  subtitle: "Per-connector status + telemetry" },
   "alert-escalations":{ title: "Alert escalations", subtitle: "Per-signal lifecycle + on-call routing" },
+  "slack-notifications": { title: "Slack notifications", subtitle: "Critical AGI signals → org's incoming webhook · best-effort send · every dispatch logged" },
   "webhook-deliveries":{ title: "Webhook deliveries", subtitle: "GitHub receiver · HMAC-verified · idempotent on delivery id" },
   billing:       { title: "Billing & usage", subtitle: "Plan + quota + AI credits" },
   trust:         { title: "Trust center",  subtitle: "Policies + approval boundaries" },

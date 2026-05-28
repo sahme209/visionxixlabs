@@ -3118,6 +3118,45 @@ model AuditEvent {
 /// providers are no-ops. Stores the verified payload so downstream
 /// reducers (release-tag refresh, PR sync, branch validation refresh)
 /// can hydrate themselves without a second HTTP roundtrip.
+/// Phase 517 — Slack notification config + delivery log.
+///
+/// Per-org Slack outbound config. When critical AGI signals fire
+/// (council block_deploy/rollback, triage auto-escalate, learning-
+/// loop signals), the platform sends to the org's Slack incoming
+/// webhook. Operators see what was sent in SlackNotificationLog.
+///
+/// Closed-union `signalKind`:
+///   council_critical | triage_auto_escalate | learning_loop_signal |
+///   remediation_p0
+model SlackNotificationConfig {
+  id              String   @id @default(cuid())
+  organizationId  String   @unique
+  webhookUrl      String
+  enabledSignalKindsJson Json?
+  defaultChannel  String?
+  enabled         Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model SlackNotificationLog {
+  id              String   @id @default(cuid())
+  organizationId  String
+  signalKind      String
+  subjectKind     String?
+  subjectId       String?
+  title           String
+  outcome         String   @default("sent")
+  httpStatus      Int?
+  errorMessage    String?
+  payloadJson     Json
+  generatedAt     DateTime @default(now())
+
+  @@index([organizationId, generatedAt])
+  @@index([organizationId, signalKind])
+  @@index([organizationId, outcome])
+}
+
 /// Phase 514 — AGI Council Decision.
 ///
 /// Persists the outcome of a multi-voter run. Each voter is a pure

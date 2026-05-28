@@ -132,6 +132,7 @@ const GROUPS: NavGroup[] = [
       // IT Support, Employee Ops) live alongside existing surfaces.
       { href: "/dashboard/notifications",        label: "Notifications",       icon: BellAlertIcon  },
       { href: "/dashboard/notifications-outbound", label: "Outbound · Slack / Teams", icon: BellAlertIcon },
+      { href: "/dashboard/slack-notifications",  label: "Slack notifications (AGI)", icon: BellAlertIcon, power: true },
       { href: "/dashboard/outbound-digest",      label: "Outbound digest",     icon: BellAlertIcon, power: true },
       { href: "/dashboard/executive-summary",    label: "Executive summary",   icon: DocumentTextIcon },
       { href: "/dashboard/priorities",           label: "Priorities",          icon: ChartBarIcon, power: true },

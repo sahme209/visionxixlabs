@@ -21,6 +21,7 @@ import {
 } from "@/lib/releaseops/advisorInputsAggregator";
 import { appendAuditEvent, type AuditEventRepo } from "@/lib/releaseops/auditEventResponder";
 import { aiNativeVoterAsync } from "@/lib/releaseops/aiNativeAdvisorVoter";
+import { sendSlackSignalBestEffort, type SlackRepo } from "@/lib/releaseops/slackNotificationResponder";
 
 export const dynamic = "force-dynamic";
 
@@ -69,6 +70,31 @@ export async function POST(req: NextRequest) {
       summary: `Council${withAi ? " (with AI)" : ""} ${r.body.data.decision.consensusKind} · ${r.body.data.decision.agreementScore}% agreement · ${r.body.data.decision.voterCount} voters`,
       actorUserId: ctx.userId ?? null,
     });
+
+    // Phase 517 — Slack notify on critical-severity consensus.
+    const critical = r.body.data.decision.consensusKind === "block_deploy"
+      || r.body.data.decision.consensusKind === "rollback";
+    if (critical) {
+      const dashboardBase = process.env.NEXTAUTH_URL ?? "";
+      await sendSlackSignalBestEffort(
+        prisma as unknown as SlackRepo,
+        {
+          organizationId: ctx.organizationId,
+          signal: {
+            kind: "council_critical",
+            title: r.body.data.decision.title,
+            summary: `Consensus: ${r.body.data.decision.consensusKind} · ${r.body.data.decision.agreementScore}% agreement · ${r.body.data.decision.voterCount} voters`,
+            detail: r.body.data.decision.rationale.slice(0, 280),
+            severity: "critical",
+            subjectKind: "release",
+            subjectId: releaseId,
+            ...(dashboardBase ? { dashboardUrl: `${dashboardBase}/dashboard/advisor-council` } : {}),
+          },
+        },
+        // Use the global fetch; cast satisfies the structural SlackFetcher type.
+        ((url, init) => fetch(url, init)) as Parameters<typeof sendSlackSignalBestEffort>[2],
+      );
+    }
   }
   return NextResponse.json(r.body, { status: r.status });
 }

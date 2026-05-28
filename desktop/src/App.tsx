@@ -50,6 +50,7 @@ import { LearningLoopView } from "./views/LearningLoopView";
 import { RemediationProposalsView } from "./views/RemediationProposalsView";
 import { ReleaseOpsAutonomyView } from "./views/ReleaseOpsAutonomyView";
 import { AdvisorCouncilView } from "./views/AdvisorCouncilView";
+import { SlackNotificationsView } from "./views/SlackNotificationsView";
 import { useTrayApprovalsBadge } from "./lib/useTrayApprovalsBadge";
 import { useConnectorHealthAmbientPoll } from "./lib/connectorHealthStore";
 import { useSseStream } from "./lib/useSseStream";
@@ -114,6 +115,7 @@ export type View =
   | "connector-health"
   | "connector-setup"
   | "alert-escalations"
+  | "slack-notifications"
   // Business / Admin
   | "billing"
   | "trust"
@@ -221,6 +223,7 @@ export default function App() {
           {activeView === "connector-health"  && <ConnectorHealthView />}
           {activeView === "connector-setup"   && <ConnectorSetupView />}
           {activeView === "alert-escalations" && <AlertEscalationsView />}
+          {activeView === "slack-notifications" && <SlackNotificationsView />}
           {activeView === "billing"       && <BillingView />}
           {activeView === "trust"         && <TrustView />}
           {activeView === "settings"      && <SettingsView />}
