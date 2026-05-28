@@ -84,7 +84,9 @@ export async function POST(req: NextRequest) {
     // bail early on "is not authorized" since that's a permanent broker-
     // side fix, not a timing issue.
     const delaysMs = [0, 2000, 4000, 6000, 8000];
-    let assumed: Awaited<ReturnType<typeof broker.send<AssumeRoleCommand>>> | undefined;
+    // Use a loose type; @aws-sdk's overloads don't compose cleanly here.
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let assumed: any;
     let lastRetryErr: unknown = null;
     for (let attempt = 0; attempt < delaysMs.length; attempt++) {
       if (delaysMs[attempt] > 0) {
