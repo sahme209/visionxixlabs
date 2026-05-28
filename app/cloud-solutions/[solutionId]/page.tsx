@@ -117,7 +117,7 @@ export default async function SolutionDetailPage({
 
       <Navigation />
       <main className="relative z-10 pt-24 pb-24 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-6xl mx-auto px-6 md:px-10">
           {/* Breadcrumb */}
           <Reveal direction="up" blur delay={0.05}>
             <nav

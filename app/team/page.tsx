@@ -83,7 +83,7 @@ export default function TeamPage() {
 
       <Navigation />
 
-      <main className="relative max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-32">
+      <main className="relative max-w-6xl mx-auto px-6 md:px-10 pt-32 pb-32">
         <p className="mono-label inline-flex items-center gap-3 mb-6">
           <span className="text-brand-coral/90 tabular-nums">TM</span>
           <span className="h-px w-6 bg-gradient-to-r from-brand-coral/60 to-transparent" />

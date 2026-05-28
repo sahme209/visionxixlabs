@@ -330,7 +330,7 @@ export default function Home() {
       {/* ── Built For ─────────────────────────────────────────────── */}
       {/* Huly-style animated outcomes strip — numbers count up on scroll */}
       <section className="py-10 sm:py-14 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-5xl mx-auto">
+        <div className="max-w-6xl mx-auto">
           <Reveal direction="up" delay={0.05}>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-x-4 sm:gap-x-6 gap-y-10 sm:gap-y-12">
               {[
@@ -356,7 +356,7 @@ export default function Home() {
       </section>
 
       <section className="py-10 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-6xl mx-auto">
           <Reveal direction="up" blur delay={0.05}>
             <p className="text-center text-xs font-semibold text-zinc-500 uppercase tracking-widest mb-5">
               Built for
@@ -394,7 +394,7 @@ export default function Home() {
           <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[820px] h-[420px] rounded-full bg-white/[0.015] blur-[140px]" />
         </div>
 
-        <div className="max-w-5xl mx-auto">
+        <div className="max-w-6xl mx-auto">
           <Reveal direction="up" blur>
             <div className="mb-12 sm:mb-14">
               <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-zinc-500 mb-6 inline-flex items-center gap-3">
@@ -679,7 +679,7 @@ export default function Home() {
       {/* ── FAQ ────────────────────────────────────────────────────── */}
       <AnimateOnScroll>
       <section id="faq" className="py-24 px-4 sm:px-6 lg:px-8" aria-labelledby="faq-heading">
-        <div className="max-w-3xl mx-auto">
+        <div className="max-w-6xl mx-auto">
           <p className="kicker-mono text-center">Questions answered</p>
           <h2 id="faq-heading" className="display-headline text-white text-center mt-4 mb-14">
             Frequently asked questions
@@ -698,7 +698,7 @@ export default function Home() {
           <div className="ambient-drift absolute bottom-[10%] right-[8%] w-[360px] h-[280px] rounded-full bg-violet-500/[0.05] blur-[120px]" style={{ animationDelay: "-13s" }} />
         </div>
 
-        <div className="relative max-w-3xl mx-auto text-center">
+        <div className="relative max-w-6xl mx-auto text-center">
           <span className="inline-flex items-center gap-2 mx-auto mb-8 px-3 py-1.5 rounded-full border border-rose-400/30 bg-gradient-to-r from-rose-500/[0.10] via-fuchsia-500/[0.06] to-violet-500/[0.10] text-[11.5px] font-medium text-zinc-200 backdrop-blur-sm">
             <span className="relative flex h-1.5 w-1.5">
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-rose-400 opacity-70" />

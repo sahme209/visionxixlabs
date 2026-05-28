@@ -55,7 +55,7 @@ export default async function InsightArticlePage({ params }: Props) {
       <div className="ambient-drift absolute bottom-1/4 left-[5%] w-[320px] h-[240px] rounded-full bg-cyan-500/[0.04] blur-[110px] pointer-events-none" style={{ animationDelay: "-14s" }} aria-hidden />
 
       <Navigation />
-      <article className="relative z-10 max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-16">
+      <article className="relative z-10 max-w-6xl mx-auto px-6 md:px-10 pt-24 pb-16">
         <Reveal direction="up" blur delay={0.05}>
           <nav className="mb-8" aria-label="Breadcrumb">
             <Link

@@ -38,7 +38,7 @@ export default function GcpCloudSolutionsPage() {
       <div className="bg-grid-mesh absolute inset-0 pointer-events-none" />
       <Navigation />
       <main className="pt-24 pb-24 px-4 sm:px-6 lg:px-8 relative">
-        <div className="max-w-5xl mx-auto">
+        <div className="max-w-6xl mx-auto px-6 md:px-10">
           {/* Breadcrumb */}
           <nav
             aria-label="Breadcrumb"

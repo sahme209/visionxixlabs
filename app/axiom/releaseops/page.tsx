@@ -193,7 +193,7 @@ export default function ReleaseOpsPage() {
         <div className="hero-beam-flare pointer-events-none" aria-hidden />
         <div className="hero-beam-converge pointer-events-none" aria-hidden />
 
-        <div className="max-w-5xl mx-auto relative z-10">
+        <div className="max-w-6xl mx-auto relative z-10">
           <Reveal direction="up" blur>
             <p className="mono-label inline-flex items-center gap-3 mb-6">
               <span className="text-brand-coral/90 tabular-nums">RO</span>

@@ -25,7 +25,7 @@ export default function SecurityPage() {
       <div className="ambient-drift absolute bottom-0 -left-40 w-[420px] h-[360px] rounded-full bg-emerald-500/[0.05] blur-[120px] pointer-events-none" style={{ animationDelay: "-14s" }} aria-hidden />
       <Navigation />
 
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-16">
+      <div className="max-w-6xl mx-auto px-6 md:px-10 pt-32 pb-16">
         <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] backdrop-blur-sm p-8 md:p-12">
           {/* Header — Huly numbered + coral underline */}
           <div className="mb-12">

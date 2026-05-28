@@ -58,13 +58,13 @@ export default async function StatusPage() {
       </div>
 
       <header className="relative z-20 border-b border-white/[0.06] sticky top-0 bg-[#09090b]/80 backdrop-blur-xl">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex items-center justify-between">
+        <div className="max-w-6xl mx-auto px-6 md:px-10 py-3.5 flex items-center justify-between">
           <Link href="/" className="font-bold text-white tracking-[-0.04em]">Axiom</Link>
           <Link href="/dashboard" className="text-[12px] text-zinc-300 hover:text-brand-coral transition-colors">Open dashboard →</Link>
         </div>
       </header>
 
-      <main className="relative z-10 max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+      <main className="relative z-10 max-w-6xl mx-auto px-6 md:px-10 py-16">
         <p className="mono-label inline-flex items-center gap-3 mb-6">
           <span className="text-brand-coral/90 tabular-nums">ST</span>
           <span className="h-px w-6 bg-gradient-to-r from-brand-coral/60 to-transparent" />

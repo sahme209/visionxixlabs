@@ -53,7 +53,7 @@ export default async function BlogPostPage({ params }: Params) {
 
       <Navigation />
 
-      <main className="relative z-10 max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-20">
+      <main className="relative z-10 max-w-6xl mx-auto px-6 md:px-10 pt-32 pb-20">
         {/* Back link */}
         <Link href="/blog" className="inline-flex items-center gap-1.5 text-[12px] font-mono text-zinc-500 hover:text-brand-coral transition-colors mb-10">
           ← Back to blog

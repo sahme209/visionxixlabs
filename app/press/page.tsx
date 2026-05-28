@@ -31,7 +31,7 @@ export default function PressPage() {
       <Navigation />
 
       <main className="pt-32 pb-16 px-4 sm:px-6 lg:px-8 relative">
-        <div className="max-w-3xl mx-auto">
+        <div className="max-w-6xl mx-auto px-6 md:px-10">
           <Reveal direction="up" blur delay={0.05}>
             <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-zinc-500 mb-4 inline-flex items-center gap-3">
               <span className="text-brand-coral/90 tabular-nums">P1</span>

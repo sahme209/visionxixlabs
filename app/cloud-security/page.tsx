@@ -37,7 +37,7 @@ export default function CloudSecurityPage() {
       <div className="bg-dots absolute inset-0 pointer-events-none" />
       <Navigation />
       <main className="pt-24 pb-24 px-4 sm:px-6 lg:px-8 relative">
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-6xl mx-auto px-6 md:px-10">
           {/* Breadcrumb */}
           <nav
             aria-label="Breadcrumb"
