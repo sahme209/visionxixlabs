@@ -109,4 +109,34 @@ describe("buildLearningLoopResponse", () => {
     if (!r.body.ok) throw new Error("expected ok");
     expect(r.body.data.totalDecisionsAnalyzed).toBe(0);
   });
+
+  // ── Phase 515 — council snapshots feed voter-dissent signals ──
+  it("voter_dissent_pattern fires when council snapshots show persistent disagreement", async () => {
+    const stub = makeRepo();
+    const councilRows = Array.from({ length: 3 }, (_, i) => ({
+      id: `cd_${i}`,
+      consensusKind: "proceed",
+      votesJson: [
+        { voterId: "rule_based", kind: "proceed", confidence: 70 },
+        { voterId: "conservative", kind: "proceed_with_caution", confidence: 60 },
+      ],
+      generatedAt: new Date(),
+    }));
+    stub.advisorCouncilDecision = {
+      async findMany() { return councilRows; },
+    };
+    const r = await buildLearningLoopResponse(stub, "o");
+    if (!r.body.ok) throw new Error("expected ok");
+    const dissent = r.body.data.signals.find((s) => s.kind === "voter_dissent_pattern");
+    expect(dissent).toBeDefined();
+    expect(dissent?.engine).toBe("advisor_council");
+  });
+
+  it("council source absent → no voter_dissent_pattern signals (backwards compat)", async () => {
+    const stub = makeRepo();
+    // No advisorCouncilDecision on stub — should not crash.
+    const r = await buildLearningLoopResponse(stub, "o");
+    if (!r.body.ok) throw new Error("expected ok");
+    expect(r.body.data.signals.find((s) => s.kind === "voter_dissent_pattern")).toBeUndefined();
+  });
 });

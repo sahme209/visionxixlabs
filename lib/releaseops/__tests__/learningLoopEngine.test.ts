@@ -231,3 +231,90 @@ describe("engine version pin + determinism", () => {
     expect(out1).toEqual(out2);
   });
 });
+
+describe("voter_dissent_pattern (Phase 515)", () => {
+  function snap(votes: Array<{ voterId: string; kind: string }>) {
+    return {
+      decisionId: "any",
+      consensusKind: "proceed",
+      votes: votes.map((v) => ({ ...v, confidence: 70 })),
+      decidedAtIso: NOW.toISOString(),
+    };
+  }
+
+  it("fires when a voter pair disagrees in ≥ min council runs", () => {
+    const snapshots = [
+      snap([{ voterId: "rule_based", kind: "proceed" }, { voterId: "conservative", kind: "proceed_with_caution" }]),
+      snap([{ voterId: "rule_based", kind: "proceed" }, { voterId: "conservative", kind: "proceed_with_caution" }]),
+      snap([{ voterId: "rule_based", kind: "proceed" }, { voterId: "conservative", kind: "proceed_with_caution" }]),
+    ];
+    const out = generateLearningSignals({ ...baseInput([]), councilSnapshots: snapshots });
+    const sig = out.signals.find((s) => s.kind === "voter_dissent_pattern");
+    expect(sig).toBeDefined();
+    expect(sig?.engine).toBe("advisor_council");
+    expect(sig?.targetKind).toContain("conservative");
+    expect(sig?.targetKind).toContain("rule_based");
+    expect(sig?.occurrences).toBe(3);
+  });
+
+  it("does NOT fire when dissent count below min", () => {
+    const snapshots = [
+      snap([{ voterId: "a", kind: "proceed" }, { voterId: "b", kind: "block_deploy" }]),
+      snap([{ voterId: "a", kind: "proceed" }, { voterId: "b", kind: "block_deploy" }]),
+    ];
+    const out = generateLearningSignals({ ...baseInput([]), councilSnapshots: snapshots, voterDissentMin: 3 });
+    expect(out.signals.find((s) => s.kind === "voter_dissent_pattern")).toBeUndefined();
+  });
+
+  it("does NOT fire when no council snapshots provided (backwards compat)", () => {
+    const out = generateLearningSignals(baseInput([]));
+    expect(out.signals.find((s) => s.kind === "voter_dissent_pattern")).toBeUndefined();
+  });
+
+  it("counts each pair independently (3 voters → 3 pairs)", () => {
+    const snapshots = [
+      snap([
+        { voterId: "a", kind: "proceed" },
+        { voterId: "b", kind: "block_deploy" },
+        { voterId: "c", kind: "proceed_with_caution" },
+      ]),
+      snap([
+        { voterId: "a", kind: "proceed" },
+        { voterId: "b", kind: "block_deploy" },
+        { voterId: "c", kind: "proceed_with_caution" },
+      ]),
+      snap([
+        { voterId: "a", kind: "proceed" },
+        { voterId: "b", kind: "block_deploy" },
+        { voterId: "c", kind: "proceed_with_caution" },
+      ]),
+    ];
+    const out = generateLearningSignals({ ...baseInput([]), councilSnapshots: snapshots, voterDissentMin: 3 });
+    // Three pairs all in full disagreement → three signals.
+    const dissentSignals = out.signals.filter((s) => s.kind === "voter_dissent_pattern");
+    expect(dissentSignals).toHaveLength(3);
+  });
+
+  it("keyword field captures most-frequent dissenting kind for voter A", () => {
+    const snapshots = [
+      snap([{ voterId: "rule_based", kind: "proceed" }, { voterId: "conservative", kind: "proceed_with_caution" }]),
+      snap([{ voterId: "rule_based", kind: "proceed" }, { voterId: "conservative", kind: "proceed_with_caution" }]),
+      snap([{ voterId: "rule_based", kind: "proceed_with_caution" }, { voterId: "conservative", kind: "block_deploy" }]),
+    ];
+    const out = generateLearningSignals({ ...baseInput([]), councilSnapshots: snapshots });
+    const sig = out.signals.find((s) => s.kind === "voter_dissent_pattern");
+    expect(sig).toBeDefined();
+    // voter A = "conservative" (lex order), most common dissenting kind is "proceed_with_caution".
+    expect(sig?.keyword).toBe("proceed_with_caution");
+  });
+
+  it("summary counts voter_dissent_pattern entries", () => {
+    const snapshots = [
+      snap([{ voterId: "a", kind: "proceed" }, { voterId: "b", kind: "block_deploy" }]),
+      snap([{ voterId: "a", kind: "proceed" }, { voterId: "b", kind: "block_deploy" }]),
+      snap([{ voterId: "a", kind: "proceed" }, { voterId: "b", kind: "block_deploy" }]),
+    ];
+    const out = generateLearningSignals({ ...baseInput([]), councilSnapshots: snapshots });
+    expect(out.summary.signalsByKind.voter_dissent_pattern).toBe(1);
+  });
+});

@@ -75,6 +75,15 @@ export interface LearningLoopRepo {
       select: { priority: boolean; operatorDecision: boolean; decisionNote: boolean; confidence: boolean; decidedAt: boolean };
     }): Promise<TriageRowForLearning[]>;
   };
+  /** Phase 515 — optional council source for voter-dissent signals. */
+  advisorCouncilDecision?: {
+    findMany(args: {
+      where: { organizationId: string };
+      orderBy: { generatedAt: "desc" };
+      take?: number;
+      select: { id: boolean; consensusKind: boolean; votesJson: boolean; generatedAt: boolean };
+    }): Promise<Array<{ id: string; consensusKind: string; votesJson: unknown; generatedAt: Date }>>;
+  };
 }
 
 /* ──────────────────────────────────────────────────────────────────
@@ -123,7 +132,7 @@ export async function buildLearningLoopResponse(
   try {
     const now = opts.now ?? new Date();
 
-    const [advisorRows, proposalRows, triageRows] = await Promise.all([
+    const [advisorRows, proposalRows, triageRows, councilRows] = await Promise.all([
       safe(() =>
         repo.advisorRecommendation.findMany({
           where: { organizationId, operatorDecision: { in: ANALYZE_DECISIONS } },
@@ -151,6 +160,18 @@ export async function buildLearningLoopResponse(
         }),
         [] as TriageRowForLearning[],
       ),
+      // Phase 515 — optional council snapshots for voter-dissent signals.
+      repo.advisorCouncilDecision
+        ? safe(() =>
+            repo.advisorCouncilDecision!.findMany({
+              where: { organizationId },
+              orderBy: { generatedAt: "desc" },
+              take: 200,
+              select: { id: true, consensusKind: true, votesJson: true, generatedAt: true },
+            }),
+            [] as Array<{ id: string; consensusKind: string; votesJson: unknown; generatedAt: Date }>,
+          )
+        : Promise.resolve([] as Array<{ id: string; consensusKind: string; votesJson: unknown; generatedAt: Date }>),
     ]);
 
     const rows: OperatorDecisionRow[] = [
@@ -159,8 +180,21 @@ export async function buildLearningLoopResponse(
       ...triageRows.map((r) => projectTriage(r)),
     ].filter((r): r is OperatorDecisionRow => r !== null);
 
+    // Phase 515 — shape council rows into the engine's CouncilSnapshot type.
+    const councilSnapshots = councilRows
+      .filter((c) => Array.isArray(c.votesJson) && (c.votesJson as unknown[]).length > 0)
+      .map((c) => ({
+        decisionId: c.id,
+        consensusKind: c.consensusKind,
+        votes: (c.votesJson as Array<{ voterId: string; kind: string; confidence: number }>)
+          .filter((v) => typeof v.voterId === "string" && typeof v.kind === "string")
+          .map((v) => ({ voterId: v.voterId, kind: v.kind, confidence: typeof v.confidence === "number" ? v.confidence : 0 })),
+        decidedAtIso: c.generatedAt.toISOString(),
+      }));
+
     const output = generateLearningSignals({
       rows,
+      councilSnapshots,
       rejectionClusterMin: 3,
       overrideClusterMin: 2,
       highRejectionRateThreshold: 0.5,

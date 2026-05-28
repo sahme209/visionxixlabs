@@ -21,7 +21,7 @@ export const LEARNING_LOOP_ENGINE_VERSION = "learning-loop-v1.0.0";
    Closed-unions.
    ────────────────────────────────────────────────────────────── */
 
-export const LEARNING_ENGINES = ["release_advisor", "policy_proposal", "incident_triage"] as const;
+export const LEARNING_ENGINES = ["release_advisor", "policy_proposal", "incident_triage", "advisor_council"] as const;
 export type LearningEngine = (typeof LEARNING_ENGINES)[number];
 
 export const LEARNING_SIGNAL_KINDS = [
@@ -29,6 +29,7 @@ export const LEARNING_SIGNAL_KINDS = [
   "override_cluster",
   "low_confidence_acceptance",
   "high_rejection_rate",
+  "voter_dissent_pattern",
 ] as const;
 export type LearningSignalKind = (typeof LEARNING_SIGNAL_KINDS)[number];
 
@@ -45,8 +46,23 @@ export interface OperatorDecisionRow {
   decidedAtIso: string;
 }
 
+/**
+ * Phase 515 — Council snapshot row. Each row is one council decision's
+ * vote breakdown. The engine clusters voter pairs that consistently
+ * disagree, surfacing engine-improvement signals about per-voter
+ * calibration.
+ */
+export interface CouncilSnapshot {
+  decisionId: string;
+  consensusKind: string;
+  votes: Array<{ voterId: string; kind: string; confidence: number }>;
+  decidedAtIso: string;
+}
+
 export interface LearningLoopInputs {
   rows: OperatorDecisionRow[];
+  /** Optional council snapshots — when provided, voter dissent signals fire. */
+  councilSnapshots?: CouncilSnapshot[];
   /** Minimum cluster size for a rejection_cluster signal. Default 3. */
   rejectionClusterMin: number;
   /** Minimum cluster size for an override_cluster signal. Default 2. */
@@ -55,6 +71,12 @@ export interface LearningLoopInputs {
   highRejectionRateThreshold: number;
   /** Confidence threshold for low_confidence_acceptance (e.g. 60). */
   lowConfidenceCeiling: number;
+  /**
+   * Phase 515 — minimum council decisions in which a voter pair must
+   * have disagreed for a voter_dissent_pattern signal to fire.
+   * Default 3.
+   */
+  voterDissentMin?: number;
   now: Date;
 }
 
@@ -208,6 +230,15 @@ export function generateLearningSignals(input: LearningLoopInputs): LearningLoop
     }
   }
 
+  // ── Phase 515 — voter dissent patterns (advisor council) ─────
+  if (input.councilSnapshots && input.councilSnapshots.length > 0) {
+    const dissentSignals = detectVoterDissentPatterns(
+      input.councilSnapshots,
+      input.voterDissentMin ?? 3,
+    );
+    signals.push(...dissentSignals);
+  }
+
   // Rank by strength desc, then occurrences desc.
   signals.sort((a, b) => (b.strength - a.strength) || (b.occurrences - a.occurrences));
 
@@ -217,6 +248,7 @@ export function generateLearningSignals(input: LearningLoopInputs): LearningLoop
     override_cluster: 0,
     low_confidence_acceptance: 0,
     high_rejection_rate: 0,
+    voter_dissent_pattern: 0,
   };
   for (const s of signals) signalsByKind[s.kind] += 1;
 
@@ -250,4 +282,68 @@ function topKeyword(notes: string[]): { word: string; count: number } | null {
   }
   if (bestCount === 0) return null;
   return { word: bestWord, count: bestCount };
+}
+
+/* ──────────────────────────────────────────────────────────────────
+   Phase 515 — Voter dissent pattern detector.
+   ────────────────────────────────────────────────────────────── */
+
+/**
+ * Walk council snapshots, for every voter pair count how often they
+ * voted different kinds. Pairs whose dissent count >= min produce a
+ * voter_dissent_pattern signal that the platform team can use to
+ * tune the more-frequently-overridden voter.
+ */
+function detectVoterDissentPatterns(
+  snapshots: CouncilSnapshot[],
+  min: number,
+): LearningSignal[] {
+  if (snapshots.length === 0) return [];
+
+  // For each pair, count disagreements + record the dissenting kinds.
+  type PairKey = string; // "voterA|voterB" with A < B lex
+  const dissents = new Map<PairKey, { a: string; b: string; total: number; disagreements: number; kindsAOver: Record<string, number> }>();
+
+  for (const snap of snapshots) {
+    for (let i = 0; i < snap.votes.length; i++) {
+      for (let j = i + 1; j < snap.votes.length; j++) {
+        const v1 = snap.votes[i];
+        const v2 = snap.votes[j];
+        const [a, b] = v1.voterId < v2.voterId ? [v1, v2] : [v2, v1];
+        const key = `${a.voterId}|${b.voterId}`;
+        const entry = dissents.get(key) ?? { a: a.voterId, b: b.voterId, total: 0, disagreements: 0, kindsAOver: {} };
+        entry.total += 1;
+        if (a.kind !== b.kind) {
+          entry.disagreements += 1;
+          // Track a's chosen kind when they disagreed (useful direction signal).
+          entry.kindsAOver[a.kind] = (entry.kindsAOver[a.kind] ?? 0) + 1;
+        }
+        dissents.set(key, entry);
+      }
+    }
+  }
+
+  const out: LearningSignal[] = [];
+  for (const entry of dissents.values()) {
+    if (entry.disagreements < min) continue;
+    const dissentRate = entry.total === 0 ? 0 : entry.disagreements / entry.total;
+    // Most-frequent disagreement kind for voter A.
+    let topKind = "?";
+    let topCount = 0;
+    for (const [k, c] of Object.entries(entry.kindsAOver)) {
+      if (c > topCount) { topKind = k; topCount = c; }
+    }
+    out.push({
+      kind: "voter_dissent_pattern",
+      engine: "advisor_council",
+      targetKind: `${entry.a}__vs__${entry.b}`,
+      keyword: topKind,
+      occurrences: entry.disagreements,
+      strength: Math.min(95, Math.round(40 + dissentRate * 50 + entry.disagreements * 2)),
+      title: `${entry.a} and ${entry.b} disagree in ${entry.disagreements}/${entry.total} council runs`,
+      rationale: `Voters "${entry.a}" and "${entry.b}" diverged in ${entry.disagreements} of ${entry.total} council decisions (${Math.round(dissentRate * 100)}%). ${entry.a}'s most common dissenting call is "${topKind}". This indicates a systemic calibration gap between the two voters.`,
+      suggestedAction: `Inspect the recent council decisions where "${entry.a}" voted "${topKind}" and "${entry.b}" voted otherwise. Decide whether to tune ${entry.a}'s rule for "${topKind}" toward ${entry.b}'s call (less aggressive) or update ${entry.b}'s rule to match (more aggressive).`,
+    });
+  }
+  return out;
 }
