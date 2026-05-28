@@ -89,7 +89,7 @@ export function PlatformsClient() {
               viewport={{ once: true, amount: 0.3 }}
               transition={{ duration: 0.6, delay: i * 0.07 }}
               whileHover={{ y: -4, transition: { duration: 0.2 } }}
-              className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-6 hover:border-cyan-500/30 hover:bg-white/[0.04] transition"
+              className="surface-glass rounded-2xl p-6 hover:border-brand-coral/25 transition-all"
             >
               <p className="text-[12px] font-mono uppercase tracking-widest text-cyan-300">{s.name}</p>
               <p className="mt-2 text-[12.5px] text-zinc-500">{s.tag}</p>

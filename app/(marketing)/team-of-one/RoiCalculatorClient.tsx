@@ -93,11 +93,11 @@ export function RoiCalculatorClient() {
       </div>
 
       <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5">
+        <div className="surface-glass rounded-2xl p-5">
           <p className="text-[10px] font-mono uppercase tracking-widest text-zinc-500">Team loaded cost</p>
           <p className="mt-2 text-3xl font-bold tabular-nums">{usd(total)}</p>
         </div>
-        <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5">
+        <div className="surface-glass rounded-2xl p-5">
           <p className="text-[10px] font-mono uppercase tracking-widest text-zinc-500">Axiom annual (illustrative)</p>
           <p className="mt-2 text-3xl font-bold tabular-nums">{usd(AXIOM_ANNUAL_USD)}</p>
         </div>

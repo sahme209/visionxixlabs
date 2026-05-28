@@ -255,7 +255,7 @@ export function TeamOfOneClient() {
               viewport={{ once: true, amount: 0.35 }}
               transition={{ duration: 0.5, delay: Math.min(i * 0.03, 0.4) }}
               whileHover={{ y: -4, transition: { duration: 0.2 } }}
-              className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-4 hover:border-indigo-500/30 hover:bg-white/[0.04] transition"
+              className="surface-glass rounded-2xl p-4 hover:border-brand-coral/25 transition-all"
             >
               <div className="text-2xl text-indigo-300 mb-2 font-mono">{d.symbol}</div>
               <p className="text-[14px] font-semibold text-white">{d.label}</p>

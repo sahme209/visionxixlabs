@@ -288,7 +288,7 @@ export function ChangelogClient() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, amount: 0.2 }}
               transition={{ duration: 0.45, delay: Math.min(i * 0.03, 0.25) }}
-              className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 md:p-6 hover:border-indigo-500/30 hover:bg-white/[0.04] transition"
+              className="surface-glass rounded-2xl p-5 md:p-6 hover:border-brand-coral/25 transition-all"
             >
               <div className="flex flex-wrap items-center gap-2 mb-2">
                 <span className="text-[10px] font-mono uppercase tracking-widest text-zinc-500">

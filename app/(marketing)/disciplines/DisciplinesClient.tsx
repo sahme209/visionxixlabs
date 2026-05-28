@@ -182,7 +182,7 @@ export function DisciplinesClient() {
               viewport={{ once: true, amount: 0.2 }}
               transition={{ duration: 0.45, delay: Math.min(i * 0.03, 0.3) }}
               whileHover={{ y: -3, transition: { duration: 0.18 } }}
-              className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 hover:border-fuchsia-500/30 hover:bg-white/[0.04] transition"
+              className="surface-glass rounded-2xl p-5 hover:border-brand-coral/25 transition-all"
             >
               <div className="flex items-start justify-between gap-3">
                 <p className="text-[13px] font-semibold text-white">{d.name}</p>
