@@ -41,10 +41,13 @@ const productLinks = [
 
 const companyLinks = [
   { href: "/manifesto", label: "Manifesto" },
+  { href: "/principles", label: "Principles" },
+  { href: "/team", label: "Team" },
   { href: "/contact", label: "Contact" },
   { href: "/case-studies", label: "Case Studies" },
   { href: "/press", label: "Press & Media" },
   { href: "/insights", label: "Insights" },
+  { href: "/status", label: "Status" },
   { href: "/privacy", label: "Privacy" },
   { href: "/terms", label: "Terms" },
   { href: "/security", label: "Security" },

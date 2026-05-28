@@ -39,6 +39,8 @@ const resourcesDropdown = [
   { href: "/blog",                 label: "Blog",       desc: "Product notes + deep dives",      icon: NewspaperIcon },
   { href: "/changelog",            label: "Changelog",  desc: "What we shipped recently",        icon: RocketLaunchIcon },
   { href: "/manifesto",            label: "Manifesto",  desc: "The seven things we believe",     icon: SparklesIcon },
+  { href: "/principles",           label: "Principles", desc: "How we make visual decisions",    icon: SparklesIcon },
+  { href: "/team",                 label: "Team",       desc: "How a small team ships carefully",icon: SparklesIcon },
   { href: "/insights",             label: "Insights",   desc: "Customer stories + frameworks",   icon: BookOpenIcon },
   { href: "/enterprise-readiness", label: "Enterprise", desc: "Compliance and readiness",        icon: DocumentTextIcon },
   { href: "/security",             label: "Security",   desc: "Trust center and policies",       icon: ShieldCheckIcon },
