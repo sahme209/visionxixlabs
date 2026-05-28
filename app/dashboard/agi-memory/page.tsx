@@ -126,6 +126,8 @@ export default function AgiMemoryPage() {
 
       <SummaryPanel targetKind={filterKind === "all" ? undefined : filterKind} />
 
+      <ChatPanel targetKind={filterKind === "all" ? undefined : filterKind} />
+
       <SummaryTimeline filterKind={filterKind} />
 
       <div className="mb-4 flex items-center gap-2 flex-wrap">
@@ -509,6 +511,174 @@ function TimelineRow({ entry }: { entry: TimelineSummary }) {
             </ul>
           </div>
         </div>
+      )}
+    </div>
+  );
+}
+
+/* ──────────────────────────────────────────────────────────────────
+   ChatPanel — Phase 524 (ask the AGI a free-form question).
+   ────────────────────────────────────────────────────────────── */
+
+interface ChatCitationDetail {
+  citationId: string;
+  kind: "entry" | "summary";
+  targetKind: string | null;
+  targetId: string | null;
+  narrative: string;
+  generatedAtIso: string;
+}
+
+interface ChatAnswerView {
+  outcome: string;
+  answer: string;
+  citations: string[];
+  modelHint: string | null;
+  errorMessage: string | null;
+  engineVersion: string;
+}
+
+type ChatBody =
+  | { ok: true; data: { generatedAt: string; answer: ChatAnswerView; contextSize: { entries: number; summaries: number }; citationDetails: ChatCitationDetail[] } }
+  | { ok: false; error: string; hint?: string };
+
+interface ChatTurn {
+  question: string;
+  answer: ChatAnswerView;
+  contextSize: { entries: number; summaries: number };
+  citationDetails: ChatCitationDetail[];
+}
+
+const SUGGESTED_QUESTIONS = [
+  "What did the AGI block in the last 24 hours, and why?",
+  "Where is the AI provider failing most often?",
+  "Summarize the most recurring risk factor.",
+];
+
+function ChatPanel({ targetKind }: { targetKind?: string }) {
+  const [question, setQuestion] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState<string | null>(null);
+  const [turns, setTurns] = useState<ChatTurn[]>([]);
+
+  async function ask(text: string) {
+    const trimmed = text.trim();
+    if (trimmed.length < 4) {
+      setErr("Question is too short — at least 4 characters.");
+      return;
+    }
+    setBusy(true);
+    setErr(null);
+    try {
+      const res = await fetch("/api/dashboard/agi-memory-ask", {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ question: trimmed, ...(targetKind ? { targetKind } : {}) }),
+      });
+      const j: ChatBody = await res.json();
+      if (j.ok) {
+        setTurns((prev) => [
+          { question: trimmed, answer: j.data.answer, contextSize: j.data.contextSize, citationDetails: j.data.citationDetails },
+          ...prev,
+        ].slice(0, 10));
+        setQuestion("");
+      } else {
+        setErr(j.hint ?? j.error);
+      }
+    } catch (e) {
+      setErr(e instanceof Error ? e.message : "network error");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <div className="mb-4 rounded-2xl border border-violet-500/[0.20] bg-violet-500/[0.04] p-4">
+      <div className="flex items-center gap-2 mb-3">
+        <SparklesIcon className="h-4 w-4 text-violet-300" />
+        <p className="text-[12.5px] font-semibold text-violet-100">Ask the AGI</p>
+        <span className="text-[11px] text-zinc-400">— Claude reads the last 100 entries + 20 summaries and answers, with citations.</span>
+      </div>
+
+      <div className="flex items-stretch gap-2 mb-3">
+        <input
+          type="text"
+          value={question}
+          onChange={(e) => setQuestion(e.target.value)}
+          onKeyDown={(e) => { if (e.key === "Enter" && !busy) ask(question); }}
+          placeholder="Ask anything about the AGI's recent reasoning…"
+          disabled={busy}
+          maxLength={500}
+          className="flex-1 rounded-lg border border-white/[0.08] bg-black/30 px-3 py-2 text-[12.5px] text-zinc-100 placeholder:text-zinc-600 focus:border-violet-500/40 focus:outline-none disabled:opacity-50"
+        />
+        <button
+          type="button"
+          onClick={() => ask(question)}
+          disabled={busy || question.trim().length < 4}
+          className="px-3 py-2 rounded-lg border border-violet-500/40 bg-violet-500/[0.14] text-[12px] font-semibold text-violet-100 hover:bg-violet-500/[0.22] disabled:opacity-50 disabled:cursor-wait transition-colors"
+        >
+          {busy ? "Asking…" : "Ask"}
+        </button>
+      </div>
+
+      {turns.length === 0 && (
+        <div className="flex flex-wrap gap-2 mb-2">
+          {SUGGESTED_QUESTIONS.map((s) => (
+            <button
+              key={s}
+              type="button"
+              onClick={() => ask(s)}
+              disabled={busy}
+              className="px-2 py-1 rounded-md border border-white/[0.08] bg-white/[0.02] text-[11px] font-mono text-zinc-300 hover:bg-white/[0.06] disabled:opacity-50"
+            >
+              {s}
+            </button>
+          ))}
+        </div>
+      )}
+
+      {err && <p className="text-[11px] font-mono text-rose-300 mb-2">✗ {err}</p>}
+
+      <div className="space-y-2">
+        {turns.map((turn, i) => <ChatTurnRow key={i} turn={turn} />)}
+      </div>
+    </div>
+  );
+}
+
+function ChatTurnRow({ turn }: { turn: ChatTurn }) {
+  return (
+    <div className="rounded-lg border border-white/[0.06] bg-black/20 p-3">
+      <p className="text-[11.5px] font-mono text-zinc-400 mb-1.5">Q: {turn.question}</p>
+      <div className="flex items-center gap-2 mb-1.5 flex-wrap">
+        <span className={`text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border ${OUTCOME_CLASS[turn.answer.outcome] ?? OUTCOME_CLASS.error}`}>
+          {turn.answer.outcome}
+        </span>
+        {turn.answer.modelHint && <span className="text-[10px] font-mono text-zinc-500">model: {turn.answer.modelHint}</span>}
+        <span className="text-[10px] font-mono text-zinc-500">context: {turn.contextSize.entries} entries · {turn.contextSize.summaries} summaries</span>
+      </div>
+      <p className="text-[12.5px] text-zinc-200 mb-2">{turn.answer.answer}</p>
+      {turn.citationDetails.length > 0 && (
+        <div className="border-t border-white/[0.04] pt-2">
+          <p className="text-[9.5px] font-mono uppercase tracking-wider text-zinc-500 mb-1">Citations</p>
+          <div className="space-y-1">
+            {turn.citationDetails.map((c) => {
+              const href = c.targetKind && KIND_HREF[c.targetKind] ? KIND_HREF[c.targetKind] : null;
+              return (
+                <div key={c.citationId} className="flex items-baseline gap-2 text-[11px] font-mono">
+                  <span className="text-violet-300 shrink-0">[{c.citationId}]</span>
+                  <span className="text-zinc-400 shrink-0">{c.kind === "entry" ? (c.targetKind ?? "?") : `${c.targetKind ?? "all"}-summary`}</span>
+                  <span className="text-zinc-300 line-clamp-1 flex-1">{c.narrative}</span>
+                  {href && <a href={href} className="text-violet-300 hover:text-violet-200 shrink-0">open →</a>}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+      {turn.answer.outcome !== "ai_generated" && turn.answer.errorMessage && (
+        <p className="mt-1.5 text-[10.5px] font-mono text-amber-300">↳ {turn.answer.errorMessage}</p>
       )}
     </div>
   );
