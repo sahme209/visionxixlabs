@@ -314,6 +314,115 @@ function majoritySummaryPrefix(kind: RecommendationKind, majCount: number, total
   return `${majCount}/${totalCount} voters agreed on ${kind}.`;
 }
 
+/* ──────────────────────────────────────────────────────────────────
+   Phase 516 — Async council with AI-native voter.
+   ────────────────────────────────────────────────────────────── */
+
+/**
+ * Async voter — returns a promise of a vote. Used for the
+ * AI-native voter (Claude API) and any future voter that needs I/O.
+ */
+export type AsyncAdvisorVoter = (input: AdvisorInputs) => Promise<CouncilVote>;
+
+/**
+ * Run the council with a mix of sync (rule-based) voters and async
+ * (AI-backed) voters. The async voters are executed in parallel.
+ * Failures in any voter degrade to "errored_voter" — never abort
+ * the council.
+ */
+export async function runAdvisorCouncilAsync(
+  input: AdvisorInputs,
+  syncVoters: AdvisorVoter[] = DEFAULT_COUNCIL,
+  asyncVoters: AsyncAdvisorVoter[] = [],
+): Promise<CouncilDecision> {
+  // Run sync voters synchronously (their failures already captured by
+  // the existing runAdvisorCouncil function — we replicate the same
+  // tolerance here).
+  const syncVotes: CouncilVote[] = [];
+  for (const v of syncVoters) {
+    try {
+      const vote = v(input);
+      const k = (RECOMMENDATION_KINDS as readonly string[]).includes(vote.kind) ? vote.kind : "proceed";
+      const c = Math.max(0, Math.min(100, vote.confidence));
+      syncVotes.push({ voterId: vote.voterId, kind: k as RecommendationKind, confidence: c, rationale: vote.rationale });
+    } catch (err) {
+      syncVotes.push({
+        voterId: "errored_voter",
+        kind: "proceed",
+        confidence: 0,
+        rationale: `Sync voter threw: ${err instanceof Error ? err.message : "unknown"}`,
+      });
+    }
+  }
+
+  // Run async voters in parallel; capture their exceptions.
+  const asyncSettled = await Promise.allSettled(asyncVoters.map((v) => v(input)));
+  const asyncVotes: CouncilVote[] = asyncSettled.map((r) => {
+    if (r.status === "fulfilled") {
+      const vote = r.value;
+      const k = (RECOMMENDATION_KINDS as readonly string[]).includes(vote.kind) ? vote.kind : "proceed";
+      const c = Math.max(0, Math.min(100, vote.confidence));
+      return { voterId: vote.voterId, kind: k as RecommendationKind, confidence: c, rationale: vote.rationale };
+    }
+    return {
+      voterId: "errored_voter",
+      kind: "proceed",
+      confidence: 0,
+      rationale: `Async voter threw: ${r.reason instanceof Error ? r.reason.message : String(r.reason)}`,
+    };
+  });
+
+  const votes = [...syncVotes, ...asyncVotes];
+
+  // Same aggregation as runAdvisorCouncil.
+  const weights = new Map<RecommendationKind, number>();
+  let totalWeight = 0;
+  for (const vote of votes) {
+    weights.set(vote.kind, (weights.get(vote.kind) ?? 0) + vote.confidence);
+    totalWeight += vote.confidence;
+  }
+
+  let topKind: RecommendationKind = "proceed";
+  let topWeight = 0;
+  for (const [k, w] of weights.entries()) {
+    if (w > topWeight) { topKind = k; topWeight = w; }
+  }
+
+  const isStrictMajority = totalWeight > 0 && topWeight > totalWeight / 2;
+  const consensusKind: RecommendationKind | "no_consensus" = isStrictMajority ? topKind : "no_consensus";
+  const agreementScore = totalWeight === 0 ? 0 : Math.round((topWeight / totalWeight) * 100);
+
+  const dissentVoters = votes.filter((v) => v.kind !== topKind);
+  const majorityVoters = votes.filter((v) => v.kind === topKind);
+
+  let rationale: string;
+  if (consensusKind === "no_consensus") {
+    const breakdown = Array.from(weights.entries()).map(([k, w]) => `${k} (${w}pt)`).join(", ");
+    rationale = `No strict majority. Vote distribution: ${breakdown}. Operator must decide.`;
+  } else {
+    const majSummary = majorityVoters.map((v) => `${v.voterId}: ${v.confidence}% — "${truncate(v.rationale, 80)}"`).join(" | ");
+    const dissentSummary = dissentVoters.length === 0
+      ? "All voters agreed."
+      : `Dissent: ${dissentVoters.map((v) => `${v.voterId} voted ${v.kind} (${v.confidence}%) — "${truncate(v.rationale, 60)}"`).join("; ")}`;
+    rationale = `${majoritySummaryPrefix(consensusKind, majorityVoters.length, votes.length)} ${majSummary}. ${dissentSummary}`;
+  }
+
+  const title = consensusKind === "no_consensus"
+    ? "Council: No consensus — operator decides"
+    : KIND_TITLES[consensusKind];
+
+  return {
+    engineVersion: COUNCIL_ENGINE_VERSION,
+    generatedAtIso: input.now.toISOString(),
+    consensusKind,
+    agreementScore,
+    title,
+    rationale,
+    votes,
+    voterCount: votes.length,
+  };
+}
+
 function truncate(s: string, n: number): string {
   return s.length <= n ? s : `${s.slice(0, n - 1)}…`;
 }

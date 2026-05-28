@@ -268,6 +268,7 @@ type GenState =
 function GeneratePanel({ onGenerated }: { onGenerated: () => void }) {
   const [state, setState] = useState<GenState>({ kind: "closed" });
   const [releaseId, setReleaseId] = useState("");
+  const [withAi, setWithAi] = useState(true);
 
   async function submit() {
     setState({ kind: "submitting" });
@@ -276,7 +277,7 @@ function GeneratePanel({ onGenerated }: { onGenerated: () => void }) {
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ releaseId }),
+        body: JSON.stringify({ releaseId, withAi }),
       });
       const j = await res.json();
       if (j.ok) {
@@ -322,6 +323,16 @@ function GeneratePanel({ onGenerated }: { onGenerated: () => void }) {
           disabled={busy}
           className="w-full rounded-md border border-zinc-700/40 bg-zinc-900/60 px-2 py-1.5 text-[12px] text-zinc-100 placeholder:text-zinc-600 focus:border-violet-500/40 focus:outline-none disabled:opacity-50"
         />
+      </label>
+      <label className="flex items-center gap-2 mb-2 text-[11.5px] text-zinc-300 cursor-pointer">
+        <input
+          type="checkbox"
+          checked={withAi}
+          onChange={(e) => setWithAi(e.target.checked)}
+          disabled={busy}
+          className="accent-violet-500 disabled:opacity-50"
+        />
+        <span>Include AI-native voter (Claude · ~1-3s)</span>
       </label>
       <div className="flex items-center gap-3">
         <button

@@ -5,9 +5,11 @@
 import { isMissingTable } from "./releaseListResponder";
 import {
   runAdvisorCouncil,
+  runAdvisorCouncilAsync,
   COUNCIL_ENGINE_VERSION,
   DEFAULT_COUNCIL,
   type AdvisorVoter,
+  type AsyncAdvisorVoter,
   type CouncilVote,
 } from "./advisorCouncilEngine";
 import { RECOMMENDATION_KINDS, type AdvisorInputs, type RecommendationKind } from "./releaseAdvisorEngine";
@@ -166,6 +168,8 @@ export interface GenerateInput {
   releaseId: string;
   engineInputs: AdvisorInputs;
   voters?: AdvisorVoter[];
+  /** Phase 516 — optional async voters (e.g. AI-native) run in parallel. */
+  asyncVoters?: AsyncAdvisorVoter[];
 }
 
 export type GenerateBody =
@@ -188,7 +192,15 @@ export async function buildCouncilGenerateResponse(
   opts: { correlationId?: string } = {},
 ): Promise<GenerateResult> {
   try {
-    const output = runAdvisorCouncil(input.engineInputs, input.voters ?? DEFAULT_COUNCIL);
+    // Phase 516 — when async voters supplied, run the async council
+    // (waits for AI). Otherwise the sync path stays cheap.
+    const output = input.asyncVoters && input.asyncVoters.length > 0
+      ? await runAdvisorCouncilAsync(
+          input.engineInputs,
+          input.voters ?? DEFAULT_COUNCIL,
+          input.asyncVoters,
+        )
+      : runAdvisorCouncil(input.engineInputs, input.voters ?? DEFAULT_COUNCIL);
 
     const superseded = await repo.advisorCouncilDecision.updateMany({
       where: { organizationId: input.organizationId, releaseId: input.releaseId, operatorDecision: "pending" },
