@@ -43,6 +43,7 @@ import { DeploymentIncidentsView } from "./views/DeploymentIncidentsView";
 import { GitHubAppView } from "./views/GitHubAppView";
 import { StartHereReleaseOpsView } from "./views/StartHereReleaseOpsView";
 import { ReleaseAdvisorView } from "./views/ReleaseAdvisorView";
+import { PolicyProposalsView } from "./views/PolicyProposalsView";
 import { useTrayApprovalsBadge } from "./lib/useTrayApprovalsBadge";
 import { useConnectorHealthAmbientPoll } from "./lib/connectorHealthStore";
 import { useSseStream } from "./lib/useSseStream";
@@ -86,6 +87,7 @@ export type View =
   | "github-app"
   | "start-here-releaseops"
   | "release-advisor"
+  | "policy-proposals"
   // Automation
   | "activity"
   | "workflows"
@@ -188,6 +190,7 @@ export default function App() {
           {activeView === "github-app"       && <GitHubAppView />}
           {activeView === "start-here-releaseops" && <StartHereReleaseOpsView onNavigate={setActiveView} />}
           {activeView === "release-advisor"  && <ReleaseAdvisorView />}
+          {activeView === "policy-proposals" && <PolicyProposalsView />}
           {activeView === "activity"      && <ActivityView />}
           {activeView === "workflows"     && <WorkflowsView />}
           {activeView === "approvals"     && <ApprovalsView />}
