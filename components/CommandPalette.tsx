@@ -76,7 +76,7 @@ const COMMANDS: readonly CommandItem[] = [
   // External
   { id: "linkedin",   label: "LinkedIn",          href: "https://www.linkedin.com/company/vision-xix-labs/", category: "External", icon: ArrowUpRightIcon, external: true },
   { id: "github",     label: "GitHub · Axiom repo", href: "https://github.com/sahme209/axiom-releases",     category: "External", icon: ArrowUpRightIcon, external: true },
-  { id: "x",          label: "X (Twitter)",       href: "https://x.com/visionxixlabs",                      category: "External", icon: ArrowUpRightIcon, external: true },
+  { id: "x",          label: "X (Twitter)",       href: "https://x.com/VisionXIXLabs",                      category: "External", icon: ArrowUpRightIcon, external: true },
 ];
 
 /* Cheap fuzzy match — checks all characters of the query appear, in

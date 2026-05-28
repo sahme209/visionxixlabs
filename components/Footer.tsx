@@ -165,7 +165,7 @@ export function Footer() {
                 <LinkedInIcon className="h-4 w-4" />
               </a>
               <a
-                href="https://x.com/visionxixlabs"
+                href="https://x.com/VisionXIXLabs"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="social-link card-border-glow-hover"

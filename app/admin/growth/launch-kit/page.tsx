@@ -237,7 +237,7 @@ redistribution requires written permission. Contact
 
 - Website: [visionxixlabs.com](https://visionxixlabs.com)
 - LinkedIn: [Vision XIX Labs](https://www.linkedin.com/company/vision-xix-labs/)
-- X (Twitter): [@visionxixlabs](https://x.com/visionxixlabs)
+- X (Twitter): [@visionxixlabs](https://x.com/VisionXIXLabs)
 - Support: support@visionxixlabs.com
 
 ---
@@ -355,7 +355,7 @@ export default function LaunchKitPage() {
       <section className="surface-frost rounded-2xl p-6 mb-6">
         <h2 className="font-display text-xl font-bold text-white mb-4">Manual steps (~10 min)</h2>
         <ol className="space-y-3 text-[14px] text-zinc-300 leading-relaxed">
-          <li><strong className="text-brand-coral">1.</strong> Open <a href="https://x.com/visionxixlabs" target="_blank" rel="noopener noreferrer" className="text-brand-coral hover:underline">x.com/visionxixlabs</a> → Profile → Edit profile. Paste display name, bio, location, website from the section above.</li>
+          <li><strong className="text-brand-coral">1.</strong> Open <a href="https://x.com/VisionXIXLabs" target="_blank" rel="noopener noreferrer" className="text-brand-coral hover:underline">x.com/VisionXIXLabs</a> → Profile → Edit profile. Paste display name, bio, location, website from the section above.</li>
           <li><strong className="text-brand-coral">2.</strong> Post the pinned tweet from above. Long-press → Pin to profile.</li>
           <li><strong className="text-brand-coral">3.</strong> Schedule the 12 daily posts. X has native scheduling — Tweet composer → calendar icon → pick time.</li>
           <li><strong className="text-brand-coral">4.</strong> Open <a href="https://github.com/sahme209/axiom-releases" target="_blank" rel="noopener noreferrer" className="text-brand-coral hover:underline">github.com/sahme209/axiom-releases</a>. Add file → name it <code className="font-mono text-brand-coral/90 bg-white/[0.04] px-1 rounded">LICENSE</code> → paste the LICENSE block above.</li>

@@ -19,7 +19,7 @@ export const organization = {
      parsers. Keep in sync with Footer + Navigation social links. */
   sameAs: [
     "https://www.linkedin.com/company/vision-xix-labs/",
-    "https://x.com/visionxixlabs",
+    "https://x.com/VisionXIXLabs",
     "https://github.com/sahme209/axiom-releases",
   ],
 };
