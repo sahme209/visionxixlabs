@@ -10,6 +10,15 @@ interface CockpitProp {
   id: string; kind: string; suggestedRuleKey: string; title: string;
   rationale: string; confidence: number; severity: string; generatedAtIso: string;
 }
+interface CockpitSugg {
+  id: string; kind: string; title: string; rationale: string;
+  targetKind: string | null; targetId: string | null;
+  confidence: number; generatedAtIso: string;
+}
+interface AvailSnapshot {
+  windowSize: number; aiGenerated: number; fallbackRules: number;
+  errored: number; aiAvailabilityPct: number;
+}
 interface EngineTelemetry {
   name: string; version: string;
   pendingCount: number; acceptedCount: number; rejectedCount: number;
@@ -17,15 +26,31 @@ interface EngineTelemetry {
 }
 interface CockpitData {
   generatedAt: string;
-  engines: { advisor: EngineTelemetry; policyProposal: EngineTelemetry };
+  engines: {
+    advisor: EngineTelemetry;
+    policyProposal: EngineTelemetry;
+    proactiveSuggestion?: EngineTelemetry;
+  };
   topRecommendations: CockpitRec[];
   topProposals: CockpitProp[];
+  topSuggestions: CockpitSugg[];
+  aiAvailability: AvailSnapshot | null;
   headline: {
     totalPending: number;
     highestSeverity: "low" | "medium" | "high" | "critical" | "none";
     callToAction: string;
   };
 }
+
+const SUGGESTION_KIND_LABEL: Record<string, string> = {
+  review_release: "Review release",
+  tighten_protection: "Tighten protection",
+  reconcile_manual_fix: "Reconcile manual fix",
+  investigate_incident: "Investigate incident",
+  reduce_fallback_rate: "Reduce AI fallback",
+  review_pattern: "Review pattern",
+  no_action_needed: "No action needed",
+};
 type CockpitBody = { ok: true; data: CockpitData } | { ok: false; error: string; hint?: string };
 
 const SEVERITY_CLASS: Record<string, string> = {
@@ -103,10 +128,44 @@ export function AgiCockpitView({ onNavigate }: { onNavigate?: (v: View) => void 
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className={`grid gap-3 ${data.engines.proactiveSuggestion ? "grid-cols-3" : "grid-cols-2"}`}>
             <EngineCard engine={data.engines.advisor} view="release-advisor" onNavigate={onNavigate} />
             <EngineCard engine={data.engines.policyProposal} view="policy-proposals" onNavigate={onNavigate} />
+            {data.engines.proactiveSuggestion && (
+              <EngineCard engine={data.engines.proactiveSuggestion} view="agi-suggestions" onNavigate={onNavigate} />
+            )}
           </div>
+
+          {data.aiAvailability && data.aiAvailability.windowSize > 0 && (
+            <AvailabilityStrip snapshot={data.aiAvailability} onNavigate={onNavigate} />
+          )}
+
+          {data.engines.proactiveSuggestion && (
+            <Section title="Top pending AGI suggestions" subtitle="From recent memory · Claude proposes operator next-actions">
+              {data.topSuggestions.length === 0 ? (
+                <p className="text-[12.5px] text-zinc-400 italic glass-card p-3">No pending suggestions.</p>
+              ) : (
+                <div className="space-y-1.5">
+                  {data.topSuggestions.map((s) => {
+                    const severity = s.confidence >= 80 ? "high" : s.confidence >= 60 ? "medium" : "low";
+                    return (
+                      <CompactCard
+                        key={s.id}
+                        severity={severity}
+                        title={s.title}
+                        rationale={s.rationale}
+                        confidence={s.confidence}
+                        chip={SUGGESTION_KIND_LABEL[s.kind] ?? s.kind}
+                        meta={s.targetId ? `${s.targetKind ?? "target"} ${s.targetId}` : "no specific target"}
+                        onClick={() => onNavigate?.("agi-suggestions")}
+                        generatedAtIso={s.generatedAtIso}
+                      />
+                    );
+                  })}
+                </div>
+              )}
+            </Section>
+          )}
 
           <Section title="Top pending recommendations" subtitle={data.engines.advisor.version}>
             {data.topRecommendations.length === 0 ? (
@@ -192,6 +251,39 @@ function Metric({ label, value, tone }: { label: string; value: number; tone: "e
       <p className="text-zinc-500 uppercase tracking-[0.18em] text-[8px]">{label}</p>
       <p className={`${cls} text-[14px] font-bold`}>{value}</p>
     </div>
+  );
+}
+
+function AvailabilityStrip({ snapshot, onNavigate }: { snapshot: AvailSnapshot; onNavigate?: (v: View) => void }) {
+  const tone =
+    snapshot.aiAvailabilityPct >= 80
+      ? "border-emerald-500/30 bg-emerald-500/[0.05]"
+      : snapshot.aiAvailabilityPct >= 50
+      ? "border-amber-500/30 bg-amber-500/[0.05]"
+      : "border-rose-500/30 bg-rose-500/[0.05]";
+  return (
+    <button
+      type="button"
+      onClick={() => onNavigate?.("agi-memory")}
+      className={`block w-full text-left glass-card p-3 border ${tone} hover:brightness-110 transition`}
+    >
+      <div className="flex items-center gap-3 flex-wrap">
+        <p className="text-[11px] font-semibold text-violet-100">AI provider availability</p>
+        <span className="text-[10px] font-mono text-zinc-300">window: last {snapshot.windowSize}</span>
+        <div className="flex items-center gap-2 ml-auto text-[11px] font-mono">
+          <span className="text-violet-300">{snapshot.aiGenerated} AI</span>
+          <span className="text-zinc-500">·</span>
+          <span className="text-amber-300">{snapshot.fallbackRules} fallback</span>
+          <span className="text-zinc-500">·</span>
+          <span className="text-rose-300">{snapshot.errored} err</span>
+          <span className="text-zinc-500">·</span>
+          <span className="text-white font-bold">{snapshot.aiAvailabilityPct}%</span>
+        </div>
+      </div>
+      <div className="mt-2 h-1.5 rounded-full bg-black/40 overflow-hidden">
+        <div className="h-full bg-gradient-to-r from-violet-500 via-fuchsia-500 to-cyan-400" style={{ width: `${snapshot.aiAvailabilityPct}%` }} />
+      </div>
+    </button>
   );
 }
 

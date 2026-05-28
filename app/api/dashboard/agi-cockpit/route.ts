@@ -17,6 +17,10 @@ export async function GET(_req: NextRequest) {
   if (!ctx.isAuthenticated || !ctx.organizationId) {
     return NextResponse.json({ ok: false, error: "auth_required" }, { status: 401 });
   }
+  // Phase 528 — cast through `AgiCockpitRepo` so the optional
+  // proactiveAgiSuggestion + aiRationaleEnrichment repos resolve to
+  // the live Prisma client. The structural interface tolerates
+  // omitted repos for backwards-compat tests.
   const r = await buildAgiCockpitResponse(
     prisma as unknown as AgiCockpitRepo,
     ctx.organizationId,

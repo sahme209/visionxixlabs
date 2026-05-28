@@ -2,8 +2,10 @@ import { describe, expect, it } from "vitest";
 import {
   buildAgiCockpitResponse,
   type AgiCockpitRepo,
+  type AvailabilityRow,
   type PendingProposalRow,
   type PendingRecommendationRow,
+  type PendingSuggestionRow,
 } from "../agiCockpitResponder";
 
 interface Stub extends AgiCockpitRepo {
@@ -136,5 +138,135 @@ describe("buildAgiCockpitResponse — degraded", () => {
     expect(r.status).toBe(200);
     if (!r.body.ok) throw new Error("expected ok");
     expect(r.body.data.headline.totalPending).toBe(0);
+  });
+});
+
+/* ──────────────────────────────────────────────────────────────────
+   Phase 528 — suggestions + AI availability.
+   ────────────────────────────────────────────────────────────── */
+
+interface StubV2 extends Stub {
+  _suggs: Array<PendingSuggestionRow & { operatorDecision: string }>;
+  _avail: AvailabilityRow[];
+}
+
+function makeRepoV2(): StubV2 {
+  const base = makeRepo();
+  const v2: StubV2 = {
+    ...base,
+    _suggs: [],
+    _avail: [],
+    proactiveAgiSuggestion: {
+      async findMany({ where, take }) {
+        const out = v2._suggs.filter((s) => s.operatorDecision === where.operatorDecision);
+        return out.slice(0, take);
+      },
+      async count({ where }) {
+        return v2._suggs.filter((s) => s.operatorDecision === where.operatorDecision).length;
+      },
+      async findFirst() {
+        if (v2._suggs.length === 0) return null;
+        return { generatedAt: v2._suggs.map((s) => s.generatedAt).sort((a, b) => b.getTime() - a.getTime())[0] };
+      },
+    },
+    aiRationaleEnrichment: {
+      async findMany({ take }) {
+        return take ? v2._avail.slice(0, take) : v2._avail;
+      },
+    },
+  };
+  return v2;
+}
+
+describe("buildAgiCockpitResponse — Phase 528 suggestions + availability", () => {
+  it("omits suggestion engine block + topSuggestions=[] + aiAvailability=null when repos absent", async () => {
+    const stub = makeRepo();
+    const r = await buildAgiCockpitResponse(stub, "o");
+    if (!r.body.ok) throw new Error("expected ok");
+    expect(r.body.data.engines.proactiveSuggestion).toBeUndefined();
+    expect(r.body.data.topSuggestions).toEqual([]);
+    expect(r.body.data.aiAvailability).toBeNull();
+  });
+
+  it("surfaces top pending suggestions sorted confidence-desc", async () => {
+    const stub = makeRepoV2();
+    stub._suggs.push(
+      { id: "s1", kind: "review_release", title: "T1", rationale: "R1", targetKind: "release", targetId: "rel_1", confidence: 60, generatedAt: new Date(), operatorDecision: "pending" },
+      { id: "s2", kind: "tighten_protection", title: "T2", rationale: "R2", targetKind: "repo", targetId: "r_1", confidence: 90, generatedAt: new Date(), operatorDecision: "pending" },
+    );
+    const r = await buildAgiCockpitResponse(stub, "o");
+    if (!r.body.ok) throw new Error("expected ok");
+    expect(r.body.data.topSuggestions).toHaveLength(2);
+    expect(r.body.data.engines.proactiveSuggestion?.pendingCount).toBe(2);
+  });
+
+  it("tallies acted/dismissed into the engine telemetry block", async () => {
+    const stub = makeRepoV2();
+    stub._suggs.push(
+      { id: "s1", kind: "review_release", title: "T1", rationale: "R1", targetKind: null, targetId: null, confidence: 80, generatedAt: new Date(), operatorDecision: "pending" },
+      { id: "s2", kind: "tighten_protection", title: "T2", rationale: "R2", targetKind: null, targetId: null, confidence: 70, generatedAt: new Date(), operatorDecision: "acted" },
+      { id: "s3", kind: "review_pattern", title: "T3", rationale: "R3", targetKind: null, targetId: null, confidence: 65, generatedAt: new Date(), operatorDecision: "dismissed" },
+      { id: "s4", kind: "review_pattern", title: "T4", rationale: "R4", targetKind: null, targetId: null, confidence: 60, generatedAt: new Date(), operatorDecision: "dismissed" },
+    );
+    const r = await buildAgiCockpitResponse(stub, "o");
+    if (!r.body.ok) throw new Error("expected ok");
+    expect(r.body.data.engines.proactiveSuggestion?.pendingCount).toBe(1);
+    expect(r.body.data.engines.proactiveSuggestion?.acceptedCount).toBe(1);
+    expect(r.body.data.engines.proactiveSuggestion?.rejectedCount).toBe(2);
+  });
+
+  it("rolls suggestion confidence into the headline severity", async () => {
+    const stub = makeRepoV2();
+    stub._suggs.push(
+      { id: "s1", kind: "review_release", title: "Critical thing", rationale: "x", targetKind: null, targetId: null, confidence: 95, generatedAt: new Date(), operatorDecision: "pending" },
+    );
+    const r = await buildAgiCockpitResponse(stub, "o");
+    if (!r.body.ok) throw new Error("expected ok");
+    // 95 conf → high severity (≥80)
+    expect(r.body.data.headline.highestSeverity).toBe("high");
+    expect(r.body.data.headline.totalPending).toBe(1);
+  });
+
+  it("computes AI availability % from the recent rationale window", async () => {
+    const stub = makeRepoV2();
+    stub._avail.push(
+      { outcome: "ai_generated" },
+      { outcome: "ai_generated" },
+      { outcome: "fallback_rules" },
+      { outcome: "error" },
+    );
+    const r = await buildAgiCockpitResponse(stub, "o");
+    if (!r.body.ok) throw new Error("expected ok");
+    expect(r.body.data.aiAvailability).toEqual({
+      windowSize: 4,
+      aiGenerated: 2,
+      fallbackRules: 1,
+      errored: 1,
+      aiAvailabilityPct: 50,
+    });
+  });
+
+  it("AI availability is 0% with an empty window", async () => {
+    const stub = makeRepoV2();
+    const r = await buildAgiCockpitResponse(stub, "o");
+    if (!r.body.ok) throw new Error("expected ok");
+    expect(r.body.data.aiAvailability?.windowSize).toBe(0);
+    expect(r.body.data.aiAvailability?.aiAvailabilityPct).toBe(0);
+  });
+
+  it("suggestions count toward totalPending alongside recs + props", async () => {
+    const stub = makeRepoV2();
+    stub._recs.push({
+      id: "r1", releaseId: "rel_1", kind: "block_deploy", title: "Block",
+      rationale: "x", confidence: 80, severity: "high", generatedAt: new Date(),
+      operatorDecision: "pending",
+    });
+    stub._suggs.push(
+      { id: "s1", kind: "review_release", title: "T1", rationale: "R1", targetKind: null, targetId: null, confidence: 70, generatedAt: new Date(), operatorDecision: "pending" },
+      { id: "s2", kind: "tighten_protection", title: "T2", rationale: "R2", targetKind: null, targetId: null, confidence: 65, generatedAt: new Date(), operatorDecision: "pending" },
+    );
+    const r = await buildAgiCockpitResponse(stub, "o");
+    if (!r.body.ok) throw new Error("expected ok");
+    expect(r.body.data.headline.totalPending).toBe(3); // 1 rec + 2 suggestions
   });
 });

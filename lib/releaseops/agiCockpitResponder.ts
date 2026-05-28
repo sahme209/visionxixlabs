@@ -42,6 +42,21 @@ export interface PendingProposalRow {
   generatedAt: Date;
 }
 
+export interface PendingSuggestionRow {
+  id: string;
+  kind: string;
+  title: string;
+  rationale: string;
+  targetKind: string | null;
+  targetId: string | null;
+  confidence: number;
+  generatedAt: Date;
+}
+
+export interface AvailabilityRow {
+  outcome: string;
+}
+
 export interface AgiCockpitRepo {
   advisorRecommendation: {
     findMany(args: {
@@ -66,6 +81,31 @@ export interface AgiCockpitRepo {
       where: { organizationId: string };
       orderBy: { generatedAt: "desc" };
     }): Promise<{ generatedAt: Date } | null>;
+  };
+  /** Phase 528 — Optional. When present, the cockpit surfaces pending
+   *  proactive suggestions + acceptance counts. When absent, the
+   *  suggestions block is omitted from the response (backwards-compat
+   *  with deployments pre-Phase-525). */
+  proactiveAgiSuggestion?: {
+    findMany(args: {
+      where: { organizationId: string; operatorDecision: "pending" };
+      orderBy: Array<{ confidence: "desc" } | { generatedAt: "desc" }>;
+      take: number;
+    }): Promise<PendingSuggestionRow[]>;
+    count(args: { where: { organizationId: string; operatorDecision: string } }): Promise<number>;
+    findFirst(args: {
+      where: { organizationId: string };
+      orderBy: { generatedAt: "desc" };
+    }): Promise<{ generatedAt: Date } | null>;
+  };
+  /** Phase 528 — Optional. When present, the cockpit surfaces AI
+   *  availability over the recent rationale window. */
+  aiRationaleEnrichment?: {
+    findMany(args: {
+      where: { organizationId: string };
+      orderBy: { generatedAt: "desc" };
+      take: number;
+    }): Promise<AvailabilityRow[]>;
   };
 }
 
@@ -95,6 +135,25 @@ export interface CockpitProposal {
   generatedAtIso: string;
 }
 
+export interface CockpitSuggestion {
+  id: string;
+  kind: string;
+  title: string;
+  rationale: string;
+  targetKind: string | null;
+  targetId: string | null;
+  confidence: number;
+  generatedAtIso: string;
+}
+
+export interface AvailabilitySnapshot {
+  windowSize: number;
+  aiGenerated: number;
+  fallbackRules: number;
+  errored: number;
+  aiAvailabilityPct: number;
+}
+
 export interface EngineTelemetry {
   name: string;
   version: string;
@@ -112,9 +171,20 @@ export type CockpitBody =
         engines: {
           advisor: EngineTelemetry;
           policyProposal: EngineTelemetry;
+          /** Phase 528 — present when the proactiveAgiSuggestion repo
+           *  is wired into the cockpit. Absent on legacy deployments. */
+          proactiveSuggestion?: EngineTelemetry;
         };
         topRecommendations: CockpitRecommendation[];
         topProposals: CockpitProposal[];
+        /** Phase 528 — top pending proactive suggestions, sorted by
+         *  confidence desc then generatedAt desc. Empty array when the
+         *  repo isn't wired in. */
+        topSuggestions: CockpitSuggestion[];
+        /** Phase 528 — AI availability across the recent rationale
+         *  window. null when the aiRationaleEnrichment repo isn't
+         *  wired in. */
+        aiAvailability: AvailabilitySnapshot | null;
         headline: {
           totalPending: number;
           highestSeverity: "low" | "medium" | "high" | "critical" | "none";
@@ -192,10 +262,75 @@ export async function buildAgiCockpitResponse(
       safeRow(() => repo.policyProposal.findFirst({ where: { organizationId }, orderBy: { generatedAt: "desc" } })),
     ]);
 
-    const totalPending = recs.length + props.length;
+    // Phase 528 — optional proactive suggestions block. Reads are
+    // best-effort: a missing repo (legacy deployment), a missing table
+    // (migration pending), or any other read failure cleanly degrades
+    // to an empty suggestions list.
+    let suggPending = 0;
+    let suggAccepted = 0;
+    let suggDismissed = 0;
+    let suggLastIso: string | null = null;
+    let topSuggestions: CockpitSuggestion[] = [];
+    if (repo.proactiveAgiSuggestion) {
+      const repoSugg = repo.proactiveAgiSuggestion;
+      const [pending, accepted, dismissed, last] = await Promise.all([
+        safeMany(() => repoSugg.findMany({
+          where: { organizationId, operatorDecision: "pending" },
+          orderBy: [{ confidence: "desc" }, { generatedAt: "desc" }],
+          take: 5,
+        })),
+        safeCount(() => repoSugg.count({ where: { organizationId, operatorDecision: "acted" } })),
+        safeCount(() => repoSugg.count({ where: { organizationId, operatorDecision: "dismissed" } })),
+        safeRow(() => repoSugg.findFirst({ where: { organizationId }, orderBy: { generatedAt: "desc" } })),
+      ]);
+      suggPending = pending.length;
+      suggAccepted = accepted;
+      suggDismissed = dismissed;
+      suggLastIso = last ? last.generatedAt.toISOString() : null;
+      topSuggestions = pending.map((s) => ({
+        id: s.id,
+        kind: s.kind,
+        title: s.title,
+        rationale: s.rationale,
+        targetKind: s.targetKind,
+        targetId: s.targetId,
+        confidence: s.confidence,
+        generatedAtIso: s.generatedAt.toISOString(),
+      }));
+    }
+
+    // Phase 528 — AI availability over the last 50 rationale entries.
+    let aiAvailability: AvailabilitySnapshot | null = null;
+    if (repo.aiRationaleEnrichment) {
+      const repoAvail = repo.aiRationaleEnrichment;
+      const rows = await safeMany(() => repoAvail.findMany({
+        where: { organizationId },
+        orderBy: { generatedAt: "desc" },
+        take: 50,
+      }));
+      let aiGenerated = 0;
+      let fallbackRules = 0;
+      let errored = 0;
+      for (const r of rows) {
+        if (r.outcome === "ai_generated") aiGenerated++;
+        else if (r.outcome === "fallback_rules") fallbackRules++;
+        else if (r.outcome === "error") errored++;
+      }
+      const windowSize = rows.length;
+      const aiAvailabilityPct = windowSize === 0 ? 0 : Math.round((aiGenerated / windowSize) * 100);
+      aiAvailability = { windowSize, aiGenerated, fallbackRules, errored, aiAvailabilityPct };
+    }
+
+    // Suggestions count toward totalPending so the headline reflects
+    // the operator's true backlog. Only excluded when suggestion repo
+    // wasn't wired (legacy deployments) — in that case suggPending = 0.
+    const totalPending = recs.length + props.length + suggPending;
     const allSeverities = [
       ...recs.map((r) => ({ severity: r.severity })),
       ...props.map((p) => ({ severity: p.severity })),
+      // Suggestions don't carry a severity column; map confidence
+      // bands to severities so they fold into the headline correctly.
+      ...topSuggestions.map((s) => ({ severity: s.confidence >= 80 ? "high" : s.confidence >= 60 ? "medium" : "low" })),
     ];
     const severity = headlineSeverity(allSeverities);
 
@@ -222,6 +357,18 @@ export async function buildAgiCockpitResponse(
               rejectedCount: propsRejected,
               lastRunIso: propsLast ? propsLast.generatedAt.toISOString() : null,
             },
+            ...(repo.proactiveAgiSuggestion
+              ? {
+                  proactiveSuggestion: {
+                    name: "Proactive Suggestion",
+                    version: "proactive-suggestion-v1.0.0",
+                    pendingCount: suggPending,
+                    acceptedCount: suggAccepted,
+                    rejectedCount: suggDismissed,
+                    lastRunIso: suggLastIso,
+                  },
+                }
+              : {}),
           },
           topRecommendations: recs.map((r) => ({
             id: r.id,
@@ -243,6 +390,8 @@ export async function buildAgiCockpitResponse(
             severity: p.severity,
             generatedAtIso: p.generatedAt.toISOString(),
           })),
+          topSuggestions,
+          aiAvailability,
           headline: {
             totalPending,
             highestSeverity: severity,

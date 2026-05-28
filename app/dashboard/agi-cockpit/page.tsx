@@ -29,6 +29,15 @@ interface CockpitProp {
   id: string; kind: string; suggestedRuleKey: string; title: string;
   rationale: string; confidence: number; severity: string; generatedAtIso: string;
 }
+interface CockpitSugg {
+  id: string; kind: string; title: string; rationale: string;
+  targetKind: string | null; targetId: string | null;
+  confidence: number; generatedAtIso: string;
+}
+interface AvailSnapshot {
+  windowSize: number; aiGenerated: number; fallbackRules: number;
+  errored: number; aiAvailabilityPct: number;
+}
 interface EngineTelemetry {
   name: string; version: string;
   pendingCount: number; acceptedCount: number; rejectedCount: number;
@@ -36,15 +45,39 @@ interface EngineTelemetry {
 }
 interface CockpitData {
   generatedAt: string;
-  engines: { advisor: EngineTelemetry; policyProposal: EngineTelemetry };
+  engines: {
+    advisor: EngineTelemetry;
+    policyProposal: EngineTelemetry;
+    proactiveSuggestion?: EngineTelemetry;
+  };
   topRecommendations: CockpitRec[];
   topProposals: CockpitProp[];
+  topSuggestions: CockpitSugg[];
+  aiAvailability: AvailSnapshot | null;
   headline: {
     totalPending: number;
     highestSeverity: "low" | "medium" | "high" | "critical" | "none";
     callToAction: string;
   };
 }
+
+const SUGGESTION_KIND_LABEL: Record<string, string> = {
+  review_release: "Review release",
+  tighten_protection: "Tighten protection",
+  reconcile_manual_fix: "Reconcile manual fix",
+  investigate_incident: "Investigate incident",
+  reduce_fallback_rate: "Reduce AI fallback",
+  review_pattern: "Review pattern",
+  no_action_needed: "No action needed",
+};
+
+const KIND_HREF: Record<string, string> = {
+  release: "/dashboard/releases",
+  council: "/dashboard/advisor-council",
+  triage:  "/dashboard/incident-triage",
+  remediation: "/dashboard/remediation-proposals",
+  repo: "/dashboard/repositories",
+};
 type CockpitBody = { ok: true; data: CockpitData } | { ok: false; error: string; hint?: string };
 
 const SEVERITY_CLASS: Record<string, string> = {
@@ -149,10 +182,47 @@ export default function AgiCockpitPage() {
           </div>
 
           {/* Engine telemetry */}
-          <div className="mb-6 grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div className="mb-6 grid grid-cols-1 md:grid-cols-3 gap-3">
             <EngineCard engine={data.engines.advisor} icon={<SparklesIcon className="h-4 w-4" />} href="/dashboard/release-advisor" />
             <EngineCard engine={data.engines.policyProposal} icon={<CpuChipIcon className="h-4 w-4" />} href="/dashboard/policy-proposals" />
+            {data.engines.proactiveSuggestion && (
+              <EngineCard engine={data.engines.proactiveSuggestion} icon={<SparklesIcon className="h-4 w-4" />} href="/dashboard/agi-suggestions" />
+            )}
           </div>
+
+          {/* Phase 528 — AI availability snapshot */}
+          {data.aiAvailability && data.aiAvailability.windowSize > 0 && (
+            <AvailabilityStrip snapshot={data.aiAvailability} />
+          )}
+
+          {/* Phase 528 — Top pending proactive suggestions */}
+          {data.engines.proactiveSuggestion && (
+            <Section title="Top pending AGI suggestions" subtitle="Operator next-actions proposed by Claude from recent memory">
+              {data.topSuggestions.length === 0 ? (
+                <p className="text-[12.5px] text-zinc-400 italic">No pending suggestions. Generate from /dashboard/agi-suggestions.</p>
+              ) : (
+                <div className="space-y-2">
+                  {data.topSuggestions.map((s) => {
+                    const targetHref = s.targetKind && KIND_HREF[s.targetKind] ? KIND_HREF[s.targetKind] : "/dashboard/agi-suggestions";
+                    const severity = s.confidence >= 80 ? "high" : s.confidence >= 60 ? "medium" : "low";
+                    return (
+                      <CompactCard
+                        key={s.id}
+                        severity={severity}
+                        title={s.title}
+                        rationale={s.rationale}
+                        confidence={s.confidence}
+                        chip={SUGGESTION_KIND_LABEL[s.kind] ?? s.kind}
+                        meta={s.targetId ? `${s.targetKind ?? "target"} ${s.targetId}` : "no specific target"}
+                        href={targetHref}
+                        generatedAtIso={s.generatedAtIso}
+                      />
+                    );
+                  })}
+                </div>
+              )}
+            </Section>
+          )}
 
           {/* Top recommendations */}
           <Section title="Top pending recommendations" subtitle={`From the Release Advisor (${data.engines.advisor.version})`}>
@@ -241,6 +311,37 @@ function Metric({ label, value, tone }: { label: string; value: number; tone: "e
       <p className="text-zinc-500 uppercase tracking-[0.18em] text-[8px]">{label}</p>
       <p className={`${cls} text-[14px] font-bold`}>{value}</p>
     </div>
+  );
+}
+
+function AvailabilityStrip({ snapshot }: { snapshot: AvailSnapshot }) {
+  const tone =
+    snapshot.aiAvailabilityPct >= 80
+      ? "border-emerald-500/[0.20] bg-emerald-500/[0.04]"
+      : snapshot.aiAvailabilityPct >= 50
+      ? "border-amber-500/[0.20] bg-amber-500/[0.04]"
+      : "border-rose-500/[0.20] bg-rose-500/[0.04]";
+  return (
+    <Link href="/dashboard/agi-memory" className="block mb-6">
+      <div className={`rounded-xl border p-3 ${tone} hover:brightness-110 transition`}>
+        <div className="flex items-center gap-3 flex-wrap">
+          <p className="text-[11px] font-semibold text-violet-100">AI provider availability</p>
+          <span className="text-[10px] font-mono text-zinc-300">window: last {snapshot.windowSize}</span>
+          <div className="flex items-center gap-2 ml-auto text-[11px] font-mono">
+            <span className="text-violet-300">{snapshot.aiGenerated} AI</span>
+            <span className="text-zinc-500">·</span>
+            <span className="text-amber-300">{snapshot.fallbackRules} fallback</span>
+            <span className="text-zinc-500">·</span>
+            <span className="text-rose-300">{snapshot.errored} err</span>
+            <span className="text-zinc-500">·</span>
+            <span className="text-white font-bold">{snapshot.aiAvailabilityPct}%</span>
+          </div>
+        </div>
+        <div className="mt-2 h-1.5 rounded-full bg-black/40 overflow-hidden">
+          <div className="h-full bg-gradient-to-r from-violet-500 via-fuchsia-500 to-cyan-400" style={{ width: `${snapshot.aiAvailabilityPct}%` }} />
+        </div>
+      </div>
+    </Link>
   );
 }
 
