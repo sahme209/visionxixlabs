@@ -21,6 +21,7 @@ import {
   PuzzlePieceIcon,
   NewspaperIcon,
   RocketLaunchIcon,
+  CommandLineIcon,
 } from "@heroicons/react/24/outline";
 import { AnimatePresence, motion } from "framer-motion";
 
@@ -40,6 +41,7 @@ const resourcesDropdown = [
   { href: "/changelog",            label: "Changelog",  desc: "What we shipped recently",        icon: RocketLaunchIcon },
   { href: "/manifesto",            label: "Manifesto",  desc: "The seven things we believe",     icon: SparklesIcon },
   { href: "/principles",           label: "Principles", desc: "How we make visual decisions",    icon: SparklesIcon },
+  { href: "/handbook",             label: "Handbook",   desc: "How we build it — engineering",   icon: CommandLineIcon },
   { href: "/team",                 label: "Team",       desc: "How a small team ships carefully",icon: SparklesIcon },
   { href: "/insights",             label: "Insights",   desc: "Customer stories + frameworks",   icon: BookOpenIcon },
   { href: "/enterprise-readiness", label: "Enterprise", desc: "Compliance and readiness",        icon: DocumentTextIcon },
@@ -217,7 +219,7 @@ export function Navigation() {
               </Link>
 
               <a
-                href="https://github.com/visionxixlabs"
+                href="https://github.com/visionxixlabs/axiom"
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="GitHub"
@@ -331,7 +333,7 @@ export function Navigation() {
                     Pricing
                   </Link>
                   <a
-                    href="https://github.com/visionxixlabs"
+                    href="https://github.com/visionxixlabs/axiom"
                     target="_blank"
                     rel="noopener noreferrer"
                     onClick={() => setMobileMenuOpen(false)}

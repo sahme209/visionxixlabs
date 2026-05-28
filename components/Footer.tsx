@@ -42,6 +42,7 @@ const productLinks = [
 const companyLinks = [
   { href: "/manifesto", label: "Manifesto" },
   { href: "/principles", label: "Principles" },
+  { href: "/handbook", label: "Handbook" },
   { href: "/team", label: "Team" },
   { href: "/contact", label: "Contact" },
   { href: "/case-studies", label: "Case Studies" },
@@ -143,20 +144,22 @@ export function Footer() {
             {/* Social links */}
             <div className="flex items-center gap-3">
               <a
-                href="https://github.com/visionxixlabs"
+                href="https://github.com/visionxixlabs/axiom"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="social-link card-border-glow-hover"
-                aria-label="GitHub"
+                aria-label="GitHub — Axiom repo"
+                title="GitHub — Axiom repo"
               >
                 <GitHubIcon className="h-4 w-4" />
               </a>
               <a
-                href="https://linkedin.com/company/visionxixlabs"
+                href="https://www.linkedin.com/company/vision-xix-labs/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="social-link card-border-glow-hover"
-                aria-label="LinkedIn"
+                aria-label="LinkedIn — Vision XIX Labs"
+                title="LinkedIn — Vision XIX Labs"
               >
                 <LinkedInIcon className="h-4 w-4" />
               </a>
@@ -165,7 +168,8 @@ export function Footer() {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="social-link card-border-glow-hover"
-                aria-label="X (Twitter)"
+                aria-label="X (Twitter) — @visionxixlabs"
+                title="X (Twitter) — @visionxixlabs"
               >
                 <XIcon className="h-4 w-4" />
               </a>

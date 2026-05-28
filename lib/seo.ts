@@ -14,7 +14,14 @@ export const organization = {
   description:
     "Axiom is an autonomous cloud operations agent. It scans infrastructure, reasons about what to fix, generates execution plans, and applies approved changes — with governance, rollback, and full audit trail.",
   foundingDate: "2024",
-  sameAs: [] as string[],
+  /* sameAs powers schema.org Organization sameAs[]. Surfaces these
+     social profiles in Google's Knowledge Panel + Twitter card / OG
+     parsers. Keep in sync with Footer + Navigation social links. */
+  sameAs: [
+    "https://www.linkedin.com/company/vision-xix-labs/",
+    "https://x.com/visionxixlabs",
+    "https://github.com/visionxixlabs/axiom",
+  ],
 };
 
 export const primaryKeywords = [
