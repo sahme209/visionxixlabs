@@ -49,6 +49,7 @@ import { IncidentTriageView } from "./views/IncidentTriageView";
 import { LearningLoopView } from "./views/LearningLoopView";
 import { RemediationProposalsView } from "./views/RemediationProposalsView";
 import { ReleaseOpsAutonomyView } from "./views/ReleaseOpsAutonomyView";
+import { AdvisorCouncilView } from "./views/AdvisorCouncilView";
 import { useTrayApprovalsBadge } from "./lib/useTrayApprovalsBadge";
 import { useConnectorHealthAmbientPoll } from "./lib/connectorHealthStore";
 import { useSseStream } from "./lib/useSseStream";
@@ -98,6 +99,7 @@ export type View =
   | "learning-loop"
   | "remediation-proposals"
   | "releaseops-autonomy"
+  | "advisor-council"
   // Automation
   | "activity"
   | "workflows"
@@ -206,6 +208,7 @@ export default function App() {
           {activeView === "learning-loop"    && <LearningLoopView />}
           {activeView === "remediation-proposals" && <RemediationProposalsView />}
           {activeView === "releaseops-autonomy" && <ReleaseOpsAutonomyView />}
+          {activeView === "advisor-council"  && <AdvisorCouncilView />}
           {activeView === "activity"      && <ActivityView />}
           {activeView === "workflows"     && <WorkflowsView />}
           {activeView === "approvals"     && <ApprovalsView />}

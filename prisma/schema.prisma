@@ -3118,6 +3118,53 @@ model AuditEvent {
 /// providers are no-ops. Stores the verified payload so downstream
 /// reducers (release-tag refresh, PR sync, branch validation refresh)
 /// can hydrate themselves without a second HTTP roundtrip.
+/// Phase 514 — AGI Council Decision.
+///
+/// Persists the outcome of a multi-voter run. Each voter is a pure
+/// function over AdvisorInputs that emits a candidate recommendation
+/// kind + confidence. The council aggregator picks the consensus
+/// (majority kind, weighted by confidence) and records the per-voter
+/// dissent for the learning loop.
+///
+/// Closed-union `consensusKind`: one of RECOMMENDATION_KINDS, or
+/// "no_consensus" when no kind has a majority.
+/// Closed-union `operatorDecision`: pending | accepted | overridden |
+/// dismissed.
+model AdvisorCouncilDecision {
+  id              String   @id @default(cuid())
+  organizationId  String
+  releaseId       String
+  /// Closed-union (see model docstring).
+  consensusKind   String
+  /// 0-100 — how much the voters agreed.
+  agreementScore  Int
+  /// Operator-readable title (matches the consensus kind's title).
+  title           String
+  /// Synthesized rationale citing the majority + dissent voices.
+  rationale       String
+  /// JSON array of per-voter records: { voterId, kind, confidence, rationale }.
+  votesJson       Json
+  /// Number of voters that contributed.
+  voterCount      Int
+  /// Inputs the council saw, snapshotted.
+  inputsJson      Json
+  /// Pinned engine version.
+  engineVersion   String
+  /// Closed-union: pending | accepted | overridden | dismissed.
+  operatorDecision String  @default("pending")
+  decidedByUserId String?
+  decidedAt       DateTime?
+  decisionNote    String?
+  /// If operator overrode, the kind they picked.
+  overrideKind    String?
+  generatedAt     DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([organizationId, operatorDecision])
+  @@index([organizationId, releaseId])
+  @@index([organizationId, consensusKind])
+}
+
 /// Phase 513 — Autonomous Tick log.
 ///
 /// Append-only record of each autonomous cron tick. Operators see
