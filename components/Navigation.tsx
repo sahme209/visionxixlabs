@@ -38,7 +38,8 @@ const resourcesDropdown = [
   { href: "/docs",                 label: "Docs",       desc: "Guides, APIs, runbooks",          icon: BookOpenIcon },
   { href: "/blog",                 label: "Blog",       desc: "Product notes + deep dives",      icon: NewspaperIcon },
   { href: "/changelog",            label: "Changelog",  desc: "What we shipped recently",        icon: RocketLaunchIcon },
-  { href: "/insights",             label: "Insights",   desc: "Customer stories + frameworks",   icon: SparklesIcon },
+  { href: "/manifesto",            label: "Manifesto",  desc: "The seven things we believe",     icon: SparklesIcon },
+  { href: "/insights",             label: "Insights",   desc: "Customer stories + frameworks",   icon: BookOpenIcon },
   { href: "/enterprise-readiness", label: "Enterprise", desc: "Compliance and readiness",        icon: DocumentTextIcon },
   { href: "/security",             label: "Security",   desc: "Trust center and policies",       icon: ShieldCheckIcon },
 ];
@@ -194,8 +195,25 @@ export function Navigation() {
               Pricing
             </Link>
 
-            {/* Right-side cluster: GitHub icon · Demo CTA · Sign in · Sign up */}
+            {/* Right-side cluster: Shipped pill · GitHub · Demo · Sign in · Sign up */}
             <div className="flex items-center gap-1 ml-2">
+              {/* "What's shipped" — small live indicator linking to /changelog.
+                  Pinging coral dot + monospace phase number reads as "alive
+                  and being actively built". Apple-style restrained badge. */}
+              <Link
+                href="/changelog"
+                aria-label="What's shipped — view changelog"
+                title="What's shipped — view changelog"
+                className="hidden xl:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border border-brand-coral/20 bg-brand-coral/[0.04] text-[10.5px] font-mono uppercase tracking-[0.12em] text-brand-coral/85 hover:bg-brand-coral/[0.08] hover:border-brand-coral/35 transition-all group"
+              >
+                <span className="relative flex h-1.5 w-1.5">
+                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-brand-coral opacity-60" />
+                  <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-brand-coral" />
+                </span>
+                <span className="text-zinc-400">Shipped</span>
+                <span className="text-brand-coral tabular-nums">489</span>
+              </Link>
+
               <a
                 href="https://github.com/visionxixlabs"
                 target="_blank"
@@ -209,9 +227,9 @@ export function Navigation() {
 
               <Link
                 href="/demo"
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-violet-500/30 bg-violet-500/10 text-violet-100 hover:bg-violet-500/20 hover:border-violet-500/50 transition-all text-sm font-medium whitespace-nowrap"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-brand-coral/30 bg-brand-coral/[0.08] text-zinc-100 hover:bg-brand-coral/[0.14] hover:border-brand-coral/55 transition-all text-sm font-medium whitespace-nowrap tracking-tight"
               >
-                <PlayCircleIcon className="h-4 w-4 text-violet-300" />
+                <PlayCircleIcon className="h-4 w-4 text-brand-coral" />
                 Demo
               </Link>
 

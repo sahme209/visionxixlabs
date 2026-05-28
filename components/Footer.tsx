@@ -40,6 +40,7 @@ const productLinks = [
 ];
 
 const companyLinks = [
+  { href: "/manifesto", label: "Manifesto" },
   { href: "/contact", label: "Contact" },
   { href: "/case-studies", label: "Case Studies" },
   { href: "/press", label: "Press & Media" },
