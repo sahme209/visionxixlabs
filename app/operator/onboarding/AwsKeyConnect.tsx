@@ -175,8 +175,28 @@ export function AwsKeyConnect({
         </h2>
         <p className="mt-3 text-[14px] text-zinc-400 leading-relaxed max-w-xl">
           Account <code className="font-mono text-emerald-200/90">{result.accountId ?? "—"}</code>
-          {" "}is connected through the read-only role you just created. Starting the inventory.
+          {" "}is connected through the read-only role you just created.
         </p>
+        {/* Manual escape hatch — when the parent's auto-advance hangs
+            (rate-limit retry loops on /api/cloud-operator/start +
+            /api/connectors/link), the operator can jump straight to
+            the dashboard. The cloud connection has already been
+            validated server-side at this point. */}
+        <div className="mt-7 flex flex-wrap items-center gap-3">
+          <a
+            href="/dashboard"
+            className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-emerald-500 hover:bg-emerald-400 text-zinc-950 text-[14px] font-medium transition-colors shadow-[0_0_30px_-10px_rgba(16,185,129,0.5)]"
+          >
+            Continue to dashboard
+            <span aria-hidden className="opacity-70">→</span>
+          </a>
+          <a
+            href="/dashboard/start-here"
+            className="text-[13px] text-zinc-400 hover:text-white transition-colors"
+          >
+            Start-here tour
+          </a>
+        </div>
       </div>
     );
   }
