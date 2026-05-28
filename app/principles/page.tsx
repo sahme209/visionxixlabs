@@ -14,6 +14,7 @@ import Link from "next/link";
 import { ArrowRightIcon } from "@heroicons/react/24/outline";
 import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
+import { SectionRail } from "@/components/motion/SectionRail";
 
 export const metadata: Metadata = {
   title: "Design Principles — VisionXIXLabs",
@@ -92,6 +93,8 @@ export default function PrinciplesPage() {
 
       <Navigation />
 
+      <SectionRail items={PRINCIPLES.map((p) => ({ id: `principle-${p.num}`, label: p.title, num: p.num }))} />
+
       <main className="relative max-w-6xl mx-auto px-6 md:px-10 pt-32 pb-32">
         <p className="mono-label inline-flex items-center gap-3 mb-6">
           <span className="text-brand-coral/90 tabular-nums">PR</span>
@@ -119,7 +122,7 @@ export default function PrinciplesPage() {
 
         <div className="space-y-24">
           {PRINCIPLES.map((p) => (
-            <article key={p.num} className="relative">
+            <article key={p.num} id={`principle-${p.num}`} className="relative scroll-mt-24">
               <div className="hairline-soft mb-10" />
               <p className="mono-label mb-5 inline-flex items-center gap-3">
                 <span className="text-brand-coral/90 tabular-nums text-[11px]">{p.num}</span>

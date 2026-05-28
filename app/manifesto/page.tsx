@@ -9,6 +9,7 @@ import Link from "next/link";
 import { ArrowRightIcon } from "@heroicons/react/24/outline";
 import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
+import { SectionRail } from "@/components/motion/SectionRail";
 
 export const metadata: Metadata = {
   title: "Manifesto — VisionXIXLabs",
@@ -72,6 +73,8 @@ export default function ManifestoPage() {
 
       <Navigation />
 
+      <SectionRail items={TENETS.map((t) => ({ id: `tenet-${t.num}`, label: t.short, num: t.num }))} />
+
       <main className="relative max-w-6xl mx-auto px-6 md:px-10 pt-32 pb-32">
         {/* Tiny manifesto eyebrow */}
         <p className="mono-label inline-flex items-center gap-3 mb-6">
@@ -99,7 +102,7 @@ export default function ManifestoPage() {
         {/* Tenets — one per scroll, Apple keynote rhythm */}
         <div className="space-y-28">
           {TENETS.map((tenet) => (
-            <article key={tenet.num} className="relative">
+            <article key={tenet.num} id={`tenet-${tenet.num}`} className="relative scroll-mt-24">
               {/* Subtle coral hairline above each tenet */}
               <div className="hairline-soft mb-10" />
               <p className="mono-label mb-6 inline-flex items-center gap-3">

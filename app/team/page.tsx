@@ -19,6 +19,7 @@ import {
 } from "@heroicons/react/24/outline";
 import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
+import { SectionRail } from "@/components/motion/SectionRail";
 
 export const metadata: Metadata = {
   title: "Team — VisionXIXLabs",
@@ -83,6 +84,8 @@ export default function TeamPage() {
 
       <Navigation />
 
+      <SectionRail items={PRACTICES.map((p) => ({ id: `team-${p.num}`, label: p.title.replace(/[.,].*/, ""), num: p.num }))} />
+
       <main className="relative max-w-6xl mx-auto px-6 md:px-10 pt-32 pb-32">
         <p className="mono-label inline-flex items-center gap-3 mb-6">
           <span className="text-brand-coral/90 tabular-nums">TM</span>
@@ -108,7 +111,7 @@ export default function TeamPage() {
           {PRACTICES.map((p) => {
             const Icon = p.icon;
             return (
-              <article key={p.num} className="surface-glass rounded-2xl p-7 sm:p-9 hover:border-brand-coral/20 transition-all">
+              <article key={p.num} id={`team-${p.num}`} className="surface-glass rounded-2xl p-7 sm:p-9 hover:border-brand-coral/20 transition-all scroll-mt-24">
                 <header className="flex items-center gap-4 mb-5">
                   <div className="shrink-0 w-10 h-10 rounded-lg border border-brand-coral/25 bg-gradient-to-br from-brand-coral/10 to-brand-violet/10 flex items-center justify-center">
                     <Icon className="h-4.5 w-4.5 text-brand-coral" style={{ height: "1.125rem", width: "1.125rem" }} />
