@@ -185,6 +185,47 @@ export async function POST(req: NextRequest) {
         where: { id: lead.id },
         data: { fullPayload: { ...payload, connectors: connectorsForAws } as object },
       });
+
+      // Bridge to the authenticated dashboard: if the lead is tied to
+      // a user with an org, ALSO upsert ConnectorSetupSession so the
+      // dashboard's "Connect AWS" CTA flips to "Connected". The two
+      // data models were previously disconnected — verified leads
+      // didn't propagate to the org's connector state, so the user
+      // would see "AWS verified" on /operator/onboarding and then
+      // "Connect AWS" on /dashboard. This closes that gap.
+      try {
+        if (lead.userId) {
+          const user = await prisma.user.findUnique({
+            where: { id: lead.userId },
+            select: { organizationId: true },
+          });
+          if (user?.organizationId) {
+            await prisma.connectorSetupSession.upsert({
+              where: {
+                organizationId_provider: { organizationId: user.organizationId, provider: "aws" },
+              },
+              update: {
+                status: "connected",
+                lastEventKind: "operator_onboarding_link",
+                lastErrorCode: null,
+                firstConnectedAt: new Date(),
+                lastTransitionAt: new Date(),
+              },
+              create: {
+                organizationId: user.organizationId,
+                provider: "aws",
+                status: "connected",
+                lastEventKind: "operator_onboarding_link",
+                firstConnectedAt: new Date(),
+                lastTransitionAt: new Date(),
+              },
+            });
+          }
+        }
+      } catch (err) {
+        console.warn("[connectors/link] dashboard bridge failed:", err instanceof Error ? err.message : err);
+      }
+
       await logAudit({ leadId: lead.id, action: "connector_linked", actor: "user", metadata: { connectorType } });
       eventConnectorLinked({ leadId: lead.id, connectorType });
       return NextResponse.json({ success: true, connectorType, status: "linked", account: validation.account });

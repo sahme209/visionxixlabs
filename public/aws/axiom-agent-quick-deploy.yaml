@@ -33,13 +33,17 @@ Parameters:
       on the broker user's actual STS GetCallerIdentity, so the
       default below is only a fallback for someone deploying this
       template by hand.
-    # Default matches the broker user's AWS account
-    # (arn:aws:iam::595842668406:user/visionxixlabs-readonly). Old
-    # value 590183704419 was a stale ID baked in early — it caused a
-    # silent AssumeRole-denied loop for every customer because the
-    # role's trust policy then allowed the wrong account.
     Default: "595842668406"
     AllowedPattern: "^[0-9]{12}$"
+
+  CallbackUrl:
+    Type: String
+    Description: >
+      Webhook the platform receives a POST on when the stack reaches
+      CREATE_COMPLETE. Lets the onboarding page auto-advance without
+      the customer clicking the FinishUrl. Injected by the platform's
+      Quick-Create URL.
+    Default: "https://visionxixlabs.com/api/aws/cfn-callback"
 
 Resources:
   AxiomAgentReadOnlyRole:
@@ -110,6 +114,109 @@ Resources:
           Value: VisionXIXLabs
         - Key: Purpose
           Value: AxiomAgent-CrossAccount-ReadOnly
+
+  # ─── Auto-notify the platform when CREATE_COMPLETE fires ──────────────
+  # The Lambda below runs inside the customer's account once at stack
+  # creation, POSTs the new role's ARN + account id + external id to
+  # the platform's webhook, then returns success to CloudFormation. The
+  # onboarding page polls our DB for the callback and auto-advances —
+  # no click on FinishUrl required.
+
+  AxiomNotifyLambdaRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub "AxiomNotifyLambda-${ExternalId}"
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+
+  AxiomNotifyLambda:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: !Sub "AxiomNotify-${ExternalId}"
+      Runtime: python3.12
+      Handler: index.handler
+      Timeout: 30
+      Role: !GetAtt AxiomNotifyLambdaRole.Arn
+      Code:
+        ZipFile: |
+          import json
+          import urllib.request
+          import urllib.error
+          import logging
+
+          log = logging.getLogger()
+          log.setLevel(logging.INFO)
+
+          def send_cfn_response(event, context, status, data=None, reason=None):
+              body = {
+                  "Status": status,
+                  "Reason": reason or f"See CloudWatch log stream {context.log_stream_name}",
+                  "PhysicalResourceId": event.get("PhysicalResourceId") or context.log_stream_name,
+                  "StackId": event["StackId"],
+                  "RequestId": event["RequestId"],
+                  "LogicalResourceId": event["LogicalResourceId"],
+                  "Data": data or {},
+              }
+              encoded = json.dumps(body).encode("utf-8")
+              req = urllib.request.Request(
+                  event["ResponseURL"],
+                  data=encoded,
+                  method="PUT",
+                  headers={"Content-Type": "", "Content-Length": str(len(encoded))},
+              )
+              try:
+                  urllib.request.urlopen(req, timeout=10)
+              except Exception as e:
+                  log.warning(f"cfn response post failed: {e}")
+
+          def handler(event, context):
+              log.info(f"event: {json.dumps({k: v for k, v in event.items() if k != 'ResponseURL'})}")
+              # Only POST on Create. Update + Delete just return success.
+              if event["RequestType"] != "Create":
+                  send_cfn_response(event, context, "SUCCESS")
+                  return
+
+              props = event.get("ResourceProperties", {})
+              callback_url = props.get("CallbackUrl")
+              payload = {
+                  "stackId": event["StackId"],
+                  "roleArn": props.get("RoleArn"),
+                  "accountId": props.get("AccountId"),
+                  "externalId": props.get("ExternalId"),
+                  "region": props.get("Region"),
+              }
+              try:
+                  body = json.dumps(payload).encode("utf-8")
+                  req = urllib.request.Request(
+                      callback_url,
+                      data=body,
+                      method="POST",
+                      headers={"Content-Type": "application/json"},
+                  )
+                  with urllib.request.urlopen(req, timeout=10) as resp:
+                      log.info(f"webhook responded {resp.status}")
+              except Exception as e:
+                  log.warning(f"webhook post failed: {e}")
+
+              send_cfn_response(event, context, "SUCCESS", data={"Notified": "true"})
+
+  AxiomNotifyResource:
+    Type: Custom::AxiomNotify
+    DependsOn: AxiomAgentReadOnlyRole
+    Properties:
+      ServiceToken: !GetAtt AxiomNotifyLambda.Arn
+      RoleArn: !GetAtt AxiomAgentReadOnlyRole.Arn
+      AccountId: !Ref AWS::AccountId
+      ExternalId: !Ref ExternalId
+      Region: !Ref AWS::Region
+      CallbackUrl: !Ref CallbackUrl
 
 Outputs:
   RoleArn:
