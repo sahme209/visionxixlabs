@@ -16,6 +16,7 @@ import { getConnector } from "@/lib/connectors/registry";
 import { encryptCredential } from "@/lib/security/credentialVault";
 import { logAudit } from "@/lib/security/auditLog";
 import { eventConnectorLinked } from "@/lib/observability/events";
+import { deriveWorkspaceIdFromEmail } from "@/lib/auth/workspaceId";
 
 const VALID_CONNECTORS: ConnectorType[] = ["github", "aws", "azure", "gcp"];
 
@@ -186,41 +187,42 @@ export async function POST(req: NextRequest) {
         data: { fullPayload: { ...payload, connectors: connectorsForAws } as object },
       });
 
-      // Bridge to the authenticated dashboard: if the lead is tied to
-      // a user with an org, ALSO upsert ConnectorSetupSession so the
+      // Bridge to the authenticated dashboard: derive the workspace id
+      // from the lead's email (same hash currentContext() uses for the
+      // session-based read), then upsert ConnectorSetupSession so the
       // dashboard's "Connect AWS" CTA flips to "Connected". The two
       // data models were previously disconnected — verified leads
       // didn't propagate to the org's connector state, so the user
       // would see "AWS verified" on /operator/onboarding and then
       // "Connect AWS" on /dashboard. This closes that gap.
+      //
+      // Note: the User model has no organizationId column — workspace
+      // id is derived deterministically from email via the same SHA-256
+      // prefix that currentContext() uses, so writes here and reads
+      // from a session land on the same row.
       try {
-        if (lead.userId) {
-          const user = await prisma.user.findUnique({
-            where: { id: lead.userId },
-            select: { organizationId: true },
+        if (lead.userId && lead.email && lead.email !== "cloud-operator@placeholder.local") {
+          const organizationId = deriveWorkspaceIdFromEmail(lead.email);
+          await prisma.connectorSetupSession.upsert({
+            where: {
+              organizationId_provider: { organizationId, provider: "aws" },
+            },
+            update: {
+              status: "connected",
+              lastEventKind: "operator_onboarding_link",
+              lastErrorCode: null,
+              firstConnectedAt: new Date(),
+              lastTransitionAt: new Date(),
+            },
+            create: {
+              organizationId,
+              provider: "aws",
+              status: "connected",
+              lastEventKind: "operator_onboarding_link",
+              firstConnectedAt: new Date(),
+              lastTransitionAt: new Date(),
+            },
           });
-          if (user?.organizationId) {
-            await prisma.connectorSetupSession.upsert({
-              where: {
-                organizationId_provider: { organizationId: user.organizationId, provider: "aws" },
-              },
-              update: {
-                status: "connected",
-                lastEventKind: "operator_onboarding_link",
-                lastErrorCode: null,
-                firstConnectedAt: new Date(),
-                lastTransitionAt: new Date(),
-              },
-              create: {
-                organizationId: user.organizationId,
-                provider: "aws",
-                status: "connected",
-                lastEventKind: "operator_onboarding_link",
-                firstConnectedAt: new Date(),
-                lastTransitionAt: new Date(),
-              },
-            });
-          }
         }
       } catch (err) {
         console.warn("[connectors/link] dashboard bridge failed:", err instanceof Error ? err.message : err);

@@ -29,6 +29,7 @@ import { loadAppEnv } from "@/lib/config/env";
 import { encryptCredential } from "@/lib/security/credentialVault";
 import { logAudit } from "@/lib/security/auditLog";
 import { eventConnectorLinked } from "@/lib/observability/events";
+import { deriveWorkspaceIdFromEmail } from "@/lib/auth/workspaceId";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -189,37 +190,33 @@ export async function POST(req: NextRequest) {
   });
 
   // Bridge to the authenticated dashboard, same pattern as /api/connectors/link.
-  // Failures are warn-only: the lead-side state above is the source of truth
-  // for the operator/onboarding screen, the bridge is just so the dashboard
-  // CTA agrees with it.
+  // Workspace id derives from email (same hash currentContext() uses) — the
+  // User model has no organizationId column, so a join would always return
+  // null. Failures are warn-only: the lead-side state above is the source
+  // of truth for the operator/onboarding screen.
   try {
-    if (lead.userId) {
-      const user = await prisma.user.findUnique({
-        where: { id: lead.userId },
-        select: { organizationId: true },
+    if (lead.userId && lead.email && lead.email !== "cloud-operator@placeholder.local") {
+      const organizationId = deriveWorkspaceIdFromEmail(lead.email);
+      await prisma.connectorSetupSession.upsert({
+        where: {
+          organizationId_provider: { organizationId, provider: "aws" },
+        },
+        update: {
+          status: "connected",
+          lastEventKind: "cfn_callback",
+          lastErrorCode: null,
+          firstConnectedAt: new Date(),
+          lastTransitionAt: new Date(),
+        },
+        create: {
+          organizationId,
+          provider: "aws",
+          status: "connected",
+          lastEventKind: "cfn_callback",
+          firstConnectedAt: new Date(),
+          lastTransitionAt: new Date(),
+        },
       });
-      if (user?.organizationId) {
-        await prisma.connectorSetupSession.upsert({
-          where: {
-            organizationId_provider: { organizationId: user.organizationId, provider: "aws" },
-          },
-          update: {
-            status: "connected",
-            lastEventKind: "cfn_callback",
-            lastErrorCode: null,
-            firstConnectedAt: new Date(),
-            lastTransitionAt: new Date(),
-          },
-          create: {
-            organizationId: user.organizationId,
-            provider: "aws",
-            status: "connected",
-            lastEventKind: "cfn_callback",
-            firstConnectedAt: new Date(),
-            lastTransitionAt: new Date(),
-          },
-        });
-      }
     }
   } catch (err) {
     console.warn("[cfn-callback] dashboard bridge failed:", err instanceof Error ? err.message : err);

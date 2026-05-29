@@ -16,7 +16,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { id } from "@/lib/domain/ids";
 import type { OrganizationId, UserId } from "@/lib/domain/ids";
-import { createHash } from "node:crypto";
+import { deriveWorkspaceIdFromEmail } from "@/lib/auth/workspaceId";
 
 export interface CurrentContext {
   isAuthenticated: boolean;
@@ -44,7 +44,7 @@ export async function currentContext(): Promise<CurrentContext> {
     return { isAuthenticated: false, roles: [] };
   }
   const userId = sessionUserId ? id.user(sessionUserId) : id.user(userEmail);
-  const orgId = deriveDefaultWorkspaceId(userEmail);
+  const orgId = deriveWorkspaceIdFromEmail(userEmail);
   return {
     isAuthenticated: true,
     userId,
@@ -54,20 +54,6 @@ export async function currentContext(): Promise<CurrentContext> {
     workspaceLabel: deriveWorkspaceLabel(userEmail),
     roles: deriveRolesFromSession(session.user as { roles?: string[] | null }),
   };
-}
-
-/**
- * Default workspace id derivation — until the User → Organization model
- * lands, every email gets a stable "ws_<sha256-prefix>" id. This keeps
- * tenant-scoped queries deterministic without requiring the full multi-
- * tenant schema migration.
- *
- * Same email + same workspace id forever. Different emails → different
- * workspace ids → tenant isolation still holds.
- */
-function deriveDefaultWorkspaceId(email: string): OrganizationId {
-  const hash = createHash("sha256").update(email.trim().toLowerCase()).digest("hex").slice(0, 16);
-  return id.organization(`ws_${hash}`);
 }
 
 function deriveWorkspaceLabel(email: string): string {
