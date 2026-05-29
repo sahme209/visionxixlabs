@@ -35,6 +35,14 @@ export async function GET(req: NextRequest) {
     }, { status: 400 });
   }
 
+  // Optional starter token — when present, baked into the CallbackUrl
+  // so the in-stack Lambda's CREATE_COMPLETE POST can authenticate back
+  // to the right Lead without us having to scan by externalId. If the
+  // token is missing the template default (no token) still POSTs and
+  // the callback endpoint will 400 — but the rest of the manual
+  // RoleArn-paste flow keeps working.
+  const token = req.nextUrl.searchParams.get("token");
+
   const publish = await ensureTemplatePublished();
   if (!publish.available) {
     return NextResponse.json({
@@ -59,11 +67,15 @@ export async function GET(req: NextRequest) {
   // the source of the "broker user needs sts:AssumeRole" loop that
   // resisted every IAM policy paste — the IAM was right, the trust
   // policy was wrong.
+  const callbackUrl = token
+    ? `https://visionxixlabs.com/api/aws/cfn-callback?token=${encodeURIComponent(token)}`
+    : "https://visionxixlabs.com/api/aws/cfn-callback";
   const params = new URLSearchParams({
     templateURL: publish.url,
     stackName,
     param_ExternalId: externalId,
     param_BrokerAccountId: publish.brokerAccountId,
+    param_CallbackUrl: callbackUrl,
   });
   const region = "us-east-1";
   const url =

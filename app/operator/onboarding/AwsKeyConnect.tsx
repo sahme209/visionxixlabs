@@ -82,6 +82,11 @@ export function AwsKeyConnect({
   const params = useSearchParams();
   const urlRoleArn    = params.get("roleArn")    ?? "";
   const urlExternalId = params.get("externalId") ?? "";
+  // Starter token is on the operator/onboarding page URL — forward it
+  // to /api/aws/quick-deploy-url so the CFN stack's in-stack Lambda
+  // can POST back to /api/aws/cfn-callback?token=… and authenticate
+  // to the right Lead without us scanning by externalId.
+  const urlToken = params.get("token") ?? "";
 
   // Stable session externalId. sessionStorage so the CFN trust condition
   // still matches if the customer takes 10 minutes in the AWS Console.
@@ -108,7 +113,7 @@ export function AwsKeyConnect({
   // returns a console deep-link with templateURL=… filled in).
   useEffect(() => {
     let cancelled = false;
-    fetch(`/api/aws/quick-deploy-url?externalId=${encodeURIComponent(externalId)}`)
+    fetch(`/api/aws/quick-deploy-url?externalId=${encodeURIComponent(externalId)}${urlToken ? `&token=${encodeURIComponent(urlToken)}` : ""}`)
       .then((r) => r.json())
       .then((data: { available: boolean; url?: string; hint?: string; reason?: string; brokerArn?: string; bucket?: string }) => {
         if (cancelled) return;
@@ -130,7 +135,7 @@ export function AwsKeyConnect({
         if (!cancelled) setPhase("failed");
       });
     return () => { cancelled = true; };
-  }, [externalId]);
+  }, [externalId, urlToken]);
 
   // Step B — bounce-back from CFN: validate the role we just created.
   useEffect(() => {
@@ -230,7 +235,7 @@ export function AwsKeyConnect({
       setResult(null);
       setPhase(cfnUrl ? "ready" : "loading_template");
       if (!cfnUrl) {
-        fetch(`/api/aws/quick-deploy-url?externalId=${encodeURIComponent(externalId)}`)
+        fetch(`/api/aws/quick-deploy-url?externalId=${encodeURIComponent(externalId)}${urlToken ? `&token=${encodeURIComponent(urlToken)}` : ""}`)
           .then((r) => r.json())
           .then((data: { available: boolean; url?: string; hint?: string; reason?: string; brokerArn?: string; bucket?: string }) => {
             if (data.available && data.url) {
