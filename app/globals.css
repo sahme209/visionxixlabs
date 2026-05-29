@@ -1388,6 +1388,11 @@ h1, h2, h3, h4, h5, h6 {
   mask-composite: exclude;
   animation: border-flow 5s ease infinite;
   opacity: 0.6;
+  /* The pseudo-element sits ON TOP of the card's children in the stacking
+     order. Without this, every click on the form (inputs, the Create
+     account button, the Google/GitHub buttons, the Sign in link) was
+     swallowed by this decorative ring. */
+  pointer-events: none;
 }
 
 /* ── Auth input violet glow ring ─────────────────────────────── */
