@@ -108,19 +108,29 @@ export async function GET(req: NextRequest) {
     });
 
     // Backfill from Lead.fullPayload.connectors for users who linked
-    // BEFORE the bridge fix shipped (commit c655c56). Without this,
-    // anyone who completed /operator/onboarding earlier would still
-    // see "Connect a cloud" forever — their connector lives on the
-    // Lead but never propagated to ConnectorSetupSession. The
-    // backfill is lazy: on first read after the fix, the missing
-    // session row is created so subsequent reads are fast.
+    // BEFORE the bridge fix shipped, OR for fresh sign-ups where the
+    // Lead carries the "cloud-operator@placeholder.local" sentinel
+    // because the start route didn't pick up the session email. Match
+    // by User.id first (most reliable), then by email as a fallback.
+    // The backfill is lazy: on first read, the missing session row is
+    // created so subsequent reads are fast.
     const seenProviders = new Set(view.map((c) => c.provider));
     const missing: ConnectorView[] = [];
     try {
+      // Resolve the user's id so we can match Leads by userId too —
+      // /api/cloud-operator/start sets userId when the session is
+      // present, even when the email column ends up as the placeholder.
+      const user = await prisma.user.findUnique({
+        where: { email: ctx.email.toLowerCase() },
+        select: { id: true },
+      });
       const lead = await prisma.lead.findFirst({
         where: {
-          email: ctx.email.toLowerCase(),
           source: "cloud-operator",
+          OR: [
+            ...(user?.id ? [{ userId: user.id }] : []),
+            { email: ctx.email.toLowerCase() },
+          ],
         },
         orderBy: { updatedAt: "desc" },
         select: { id: true, fullPayload: true },

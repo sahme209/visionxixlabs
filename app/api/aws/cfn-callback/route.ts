@@ -189,14 +189,23 @@ export async function POST(req: NextRequest) {
     data: { fullPayload: { ...payload, connectors } as object },
   });
 
-  // Bridge to the authenticated dashboard, same pattern as /api/connectors/link.
-  // Workspace id derives from email (same hash currentContext() uses) — the
-  // User model has no organizationId column, so a join would always return
-  // null. Failures are warn-only: the lead-side state above is the source
-  // of truth for the operator/onboarding screen.
+  // Bridge to the authenticated dashboard, same pattern as
+  // /api/connectors/link. Prefer User.email over Lead.email — older
+  // Leads carry the "cloud-operator@placeholder.local" sentinel.
   try {
-    if (lead.userId && lead.email && lead.email !== "cloud-operator@placeholder.local") {
-      const organizationId = deriveWorkspaceIdFromEmail(lead.email);
+    let bridgeEmail: string | null = null;
+    if (lead.userId) {
+      const user = await prisma.user.findUnique({
+        where: { id: lead.userId },
+        select: { email: true },
+      });
+      if (user?.email) bridgeEmail = user.email.toLowerCase();
+    }
+    if (!bridgeEmail && lead.email && lead.email !== "cloud-operator@placeholder.local") {
+      bridgeEmail = lead.email.toLowerCase();
+    }
+    if (bridgeEmail) {
+      const organizationId = deriveWorkspaceIdFromEmail(bridgeEmail);
       await prisma.connectorSetupSession.upsert({
         where: {
           organizationId_provider: { organizationId, provider: "aws" },

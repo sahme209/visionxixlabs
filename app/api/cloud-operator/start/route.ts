@@ -58,13 +58,24 @@ export async function POST(req: NextRequest) {
       new Promise<null>((resolve) => setTimeout(() => resolve(null), 2000)),
     ]);
     const userId = session?.user && "id" in session.user ? (session.user as { id: string }).id : null;
+    const sessionEmail = session?.user?.email?.trim().toLowerCase() || null;
+
+    // Critical: use the signed-in user's real email when present. The
+    // ConnectorSetupSession bridge derives the org id by hashing this
+    // email — if the Lead carries the "cloud-operator@placeholder.local"
+    // fallback, the bridge skips the upsert AND the session-mode status
+    // backfill can't find the Lead, so /dashboard sits on "Connect a
+    // cloud" forever after a successful AWS connect.
+    const leadEmail = body.email?.trim().toLowerCase()
+      || sessionEmail
+      || "cloud-operator@placeholder.local";
 
     const lead = await prisma.lead.create({
       data: {
-        email: body.email?.trim().toLowerCase() || "cloud-operator@placeholder.local",
+        email: leadEmail,
         // DB column is NOT NULL (migration drift vs nullable schema) — always
         // pass a string default to avoid P2011 null-constraint violations.
-        name: body.name?.trim() || "Cloud Operator",
+        name: body.name?.trim() || session?.user?.name?.trim() || "Cloud Operator",
         userId: userId ?? undefined,
         source: "cloud-operator",
         status: "created",

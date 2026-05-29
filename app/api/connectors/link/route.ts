@@ -187,22 +187,28 @@ export async function POST(req: NextRequest) {
         data: { fullPayload: { ...payload, connectors: connectorsForAws } as object },
       });
 
-      // Bridge to the authenticated dashboard: derive the workspace id
-      // from the lead's email (same hash currentContext() uses for the
-      // session-based read), then upsert ConnectorSetupSession so the
-      // dashboard's "Connect AWS" CTA flips to "Connected". The two
-      // data models were previously disconnected — verified leads
-      // didn't propagate to the org's connector state, so the user
-      // would see "AWS verified" on /operator/onboarding and then
-      // "Connect AWS" on /dashboard. This closes that gap.
-      //
-      // Note: the User model has no organizationId column — workspace
-      // id is derived deterministically from email via the same SHA-256
-      // prefix that currentContext() uses, so writes here and reads
-      // from a session land on the same row.
+      // Bridge to the authenticated dashboard: resolve the user's real
+      // email (preferring User.email over Lead.email — older Leads
+      // carry the "cloud-operator@placeholder.local" sentinel), then
+      // upsert ConnectorSetupSession so the dashboard's "Connect AWS"
+      // CTA flips to "Connected". The User model has no organizationId
+      // column — workspace id is derived deterministically from email
+      // via the same SHA-256 prefix that currentContext() uses, so
+      // writes here and reads from a session land on the same row.
       try {
-        if (lead.userId && lead.email && lead.email !== "cloud-operator@placeholder.local") {
-          const organizationId = deriveWorkspaceIdFromEmail(lead.email);
+        let bridgeEmail: string | null = null;
+        if (lead.userId) {
+          const user = await prisma.user.findUnique({
+            where: { id: lead.userId },
+            select: { email: true },
+          });
+          if (user?.email) bridgeEmail = user.email.toLowerCase();
+        }
+        if (!bridgeEmail && lead.email && lead.email !== "cloud-operator@placeholder.local") {
+          bridgeEmail = lead.email.toLowerCase();
+        }
+        if (bridgeEmail) {
+          const organizationId = deriveWorkspaceIdFromEmail(bridgeEmail);
           await prisma.connectorSetupSession.upsert({
             where: {
               organizationId_provider: { organizationId, provider: "aws" },
