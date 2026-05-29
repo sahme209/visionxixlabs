@@ -259,7 +259,7 @@ export default function DashboardPage() {
           label="Cloud connections"
           value={`${connected.length}`}
           detail={connected.length === 0 ? "No accounts connected" : `${connected.length} provider${connected.length === 1 ? "" : "s"} live`}
-          href="/operator/onboarding"
+          href="/dashboard/connect-cloud"
           source="live"
         />
       </section>
@@ -337,7 +337,7 @@ export default function DashboardPage() {
             Axiom uses a read-only IAM role with External ID. Validation takes a few seconds — your credentials never leave AWS.
           </p>
           <Link
-            href="/operator/onboarding"
+            href="/dashboard/connect-cloud?provider=aws"
             className="inline-flex items-center gap-2 rounded-full bg-white px-5 py-2.5 text-sm font-semibold text-zinc-900 hover:bg-zinc-100 transition-colors"
           >
             Connect AWS
