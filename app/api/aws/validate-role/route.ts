@@ -52,7 +52,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({
       ok: false,
       error: "malformed_external_id",
-      hint: "External ID is missing from the URL. Re-deploy the CloudFormation stack from /operator/onboarding so a fresh session id is generated.",
+      hint: "External ID is missing from the URL. Re-deploy the CloudFormation stack from /dashboard/connect-cloud so a fresh session id is generated.",
     }, { status: 400 });
   }
 

@@ -253,7 +253,7 @@ export default function EnterpriseReadinessPage() {
                 </div>
                 <div className="flex flex-wrap gap-3">
                   <Link
-                    href="/operator/onboarding"
+                    href="/auth/signup?redirect=/dashboard/connect-cloud"
                     className="btn-huly inline-flex items-center px-7 py-3 rounded-full bg-white text-zinc-900 text-sm font-semibold uppercase tracking-wide hover:bg-zinc-100 transition-all shadow-lg shadow-white/10"
                   >
                     Run Axiom

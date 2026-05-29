@@ -47,7 +47,7 @@ export default function AzureSetupPage() {
           <li>Configure federated identity credentials pointing at Axiom&apos;s issuer (no client secret to share)</li>
           <li>Paste the Tenant ID + Subscription ID + Application ID into the Axiom onboarding wizard</li>
         </ol>
-        <p>See the <Link href="/operator/onboarding" className="text-violet-300 hover:text-violet-200">onboarding wizard</Link> for the exact values to copy.</p>
+        <p>Sign in, then see the <Link href="/dashboard/connect-cloud" className="text-violet-300 hover:text-violet-200">in-dashboard connect flow</Link> for the exact values to copy.</p>
       </DocSection>
 
       <DocSection id="permissions" title="Expected permissions" kicker="03 · Permissions">

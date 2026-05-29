@@ -89,7 +89,7 @@ const plans = [
       "Community support",
     ],
     cta: "Start Free",
-    ctaHref: "/auth/signup?plan=free&redirect=/operator/onboarding",
+    ctaHref: "/auth/signup?plan=free&redirect=/dashboard/connect-cloud",
     highlighted: false,
   },
   {
@@ -107,7 +107,7 @@ const plans = [
       "Priority support",
     ],
     cta: "Get started",
-    ctaHref: "/auth/signup?plan=pro&redirect=/operator/onboarding",
+    ctaHref: "/auth/signup?plan=pro&redirect=/dashboard/connect-cloud",
     highlighted: true,
   },
   {
@@ -178,7 +178,7 @@ export default function OperatorLandingPage() {
             <Link href="/auth/signin" className="text-sm text-zinc-400 hover:text-white transition-colors hidden sm:block">
               Sign in
             </Link>
-            <AnimatedButton href="/auth/signup?redirect=/operator/onboarding" variant="primary" className="text-sm px-4 py-2">
+            <AnimatedButton href="/auth/signup?redirect=/dashboard/connect-cloud" variant="primary" className="text-sm px-4 py-2">
               Start Free
             </AnimatedButton>
           </div>
@@ -220,7 +220,7 @@ export default function OperatorLandingPage() {
           </Reveal>
           <Reveal delay={0.3}>
             <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
-              <AnimatedButton href="/auth/signup?redirect=/operator/onboarding" variant="primary" className="btn-amber-shimmer px-8 py-4 text-base">
+              <AnimatedButton href="/auth/signup?redirect=/dashboard/connect-cloud" variant="primary" className="btn-amber-shimmer px-8 py-4 text-base">
                 Start Free
                 <ArrowRightIcon className="h-4 w-4" />
               </AnimatedButton>
@@ -489,7 +489,7 @@ export default function OperatorLandingPage() {
             <p className="text-lg text-zinc-400 mb-10 max-w-xl mx-auto">
               Connect your AWS account, let Axiom scan and reason, and see exactly what needs fixing — prioritized and ready to act on.
             </p>
-            <AnimatedButton href="/auth/signup?redirect=/operator/onboarding" variant="primary" className="btn-amber-shimmer px-10 py-4 text-base">
+            <AnimatedButton href="/auth/signup?redirect=/dashboard/connect-cloud" variant="primary" className="btn-amber-shimmer px-10 py-4 text-base">
               Start Free — No Credit Card
               <ArrowRightIcon className="h-4 w-4" />
             </AnimatedButton>

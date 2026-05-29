@@ -271,7 +271,7 @@ export default function OperationsPage() {
             </div>
             <div className="flex items-center gap-3">
               <Link
-                href="/operator/onboarding"
+                href="/auth/signup?redirect=/dashboard/connect-cloud"
                 className="btn-huly cta-glow inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white text-xs font-semibold transition-all shadow-sm shadow-violet-500/20"
               >
                 <BoltIcon className="h-3.5 w-3.5" />
@@ -347,7 +347,7 @@ export default function OperationsPage() {
                       <EmptyState
                         title="No agent runs yet"
                         desc="Run your first scan to see agent activity here."
-                        action={{ label: "Run Axiom", href: "/operator/onboarding" }}
+                        action={{ label: "Run Axiom", href: "/auth/signup?redirect=/dashboard/connect-cloud" }}
                       />
                     )}
                   </div>
@@ -391,7 +391,7 @@ export default function OperationsPage() {
                     ) : (
                       <div className="text-center py-4">
                         <p className="text-xs text-zinc-500 mb-2">No accounts connected</p>
-                        <Link href="/operator/onboarding" className="text-xs font-medium text-violet-400 hover:text-violet-300 transition-colors">
+                        <Link href="/auth/signup?redirect=/dashboard/connect-cloud" className="text-xs font-medium text-violet-400 hover:text-violet-300 transition-colors">
                           Connect AWS
                         </Link>
                       </div>
@@ -469,7 +469,7 @@ export default function OperationsPage() {
                             </p>
                           </div>
                           <Link
-                            href={`/operator/onboarding?runId=${approval.runId}`}
+                            href={`/auth/signin?callbackUrl=${encodeURIComponent(`/dashboard?runId=${approval.runId}`)}`}
                             className="text-xs font-medium text-violet-400 hover:text-violet-300 transition-colors"
                           >
                             Review

@@ -6,7 +6,10 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const staticRoutes: MetadataRoute.Sitemap = [
     { url: SITE_URL, lastModified: new Date(), changeFrequency: "weekly", priority: 1 },
     { url: `${SITE_URL}/axiom`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.95 },
-    { url: `${SITE_URL}/operator/onboarding`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.95 },
+    // /operator/onboarding is no longer a public page — it's an
+    // auth-gated redirect into /dashboard/connect-cloud. Removed from
+    // the sitemap so search engines stop crawling a path that just
+    // bounces to sign-in.
     { url: `${SITE_URL}/operator/pricing`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.9 },
     { url: `${SITE_URL}/cloud-solutions`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.85 },
     { url: `${SITE_URL}/cloud-solutions/aws`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.8 },

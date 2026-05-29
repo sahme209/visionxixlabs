@@ -93,7 +93,7 @@ export default function CommandCenterPage() {
               agiNote="No SDKs to install, no agents to deploy. One click connects the source, and the loop starts producing real recommendations within minutes."
               actions={[
                 { href: "/dashboard/connectors", label: "Connect first cloud", variant: "primary" },
-                { href: "/operator/onboarding", label: "Open guided setup", variant: "ghost" },
+                { href: "/dashboard/connect-cloud", label: "Open guided setup", variant: "ghost" },
               ]}
             />
           </div>
@@ -188,7 +188,7 @@ export default function CommandCenterPage() {
               <h3 className="text-sm font-semibold text-white mb-3">Quick actions</h3>
               <div className="space-y-1.5">
                 {[
-                  { href: "/operator/onboarding", icon: CloudIcon, label: "Run new scan" },
+                  { href: "/dashboard/connect-cloud", icon: CloudIcon, label: "Run new scan" },
                   { href: "/dashboard/releaseops", icon: LockClosedIcon, label: "ReleaseOps command center" },
                   { href: "/dashboard/topology", icon: EyeIcon, label: "View topology" },
                   { href: "/dashboard/workflows", icon: ChartBarIcon, label: "Continuous workflows" },
@@ -1652,7 +1652,7 @@ function LiveProvidersStrip() {
 
       <div className="px-3 pb-3">
         <Link
-          href="/operator/onboarding"
+          href="/dashboard/connect-cloud"
           className="flex items-center justify-center gap-1.5 w-full text-[11px] text-zinc-400 hover:text-white border border-dashed border-white/[0.1] hover:border-white/[0.2] rounded-xl py-2.5 transition-colors"
         >
           + Connect provider

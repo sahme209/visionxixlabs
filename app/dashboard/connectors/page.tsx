@@ -365,7 +365,7 @@ export default async function ConnectorsPage() {
         engineers={["Cloud Engineer", "DevOps Engineer", "Security Engineer", "Monitoring Engineer"]}
         requiresApproval="Any write action a connector exposes — IAM edits, repo merges, ticket transitions, runbook executions."
         actions={[
-          { label: "Add a connector", href: "/operator/onboarding" },
+          { label: "Add a connector", href: "/dashboard/connect-cloud" },
           { label: "View setup docs", href: "/docs" },
         ]}
         safetyNote="Read-only by default · Sessions short-lived · Every action audit-logged"

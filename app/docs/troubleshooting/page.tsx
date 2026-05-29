@@ -11,7 +11,7 @@ const ISSUES = [
   {
     section: "AWS connection",
     items: [
-      { code: "AccessDenied (sts:AssumeRole)", cause: "Trust policy points at the wrong Axiom AWS account, or the role doesn't exist.", fix: "Re-copy the trust policy from /operator/onboarding exactly. Confirm the role appears in IAM → Roles." },
+      { code: "AccessDenied (sts:AssumeRole)", cause: "Trust policy points at the wrong Axiom AWS account, or the role doesn't exist.", fix: "Sign in and re-copy the trust policy from /dashboard/connect-cloud exactly. Confirm the role appears in IAM → Roles." },
       { code: "InvalidExternalId", cause: "The External ID in your trust policy condition doesn't match what Axiom sends.", fix: "Re-paste the External ID from the onboarding screen. It must match character-for-character. If you rotated, re-onboard to get a fresh ID." },
       { code: "Cannot assume role: TokenSignatureInvalid", cause: "Clock skew on the role's account, or a permissions boundary blocks sts:AssumeRole.", fix: "Check the role has no Permissions Boundary that excludes sts:AssumeRole. Confirm AWS account-level clock is in sync." },
       { code: "MalformedPolicyDocumentException", cause: "JSON syntax error in the trust or permission policy.", fix: "Use AWS Console's built-in JSON validator. Common issues: trailing commas, missing quotes, copy-paste line breaks." },

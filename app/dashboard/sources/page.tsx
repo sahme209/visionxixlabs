@@ -264,7 +264,7 @@ export default function SourcesPage() {
           <p className="text-[12px] text-zinc-400 leading-relaxed mb-3">
             Connect at least one cloud provider or GitHub to unlock the scan → finding → remediation → simulation → approval → desktop review → evidence flow.
           </p>
-          <Link href="/operator/onboarding" className="inline-flex items-center gap-1.5 text-[12px] font-medium text-amber-200 hover:text-amber-100 border border-amber-500/30 bg-amber-500/[0.06] rounded-md px-3 py-1.5 transition-colors">
+          <Link href="/dashboard/connect-cloud" className="inline-flex items-center gap-1.5 text-[12px] font-medium text-amber-200 hover:text-amber-100 border border-amber-500/30 bg-amber-500/[0.06] rounded-md px-3 py-1.5 transition-colors">
             Start onboarding <ArrowRightIcon className="h-3 w-3" />
           </Link>
         </section>

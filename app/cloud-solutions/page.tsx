@@ -439,7 +439,7 @@ export default function CloudSolutionsPage() {
             primaryLabel="Book a Call"
             primaryHref="/contact"
             secondaryLabel="Run Axiom"
-            secondaryHref="/operator/onboarding"
+            secondaryHref="/auth/signup?redirect=/dashboard/connect-cloud"
             plansHref="/operator/pricing"
           />
         </div>

@@ -42,7 +42,7 @@ export default function GettingStartedPage() {
       <DocSection id="step-2" title="Step 2 — Connect AWS" kicker="02">
         <Step number={1} title="Open Cloud Operator onboarding">
           <p>
-            From the dashboard click <strong>Connect Cloud</strong>, or go directly to <Link href="/operator/onboarding">/operator/onboarding</Link>.
+            Sign in, then from the dashboard click <strong>Connect a cloud</strong> (or go directly to <Link href="/dashboard/connect-cloud">/dashboard/connect-cloud</Link>). Cloud connect is now portal-only — you can't wire it up before signing in.
           </p>
           <p>The onboarding wizard walks you through five steps: provider selection → IAM role creation → ARN paste → connection test → first scan.</p>
         </Step>

@@ -50,7 +50,7 @@ export default async function MultiCloudPage() {
         engineers={["Cloud Engineer", "Security Engineer", "FinOps Engineer", "Incident Engineer"]}
         requiresApproval="Any write action (rightsizing, role change, policy edit). Read-only scans run without approval once a cloud is connected."
         actions={[
-          { label: "Connect a cloud", href: "/operator/onboarding" },
+          { label: "Connect a cloud", href: "/dashboard/connect-cloud" },
           { label: "Run a read-only scan", href: "/dashboard/scheduled-scans" },
           { label: "View demo", href: "/demo" },
         ]}
@@ -95,7 +95,7 @@ export default async function MultiCloudPage() {
               </div>
             )}
             {p.nextAction && (
-              <Link href={p.nextAction.href ?? "/operator/onboarding"} className="inline-flex items-center gap-1.5 text-xs font-semibold text-white hover:text-violet-200">
+              <Link href={p.nextAction.href ?? "/dashboard/connect-cloud"} className="inline-flex items-center gap-1.5 text-xs font-semibold text-white hover:text-violet-200">
                 {p.nextAction.label} <ArrowRightIcon className="h-3.5 w-3.5" />
               </Link>
             )}

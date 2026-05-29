@@ -133,7 +133,7 @@ export default function ManifestoPage() {
 
           {/* Single closing CTA */}
           <Link
-            href="/operator/onboarding"
+            href="/auth/signup?redirect=/dashboard/connect-cloud"
             className="btn-press inline-flex items-center gap-2 px-7 py-3.5 rounded-full text-[14.5px] font-semibold tracking-tight"
           >
             Run Axiom

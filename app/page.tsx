@@ -210,7 +210,7 @@ export default function Home() {
               <Reveal direction="up" delay={0.12}>
                 <div className="relative z-20 flex flex-wrap items-center gap-x-5 gap-y-3">
                   <Link
-                    href="/operator/onboarding"
+                    href="/auth/signup?redirect=/dashboard/connect-cloud"
                     className="btn-press inline-flex items-center gap-2.5 px-7 py-3.5 rounded-full text-[14.5px] font-semibold tracking-tight"
                   >
                     See Axiom in action

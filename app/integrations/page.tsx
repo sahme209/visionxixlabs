@@ -92,7 +92,7 @@ export default function IntegrationsCatalog() {
           without telling us first.
         </p>
         <div className="flex flex-wrap gap-3 pt-1">
-          <Link href="/operator/onboarding" className="text-[13px] text-violet-300/90 hover:text-violet-200 underline-offset-2 hover:underline">Cloud onboarding →</Link>
+          <Link href="/auth/signup?redirect=/dashboard/connect-cloud" className="text-[13px] text-violet-300/90 hover:text-violet-200 underline-offset-2 hover:underline">Cloud onboarding →</Link>
           <Link href="/demo/reference" className="text-[13px] text-violet-300/90 hover:text-violet-200 underline-offset-2 hover:underline">Platform reference →</Link>
           <Link href="/docs/permissions-model" className="text-[13px] text-zinc-300 hover:text-white underline-offset-2 hover:underline">Permissions model →</Link>
           <Link href="/docs/security-model" className="text-[13px] text-zinc-300 hover:text-white underline-offset-2 hover:underline">Security model →</Link>

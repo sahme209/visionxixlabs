@@ -245,7 +245,7 @@ export default async function SolutionDetailPage({
               primaryLabel="Talk to an Engineer"
               primaryHref="/contact"
               secondaryLabel="Run Axiom"
-              secondaryHref="/operator/onboarding"
+              secondaryHref="/auth/signup?redirect=/dashboard/connect-cloud"
               plansHref="/operator/pricing"
             />
           </Reveal>

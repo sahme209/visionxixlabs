@@ -183,7 +183,7 @@ export default function AxiomPage() {
           <Reveal direction="up" blur delay={0.3}>
             <div className="flex flex-wrap justify-center gap-4">
               <Link
-                href="/operator/onboarding"
+                href="/auth/signup?redirect=/dashboard/connect-cloud"
                 className="btn-huly inline-flex items-center gap-2 px-8 py-3.5 bg-white text-zinc-900 rounded-full font-semibold text-sm uppercase tracking-wide hover:bg-zinc-100 transition-all shadow-lg shadow-white/10"
               >
                 Start free scan
@@ -516,7 +516,7 @@ export default function AxiomPage() {
             </div>
             <div className="flex flex-wrap justify-center gap-4">
               <Link
-                href="/operator/onboarding"
+                href="/auth/signup?redirect=/dashboard/connect-cloud"
                 className="btn-huly inline-flex items-center gap-2 px-8 py-3.5 bg-white text-zinc-900 rounded-full font-semibold text-sm uppercase tracking-wide hover:bg-zinc-100 transition-all shadow-lg shadow-white/10"
               >
                 Start free scan
