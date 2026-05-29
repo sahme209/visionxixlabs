@@ -300,16 +300,19 @@ export function DashboardSidebar() {
                       const Icon = item.icon;
                       const active = isActive(pathname, item.href);
                       return (
-                        <li key={item.href}>
+                        <li key={item.href} className="relative">
+                          {active && (
+                            <span aria-hidden className="absolute left-0 top-1/2 -translate-y-1/2 w-[2px] h-4 rounded-full bg-white" />
+                          )}
                           <Link
                             href={item.href}
-                            className={`flex items-center gap-2.5 rounded-lg px-3 py-1.5 text-[12.5px] transition-all ${
+                            className={`flex items-center gap-2.5 rounded-lg pl-4 pr-3 py-1.5 text-[12.5px] transition-colors ${
                               active
-                                ? "bg-violet-500/[0.10] text-white border border-violet-500/[0.22]"
-                                : "text-zinc-400 hover:text-white hover:bg-white/[0.03] border border-transparent"
+                                ? "text-white"
+                                : "text-zinc-500 hover:text-zinc-200"
                             }`}
                           >
-                            <Icon className={`h-3.5 w-3.5 shrink-0 ${active ? "text-violet-300" : "text-zinc-500"}`} />
+                            <Icon className="h-3.5 w-3.5 shrink-0 text-zinc-500" />
                             <span className="truncate">{item.label}</span>
                           </Link>
                         </li>
@@ -344,10 +347,10 @@ export function DashboardSidebar() {
               <Link
                 key={item.href}
                 href={item.href}
-                className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] border transition-all ${
+                className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] border transition-colors ${
                   active
-                    ? "bg-violet-500/[0.10] text-white border-violet-500/[0.22]"
-                    : "text-zinc-400 border-white/[0.06] hover:text-white hover:border-white/[0.18]"
+                    ? "text-white border-white/[0.18]"
+                    : "text-zinc-500 border-white/[0.04] hover:text-zinc-200 hover:border-white/[0.10]"
                 }`}
               >
                 <Icon className="h-3 w-3 shrink-0" />

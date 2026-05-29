@@ -31,10 +31,7 @@ import {
   ExclamationCircleIcon,
   LockClosedIcon,
   EyeIcon,
-  BoltIcon,
   ShieldCheckIcon,
-  CpuChipIcon,
-  ChartBarSquareIcon,
 } from "@heroicons/react/24/outline";
 import { AwsKeyConnect } from "@/app/operator/onboarding/AwsKeyConnect";
 import { AzureDeployConnect } from "@/app/operator/onboarding/AzureDeployConnect";
@@ -49,11 +46,9 @@ const PROVIDER_LABELS: Record<Provider, string> = {
   gcp:   "Google Cloud",
 };
 
-const PROVIDER_TONE: Record<Provider, string> = {
-  aws:   "from-amber-500/20  to-amber-500/5  border-amber-500/30  text-amber-200",
-  azure: "from-sky-500/20    to-sky-500/5    border-sky-500/30    text-sky-200",
-  gcp:   "from-emerald-500/20 to-emerald-500/5 border-emerald-500/30 text-emerald-200",
-};
+// Removed per-provider gradients — the page used to flash amber / sky /
+// emerald cards in a row, which broke the calm. Provider cards now share
+// the same surface; the brand badge in the corner is the only differentiator.
 
 const PROVIDER_BADGES: Record<Provider, string> = {
   aws:   "AWS",
@@ -251,90 +246,64 @@ function ConnectCloudInner() {
           </p>
         </div>
 
-        {/* Provider cards — full-width rows like the public page used to render */}
-        <div className="space-y-3 mb-12">
+        {/* Provider rows — calm shared surface, brand differentiated only by badge */}
+        <div className="rounded-2xl border border-white/[0.06] bg-white/[0.015] divide-y divide-white/[0.04] overflow-hidden mb-12">
           {(["aws", "azure", "gcp"] as Provider[]).map((p) => {
             const info = PROVIDER_INFO[p];
             return (
               <button
                 key={p}
                 onClick={() => startProvider(p)}
-                className={`group w-full rounded-2xl border bg-gradient-to-br ${PROVIDER_TONE[p]} px-5 sm:px-7 py-5 text-left transition-all hover:-translate-y-0.5 hover:shadow-[0_18px_40px_-22px_rgba(255,255,255,0.18)] focus:outline-none focus:ring-1 focus:ring-white/20`}
+                className="group w-full px-6 sm:px-7 py-6 text-left hover:bg-white/[0.015] transition-colors focus:outline-none"
               >
-                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 rounded-xl bg-white/[0.06] border border-white/10 flex items-center justify-center shrink-0 text-[11px] font-mono font-semibold tracking-wider">
+                <div className="flex items-start gap-5">
+                  <div className="w-10 h-10 rounded-xl bg-white/[0.04] border border-white/[0.06] flex items-center justify-center shrink-0 text-[10px] font-mono font-semibold tracking-wider text-zinc-300">
                     {PROVIDER_BADGES[p]}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <div className="flex flex-wrap items-center gap-2 mb-1.5">
-                      <p className="text-base font-semibold text-white">{PROVIDER_LABELS[p]}</p>
-                      <span className="text-[10px] font-mono uppercase tracking-[0.18em] text-emerald-300">· operational</span>
-                    </div>
-                    <p className="text-[13px] text-zinc-300/90 leading-relaxed mb-2.5">{info.tagline}</p>
-                    <div className="flex flex-wrap gap-x-5 gap-y-1 text-[11px] text-zinc-400">
-                      <span className="font-mono">{info.capabilities.length}/{info.capabilities.length} capabilities</span>
-                      <span>· {info.setup}</span>
-                      <span>· {info.authMethod}</span>
-                    </div>
+                    <p className="text-[15px] font-semibold text-white mb-1">{PROVIDER_LABELS[p]}</p>
+                    <p className="text-[12px] text-zinc-500 leading-relaxed mb-2">{info.tagline}</p>
+                    <p className="text-[11px] text-zinc-600">{info.setup} · {info.authMethod}</p>
                   </div>
-                  <ArrowRightIcon className="h-4 w-4 text-zinc-500 group-hover:text-white transition-colors mt-1 shrink-0" />
+                  <ArrowRightIcon className="h-4 w-4 text-zinc-600 group-hover:text-white group-hover:translate-x-0.5 transition-all mt-1 shrink-0" />
                 </div>
               </button>
             );
           })}
         </div>
 
-        {/* Agent architecture — security + scan story */}
-        <div className="rounded-2xl border border-white/[0.06] bg-white/[0.015] px-5 sm:px-7 py-7 mb-8">
-          <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-zinc-500 mb-4">agent architecture</p>
-          <div className="grid sm:grid-cols-2 gap-5">
-            <AgentFeature
-              icon={LockClosedIcon}
-              title="Read-only access"
-              body="No credentials stored — only the assumed role or service principal. Revoke anytime from your provider console and Axiom loses access in seconds."
-            />
-            <AgentFeature
-              icon={EyeIcon}
-              title="Deep infrastructure scan"
-              body="All regions, all resource types. Discovery normalizes into a single graph so cross-cloud reasoning works the same way regardless of provider."
-            />
-            <AgentFeature
-              icon={ShieldCheckIcon}
-              title="External ID + trust policy"
-              body="The cross-account role only trusts our broker account, and only with the per-tenant external id baked into the trust policy. No confused-deputy risk."
-            />
-            <AgentFeature
-              icon={BoltIcon}
-              title="Approval gates for writes"
-              body="Discovery + analysis runs unattended. Any plan that mutates infrastructure stops at a human-readable approval before executing."
-            />
-            <AgentFeature
-              icon={CpuChipIcon}
-              title="Reasoning over snapshots"
-              body="Axiom builds a fresh snapshot on every scan and reasons over that, not your live API. No surprise throttling, no rate-limit storms."
-            />
-            <AgentFeature
-              icon={ChartBarSquareIcon}
-              title="Audit-grade activity log"
-              body="Every read, every plan, every approval, every write — captured as a signed audit row you can export to your SIEM."
-            />
-          </div>
+        {/* How Axiom connects — three plain promises */}
+        <div className="grid md:grid-cols-3 gap-x-10 gap-y-6 mb-12">
+          <Promise
+            icon={LockClosedIcon}
+            title="Read-only by default"
+            body="Only the role or service principal you create. No keys, no JSON. Revoke from your console and access ends in seconds."
+          />
+          <Promise
+            icon={ShieldCheckIcon}
+            title="Approval-gated writes"
+            body="Discovery + analysis runs unattended. Anything that mutates infrastructure pauses at a human-readable approval first."
+          />
+          <Promise
+            icon={EyeIcon}
+            title="Audit-grade log"
+            body="Every read, plan, approval, and write captured as a signed row you can export to your SIEM."
+          />
         </div>
 
-        {/* Capability detail per provider */}
-        <details className="rounded-2xl border border-white/[0.06] bg-white/[0.015] open:bg-white/[0.025] transition-colors">
-          <summary className="cursor-pointer list-none px-5 sm:px-7 py-4 flex items-center justify-between text-sm text-zinc-300 hover:text-white">
-            <span className="font-medium">What does each provider unlock?</span>
-            <ArrowRightIcon className="h-3.5 w-3.5" />
+        {/* Capability detail — collapsed by default so the picker stays calm */}
+        <details className="group rounded-2xl border border-white/[0.06] bg-white/[0.015] open:bg-white/[0.02] transition-colors">
+          <summary className="cursor-pointer list-none px-6 sm:px-7 py-4 flex items-center justify-between text-[13px] text-zinc-400 hover:text-white">
+            <span>What does each provider unlock?</span>
+            <span className="text-[10px] font-mono text-zinc-600 group-open:rotate-180 transition-transform">▾</span>
           </summary>
-          <div className="grid sm:grid-cols-3 gap-5 px-5 sm:px-7 pb-6 pt-2">
+          <div className="grid sm:grid-cols-3 gap-x-8 gap-y-5 px-6 sm:px-7 pb-6 pt-1">
             {(["aws", "azure", "gcp"] as Provider[]).map((p) => (
               <div key={p}>
-                <p className="text-[11px] font-mono uppercase tracking-[0.18em] text-zinc-500 mb-3">{PROVIDER_LABELS[p]}</p>
-                <ul className="space-y-2">
+                <p className="text-[11px] text-zinc-500 mb-3">{PROVIDER_LABELS[p]}</p>
+                <ul className="space-y-1.5">
                   {PROVIDER_INFO[p].capabilities.map((cap) => (
-                    <li key={cap} className="flex items-start gap-2 text-[12px] text-zinc-300/90 leading-relaxed">
-                      <CheckCircleIcon className="h-3.5 w-3.5 text-emerald-400/80 mt-0.5 shrink-0" />
+                    <li key={cap} className="text-[12px] text-zinc-400 leading-relaxed">
                       {cap}
                     </li>
                   ))}
@@ -437,7 +406,7 @@ function ConnectCloudInner() {
   );
 }
 
-function AgentFeature({
+function Promise({
   icon: Icon,
   title,
   body,
@@ -447,14 +416,10 @@ function AgentFeature({
   body: string;
 }) {
   return (
-    <div className="flex items-start gap-3">
-      <div className="w-9 h-9 rounded-xl bg-white/[0.04] border border-white/10 flex items-center justify-center shrink-0">
-        <Icon className="h-4 w-4 text-zinc-300" />
-      </div>
-      <div className="flex-1 min-w-0">
-        <p className="text-sm font-semibold text-white mb-1">{title}</p>
-        <p className="text-[12px] text-zinc-400 leading-relaxed">{body}</p>
-      </div>
+    <div>
+      <Icon className="h-4 w-4 text-zinc-500 mb-3" />
+      <p className="text-[14px] font-medium text-white mb-1.5">{title}</p>
+      <p className="text-[12px] text-zinc-500 leading-relaxed">{body}</p>
     </div>
   );
 }
