@@ -33,6 +33,10 @@ type ConnectorView = {
   status: string;
   accountId?: string;
   lastScan?: string;
+  /** Verified role ARN — present when the cfn-callback or link route
+   *  has run AssumeRole + GetCallerIdentity. Lets the connect page
+   *  poll for completion without re-running validate-role. */
+  arn?: string;
 };
 
 function clampCloudStatus(provider: string, status: string): string {
@@ -68,6 +72,7 @@ export async function GET(req: NextRequest) {
         const status = clampCloudStatus(provider, (meta.status as string) || "pending");
         const entry: ConnectorView = { provider, status };
         if (meta.verifiedAccountId) entry.accountId = String(meta.verifiedAccountId);
+        if (meta.verifiedCallerArn) entry.arn = String(meta.verifiedCallerArn);
         view.push(entry);
       }
       return NextResponse.json({ ok: true, connectors: view });

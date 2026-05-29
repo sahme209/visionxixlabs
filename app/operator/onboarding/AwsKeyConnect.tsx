@@ -170,6 +170,61 @@ export function AwsKeyConnect({
     return () => { cancelled = true; };
   }, [urlRoleArn, urlExternalId, onValidated]);
 
+  // Step C — auto-detect the CFN auto-notify callback. While we're in
+  // "deploying" (user is over in the AWS console clicking through Quick-
+  // Create), poll /api/connectors/status?token=… every 4 seconds. The
+  // moment the in-stack Lambda POSTs to /api/aws/cfn-callback, the Lead's
+  // connectors.aws flips to "linked" and we advance the page without
+  // requiring the customer to click FinishUrl. ~10 minutes of polling
+  // covers slow CFN runs without leaking intervals on idle pages.
+  useEffect(() => {
+    if (phase !== "deploying" || !urlToken) return;
+    let cancelled = false;
+    let attempts = 0;
+    const MAX_ATTEMPTS = 150; // 150 × 4s ≈ 10 minutes
+    const interval = window.setInterval(async () => {
+      if (cancelled) return;
+      attempts += 1;
+      if (attempts > MAX_ATTEMPTS) {
+        window.clearInterval(interval);
+        return;
+      }
+      try {
+        const res = await fetch(`/api/connectors/status?token=${encodeURIComponent(urlToken)}`, {
+          cache: "no-store",
+        });
+        if (!res.ok) return;
+        const data: { ok?: boolean; connectors?: Array<{ provider: string; status: string; accountId?: string; arn?: string }> } = await res.json();
+        if (cancelled || !data?.connectors) return;
+        const aws = data.connectors.find((c) => c.provider === "aws");
+        if (!aws || (aws.status !== "linked" && aws.status !== "connected")) return;
+        // CFN auto-notify completed. Surface success without re-running
+        // validate-role — the callback already AssumeRole'd.
+        window.clearInterval(interval);
+        const validated: ValidationOk = {
+          ok: true,
+          accountId: aws.accountId ?? null,
+          arn: aws.arn ?? `arn:aws:iam::${aws.accountId ?? "000000000000"}:role/AxiomAgentReadOnly-${externalId.replace(/^axiom-/, "")}`,
+          externalId,
+        };
+        setResult(validated);
+        setPhase("connected");
+        if (onValidated) onValidated({
+          accountId: validated.accountId,
+          roleArn: validated.arn,
+          externalId: validated.externalId,
+        });
+      } catch {
+        // Network blip — keep polling. The interval will eventually
+        // time out via MAX_ATTEMPTS if AWS never finishes.
+      }
+    }, 4000);
+    return () => {
+      cancelled = true;
+      window.clearInterval(interval);
+    };
+  }, [phase, urlToken, externalId, onValidated]);
+
   // ─── Connected ──────────────────────────────────────────────────────
   if (phase === "connected" && result?.ok) {
     return (
