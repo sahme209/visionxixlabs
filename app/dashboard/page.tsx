@@ -332,15 +332,15 @@ export default function DashboardPage() {
       {connected.length === 0 && (
         <section className="mb-10 rounded-2xl border border-white/[0.06] bg-gradient-to-br from-white/[0.02] to-transparent p-8 text-center">
           <CloudIcon className="h-10 w-10 text-zinc-600 mx-auto mb-3" />
-          <h2 className="text-base font-semibold text-white mb-1">Connect your first cloud account</h2>
+          <h2 className="text-base font-semibold text-white mb-1">Connect a cloud to get started</h2>
           <p className="text-sm text-zinc-500 mb-5 max-w-md mx-auto leading-relaxed">
-            Axiom uses a read-only IAM role with External ID. Validation takes a few seconds — your credentials never leave AWS.
+            AWS, Azure, or Google Cloud — pick whichever your team uses. Axiom only reads, your credentials never leave your provider.
           </p>
           <Link
-            href="/dashboard/connect-cloud?provider=aws"
+            href="/dashboard/connect-cloud"
             className="inline-flex items-center gap-2 rounded-full bg-white px-5 py-2.5 text-sm font-semibold text-zinc-900 hover:bg-zinc-100 transition-colors"
           >
-            Connect AWS
+            Connect a cloud
             <ArrowRightIcon className="h-3.5 w-3.5" />
           </Link>
         </section>

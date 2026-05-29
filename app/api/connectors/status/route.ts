@@ -79,7 +79,7 @@ export async function GET(req: NextRequest) {
 
   // ─── Session mode (authenticated dashboard) ───────────────────────────
   const ctx = await currentContext();
-  if (!ctx.isAuthenticated || !ctx.organizationId) {
+  if (!ctx.isAuthenticated || !ctx.organizationId || !ctx.email) {
     // Empty array, not 401 — the dashboard treats this as "nothing
     // connected yet" and renders its empty-state CTA. A 401 here would
     // cause the dashboard's loading spinner to never resolve.
@@ -95,12 +95,76 @@ export async function GET(req: NextRequest) {
         lastTransitionAt: true,
       },
     });
-    const view: ConnectorView[] = sessions.map((s) => {
+    let view: ConnectorView[] = sessions.map((s) => {
       const status = clampCloudStatus(s.provider, s.status);
       const entry: ConnectorView = { provider: s.provider, status };
       if (s.lastTransitionAt) entry.lastScan = s.lastTransitionAt.toISOString();
       return entry;
     });
+
+    // Backfill from Lead.fullPayload.connectors for users who linked
+    // BEFORE the bridge fix shipped (commit c655c56). Without this,
+    // anyone who completed /operator/onboarding earlier would still
+    // see "Connect a cloud" forever — their connector lives on the
+    // Lead but never propagated to ConnectorSetupSession. The
+    // backfill is lazy: on first read after the fix, the missing
+    // session row is created so subsequent reads are fast.
+    const seenProviders = new Set(view.map((c) => c.provider));
+    const missing: ConnectorView[] = [];
+    try {
+      const lead = await prisma.lead.findFirst({
+        where: {
+          email: ctx.email.toLowerCase(),
+          source: "cloud-operator",
+        },
+        orderBy: { updatedAt: "desc" },
+        select: { id: true, fullPayload: true },
+      });
+      if (lead) {
+        const payload = (lead.fullPayload as Record<string, unknown>) || {};
+        const connectors = (payload.connectors as Record<string, unknown>) || {};
+        for (const [provider, raw] of Object.entries(connectors)) {
+          if (seenProviders.has(provider)) continue;
+          const meta = raw as Record<string, unknown>;
+          const status = clampCloudStatus(provider, (meta.status as string) || "pending");
+          if (status !== "linked" && status !== "connected") continue;
+          const entry: ConnectorView = { provider, status: "connected" };
+          if (meta.verifiedAccountId) entry.accountId = String(meta.verifiedAccountId);
+          missing.push(entry);
+          // Lazy upsert so the next read hits the session row.
+          try {
+            await prisma.connectorSetupSession.upsert({
+              where: {
+                organizationId_provider: { organizationId: ctx.organizationId, provider },
+              },
+              update: {
+                status: "connected",
+                lastEventKind: "backfill_from_lead",
+                lastErrorCode: null,
+                firstConnectedAt: new Date(),
+                lastTransitionAt: new Date(),
+              },
+              create: {
+                organizationId: ctx.organizationId,
+                provider,
+                status: "connected",
+                lastEventKind: "backfill_from_lead",
+                firstConnectedAt: new Date(),
+                lastTransitionAt: new Date(),
+              },
+            });
+          } catch (upsertErr) {
+            console.warn("[connectors status] backfill upsert failed:",
+              upsertErr instanceof Error ? upsertErr.message : upsertErr);
+          }
+        }
+      }
+    } catch (backfillErr) {
+      console.warn("[connectors status] lead backfill lookup failed:",
+        backfillErr instanceof Error ? backfillErr.message : backfillErr);
+    }
+    if (missing.length > 0) view = [...view, ...missing];
+
     return NextResponse.json({ ok: true, connectors: view });
   } catch (e) {
     // Table not migrated yet → return empty list, not 500. The
