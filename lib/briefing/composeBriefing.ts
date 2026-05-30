@@ -48,17 +48,20 @@ export async function composeDailyBriefing(
   const paragraphs: BriefingParagraph[] = [];
   let partial = false;
 
-  // Scans in last 24h vs prior 24h.
-  let recentRuns: Array<{
+  // Scans in last 24h vs prior 24h. Let Prisma infer the row type
+  // from the select — we map to plain strings below for the templates,
+  // avoiding `as typeof` casts that can drift from the actual schema.
+  type RecentRun = {
     id: string;
     trigger: string;
     completedAt: Date | null;
     cloudAccount: { provider: string; externalAccountId: string };
     _count: { findings: number };
-  }> = [];
+  };
+  let recentRuns: RecentRun[] = [];
   let priorRunCount = 0;
   try {
-    recentRuns = await prisma.axiomAgentRun.findMany({
+    const rows = await prisma.axiomAgentRun.findMany({
       where: {
         organizationId,
         status: "completed",
@@ -72,7 +75,17 @@ export async function composeDailyBriefing(
         cloudAccount: { select: { provider: true, externalAccountId: true } },
         _count: { select: { findings: true } },
       },
-    }) as typeof recentRuns;
+    });
+    recentRuns = rows.map((r) => ({
+      id: r.id,
+      trigger: String(r.trigger),
+      completedAt: r.completedAt,
+      cloudAccount: {
+        provider: String(r.cloudAccount.provider),
+        externalAccountId: r.cloudAccount.externalAccountId,
+      },
+      _count: r._count,
+    }));
     priorRunCount = await prisma.axiomAgentRun.count({
       where: {
         organizationId,

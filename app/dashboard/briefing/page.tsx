@@ -10,6 +10,7 @@
  * click any cited number to drill in.
  */
 
+import type { ReactNode } from "react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { currentContext } from "@/lib/auth/currentContext";
@@ -25,8 +26,8 @@ const CHIP_TONE: Record<NonNullable<BriefingParagraph["chip"]>["tone"], string> 
 };
 
 /** Render `**bold**` and `[label](href)` markers without pulling a Markdown lib. */
-function renderInline(body: string): React.ReactNode[] {
-  const nodes: React.ReactNode[] = [];
+function renderInline(body: string): ReactNode[] {
+  const nodes: ReactNode[] = [];
   let i = 0;
   const re = /\*\*([^*]+)\*\*|\[([^\]]+)\]\(([^)]+)\)/g;
   let m: RegExpExecArray | null;
