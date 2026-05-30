@@ -68,6 +68,10 @@
     {
       "path": "/api/cron/releaseops-autonomous-tick",
       "schedule": "0 * * * *"
+    },
+    {
+      "path": "/api/cron/scheduled-scan-tick",
+      "schedule": "*/15 * * * *"
     }
   ]
 }

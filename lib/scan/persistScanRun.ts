@@ -131,6 +131,43 @@ export async function persistScanRun(input: PersistInput): Promise<PersistOutcom
       });
     }
 
+    // Auto-create a daily scheduled scan after the first manual scan.
+    // The cron worker at /api/cron/scheduled-scan-tick polls these
+    // every 15 minutes. Users don't have to opt in — they get
+    // automatic re-scans, and can disable via toggle later.
+    if (input.trigger === "manual" || input.trigger === undefined) {
+      try {
+        const existing = await prisma.axiomScheduledRun.findFirst({
+          where: {
+            organizationId: input.organizationId,
+            cloudAccountId: cloudAccount.id,
+          },
+          select: { id: true },
+        });
+        if (!existing) {
+          const tomorrow = new Date(Date.now() + 24 * 60 * 60 * 1000);
+          await prisma.axiomScheduledRun.create({
+            data: {
+              organizationId: input.organizationId,
+              cloudAccountId: cloudAccount.id,
+              frequency: "daily",
+              cronExpression: "0 9 * * *",
+              timezone: "UTC",
+              nextRunAt: tomorrow,
+              enabled: true,
+            },
+          });
+        }
+      } catch (schedErr) {
+        // Schedule creation is best-effort — the manual scan
+        // already succeeded so we never fail the parent for this.
+        console.warn(
+          "[persistScanRun] schedule auto-create failed:",
+          schedErr instanceof Error ? schedErr.message : schedErr,
+        );
+      }
+    }
+
     return {
       runId: run.id,
       cloudAccountId: cloudAccount.id,
