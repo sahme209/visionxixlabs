@@ -3,13 +3,13 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import Link from "next/link";
 import { CpuChipIcon } from "@heroicons/react/24/outline";
-import { SignOutButton } from "./SignOutButton";
 import { DashboardSidebar } from "./DashboardSidebar";
 import { ContextualHelpBubble } from "./ContextualHelpBubble";
 import { TrialCountdownBanner } from "./TrialCountdownBanner";
 import { FeedbackWidget } from "./FeedbackWidget";
 import { DemoModeBanner } from "./DemoModeBanner";
 import { PendingApprovalsBadge } from "./PendingApprovalsBadge";
+import { ProfileMenu } from "./ProfileMenu";
 
 export default async function DashboardLayout({
   children,
@@ -32,10 +32,9 @@ export default async function DashboardLayout({
             <CpuChipIcon className="h-7 w-7 text-violet-500" />
             <span className="font-bold text-white tracking-[-0.04em]">Axiom</span>
           </Link>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
             <PendingApprovalsBadge />
-            <span className="text-sm text-zinc-400 hidden sm:inline">{session.user.email}</span>
-            <SignOutButton />
+            <ProfileMenu email={session.user.email ?? ""} />
           </div>
         </div>
       </header>
