@@ -1,406 +1,336 @@
-"use client";
+/**
+ * /dashboard/security — real-data security posture.
+ *
+ * Replaces the prior SAMPLE_CREDS / SAMPLE_DESKTOPS demo with reads
+ * against the canonical tables:
+ *   - Lead.fullPayload.connectors → which connectors hold credentials,
+ *     when each was last linked, what the status is
+ *   - AxiomFinding (category = security) → recent security findings
+ *     scoped to the tenant
+ *   - AxiomApprovalItem (riskLevel = high) → high-risk decisions pending
+ *   - SecureAuditRecord → recent security-relevant events
+ *
+ * Empty states render an honest 'nothing wired yet' card with a
+ * single connect-cloud or run-scan CTA. No sample data anywhere.
+ */
 
 import Link from "next/link";
-import {
-  ShieldCheckIcon,
-  LockClosedIcon,
-  KeyIcon,
-  EyeSlashIcon,
-  ServerStackIcon,
-  ComputerDesktopIcon,
-  CubeTransparentIcon,
-  DocumentTextIcon,
-  CheckCircleIcon,
-  ExclamationTriangleIcon,
-  XCircleIcon,
-  ArrowRightIcon,
-} from "@heroicons/react/24/outline";
-import { Reveal } from "@/components/motion/Reveal";
-import { Stagger } from "@/components/motion/Stagger";
-import { PageIntro } from "@/components/dashboard/PageIntro";
-import { RunSecurityScannerPanel } from "@/components/dashboard/RunSecurityScannerPanel";
-import { buildSecurityPosture } from "@/lib/security/securityPosture";
-import type { PostureCheck, PostureSemantic } from "@/lib/security/securityPosture";
-import type { CredentialMetadata } from "@/lib/security/credentialMeta";
-import { displayFor as credDisplay, materialDisplay } from "@/lib/security/credentialMeta";
-import type { PairedDesktop } from "@/lib/desktop/desktopSecurity";
-import { displayFor as desktopDisplay } from "@/lib/desktop/desktopSecurity";
-import { id } from "@/lib/domain/ids";
-import { TenantEmptyState } from "@/components/platform/TenantEmptyState";
-import { useTenantFreshness } from "@/components/platform/useTenantFreshness";
+import { redirect } from "next/navigation";
+import { currentContext } from "@/lib/auth/currentContext";
+import { prisma } from "@/lib/db";
+import { ArrowRightIcon } from "@heroicons/react/24/outline";
 
-// ---------------------------------------------------------------------------
-// Honest preview inputs — no live data wired yet. Source is tagged "preview"
-// so every panel surfaces the same label rather than faking production.
-// ---------------------------------------------------------------------------
+export const dynamic = "force-dynamic";
 
-const SAMPLE_CREDS: CredentialMetadata[] = [
-  {
-    organizationId: id.organization("preview"),
-    connectorId: id.connector("preview-aws"),
-    material: "aws_role_arn",
-    state: "active",
-    vaultRef: "vault://preview/aws",
-    lastValidatedAt: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000).toISOString(),
-    lastRotatedAt: new Date(Date.now() - 22 * 24 * 60 * 60 * 1000).toISOString(),
-    label: "Production AWS Role",
-  },
-  {
-    organizationId: id.organization("preview"),
-    connectorId: id.connector("preview-github"),
-    material: "github_app_installation",
-    state: "active",
-    vaultRef: "vault://preview/gh",
-    lastRotatedAt: new Date(Date.now() - 68 * 24 * 60 * 60 * 1000).toISOString(),
-    label: "GitHub App — releaseops",
-  },
-  {
-    organizationId: id.organization("preview"),
-    connectorId: id.connector("preview-azure"),
-    material: "azure_service_principal",
-    state: "active",
-    vaultRef: "vault://preview/az",
-    lastRotatedAt: new Date(Date.now() - 95 * 24 * 60 * 60 * 1000).toISOString(),
-    label: "Azure SP — staging",
-  },
-];
+type Severity = "info" | "low" | "medium" | "high" | "critical";
 
-const SAMPLE_DESKTOPS: PairedDesktop[] = [
-  {
-    desktopId: "desk-preview-1",
-    organizationId: id.organization("preview"),
-    userId: id.user("preview-user"),
-    os: "macos",
-    channel: "stable",
-    version: "0.2.4",
-    fingerprint: "fp-preview-mac",
-    state: "trusted",
-    pairedAt: new Date(Date.now() - 12 * 24 * 60 * 60 * 1000).toISOString(),
-    lastSeenAt: new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString(),
-  },
-];
+const SEVERITY_TONE: Record<Severity, string> = {
+  critical: "text-rose-400",
+  high:     "text-rose-300",
+  medium:   "text-amber-300",
+  low:      "text-zinc-400",
+  info:     "text-zinc-500",
+};
 
-export default function SecurityCenterPage() {
-  const { isFreshOrLoading, loaded } = useTenantFreshness();
-  const showSampleData = loaded && !isFreshOrLoading;
-  const posture = buildSecurityPosture({
-    source: showSampleData ? "preview" : "preview",
-    credentials: showSampleData ? SAMPLE_CREDS : [],
-    pairedDesktops: showSampleData ? SAMPLE_DESKTOPS : [],
-    crossTenantAttempts30d: 0,
-    policyBlocks30d: showSampleData ? 2 : 0,
-    openHighRiskFindings: showSampleData ? 1 : 0,
-    redactionEnabled: true,
-    auditStoreConfigured: true,
-    copilotContextSafe: true,
+interface ConnectorCred {
+  provider: string;
+  status: string;
+  linkedAt?: string;
+  authMethod?: string;
+  verifiedAccountId?: string;
+}
+
+interface SecurityFinding {
+  id: string;
+  severity: Severity;
+  title: string;
+  description: string;
+  region: string;
+  createdAt: Date;
+}
+
+interface SecurityAudit {
+  id: string;
+  action: string;
+  outcome: string;
+  occurredAt: Date;
+  entityRef: string | null;
+}
+
+export default async function SecurityPage() {
+  const ctx = await currentContext();
+  if (!ctx.isAuthenticated || !ctx.organizationId || !ctx.email) {
+    redirect("/auth/signin?callbackUrl=/dashboard/security");
+  }
+
+  // Connector credentials — read from the user's cloud-operator Lead.
+  const user = await prisma.user.findUnique({
+    where: { email: ctx.email.toLowerCase() },
+    select: { id: true },
   });
+  const lead = await prisma.lead.findFirst({
+    where: {
+      source: "cloud-operator",
+      OR: [
+        ...(user?.id ? [{ userId: user.id }] : []),
+        { email: ctx.email.toLowerCase() },
+      ],
+    },
+    orderBy: { updatedAt: "desc" },
+    select: { fullPayload: true },
+  });
+  const payload = (lead?.fullPayload as Record<string, unknown>) || {};
+  const connectors = (payload.connectors as Record<string, unknown>) || {};
+  const creds: ConnectorCred[] = [];
+  for (const [provider, raw] of Object.entries(connectors)) {
+    const meta = raw as Record<string, unknown>;
+    creds.push({
+      provider,
+      status: String(meta.status ?? "unknown"),
+      linkedAt: meta.linkedAt ? String(meta.linkedAt) : undefined,
+      authMethod: meta.authMethod ? String(meta.authMethod) : undefined,
+      verifiedAccountId: meta.verifiedAccountId ? String(meta.verifiedAccountId) : undefined,
+    });
+  }
 
-  const semanticTone: Record<PostureSemantic, string> = {
-    success: "text-emerald-400",
-    warning: "text-amber-400",
-    error: "text-red-400",
-    neutral: "text-zinc-400",
-  };
-  const semanticBg: Record<PostureSemantic, string> = {
-    success: "bg-emerald-500/10 border-emerald-500/20",
-    warning: "bg-amber-500/10 border-amber-500/20",
-    error: "bg-red-500/10 border-red-500/20",
-    neutral: "bg-white/[0.04] border-white/[0.08]",
-  };
+  // Recent security findings.
+  let recentSecurity: SecurityFinding[] = [];
+  let highRiskPending = 0;
+  let migrationPending = false;
+  try {
+    const findings = await prisma.axiomFinding.findMany({
+      where: {
+        run: { organizationId: ctx.organizationId },
+        category: "security",
+      },
+      orderBy: { createdAt: "desc" },
+      take: 8,
+      select: {
+        id: true,
+        severity: true,
+        title: true,
+        description: true,
+        region: true,
+        createdAt: true,
+      },
+    });
+    recentSecurity = findings.map((f) => ({
+      id: f.id,
+      severity: f.severity as Severity,
+      title: f.title,
+      description: f.description,
+      region: f.region,
+      createdAt: f.createdAt,
+    }));
+    highRiskPending = await prisma.axiomApprovalItem.count({
+      where: {
+        organizationId: ctx.organizationId,
+        status: { in: ["pending", "snoozed"] },
+        riskLevel: "high",
+      },
+    });
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    if (/relation .* does not exist|table .* does not exist/i.test(msg)) {
+      migrationPending = true;
+    }
+  }
+
+  // Recent security-relevant audit events.
+  let recentAudits: SecurityAudit[] = [];
+  try {
+    const rows = await (prisma as unknown as {
+      secureAuditRecord: {
+        findMany: (args: unknown) => Promise<Array<SecurityAudit>>;
+      };
+    }).secureAuditRecord.findMany({
+      where: {
+        organizationId: ctx.organizationId,
+        OR: [
+          { action: { startsWith: "connector." } },
+          { action: { startsWith: "approval." } },
+          { action: { startsWith: "aws." } },
+        ],
+      },
+      orderBy: { occurredAt: "desc" },
+      take: 6,
+      select: {
+        id: true,
+        action: true,
+        outcome: true,
+        occurredAt: true,
+        entityRef: true,
+      },
+    });
+    recentAudits = rows;
+  } catch { /* migration_pending captured above */ }
 
   return (
-    <div className="relative">
-      <PageIntro
-        kicker={`Security Center · ${posture.source === "live" ? "Live" : posture.source === "preview" ? "Preview" : "Demo"}`}
-        title={<>Enterprise <span className="text-zinc-500">trust posture.</span></>}
-        description="What Axiom protects, how it protects it, and what is still on the roadmap. The matrix below reflects real implementation state — no hidden controls, no faked claims."
-        helps="See credential hygiene, IAM drift, tenant isolation, and audit-log coverage in one place."
-        connectFirst="A cloud connector so we can read IAM policies, access keys, and least-privilege gaps."
-        engineers={["Security Engineer", "Cloud Engineer", "Incident Engineer"]}
-        requiresApproval="Any policy edit, key rotation, or role modification surfaced as a remediation."
-        actions={[
-          { label: "Connect first cloud", href: "/dashboard/connectors" },
-          { label: "Read the trust model", href: "/docs/permissions-model" },
-        ]}
-        safetyNote="Read-only by default · Findings are surfaced, never auto-applied"
-      />
+    <div className="max-w-5xl mx-auto px-1 -mt-2">
+      <header className="mb-12">
+        <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-zinc-500 mb-3">security</p>
+        <h1 className="text-[34px] sm:text-[40px] leading-[1.05] font-semibold text-white tracking-[-0.03em] mb-3">
+          Your posture, today.
+        </h1>
+        <p className="text-[15px] text-zinc-400 leading-relaxed max-w-xl">
+          Reads from your real connectors, findings, approvals, and audit
+          trail. Nothing on this page is sample data.
+        </p>
+      </header>
 
-      {!showSampleData && (
-        <Reveal direction="up" delay={0.04}>
-          <div className="mb-8">
-            <TenantEmptyState
-              icon={<ShieldCheckIcon className="h-5 w-5" />}
-              tone="emerald"
-              eyebrow="Trust posture pending"
-              title="Your security posture appears the moment a cloud is linked."
-              description="Once a connector is wired, Axiom inventories credentials, scores rotation hygiene, watches every desktop pairing, and shows you exactly what an enterprise reviewer would ask about."
-              agiNote="AGI will run the first credential, redaction, and tenant-isolation checks automatically — no manual config required."
-              actions={[
-                { href: "/dashboard/connectors", label: "Connect first cloud", variant: "primary" },
-                { href: "/docs/permissions-model", label: "Read the trust model", variant: "ghost" },
-              ]}
-            />
-          </div>
-        </Reveal>
-      )}
-
-      {/* Run scanner — clickable POST /api/security-scan with canonical result */}
-      {showSampleData && <RunSecurityScannerPanel />}
-
-      {/* Posture KPIs */}
-      {showSampleData && (
-      <Stagger delay={0.05} interval={0.05} className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
-        {[
-          { label: "Posture score", value: `${Math.round(posture.score * 100)}%`, sub: posture.semantic === "success" ? "Strong baseline" : posture.semantic === "warning" ? "Action needed" : "Critical gaps", icon: ShieldCheckIcon, semantic: posture.semantic },
-          { label: "Redaction patterns", value: String(posture.redaction.patterns.length), sub: `${posture.redaction.sensitiveKeyCount} key-name blocks`, icon: EyeSlashIcon, semantic: "success" as PostureSemantic },
-          { label: "Credentials registered", value: String(posture.credentialSummary.total), sub: `${posture.credentialSummary.delegated} delegated · ${posture.credentialSummary.rotationDue} due · ${posture.credentialSummary.rotationOverdue} overdue`, icon: KeyIcon, semantic: posture.credentialSummary.rotationOverdue > 0 ? "error" : posture.credentialSummary.rotationDue > 0 ? "warning" : "success" as PostureSemantic },
-          { label: "Desktops trusted", value: `${posture.desktopSummary.trusted}/${posture.desktopSummary.paired}`, sub: posture.desktopSummary.blocked > 0 ? `${posture.desktopSummary.blocked} blocked` : "No blocked desktops", icon: ComputerDesktopIcon, semantic: posture.desktopSummary.blocked > 0 ? "warning" : "success" as PostureSemantic },
-        ].map((kpi) => {
-          const Icon = kpi.icon;
-          return (
-            <div key={kpi.label} className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
-              <div className={`w-9 h-9 rounded-lg ${semanticBg[kpi.semantic]} border flex items-center justify-center mb-3`}>
-                <Icon className={`h-4.5 w-4.5 ${semanticTone[kpi.semantic]}`} />
-              </div>
-              <p className="text-2xl font-bold text-white tracking-tight mb-0.5">{kpi.value}</p>
-              <p className="text-[11px] text-zinc-500 leading-tight">{kpi.label}</p>
-              <p className="text-[10px] text-zinc-600 mt-1">{kpi.sub}</p>
-            </div>
-          );
-        })}
-      </Stagger>
-      )}
-
-      {/* Posture checks */}
-      {showSampleData && (
-      <Reveal direction="up" delay={0.08}>
-        <div className="mb-8 rounded-2xl border border-white/[0.06] bg-white/[0.015] p-6">
-          <div className="flex items-center justify-between flex-wrap gap-3 mb-5">
-            <div>
-              <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-zinc-500 mb-1">posture checks</p>
-              <h2 className="text-[18px] font-semibold text-white tracking-[-0.01em]">Live signals from the security layer.</h2>
-            </div>
-            <Link href="/docs" className="text-[11px] text-zinc-400 hover:text-white transition-colors">
-              Trust documentation <ArrowRightIcon className="inline h-3 w-3 ml-1 -mt-0.5" />
-            </Link>
-          </div>
-          <div className="grid md:grid-cols-2 gap-2">
-            {posture.checks.map((c) => (
-              <PostureRow key={c.id} check={c} />
-            ))}
-          </div>
+      {migrationPending && (
+        <div className="mb-8 rounded-2xl border border-amber-500/15 bg-white/[0.015] px-6 py-5">
+          <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-amber-300 mb-1">migration pending</p>
+          <p className="text-[13px] text-zinc-300">
+            Findings / approvals tables aren&apos;t migrated yet. Run <code className="font-mono text-white">prisma migrate deploy</code>.
+          </p>
         </div>
-      </Reveal>
       )}
 
-      {/* Credentials */}
-      {showSampleData && (
-      <Reveal direction="up" delay={0.12}>
-        <div className="mb-8 rounded-2xl border border-white/[0.06] bg-white/[0.02] overflow-hidden">
-          <div className="px-5 py-3 border-b border-white/[0.06] flex items-center justify-between flex-wrap gap-2">
-            <div className="flex items-center gap-2">
-              <KeyIcon className="h-4 w-4 text-zinc-500" />
-              <p className="text-[11px] font-semibold text-zinc-300 uppercase tracking-widest">Credential health</p>
-            </div>
-            <p className="text-[11px] text-zinc-500">Delegated trust preferred over static keys.</p>
-          </div>
-          <div className="p-3 space-y-2">
-            {SAMPLE_CREDS.map((c) => {
-              const disp = credDisplay(c.state);
+      {/* Connector credentials */}
+      <section className="mb-10">
+        <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-zinc-500 mb-3">connector credentials</p>
+        {creds.length === 0 ? (
+          <Link
+            href="/dashboard/connect-cloud"
+            className="group block rounded-2xl border border-white/[0.06] bg-white/[0.015] hover:border-white/[0.12] transition-colors px-7 py-7"
+          >
+            <p className="text-[14px] font-medium text-white mb-1">No connectors yet</p>
+            <p className="text-[12px] text-zinc-500 leading-relaxed max-w-md mb-4">
+              Credentials appear here when you link a cloud account. They&apos;re
+              stored encrypted; only the assumed role is used during scans.
+            </p>
+            <span className="inline-flex items-center gap-2 text-[13px] font-medium text-zinc-200 group-hover:text-white">
+              Connect a cloud
+              <ArrowRightIcon className="h-3.5 w-3.5 group-hover:translate-x-0.5 transition-transform" />
+            </span>
+          </Link>
+        ) : (
+          <ul className="rounded-2xl border border-white/[0.06] bg-white/[0.015] divide-y divide-white/[0.04] overflow-hidden">
+            {creds.map((c) => {
+              const linkedDate = c.linkedAt ? new Date(c.linkedAt) : null;
+              const tone = c.status === "linked" ? "text-emerald-300" : c.status === "invalid" ? "text-rose-300" : "text-zinc-400";
               return (
-                <div key={c.connectorId} className="flex items-center justify-between rounded-lg border border-white/[0.05] bg-white/[0.015] px-4 py-3">
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold text-white truncate">{c.label}</p>
-                    <p className="text-[11px] text-zinc-500 mt-0.5">
-                      {materialDisplay(c.material)} · Rotated {daysAgo(c.lastRotatedAt)}
-                    </p>
+                <li key={c.provider} className="px-6 py-4">
+                  <div className="flex items-baseline justify-between gap-3 flex-wrap">
+                    <div className="flex-1 min-w-0">
+                      <p className="text-[14px] font-medium text-white">
+                        {c.provider.toUpperCase()}
+                        {c.verifiedAccountId && <span className="text-zinc-500 font-mono text-[12px]"> · {c.verifiedAccountId}</span>}
+                      </p>
+                      <p className="text-[11px] font-mono uppercase tracking-wider mt-0.5">
+                        <span className={tone}>{c.status}</span>
+                        {c.authMethod && <span className="text-zinc-600"> · {c.authMethod.replace(/-/g, " ")}</span>}
+                      </p>
+                    </div>
+                    {linkedDate && (
+                      <span className="text-[11px] text-zinc-500 shrink-0">
+                        linked {linkedDate.toLocaleDateString()}
+                      </span>
+                    )}
                   </div>
-                  <span className={`text-[10px] font-mono uppercase tracking-wider ${
-                    disp.semantic === "success" ? "text-emerald-400" :
-                    disp.semantic === "warning" ? "text-amber-400" :
-                    disp.semantic === "error" ? "text-rose-400" :
-                    "text-zinc-500"
-                  }`}>· {disp.pill}</span>
-                </div>
+                </li>
               );
             })}
-          </div>
-        </div>
-      </Reveal>
-      )}
+          </ul>
+        )}
+      </section>
 
-      {/* RBAC overview */}
-      <Reveal direction="up" delay={0.16}>
-        <div className="mb-8 rounded-2xl border border-white/[0.06] bg-white/[0.02] overflow-hidden">
-          <div className="px-5 py-3 border-b border-white/[0.06] flex items-center justify-between flex-wrap gap-2">
-            <div className="flex items-center gap-2">
-              <LockClosedIcon className="h-4 w-4 text-zinc-500" />
-              <p className="text-[11px] font-semibold text-zinc-300 uppercase tracking-widest">Role-based access control</p>
-            </div>
-            <p className="text-[11px] text-zinc-500">{posture.rbac.roles.length} roles · {posture.rbac.permissions.length} permissions</p>
-          </div>
-          <div className="divide-y divide-white/[0.04]">
-            {posture.rbac.roles.map((r) => (
-              <div key={r.id} className="px-5 py-3 flex items-start gap-4">
-                <div className="w-28 shrink-0">
-                  <p className="text-sm font-semibold text-white">{r.label}</p>
-                  <p className="text-[10px] text-zinc-500 mt-0.5">{r.permissions.length} perms</p>
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-[12px] text-zinc-400 leading-relaxed">{r.description}</p>
-                </div>
-              </div>
-            ))}
-          </div>
+      {/* Recent security findings */}
+      <section className="mb-10">
+        <div className="flex items-baseline justify-between mb-3">
+          <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-zinc-500">recent security findings</p>
+          {recentSecurity.length > 0 && (
+            <Link href="/dashboard/findings?q=security" className="text-[11px] text-zinc-500 hover:text-white transition-colors">
+              All security findings
+            </Link>
+          )}
         </div>
-      </Reveal>
-
-      {/* Supply chain */}
-      <Reveal direction="up" delay={0.2}>
-        <div className="mb-8 rounded-2xl border border-white/[0.06] bg-white/[0.02] overflow-hidden">
-          <div className="px-5 py-3 border-b border-white/[0.06] flex items-center justify-between flex-wrap gap-2">
-            <div className="flex items-center gap-2">
-              <CubeTransparentIcon className="h-4 w-4 text-zinc-500" />
-              <p className="text-[11px] font-semibold text-zinc-300 uppercase tracking-widest">Supply-chain posture</p>
-            </div>
-            <p className="text-[11px] text-zinc-500">
-              {posture.supplyChain.summary.implemented} implemented · {posture.supplyChain.summary.inProgress} in progress · {posture.supplyChain.summary.planned} planned
+        {recentSecurity.length === 0 ? (
+          <div className="rounded-2xl border border-white/[0.06] bg-white/[0.015] px-6 py-8 text-center">
+            <p className="text-[13px] text-zinc-300 mb-1">No security findings yet</p>
+            <p className="text-[11px] text-zinc-500 leading-relaxed max-w-md mx-auto">
+              Run a scan from the dashboard to populate findings. Security-category
+              rows from your real scan show up here.
             </p>
           </div>
-          <div className="p-3 space-y-2">
-            {posture.supplyChain.controls.map((c) => {
-              const tone =
-                c.status === "implemented" ? "success" :
-                c.status === "in_progress" ? "warning" :
-                c.status === "planned" ? "neutral" : "neutral";
-              return (
-                <div key={c.id} className="flex items-start justify-between rounded-lg border border-white/[0.05] bg-white/[0.015] px-4 py-3 gap-3">
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold text-white">{c.label}</p>
-                    <p className="text-[11px] text-zinc-500 mt-0.5 leading-relaxed">{c.description}</p>
+        ) : (
+          <ul className="rounded-2xl border border-white/[0.06] bg-white/[0.015] divide-y divide-white/[0.04] overflow-hidden">
+            {recentSecurity.map((f) => (
+              <li key={f.id}>
+                <Link
+                  href={`/dashboard/findings/${f.id}`}
+                  className="group block px-6 py-4 hover:bg-white/[0.015] transition-colors"
+                >
+                  <div className="flex items-center gap-2 mb-1 text-[10px] font-mono uppercase tracking-wider">
+                    <span className={SEVERITY_TONE[f.severity]}>{f.severity}</span>
+                    <span className="text-zinc-600">· {f.region}</span>
                   </div>
-                  <span className={`text-[10px] font-mono uppercase tracking-wider shrink-0 ${
-                    tone === "success" ? "text-emerald-400" :
-                    tone === "warning" ? "text-amber-400" :
-                    "text-zinc-500"
-                  }`}>
-                    {c.status === "implemented" ? "Live" : c.status === "in_progress" ? "In progress" : c.status === "planned" ? "Planned" : "N/A"}
-                  </span>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      </Reveal>
-
-      {/* Desktop trust */}
-      {showSampleData && (
-      <Reveal direction="up" delay={0.24}>
-        <div className="mb-8 rounded-2xl border border-white/[0.06] bg-white/[0.02] overflow-hidden">
-          <div className="px-5 py-3 border-b border-white/[0.06] flex items-center justify-between flex-wrap gap-2">
-            <div className="flex items-center gap-2">
-              <ComputerDesktopIcon className="h-4 w-4 text-zinc-500" />
-              <p className="text-[11px] font-semibold text-zinc-300 uppercase tracking-widest">Desktop trust</p>
-            </div>
-            <p className="text-[11px] text-zinc-500">{posture.desktopSummary.paired} paired · {posture.desktopSummary.trusted} trusted</p>
-          </div>
-          <div className="p-3 space-y-2">
-            {SAMPLE_DESKTOPS.map((d) => {
-              const disp = desktopDisplay(d.state);
-              return (
-                <div key={d.desktopId} className="flex items-center justify-between rounded-lg border border-white/[0.05] bg-white/[0.015] px-4 py-3">
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold text-white">{d.os} · v{d.version} · {d.channel}</p>
-                    <p className="text-[11px] text-zinc-500 mt-0.5">{disp.detail}</p>
-                  </div>
-                  <span className={`text-[10px] font-mono uppercase tracking-wider ${
-                    disp.semantic === "success" ? "text-emerald-400" :
-                    disp.semantic === "warning" ? "text-amber-400" :
-                    disp.semantic === "error" ? "text-rose-400" :
-                    "text-zinc-500"
-                  }`}>· {disp.pill}</span>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      </Reveal>
-      )}
-
-      {/* Trust strip — answers the questions enterprise reviewers ask */}
-      <Reveal direction="up" delay={0.28}>
-        <div className="mt-8 rounded-2xl border border-white/[0.06] bg-white/[0.015] p-5">
-          <div className="flex items-center gap-2 mb-3">
-            <ShieldCheckIcon className="h-4 w-4 text-zinc-500" />
-            <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-zinc-500">if your security team asks…</p>
-          </div>
-          <ul className="grid sm:grid-cols-2 gap-2 text-xs text-zinc-300">
-            {[
-              ["Can you prove tenant isolation?",                "Every customer-data query passes a TenantScope gate; cross-tenant attempts are audited."],
-              ["Can we revoke access?",                          "Yes — credentials and desktop pairings both have a revoke flow that blocks execution."],
-              ["Are secrets encrypted at rest?",                 "AES-256-GCM via the credential vault. Raw secrets never leave the encrypted blob."],
-              ["Can AI see secrets?",                            "No — every AI context goes through redaction + key-name blocking before any LLM call."],
-              ["Are sensitive actions audited?",                 "Yes — every API guard wraps the action and emits an audit record with correlation IDs."],
-              ["Can users bypass policy?",                       "No — policy is evaluated server-side. Frontend hints are courtesy only."],
-              ["Can desktop bypass governance?",                 "No — desktop handoffs are signed, time-bounded, replay-protected, and policy-gated."],
-              ["Can we run read-only only?",                     "Yes — set autonomy level 0 (Observe) to disable all proposing/execution."],
-            ].map(([q, a]) => (
-              <li key={q} className="flex items-start gap-2">
-                <CheckCircleIcon className="h-3.5 w-3.5 text-emerald-400 shrink-0 mt-0.5" />
-                <span className="leading-relaxed"><span className="font-semibold text-zinc-100">{q}</span> <span className="dim-1">{a}</span></span>
+                  <p className="text-[14px] font-medium text-white">{f.title}</p>
+                  <p className="text-[12px] text-zinc-500 leading-relaxed mt-1 line-clamp-2">{f.description}</p>
+                </Link>
               </li>
             ))}
           </ul>
-        </div>
-      </Reveal>
+        )}
+      </section>
 
-      {/* Footer self-serve links */}
-      <Reveal direction="up" delay={0.32}>
-        <div className="mt-8 grid sm:grid-cols-3 gap-3">
-          {[
-            { href: "/dashboard/governance",     label: "Governance & policy",  icon: DocumentTextIcon, sub: "Inspect policy rules and autonomy ladder." },
-            { href: "/dashboard/integrations",   label: "Connector security",   icon: ServerStackIcon,  sub: "Review connector lifecycle and revoke access." },
-            { href: "/docs/permissions-model",   label: "Permissions model",    icon: LockClosedIcon,   sub: "Read how RBAC and approvals interlock." },
-          ].map(({ href, label, icon: Icon, sub }) => (
-            <Link key={href} href={href} className="block rounded-xl border border-white/[0.06] bg-white/[0.015] p-4 hover:border-white/[0.12] transition-colors">
-              <Icon className="h-4 w-4 text-zinc-500 mb-2" />
-              <p className="text-sm font-semibold text-white">{label}</p>
-              <p className="text-[11px] text-zinc-500 mt-1 leading-relaxed">{sub}</p>
-            </Link>
-          ))}
+      {/* High-risk approvals counter */}
+      <section className="mb-10">
+        <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-zinc-500 mb-3">high-risk approvals</p>
+        <Link
+          href="/dashboard/approvals"
+          className="group block rounded-2xl border border-white/[0.06] bg-white/[0.015] hover:border-white/[0.12] transition-colors px-7 py-5"
+        >
+          <div className="flex items-baseline justify-between gap-4">
+            <div>
+              <p className={`text-[24px] font-semibold tabular-nums ${highRiskPending > 0 ? "text-amber-300" : "text-white"}`}>
+                {highRiskPending}
+              </p>
+              <p className="text-[11px] font-mono uppercase tracking-[0.18em] text-zinc-500 mt-1">
+                pending decisions with high-risk classification
+              </p>
+            </div>
+            <ArrowRightIcon className="h-4 w-4 text-zinc-600 group-hover:text-white group-hover:translate-x-0.5 transition-all" />
+          </div>
+        </Link>
+      </section>
+
+      {/* Recent audit events */}
+      <section className="mb-10">
+        <div className="flex items-baseline justify-between mb-3">
+          <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-zinc-500">recent security events</p>
+          <Link href="/dashboard/audit" className="text-[11px] text-zinc-500 hover:text-white transition-colors">
+            Full audit
+          </Link>
         </div>
-      </Reveal>
+        {recentAudits.length === 0 ? (
+          <div className="rounded-2xl border border-white/[0.06] bg-white/[0.015] px-6 py-6 text-center">
+            <p className="text-[12px] text-zinc-500">No security-relevant events yet.</p>
+          </div>
+        ) : (
+          <ul className="rounded-2xl border border-white/[0.06] bg-white/[0.015] divide-y divide-white/[0.04] overflow-hidden">
+            {recentAudits.map((a) => {
+              const tone = a.outcome === "success" ? "text-emerald-300"
+                         : a.outcome === "failure" ? "text-rose-300"
+                         : a.outcome === "blocked" ? "text-amber-300"
+                         : "text-zinc-400";
+              return (
+                <li key={a.id} className="px-6 py-3 flex items-center gap-3">
+                  <span className={`text-[10px] font-mono uppercase tracking-wider ${tone} w-14 shrink-0`}>{a.outcome}</span>
+                  <span className="text-[12px] font-mono text-zinc-300 truncate flex-1 min-w-0">
+                    {a.action}
+                    {a.entityRef && <span className="text-zinc-600"> · {a.entityRef}</span>}
+                  </span>
+                  <span className="text-[10px] font-mono text-zinc-600 shrink-0">
+                    {Math.floor((Date.now() - a.occurredAt.getTime()) / 60000)}m ago
+                  </span>
+                </li>
+              );
+            })}
+          </ul>
+        )}
+      </section>
     </div>
   );
-}
-
-function PostureRow({ check }: { check: PostureCheck }) {
-  const Icon =
-    check.semantic === "success" ? CheckCircleIcon :
-    check.semantic === "warning" ? ExclamationTriangleIcon :
-    check.semantic === "error"   ? XCircleIcon :
-                                   CheckCircleIcon;
-  const tone =
-    check.semantic === "success" ? "text-emerald-400" :
-    check.semantic === "warning" ? "text-amber-400" :
-    check.semantic === "error"   ? "text-red-400" :
-                                   "text-zinc-400";
-  return (
-    <div className="flex items-start gap-3 rounded-lg border border-white/[0.05] bg-white/[0.015] px-4 py-3">
-      <Icon className={`h-4 w-4 ${tone} shrink-0 mt-0.5`} />
-      <div className="flex-1 min-w-0">
-        <p className="text-sm font-semibold text-white">{check.label}</p>
-        <p className="text-[11px] text-zinc-500 mt-0.5 leading-relaxed">{check.detail}</p>
-      </div>
-    </div>
-  );
-}
-
-function daysAgo(iso?: string): string {
-  if (!iso) return "never";
-  const diff = Date.now() - new Date(iso).getTime();
-  const days = Math.floor(diff / (24 * 60 * 60 * 1000));
-  if (days <= 0) return "today";
-  if (days === 1) return "yesterday";
-  return `${days} days ago`;
 }
