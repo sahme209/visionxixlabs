@@ -168,6 +168,37 @@ export default async function EngineerDetailPage({ params }: { params: Promise<{
     }).catch(() => [] as Array<{ status: string; executionStatus: string; _count: { _all: number } }>),
   ]);
 
+  // Last 10 decided approvals — most concrete signal of "what's
+  // actually happening with this engineer's outputs". Pulled
+  // separately from the latency window above because we want the
+  // newest 10 in full, not the median-pull list.
+  const recentDecidedFull = await prisma.engineerApprovalSnapshot.findMany({
+    where: {
+      organizationId: String(ctx.organizationId),
+      engineerId: engineer.id,
+      decidedAt: { not: null },
+    },
+    orderBy: { decidedAt: "desc" },
+    take: 10,
+    select: {
+      id: true,
+      action: true,
+      status: true,
+      executionStatus: true,
+      decidedAt: true,
+      createdAt: true,
+      decisionReason: true,
+    },
+  }).catch(() => [] as Array<{
+    id: string;
+    action: string;
+    status: string;
+    executionStatus: string;
+    decidedAt: Date | null;
+    createdAt: Date;
+    decisionReason: string | null;
+  }>);
+
   // Funnel: minted → decided → executed → failed. Each stage is the
   // count satisfying that terminal condition across all-time
   // snapshots for this engineer. We render a row only when the prior
@@ -505,6 +536,50 @@ export default async function EngineerDetailPage({ params }: { params: Promise<{
           </header>
           <ul className="text-[12px] text-amber-100/85 leading-relaxed list-disc list-inside marker:text-amber-400/70">
             {engineer.missingPieces.map((m) => <li key={m}>{m}</li>)}
+          </ul>
+        </section>
+      )}
+
+      {/* Recent decisions — last 10 decided approvals so the operator
+          sees what's actually happening to this engineer's outputs.
+          Hidden when there are no decisions yet. */}
+      {recentDecidedFull.length > 0 && (
+        <section className="mb-6 rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5">
+          <header className="flex items-center justify-between gap-3 mb-3 flex-wrap">
+            <p className="text-[12px] font-semibold text-white">Recent decisions</p>
+            <span className="text-[10px] font-mono uppercase tracking-wider text-zinc-500">{recentDecidedFull.length} shown</span>
+          </header>
+          <ul className="space-y-1.5">
+            {recentDecidedFull.map((d) => {
+              const latencyMs = d.decidedAt ? d.decidedAt.getTime() - d.createdAt.getTime() : 0;
+              const statusTone =
+                d.status === "approved" ? "text-emerald-300" :
+                d.status === "rejected" ? "text-zinc-400" :
+                d.status === "expired"  ? "text-rose-300"   :
+                "text-zinc-500";
+              const execTone =
+                d.executionStatus === "executed" ? "text-emerald-300" :
+                d.executionStatus === "failed"   ? "text-rose-300"    :
+                "text-zinc-500";
+              return (
+                <li key={d.id} className="rounded-lg border border-white/[0.04] bg-white/[0.015] px-3 py-2.5">
+                  <div className="flex items-center justify-between gap-2 flex-wrap mb-1">
+                    <p className="text-[12px] font-mono text-white truncate">{d.action}</p>
+                    <div className="flex items-center gap-2 text-[10px] font-mono uppercase tracking-wider shrink-0">
+                      <span className={statusTone}>{d.status}</span>
+                      <span className="text-zinc-600">·</span>
+                      <span className={execTone}>{d.executionStatus.replace(/_/g, " ")}</span>
+                    </div>
+                  </div>
+                  {d.decisionReason && (
+                    <p className="text-[10.5px] text-zinc-400 leading-snug">{d.decisionReason}</p>
+                  )}
+                  <p className="text-[10px] font-mono text-zinc-500 mt-1">
+                    decided in {formatMs(latencyMs)} · {d.decidedAt?.toISOString()}
+                  </p>
+                </li>
+              );
+            })}
           </ul>
         </section>
       )}
