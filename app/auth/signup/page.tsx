@@ -2,6 +2,7 @@
 
 import { Suspense, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { signIn } from "next-auth/react";
 import Link from "next/link";
 import Image from "next/image";
 import {
@@ -55,8 +56,25 @@ function SignUpForm() {
         setError(data.error || "Sign up failed");
         return;
       }
-      router.push(`/auth/signin?callbackUrl=${encodeURIComponent(redirect)}`);
-      router.refresh();
+      // Auto-sign-in right after creating the account — the user
+      // wants to land in the dashboard, not bounce through signin.
+      // signIn({ redirect: true, callbackUrl }) handles the full
+      // session cookie + redirect for us; falls back to the signin
+      // page if credentials auth isn't configured.
+      const signInResult = await signIn("credentials", {
+        email: email.trim().toLowerCase(),
+        password,
+        redirect: false,
+      });
+      if (signInResult?.ok) {
+        router.push(redirect);
+        router.refresh();
+      } else {
+        // Fall back to the manual signin page — at least the
+        // account is created.
+        router.push(`/auth/signin?callbackUrl=${encodeURIComponent(redirect)}`);
+        router.refresh();
+      }
     } catch {
       setError("Something went wrong");
     } finally {
