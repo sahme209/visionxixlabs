@@ -85,6 +85,7 @@ const GROUPS: NavGroup[] = [
     items: [
       { href: "/dashboard/command-center", label: "Command Center",  icon: Squares2X2Icon   },
       { href: "/dashboard/briefing",       label: "Daily briefing",  icon: SparklesIcon     },
+      { href: "/dashboard/mission",        label: "Mission Control", icon: BoltIcon         },
       { href: "/dashboard/start-here",     label: "Setup Guide",     icon: RocketLaunchIcon },
       { href: "/dashboard/onboarding",     label: "First-run checklist", icon: SparklesIcon },
       { href: "/demo",                     label: "Product Tour / Sandbox", icon: BeakerIcon },
