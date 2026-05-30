@@ -222,6 +222,17 @@ export default async function FindingsPage({
                   clear
                 </a>
               )}
+              <a
+                href={`/api/findings/export.csv?${new URLSearchParams({
+                  ...(severityFilter !== "all" ? { severity: severityFilter } : {}),
+                  ...(search ? { q: search } : {}),
+                }).toString()}`}
+                download
+                className="ml-auto text-[11px] font-mono text-zinc-500 hover:text-white transition-colors"
+                title="Download up to 5000 matching findings as CSV"
+              >
+                download .csv
+              </a>
             </form>
           </section>
 
