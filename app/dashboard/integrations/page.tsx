@@ -1,362 +1,181 @@
-"use client";
+/**
+ * /dashboard/integrations — unified integration status hub.
+ *
+ * Single page answering 'what is the platform connected to right
+ * now?' across cloud providers + notification channels. Each row
+ * links to the surface that manages it — cloud providers to
+ * /dashboard/connect-cloud, notifications to
+ * /dashboard/settings/notifications.
+ */
 
-import { useState } from "react";
 import Link from "next/link";
-import {
-  CloudIcon,
-  CodeBracketIcon,
-  CommandLineIcon,
-  CubeTransparentIcon,
-  DocumentCheckIcon,
-  PuzzlePieceIcon,
-  ChatBubbleLeftRightIcon,
-  CpuChipIcon,
-  ShieldCheckIcon,
-  ArrowRightIcon,
-  CheckCircleIcon,
-  ClockIcon,
-  SignalIcon,
-  CircleStackIcon,
-  ServerStackIcon,
-  GlobeAltIcon,
-} from "@heroicons/react/24/outline";
-import { Reveal } from "@/components/motion/Reveal";
-import { Stagger } from "@/components/motion/Stagger";
-import {
-  CONNECTOR_REGISTRY,
-  categorySummary,
-  type ConnectorCategory,
-  type ConnectorRecord,
-  type ConnectorStatus,
-} from "@/lib/connectors/connectorRegistry";
+import { redirect } from "next/navigation";
+import { prisma } from "@/lib/db";
+import { currentContext } from "@/lib/auth/currentContext";
+import { ArrowRightIcon } from "@heroicons/react/24/outline";
 
-const CATEGORY_LABEL: Record<ConnectorCategory, string> = {
-  cloud: "Cloud providers",
-  repository: "Repositories",
-  ci_cd: "CI/CD",
-  iac: "Infrastructure as Code",
-  ticketing: "Ticketing & change",
-  incident: "Incident management",
-  messaging: "Messaging",
-  desktop: "Desktop runtime",
-  audit: "Audit & export",
-  identity: "Identity",
-  observability: "Observability",
-  logging: "Logging",
-  security_posture: "Security posture",
-  database: "Databases",
-  container: "Containers",
-  edge: "Edge / DNS",
+export const dynamic = "force-dynamic";
+
+const PROVIDER_LABEL: Record<string, string> = {
+  aws:   "Amazon Web Services",
+  azure: "Microsoft Azure",
+  gcp:   "Google Cloud",
 };
 
-const CATEGORY_ICON: Record<ConnectorCategory, typeof CloudIcon> = {
-  cloud: CloudIcon,
-  repository: CodeBracketIcon,
-  ci_cd: CommandLineIcon,
-  iac: CubeTransparentIcon,
-  ticketing: PuzzlePieceIcon,
-  incident: CpuChipIcon,
-  messaging: ChatBubbleLeftRightIcon,
-  desktop: CommandLineIcon,
-  audit: DocumentCheckIcon,
-  identity: ShieldCheckIcon,
-  observability: SignalIcon,
-  logging: DocumentCheckIcon,
-  security_posture: ShieldCheckIcon,
-  database: CircleStackIcon,
-  container: ServerStackIcon,
-  edge: GlobeAltIcon,
+const STATUS_TONE: Record<string, string> = {
+  connected:           "text-emerald-300",
+  setup_started:       "text-zinc-400",
+  waiting_for_provider:"text-amber-300",
+  validating:          "text-amber-300",
+  needs_attention:     "text-amber-300",
+  failed:              "text-rose-300",
+  disconnected:        "text-zinc-500",
+  revoked:             "text-rose-300",
+  not_connected:       "text-zinc-600",
 };
 
-const STATUS_COLOR: Record<ConnectorStatus, { text: string; bg: string; label: string }> = {
-  live:        { text: "text-emerald-400", bg: "bg-emerald-500/10 border-emerald-500/20", label: "Live" },
-  preview:     { text: "text-zinc-500",  bg: "bg-violet-500/10 border-white/[0.08]",   label: "Preview" },
-  expanding:   { text: "text-blue-400",    bg: "bg-blue-500/10 border-blue-500/20",       label: "Expanding" },
-  planned:     { text: "text-amber-400",   bg: "bg-amber-500/10 border-amber-500/20",     label: "Planned" },
-  unavailable: { text: "text-zinc-500",    bg: "bg-white/[0.04] border-white/[0.08]",     label: "Unavailable" },
-};
+export default async function IntegrationsPage() {
+  const ctx = await currentContext();
+  if (!ctx.isAuthenticated || !ctx.organizationId || !ctx.email) {
+    redirect("/auth/signin?callbackUrl=/dashboard/integrations");
+  }
 
-type FilterKind = "all" | ConnectorStatus;
+  let sessions: Array<{ provider: string; status: string; firstConnectedAt: Date | null; lastTransitionAt: Date | null }> = [];
+  let migrationPending = false;
+  try {
+    sessions = await prisma.connectorSetupSession.findMany({
+      where: { organizationId: ctx.organizationId },
+      select: {
+        provider: true,
+        status: true,
+        firstConnectedAt: true,
+        lastTransitionAt: true,
+      },
+    });
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    if (/relation .* does not exist|table .* does not exist/i.test(msg)) {
+      migrationPending = true;
+    } else {
+      throw err;
+    }
+  }
 
-export default function IntegrationsPage() {
-  const [filter, setFilter] = useState<FilterKind>("all");
-  const [selected, setSelected] = useState<string | null>(CONNECTOR_REGISTRY[0]?.id ?? null);
-
-  const filtered = filter === "all" ? CONNECTOR_REGISTRY : CONNECTOR_REGISTRY.filter((c) => c.status === filter);
-  const active = filtered.find((c) => c.id === selected) ?? filtered[0];
-  const summary = categorySummary();
-  const liveCount = CONNECTOR_REGISTRY.filter((c) => c.status === "live").length;
-  const previewCount = CONNECTOR_REGISTRY.filter((c) => c.status === "preview").length;
-  const plannedCount = CONNECTOR_REGISTRY.filter((c) => c.status === "planned" || c.status === "expanding").length;
+  const user = await prisma.user.findUnique({
+    where: { email: ctx.email.toLowerCase() },
+    select: { id: true },
+  });
+  const lead = await prisma.lead.findFirst({
+    where: {
+      source: "cloud-operator",
+      OR: [
+        ...(user?.id ? [{ userId: user.id }] : []),
+        { email: ctx.email.toLowerCase() },
+      ],
+    },
+    orderBy: { updatedAt: "desc" },
+    select: { fullPayload: true },
+  });
+  const payload = (lead?.fullPayload as Record<string, unknown>) ?? {};
+  const notif = (payload.notifications as Record<string, unknown> | undefined) ?? {};
+  const slackOn = typeof notif.slackWebhookUrl === "string" && notif.slackWebhookUrl.length > 0;
+  const teamsOn = typeof notif.teamsWebhookUrl === "string" && notif.teamsWebhookUrl.length > 0;
+  const emailOn = typeof notif.emailDigestTo === "string" && notif.emailDigestTo.length > 0;
 
   return (
-    <div className="relative">
-      {/* Hero */}
-      <Reveal direction="up" blur>
-        <div className="mb-8">
-          <div className="flex items-center gap-3 mb-3">
-            <PuzzlePieceIcon className="h-4 w-4 text-zinc-500" />
-            <p className="text-[10px] font-semibold text-zinc-500 uppercase tracking-widest">
-              Integrations · Operational nervous system
-            </p>
-          </div>
-          <h1 className="text-3xl md:text-4xl font-bold text-white tracking-[-0.04em] mb-2">
-            Connectors & <span className="text-gradient">Integrations.</span>
-          </h1>
-          <p className="text-dim-paragraph text-base max-w-3xl leading-relaxed">
-            Axiom coordinates above the systems you already run. <span className="dim-1">Every connector is registered, lifecycle-tracked, and security-profiled — nothing is hardcoded in the UI.</span>
+    <div className="max-w-4xl mx-auto px-1 -mt-2">
+      <header className="mb-12">
+        <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-zinc-500 mb-3">integrations</p>
+        <h1 className="text-[34px] sm:text-[40px] leading-[1.05] font-semibold text-white tracking-[-0.03em] mb-3">
+          What&apos;s wired up.
+        </h1>
+        <p className="text-[15px] text-zinc-400 leading-relaxed max-w-xl">
+          Every external system the platform talks to today, with current
+          status. Click any row to manage it.
+        </p>
+      </header>
+
+      {migrationPending && (
+        <div className="mb-8 rounded-2xl border border-amber-500/15 bg-white/[0.015] px-6 py-5">
+          <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-amber-300 mb-1">migration pending</p>
+          <p className="text-[13px] text-zinc-300">
+            ConnectorSetupSession table not migrated yet. Run <code className="font-mono text-white">prisma migrate deploy</code>.
           </p>
         </div>
-      </Reveal>
+      )}
 
-      {/* KPI strip */}
-      <Stagger delay={0.05} interval={0.05} className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
-        {[
-          { label: "Live connectors", value: liveCount, color: "text-emerald-400", bg: "bg-emerald-500/10 border-emerald-500/20", icon: CheckCircleIcon },
-          { label: "Preview", value: previewCount, color: "text-zinc-500", bg: "bg-violet-500/10 border-white/[0.08]", icon: CpuChipIcon },
-          { label: "Planned / expanding", value: plannedCount, color: "text-amber-400", bg: "bg-amber-500/10 border-amber-500/20", icon: ClockIcon },
-          { label: "Total registry", value: CONNECTOR_REGISTRY.length, color: "text-blue-400", bg: "bg-blue-500/10 border-blue-500/20", icon: PuzzlePieceIcon },
-        ].map((kpi) => {
-          const Icon = kpi.icon;
-          return (
-            <div key={kpi.label} className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
-              <div className={`w-9 h-9 rounded-lg ${kpi.bg} border flex items-center justify-center mb-3`}>
-                <Icon className={`h-4.5 w-4.5 ${kpi.color}`} />
-              </div>
-              <p className="text-2xl font-bold text-white tracking-tight mb-0.5">{kpi.value}</p>
-              <p className="text-[11px] text-zinc-500 leading-tight">{kpi.label}</p>
-            </div>
-          );
-        })}
-      </Stagger>
-
-      {/* Filter pills */}
-      <Reveal direction="up" delay={0.08}>
-        <div className="flex flex-wrap items-center gap-2 mb-5">
-          <span className="text-[10px] font-semibold text-zinc-500 uppercase tracking-wider mr-2">Filter:</span>
-          {(["all", "live", "preview", "expanding", "planned"] as FilterKind[]).map((id) => {
-            const isActive = filter === id;
-            const label = id === "all" ? "All connectors" : STATUS_COLOR[id as ConnectorStatus]?.label ?? id;
+      <section className="mb-10">
+        <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-zinc-500 mb-3">cloud providers</p>
+        <ul className="rounded-2xl border border-white/[0.06] bg-white/[0.015] divide-y divide-white/[0.04] overflow-hidden">
+          {(["aws", "azure", "gcp"] as const).map((provider) => {
+            const session = sessions.find((s) => s.provider === provider);
+            const status = session?.status ?? "not_connected";
+            const tone = STATUS_TONE[status] ?? "text-zinc-500";
             return (
-              <button
-                key={id}
-                onClick={() => setFilter(id)}
-                className={`inline-flex items-center px-3.5 py-1.5 rounded-full text-xs font-medium transition-all border ${
-                  isActive
-                    ? "bg-violet-500/15 border-white/[0.12] text-violet-300 shadow-[0_0_20px_rgba(139,92,246,0.15)]"
-                    : "bg-white/[0.02] border-white/[0.06] text-zinc-400 hover:text-white hover:border-white/[0.12]"
-                }`}
-              >
-                {label}
-              </button>
+              <li key={provider}>
+                <Link
+                  href="/dashboard/connect-cloud"
+                  className="group flex items-center gap-4 px-6 py-4 hover:bg-white/[0.015] transition-colors"
+                >
+                  <div className="w-10 h-10 rounded-xl bg-white/[0.04] border border-white/[0.06] flex items-center justify-center shrink-0 text-[10px] font-mono font-semibold tracking-wider text-zinc-300">
+                    {provider.toUpperCase()}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-[14px] font-medium text-white">{PROVIDER_LABEL[provider]}</p>
+                    <p className={`text-[11px] font-mono uppercase tracking-wider mt-0.5 ${tone}`}>
+                      {status.replace(/_/g, " ")}
+                      {session?.lastTransitionAt && (
+                        <span className="text-zinc-600"> · {session.lastTransitionAt.toISOString().slice(0, 10)}</span>
+                      )}
+                    </p>
+                  </div>
+                  <ArrowRightIcon className="h-3.5 w-3.5 text-zinc-600 group-hover:text-white group-hover:translate-x-0.5 transition-all shrink-0" />
+                </Link>
+              </li>
             );
           })}
-        </div>
-      </Reveal>
+        </ul>
+      </section>
 
-      {/* Two-pane: list on left, detail on right */}
-      <div className="grid lg:grid-cols-5 gap-5">
-        {/* Category-grouped list */}
-        <div className="lg:col-span-2">
-          <Reveal direction="up" delay={0.1}>
-            <div className="space-y-3">
-              {(Object.keys(CATEGORY_LABEL) as ConnectorCategory[]).map((cat) => {
-                const connectors = filtered.filter((c) => c.category === cat);
-                if (connectors.length === 0) return null;
-                const Icon = CATEGORY_ICON[cat];
-                const sum = summary[cat];
-                return (
-                  <div key={cat} className="rounded-2xl border border-white/[0.06] bg-white/[0.02] overflow-hidden">
-                    <div className="px-4 py-2.5 border-b border-white/[0.06] bg-white/[0.01] flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <Icon className="h-3.5 w-3.5 text-zinc-500" />
-                        <span className="text-xs font-bold text-white uppercase tracking-wider">{CATEGORY_LABEL[cat]}</span>
-                      </div>
-                      <span className="text-[10px] text-zinc-500 font-mono">{sum.live + sum.preview} live · {sum.planned} planned</span>
-                    </div>
-                    <div className="p-2 space-y-1">
-                      {connectors.map((c) => (
-                        <button
-                          key={c.id}
-                          onClick={() => setSelected(c.id)}
-                          className={`w-full text-left rounded-xl border p-3 transition-all ${
-                            c.id === active?.id
-                              ? "border-white/[0.12] bg-white/[0.025]"
-                              : "border-white/[0.06] bg-white/[0.02] hover:border-white/[0.12] hover:bg-white/[0.04]"
-                          }`}
-                        >
-                          <div className="flex items-center justify-between gap-2 flex-wrap mb-1">
-                            <p className="text-sm font-semibold text-white">{c.name}</p>
-                            <span className={`text-[9px] font-bold uppercase tracking-wider border rounded-full px-1.5 py-px ${STATUS_COLOR[c.status].bg} ${STATUS_COLOR[c.status].text}`}>
-                              {STATUS_COLOR[c.status].label}
-                            </span>
-                          </div>
-                          <p className="text-[11px] text-zinc-500 leading-snug">{c.description}</p>
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </Reveal>
-        </div>
-
-        {/* Detail panel */}
-        <div className="lg:col-span-3">
-          <Reveal direction="up" delay={0.14}>
-            {active ? <ConnectorDetailPanel connector={active} /> : (
-              <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-10 text-center">
-                <p className="text-sm text-zinc-500">Select a connector to see its full profile.</p>
-              </div>
-            )}
-          </Reveal>
-        </div>
-      </div>
+      <section className="mb-10">
+        <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-zinc-500 mb-3">notification channels</p>
+        <ul className="rounded-2xl border border-white/[0.06] bg-white/[0.015] divide-y divide-white/[0.04] overflow-hidden">
+          <ChannelRow label="Slack" configured={slackOn} hint="Incoming webhook URL" />
+          <ChannelRow label="Microsoft Teams" configured={teamsOn} hint="Connector URL" />
+          <ChannelRow label="Email digest" configured={emailOn} hint="Recipient address" deferred />
+        </ul>
+      </section>
     </div>
   );
 }
 
-function ConnectorDetailPanel({ connector }: { connector: ConnectorRecord }) {
-  const status = STATUS_COLOR[connector.status];
+function ChannelRow({
+  label,
+  configured,
+  hint,
+  deferred,
+}: {
+  label: string;
+  configured: boolean;
+  hint: string;
+  deferred?: boolean;
+}) {
   return (
-    <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] overflow-hidden">
-      {/* Header */}
-      <div className="px-6 py-5 border-b border-white/[0.06] bg-white/[0.01]">
-        <div className="flex items-center justify-between gap-3 flex-wrap mb-2">
-          <div className="flex items-center gap-2 flex-wrap">
-            <span className={`text-[9px] font-bold uppercase tracking-wider border rounded-full px-1.5 py-px ${status.bg} ${status.text}`}>
-              {status.label}
-            </span>
-            <span className="text-[10px] text-zinc-500 font-mono">{connector.id}</span>
-            <span className={`text-[10px] font-semibold uppercase tracking-wider ${connector.riskLevel === "low" ? "text-emerald-400" : connector.riskLevel === "medium" ? "text-amber-400" : "text-red-400"}`}>
-              {connector.riskLevel} risk
-            </span>
-          </div>
-          {connector.eta && (
-            <span className="text-[10px] text-zinc-500 font-mono">ETA: {connector.eta}</span>
-          )}
+    <li>
+      <Link
+        href="/dashboard/settings/notifications"
+        className="group flex items-center gap-4 px-6 py-4 hover:bg-white/[0.015] transition-colors"
+      >
+        <div className="flex-1 min-w-0">
+          <p className="text-[14px] font-medium text-white">{label}</p>
+          <p className={`text-[11px] font-mono uppercase tracking-wider mt-0.5 ${configured ? "text-emerald-300" : "text-zinc-500"}`}>
+            {configured ? "configured" : "not set"}
+            <span className="text-zinc-600"> · {hint}</span>
+            {deferred && <span className="text-zinc-600"> · wiring pending</span>}
+          </p>
         </div>
-        <h3 className="text-xl font-bold text-white tracking-[-0.02em] mb-1">{connector.name}</h3>
-        <p className="text-sm text-zinc-400 leading-relaxed">{connector.description}</p>
-      </div>
-
-      {/* Auth + setup */}
-      <div className="px-6 py-4 border-b border-white/[0.06]">
-        <p className="text-[10px] font-semibold text-zinc-500 uppercase tracking-widest mb-2">Auth model</p>
-        <p className="text-sm text-zinc-300 mb-3 font-mono">{connector.authModel}</p>
-        <div className="flex flex-wrap gap-1">
-          {connector.permissions.map((p) => (
-            <span key={p} className="text-[10px] text-zinc-400 bg-white/[0.04] border border-white/[0.06] rounded-full px-2 py-0.5 font-mono">{p}</span>
-          ))}
-        </div>
-      </div>
-
-      {/* Reads / does not read */}
-      <div className="px-6 py-4 border-b border-white/[0.06]">
-        <div className="grid sm:grid-cols-2 gap-3">
-          <div className="rounded-xl bg-emerald-500/[0.04] border border-emerald-500/15 p-4">
-            <p className="text-[10px] font-semibold text-emerald-400 uppercase tracking-widest mb-2">What Axiom reads</p>
-            <ul className="text-xs text-zinc-300 space-y-1">
-              {connector.reads.map((r) => <li key={r} className="leading-snug">· {r}</li>)}
-            </ul>
-          </div>
-          <div className="rounded-xl bg-white/[0.02] border border-white/[0.06] p-4">
-            <p className="text-[10px] font-semibold text-zinc-500 uppercase tracking-widest mb-2">What Axiom does NOT read</p>
-            <ul className="text-xs text-zinc-400 space-y-1">
-              {connector.doesNotRead.map((r) => <li key={r} className="leading-snug">· {r}</li>)}
-            </ul>
-          </div>
-        </div>
-      </div>
-
-      {/* Capabilities + events */}
-      <div className="px-6 py-4 border-b border-white/[0.06]">
-        <div className="grid sm:grid-cols-2 gap-3">
-          <div>
-            <p className="text-[10px] font-semibold text-zinc-500 uppercase tracking-widest mb-2">Actions</p>
-            <div className="flex flex-wrap gap-1">
-              {connector.supportedActions.map((a) => (
-                <span key={a} className="text-[10px] text-zinc-500 bg-violet-500/10 border border-white/[0.08] rounded-full px-2 py-0.5 font-mono">{a}</span>
-              ))}
-            </div>
-          </div>
-          <div>
-            <p className="text-[10px] font-semibold text-zinc-500 uppercase tracking-widest mb-2">Events emitted</p>
-            <div className="flex flex-wrap gap-1">
-              {connector.supportedEvents.map((e) => (
-                <span key={e} className="text-[10px] text-blue-400 bg-blue-500/10 border border-blue-500/20 rounded-full px-2 py-0.5 font-mono">{e}</span>
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Limitations + roadmap */}
-      <div className="px-6 py-4 border-b border-white/[0.06]">
-        <div className="grid sm:grid-cols-2 gap-3">
-          <div>
-            <p className="text-[10px] font-semibold text-amber-400 uppercase tracking-widest mb-2">Current limitations</p>
-            <ul className="text-xs text-zinc-400 space-y-1">
-              {connector.limitations.length === 0
-                ? <li className="text-zinc-600">No documented limitations.</li>
-                : connector.limitations.map((l) => <li key={l} className="leading-snug">· {l}</li>)}
-            </ul>
-          </div>
-          <div>
-            <p className="text-[10px] font-semibold text-emerald-400 uppercase tracking-widest mb-2">Next milestones</p>
-            <ul className="text-xs text-zinc-400 space-y-1">
-              {connector.nextMilestones.length === 0
-                ? <li className="text-zinc-600">No documented next milestones.</li>
-                : connector.nextMilestones.map((m) => <li key={m} className="leading-snug">· {m}</li>)}
-            </ul>
-          </div>
-        </div>
-      </div>
-
-      {/* Trust notes */}
-      <div className="px-6 py-4 border-b border-white/[0.06] bg-emerald-500/[0.02]">
-        <p className="text-[10px] font-semibold text-emerald-400 uppercase tracking-widest mb-2">Enterprise trust</p>
-        <ul className="text-xs text-zinc-300 space-y-1">
-          {connector.enterpriseTrustNotes.map((n) => (
-            <li key={n} className="flex items-start gap-2 leading-snug">
-              <CheckCircleIcon className="h-3 w-3 text-emerald-400 shrink-0 mt-0.5" />
-              <span>{n}</span>
-            </li>
-          ))}
-        </ul>
-      </div>
-
-      {/* Actions */}
-      <div className="px-6 py-4 flex items-center justify-between flex-wrap gap-3">
-        <div className="flex items-center gap-x-3 gap-y-1 text-[11px] flex-wrap">
-          {connector.docsRoute && (
-            <Link href={connector.docsRoute} target="_blank" className="text-zinc-500 hover:text-violet-300 transition-colors font-medium">
-              Setup guide →
-            </Link>
-          )}
-          {connector.dashboardRoute && connector.status !== "planned" && (
-            <Link href={connector.dashboardRoute} className="text-zinc-500 hover:text-violet-300 transition-colors font-medium">
-              Open dashboard →
-            </Link>
-          )}
-        </div>
-        <div className="flex items-center gap-2">
-          {connector.setupRoute && connector.status !== "planned" ? (
-            <Link
-              href={connector.setupRoute}
-              className="btn-amber-shimmer inline-flex items-center gap-2 px-5 py-1.5 rounded-full text-xs font-semibold uppercase tracking-wider"
-            >
-              Start setup
-              <ArrowRightIcon className="h-3.5 w-3.5" />
-            </Link>
-          ) : (
-            <span className="inline-flex items-center gap-2 px-5 py-1.5 rounded-full border border-white/[0.1] text-zinc-500 text-xs font-semibold uppercase tracking-wider">
-              {connector.status === "planned" ? "Coming soon" : "Not yet available"}
-            </span>
-          )}
-        </div>
-      </div>
-    </div>
+        <ArrowRightIcon className="h-3.5 w-3.5 text-zinc-600 group-hover:text-white group-hover:translate-x-0.5 transition-all shrink-0" />
+      </Link>
+    </li>
   );
 }
