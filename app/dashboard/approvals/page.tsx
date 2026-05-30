@@ -17,6 +17,7 @@ import { redirect } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { currentContext } from "@/lib/auth/currentContext";
 import { ArrowRightIcon } from "@heroicons/react/24/outline";
+import { BulkProvider, BulkRowCheckbox, BulkActionBar } from "./BulkActions";
 
 export const dynamic = "force-dynamic";
 
@@ -146,46 +147,50 @@ export default async function ApprovalsPage() {
           </section>
 
           {/* Approval rows */}
-          <section>
-            <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-zinc-500 mb-3">queue</p>
-            <ul className="rounded-2xl border border-white/[0.06] bg-white/[0.015] divide-y divide-white/[0.04] overflow-hidden">
-              {items.map((item) => (
-                <li key={item.id} className="px-6 py-5">
-                  <div className="flex items-start justify-between gap-4">
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-1 flex-wrap">
-                        <span className={`text-[10px] font-mono uppercase tracking-wider ${STATUS_TONE[item.status]}`}>{item.status}</span>
-                        <span className={`text-[10px] font-mono uppercase tracking-wider ${RISK_TONE[item.riskLevel]}`}>· {item.riskLevel} risk</span>
-                        <span className="text-[10px] font-mono text-zinc-600">· {item.provider} / {item.region}</span>
+          <BulkProvider>
+            <BulkActionBar />
+            <section>
+              <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-zinc-500 mb-3">queue</p>
+              <ul className="rounded-2xl border border-white/[0.06] bg-white/[0.015] divide-y divide-white/[0.04] overflow-hidden">
+                {items.map((item) => (
+                  <li key={item.id} className="px-6 py-5">
+                    <div className="flex items-start justify-between gap-4">
+                      {item.status === "pending" && <BulkRowCheckbox itemId={item.id} />}
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-1 flex-wrap">
+                          <span className={`text-[10px] font-mono uppercase tracking-wider ${STATUS_TONE[item.status]}`}>{item.status}</span>
+                          <span className={`text-[10px] font-mono uppercase tracking-wider ${RISK_TONE[item.riskLevel]}`}>· {item.riskLevel} risk</span>
+                          <span className="text-[10px] font-mono text-zinc-600">· {item.provider} / {item.region}</span>
+                        </div>
+                        <p className="text-[14px] font-medium text-white mb-1">{item.title}</p>
+                        <p className="text-[12px] text-zinc-500 leading-relaxed">{item.dispositionReason}</p>
+                        {item.monthlyLow > 0 && (
+                          <p className="text-[11px] text-emerald-300/80 mt-1">
+                            ~${item.monthlyLow.toFixed(0)}/mo savings if applied
+                          </p>
+                        )}
                       </div>
-                      <p className="text-[14px] font-medium text-white mb-1">{item.title}</p>
-                      <p className="text-[12px] text-zinc-500 leading-relaxed">{item.dispositionReason}</p>
-                      {item.monthlyLow > 0 && (
-                        <p className="text-[11px] text-emerald-300/80 mt-1">
-                          ~${item.monthlyLow.toFixed(0)}/mo savings if applied
-                        </p>
+                      {item.status === "pending" && (
+                        <div className="flex flex-col gap-1.5 shrink-0">
+                          <ApproveButton itemId={item.id} action="approve" />
+                          <ApproveButton itemId={item.id} action="reject" />
+                        </div>
+                      )}
+                      {(item.status === "approved" || item.status === "applied") && (
+                        <a
+                          href={`/api/approvals/${item.id}/plan`}
+                          download
+                          className="shrink-0 inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-medium border border-emerald-500/30 text-emerald-200 hover:border-emerald-500/50 transition-colors"
+                        >
+                          Download .tf
+                        </a>
                       )}
                     </div>
-                    {item.status === "pending" && (
-                      <div className="flex flex-col gap-1.5 shrink-0">
-                        <ApproveButton itemId={item.id} action="approve" />
-                        <ApproveButton itemId={item.id} action="reject" />
-                      </div>
-                    )}
-                    {(item.status === "approved" || item.status === "applied") && (
-                      <a
-                        href={`/api/approvals/${item.id}/plan`}
-                        download
-                        className="shrink-0 inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-medium border border-emerald-500/30 text-emerald-200 hover:border-emerald-500/50 transition-colors"
-                      >
-                        Download .tf
-                      </a>
-                    )}
-                  </div>
-                </li>
-              ))}
-            </ul>
-          </section>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          </BulkProvider>
         </>
       )}
     </div>
