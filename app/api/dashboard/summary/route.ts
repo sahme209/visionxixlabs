@@ -30,6 +30,11 @@ interface SummaryResponse {
   monthlyHigh: number;
   lastScanIso: string | null;
   migrationPending: boolean;
+  /** Seven daily buckets, oldest → newest, of new-findings per day.
+   *  Drives the sparkline next to the 'findings' stat tile. */
+  findingsTrend7d: number[];
+  /** Seven daily buckets of completed scans per day for the 'last scan' tile. */
+  scansTrend7d: number[];
 }
 
 export async function GET() {
@@ -44,12 +49,27 @@ export async function GET() {
       monthlyHigh: 0,
       lastScanIso: null,
       migrationPending: false,
+      findingsTrend7d: [0, 0, 0, 0, 0, 0, 0],
+      scansTrend7d: [0, 0, 0, 0, 0, 0, 0],
     });
   }
 
+  // Build seven daily buckets for the trend lines — oldest at index 0.
+  const now = new Date();
+  const dayStart = (offset: number) => {
+    const d = new Date(now);
+    d.setUTCHours(0, 0, 0, 0);
+    d.setUTCDate(d.getUTCDate() - offset);
+    return d;
+  };
+  const buckets = Array.from({ length: 7 }, (_, i) => ({
+    start: dayStart(6 - i),
+    end: dayStart(6 - i - 1),
+  }));
+
   // Run everything in parallel. Each branch degrades to zero on a
   // missing table so a partial migration still renders.
-  const [findingCount, pendingApprovals, highRiskApprovals, savingsAgg, lastRun] = await Promise.all([
+  const [findingCount, pendingApprovals, highRiskApprovals, savingsAgg, lastRun, findingsTrend7d, scansTrend7d] = await Promise.all([
     prisma.axiomFinding
       .count({ where: { run: { organizationId: ctx.organizationId } } })
       .catch(() => 0),
@@ -86,6 +106,33 @@ export async function GET() {
         select: { completedAt: true },
       })
       .catch(() => null),
+    // Findings per day for the last 7 days, oldest first.
+    Promise.all(
+      buckets.map((b) =>
+        prisma.axiomFinding
+          .count({
+            where: {
+              run: { organizationId: ctx.organizationId },
+              createdAt: { gte: b.start, lt: b.end },
+            },
+          })
+          .catch(() => 0),
+      ),
+    ),
+    // Scans per day for the last 7 days, oldest first.
+    Promise.all(
+      buckets.map((b) =>
+        prisma.axiomAgentRun
+          .count({
+            where: {
+              organizationId: ctx.organizationId,
+              status: "completed",
+              completedAt: { gte: b.start, lt: b.end },
+            },
+          })
+          .catch(() => 0),
+      ),
+    ),
   ]);
 
   return NextResponse.json<SummaryResponse>({
@@ -97,5 +144,7 @@ export async function GET() {
     monthlyHigh: savingsAgg._sum.monthlyHigh ?? 0,
     lastScanIso: lastRun?.completedAt?.toISOString() ?? null,
     migrationPending: false,
+    findingsTrend7d,
+    scansTrend7d,
   });
 }

@@ -44,6 +44,7 @@ import { RunScanButton } from "./RunScanButton";
 import { DisconnectButton } from "./DisconnectButton";
 import { ConnectionHealth } from "./ConnectionHealth";
 import { RecentActivity } from "./RecentActivity";
+import { Sparkline } from "./Sparkline";
 
 type ConnectorStatus = {
   provider: string;
@@ -59,6 +60,8 @@ interface DashboardSummary {
   monthlyLow: number;
   monthlyHigh: number;
   lastScanIso: string | null;
+  findingsTrend7d: number[];
+  scansTrend7d: number[];
 }
 
 const PROVIDER_LABEL: Record<string, string> = {
@@ -221,6 +224,16 @@ export default function DashboardPage() {
             {onboarding.nextStep.label} · {onboarding.nextStep.detail}
           </p>
         )}
+        {summary && summary.lastScanIso && (
+          <Link
+            href="/dashboard/briefing"
+            className="mt-3 inline-flex items-center gap-1.5 text-[12px] text-zinc-500 hover:text-white transition-colors pl-1"
+          >
+            <SparklesIcon className="h-3 w-3" />
+            Read today&apos;s briefing
+            <span aria-hidden className="text-zinc-700">→</span>
+          </Link>
+        )}
       </section>
 
       {/* ─── First-run journey — only while the user hasn't completed it yet ─ */}
@@ -236,11 +249,13 @@ export default function DashboardPage() {
       {/* ─── Live stats — only shows when there's signal ──────────────────── */}
       {summary && (summary.findingCount > 0 || summary.pendingApprovals > 0 || summary.lastScanIso) && (
         <section className="mb-12 rounded-2xl border border-white/[0.06] bg-white/[0.015] grid grid-cols-2 sm:grid-cols-4 divide-x sm:divide-y-0 divide-y divide-white/[0.04] overflow-hidden">
-          <Stat label="findings"     value={summary.findingCount.toString()} href="/dashboard/findings" />
+          <Stat label="findings"     value={summary.findingCount.toString()} href="/dashboard/findings"
+                spark={summary.findingsTrend7d} sparkTone="text-zinc-400" />
           <Stat label="pending"      value={summary.pendingApprovals.toString()} href="/dashboard/approvals"
                 tone={summary.highRiskApprovals > 0 ? "text-amber-300" : undefined} />
           <Stat label="potential/mo" value={summary.monthlyHigh > 0 ? `$${Math.round(summary.monthlyHigh).toLocaleString()}` : "—"} href="/dashboard/approvals" />
-          <Stat label="last scan"    value={timeAgoFromIso(summary.lastScanIso) ?? "—"} href="/dashboard/scans" />
+          <Stat label="last scan"    value={timeAgoFromIso(summary.lastScanIso) ?? "—"} href="/dashboard/scans"
+                spark={summary.scansTrend7d} sparkTone="text-emerald-400/70" />
         </section>
       )}
 
@@ -454,18 +469,27 @@ function Stat({
   value,
   href,
   tone,
+  spark,
+  sparkTone,
 }: {
   label: string;
   value: string;
   href: string;
   tone?: string;
+  spark?: number[];
+  sparkTone?: string;
 }) {
   return (
     <Link
       href={href}
       className="group block px-5 py-4 hover:bg-white/[0.015] transition-colors"
     >
-      <p className={`text-[22px] font-semibold tabular-nums ${tone ?? "text-white"}`}>{value}</p>
+      <div className="flex items-baseline justify-between gap-2 mb-1">
+        <p className={`text-[22px] font-semibold tabular-nums ${tone ?? "text-white"}`}>{value}</p>
+        {spark && spark.length > 0 && (
+          <Sparkline values={spark} tone={sparkTone ?? "text-zinc-500"} />
+        )}
+      </div>
       <p className="text-[10px] font-mono uppercase tracking-[0.18em] text-zinc-500 mt-1 group-hover:text-zinc-300 transition-colors">{label}</p>
     </Link>
   );
