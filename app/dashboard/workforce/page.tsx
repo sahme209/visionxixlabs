@@ -36,6 +36,7 @@ import {
 } from "@/lib/workforce/agentWorkforceRegistry";
 import { currentContext } from "@/lib/auth/currentContext";
 import { syncAgentEngineerRegistryForWorkspace } from "@/lib/workforce/workspaceRegistrySync";
+import { prisma } from "@/lib/db";
 
 export const metadata: Metadata = {
   title: "AI Workforce · Axiom",
@@ -87,6 +88,27 @@ export default async function WorkforcePage() {
     }
   }
 
+  // 30-day activity totals per engineer — one groupBy covers every
+  // card so we don't N+1 the workforce render. Empty workspace gets
+  // an empty map; cards render an honest "0 attempts" badge.
+  const since30d = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+  const attemptCounts = new Map<string, number>();
+  if (ctx.isAuthenticated && ctx.organizationId) {
+    try {
+      const rows = await prisma.agentEngineerActionAttempt.groupBy({
+        by: ["engineerId"],
+        where: {
+          organizationId: String(ctx.organizationId),
+          createdAt: { gte: since30d },
+        },
+        _count: { _all: true },
+      });
+      for (const r of rows) attemptCounts.set(r.engineerId, r._count._all);
+    } catch {
+      // migration-pending degrades to empty map — cards show 0 honestly.
+    }
+  }
+
   return (
     <div className="relative">
       <PageIntro
@@ -127,7 +149,7 @@ export default async function WorkforcePage() {
 
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
                 {engineers.map((e) => (
-                  <EngineerCard key={e.id} engineer={e} />
+                  <EngineerCard key={e.id} engineer={e} attempts30d={attemptCounts.get(e.id) ?? 0} />
                 ))}
               </div>
             </section>
@@ -206,7 +228,7 @@ function Stat({ label, value, icon: Icon, sub }: { label: string; value: number;
   );
 }
 
-function EngineerCard({ engineer }: { engineer: AgentEngineer }) {
+function EngineerCard({ engineer, attempts30d }: { engineer: AgentEngineer; attempts30d: number }) {
   const approval = APPROVAL_TONE[engineer.approvalRule];
   return (
     <article className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 flex flex-col">
@@ -275,9 +297,13 @@ function EngineerCard({ engineer }: { engineer: AgentEngineer }) {
       )}
 
       <div className="mt-3 flex items-center justify-between gap-2">
-        <span className="text-[10px] font-mono text-zinc-500">{engineer.kernelModules.length} kernel{engineer.kernelModules.length === 1 ? "" : "s"}</span>
-        <Link href={`/dashboard/agents`} className="text-[11px] text-zinc-300 hover:text-white inline-flex items-center gap-1">
-          Kernels
+        <span className="text-[10px] font-mono text-zinc-500">
+          {attempts30d > 0
+            ? <><span className="text-zinc-300 tabular-nums">{attempts30d}</span> attempt{attempts30d === 1 ? "" : "s"} · 30d</>
+            : <span className="text-zinc-600">no attempts · 30d</span>}
+        </span>
+        <Link href={`/dashboard/workforce/${engineer.id}`} className="text-[11px] text-zinc-300 hover:text-white inline-flex items-center gap-1">
+          Open
           <ArrowRightIcon className="h-3 w-3" />
         </Link>
       </div>

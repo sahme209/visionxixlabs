@@ -71,6 +71,39 @@ export default async function EngineerDetailPage({ params }: { params: Promise<{
     take: 10,
   }).catch(() => []);
 
+  // 30-day rollup — the operator wants "how is this engineer doing"
+  // in a glance, not the raw row dump. Honest zeros when the engineer
+  // hasn't been used yet, no fabricated numbers.
+  const since30d = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+  const rollupGroups = await prisma.agentEngineerActionAttempt.groupBy({
+    by: ["runtimeDecision"],
+    where: {
+      organizationId: String(ctx.organizationId),
+      engineerId: engineer.id,
+      createdAt: { gte: since30d },
+    },
+    _count: { _all: true },
+  }).catch(() => [] as Array<{ runtimeDecision: string; _count: { _all: number } }>);
+  const rollup = { allowed: 0, requires_approval: 0, blocked: 0 };
+  for (const g of rollupGroups) {
+    if (g.runtimeDecision === "allowed") rollup.allowed = g._count._all;
+    else if (g.runtimeDecision === "requires_approval") rollup.requires_approval = g._count._all;
+    else if (g.runtimeDecision === "blocked") rollup.blocked = g._count._all;
+  }
+  const totalAttempts30d = rollup.allowed + rollup.requires_approval + rollup.blocked;
+
+  // Most-recent block reason — quick diagnosis of why this engineer is
+  // being held back without scrolling to the recent-attempts list.
+  const recentBlock = await prisma.agentEngineerActionAttempt.findFirst({
+    where: {
+      organizationId: String(ctx.organizationId),
+      engineerId: engineer.id,
+      runtimeDecision: "blocked",
+    },
+    orderBy: { createdAt: "desc" },
+    select: { reason: true, createdAt: true, action: true },
+  }).catch(() => null);
+
   const currentRule: ApprovalRule = (record?.currentApprovalRule as ApprovalRule | null) ?? engineer.approvalRule;
   const overrideActive = !!record?.currentApprovalRule && record.currentApprovalRule !== engineer.approvalRule;
 
@@ -133,6 +166,25 @@ export default async function EngineerDetailPage({ params }: { params: Promise<{
             </Link>
           </div>
         </div>
+      </section>
+
+      {/* 30-day rollup — honest zeros if this engineer hasn't been
+          exercised in the workspace yet, no fabricated KPIs. */}
+      <section className="mb-6">
+        <header className="flex items-baseline justify-between mb-3">
+          <p className="text-[10px] font-semibold uppercase tracking-widest text-zinc-400">Last 30 days</p>
+          <span className="text-[10px] font-mono text-zinc-500">{totalAttempts30d} attempt{totalAttempts30d === 1 ? "" : "s"}</span>
+        </header>
+        <div className="grid grid-cols-3 rounded-2xl border border-white/[0.06] bg-white/[0.015] divide-x divide-white/[0.04] overflow-hidden">
+          <RollupTile label="allowed"           count={rollup.allowed}           tone={rollup.allowed > 0 ? "text-emerald-300" : "text-zinc-600"} />
+          <RollupTile label="requires approval" count={rollup.requires_approval} tone={rollup.requires_approval > 0 ? "text-amber-300" : "text-zinc-600"} />
+          <RollupTile label="blocked"           count={rollup.blocked}           tone={rollup.blocked > 0 ? "text-rose-300" : "text-zinc-600"} />
+        </div>
+        {recentBlock && (
+          <p className="text-[11px] text-rose-300/80 mt-2 leading-relaxed">
+            Most recent block on <span className="font-mono text-zinc-300">{recentBlock.action}</span> · {recentBlock.reason}
+          </p>
+        )}
       </section>
 
       {/* Dependencies grid */}
@@ -240,6 +292,15 @@ export default async function EngineerDetailPage({ params }: { params: Promise<{
           <p className="text-[11px] text-zinc-500 mt-1">Every gate decision recorded.</p>
         </Link>
       </section>
+    </div>
+  );
+}
+
+function RollupTile({ label, count, tone }: { label: string; count: number; tone: string }) {
+  return (
+    <div className="px-4 py-4 text-center">
+      <p className={`text-[22px] font-semibold tabular-nums ${tone}`}>{count}</p>
+      <p className="text-[10px] font-mono uppercase tracking-[0.18em] text-zinc-500 mt-1">{label}</p>
     </div>
   );
 }
