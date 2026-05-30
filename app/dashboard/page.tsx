@@ -83,8 +83,8 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true);
   const { isDesktop } = useDesktopRuntime();
 
-  useEffect(() => {
-    Promise.all([
+  async function refresh() {
+    await Promise.all([
       fetch("/api/connectors/status")
         .then((r) => r.json())
         .then((data) => setConnectors(Array.isArray(data?.connectors) ? data.connectors : []))
@@ -95,7 +95,11 @@ export default function DashboardPage() {
           if (data?.ok) setSummary(data as DashboardSummary);
         })
         .catch(() => {}),
-    ]).finally(() => setLoading(false));
+    ]);
+  }
+
+  useEffect(() => {
+    refresh().finally(() => setLoading(false));
   }, []);
 
   if (loading) {
@@ -239,9 +243,12 @@ export default function DashboardPage() {
               ))}
             </div>
             {/* Real-action control — first time this button does
-                anything, the platform stops feeling like a mock. */}
+                anything, the platform stops feeling like a mock.
+                onComplete refreshes the live stats row above so
+                'findings' and 'last scan' tick up the moment the
+                scan returns. */}
             <div className="mt-4">
-              <RunScanButton />
+              <RunScanButton onComplete={() => { void refresh(); }} />
             </div>
           </>
         )}
