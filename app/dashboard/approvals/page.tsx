@@ -172,6 +172,15 @@ export default async function ApprovalsPage() {
                         <ApproveButton itemId={item.id} action="reject" />
                       </div>
                     )}
+                    {(item.status === "approved" || item.status === "applied") && (
+                      <a
+                        href={`/api/approvals/${item.id}/plan`}
+                        download
+                        className="shrink-0 inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-medium border border-emerald-500/30 text-emerald-200 hover:border-emerald-500/50 transition-colors"
+                      >
+                        Download .tf
+                      </a>
+                    )}
                   </div>
                 </li>
               ))}
