@@ -326,40 +326,28 @@ function ExecutiveSummaryBanner() {
   const recommendedHref = topAction?.route ?? "/dashboard";
 
   return (
-    <div className="mb-6 rounded-2xl border border-violet-500/15 bg-gradient-to-br from-violet-500/[0.04] via-transparent to-fuchsia-500/[0.03] p-5 relative overflow-hidden">
-      <div className="absolute -top-12 -right-12 w-48 h-48 rounded-full bg-violet-500/[0.06] blur-[60px] pointer-events-none" aria-hidden />
-      <div className="relative">
-        <div className="flex items-center gap-2 mb-3 flex-wrap">
-          <CpuChipIcon className="h-4 w-4 text-violet-400" />
-          <p className="text-[10px] font-semibold text-violet-400 uppercase tracking-widest">Executive summary</p>
-          <span className="text-[9px] font-semibold text-zinc-400 bg-white/[0.04] border border-white/[0.06] rounded-full px-1.5 py-px uppercase tracking-wider">
-            from /api/axiom-os/state
-          </span>
-        </div>
-        <p className="text-sm font-semibold text-white mb-4 leading-relaxed">{opener}</p>
-        {highlights.length > 0 && (
-          <div className="grid sm:grid-cols-3 gap-2.5 mb-4">
-            {highlights.map((h, i) => {
-              const tint =
-                h.severity === "success" ? "border-emerald-500/15 bg-emerald-500/[0.03]" :
-                h.severity === "warning" ? "border-amber-500/15 bg-amber-500/[0.03]" :
-                "border-blue-500/15 bg-blue-500/[0.03]";
-              return (
-                <Link key={i} href={h.link.href} className={`rounded-xl border ${tint} p-3 hover:border-white/[0.18] transition-colors group`}>
-                  <p className="text-xs font-bold text-white mb-1 leading-snug">{h.headline}</p>
-                  <p className="text-[11px] text-zinc-400 leading-relaxed">{h.detail}</p>
-                  <p className="text-[10px] text-zinc-500 mt-2 group-hover:text-white transition-colors">{h.link.label} →</p>
-                </Link>
-              );
-            })}
-          </div>
-        )}
-        <Link href={recommendedHref} className="flex items-center gap-2 text-xs text-zinc-400 hover:text-white transition-colors group">
-          <span className="text-[10px] font-semibold text-amber-400 uppercase tracking-widest">Next best action:</span>
-          <span className="text-zinc-300 group-hover:text-white transition-colors">{recommended}</span>
-          <ArrowRightIcon className="h-3 w-3 text-zinc-600 group-hover:text-amber-300 group-hover:translate-x-0.5 transition-all" />
-        </Link>
+    <div className="mb-6 rounded-2xl border border-white/[0.06] bg-white/[0.015] p-5">
+      <div className="flex items-center gap-2 mb-3 flex-wrap">
+        <CpuChipIcon className="h-4 w-4 text-zinc-500" />
+        <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-zinc-500">executive summary</p>
       </div>
+      <p className="text-sm font-semibold text-white mb-4 leading-relaxed">{opener}</p>
+      {highlights.length > 0 && (
+        <div className="grid sm:grid-cols-3 gap-2.5 mb-4">
+          {highlights.map((h, i) => (
+            <Link key={i} href={h.link.href} className="rounded-xl border border-white/[0.06] bg-white/[0.015] p-3 hover:border-white/[0.12] transition-colors group">
+              <p className="text-xs font-semibold text-white mb-1 leading-snug">{h.headline}</p>
+              <p className="text-[11px] text-zinc-500 leading-relaxed">{h.detail}</p>
+              <p className="text-[10px] text-zinc-600 mt-2 group-hover:text-white transition-colors">{h.link.label} →</p>
+            </Link>
+          ))}
+        </div>
+      )}
+      <Link href={recommendedHref} className="flex items-center gap-2 text-xs text-zinc-400 hover:text-white transition-colors group">
+        <span className="text-[10px] font-mono uppercase tracking-[0.18em] text-zinc-500">next best action ·</span>
+        <span className="text-zinc-300 group-hover:text-white transition-colors">{recommended}</span>
+        <ArrowRightIcon className="h-3 w-3 text-zinc-600 group-hover:text-white group-hover:translate-x-0.5 transition-all" />
+      </Link>
     </div>
   );
 }
@@ -409,40 +397,32 @@ function DemoJourneyCard() {
     if (state.evidencePosture.data.verifiedRecords > 0) stepsDone++;
   }
 
+  // Mode signals only — dot color stays (it's a real status). No more
+  // gradient backgrounds; the card uses the standard calm surface.
   const tone =
-    awsMode === "live"         ? { border: "border-emerald-500/[0.22]", bg: "from-emerald-500/[0.06] via-white/[0.015] to-transparent", text: "text-emerald-300", dot: "bg-emerald-400 animate-pulse" } :
-    awsMode === "partial_live" ? { border: "border-cyan-500/[0.22]",    bg: "from-cyan-500/[0.06] via-white/[0.015] to-transparent",    text: "text-cyan-300",    dot: "bg-cyan-400 animate-pulse"    } :
-    awsMode === "blocked"      ? { border: "border-rose-500/[0.22]",    bg: "from-rose-500/[0.06] via-white/[0.015] to-transparent",    text: "text-rose-300",    dot: "bg-rose-400"                  } :
-                                  { border: "border-amber-500/[0.18]",  bg: "from-amber-500/[0.06] via-white/[0.015] to-transparent",   text: "text-amber-300",   dot: "bg-amber-400"                 };
+    awsMode === "live"         ? { text: "text-emerald-300", dot: "bg-emerald-400 animate-pulse" } :
+    awsMode === "partial_live" ? { text: "text-cyan-300",    dot: "bg-cyan-400 animate-pulse"    } :
+    awsMode === "blocked"      ? { text: "text-rose-300",    dot: "bg-rose-400"                  } :
+                                  { text: "text-amber-300",  dot: "bg-amber-400"                 };
 
   return (
     <Link
       href="/dashboard/aws"
-      className={`group block rounded-2xl border ${tone.border} bg-gradient-to-br ${tone.bg} p-5 mb-6 relative overflow-hidden hover:-translate-y-0.5 transition-all`}
+      className="group block rounded-2xl border border-white/[0.06] bg-white/[0.015] p-5 mb-6 hover:border-white/[0.12] transition-colors"
     >
-      <div
-        className="absolute inset-0 -z-10 opacity-90 pointer-events-none"
-        style={{
-          background:
-            "radial-gradient(700px 200px at 90% 0%, rgba(99,102,241,0.08), transparent 60%)",
-        }}
-        aria-hidden
-      />
       <div className="flex items-center justify-between gap-4 flex-wrap">
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2 mb-2 flex-wrap">
-            <span className="inline-flex items-center gap-2 rounded-full border border-white/[0.06] bg-white/[0.02] px-2 py-0.5">
-              <span className={`w-1.5 h-1.5 rounded-full ${tone.dot}`} />
-              <span className={`text-[10px] font-semibold uppercase tracking-widest ${tone.text}`}>AWS demo journey · {awsMode.replace(/_/g, " ")}</span>
-            </span>
+            <span className={`w-1.5 h-1.5 rounded-full ${tone.dot}`} />
+            <span className={`text-[10px] font-mono uppercase tracking-[0.18em] ${tone.text}`}>aws demo journey · {awsMode.replace(/_/g, " ")}</span>
             <span className="text-[10px] font-mono text-zinc-500">
-              {state ? `${stepsDone}/7 steps complete` : "composing…"}
+              · {state ? `${stepsDone}/7 steps` : "composing…"}
             </span>
           </div>
-          <h2 className="text-xl md:text-2xl font-bold text-white tracking-tight mb-1">
+          <h2 className="text-xl md:text-[22px] font-semibold text-white tracking-[-0.02em] mb-1">
             Connect → Scan → Find → Remediate → Approve → Review → Evidence
           </h2>
-          <p className="text-[12.5px] text-zinc-400 leading-relaxed">
+          <p className="text-[12.5px] text-zinc-500 leading-relaxed">
             One canonical 7-step narrative. Every step reads from /api/axiom-os/state and shows real status, sourceMode, and safe-next-action.
           </p>
         </div>
@@ -1211,9 +1191,9 @@ function ObservabilityPostureStrip() {
   const errors = posture.checks.filter((c) => c.semantic === "error").length;
   const warnings = posture.checks.filter((c) => c.semantic === "warning").length;
   const tone =
-    errors > 0   ? "border-rose-500/15 bg-rose-500/[0.03]"   :
-    warnings > 0 ? "border-amber-500/15 bg-amber-500/[0.03]" :
-                   "border-violet-500/15 bg-violet-500/[0.03]";
+    errors > 0   ? "border-rose-500/15"   :
+    warnings > 0 ? "border-amber-500/15"  :
+                   "border-white/[0.06]";
   const headlineCheck =
     posture.checks.find((c) => c.semantic === "error") ??
     posture.checks.find((c) => c.semantic === "warning") ??
@@ -1221,19 +1201,19 @@ function ObservabilityPostureStrip() {
   const headline = state
     ? (persistent ? "Audit + memory persistent · every event traceable" : "Audit + memory in-memory · enable persistence for durability")
     : (headlineCheck?.label ?? "Composing observability state…");
-  const labelTone = persistent ? "bg-emerald-500/15 text-emerald-300 border-emerald-500/30" : "bg-amber-500/15 text-amber-300 border-amber-500/30";
+  const labelTone = persistent ? "text-emerald-400" : "text-amber-400";
   return (
-    <Link href="/dashboard/traces" className={`block rounded-2xl border ${tone} p-5 hover:border-violet-500/30 transition-colors group`}>
+    <Link href="/dashboard/traces" className={`block rounded-2xl border ${tone} bg-white/[0.015] p-5 hover:border-white/[0.12] transition-colors group`}>
       <div className="flex items-center justify-between gap-4 flex-wrap">
         <div className="flex items-center gap-3 min-w-0">
-          <div className="w-10 h-10 rounded-lg bg-violet-500/10 border border-violet-500/20 flex items-center justify-center shrink-0">
-            <ChartBarSquareIcon className="h-5 w-5 text-violet-400" />
+          <div className="w-10 h-10 rounded-lg bg-white/[0.04] border border-white/[0.06] flex items-center justify-center shrink-0">
+            <ChartBarSquareIcon className="h-5 w-5 text-zinc-400" />
           </div>
           <div className="min-w-0">
             <div className="flex items-center gap-2 mb-1">
-              <p className="text-[10px] font-semibold text-violet-400 uppercase tracking-widest">Observability</p>
-              <span className={`text-[9px] font-semibold ${labelTone} border rounded-full px-1.5 py-px uppercase tracking-wider`}>
-                {sourceMode.replace(/_/g, " ")}
+              <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-zinc-500">observability</p>
+              <span className={`text-[9px] font-mono ${labelTone} uppercase tracking-wider`}>
+                · {sourceMode.replace(/_/g, " ")}
               </span>
             </div>
             <p className="text-sm font-semibold text-white">{headline}</p>
@@ -1405,7 +1385,7 @@ function DesktopRuntimePanel() {
       <div className="px-3 pb-3 pt-1 flex items-center gap-2">
         <Link
           href={state?.safeNextAction?.href ?? "/download"}
-          className="flex-1 text-center text-[11px] font-semibold text-violet-300 hover:text-violet-200 rounded-md border border-violet-500/20 bg-violet-500/[0.06] hover:border-violet-500/40 px-2 py-1.5 transition-colors"
+          className="flex-1 text-center text-[11px] font-semibold text-zinc-200 hover:text-white rounded-md border border-white/[0.10] bg-white/[0.04] hover:bg-white/[0.08] hover:border-white/[0.18] px-2 py-1.5 transition-colors"
         >
           {state?.safeNextAction?.label ?? "Download desktop"}
         </Link>
@@ -1468,10 +1448,10 @@ function OnboardingPanel() {
     );
   }
   return (
-    <div className="rounded-2xl border border-emerald-500/15 bg-gradient-to-br from-emerald-500/[0.04] via-transparent to-cyan-500/[0.02] overflow-hidden">
-      <div className="px-5 py-3.5 border-b border-white/[0.06] bg-white/[0.01] flex items-center justify-between">
+    <div className="rounded-2xl border border-white/[0.06] bg-white/[0.015] overflow-hidden">
+      <div className="px-5 py-3.5 border-b border-white/[0.06] flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <BoltIcon className="h-4 w-4 text-emerald-300" />
+          <BoltIcon className="h-4 w-4 text-zinc-500" />
           <h3 className="text-sm font-semibold text-white">Getting Axiom productive</h3>
         </div>
         <span className="text-[11px] font-mono text-zinc-500">{pct}%</span>
@@ -1479,7 +1459,7 @@ function OnboardingPanel() {
       <div className="px-4 py-3 border-b border-white/[0.04]">
         <div className="w-full h-1.5 rounded-full bg-white/[0.04] overflow-hidden mb-3">
           <div
-            className="h-full bg-gradient-to-r from-emerald-400 to-cyan-400 transition-all"
+            className="h-full bg-white/40 transition-all"
             style={{ width: `${pct}%` }}
           />
         </div>
@@ -1867,16 +1847,14 @@ function LiveAgentStatusPanel() {
                       "text-zinc-200";
 
   return (
-    <div className="rounded-2xl border border-violet-500/15 bg-gradient-to-br from-violet-500/[0.05] via-transparent to-fuchsia-500/[0.03] p-4 relative overflow-hidden">
-      <div className="absolute -top-10 -right-10 w-32 h-32 rounded-full bg-violet-500/[0.08] blur-[40px] pointer-events-none" aria-hidden />
-      <div className="relative">
-        <div className="flex items-center gap-2 mb-3">
-          <CpuChipIcon className="h-4 w-4 text-violet-400" />
-          <h3 className="text-sm font-semibold text-white">Agent status</h3>
-          <span className="text-[9px] font-mono text-zinc-500 uppercase tracking-wider bg-white/[0.04] border border-white/[0.06] rounded px-1.5 py-px ml-auto">
-            from axiom-os
-          </span>
-        </div>
+    <div className="rounded-2xl border border-white/[0.06] bg-white/[0.015] p-4">
+      <div className="flex items-center gap-2 mb-3">
+        <CpuChipIcon className="h-4 w-4 text-zinc-500" />
+        <h3 className="text-sm font-semibold text-white">Agent status</h3>
+        <span className="text-[9px] font-mono text-zinc-600 uppercase tracking-wider ml-auto">
+          axiom-os
+        </span>
+      </div>
         {loading && (
           <p className="text-[11px] text-zinc-500 font-mono uppercase tracking-[0.18em]">// composing agent status…</p>
         )}
@@ -1896,7 +1874,6 @@ function LiveAgentStatusPanel() {
             ))}
           </div>
         )}
-      </div>
     </div>
   );
 }
