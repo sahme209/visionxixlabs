@@ -28,6 +28,7 @@ import { getAzureConfig } from "@/lib/cloud/azure/azureConfig";
 import { getGcpConfig } from "@/lib/cloud/gcp/gcpConfig";
 import { getGithubMode } from "@/lib/connectors/github/githubLiveClient";
 import { getGithubConfig, listMissingGithubConfig } from "@/lib/connectors/github/githubConfig";
+import { prisma } from "@/lib/db";
 
 import type { OrganizationId, UserId } from "@/lib/domain/ids";
 import {
@@ -72,14 +73,8 @@ export async function buildAxiomOSState(input: BuildAxiomOSStateInput): Promise<
   // 5) Remediation posture — derived from operating-loop hints.
   const remediationPosture = synthesiseRemediation(operatingLoops);
 
-  // 6) Approval posture.
-  const approvalPosture: SectionEnvelope<{ pendingCount: number; highRiskCount: number; expiredCount: number }> = {
-    status: "preview",
-    sourceMode: env.databaseUrlSet ? "partial_live" : "preview",
-    data: { pendingCount: 0, highRiskCount: 0, expiredCount: 0 },
-    limitations: env.databaseUrlSet ? [] : ["No persistence — approval counts are reset every server boot."],
-    safeNextAction: { label: "Open approval center", href: "/dashboard/orchestration/approvals" },
-  };
+  // 6) Approval posture — real counts from AxiomApprovalItem.
+  const approvalPosture = await safeApprovalPosture(input);
 
   // 7) Desktop posture.
   const desktopPosture: SectionEnvelope<{ binaryAvailable: boolean; signingStatus: "signed_notarized" | "signed" | "unsigned" | "preview"; pairedSessions: number; localExecutionDisabled: true }> = {
@@ -312,6 +307,63 @@ async function safeReleaseOps(input: BuildAxiomOSStateInput): Promise<SectionEnv
       sourceMode: "unknown",
       data: { readinessScore: 0, readinessGrade: "F", repoCount: 0, workflowCount: 0, failingWorkflowCount: 0, blockerCount: 0 },
       limitations: ["ReleaseOps state could not be built — check GitHub configuration."],
+    };
+  }
+}
+
+async function safeApprovalPosture(
+  input: BuildAxiomOSStateInput,
+): Promise<SectionEnvelope<{ pendingCount: number; highRiskCount: number; expiredCount: number }>> {
+  const env = loadAppEnv();
+  if (!env.databaseUrlSet) {
+    return {
+      status: "preview",
+      sourceMode: "preview",
+      data: { pendingCount: 0, highRiskCount: 0, expiredCount: 0 },
+      limitations: ["No persistence — approval counts are reset every server boot."],
+      safeNextAction: { label: "Open approval center", href: "/dashboard/approvals" },
+    };
+  }
+  try {
+    // Three counts in parallel — small and indexed.
+    const [pendingCount, highRiskCount, expiredCount] = await Promise.all([
+      prisma.axiomApprovalItem.count({
+        where: { organizationId: input.tenantId, status: { in: ["pending", "snoozed"] } },
+      }),
+      prisma.axiomApprovalItem.count({
+        where: {
+          organizationId: input.tenantId,
+          status: { in: ["pending", "snoozed"] },
+          riskLevel: "high",
+        },
+      }),
+      prisma.axiomApprovalItem.count({
+        where: { organizationId: input.tenantId, status: "expired" },
+      }),
+    ]);
+    return {
+      status: pendingCount === 0 ? "passing" : highRiskCount > 0 ? "failing" : "partial",
+      sourceMode: "live",
+      data: { pendingCount, highRiskCount, expiredCount },
+      limitations: [],
+      safeNextAction: { label: "Open approval center", href: "/dashboard/approvals" },
+    };
+  } catch (err) {
+    // Table not migrated yet — degrade to preview honestly so the
+    // dashboard still renders. Same migration_pending pattern used
+    // elsewhere in the codebase.
+    const msg = err instanceof Error ? err.message : String(err);
+    const migrationPending = /relation .* does not exist|table .* does not exist/i.test(msg);
+    return {
+      status: "unknown",
+      sourceMode: migrationPending ? "preview" : "unknown",
+      data: { pendingCount: 0, highRiskCount: 0, expiredCount: 0 },
+      limitations: [
+        migrationPending
+          ? "AxiomApprovalItem table not migrated — run prisma migrate deploy."
+          : "Approval counts unavailable — check Postgres connectivity.",
+      ],
+      safeNextAction: { label: "Open approval center", href: "/dashboard/approvals" },
     };
   }
 }
