@@ -41,6 +41,7 @@ import { resolveNextAction } from "@/lib/product/nextAction";
 import { useDesktopRuntime } from "@/lib/desktop/useDesktopRuntime";
 import { assessOnboarding } from "@/lib/onboarding/onboardingState";
 import { RunScanButton } from "./RunScanButton";
+import { DisconnectButton } from "./DisconnectButton";
 
 type ConnectorStatus = {
   provider: string;
@@ -238,6 +239,12 @@ export default function DashboardPage() {
                     <span className="text-[11px] text-zinc-500 shrink-0">
                       {new Date(c.lastScan).toLocaleDateString()}
                     </span>
+                  )}
+                  {(c.provider === "aws" || c.provider === "azure" || c.provider === "gcp") && (
+                    <DisconnectButton
+                      provider={c.provider}
+                      onComplete={() => { void refresh(); }}
+                    />
                   )}
                 </div>
               ))}
