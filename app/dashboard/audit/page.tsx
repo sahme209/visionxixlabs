@@ -1,356 +1,189 @@
-"use client";
+/**
+ * /dashboard/audit — the live audit trail.
+ *
+ * Reads SecureAuditRecord directly, scoped by org. Every meaningful
+ * platform event (scan.start, scan.success, approval.approve,
+ * connector_linked, etc.) lands here. Operators reviewing what
+ * happened see the chain, not a curated demo.
+ *
+ * 200 most-recent rows, ordered desc by occurredAt. Each row shows
+ * the action, outcome tone, time, entity, correlation id, and the
+ * actor — system vs user.
+ */
 
-import Link from "next/link";
-import {
-  DocumentTextIcon,
-  ShieldCheckIcon,
-  ArrowDownTrayIcon,
-  CheckCircleIcon,
-  ExclamationTriangleIcon,
-  CpuChipIcon,
-  ArrowRightIcon,
-  UserIcon,
-  ComputerDesktopIcon,
-} from "@heroicons/react/24/outline";
-import { Reveal } from "@/components/motion/Reveal";
-import { PageIntro } from "@/components/dashboard/PageIntro";
-import { Stagger } from "@/components/motion/Stagger";
-import { buildStoryFeed } from "@/lib/audit/auditIntelligence";
-import type { AuditStory, StoryRiskLevel } from "@/lib/audit/auditIntelligence";
-import type { AuditRecord, AuditAction, AuditOutcome } from "@/lib/audit/secureAudit";
-import { BUNDLE_KIND_LABEL } from "@/lib/audit/auditBundle";
-import type { AuditBundleKind } from "@/lib/audit/auditBundle";
-import { id } from "@/lib/domain/ids";
-import { TenantEmptyState } from "@/components/platform/TenantEmptyState";
-import { useTenantFreshness } from "@/components/platform/useTenantFreshness";
+import { redirect } from "next/navigation";
+import { prisma } from "@/lib/db";
+import { currentContext } from "@/lib/auth/currentContext";
 
-// ---------------------------------------------------------------------------
-// Honest preview records — same shape as the canonical AuditRecord.
-// ---------------------------------------------------------------------------
+export const dynamic = "force-dynamic";
 
-const RAW: { action: AuditAction; outcome?: AuditOutcome; minsAgo: number; correlation: string; actorUserId?: string; entityRef?: string; detail?: Record<string, string | number | boolean>; errorCode?: string }[] = [
-  // Story 1: plan -> approval -> export
-  { action: "execution_plan.create",  minsAgo: 38, correlation: "plan_s3_close",   actorUserId: "u_alice", entityRef: "plan:plan_s3_close", detail: { risk: "high", steps: 4 } },
-  { action: "approval.grant",         minsAgo: 30, correlation: "plan_s3_close",   actorUserId: "u_bob",   entityRef: "approval:apr_42",    detail: { approver: "bob", scope: "any_member" } },
-  { action: "execution_plan.submit",  minsAgo: 28, correlation: "plan_s3_close",   actorUserId: "u_alice", entityRef: "plan:plan_s3_close" },
-  { action: "execution_plan.export",  minsAgo: 27, correlation: "plan_s3_close",   actorUserId: "u_alice", entityRef: "export:tf_19" },
+type Outcome = "success" | "failure" | "blocked";
+type ActorKind = "user" | "agent" | "system";
 
-  // Story 2: AWS scan
-  { action: "scan.start",      minsAgo: 95, correlation: "scan_aws_prod", entityRef: "connector:aws-prod", detail: { provider: "aws", regions: 3 } },
-  { action: "scan.success",    minsAgo: 90, correlation: "scan_aws_prod", entityRef: "snapshot:snp_a3b1",  detail: { resources: 412, findings: 17 } },
+const OUTCOME_TONE: Record<Outcome, string> = {
+  success: "text-emerald-300",
+  failure: "text-rose-300",
+  blocked: "text-amber-300",
+};
 
-  // Story 3: blocked by policy
-  { action: "execution_plan.create", minsAgo: 200, correlation: "plan_iam_tighten", actorUserId: "u_alice", entityRef: "plan:plan_iam", detail: { risk: "high", actionClass: "iam_modification" } },
-  { action: "system.error",          minsAgo: 199, correlation: "plan_iam_tighten", actorUserId: "u_alice", entityRef: "plan:plan_iam", outcome: "blocked", errorCode: "policy.requires_security_review" },
+const ACTOR_TONE: Record<ActorKind, string> = {
+  user:   "text-zinc-200",
+  agent:  "text-zinc-400",
+  system: "text-zinc-500",
+};
 
-  // Story 4: github sync failure
-  { action: "connector.validate.attempt", minsAgo: 412, correlation: "github_sync", entityRef: "connector:github" },
-  { action: "connector.validate.failure", minsAgo: 411, correlation: "github_sync", entityRef: "connector:github", outcome: "failure", errorCode: "github.5xx" },
+function timeAgo(iso: Date): string {
+  const ms = Date.now() - iso.getTime();
+  const sec = Math.floor(ms / 1000);
+  if (sec < 60) return `${sec}s ago`;
+  const min = Math.floor(sec / 60);
+  if (min < 60) return `${min}m ago`;
+  const hr = Math.floor(min / 60);
+  if (hr < 24) return `${hr}h ago`;
+  const day = Math.floor(hr / 24);
+  return `${day}d ago`;
+}
 
-  // Story 5: cross-tenant attempt
-  { action: "tenant.cross_attempt", minsAgo: 700, correlation: "tenant_probe", actorUserId: "u_probe", entityRef: "execution:other_tenant", outcome: "blocked", detail: { expected: "preview", actual: "other-org" } },
+export default async function AuditPage() {
+  const ctx = await currentContext();
+  if (!ctx.isAuthenticated || !ctx.organizationId) {
+    redirect("/auth/signin?callbackUrl=/dashboard/audit");
+  }
 
-  // Story 6: copilot
-  { action: "copilot.query",  minsAgo: 12, correlation: "copilot_q1", actorUserId: "u_alice", entityRef: "conv:c_alice_1", detail: { intent: "informational" } },
+  let records: Array<{
+    id: string;
+    action: string;
+    outcome: string;
+    actorKind: string;
+    actorUserId: string | null;
+    entityRef: string | null;
+    correlationId: string;
+    occurredAt: Date;
+    detail: unknown;
+    errorCode: string | null;
+  }> = [];
+  let migrationPending = false;
+  try {
+    records = await (prisma as unknown as {
+      secureAuditRecord: {
+        findMany: (args: unknown) => Promise<typeof records>;
+      };
+    }).secureAuditRecord.findMany({
+      where: { organizationId: ctx.organizationId },
+      orderBy: { occurredAt: "desc" },
+      take: 200,
+    });
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    if (/relation .* does not exist|table .* does not exist/i.test(msg)) {
+      migrationPending = true;
+    } else {
+      throw err;
+    }
+  }
 
-  // Story 7: desktop pair + handoff
-  { action: "desktop.pair",          minsAgo: 1440, correlation: "desk_pair", actorUserId: "u_alice", entityRef: "desktop:macos_alice" },
-  { action: "desktop.handoff.issue", minsAgo: 60,   correlation: "desk_pair", actorUserId: "u_alice", entityRef: "handoff:hf_19", detail: { plan: "plan_s3_close" } },
-];
-
-const RECORDS: AuditRecord[] = RAW.map((r, idx) => ({
-  id: id.auditEvent(`aud_preview_${idx}`),
-  organizationId: id.organization("preview"),
-  actorUserId: r.actorUserId ? id.user(r.actorUserId) : undefined,
-  actorKind: r.actorUserId ? "user" : "system",
-  action: r.action,
-  outcome: r.outcome ?? "success",
-  entityRef: r.entityRef,
-  correlationId: id.correlation(r.correlation),
-  source: "preview",
-  occurredAt: new Date(Date.now() - r.minsAgo * 60_000).toISOString(),
-  detail: r.detail,
-  errorCode: r.errorCode,
-}));
-
-const STORIES = buildStoryFeed(RECORDS);
-
-export default function AuditCenterPage() {
-  const { isFreshOrLoading, loaded } = useTenantFreshness();
-  const showSampleData = loaded && !isFreshOrLoading;
-  const totalStories = showSampleData ? STORIES.length : 0;
-  const blockedStories = showSampleData ? STORIES.filter((s) => s.hasBlockedAction).length : 0;
-  const securityStories = showSampleData ? STORIES.filter((s) => s.hasSecurityEvent).length : 0;
-  const userActorStories = showSampleData ? STORIES.filter((s) => s.actors.some((a) => a.kind === "user")).length : 0;
+  const counts = records.reduce<Record<Outcome, number>>(
+    (acc, r) => {
+      const o = r.outcome as Outcome;
+      if (o === "success" || o === "failure" || o === "blocked") {
+        acc[o] = (acc[o] ?? 0) + 1;
+      }
+      return acc;
+    },
+    { success: 0, failure: 0, blocked: 0 },
+  );
 
   return (
-    <div className="relative">
-      <PageIntro
-        kicker={`Audit center${showSampleData ? " · preview" : ""}`}
-        title={<>Evidence-backed <span className="text-zinc-500">audit stories.</span></>}
-        description="Every action grouped into a coherent story — actors, policies, approvals, artifacts, outcomes. Exportable as JSON, CSV, or NDJSON for compliance review."
-        helps="Reconstruct who did what and why, end-to-end, for any change Axiom executed in your workspace."
-        connectFirst="Already covered — every action across the platform writes to the audit log automatically."
-        engineers={["Security", "Compliance", "Cloud"]}
-        requiresApproval="Read-only. Audit records are immutable; nothing on this page mutates state."
-        actions={[
-          { label: "Configure approval policy", href: "/dashboard/automation-boundaries" },
-          { label: "Read audit model docs", href: "/docs" },
-        ]}
-        safetyNote="Immutable · SHA-256 rationale rows · Tamper-evident exports"
-      />
+    <div className="max-w-5xl mx-auto px-1 -mt-2">
+      <header className="mb-12">
+        <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-zinc-500 mb-3">audit</p>
+        <h1 className="text-[34px] sm:text-[40px] leading-[1.05] font-semibold text-white tracking-[-0.03em] mb-3">
+          Every meaningful event.
+        </h1>
+        <p className="text-[15px] text-zinc-400 leading-relaxed max-w-xl">
+          Each row is a real platform event — scans, approvals, connector links,
+          failures. Read top-down for the most recent.
+        </p>
+      </header>
 
-      {!showSampleData && (
-        <Reveal direction="up" delay={0.04}>
-          <div className="mb-8">
-            <TenantEmptyState
-              icon={<DocumentTextIcon className="h-5 w-5" />}
-              tone="fuchsia"
-              eyebrow="Nothing audited yet"
-              title="Your audit timeline is waiting on its first connection."
-              description="Once a cloud account is linked, every approval, scan, plan, and policy decision is automatically grouped into evidence-backed stories you can export for compliance."
-              agiNote="AGI will assemble your first audit story the moment a connector is wired — no manual logging, no configuration files."
-              actions={[
-                { href: "/dashboard/connectors", label: "Connect first cloud", variant: "primary" },
-                { href: "/dashboard/command-center", label: "Open Command Center", variant: "ghost" },
-              ]}
-            />
-          </div>
-        </Reveal>
-      )}
-
-      {/* KPI strip */}
-      {showSampleData && (
-      <Stagger delay={0.05} interval={0.05} className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
-        {[
-          { label: "Audit stories",      value: String(totalStories),       sub: "in the recent window",                            icon: DocumentTextIcon, semantic: "neutral" },
-          { label: "Blocked actions",    value: String(blockedStories),     sub: blockedStories === 0 ? "All actions passed" : "Includes policy + tenant blocks", icon: ExclamationTriangleIcon, semantic: blockedStories > 0 ? "warning" : "success" },
-          { label: "Security events",    value: String(securityStories),    sub: "auth / cross-tenant / membership",                icon: ShieldCheckIcon, semantic: securityStories > 0 ? "warning" : "success" },
-          { label: "User-led stories",   value: String(userActorStories),   sub: "system actions audited separately",                icon: UserIcon, semantic: "success" },
-        ].map((kpi) => {
-          const Icon = kpi.icon;
-          const tone =
-            kpi.semantic === "success" ? "text-emerald-400 bg-emerald-500/10 border-emerald-500/20" :
-            kpi.semantic === "warning" ? "text-amber-400 bg-amber-500/10 border-amber-500/20" :
-                                          "text-fuchsia-400 bg-fuchsia-500/10 border-fuchsia-500/20";
-          const iconTone = tone.split(" ")[0];
-          return (
-            <div key={kpi.label} className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
-              <div className={`w-9 h-9 rounded-lg ${tone} border flex items-center justify-center mb-3`}>
-                <Icon className={`h-4.5 w-4.5 ${iconTone}`} />
-              </div>
-              <p className="text-2xl font-bold text-white tracking-tight mb-0.5">{kpi.value}</p>
-              <p className="text-[11px] text-zinc-500 leading-tight">{kpi.label}</p>
-              <p className="text-[10px] text-zinc-600 mt-1">{kpi.sub}</p>
-            </div>
-          );
-        })}
-      </Stagger>
-      )}
-
-      {/* Bundle export menu */}
-      {showSampleData && (
-      <Reveal direction="up" delay={0.08}>
-        <div className="mb-8 rounded-2xl border border-fuchsia-500/15 bg-gradient-to-br to-transparent via-transparent to-violet-500/[0.02] p-6 relative overflow-hidden">
-          <div className="absolute -top-12 -right-12 w-48 h-48 rounded-full bg-fuchsia-500/[0.06] blur-[60px] pointer-events-none" aria-hidden />
-          <div className="relative">
-            <div className="flex items-center justify-between flex-wrap gap-3 mb-4">
-              <div>
-                <p className="text-[10px] font-semibold text-fuchsia-400 uppercase tracking-widest mb-1">Bundle export</p>
-                <h2 className="text-lg font-bold text-white">Compliance-ready evidence packs.</h2>
-              </div>
-              <span className="text-[11px] text-zinc-500">JSON · CSV · NDJSON (PDF on roadmap)</span>
-            </div>
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
-              {(Object.keys(BUNDLE_KIND_LABEL) as AuditBundleKind[]).map((kind) => (
-                <div key={kind} className="rounded-lg border border-white/[0.05] bg-white/[0.015] px-3 py-2 flex items-center gap-2">
-                  <ArrowDownTrayIcon className="h-3.5 w-3.5 text-fuchsia-300 shrink-0" />
-                  <span className="text-[11px] text-zinc-300 truncate">{BUNDLE_KIND_LABEL[kind]}</span>
-                </div>
-              ))}
-            </div>
-            <p className="text-[11px] text-zinc-500 mt-3">All bundles pass through redaction before serialisation — raw credentials, tokens, and private keys are never included.</p>
-          </div>
+      {migrationPending && (
+        <div className="mb-8 rounded-2xl border border-amber-500/15 bg-white/[0.015] px-6 py-5">
+          <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-amber-300 mb-1">migration pending</p>
+          <p className="text-[13px] text-zinc-300">
+            The audit table hasn&apos;t been migrated yet. Run <code className="font-mono text-white">prisma migrate deploy</code> to populate the trail.
+          </p>
         </div>
-      </Reveal>
       )}
 
-      {/* Story feed */}
-      {showSampleData && (
-        <>
-          <Reveal direction="up" delay={0.12}>
-            <div className="mb-4">
-              <p className="text-[10px] font-semibold text-zinc-500 uppercase tracking-widest mb-1">Audit timeline</p>
-              <h2 className="text-xl font-bold text-white">{STORIES.length} stories · grouped by correlation id.</h2>
-            </div>
-          </Reveal>
+      {!migrationPending && records.length === 0 && (
+        <div className="rounded-2xl border border-white/[0.06] bg-white/[0.015] px-7 py-12 text-center">
+          <p className="text-[15px] font-semibold text-white mb-1">No events yet</p>
+          <p className="text-[12px] text-zinc-500 leading-relaxed max-w-md mx-auto">
+            Connect a cloud, run a scan, or approve a recommendation — every
+            action you take here lands in this trail.
+          </p>
+        </div>
+      )}
 
-          <div className="space-y-3 mb-8">
-            {STORIES.map((story) => (
-              <Reveal key={story.correlationId} direction="up" delay={0.04}>
-                <StoryCard story={story} />
-              </Reveal>
-            ))}
-          </div>
+      {records.length > 0 && (
+        <>
+          <section className="mb-10 rounded-2xl border border-white/[0.06] bg-white/[0.015] divide-x divide-white/[0.04] grid grid-cols-3 overflow-hidden">
+            <CountTile label="success"  count={counts.success}  tone={counts.success > 0 ? "text-emerald-300" : "text-zinc-600"} />
+            <CountTile label="failure"  count={counts.failure}  tone={counts.failure > 0 ? "text-rose-300" : "text-zinc-600"} />
+            <CountTile label="blocked"  count={counts.blocked}  tone={counts.blocked > 0 ? "text-amber-300" : "text-zinc-600"} />
+          </section>
+
+          <section>
+            <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-zinc-500 mb-3">timeline · latest 200</p>
+            <ul className="rounded-2xl border border-white/[0.06] bg-white/[0.015] divide-y divide-white/[0.04] overflow-hidden">
+              {records.map((r) => {
+                const outcome = r.outcome as Outcome;
+                const actor = r.actorKind as ActorKind;
+                const tone = OUTCOME_TONE[outcome] ?? "text-zinc-400";
+                const actorTone = ACTOR_TONE[actor] ?? "text-zinc-500";
+                return (
+                  <li key={r.id} className="px-6 py-3.5">
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 flex-wrap text-[10px] font-mono uppercase tracking-wider">
+                          <span className={tone}>{r.outcome}</span>
+                          <span className="text-zinc-500">·</span>
+                          <span className="text-zinc-300">{r.action}</span>
+                          {r.errorCode && (
+                            <>
+                              <span className="text-zinc-500">·</span>
+                              <span className="text-rose-300/80">{r.errorCode}</span>
+                            </>
+                          )}
+                        </div>
+                        {r.entityRef && (
+                          <p className="text-[11px] font-mono text-zinc-500 mt-1 truncate">{r.entityRef}</p>
+                        )}
+                        <p className="text-[10px] font-mono mt-1">
+                          <span className={actorTone}>{r.actorKind}</span>
+                          <span className="text-zinc-600"> · {r.correlationId.slice(0, 16)}</span>
+                        </p>
+                      </div>
+                      <div className="text-[10px] font-mono text-zinc-600 shrink-0 text-right">
+                        {timeAgo(r.occurredAt)}
+                      </div>
+                    </div>
+                  </li>
+                );
+              })}
+            </ul>
+          </section>
         </>
       )}
-
-      {/* Trust strip */}
-      <Reveal direction="up" delay={0.24}>
-        <div className="mt-8 rounded-2xl border border-fuchsia-500/15 bg-fuchsia-500/[0.02] p-5">
-          <div className="flex items-center gap-2 mb-3">
-            <CpuChipIcon className="h-4 w-4 text-fuchsia-400" />
-            <p className="text-[10px] font-semibold text-fuchsia-400 uppercase tracking-widest">Audit guarantees</p>
-          </div>
-          <ul className="grid sm:grid-cols-2 gap-2 text-xs text-zinc-300">
-            {[
-              ["Every sensitive action audited",         "API guard wraps the action, records success/failure with correlation ids."],
-              ["Cross-tenant attempts logged separately","Mismatched tenants surface as not_found but record a tenant.cross_attempt entry."],
-              ["Redaction applied before persistence",   "All free-text fields and metadata pass through canonical redaction before write."],
-              ["Approvals tied to plans",                "Every approval grant / deny links to its execution plan in the same story."],
-              ["Policy decisions visible",               "Policy evaluations appear in the story timeline alongside the affected action."],
-              ["Desktop actions auditable",              "Pairing, handoff, and verification all participate in the audit story."],
-              ["Copilot interactions auditable",         "Query, intent, evidence used, and guardrail modifications all recorded."],
-              ["Exportable for review",                  "Bundle engine produces JSON / CSV / NDJSON envelopes carrying the full story."],
-            ].map(([q, a]) => (
-              <li key={q} className="flex items-start gap-2">
-                <CheckCircleIcon className="h-3.5 w-3.5 text-fuchsia-400 shrink-0 mt-0.5" />
-                <span className="leading-relaxed"><span className="font-semibold text-zinc-100">{q}</span> <span className="dim-1">{a}</span></span>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </Reveal>
-
-      {/* Self-serve links */}
-      <Reveal direction="up" delay={0.28}>
-        <div className="mt-8 grid sm:grid-cols-3 gap-3">
-          {[
-            { href: "/dashboard/traces",       label: "Trace viewer",     icon: DocumentTextIcon,   sub: "Span timelines, evidence, and redacted spans for every operation." },
-            { href: "/dashboard/security",     label: "Security center",  icon: ShieldCheckIcon,    sub: "Tenant isolation, RBAC, credential health, redaction coverage." },
-            { href: "/dashboard/reliability",  label: "Reliability",      icon: ComputerDesktopIcon, sub: "Circuits, retries, dead-letters, and system health." },
-          ].map(({ href, label, icon: Icon, sub }) => (
-            <Link key={href} href={href} className="block rounded-xl border border-white/[0.06] bg-white/[0.02] p-4 hover:border-fuchsia-500/25 hover:bg-fuchsia-500/[0.03] transition-colors">
-              <Icon className="h-4 w-4 text-fuchsia-400 mb-2" />
-              <p className="text-sm font-semibold text-white">{label}</p>
-              <p className="text-[11px] text-zinc-500 mt-1 leading-relaxed">{sub}</p>
-            </Link>
-          ))}
-        </div>
-      </Reveal>
     </div>
   );
 }
 
-function StoryCard({ story }: { story: AuditStory }) {
-  const semantic =
-    story.risk === "critical" ? "error" :
-    story.risk === "high"     ? "warning" :
-    story.risk === "medium"   ? "warning" :
-                                 "success";
-  const border =
-    semantic === "error"   ? "border-red-500/20"   :
-    semantic === "warning" ? "border-amber-500/20" :
-                              "border-white/[0.06]";
+function CountTile({ label, count, tone }: { label: string; count: number; tone: string }) {
   return (
-    <div className={`rounded-2xl border ${border} bg-white/[0.02] overflow-hidden`}>
-      <div className="px-5 py-3 border-b border-white/[0.05] flex items-center justify-between flex-wrap gap-2">
-        <div className="flex items-center gap-3 min-w-0">
-          <span className={`text-[9px] font-bold uppercase tracking-wider border rounded-full px-1.5 py-px ${riskBadge(story.risk)}`}>
-            {story.risk}
-          </span>
-          <p className="text-sm font-semibold text-white truncate">{story.title}</p>
-        </div>
-        <div className="flex items-center gap-3 text-[10px] text-zinc-500 font-mono shrink-0">
-          {story.actors.map((a) => (
-            <span key={`${a.kind}::${a.label}`} className="inline-flex items-center gap-1">
-              <UserIcon className="h-3 w-3" /> {a.userId ?? a.label}
-            </span>
-          ))}
-          <span>{formatRelative(story.startedAt)}</span>
-        </div>
-      </div>
-
-      <div className="px-5 py-3 border-b border-white/[0.05]">
-        <p className="text-[12px] text-zinc-400 leading-relaxed">{story.summary}</p>
-      </div>
-
-      <div className="px-5 py-3">
-        <p className="text-[10px] font-semibold text-zinc-500 uppercase tracking-widest mb-2">Timeline · {story.timeline.length}</p>
-        <div className="space-y-1.5">
-          {story.timeline.map((t) => (
-            <div key={t.recordId} className="flex items-center gap-3">
-              <span className={`w-2 h-2 rounded-full shrink-0 ${
-                t.outcome === "success" ? "bg-emerald-400" :
-                t.outcome === "blocked" ? "bg-amber-400"  :
-                                           "bg-red-400"
-              }`} />
-              <span className="text-[11px] text-zinc-300 font-mono">{t.action}</span>
-              <span className="text-[10px] text-zinc-500 truncate flex-1">{t.detailLine ?? ""}</span>
-              <span className="text-[10px] text-zinc-500 font-mono shrink-0">{formatRelative(t.occurredAt)}</span>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      <div className="px-5 py-2.5 bg-white/[0.01] border-t border-white/[0.04] flex items-center justify-between flex-wrap gap-2">
-        <div className="flex flex-wrap gap-1.5">
-          {story.policyApplied && <Badge label="Policy applied" tone="violet" />}
-          {story.approvalGranted && <Badge label="Approval granted" tone="emerald" />}
-          {story.approvalDenied  && <Badge label="Approval denied" tone="red" />}
-          {story.rollbackPrepared && <Badge label="Rollback prepared" tone="cyan" />}
-          {story.verificationCompleted && <Badge label="Verification" tone="emerald" />}
-          {story.hasBlockedAction && <Badge label="Blocked action" tone="amber" />}
-          {story.hasSecurityEvent && <Badge label="Security event" tone="fuchsia" />}
-        </div>
-        <div className="flex items-center gap-3">
-          <a
-            href={`/api/audit/bundle/${encodeURIComponent(story.correlationId as unknown as string)}?format=json`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-[11px] font-semibold text-emerald-300 hover:text-emerald-200"
-          >
-            Export bundle <ArrowDownTrayIcon className="inline h-3 w-3 ml-0.5 -mt-0.5" />
-          </a>
-          <Link href="/dashboard/traces" className="text-[11px] font-semibold text-fuchsia-300 hover:text-fuchsia-200">
-            View trace <ArrowRightIcon className="inline h-3 w-3 ml-0.5 -mt-0.5" />
-          </Link>
-        </div>
-      </div>
+    <div className="px-4 py-4 text-center">
+      <p className={`text-[22px] font-semibold tabular-nums ${tone}`}>{count}</p>
+      <p className="text-[10px] font-mono uppercase tracking-[0.18em] text-zinc-500 mt-1">{label}</p>
     </div>
   );
-}
-
-function Badge({ label, tone }: { label: string; tone: "violet" | "emerald" | "amber" | "red" | "cyan" | "fuchsia" }) {
-  const map: Record<string, string> = {
-    violet:  "text-violet-300 bg-violet-500/10 border-white/[0.08]",
-    emerald: "text-emerald-300 bg-emerald-500/10 border-emerald-500/20",
-    amber:   "text-amber-300 bg-amber-500/10 border-amber-500/20",
-    red:     "text-red-300 bg-red-500/10 border-red-500/20",
-    cyan:    "text-cyan-300 bg-cyan-500/10 border-cyan-500/20",
-    fuchsia: "text-fuchsia-300 bg-fuchsia-500/10 border-fuchsia-500/20",
-  };
-  return (
-    <span className={`text-[9px] font-semibold uppercase tracking-wider border rounded-full px-1.5 py-px ${map[tone]}`}>
-      {label}
-    </span>
-  );
-}
-
-function riskBadge(risk: StoryRiskLevel): string {
-  switch (risk) {
-    case "critical": return "text-red-300 bg-red-500/10 border-red-500/20";
-    case "high":     return "text-amber-300 bg-amber-500/10 border-amber-500/20";
-    case "medium":   return "text-amber-300 bg-amber-500/10 border-amber-500/20";
-    case "low":      return "text-emerald-300 bg-emerald-500/10 border-emerald-500/20";
-    case "info":     return "text-zinc-400 bg-white/[0.04] border-white/[0.08]";
-  }
-}
-
-function formatRelative(iso: string): string {
-  const diff = Date.now() - new Date(iso).getTime();
-  if (diff < 60_000) return `${Math.round(diff / 1000)}s ago`;
-  if (diff < 60 * 60_000) return `${Math.round(diff / 60_000)}m ago`;
-  if (diff < 24 * 60 * 60_000) return `${Math.round(diff / (60 * 60_000))}h ago`;
-  return `${Math.round(diff / (24 * 60 * 60_000))}d ago`;
 }
