@@ -40,10 +40,14 @@ export async function GET(req: NextRequest) {
   const ctx = await requireContext();
   const severityFilter = clampSev(req.nextUrl.searchParams.get("severity"));
   const search = (req.nextUrl.searchParams.get("q") ?? "").trim();
+  const accountId = (req.nextUrl.searchParams.get("accountId") ?? "").trim();
 
   const findings = await prisma.axiomFinding.findMany({
     where: {
-      run: { organizationId: ctx.organizationId },
+      run: {
+        organizationId: ctx.organizationId,
+        ...(accountId.length > 0 ? { cloudAccountId: accountId } : {}),
+      },
       ...(severityFilter ? { severity: severityFilter } : {}),
       ...(search.length > 0
         ? {

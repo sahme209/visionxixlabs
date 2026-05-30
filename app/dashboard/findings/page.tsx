@@ -46,7 +46,7 @@ function clampSev(input: string | undefined): Severity | "all" {
 export default async function FindingsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ severity?: string; q?: string }>;
+  searchParams: Promise<{ severity?: string; q?: string; accountId?: string }>;
 }) {
   const ctx = await currentContext();
   if (!ctx.isAuthenticated || !ctx.organizationId) {
@@ -55,6 +55,7 @@ export default async function FindingsPage({
   const params = await searchParams;
   const severityFilter = clampSev(params.severity);
   const search = (params.q ?? "").trim();
+  const accountId = (params.accountId ?? "").trim();
 
   // Latest 100 findings for the org, joined through AxiomAgentRun so
   // we can also surface which scan produced each one.
@@ -74,7 +75,10 @@ export default async function FindingsPage({
   try {
     findings = await prisma.axiomFinding.findMany({
       where: {
-        run: { organizationId: ctx.organizationId },
+        run: {
+          organizationId: ctx.organizationId,
+          ...(accountId.length > 0 ? { cloudAccountId: accountId } : {}),
+        },
         ...(severityFilter !== "all" ? { severity: severityFilter } : {}),
         ...(search.length > 0
           ? {
@@ -115,7 +119,12 @@ export default async function FindingsPage({
     try {
       const groups = await prisma.axiomFinding.groupBy({
         by: ["severity"],
-        where: { run: { organizationId: ctx.organizationId } },
+        where: {
+          run: {
+            organizationId: ctx.organizationId,
+            ...(accountId.length > 0 ? { cloudAccountId: accountId } : {}),
+          },
+        },
         _count: { _all: true },
       });
       for (const g of groups) {
@@ -186,6 +195,7 @@ export default async function FindingsPage({
                       href={`/dashboard/findings?${new URLSearchParams({
                         ...(s !== "all" ? { severity: s } : {}),
                         ...(search ? { q: search } : {}),
+                        ...(accountId ? { accountId } : {}),
                       }).toString()}`}
                       className={`text-[11px] font-mono px-2.5 py-1 rounded-full border transition-colors ${
                         isActive
@@ -208,6 +218,9 @@ export default async function FindingsPage({
               {severityFilter !== "all" && (
                 <input type="hidden" name="severity" value={severityFilter} />
               )}
+              {accountId && (
+                <input type="hidden" name="accountId" value={accountId} />
+              )}
               <button
                 type="submit"
                 className="rounded-full border border-white/[0.06] hover:border-white/[0.18] px-3 py-1.5 text-[11px] font-mono text-zinc-300 hover:text-white transition-colors"
@@ -226,6 +239,7 @@ export default async function FindingsPage({
                 href={`/api/findings/export.csv?${new URLSearchParams({
                   ...(severityFilter !== "all" ? { severity: severityFilter } : {}),
                   ...(search ? { q: search } : {}),
+                  ...(accountId ? { accountId } : {}),
                 }).toString()}`}
                 download
                 className="ml-auto text-[11px] font-mono text-zinc-500 hover:text-white transition-colors"

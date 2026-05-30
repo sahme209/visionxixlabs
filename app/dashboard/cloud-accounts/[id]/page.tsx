@@ -146,7 +146,10 @@ export default async function CloudAccountDetailPage({
         <div className="flex items-baseline justify-between mb-3">
           <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-zinc-500">findings · {totalFindings}</p>
           {totalFindings > 0 && (
-            <Link href={`/dashboard/findings`} className="text-[11px] font-mono text-zinc-500 hover:text-white transition-colors">
+            <Link
+              href={`/dashboard/findings?accountId=${encodeURIComponent(account.id)}`}
+              className="text-[11px] font-mono text-zinc-500 hover:text-white transition-colors"
+            >
               view all
             </Link>
           )}
