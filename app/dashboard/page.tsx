@@ -304,13 +304,17 @@ export default function DashboardPage() {
                 </div>
               ))}
             </div>
-            {/* Real-action control — first time this button does
-                anything, the platform stops feeling like a mock.
-                onComplete refreshes the live stats row above so
-                'findings' and 'last scan' tick up the moment the
-                scan returns. */}
-            <div className="mt-4">
-              <RunScanButton onComplete={() => { void refresh(); }} />
+            {/* Real-action controls. Single-region default for fast
+                feedback; multi-region for the thorough sweep. onComplete
+                refreshes the live stats row above so 'findings' and
+                'last scan' tick up the moment the scan returns. */}
+            <div className="mt-4 flex flex-wrap items-center gap-x-6 gap-y-3">
+              <RunScanButton label="Run scan now" onComplete={() => { void refresh(); }} />
+              <RunScanButton
+                label="Scan all regions"
+                multiRegion
+                onComplete={() => { void refresh(); }}
+              />
             </div>
           </>
         )}

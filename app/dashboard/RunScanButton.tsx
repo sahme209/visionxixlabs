@@ -82,8 +82,13 @@ export function RunScanButton({
         {phase === "running" && (
           <span className="w-3.5 h-3.5 rounded-full border-2 border-zinc-700 border-t-transparent animate-spin" />
         )}
-        {phase === "running" ? "Scanning…" : label}
+        {phase === "running" ? `Scanning${multiRegion ? " all regions" : ""}…` : label}
       </button>
+      {phase === "idle" && (
+        <span className="text-[11px] text-zinc-500" title={multiRegion ? "Sweeps every region" : "Single region — fast"}>
+          {multiRegion ? "all regions · ~30s" : "single region · ~10s"}
+        </span>
+      )}
       {phase === "done" && result?.ok && (
         <span className="text-[12px] text-emerald-300">
           {result.findingCount} finding{result.findingCount === 1 ? "" : "s"} · {result.resourceCount} resource{result.resourceCount === 1 ? "" : "s"}
