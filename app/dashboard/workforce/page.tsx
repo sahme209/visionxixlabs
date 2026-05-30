@@ -141,10 +141,19 @@ export default async function WorkforcePage() {
           return (
             <section key={dept}>
               <header className="flex items-baseline gap-3 mb-3 flex-wrap">
-                <span className={`inline-flex items-center gap-2 rounded-full border px-2.5 py-1 ${meta.tone}`}>
+                <Link
+                  href={`/dashboard/workforce/department/${dept}`}
+                  className={`inline-flex items-center gap-2 rounded-full border px-2.5 py-1 hover:opacity-80 transition-opacity ${meta.tone}`}
+                >
                   <span className="text-[10px] font-semibold uppercase tracking-widest">{meta.label}</span>
-                </span>
+                </Link>
                 <span className="text-[11px] text-zinc-500">{engineers.length} engineer{engineers.length === 1 ? "" : "s"}</span>
+                <Link
+                  href={`/dashboard/workforce/department/${dept}`}
+                  className="text-[11px] text-zinc-500 hover:text-white transition-colors ml-auto inline-flex items-center gap-1"
+                >
+                  rollup <ArrowRightIcon className="h-3 w-3" />
+                </Link>
               </header>
 
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
