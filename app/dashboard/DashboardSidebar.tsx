@@ -220,6 +220,7 @@ const GROUPS: NavGroup[] = [
     kind: "admin",
     items: [
       { href: "/dashboard/billing",                  label: "Billing & usage",     icon: BoltIcon },
+      { href: "/dashboard/cost-analysis",            label: "Cost analysis",       icon: ChartBarIcon },
       { href: "/dashboard/ai-usage",                 label: "AI usage",            icon: ChartBarIcon },
       { href: "/dashboard/settings/notifications",   label: "Notifications",       icon: BellAlertIcon },
       { href: "/dashboard/settings/workspace",       label: "Users & roles",       icon: ShieldCheckIcon },
