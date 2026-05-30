@@ -103,6 +103,33 @@ export default async function ScanDetailPage({
     orderBy: { createdAt: "desc" },
   });
 
+  // Previous completed scan of the same cloud account, for the diff.
+  const previousRun = await prisma.axiomAgentRun.findFirst({
+    where: {
+      organizationId: ctx.organizationId,
+      cloudAccount: {
+        provider: run.cloudAccount.provider,
+        externalAccountId: run.cloudAccount.externalAccountId,
+      },
+      status: "completed",
+      createdAt: { lt: run.createdAt },
+    },
+    orderBy: { createdAt: "desc" },
+    select: {
+      id: true,
+      completedAt: true,
+      findings: { select: { title: true } },
+    },
+  });
+
+  // Diff = title-based set difference, modulo identical-title duplicates.
+  // Good enough for the 'what's new since last scan' chip without
+  // fingerprinting every resource id.
+  const currentTitles = new Set(run.findings.map((f) => f.title));
+  const previousTitles = new Set((previousRun?.findings ?? []).map((f) => f.title));
+  const newSinceLast = previousRun ? [...currentTitles].filter((t) => !previousTitles.has(t)).length : 0;
+  const resolvedSinceLast = previousRun ? [...previousTitles].filter((t) => !currentTitles.has(t)).length : 0;
+
   const dur = duration(run.startedAt, run.completedAt);
 
   return (
@@ -134,6 +161,19 @@ export default async function ScanDetailPage({
         </h1>
         {run.summary && (
           <p className="text-[14px] text-zinc-400 leading-relaxed max-w-xl">{run.summary}</p>
+        )}
+        {previousRun && (newSinceLast > 0 || resolvedSinceLast > 0) && (
+          <p className="text-[12px] mt-3 flex items-center gap-3 flex-wrap">
+            <span className="text-zinc-500">vs previous scan:</span>
+            {newSinceLast > 0 && <span className="text-amber-300 font-mono">+{newSinceLast} new</span>}
+            {resolvedSinceLast > 0 && <span className="text-emerald-300 font-mono">−{resolvedSinceLast} resolved</span>}
+            <Link
+              href={`/dashboard/scans/${previousRun.id}`}
+              className="text-zinc-500 hover:text-white underline-offset-2 hover:underline transition-colors"
+            >
+              see previous
+            </Link>
+          </p>
         )}
         <p className="text-[11px] font-mono text-zinc-600 mt-3">
           Run {run.id} · started {run.startedAt?.toISOString() ?? "—"}
