@@ -232,8 +232,8 @@ export default function DashboardPage() {
             title="Inspect"
             items={[
               { href: "/dashboard/findings",    icon: CloudIcon,          label: "Findings",    sub: "What your latest scan found" },
-              { href: "/dashboard/audit",       icon: DocumentTextIcon,   label: "Audit",       sub: "Evidence-backed stories" },
-              { href: "/dashboard/traces",      icon: ChartBarSquareIcon, label: "Traces",      sub: "Operation span timelines" },
+              { href: "/dashboard/scans",       icon: ArrowPathIcon,      label: "Scans",       sub: "History of every run" },
+              { href: "/dashboard/audit",       icon: DocumentTextIcon,   label: "Audit",       sub: "Every meaningful event" },
               { href: "/dashboard/reliability", icon: BoltIcon,           label: "Reliability", sub: "Circuits + retries" },
             ]}
           />
