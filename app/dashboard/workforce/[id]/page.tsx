@@ -136,6 +136,46 @@ export default async function EngineerDetailPage({ params }: { params: Promise<{
   // Connector readiness — cloud (aws/azure/gcp) + github are the
   // most-load-bearing deps across the workforce. Others stay as
   // honest 'not verified' chips in the dependency grid below.
+  // Pending approvals + recent decision latency, scoped to this
+  // engineer via the EngineerApprovalSnapshot mirror. Median is
+  // computed in-app from the last 50 decisions — small enough to
+  // load + sort cheaply, big enough to be representative.
+  const [pendingApprovalCount, recentDecisions] = await Promise.all([
+    prisma.engineerApprovalSnapshot.count({
+      where: {
+        organizationId: String(ctx.organizationId),
+        engineerId: engineer.id,
+        status: "pending",
+      },
+    }).catch(() => 0),
+    prisma.engineerApprovalSnapshot.findMany({
+      where: {
+        organizationId: String(ctx.organizationId),
+        engineerId: engineer.id,
+        decidedAt: { not: null },
+      },
+      orderBy: { decidedAt: "desc" },
+      take: 50,
+      select: { createdAt: true, decidedAt: true },
+    }).catch(() => [] as Array<{ createdAt: Date; decidedAt: Date | null }>),
+  ]);
+
+  const latenciesMs = recentDecisions
+    .map((d) => (d.decidedAt ? d.decidedAt.getTime() - d.createdAt.getTime() : 0))
+    .filter((ms) => ms > 0)
+    .sort((a, b) => a - b);
+  const medianDecisionMs = latenciesMs.length === 0
+    ? null
+    : latenciesMs[Math.floor(latenciesMs.length / 2)];
+
+  function formatMs(ms: number): string {
+    const min = Math.floor(ms / 60000);
+    if (min < 60) return `${min}m`;
+    const hr = Math.floor(min / 60);
+    if (hr < 24) return `${hr}h`;
+    return `${Math.floor(hr / 24)}d`;
+  }
+
   const cloudConnectorDeps = engineer.requiredConnectors.filter(
     (c) => c === "aws" || c === "azure" || c === "gcp",
   );
@@ -242,6 +282,39 @@ export default async function EngineerDetailPage({ params }: { params: Promise<{
             Most recent block on <span className="font-mono text-zinc-300">{recentBlock.action}</span> · {recentBlock.reason}
           </p>
         )}
+      </section>
+
+      {/* Approval SLA — pending count + median decision latency for
+          the last 50 decided requests. Honest 'no decisions yet' note
+          when the engineer has never minted an approval. */}
+      <section className="mb-6 grid sm:grid-cols-2 gap-3">
+        <div className="rounded-2xl border border-white/[0.06] bg-white/[0.015] px-5 py-4">
+          <p className="text-[10px] font-mono uppercase tracking-[0.18em] text-zinc-500 mb-1">pending approvals</p>
+          <p className={`text-[22px] font-semibold tabular-nums ${pendingApprovalCount > 0 ? "text-amber-300" : "text-zinc-600"}`}>
+            {pendingApprovalCount}
+          </p>
+          {pendingApprovalCount > 0 ? (
+            <Link
+              href={`/dashboard/workforce/approvals?engineer=${encodeURIComponent(engineer.id)}`}
+              className="text-[11px] font-mono text-zinc-400 hover:text-white mt-2 inline-flex items-center gap-1"
+            >
+              review queue <ArrowRightIcon className="h-3 w-3" />
+            </Link>
+          ) : (
+            <p className="text-[11px] text-zinc-500 mt-1">Nothing waiting on a workspace decision.</p>
+          )}
+        </div>
+        <div className="rounded-2xl border border-white/[0.06] bg-white/[0.015] px-5 py-4">
+          <p className="text-[10px] font-mono uppercase tracking-[0.18em] text-zinc-500 mb-1">median decision latency</p>
+          <p className={`text-[22px] font-semibold tabular-nums ${medianDecisionMs !== null ? "text-white" : "text-zinc-600"}`}>
+            {medianDecisionMs !== null ? formatMs(medianDecisionMs) : "—"}
+          </p>
+          <p className="text-[11px] text-zinc-500 mt-1">
+            {medianDecisionMs !== null
+              ? `Across the last ${latenciesMs.length} decision${latenciesMs.length === 1 ? "" : "s"}.`
+              : "No decided requests yet."}
+          </p>
+        </div>
       </section>
 
       {/* Connector readiness — cloud + github are checkable here.
