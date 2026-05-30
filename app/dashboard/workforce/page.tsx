@@ -167,11 +167,21 @@ export default async function WorkforcePage() {
       {/* Live workforce KPIs — totals across every client engineer in
           THIS workspace. Honest zeros when the workspace is empty,
           no projected demo numbers. */}
-      <div className="flex items-baseline justify-between mb-3">
+      <div className="flex items-baseline justify-between mb-3 gap-3 flex-wrap">
         <p className="text-[10px] font-mono uppercase tracking-[0.18em] text-zinc-500">live · this workspace</p>
-        <Link href="/dashboard/workforce/compare" className="text-[11px] font-mono text-zinc-500 hover:text-white transition-colors">
-          compare engineers →
-        </Link>
+        <div className="flex items-center gap-4">
+          <a
+            href="/api/workforce/attempts.csv"
+            download
+            className="text-[11px] font-mono text-zinc-500 hover:text-white transition-colors"
+            title="Download up to 5000 workforce attempts as CSV"
+          >
+            download .csv
+          </a>
+          <Link href="/dashboard/workforce/compare" className="text-[11px] font-mono text-zinc-500 hover:text-white transition-colors">
+            compare engineers →
+          </Link>
+        </div>
       </div>
       <section className="grid grid-cols-2 md:grid-cols-3 gap-3 mb-8">
         <LiveStat
