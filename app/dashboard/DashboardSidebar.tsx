@@ -229,6 +229,7 @@ const GROUPS: NavGroup[] = [
       { href: "/dashboard/settings/notifications",   label: "Notifications",       icon: BellAlertIcon },
       { href: "/dashboard/settings/workspace",       label: "Users & roles",       icon: ShieldCheckIcon },
       { href: "/dashboard/trust",                label: "Trust center",        icon: ShieldCheckIcon },
+      { href: "/dashboard/compliance",           label: "Compliance",          icon: DocumentMagnifyingGlassIcon },
       { href: "/dashboard/policies",             label: "Policies",            icon: LockClosedIcon },
       // Power-user routes — internal/admin.
       { href: "/dashboard/cost-overview",        label: "Cost overview",       icon: ChartBarIcon, power: true },
