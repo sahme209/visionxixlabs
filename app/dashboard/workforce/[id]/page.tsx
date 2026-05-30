@@ -275,6 +275,36 @@ export default async function EngineerDetailPage({ params }: { params: Promise<{
         <p className="text-[15px] text-zinc-400 max-w-3xl leading-relaxed">{engineer.role}</p>
       </div>
 
+      {/* Enable / disable toggle — workspace-level switch on top of the
+          canonical approval rule. Lives directly under the header so
+          the operator never has to scroll to flip the engineer off. */}
+      <section className="rounded-2xl border border-white/[0.06] bg-white/[0.015] p-4 mb-6 flex items-center justify-between gap-4 flex-wrap">
+        <div className="min-w-0">
+          <p className="text-[10px] font-mono uppercase tracking-[0.18em] text-zinc-500 mb-1">workspace state</p>
+          <p className="text-[13px] font-semibold text-white">
+            {record?.isEnabled === false ? "Disabled in this workspace" : "Enabled in this workspace"}
+          </p>
+          <p className="text-[11px] text-zinc-500 mt-0.5 leading-snug">
+            {record?.isEnabled === false
+              ? "Disabled engineers can't be invoked even with operator approval — every attempt blocks at the runtime gate."
+              : "Engineer can be invoked under the approval rule above."}
+          </p>
+        </div>
+        <form action={`/api/workforce/${engineer.id}/toggle`} method="POST" className="shrink-0">
+          <input type="hidden" name="enabled" value={record?.isEnabled === false ? "true" : "false"} />
+          <button
+            type="submit"
+            className={`text-[11px] font-mono uppercase tracking-wider px-3 py-1.5 rounded-full border transition-colors ${
+              record?.isEnabled === false
+                ? "border-emerald-500/30 text-emerald-200 hover:border-emerald-500/50"
+                : "border-rose-500/30 text-rose-200 hover:border-rose-500/50"
+            }`}
+          >
+            {record?.isEnabled === false ? "enable" : "disable"}
+          </button>
+        </form>
+      </section>
+
       {/* Approval rule strip */}
       <section className="rounded-2xl border border-violet-500/15 bg-white/[0.015] p-5 mb-6">
         <header className="flex items-center gap-2 mb-3 flex-wrap">
