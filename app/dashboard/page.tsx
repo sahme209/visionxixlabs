@@ -287,10 +287,10 @@ export default function DashboardPage() {
           <CapabilityGroup
             title="Govern"
             items={[
-              { href: "/dashboard/approvals",  icon: SparklesIcon,    label: "Approvals",  sub: "Human-in-the-loop plans" },
-              { href: "/dashboard/governance", icon: ShieldCheckIcon, label: "Governance", sub: "Policy + autonomy ladder" },
-              { href: "/dashboard/security",   icon: KeyIcon,         label: "Security",   sub: "RBAC + credentials" },
-              { href: "/dashboard/releaseops", icon: ServerStackIcon, label: "ReleaseOps", sub: "Deployment readiness" },
+              { href: "/dashboard/approvals",       icon: SparklesIcon,    label: "Approvals",       sub: "Human-in-the-loop plans" },
+              { href: "/dashboard/recommendations", icon: BoltIcon,        label: "Recommendations", sub: "Every action proposed" },
+              { href: "/dashboard/governance",      icon: ShieldCheckIcon, label: "Governance",      sub: "Policy + autonomy ladder" },
+              { href: "/dashboard/security",        icon: KeyIcon,         label: "Security",        sub: "RBAC + credentials" },
             ]}
           />
           <CapabilityGroup
