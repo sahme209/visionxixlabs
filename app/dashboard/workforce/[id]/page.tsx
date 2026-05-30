@@ -104,6 +104,35 @@ export default async function EngineerDetailPage({ params }: { params: Promise<{
     select: { reason: true, createdAt: true, action: true },
   }).catch(() => null);
 
+  // Top-actions breakdown — which actions does this engineer actually
+  // attempt? Per-action outcome split lets the operator see "the
+  // engineer wants to apply_terraform 40x but is blocked 38 of those".
+  const topActionGroups = await prisma.agentEngineerActionAttempt.groupBy({
+    by: ["action", "runtimeDecision"],
+    where: {
+      organizationId: String(ctx.organizationId),
+      engineerId: engineer.id,
+      createdAt: { gte: since30d },
+    },
+    _count: { _all: true },
+  }).catch(() => [] as Array<{ action: string; runtimeDecision: string; _count: { _all: number } }>);
+
+  type ActionRow = { action: string; allowed: number; requires_approval: number; blocked: number; total: number };
+  const actionMap = new Map<string, ActionRow>();
+  for (const g of topActionGroups) {
+    const row = actionMap.get(g.action) ?? {
+      action: g.action, allowed: 0, requires_approval: 0, blocked: 0, total: 0,
+    };
+    if (g.runtimeDecision === "allowed")           row.allowed += g._count._all;
+    else if (g.runtimeDecision === "requires_approval") row.requires_approval += g._count._all;
+    else if (g.runtimeDecision === "blocked")      row.blocked += g._count._all;
+    row.total = row.allowed + row.requires_approval + row.blocked;
+    actionMap.set(g.action, row);
+  }
+  const topActions = Array.from(actionMap.values())
+    .sort((a, b) => b.total - a.total)
+    .slice(0, 5);
+
   const currentRule: ApprovalRule = (record?.currentApprovalRule as ApprovalRule | null) ?? engineer.approvalRule;
   const overrideActive = !!record?.currentApprovalRule && record.currentApprovalRule !== engineer.approvalRule;
 
@@ -186,6 +215,50 @@ export default async function EngineerDetailPage({ params }: { params: Promise<{
           </p>
         )}
       </section>
+
+      {/* Top actions — only render when this engineer has actually
+          attempted something. Empty state lives in 'recent attempts'
+          below, no need to double up. */}
+      {topActions.length > 0 && (
+        <section className="mb-6">
+          <header className="flex items-baseline justify-between mb-3">
+            <p className="text-[10px] font-semibold uppercase tracking-widest text-zinc-400">Top actions · 30d</p>
+            <span className="text-[10px] font-mono text-zinc-500">{topActions.length} of {actionMap.size}</span>
+          </header>
+          <ul className="rounded-2xl border border-white/[0.06] bg-white/[0.015] divide-y divide-white/[0.04] overflow-hidden">
+            {topActions.map((a) => {
+              const allowedPct = a.total > 0 ? (a.allowed / a.total) * 100 : 0;
+              const approvalPct = a.total > 0 ? (a.requires_approval / a.total) * 100 : 0;
+              const blockedPct = a.total > 0 ? (a.blocked / a.total) * 100 : 0;
+              return (
+                <li key={a.action} className="px-5 py-3.5">
+                  <div className="flex items-center justify-between gap-3 mb-2">
+                    <p className="text-[13px] font-mono text-white truncate">{a.action}</p>
+                    <span className="text-[11px] font-mono text-zinc-500 tabular-nums shrink-0">{a.total}</span>
+                  </div>
+                  {/* Stacked bar — emerald/amber/rose proportional to outcomes. */}
+                  <div className="h-1.5 rounded-full overflow-hidden bg-white/[0.04] flex">
+                    {a.allowed > 0 && (
+                      <span className="bg-emerald-400/70" style={{ width: `${allowedPct}%` }} />
+                    )}
+                    {a.requires_approval > 0 && (
+                      <span className="bg-amber-400/70" style={{ width: `${approvalPct}%` }} />
+                    )}
+                    {a.blocked > 0 && (
+                      <span className="bg-rose-400/70" style={{ width: `${blockedPct}%` }} />
+                    )}
+                  </div>
+                  <div className="flex items-center gap-3 mt-1.5 text-[10px] font-mono text-zinc-500">
+                    {a.allowed > 0 &&           <span><span className="text-emerald-300">{a.allowed}</span> allowed</span>}
+                    {a.requires_approval > 0 && <span><span className="text-amber-300">{a.requires_approval}</span> needs approval</span>}
+                    {a.blocked > 0 &&           <span><span className="text-rose-300">{a.blocked}</span> blocked</span>}
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
+        </section>
+      )}
 
       {/* Dependencies grid */}
       <section className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-6">
