@@ -140,12 +140,36 @@ export default async function WorkforcePage() {
         safetyNote="Engineers are read-only by default · Tool access is per-engineer + per-cloud · Every action audit-logged"
       />
 
-      {/* Summary KPIs */}
-      <section className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">
+      {/* Summary KPIs — registry-derived static facts. */}
+      <section className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
         <Stat label="Client engineers"     value={summary.clientLayer}      icon={UserGroupIcon} />
         <Stat label="Consolidated kernels" value={summary.withDuplicates}    icon={CheckCircleIcon} sub="duplicate kernels folded into a single engineer" />
         <Stat label="Missing setup pieces" value={summary.totalMissingPieces} icon={ExclamationTriangleIcon} sub="implementation gaps tracked openly" />
         <Stat label="Departments"          value={groups.length}             icon={PuzzlePieceIcon} />
+      </section>
+
+      {/* Live workforce KPIs — totals across every client engineer in
+          THIS workspace. Honest zeros when the workspace is empty,
+          no projected demo numbers. */}
+      <section className="grid grid-cols-2 md:grid-cols-3 gap-3 mb-8">
+        <LiveStat
+          label="Attempts · 30d"
+          value={Array.from(attemptCounts.values()).reduce((a, b) => a + b, 0)}
+          sub="every gated engineer attempt across the workspace"
+          tone="text-white"
+        />
+        <LiveStat
+          label="Pending approvals"
+          value={Array.from(pendingCounts.values()).reduce((a, b) => a + b, 0)}
+          sub="waiting on a workspace decision right now"
+          tone="text-amber-300"
+        />
+        <LiveStat
+          label="Active engineers · 30d"
+          value={attemptCounts.size}
+          sub="engineers that emitted at least one attempt"
+          tone="text-emerald-300"
+        />
       </section>
 
       {/* Department groups */}
@@ -252,6 +276,16 @@ function Stat({ label, value, icon: Icon, sub }: { label: string; value: number;
       <p className="text-2xl font-bold text-white tabular-nums">{value}</p>
       <p className="text-[11px] text-zinc-400 mt-0.5">{label}</p>
       {sub && <p className="text-[10px] text-zinc-500 mt-1 leading-snug">{sub}</p>}
+    </div>
+  );
+}
+
+function LiveStat({ label, value, sub, tone }: { label: string; value: number; sub: string; tone: string }) {
+  return (
+    <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
+      <p className="text-[10px] font-mono text-zinc-500 uppercase tracking-[0.18em] mb-2">{label}</p>
+      <p className={`text-2xl font-bold tabular-nums ${value > 0 ? tone : "text-zinc-600"}`}>{value}</p>
+      <p className="text-[10px] text-zinc-500 mt-1 leading-snug">{sub}</p>
     </div>
   );
 }
