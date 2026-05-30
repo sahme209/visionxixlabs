@@ -92,7 +92,7 @@ export async function POST() {
   await auditRecord({
     organizationId: ctx.organizationId,
     actorUserId: ctx.userId,
-    action: "connector.disconnected",
+    action: "connector.disconnect",
     outcome: "success",
     entityRef: "aws",
     correlationId,

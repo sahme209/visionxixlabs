@@ -78,7 +78,7 @@ export async function disconnectConnector(
   await auditRecord({
     organizationId: ctx.organizationId,
     actorUserId: ctx.userId,
-    action: "connector.disconnected",
+    action: "connector.disconnect",
     outcome: "success",
     entityRef: provider,
     correlationId,

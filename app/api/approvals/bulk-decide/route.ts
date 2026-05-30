@@ -60,11 +60,13 @@ export async function POST(req: NextRequest) {
   });
 
   // Audit one row per item — fire-and-forget so the response is fast.
+  // Map UI vocabulary (approve/reject) → AuditAction enum (grant/deny).
+  const auditActionName = action === "approve" ? "approval.grant" as const : "approval.deny" as const;
   for (const item of eligible) {
     void auditRecord({
       organizationId: ctx.organizationId,
       actorUserId: ctx.userId,
-      action: `approval.${action}`,
+      action: auditActionName,
       outcome: "success",
       entityRef: `approval:${item.id}`,
       correlationId,

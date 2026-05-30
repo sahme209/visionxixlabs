@@ -145,6 +145,12 @@ export type AuditAction =
   | "workforce.model_downgraded"
   // Connector health scan — Phase 410.
   | "workforce.connector_health_polled"
+  // AWS broker / CFN flow
+  | "aws.validation_succeeded"
+  | "aws.validation_failed"
+  | "aws.cfn_callback_broker_unavailable"
+  | "aws.cfn_callback_validation_failed"
+  | "aws.cfn_callback_linked"
   // Generic
   | "system.error";
 

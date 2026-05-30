@@ -56,10 +56,12 @@ export async function POST(req: NextRequest) {
     data: { status: nextStatus },
   });
 
+  // Map UI vocabulary (approve/reject) → AuditAction enum (grant/deny).
+  const auditActionName = action === "approve" ? "approval.grant" as const : "approval.deny" as const;
   await auditRecord({
     organizationId: ctx.organizationId,
     actorUserId: ctx.userId,
-    action: `approval.${action}`,
+    action: auditActionName,
     outcome: "success",
     entityRef: `approval:${itemId}`,
     correlationId,
