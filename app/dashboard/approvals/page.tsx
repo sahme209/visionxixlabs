@@ -94,6 +94,7 @@ export default async function ApprovalsPage() {
     snoozed:  items.filter((i) => i.status === "snoozed").length,
     approved: items.filter((i) => i.status === "approved" || i.status === "applied").length,
     rejected: items.filter((i) => i.status === "rejected").length,
+    expired:  items.filter((i) => i.status === "expired").length,
   };
 
   return (
@@ -138,12 +139,18 @@ export default async function ApprovalsPage() {
 
       {items.length > 0 && (
         <>
-          {/* Status counts */}
-          <section className="mb-10 rounded-2xl border border-white/[0.06] bg-white/[0.015] divide-x divide-white/[0.04] grid grid-cols-4 overflow-hidden">
+          {/* Status counts. 'expired' tile only renders when there's at
+              least one — the hourly /api/cron/expire-approvals worker
+              flips items pending for 7+ days to expired so the queue
+              top stays honest. */}
+          <section className={`mb-10 rounded-2xl border border-white/[0.06] bg-white/[0.015] divide-x divide-white/[0.04] grid ${counts.expired > 0 ? "grid-cols-5" : "grid-cols-4"} overflow-hidden`}>
             <CountTile label="pending"  count={counts.pending}  tone={counts.pending > 0 ? "text-amber-300" : "text-zinc-600"} />
             <CountTile label="snoozed"  count={counts.snoozed}  tone="text-zinc-400" />
             <CountTile label="approved" count={counts.approved} tone={counts.approved > 0 ? "text-emerald-300" : "text-zinc-600"} />
             <CountTile label="rejected" count={counts.rejected} tone="text-zinc-500" />
+            {counts.expired > 0 && (
+              <CountTile label="expired" count={counts.expired} tone="text-rose-300" />
+            )}
           </section>
 
           {/* Approval rows */}
