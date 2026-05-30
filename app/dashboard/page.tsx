@@ -42,6 +42,7 @@ import { useDesktopRuntime } from "@/lib/desktop/useDesktopRuntime";
 import { assessOnboarding } from "@/lib/onboarding/onboardingState";
 import { RunScanButton } from "./RunScanButton";
 import { DisconnectButton } from "./DisconnectButton";
+import { ConnectionHealth } from "./ConnectionHealth";
 
 type ConnectorStatus = {
   provider: string;
@@ -275,27 +276,30 @@ export default function DashboardPage() {
           <>
             <div className="rounded-2xl border border-white/[0.06] bg-white/[0.015] divide-y divide-white/[0.04] overflow-hidden">
               {connected.map((c) => (
-                <div key={c.accountId || c.provider} className="px-6 py-4 flex items-center gap-4">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0" />
-                  <div className="flex-1 min-w-0">
-                    <p className="text-[14px] font-medium text-white">
-                      {PROVIDER_LABEL[c.provider] ?? c.provider}
-                    </p>
-                    {c.accountId && (
-                      <p className="text-[11px] font-mono text-zinc-500 mt-0.5">{c.accountId}</p>
+                <div key={c.accountId || c.provider}>
+                  <div className="px-6 py-4 flex items-center gap-4">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0" />
+                    <div className="flex-1 min-w-0">
+                      <p className="text-[14px] font-medium text-white">
+                        {PROVIDER_LABEL[c.provider] ?? c.provider}
+                      </p>
+                      {c.accountId && (
+                        <p className="text-[11px] font-mono text-zinc-500 mt-0.5">{c.accountId}</p>
+                      )}
+                    </div>
+                    {c.lastScan && (
+                      <span className="text-[11px] text-zinc-500 shrink-0">
+                        {new Date(c.lastScan).toLocaleDateString()}
+                      </span>
+                    )}
+                    {(c.provider === "aws" || c.provider === "azure" || c.provider === "gcp") && (
+                      <DisconnectButton
+                        provider={c.provider}
+                        onComplete={() => { void refresh(); }}
+                      />
                     )}
                   </div>
-                  {c.lastScan && (
-                    <span className="text-[11px] text-zinc-500 shrink-0">
-                      {new Date(c.lastScan).toLocaleDateString()}
-                    </span>
-                  )}
-                  {(c.provider === "aws" || c.provider === "azure" || c.provider === "gcp") && (
-                    <DisconnectButton
-                      provider={c.provider}
-                      onComplete={() => { void refresh(); }}
-                    />
-                  )}
+                  {c.provider === "aws" && <ConnectionHealth />}
                 </div>
               ))}
             </div>
