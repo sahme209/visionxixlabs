@@ -100,6 +100,7 @@ const GROUPS: NavGroup[] = [
     items: [
       // Cloud + multi-cloud first — most-clicked.
       { href: "/dashboard/multi-cloud",      label: "Cloud overview",    icon: ServerStackIcon },
+      { href: "/dashboard/findings",         label: "Findings",          icon: EyeIcon         },
       { href: "/dashboard/observability",    label: "Monitoring",        icon: ChartBarIcon    },
       { href: "/dashboard/security",         label: "Security",          icon: ShieldCheckIcon },
       { href: "/dashboard/incidents",        label: "Incidents",         icon: BellAlertIcon   },

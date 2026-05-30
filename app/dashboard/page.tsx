@@ -223,10 +223,10 @@ export default function DashboardPage() {
           <CapabilityGroup
             title="Inspect"
             items={[
+              { href: "/dashboard/findings",    icon: CloudIcon,          label: "Findings",    sub: "What your latest scan found" },
               { href: "/dashboard/audit",       icon: DocumentTextIcon,   label: "Audit",       sub: "Evidence-backed stories" },
               { href: "/dashboard/traces",      icon: ChartBarSquareIcon, label: "Traces",      sub: "Operation span timelines" },
               { href: "/dashboard/reliability", icon: BoltIcon,           label: "Reliability", sub: "Circuits + retries" },
-              { href: "/dashboard/copilot",     icon: SparklesIcon,       label: "Copilot",     sub: "AI ops with evidence" },
             ]}
           />
         </div>
