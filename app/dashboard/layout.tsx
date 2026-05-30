@@ -10,6 +10,7 @@ import { FeedbackWidget } from "./FeedbackWidget";
 import { DemoModeBanner } from "./DemoModeBanner";
 import { PendingApprovalsBadge } from "./PendingApprovalsBadge";
 import { ProfileMenu } from "./ProfileMenu";
+import { CommandPalette } from "./CommandPalette";
 
 export default async function DashboardLayout({
   children,
@@ -28,10 +29,17 @@ export default async function DashboardLayout({
 
       <header className="relative z-20 glass-dark border-b border-white/[0.06] backdrop-blur-sm">
         <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex items-center justify-between">
-          <Link href="/dashboard/command-center" className="flex items-center gap-2 nav-link-underline">
-            <CpuChipIcon className="h-7 w-7 text-violet-500" />
-            <span className="font-bold text-white tracking-[-0.04em]">Axiom</span>
-          </Link>
+          <div className="flex items-center gap-4">
+            <Link href="/dashboard/command-center" className="flex items-center gap-2 nav-link-underline">
+              <CpuChipIcon className="h-7 w-7 text-violet-500" />
+              <span className="font-bold text-white tracking-[-0.04em]">Axiom</span>
+            </Link>
+            <span className="hidden md:inline-flex items-center gap-1 text-[10px] font-mono text-zinc-600">
+              <kbd className="border border-white/[0.08] rounded px-1 py-px">⌘</kbd>
+              <kbd className="border border-white/[0.08] rounded px-1 py-px">K</kbd>
+              <span className="ml-1">jump anywhere</span>
+            </span>
+          </div>
           <div className="flex items-center gap-3">
             <PendingApprovalsBadge />
             <ProfileMenu email={session.user.email ?? ""} />
@@ -50,6 +58,7 @@ export default async function DashboardLayout({
 
       <ContextualHelpBubble />
       <FeedbackWidget />
+      <CommandPalette />
     </div>
   );
 }
