@@ -181,6 +181,16 @@ export default function DashboardPage() {
         )}
       </section>
 
+      {/* ─── First-run journey — only while the user hasn't completed it yet ─ */}
+      {summary && summary.findingCount === 0 && !summary.lastScanIso && (
+        <JourneyChecklist
+          connected={connected.length > 0}
+          scanned={!!summary.lastScanIso}
+          findings={summary.findingCount}
+          approved={false}
+        />
+      )}
+
       {/* ─── Live stats — only shows when there's signal ──────────────────── */}
       {summary && (summary.findingCount > 0 || summary.pendingApprovals > 0 || summary.lastScanIso) && (
         <section className="mb-12 rounded-2xl border border-white/[0.06] bg-white/[0.015] grid grid-cols-2 sm:grid-cols-4 divide-x sm:divide-y-0 divide-y divide-white/[0.04] overflow-hidden">
@@ -316,6 +326,72 @@ export default function DashboardPage() {
         </section>
       )}
     </div>
+  );
+}
+
+function JourneyChecklist({
+  connected,
+  scanned,
+  findings,
+  approved,
+}: {
+  connected: boolean;
+  scanned: boolean;
+  findings: number;
+  approved: boolean;
+}) {
+  const steps: Array<{ label: string; done: boolean; href: string; hint: string }> = [
+    {
+      label: "Connect a cloud",
+      done: connected,
+      href: "/dashboard/connect-cloud",
+      hint: "AWS via CloudFormation, Azure via Cloud Shell, GCP via service account.",
+    },
+    {
+      label: "Run your first scan",
+      done: scanned,
+      href: "/dashboard/findings",
+      hint: "Broker AssumeRoles into your account and reads inventory + posture.",
+    },
+    {
+      label: "Review findings",
+      done: findings > 0,
+      href: "/dashboard/findings",
+      hint: "Every finding traces back to the resource and the rule that produced it.",
+    },
+    {
+      label: "Approve a recommendation",
+      done: approved,
+      href: "/dashboard/approvals",
+      hint: "Approval emits a downloadable Terraform plan — nothing applies automatically.",
+    },
+  ];
+  return (
+    <section className="mb-12">
+      <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-zinc-500 mb-3">first run</p>
+      <ol className="rounded-2xl border border-white/[0.06] bg-white/[0.015] divide-y divide-white/[0.04] overflow-hidden">
+        {steps.map((s, i) => (
+          <li key={s.label}>
+            <Link
+              href={s.href}
+              className="group flex items-start gap-4 px-6 py-4 hover:bg-white/[0.015] transition-colors"
+            >
+              <span className={`mt-1 w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0 ${
+                s.done ? "border-emerald-400 bg-emerald-400/20" : "border-white/[0.12]"
+              }`}>
+                {s.done && <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />}
+              </span>
+              <div className="flex-1 min-w-0">
+                <p className={`text-[14px] font-medium ${s.done ? "text-zinc-400 line-through decoration-zinc-700" : "text-white"}`}>
+                  {i + 1}. {s.label}
+                </p>
+                <p className="text-[12px] text-zinc-500 leading-relaxed mt-0.5">{s.hint}</p>
+              </div>
+            </Link>
+          </li>
+        ))}
+      </ol>
+    </section>
   );
 }
 
