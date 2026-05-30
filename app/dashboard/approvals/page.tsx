@@ -159,7 +159,17 @@ export default async function ApprovalsPage() {
             <section>
               <div className="flex items-baseline justify-between mb-3">
                 <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-zinc-500">queue</p>
-                <BulkSelectAll allPendingIds={items.filter((i) => i.status === "pending").map((i) => i.id)} />
+                <div className="flex items-center gap-4">
+                  <a
+                    href="/api/approvals/export.csv"
+                    download
+                    className="text-[11px] font-mono text-zinc-500 hover:text-white transition-colors"
+                    title="Download up to 5000 approval items as CSV"
+                  >
+                    download .csv
+                  </a>
+                  <BulkSelectAll allPendingIds={items.filter((i) => i.status === "pending").map((i) => i.id)} />
+                </div>
               </div>
               <ul className="rounded-2xl border border-white/[0.06] bg-white/[0.015] divide-y divide-white/[0.04] overflow-hidden">
                 {items.map((item) => (
