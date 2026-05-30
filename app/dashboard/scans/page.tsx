@@ -152,7 +152,7 @@ export default async function ScansPage() {
               return (
                 <li key={r.id}>
                   <Link
-                    href="/dashboard/findings"
+                    href={`/dashboard/scans/${r.id}`}
                     className="group flex items-start gap-4 px-6 py-4 hover:bg-white/[0.015] transition-colors"
                   >
                     <div className="flex-1 min-w-0">
