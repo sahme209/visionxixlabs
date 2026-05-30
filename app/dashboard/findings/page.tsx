@@ -149,24 +149,29 @@ export default async function FindingsPage() {
                 const resources = Array.isArray(f.affectedResources) ? f.affectedResources : [];
                 const firstRef = resources[0] != null ? String(resources[0]) : null;
                 return (
-                  <li key={f.id} className="px-6 py-4">
-                    <div className="flex items-start justify-between gap-4">
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 mb-1 flex-wrap">
-                          <span className={`text-[10px] font-mono uppercase tracking-wider ${SEVERITY_TONE[f.severity]}`}>{f.severity}</span>
-                          <span className="text-[10px] font-mono uppercase tracking-wider text-zinc-500">· {f.category}</span>
-                          <span className="text-[10px] font-mono text-zinc-600">· {f.provider} / {f.region}</span>
+                  <li key={f.id}>
+                    <Link
+                      href={`/dashboard/findings/${f.id}`}
+                      className="group block px-6 py-4 hover:bg-white/[0.015] transition-colors"
+                    >
+                      <div className="flex items-start justify-between gap-4">
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 mb-1 flex-wrap">
+                            <span className={`text-[10px] font-mono uppercase tracking-wider ${SEVERITY_TONE[f.severity]}`}>{f.severity}</span>
+                            <span className="text-[10px] font-mono uppercase tracking-wider text-zinc-500">· {f.category}</span>
+                            <span className="text-[10px] font-mono text-zinc-600">· {f.provider} / {f.region}</span>
+                          </div>
+                          <p className="text-[14px] font-medium text-white">{f.title}</p>
+                          <p className="text-[12px] text-zinc-500 leading-relaxed mt-1 line-clamp-2">{f.description}</p>
+                          {firstRef && (
+                            <p className="text-[11px] font-mono text-zinc-600 mt-1.5 truncate">{firstRef}{resources.length > 1 ? ` · +${resources.length - 1}` : ""}</p>
+                          )}
                         </div>
-                        <p className="text-[14px] font-medium text-white">{f.title}</p>
-                        <p className="text-[12px] text-zinc-500 leading-relaxed mt-1 line-clamp-2">{f.description}</p>
-                        {firstRef && (
-                          <p className="text-[11px] font-mono text-zinc-600 mt-1.5 truncate">{firstRef}{resources.length > 1 ? ` · +${resources.length - 1}` : ""}</p>
-                        )}
+                        <div className="text-[10px] font-mono text-zinc-600 shrink-0 text-right">
+                          {f.createdAt.toLocaleDateString()}
+                        </div>
                       </div>
-                      <div className="text-[10px] font-mono text-zinc-600 shrink-0 text-right">
-                        {f.createdAt.toLocaleDateString()}
-                      </div>
-                    </div>
+                    </Link>
                   </li>
                 );
               })}
