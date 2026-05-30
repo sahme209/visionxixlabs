@@ -60,6 +60,7 @@ export default async function WorkforceDepartmentPage({
   for (const id of engineerIds) counts.set(id, { allowed: 0, requires_approval: 0, blocked: 0, total: 0 });
 
   let migrationPending = false;
+  const pendingByEngineer = new Map<string, number>();
   if (ctx.isAuthenticated && ctx.organizationId) {
     try {
       const rows = await prisma.agentEngineerActionAttempt.groupBy({
@@ -87,7 +88,22 @@ export default async function WorkforceDepartmentPage({
         throw err;
       }
     }
+    try {
+      const pendingRows = await prisma.engineerApprovalSnapshot.groupBy({
+        by: ["engineerId"],
+        where: {
+          organizationId: String(ctx.organizationId),
+          engineerId: { in: engineerIds },
+          status: "pending",
+        },
+        _count: { _all: true },
+      });
+      for (const r of pendingRows) pendingByEngineer.set(r.engineerId, r._count._all);
+    } catch {
+      // empty map fallback — engineers render '0 pending' honestly.
+    }
   }
+  const totalPending = Array.from(pendingByEngineer.values()).reduce((a, b) => a + b, 0);
 
   // Department-level rollup.
   const rollup = engineers.reduce(
@@ -133,12 +149,29 @@ export default async function WorkforceDepartmentPage({
       )}
 
       {/* Department rollup */}
-      <section className="mb-10 grid grid-cols-4 rounded-2xl border border-white/[0.06] bg-white/[0.015] divide-x divide-white/[0.04] overflow-hidden">
+      <section className="mb-4 grid grid-cols-4 rounded-2xl border border-white/[0.06] bg-white/[0.015] divide-x divide-white/[0.04] overflow-hidden">
         <RollupTile label="total"             count={rollup.total}             tone="text-white" />
         <RollupTile label="allowed"           count={rollup.allowed}           tone={rollup.allowed > 0 ? "text-emerald-300" : "text-zinc-600"} />
         <RollupTile label="requires approval" count={rollup.requires_approval} tone={rollup.requires_approval > 0 ? "text-amber-300" : "text-zinc-600"} />
         <RollupTile label="blocked"           count={rollup.blocked}           tone={rollup.blocked > 0 ? "text-rose-300" : "text-zinc-600"} />
       </section>
+
+      {/* Department-wide pending approvals — separate from the
+          attempts rollup because pending count is a 'now' signal,
+          not a 30-day cumulative one. */}
+      {totalPending > 0 && (
+        <div className="mb-10 rounded-2xl border border-amber-500/15 bg-amber-500/[0.03] px-5 py-3 flex items-center justify-between gap-3">
+          <p className="text-[12px] text-amber-100/85">
+            <span className="font-semibold text-amber-200 tabular-nums">{totalPending}</span> approval{totalPending === 1 ? "" : "s"} waiting on a workspace decision across this department.
+          </p>
+          <Link href="/dashboard/workforce/approvals" className="text-[11px] font-mono text-amber-200 hover:text-white whitespace-nowrap">
+            review queue →
+          </Link>
+        </div>
+      )}
+      {totalPending === 0 && (
+        <div className="mb-10" aria-hidden />
+      )}
 
       {/* Engineer rows */}
       <section className="mb-10">
@@ -146,6 +179,7 @@ export default async function WorkforceDepartmentPage({
         <ul className="rounded-2xl border border-white/[0.06] bg-white/[0.015] divide-y divide-white/[0.04] overflow-hidden">
           {engineers.map((e) => {
             const c = counts.get(e.id) ?? { allowed: 0, requires_approval: 0, blocked: 0, total: 0 };
+            const pending = pendingByEngineer.get(e.id) ?? 0;
             return (
               <li key={e.id}>
                 <Link
@@ -166,6 +200,7 @@ export default async function WorkforceDepartmentPage({
                       {c.allowed > 0 &&           <span className="text-emerald-300">· {c.allowed} allowed</span>}
                       {c.requires_approval > 0 && <span className="text-amber-300">· {c.requires_approval} approval</span>}
                       {c.blocked > 0 &&           <span className="text-rose-300">· {c.blocked} blocked</span>}
+                      {pending > 0 &&              <span className="text-amber-300">· {pending} pending</span>}
                     </div>
                     {e.missingPieces.length > 0 && (
                       <p className="text-[11px] text-amber-300/80 mt-2 inline-flex items-center gap-1">

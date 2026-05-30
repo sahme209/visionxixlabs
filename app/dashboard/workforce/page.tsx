@@ -93,6 +93,7 @@ export default async function WorkforcePage() {
   // an empty map; cards render an honest "0 attempts" badge.
   const since30d = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
   const attemptCounts = new Map<string, number>();
+  const pendingCounts = new Map<string, number>();
   if (ctx.isAuthenticated && ctx.organizationId) {
     try {
       const rows = await prisma.agentEngineerActionAttempt.groupBy({
@@ -106,6 +107,19 @@ export default async function WorkforcePage() {
       for (const r of rows) attemptCounts.set(r.engineerId, r._count._all);
     } catch {
       // migration-pending degrades to empty map — cards show 0 honestly.
+    }
+    try {
+      const rows = await prisma.engineerApprovalSnapshot.groupBy({
+        by: ["engineerId"],
+        where: {
+          organizationId: String(ctx.organizationId),
+          status: "pending",
+        },
+        _count: { _all: true },
+      });
+      for (const r of rows) pendingCounts.set(r.engineerId, r._count._all);
+    } catch {
+      // ditto — honest 0 fallback.
     }
   }
 
@@ -158,7 +172,12 @@ export default async function WorkforcePage() {
 
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
                 {engineers.map((e) => (
-                  <EngineerCard key={e.id} engineer={e} attempts30d={attemptCounts.get(e.id) ?? 0} />
+                  <EngineerCard
+                    key={e.id}
+                    engineer={e}
+                    attempts30d={attemptCounts.get(e.id) ?? 0}
+                    pending={pendingCounts.get(e.id) ?? 0}
+                  />
                 ))}
               </div>
             </section>
@@ -237,7 +256,7 @@ function Stat({ label, value, icon: Icon, sub }: { label: string; value: number;
   );
 }
 
-function EngineerCard({ engineer, attempts30d }: { engineer: AgentEngineer; attempts30d: number }) {
+function EngineerCard({ engineer, attempts30d, pending }: { engineer: AgentEngineer; attempts30d: number; pending: number }) {
   const approval = APPROVAL_TONE[engineer.approvalRule];
   return (
     <article className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 flex flex-col">
@@ -305,12 +324,19 @@ function EngineerCard({ engineer, attempts30d }: { engineer: AgentEngineer; atte
         </div>
       )}
 
-      <div className="mt-3 flex items-center justify-between gap-2">
-        <span className="text-[10px] font-mono text-zinc-500">
-          {attempts30d > 0
-            ? <><span className="text-zinc-300 tabular-nums">{attempts30d}</span> attempt{attempts30d === 1 ? "" : "s"} · 30d</>
-            : <span className="text-zinc-600">no attempts · 30d</span>}
-        </span>
+      <div className="mt-3 flex items-center justify-between gap-2 flex-wrap">
+        <div className="flex items-center gap-2 flex-wrap">
+          <span className="text-[10px] font-mono text-zinc-500">
+            {attempts30d > 0
+              ? <><span className="text-zinc-300 tabular-nums">{attempts30d}</span> attempt{attempts30d === 1 ? "" : "s"} · 30d</>
+              : <span className="text-zinc-600">no attempts · 30d</span>}
+          </span>
+          {pending > 0 && (
+            <span className="text-[10px] font-mono text-amber-300 inline-flex items-center gap-1">
+              · <span className="tabular-nums">{pending}</span> pending
+            </span>
+          )}
+        </div>
         <Link href={`/dashboard/workforce/${engineer.id}`} className="text-[11px] text-zinc-300 hover:text-white inline-flex items-center gap-1">
           Open
           <ArrowRightIcon className="h-3 w-3" />
