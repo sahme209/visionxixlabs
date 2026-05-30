@@ -300,7 +300,9 @@ export default function DashboardPage() {
                       />
                     )}
                   </div>
-                  {c.provider === "aws" && <ConnectionHealth />}
+                  {(c.provider === "aws" || c.provider === "azure" || c.provider === "gcp") && (
+                    <ConnectionHealth provider={c.provider} />
+                  )}
                 </div>
               ))}
             </div>

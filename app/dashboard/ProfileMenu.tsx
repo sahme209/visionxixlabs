@@ -19,6 +19,7 @@ import {
   WrenchScrewdriverIcon,
   ArrowRightOnRectangleIcon,
   ChevronDownIcon,
+  QuestionMarkCircleIcon,
 } from "@heroicons/react/24/outline";
 
 export function ProfileMenu({ email }: { email: string }) {
@@ -62,7 +63,8 @@ export function ProfileMenu({ email }: { email: string }) {
             <p className="text-[12px] text-zinc-200 truncate">{email}</p>
           </div>
           <ul className="py-1">
-            <MenuRow href="/dashboard/settings/notifications" icon={Cog6ToothIcon} label="Notification settings" />
+            <MenuRow href="/dashboard/help" icon={QuestionMarkCircleIcon} label="Help & quick reference" />
+            <MenuRow href="/dashboard/settings" icon={Cog6ToothIcon} label="Settings" />
             <MenuRow href="/dashboard/integrations" icon={PuzzlePieceIcon} label="Integrations" />
             <MenuRow href="/api/admin/diag/connect-flow" icon={WrenchScrewdriverIcon} label="Connection diagnostic" external />
           </ul>

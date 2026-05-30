@@ -20,14 +20,14 @@ interface Healthy { ok: true; healthy: true; accountId: string; arn: string | nu
 interface Unhealthy { ok: true; healthy: false; reason: string; hint?: string; }
 type Result = Healthy | Unhealthy;
 
-export function ConnectionHealth() {
+export function ConnectionHealth({ provider = "aws" }: { provider?: "aws" | "azure" | "gcp" }) {
   const [result, setResult] = useState<Result | null>(null);
   const [loading, setLoading] = useState(true);
 
   async function probe() {
     setLoading(true);
     try {
-      const res = await fetch("/api/connectors/aws/health", { cache: "no-store" });
+      const res = await fetch(`/api/connectors/${provider}/health`, { cache: "no-store" });
       const data: Result = await res.json();
       setResult(data);
     } catch (err) {
