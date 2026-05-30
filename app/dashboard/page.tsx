@@ -49,23 +49,53 @@ type ConnectorStatus = {
   lastScan?: string;
 };
 
+interface DashboardSummary {
+  findingCount: number;
+  pendingApprovals: number;
+  highRiskApprovals: number;
+  monthlyLow: number;
+  monthlyHigh: number;
+  lastScanIso: string | null;
+}
+
 const PROVIDER_LABEL: Record<string, string> = {
   aws:   "Amazon Web Services",
   azure: "Microsoft Azure",
   gcp:   "Google Cloud",
 };
 
+function timeAgoFromIso(iso: string | null): string | null {
+  if (!iso) return null;
+  const ms = Date.now() - new Date(iso).getTime();
+  const sec = Math.floor(ms / 1000);
+  if (sec < 60) return `${sec}s ago`;
+  const min = Math.floor(sec / 60);
+  if (min < 60) return `${min}m ago`;
+  const hr = Math.floor(min / 60);
+  if (hr < 24) return `${hr}h ago`;
+  const day = Math.floor(hr / 24);
+  return `${day}d ago`;
+}
+
 export default function DashboardPage() {
   const [connectors, setConnectors] = useState<ConnectorStatus[]>([]);
+  const [summary, setSummary] = useState<DashboardSummary | null>(null);
   const [loading, setLoading] = useState(true);
   const { isDesktop } = useDesktopRuntime();
 
   useEffect(() => {
-    fetch("/api/connectors/status")
-      .then((r) => r.json())
-      .then((data) => setConnectors(Array.isArray(data?.connectors) ? data.connectors : []))
-      .catch(() => {})
-      .finally(() => setLoading(false));
+    Promise.all([
+      fetch("/api/connectors/status")
+        .then((r) => r.json())
+        .then((data) => setConnectors(Array.isArray(data?.connectors) ? data.connectors : []))
+        .catch(() => {}),
+      fetch("/api/dashboard/summary")
+        .then((r) => r.json())
+        .then((data) => {
+          if (data?.ok) setSummary(data as DashboardSummary);
+        })
+        .catch(() => {}),
+    ]).finally(() => setLoading(false));
   }, []);
 
   if (loading) {
@@ -145,6 +175,17 @@ export default function DashboardPage() {
           </p>
         )}
       </section>
+
+      {/* ─── Live stats — only shows when there's signal ──────────────────── */}
+      {summary && (summary.findingCount > 0 || summary.pendingApprovals > 0 || summary.lastScanIso) && (
+        <section className="mb-12 rounded-2xl border border-white/[0.06] bg-white/[0.015] grid grid-cols-2 sm:grid-cols-4 divide-x sm:divide-y-0 divide-y divide-white/[0.04] overflow-hidden">
+          <Stat label="findings"     value={summary.findingCount.toString()} href="/dashboard/findings" />
+          <Stat label="pending"      value={summary.pendingApprovals.toString()} href="/dashboard/approvals"
+                tone={summary.highRiskApprovals > 0 ? "text-amber-300" : undefined} />
+          <Stat label="potential/mo" value={summary.monthlyHigh > 0 ? `$${Math.round(summary.monthlyHigh).toLocaleString()}` : "—"} href="/dashboard/approvals" />
+          <Stat label="last scan"    value={timeAgoFromIso(summary.lastScanIso) ?? "—"} href="/dashboard/scans" />
+        </section>
+      )}
 
       {/* ─── Connected accounts ──────────────────────────────────────────── */}
       <section className="mb-12">
@@ -261,6 +302,28 @@ export default function DashboardPage() {
         </section>
       )}
     </div>
+  );
+}
+
+function Stat({
+  label,
+  value,
+  href,
+  tone,
+}: {
+  label: string;
+  value: string;
+  href: string;
+  tone?: string;
+}) {
+  return (
+    <Link
+      href={href}
+      className="group block px-5 py-4 hover:bg-white/[0.015] transition-colors"
+    >
+      <p className={`text-[22px] font-semibold tabular-nums ${tone ?? "text-white"}`}>{value}</p>
+      <p className="text-[10px] font-mono uppercase tracking-[0.18em] text-zinc-500 mt-1 group-hover:text-zinc-300 transition-colors">{label}</p>
+    </Link>
   );
 }
 
