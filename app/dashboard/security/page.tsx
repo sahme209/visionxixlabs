@@ -174,23 +174,20 @@ export default function SecurityCenterPage() {
       {/* Posture checks */}
       {showSampleData && (
       <Reveal direction="up" delay={0.08}>
-        <div className="mb-8 rounded-2xl border border-emerald-500/15 bg-gradient-to-br from-emerald-500/[0.03] via-transparent to-cyan-500/[0.02] p-6 relative overflow-hidden">
-          <div className="absolute -top-12 -right-12 w-48 h-48 rounded-full bg-emerald-500/[0.06] blur-[60px] pointer-events-none" aria-hidden />
-          <div className="relative">
-            <div className="flex items-center justify-between flex-wrap gap-3 mb-5">
-              <div>
-                <p className="text-[10px] font-semibold text-emerald-400 uppercase tracking-widest mb-1">Posture checks</p>
-                <h2 className="text-lg font-bold text-white">Live signals from the security layer.</h2>
-              </div>
-              <Link href="/docs" className="text-[11px] font-semibold text-emerald-300 hover:text-emerald-200 transition-colors">
-                Trust documentation <ArrowRightIcon className="inline h-3 w-3 ml-1 -mt-0.5" />
-              </Link>
+        <div className="mb-8 rounded-2xl border border-white/[0.06] bg-white/[0.015] p-6">
+          <div className="flex items-center justify-between flex-wrap gap-3 mb-5">
+            <div>
+              <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-zinc-500 mb-1">posture checks</p>
+              <h2 className="text-[18px] font-semibold text-white tracking-[-0.01em]">Live signals from the security layer.</h2>
             </div>
-            <div className="grid md:grid-cols-2 gap-2">
-              {posture.checks.map((c) => (
-                <PostureRow key={c.id} check={c} />
-              ))}
-            </div>
+            <Link href="/docs" className="text-[11px] text-zinc-400 hover:text-white transition-colors">
+              Trust documentation <ArrowRightIcon className="inline h-3 w-3 ml-1 -mt-0.5" />
+            </Link>
+          </div>
+          <div className="grid md:grid-cols-2 gap-2">
+            {posture.checks.map((c) => (
+              <PostureRow key={c.id} check={c} />
+            ))}
           </div>
         </div>
       </Reveal>
@@ -202,7 +199,7 @@ export default function SecurityCenterPage() {
         <div className="mb-8 rounded-2xl border border-white/[0.06] bg-white/[0.02] overflow-hidden">
           <div className="px-5 py-3 border-b border-white/[0.06] flex items-center justify-between flex-wrap gap-2">
             <div className="flex items-center gap-2">
-              <KeyIcon className="h-4 w-4 text-amber-400" />
+              <KeyIcon className="h-4 w-4 text-zinc-500" />
               <p className="text-[11px] font-semibold text-zinc-300 uppercase tracking-widest">Credential health</p>
             </div>
             <p className="text-[11px] text-zinc-500">Delegated trust preferred over static keys.</p>
@@ -218,12 +215,12 @@ export default function SecurityCenterPage() {
                       {materialDisplay(c.material)} · Rotated {daysAgo(c.lastRotatedAt)}
                     </p>
                   </div>
-                  <span className={`text-[10px] font-semibold uppercase tracking-wider border rounded-full px-2 py-0.5 ${
-                    disp.semantic === "success" ? "text-emerald-400 bg-emerald-500/10 border-emerald-500/20" :
-                    disp.semantic === "warning" ? "text-amber-400 bg-amber-500/10 border-amber-500/20" :
-                    disp.semantic === "error" ? "text-red-400 bg-red-500/10 border-red-500/20" :
-                    "text-zinc-400 bg-white/[0.04] border-white/[0.08]"
-                  }`}>{disp.pill}</span>
+                  <span className={`text-[10px] font-mono uppercase tracking-wider ${
+                    disp.semantic === "success" ? "text-emerald-400" :
+                    disp.semantic === "warning" ? "text-amber-400" :
+                    disp.semantic === "error" ? "text-rose-400" :
+                    "text-zinc-500"
+                  }`}>· {disp.pill}</span>
                 </div>
               );
             })}
@@ -237,7 +234,7 @@ export default function SecurityCenterPage() {
         <div className="mb-8 rounded-2xl border border-white/[0.06] bg-white/[0.02] overflow-hidden">
           <div className="px-5 py-3 border-b border-white/[0.06] flex items-center justify-between flex-wrap gap-2">
             <div className="flex items-center gap-2">
-              <LockClosedIcon className="h-4 w-4 text-violet-400" />
+              <LockClosedIcon className="h-4 w-4 text-zinc-500" />
               <p className="text-[11px] font-semibold text-zinc-300 uppercase tracking-widest">Role-based access control</p>
             </div>
             <p className="text-[11px] text-zinc-500">{posture.rbac.roles.length} roles · {posture.rbac.permissions.length} permissions</p>
@@ -263,7 +260,7 @@ export default function SecurityCenterPage() {
         <div className="mb-8 rounded-2xl border border-white/[0.06] bg-white/[0.02] overflow-hidden">
           <div className="px-5 py-3 border-b border-white/[0.06] flex items-center justify-between flex-wrap gap-2">
             <div className="flex items-center gap-2">
-              <CubeTransparentIcon className="h-4 w-4 text-cyan-400" />
+              <CubeTransparentIcon className="h-4 w-4 text-zinc-500" />
               <p className="text-[11px] font-semibold text-zinc-300 uppercase tracking-widest">Supply-chain posture</p>
             </div>
             <p className="text-[11px] text-zinc-500">
@@ -282,10 +279,10 @@ export default function SecurityCenterPage() {
                     <p className="text-sm font-semibold text-white">{c.label}</p>
                     <p className="text-[11px] text-zinc-500 mt-0.5 leading-relaxed">{c.description}</p>
                   </div>
-                  <span className={`text-[10px] font-semibold uppercase tracking-wider border rounded-full px-2 py-0.5 shrink-0 ${
-                    tone === "success" ? "text-emerald-400 bg-emerald-500/10 border-emerald-500/20" :
-                    tone === "warning" ? "text-amber-400 bg-amber-500/10 border-amber-500/20" :
-                    "text-zinc-400 bg-white/[0.04] border-white/[0.08]"
+                  <span className={`text-[10px] font-mono uppercase tracking-wider shrink-0 ${
+                    tone === "success" ? "text-emerald-400" :
+                    tone === "warning" ? "text-amber-400" :
+                    "text-zinc-500"
                   }`}>
                     {c.status === "implemented" ? "Live" : c.status === "in_progress" ? "In progress" : c.status === "planned" ? "Planned" : "N/A"}
                   </span>
@@ -302,7 +299,7 @@ export default function SecurityCenterPage() {
         <div className="mb-8 rounded-2xl border border-white/[0.06] bg-white/[0.02] overflow-hidden">
           <div className="px-5 py-3 border-b border-white/[0.06] flex items-center justify-between flex-wrap gap-2">
             <div className="flex items-center gap-2">
-              <ComputerDesktopIcon className="h-4 w-4 text-blue-400" />
+              <ComputerDesktopIcon className="h-4 w-4 text-zinc-500" />
               <p className="text-[11px] font-semibold text-zinc-300 uppercase tracking-widest">Desktop trust</p>
             </div>
             <p className="text-[11px] text-zinc-500">{posture.desktopSummary.paired} paired · {posture.desktopSummary.trusted} trusted</p>
@@ -316,12 +313,12 @@ export default function SecurityCenterPage() {
                     <p className="text-sm font-semibold text-white">{d.os} · v{d.version} · {d.channel}</p>
                     <p className="text-[11px] text-zinc-500 mt-0.5">{disp.detail}</p>
                   </div>
-                  <span className={`text-[10px] font-semibold uppercase tracking-wider border rounded-full px-2 py-0.5 ${
-                    disp.semantic === "success" ? "text-emerald-400 bg-emerald-500/10 border-emerald-500/20" :
-                    disp.semantic === "warning" ? "text-amber-400 bg-amber-500/10 border-amber-500/20" :
-                    disp.semantic === "error" ? "text-red-400 bg-red-500/10 border-red-500/20" :
-                    "text-zinc-400 bg-white/[0.04] border-white/[0.08]"
-                  }`}>{disp.pill}</span>
+                  <span className={`text-[10px] font-mono uppercase tracking-wider ${
+                    disp.semantic === "success" ? "text-emerald-400" :
+                    disp.semantic === "warning" ? "text-amber-400" :
+                    disp.semantic === "error" ? "text-rose-400" :
+                    "text-zinc-500"
+                  }`}>· {disp.pill}</span>
                 </div>
               );
             })}
@@ -332,10 +329,10 @@ export default function SecurityCenterPage() {
 
       {/* Trust strip — answers the questions enterprise reviewers ask */}
       <Reveal direction="up" delay={0.28}>
-        <div className="mt-8 rounded-2xl border border-emerald-500/15 bg-emerald-500/[0.02] p-5">
+        <div className="mt-8 rounded-2xl border border-white/[0.06] bg-white/[0.015] p-5">
           <div className="flex items-center gap-2 mb-3">
-            <ShieldCheckIcon className="h-4 w-4 text-emerald-400" />
-            <p className="text-[10px] font-semibold text-emerald-400 uppercase tracking-widest">If your security team asks…</p>
+            <ShieldCheckIcon className="h-4 w-4 text-zinc-500" />
+            <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-zinc-500">if your security team asks…</p>
           </div>
           <ul className="grid sm:grid-cols-2 gap-2 text-xs text-zinc-300">
             {[
@@ -365,8 +362,8 @@ export default function SecurityCenterPage() {
             { href: "/dashboard/integrations",   label: "Connector security",   icon: ServerStackIcon,  sub: "Review connector lifecycle and revoke access." },
             { href: "/docs/permissions-model",   label: "Permissions model",    icon: LockClosedIcon,   sub: "Read how RBAC and approvals interlock." },
           ].map(({ href, label, icon: Icon, sub }) => (
-            <Link key={href} href={href} className="block rounded-xl border border-white/[0.06] bg-white/[0.02] p-4 hover:border-emerald-500/25 hover:bg-emerald-500/[0.03] transition-colors">
-              <Icon className="h-4 w-4 text-emerald-400 mb-2" />
+            <Link key={href} href={href} className="block rounded-xl border border-white/[0.06] bg-white/[0.015] p-4 hover:border-white/[0.12] transition-colors">
+              <Icon className="h-4 w-4 text-zinc-500 mb-2" />
               <p className="text-sm font-semibold text-white">{label}</p>
               <p className="text-[11px] text-zinc-500 mt-1 leading-relaxed">{sub}</p>
             </Link>

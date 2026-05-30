@@ -100,10 +100,10 @@ export default function AgentActivityPage() {
           <button
             key={h}
             onClick={() => setWindowHours(h)}
-            className={`text-[10px] font-mono px-2 py-0.5 rounded-full border transition ${
+            className={`text-[10px] font-mono px-2 py-0.5 rounded-full border transition-colors ${
               windowHours === h
-                ? "bg-indigo-500/15 text-indigo-200 border-indigo-500/30"
-                : "bg-white/[0.02] text-zinc-400 border-white/[0.06] hover:text-white"
+                ? "text-white border-white/[0.18]"
+                : "text-zinc-500 border-white/[0.06] hover:text-white hover:border-white/[0.12]"
             }`}
           >
             {h < 24 ? `${h}h` : h === 24 ? "24h" : h === 168 ? "7d" : "30d"}
@@ -132,10 +132,10 @@ export default function AgentActivityPage() {
             <div className="space-y-1.5">
               {activity.agents.map((a) => (
                 <div key={a.agent} className="flex items-center gap-2 text-[12px]">
-                  <span className="font-mono text-indigo-300 w-28 truncate">{a.agent}</span>
+                  <span className="font-mono text-zinc-200 w-28 truncate">{a.agent}</span>
                   <div className="flex-1 h-1.5 rounded-full bg-white/[0.04] overflow-hidden">
                     <div
-                      className="h-full bg-indigo-400/60"
+                      className="h-full bg-white/30"
                       style={{ width: `${Math.min(100, (a.sent / Math.max(1, activity.totalMessages || 1)) * 100)}%` }}
                     />
                   </div>
@@ -157,7 +157,7 @@ export default function AgentActivityPage() {
                   <span className="font-mono text-zinc-300 w-36 truncate">{k.kind}</span>
                   <div className="flex-1 h-1.5 rounded-full bg-white/[0.04] overflow-hidden">
                     <div
-                      className="h-full bg-emerald-400/60"
+                      className="h-full bg-white/20"
                       style={{ width: `${Math.min(100, (k.count / Math.max(1, activity.totalMessages || 1)) * 100)}%` }}
                     />
                   </div>
@@ -171,7 +171,7 @@ export default function AgentActivityPage() {
 
       <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 mb-8">
         <div className="flex items-center gap-2 mb-3">
-          <ScaleIcon className="h-3.5 w-3.5 text-indigo-300" />
+          <ScaleIcon className="h-3.5 w-3.5 text-zinc-500" />
           <h2 className="text-[10px] font-mono uppercase tracking-widest text-zinc-500">
             Calibration · {calibration?.totalConsidered ?? 0} decided proposals
           </h2>
@@ -193,7 +193,7 @@ export default function AgentActivityPage() {
               <tbody>
                 {calibration.buckets.map((b) => (
                   <tr key={`${b.authorAgent}/${b.target}`} className="border-t border-white/[0.04]">
-                    <td className="py-1.5 font-mono text-indigo-300">{b.authorAgent}</td>
+                    <td className="py-1.5 font-mono text-zinc-200">{b.authorAgent}</td>
                     <td className="py-1.5 font-mono text-zinc-400">{b.target}</td>
                     <td className="py-1.5 text-right tabular-nums text-zinc-300">{b.decided}</td>
                     <td className="py-1.5 text-right tabular-nums text-zinc-300">{(b.approvalRate * 100).toFixed(0)}%</td>

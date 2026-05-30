@@ -61,26 +61,26 @@ export function DemoModeBanner() {
   if (active !== true) return null;
 
   return (
-    <div className="mb-5 rounded-2xl border border-violet-500/30 bg-gradient-to-r from-violet-500/[0.06] via-fuchsia-500/[0.04] to-transparent">
+    <div className="mb-5 rounded-2xl border border-white/[0.06] bg-white/[0.015]">
       <div className="flex items-center gap-3 flex-wrap px-4 py-3">
-        <span className="inline-flex items-center gap-1.5 text-[10.5px] font-mono uppercase tracking-[0.18em] text-violet-200 px-2 py-1 rounded-full border border-violet-500/30 bg-violet-500/[0.10]">
+        <span className="inline-flex items-center gap-1.5 text-[10.5px] font-mono uppercase tracking-[0.18em] text-zinc-400">
           <SparklesIcon className="h-3.5 w-3.5" /> demo mode
         </span>
-        <p className="text-[12.5px] text-zinc-300 leading-relaxed">
-          You&apos;re exploring with synthetic data. Every signal, recommendation, and audit row was seeded for your tenant — nothing here touches a real cloud account.
+        <p className="text-[12.5px] text-zinc-400 leading-relaxed">
+          You&apos;re exploring with synthetic data. Nothing here touches a real cloud account.
         </p>
         <div className="ml-auto flex items-center gap-2">
           <button
             type="button"
             onClick={toggleExplainer}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-violet-500/30 bg-violet-500/[0.08] text-[12px] font-medium text-violet-100 hover:bg-violet-500/[0.16] transition-colors"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-white/[0.08] text-[12px] text-zinc-300 hover:text-white hover:border-white/[0.18] transition-colors"
           >
             <QuestionMarkCircleIcon className="h-3.5 w-3.5" />
             {explainerOn ? "Hide explainer" : "Explain this page"}
           </button>
           <Link
             href="/dashboard/start-here"
-            className="text-[11.5px] font-mono text-zinc-400 hover:text-zinc-200 transition-colors"
+            className="text-[11.5px] font-mono text-zinc-500 hover:text-zinc-200 transition-colors"
           >
             tour ↗
           </Link>
@@ -88,7 +88,7 @@ export function DemoModeBanner() {
             type="button"
             onClick={exitDemo}
             disabled={busy}
-            className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-md text-[11.5px] font-mono text-zinc-400 hover:text-zinc-200 disabled:opacity-50"
+            className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-md text-[11.5px] font-mono text-zinc-500 hover:text-zinc-200 disabled:opacity-50"
             aria-label="Exit demo mode"
           >
             <XMarkIcon className="h-3.5 w-3.5" />
