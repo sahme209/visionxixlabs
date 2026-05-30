@@ -46,8 +46,12 @@ interface PersistInput {
   recommendations?: ReadonlyArray<PreviewRecommendation>;
   /** Optional summary surfaced on the AxiomAgentRun row for quick reads. */
   summary?: string;
-  /** Honest source tag from the scanner — only "live" runs persist findings. */
-  source: "live" | "partial" | "preview";
+  /** Honest source tag from the scanner — only "live"/"partial" runs
+   *  persist findings. "preview" and "demo" runs are skipped so the
+   *  canonical tables don't accumulate non-real signal. Accepts the
+   *  full DataSource union so callers can pass through outcome.source
+   *  without a narrowing dance. */
+  source: "live" | "partial" | "preview" | "demo" | "synthetic" | "unknown";
 }
 
 interface PersistOutcome {
@@ -135,9 +139,17 @@ function actionTypeFor(actionClass: string, recommendedState: string): ActionTyp
 }
 
 export async function persistScanRun(input: PersistInput): Promise<PersistOutcome | null> {
-  // Only persist real / live findings — preview noise would pollute the
-  // canonical tables and create false signal on the dashboard.
-  if (input.source === "preview") return null;
+  // Only persist real / live findings. preview / demo / synthetic /
+  // unknown sources are skipped so the canonical tables don't accumulate
+  // non-real signal on the dashboard.
+  if (
+    input.source === "preview" ||
+    input.source === "demo" ||
+    input.source === "synthetic" ||
+    input.source === "unknown"
+  ) {
+    return null;
+  }
 
   try {
     const cloudAccount = await prisma.cloudAccount.upsert({
