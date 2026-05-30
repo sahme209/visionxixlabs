@@ -102,11 +102,24 @@ export default async function CompliancePage() {
       )}
 
       {/* Counts strip */}
-      <section className="mb-10 rounded-2xl border border-white/[0.06] bg-white/[0.015] divide-x divide-white/[0.04] grid grid-cols-3 overflow-hidden">
+      <section className="mb-4 rounded-2xl border border-white/[0.06] bg-white/[0.015] divide-x divide-white/[0.04] grid grid-cols-3 overflow-hidden">
         <CountTile label="failing"  count={counts.failing}  tone={counts.failing > 0 ? "text-rose-300" : "text-zinc-600"} />
         <CountTile label="untested" count={counts.untested} tone="text-zinc-400" />
         <CountTile label="passing"  count={counts.passing}  tone={counts.passing > 0 ? "text-emerald-300" : "text-zinc-600"} />
       </section>
+
+      {/* CSV export — audit-handoff artifact. Lives here, not behind a
+          menu, because auditors want the .csv on the first click. */}
+      <div className="mb-10 flex justify-end">
+        <a
+          href="/api/compliance/export.csv"
+          download
+          className="text-[11px] font-mono text-zinc-500 hover:text-white transition-colors"
+          title="Download the full compliance scorecard as CSV"
+        >
+          download .csv
+        </a>
+      </div>
 
       {/* Per-framework grouped list */}
       <div className="space-y-10">
