@@ -16,6 +16,7 @@ import { redirect } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { currentContext } from "@/lib/auth/currentContext";
 import { CloudIcon, ArrowRightIcon } from "@heroicons/react/24/outline";
+import { RunScanButton } from "../RunScanButton";
 
 export const dynamic = "force-dynamic";
 
@@ -105,9 +106,12 @@ export default async function FindingsPage() {
         <h1 className="text-[34px] sm:text-[40px] leading-[1.05] font-semibold text-white tracking-[-0.03em] mb-3">
           What your scan found.
         </h1>
-        <p className="text-[15px] text-zinc-400 leading-relaxed max-w-xl">
+        <p className="text-[15px] text-zinc-400 leading-relaxed max-w-xl mb-6">
           Every row here came from a real read against your connected cloud — STS AssumeRole, EC2 / S3 / RDS / VPC reads. No seeded data.
         </p>
+        {!migrationPending && (
+          <RunScanButton label={findings.length === 0 ? "Run your first scan" : "Run scan again"} />
+        )}
       </header>
 
       {migrationPending && (
