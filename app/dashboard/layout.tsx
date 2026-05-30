@@ -9,6 +9,7 @@ import { ContextualHelpBubble } from "./ContextualHelpBubble";
 import { TrialCountdownBanner } from "./TrialCountdownBanner";
 import { FeedbackWidget } from "./FeedbackWidget";
 import { DemoModeBanner } from "./DemoModeBanner";
+import { PendingApprovalsBadge } from "./PendingApprovalsBadge";
 
 export default async function DashboardLayout({
   children,
@@ -32,6 +33,7 @@ export default async function DashboardLayout({
             <span className="font-bold text-white tracking-[-0.04em]">Axiom</span>
           </Link>
           <div className="flex items-center gap-4">
+            <PendingApprovalsBadge />
             <span className="text-sm text-zinc-400 hidden sm:inline">{session.user.email}</span>
             <SignOutButton />
           </div>
