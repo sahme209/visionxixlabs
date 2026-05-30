@@ -184,6 +184,7 @@ export default async function ApprovalsPage() {
                         <div className="flex flex-col gap-1.5 shrink-0">
                           <ApproveButton itemId={item.id} action="approve" />
                           <ApproveButton itemId={item.id} action="reject" />
+                          <SnoozeMenu itemId={item.id} />
                         </div>
                       )}
                       {(item.status === "approved" || item.status === "applied") && (
@@ -234,5 +235,29 @@ function ApproveButton({ itemId, action }: { itemId: string; action: "approve" |
         {action === "approve" ? "Approve" : "Reject"}
       </button>
     </form>
+  );
+}
+
+/** Quiet two-button snooze: 1 day or 7 days. Reactivated by the hourly cron. */
+function SnoozeMenu({ itemId }: { itemId: string }) {
+  return (
+    <div className="flex items-center gap-1">
+      {([
+        { days: "1", label: "1d" },
+        { days: "7", label: "7d" },
+      ] as const).map((opt) => (
+        <form key={opt.days} action="/api/approvals/snooze" method="POST">
+          <input type="hidden" name="itemId" value={itemId} />
+          <input type="hidden" name="days" value={opt.days} />
+          <button
+            type="submit"
+            className="text-[10px] font-mono uppercase tracking-wider text-zinc-500 hover:text-zinc-200 transition-colors"
+            title={`Snooze for ${opt.days} day${opt.days === "1" ? "" : "s"}`}
+          >
+            snooze {opt.label}
+          </button>
+        </form>
+      ))}
+    </div>
   );
 }

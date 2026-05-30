@@ -1,11 +1,13 @@
 /**
  * GET /api/cron/expire-approvals — hourly cron.
  *
- * Sweeps AxiomApprovalItem rows that have been pending for 7+ days
- * and flips them to "expired". This keeps the approval queue honest:
- * stale recommendations don't sit at the top of the dashboard
- * forever, and the "pending savings" headline reflects what's
- * actually actionable today.
+ * Two passes:
+ *   1. Sweep AxiomApprovalItem rows that have been pending for 7+
+ *      days and flip them to "expired". Keeps the approval queue
+ *      honest — stale recommendations don't sit at the top of the
+ *      dashboard forever.
+ *   2. Reactivate snoozed rows whose snoozedUntil has passed back
+ *      into "pending" so the operator sees them again.
  *
  * Auth: Vercel sets CRON_SECRET as an env var; this route checks
  * it via Authorization: Bearer when set. Audits an
@@ -76,9 +78,25 @@ export async function GET(req: NextRequest) {
     });
   }
 
+  // Pass 2: reactivate snoozed items whose timer expired.
+  let reactivated = 0;
+  try {
+    const result = await prisma.axiomApprovalItem.updateMany({
+      where: {
+        status: "snoozed",
+        snoozedUntil: { lte: new Date() },
+      },
+      data: { status: "pending", snoozedUntil: null },
+    });
+    reactivated = result.count;
+  } catch (err) {
+    console.warn("[expire-approvals] reactivate pass failed:", err instanceof Error ? err.message : err);
+  }
+
   return NextResponse.json({
     ok: true,
     expired: stale.length,
+    reactivated,
     sweptAt: new Date().toISOString(),
   });
 }
