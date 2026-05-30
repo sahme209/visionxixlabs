@@ -76,6 +76,10 @@
     {
       "path": "/api/cron/expire-approvals",
       "schedule": "0 * * * *"
+    },
+    {
+      "path": "/api/cron/scheduled-scan-watchdog",
+      "schedule": "0 * * * *"
     }
   ]
 }
