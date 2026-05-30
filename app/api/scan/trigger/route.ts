@@ -142,6 +142,7 @@ export async function POST(req: NextRequest) {
         trigger: "manual",
         snapshot: live.snapshot,
         findings: live.findings,
+        recommendations: live.recommendations,
         source: live.source,
         summary: `Dashboard trigger · ${live.snapshot.resources.length} resources · ${live.findings.length} findings`,
       });
@@ -181,6 +182,7 @@ export async function POST(req: NextRequest) {
       trigger: "manual",
       snapshot: outcome.preview.snapshot,
       findings: outcome.preview.findings,
+      recommendations: outcome.preview.recommendations,
       source: outcome.source,
       summary: `Dashboard trigger · ${outcome.preview.snapshot.resources.length} resources · ${outcome.preview.findings.length} findings`,
     });

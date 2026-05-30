@@ -22,7 +22,7 @@
  */
 
 import { prisma } from "@/lib/db";
-import type { PreviewFinding } from "@/lib/cloud/aws/awsPreviewScanner";
+import type { PreviewFinding, PreviewRecommendation } from "@/lib/cloud/aws/awsPreviewScanner";
 import type { OrganizationId, UserId } from "@/lib/domain/ids";
 
 type Severity = "info" | "low" | "medium" | "high" | "critical";
@@ -40,6 +40,9 @@ interface PersistInput {
   trigger?: "manual" | "scheduled" | "drift" | "onboarding" | "webhook";
   snapshot: unknown;
   findings: ReadonlyArray<PreviewFinding>;
+  /** Optional recommendations — when present, persisted alongside findings
+   *  via AxiomRecommendation (and actionable ones flow into AxiomApprovalItem). */
+  recommendations?: ReadonlyArray<PreviewRecommendation>;
   /** Optional summary surfaced on the AxiomAgentRun row for quick reads. */
   summary?: string;
   /** Honest source tag from the scanner — only "live" runs persist findings. */
@@ -50,6 +53,7 @@ interface PersistOutcome {
   runId: string;
   cloudAccountId: string;
   findingCount: number;
+  recommendationCount: number;
 }
 
 /** Infer a category from a rule code so dashboard filters work. */
@@ -66,6 +70,42 @@ function clampSeverity(input: string | undefined | null): Severity {
   const s = (input ?? "").toLowerCase();
   if (s === "critical" || s === "high" || s === "medium" || s === "low" || s === "info") return s;
   return "info";
+}
+
+type ActionDispositionEnum = "auto_fix_candidate" | "approval_required" | "informational";
+type RiskLevelEnum = "low" | "medium" | "high";
+
+/** Translate a scanner action class into a disposition that maps to the
+ *  ActionDisposition Prisma enum. Auto-fix candidates can be applied
+ *  without a human gate (e.g. delete-empty-bucket). Approval-required
+ *  recommendations enter the approval queue. */
+function dispositionFor(actionClass: string): ActionDispositionEnum {
+  switch (actionClass) {
+    case "cost_optimization":
+    case "scaling":
+      return "auto_fix_candidate";
+    case "security_remediation":
+    case "iam_modification":
+      return "approval_required";
+    case "drift_correction":
+      return "approval_required";
+    default:
+      return "informational";
+  }
+}
+
+function riskFor(actionClass: string): RiskLevelEnum {
+  switch (actionClass) {
+    case "security_remediation":
+    case "iam_modification":
+      return "high";
+    case "drift_correction":
+      return "medium";
+    case "cost_optimization":
+    case "scaling":
+    default:
+      return "low";
+  }
 }
 
 export async function persistScanRun(input: PersistInput): Promise<PersistOutcome | null> {
@@ -110,9 +150,13 @@ export async function persistScanRun(input: PersistInput): Promise<PersistOutcom
       },
     });
 
-    if (input.findings.length > 0) {
-      await prisma.axiomFinding.createMany({
-        data: input.findings.map((f) => ({
+    // Per-row create so we can map PreviewFinding.id → AxiomFinding.id.
+    // Recommendations carry a PreviewFinding.id reference which must
+    // be translated to the just-created AxiomFinding row.
+    const previewIdToDbId = new Map<string, string>();
+    for (const f of input.findings) {
+      const created = await prisma.axiomFinding.create({
+        data: {
           runId: run.id,
           category: inferCategory(f.ruleCode),
           severity: clampSeverity(f.risk),
@@ -127,8 +171,83 @@ export async function persistScanRun(input: PersistInput): Promise<PersistOutcom
             snapshotId: f.snapshotId,
             source: f.source,
           },
-        })),
+        },
+        select: { id: true },
       });
+      previewIdToDbId.set(f.id, created.id);
+    }
+
+    // Persist recommendations + auto-create approval items for those
+    // that need a human gate. Only proceed when the scanner returned
+    // recommendations (some paths run inventory-only).
+    let recommendationCount = 0;
+    if (input.recommendations && input.recommendations.length > 0) {
+      for (const r of input.recommendations) {
+        const findingDbId = previewIdToDbId.get(r.findingId);
+        if (!findingDbId) continue; // orphan rec — skip rather than fail the whole scan
+        const disposition = dispositionFor(r.actionClass);
+        const risk = riskFor(r.actionClass);
+        const rec = await prisma.axiomRecommendation.create({
+          data: {
+            runId: run.id,
+            findingId: findingDbId,
+            title: r.title,
+            rationale: r.description,
+            disposition,
+            dispositionReason: `Scanner classified as ${r.actionClass.replace(/_/g, " ")}.`,
+            actionType: null,
+            riskLevel: risk,
+            effort: "low",
+            actionable: disposition !== "informational",
+            monthlyLow: r.monthlySavingsUsd ?? 0,
+            monthlyHigh: r.monthlySavingsUsd ?? 0,
+            yearlyLow: (r.monthlySavingsUsd ?? 0) * 12,
+            yearlyHigh: (r.monthlySavingsUsd ?? 0) * 12,
+          },
+          select: { id: true },
+        });
+        recommendationCount++;
+
+        // Approval-required recommendations enter the approval queue.
+        // We don't have AxiomExecutionPlan rows yet (that machinery
+        // lives in the executor pipeline), so we wire the approval
+        // item to planItemId=rec.id as a stand-in until the planner
+        // runs. The approval center reads by organizationId + status,
+        // so the stand-in id never causes a join failure.
+        if (disposition === "approval_required") {
+          try {
+            await prisma.axiomApprovalItem.create({
+              data: {
+                organizationId: input.organizationId,
+                runId: run.id,
+                planItemId: rec.id,
+                title: r.title,
+                actionType: "apply_storage_policy", // closest mapping until executor lands
+                provider: input.provider,
+                region: input.region,
+                resourceIds: input.findings.find((f) => f.id === r.findingId)?.resourceRef
+                  ? [input.findings.find((f) => f.id === r.findingId)!.resourceRef]
+                  : [],
+                currentState: "current",
+                recommendedState: "recommended",
+                riskLevel: risk,
+                disposition: "approval_required",
+                dispositionReason: `Scanner: ${r.actionClass.replace(/_/g, " ")}`,
+                monthlyLow: r.monthlySavingsUsd ?? 0,
+                monthlyHigh: r.monthlySavingsUsd ?? 0,
+                yearlyLow: (r.monthlySavingsUsd ?? 0) * 12,
+                yearlyHigh: (r.monthlySavingsUsd ?? 0) * 12,
+                rollbackAvailable: false,
+              },
+            });
+          } catch (approvalErr) {
+            console.warn(
+              "[persistScanRun] approval item create failed:",
+              approvalErr instanceof Error ? approvalErr.message : approvalErr,
+            );
+          }
+        }
+      }
     }
 
     // Auto-create a daily scheduled scan after the first manual scan.
@@ -172,6 +291,7 @@ export async function persistScanRun(input: PersistInput): Promise<PersistOutcom
       runId: run.id,
       cloudAccountId: cloudAccount.id,
       findingCount: input.findings.length,
+      recommendationCount,
     };
   } catch (err) {
     console.warn("[persistScanRun] failed:", err instanceof Error ? err.message : err);

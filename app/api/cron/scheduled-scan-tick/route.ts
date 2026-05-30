@@ -157,6 +157,7 @@ export async function GET(req: NextRequest) {
         trigger: "scheduled",
         snapshot: live.snapshot,
         findings: live.findings,
+        recommendations: live.recommendations,
         source: live.source,
         summary: `Scheduled scan · ${live.snapshot.resources.length} resources · ${live.findings.length} findings`,
       });
