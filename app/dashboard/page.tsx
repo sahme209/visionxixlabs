@@ -43,6 +43,7 @@ import { assessOnboarding } from "@/lib/onboarding/onboardingState";
 import { RunScanButton } from "./RunScanButton";
 import { DisconnectButton } from "./DisconnectButton";
 import { ConnectionHealth } from "./ConnectionHealth";
+import { RecentActivity } from "./RecentActivity";
 
 type ConnectorStatus = {
   provider: string;
@@ -314,6 +315,9 @@ export default function DashboardPage() {
           </>
         )}
       </section>
+
+      {/* ─── Recent activity — hidden when empty ──────────────────────────── */}
+      <RecentActivity />
 
       {/* ─── Workspace ──────────────────────────────────────────────────── */}
       <section className="mb-12">
