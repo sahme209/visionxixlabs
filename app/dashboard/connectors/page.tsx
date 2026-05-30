@@ -419,8 +419,8 @@ export default async function ConnectorsPage() {
                       className={[
                         "rounded-2xl border bg-white/[0.015] p-4 md:p-5 hover:bg-white/[0.025] transition flex flex-col",
                         liveAccount
-                          ? "border-emerald-500/30 hover:border-emerald-500/50"
-                          : "border-white/[0.06] hover:border-violet-500/30",
+                          ? "border-emerald-500/20 hover:border-emerald-500/35"
+                          : "border-white/[0.06] hover:border-white/[0.12]",
                       ].join(" ")}
                     >
                       <header className="flex items-start justify-between gap-3">
@@ -465,7 +465,7 @@ export default async function ConnectorsPage() {
                         </p>
                         {c.writes ? (
                           <p className="mt-2">
-                            <span className="font-mono uppercase tracking-widest text-[9.5px] text-violet-300/80 mr-1.5">
+                            <span className="font-mono uppercase tracking-widest text-[9.5px] text-zinc-500 mr-1.5">
                               writes
                             </span>
                             {c.writes}
@@ -479,7 +479,7 @@ export default async function ConnectorsPage() {
                         {c.setupRoute ? (
                           <Link
                             href={c.setupRoute}
-                            className="inline-flex items-center gap-1 text-[12px] font-medium text-violet-300 hover:text-violet-200 transition"
+                            className="inline-flex items-center gap-1 text-[12px] font-medium text-zinc-300 hover:text-white transition-colors"
                           >
                             Manage
                             <ArrowTopRightOnSquareIcon className="h-3 w-3" />
