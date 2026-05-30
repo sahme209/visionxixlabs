@@ -123,6 +123,22 @@ export default async function WorkforcePage() {
     }
   }
 
+  // Disabled-state lookup so the cards can render a 'disabled' badge.
+  // Only the rows that exist count — an absent record means the
+  // canonical default (enabled), per the registry sync contract.
+  const disabledSet = new Set<string>();
+  if (ctx.isAuthenticated && ctx.organizationId) {
+    try {
+      const rows = await prisma.agentEngineerRecord.findMany({
+        where: { organizationId: String(ctx.organizationId), isEnabled: false },
+        select: { engineerId: true },
+      });
+      for (const r of rows) disabledSet.add(r.engineerId);
+    } catch {
+      // empty fallback — no row gets a disabled badge.
+    }
+  }
+
   return (
     <div className="relative">
       <PageIntro
@@ -207,6 +223,7 @@ export default async function WorkforcePage() {
                     engineer={e}
                     attempts30d={attemptCounts.get(e.id) ?? 0}
                     pending={pendingCounts.get(e.id) ?? 0}
+                    disabled={disabledSet.has(e.id)}
                   />
                 ))}
               </div>
@@ -296,18 +313,25 @@ function LiveStat({ label, value, sub, tone }: { label: string; value: number; s
   );
 }
 
-function EngineerCard({ engineer, attempts30d, pending }: { engineer: AgentEngineer; attempts30d: number; pending: number }) {
+function EngineerCard({ engineer, attempts30d, pending, disabled }: { engineer: AgentEngineer; attempts30d: number; pending: number; disabled: boolean }) {
   const approval = APPROVAL_TONE[engineer.approvalRule];
   return (
-    <article className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 flex flex-col">
+    <article className={`rounded-2xl border bg-white/[0.02] p-5 flex flex-col transition-opacity ${disabled ? "border-rose-500/15 opacity-60" : "border-white/[0.06]"}`}>
       <header className="flex items-start justify-between gap-3 mb-2">
         <div className="min-w-0">
           <p className="text-[13px] font-semibold text-white">{engineer.displayName}</p>
           <p className="text-[10px] font-mono uppercase tracking-wider text-zinc-500 mt-0.5">{engineer.id}</p>
         </div>
-        <span className={`text-[9px] font-mono uppercase tracking-wider border rounded-full px-1.5 py-px whitespace-nowrap ${approval.tone}`}>
-          {approval.label}
-        </span>
+        <div className="flex flex-col items-end gap-1 shrink-0">
+          {disabled && (
+            <span className="text-[9px] font-mono uppercase tracking-wider border rounded-full px-1.5 py-px whitespace-nowrap text-rose-300 bg-rose-500/10 border-rose-500/30">
+              disabled
+            </span>
+          )}
+          <span className={`text-[9px] font-mono uppercase tracking-wider border rounded-full px-1.5 py-px whitespace-nowrap ${approval.tone}`}>
+            {approval.label}
+          </span>
+        </div>
       </header>
 
       <p className="text-[11.5px] text-zinc-400 leading-snug mb-3">{engineer.role}</p>
