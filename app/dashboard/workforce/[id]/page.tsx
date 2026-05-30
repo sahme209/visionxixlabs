@@ -403,7 +403,17 @@ export default async function EngineerDetailPage({ params }: { params: Promise<{
             <ClockIcon className="h-4 w-4 text-zinc-400" />
             <p className="text-[12px] font-semibold text-white">Recent action attempts</p>
           </div>
-          <span className="text-[10px] font-mono uppercase tracking-wider text-zinc-500">{attempts.length} shown</span>
+          <div className="flex items-center gap-3">
+            <a
+              href={`/api/workforce/${engineer.id}/attempts.csv`}
+              download
+              className="text-[10px] font-mono text-zinc-500 hover:text-white transition-colors"
+              title="Download up to 5000 attempts as CSV"
+            >
+              download .csv
+            </a>
+            <span className="text-[10px] font-mono uppercase tracking-wider text-zinc-500">{attempts.length} shown</span>
+          </div>
         </header>
         {attempts.length === 0 ? (
           <div className="text-center py-6">
