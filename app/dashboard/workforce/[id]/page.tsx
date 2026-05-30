@@ -133,26 +133,33 @@ export default async function EngineerDetailPage({ params }: { params: Promise<{
     .sort((a, b) => b.total - a.total)
     .slice(0, 5);
 
-  // Connector readiness — only cloud (aws/azure/gcp) is checkable
-  // here without pulling in GithubInstallation + per-provider sources.
-  // The rest stay as honest 'not verified' chips in the dependency
-  // grid below. We rank cloud connectors first because they're the
-  // most common gating reason for the cloud + finops + observability
-  // engineers that dominate the workforce list.
+  // Connector readiness — cloud (aws/azure/gcp) + github are the
+  // most-load-bearing deps across the workforce. Others stay as
+  // honest 'not verified' chips in the dependency grid below.
   const cloudConnectorDeps = engineer.requiredConnectors.filter(
     (c) => c === "aws" || c === "azure" || c === "gcp",
   );
-  const cloudAccountRows = cloudConnectorDeps.length > 0
-    ? await prisma.cloudAccount.findMany({
-        where: {
-          organizationId: String(ctx.organizationId),
-          provider: { in: cloudConnectorDeps as ("aws" | "azure" | "gcp")[] },
-          enabled: true,
-        },
-        select: { provider: true, externalAccountId: true },
-      }).catch(() => [] as Array<{ provider: string; externalAccountId: string }>)
-    : [];
+  const githubRequired = engineer.requiredConnectors.includes("github");
+  const [cloudAccountRows, githubInstallCount] = await Promise.all([
+    cloudConnectorDeps.length > 0
+      ? prisma.cloudAccount.findMany({
+          where: {
+            organizationId: String(ctx.organizationId),
+            provider: { in: cloudConnectorDeps as ("aws" | "azure" | "gcp")[] },
+            enabled: true,
+          },
+          select: { provider: true, externalAccountId: true },
+        }).catch(() => [] as Array<{ provider: string; externalAccountId: string }>)
+      : Promise.resolve([] as Array<{ provider: string; externalAccountId: string }>),
+    githubRequired
+      ? prisma.gitHubInstallation.count({
+          where: { organizationId: String(ctx.organizationId) },
+        }).catch(() => 0)
+      : Promise.resolve(0),
+  ]);
   const connectedProviders = new Set<string>(cloudAccountRows.map((r) => r.provider));
+  const githubConnected = githubInstallCount > 0;
+  const hasReadinessSection = cloudConnectorDeps.length > 0 || githubRequired;
 
   const currentRule: ApprovalRule = (record?.currentApprovalRule as ApprovalRule | null) ?? engineer.approvalRule;
   const overrideActive = !!record?.currentApprovalRule && record.currentApprovalRule !== engineer.approvalRule;
@@ -237,15 +244,15 @@ export default async function EngineerDetailPage({ params }: { params: Promise<{
         )}
       </section>
 
-      {/* Connector readiness — cloud only, the rest stay honest in
-          the dependency grid below. Renders only when the engineer
-          requires at least one cloud provider. */}
-      {cloudConnectorDeps.length > 0 && (
+      {/* Connector readiness — cloud + github are checkable here.
+          Renders only when the engineer requires at least one of
+          those connectors. */}
+      {hasReadinessSection && (
         <section className="mb-6">
           <header className="flex items-baseline justify-between mb-3">
-            <p className="text-[10px] font-semibold uppercase tracking-widest text-zinc-400">Cloud connector readiness</p>
+            <p className="text-[10px] font-semibold uppercase tracking-widest text-zinc-400">Connector readiness</p>
             <Link
-              href="/dashboard/cloud-accounts"
+              href="/dashboard/connectors"
               className="text-[10px] font-mono text-zinc-500 hover:text-white transition-colors"
             >
               manage
@@ -273,6 +280,26 @@ export default async function EngineerDetailPage({ params }: { params: Promise<{
                 </li>
               );
             })}
+            {githubRequired && (
+              <li className="px-5 py-3 flex items-center justify-between gap-3">
+                <div className="flex items-center gap-2 min-w-0">
+                  <span className={`h-1.5 w-1.5 rounded-full shrink-0 ${githubConnected ? "bg-emerald-400" : "bg-amber-400"}`} aria-hidden />
+                  <p className="text-[12px] font-mono uppercase tracking-wider text-white">github</p>
+                </div>
+                {githubConnected ? (
+                  <span className="text-[10px] font-mono text-emerald-300">
+                    {githubInstallCount} install{githubInstallCount === 1 ? "" : "s"}
+                  </span>
+                ) : (
+                  <Link
+                    href="/dashboard/integrations/github"
+                    className="text-[10px] font-mono text-amber-300 hover:text-amber-200 transition-colors"
+                  >
+                    connect →
+                  </Link>
+                )}
+              </li>
+            )}
           </ul>
         </section>
       )}
