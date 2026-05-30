@@ -24,6 +24,7 @@
 import { prisma } from "@/lib/db";
 import type { PreviewFinding, PreviewRecommendation } from "@/lib/cloud/aws/awsPreviewScanner";
 import type { OrganizationId, UserId } from "@/lib/domain/ids";
+import { notifyScanComplete } from "@/lib/notifications/scanCompleteNotifier";
 
 type Severity = "info" | "low" | "medium" | "high" | "critical";
 type Category = "cost" | "resilience" | "security" | "performance" | "compliance";
@@ -286,6 +287,24 @@ export async function persistScanRun(input: PersistInput): Promise<PersistOutcom
         );
       }
     }
+
+    // Fire the outbound notification — best-effort, never blocks
+    // the scan response. Only configured channels (Slack / Teams /
+    // webhook / email via env opt-in) receive anything; otherwise
+    // this is a no-op.
+    void notifyScanComplete({
+      tenantId: input.organizationId,
+      provider: input.provider,
+      externalAccountId: input.externalAccountId,
+      findings: input.findings.map((f) => ({
+        severity: clampSeverity(f.risk),
+      })),
+      resourceCount: Array.isArray((input.snapshot as { resources?: unknown[] })?.resources)
+        ? (input.snapshot as { resources: unknown[] }).resources.length
+        : 0,
+      trigger: input.trigger ?? "manual",
+      runId: run.id,
+    });
 
     return {
       runId: run.id,
