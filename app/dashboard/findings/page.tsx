@@ -38,11 +38,23 @@ const SEVERITY_ORDER: Record<Severity, number> = {
   info:     4,
 };
 
-export default async function FindingsPage() {
+function clampSev(input: string | undefined): Severity | "all" {
+  if (input === "critical" || input === "high" || input === "medium" || input === "low" || input === "info") return input;
+  return "all";
+}
+
+export default async function FindingsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ severity?: string; q?: string }>;
+}) {
   const ctx = await currentContext();
   if (!ctx.isAuthenticated || !ctx.organizationId) {
     redirect("/auth/signin?callbackUrl=/dashboard/findings");
   }
+  const params = await searchParams;
+  const severityFilter = clampSev(params.severity);
+  const search = (params.q ?? "").trim();
 
   // Latest 100 findings for the org, joined through AxiomAgentRun so
   // we can also surface which scan produced each one.
@@ -61,7 +73,18 @@ export default async function FindingsPage() {
   let migrationPending = false;
   try {
     findings = await prisma.axiomFinding.findMany({
-      where: { run: { organizationId: ctx.organizationId } },
+      where: {
+        run: { organizationId: ctx.organizationId },
+        ...(severityFilter !== "all" ? { severity: severityFilter } : {}),
+        ...(search.length > 0
+          ? {
+              OR: [
+                { title: { contains: search, mode: "insensitive" as const } },
+                { description: { contains: search, mode: "insensitive" as const } },
+              ],
+            }
+          : {}),
+      },
       orderBy: { createdAt: "desc" },
       take: 100,
       select: {
@@ -85,19 +108,29 @@ export default async function FindingsPage() {
       throw err;
     }
   }
+  // Pre-compute the unfiltered counts strip so the user always sees
+  // the per-severity totals even when a filter is on.
+  let totalsBySeverity: Record<Severity, number> = { critical: 0, high: 0, medium: 0, low: 0, info: 0 };
+  if (!migrationPending) {
+    try {
+      const groups = await prisma.axiomFinding.groupBy({
+        by: ["severity"],
+        where: { run: { organizationId: ctx.organizationId } },
+        _count: { _all: true },
+      });
+      for (const g of groups) {
+        const s = g.severity as Severity;
+        if (s in totalsBySeverity) totalsBySeverity[s] = g._count._all;
+      }
+    } catch { /* same migration-pending guard above already handled */ }
+  }
 
   findings.sort((a, b) =>
     SEVERITY_ORDER[a.severity] - SEVERITY_ORDER[b.severity] ||
     b.createdAt.getTime() - a.createdAt.getTime(),
   );
 
-  const counts = findings.reduce<Record<Severity, number>>(
-    (acc, f) => {
-      acc[f.severity] = (acc[f.severity] ?? 0) + 1;
-      return acc;
-    },
-    { critical: 0, high: 0, medium: 0, low: 0, info: 0 },
-  );
+  const counts = totalsBySeverity;
 
   return (
     <div className="max-w-5xl mx-auto px-1 -mt-2">
@@ -141,9 +174,66 @@ export default async function FindingsPage() {
             ))}
           </section>
 
+          {/* Filter row */}
+          <section className="mb-4">
+            <form method="GET" className="flex items-center gap-3 flex-wrap">
+              <div className="flex items-center gap-1.5">
+                {(["all", "critical", "high", "medium", "low", "info"] as Array<Severity | "all">).map((s) => {
+                  const isActive = severityFilter === s;
+                  return (
+                    <a
+                      key={s}
+                      href={`/dashboard/findings?${new URLSearchParams({
+                        ...(s !== "all" ? { severity: s } : {}),
+                        ...(search ? { q: search } : {}),
+                      }).toString()}`}
+                      className={`text-[11px] font-mono px-2.5 py-1 rounded-full border transition-colors ${
+                        isActive
+                          ? "text-white border-white/[0.18]"
+                          : "text-zinc-500 border-white/[0.06] hover:text-white hover:border-white/[0.12]"
+                      }`}
+                    >
+                      {s}
+                    </a>
+                  );
+                })}
+              </div>
+              <input
+                type="text"
+                name="q"
+                defaultValue={search}
+                placeholder="Search title or description…"
+                className="flex-1 min-w-[180px] rounded-full border border-white/[0.06] bg-white/[0.015] px-4 py-1.5 text-[12px] text-white placeholder:text-zinc-600 focus:outline-none focus:border-white/[0.18] transition-colors"
+              />
+              {severityFilter !== "all" && (
+                <input type="hidden" name="severity" value={severityFilter} />
+              )}
+              <button
+                type="submit"
+                className="rounded-full border border-white/[0.06] hover:border-white/[0.18] px-3 py-1.5 text-[11px] font-mono text-zinc-300 hover:text-white transition-colors"
+              >
+                search
+              </button>
+              {(search || severityFilter !== "all") && (
+                <a
+                  href="/dashboard/findings"
+                  className="text-[11px] font-mono text-zinc-500 hover:text-white transition-colors"
+                >
+                  clear
+                </a>
+              )}
+            </form>
+          </section>
+
           {/* Findings list */}
           <section>
-            <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-zinc-500 mb-3">latest 100</p>
+            <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-zinc-500 mb-3">
+              {findings.length === 0
+                ? "no matches"
+                : findings.length < 100
+                  ? `${findings.length} match${findings.length === 1 ? "" : "es"}`
+                  : "latest 100"}
+            </p>
             <ul className="rounded-2xl border border-white/[0.06] bg-white/[0.015] divide-y divide-white/[0.04] overflow-hidden">
               {findings.map((f) => {
                 const resources = Array.isArray(f.affectedResources) ? f.affectedResources : [];
