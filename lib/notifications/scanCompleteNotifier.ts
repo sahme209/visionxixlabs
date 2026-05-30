@@ -25,6 +25,85 @@ import {
   sendOutboundNotification,
   type OutboundSeverity,
 } from "./outboundNotificationLane";
+import { prisma } from "@/lib/db";
+
+type Severity = "info" | "low" | "medium" | "high" | "critical";
+
+const SEVERITY_ORDER: Record<Severity, number> = {
+  info: 0, low: 1, medium: 2, high: 3, critical: 4,
+};
+
+interface TenantPrefs {
+  slackWebhookUrl: string | null;
+  teamsWebhookUrl: string | null;
+  emailDigestTo: string | null;
+  severityFloor: Severity;
+}
+
+async function loadTenantPrefs(tenantId: string): Promise<TenantPrefs | null> {
+  // Best-effort lookup. The notifier should NEVER block on this —
+  // env-routing keeps working if the read fails.
+  try {
+    // The prefs live on the org's cloud-operator Lead. We can't
+    // reverse the workspace hash directly; instead scan recent
+    // cloud-operator Leads and match the derived id, same approach
+    // as the cron worker uses.
+    const { deriveWorkspaceIdFromEmail } = await import("@/lib/auth/workspaceId");
+    const leads = await prisma.lead.findMany({
+      where: { source: "cloud-operator", userId: { not: null } },
+      orderBy: { updatedAt: "desc" },
+      take: 200,
+      include: { user: { select: { email: true } } },
+    });
+    for (const lead of leads) {
+      if (!lead.user?.email) continue;
+      const derived = deriveWorkspaceIdFromEmail(lead.user.email.toLowerCase());
+      if (derived !== tenantId) continue;
+      const payload = (lead.fullPayload as Record<string, unknown>) ?? {};
+      const stored = (payload.notifications as Partial<TenantPrefs> | undefined) ?? {};
+      return {
+        slackWebhookUrl: typeof stored.slackWebhookUrl === "string" ? stored.slackWebhookUrl : null,
+        teamsWebhookUrl: typeof stored.teamsWebhookUrl === "string" ? stored.teamsWebhookUrl : null,
+        emailDigestTo:   typeof stored.emailDigestTo === "string" ? stored.emailDigestTo : null,
+        severityFloor:   (stored.severityFloor as Severity) ?? "low",
+      };
+    }
+  } catch (err) {
+    console.warn("[scanCompleteNotifier] prefs lookup failed:", err instanceof Error ? err.message : err);
+  }
+  return null;
+}
+
+async function postSlack(webhookUrl: string, body: { text: string; blocks?: unknown[] }): Promise<void> {
+  try {
+    await fetch(webhookUrl, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    });
+  } catch (err) {
+    console.warn("[scanCompleteNotifier] slack post failed:", err instanceof Error ? err.message : err);
+  }
+}
+
+async function postTeams(webhookUrl: string, body: { title: string; text: string }): Promise<void> {
+  try {
+    await fetch(webhookUrl, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        "@type": "MessageCard",
+        "@context": "https://schema.org/extensions",
+        themeColor: "0078D4",
+        summary: body.title,
+        title: body.title,
+        text: body.text,
+      }),
+    });
+  } catch (err) {
+    console.warn("[scanCompleteNotifier] teams post failed:", err instanceof Error ? err.message : err);
+  }
+}
 
 interface FindingSummary {
   severity: "info" | "low" | "medium" | "high" | "critical";
@@ -103,6 +182,28 @@ export async function notifyScanComplete(input: ScanCompleteNotificationInput): 
         : { label: "Open dashboard", href: "/dashboard" },
       evidenceRefs: input.runId ? [`run:${input.runId}`] : [],
     });
+
+    // Per-tenant URLs from /dashboard/settings/notifications. Run in
+    // parallel with the env-routed lane so the tenant can choose:
+    // env-only, tenant-only, or both. severityFloor gates per-tenant
+    // sends; the env-routed lane uses its own platform-level gating.
+    const prefs = await loadTenantPrefs(input.tenantId);
+    if (prefs) {
+      const passesFloor =
+        SEVERITY_ORDER[severity as Severity] >= SEVERITY_ORDER[prefs.severityFloor];
+      if (passesFloor) {
+        const text = `${headline}\n${lines.join("\n")}\nReview at https://visionxixlabs.com/dashboard/findings`;
+        if (prefs.slackWebhookUrl) {
+          void postSlack(prefs.slackWebhookUrl, { text });
+        }
+        if (prefs.teamsWebhookUrl) {
+          void postTeams(prefs.teamsWebhookUrl, { title: headline, text });
+        }
+        // Email digest left as a TODO — the platform's email service
+        // wiring is opinionated about sender/template and warrants
+        // its own commit alongside the right SES/Resend integration.
+      }
+    }
   } catch (err) {
     console.warn(
       "[scanCompleteNotifier] send failed:",
