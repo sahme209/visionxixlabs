@@ -109,6 +109,31 @@ function riskFor(actionClass: string): RiskLevelEnum {
   }
 }
 
+type ActionTypeEnum = "resize_compute" | "apply_storage_policy" | "purchase_commitment" | "decommission_compute";
+
+/** Map the scanner's actionClass to the Prisma ActionType enum so the
+ *  downstream Terraform plan renderer picks the right resource block.
+ *  The mapping is intentionally narrow — when a class has no obvious
+ *  Terraform analogue we fall through to apply_storage_policy and let
+ *  the renderer print a 'review manually' comment. */
+function actionTypeFor(actionClass: string, recommendedState: string): ActionTypeEnum {
+  switch (actionClass) {
+    case "cost_optimization":
+      // Resize is the common case; if the recommended state literally
+      // says 'decommission' the renderer needs to surface a destroy plan.
+      return /decommission|delete|remove/i.test(recommendedState)
+        ? "decommission_compute"
+        : "resize_compute";
+    case "scaling":
+      return "resize_compute";
+    case "security_remediation":
+    case "iam_modification":
+    case "drift_correction":
+    default:
+      return "apply_storage_policy";
+  }
+}
+
 export async function persistScanRun(input: PersistInput): Promise<PersistOutcome | null> {
   // Only persist real / live findings — preview noise would pollute the
   // canonical tables and create false signal on the dashboard.
@@ -188,6 +213,9 @@ export async function persistScanRun(input: PersistInput): Promise<PersistOutcom
         if (!findingDbId) continue; // orphan rec — skip rather than fail the whole scan
         const disposition = dispositionFor(r.actionClass);
         const risk = riskFor(r.actionClass);
+        const matchedFinding = input.findings.find((f) => f.id === r.findingId);
+        const recommendedStateText = matchedFinding?.description ?? r.title;
+        const action = actionTypeFor(r.actionClass, recommendedStateText);
         const rec = await prisma.axiomRecommendation.create({
           data: {
             runId: run.id,
@@ -196,7 +224,7 @@ export async function persistScanRun(input: PersistInput): Promise<PersistOutcom
             rationale: r.description,
             disposition,
             dispositionReason: `Scanner classified as ${r.actionClass.replace(/_/g, " ")}.`,
-            actionType: null,
+            actionType: action,
             riskLevel: risk,
             effort: "low",
             actionable: disposition !== "informational",
@@ -223,7 +251,7 @@ export async function persistScanRun(input: PersistInput): Promise<PersistOutcom
                 runId: run.id,
                 planItemId: rec.id,
                 title: r.title,
-                actionType: "apply_storage_policy", // closest mapping until executor lands
+                actionType: action,
                 provider: input.provider,
                 region: input.region,
                 resourceIds: input.findings.find((f) => f.id === r.findingId)?.resourceRef
