@@ -46,18 +46,28 @@ async function loadTenantPrefs(tenantId: string): Promise<TenantPrefs | null> {
   try {
     // The prefs live on the org's cloud-operator Lead. We can't
     // reverse the workspace hash directly; instead scan recent
-    // cloud-operator Leads and match the derived id, same approach
-    // as the cron worker uses.
+    // cloud-operator Leads and look up the linked user's email
+    // separately (Lead has no `user` Prisma relation defined).
     const { deriveWorkspaceIdFromEmail } = await import("@/lib/auth/workspaceId");
     const leads = await prisma.lead.findMany({
       where: { source: "cloud-operator", userId: { not: null } },
       orderBy: { updatedAt: "desc" },
       take: 200,
-      include: { user: { select: { email: true } } },
+      select: { userId: true, fullPayload: true },
     });
+    const userIds = leads
+      .map((l) => l.userId)
+      .filter((u): u is string => typeof u === "string");
+    if (userIds.length === 0) return null;
+    const users = await prisma.user.findMany({
+      where: { id: { in: userIds } },
+      select: { id: true, email: true },
+    });
+    const emailByUserId = new Map(users.map((u) => [u.id, u.email]));
     for (const lead of leads) {
-      if (!lead.user?.email) continue;
-      const derived = deriveWorkspaceIdFromEmail(lead.user.email.toLowerCase());
+      const userEmail = lead.userId ? emailByUserId.get(lead.userId) : null;
+      if (!userEmail) continue;
+      const derived = deriveWorkspaceIdFromEmail(userEmail.toLowerCase());
       if (derived !== tenantId) continue;
       const payload = (lead.fullPayload as Record<string, unknown>) ?? {};
       const stored = (payload.notifications as Partial<TenantPrefs> | undefined) ?? {};

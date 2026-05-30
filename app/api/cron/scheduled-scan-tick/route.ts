@@ -51,20 +51,33 @@ interface AwsCredsBlob {
 
 async function resolveAwsCredsForOrg(organizationId: string): Promise<AwsCredsBlob | null> {
   // Resolve credentials the same way /api/scan/trigger does: scan all
-  // cloud-operator Leads, group by the linked user's email, derive
-  // the workspace id, and match. organizationId is a deterministic
-  // SHA-256 prefix of the email, so we can't reverse it directly;
-  // a single sweep is fine because total cloud-operator Leads is
-  // small (bounded by signed-up users with AWS connected).
+  // cloud-operator Leads, look up the linked user's email separately
+  // (Lead has no `user` relation defined), derive the workspace id,
+  // and match. organizationId is a deterministic SHA-256 prefix of
+  // the email, so we can't reverse it directly; a single sweep is
+  // fine because total cloud-operator Leads is small (bounded by
+  // signed-up users with AWS connected).
   const candidates = await prisma.lead.findMany({
     where: { source: "cloud-operator", userId: { not: null } },
     orderBy: { updatedAt: "desc" },
     take: 200, // bound the worst case
-    include: { user: { select: { email: true } } },
+    select: { id: true, userId: true, fullPayload: true },
   });
+  const userIds = candidates
+    .map((l) => l.userId)
+    .filter((u): u is string => typeof u === "string");
+  const users = userIds.length > 0
+    ? await prisma.user.findMany({
+        where: { id: { in: userIds } },
+        select: { id: true, email: true },
+      })
+    : [];
+  const emailByUserId = new Map(users.map((u) => [u.id, u.email]));
+
   for (const lead of candidates) {
-    if (!lead.user?.email) continue;
-    const derived = deriveWorkspaceIdFromEmail(lead.user.email.toLowerCase());
+    const userEmail = lead.userId ? emailByUserId.get(lead.userId) : null;
+    if (!userEmail) continue;
+    const derived = deriveWorkspaceIdFromEmail(userEmail.toLowerCase());
     if (derived !== organizationId) continue;
 
     const payload = (lead.fullPayload as Record<string, unknown>) || {};
