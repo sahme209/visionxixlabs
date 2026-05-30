@@ -155,26 +155,66 @@ export default function DashboardPage() {
         </p>
       </header>
 
-      {/* ─── Next best action ────────────────────────────────────────────── */}
+      {/* ─── Next best action — real-state aware ──────────────────────────── */}
       <section className="mb-12">
         <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-zinc-500 mb-3">next</p>
-        <Link
-          href={nextAction.cta.href}
-          className="group block rounded-2xl border border-white/[0.06] bg-white/[0.015] hover:border-white/[0.12] transition-colors px-7 py-7"
-        >
-          <div className="flex items-start justify-between gap-6">
-            <div className="flex-1 min-w-0">
-              <h2 className="text-[22px] font-semibold text-white tracking-[-0.02em] mb-2">
-                {nextAction.cta.label}
-              </h2>
-              <p className="text-[14px] text-zinc-400 leading-relaxed max-w-xl">
-                {nextAction.reason}
-              </p>
-            </div>
-            <ArrowRightIcon className="h-4 w-4 text-zinc-600 group-hover:text-white group-hover:translate-x-0.5 transition-all mt-1.5 shrink-0" />
-          </div>
-        </Link>
-        {onboarding.nextStep && (
+        {(() => {
+          // Live summary trumps the heuristic nextAction whenever it
+          // can answer concretely. Order from most-urgent to least.
+          const live = summary && (() => {
+            if (summary.highRiskApprovals > 0) {
+              return {
+                href: "/dashboard/approvals",
+                label: `Review ${summary.highRiskApprovals} high-risk approval${summary.highRiskApprovals === 1 ? "" : "s"}`,
+                reason: "High-risk recommendations stop scans from making cross-cuts. Approve or reject to keep the queue moving.",
+              };
+            }
+            if (summary.pendingApprovals > 0) {
+              return {
+                href: "/dashboard/approvals",
+                label: summary.monthlyHigh > 0
+                  ? `Approve ~$${Math.round(summary.monthlyHigh).toLocaleString()}/mo in pending changes`
+                  : `Decide on ${summary.pendingApprovals} pending recommendation${summary.pendingApprovals === 1 ? "" : "s"}`,
+                reason: "Each approval emits a Terraform plan you can review and apply in your own environment.",
+              };
+            }
+            if (summary.findingCount > 0) {
+              return {
+                href: "/dashboard/findings",
+                label: `Investigate ${summary.findingCount} finding${summary.findingCount === 1 ? "" : "s"}`,
+                reason: "The scanner found real signals in your last scan. Open the list to drill into severity, resources, and the recommendation chain.",
+              };
+            }
+            if (summary.lastScanIso) {
+              return {
+                href: "/dashboard/scans",
+                label: "Clean — review the scan history",
+                reason: "Nothing actionable in the latest scan. The cron keeps re-running daily; history is on /dashboard/scans.",
+              };
+            }
+            return null;
+          })();
+          const action = live ?? { href: nextAction.cta.href, label: nextAction.cta.label, reason: nextAction.reason };
+          return (
+            <Link
+              href={action.href}
+              className="group block rounded-2xl border border-white/[0.06] bg-white/[0.015] hover:border-white/[0.12] transition-colors px-7 py-7"
+            >
+              <div className="flex items-start justify-between gap-6">
+                <div className="flex-1 min-w-0">
+                  <h2 className="text-[22px] font-semibold text-white tracking-[-0.02em] mb-2">
+                    {action.label}
+                  </h2>
+                  <p className="text-[14px] text-zinc-400 leading-relaxed max-w-xl">
+                    {action.reason}
+                  </p>
+                </div>
+                <ArrowRightIcon className="h-4 w-4 text-zinc-600 group-hover:text-white group-hover:translate-x-0.5 transition-all mt-1.5 shrink-0" />
+              </div>
+            </Link>
+          );
+        })()}
+        {onboarding.nextStep && !summary?.findingCount && (
           <p className="mt-3 text-[12px] text-zinc-600 leading-relaxed pl-1">
             {onboarding.nextStep.label} · {onboarding.nextStep.detail}
           </p>
