@@ -447,10 +447,10 @@ export default async function EngineerDetailPage({ params }: { params: Promise<{
           <p className="text-sm font-semibold text-white">Approvals queue</p>
           <p className="text-[11px] text-zinc-500 mt-1">Where this engineer's actions stage.</p>
         </Link>
-        <Link href="/dashboard/audit" className="block rounded-xl border border-white/[0.06] bg-white/[0.02] p-4 hover:border-white/[0.10] transition-colors">
+        <Link href={`/dashboard/workforce/${engineer.id}/audit`} className="block rounded-xl border border-white/[0.06] bg-white/[0.02] p-4 hover:border-white/[0.10] transition-colors">
           <CheckCircleIcon className="h-4 w-4 text-zinc-500 mb-2" />
-          <p className="text-sm font-semibold text-white">Audit log</p>
-          <p className="text-[11px] text-zinc-500 mt-1">Every gate decision recorded.</p>
+          <p className="text-sm font-semibold text-white">Audit timeline</p>
+          <p className="text-[11px] text-zinc-500 mt-1">Every workspace event tagged with this engineer&apos;s topics.</p>
         </Link>
       </section>
     </div>
