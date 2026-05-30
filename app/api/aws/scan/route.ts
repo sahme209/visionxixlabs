@@ -27,6 +27,7 @@ import { AxiomErrors, httpStatusFor, toAxiomError } from "@/lib/errors/axiomErro
 import { asRecord, requireString, requireBool, optionalString } from "@/lib/security/validation";
 import { record as auditRecord } from "@/lib/audit/secureAudit";
 import type { CorrelationId } from "@/lib/domain/ids";
+import { persistScanRun } from "@/lib/scan/persistScanRun";
 
 export const dynamic = "force-dynamic";
 
@@ -113,6 +114,24 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
         errorCode: live.source === "preview" ? "aws.empty_multi_region" : undefined,
       });
 
+      // Persist the run + findings to AxiomAgentRun + AxiomFinding so
+      // the dashboard's history views can read real data. Fire-and-
+      // forget — failures are warn-only inside persistScanRun.
+      if (live.accountId) {
+        await persistScanRun({
+          organizationId: ctx.organizationId,
+          userId: ctx.userId,
+          provider: "aws",
+          externalAccountId: live.accountId,
+          region,
+          trigger: "manual",
+          snapshot: live.snapshot,
+          findings: live.findings,
+          source: live.source,
+          summary: `Multi-region scan · ${live.snapshot.resources.length} resources · ${live.findings.length} findings`,
+        });
+      }
+
       return NextResponse.json(
         apiSuccess({
           ok: true,
@@ -145,6 +164,24 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       connection: { roleArn, externalId, region },
       requestLive,
     });
+
+    // Persist the run + findings — same pattern as the multi-region
+    // path. Skips on preview source so the canonical tables only
+    // accumulate signal that's actually grounded in a real account.
+    if (outcome.ok && outcome.preview && outcome.validation.accountId) {
+      await persistScanRun({
+        organizationId: ctx.organizationId,
+        userId: ctx.userId,
+        provider: "aws",
+        externalAccountId: outcome.validation.accountId,
+        region,
+        trigger: "manual",
+        snapshot: outcome.preview.snapshot,
+        findings: outcome.preview.findings,
+        source: outcome.source,
+        summary: `Single-region scan · ${outcome.preview.snapshot.resources.length} resources · ${outcome.preview.findings.length} findings`,
+      });
+    }
 
     return NextResponse.json(
       apiSuccess({
