@@ -22,19 +22,22 @@ import { ArrowRightIcon } from "@heroicons/react/24/outline";
 
 export const dynamic = "force-dynamic";
 
-type Disposition = "auto_fix_candidate" | "approval_required" | "informational";
+// Mirrors the Prisma ActionDisposition enum so reads pass straight through.
+type Disposition = "auto_fix_candidate" | "approval_required" | "report_only" | "blocked";
 type Risk = "low" | "medium" | "high";
 
 const DISPOSITION_LABEL: Record<Disposition, string> = {
   auto_fix_candidate: "Auto-fix candidates",
   approval_required:  "Need a human call",
-  informational:      "For your awareness",
+  report_only:        "For your awareness",
+  blocked:            "Blocked by policy",
 };
 
 const DISPOSITION_HINT: Record<Disposition, string> = {
   auto_fix_candidate: "Safe by class (cost / scaling). An executor could apply these without approval once one is registered.",
   approval_required:  "Security / IAM / drift fixes. Each one enters the approval queue.",
-  informational:      "No action proposed, surfaced for context.",
+  report_only:        "No action proposed, surfaced for context.",
+  blocked:            "Recommendation generated but the platform won't execute it — usually a policy guard fired.",
 };
 
 const RISK_TONE: Record<Risk, string> = {
@@ -90,7 +93,8 @@ export default async function RecommendationsPage() {
   const buckets: Record<Disposition, typeof recs> = {
     auto_fix_candidate: [],
     approval_required:  [],
-    informational:      [],
+    report_only:        [],
+    blocked:            [],
   };
   for (const r of recs) {
     if (r.disposition in buckets) buckets[r.disposition].push(r);
@@ -102,9 +106,10 @@ export default async function RecommendationsPage() {
   const totals = {
     auto_fix_candidate: sumSavings(buckets.auto_fix_candidate),
     approval_required:  sumSavings(buckets.approval_required),
-    informational:      sumSavings(buckets.informational),
+    report_only:        sumSavings(buckets.report_only),
+    blocked:            sumSavings(buckets.blocked),
   };
-  const grandTotal = totals.auto_fix_candidate + totals.approval_required + totals.informational;
+  const grandTotal = totals.auto_fix_candidate + totals.approval_required + totals.report_only + totals.blocked;
 
   return (
     <div className="max-w-5xl mx-auto px-1 -mt-2">
@@ -150,7 +155,7 @@ export default async function RecommendationsPage() {
 
       {recs.length > 0 && (
         <div className="space-y-10">
-          {(["approval_required", "auto_fix_candidate", "informational"] as Disposition[]).map((d) => {
+          {(["approval_required", "auto_fix_candidate", "report_only", "blocked"] as Disposition[]).map((d) => {
             const rows = buckets[d];
             if (rows.length === 0) return null;
             return (

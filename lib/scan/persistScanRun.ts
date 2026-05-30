@@ -77,13 +77,16 @@ function clampSeverity(input: string | undefined | null): Severity {
   return "info";
 }
 
-type ActionDispositionEnum = "auto_fix_candidate" | "approval_required" | "informational";
+// Mirror the Prisma ActionDisposition enum exactly so the value passes
+// straight through to prisma.axiomRecommendation.create without a cast.
+type ActionDispositionEnum = "auto_fix_candidate" | "approval_required" | "report_only" | "blocked";
 type RiskLevelEnum = "low" | "medium" | "high";
 
 /** Translate a scanner action class into a disposition that maps to the
  *  ActionDisposition Prisma enum. Auto-fix candidates can be applied
  *  without a human gate (e.g. delete-empty-bucket). Approval-required
- *  recommendations enter the approval queue. */
+ *  recommendations enter the approval queue. Anything else is
+ *  report_only — the row is surfaced but no action is proposed. */
 function dispositionFor(actionClass: string): ActionDispositionEnum {
   switch (actionClass) {
     case "cost_optimization":
@@ -95,7 +98,7 @@ function dispositionFor(actionClass: string): ActionDispositionEnum {
     case "drift_correction":
       return "approval_required";
     default:
-      return "informational";
+      return "report_only";
   }
 }
 
@@ -239,7 +242,7 @@ export async function persistScanRun(input: PersistInput): Promise<PersistOutcom
             actionType: action,
             riskLevel: risk,
             effort: "low",
-            actionable: disposition !== "informational",
+            actionable: disposition !== "report_only" && disposition !== "blocked",
             monthlyLow: r.monthlySavingsUsd ?? 0,
             monthlyHigh: r.monthlySavingsUsd ?? 0,
             yearlyLow: (r.monthlySavingsUsd ?? 0) * 12,
