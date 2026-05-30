@@ -140,7 +140,7 @@ export default async function EngineerDetailPage({ params }: { params: Promise<{
   // engineer via the EngineerApprovalSnapshot mirror. Median is
   // computed in-app from the last 50 decisions — small enough to
   // load + sort cheaply, big enough to be representative.
-  const [pendingApprovalCount, recentDecisions] = await Promise.all([
+  const [pendingApprovalCount, recentDecisions, executionGroups] = await Promise.all([
     prisma.engineerApprovalSnapshot.count({
       where: {
         organizationId: String(ctx.organizationId),
@@ -158,7 +158,29 @@ export default async function EngineerDetailPage({ params }: { params: Promise<{
       take: 50,
       select: { createdAt: true, decidedAt: true },
     }).catch(() => [] as Array<{ createdAt: Date; decidedAt: Date | null }>),
+    prisma.engineerApprovalSnapshot.groupBy({
+      by: ["status", "executionStatus"],
+      where: {
+        organizationId: String(ctx.organizationId),
+        engineerId: engineer.id,
+      },
+      _count: { _all: true },
+    }).catch(() => [] as Array<{ status: string; executionStatus: string; _count: { _all: number } }>),
   ]);
+
+  // Funnel: minted → decided → executed → failed. Each stage is the
+  // count satisfying that terminal condition across all-time
+  // snapshots for this engineer. We render a row only when the prior
+  // stage has at least one — keeps the empty engineer surface honest.
+  const funnel = { minted: 0, decided: 0, executed: 0, failed: 0 };
+  for (const g of executionGroups) {
+    funnel.minted += g._count._all;
+    if (g.status === "approved" || g.status === "rejected" || g.status === "expired") {
+      funnel.decided += g._count._all;
+    }
+    if (g.executionStatus === "executed") funnel.executed += g._count._all;
+    if (g.executionStatus === "failed")   funnel.failed   += g._count._all;
+  }
 
   const latenciesMs = recentDecisions
     .map((d) => (d.decidedAt ? d.decidedAt.getTime() - d.createdAt.getTime() : 0))
@@ -316,6 +338,24 @@ export default async function EngineerDetailPage({ params }: { params: Promise<{
           </p>
         </div>
       </section>
+
+      {/* Outcome funnel — only render when at least one approval has
+          been minted for this engineer. Stages: minted → decided →
+          executed, with a separate 'failed' callout when applies have
+          broken. Honest hide when there's nothing to show. */}
+      {funnel.minted > 0 && (
+        <section className="mb-6">
+          <p className="text-[10px] font-semibold uppercase tracking-widest text-zinc-400 mb-3">Approval funnel · all time</p>
+          <ol className="rounded-2xl border border-white/[0.06] bg-white/[0.015] divide-y divide-white/[0.04] overflow-hidden">
+            <FunnelRow label="minted"   count={funnel.minted}   tone="text-white" />
+            <FunnelRow label="decided"  count={funnel.decided}  tone={funnel.decided > 0 ? "text-zinc-200" : "text-zinc-600"} />
+            <FunnelRow label="executed" count={funnel.executed} tone={funnel.executed > 0 ? "text-emerald-300" : "text-zinc-600"} />
+            {funnel.failed > 0 && (
+              <FunnelRow label="failed" count={funnel.failed} tone="text-rose-300" />
+            )}
+          </ol>
+        </section>
+      )}
 
       {/* Connector readiness — cloud + github are checkable here.
           Renders only when the engineer requires at least one of
@@ -546,6 +586,15 @@ function RollupTile({ label, count, tone }: { label: string; count: number; tone
       <p className={`text-[22px] font-semibold tabular-nums ${tone}`}>{count}</p>
       <p className="text-[10px] font-mono uppercase tracking-[0.18em] text-zinc-500 mt-1">{label}</p>
     </div>
+  );
+}
+
+function FunnelRow({ label, count, tone }: { label: string; count: number; tone: string }) {
+  return (
+    <li className="px-5 py-3 flex items-center justify-between gap-3">
+      <p className="text-[10px] font-mono uppercase tracking-[0.18em] text-zinc-500">{label}</p>
+      <p className={`text-[16px] font-semibold tabular-nums ${tone}`}>{count}</p>
+    </li>
   );
 }
 
