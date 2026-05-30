@@ -162,7 +162,7 @@ export default function AgiCockpitPage() {
 
           {/* Autonomy cycle summary */}
           {autonomy && (
-            <div className="rounded-2xl border border-violet-500/15 bg-violet-500/[0.04] p-5 mb-6">
+            <div className="rounded-2xl border border-violet-500/15 bg-white/[0.015] p-5 mb-6">
               <div className="flex items-start gap-3">
                 <BoltIcon className="h-5 w-5 text-violet-300 mt-0.5 shrink-0" />
                 <div className="min-w-0 flex-1">
@@ -177,7 +177,7 @@ export default function AgiCockpitPage() {
                     <Mini label="Halted"     value={autonomy.summary?.haltedAtGate ?? 0} />
                     <Mini label="Errored"    value={autonomy.summary?.erroredCount ?? 0} />
                   </div>
-                  <Link href="/dashboard/autonomy" className="mt-3 inline-flex items-center gap-1 text-[12px] text-violet-200 hover:text-violet-100">
+                  <Link href="/dashboard/autonomy" className="mt-3 inline-flex items-center gap-1 text-[12px] text-white hover:text-violet-100">
                     Open Autonomy Cockpit <ArrowRightIcon className="h-3 w-3" />
                   </Link>
                 </div>

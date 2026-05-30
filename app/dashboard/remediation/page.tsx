@@ -198,7 +198,7 @@ export default async function RemediationCenter() {
                     ))}
                   </div>
                   {bundle.readiness.safeNextAction.href ? (
-                    <Link href={bundle.readiness.safeNextAction.href} className="inline-flex items-center gap-1.5 text-xs font-semibold text-violet-200 hover:text-white">
+                    <Link href={bundle.readiness.safeNextAction.href} className="inline-flex items-center gap-1.5 text-xs font-semibold text-white hover:text-white">
                       {bundle.readiness.safeNextAction.label} →
                     </Link>
                   ) : (

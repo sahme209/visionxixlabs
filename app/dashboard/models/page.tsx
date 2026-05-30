@@ -44,7 +44,7 @@ const STATUS_TONE: Record<ModelStatus, string> = {
   candidate:  "border-cyan-500/30    bg-cyan-500/10    text-cyan-300",
   evaluating: "border-amber-500/30   bg-amber-500/10   text-amber-300",
   rejected:   "border-rose-500/30    bg-rose-500/10    text-rose-300",
-  installed:  "border-violet-500/30  bg-violet-500/10  text-violet-300",
+  installed:  "border-white/[0.12]  bg-violet-500/10  text-violet-300",
 };
 
 const RISK_TONE: Record<RiskLevel, string> = {
@@ -124,7 +124,7 @@ export default async function ModelsPage() {
           return (
             <article
               key={m.id}
-              className="rounded-2xl border border-white/[0.05] bg-white/[0.015] p-5 hover:border-violet-500/30 hover:bg-white/[0.025] transition flex flex-col"
+              className="rounded-2xl border border-white/[0.05] bg-white/[0.015] p-5 hover:border-white/[0.12] hover:bg-white/[0.025] transition flex flex-col"
             >
               <header className="flex items-start justify-between gap-3">
                 <div className="min-w-0">

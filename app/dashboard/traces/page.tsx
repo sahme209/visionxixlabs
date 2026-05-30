@@ -202,8 +202,8 @@ export default function TraceViewerPage() {
       <Reveal direction="up" blur>
         <div className="mb-8">
           <div className="flex items-center gap-3 mb-3">
-            <ChartBarSquareIcon className="h-4 w-4 text-violet-400" />
-            <p className="text-[10px] font-semibold text-violet-400 uppercase tracking-widest">Trace Viewer</p>
+            <ChartBarSquareIcon className="h-4 w-4 text-zinc-500" />
+            <p className="text-[10px] font-semibold text-zinc-500 uppercase tracking-widest">Trace Viewer</p>
             {showSampleData && (
               <span className="text-[9px] font-semibold text-amber-400 bg-amber-500/15 border border-amber-500/30 rounded-full px-2 py-0.5 uppercase tracking-wider">
                 Preview
@@ -266,14 +266,14 @@ export default function TraceViewerPage() {
       {showSampleData && (
       <Reveal direction="up" delay={0.08}>
         <div className="mb-8 rounded-2xl border border-violet-500/15 bg-gradient-to-br from-violet-500/[0.04] via-transparent to-fuchsia-500/[0.02] p-6 relative overflow-hidden">
-          <div className="absolute -top-12 -right-12 w-48 h-48 rounded-full bg-violet-500/[0.06] blur-[60px] pointer-events-none" aria-hidden />
+          <div className="absolute -top-12 -right-12 w-48 h-48 rounded-full bg-white/[0.025] blur-[60px] pointer-events-none" aria-hidden />
           <div className="relative">
             <div className="flex items-center justify-between flex-wrap gap-3 mb-5">
               <div>
-                <p className="text-[10px] font-semibold text-violet-400 uppercase tracking-widest mb-1">Observability posture</p>
+                <p className="text-[10px] font-semibold text-zinc-500 uppercase tracking-widest mb-1">Observability posture</p>
                 <h2 className="text-lg font-bold text-white">Every action traceable. Every trace redacted.</h2>
               </div>
-              <Link href="/dashboard/audit" className="text-[11px] font-semibold text-violet-300 hover:text-violet-200 transition-colors">
+              <Link href="/dashboard/audit" className="text-[11px] font-semibold text-zinc-300 hover:text-white transition-colors">
                 Audit Center <ArrowRightIcon className="inline h-3 w-3 ml-0.5 -mt-0.5" />
               </Link>
             </div>
@@ -316,8 +316,8 @@ export default function TraceViewerPage() {
       <Reveal direction="up" delay={0.24}>
         <div className="mt-8 rounded-2xl border border-violet-500/15 bg-violet-500/[0.02] p-5">
           <div className="flex items-center gap-2 mb-3">
-            <CpuChipIcon className="h-4 w-4 text-violet-400" />
-            <p className="text-[10px] font-semibold text-violet-400 uppercase tracking-widest">If your compliance team asks…</p>
+            <CpuChipIcon className="h-4 w-4 text-zinc-500" />
+            <p className="text-[10px] font-semibold text-zinc-500 uppercase tracking-widest">If your compliance team asks…</p>
           </div>
           <ul className="grid sm:grid-cols-2 gap-2 text-xs text-zinc-300">
             {[
@@ -331,7 +331,7 @@ export default function TraceViewerPage() {
               ["Can I see what failed?",    "Failed spans render in red with the safe next action; trace ties into the dead-letter queue."],
             ].map(([q, a]) => (
               <li key={q} className="flex items-start gap-2">
-                <CheckCircleIcon className="h-3.5 w-3.5 text-violet-400 shrink-0 mt-0.5" />
+                <CheckCircleIcon className="h-3.5 w-3.5 text-zinc-500 shrink-0 mt-0.5" />
                 <span className="leading-relaxed"><span className="font-semibold text-zinc-100">{q}</span> <span className="dim-1">{a}</span></span>
               </li>
             ))}
@@ -374,7 +374,7 @@ function TraceCard({ trace }: { trace: OperationTrace }) {
     }`}>
       <div className="px-5 py-3 border-b border-white/[0.05] flex items-center justify-between flex-wrap gap-2">
         <div className="flex items-center gap-3 min-w-0">
-          <span className="text-[9px] font-bold uppercase tracking-wider border rounded-full px-1.5 py-px text-violet-400 bg-violet-500/10 border-violet-500/20">
+          <span className="text-[9px] font-bold uppercase tracking-wider border rounded-full px-1.5 py-px text-zinc-500 bg-violet-500/10 border-white/[0.08]">
             {trace.operation}
           </span>
           <span className="text-sm font-semibold text-white truncate">{trace.rootSpanName}</span>
@@ -415,7 +415,7 @@ function TraceCard({ trace }: { trace: OperationTrace }) {
           <p className="text-[10px] font-semibold text-zinc-500 uppercase tracking-widest mb-2">Evidence</p>
           <div className="flex flex-wrap gap-1.5">
             {trace.evidence.map((e) => (
-              <span key={e.id} className="text-[10px] text-violet-300/90 bg-violet-500/[0.06] border border-violet-500/15 rounded-full px-2 py-0.5">
+              <span key={e.id} className="text-[10px] text-violet-300/90 bg-white/[0.025] border border-violet-500/15 rounded-full px-2 py-0.5">
                 {e.kind} · {e.label}
               </span>
             ))}
@@ -431,7 +431,7 @@ function TraceCard({ trace }: { trace: OperationTrace }) {
             : <span className="text-emerald-400">Completed cleanly</span>}
           {trace.redacted && <span className="ml-2 text-zinc-500">· redacted</span>}
         </div>
-        <Link href="/dashboard/audit" className="text-[11px] font-semibold text-violet-300 hover:text-violet-200">
+        <Link href="/dashboard/audit" className="text-[11px] font-semibold text-zinc-300 hover:text-white">
           View audit story <ArrowRightIcon className="inline h-3 w-3 ml-0.5 -mt-0.5" />
         </Link>
       </div>

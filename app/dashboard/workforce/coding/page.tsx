@@ -63,7 +63,7 @@ export default async function CodingPage() {
   return (
     <div className="relative max-w-4xl">
       <div className="mb-6">
-        <Link href="/dashboard/workforce" className="text-[11px] text-violet-300 hover:text-violet-200 inline-flex items-center gap-1">
+        <Link href="/dashboard/workforce" className="text-[11px] text-zinc-300 hover:text-white inline-flex items-center gap-1">
           <ArrowRightIcon className="h-3 w-3 rotate-180" />
           Back to Workforce
         </Link>
@@ -71,8 +71,8 @@ export default async function CodingPage() {
 
       <div className="mb-8">
         <div className="flex items-center gap-3 mb-3">
-          <CodeBracketIcon className="h-4 w-4 text-violet-400" />
-          <p className="text-[10px] font-semibold text-violet-400 uppercase tracking-widest">AI coding</p>
+          <CodeBracketIcon className="h-4 w-4 text-zinc-500" />
+          <p className="text-[10px] font-semibold text-zinc-500 uppercase tracking-widest">AI coding</p>
         </div>
         <h1 className="text-3xl md:text-4xl font-bold text-white tracking-[-0.04em] mb-2">
           Describe the change. <span className="text-gradient">We propose, gate, and ship.</span>
@@ -89,7 +89,7 @@ export default async function CodingPage() {
         <Stat label="All"       value={Array.from(countByStatus.values()).reduce((a, b) => a + b, 0)}     icon={CpuChipIcon}             tone="text-violet-300" />
       </section>
 
-      <section className="rounded-2xl border border-violet-500/20 bg-violet-500/[0.03] p-5 mb-8">
+      <section className="rounded-2xl border border-white/[0.08] bg-white/[0.015] p-5 mb-8">
         <p className="text-[10px] font-semibold text-violet-300 uppercase tracking-widest mb-3">// new coding task</p>
         <CodingTaskForm />
       </section>
@@ -111,7 +111,7 @@ export default async function CodingPage() {
               <li key={t.id}>
                 <Link
                   href={`/dashboard/workforce/coding/${t.id}`}
-                  className="block rounded-xl border border-white/[0.06] bg-white/[0.02] px-4 py-3 hover:border-violet-500/25 transition-colors"
+                  className="block rounded-xl border border-white/[0.06] bg-white/[0.02] px-4 py-3 hover:border-white/[0.10] transition-colors"
                 >
                   <div className="flex items-center justify-between gap-3 flex-wrap mb-1">
                     <p className="text-[12px] font-semibold text-white truncate">{t.instruction.slice(0, 120)}{t.instruction.length > 120 ? "…" : ""}</p>

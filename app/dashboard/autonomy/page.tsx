@@ -158,11 +158,11 @@ export default function AutonomyCockpitPage() {
                 onClick={() => setMode(m)}
                 className={`rounded-xl border p-3 text-left transition-all ${
                   active
-                    ? "border-violet-500/40 bg-violet-500/[0.06]"
+                    ? "border-violet-500/40 bg-white/[0.025]"
                     : "border-white/[0.06] bg-white/[0.02] hover:border-white/[0.12]"
                 }`}
               >
-                <p className={`text-[11px] font-mono uppercase tracking-wider ${active ? "text-violet-200" : "text-zinc-400"}`}>{m}</p>
+                <p className={`text-[11px] font-mono uppercase tracking-wider ${active ? "text-white" : "text-zinc-400"}`}>{m}</p>
                 <p className="text-[11px] text-zinc-400 leading-snug mt-1">{MODE_DESCRIPTIONS[m]}</p>
               </button>
             );
@@ -205,13 +205,13 @@ export default function AutonomyCockpitPage() {
           </div>
 
           {/* Charter summary */}
-          <div className="rounded-2xl border border-violet-500/15 bg-violet-500/[0.04] p-4 mb-6">
+          <div className="rounded-2xl border border-violet-500/15 bg-white/[0.015] p-4 mb-6">
             <p className="text-[10px] font-mono text-violet-300/80 uppercase tracking-[0.18em] mb-1">// active charter</p>
             <p className="text-[13px] text-white font-semibold">{report.charter.mode}</p>
             <p className="text-[12px] text-zinc-300 leading-relaxed mt-1">{report.charter.rationale}</p>
             <div className="flex flex-wrap gap-1 mt-2">
               {report.charter.allowedClasses.map((c) => (
-                <span key={c} className="text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded bg-violet-500/15 text-violet-200">
+                <span key={c} className="text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded bg-violet-500/15 text-white">
                   {c.replace(/_/g, " ")}
                 </span>
               ))}

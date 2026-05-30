@@ -276,7 +276,7 @@ export default function OutboundNotificationsPage() {
               <button
                 onClick={dispatchTelemetry}
                 disabled={busy || status.configuredCount === 0}
-                className="inline-flex items-center gap-1.5 text-[12px] font-medium px-3 py-1.5 rounded-lg bg-violet-500/15 text-violet-200 border border-violet-500/30 hover:bg-violet-500/20 disabled:opacity-50"
+                className="inline-flex items-center gap-1.5 text-[12px] font-medium px-3 py-1.5 rounded-lg bg-violet-500/15 text-white border border-white/[0.12] hover:bg-violet-500/20 disabled:opacity-50"
               >
                 <PaperAirplaneIcon className="h-3.5 w-3.5" />
                 {busy ? "Dispatching…" : "Dispatch high+ signals"}
@@ -378,7 +378,7 @@ function Stat({ label, value, tone }: { label: string; value: string; tone: "eme
   const cls = {
     emerald: "border-emerald-500/[0.18] bg-emerald-500/[0.03] text-emerald-200",
     amber: "border-amber-500/[0.18] bg-amber-500/[0.03] text-amber-200",
-    violet: "border-violet-500/[0.18] bg-violet-500/[0.03] text-violet-200",
+    violet: "border-white/[0.06] bg-white/[0.015] text-white",
     zinc: "border-white/[0.06] bg-white/[0.02] text-zinc-200",
   }[tone];
   return (

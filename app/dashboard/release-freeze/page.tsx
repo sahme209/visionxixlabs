@@ -43,7 +43,7 @@ type RespBody =
 
 const STATUS_CLASS: Record<Status, string> = {
   not_yet_finalized:    "bg-zinc-700/40 text-zinc-300 border-zinc-600/40",
-  frozen:               "bg-violet-500/15 text-violet-300 border-violet-500/25",
+  frozen:               "bg-violet-500/15 text-violet-300 border-white/[0.10]",
   deploy_window_started: "bg-emerald-500/15 text-emerald-300 border-emerald-500/25",
 };
 
@@ -172,7 +172,7 @@ export default function ReleaseFreezePage() {
 
 function Stat({ icon: Icon, label, value, tone }: { icon: typeof LockClosedIcon; label: string; value: string; tone: "violet" | "emerald" | "rose" | "zinc" }) {
   const cls = {
-    violet:  "border-violet-500/[0.18] bg-violet-500/[0.03] text-violet-200",
+    violet:  "border-white/[0.06] bg-white/[0.015] text-white",
     emerald: "border-emerald-500/[0.18] bg-emerald-500/[0.03] text-emerald-200",
     rose:    "border-rose-500/[0.18] bg-rose-500/[0.03] text-rose-200",
     zinc:    "border-white/[0.06] bg-white/[0.02] text-zinc-200",

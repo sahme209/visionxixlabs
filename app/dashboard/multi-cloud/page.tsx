@@ -87,7 +87,7 @@ export default async function MultiCloudPage() {
               </div>
             )}
             {p.nextAction && (
-              <Link href={p.nextAction.href ?? "/dashboard/connect-cloud"} className="inline-flex items-center gap-1.5 text-xs font-semibold text-white hover:text-violet-200">
+              <Link href={p.nextAction.href ?? "/dashboard/connect-cloud"} className="inline-flex items-center gap-1.5 text-xs font-semibold text-white hover:text-white">
                 {p.nextAction.label} <ArrowRightIcon className="h-3.5 w-3.5" />
               </Link>
             )}

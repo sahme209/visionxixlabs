@@ -45,8 +45,8 @@ export default async function EngineerWorkspacePage() {
     <div className="relative">
       <div className="mb-8">
         <div className="flex items-center gap-3 mb-3">
-          <CpuChipIcon className="h-4 w-4 text-violet-400" />
-          <p className="text-[10px] font-semibold text-violet-400 uppercase tracking-widest">Engineer workspace</p>
+          <CpuChipIcon className="h-4 w-4 text-zinc-500" />
+          <p className="text-[10px] font-semibold text-zinc-500 uppercase tracking-widest">Engineer workspace</p>
         </div>
         <h1 className="text-3xl md:text-4xl font-bold text-white tracking-[-0.04em] mb-2">
           Everything an engineer needs, <span className="text-gradient">in one calm view.</span>
@@ -126,34 +126,34 @@ export default async function EngineerWorkspacePage() {
       </div>
 
       {/* Vision strip — what this surface becomes */}
-      <section className="mt-10 rounded-2xl border border-violet-500/15 bg-violet-500/[0.03] p-5">
+      <section className="mt-10 rounded-2xl border border-violet-500/15 bg-white/[0.015] p-5">
         <header className="flex items-center gap-2 mb-3">
           <SparklesPlaceholder />
           <p className="text-[10px] font-semibold uppercase tracking-widest text-violet-300">Where this surface is going</p>
         </header>
         <ul className="grid sm:grid-cols-2 gap-2 text-[12px] text-zinc-300">
           <li className="flex items-start gap-2">
-            <CheckCircleIcon className="h-3.5 w-3.5 text-violet-400 shrink-0 mt-0.5" />
+            <CheckCircleIcon className="h-3.5 w-3.5 text-zinc-500 shrink-0 mt-0.5" />
             <span><span className="font-semibold text-zinc-100">Unified queue.</span> Web + desktop signals merged, ranked by AI.</span>
           </li>
           <li className="flex items-start gap-2">
-            <CheckCircleIcon className="h-3.5 w-3.5 text-violet-400 shrink-0 mt-0.5" />
+            <CheckCircleIcon className="h-3.5 w-3.5 text-zinc-500 shrink-0 mt-0.5" />
             <span><span className="font-semibold text-zinc-100">One-click connect.</span> Every tool wires in via OAuth or paste-form — no env-var manual work.</span>
           </li>
           <li className="flex items-start gap-2">
-            <CheckCircleIcon className="h-3.5 w-3.5 text-violet-400 shrink-0 mt-0.5" />
+            <CheckCircleIcon className="h-3.5 w-3.5 text-zinc-500 shrink-0 mt-0.5" />
             <span><span className="font-semibold text-zinc-100">Local execution, safe.</span> Desktop app runs scripts only with on-device approval.</span>
           </li>
           <li className="flex items-start gap-2">
-            <CheckCircleIcon className="h-3.5 w-3.5 text-violet-400 shrink-0 mt-0.5" />
+            <CheckCircleIcon className="h-3.5 w-3.5 text-zinc-500 shrink-0 mt-0.5" />
             <span><span className="font-semibold text-zinc-100">Approval-only contract.</span> AGI proposes; humans approve. Every change audited.</span>
           </li>
           <li className="flex items-start gap-2">
-            <CheckCircleIcon className="h-3.5 w-3.5 text-violet-400 shrink-0 mt-0.5" />
+            <CheckCircleIcon className="h-3.5 w-3.5 text-zinc-500 shrink-0 mt-0.5" />
             <span><span className="font-semibold text-zinc-100">VS Code + JetBrains plugins.</span> Same surface inside the editor (roadmap).</span>
           </li>
           <li className="flex items-start gap-2">
-            <CheckCircleIcon className="h-3.5 w-3.5 text-violet-400 shrink-0 mt-0.5" />
+            <CheckCircleIcon className="h-3.5 w-3.5 text-zinc-500 shrink-0 mt-0.5" />
             <span><span className="font-semibold text-zinc-100">Reasoning, not noise.</span> AI explains every flagged item with linked evidence.</span>
           </li>
         </ul>
@@ -161,18 +161,18 @@ export default async function EngineerWorkspacePage() {
 
       {/* Bottom links */}
       <section className="mt-8 grid sm:grid-cols-3 gap-3">
-        <Link href="/dashboard/connector-store" className="block rounded-xl border border-white/[0.06] bg-white/[0.02] p-4 hover:border-violet-500/25 transition-colors">
-          <PlayCircleIcon className="h-4 w-4 text-violet-400 mb-2" />
+        <Link href="/dashboard/connector-store" className="block rounded-xl border border-white/[0.06] bg-white/[0.02] p-4 hover:border-white/[0.10] transition-colors">
+          <PlayCircleIcon className="h-4 w-4 text-zinc-500 mb-2" />
           <p className="text-sm font-semibold text-white">Connector store</p>
           <p className="text-[11px] text-zinc-500 mt-1">One-click connect every tool you already use.</p>
         </Link>
-        <Link href="/dashboard/observability" className="block rounded-xl border border-white/[0.06] bg-white/[0.02] p-4 hover:border-violet-500/25 transition-colors">
-          <SignalIcon className="h-4 w-4 text-violet-400 mb-2" />
+        <Link href="/dashboard/observability" className="block rounded-xl border border-white/[0.06] bg-white/[0.02] p-4 hover:border-white/[0.10] transition-colors">
+          <SignalIcon className="h-4 w-4 text-zinc-500 mb-2" />
           <p className="text-sm font-semibold text-white">Observability</p>
           <p className="text-[11px] text-zinc-500 mt-1">Service health + telemetry sources.</p>
         </Link>
-        <Link href="/download" className="block rounded-xl border border-white/[0.06] bg-white/[0.02] p-4 hover:border-violet-500/25 transition-colors">
-          <ComputerDesktopIcon className="h-4 w-4 text-violet-400 mb-2" />
+        <Link href="/download" className="block rounded-xl border border-white/[0.06] bg-white/[0.02] p-4 hover:border-white/[0.10] transition-colors">
+          <ComputerDesktopIcon className="h-4 w-4 text-zinc-500 mb-2" />
           <p className="text-sm font-semibold text-white">Desktop app</p>
           <p className="text-[11px] text-zinc-500 mt-1">macOS / Win / Linux local runtime.</p>
         </Link>
@@ -213,7 +213,7 @@ function Lane({
       </div>
       <Link
         href={ctaHref}
-        className="mt-3 inline-flex items-center gap-1 text-[11.5px] text-violet-300 hover:text-violet-200 self-end"
+        className="mt-3 inline-flex items-center gap-1 text-[11.5px] text-zinc-300 hover:text-white self-end"
       >
         Configure <ArrowRightIcon className="h-3 w-3" />
       </Link>

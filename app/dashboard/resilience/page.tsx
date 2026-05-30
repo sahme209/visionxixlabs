@@ -450,15 +450,15 @@ export default function ResilienceDashboard() {
               <div className="glass-card animated-border card-inner-glow card-hover rounded-2xl p-6">
                 <h2 className="text-[15px] font-semibold text-white mb-4 tracking-[-0.04em]">Recommended Setup</h2>
                 <div className="text-sm text-zinc-400 space-y-2">
-                  <div><span className="text-zinc-500">Architecture:</span> <strong className="text-violet-400">{report.recommendedArchitecture.pattern}</strong></div>
-                  <div><span className="text-zinc-500">Standby cloud:</span> <strong className="text-violet-400">{providerFullName(report.recommendedArchitecture.secondaryProvider)}</strong></div>
+                  <div><span className="text-zinc-500">Architecture:</span> <strong className="text-zinc-500">{report.recommendedArchitecture.pattern}</strong></div>
+                  <div><span className="text-zinc-500">Standby cloud:</span> <strong className="text-zinc-500">{providerFullName(report.recommendedArchitecture.secondaryProvider)}</strong></div>
                   <div><span className="text-zinc-500">Recovery time:</span> <strong className="text-zinc-200">{report.rto}</strong></div>
                   <div><span className="text-zinc-500">Data recovery:</span> <strong className="text-zinc-200">{report.rpo}</strong></div>
                   <div><span className="text-zinc-500">Additional cost:</span> <strong className="text-zinc-200">{report.estimatedCostImpact.additionalMonthlyCost != null ? `+$${report.estimatedCostImpact.additionalMonthlyCost.toLocaleString()}/mo` : `+${report.estimatedCostImpact.percentIncrease}%`}</strong></div>
                 </div>
                 <div className="mt-3.5 flex flex-wrap gap-1.5">
                   {report.recommendedArchitecture.components.map((c, i) => (
-                    <span key={i} className="huly-badge text-violet-400">{c}</span>
+                    <span key={i} className="huly-badge text-zinc-500">{c}</span>
                   ))}
                 </div>
               </div>
@@ -490,7 +490,7 @@ export default function ResilienceDashboard() {
                 <div key={i} className={`flex gap-3 py-2.5 ${i < report.nextSteps.length - 1 ? "border-b border-white/[0.06]" : ""}`}>
                   <span className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-semibold shrink-0 ${
                     i === 0
-                      ? "bg-violet-500/15 border border-violet-500/30 text-violet-400"
+                      ? "bg-violet-500/15 border border-white/[0.12] text-zinc-500"
                       : "bg-white/[0.04] text-zinc-500"
                   }`}>{i + 1}</span>
                   <span className="text-sm text-zinc-300">{step}</span>
@@ -654,7 +654,7 @@ export default function ResilienceDashboard() {
             <button
               onClick={() => { setReport(null); setTfJob(null); setTfError(null); setPlanOutput(null); setConfirmInput(""); runAnalysis(); }}
               disabled={analyzing}
-              className="btn-huly px-5 py-2 text-sm font-medium text-zinc-500 bg-transparent border border-white/[0.06] rounded-lg hover:text-violet-400 hover:border-violet-500/20 transition-colors"
+              className="btn-huly px-5 py-2 text-sm font-medium text-zinc-500 bg-transparent border border-white/[0.06] rounded-lg hover:text-zinc-500 hover:border-white/[0.08] transition-colors"
             >
               {analyzing ? "Analyzing..." : "Re-run analysis"}
             </button>

@@ -77,7 +77,7 @@ export default async function EngineerDetailPage({ params }: { params: Promise<{
   return (
     <div className="relative">
       <div className="mb-6">
-        <Link href="/dashboard/workforce" className="text-[11px] text-violet-300 hover:text-violet-200 inline-flex items-center gap-1">
+        <Link href="/dashboard/workforce" className="text-[11px] text-zinc-300 hover:text-white inline-flex items-center gap-1">
           <ArrowRightIcon className="h-3 w-3 rotate-180" />
           Back to Workforce
         </Link>
@@ -85,15 +85,15 @@ export default async function EngineerDetailPage({ params }: { params: Promise<{
 
       <div className="mb-8">
         <div className="flex items-center gap-3 mb-3">
-          <UserGroupIcon className="h-4 w-4 text-violet-400" />
-          <p className="text-[10px] font-semibold text-violet-400 uppercase tracking-widest">Engineer · {engineer.department}</p>
+          <UserGroupIcon className="h-4 w-4 text-zinc-500" />
+          <p className="text-[10px] font-semibold text-zinc-500 uppercase tracking-widest">Engineer · {engineer.department}</p>
         </div>
         <h1 className="text-3xl md:text-4xl font-bold text-white tracking-[-0.04em] mb-2">{engineer.displayName}</h1>
         <p className="text-[15px] text-zinc-400 max-w-3xl leading-relaxed">{engineer.role}</p>
       </div>
 
       {/* Approval rule strip */}
-      <section className="rounded-2xl border border-violet-500/15 bg-violet-500/[0.03] p-5 mb-6">
+      <section className="rounded-2xl border border-violet-500/15 bg-white/[0.015] p-5 mb-6">
         <header className="flex items-center gap-2 mb-3 flex-wrap">
           <ShieldCheckIcon className="h-4 w-4 text-violet-300" />
           <p className="text-[10px] font-semibold uppercase tracking-widest text-violet-300">Approval rule in this workspace</p>
@@ -126,7 +126,7 @@ export default async function EngineerDetailPage({ params }: { params: Promise<{
             )}
             <Link
               href={`/dashboard/workforce/${engineer.id}/edit`}
-              className="inline-flex items-center gap-1.5 text-[12px] font-medium px-3 py-1.5 rounded-lg bg-violet-500/15 text-violet-100 border border-violet-500/30 hover:bg-violet-500/25 transition"
+              className="inline-flex items-center gap-1.5 text-[12px] font-medium px-3 py-1.5 rounded-lg bg-violet-500/15 text-violet-100 border border-white/[0.12] hover:bg-violet-500/25 transition"
             >
               Tighten rule
               <ArrowRightIcon className="h-3 w-3" />
@@ -160,7 +160,7 @@ export default async function EngineerDetailPage({ params }: { params: Promise<{
             </span>
           )}
           {engineer.ideExposed && (
-            <span className="inline-flex items-center gap-1 rounded-full border border-violet-500/30 bg-violet-500/10 text-violet-300 px-2 py-0.5">
+            <span className="inline-flex items-center gap-1 rounded-full border border-white/[0.12] bg-violet-500/10 text-violet-300 px-2 py-0.5">
               <CodeBracketIcon className="h-3 w-3" /> ide
             </span>
           )}
@@ -224,18 +224,18 @@ export default async function EngineerDetailPage({ params }: { params: Promise<{
       </section>
 
       <section className="mt-6 grid sm:grid-cols-3 gap-3">
-        <Link href="/dashboard/agent-tools" className="block rounded-xl border border-white/[0.06] bg-white/[0.02] p-4 hover:border-violet-500/25 transition-colors">
-          <ShieldCheckIcon className="h-4 w-4 text-violet-400 mb-2" />
+        <Link href="/dashboard/agent-tools" className="block rounded-xl border border-white/[0.06] bg-white/[0.02] p-4 hover:border-white/[0.10] transition-colors">
+          <ShieldCheckIcon className="h-4 w-4 text-zinc-500 mb-2" />
           <p className="text-sm font-semibold text-white">Agent tool access matrix</p>
           <p className="text-[11px] text-zinc-500 mt-1">Per-action read / write / approval rules.</p>
         </Link>
-        <Link href="/dashboard/approvals" className="block rounded-xl border border-white/[0.06] bg-white/[0.02] p-4 hover:border-violet-500/25 transition-colors">
-          <PuzzlePieceIcon className="h-4 w-4 text-violet-400 mb-2" />
+        <Link href="/dashboard/approvals" className="block rounded-xl border border-white/[0.06] bg-white/[0.02] p-4 hover:border-white/[0.10] transition-colors">
+          <PuzzlePieceIcon className="h-4 w-4 text-zinc-500 mb-2" />
           <p className="text-sm font-semibold text-white">Approvals queue</p>
           <p className="text-[11px] text-zinc-500 mt-1">Where this engineer's actions stage.</p>
         </Link>
-        <Link href="/dashboard/audit" className="block rounded-xl border border-white/[0.06] bg-white/[0.02] p-4 hover:border-violet-500/25 transition-colors">
-          <CheckCircleIcon className="h-4 w-4 text-violet-400 mb-2" />
+        <Link href="/dashboard/audit" className="block rounded-xl border border-white/[0.06] bg-white/[0.02] p-4 hover:border-white/[0.10] transition-colors">
+          <CheckCircleIcon className="h-4 w-4 text-zinc-500 mb-2" />
           <p className="text-sm font-semibold text-white">Audit log</p>
           <p className="text-[11px] text-zinc-500 mt-1">Every gate decision recorded.</p>
         </Link>

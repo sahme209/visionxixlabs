@@ -79,7 +79,7 @@ export default function TrustCenterPage() {
           const Icon = kpi.icon;
           const toneClass =
             kpi.tone === "emerald" ? "text-emerald-300 bg-emerald-500/10 border-emerald-500/20" :
-            kpi.tone === "violet"  ? "text-violet-300 bg-violet-500/10 border-violet-500/20" :
+            kpi.tone === "violet"  ? "text-violet-300 bg-violet-500/10 border-white/[0.08]" :
             kpi.tone === "cyan"    ? "text-cyan-300 bg-cyan-500/10 border-cyan-500/20" :
                                      "text-amber-300 bg-amber-500/10 border-amber-500/20";
           return (

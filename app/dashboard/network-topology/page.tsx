@@ -248,7 +248,7 @@ export default function NetworkTopologyPage() {
                               onMouseLeave={() => setHoverVpc(null)}
                               className={`rounded-lg border p-2.5 transition cursor-default ${
                                 isHovered
-                                  ? "border-violet-400/60 bg-violet-500/[0.06]"
+                                  ? "border-violet-400/60 bg-white/[0.025]"
                                   : v.internetFacing
                                     ? "border-rose-500/30 bg-rose-500/[0.04]"
                                     : "border-white/[0.08] bg-black/20"
@@ -263,7 +263,7 @@ export default function NetworkTopologyPage() {
                                     </span>
                                   )}
                                   {peerCount > 0 && (
-                                    <span className="text-[8.5px] font-mono uppercase tracking-wider px-1 py-px rounded bg-violet-500/15 text-violet-300 border border-violet-500/30">
+                                    <span className="text-[8.5px] font-mono uppercase tracking-wider px-1 py-px rounded bg-violet-500/15 text-violet-300 border border-white/[0.12]">
                                       ⇄ {peerCount}
                                     </span>
                                   )}
@@ -323,7 +323,7 @@ function Stat({
     emerald: "border-emerald-500/[0.18] bg-emerald-500/[0.03] text-emerald-200",
     amber:   "border-amber-500/[0.18] bg-amber-500/[0.03] text-amber-200",
     rose:    "border-rose-500/[0.18] bg-rose-500/[0.03] text-rose-200",
-    violet:  "border-violet-500/[0.18] bg-violet-500/[0.03] text-violet-200",
+    violet:  "border-white/[0.06] bg-white/[0.015] text-white",
     indigo:  "border-indigo-500/[0.18] bg-indigo-500/[0.03] text-indigo-200",
     zinc:    "border-white/[0.06] bg-white/[0.02] text-zinc-200",
   }[tone];

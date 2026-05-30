@@ -288,10 +288,10 @@ export default function ReliabilityCenterPage() {
         <div className="mb-8 rounded-2xl border border-white/[0.06] bg-white/[0.02] overflow-hidden">
           <div className="px-5 py-3 border-b border-white/[0.06] flex items-center justify-between flex-wrap gap-2">
             <div className="flex items-center gap-2">
-              <ClockIcon className="h-4 w-4 text-violet-400" />
+              <ClockIcon className="h-4 w-4 text-zinc-500" />
               <p className="text-[11px] font-semibold text-zinc-300 uppercase tracking-widest">Workflows needing attention</p>
             </div>
-            <Link href="/dashboard/workflows" className="text-[11px] font-semibold text-violet-300 hover:text-violet-200">View all <ArrowRightIcon className="inline h-3 w-3 ml-0.5 -mt-0.5" /></Link>
+            <Link href="/dashboard/workflows" className="text-[11px] font-semibold text-zinc-300 hover:text-white">View all <ArrowRightIcon className="inline h-3 w-3 ml-0.5 -mt-0.5" /></Link>
           </div>
           <div className="p-3 space-y-2">
             {posture.actionableDiagnoses.length === 0 ? (

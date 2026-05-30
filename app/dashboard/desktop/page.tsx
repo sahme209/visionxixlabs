@@ -267,14 +267,14 @@ export default function DesktopDashboardPage() {
 
           {/* Safe next action */}
           {state.safeNextAction && (
-            <section className="mb-8 flex items-center justify-between rounded-2xl border border-violet-500/15 bg-violet-500/[0.04] p-5 gap-3">
+            <section className="mb-8 flex items-center justify-between rounded-2xl border border-violet-500/15 bg-white/[0.015] p-5 gap-3">
               <div>
                 <p className="text-[11px] font-mono text-violet-300/80 uppercase tracking-[0.18em] mb-1">// next safe step</p>
                 <p className="text-[13px] text-white font-semibold">{state.safeNextAction.label}</p>
               </div>
               <Link
                 href={state.safeNextAction.href}
-                className="inline-flex items-center gap-1.5 text-[12px] font-medium text-violet-200 hover:text-white border border-violet-500/30 hover:border-violet-500/50 bg-violet-500/[0.06] rounded-md px-3 py-1.5 transition-colors"
+                className="inline-flex items-center gap-1.5 text-[12px] font-medium text-white hover:text-white border border-white/[0.12] hover:border-violet-500/50 bg-white/[0.025] rounded-md px-3 py-1.5 transition-colors"
               >
                 Open <ArrowRightIcon className="h-3 w-3" />
               </Link>

@@ -84,8 +84,8 @@ export default function ConnectorStorePage() {
       {/* Hero */}
       <div className="mb-8">
         <div className="flex items-center gap-3 mb-3">
-          <PuzzlePieceIcon className="h-4 w-4 text-violet-400" />
-          <p className="text-[10px] font-semibold text-violet-400 uppercase tracking-widest">Connector store</p>
+          <PuzzlePieceIcon className="h-4 w-4 text-zinc-500" />
+          <p className="text-[10px] font-semibold text-zinc-500 uppercase tracking-widest">Connector store</p>
         </div>
         <h1 className="text-3xl md:text-4xl font-bold text-white tracking-[-0.04em] mb-2">
           Connect everything. <span className="text-gradient">One click.</span>
@@ -128,7 +128,7 @@ export default function ConnectorStorePage() {
         })}
       </div>
 
-      <section className="mt-12 rounded-2xl border border-violet-500/15 bg-violet-500/[0.03] p-5 flex items-start gap-3">
+      <section className="mt-12 rounded-2xl border border-violet-500/15 bg-white/[0.015] p-5 flex items-start gap-3">
         <SparklesIcon className="h-5 w-5 text-violet-300 mt-0.5 shrink-0" />
         <div>
           <p className="text-[13px] font-semibold text-violet-100 leading-snug">Don't see what you need?</p>
@@ -136,7 +136,7 @@ export default function ConnectorStorePage() {
             Tell us which connector to ship next.
             We prioritize the registry based on customer demand — every request joins the public roadmap with an ETA. The native ingestion path (HTTP pinger, webhook ingest, desktop agent) also lets you wire anything that speaks HTTP without waiting on a dedicated connector.
           </p>
-          <Link href="/contact?ref=connector-request" className="mt-3 inline-flex items-center gap-1.5 text-[12px] text-violet-300 hover:text-violet-200">
+          <Link href="/contact?ref=connector-request" className="mt-3 inline-flex items-center gap-1.5 text-[12px] text-zinc-300 hover:text-white">
             Request a connector <ArrowRightIcon className="h-3 w-3" />
           </Link>
         </div>
@@ -150,7 +150,7 @@ function ConnectorCard({ record }: { record: ConnectorRecord }) {
   const isLive = record.status === "live" || record.status === "preview";
 
   return (
-    <article className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4 flex flex-col hover:border-violet-500/30 transition">
+    <article className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4 flex flex-col hover:border-white/[0.12] transition">
       <header className="flex items-start justify-between gap-3 mb-2">
         <div className="min-w-0">
           <p className="text-[13px] font-semibold text-white truncate">{record.name}</p>
@@ -177,7 +177,7 @@ function ConnectorCard({ record }: { record: ConnectorRecord }) {
         {one.ready ? (
           <Link
             href={record.setupRoute ?? "/dashboard/connectors"}
-            className="inline-flex items-center gap-1.5 text-[12px] font-medium px-3 py-1.5 rounded-lg bg-violet-500/15 text-violet-100 border border-violet-500/30 hover:bg-violet-500/25 transition"
+            className="inline-flex items-center gap-1.5 text-[12px] font-medium px-3 py-1.5 rounded-lg bg-violet-500/15 text-violet-100 border border-white/[0.12] hover:bg-violet-500/25 transition"
           >
             <CheckCircleIcon className="h-3.5 w-3.5" />
             {one.buttonLabel}

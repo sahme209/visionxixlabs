@@ -237,7 +237,7 @@ function SyncControls({ repositoryId }: { repositoryId: string }) {
           type="button"
           disabled={isRunning}
           onClick={() => trigger(k)}
-          className="px-2 py-1 rounded border border-white/[0.08] bg-white/[0.02] text-zinc-300 hover:border-violet-500/40 hover:text-violet-200 disabled:opacity-50 disabled:cursor-wait transition-colors"
+          className="px-2 py-1 rounded border border-white/[0.08] bg-white/[0.02] text-zinc-300 hover:border-white/[0.15] hover:text-white disabled:opacity-50 disabled:cursor-wait transition-colors"
         >
           {outcome.kind === "running" && outcome.which === k
             ? "syncing…"
@@ -333,7 +333,7 @@ function NewRepositoryPanel({ onCreated }: { onCreated: () => void }) {
         <button
           type="button"
           onClick={() => setState({ kind: "open" })}
-          className="px-3 py-1.5 rounded-lg border border-violet-500/30 bg-violet-500/[0.06] text-[12px] font-semibold text-violet-200 hover:bg-violet-500/[0.12] transition-colors"
+          className="px-3 py-1.5 rounded-lg border border-white/[0.12] bg-white/[0.025] text-[12px] font-semibold text-white hover:bg-violet-500/[0.12] transition-colors"
         >
           + Register repository
         </button>
@@ -343,7 +343,7 @@ function NewRepositoryPanel({ onCreated }: { onCreated: () => void }) {
 
   const busy = state.kind === "submitting";
   return (
-    <div className="mb-6 rounded-2xl border border-violet-500/[0.18] bg-violet-500/[0.03] p-5">
+    <div className="mb-6 rounded-2xl border border-white/[0.06] bg-white/[0.015] p-5">
       <div className="flex items-center justify-between mb-3">
         <p className="text-[13px] font-semibold text-violet-100">New repository</p>
         <button type="button" onClick={reset} className="text-[11px] font-mono text-zinc-400 hover:text-zinc-200" disabled={busy}>cancel</button>

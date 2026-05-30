@@ -149,7 +149,7 @@ export default async function SubToolDetailPage({ params }: Params) {
                   <li key={r.href}>
                     <Link
                       href={r.href}
-                      className="flex items-center justify-between gap-2 rounded-lg border border-white/[0.04] bg-white/[0.02] px-3 py-2 hover:border-violet-500/30 hover:bg-white/[0.04] transition"
+                      className="flex items-center justify-between gap-2 rounded-lg border border-white/[0.04] bg-white/[0.02] px-3 py-2 hover:border-white/[0.12] hover:bg-white/[0.04] transition"
                     >
                       <span className="text-[12.5px] text-zinc-200">{r.label}</span>
                       <ArrowTopRightOnSquareIcon className="h-3 w-3 text-zinc-500" />
@@ -290,7 +290,7 @@ export default async function SubToolDetailPage({ params }: Params) {
                   <li key={r.id} className="rounded-lg border border-white/[0.04] bg-white/[0.02] px-3 py-2">
                     <div className="flex items-start justify-between gap-3 flex-wrap">
                       <p className="text-[12.5px] font-medium text-white">{r.scriptName}</p>
-                      <span className="text-[10px] font-mono uppercase tracking-widest px-2 py-0.5 rounded-full border border-violet-500/30 bg-violet-500/10 text-violet-300 whitespace-nowrap">
+                      <span className="text-[10px] font-mono uppercase tracking-widest px-2 py-0.5 rounded-full border border-white/[0.12] bg-violet-500/10 text-violet-300 whitespace-nowrap">
                         {r.status.replace("_", " ")}
                       </span>
                     </div>
@@ -405,7 +405,7 @@ function Panel({
         {link ? (
           <Link
             href={link.href}
-            className="inline-flex items-center gap-1 text-[11px] text-violet-300 hover:text-violet-200 transition"
+            className="inline-flex items-center gap-1 text-[11px] text-zinc-300 hover:text-white transition"
           >
             {link.label}
             <ArrowRightIcon className="h-3 w-3" />

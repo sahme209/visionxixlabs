@@ -193,7 +193,7 @@ function CheckRow({ result }: { result: CheckResult }) {
             <span className={`text-[9px] font-bold uppercase tracking-wider border rounded-full px-1.5 py-px ${sev}`}>{result.severity}</span>
             <span className="text-[9px] font-bold uppercase tracking-wider border border-white/[0.08] bg-white/[0.04] text-zinc-400 rounded-full px-1.5 py-px">{result.scope.replace("_", " ")}</span>
             {result.provider && (
-              <span className="text-[9px] font-bold uppercase tracking-wider border border-violet-500/20 bg-violet-500/10 text-violet-300 rounded-full px-1.5 py-px">{result.provider}</span>
+              <span className="text-[9px] font-bold uppercase tracking-wider border border-white/[0.08] bg-violet-500/10 text-violet-300 rounded-full px-1.5 py-px">{result.provider}</span>
             )}
             {result.source === "preview" && (
               <span className="text-[9px] font-bold uppercase tracking-wider border border-amber-500/25 bg-amber-500/10 text-amber-300 rounded-full px-1.5 py-px">preview</span>

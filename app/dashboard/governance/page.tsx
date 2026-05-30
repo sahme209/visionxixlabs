@@ -42,7 +42,7 @@ const CATEGORY_COLOR: Record<PolicyCategory, string> = {
   cost: "text-emerald-400 bg-emerald-500/10 border-emerald-500/20",
   compliance: "text-cyan-400 bg-cyan-500/10 border-cyan-500/20",
   reliability: "text-amber-400 bg-amber-500/10 border-amber-500/20",
-  release_governance: "text-violet-400 bg-violet-500/10 border-violet-500/20",
+  release_governance: "text-zinc-500 bg-violet-500/10 border-white/[0.08]",
   execution_safety: "text-amber-400 bg-amber-500/10 border-amber-500/20",
   desktop_execution: "text-blue-400 bg-blue-500/10 border-blue-500/20",
   access_control: "text-red-400 bg-red-500/10 border-red-500/20",
@@ -64,7 +64,7 @@ export default function GovernancePage() {
             <p className="text-[10px] font-semibold text-emerald-400 uppercase tracking-widest">
               Governance Control Center
             </p>
-            <span className="text-[9px] font-semibold text-violet-400 bg-violet-500/15 border border-violet-500/30 rounded-full px-2 py-0.5 uppercase tracking-wider">
+            <span className="text-[9px] font-semibold text-zinc-500 bg-violet-500/15 border border-white/[0.12] rounded-full px-2 py-0.5 uppercase tracking-wider">
               Enterprise · Human-in-the-loop
             </span>
           </div>
@@ -80,7 +80,7 @@ export default function GovernancePage() {
       {/* Autonomy level + KPIs */}
       <Stagger delay={0.05} interval={0.05} className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
         {[
-          { label: "Current autonomy", value: `Level ${CURRENT_LEVEL}`, sub: AUTONOMY_LEVELS[CURRENT_LEVEL].name, icon: LockClosedIcon, color: "text-violet-400", bg: "bg-violet-500/10 border-violet-500/20" },
+          { label: "Current autonomy", value: `Level ${CURRENT_LEVEL}`, sub: AUTONOMY_LEVELS[CURRENT_LEVEL].name, icon: LockClosedIcon, color: "text-zinc-500", bg: "bg-violet-500/10 border-white/[0.08]" },
           { label: "Active policy pack", value: ACTIVE_POLICY_PACK, sub: `${DEFAULT_POLICY_PACK.length} rules · ${DEFAULT_POLICY_PACK.filter((r) => r.enabled).length} active`, icon: DocumentCheckIcon, color: "text-emerald-400", bg: "bg-emerald-500/10 border-emerald-500/20" },
           { label: "Blocked actions", value: "0", sub: "Past 24h · no violations", icon: ShieldExclamationIcon, color: "text-emerald-400", bg: "bg-emerald-500/10 border-emerald-500/20" },
           { label: "Pending policy approvals", value: "3", sub: "1 production · 2 staging", icon: ShieldCheckIcon, color: "text-amber-400", bg: "bg-amber-500/10 border-amber-500/20" },
@@ -102,14 +102,14 @@ export default function GovernancePage() {
       {/* Autonomy ladder */}
       <Reveal direction="up" delay={0.08}>
         <div className="mb-8 rounded-2xl border border-violet-500/15 bg-gradient-to-br from-violet-500/[0.04] via-transparent to-fuchsia-500/[0.03] p-6 relative overflow-hidden">
-          <div className="absolute -top-12 -right-12 w-48 h-48 rounded-full bg-violet-500/[0.06] blur-[60px] pointer-events-none" aria-hidden />
+          <div className="absolute -top-12 -right-12 w-48 h-48 rounded-full bg-white/[0.025] blur-[60px] pointer-events-none" aria-hidden />
           <div className="relative">
             <div className="flex items-center justify-between flex-wrap gap-3 mb-5">
               <div>
-                <p className="text-[10px] font-semibold text-violet-400 uppercase tracking-widest mb-1">Autonomy ladder</p>
+                <p className="text-[10px] font-semibold text-zinc-500 uppercase tracking-widest mb-1">Autonomy ladder</p>
                 <h2 className="text-lg font-bold text-white">Axiom can never silently escalate.</h2>
               </div>
-              <Link href="/docs/approval-workflow" target="_blank" className="text-[11px] font-semibold text-violet-300 hover:text-violet-200 transition-colors">
+              <Link href="/docs/approval-workflow" target="_blank" className="text-[11px] font-semibold text-zinc-300 hover:text-white transition-colors">
                 How autonomy works →
               </Link>
             </div>
@@ -121,14 +121,14 @@ export default function GovernancePage() {
                     key={spec.level}
                     className={`rounded-xl border p-3 transition-all ${
                       isCurrent
-                        ? "border-violet-500/40 bg-violet-500/[0.06] shadow-[0_0_20px_rgba(139,92,246,0.15)]"
+                        ? "border-violet-500/40 bg-white/[0.025] shadow-[0_0_20px_rgba(139,92,246,0.15)]"
                         : "border-white/[0.06] bg-white/[0.02]"
                     }`}
                   >
                     <div className="flex items-center justify-between mb-1">
                       <div className="flex items-center gap-2">
                         <span className={`text-[9px] font-bold uppercase tracking-wider px-1.5 py-px rounded-full border ${
-                          isCurrent ? "text-violet-300 bg-violet-500/15 border-violet-500/30" : "text-zinc-500 bg-white/[0.04] border-white/[0.06]"
+                          isCurrent ? "text-violet-300 bg-violet-500/15 border-white/[0.12]" : "text-zinc-500 bg-white/[0.04] border-white/[0.06]"
                         }`}>
                           Level {spec.level}
                         </span>
@@ -171,7 +171,7 @@ export default function GovernancePage() {
               <p className="text-[10px] font-semibold text-zinc-500 uppercase tracking-widest mb-1">Policy rules</p>
               <h2 className="text-xl font-bold text-white">{DEFAULT_POLICY_PACK.length} rules across {Object.keys(policiesByCategory).length} categories.</h2>
             </div>
-            <Link href="/docs/permissions-model" target="_blank" className="text-[11px] font-semibold text-violet-300 hover:text-violet-200 transition-colors">
+            <Link href="/docs/permissions-model" target="_blank" className="text-[11px] font-semibold text-zinc-300 hover:text-white transition-colors">
               Permissions model →
             </Link>
           </div>

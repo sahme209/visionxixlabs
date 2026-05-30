@@ -31,8 +31,8 @@ export default function TopologyPage() {
       <Reveal direction="up" blur>
         <div className="mb-8">
           <div className="flex items-center gap-3 mb-3">
-            <ArrowsPointingOutIcon className="h-4 w-4 text-violet-400" />
-            <p className="text-[10px] font-semibold text-violet-400 uppercase tracking-widest">
+            <ArrowsPointingOutIcon className="h-4 w-4 text-zinc-500" />
+            <p className="text-[10px] font-semibold text-zinc-500 uppercase tracking-widest">
               Infrastructure intelligence
             </p>
           </div>
@@ -58,7 +58,7 @@ export default function TopologyPage() {
                 onClick={() => setOverlay(o.id)}
                 className={`inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-medium transition-all border ${
                   isActive
-                    ? "bg-violet-500/15 border-violet-500/30 text-violet-300 shadow-[0_0_20px_rgba(139,92,246,0.15)]"
+                    ? "bg-violet-500/15 border-white/[0.12] text-violet-300 shadow-[0_0_20px_rgba(139,92,246,0.15)]"
                     : "bg-white/[0.02] border-white/[0.06] text-zinc-400 hover:text-white hover:border-white/[0.12]"
                 }`}
               >
@@ -116,7 +116,7 @@ export default function TopologyPage() {
 
         <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5">
           <div className="flex items-center gap-2 mb-3">
-            <CpuChipIcon className="h-4 w-4 text-violet-400" />
+            <CpuChipIcon className="h-4 w-4 text-zinc-500" />
             <h3 className="text-sm font-semibold text-white">Operational signals</h3>
           </div>
           <div className="space-y-2 text-[11px]">

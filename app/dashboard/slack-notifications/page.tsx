@@ -237,7 +237,7 @@ function ConfigPanel({ current, onSaved }: { current: ConfigView | null; onSaved
   const currentlyConfigured = current !== null && current.webhookUrl.length > 0;
 
   return (
-    <div className="mb-6 rounded-2xl border border-violet-500/[0.18] bg-violet-500/[0.03] p-5">
+    <div className="mb-6 rounded-2xl border border-white/[0.06] bg-white/[0.015] p-5">
       <div className="flex items-center justify-between mb-3">
         <p className="text-[13px] font-semibold text-violet-100">Slack incoming webhook</p>
         {currentlyConfigured && (

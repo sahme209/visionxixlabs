@@ -66,7 +66,7 @@ const KIND_HREF: Record<string, string> = {
 };
 
 const OUTCOME_CLASS: Record<string, string> = {
-  ai_generated:    "bg-violet-500/15 text-violet-300 border-violet-500/25",
+  ai_generated:    "bg-violet-500/15 text-violet-300 border-white/[0.10]",
   fallback_rules:  "bg-amber-500/15 text-amber-300 border-amber-500/25",
   error:           "bg-rose-500/15 text-rose-300 border-rose-500/25",
 };
@@ -200,7 +200,7 @@ function MemoryRow({ entry }: { entry: Entry }) {
   return (
     <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-3">
       <div className="flex items-center gap-2 mb-1.5 flex-wrap">
-        <span className="inline-flex items-center gap-1 text-[10px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border border-violet-500/30 bg-violet-500/[0.10] text-violet-200">
+        <span className="inline-flex items-center gap-1 text-[10px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border border-white/[0.12] bg-white/[0.04] text-white">
           <SparklesIcon className="h-3 w-3" /> {KIND_LABEL[entry.targetKind] ?? entry.targetKind}
         </span>
         <span className={`text-[10px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border ${OUTCOME_CLASS[entry.outcome] ?? OUTCOME_CLASS.error}`}>
@@ -210,7 +210,7 @@ function MemoryRow({ entry }: { entry: Entry }) {
         {entry.modelHint && <span className="text-[10px] font-mono text-zinc-500">model: {entry.modelHint}</span>}
         <span className="text-[10px] font-mono text-zinc-500 ml-auto">{new Date(entry.generatedAtIso).toLocaleString()}</span>
         {href && (
-          <a href={href} className="text-[10.5px] font-mono text-violet-300 hover:text-violet-200">
+          <a href={href} className="text-[10.5px] font-mono text-zinc-300 hover:text-white">
             open →
           </a>
         )}
@@ -271,7 +271,7 @@ function FilterPill({ label, active, onClick }: { label: string; active: boolean
 
 function Stat({ icon: Icon, label, value, tone }: { icon: typeof SparklesIcon; label: string; value: string; tone: "violet" | "amber" | "rose" | "zinc" }) {
   const cls = {
-    violet:  "border-violet-500/[0.18] bg-violet-500/[0.03] text-violet-200",
+    violet:  "border-white/[0.06] bg-white/[0.015] text-white",
     amber:   "border-amber-500/[0.18] bg-amber-500/[0.03] text-amber-200",
     rose:    "border-rose-500/[0.18] bg-rose-500/[0.03] text-rose-200",
     zinc:    "border-white/[0.06] bg-white/[0.02] text-zinc-200",
@@ -332,7 +332,7 @@ function SummaryPanel({ targetKind }: { targetKind?: string }) {
 
   if (!summary) {
     return (
-      <div className="mb-4 rounded-2xl border border-violet-500/[0.20] bg-violet-500/[0.04] p-4 flex items-center justify-between gap-3">
+      <div className="mb-4 rounded-2xl border border-white/[0.08] bg-white/[0.015] p-4 flex items-center justify-between gap-3">
         <div className="flex items-center gap-2">
           <SparklesIcon className="h-4 w-4 text-violet-300" />
           <p className="text-[12.5px] text-violet-100">
@@ -354,9 +354,9 @@ function SummaryPanel({ targetKind }: { targetKind?: string }) {
   }
 
   return (
-    <div className="mb-4 rounded-2xl border border-violet-500/[0.22] bg-violet-500/[0.05] p-4">
+    <div className="mb-4 rounded-2xl border border-white/[0.10] bg-white/[0.02] p-4">
       <div className="flex items-center gap-2 mb-2 flex-wrap">
-        <span className="inline-flex items-center gap-1 text-[10px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border border-violet-500/30 bg-violet-500/[0.10] text-violet-200">
+        <span className="inline-flex items-center gap-1 text-[10px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border border-white/[0.12] bg-white/[0.04] text-white">
           <SparklesIcon className="h-3 w-3" /> AGI meta-summary
         </span>
         <span className={`text-[10px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border ${OUTCOME_CLASS[summary.outcome] ?? OUTCOME_CLASS.error}`}>
@@ -368,7 +368,7 @@ function SummaryPanel({ targetKind }: { targetKind?: string }) {
           type="button"
           onClick={generate}
           disabled={busy}
-          className="ml-auto text-[11px] font-mono text-violet-300 hover:text-violet-200 disabled:opacity-50 disabled:cursor-wait"
+          className="ml-auto text-[11px] font-mono text-zinc-300 hover:text-white disabled:opacity-50 disabled:cursor-wait"
         >
           {busy ? "Regenerating…" : "Regenerate"}
         </button>
@@ -379,7 +379,7 @@ function SummaryPanel({ targetKind }: { targetKind?: string }) {
           <p className="text-[9.5px] font-mono uppercase tracking-wider text-zinc-500 mb-1">Themes</p>
           <ul className="space-y-0.5">
             {summary.themes.map((t, i) => (
-              <li key={i} className="text-[12px] text-zinc-300 flex gap-1.5"><span className="text-violet-400">◉</span><span>{t}</span></li>
+              <li key={i} className="text-[12px] text-zinc-300 flex gap-1.5"><span className="text-zinc-500">◉</span><span>{t}</span></li>
             ))}
           </ul>
         </div>
@@ -500,7 +500,7 @@ function TimelineRow({ entry }: { entry: TimelineSummary }) {
             <p className="text-[9px] font-mono uppercase tracking-wider text-zinc-500 mb-0.5">Themes</p>
             <ul>
               {entry.themes.map((t, i) => (
-                <li key={i} className="text-[11px] text-zinc-300 flex gap-1.5"><span className="text-violet-400">◉</span><span>{t}</span></li>
+                <li key={i} className="text-[11px] text-zinc-300 flex gap-1.5"><span className="text-zinc-500">◉</span><span>{t}</span></li>
               ))}
             </ul>
           </div>
@@ -679,7 +679,7 @@ function ChatPanel({ targetKind }: { targetKind?: string }) {
   }
 
   return (
-    <div className="mb-4 rounded-2xl border border-violet-500/[0.20] bg-violet-500/[0.04] p-4">
+    <div className="mb-4 rounded-2xl border border-white/[0.08] bg-white/[0.015] p-4">
       <div className="flex items-center gap-2 mb-3 flex-wrap">
         <SparklesIcon className="h-4 w-4 text-violet-300" />
         <p className="text-[12.5px] font-semibold text-violet-100">Ask the AGI</p>
@@ -790,7 +790,7 @@ function ChatTurnRow({ turn, onDelete }: { turn: ChatTurn; onDelete?: () => void
                   <span className="text-violet-300 shrink-0">[{c.citationId}]</span>
                   <span className="text-zinc-400 shrink-0">{c.kind === "entry" ? (c.targetKind ?? "?") : `${c.targetKind ?? "all"}-summary`}</span>
                   <span className="text-zinc-300 line-clamp-1 flex-1">{c.narrative}</span>
-                  {href && <a href={href} className="text-violet-300 hover:text-violet-200 shrink-0">open →</a>}
+                  {href && <a href={href} className="text-zinc-300 hover:text-white shrink-0">open →</a>}
                 </div>
               );
             })}

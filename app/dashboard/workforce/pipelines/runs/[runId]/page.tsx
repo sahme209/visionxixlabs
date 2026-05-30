@@ -74,7 +74,7 @@ export default async function PipelineRunPage({ params }: { params: Promise<{ ru
   return (
     <div className="relative max-w-4xl">
       <div className="mb-6">
-        <Link href="/dashboard/workforce/pipelines" className="text-[11px] text-violet-300 hover:text-violet-200 inline-flex items-center gap-1">
+        <Link href="/dashboard/workforce/pipelines" className="text-[11px] text-zinc-300 hover:text-white inline-flex items-center gap-1">
           <ArrowRightIcon className="h-3 w-3 rotate-180" />
           Back to pipelines
         </Link>
@@ -82,8 +82,8 @@ export default async function PipelineRunPage({ params }: { params: Promise<{ ru
 
       <div className="mb-6">
         <div className="flex items-center gap-3 mb-3">
-          <BoltIcon className="h-4 w-4 text-violet-400" />
-          <p className="text-[10px] font-semibold text-violet-400 uppercase tracking-widest">Pipeline run</p>
+          <BoltIcon className="h-4 w-4 text-zinc-500" />
+          <p className="text-[10px] font-semibold text-zinc-500 uppercase tracking-widest">Pipeline run</p>
         </div>
         <h1 className="text-2xl md:text-3xl font-bold text-white tracking-[-0.04em] mb-2">
           {def?.name ?? run.pipelineId} · <span className="text-gradient">{run.status}</span>
@@ -150,7 +150,7 @@ export default async function PipelineRunPage({ params }: { params: Promise<{ ru
                 {s.approvalRequestId && (
                   <Link
                     href={`/dashboard/workforce/approvals/${s.approvalRequestId}`}
-                    className="text-violet-300 hover:text-violet-200 ml-auto"
+                    className="text-zinc-300 hover:text-white ml-auto"
                   >
                     approval · {s.approvalRequestId} →
                   </Link>

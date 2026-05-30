@@ -62,7 +62,7 @@ export default async function EditEngineerPolicyPage({ params }: { params: Promi
   return (
     <div className="relative">
       <div className="mb-6">
-        <Link href={`/dashboard/workforce/${engineer.id}`} className="text-[11px] text-violet-300 hover:text-violet-200 inline-flex items-center gap-1">
+        <Link href={`/dashboard/workforce/${engineer.id}`} className="text-[11px] text-zinc-300 hover:text-white inline-flex items-center gap-1">
           <ArrowRightIcon className="h-3 w-3 rotate-180" />
           Back to engineer
         </Link>
@@ -70,8 +70,8 @@ export default async function EditEngineerPolicyPage({ params }: { params: Promi
 
       <div className="mb-8">
         <div className="flex items-center gap-3 mb-3">
-          <LockClosedIcon className="h-4 w-4 text-violet-400" />
-          <p className="text-[10px] font-semibold text-violet-400 uppercase tracking-widest">Policy override</p>
+          <LockClosedIcon className="h-4 w-4 text-zinc-500" />
+          <p className="text-[10px] font-semibold text-zinc-500 uppercase tracking-widest">Policy override</p>
         </div>
         <h1 className="text-3xl md:text-4xl font-bold text-white tracking-[-0.04em] mb-2">
           Tighten <span className="text-gradient">{engineer.displayName}</span>

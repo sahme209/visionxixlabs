@@ -183,8 +183,8 @@ export default function JobsPage() {
       <Reveal direction="up" blur>
         <div className="mb-8">
           <div className="flex items-center gap-3 mb-3">
-            <CpuChipIcon className="h-4 w-4 text-violet-400" />
-            <p className="text-[10px] font-semibold text-violet-400 uppercase tracking-widest">
+            <CpuChipIcon className="h-4 w-4 text-zinc-500" />
+            <p className="text-[10px] font-semibold text-zinc-500 uppercase tracking-widest">
               Agent Jobs · Durable operational work
             </p>
             <span className="text-[9px] font-semibold text-emerald-400 bg-emerald-500/15 border border-emerald-500/30 rounded-full px-2 py-0.5 uppercase tracking-wider">
@@ -233,7 +233,7 @@ export default function JobsPage() {
                 onClick={() => setFilter(f.id)}
                 className={`inline-flex items-center px-3.5 py-1.5 rounded-full text-xs font-medium transition-all border ${
                   isActive
-                    ? "bg-violet-500/15 border-violet-500/30 text-violet-300 shadow-[0_0_20px_rgba(139,92,246,0.15)]"
+                    ? "bg-violet-500/15 border-white/[0.12] text-violet-300 shadow-[0_0_20px_rgba(139,92,246,0.15)]"
                     : "bg-white/[0.02] border-white/[0.06] text-zinc-400 hover:text-white hover:border-white/[0.12]"
                 }`}
               >
@@ -382,7 +382,7 @@ function JobRow({ job }: { job: AgentJob }) {
         {/* Quick actions */}
         <div className="flex items-center gap-2 shrink-0">
           {job.relatedWorkflowId && (
-            <Link href="/dashboard/workflows" className="text-[11px] text-violet-400 hover:text-violet-300 transition-colors font-semibold">
+            <Link href="/dashboard/workflows" className="text-[11px] text-zinc-500 hover:text-violet-300 transition-colors font-semibold">
               Workflow
             </Link>
           )}

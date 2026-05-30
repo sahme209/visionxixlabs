@@ -279,7 +279,7 @@ export default function ModulesPage() {
           return (
             <article
               key={m.id}
-              className="rounded-2xl border border-white/[0.06] bg-white/[0.015] p-5 md:p-6 hover:border-violet-500/30 hover:bg-white/[0.025] transition flex flex-col"
+              className="rounded-2xl border border-white/[0.06] bg-white/[0.015] p-5 md:p-6 hover:border-white/[0.12] hover:bg-white/[0.025] transition flex flex-col"
             >
               <header className="flex items-start justify-between gap-3">
                 <div className="flex items-center gap-3">
@@ -315,7 +315,7 @@ export default function ModulesPage() {
                       <Link
                         key={r.href}
                         href={r.href}
-                        className="inline-flex items-center gap-1 rounded-full border border-white/[0.06] bg-white/[0.02] px-2.5 py-0.5 text-[11px] text-zinc-300 hover:text-white hover:border-violet-500/40 transition"
+                        className="inline-flex items-center gap-1 rounded-full border border-white/[0.06] bg-white/[0.02] px-2.5 py-0.5 text-[11px] text-zinc-300 hover:text-white hover:border-white/[0.15] transition"
                       >
                         {r.label}
                       </Link>
@@ -364,7 +364,7 @@ export default function ModulesPage() {
               <div className="mt-auto pt-5 flex items-center justify-between">
                 <Link
                   href={m.entryRoute}
-                  className="inline-flex items-center gap-1.5 text-[12.5px] font-medium text-violet-300 hover:text-violet-200 transition"
+                  className="inline-flex items-center gap-1.5 text-[12.5px] font-medium text-zinc-300 hover:text-white transition"
                 >
                   Open module
                   <ArrowRightIcon className="h-3.5 w-3.5" />

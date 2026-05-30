@@ -74,7 +74,7 @@ export default async function PipelinesPage() {
   return (
     <div className="relative">
       <div className="mb-6">
-        <Link href="/dashboard/workforce" className="text-[11px] text-violet-300 hover:text-violet-200 inline-flex items-center gap-1">
+        <Link href="/dashboard/workforce" className="text-[11px] text-zinc-300 hover:text-white inline-flex items-center gap-1">
           <ArrowRightIcon className="h-3 w-3 rotate-180" />
           Back to Workforce
         </Link>
@@ -82,8 +82,8 @@ export default async function PipelinesPage() {
 
       <div className="mb-8">
         <div className="flex items-center gap-3 mb-3">
-          <BoltIcon className="h-4 w-4 text-violet-400" />
-          <p className="text-[10px] font-semibold text-violet-400 uppercase tracking-widest">Pipelines</p>
+          <BoltIcon className="h-4 w-4 text-zinc-500" />
+          <p className="text-[10px] font-semibold text-zinc-500 uppercase tracking-widest">Pipelines</p>
         </div>
         <h1 className="text-3xl md:text-4xl font-bold text-white tracking-[-0.04em] mb-2">
           Ship. <span className="text-gradient">Without holding your breath.</span>
@@ -107,7 +107,7 @@ export default async function PipelinesPage() {
           const Icon = meta.icon;
           const totalSeconds = p.stages.reduce((acc, s) => acc + s.expectedDurationSeconds, 0);
           return (
-            <article key={p.id} className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 hover:border-violet-500/25 transition-colors">
+            <article key={p.id} className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 hover:border-white/[0.10] transition-colors">
               <header className="flex items-center gap-2 mb-2 flex-wrap">
                 <Icon className={`h-4 w-4 ${meta.tone}`} />
                 <p className={`text-[10px] font-mono uppercase tracking-wider ${meta.tone}`}>{meta.label}</p>
@@ -162,7 +162,7 @@ export default async function PipelinesPage() {
               <Link
                 key={r.id}
                 href={`/dashboard/workforce/pipelines/runs/${r.id}`}
-                className="block rounded-xl border border-white/[0.06] bg-white/[0.02] px-4 py-3 hover:border-violet-500/25 transition-colors"
+                className="block rounded-xl border border-white/[0.06] bg-white/[0.02] px-4 py-3 hover:border-white/[0.10] transition-colors"
               >
                 <div className="flex items-center justify-between gap-3 flex-wrap mb-1">
                   <p className="text-[12px] font-semibold text-white truncate">

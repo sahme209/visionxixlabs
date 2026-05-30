@@ -148,12 +148,12 @@ export default function SetupPage() {
       {!loading && !error && report && (
         <>
           {/* Next action callout */}
-          <div className="rounded-2xl border border-violet-500/15 bg-violet-500/[0.04] p-5 mb-8 flex items-center justify-between gap-3 flex-wrap">
+          <div className="rounded-2xl border border-violet-500/15 bg-white/[0.015] p-5 mb-8 flex items-center justify-between gap-3 flex-wrap">
             <div className="min-w-0">
               <p className="text-[10px] font-mono text-violet-300/80 uppercase tracking-[0.18em] mb-1">// recommended next step</p>
               <p className="text-[14px] text-white font-semibold leading-snug">{report.safeNextAction.label}</p>
             </div>
-            <Link href={report.safeNextAction.href} className="inline-flex items-center gap-1.5 text-[12px] font-medium text-violet-200 hover:text-violet-100 border border-violet-500/30 hover:border-violet-500/50 bg-violet-500/[0.06] rounded-md px-3 py-1.5 transition-colors">
+            <Link href={report.safeNextAction.href} className="inline-flex items-center gap-1.5 text-[12px] font-medium text-white hover:text-violet-100 border border-white/[0.12] hover:border-violet-500/50 bg-white/[0.025] rounded-md px-3 py-1.5 transition-colors">
               {report.safeNextAction.label}
               <ArrowRightIcon className="h-3 w-3" />
             </Link>

@@ -320,7 +320,7 @@ const CATEGORY_META: Record<
 
 const STATUS_STYLE: Record<ConnectorStatus, { tone: string; label: string }> = {
   connected:   { tone: "border-emerald-500/30 bg-emerald-500/10 text-emerald-300", label: "Connected"   },
-  available:   { tone: "border-violet-500/30  bg-violet-500/10  text-violet-300",  label: "Available"   },
+  available:   { tone: "border-white/[0.12]  bg-violet-500/10  text-violet-300",  label: "Available"   },
   coming_soon: { tone: "border-zinc-500/30    bg-zinc-500/10    text-zinc-400",    label: "Coming soon" },
 };
 

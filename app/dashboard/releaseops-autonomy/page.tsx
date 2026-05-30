@@ -119,7 +119,7 @@ export default function ReleaseOpsAutonomyPage() {
       )}
 
       {data && data.org.length === 0 && (
-        <div className="rounded-2xl border border-violet-500/[0.18] bg-violet-500/[0.04] p-8 text-center">
+        <div className="rounded-2xl border border-white/[0.06] bg-white/[0.015] p-8 text-center">
           <p className="text-[14px] font-semibold text-violet-100 mb-2">No autonomy ticks yet.</p>
           <p className="text-[12.5px] text-zinc-400">
             The cron runs hourly. If you just deployed this phase, wait for the next top-of-the-hour tick — or trigger manually with

@@ -237,7 +237,7 @@ export default function ApprovalsPage() {
                 onClick={() => setFilter(f.id)}
                 className={`inline-flex items-center px-3.5 py-1.5 rounded-full text-xs font-medium transition-all border ${
                   isActive
-                    ? "bg-violet-500/15 border-violet-500/30 text-violet-300 shadow-[0_0_20px_rgba(139,92,246,0.15)]"
+                    ? "bg-violet-500/15 border-white/[0.12] text-violet-300 shadow-[0_0_20px_rgba(139,92,246,0.15)]"
                     : "bg-white/[0.02] border-white/[0.06] text-zinc-400 hover:text-white hover:border-white/[0.12]"
                 }`}
               >
@@ -265,7 +265,7 @@ export default function ApprovalsPage() {
                   onClick={() => setSelected(a.id)}
                   className={`w-full text-left rounded-xl border p-3 transition-all ${
                     a.id === active?.id
-                      ? "border-violet-500/30 bg-violet-500/[0.06]"
+                      ? "border-white/[0.12] bg-white/[0.025]"
                       : "border-white/[0.06] bg-white/[0.02] hover:border-white/[0.12] hover:bg-white/[0.04]"
                   }`}
                 >
@@ -464,13 +464,13 @@ function ApprovalDetailPanel({ approval }: { approval: DemoApproval }) {
       {/* Docs row */}
       <div className="px-6 py-3 bg-white/[0.01] flex items-center justify-between flex-wrap gap-2 text-[11px]">
         <div className="flex items-center gap-x-4 gap-y-1 flex-wrap">
-          <Link href="/docs/approval-workflow" target="_blank" className="text-violet-400 hover:text-violet-300 transition-colors font-medium">
+          <Link href="/docs/approval-workflow" target="_blank" className="text-zinc-500 hover:text-violet-300 transition-colors font-medium">
             How approvals work →
           </Link>
-          <Link href="/docs/execution-plans" target="_blank" className="text-violet-400 hover:text-violet-300 transition-colors font-medium">
+          <Link href="/docs/execution-plans" target="_blank" className="text-zinc-500 hover:text-violet-300 transition-colors font-medium">
             Execution plan details →
           </Link>
-          <Link href="/docs/rollback" target="_blank" className="text-violet-400 hover:text-violet-300 transition-colors font-medium">
+          <Link href="/docs/rollback" target="_blank" className="text-zinc-500 hover:text-violet-300 transition-colors font-medium">
             Rollback strategy →
           </Link>
         </div>

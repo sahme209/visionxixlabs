@@ -40,7 +40,7 @@ export default function VsCodePage() {
   return (
     <div className="relative">
       <div className="mb-6">
-        <Link href="/dashboard/developer-tools" className="text-[11px] text-violet-300 hover:text-violet-200 inline-flex items-center gap-1">
+        <Link href="/dashboard/developer-tools" className="text-[11px] text-zinc-300 hover:text-white inline-flex items-center gap-1">
           <ArrowRightIcon className="h-3 w-3 rotate-180" />
           Back to developer tools
         </Link>
@@ -48,8 +48,8 @@ export default function VsCodePage() {
 
       <div className="mb-8">
         <div className="flex items-center gap-3 mb-3">
-          <CodeBracketIcon className="h-4 w-4 text-violet-400" />
-          <p className="text-[10px] font-semibold text-violet-400 uppercase tracking-widest">VS Code extension</p>
+          <CodeBracketIcon className="h-4 w-4 text-zinc-500" />
+          <p className="text-[10px] font-semibold text-zinc-500 uppercase tracking-widest">VS Code extension</p>
           <span className="text-[9px] font-semibold text-amber-300 bg-amber-500/10 border border-amber-500/30 rounded-full px-2 py-0.5 uppercase tracking-wider">Coming soon</span>
         </div>
         <h1 className="text-3xl md:text-4xl font-bold text-white tracking-[-0.04em] mb-2">
@@ -69,7 +69,7 @@ export default function VsCodePage() {
         <ol className="space-y-2">
           {STEPS.map((s) => (
             <li key={s.n} className="flex items-start gap-3 rounded-lg border border-white/[0.05] bg-white/[0.015] px-4 py-3">
-              <span className="inline-flex items-center justify-center h-6 w-6 rounded-full border border-violet-400/40 bg-violet-500/10 text-[11px] font-mono text-violet-200 shrink-0 mt-0.5">{s.n}</span>
+              <span className="inline-flex items-center justify-center h-6 w-6 rounded-full border border-violet-400/40 bg-violet-500/10 text-[11px] font-mono text-white shrink-0 mt-0.5">{s.n}</span>
               <div className="flex-1">
                 <p className="text-[13px] font-semibold text-white">{s.title}</p>
                 <p className="text-[11.5px] text-zinc-400 mt-0.5 leading-snug">{s.detail}</p>
@@ -130,7 +130,7 @@ export default function VsCodePage() {
         </div>
         <Link
           href="/contact?ref=vscode-extension"
-          className="inline-flex items-center gap-1.5 text-[12px] font-medium px-3 py-1.5 rounded-lg bg-violet-500/15 text-violet-100 border border-violet-500/30 hover:bg-violet-500/25 transition"
+          className="inline-flex items-center gap-1.5 text-[12px] font-medium px-3 py-1.5 rounded-lg bg-violet-500/15 text-violet-100 border border-white/[0.12] hover:bg-violet-500/25 transition"
         >
           <ClipboardDocumentIcon className="h-3.5 w-3.5" />
           Notify me
@@ -139,7 +139,7 @@ export default function VsCodePage() {
 
       <p className="mt-6 text-[10.5px] font-mono text-zinc-500 inline-flex items-center gap-1.5">
         <CommandLineIcon className="h-3 w-3" />
-        Prefer the terminal? The CLI ships first — see <Link href="/dashboard/developer-tools/cli" className="text-violet-300 hover:text-violet-200 underline">CLI install</Link>.
+        Prefer the terminal? The CLI ships first — see <Link href="/dashboard/developer-tools/cli" className="text-zinc-300 hover:text-white underline">CLI install</Link>.
       </p>
     </div>
   );

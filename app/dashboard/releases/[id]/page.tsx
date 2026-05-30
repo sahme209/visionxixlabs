@@ -136,13 +136,13 @@ export default function ReleaseOverviewPage() {
             <LifecycleControls releaseId={releaseId} currentStatus={data.release.status} />
 
             <div className="mt-4 flex items-center gap-2 flex-wrap">
-              <Link href={`/dashboard/releases/${releaseId}/branch${repositoryId ? `?repositoryId=${repositoryId}` : ""}`} className="px-3 py-1.5 rounded-lg border border-violet-500/30 bg-violet-500/[0.08] text-[11.5px] font-semibold text-violet-200 hover:bg-violet-500/[0.15] transition-colors">
+              <Link href={`/dashboard/releases/${releaseId}/branch${repositoryId ? `?repositoryId=${repositoryId}` : ""}`} className="px-3 py-1.5 rounded-lg border border-white/[0.12] bg-white/[0.03] text-[11.5px] font-semibold text-white hover:bg-white/[0.06] transition-colors">
                 Open branch validation →
               </Link>
-              <Link href={`/api/dashboard/release-evidence-export/${releaseId}?format=markdown`} className="px-3 py-1.5 rounded-lg border border-white/[0.08] bg-white/[0.03] text-[11.5px] font-mono text-zinc-200 hover:border-violet-500/30 transition-colors" download>
+              <Link href={`/api/dashboard/release-evidence-export/${releaseId}?format=markdown`} className="px-3 py-1.5 rounded-lg border border-white/[0.08] bg-white/[0.03] text-[11.5px] font-mono text-zinc-200 hover:border-white/[0.12] transition-colors" download>
                 Evidence pack .md
               </Link>
-              <Link href={`/api/dashboard/release-evidence-export/${releaseId}?format=json`} className="px-3 py-1.5 rounded-lg border border-white/[0.08] bg-white/[0.03] text-[11.5px] font-mono text-zinc-200 hover:border-violet-500/30 transition-colors" download>
+              <Link href={`/api/dashboard/release-evidence-export/${releaseId}?format=json`} className="px-3 py-1.5 rounded-lg border border-white/[0.08] bg-white/[0.03] text-[11.5px] font-mono text-zinc-200 hover:border-white/[0.12] transition-colors" download>
                 Evidence pack .json
               </Link>
             </div>

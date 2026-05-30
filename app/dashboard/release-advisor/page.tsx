@@ -75,7 +75,7 @@ const SEVERITY_CLASS: Record<RecommendationView["severity"], string> = {
 };
 
 const DECISION_CLASS: Record<OperatorDecision, string> = {
-  pending:     "bg-violet-500/15 text-violet-300 border-violet-500/25",
+  pending:     "bg-violet-500/15 text-violet-300 border-white/[0.10]",
   accepted:    "bg-emerald-500/15 text-emerald-300 border-emerald-500/25",
   rejected:    "bg-rose-500/15 text-rose-300 border-rose-500/25",
   implemented: "bg-cyan-500/15 text-cyan-300 border-cyan-500/25",
@@ -202,7 +202,7 @@ function RecCard({ rec, onChanged }: { rec: RecommendationView; onChanged: () =>
   const isProceed = rec.kind === "proceed";
 
   return (
-    <div className={`rounded-2xl border p-4 ${isProceed ? "border-emerald-500/[0.18] bg-emerald-500/[0.025]" : "border-violet-500/[0.18] bg-violet-500/[0.025]"}`}>
+    <div className={`rounded-2xl border p-4 ${isProceed ? "border-emerald-500/[0.18] bg-emerald-500/[0.025]" : "border-white/[0.06] bg-violet-500/[0.025]"}`}>
       <div className="flex items-center gap-2 mb-2 flex-wrap">
         <span className={`text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border ${SEVERITY_CLASS[rec.severity]}`}>
           {rec.severity}
@@ -227,7 +227,7 @@ function RecCard({ rec, onChanged }: { rec: RecommendationView; onChanged: () =>
             <a
               key={i}
               href={a.href}
-              className="px-2 py-1 rounded border border-white/[0.08] bg-white/[0.02] text-[11px] font-mono text-zinc-200 hover:border-violet-500/30 transition-colors"
+              className="px-2 py-1 rounded border border-white/[0.08] bg-white/[0.02] text-[11px] font-mono text-zinc-200 hover:border-white/[0.12] transition-colors"
             >
               {a.label} →
             </a>
@@ -328,7 +328,7 @@ function GeneratePanel({ onGenerated }: { onGenerated: () => void }) {
         <button
           type="button"
           onClick={() => setState({ kind: "open" })}
-          className="px-3 py-1.5 rounded-lg border border-violet-500/30 bg-violet-500/[0.06] text-[12px] font-semibold text-violet-200 hover:bg-violet-500/[0.12] transition-colors inline-flex items-center gap-1.5"
+          className="px-3 py-1.5 rounded-lg border border-white/[0.12] bg-white/[0.025] text-[12px] font-semibold text-white hover:bg-violet-500/[0.12] transition-colors inline-flex items-center gap-1.5"
         >
           <SparklesIcon className="h-3.5 w-3.5" />
           Generate recommendations
@@ -339,7 +339,7 @@ function GeneratePanel({ onGenerated }: { onGenerated: () => void }) {
 
   const busy = state.kind === "submitting";
   return (
-    <div className="mb-6 rounded-2xl border border-violet-500/[0.18] bg-violet-500/[0.03] p-5">
+    <div className="mb-6 rounded-2xl border border-white/[0.06] bg-white/[0.015] p-5">
       <div className="flex items-center justify-between mb-3">
         <p className="text-[13px] font-semibold text-violet-100 inline-flex items-center gap-1.5">
           <ArrowPathIcon className="h-4 w-4" /> Generate advisor recommendations

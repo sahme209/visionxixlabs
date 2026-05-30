@@ -76,25 +76,25 @@ const KIND_LABEL: Record<string, string> = {
 };
 
 const KIND_TONE: Record<string, string> = {
-  review_release:       "border-violet-500/30 bg-violet-500/[0.04]",
+  review_release:       "border-white/[0.12] bg-white/[0.015]",
   tighten_protection:   "border-rose-500/30 bg-rose-500/[0.04]",
   reconcile_manual_fix: "border-amber-500/30 bg-amber-500/[0.04]",
   investigate_incident: "border-rose-500/30 bg-rose-500/[0.04]",
   reduce_fallback_rate: "border-amber-500/30 bg-amber-500/[0.04]",
-  review_pattern:       "border-violet-500/30 bg-violet-500/[0.04]",
+  review_pattern:       "border-white/[0.12] bg-white/[0.015]",
   no_action_needed:     "border-emerald-500/30 bg-emerald-500/[0.04]",
   unknown:              "border-white/[0.06] bg-white/[0.02]",
 };
 
 const DECISION_CLASS: Record<Decision, string> = {
-  pending:    "bg-violet-500/15 text-violet-300 border-violet-500/25",
+  pending:    "bg-violet-500/15 text-violet-300 border-white/[0.10]",
   acted:      "bg-emerald-500/15 text-emerald-300 border-emerald-500/25",
   dismissed:  "bg-zinc-700/40 text-zinc-300 border-zinc-700/40",
   unknown:    "bg-zinc-700/40 text-zinc-400 border-zinc-700/40",
 };
 
 const OUTCOME_CLASS: Record<string, string> = {
-  ai_generated:   "bg-violet-500/15 text-violet-300 border-violet-500/25",
+  ai_generated:   "bg-violet-500/15 text-violet-300 border-white/[0.10]",
   fallback_rules: "bg-amber-500/15 text-amber-300 border-amber-500/25",
   error:          "bg-rose-500/15 text-rose-300 border-rose-500/25",
   unknown:        "bg-zinc-700/40 text-zinc-400 border-zinc-700/40",
@@ -311,7 +311,7 @@ function SuggestionCard({ suggestion, onChanged }: { suggestion: Suggestion; onC
         <p className="text-[11px] font-mono text-zinc-400 mb-2">
           {suggestion.targetKind && <>target: <span className="text-zinc-200">{suggestion.targetKind}</span></>}
           {suggestion.targetId && <span className="text-zinc-200"> · {suggestion.targetId}</span>}
-          {deepLink && <a href={deepLink} className="ml-2 inline-flex items-center gap-1 text-violet-300 hover:text-violet-200">
+          {deepLink && <a href={deepLink} className="ml-2 inline-flex items-center gap-1 text-zinc-300 hover:text-white">
             open <ArrowRightIcon className="h-3 w-3" />
           </a>}
         </p>
@@ -370,7 +370,7 @@ function FilterPill({ label, active, onClick }: { label: string; active: boolean
 
 function Stat({ icon: Icon, label, value, tone }: { icon: typeof SparklesIcon; label: string; value: string; tone: "violet" | "emerald" | "amber" | "rose" | "zinc" }) {
   const cls = {
-    violet:  "border-violet-500/[0.18] bg-violet-500/[0.03] text-violet-200",
+    violet:  "border-white/[0.06] bg-white/[0.015] text-white",
     emerald: "border-emerald-500/[0.18] bg-emerald-500/[0.03] text-emerald-200",
     amber:   "border-amber-500/[0.18] bg-amber-500/[0.03] text-amber-200",
     rose:    "border-rose-500/[0.18] bg-rose-500/[0.03] text-rose-200",

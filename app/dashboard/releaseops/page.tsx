@@ -194,7 +194,7 @@ export default function ReleaseOpsCommandCenterPage() {
           { label: "Fleet readiness", value: "82.5", trend: "+1.8 pts this week", trendColor: "text-emerald-400", icon: ShieldCheckIcon, bg: "bg-emerald-500/10 border-emerald-500/20", iconColor: "text-emerald-400" },
           { label: "Services below threshold", value: "2", trend: "1 critical · 1 watch", trendColor: "text-amber-400", icon: ShieldExclamationIcon, bg: "bg-amber-500/10 border-amber-500/20", iconColor: "text-amber-400" },
           { label: "Approvals pending", value: "5", trend: "2 production · 3 staging", trendColor: "text-amber-400", icon: LockClosedIcon, bg: "bg-amber-500/10 border-amber-500/20", iconColor: "text-amber-400" },
-          { label: "Deployments today", value: "14", trend: "94% success · 1 rollback", trendColor: "text-emerald-400", icon: RocketLaunchIcon, bg: "bg-violet-500/10 border-violet-500/20", iconColor: "text-violet-400" },
+          { label: "Deployments today", value: "14", trend: "94% success · 1 rollback", trendColor: "text-emerald-400", icon: RocketLaunchIcon, bg: "bg-violet-500/10 border-white/[0.08]", iconColor: "text-zinc-500" },
         ].map((kpi) => {
           const Icon = kpi.icon;
           return (
@@ -323,10 +323,10 @@ export default function ReleaseOpsCommandCenterPage() {
           {/* Platform Integration Quick Actions */}
           <Reveal direction="up" delay={0.18}>
             <div className="rounded-2xl border border-violet-500/15 bg-gradient-to-br from-violet-500/[0.04] via-transparent to-fuchsia-500/[0.03] p-4 relative overflow-hidden">
-              <div className="absolute -top-10 -right-10 w-32 h-32 rounded-full bg-violet-500/[0.06] blur-[40px] pointer-events-none" aria-hidden />
+              <div className="absolute -top-10 -right-10 w-32 h-32 rounded-full bg-white/[0.025] blur-[40px] pointer-events-none" aria-hidden />
               <div className="relative">
                 <div className="flex items-center gap-2 mb-3">
-                  <CpuChipIcon className="h-4 w-4 text-violet-400" />
+                  <CpuChipIcon className="h-4 w-4 text-zinc-500" />
                   <h3 className="text-sm font-semibold text-white">Cross-platform jump</h3>
                 </div>
                 <div className="space-y-1.5">

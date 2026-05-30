@@ -187,7 +187,7 @@ function ReleaseRow({ r, now }: { r: ReleaseListRow; now: Date }) {
   return (
     <Link
       href={`/dashboard/releases/${r.id}`}
-      className="block rounded-2xl border border-white/[0.06] bg-white/[0.02] p-4 hover:border-violet-500/[0.30] hover:bg-white/[0.03] transition-all"
+      className="block rounded-2xl border border-white/[0.06] bg-white/[0.02] p-4 hover:border-white/[0.12] hover:bg-white/[0.03] transition-all"
     >
       <div className="flex items-center justify-between gap-3 flex-wrap">
         <div className="flex items-center gap-2 min-w-0 flex-1">
@@ -253,9 +253,9 @@ function Stat({ icon: Icon, label, value, tone }: { icon: typeof RocketLaunchIco
    ────────────────────────────────────────────────────────────── */
 
 const SUBSYSTEMS: Array<{ label: string; href: string; tone: string }> = [
-  { label: "Repositories",         href: "/dashboard/repositories",     tone: "border-violet-500/30 text-violet-200" },
-  { label: "Cherry-picks",         href: "/dashboard/cherry-picks",     tone: "border-violet-500/30 text-violet-200" },
-  { label: "Change tickets",       href: "/dashboard/change-tickets",   tone: "border-violet-500/30 text-violet-200" },
+  { label: "Repositories",         href: "/dashboard/repositories",     tone: "border-white/[0.12] text-white" },
+  { label: "Cherry-picks",         href: "/dashboard/cherry-picks",     tone: "border-white/[0.12] text-white" },
+  { label: "Change tickets",       href: "/dashboard/change-tickets",   tone: "border-white/[0.12] text-white" },
   { label: "Release freeze",       href: "/dashboard/release-freeze",   tone: "border-cyan-500/30 text-cyan-200" },
   { label: "Release readiness",    href: "/dashboard/release-readiness", tone: "border-emerald-500/30 text-emerald-200" },
   { label: "Policy violations",    href: "/dashboard/policy-violations", tone: "border-rose-500/30 text-rose-200" },
@@ -363,7 +363,7 @@ function SummaryStat({
     zinc:    "text-zinc-300",
   }[highlight];
   return (
-    <Link href={href} className="block rounded-xl border border-white/[0.06] bg-white/[0.02] p-3 hover:border-violet-500/30 transition-colors">
+    <Link href={href} className="block rounded-xl border border-white/[0.06] bg-white/[0.02] p-3 hover:border-white/[0.12] transition-colors">
       <p className="text-[9px] font-mono uppercase tracking-wider opacity-70 mb-1">{label}</p>
       <p className={`text-[20px] font-bold ${tone}`}>{value}</p>
     </Link>
@@ -452,7 +452,7 @@ function NewReleasePanel({ onCreated }: { onCreated: () => void }) {
         <button
           type="button"
           onClick={() => setState({ kind: "open" })}
-          className="px-3 py-1.5 rounded-lg border border-violet-500/30 bg-violet-500/[0.06] text-[12px] font-semibold text-violet-200 hover:bg-violet-500/[0.12] transition-colors"
+          className="px-3 py-1.5 rounded-lg border border-white/[0.12] bg-white/[0.025] text-[12px] font-semibold text-white hover:bg-violet-500/[0.12] transition-colors"
         >
           + New release
         </button>
@@ -462,7 +462,7 @@ function NewReleasePanel({ onCreated }: { onCreated: () => void }) {
 
   const busy = state.kind === "submitting";
   return (
-    <div className="mb-6 rounded-2xl border border-violet-500/[0.18] bg-violet-500/[0.03] p-5">
+    <div className="mb-6 rounded-2xl border border-white/[0.06] bg-white/[0.015] p-5">
       <div className="flex items-center justify-between mb-3">
         <p className="text-[13px] font-semibold text-violet-100">New release</p>
         <button type="button" onClick={reset} className="text-[11px] font-mono text-zinc-400 hover:text-zinc-200" disabled={busy}>cancel</button>

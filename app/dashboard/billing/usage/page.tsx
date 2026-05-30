@@ -75,7 +75,7 @@ export default async function BillingUsagePage() {
   return (
     <div className="relative max-w-5xl">
       <div className="mb-6">
-        <Link href="/dashboard" className="text-[11px] text-violet-300 hover:text-violet-200 inline-flex items-center gap-1">
+        <Link href="/dashboard" className="text-[11px] text-zinc-300 hover:text-white inline-flex items-center gap-1">
           <ArrowRightIcon className="h-3 w-3 rotate-180" />
           Back to dashboard
         </Link>
@@ -83,8 +83,8 @@ export default async function BillingUsagePage() {
 
       <div className="mb-8">
         <div className="flex items-center gap-3 mb-3">
-          <ChartBarIcon className="h-4 w-4 text-violet-400" />
-          <p className="text-[10px] font-semibold text-violet-400 uppercase tracking-widest">Usage & billing</p>
+          <ChartBarIcon className="h-4 w-4 text-zinc-500" />
+          <p className="text-[10px] font-semibold text-zinc-500 uppercase tracking-widest">Usage & billing</p>
         </div>
         <h1 className="text-3xl md:text-4xl font-bold text-white tracking-[-0.04em] mb-2">
           {plan.displayName} plan · <span className="text-gradient">{period}</span>
@@ -199,7 +199,7 @@ export default async function BillingUsagePage() {
 
       {/* Add-ons CTA — surfaces when approaching the credit pool ceiling */}
       {plan.tier !== "enterprise" && usedRatio >= 0.5 && (
-        <section className="rounded-2xl border border-violet-500/20 bg-violet-500/[0.04] p-5 mb-4">
+        <section className="rounded-2xl border border-white/[0.08] bg-white/[0.015] p-5 mb-4">
           <div className="flex items-center justify-between gap-3 flex-wrap">
             <div>
               <p className="text-[12px] font-semibold text-white mb-1">Don't want to upgrade? Buy a top-up.</p>
@@ -220,7 +220,7 @@ export default async function BillingUsagePage() {
 
       {/* Plan upgrade hint */}
       {plan.tier !== "enterprise" && (
-        <section className="rounded-2xl border border-violet-500/20 bg-violet-500/[0.04] p-5">
+        <section className="rounded-2xl border border-white/[0.08] bg-white/[0.015] p-5">
           <div className="flex items-center justify-between gap-3 flex-wrap">
             <div>
               <p className="text-[12px] font-semibold text-white mb-1">Need more credits or more seats?</p>

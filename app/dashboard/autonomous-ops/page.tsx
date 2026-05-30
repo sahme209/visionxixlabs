@@ -54,7 +54,7 @@ function statusTone(status: string): string {
     case "blocked":   return "text-rose-300 bg-rose-500/10 border-rose-500/25";
     case "completed": return "text-emerald-300 bg-emerald-500/10 border-emerald-500/25";
     case "failed":    return "text-rose-300 bg-rose-500/10 border-rose-500/25";
-    case "preview":   return "text-violet-300 bg-violet-500/10 border-violet-500/25";
+    case "preview":   return "text-violet-300 bg-violet-500/10 border-white/[0.10]";
     case "planned":   return "text-zinc-300 bg-zinc-500/10 border-zinc-500/25";
     default:          return "text-zinc-300 bg-zinc-500/10 border-zinc-500/25";
   }
@@ -162,7 +162,7 @@ export default async function AutonomousOpsPage() {
                     </div>
                   </div>
                   {href && (
-                    <Link href={href} className="shrink-0 inline-flex items-center gap-1.5 text-xs font-semibold text-violet-200 hover:text-white">
+                    <Link href={href} className="shrink-0 inline-flex items-center gap-1.5 text-xs font-semibold text-white hover:text-white">
                       Open <ArrowRightIcon className="h-3.5 w-3.5" />
                     </Link>
                   )}
@@ -282,7 +282,7 @@ function Stat({ label, value, tone }: { label: string; value: string; tone: stri
 }
 
 function Card({ title, value, tone, detail }: { title: string; value: string; tone: "violet" | "amber" | "rose" | "cyan"; detail: string }) {
-  const ring = tone === "violet" ? "border-violet-500/20" : tone === "amber" ? "border-amber-500/20" : tone === "rose" ? "border-rose-500/20" : "border-cyan-500/20";
+  const ring = tone === "violet" ? "border-white/[0.08]" : tone === "amber" ? "border-amber-500/20" : tone === "rose" ? "border-rose-500/20" : "border-cyan-500/20";
   const text = tone === "violet" ? "text-violet-300" : tone === "amber" ? "text-amber-300" : tone === "rose" ? "text-rose-300" : "text-cyan-300";
   return (
     <div className={`rounded-xl border ${ring} bg-white/[0.02] p-5`}>

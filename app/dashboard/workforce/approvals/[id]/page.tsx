@@ -107,7 +107,7 @@ export default async function ApprovalDetailPage({ params }: { params: Promise<{
   return (
     <div className="relative max-w-4xl">
       <div className="mb-6">
-        <Link href="/dashboard/workforce/approvals" className="text-[11px] text-violet-300 hover:text-violet-200 inline-flex items-center gap-1">
+        <Link href="/dashboard/workforce/approvals" className="text-[11px] text-zinc-300 hover:text-white inline-flex items-center gap-1">
           <ArrowRightIcon className="h-3 w-3 rotate-180" />
           Back to approvals
         </Link>
@@ -148,14 +148,14 @@ export default async function ApprovalDetailPage({ params }: { params: Promise<{
             {isPipelineSourced && snapshot.pipelineStageRun?.runId ? (
               <Link
                 href={`/dashboard/workforce/pipelines/runs/${snapshot.pipelineStageRun.runId}`}
-                className="text-[13px] font-semibold text-white hover:text-violet-200 truncate"
+                className="text-[13px] font-semibold text-white hover:text-white truncate"
               >
                 {pipelineDef?.name ?? "Pipeline run"} → {pipelineStageDef?.name ?? "stage"}
               </Link>
             ) : engineer ? (
               <Link
                 href={`/dashboard/workforce/${engineer.id}`}
-                className="text-[13px] font-semibold text-white hover:text-violet-200 truncate"
+                className="text-[13px] font-semibold text-white hover:text-white truncate"
               >
                 {engineer.displayName}
               </Link>

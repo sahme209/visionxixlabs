@@ -198,7 +198,7 @@ export default function PolicyPreviewsPage() {
               {report.packages.map((pkg) => (
                 <div key={pkg.runbookId} className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-4">
                   <div className="flex items-center gap-2 flex-wrap mb-2">
-                    <span className="text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border bg-violet-500/15 text-violet-300 border-violet-500/30">
+                    <span className="text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border bg-violet-500/15 text-violet-300 border-white/[0.12]">
                       {pkg.severity}
                     </span>
                     <p className="text-[14px] font-semibold text-white">{pkg.eventName}</p>
@@ -314,7 +314,7 @@ function Stat({
 }: { label: string; value: string; tone: "emerald" | "violet" | "zinc"; icon?: typeof LockClosedIcon }) {
   const cls = {
     emerald: "border-emerald-500/[0.18] bg-emerald-500/[0.03] text-emerald-200",
-    violet:  "border-violet-500/[0.18] bg-violet-500/[0.03] text-violet-200",
+    violet:  "border-white/[0.06] bg-white/[0.015] text-white",
     zinc:    "border-white/[0.06] bg-white/[0.02] text-zinc-200",
   }[tone];
   return (

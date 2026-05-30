@@ -83,7 +83,7 @@ const KIND_LABEL: Record<string, string> = {
 };
 
 const DECISION_CLASS: Record<Decision, string> = {
-  pending:    "bg-violet-500/15 text-violet-300 border-violet-500/25",
+  pending:    "bg-violet-500/15 text-violet-300 border-white/[0.10]",
   accepted:   "bg-emerald-500/15 text-emerald-300 border-emerald-500/25",
   overridden: "bg-amber-500/15 text-amber-300 border-amber-500/25",
   dismissed:  "bg-zinc-700/40 text-zinc-300 border-zinc-700/40",
@@ -99,7 +99,7 @@ function agreementClass(score: number): string {
 function consensusClass(kind: Kind): string {
   if (kind === "block_deploy" || kind === "rollback") return "border-rose-500/30 bg-rose-500/[0.04]";
   if (kind === "needs_evidence" || kind === "propose_freeze" || kind === "proceed_with_caution") return "border-amber-500/30 bg-amber-500/[0.04]";
-  if (kind === "no_consensus") return "border-violet-500/30 bg-violet-500/[0.05]";
+  if (kind === "no_consensus") return "border-white/[0.12] bg-white/[0.02]";
   if (kind === "proceed") return "border-emerald-500/30 bg-emerald-500/[0.04]";
   return "border-white/[0.08] bg-white/[0.02]";
 }
@@ -360,7 +360,7 @@ function GeneratePanel({ onGenerated }: { onGenerated: () => void }) {
         <button
           type="button"
           onClick={() => setState({ kind: "open" })}
-          className="px-3 py-1.5 rounded-lg border border-violet-500/30 bg-violet-500/[0.06] text-[12px] font-semibold text-violet-200 hover:bg-violet-500/[0.12] transition-colors inline-flex items-center gap-1.5"
+          className="px-3 py-1.5 rounded-lg border border-white/[0.12] bg-white/[0.025] text-[12px] font-semibold text-white hover:bg-violet-500/[0.12] transition-colors inline-flex items-center gap-1.5"
         >
           <ScaleIcon className="h-3.5 w-3.5" />
           Run council
@@ -371,7 +371,7 @@ function GeneratePanel({ onGenerated }: { onGenerated: () => void }) {
 
   const busy = state.kind === "submitting";
   return (
-    <div className="mb-6 rounded-2xl border border-violet-500/[0.18] bg-violet-500/[0.03] p-5">
+    <div className="mb-6 rounded-2xl border border-white/[0.06] bg-white/[0.015] p-5">
       <div className="flex items-center justify-between mb-3">
         <p className="text-[13px] font-semibold text-violet-100">Run advisor council</p>
         <button type="button" onClick={() => { setReleaseId(""); setState({ kind: "closed" }); }} className="text-[11px] font-mono text-zinc-400 hover:text-zinc-200" disabled={busy}>cancel</button>
@@ -442,7 +442,7 @@ interface EnrichmentView {
 type EnrichBody = { ok: true; data: { enrichment: EnrichmentView | null } } | { ok: false; error: string; hint?: string };
 
 const OUTCOME_BADGE: Record<string, string> = {
-  ai_generated:    "bg-violet-500/15 text-violet-300 border-violet-500/25",
+  ai_generated:    "bg-violet-500/15 text-violet-300 border-white/[0.10]",
   fallback_rules:  "bg-amber-500/15 text-amber-300 border-amber-500/25",
   error:           "bg-rose-500/15 text-rose-300 border-rose-500/25",
 };
@@ -493,9 +493,9 @@ function AiRationaleCard({ decisionId }: { decisionId: string }) {
 
   if (!enrichment) {
     return (
-      <div className="mb-3 rounded-lg border border-violet-500/[0.18] bg-violet-500/[0.03] p-2.5">
+      <div className="mb-3 rounded-lg border border-white/[0.06] bg-white/[0.015] p-2.5">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2 text-[11px] font-mono text-violet-200">
+          <div className="flex items-center gap-2 text-[11px] font-mono text-white">
             <SparklesIcon className="h-3.5 w-3.5" />
             <span>AI rationale not generated yet</span>
           </div>
@@ -514,9 +514,9 @@ function AiRationaleCard({ decisionId }: { decisionId: string }) {
   }
 
   return (
-    <div className="mb-3 rounded-lg border border-violet-500/[0.18] bg-violet-500/[0.03] p-3">
+    <div className="mb-3 rounded-lg border border-white/[0.06] bg-white/[0.015] p-3">
       <div className="flex items-center gap-2 mb-2 flex-wrap">
-        <span className="inline-flex items-center gap-1 text-[10px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border border-violet-500/30 bg-violet-500/[0.10] text-violet-200">
+        <span className="inline-flex items-center gap-1 text-[10px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border border-white/[0.12] bg-white/[0.04] text-white">
           <SparklesIcon className="h-3 w-3" /> AI rationale
         </span>
         <span className={`text-[10px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border ${OUTCOME_BADGE[enrichment.outcome] ?? OUTCOME_BADGE.error}`}>
@@ -530,7 +530,7 @@ function AiRationaleCard({ decisionId }: { decisionId: string }) {
           type="button"
           onClick={generate}
           disabled={generating}
-          className="text-[10.5px] font-mono text-violet-300 hover:text-violet-200 disabled:opacity-50 disabled:cursor-wait"
+          className="text-[10.5px] font-mono text-zinc-300 hover:text-white disabled:opacity-50 disabled:cursor-wait"
         >
           {generating ? "Regenerating…" : "Regenerate"}
         </button>

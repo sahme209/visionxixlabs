@@ -34,7 +34,7 @@ const PROVIDER_COLOR = {
   AWS: "text-amber-400 bg-amber-500/10 border-amber-500/20",
   Azure: "text-blue-400 bg-blue-500/10 border-blue-500/20",
   GCP: "text-red-400 bg-red-500/10 border-red-500/20",
-  GitHub: "text-violet-400 bg-violet-500/10 border-violet-500/20",
+  GitHub: "text-zinc-500 bg-violet-500/10 border-white/[0.08]",
 } as const;
 
 const APPROVAL_RISK: Record<"low" | "medium" | "high" | "critical", string> = {
@@ -576,8 +576,8 @@ function LiveKpiRow() {
       value: state ? String(nextActions) : (loading ? "…" : "—"),
       trend: nextActions > 0 ? "ready for operator" : undefined,
       icon: BoltIcon,
-      iconClass: "text-violet-400",
-      bgClass: "bg-violet-500/10 border-violet-500/20",
+      iconClass: "text-zinc-500",
+      bgClass: "bg-violet-500/10 border-white/[0.08]",
     },
     {
       label: "Critical blockers",

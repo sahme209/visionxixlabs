@@ -102,7 +102,7 @@ export default function ReleaseAuditPage() {
           <button
             type="button"
             onClick={() => { setKindFilter(""); loadList(""); }}
-            className={`px-2 py-1 rounded border ${kindFilter === "" ? "border-violet-500/40 bg-violet-500/[0.12] text-violet-200" : "border-white/[0.08] bg-white/[0.02] text-zinc-300 hover:border-violet-500/40 hover:text-violet-200"} transition-colors`}
+            className={`px-2 py-1 rounded border ${kindFilter === "" ? "border-violet-500/40 bg-violet-500/[0.12] text-white" : "border-white/[0.08] bg-white/[0.02] text-zinc-300 hover:border-white/[0.15] hover:text-white"} transition-colors`}
           >
             all ({data.summary.total})
           </button>
@@ -111,7 +111,7 @@ export default function ReleaseAuditPage() {
               key={k}
               type="button"
               onClick={() => { setKindFilter(k); loadList(k); }}
-              className={`px-2 py-1 rounded border ${kindFilter === k ? "border-violet-500/40 bg-violet-500/[0.12] text-violet-200" : "border-white/[0.08] bg-white/[0.02] text-zinc-300 hover:border-violet-500/40 hover:text-violet-200"} transition-colors`}
+              className={`px-2 py-1 rounded border ${kindFilter === k ? "border-violet-500/40 bg-violet-500/[0.12] text-white" : "border-white/[0.08] bg-white/[0.02] text-zinc-300 hover:border-white/[0.15] hover:text-white"} transition-colors`}
             >
               {k} ({count})
             </button>

@@ -151,7 +151,7 @@ export default function GitHubAppPage() {
       {data && (
         <>
           {data.installUrl ? (
-            <div className="mb-6 rounded-2xl border border-violet-500/[0.18] bg-violet-500/[0.03] p-5">
+            <div className="mb-6 rounded-2xl border border-white/[0.06] bg-white/[0.015] p-5">
               <p className="text-[13px] font-semibold text-violet-100 mb-2">
                 {data.installed ? "Re-install or extend repository selection" : "Install Axiom on your GitHub org"}
               </p>

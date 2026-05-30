@@ -32,7 +32,7 @@ interface Record {
 const MODES: { mode: Mode; tagline: string; tone: string }[] = [
   { mode: "observer",   tagline: "Loop runs but never auto-approves. Operator drives every transition.", tone: "border-zinc-500/30 bg-zinc-500/[0.04]" },
   { mode: "review",     tagline: "Auto-approves read-only / preview / simulation; halts everything else for review.", tone: "border-sky-500/30 bg-sky-500/[0.04]" },
-  { mode: "assisted",   tagline: "Also hands desktop-reviewable actions to the paired runtime. Mutations halt.", tone: "border-violet-500/30 bg-violet-500/[0.04]" },
+  { mode: "assisted",   tagline: "Also hands desktop-reviewable actions to the paired runtime. Mutations halt.", tone: "border-white/[0.12] bg-white/[0.015]" },
   { mode: "autonomous", tagline: "Drives policy-gated executions end-to-end. Unsafe + credential-disabled classes always halt.", tone: "border-emerald-500/30 bg-emerald-500/[0.04]" },
 ];
 
@@ -227,7 +227,7 @@ export default function CharterPage() {
             <button
               onClick={save}
               disabled={busy}
-              className="inline-flex items-center gap-1.5 text-[12px] font-medium px-3 py-1.5 rounded-lg bg-violet-500/15 text-violet-200 border border-violet-500/30 hover:bg-violet-500/20 disabled:opacity-50"
+              className="inline-flex items-center gap-1.5 text-[12px] font-medium px-3 py-1.5 rounded-lg bg-violet-500/15 text-white border border-white/[0.12] hover:bg-violet-500/20 disabled:opacity-50"
             >
               <CheckIcon className="h-3.5 w-3.5" />
               {busy ? "Saving…" : hasOverride ? "Update charter" : "Save charter"}

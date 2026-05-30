@@ -151,7 +151,7 @@ export default function AuditCenterPage() {
       {/* Bundle export menu */}
       {showSampleData && (
       <Reveal direction="up" delay={0.08}>
-        <div className="mb-8 rounded-2xl border border-fuchsia-500/15 bg-gradient-to-br from-fuchsia-500/[0.03] via-transparent to-violet-500/[0.02] p-6 relative overflow-hidden">
+        <div className="mb-8 rounded-2xl border border-fuchsia-500/15 bg-gradient-to-br to-transparent via-transparent to-violet-500/[0.02] p-6 relative overflow-hidden">
           <div className="absolute -top-12 -right-12 w-48 h-48 rounded-full bg-fuchsia-500/[0.06] blur-[60px] pointer-events-none" aria-hidden />
           <div className="relative">
             <div className="flex items-center justify-between flex-wrap gap-3 mb-4">
@@ -323,7 +323,7 @@ function StoryCard({ story }: { story: AuditStory }) {
 
 function Badge({ label, tone }: { label: string; tone: "violet" | "emerald" | "amber" | "red" | "cyan" | "fuchsia" }) {
   const map: Record<string, string> = {
-    violet:  "text-violet-300 bg-violet-500/10 border-violet-500/20",
+    violet:  "text-violet-300 bg-violet-500/10 border-white/[0.08]",
     emerald: "text-emerald-300 bg-emerald-500/10 border-emerald-500/20",
     amber:   "text-amber-300 bg-amber-500/10 border-amber-500/20",
     red:     "text-red-300 bg-red-500/10 border-red-500/20",

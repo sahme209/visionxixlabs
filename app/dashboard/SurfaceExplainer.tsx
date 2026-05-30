@@ -160,9 +160,9 @@ export function SurfaceExplainer({ surface }: { surface: ExplainerSurface }) {
   const ex = EXPLAINERS[surface];
 
   return (
-    <div className="mb-5 rounded-2xl border border-violet-500/[0.22] bg-violet-500/[0.04] p-4">
+    <div className="mb-5 rounded-2xl border border-white/[0.10] bg-white/[0.015] p-4">
       <div className="flex items-start gap-3">
-        <div className="w-8 h-8 rounded-lg bg-violet-500/[0.10] border border-violet-500/30 flex items-center justify-center flex-shrink-0">
+        <div className="w-8 h-8 rounded-lg bg-white/[0.04] border border-white/[0.12] flex items-center justify-center flex-shrink-0">
           <LightBulbIcon className="h-4 w-4 text-violet-300" />
         </div>
         <div className="flex-1 min-w-0">
@@ -173,7 +173,7 @@ export function SurfaceExplainer({ surface }: { surface: ExplainerSurface }) {
             <ul className="space-y-1">
               {ex.tour.map((t, i) => (
                 <li key={i} className="text-[12px] text-zinc-400 flex gap-2">
-                  <span className="text-violet-400/70 font-mono text-[10.5px] mt-0.5">{String(i + 1).padStart(2, "0")}</span>
+                  <span className="text-zinc-500/70 font-mono text-[10.5px] mt-0.5">{String(i + 1).padStart(2, "0")}</span>
                   <span>{t}</span>
                 </li>
               ))}

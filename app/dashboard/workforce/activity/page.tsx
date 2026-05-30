@@ -105,7 +105,7 @@ export default async function WorkforceActivityPage({
   return (
     <div className="relative">
       <div className="mb-6">
-        <Link href="/dashboard/workforce" className="text-[11px] text-violet-300 hover:text-violet-200 inline-flex items-center gap-1">
+        <Link href="/dashboard/workforce" className="text-[11px] text-zinc-300 hover:text-white inline-flex items-center gap-1">
           <ArrowRightIcon className="h-3 w-3 rotate-180" />
           Back to Workforce
         </Link>
@@ -113,8 +113,8 @@ export default async function WorkforceActivityPage({
 
       <div className="mb-8">
         <div className="flex items-center gap-3 mb-3">
-          <ClockIcon className="h-4 w-4 text-violet-400" />
-          <p className="text-[10px] font-semibold text-violet-400 uppercase tracking-widest">Workforce activity</p>
+          <ClockIcon className="h-4 w-4 text-zinc-500" />
+          <p className="text-[10px] font-semibold text-zinc-500 uppercase tracking-widest">Workforce activity</p>
         </div>
         <h1 className="text-3xl md:text-4xl font-bold text-white tracking-[-0.04em] mb-2">
           Every gated attempt. <span className="text-gradient">In one timeline.</span>
@@ -211,7 +211,7 @@ function FilterPill({
     amber:   active ? "bg-amber-500/15 text-amber-200 border-amber-500/40"       : "bg-white/[0.02] text-zinc-400 border-white/[0.06] hover:text-amber-200",
     emerald: active ? "bg-emerald-500/15 text-emerald-200 border-emerald-500/40" : "bg-white/[0.02] text-zinc-400 border-white/[0.06] hover:text-emerald-200",
     rose:    active ? "bg-rose-500/15 text-rose-200 border-rose-500/40"          : "bg-white/[0.02] text-zinc-400 border-white/[0.06] hover:text-rose-200",
-    violet:  active ? "bg-violet-500/15 text-violet-200 border-violet-500/40"    : "bg-white/[0.02] text-zinc-400 border-white/[0.06] hover:text-violet-200",
+    violet:  active ? "bg-violet-500/15 text-white border-violet-500/40"    : "bg-white/[0.02] text-zinc-400 border-white/[0.06] hover:text-white",
   }[tone];
   return (
     <Link href={href} className={`text-[10px] font-mono uppercase tracking-wider border rounded-full px-2.5 py-1 transition ${toneClass}`}>
@@ -250,7 +250,7 @@ function ActivityRow(props: {
       <header className="flex items-center justify-between gap-3 flex-wrap mb-1">
         <div className="flex items-center gap-2 min-w-0">
           <CpuChipIcon className="h-4 w-4 text-violet-300 shrink-0" />
-          <Link href={`/dashboard/workforce/${props.engineerId}`} className="text-[12px] font-semibold text-white hover:text-violet-200 truncate">
+          <Link href={`/dashboard/workforce/${props.engineerId}`} className="text-[12px] font-semibold text-white hover:text-white truncate">
             {props.engineerName}
           </Link>
         </div>
@@ -276,7 +276,7 @@ function ActivityRow(props: {
         {props.approvalRequestId && (
           <Link
             href={`/dashboard/workforce/approvals/${props.approvalRequestId}`}
-            className="text-[10px] font-mono text-violet-300 hover:text-violet-200"
+            className="text-[10px] font-mono text-zinc-300 hover:text-white"
           >
             approval · {props.approvalRequestId} →
           </Link>

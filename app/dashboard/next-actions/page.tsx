@@ -65,7 +65,7 @@ interface NextActionReportLite {
 const SAFETY_VISUAL: Record<SafetyLevel, { border: string; bg: string; text: string; pill: string; icon: typeof ShieldCheckIcon }> = {
   safe_readonly:     { border: "border-emerald-500/[0.22]", bg: "bg-emerald-500/[0.04]", text: "text-emerald-300", pill: "bg-emerald-500/15 text-emerald-300", icon: ShieldCheckIcon         },
   safe_review:       { border: "border-cyan-500/[0.22]",    bg: "bg-cyan-500/[0.04]",    text: "text-cyan-300",    pill: "bg-cyan-500/15 text-cyan-300",       icon: EyeIcon                  },
-  safe_preview:      { border: "border-violet-500/[0.22]",  bg: "bg-violet-500/[0.04]",  text: "text-violet-300",  pill: "bg-violet-500/15 text-violet-300",   icon: BeakerIcon               },
+  safe_preview:      { border: "border-white/[0.10]",  bg: "bg-white/[0.015]",  text: "text-violet-300",  pill: "bg-violet-500/15 text-violet-300",   icon: BeakerIcon               },
   approval_required: { border: "border-amber-500/[0.22]",   bg: "bg-amber-500/[0.04]",   text: "text-amber-300",   pill: "bg-amber-500/15 text-amber-300",     icon: LockClosedIcon           },
   blocked_by_config: { border: "border-amber-500/[0.18]",   bg: "bg-amber-500/[0.04]",   text: "text-amber-300",   pill: "bg-amber-500/15 text-amber-300",     icon: ExclamationTriangleIcon  },
   blocked_by_policy: { border: "border-rose-500/[0.22]",    bg: "bg-rose-500/[0.04]",    text: "text-rose-300",    pill: "bg-rose-500/15 text-rose-300",       icon: XCircleIcon              },

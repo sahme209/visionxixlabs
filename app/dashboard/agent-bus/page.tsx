@@ -25,7 +25,7 @@ interface Report { messages: BusMessage[]; total: number }
 
 const SENDER_TONE: Record<string, string> = {
   detector:       "bg-cyan-500/15 text-cyan-300 border-cyan-500/30",
-  reasoner:       "bg-violet-500/15 text-violet-300 border-violet-500/30",
+  reasoner:       "bg-violet-500/15 text-violet-300 border-white/[0.12]",
   simulator:      "bg-sky-500/15 text-sky-300 border-sky-500/30",
   policy_gate:    "bg-amber-500/15 text-amber-300 border-amber-500/30",
   boundary_gate:  "bg-amber-500/15 text-amber-300 border-amber-500/30",

@@ -54,7 +54,7 @@ interface Report {
 
 const OUTCOME_TONE: Record<string, string> = {
   deferred_to_human:        "bg-amber-500/15 text-amber-300 border-amber-500/30",
-  approval_packet_prepared: "bg-violet-500/15 text-violet-300 border-violet-500/30",
+  approval_packet_prepared: "bg-violet-500/15 text-violet-300 border-white/[0.12]",
   execution_handed_off:     "bg-cyan-500/15 text-cyan-300 border-cyan-500/30",
   verified_complete:        "bg-emerald-500/15 text-emerald-300 border-emerald-500/30",
   halted_at_gate:           "bg-rose-500/15 text-rose-300 border-rose-500/30",
@@ -147,7 +147,7 @@ export default function RationalePage() {
             onClick={() => setFilter(o)}
             className={`text-[10px] font-mono px-2 py-0.5 rounded-full border transition ${
               filter === o
-                ? "bg-violet-500/15 text-violet-200 border-violet-500/30"
+                ? "bg-violet-500/15 text-white border-white/[0.12]"
                 : "bg-white/[0.02] text-zinc-400 border-white/[0.06] hover:text-white"
             }`}
           >
@@ -244,7 +244,7 @@ function Stat({
     emerald: "border-emerald-500/[0.18] bg-emerald-500/[0.03] text-emerald-200",
     amber:   "border-amber-500/[0.18] bg-amber-500/[0.03] text-amber-200",
     rose:    "border-rose-500/[0.18] bg-rose-500/[0.03] text-rose-200",
-    violet:  "border-violet-500/[0.18] bg-violet-500/[0.03] text-violet-200",
+    violet:  "border-white/[0.06] bg-white/[0.015] text-white",
     zinc:    "border-white/[0.06] bg-white/[0.02] text-zinc-200",
   }[tone];
   return (

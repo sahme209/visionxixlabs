@@ -223,7 +223,7 @@ function EvidencePackButton({ releaseId, repositoryId }: { releaseId: string; re
   const exportUrl = (fmt: "json" | "markdown") =>
     `/api/dashboard/release-evidence-export/${encodeURIComponent(releaseId)}?format=${fmt}`;
   return (
-    <div className="mb-6 rounded-2xl border border-violet-500/[0.18] bg-violet-500/[0.03] p-4 flex items-center gap-3 flex-wrap text-[12px]">
+    <div className="mb-6 rounded-2xl border border-white/[0.06] bg-white/[0.015] p-4 flex items-center gap-3 flex-wrap text-[12px]">
       <span className="text-[10px] font-mono uppercase tracking-wider text-violet-300/70">Evidence pack</span>
       <button
         type="button"
@@ -235,14 +235,14 @@ function EvidencePackButton({ releaseId, repositoryId }: { releaseId: string; re
       </button>
       <a
         href={exportUrl("markdown")}
-        className="px-3 py-1.5 rounded-lg border border-white/[0.08] bg-white/[0.03] font-mono text-[11px] text-zinc-200 hover:border-violet-500/30 hover:text-violet-200 transition-colors"
+        className="px-3 py-1.5 rounded-lg border border-white/[0.08] bg-white/[0.03] font-mono text-[11px] text-zinc-200 hover:border-white/[0.12] hover:text-white transition-colors"
         download
       >
         Download .md
       </a>
       <a
         href={exportUrl("json")}
-        className="px-3 py-1.5 rounded-lg border border-white/[0.08] bg-white/[0.03] font-mono text-[11px] text-zinc-200 hover:border-violet-500/30 hover:text-violet-200 transition-colors"
+        className="px-3 py-1.5 rounded-lg border border-white/[0.08] bg-white/[0.03] font-mono text-[11px] text-zinc-200 hover:border-white/[0.12] hover:text-white transition-colors"
         download
       >
         Download .json

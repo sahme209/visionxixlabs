@@ -160,7 +160,7 @@ export default function RunbookQueuePage() {
                 onClick={() => setFilter(s)}
                 className={`text-[10px] font-mono px-2 py-0.5 rounded-full border transition ${
                   filter === s
-                    ? "bg-violet-500/15 text-violet-200 border-violet-500/30"
+                    ? "bg-violet-500/15 text-white border-white/[0.12]"
                     : "bg-white/[0.02] text-zinc-400 border-white/[0.06] hover:text-white"
                 }`}
               >

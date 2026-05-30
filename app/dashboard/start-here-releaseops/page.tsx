@@ -80,7 +80,7 @@ export default function StartHereReleaseOpsPage() {
       </section>
 
       {/* The cause → effect loop */}
-      <section className="mb-8 rounded-2xl border border-violet-500/[0.15] bg-violet-500/[0.025] p-5">
+      <section className="mb-8 rounded-2xl border border-white/[0.06] bg-violet-500/[0.025] p-5">
         <h2 className="text-[14px] font-semibold text-violet-100 mb-2">The cause → effect loop</h2>
         <p className="text-[12.5px] text-zinc-300 mb-4">
           Two surfaces close the post-deploy reconciliation loop:
@@ -92,7 +92,7 @@ export default function StartHereReleaseOpsPage() {
             <p className="text-[11.5px] text-zinc-400 mb-2">
               When an engineer patches an environment by hand (typically prod), log the action. The pending status flows back to source-of-truth once a PR / IaC catch-up commit captures it.
             </p>
-            <Link href="/dashboard/manual-fixes" className="text-[11px] font-mono text-violet-300 hover:text-violet-200 underline-offset-2 hover:underline">
+            <Link href="/dashboard/manual-fixes" className="text-[11px] font-mono text-zinc-300 hover:text-white underline-offset-2 hover:underline">
               Open manual fixes →
             </Link>
           </div>
@@ -102,7 +102,7 @@ export default function StartHereReleaseOpsPage() {
             <p className="text-[11.5px] text-zinc-400 mb-2">
               Post-deploy regressions pinned to a release. open → mitigated → resolved | wont_fix. Pairs with manual fixes for the full audit story.
             </p>
-            <Link href="/dashboard/deployment-incidents" className="text-[11px] font-mono text-violet-300 hover:text-violet-200 underline-offset-2 hover:underline">
+            <Link href="/dashboard/deployment-incidents" className="text-[11px] font-mono text-zinc-300 hover:text-white underline-offset-2 hover:underline">
               Open deployment incidents →
             </Link>
           </div>
@@ -117,19 +117,19 @@ export default function StartHereReleaseOpsPage() {
           log. Compliance exports read directly from this table.
         </p>
         <div className="flex flex-wrap gap-2">
-          <Link href="/dashboard/release-audit" className="px-3 py-1.5 rounded-lg border border-white/[0.08] bg-white/[0.02] text-[12px] font-mono text-zinc-200 hover:border-violet-500/30 transition-colors">
+          <Link href="/dashboard/release-audit" className="px-3 py-1.5 rounded-lg border border-white/[0.08] bg-white/[0.02] text-[12px] font-mono text-zinc-200 hover:border-white/[0.12] transition-colors">
             Release audit log
           </Link>
-          <Link href="/dashboard/policy-violations" className="px-3 py-1.5 rounded-lg border border-white/[0.08] bg-white/[0.02] text-[12px] font-mono text-zinc-200 hover:border-violet-500/30 transition-colors">
+          <Link href="/dashboard/policy-violations" className="px-3 py-1.5 rounded-lg border border-white/[0.08] bg-white/[0.02] text-[12px] font-mono text-zinc-200 hover:border-white/[0.12] transition-colors">
             Policy violations
           </Link>
-          <Link href="/dashboard/release-readiness" className="px-3 py-1.5 rounded-lg border border-white/[0.08] bg-white/[0.02] text-[12px] font-mono text-zinc-200 hover:border-violet-500/30 transition-colors">
+          <Link href="/dashboard/release-readiness" className="px-3 py-1.5 rounded-lg border border-white/[0.08] bg-white/[0.02] text-[12px] font-mono text-zinc-200 hover:border-white/[0.12] transition-colors">
             Release readiness
           </Link>
-          <Link href="/dashboard/branch-protection" className="px-3 py-1.5 rounded-lg border border-white/[0.08] bg-white/[0.02] text-[12px] font-mono text-zinc-200 hover:border-violet-500/30 transition-colors">
+          <Link href="/dashboard/branch-protection" className="px-3 py-1.5 rounded-lg border border-white/[0.08] bg-white/[0.02] text-[12px] font-mono text-zinc-200 hover:border-white/[0.12] transition-colors">
             Branch protection
           </Link>
-          <Link href="/dashboard/webhook-deliveries" className="px-3 py-1.5 rounded-lg border border-white/[0.08] bg-white/[0.02] text-[12px] font-mono text-zinc-200 hover:border-violet-500/30 transition-colors">
+          <Link href="/dashboard/webhook-deliveries" className="px-3 py-1.5 rounded-lg border border-white/[0.08] bg-white/[0.02] text-[12px] font-mono text-zinc-200 hover:border-white/[0.12] transition-colors">
             Webhook deliveries
           </Link>
         </div>
@@ -170,8 +170,8 @@ function Step({ num, icon, title, body, href, cta }: {
 }) {
   return (
     <li className="flex items-start gap-3">
-      <div className="flex-shrink-0 w-7 h-7 rounded-full bg-violet-500/[0.12] border border-violet-500/30 flex items-center justify-center mt-0.5">
-        <span className="text-[11px] font-mono font-semibold text-violet-200">{num}</span>
+      <div className="flex-shrink-0 w-7 h-7 rounded-full bg-violet-500/[0.12] border border-white/[0.12] flex items-center justify-center mt-0.5">
+        <span className="text-[11px] font-mono font-semibold text-white">{num}</span>
       </div>
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 mb-1">
@@ -179,7 +179,7 @@ function Step({ num, icon, title, body, href, cta }: {
           <p className="text-[13px] font-semibold text-white">{title}</p>
         </div>
         <p className="text-[12px] text-zinc-400 mb-1.5">{body}</p>
-        <Link href={href} className="inline-flex items-center gap-1 text-[11px] font-mono text-violet-300 hover:text-violet-200">
+        <Link href={href} className="inline-flex items-center gap-1 text-[11px] font-mono text-zinc-300 hover:text-white">
           <span>{cta}</span>
           <ArrowRightIcon className="h-3 w-3" />
         </Link>

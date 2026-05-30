@@ -103,8 +103,8 @@ export default function CopilotPage() {
       <Reveal direction="up" blur>
         <div className="mb-8">
           <div className="flex items-center gap-3 mb-3">
-            <SparklesIcon className="h-4 w-4 text-violet-400" />
-            <p className="text-[10px] font-semibold text-violet-400 uppercase tracking-widest">
+            <SparklesIcon className="h-4 w-4 text-zinc-500" />
+            <p className="text-[10px] font-semibold text-zinc-500 uppercase tracking-widest">
               AI Operations Copilot
             </p>
             <span className="text-[9px] font-semibold text-emerald-400 bg-emerald-500/15 border border-emerald-500/30 rounded-full px-2 py-0.5 uppercase tracking-wider">
@@ -138,7 +138,7 @@ export default function CopilotPage() {
               <div className="flex-1 px-6 py-5 space-y-4 overflow-y-auto">
                 {turns.length === 0 && (
                   <div className="text-center py-10">
-                    <SparklesIcon className="h-8 w-8 text-violet-400 mx-auto mb-3 opacity-60" />
+                    <SparklesIcon className="h-8 w-8 text-zinc-500 mx-auto mb-3 opacity-60" />
                     <p className="text-sm font-semibold text-white mb-1">Start with a suggested question.</p>
                     <p className="text-xs text-zinc-500">Or type a free-form question below.</p>
                   </div>
@@ -200,7 +200,7 @@ export default function CopilotPage() {
                       onClick={() => ask(q.intent, q.label)}
                       className="w-full text-left rounded-lg px-3 py-2 hover:bg-white/[0.04] transition-colors group flex items-center gap-2.5"
                     >
-                      <Icon className="h-3.5 w-3.5 text-violet-400 shrink-0" />
+                      <Icon className="h-3.5 w-3.5 text-zinc-500 shrink-0" />
                       <span className="text-xs text-zinc-300 group-hover:text-white transition-colors leading-snug">{q.label}</span>
                       <ArrowRightIcon className="h-3 w-3 text-zinc-700 ml-auto group-hover:text-zinc-400 group-hover:translate-x-0.5 transition-all shrink-0" />
                     </button>
@@ -266,7 +266,7 @@ function TurnView({ turn }: { turn: Turn }) {
   if (turn.role === "user") {
     return (
       <div className="flex justify-end">
-        <div className="rounded-2xl bg-violet-500/10 border border-violet-500/20 px-4 py-2.5 text-sm text-white max-w-[80%]">
+        <div className="rounded-2xl bg-violet-500/10 border border-white/[0.08] px-4 py-2.5 text-sm text-white max-w-[80%]">
           {turn.text}
         </div>
       </div>
@@ -314,7 +314,7 @@ function TurnView({ turn }: { turn: Turn }) {
                   <Link
                     key={a.href}
                     href={a.href}
-                    className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-semibold text-violet-300 bg-violet-500/10 border border-violet-500/20 hover:bg-violet-500/20 hover:border-violet-500/30 transition-colors"
+                    className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-semibold text-violet-300 bg-violet-500/10 border border-white/[0.08] hover:bg-violet-500/20 hover:border-white/[0.12] transition-colors"
                   >
                     {a.label}
                     <ArrowRightIcon className="h-3 w-3" />

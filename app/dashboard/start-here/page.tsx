@@ -176,7 +176,7 @@ export default function StartHerePage() {
         <div className="flex items-center gap-2 pt-1">
           <Link
             href="/demo"
-            className="inline-flex items-center gap-1.5 text-[12px] text-violet-300 hover:text-violet-200 transition-colors"
+            className="inline-flex items-center gap-1.5 text-[12px] text-zinc-300 hover:text-white transition-colors"
           >
             Prefer to explore first? Open the sandbox →
           </Link>
@@ -192,7 +192,7 @@ export default function StartHerePage() {
               className="rounded-2xl border border-white/[0.06] bg-white/[0.01] p-5 hover:border-white/[0.10] transition-colors"
             >
               <div className="flex items-start gap-4">
-                <div className="shrink-0 w-10 h-10 rounded-xl bg-violet-500/10 border border-violet-500/20 flex items-center justify-center">
+                <div className="shrink-0 w-10 h-10 rounded-xl bg-violet-500/10 border border-white/[0.08] flex items-center justify-center">
                   <Icon className="h-5 w-5 text-violet-300" />
                 </div>
                 <div className="min-w-0 flex-1 space-y-2">
@@ -221,7 +221,7 @@ export default function StartHerePage() {
                     {step.demoHref && (
                       <Link
                         href={step.demoHref}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-violet-500/[0.10] text-violet-200 text-[12px] font-medium border border-violet-500/20 hover:bg-violet-500/[0.18] transition-colors"
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-white/[0.04] text-white text-[12px] font-medium border border-white/[0.08] hover:bg-violet-500/[0.18] transition-colors"
                       >
                         View demo
                       </Link>

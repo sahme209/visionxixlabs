@@ -54,7 +54,7 @@ type RespBody =
 const STATUS_CLASS: Record<Status, string> = {
   pending:     "bg-zinc-700/40 text-zinc-300 border-zinc-600/40",
   in_progress: "bg-amber-500/15 text-amber-300 border-amber-500/25",
-  approved:    "bg-violet-500/15 text-violet-300 border-violet-500/25",
+  approved:    "bg-violet-500/15 text-violet-300 border-white/[0.10]",
   implemented: "bg-emerald-500/15 text-emerald-300 border-emerald-500/25",
   rejected:    "bg-rose-500/15 text-rose-300 border-rose-500/25",
   cancelled:   "bg-zinc-700/40 text-zinc-400 border-zinc-700/40",
@@ -245,7 +245,7 @@ function PrTicketEnrichButton({ onEnriched }: { onEnriched: () => void }) {
         type="button"
         disabled={busy}
         onClick={trigger}
-        className="px-2 py-1 rounded border border-violet-500/30 bg-violet-500/[0.06] text-violet-200 hover:bg-violet-500/[0.12] disabled:opacity-50 disabled:cursor-wait transition-colors"
+        className="px-2 py-1 rounded border border-white/[0.12] bg-white/[0.025] text-white hover:bg-violet-500/[0.12] disabled:opacity-50 disabled:cursor-wait transition-colors"
       >
         {busy ? "scanning…" : "Refresh PR ↔ ticket links"}
       </button>
@@ -311,7 +311,7 @@ function ProviderSyncControls({ onSynced }: { onSynced: () => void }) {
           type="button"
           disabled={busy}
           onClick={() => trigger(p)}
-          className="px-2 py-1 rounded border border-white/[0.08] bg-white/[0.02] text-zinc-300 hover:border-violet-500/40 hover:text-violet-200 disabled:opacity-50 disabled:cursor-wait transition-colors"
+          className="px-2 py-1 rounded border border-white/[0.08] bg-white/[0.02] text-zinc-300 hover:border-white/[0.15] hover:text-white disabled:opacity-50 disabled:cursor-wait transition-colors"
         >
           {outcome.kind === "running" && outcome.which === p
             ? `${p}…`
@@ -333,7 +333,7 @@ function ProviderSyncControls({ onSynced }: { onSynced: () => void }) {
 
 function Stat({ icon: Icon, label, value, tone }: { icon: typeof TicketIcon; label: string; value: string; tone: "violet" | "emerald" | "amber" | "rose" | "zinc" }) {
   const cls = {
-    violet:  "border-violet-500/[0.18] bg-violet-500/[0.03] text-violet-200",
+    violet:  "border-white/[0.06] bg-white/[0.015] text-white",
     emerald: "border-emerald-500/[0.18] bg-emerald-500/[0.03] text-emerald-200",
     amber:   "border-amber-500/[0.18] bg-amber-500/[0.03] text-amber-200",
     rose:    "border-rose-500/[0.18] bg-rose-500/[0.03] text-rose-200",

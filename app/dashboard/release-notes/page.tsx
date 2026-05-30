@@ -44,7 +44,7 @@ type ListBody =
 
 const STATUS_CLASS: Record<NotesView["status"], string> = {
   draft:     "bg-amber-500/15 text-amber-300 border-amber-500/25",
-  reviewed:  "bg-violet-500/15 text-violet-300 border-violet-500/25",
+  reviewed:  "bg-violet-500/15 text-violet-300 border-white/[0.10]",
   published: "bg-emerald-500/15 text-emerald-300 border-emerald-500/25",
   unknown:   "bg-zinc-700/40 text-zinc-400 border-zinc-700/40",
 };
@@ -193,7 +193,7 @@ function DraftCard({ draft, onChanged }: { draft: NotesView; onChanged: () => vo
       <div className="mt-3 pt-3 border-t border-white/[0.04] flex items-center gap-2 flex-wrap text-[11px] font-mono">
         {draft.status === "draft" && (
           <button type="button" onClick={() => transition("review")} disabled={busy !== null}
-            className="px-2 py-1 rounded border border-violet-500/30 bg-violet-500/[0.08] text-violet-200 hover:bg-violet-500/[0.16] disabled:opacity-50 disabled:cursor-wait">
+            className="px-2 py-1 rounded border border-white/[0.12] bg-white/[0.03] text-white hover:bg-violet-500/[0.16] disabled:opacity-50 disabled:cursor-wait">
             {busy === "review" ? "…" : "Mark reviewed"}
           </button>
         )}
@@ -296,7 +296,7 @@ function UpsertPanel({ onSaved }: { onSaved: () => void }) {
         <button
           type="button"
           onClick={() => setState({ kind: "open" })}
-          className="px-3 py-1.5 rounded-lg border border-violet-500/30 bg-violet-500/[0.06] text-[12px] font-semibold text-violet-200 hover:bg-violet-500/[0.12] transition-colors"
+          className="px-3 py-1.5 rounded-lg border border-white/[0.12] bg-white/[0.025] text-[12px] font-semibold text-white hover:bg-violet-500/[0.12] transition-colors"
         >
           + Draft release notes
         </button>
@@ -306,7 +306,7 @@ function UpsertPanel({ onSaved }: { onSaved: () => void }) {
 
   const busy = state.kind === "submitting";
   return (
-    <div className="mb-6 rounded-2xl border border-violet-500/[0.18] bg-violet-500/[0.03] p-5">
+    <div className="mb-6 rounded-2xl border border-white/[0.06] bg-white/[0.015] p-5">
       <div className="flex items-center justify-between mb-3">
         <p className="text-[13px] font-semibold text-violet-100">Draft release notes</p>
         <button type="button" onClick={reset} className="text-[11px] font-mono text-zinc-400 hover:text-zinc-200" disabled={busy}>cancel</button>

@@ -70,7 +70,7 @@ const CATEGORY_ICON: Record<ConnectorCategory, typeof CloudIcon> = {
 
 const STATUS_COLOR: Record<ConnectorStatus, { text: string; bg: string; label: string }> = {
   live:        { text: "text-emerald-400", bg: "bg-emerald-500/10 border-emerald-500/20", label: "Live" },
-  preview:     { text: "text-violet-400",  bg: "bg-violet-500/10 border-violet-500/20",   label: "Preview" },
+  preview:     { text: "text-zinc-500",  bg: "bg-violet-500/10 border-white/[0.08]",   label: "Preview" },
   expanding:   { text: "text-blue-400",    bg: "bg-blue-500/10 border-blue-500/20",       label: "Expanding" },
   planned:     { text: "text-amber-400",   bg: "bg-amber-500/10 border-amber-500/20",     label: "Planned" },
   unavailable: { text: "text-zinc-500",    bg: "bg-white/[0.04] border-white/[0.08]",     label: "Unavailable" },
@@ -95,8 +95,8 @@ export default function IntegrationsPage() {
       <Reveal direction="up" blur>
         <div className="mb-8">
           <div className="flex items-center gap-3 mb-3">
-            <PuzzlePieceIcon className="h-4 w-4 text-violet-400" />
-            <p className="text-[10px] font-semibold text-violet-400 uppercase tracking-widest">
+            <PuzzlePieceIcon className="h-4 w-4 text-zinc-500" />
+            <p className="text-[10px] font-semibold text-zinc-500 uppercase tracking-widest">
               Integrations · Operational nervous system
             </p>
           </div>
@@ -113,7 +113,7 @@ export default function IntegrationsPage() {
       <Stagger delay={0.05} interval={0.05} className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
         {[
           { label: "Live connectors", value: liveCount, color: "text-emerald-400", bg: "bg-emerald-500/10 border-emerald-500/20", icon: CheckCircleIcon },
-          { label: "Preview", value: previewCount, color: "text-violet-400", bg: "bg-violet-500/10 border-violet-500/20", icon: CpuChipIcon },
+          { label: "Preview", value: previewCount, color: "text-zinc-500", bg: "bg-violet-500/10 border-white/[0.08]", icon: CpuChipIcon },
           { label: "Planned / expanding", value: plannedCount, color: "text-amber-400", bg: "bg-amber-500/10 border-amber-500/20", icon: ClockIcon },
           { label: "Total registry", value: CONNECTOR_REGISTRY.length, color: "text-blue-400", bg: "bg-blue-500/10 border-blue-500/20", icon: PuzzlePieceIcon },
         ].map((kpi) => {
@@ -143,7 +143,7 @@ export default function IntegrationsPage() {
                 onClick={() => setFilter(id)}
                 className={`inline-flex items-center px-3.5 py-1.5 rounded-full text-xs font-medium transition-all border ${
                   isActive
-                    ? "bg-violet-500/15 border-violet-500/30 text-violet-300 shadow-[0_0_20px_rgba(139,92,246,0.15)]"
+                    ? "bg-violet-500/15 border-white/[0.12] text-violet-300 shadow-[0_0_20px_rgba(139,92,246,0.15)]"
                     : "bg-white/[0.02] border-white/[0.06] text-zinc-400 hover:text-white hover:border-white/[0.12]"
                 }`}
               >
@@ -169,7 +169,7 @@ export default function IntegrationsPage() {
                   <div key={cat} className="rounded-2xl border border-white/[0.06] bg-white/[0.02] overflow-hidden">
                     <div className="px-4 py-2.5 border-b border-white/[0.06] bg-white/[0.01] flex items-center justify-between">
                       <div className="flex items-center gap-2">
-                        <Icon className="h-3.5 w-3.5 text-violet-400" />
+                        <Icon className="h-3.5 w-3.5 text-zinc-500" />
                         <span className="text-xs font-bold text-white uppercase tracking-wider">{CATEGORY_LABEL[cat]}</span>
                       </div>
                       <span className="text-[10px] text-zinc-500 font-mono">{sum.live + sum.preview} live · {sum.planned} planned</span>
@@ -181,7 +181,7 @@ export default function IntegrationsPage() {
                           onClick={() => setSelected(c.id)}
                           className={`w-full text-left rounded-xl border p-3 transition-all ${
                             c.id === active?.id
-                              ? "border-violet-500/30 bg-violet-500/[0.06]"
+                              ? "border-white/[0.12] bg-white/[0.025]"
                               : "border-white/[0.06] bg-white/[0.02] hover:border-white/[0.12] hover:bg-white/[0.04]"
                           }`}
                         >
@@ -243,7 +243,7 @@ function ConnectorDetailPanel({ connector }: { connector: ConnectorRecord }) {
 
       {/* Auth + setup */}
       <div className="px-6 py-4 border-b border-white/[0.06]">
-        <p className="text-[10px] font-semibold text-violet-400 uppercase tracking-widest mb-2">Auth model</p>
+        <p className="text-[10px] font-semibold text-zinc-500 uppercase tracking-widest mb-2">Auth model</p>
         <p className="text-sm text-zinc-300 mb-3 font-mono">{connector.authModel}</p>
         <div className="flex flex-wrap gap-1">
           {connector.permissions.map((p) => (
@@ -277,7 +277,7 @@ function ConnectorDetailPanel({ connector }: { connector: ConnectorRecord }) {
             <p className="text-[10px] font-semibold text-zinc-500 uppercase tracking-widest mb-2">Actions</p>
             <div className="flex flex-wrap gap-1">
               {connector.supportedActions.map((a) => (
-                <span key={a} className="text-[10px] text-violet-400 bg-violet-500/10 border border-violet-500/20 rounded-full px-2 py-0.5 font-mono">{a}</span>
+                <span key={a} className="text-[10px] text-zinc-500 bg-violet-500/10 border border-white/[0.08] rounded-full px-2 py-0.5 font-mono">{a}</span>
               ))}
             </div>
           </div>
@@ -331,12 +331,12 @@ function ConnectorDetailPanel({ connector }: { connector: ConnectorRecord }) {
       <div className="px-6 py-4 flex items-center justify-between flex-wrap gap-3">
         <div className="flex items-center gap-x-3 gap-y-1 text-[11px] flex-wrap">
           {connector.docsRoute && (
-            <Link href={connector.docsRoute} target="_blank" className="text-violet-400 hover:text-violet-300 transition-colors font-medium">
+            <Link href={connector.docsRoute} target="_blank" className="text-zinc-500 hover:text-violet-300 transition-colors font-medium">
               Setup guide →
             </Link>
           )}
           {connector.dashboardRoute && connector.status !== "planned" && (
-            <Link href={connector.dashboardRoute} className="text-violet-400 hover:text-violet-300 transition-colors font-medium">
+            <Link href={connector.dashboardRoute} className="text-zinc-500 hover:text-violet-300 transition-colors font-medium">
               Open dashboard →
             </Link>
           )}

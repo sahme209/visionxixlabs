@@ -50,7 +50,7 @@ const STATUS_CLASS: Record<FixView["status"], string> = {
 
 const TIER_CLASS: Record<FixView["environmentTier"], string> = {
   prod:    "bg-rose-500/15 text-rose-300 border-rose-500/25",
-  staging: "bg-violet-500/15 text-violet-300 border-violet-500/25",
+  staging: "bg-violet-500/15 text-violet-300 border-white/[0.10]",
   dev:     "bg-cyan-500/15 text-cyan-300 border-cyan-500/25",
   other:   "bg-zinc-700/40 text-zinc-300 border-zinc-700/40",
   unknown: "bg-zinc-700/40 text-zinc-400 border-zinc-700/40",

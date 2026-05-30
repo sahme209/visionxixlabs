@@ -77,7 +77,7 @@ const SEVERITY_CLASS: Record<ProposalView["severity"], string> = {
 };
 
 const DECISION_CLASS: Record<ProposalDecision, string> = {
-  pending:    "bg-violet-500/15 text-violet-300 border-violet-500/25",
+  pending:    "bg-violet-500/15 text-violet-300 border-white/[0.10]",
   accepted:   "bg-emerald-500/15 text-emerald-300 border-emerald-500/25",
   rejected:   "bg-rose-500/15 text-rose-300 border-rose-500/25",
   dismissed:  "bg-zinc-700/40 text-zinc-300 border-zinc-700/40",
@@ -141,7 +141,7 @@ export default function PolicyProposalsPage() {
           type="button"
           onClick={generateProposals}
           disabled={loading}
-          className="px-3 py-1.5 rounded-lg border border-violet-500/40 bg-violet-500/[0.10] text-[12px] font-semibold text-violet-100 hover:bg-violet-500/[0.18] disabled:opacity-50 disabled:cursor-wait transition-colors inline-flex items-center gap-1.5"
+          className="px-3 py-1.5 rounded-lg border border-violet-500/40 bg-white/[0.04] text-[12px] font-semibold text-violet-100 hover:bg-violet-500/[0.18] disabled:opacity-50 disabled:cursor-wait transition-colors inline-flex items-center gap-1.5"
         >
           <SparklesIcon className="h-3.5 w-3.5" />
           {loading ? "Working…" : "Generate proposals"}
@@ -228,7 +228,7 @@ function ProposalCard({ proposal, onChanged }: { proposal: ProposalView; onChang
   const body = proposal.suggestedRuleBody as { description?: string; defaultBlocking?: boolean; scope?: string } | null;
 
   return (
-    <div className="rounded-2xl border border-violet-500/[0.18] bg-violet-500/[0.025] p-4">
+    <div className="rounded-2xl border border-white/[0.06] bg-violet-500/[0.025] p-4">
       <div className="flex items-center gap-2 mb-2 flex-wrap">
         <span className={`text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border ${SEVERITY_CLASS[proposal.severity]}`}>
           {proposal.severity}

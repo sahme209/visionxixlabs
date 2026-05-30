@@ -147,7 +147,7 @@ export default async function GapsPage() {
             return (
               <li
                 key={g.id}
-                className="rounded-xl border border-white/[0.04] bg-white/[0.02] p-4 hover:border-violet-500/30 transition"
+                className="rounded-xl border border-white/[0.04] bg-white/[0.02] p-4 hover:border-white/[0.12] transition"
               >
                 <div className="flex flex-wrap items-start justify-between gap-3">
                   <div className="min-w-0 flex-1">
@@ -168,7 +168,7 @@ export default async function GapsPage() {
                       {tool ? (
                         <Link
                           href={`/dashboard/sub-tools/${tool.slug}`}
-                          className="rounded-full border border-violet-500/30 bg-violet-500/10 px-2 py-0.5 text-violet-300 hover:bg-violet-500/15 transition"
+                          className="rounded-full border border-white/[0.12] bg-violet-500/10 px-2 py-0.5 text-violet-300 hover:bg-white/[0.06] transition"
                         >
                           {tool.name}
                         </Link>

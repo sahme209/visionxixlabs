@@ -193,7 +193,7 @@ export default function EvidenceLibraryPage() {
               onClick={() => setFilter("all")}
               className={`inline-flex items-center px-3 py-1.5 rounded-full text-[11px] font-medium border transition-all ${
                 filter === "all"
-                  ? "bg-violet-500/15 border-violet-500/30 text-violet-300"
+                  ? "bg-violet-500/15 border-white/[0.12] text-violet-300"
                   : "bg-white/[0.02] border-white/[0.06] text-zinc-400 hover:text-white hover:border-white/[0.12]"
               }`}
             >
@@ -206,7 +206,7 @@ export default function EvidenceLibraryPage() {
                 onClick={() => setFilter(t)}
                 className={`inline-flex items-center px-3 py-1.5 rounded-full text-[11px] font-medium border transition-all ${
                   filter === t
-                    ? "bg-violet-500/15 border-violet-500/30 text-violet-300"
+                    ? "bg-violet-500/15 border-white/[0.12] text-violet-300"
                     : "bg-white/[0.02] border-white/[0.06] text-zinc-400 hover:text-white hover:border-white/[0.12]"
                 }`}
               >

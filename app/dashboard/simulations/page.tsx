@@ -28,7 +28,7 @@ export const dynamic = "force-dynamic";
 
 const STATUS_TONE: Record<SimulationResult["status"], string> = {
   simulated:      "text-emerald-300 bg-emerald-500/10 border-emerald-500/25",
-  preview_only:   "text-violet-300 bg-violet-500/10 border-violet-500/25",
+  preview_only:   "text-violet-300 bg-violet-500/10 border-white/[0.10]",
   blocked:        "text-rose-300 bg-rose-500/10 border-rose-500/25",
   unsafe:         "text-amber-300 bg-amber-500/10 border-amber-500/25",
   incomplete:     "text-zinc-300 bg-zinc-500/10 border-zinc-500/25",

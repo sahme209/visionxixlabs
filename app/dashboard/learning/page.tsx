@@ -158,7 +158,7 @@ export default async function LearningPage() {
                       {tool ? (
                         <Link
                           href={`/dashboard/sub-tools/${tool.slug}`}
-                          className="rounded-full border border-violet-500/30 bg-violet-500/10 px-2 py-0.5 text-violet-300 hover:bg-violet-500/15 transition"
+                          className="rounded-full border border-white/[0.12] bg-violet-500/10 px-2 py-0.5 text-violet-300 hover:bg-white/[0.06] transition"
                         >
                           {tool.name}
                         </Link>

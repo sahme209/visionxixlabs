@@ -109,7 +109,7 @@ const ROLE_META: Record<
   safety:       { label: "Safety",       tone: "border-amber-500/30   bg-amber-500/10   text-amber-300",   description: "Apply the charter, classify the blast radius, build the packet." },
   verification: { label: "Verification", tone: "border-emerald-500/30 bg-emerald-500/10 text-emerald-300", description: "Check that the action did what it claimed, and write the audit row." },
   memory:       { label: "Memory",       tone: "border-zinc-500/30    bg-zinc-500/10    text-zinc-300",    description: "Persist proposals + calibration so improvements compound over time." },
-  workflow:     { label: "Workflow",     tone: "border-violet-500/30  bg-violet-500/10  text-violet-300",  description: "Orchestrate the agents end-to-end on the bus." },
+  workflow:     { label: "Workflow",     tone: "border-white/[0.12]  bg-violet-500/10  text-violet-300",  description: "Orchestrate the agents end-to-end on the bus." },
 };
 
 const ROLES_ORDER: readonly AgentRole[] = [
@@ -218,7 +218,7 @@ export default async function AgentsPage() {
                       "rounded-2xl border bg-white/[0.015] p-4 md:p-5 hover:bg-white/[0.025] transition flex flex-col",
                       liveMessages && liveMessages > 0
                         ? "border-emerald-500/25 hover:border-emerald-500/45"
-                        : "border-white/[0.06] hover:border-violet-500/30",
+                        : "border-white/[0.06] hover:border-white/[0.12]",
                     ].join(" ")}
                   >
                     <header className="flex items-start justify-between gap-3">
@@ -258,7 +258,7 @@ export default async function AgentsPage() {
                       {a.evidenceRoute ? (
                         <Link
                           href={a.evidenceRoute.href}
-                          className="inline-flex items-center gap-1 text-[12px] font-medium text-violet-300 hover:text-violet-200 transition"
+                          className="inline-flex items-center gap-1 text-[12px] font-medium text-zinc-300 hover:text-white transition"
                         >
                           {a.evidenceRoute.label}
                           <ArrowRightIcon className="h-3 w-3" />
@@ -296,7 +296,7 @@ export default async function AgentsPage() {
         </div>
         <Link
           href="/dashboard/agent-proposals"
-          className="inline-flex items-center gap-1.5 rounded-full border border-violet-500/30 bg-violet-500/10 px-3.5 py-1.5 text-[12px] font-medium text-violet-200 hover:bg-violet-500/15 transition"
+          className="inline-flex items-center gap-1.5 rounded-full border border-white/[0.12] bg-violet-500/10 px-3.5 py-1.5 text-[12px] font-medium text-white hover:bg-white/[0.06] transition"
         >
           Method proposals
           <ArrowRightIcon className="h-3 w-3" />

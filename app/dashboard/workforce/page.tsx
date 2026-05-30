@@ -51,14 +51,14 @@ const DEPT_META: Record<WorkforceDepartment, { label: string; tone: string }> = 
   safety:            { label: "Safety",             tone: "border-amber-500/30 bg-amber-500/10 text-amber-300" },
   verification:      { label: "Verification",       tone: "border-emerald-500/30 bg-emerald-500/10 text-emerald-300" },
   memory:            { label: "Memory",             tone: "border-zinc-500/30 bg-zinc-500/10 text-zinc-300" },
-  workflow:          { label: "Workflow",           tone: "border-violet-500/30 bg-violet-500/10 text-violet-300" },
-  devops:            { label: "DevOps",             tone: "border-violet-500/30 bg-violet-500/10 text-violet-300" },
+  workflow:          { label: "Workflow",           tone: "border-white/[0.12] bg-violet-500/10 text-violet-300" },
+  devops:            { label: "DevOps",             tone: "border-white/[0.12] bg-violet-500/10 text-violet-300" },
   database:          { label: "Database",           tone: "border-blue-500/30 bg-blue-500/10 text-blue-300" },
   security:          { label: "Security",           tone: "border-emerald-500/30 bg-emerald-500/10 text-emerald-300" },
   finops:            { label: "FinOps",             tone: "border-amber-500/30 bg-amber-500/10 text-amber-300" },
   observability:     { label: "Observability",      tone: "border-cyan-500/30 bg-cyan-500/10 text-cyan-300" },
   incident_response: { label: "Incident response",  tone: "border-rose-500/30 bg-rose-500/10 text-rose-300" },
-  marketing:         { label: "Marketing",          tone: "border-violet-500/30 bg-violet-500/10 text-violet-300" },
+  marketing:         { label: "Marketing",          tone: "border-white/[0.12] bg-violet-500/10 text-violet-300" },
   sales:             { label: "Sales",              tone: "border-fuchsia-500/30 bg-fuchsia-500/10 text-fuchsia-300" },
 };
 
@@ -136,7 +136,7 @@ export default async function WorkforcePage() {
       </div>
 
       {/* Approval legend */}
-      <section className="mt-10 rounded-2xl border border-violet-500/15 bg-violet-500/[0.03] p-5">
+      <section className="mt-10 rounded-2xl border border-violet-500/15 bg-white/[0.015] p-5">
         <header className="flex items-center gap-2 mb-3">
           <ShieldCheckIcon className="h-4 w-4 text-violet-300" />
           <p className="text-[10px] font-semibold uppercase tracking-widest text-violet-300">Approval rules</p>
@@ -152,33 +152,33 @@ export default async function WorkforcePage() {
       </section>
 
       <section className="mt-6 grid sm:grid-cols-2 lg:grid-cols-6 gap-3">
-        <Link href="/dashboard/workforce/coding" className="block rounded-xl border border-violet-500/30 bg-violet-500/[0.04] p-4 hover:border-violet-500/40 transition-colors">
+        <Link href="/dashboard/workforce/coding" className="block rounded-xl border border-white/[0.12] bg-white/[0.015] p-4 hover:border-white/[0.15] transition-colors">
           <CodeBracketSquareIcon className="h-4 w-4 text-violet-300 mb-2" />
           <p className="text-sm font-semibold text-white">AI coding</p>
           <p className="text-[11px] text-zinc-400 mt-1">Describe a change · we propose, gate, and ship the PR.</p>
         </Link>
-        <Link href="/dashboard/workforce/pipelines" className="block rounded-xl border border-violet-500/30 bg-violet-500/[0.04] p-4 hover:border-violet-500/40 transition-colors">
+        <Link href="/dashboard/workforce/pipelines" className="block rounded-xl border border-white/[0.12] bg-white/[0.015] p-4 hover:border-white/[0.15] transition-colors">
           <PuzzlePieceIcon className="h-4 w-4 text-violet-300 mb-2" />
           <p className="text-sm font-semibold text-white">Pipelines</p>
           <p className="text-[11px] text-zinc-400 mt-1">Multi-stage CI/CD, DB-migrate, security sweeps — one click.</p>
         </Link>
-        <Link href="/dashboard/agent-tools" className="block rounded-xl border border-white/[0.06] bg-white/[0.02] p-4 hover:border-violet-500/25 transition-colors">
-          <ShieldCheckIcon className="h-4 w-4 text-violet-400 mb-2" />
+        <Link href="/dashboard/agent-tools" className="block rounded-xl border border-white/[0.06] bg-white/[0.02] p-4 hover:border-white/[0.10] transition-colors">
+          <ShieldCheckIcon className="h-4 w-4 text-zinc-500 mb-2" />
           <p className="text-sm font-semibold text-white">Agent tool access matrix</p>
           <p className="text-[11px] text-zinc-500 mt-1">Per-action read / write / approval rules.</p>
         </Link>
-        <Link href="/dashboard/workforce/approvals" className="block rounded-xl border border-white/[0.06] bg-white/[0.02] p-4 hover:border-violet-500/25 transition-colors">
-          <ExclamationTriangleIcon className="h-4 w-4 text-violet-400 mb-2" />
+        <Link href="/dashboard/workforce/approvals" className="block rounded-xl border border-white/[0.06] bg-white/[0.02] p-4 hover:border-white/[0.10] transition-colors">
+          <ExclamationTriangleIcon className="h-4 w-4 text-zinc-500 mb-2" />
           <p className="text-sm font-semibold text-white">Engineer approvals</p>
           <p className="text-[11px] text-zinc-500 mt-1">Engineer-sourced risky actions awaiting sign-off.</p>
         </Link>
-        <Link href="/dashboard/workforce/activity" className="block rounded-xl border border-white/[0.06] bg-white/[0.02] p-4 hover:border-violet-500/25 transition-colors">
-          <ClockIcon className="h-4 w-4 text-violet-400 mb-2" />
+        <Link href="/dashboard/workforce/activity" className="block rounded-xl border border-white/[0.06] bg-white/[0.02] p-4 hover:border-white/[0.10] transition-colors">
+          <ClockIcon className="h-4 w-4 text-zinc-500 mb-2" />
           <p className="text-sm font-semibold text-white">Activity feed</p>
           <p className="text-[11px] text-zinc-500 mt-1">Every gated attempt — allowed, requires approval, or blocked.</p>
         </Link>
-        <Link href="/dashboard/audit" className="block rounded-xl border border-white/[0.06] bg-white/[0.02] p-4 hover:border-violet-500/25 transition-colors">
-          <CheckCircleIcon className="h-4 w-4 text-violet-400 mb-2" />
+        <Link href="/dashboard/audit" className="block rounded-xl border border-white/[0.06] bg-white/[0.02] p-4 hover:border-white/[0.10] transition-colors">
+          <CheckCircleIcon className="h-4 w-4 text-zinc-500 mb-2" />
           <p className="text-sm font-semibold text-white">Audit log</p>
           <p className="text-[11px] text-zinc-500 mt-1">Every engineer action recorded.</p>
         </Link>
@@ -251,7 +251,7 @@ function EngineerCard({ engineer }: { engineer: AgentEngineer }) {
           </span>
         )}
         {engineer.ideExposed && (
-          <span className="inline-flex items-center gap-1 rounded-full border border-violet-500/30 bg-violet-500/10 text-violet-300 px-1.5 py-0.5">
+          <span className="inline-flex items-center gap-1 rounded-full border border-white/[0.12] bg-violet-500/10 text-violet-300 px-1.5 py-0.5">
             <CodeBracketIcon className="h-3 w-3" /> ide
           </span>
         )}
@@ -276,7 +276,7 @@ function EngineerCard({ engineer }: { engineer: AgentEngineer }) {
 
       <div className="mt-3 flex items-center justify-between gap-2">
         <span className="text-[10px] font-mono text-zinc-500">{engineer.kernelModules.length} kernel{engineer.kernelModules.length === 1 ? "" : "s"}</span>
-        <Link href={`/dashboard/agents`} className="text-[11px] text-violet-300 hover:text-violet-200 inline-flex items-center gap-1">
+        <Link href={`/dashboard/agents`} className="text-[11px] text-zinc-300 hover:text-white inline-flex items-center gap-1">
           Kernels
           <ArrowRightIcon className="h-3 w-3" />
         </Link>

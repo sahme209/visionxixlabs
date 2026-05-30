@@ -101,7 +101,7 @@ export default async function AutomationPage() {
             <span className="rounded-full border border-cyan-500/30 bg-cyan-500/10 text-cyan-300 px-2.5 py-1 text-[11px] font-mono">
               {cloudScripts.length} cloud
             </span>
-            <span className="rounded-full border border-violet-500/30 bg-violet-500/10 text-violet-300 px-2.5 py-1 text-[11px] font-mono">
+            <span className="rounded-full border border-white/[0.12] bg-violet-500/10 text-violet-300 px-2.5 py-1 text-[11px] font-mono">
               {desktopScripts.length} desktop
             </span>
             {showSampleData && (
@@ -211,7 +211,7 @@ export default async function AutomationPage() {
               return (
                 <article
                   key={s.id}
-                  className="rounded-xl border border-white/[0.04] bg-white/[0.02] px-3.5 py-3 hover:border-violet-500/30 hover:bg-white/[0.035] transition"
+                  className="rounded-xl border border-white/[0.04] bg-white/[0.02] px-3.5 py-3 hover:border-white/[0.12] hover:bg-white/[0.035] transition"
                 >
                   <div className="flex flex-wrap items-start justify-between gap-3">
                     <div className="min-w-0 flex-1">
@@ -231,7 +231,7 @@ export default async function AutomationPage() {
                         {tool ? (
                           <Link
                             href={`/dashboard/sub-tools/${tool.slug}`}
-                            className="rounded-full border border-violet-500/30 bg-violet-500/10 px-2 py-0.5 text-violet-300 hover:bg-violet-500/15 transition"
+                            className="rounded-full border border-white/[0.12] bg-violet-500/10 px-2 py-0.5 text-violet-300 hover:bg-white/[0.06] transition"
                           >
                             {tool.name}
                           </Link>

@@ -58,7 +58,7 @@ const PRIORITY_CLASS: Record<Priority, string> = {
 };
 
 const DECISION_CLASS: Record<Decision, string> = {
-  pending:    "bg-violet-500/15 text-violet-300 border-violet-500/25",
+  pending:    "bg-violet-500/15 text-violet-300 border-white/[0.10]",
   accepted:   "bg-emerald-500/15 text-emerald-300 border-emerald-500/25",
   overridden: "bg-amber-500/15 text-amber-300 border-amber-500/25",
   dismissed:  "bg-zinc-700/40 text-zinc-300 border-zinc-700/40",
@@ -178,7 +178,7 @@ function TriageCard({ triage, onChanged }: { triage: TriageView; onChanged: () =
   }
 
   return (
-    <div className="rounded-2xl border border-violet-500/[0.18] bg-violet-500/[0.025] p-4">
+    <div className="rounded-2xl border border-white/[0.06] bg-violet-500/[0.025] p-4">
       <div className="flex items-center gap-2 mb-2 flex-wrap">
         <span className={`text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded border ${PRIORITY_CLASS[triage.priority]}`}>
           {triage.priority}
@@ -327,7 +327,7 @@ function GeneratePanel({ onGenerated }: { onGenerated: () => void }) {
         <button
           type="button"
           onClick={() => setState({ kind: "open" })}
-          className="px-3 py-1.5 rounded-lg border border-violet-500/30 bg-violet-500/[0.06] text-[12px] font-semibold text-violet-200 hover:bg-violet-500/[0.12] transition-colors inline-flex items-center gap-1.5"
+          className="px-3 py-1.5 rounded-lg border border-white/[0.12] bg-white/[0.025] text-[12px] font-semibold text-white hover:bg-violet-500/[0.12] transition-colors inline-flex items-center gap-1.5"
         >
           <SparklesIcon className="h-3.5 w-3.5" />
           Generate triage
@@ -338,7 +338,7 @@ function GeneratePanel({ onGenerated }: { onGenerated: () => void }) {
 
   const busy = state.kind === "submitting";
   return (
-    <div className="mb-6 rounded-2xl border border-violet-500/[0.18] bg-violet-500/[0.03] p-5">
+    <div className="mb-6 rounded-2xl border border-white/[0.06] bg-white/[0.015] p-5">
       <div className="flex items-center justify-between mb-3">
         <p className="text-[13px] font-semibold text-violet-100">Generate incident triage</p>
         <button type="button" onClick={() => { setIncidentId(""); setHint(""); setState({ kind: "closed" }); }} className="text-[11px] font-mono text-zinc-400 hover:text-zinc-200" disabled={busy}>cancel</button>
@@ -412,7 +412,7 @@ interface TriageEnrichmentView {
 type TriageEnrichBody = { ok: true; data: { enrichment: TriageEnrichmentView | null } } | { ok: false; error: string; hint?: string };
 
 const TRIAGE_OUTCOME_BADGE: Record<string, string> = {
-  ai_generated:    "bg-violet-500/15 text-violet-300 border-violet-500/25",
+  ai_generated:    "bg-violet-500/15 text-violet-300 border-white/[0.10]",
   fallback_rules:  "bg-amber-500/15 text-amber-300 border-amber-500/25",
   error:           "bg-rose-500/15 text-rose-300 border-rose-500/25",
 };
@@ -463,9 +463,9 @@ function AiTriageRationaleCard({ triageId }: { triageId: string }) {
 
   if (!enrichment) {
     return (
-      <div className="mb-3 rounded-lg border border-violet-500/[0.18] bg-violet-500/[0.03] p-2.5">
+      <div className="mb-3 rounded-lg border border-white/[0.06] bg-white/[0.015] p-2.5">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2 text-[11px] font-mono text-violet-200">
+          <div className="flex items-center gap-2 text-[11px] font-mono text-white">
             <SparklesIcon className="h-3.5 w-3.5" />
             <span>AI rationale not generated yet</span>
           </div>
@@ -484,9 +484,9 @@ function AiTriageRationaleCard({ triageId }: { triageId: string }) {
   }
 
   return (
-    <div className="mb-3 rounded-lg border border-violet-500/[0.18] bg-violet-500/[0.03] p-3">
+    <div className="mb-3 rounded-lg border border-white/[0.06] bg-white/[0.015] p-3">
       <div className="flex items-center gap-2 mb-2 flex-wrap">
-        <span className="inline-flex items-center gap-1 text-[10px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border border-violet-500/30 bg-violet-500/[0.10] text-violet-200">
+        <span className="inline-flex items-center gap-1 text-[10px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border border-white/[0.12] bg-white/[0.04] text-white">
           <SparklesIcon className="h-3 w-3" /> AI rationale
         </span>
         <span className={`text-[10px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border ${TRIAGE_OUTCOME_BADGE[enrichment.outcome] ?? TRIAGE_OUTCOME_BADGE.error}`}>
@@ -500,7 +500,7 @@ function AiTriageRationaleCard({ triageId }: { triageId: string }) {
           type="button"
           onClick={generate}
           disabled={generating}
-          className="text-[10.5px] font-mono text-violet-300 hover:text-violet-200 disabled:opacity-50 disabled:cursor-wait"
+          className="text-[10.5px] font-mono text-zinc-300 hover:text-white disabled:opacity-50 disabled:cursor-wait"
         >
           {generating ? "Regenerating…" : "Regenerate"}
         </button>

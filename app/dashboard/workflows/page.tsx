@@ -47,8 +47,8 @@ const WORKFLOW_TYPES = [
     icon: CommandLineIcon,
     title: "Execution queues",
     desc: "Phased execution of approved plans with health verification between each step.",
-    color: "text-violet-400",
-    bg: "bg-violet-500/10 border-violet-500/20",
+    color: "text-zinc-500",
+    bg: "bg-violet-500/10 border-white/[0.08]",
   },
   {
     icon: CheckCircleIcon,
@@ -148,12 +148,12 @@ export default function WorkflowsPage() {
                   </div>
                   <div className="flex items-center gap-2.5">
                     <div className={`w-8 h-8 rounded-lg flex items-center justify-center border ${
-                      tile.accent === "violet" ? "bg-violet-500/10 border-violet-500/20" :
+                      tile.accent === "violet" ? "bg-violet-500/10 border-white/[0.08]" :
                       tile.accent === "blue" ? "bg-blue-500/10 border-blue-500/20" :
                       "bg-emerald-500/10 border-emerald-500/20"
                     }`}>
                       <Icon className={`h-4 w-4 ${
-                        tile.accent === "violet" ? "text-violet-400" :
+                        tile.accent === "violet" ? "text-zinc-500" :
                         tile.accent === "blue" ? "text-blue-400" :
                         "text-emerald-400"
                       }`} />
@@ -182,7 +182,7 @@ export default function WorkflowsPage() {
                 onClick={() => setFilter(f.id)}
                 className={`inline-flex items-center px-3.5 py-1.5 rounded-full text-xs font-medium transition-all border ${
                   isActive
-                    ? "bg-violet-500/15 border-violet-500/30 text-violet-300 shadow-[0_0_20px_rgba(139,92,246,0.15)]"
+                    ? "bg-violet-500/15 border-white/[0.12] text-violet-300 shadow-[0_0_20px_rgba(139,92,246,0.15)]"
                     : "bg-white/[0.02] border-white/[0.06] text-zinc-400 hover:text-white hover:border-white/[0.12]"
                 }`}
               >

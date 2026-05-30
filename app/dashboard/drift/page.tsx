@@ -308,7 +308,7 @@ function DemoDetectButton({ onCompleted }: { onCompleted: () => void }) {
 
   const busy = outcome.kind === "running";
   return (
-    <div className="mb-6 rounded-2xl border border-violet-500/[0.18] bg-violet-500/[0.03] p-4 flex items-center gap-3 flex-wrap text-[12px]">
+    <div className="mb-6 rounded-2xl border border-white/[0.06] bg-white/[0.015] p-4 flex items-center gap-3 flex-wrap text-[12px]">
       <span className="text-[10px] font-mono uppercase tracking-wider text-violet-300/70">Demo detection</span>
       <button
         type="button"

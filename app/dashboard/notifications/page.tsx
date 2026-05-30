@@ -150,7 +150,7 @@ export default function NotificationsPage() {
               onClick={() => setFilter(f)}
               className={`inline-flex items-center px-3 py-1.5 rounded-full text-[11px] font-medium border transition-all ${
                 filter === f
-                  ? "bg-violet-500/15 border-violet-500/30 text-violet-300"
+                  ? "bg-violet-500/15 border-white/[0.12] text-violet-300"
                   : "bg-white/[0.02] border-white/[0.06] text-zinc-400 hover:text-white hover:border-white/[0.12]"
               }`}
             >

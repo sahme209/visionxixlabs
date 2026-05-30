@@ -83,7 +83,7 @@ export default async function DesktopAgentsPage() {
           <>
             {showSampleData && (
               <>
-                <span className="rounded-full border border-violet-500/30 bg-violet-500/10 text-violet-300 px-2.5 py-1 text-[11px] font-mono">
+                <span className="rounded-full border border-white/[0.12] bg-violet-500/10 text-violet-300 px-2.5 py-1 text-[11px] font-mono">
                   {DEMO_DESKTOP_AGENTS.length} devices
                 </span>
                 <span className="rounded-full border border-emerald-500/30 bg-emerald-500/10 text-emerald-300 px-2.5 py-1 text-[11px] font-mono">
@@ -134,7 +134,7 @@ export default async function DesktopAgentsPage() {
           </h2>
           <Link
             href="/download"
-            className="inline-flex items-center gap-1.5 text-[11.5px] text-violet-300 hover:text-violet-200 transition"
+            className="inline-flex items-center gap-1.5 text-[11.5px] text-zinc-300 hover:text-white transition"
           >
             <ArrowDownTrayIcon className="h-3.5 w-3.5" />
             Download app
@@ -147,7 +147,7 @@ export default async function DesktopAgentsPage() {
             return (
               <article
                 key={d.id}
-                className="rounded-xl border border-white/[0.04] bg-white/[0.02] p-4 hover:border-violet-500/30 hover:bg-white/[0.035] transition"
+                className="rounded-xl border border-white/[0.04] bg-white/[0.02] p-4 hover:border-white/[0.12] hover:bg-white/[0.035] transition"
               >
                 <header className="flex items-start justify-between gap-3">
                   <div className="flex items-center gap-3 min-w-0">

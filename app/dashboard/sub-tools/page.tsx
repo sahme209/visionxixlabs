@@ -112,7 +112,7 @@ export default function SubToolsCenterPage() {
                   <Link
                     key={s.slug}
                     href={`/dashboard/sub-tools/${s.slug}`}
-                    className="group rounded-2xl border border-white/[0.06] bg-white/[0.015] p-5 hover:border-violet-500/30 hover:bg-white/[0.025] transition flex flex-col"
+                    className="group rounded-2xl border border-white/[0.06] bg-white/[0.015] p-5 hover:border-white/[0.12] hover:bg-white/[0.025] transition flex flex-col"
                   >
                     <header className="flex items-start justify-between gap-3">
                       <div className="min-w-0">
@@ -140,7 +140,7 @@ export default function SubToolsCenterPage() {
                     </div>
 
                     <div className="mt-auto pt-4 flex items-center justify-between">
-                      <span className="inline-flex items-center gap-1 text-[12px] font-medium text-violet-300 group-hover:text-violet-200 transition">
+                      <span className="inline-flex items-center gap-1 text-[12px] font-medium text-violet-300 group-hover:text-white transition">
                         Open
                         <ArrowRightIcon className="h-3 w-3" />
                       </span>

@@ -188,8 +188,8 @@ export default function DeveloperToolsPage() {
     <div className="relative">
       <div className="mb-8">
         <div className="flex items-center gap-3 mb-3">
-          <CodeBracketIcon className="h-4 w-4 text-violet-400" />
-          <p className="text-[10px] font-semibold text-violet-400 uppercase tracking-widest">Developer tools</p>
+          <CodeBracketIcon className="h-4 w-4 text-zinc-500" />
+          <p className="text-[10px] font-semibold text-zinc-500 uppercase tracking-widest">Developer tools</p>
         </div>
         <h1 className="text-3xl md:text-4xl font-bold text-white tracking-[-0.04em] mb-2">
           The engineer-facing <span className="text-gradient">integration layer.</span>
@@ -239,7 +239,7 @@ export default function DeveloperToolsPage() {
                 {primaryRoute && (
                   <Link
                     href={primaryRoute}
-                    className="inline-flex items-center gap-1.5 text-[12px] font-medium px-3 py-1.5 rounded-lg bg-violet-500/15 text-violet-100 border border-violet-500/30 hover:bg-violet-500/25 transition"
+                    className="inline-flex items-center gap-1.5 text-[12px] font-medium px-3 py-1.5 rounded-lg bg-violet-500/15 text-violet-100 border border-white/[0.12] hover:bg-violet-500/25 transition"
                   >
                     {t.status === "available" ? "Set up" : t.status === "coming_soon" ? "Notify me" : "Configure"}
                     <ArrowRightIcon className="h-3 w-3" />
@@ -255,7 +255,7 @@ export default function DeveloperToolsPage() {
       </section>
 
       {/* Workflow explainer */}
-      <section className="rounded-2xl border border-violet-500/15 bg-violet-500/[0.03] p-5 mb-8">
+      <section className="rounded-2xl border border-violet-500/15 bg-white/[0.015] p-5 mb-8">
         <header className="flex items-center gap-2 mb-3">
           <SparklesIcon className="h-4 w-4 text-violet-300" />
           <p className="text-[10px] font-semibold uppercase tracking-widest text-violet-300">How web + desktop + IDE talk to each other</p>
@@ -270,7 +270,7 @@ export default function DeveloperToolsPage() {
             "Risky actions stage in /dashboard/approvals — never auto-applied.",
           ].map((step, i) => (
             <li key={step} className="flex items-start gap-2">
-              <span className="inline-flex items-center justify-center h-5 w-5 rounded-full border border-violet-400/40 bg-violet-500/10 text-[10px] font-mono text-violet-200 shrink-0 mt-0.5">{i + 1}</span>
+              <span className="inline-flex items-center justify-center h-5 w-5 rounded-full border border-violet-400/40 bg-violet-500/10 text-[10px] font-mono text-white shrink-0 mt-0.5">{i + 1}</span>
               <span className="leading-snug">{step}</span>
             </li>
           ))}
@@ -278,18 +278,18 @@ export default function DeveloperToolsPage() {
       </section>
 
       <section className="grid sm:grid-cols-3 gap-3">
-        <Link href="/dashboard/agent-tools" className="block rounded-xl border border-white/[0.06] bg-white/[0.02] p-4 hover:border-violet-500/25 transition-colors">
-          <CheckCircleIcon className="h-4 w-4 text-violet-400 mb-2" />
+        <Link href="/dashboard/agent-tools" className="block rounded-xl border border-white/[0.06] bg-white/[0.02] p-4 hover:border-white/[0.10] transition-colors">
+          <CheckCircleIcon className="h-4 w-4 text-zinc-500 mb-2" />
           <p className="text-sm font-semibold text-white">Agent tool access matrix</p>
           <p className="text-[11px] text-zinc-500 mt-1">Per-agent read / write / approval rules.</p>
         </Link>
-        <Link href="/dashboard/approvals" className="block rounded-xl border border-white/[0.06] bg-white/[0.02] p-4 hover:border-violet-500/25 transition-colors">
-          <CircleStackIcon className="h-4 w-4 text-violet-400 mb-2" />
+        <Link href="/dashboard/approvals" className="block rounded-xl border border-white/[0.06] bg-white/[0.02] p-4 hover:border-white/[0.10] transition-colors">
+          <CircleStackIcon className="h-4 w-4 text-zinc-500 mb-2" />
           <p className="text-sm font-semibold text-white">Approvals queue</p>
           <p className="text-[11px] text-zinc-500 mt-1">Risky agent actions stage here.</p>
         </Link>
-        <Link href="/dashboard/audit" className="block rounded-xl border border-white/[0.06] bg-white/[0.02] p-4 hover:border-violet-500/25 transition-colors">
-          <CommandLineIcon className="h-4 w-4 text-violet-400 mb-2" />
+        <Link href="/dashboard/audit" className="block rounded-xl border border-white/[0.06] bg-white/[0.02] p-4 hover:border-white/[0.10] transition-colors">
+          <CommandLineIcon className="h-4 w-4 text-zinc-500 mb-2" />
           <p className="text-sm font-semibold text-white">Audit log</p>
           <p className="text-[11px] text-zinc-500 mt-1">Every tool action recorded.</p>
         </Link>

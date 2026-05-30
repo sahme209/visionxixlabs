@@ -347,7 +347,7 @@ export default function AgiCockpitPage() {
 function EngineCard({ engine, icon, href }: { engine: EngineTelemetry; icon: React.ReactNode; href: string }) {
   const lastRun = engine.lastRunIso ? new Date(engine.lastRunIso).toLocaleString() : "never";
   return (
-    <div className="rounded-xl border border-violet-500/[0.18] bg-violet-500/[0.03] p-4">
+    <div className="rounded-xl border border-white/[0.06] bg-white/[0.015] p-4">
       <div className="flex items-center gap-2 mb-2">
         <span className="text-violet-300">{icon}</span>
         <p className="text-[13px] font-semibold text-white">{engine.name}</p>
@@ -360,7 +360,7 @@ function EngineCard({ engine, icon, href }: { engine: EngineTelemetry; icon: Rea
       </div>
       <div className="flex items-center justify-between text-[10.5px] font-mono text-zinc-500">
         <span>last run · {lastRun}</span>
-        <Link href={href} className="text-violet-300 hover:text-violet-200 inline-flex items-center gap-1">
+        <Link href={href} className="text-zinc-300 hover:text-white inline-flex items-center gap-1">
           Open <ArrowRightIcon className="h-3 w-3" />
         </Link>
       </div>
@@ -432,7 +432,7 @@ function CompactCard({ severity, title, rationale, confidence, chip, meta, href,
 }) {
   return (
     <Link href={href}
-          className="block rounded-xl border border-white/[0.06] bg-white/[0.02] p-3 hover:border-violet-500/30 transition-colors">
+          className="block rounded-xl border border-white/[0.06] bg-white/[0.02] p-3 hover:border-white/[0.12] transition-colors">
       <div className="flex items-center gap-2 mb-1 flex-wrap">
         <span className={`text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border ${SEVERITY_CLASS[severity] ?? SEVERITY_CLASS.unknown}`}>
           {severity}

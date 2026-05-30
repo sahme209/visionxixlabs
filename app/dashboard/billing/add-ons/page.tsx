@@ -71,7 +71,7 @@ export default async function AddOnsPage() {
   return (
     <div className="relative max-w-5xl">
       <div className="mb-6">
-        <Link href="/dashboard/billing/usage" className="text-[11px] text-violet-300 hover:text-violet-200 inline-flex items-center gap-1">
+        <Link href="/dashboard/billing/usage" className="text-[11px] text-zinc-300 hover:text-white inline-flex items-center gap-1">
           <ArrowRightIcon className="h-3 w-3 rotate-180" />
           Back to usage
         </Link>
@@ -79,8 +79,8 @@ export default async function AddOnsPage() {
 
       <div className="mb-8">
         <div className="flex items-center gap-3 mb-3">
-          <ShoppingCartIcon className="h-4 w-4 text-violet-400" />
-          <p className="text-[10px] font-semibold text-violet-400 uppercase tracking-widest">Add-ons · {plan.displayName} plan</p>
+          <ShoppingCartIcon className="h-4 w-4 text-zinc-500" />
+          <p className="text-[10px] font-semibold text-zinc-500 uppercase tracking-widest">Add-ons · {plan.displayName} plan</p>
         </div>
         <h1 className="text-3xl md:text-4xl font-bold text-white tracking-[-0.04em] mb-2">
           Top up. <span className="text-gradient">Without changing plans.</span>
@@ -111,7 +111,7 @@ export default async function AddOnsPage() {
           const meta = CATEGORY_META[a.category];
           const Icon = meta.icon;
           return (
-            <article key={a.sku} className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 hover:border-violet-500/25 transition-colors">
+            <article key={a.sku} className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 hover:border-white/[0.10] transition-colors">
               <header className="flex items-center gap-2 mb-2 flex-wrap">
                 <Icon className={`h-4 w-4 ${meta.tone}`} />
                 <p className={`text-[10px] font-mono uppercase tracking-wider ${meta.tone}`}>{meta.label}</p>
