@@ -14,8 +14,8 @@
  *   otherwise    → info (clean scans still fire so operators can
  *                  confirm the cron is running)
  *
- * Dedupe key uses the cloud account id + day, so the */15 cron
- * doesn't spam the channel when two ticks complete within the
+ * Dedupe key uses the cloud account id + day, so the every-15-minute
+ * cron doesn't spam the channel when two ticks complete within the
  * 10-minute dedupe window.
  */
 
