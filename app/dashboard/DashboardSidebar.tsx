@@ -105,6 +105,7 @@ const GROUPS: NavGroup[] = [
       { href: "/dashboard/findings",         label: "Findings",          icon: EyeIcon         },
       { href: "/dashboard/scans",            label: "Scans",             icon: ClockIcon       },
       { href: "/dashboard/scheduled-scans",  label: "Scheduled scans",   icon: ClockIcon       },
+      { href: "/dashboard/resources",        label: "Resources",         icon: ServerStackIcon },
       { href: "/dashboard/observability",    label: "Monitoring",        icon: ChartBarIcon    },
       { href: "/dashboard/security",         label: "Security",          icon: ShieldCheckIcon },
       { href: "/dashboard/incidents",        label: "Incidents",         icon: BellAlertIcon   },
