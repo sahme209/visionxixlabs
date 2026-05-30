@@ -17,7 +17,7 @@ import { redirect } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { currentContext } from "@/lib/auth/currentContext";
 import { ArrowRightIcon } from "@heroicons/react/24/outline";
-import { BulkProvider, BulkRowCheckbox, BulkActionBar } from "./BulkActions";
+import { BulkProvider, BulkRowCheckbox, BulkActionBar, BulkSelectAll } from "./BulkActions";
 
 export const dynamic = "force-dynamic";
 
@@ -150,7 +150,10 @@ export default async function ApprovalsPage() {
           <BulkProvider>
             <BulkActionBar />
             <section>
-              <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-zinc-500 mb-3">queue</p>
+              <div className="flex items-baseline justify-between mb-3">
+                <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-zinc-500">queue</p>
+                <BulkSelectAll allPendingIds={items.filter((i) => i.status === "pending").map((i) => i.id)} />
+              </div>
               <ul className="rounded-2xl border border-white/[0.06] bg-white/[0.015] divide-y divide-white/[0.04] overflow-hidden">
                 {items.map((item) => (
                   <li key={item.id} className="px-6 py-5">

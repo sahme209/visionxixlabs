@@ -54,6 +54,33 @@ export function BulkRowCheckbox({ itemId }: { itemId: string }) {
   );
 }
 
+export function BulkSelectAll({ allPendingIds }: { allPendingIds: string[] }) {
+  const { selected, toggle } = useBulk();
+  const allSelected = allPendingIds.length > 0 && allPendingIds.every((id) => selected.has(id));
+  function selectAll() {
+    // Toggle each that's not already selected — uses toggle for
+    // batched state updates inside React 18+.
+    for (const id of allPendingIds) {
+      if (!selected.has(id)) toggle(id);
+    }
+  }
+  function clearAll() {
+    for (const id of allPendingIds) {
+      if (selected.has(id)) toggle(id);
+    }
+  }
+  if (allPendingIds.length === 0) return null;
+  return (
+    <button
+      type="button"
+      onClick={() => (allSelected ? clearAll() : selectAll())}
+      className="text-[11px] font-mono text-zinc-500 hover:text-white transition-colors"
+    >
+      {allSelected ? "clear all" : `select all ${allPendingIds.length} pending`}
+    </button>
+  );
+}
+
 export function BulkActionBar() {
   const { selected } = useBulk();
   const router = useRouter();
