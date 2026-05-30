@@ -219,9 +219,10 @@ const GROUPS: NavGroup[] = [
     label: "Business / Admin",
     kind: "admin",
     items: [
-      { href: "/dashboard/billing",              label: "Billing & usage",     icon: BoltIcon },
-      { href: "/dashboard/ai-usage",             label: "AI usage",            icon: ChartBarIcon },
-      { href: "/dashboard/settings/workspace",   label: "Users & roles",       icon: ShieldCheckIcon },
+      { href: "/dashboard/billing",                  label: "Billing & usage",     icon: BoltIcon },
+      { href: "/dashboard/ai-usage",                 label: "AI usage",            icon: ChartBarIcon },
+      { href: "/dashboard/settings/notifications",   label: "Notifications",       icon: BellAlertIcon },
+      { href: "/dashboard/settings/workspace",       label: "Users & roles",       icon: ShieldCheckIcon },
       { href: "/dashboard/trust",                label: "Trust center",        icon: ShieldCheckIcon },
       { href: "/dashboard/policies",             label: "Policies",            icon: LockClosedIcon },
       // Power-user routes — internal/admin.
