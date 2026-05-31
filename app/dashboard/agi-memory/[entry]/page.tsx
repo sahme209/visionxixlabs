@@ -29,6 +29,7 @@ const KIND_LABEL: Record<string, string> = {
   triage:              "Triage",
   remediation:         "Remediation",
   engineer_specialty:  "Engineer specialty",
+  engineer_qa:         "Engineer Q&A",
 };
 
 const OUTCOME_TONE: Record<string, string> = {
@@ -116,11 +117,19 @@ export default async function AgiMemoryEntryPage({
     : [];
 
   const kindLabel = KIND_LABEL[entry.targetKind] ?? entry.targetKind;
-  // For engineer_specialty entries the targetId IS the engineer id —
-  // route the source link straight at the engineer detail page.
-  const sourceHref = entry.targetKind === "engineer_specialty"
-    ? `/dashboard/workforce/${entry.targetId}`
-    : SOURCE_HREF[entry.targetKind];
+  // For engineer_specialty entries the targetId IS the engineer id;
+  // for engineer_qa it's `<engineerId>:<timestamp>` — route both at
+  // the engineer's surface accordingly.
+  let sourceHref: string | undefined;
+  if (entry.targetKind === "engineer_specialty") {
+    sourceHref = `/dashboard/workforce/${entry.targetId}`;
+  } else if (entry.targetKind === "engineer_qa") {
+    const colon = entry.targetId.indexOf(":");
+    const engineerId = colon === -1 ? entry.targetId : entry.targetId.slice(0, colon);
+    sourceHref = `/dashboard/workforce/${engineerId}/ask`;
+  } else {
+    sourceHref = SOURCE_HREF[entry.targetKind];
+  }
 
   // Engineers whose department the kind maps to. Filter to client
   // engineers only — internal_admin engineers never surface on

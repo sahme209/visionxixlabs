@@ -436,14 +436,23 @@ export default async function EngineerDetailPage({ params }: { params: Promise<{
           <p className="text-[10px] font-semibold uppercase tracking-widest text-violet-300">
             {engineer.displayName} · speaking for itself
           </p>
-          <form action={`/api/workforce/${engineer.id}/run-agi`} method="POST">
-            <button
-              type="submit"
-              className="text-[11px] font-mono uppercase tracking-wider px-3 py-1.5 rounded-full border border-violet-500/30 text-violet-100 hover:border-violet-500/60 hover:bg-violet-500/15 transition-colors"
+          <div className="flex items-center gap-2">
+            <Link
+              href={`/dashboard/workforce/${engineer.id}/ask`}
+              className="text-[11px] font-mono uppercase tracking-wider px-3 py-1.5 rounded-full border border-white/[0.08] text-zinc-300 hover:text-white hover:border-white/[0.18] transition-colors"
+              title={`Ask ${engineer.displayName} a question`}
             >
-              {ownRationale ? "re-run AGI" : "run AGI now"}
-            </button>
-          </form>
+              ask →
+            </Link>
+            <form action={`/api/workforce/${engineer.id}/run-agi`} method="POST">
+              <button
+                type="submit"
+                className="text-[11px] font-mono uppercase tracking-wider px-3 py-1.5 rounded-full border border-violet-500/30 text-violet-100 hover:border-violet-500/60 hover:bg-violet-500/15 transition-colors"
+              >
+                {ownRationale ? "re-run AGI" : "run AGI now"}
+              </button>
+            </form>
+          </div>
         </div>
         {ownRationale ? (
           <>
