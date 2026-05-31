@@ -102,6 +102,36 @@ export default async function EngineerAuditPage({
     }
   }
 
+  // AGI rationale relevant to this engineer's domain. Same mapping
+  // the detail page uses (Phase 550) so the two surfaces agree.
+  function agiKindsForDepartment(d: string): string[] {
+    if (d === "safety" || d === "planning" || d === "reasoning") return ["council"];
+    if (d === "incident_response" || d === "security" || d === "devops" || d === "finops" || d === "observability") return ["triage", "remediation"];
+    return ["council", "triage", "remediation"];
+  }
+  const agiKinds = agiKindsForDepartment(engineer.department);
+  const agiEntries = await prisma.aiRationaleEnrichment.findMany({
+    where: {
+      organizationId: String(ctx.organizationId),
+      targetKind: { in: agiKinds },
+    },
+    orderBy: { generatedAt: "desc" },
+    take: 10,
+    select: {
+      targetKind: true,
+      targetId: true,
+      narrative: true,
+      outcome: true,
+      generatedAt: true,
+    },
+  }).catch(() => [] as Array<{
+    targetKind: string;
+    targetId: string;
+    narrative: string;
+    outcome: string;
+    generatedAt: Date;
+  }>);
+
   return (
     <div className="max-w-5xl mx-auto px-1 -mt-2">
       <Link href={`/dashboard/workforce/${id}`} className="inline-flex items-center gap-1.5 text-[12px] text-zinc-500 hover:text-white transition-colors mb-6">
@@ -129,6 +159,44 @@ export default async function EngineerAuditPage({
             SecureAuditRecord table not migrated. Run <code className="font-mono text-white">prisma migrate deploy</code>.
           </p>
         </div>
+      )}
+
+      {/* AGI rationale stream — sits above the audit event list so
+          operators see what the AGI was reasoning about while events
+          were emitting. Hidden when empty so the page stays tight. */}
+      {agiEntries.length > 0 && (
+        <section className="mb-10">
+          <div className="flex items-baseline justify-between mb-3">
+            <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-violet-300">AGI rationale stream · {agiKinds.join(" + ")}</p>
+            <Link href="/dashboard/agi-memory" className="text-[11px] font-mono text-zinc-500 hover:text-white transition-colors">
+              memory feed →
+            </Link>
+          </div>
+          <ul className="rounded-2xl border border-violet-500/15 bg-violet-500/[0.03] divide-y divide-white/[0.04] overflow-hidden">
+            {agiEntries.map((e) => (
+              <li key={`${e.targetKind}:${e.targetId}`}>
+                <Link
+                  href={`/dashboard/agi-memory/${encodeURIComponent(`${e.targetKind}:${e.targetId}`)}`}
+                  className="block px-5 py-3 hover:bg-white/[0.015] transition-colors"
+                >
+                  <div className="flex items-center justify-between gap-3 mb-1 flex-wrap text-[10px] font-mono uppercase tracking-wider">
+                    <div className="flex items-center gap-2">
+                      <span className="text-violet-300">{e.targetKind}</span>
+                      <span className="text-zinc-500">·</span>
+                      <span className={
+                        e.outcome === "ai_generated" ? "text-emerald-300" :
+                        e.outcome === "fallback_rules" ? "text-amber-300" :
+                        "text-rose-300"
+                      }>{e.outcome.replace(/_/g, " ")}</span>
+                    </div>
+                    <span className="text-zinc-500">{e.generatedAt.toISOString().slice(0, 19).replace("T", " ")}</span>
+                  </div>
+                  <p className="text-[12px] text-zinc-200 leading-relaxed line-clamp-2">{e.narrative}</p>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </section>
       )}
 
       {!migrationPending && records.length === 0 && topics.length > 0 && (
