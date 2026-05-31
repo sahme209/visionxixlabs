@@ -12,6 +12,7 @@
  */
 
 import { redirect } from "next/navigation";
+import Link from "next/link";
 import { prisma } from "@/lib/db";
 import { currentContext } from "@/lib/auth/currentContext";
 
@@ -157,7 +158,29 @@ export default async function AuditPage() {
                           )}
                         </div>
                         {r.entityRef && (
-                          <p className="text-[11px] font-mono text-zinc-500 mt-1 truncate">{r.entityRef}</p>
+                          <p className="text-[11px] font-mono text-zinc-500 mt-1 truncate">
+                            {(() => {
+                              // Cross-surface deep-link: certain entityRef
+                              // prefixes map to a stable dashboard route so
+                              // the audit row is also a navigation anchor.
+                              const ref = r.entityRef;
+                              if (ref.startsWith("engineer:")) {
+                                const eid = ref.slice("engineer:".length);
+                                return <Link href={`/dashboard/workforce/${eid}`} className="hover:text-white underline transition-colors">{ref}</Link>;
+                              }
+                              if (ref.startsWith("approval:")) {
+                                return <Link href="/dashboard/approvals" className="hover:text-white underline transition-colors">{ref}</Link>;
+                              }
+                              if (ref.startsWith("schedule:")) {
+                                return <Link href="/dashboard/scheduled-scans" className="hover:text-white underline transition-colors">{ref}</Link>;
+                              }
+                              if (ref.startsWith("cloudAccount:")) {
+                                const cid = ref.slice("cloudAccount:".length);
+                                return <Link href={`/dashboard/cloud-accounts/${cid}`} className="hover:text-white underline transition-colors">{ref}</Link>;
+                              }
+                              return ref;
+                            })()}
+                          </p>
                         )}
                         <p className="text-[10px] font-mono mt-1">
                           <span className={actorTone}>{r.actorKind}</span>
