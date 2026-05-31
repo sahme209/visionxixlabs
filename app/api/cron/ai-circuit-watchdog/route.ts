@@ -47,13 +47,17 @@ export async function GET(req: NextRequest) {
 
   // Distinct engines with recent activity. We groupBy because a raw
   // findMany would return up to all rows in window just to dedupe.
+  // Prisma's strict groupBy return type fights any upfront `let:
+  // Array<...>` annotation, so we infer the type from the call and
+  // shape-coerce inline.
   let activeRows: Array<{ engineName: string; _count: { _all: number } }> = [];
   try {
-    activeRows = await prisma.aiCallLog.groupBy({
+    const grouped = await prisma.aiCallLog.groupBy({
       by: ["engineName"],
       where: { startedAt: { gte: since } },
       _count: { _all: true },
     });
+    activeRows = grouped as unknown as typeof activeRows;
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
     if (/relation .* does not exist|table .* does not exist/i.test(msg)) {

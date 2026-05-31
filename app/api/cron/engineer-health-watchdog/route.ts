@@ -45,11 +45,12 @@ export async function GET(req: NextRequest) {
     _count: { _all: number };
   }> = [];
   try {
-    rows = await prisma.agentEngineerActionAttempt.groupBy({
+    const grouped = await prisma.agentEngineerActionAttempt.groupBy({
       by: ["organizationId", "engineerId", "runtimeDecision"],
       where: { createdAt: { gte: since } },
       _count: { _all: true },
     });
+    rows = grouped as unknown as typeof rows;
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
     if (/relation .* does not exist|table .* does not exist/i.test(msg)) {

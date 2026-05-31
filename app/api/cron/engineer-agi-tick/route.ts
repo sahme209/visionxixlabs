@@ -52,11 +52,12 @@ export async function GET(req: NextRequest) {
   // the last 30 days. Avoids hammering long-dormant orgs.
   let activeOrgRows: Array<{ organizationId: string }> = [];
   try {
-    activeOrgRows = await prisma.cloudAccount.groupBy({
+    const grouped = await prisma.cloudAccount.groupBy({
       by: ["organizationId"],
       where: { connectedAt: { gte: since } },
       _count: { _all: true },
     });
+    activeOrgRows = grouped as unknown as typeof activeOrgRows;
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
     if (/relation .* does not exist|table .* does not exist/i.test(msg)) {
