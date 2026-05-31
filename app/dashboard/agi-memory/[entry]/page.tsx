@@ -20,6 +20,7 @@ import { notFound, redirect } from "next/navigation";
 import { ArrowLeftIcon, ArrowRightIcon, ExclamationTriangleIcon, SparklesIcon } from "@heroicons/react/24/outline";
 import { currentContext } from "@/lib/auth/currentContext";
 import { prisma } from "@/lib/db";
+import { AGENT_WORKFORCE_REGISTRY } from "@/lib/workforce/agentWorkforceRegistry";
 
 export const dynamic = "force-dynamic";
 
@@ -40,6 +41,19 @@ const SOURCE_HREF: Record<string, string> = {
   triage:      "/dashboard/incidents",
   remediation: "/dashboard/remediation",
 };
+
+// Mirror of agiKindsForDepartment in /dashboard/workforce/[id]. We
+// invert the mapping here so a rationale entry can name the
+// engineers whose work it's reasoning about.
+function engineersForKind(kind: string): string[] {
+  if (kind === "council") {
+    return ["safety", "planning", "reasoning"];
+  }
+  if (kind === "triage" || kind === "remediation") {
+    return ["incident_response", "security", "devops", "finops", "observability"];
+  }
+  return [];
+}
 
 function parseSlug(raw: string): { targetKind: string; targetId: string } | null {
   const decoded = decodeURIComponent(raw);
@@ -99,6 +113,14 @@ export default async function AgiMemoryEntryPage({
 
   const kindLabel = KIND_LABEL[entry.targetKind] ?? entry.targetKind;
   const sourceHref = SOURCE_HREF[entry.targetKind];
+
+  // Engineers whose department the kind maps to. Filter to client
+  // engineers only — internal_admin engineers never surface on
+  // operator pages.
+  const relevantDepts = engineersForKind(entry.targetKind);
+  const relevantEngineers = AGENT_WORKFORCE_REGISTRY.filter(
+    (e) => e.productLayer === "client" && relevantDepts.includes(e.department),
+  );
 
   return (
     <div className="max-w-3xl mx-auto px-1 -mt-2">
@@ -168,6 +190,36 @@ export default async function AgiMemoryEntryPage({
               <li key={`${i}_${a.slice(0, 24)}`} className="px-5 py-3 text-[13px] text-emerald-100/90 leading-relaxed">{a}</li>
             ))}
           </ul>
+        </section>
+      )}
+
+      {/* Relevant engineers — the departments this rationale's
+          targetKind reasons about, expanded to the canonical
+          engineers in each. Mirrors the engineer detail's AGI panel
+          (Phase 550) so the link round-trip stays honest. */}
+      {relevantEngineers.length > 0 && (
+        <section className="mb-8">
+          <p className="text-[10px] font-mono uppercase tracking-[0.18em] text-zinc-500 mb-3">relevant engineers · {relevantEngineers.length}</p>
+          <ul className="rounded-2xl border border-white/[0.06] bg-white/[0.015] divide-y divide-white/[0.04] overflow-hidden">
+            {relevantEngineers.map((e) => (
+              <li key={e.id}>
+                <Link
+                  href={`/dashboard/workforce/${e.id}`}
+                  className="group flex items-center justify-between gap-3 px-5 py-3 hover:bg-white/[0.015] transition-colors"
+                >
+                  <div className="flex items-center gap-3 min-w-0">
+                    <span className="text-[10px] font-mono uppercase tracking-wider text-zinc-500 shrink-0">{e.department}</span>
+                    <p className="text-[12.5px] font-medium text-white truncate">{e.displayName}</p>
+                  </div>
+                  <ArrowRightIcon className="h-3.5 w-3.5 text-zinc-600 group-hover:text-white group-hover:translate-x-0.5 transition-all" />
+                </Link>
+              </li>
+            ))}
+          </ul>
+          <p className="text-[10px] text-zinc-500 mt-2 leading-snug">
+            The {kindLabel.toLowerCase()} surface reasons about work owned by these departments.
+            Each link drops into the engineer detail page where this entry already appears in the AGI rationale strip.
+          </p>
         </section>
       )}
 
