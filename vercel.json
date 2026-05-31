@@ -80,6 +80,10 @@
     {
       "path": "/api/cron/scheduled-scan-watchdog",
       "schedule": "0 * * * *"
+    },
+    {
+      "path": "/api/cron/engineer-health-watchdog",
+      "schedule": "0 * * * *"
     }
   ]
 }
