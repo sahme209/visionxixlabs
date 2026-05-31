@@ -84,6 +84,10 @@
     {
       "path": "/api/cron/engineer-health-watchdog",
       "schedule": "0 * * * *"
+    },
+    {
+      "path": "/api/cron/ai-circuit-watchdog",
+      "schedule": "*/15 * * * *"
     }
   ]
 }
