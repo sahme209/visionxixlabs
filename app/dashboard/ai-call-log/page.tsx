@@ -10,6 +10,7 @@
  */
 
 import { useEffect, useMemo, useState } from "react";
+import Link from "next/link";
 import {
   CpuChipIcon,
   CheckCircleIcon,
@@ -271,7 +272,10 @@ export default function AiCallLogPage() {
 function EngineBreakdownCard({ engine }: { engine: EngineBreakdown }) {
   const successPct = Math.round(engine.stats.successRate * 100);
   return (
-    <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-3">
+    <Link
+      href={`/dashboard/ai-call-log/${encodeURIComponent(engine.engineName)}`}
+      className="block rounded-xl border border-white/[0.06] bg-white/[0.02] p-3 hover:border-white/[0.12] transition-colors"
+    >
       <div className="flex items-center gap-2 mb-2 flex-wrap">
         <span className="text-[11.5px] font-semibold text-white">{ENGINE_LABEL[engine.engineName] ?? engine.engineName}</span>
         <span className={`text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border ${STATE_CLASS[engine.state]}`}>
@@ -287,7 +291,7 @@ function EngineBreakdownCard({ engine }: { engine: EngineBreakdown }) {
         <Inline label="Prompt tokens" value={String(engine.stats.promptTokensTotal)} />
         <Inline label="Completion tokens" value={String(engine.stats.completionTokensTotal)} />
       </div>
-    </div>
+    </Link>
   );
 }
 
