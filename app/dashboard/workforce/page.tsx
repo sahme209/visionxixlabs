@@ -159,6 +159,26 @@ export default async function WorkforcePage() {
     }
   }
 
+  // Per-engineer specialty-rationale presence. The unique constraint
+  // on (org, targetKind, targetId) means one row max per engineer,
+  // so a single findMany scoped to targetKind="engineer_specialty"
+  // gives us the full lookup with minimal work.
+  const agiReady = new Set<string>();
+  if (ctx.isAuthenticated && ctx.organizationId) {
+    try {
+      const rows = await prisma.aiRationaleEnrichment.findMany({
+        where: {
+          organizationId: String(ctx.organizationId),
+          targetKind: "engineer_specialty",
+        },
+        select: { targetId: true },
+      });
+      for (const r of rows) agiReady.add(r.targetId);
+    } catch {
+      // empty fallback — every card renders the 'run AGI' nudge.
+    }
+  }
+
   return (
     <div className="relative">
       <PageIntro
@@ -269,6 +289,7 @@ export default async function WorkforcePage() {
                     attempts30d={attemptCounts.get(e.id) ?? 0}
                     pending={pendingCounts.get(e.id) ?? 0}
                     disabled={disabledSet.has(e.id)}
+                    agiReady={agiReady.has(e.id)}
                   />
                 ))}
               </div>
@@ -358,7 +379,7 @@ function LiveStat({ label, value, sub, tone }: { label: string; value: number; s
   );
 }
 
-function EngineerCard({ engineer, attempts30d, pending, disabled }: { engineer: AgentEngineer; attempts30d: number; pending: number; disabled: boolean }) {
+function EngineerCard({ engineer, attempts30d, pending, disabled, agiReady }: { engineer: AgentEngineer; attempts30d: number; pending: number; disabled: boolean; agiReady: boolean }) {
   const approval = APPROVAL_TONE[engineer.approvalRule];
   return (
     <article className={`rounded-2xl border bg-white/[0.02] p-5 flex flex-col transition-opacity ${disabled ? "border-rose-500/15 opacity-60" : "border-white/[0.06]"}`}>
@@ -371,6 +392,11 @@ function EngineerCard({ engineer, attempts30d, pending, disabled }: { engineer: 
           {disabled && (
             <span className="text-[9px] font-mono uppercase tracking-wider border rounded-full px-1.5 py-px whitespace-nowrap text-rose-300 bg-rose-500/10 border-rose-500/30">
               disabled
+            </span>
+          )}
+          {agiReady && (
+            <span className="text-[9px] font-mono uppercase tracking-wider border rounded-full px-1.5 py-px whitespace-nowrap text-violet-200 bg-violet-500/10 border-violet-500/30" title="This engineer has a current AGI rationale">
+              AGI ✓
             </span>
           )}
           <span className={`text-[9px] font-mono uppercase tracking-wider border rounded-full px-1.5 py-px whitespace-nowrap ${approval.tone}`}>
