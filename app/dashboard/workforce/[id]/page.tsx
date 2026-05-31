@@ -690,9 +690,19 @@ export default async function EngineerDetailPage({ params }: { params: Promise<{
         <section className="mb-6">
           <div className="flex items-baseline justify-between mb-3">
             <p className="text-[10px] font-semibold uppercase tracking-widest text-violet-300">AGI rationale · {relevantKinds.join(" + ")}</p>
-            <Link href="/dashboard/agi-memory" className="text-[10px] font-mono text-zinc-500 hover:text-white transition-colors">
-              full feed →
-            </Link>
+            <div className="flex items-center gap-3">
+              <a
+                href={`/api/workforce/${engineer.id}/agi.csv`}
+                download
+                className="text-[10px] font-mono text-zinc-500 hover:text-white transition-colors"
+                title={`Download up to 5000 AGI rationale rows scoped to this engineer's kinds`}
+              >
+                download .csv
+              </a>
+              <Link href="/dashboard/agi-memory" className="text-[10px] font-mono text-zinc-500 hover:text-white transition-colors">
+                full feed →
+              </Link>
+            </div>
           </div>
           <ul className="rounded-2xl border border-violet-500/15 bg-violet-500/[0.03] divide-y divide-white/[0.04] overflow-hidden">
             {recentAgiRationale.map((r) => (
