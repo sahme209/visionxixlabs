@@ -110,27 +110,61 @@ export default async function EngineerAuditPage({
     return ["council", "triage", "remediation"];
   }
   const agiKinds = agiKindsForDepartment(engineer.department);
-  const agiEntries = await prisma.aiRationaleEnrichment.findMany({
-    where: {
-      organizationId: String(ctx.organizationId),
-      targetKind: { in: agiKinds },
-    },
-    orderBy: { generatedAt: "desc" },
-    take: 10,
-    select: {
-      targetKind: true,
-      targetId: true,
-      narrative: true,
-      outcome: true,
-      generatedAt: true,
-    },
-  }).catch(() => [] as Array<{
-    targetKind: string;
-    targetId: string;
-    narrative: string;
-    outcome: string;
-    generatedAt: Date;
-  }>);
+  const [deptAgiEntries, ownAgiEntries] = await Promise.all([
+    prisma.aiRationaleEnrichment.findMany({
+      where: {
+        organizationId: String(ctx.organizationId),
+        targetKind: { in: agiKinds },
+      },
+      orderBy: { generatedAt: "desc" },
+      take: 10,
+      select: {
+        targetKind: true,
+        targetId: true,
+        narrative: true,
+        outcome: true,
+        generatedAt: true,
+      },
+    }).catch(() => [] as Array<{
+      targetKind: string;
+      targetId: string;
+      narrative: string;
+      outcome: string;
+      generatedAt: Date;
+    }>),
+    // The engineer's own AGI memory: its specialty rationale + every
+    // Q&A row keyed to this engineer. Interleaved chronologically
+    // with the dept-mapped feed below.
+    prisma.aiRationaleEnrichment.findMany({
+      where: {
+        organizationId: String(ctx.organizationId),
+        OR: [
+          { targetKind: "engineer_specialty", targetId: engineer.id },
+          { targetKind: "engineer_qa", targetId: { startsWith: `${engineer.id}:` } },
+        ],
+      },
+      orderBy: { generatedAt: "desc" },
+      take: 10,
+      select: {
+        targetKind: true,
+        targetId: true,
+        narrative: true,
+        outcome: true,
+        generatedAt: true,
+      },
+    }).catch(() => [] as Array<{
+      targetKind: string;
+      targetId: string;
+      narrative: string;
+      outcome: string;
+      generatedAt: Date;
+    }>),
+  ]);
+  // Merge and re-sort so the operator sees one chronological stream
+  // across both kinds of AGI activity.
+  const agiEntries = [...deptAgiEntries, ...ownAgiEntries]
+    .sort((a, b) => b.generatedAt.getTime() - a.generatedAt.getTime())
+    .slice(0, 15);
 
   return (
     <div className="max-w-5xl mx-auto px-1 -mt-2">
@@ -167,7 +201,7 @@ export default async function EngineerAuditPage({
       {agiEntries.length > 0 && (
         <section className="mb-10">
           <div className="flex items-baseline justify-between mb-3">
-            <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-violet-300">AGI rationale stream · {agiKinds.join(" + ")}</p>
+            <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-violet-300">AGI rationale stream · {agiKinds.join(" + ")} + own specialty + Q&amp;A</p>
             <Link href="/dashboard/agi-memory" className="text-[11px] font-mono text-zinc-500 hover:text-white transition-colors">
               memory feed →
             </Link>
