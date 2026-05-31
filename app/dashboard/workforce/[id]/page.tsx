@@ -104,6 +104,35 @@ export default async function EngineerDetailPage({ params }: { params: Promise<{
     select: { reason: true, createdAt: true, action: true },
   }).catch(() => null);
 
+  // Recent operator changes — who flipped the toggle, who tightened
+  // the rule, who saved notes. Scope to the three workspace-state
+  // audit actions so the timeline stays meaningful (i.e. it doesn't
+  // drown in every action_attempted row).
+  const recentOperatorChanges = await prisma.secureAuditRecord.findMany({
+    where: {
+      organizationId: String(ctx.organizationId),
+      entityRef: `engineer:${engineer.id}`,
+      action: { in: ["engineer.enable_toggled", "engineer.policy_override_updated", "engineer.notes_updated"] },
+    },
+    orderBy: { occurredAt: "desc" },
+    take: 5,
+    select: {
+      id: true,
+      action: true,
+      actorUserId: true,
+      actorKind: true,
+      occurredAt: true,
+      detail: true,
+    },
+  }).catch(() => [] as Array<{
+    id: string;
+    action: string;
+    actorUserId: string | null;
+    actorKind: string;
+    occurredAt: Date;
+    detail: unknown;
+  }>);
+
   // 14-day daily attempt trend. We fetch raw createdAt for each
   // attempt in window and bucket by UTC date in-app — fast, no DB
   // function dependency, and the trend stays accurate across DST
@@ -361,6 +390,40 @@ export default async function EngineerDetailPage({ params }: { params: Promise<{
           </div>
         </form>
       </section>
+
+      {/* Recent operator changes — small chronological strip showing
+          who flipped enable, tightened the rule, or edited notes. Only
+          renders when there's at least one row so empty engineers stay
+          tidy. */}
+      {recentOperatorChanges.length > 0 && (
+        <section className="mb-6 rounded-2xl border border-white/[0.06] bg-white/[0.015] p-5">
+          <p className="text-[10px] font-mono uppercase tracking-[0.18em] text-zinc-500 mb-3">recent operator changes</p>
+          <ul className="space-y-1.5">
+            {recentOperatorChanges.map((c) => {
+              const actionLabel = c.action.replace(/^engineer\./, "").replace(/_/g, " ");
+              const detail = (c.detail ?? {}) as Record<string, unknown>;
+              const nextEnabled = typeof detail.nextEnabled === "boolean" ? detail.nextEnabled : null;
+              const priorLen = typeof detail.priorLen === "number" ? detail.priorLen : null;
+              const nextLen = typeof detail.nextLen === "number" ? detail.nextLen : null;
+              const nextRule = typeof detail.nextRule === "string" ? detail.nextRule : null;
+              return (
+                <li key={c.id} className="flex items-center justify-between gap-3 px-3 py-2 rounded-lg border border-white/[0.04] bg-white/[0.015]">
+                  <div className="min-w-0 flex-1">
+                    <p className="text-[12px] font-mono text-white">{actionLabel}</p>
+                    <p className="text-[10px] font-mono text-zinc-500 mt-0.5">
+                      {c.actorUserId ? c.actorUserId.slice(0, 8) : c.actorKind}
+                      {nextEnabled !== null && <> · → {nextEnabled ? "enabled" : "disabled"}</>}
+                      {nextRule && <> · → {nextRule.replace(/_/g, " ")}</>}
+                      {(priorLen !== null && nextLen !== null) && <> · {priorLen} → {nextLen} chars</>}
+                    </p>
+                  </div>
+                  <span className="text-[10px] font-mono text-zinc-600 shrink-0">{c.occurredAt.toISOString().slice(0, 10)}</span>
+                </li>
+              );
+            })}
+          </ul>
+        </section>
+      )}
 
       {/* Approval rule strip */}
       <section className="rounded-2xl border border-violet-500/15 bg-white/[0.015] p-5 mb-6">
