@@ -187,6 +187,7 @@ const GROUPS: NavGroup[] = [
       { href: "/dashboard/runbooks/queue",       label: "Runbook queue",       icon: WrenchScrewdriverIcon, power: true },
       { href: "/dashboard/orchestration",        label: "Orchestration",       icon: ArrowsRightLeftIcon, power: true },
       { href: "/dashboard/autonomous-ops",       label: "Autonomous ops",      icon: CpuChipIcon, power: true },
+      { href: "/dashboard/autonomous-ticks",     label: "Autonomous ticks",    icon: CpuChipIcon, power: true },
       { href: "/dashboard/scheduled-scans",      label: "Scheduled scans",     icon: ClockIcon, power: true },
       { href: "/dashboard/simulations",          label: "Simulations",         icon: BeakerIcon, power: true },
       { href: "/dashboard/scp-simulator",        label: "SCP simulator",       icon: BeakerIcon, power: true },
