@@ -335,6 +335,46 @@ export default async function EngineerDetailPage({ params }: { params: Promise<{
     .filter((a) => (touchByProvider.get(a.provider) ?? 0) > 0)
     .map((a) => ({ ...a, attempts: touchByProvider.get(a.provider) ?? 0 }));
 
+  // AGI rationale relevant to this engineer. Map the canonical
+  // department to the AiRationaleEnrichment.targetKind values the
+  // AGI emits. Safety / planning / reasoning engineers operate at
+  // the council layer; incident / security / devops / finops /
+  // observability live in the triage + remediation layer. Everything
+  // else gets the full set so we never silently hide.
+  function agiKindsForDepartment(dept: string): string[] {
+    if (dept === "safety" || dept === "planning" || dept === "reasoning") {
+      return ["council"];
+    }
+    if (dept === "incident_response" || dept === "security" || dept === "devops" || dept === "finops" || dept === "observability") {
+      return ["triage", "remediation"];
+    }
+    return ["council", "triage", "remediation"];
+  }
+  const relevantKinds = agiKindsForDepartment(engineer.department);
+  const recentAgiRationale = await prisma.aiRationaleEnrichment.findMany({
+    where: {
+      organizationId: String(ctx.organizationId),
+      targetKind: { in: relevantKinds },
+    },
+    orderBy: { generatedAt: "desc" },
+    take: 5,
+    select: {
+      targetKind: true,
+      targetId: true,
+      narrative: true,
+      outcome: true,
+      modelHint: true,
+      generatedAt: true,
+    },
+  }).catch(() => [] as Array<{
+    targetKind: string;
+    targetId: string;
+    narrative: string;
+    outcome: string;
+    modelHint: string | null;
+    generatedAt: Date;
+  }>);
+
   const currentRule: ApprovalRule = (record?.currentApprovalRule as ApprovalRule | null) ?? engineer.approvalRule;
   const overrideActive = !!record?.currentApprovalRule && record.currentApprovalRule !== engineer.approvalRule;
 
@@ -637,6 +677,50 @@ export default async function EngineerDetailPage({ params }: { params: Promise<{
                 )}
               </li>
             )}
+          </ul>
+        </section>
+      )}
+
+      {/* AGI rationale tied to this engineer's domain. The mapping is
+          department → targetKind (council / triage / remediation),
+          so every engineer sees the AGI surface that actually
+          reasons about its work. Hidden when there's nothing to
+          show — honest empty. */}
+      {recentAgiRationale.length > 0 && (
+        <section className="mb-6">
+          <div className="flex items-baseline justify-between mb-3">
+            <p className="text-[10px] font-semibold uppercase tracking-widest text-violet-300">AGI rationale · {relevantKinds.join(" + ")}</p>
+            <Link href="/dashboard/agi-memory" className="text-[10px] font-mono text-zinc-500 hover:text-white transition-colors">
+              full feed →
+            </Link>
+          </div>
+          <ul className="rounded-2xl border border-violet-500/15 bg-violet-500/[0.03] divide-y divide-white/[0.04] overflow-hidden">
+            {recentAgiRationale.map((r) => (
+              <li key={`${r.targetKind}:${r.targetId}`}>
+                <Link
+                  href={`/dashboard/agi-memory/${encodeURIComponent(`${r.targetKind}:${r.targetId}`)}`}
+                  className="group block px-5 py-3 hover:bg-white/[0.015] transition-colors"
+                >
+                  <div className="flex items-center gap-2 mb-1 flex-wrap text-[10px] font-mono uppercase tracking-wider">
+                    <span className="text-violet-300">{r.targetKind}</span>
+                    <span className="text-zinc-500">·</span>
+                    <span className={
+                      r.outcome === "ai_generated" ? "text-emerald-300" :
+                      r.outcome === "fallback_rules" ? "text-amber-300" :
+                      "text-rose-300"
+                    }>{r.outcome.replace(/_/g, " ")}</span>
+                    {r.modelHint && (
+                      <>
+                        <span className="text-zinc-500">·</span>
+                        <span className="text-zinc-400">{r.modelHint}</span>
+                      </>
+                    )}
+                    <span className="text-zinc-500 ml-auto">{r.generatedAt.toISOString().slice(0, 10)}</span>
+                  </div>
+                  <p className="text-[12px] text-zinc-200 leading-relaxed line-clamp-2">{r.narrative}</p>
+                </Link>
+              </li>
+            ))}
           </ul>
         </section>
       )}
