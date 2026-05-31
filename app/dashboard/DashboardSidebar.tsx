@@ -155,6 +155,8 @@ const GROUPS: NavGroup[] = [
     kind: "ai_workforce",
     items: [
       { href: "/dashboard/workforce",            label: "AI engineers",        icon: CpuChipIcon },
+      { href: "/dashboard/workforce/ask-all",    label: "Ask the workforce",   icon: SparklesIcon },
+      { href: "/dashboard/workforce/compare",    label: "Compare engineers",   icon: ChartBarIcon, power: true },
       { href: "/dashboard/agents",               label: "Agent registry",      icon: CpuChipIcon },
       { href: "/dashboard/agent-tools",          label: "Tool access",         icon: ShieldCheckIcon },
       { href: "/dashboard/agent-activity",       label: "Activity",            icon: ChartBarIcon },
