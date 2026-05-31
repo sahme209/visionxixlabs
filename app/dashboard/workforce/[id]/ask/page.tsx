@@ -143,7 +143,17 @@ export default async function EngineerAskPage({
         </div>
       ) : (
         <section>
-          <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-zinc-500 mb-3">thread · {thread.length}</p>
+          <div className="flex items-baseline justify-between mb-3">
+            <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-zinc-500">thread · {thread.length}</p>
+            <a
+              href={`/api/workforce/${engineer.id}/qa.csv`}
+              download
+              className="text-[11px] font-mono text-zinc-500 hover:text-white transition-colors"
+              title="Download up to 5000 Q&A rows as CSV"
+            >
+              download .csv
+            </a>
+          </div>
           <ul className="space-y-3">
             {thread.map((t) => (
               <li key={t.targetId} className="rounded-2xl border border-white/[0.06] bg-white/[0.015] p-5">
