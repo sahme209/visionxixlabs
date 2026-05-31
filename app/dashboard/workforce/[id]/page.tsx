@@ -494,22 +494,36 @@ export default async function EngineerDetailPage({ params }: { params: Promise<{
         </div>
         {ownRationale ? (
           <>
-            <div className="flex items-center gap-2 mb-2 flex-wrap text-[10px] font-mono uppercase tracking-wider">
-              <span className={
-                ownRationale.outcome === "ai_generated" ? "text-emerald-300" :
-                ownRationale.outcome === "fallback_rules" ? "text-amber-300" :
-                "text-rose-300"
-              }>{ownRationale.outcome.replace(/_/g, " ")}</span>
-              {ownRationale.modelHint && (
-                <>
-                  <span className="text-zinc-500">·</span>
-                  <span className="text-zinc-400">{ownRationale.modelHint}</span>
-                </>
-              )}
-              <span className="text-zinc-500 ml-auto">
-                {ownRationale.updatedAt.toISOString().slice(0, 19).replace("T", " ")}
-              </span>
-            </div>
+            {(() => {
+              const ageDays = Math.floor((Date.now() - ownRationale.updatedAt.getTime()) / (24 * 60 * 60 * 1000));
+              const isStale = ageDays >= 7;
+              return (
+                <div className="flex items-center gap-2 mb-2 flex-wrap text-[10px] font-mono uppercase tracking-wider">
+                  <span className={
+                    ownRationale.outcome === "ai_generated" ? "text-emerald-300" :
+                    ownRationale.outcome === "fallback_rules" ? "text-amber-300" :
+                    "text-rose-300"
+                  }>{ownRationale.outcome.replace(/_/g, " ")}</span>
+                  {ownRationale.modelHint && (
+                    <>
+                      <span className="text-zinc-500">·</span>
+                      <span className="text-zinc-400">{ownRationale.modelHint}</span>
+                    </>
+                  )}
+                  {isStale && (
+                    <>
+                      <span className="text-zinc-500">·</span>
+                      <span className="text-amber-300" title={`${ageDays} days since last refresh — hit re-run AGI to update`}>
+                        stale · {ageDays}d
+                      </span>
+                    </>
+                  )}
+                  <span className="text-zinc-500 ml-auto">
+                    {ownRationale.updatedAt.toISOString().slice(0, 19).replace("T", " ")}
+                  </span>
+                </div>
+              );
+            })()}
             <p className="text-[13.5px] text-zinc-100 leading-relaxed whitespace-pre-line">{ownRationale.narrative}</p>
             {ownRiskFactors.length > 0 && (
               <div className="mt-3">

@@ -159,11 +159,13 @@ export default async function WorkforcePage() {
     }
   }
 
-  // Per-engineer specialty-rationale presence. The unique constraint
-  // on (org, targetKind, targetId) means one row max per engineer,
-  // so a single findMany scoped to targetKind="engineer_specialty"
-  // gives us the full lookup with minimal work.
-  const agiReady = new Set<string>();
+  // Per-engineer specialty-rationale presence + freshness. The unique
+  // constraint on (org, targetKind, targetId) means one row max per
+  // engineer; we read updatedAt to mark stale (≥7 days) cards so the
+  // operator knows where to focus a re-run.
+  const STALE_THRESHOLD_MS = 7 * 24 * 60 * 60 * 1000;
+  type AgiStatus = "fresh" | "stale";
+  const agiStatus = new Map<string, AgiStatus>();
   if (ctx.isAuthenticated && ctx.organizationId) {
     try {
       const rows = await prisma.aiRationaleEnrichment.findMany({
@@ -171,9 +173,12 @@ export default async function WorkforcePage() {
           organizationId: String(ctx.organizationId),
           targetKind: "engineer_specialty",
         },
-        select: { targetId: true },
+        select: { targetId: true, updatedAt: true },
       });
-      for (const r of rows) agiReady.add(r.targetId);
+      const now = Date.now();
+      for (const r of rows) {
+        agiStatus.set(r.targetId, now - r.updatedAt.getTime() >= STALE_THRESHOLD_MS ? "stale" : "fresh");
+      }
     } catch {
       // empty fallback — every card renders the 'run AGI' nudge.
     }
@@ -289,7 +294,7 @@ export default async function WorkforcePage() {
                     attempts30d={attemptCounts.get(e.id) ?? 0}
                     pending={pendingCounts.get(e.id) ?? 0}
                     disabled={disabledSet.has(e.id)}
-                    agiReady={agiReady.has(e.id)}
+                    agiStatus={agiStatus.get(e.id) ?? null}
                   />
                 ))}
               </div>
@@ -379,7 +384,7 @@ function LiveStat({ label, value, sub, tone }: { label: string; value: number; s
   );
 }
 
-function EngineerCard({ engineer, attempts30d, pending, disabled, agiReady }: { engineer: AgentEngineer; attempts30d: number; pending: number; disabled: boolean; agiReady: boolean }) {
+function EngineerCard({ engineer, attempts30d, pending, disabled, agiStatus }: { engineer: AgentEngineer; attempts30d: number; pending: number; disabled: boolean; agiStatus: "fresh" | "stale" | null }) {
   const approval = APPROVAL_TONE[engineer.approvalRule];
   return (
     <article className={`rounded-2xl border bg-white/[0.02] p-5 flex flex-col transition-opacity ${disabled ? "border-rose-500/15 opacity-60" : "border-white/[0.06]"}`}>
@@ -394,9 +399,14 @@ function EngineerCard({ engineer, attempts30d, pending, disabled, agiReady }: { 
               disabled
             </span>
           )}
-          {agiReady && (
-            <span className="text-[9px] font-mono uppercase tracking-wider border rounded-full px-1.5 py-px whitespace-nowrap text-violet-200 bg-violet-500/10 border-violet-500/30" title="This engineer has a current AGI rationale">
+          {agiStatus === "fresh" && (
+            <span className="text-[9px] font-mono uppercase tracking-wider border rounded-full px-1.5 py-px whitespace-nowrap text-violet-200 bg-violet-500/10 border-violet-500/30" title="This engineer has a current AGI rationale (<7d old)">
               AGI ✓
+            </span>
+          )}
+          {agiStatus === "stale" && (
+            <span className="text-[9px] font-mono uppercase tracking-wider border rounded-full px-1.5 py-px whitespace-nowrap text-amber-300 bg-amber-500/10 border-amber-500/30" title="AGI rationale is older than 7 days — re-run to refresh">
+              AGI · stale
             </span>
           )}
           <span className={`text-[9px] font-mono uppercase tracking-wider border rounded-full px-1.5 py-px whitespace-nowrap ${approval.tone}`}>
