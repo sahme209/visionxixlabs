@@ -17,6 +17,7 @@ import { notFound, redirect } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { currentContext } from "@/lib/auth/currentContext";
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
+import { controlsForRuleCode } from "@/lib/compliance/controls";
 
 export const dynamic = "force-dynamic";
 
@@ -143,6 +144,14 @@ export default async function FindingDetailPage({
   const resources = Array.isArray(finding.affectedResources) ? finding.affectedResources : [];
   const severityTone = SEVERITY_TONE[finding.severity as Severity];
 
+  // Compliance attribution. The finding's data.ruleCode (when present)
+  // is the key the compliance catalog matches against. We resolve to
+  // the list of controls this finding counts against so operators
+  // see the audit impact, not just the finding text.
+  const data = (finding.data ?? {}) as Record<string, unknown>;
+  const ruleCode = typeof data.ruleCode === "string" ? data.ruleCode : null;
+  const violatedControls = ruleCode ? controlsForRuleCode(ruleCode) : [];
+
   return (
     <div className="max-w-4xl mx-auto px-1 -mt-2">
       <Link href="/dashboard/findings" className="inline-flex items-center gap-1.5 text-[12px] text-zinc-500 hover:text-white transition-colors mb-6">
@@ -174,6 +183,44 @@ export default async function FindingDetailPage({
               </li>
             ))}
           </ul>
+        </section>
+      )}
+
+      {/* Compliance attribution — which controls this finding counts
+          against. Renders only when the finding's data.ruleCode
+          matches at least one matcher in the catalog. */}
+      {violatedControls.length > 0 && (
+        <section className="mb-10">
+          <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-zinc-500 mb-3">
+            counts against · {violatedControls.length} control{violatedControls.length === 1 ? "" : "s"}
+          </p>
+          <ul className="rounded-2xl border border-rose-500/15 bg-rose-500/[0.03] divide-y divide-white/[0.04] overflow-hidden">
+            {violatedControls.map((c) => (
+              <li key={c.id}>
+                <Link
+                  href={`/dashboard/compliance`}
+                  className="group flex items-start justify-between gap-3 px-5 py-3 hover:bg-white/[0.015] transition-colors"
+                >
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center gap-2 mb-1 flex-wrap text-[10px] font-mono uppercase tracking-wider">
+                      <span className="text-rose-300">failing</span>
+                      <span className="text-zinc-500">·</span>
+                      <span className="text-zinc-300">{c.framework}</span>
+                      <span className="text-zinc-500">·</span>
+                      <span className="text-zinc-500">{c.id}</span>
+                    </div>
+                    <p className="text-[13px] font-medium text-white">{c.title}</p>
+                    <p className="text-[11.5px] text-zinc-500 leading-snug mt-0.5">{c.description}</p>
+                  </div>
+                  <span className="text-[10px] font-mono text-zinc-500 shrink-0">→</span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+          <p className="text-[10px] text-zinc-500 mt-2 leading-snug">
+            Matched by ruleCode <code className="font-mono text-zinc-400">{ruleCode}</code>.
+            Operators can manage the catalog in <code className="font-mono text-zinc-400">lib/compliance/controls.ts</code>.
+          </p>
         </section>
       )}
 

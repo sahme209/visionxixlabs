@@ -130,3 +130,17 @@ export function scoreControl(
   }
   return { status: "failing", matchedCount: matched };
 }
+
+/**
+ * Inverse mapping: which controls does a single rule code violate?
+ * Cheap to compute — one substring sweep across the 12-row catalog.
+ * Used by the finding detail surface to show "this finding counts
+ * against these controls" without recomputing the full scoreControl
+ * loop on every render.
+ */
+export function controlsForRuleCode(ruleCode: string): ReadonlyArray<ComplianceControl> {
+  const codeLower = ruleCode.toLowerCase();
+  return COMPLIANCE_CONTROLS.filter((c) =>
+    c.ruleCodeMatchers.some((m) => codeLower.includes(m.toLowerCase())),
+  );
+}
