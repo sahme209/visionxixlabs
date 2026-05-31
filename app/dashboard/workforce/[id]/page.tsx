@@ -335,6 +335,36 @@ export default async function EngineerDetailPage({ params }: { params: Promise<{
     .filter((a) => (touchByProvider.get(a.provider) ?? 0) > 0)
     .map((a) => ({ ...a, attempts: touchByProvider.get(a.provider) ?? 0 }));
 
+  // The engineer's own specialty rationale — minted by /api/workforce/[id]/run-agi
+  // when the operator hits the 'Run AGI now' button (Phase 557). One
+  // row per (org, engineerSpecialty, engineerId) via the unique
+  // constraint, so refreshing always shows the latest.
+  const ownRationale = await prisma.aiRationaleEnrichment.findUnique({
+    where: {
+      organizationId_targetKind_targetId: {
+        organizationId: String(ctx.organizationId),
+        targetKind: "engineer_specialty",
+        targetId: engineer.id,
+      },
+    },
+    select: {
+      narrative: true,
+      riskFactorsJson: true,
+      nextActionsJson: true,
+      outcome: true,
+      modelHint: true,
+      errorMessage: true,
+      generatedAt: true,
+      updatedAt: true,
+    },
+  }).catch(() => null);
+  const ownRiskFactors = ownRationale && Array.isArray(ownRationale.riskFactorsJson)
+    ? (ownRationale.riskFactorsJson as unknown[]).filter((x): x is string => typeof x === "string")
+    : [];
+  const ownNextActions = ownRationale && Array.isArray(ownRationale.nextActionsJson)
+    ? (ownRationale.nextActionsJson as unknown[]).filter((x): x is string => typeof x === "string")
+    : [];
+
   // AGI rationale relevant to this engineer. Map the canonical
   // department to the AiRationaleEnrichment.targetKind values the
   // AGI emits. Safety / planning / reasoning engineers operate at
@@ -395,6 +425,90 @@ export default async function EngineerDetailPage({ params }: { params: Promise<{
         <h1 className="text-3xl md:text-4xl font-bold text-white tracking-[-0.04em] mb-2">{engineer.displayName}</h1>
         <p className="text-[15px] text-zinc-400 max-w-3xl leading-relaxed">{engineer.role}</p>
       </div>
+
+      {/* Engineer's own AGI rationale — the engineer literally
+          speaking for itself via Claude. POST /api/workforce/[id]/run-agi
+          mints a fresh narrative + risk factors + next actions and
+          upserts the row. When the row doesn't exist yet, surface a
+          'Run AGI now' button so operators kick off the first run. */}
+      <section className="rounded-2xl border border-violet-500/15 bg-violet-500/[0.04] p-5 mb-6">
+        <div className="flex items-center justify-between gap-3 mb-3 flex-wrap">
+          <p className="text-[10px] font-semibold uppercase tracking-widest text-violet-300">
+            {engineer.displayName} · speaking for itself
+          </p>
+          <form action={`/api/workforce/${engineer.id}/run-agi`} method="POST">
+            <button
+              type="submit"
+              className="text-[11px] font-mono uppercase tracking-wider px-3 py-1.5 rounded-full border border-violet-500/30 text-violet-100 hover:border-violet-500/60 hover:bg-violet-500/15 transition-colors"
+            >
+              {ownRationale ? "re-run AGI" : "run AGI now"}
+            </button>
+          </form>
+        </div>
+        {ownRationale ? (
+          <>
+            <div className="flex items-center gap-2 mb-2 flex-wrap text-[10px] font-mono uppercase tracking-wider">
+              <span className={
+                ownRationale.outcome === "ai_generated" ? "text-emerald-300" :
+                ownRationale.outcome === "fallback_rules" ? "text-amber-300" :
+                "text-rose-300"
+              }>{ownRationale.outcome.replace(/_/g, " ")}</span>
+              {ownRationale.modelHint && (
+                <>
+                  <span className="text-zinc-500">·</span>
+                  <span className="text-zinc-400">{ownRationale.modelHint}</span>
+                </>
+              )}
+              <span className="text-zinc-500 ml-auto">
+                {ownRationale.updatedAt.toISOString().slice(0, 19).replace("T", " ")}
+              </span>
+            </div>
+            <p className="text-[13.5px] text-zinc-100 leading-relaxed whitespace-pre-line">{ownRationale.narrative}</p>
+            {ownRiskFactors.length > 0 && (
+              <div className="mt-3">
+                <p className="text-[9.5px] font-mono uppercase tracking-wider text-zinc-500 mb-1">risk factors</p>
+                <ul className="space-y-0.5">
+                  {ownRiskFactors.map((f, i) => (
+                    <li key={`${i}_${f.slice(0, 24)}`} className="text-[12px] text-zinc-200 flex gap-1.5">
+                      <span className="text-rose-400">•</span>
+                      <span>{f}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+            {ownNextActions.length > 0 && (
+              <div className="mt-3">
+                <p className="text-[9.5px] font-mono uppercase tracking-wider text-zinc-500 mb-1">next actions</p>
+                <ul className="space-y-0.5">
+                  {ownNextActions.map((a, i) => (
+                    <li key={`${i}_${a.slice(0, 24)}`} className="text-[12px] text-zinc-200 flex gap-1.5">
+                      <span className="text-emerald-400">→</span>
+                      <span>{a}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+            {ownRationale.errorMessage && (
+              <p className="mt-2 text-[10.5px] font-mono text-rose-300/80">↳ {ownRationale.errorMessage}</p>
+            )}
+            <Link
+              href={`/dashboard/agi-memory/${encodeURIComponent(`engineer_specialty:${engineer.id}`)}`}
+              className="mt-3 inline-flex items-center gap-1 text-[10px] font-mono text-zinc-500 hover:text-white transition-colors"
+            >
+              permalink →
+            </Link>
+          </>
+        ) : (
+          <p className="text-[12px] text-zinc-400 leading-relaxed">
+            This engineer hasn&apos;t introduced itself yet. Hit the button to
+            invoke its AGI flow — it will read your workspace context and
+            return a structured rationale (narrative, risk factors, next
+            actions) keyed to its specialty.
+          </p>
+        )}
+      </section>
 
       {/* Enable / disable toggle — workspace-level switch on top of the
           canonical approval rule. Lives directly under the header so
