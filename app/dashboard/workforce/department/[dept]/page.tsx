@@ -105,6 +105,34 @@ export default async function WorkforceDepartmentPage({
   }
   const totalPending = Array.from(pendingByEngineer.values()).reduce((a, b) => a + b, 0);
 
+  // AGI rationale rollup for this department. Mirrors the engineer
+  // detail mapping (Phase 550): department → AGI targetKinds. The
+  // groupBy gives us outcome split so operators see "the AGI ran for
+  // this dept N times, M of those were ai_generated, K fell back."
+  function agiKindsForDepartment(d: string): string[] {
+    if (d === "safety" || d === "planning" || d === "reasoning") return ["council"];
+    if (d === "incident_response" || d === "security" || d === "devops" || d === "finops" || d === "observability") return ["triage", "remediation"];
+    return ["council", "triage", "remediation"];
+  }
+  const agiKinds = agiKindsForDepartment(dept);
+  const agiGroups = ctx.isAuthenticated && ctx.organizationId
+    ? await prisma.aiRationaleEnrichment.groupBy({
+        by: ["outcome"],
+        where: {
+          organizationId: String(ctx.organizationId),
+          targetKind: { in: agiKinds },
+        },
+        _count: { _all: true },
+      }).catch(() => [] as Array<{ outcome: string; _count: { _all: number } }>)
+    : [];
+  const agi = { ai_generated: 0, fallback_rules: 0, error: 0, total: 0 };
+  for (const g of agiGroups) {
+    if (g.outcome === "ai_generated") agi.ai_generated += g._count._all;
+    else if (g.outcome === "fallback_rules") agi.fallback_rules += g._count._all;
+    else if (g.outcome === "error") agi.error += g._count._all;
+    agi.total += g._count._all;
+  }
+
   // Department-level rollup.
   const rollup = engineers.reduce(
     (acc, e) => {
@@ -171,6 +199,27 @@ export default async function WorkforceDepartmentPage({
       )}
       {totalPending === 0 && (
         <div className="mb-10" aria-hidden />
+      )}
+
+      {/* AGI activity rollup for the kinds this department maps to.
+          Lets operators see "is the AGI reasoning about this work" at
+          a glance before they scroll the engineer list. Hidden when
+          there's nothing recorded yet. */}
+      {agi.total > 0 && (
+        <section className="mb-10">
+          <div className="flex items-baseline justify-between mb-3">
+            <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-violet-300">AGI activity · {agiKinds.join(" + ")}</p>
+            <Link href="/dashboard/agi-memory" className="text-[11px] font-mono text-zinc-500 hover:text-white transition-colors">
+              memory feed →
+            </Link>
+          </div>
+          <div className="grid grid-cols-4 rounded-2xl border border-violet-500/15 bg-violet-500/[0.03] divide-x divide-white/[0.04] overflow-hidden">
+            <RollupTile label="total"          count={agi.total}          tone="text-white" />
+            <RollupTile label="ai generated"   count={agi.ai_generated}   tone={agi.ai_generated > 0 ? "text-emerald-300" : "text-zinc-600"} />
+            <RollupTile label="fallback rules" count={agi.fallback_rules} tone={agi.fallback_rules > 0 ? "text-amber-300" : "text-zinc-600"} />
+            <RollupTile label="errored"        count={agi.error}          tone={agi.error > 0 ? "text-rose-300" : "text-zinc-600"} />
+          </div>
+        </section>
       )}
 
       {/* Engineer rows */}
