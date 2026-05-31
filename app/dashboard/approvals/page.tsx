@@ -57,6 +57,7 @@ export default async function ApprovalsPage() {
     monthlyLow: number;
     monthlyHigh: number;
     createdAt: Date;
+    planItemId: string;
   }> = [];
   let migrationPending = false;
   try {
@@ -78,6 +79,7 @@ export default async function ApprovalsPage() {
         monthlyLow: true,
         monthlyHigh: true,
         createdAt: true,
+        planItemId: true,
       },
     }) as typeof items;
   } catch (err) {
@@ -86,6 +88,35 @@ export default async function ApprovalsPage() {
       migrationPending = true;
     } else {
       throw err;
+    }
+  }
+
+  // Resolve approval → source finding via planItemId → recommendationId
+  // → findingId. One bulk join keeps the cost flat regardless of the
+  // 100-row page size. AxiomExecutionPlanItem.recommendationId is
+  // nullable (some plans skip the recommendation gateway), so the
+  // Map covers only the rows where the trace lands cleanly.
+  const planItemIds = items.map((i) => i.planItemId);
+  const sourceByApprovalId = new Map<string, { findingId: string; recId: string }>();
+  if (planItemIds.length > 0) {
+    try {
+      const planItems = await prisma.axiomExecutionPlanItem.findMany({
+        where: { id: { in: planItemIds } },
+        select: {
+          id: true,
+          recommendation: { select: { id: true, findingId: true } },
+        },
+      });
+      const recByPlan = new Map<string, { id: string; findingId: string }>();
+      for (const pi of planItems) {
+        if (pi.recommendation) recByPlan.set(pi.id, pi.recommendation);
+      }
+      for (const it of items) {
+        const rec = recByPlan.get(it.planItemId);
+        if (rec) sourceByApprovalId.set(it.id, { findingId: rec.findingId, recId: rec.id });
+      }
+    } catch {
+      // empty map fallback — rows just won't show the source link.
     }
   }
 
@@ -189,6 +220,18 @@ export default async function ApprovalsPage() {
                             ~${item.monthlyLow.toFixed(0)}/mo savings if applied
                           </p>
                         )}
+                        {(() => {
+                          const src = sourceByApprovalId.get(item.id);
+                          if (!src) return null;
+                          return (
+                            <Link
+                              href={`/dashboard/findings/${src.findingId}`}
+                              className="inline-flex items-center gap-1 mt-1 text-[10px] font-mono text-zinc-500 hover:text-white transition-colors"
+                            >
+                              source finding →
+                            </Link>
+                          );
+                        })()}
                       </div>
                       {item.status === "pending" && (
                         <div className="flex flex-col gap-1.5 shrink-0">
