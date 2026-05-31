@@ -232,6 +232,9 @@ export default async function WorkforcePage() {
           >
             download .csv
           </a>
+          <Link href="/dashboard/workforce/ask-all" className="text-[11px] font-mono text-zinc-500 hover:text-white transition-colors">
+            ask all →
+          </Link>
           <Link href="/dashboard/workforce/compare" className="text-[11px] font-mono text-zinc-500 hover:text-white transition-colors">
             compare engineers →
           </Link>
