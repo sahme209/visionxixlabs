@@ -248,7 +248,15 @@ function MemoryRow({ entry }: { entry: Entry }) {
       {entry.outcome !== "ai_generated" && entry.errorMessage && (
         <p className="mt-1.5 text-[10.5px] font-mono text-amber-300">↳ {entry.errorMessage}</p>
       )}
-      <p className="mt-1 text-[10px] font-mono text-zinc-600">{entry.targetKind} · {entry.targetId} · {entry.engineVersion}</p>
+      <div className="mt-1 flex items-center justify-between gap-2 flex-wrap">
+        <p className="text-[10px] font-mono text-zinc-600">{entry.targetKind} · {entry.targetId} · {entry.engineVersion}</p>
+        <a
+          href={`/dashboard/agi-memory/${encodeURIComponent(`${entry.targetKind}:${entry.targetId}`)}`}
+          className="text-[10px] font-mono text-zinc-500 hover:text-white transition-colors"
+        >
+          permalink →
+        </a>
+      </div>
     </div>
   );
 }
