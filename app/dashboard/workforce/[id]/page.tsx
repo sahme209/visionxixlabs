@@ -104,6 +104,35 @@ export default async function EngineerDetailPage({ params }: { params: Promise<{
     select: { reason: true, createdAt: true, action: true },
   }).catch(() => null);
 
+  // 14-day daily attempt trend. We fetch raw createdAt for each
+  // attempt in window and bucket by UTC date in-app — fast, no DB
+  // function dependency, and the trend stays accurate across DST
+  // boundaries because we never touch local time.
+  const since14d = new Date(Date.now() - 14 * 24 * 60 * 60 * 1000);
+  const trendAttempts = await prisma.agentEngineerActionAttempt.findMany({
+    where: {
+      organizationId: String(ctx.organizationId),
+      engineerId: engineer.id,
+      createdAt: { gte: since14d },
+    },
+    select: { createdAt: true },
+    take: 5000,
+  }).catch(() => [] as Array<{ createdAt: Date }>);
+
+  type DayBucket = { day: string; count: number };
+  const trend: DayBucket[] = [];
+  for (let i = 13; i >= 0; i--) {
+    const d = new Date(Date.now() - i * 24 * 60 * 60 * 1000);
+    trend.push({ day: d.toISOString().slice(0, 10), count: 0 });
+  }
+  const trendIndex = new Map(trend.map((t, i) => [t.day, i]));
+  for (const a of trendAttempts) {
+    const key = a.createdAt.toISOString().slice(0, 10);
+    const i = trendIndex.get(key);
+    if (i !== undefined) trend[i].count++;
+  }
+  const trendPeak = Math.max(1, ...trend.map((t) => t.count));
+
   // Top-actions breakdown — which actions does this engineer actually
   // attempt? Per-action outcome split lets the operator see "the
   // engineer wants to apply_terraform 40x but is blocked 38 of those".
@@ -393,6 +422,26 @@ export default async function EngineerDetailPage({ params }: { params: Promise<{
             Most recent block on <span className="font-mono text-zinc-300">{recentBlock.action}</span> · {recentBlock.reason}
           </p>
         )}
+        {/* 14-day daily trend. CSS-only bar chart — one column per day,
+            height proportional to the peak so a dormant engineer's flat
+            row reads as flat and a hot one reads as hot. */}
+        <div className="mt-3">
+          <p className="text-[10px] font-mono uppercase tracking-[0.18em] text-zinc-500 mb-1.5">14-day trend</p>
+          <div className="flex items-end gap-[2px] h-10">
+            {trend.map((t) => {
+              const pct = (t.count / trendPeak) * 100;
+              const isToday = t.day === new Date().toISOString().slice(0, 10);
+              return (
+                <div key={t.day} className="flex-1 flex flex-col justify-end" title={`${t.day} · ${t.count}`}>
+                  <div
+                    className={`w-full rounded-sm ${t.count > 0 ? (isToday ? "bg-emerald-300/80" : "bg-zinc-400/70") : "bg-white/[0.04]"}`}
+                    style={{ height: `${Math.max(pct, 2)}%` }}
+                  />
+                </div>
+              );
+            })}
+          </div>
+        </div>
       </section>
 
       {/* Approval SLA — pending count + median decision latency for
