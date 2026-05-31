@@ -88,6 +88,10 @@
     {
       "path": "/api/cron/ai-circuit-watchdog",
       "schedule": "*/15 * * * *"
+    },
+    {
+      "path": "/api/cron/engineer-agi-tick",
+      "schedule": "*/30 * * * *"
     }
   ]
 }
