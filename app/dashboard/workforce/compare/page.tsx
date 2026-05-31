@@ -33,6 +33,15 @@ interface ColumnData {
   medianLatencyMs: number | null;
   executed: number;
   failed: number;
+  agi: { total: number; ai_generated: number };
+}
+
+// Mirror of agiKindsForDepartment elsewhere — keeps the comparison
+// column aligned with the engineer detail's AGI panel.
+function agiKindsForDepartment(dept: string): string[] {
+  if (dept === "safety" || dept === "planning" || dept === "reasoning") return ["council"];
+  if (dept === "incident_response" || dept === "security" || dept === "devops" || dept === "finops" || dept === "observability") return ["triage", "remediation"];
+  return ["council", "triage", "remediation"];
 }
 
 function parseIds(raw: string | undefined): string[] {
@@ -78,10 +87,11 @@ export default async function CompareEngineersPage({
   let pendingRows: Array<{ engineerId: string; _count: { _all: number } }> = [];
   let execRows: Array<{ engineerId: string; executionStatus: string; _count: { _all: number } }> = [];
   let latencyRows: Array<{ engineerId: string; createdAt: Date; decidedAt: Date | null }> = [];
+  let agiRows: Array<{ targetKind: string; outcome: string; _count: { _all: number } }> = [];
 
   if (ctx.isAuthenticated && ctx.organizationId) {
     const org = String(ctx.organizationId);
-    [attemptRows, pendingRows, execRows, latencyRows] = await Promise.all([
+    [attemptRows, pendingRows, execRows, latencyRows, agiRows] = await Promise.all([
       prisma.agentEngineerActionAttempt.groupBy({
         by: ["engineerId", "runtimeDecision"],
         where: { organizationId: org, engineerId: { in: engineerIds }, createdAt: { gte: since30d } },
@@ -103,6 +113,11 @@ export default async function CompareEngineersPage({
         take: 50 * engineers.length, // ~50 per engineer; sufficient for median
         select: { engineerId: true, createdAt: true, decidedAt: true },
       }).catch(() => []) as Promise<typeof latencyRows>,
+      prisma.aiRationaleEnrichment.groupBy({
+        by: ["targetKind", "outcome"],
+        where: { organizationId: org },
+        _count: { _all: true },
+      }).catch(() => []) as Promise<typeof agiRows>,
     ]);
   }
 
@@ -133,7 +148,17 @@ export default async function CompareEngineersPage({
       .sort((a, b) => a - b);
     const medianLatencyMs = latencies.length === 0 ? null : latencies[Math.floor(latencies.length / 2)];
 
-    return { engineer: e, attempts30d: attempts, pending, medianLatencyMs, executed, failed };
+    // AGI activity for this engineer's department. We reduce the
+    // workspace-wide groupBy already loaded — no extra query.
+    const kinds = new Set(agiKindsForDepartment(e.department));
+    const agi = { total: 0, ai_generated: 0 };
+    for (const r of agiRows) {
+      if (!kinds.has(r.targetKind)) continue;
+      agi.total += r._count._all;
+      if (r.outcome === "ai_generated") agi.ai_generated += r._count._all;
+    }
+
+    return { engineer: e, attempts30d: attempts, pending, medianLatencyMs, executed, failed, agi };
   });
 
   return (
@@ -211,6 +236,11 @@ export default async function CompareEngineersPage({
             <MetricRow label="missing setup" value={String(c.engineer.missingPieces.length)} tone={c.engineer.missingPieces.length > 0 ? "text-amber-300" : "text-emerald-300"} />
             <MetricRow label="approval rule" value={c.engineer.approvalRule.replace(/_/g, " ")} mono />
             <MetricRow label="highest risk"  value={c.engineer.highestRiskAction}                                                              mono />
+
+            <Divider />
+
+            <MetricRow label="AGI rationale"   value={String(c.agi.total)}        tone={c.agi.total > 0        ? "text-violet-300"  : "text-zinc-600"} />
+            <MetricRow label="· ai generated"  value={String(c.agi.ai_generated)} tone={c.agi.ai_generated > 0 ? "text-emerald-300" : "text-zinc-600"} />
           </article>
         ))}
       </section>
