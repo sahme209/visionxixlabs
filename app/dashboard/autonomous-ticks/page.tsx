@@ -120,6 +120,19 @@ export default async function AutonomousTicksPage() {
 
       {/* Tick feed */}
       {ticks.length > 0 && (
+        <div className="flex items-baseline justify-between mb-3">
+          <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-zinc-500">recent ticks · {ticks.length}</p>
+          <a
+            href="/api/dashboard/autonomous-ticks/export.csv"
+            download
+            className="text-[11px] font-mono text-zinc-500 hover:text-white transition-colors"
+            title="Download up to 5000 tick logs as CSV"
+          >
+            download .csv
+          </a>
+        </div>
+      )}
+      {ticks.length > 0 && (
         <ul className="rounded-2xl border border-white/[0.06] bg-white/[0.015] divide-y divide-white/[0.04] overflow-hidden">
           {ticks.map((t) => (
             <li key={t.id} className="px-6 py-4">
