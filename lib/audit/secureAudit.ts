@@ -79,6 +79,7 @@ export type AuditAction =
   | "engineer.policy_override_updated"
   | "engineer.registry_synced"
   | "engineer.enable_toggled"
+  | "engineer.notes_updated"
   // Billing — Phase 382.
   | "billing.usage_recorded"
   | "billing.credit_pool_exhausted"

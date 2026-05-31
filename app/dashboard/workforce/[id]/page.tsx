@@ -305,6 +305,34 @@ export default async function EngineerDetailPage({ params }: { params: Promise<{
         </form>
       </section>
 
+      {/* Operator notes — admin-visible scratchpad for context like
+          "broker flaky on Tue mornings, keep disabled until fix lands".
+          Plain server-rendered form, no client JS. */}
+      <section className="rounded-2xl border border-white/[0.06] bg-white/[0.015] p-5 mb-6">
+        <p className="text-[10px] font-mono uppercase tracking-[0.18em] text-zinc-500 mb-2">operator notes</p>
+        <form action={`/api/workforce/${engineer.id}/notes`} method="POST">
+          <textarea
+            name="notes"
+            defaultValue={record?.notes ?? ""}
+            rows={3}
+            maxLength={4000}
+            placeholder="Context the next operator should see — disabled-reason, runbook link, on-call notes."
+            className="w-full rounded-lg border border-white/[0.06] bg-white/[0.02] px-3 py-2 text-[12.5px] text-zinc-200 placeholder:text-zinc-600 focus:outline-none focus:border-white/[0.18] transition-colors resize-none"
+          />
+          <div className="mt-2 flex items-center justify-between gap-2">
+            <p className="text-[10px] font-mono text-zinc-500">
+              {record?.notes ? `${record.notes.length} chars saved` : "empty"} · 4000 max
+            </p>
+            <button
+              type="submit"
+              className="text-[11px] font-mono uppercase tracking-wider px-3 py-1 rounded-full border border-white/[0.08] text-zinc-300 hover:text-white hover:border-white/[0.18] transition-colors"
+            >
+              save notes
+            </button>
+          </div>
+        </form>
+      </section>
+
       {/* Approval rule strip */}
       <section className="rounded-2xl border border-violet-500/15 bg-white/[0.015] p-5 mb-6">
         <header className="flex items-center gap-2 mb-3 flex-wrap">
