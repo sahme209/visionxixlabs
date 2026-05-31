@@ -160,11 +160,20 @@ export default async function WorkforceDepartmentPage({
         <h1 className="text-[34px] sm:text-[40px] leading-[1.05] font-semibold text-white tracking-[-0.03em] mb-3">
           The {dept.replace(/_/g, " ")} engineers.
         </h1>
-        <p className="text-[15px] text-zinc-400 leading-relaxed max-w-xl">
+        <p className="text-[15px] text-zinc-400 leading-relaxed max-w-xl mb-4">
           {engineers.length} engineer{engineers.length === 1 ? "" : "s"} in this department.
           Rollup is the sum of every engineer&apos;s gated attempts in the
           last 30 days, scoped to your workspace.
         </p>
+        <form action={`/api/workforce/department/${dept}/run-agi`} method="POST">
+          <button
+            type="submit"
+            className="text-[11px] font-mono uppercase tracking-wider px-3 py-1.5 rounded-full border border-violet-500/30 text-violet-200 hover:text-white hover:border-violet-500/60 hover:bg-violet-500/10 transition-colors"
+            title={`Run the AGI flow for every engineer in the ${dept.replace(/_/g, " ")} department`}
+          >
+            run AGI for this department
+          </button>
+        </form>
       </header>
 
       {migrationPending && (
