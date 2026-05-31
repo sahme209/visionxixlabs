@@ -66,11 +66,19 @@ export default async function CloudAccountsPage() {
         <h1 className="text-[34px] sm:text-[40px] leading-[1.05] font-semibold text-white tracking-[-0.03em] mb-3">
           Every cloud you&apos;ve connected.
         </h1>
-        <p className="text-[15px] text-zinc-400 leading-relaxed max-w-xl">
+        <p className="text-[15px] text-zinc-400 leading-relaxed max-w-xl mb-4">
           One row per CloudAccount in your tenant. Click any row to see
           its scan history, scheduled-scan config, and the findings it&apos;s
           currently producing.
         </p>
+        {accounts.length > 1 && (
+          <Link
+            href="/dashboard/cloud-accounts/compare"
+            className="text-[11px] font-mono text-zinc-500 hover:text-white transition-colors"
+          >
+            compare accounts →
+          </Link>
+        )}
       </header>
 
       {migrationPending && (
