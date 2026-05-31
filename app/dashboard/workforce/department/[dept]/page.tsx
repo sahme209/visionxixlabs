@@ -175,7 +175,17 @@ export default async function WorkforceDepartmentPage({
 
       {/* Engineer rows */}
       <section className="mb-10">
-        <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-zinc-500 mb-3">engineers</p>
+        <div className="flex items-baseline justify-between mb-3">
+          <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-zinc-500">engineers</p>
+          <a
+            href={`/api/workforce/department/${dept}/attempts.csv`}
+            download
+            className="text-[11px] font-mono text-zinc-500 hover:text-white transition-colors"
+            title={`Download up to 5000 attempts across the ${dept.replace(/_/g, " ")} department as CSV`}
+          >
+            download .csv
+          </a>
+        </div>
         <ul className="rounded-2xl border border-white/[0.06] bg-white/[0.015] divide-y divide-white/[0.04] overflow-hidden">
           {engineers.map((e) => {
             const c = counts.get(e.id) ?? { allowed: 0, requires_approval: 0, blocked: 0, total: 0 };
