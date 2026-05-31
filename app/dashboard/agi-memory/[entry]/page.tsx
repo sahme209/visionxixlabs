@@ -25,9 +25,10 @@ import { AGENT_WORKFORCE_REGISTRY } from "@/lib/workforce/agentWorkforceRegistry
 export const dynamic = "force-dynamic";
 
 const KIND_LABEL: Record<string, string> = {
-  council:     "Council",
-  triage:      "Triage",
-  remediation: "Remediation",
+  council:             "Council",
+  triage:              "Triage",
+  remediation:         "Remediation",
+  engineer_specialty:  "Engineer specialty",
 };
 
 const OUTCOME_TONE: Record<string, string> = {
@@ -40,6 +41,9 @@ const SOURCE_HREF: Record<string, string> = {
   council:     "/dashboard/agi-cockpit",
   triage:      "/dashboard/incidents",
   remediation: "/dashboard/remediation",
+  // engineer_specialty intentionally not mapped here — the canonical
+  // home for that entry is the engineer detail itself, which we
+  // synthesize from targetId below.
 };
 
 // Mirror of agiKindsForDepartment in /dashboard/workforce/[id]. We
@@ -112,7 +116,11 @@ export default async function AgiMemoryEntryPage({
     : [];
 
   const kindLabel = KIND_LABEL[entry.targetKind] ?? entry.targetKind;
-  const sourceHref = SOURCE_HREF[entry.targetKind];
+  // For engineer_specialty entries the targetId IS the engineer id —
+  // route the source link straight at the engineer detail page.
+  const sourceHref = entry.targetKind === "engineer_specialty"
+    ? `/dashboard/workforce/${entry.targetId}`
+    : SOURCE_HREF[entry.targetKind];
 
   // Engineers whose department the kind maps to. Filter to client
   // engineers only — internal_admin engineers never surface on

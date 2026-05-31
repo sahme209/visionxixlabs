@@ -54,15 +54,19 @@ interface MemoryData {
 type Body = { ok: true; data: MemoryData } | { ok: false; error: string; hint?: string };
 
 const KIND_LABEL: Record<string, string> = {
-  council: "Council",
-  triage: "Triage",
-  remediation: "Remediation",
+  council:             "Council",
+  triage:              "Triage",
+  remediation:         "Remediation",
+  engineer_specialty:  "Engineer specialty",
 };
 
 const KIND_HREF: Record<string, string> = {
   council: "/dashboard/advisor-council",
   triage: "/dashboard/incident-triage",
   remediation: "/dashboard/remediation-proposals",
+  // engineer_specialty deliberately omitted — its 'open →' link
+  // routes per-row to the matching engineer detail page (see the row
+  // renderer below), since the targetId is the canonical engineer id.
 };
 
 const OUTCOME_CLASS: Record<string, string> = {
@@ -195,7 +199,11 @@ export default function AgiMemoryPage() {
 
 function MemoryRow({ entry }: { entry: Entry }) {
   const [expanded, setExpanded] = useState(false);
-  const href = KIND_HREF[entry.targetKind];
+  // engineer_specialty entries route directly to the engineer detail
+  // page — the canonical home for an engineer's own rationale.
+  const href = entry.targetKind === "engineer_specialty"
+    ? `/dashboard/workforce/${entry.targetId}`
+    : KIND_HREF[entry.targetKind];
 
   return (
     <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-3">
