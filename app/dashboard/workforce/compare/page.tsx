@@ -34,6 +34,7 @@ interface ColumnData {
   executed: number;
   failed: number;
   agi: { total: number; ai_generated: number };
+  specialty: { hasRow: boolean; outcome: string | null; updatedAt: Date | null };
 }
 
 // Mirror of agiKindsForDepartment elsewhere — keeps the comparison
@@ -88,10 +89,11 @@ export default async function CompareEngineersPage({
   let execRows: Array<{ engineerId: string; executionStatus: string; _count: { _all: number } }> = [];
   let latencyRows: Array<{ engineerId: string; createdAt: Date; decidedAt: Date | null }> = [];
   let agiRows: Array<{ targetKind: string; outcome: string; _count: { _all: number } }> = [];
+  let specialtyRows: Array<{ targetId: string; outcome: string; updatedAt: Date }> = [];
 
   if (ctx.isAuthenticated && ctx.organizationId) {
     const org = String(ctx.organizationId);
-    [attemptRows, pendingRows, execRows, latencyRows, agiRows] = await Promise.all([
+    [attemptRows, pendingRows, execRows, latencyRows, agiRows, specialtyRows] = await Promise.all([
       prisma.agentEngineerActionAttempt.groupBy({
         by: ["engineerId", "runtimeDecision"],
         where: { organizationId: org, engineerId: { in: engineerIds }, createdAt: { gte: since30d } },
@@ -118,6 +120,14 @@ export default async function CompareEngineersPage({
         where: { organizationId: org },
         _count: { _all: true },
       }).catch(() => []) as Promise<typeof agiRows>,
+      prisma.aiRationaleEnrichment.findMany({
+        where: {
+          organizationId: org,
+          targetKind: "engineer_specialty",
+          targetId: { in: engineerIds },
+        },
+        select: { targetId: true, outcome: true, updatedAt: true },
+      }).catch(() => []) as Promise<typeof specialtyRows>,
     ]);
   }
 
@@ -158,7 +168,14 @@ export default async function CompareEngineersPage({
       if (r.outcome === "ai_generated") agi.ai_generated += r._count._all;
     }
 
-    return { engineer: e, attempts30d: attempts, pending, medianLatencyMs, executed, failed, agi };
+    const specialtyRow = specialtyRows.find((r) => r.targetId === e.id);
+    const specialty = {
+      hasRow: specialtyRow != null,
+      outcome: specialtyRow?.outcome ?? null,
+      updatedAt: specialtyRow?.updatedAt ?? null,
+    };
+
+    return { engineer: e, attempts30d: attempts, pending, medianLatencyMs, executed, failed, agi, specialty };
   });
 
   return (
@@ -241,6 +258,20 @@ export default async function CompareEngineersPage({
 
             <MetricRow label="AGI rationale"   value={String(c.agi.total)}        tone={c.agi.total > 0        ? "text-violet-300"  : "text-zinc-600"} />
             <MetricRow label="· ai generated"  value={String(c.agi.ai_generated)} tone={c.agi.ai_generated > 0 ? "text-emerald-300" : "text-zinc-600"} />
+            <MetricRow
+              label="own AGI"
+              value={c.specialty.hasRow ? (c.specialty.outcome ?? "—").replace(/_/g, " ") : "not yet"}
+              tone={
+                c.specialty.outcome === "ai_generated" ? "text-emerald-300" :
+                c.specialty.outcome === "fallback_rules" ? "text-amber-300" :
+                c.specialty.outcome === "error" ? "text-rose-300" :
+                "text-zinc-600"
+              }
+              mono
+            />
+            {c.specialty.updatedAt && (
+              <MetricRow label="· updated" value={c.specialty.updatedAt.toISOString().slice(0, 10)} mono tone="text-zinc-300" />
+            )}
           </article>
         ))}
       </section>
