@@ -299,9 +299,9 @@ export default async function EngineerDetailPage({ params }: { params: Promise<{
             provider: { in: cloudConnectorDeps as ("aws" | "azure" | "gcp")[] },
             enabled: true,
           },
-          select: { provider: true, externalAccountId: true },
-        }).catch(() => [] as Array<{ provider: string; externalAccountId: string }>)
-      : Promise.resolve([] as Array<{ provider: string; externalAccountId: string }>),
+          select: { id: true, provider: true, externalAccountId: true, alias: true },
+        }).catch(() => [] as Array<{ id: string; provider: string; externalAccountId: string; alias: string | null }>)
+      : Promise.resolve([] as Array<{ id: string; provider: string; externalAccountId: string; alias: string | null }>),
     githubRequired
       ? prisma.gitHubInstallation.count({
           where: { organizationId: String(ctx.organizationId) },
@@ -311,6 +311,29 @@ export default async function EngineerDetailPage({ params }: { params: Promise<{
   const connectedProviders = new Set<string>(cloudAccountRows.map((r) => r.provider));
   const githubConnected = githubInstallCount > 0;
   const hasReadinessSection = cloudConnectorDeps.length > 0 || githubRequired;
+
+  // Cloud accounts this engineer has actually exercised (last 30d).
+  // We pivot via the AgentEngineerActionAttempt.connector field — when
+  // the engineer's connector matches a CloudAccount.provider, we
+  // attribute the touch. Returns per-provider attempt counts which we
+  // fold against the enabled cloud accounts above.
+  const touchedConnectorGroups = await prisma.agentEngineerActionAttempt.groupBy({
+    by: ["connector"],
+    where: {
+      organizationId: String(ctx.organizationId),
+      engineerId: engineer.id,
+      connector: { in: ["aws", "azure", "gcp"] },
+      createdAt: { gte: since30d },
+    },
+    _count: { _all: true },
+  }).catch(() => [] as Array<{ connector: string | null; _count: { _all: number } }>);
+  const touchByProvider = new Map<string, number>();
+  for (const g of touchedConnectorGroups) {
+    if (g.connector) touchByProvider.set(g.connector, g._count._all);
+  }
+  const touchedAccounts = cloudAccountRows
+    .filter((a) => (touchByProvider.get(a.provider) ?? 0) > 0)
+    .map((a) => ({ ...a, attempts: touchByProvider.get(a.provider) ?? 0 }));
 
   const currentRule: ApprovalRule = (record?.currentApprovalRule as ApprovalRule | null) ?? engineer.approvalRule;
   const overrideActive = !!record?.currentApprovalRule && record.currentApprovalRule !== engineer.approvalRule;
@@ -615,6 +638,40 @@ export default async function EngineerDetailPage({ params }: { params: Promise<{
               </li>
             )}
           </ul>
+        </section>
+      )}
+
+      {/* Cloud accounts this engineer has exercised in the last 30
+          days. The attribution flows from
+          AgentEngineerActionAttempt.connector → CloudAccount.provider,
+          so an aws-touching engineer surfaces every connected aws
+          account. Operators click through into the per-account
+          surface to see what actually got produced. */}
+      {touchedAccounts.length > 0 && (
+        <section className="mb-6">
+          <p className="text-[10px] font-semibold uppercase tracking-widest text-zinc-400 mb-3">Cloud accounts touched · 30d</p>
+          <ul className="rounded-2xl border border-white/[0.06] bg-white/[0.015] divide-y divide-white/[0.04] overflow-hidden">
+            {touchedAccounts.map((a) => (
+              <li key={a.id}>
+                <Link
+                  href={`/dashboard/cloud-accounts/${a.id}`}
+                  className="group flex items-center justify-between gap-3 px-5 py-3 hover:bg-white/[0.015] transition-colors"
+                >
+                  <div className="flex items-center gap-3 min-w-0">
+                    <span className="text-[10px] font-mono uppercase tracking-wider text-zinc-300 shrink-0">{a.provider}</span>
+                    <p className="text-[12.5px] font-medium text-white truncate">{a.alias ?? a.externalAccountId}</p>
+                  </div>
+                  <div className="flex items-center gap-3 shrink-0">
+                    <span className="text-[11px] font-mono text-zinc-400 tabular-nums">{a.attempts} via {a.provider}</span>
+                    <ArrowRightIcon className="h-3.5 w-3.5 text-zinc-600 group-hover:text-white group-hover:translate-x-0.5 transition-all" />
+                  </div>
+                </Link>
+              </li>
+            ))}
+          </ul>
+          <p className="text-[10px] text-zinc-500 mt-2 leading-snug">
+            Attribution is per-provider — an aws-touching engineer sees every connected aws account because the runtime gate operates per connector, not per account.
+          </p>
         </section>
       )}
 

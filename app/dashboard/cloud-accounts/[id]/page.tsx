@@ -16,6 +16,7 @@ import { notFound, redirect } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { currentContext } from "@/lib/auth/currentContext";
 import { ArrowLeftIcon, ArrowRightIcon } from "@heroicons/react/24/outline";
+import { AGENT_WORKFORCE_REGISTRY } from "@/lib/workforce/agentWorkforceRegistry";
 
 export const dynamic = "force-dynamic";
 
@@ -59,7 +60,8 @@ export default async function CloudAccountDetailPage({
     notFound();
   }
 
-  const [runs, schedule, findingGroups] = await Promise.all([
+  const since30d = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+  const [runs, schedule, findingGroups, engineerActivity] = await Promise.all([
     prisma.axiomAgentRun.findMany({
       where: { cloudAccountId: account.id },
       orderBy: { createdAt: "desc" },
@@ -89,7 +91,36 @@ export default async function CloudAccountDetailPage({
       where: { run: { cloudAccountId: account.id } },
       _count: { _all: true },
     }),
+    // Engineer attribution: every gated attempt in the last 30 days
+    // where the engineer declared this account's provider as its
+    // connector. Same field that connector-readiness reads, so the
+    // attribution lines up with what we show on the engineer detail.
+    prisma.agentEngineerActionAttempt.groupBy({
+      by: ["engineerId"],
+      where: {
+        organizationId: String(ctx.organizationId),
+        connector: account.provider,
+        createdAt: { gte: since30d },
+      },
+      _count: { _all: true },
+    }).catch(() => [] as Array<{ engineerId: string; _count: { _all: number } }>),
   ]);
+
+  // Engineer attribution roll-up. We resolve display names via the
+  // canonical registry, skip engineers with stale ids that aren't in
+  // the registry anymore, and sort desc by attempt count in-app
+  // because Prisma's groupBy doesn't support orderBy on aggregate
+  // count for non-aggregable fields.
+  const engineerLookup = new Map(AGENT_WORKFORCE_REGISTRY.map((e) => [e.id, e]));
+  const engineerRows = engineerActivity
+    .map((r) => {
+      const engineer = engineerLookup.get(r.engineerId);
+      if (!engineer) return null;
+      return { engineerId: r.engineerId, displayName: engineer.displayName, attempts: r._count._all };
+    })
+    .filter((r): r is { engineerId: string; displayName: string; attempts: number } => r != null)
+    .sort((a, b) => b.attempts - a.attempts)
+    .slice(0, 6);
 
   // AxiomApprovalItem has no `run` relation in the Prisma schema —
   // resolve via the recent runs we already loaded above (covers the
@@ -202,6 +233,32 @@ export default async function CloudAccountDetailPage({
           )}
         </div>
       </section>
+
+      {/* Engineer attribution — who's been touching this provider */}
+      {engineerRows.length > 0 && (
+        <section className="mb-10">
+          <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-zinc-500 mb-3">engineers active on this provider · 30d</p>
+          <ul className="rounded-2xl border border-white/[0.06] bg-white/[0.015] divide-y divide-white/[0.04] overflow-hidden">
+            {engineerRows.map((r) => (
+              <li key={r.engineerId}>
+                <Link
+                  href={`/dashboard/workforce/${r.engineerId}`}
+                  className="group flex items-center justify-between gap-3 px-6 py-3 hover:bg-white/[0.015] transition-colors"
+                >
+                  <div className="flex items-center gap-3 min-w-0">
+                    <p className="text-[13px] font-medium text-white truncate">{r.displayName}</p>
+                    <span className="text-[10px] font-mono text-zinc-500 shrink-0">{r.engineerId}</span>
+                  </div>
+                  <div className="flex items-center gap-3 shrink-0">
+                    <span className="text-[11px] font-mono text-zinc-400 tabular-nums">{r.attempts} attempt{r.attempts === 1 ? "" : "s"}</span>
+                    <ArrowRightIcon className="h-3.5 w-3.5 text-zinc-600 group-hover:text-white group-hover:translate-x-0.5 transition-all" />
+                  </div>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
 
       {/* Recent runs */}
       <section className="mb-10">
