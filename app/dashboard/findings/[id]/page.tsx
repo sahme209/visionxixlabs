@@ -108,6 +108,38 @@ export default async function FindingDetailPage({
   const approvalsByRec = new Map<string, typeof approvals[number]>();
   for (const a of approvals) approvalsByRec.set(a.planItemId, a);
 
+  // AGI rationale enrichment for any recommendation tied to this
+  // finding. Phase 520 wired remediation rationale to recommendation
+  // ids — surface them here so the AGI's reasoning lives one section
+  // away from the finding it explains.
+  const rationales = recIds.length > 0
+    ? await prisma.aiRationaleEnrichment.findMany({
+        where: {
+          organizationId: ctx.organizationId,
+          targetKind: "remediation",
+          targetId: { in: recIds },
+        },
+        select: {
+          targetId: true,
+          narrative: true,
+          riskFactorsJson: true,
+          nextActionsJson: true,
+          outcome: true,
+          modelHint: true,
+          generatedAt: true,
+        },
+      }).catch(() => [] as Array<{
+        targetId: string;
+        narrative: string;
+        riskFactorsJson: unknown;
+        nextActionsJson: unknown;
+        outcome: string;
+        modelHint: string | null;
+        generatedAt: Date;
+      }>)
+    : [];
+  const rationaleByRec = new Map(rationales.map((r) => [r.targetId, r] as const));
+
   const resources = Array.isArray(finding.affectedResources) ? finding.affectedResources : [];
   const severityTone = SEVERITY_TONE[finding.severity as Severity];
 
@@ -152,6 +184,13 @@ export default async function FindingDetailPage({
           <ul className="rounded-2xl border border-white/[0.06] bg-white/[0.015] divide-y divide-white/[0.04] overflow-hidden">
             {finding.recommendations.map((r) => {
               const approval = approvalsByRec.get(r.id);
+              const rationale = rationaleByRec.get(r.id);
+              const aiRiskFactors = rationale && Array.isArray(rationale.riskFactorsJson)
+                ? (rationale.riskFactorsJson as unknown[]).filter((x): x is string => typeof x === "string")
+                : [];
+              const aiNextActions = rationale && Array.isArray(rationale.nextActionsJson)
+                ? (rationale.nextActionsJson as unknown[]).filter((x): x is string => typeof x === "string")
+                : [];
               return (
                 <li key={r.id} className="px-6 py-4">
                   <div className="flex items-center gap-2 flex-wrap text-[10px] font-mono uppercase tracking-wider mb-1">
@@ -168,12 +207,63 @@ export default async function FindingDetailPage({
                         <span className={APPROVAL_TONE[approval.status as ApprovalStatus]}>{approval.status}</span>
                       </>
                     )}
+                    {rationale && (
+                      <>
+                        <span className="text-zinc-500">·</span>
+                        <span className="text-violet-300">AGI {rationale.outcome.replace(/_/g, " ")}</span>
+                      </>
+                    )}
                   </div>
                   <p className="text-[14px] font-medium text-white">{r.title}</p>
                   <p className="text-[12px] text-zinc-500 leading-relaxed mt-1 whitespace-pre-line">{r.rationale}</p>
                   {r.monthlyHigh > 0 && (
                     <p className="text-[11px] text-emerald-300/80 mt-1">~${r.monthlyHigh.toFixed(0)}/mo if applied</p>
                   )}
+
+                  {rationale && (
+                    <div className="mt-3 rounded-lg border border-violet-500/15 bg-violet-500/[0.04] p-3">
+                      <div className="flex items-center gap-2 mb-1.5">
+                        <p className="text-[10px] font-mono uppercase tracking-[0.18em] text-violet-300">AGI rationale</p>
+                        {rationale.modelHint && (
+                          <span className="text-[10px] font-mono text-zinc-500">· {rationale.modelHint}</span>
+                        )}
+                        <Link
+                          href={`/dashboard/agi-memory/${encodeURIComponent(`remediation:${r.id}`)}`}
+                          className="ml-auto text-[10px] font-mono text-zinc-500 hover:text-white transition-colors"
+                        >
+                          permalink →
+                        </Link>
+                      </div>
+                      <p className="text-[12px] text-zinc-200 leading-relaxed whitespace-pre-line">{rationale.narrative}</p>
+                      {aiRiskFactors.length > 0 && (
+                        <div className="mt-2">
+                          <p className="text-[9.5px] font-mono uppercase tracking-wider text-zinc-500 mb-1">risk factors</p>
+                          <ul className="space-y-0.5">
+                            {aiRiskFactors.map((f, i) => (
+                              <li key={`${i}_${f.slice(0, 24)}`} className="text-[11.5px] text-zinc-300 flex gap-1.5">
+                                <span className="text-rose-400">•</span>
+                                <span>{f}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+                      {aiNextActions.length > 0 && (
+                        <div className="mt-2">
+                          <p className="text-[9.5px] font-mono uppercase tracking-wider text-zinc-500 mb-1">next actions</p>
+                          <ul className="space-y-0.5">
+                            {aiNextActions.map((a, i) => (
+                              <li key={`${i}_${a.slice(0, 24)}`} className="text-[11.5px] text-zinc-300 flex gap-1.5">
+                                <span className="text-emerald-400">→</span>
+                                <span>{a}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+                    </div>
+                  )}
+
                   {approval && (approval.status === "approved" || approval.status === "applied") && (
                     <a
                       href={`/api/approvals/${approval.id}/plan`}
