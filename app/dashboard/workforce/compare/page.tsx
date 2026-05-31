@@ -35,6 +35,7 @@ interface ColumnData {
   failed: number;
   agi: { total: number; ai_generated: number };
   specialty: { hasRow: boolean; outcome: string | null; updatedAt: Date | null };
+  qaCount: number;
 }
 
 // Mirror of agiKindsForDepartment elsewhere — keeps the comparison
@@ -90,10 +91,11 @@ export default async function CompareEngineersPage({
   let latencyRows: Array<{ engineerId: string; createdAt: Date; decidedAt: Date | null }> = [];
   let agiRows: Array<{ targetKind: string; outcome: string; _count: { _all: number } }> = [];
   let specialtyRows: Array<{ targetId: string; outcome: string; updatedAt: Date }> = [];
+  let qaRows: Array<{ targetId: string }> = [];
 
   if (ctx.isAuthenticated && ctx.organizationId) {
     const org = String(ctx.organizationId);
-    [attemptRows, pendingRows, execRows, latencyRows, agiRows, specialtyRows] = await Promise.all([
+    [attemptRows, pendingRows, execRows, latencyRows, agiRows, specialtyRows, qaRows] = await Promise.all([
       prisma.agentEngineerActionAttempt.groupBy({
         by: ["engineerId", "runtimeDecision"],
         where: { organizationId: org, engineerId: { in: engineerIds }, createdAt: { gte: since30d } },
@@ -128,7 +130,24 @@ export default async function CompareEngineersPage({
         },
         select: { targetId: true, outcome: true, updatedAt: true },
       }).catch(() => []) as Promise<typeof specialtyRows>,
+      prisma.aiRationaleEnrichment.findMany({
+        where: {
+          organizationId: org,
+          targetKind: "engineer_qa",
+          OR: engineerIds.map((id) => ({ targetId: { startsWith: `${id}:` } })),
+        },
+        select: { targetId: true },
+      }).catch(() => []) as Promise<typeof qaRows>,
     ]);
+  }
+
+  // Per-engineer Q&A count derived in-app from the targetId prefix.
+  const qaCountByEngineer = new Map<string, number>();
+  for (const row of qaRows) {
+    const colon = row.targetId.indexOf(":");
+    if (colon === -1) continue;
+    const eid = row.targetId.slice(0, colon);
+    qaCountByEngineer.set(eid, (qaCountByEngineer.get(eid) ?? 0) + 1);
   }
 
   const columns: ColumnData[] = engineers.map((e) => {
@@ -175,7 +194,9 @@ export default async function CompareEngineersPage({
       updatedAt: specialtyRow?.updatedAt ?? null,
     };
 
-    return { engineer: e, attempts30d: attempts, pending, medianLatencyMs, executed, failed, agi, specialty };
+    const qaCount = qaCountByEngineer.get(e.id) ?? 0;
+
+    return { engineer: e, attempts30d: attempts, pending, medianLatencyMs, executed, failed, agi, specialty, qaCount };
   });
 
   return (
@@ -272,6 +293,7 @@ export default async function CompareEngineersPage({
             {c.specialty.updatedAt && (
               <MetricRow label="· updated" value={c.specialty.updatedAt.toISOString().slice(0, 10)} mono tone="text-zinc-300" />
             )}
+            <MetricRow label="Q&A asked" value={String(c.qaCount)} tone={c.qaCount > 0 ? "text-violet-300" : "text-zinc-600"} />
           </article>
         ))}
       </section>
