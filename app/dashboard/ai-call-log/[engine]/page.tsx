@@ -243,7 +243,20 @@ export default async function AiCallLogEnginePage({
 
       {/* Recent calls */}
       <section className="mb-8">
-        <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-zinc-500 mb-3">recent calls · {recentCalls.length}</p>
+        <div className="flex items-baseline justify-between mb-3">
+          <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-zinc-500">recent calls · {recentCalls.length}</p>
+          <a
+            href={`/api/dashboard/ai-call-log/export.csv?${new URLSearchParams({
+              engineName,
+              ...(scope === "global" ? { scope: "global" } : {}),
+            }).toString()}`}
+            download
+            className="text-[11px] font-mono text-zinc-500 hover:text-white transition-colors"
+            title="Download up to 5000 rows in the last 24h as CSV"
+          >
+            download .csv
+          </a>
+        </div>
         {recentCalls.length === 0 ? (
           <div className="rounded-2xl border border-white/[0.06] bg-white/[0.015] px-6 py-12 text-center">
             <p className="text-[13px] text-zinc-400">No calls in the last 24 hours.</p>
