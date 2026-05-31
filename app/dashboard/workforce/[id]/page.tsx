@@ -365,6 +365,44 @@ export default async function EngineerDetailPage({ params }: { params: Promise<{
     ? (ownRationale.nextActionsJson as unknown[]).filter((x): x is string => typeof x === "string")
     : [];
 
+  // Recent Q&A — Phase 564 persists each exchange as an
+  // engineer_qa row with targetId=`<engineerId>:<ts36>`. The
+  // startsWith prefix scopes cheaply to this engineer.
+  const recentQa = await prisma.aiRationaleEnrichment.findMany({
+    where: {
+      organizationId: String(ctx.organizationId),
+      targetKind: "engineer_qa",
+      targetId: { startsWith: `${engineer.id}:` },
+    },
+    orderBy: { generatedAt: "desc" },
+    take: 3,
+    select: {
+      targetId: true,
+      narrative: true,
+      riskFactorsJson: true,
+      outcome: true,
+      generatedAt: true,
+    },
+  }).catch(() => [] as Array<{
+    targetId: string;
+    narrative: string;
+    riskFactorsJson: unknown;
+    outcome: string;
+    generatedAt: Date;
+  }>);
+  const qaEntries = recentQa.map((r) => {
+    const question = Array.isArray(r.riskFactorsJson) && typeof r.riskFactorsJson[0] === "string"
+      ? r.riskFactorsJson[0]
+      : "";
+    return {
+      targetId: r.targetId,
+      question,
+      answer: r.narrative,
+      outcome: r.outcome,
+      generatedAt: r.generatedAt,
+    };
+  });
+
   // AGI rationale relevant to this engineer. Map the canonical
   // department to the AiRationaleEnrichment.targetKind values the
   // AGI emits. Safety / planning / reasoning engineers operate at
@@ -518,6 +556,38 @@ export default async function EngineerDetailPage({ params }: { params: Promise<{
           </p>
         )}
       </section>
+
+      {/* Recent Q&A — Phase 565. Three most recent operator-prompted
+          exchanges with this engineer. Each row deep-links to the
+          full thread page so a long conversation stays accessible. */}
+      {qaEntries.length > 0 && (
+        <section className="mb-6 rounded-2xl border border-violet-500/10 bg-white/[0.015] p-5">
+          <div className="flex items-baseline justify-between mb-3">
+            <p className="text-[10px] font-semibold uppercase tracking-widest text-violet-300">recent Q&amp;A · {qaEntries.length}</p>
+            <Link
+              href={`/dashboard/workforce/${engineer.id}/ask`}
+              className="text-[10px] font-mono text-zinc-500 hover:text-white transition-colors"
+            >
+              full thread →
+            </Link>
+          </div>
+          <ul className="space-y-3">
+            {qaEntries.map((q) => (
+              <li key={q.targetId} className="rounded-lg border border-white/[0.04] bg-white/[0.015] p-3">
+                <p className="text-[10px] font-mono text-zinc-500 mb-1">{q.generatedAt.toISOString().slice(0, 16).replace("T", " ")}</p>
+                {q.question && (
+                  <p className="text-[11.5px] text-zinc-400 leading-snug mb-2 line-clamp-2">
+                    <span className="text-zinc-500 mr-1">you:</span>{q.question}
+                  </p>
+                )}
+                <p className="text-[12px] text-zinc-100 leading-snug line-clamp-3">
+                  <span className="text-violet-300 mr-1 font-mono text-[10px] uppercase tracking-wider">{engineer.id.slice(0, 12)}:</span>{q.answer}
+                </p>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
 
       {/* Enable / disable toggle — workspace-level switch on top of the
           canonical approval rule. Lives directly under the header so
