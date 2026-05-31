@@ -17,6 +17,7 @@ import { prisma } from "@/lib/db";
 import { currentContext } from "@/lib/auth/currentContext";
 import { ArrowLeftIcon, ArrowRightIcon } from "@heroicons/react/24/outline";
 import { AGENT_WORKFORCE_REGISTRY } from "@/lib/workforce/agentWorkforceRegistry";
+import { COMPLIANCE_CONTROLS, scoreControl } from "@/lib/compliance/controls";
 
 export const dynamic = "force-dynamic";
 
@@ -105,6 +106,30 @@ export default async function CloudAccountDetailPage({
       _count: { _all: true },
     }).catch(() => [] as Array<{ engineerId: string; _count: { _all: number } }>),
   ]);
+
+  // Compliance attribution scoped to this account. Pull rule codes
+  // from findings on this account only, then score every control.
+  // Capped at 5000 findings — matches the main scorecard's cap.
+  const accountRuleCodes: string[] = [];
+  try {
+    const findingsForCompliance = await prisma.axiomFinding.findMany({
+      where: { run: { cloudAccountId: account.id } },
+      select: { data: true },
+      take: 5000,
+    });
+    for (const f of findingsForCompliance) {
+      const data = f.data as Record<string, unknown> | null;
+      const code = data && typeof data.ruleCode === "string" ? data.ruleCode : null;
+      if (code) accountRuleCodes.push(code);
+    }
+  } catch {
+    // missing table → empty list, surface degrades to 'untested' on every control.
+  }
+  const scoredControls = COMPLIANCE_CONTROLS.map((c) => ({
+    control: c,
+    ...scoreControl(c, accountRuleCodes),
+  }));
+  const failingControls = scoredControls.filter((s) => s.status === "failing");
 
   // Engineer attribution roll-up. We resolve display names via the
   // canonical registry, skip engineers with stale ids that aren't in
@@ -233,6 +258,39 @@ export default async function CloudAccountDetailPage({
           )}
         </div>
       </section>
+
+      {/* Compliance attribution scoped to this account. Render only
+          the failing controls; rolls up the rest under a single
+          'view scorecard' link to keep the surface tight. */}
+      {failingControls.length > 0 && (
+        <section className="mb-10">
+          <div className="flex items-baseline justify-between mb-3">
+            <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-zinc-500">
+              failing compliance controls · {failingControls.length}
+            </p>
+            <Link href="/dashboard/compliance" className="text-[11px] font-mono text-zinc-500 hover:text-white transition-colors">
+              full scorecard →
+            </Link>
+          </div>
+          <ul className="rounded-2xl border border-rose-500/15 bg-rose-500/[0.03] divide-y divide-white/[0.04] overflow-hidden">
+            {failingControls.slice(0, 6).map(({ control, matchedCount }) => (
+              <li key={control.id} className="px-5 py-3">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center gap-2 flex-wrap text-[10px] font-mono uppercase tracking-wider mb-1">
+                      <span className="text-zinc-300">{control.framework}</span>
+                      <span className="text-zinc-500">·</span>
+                      <span className="text-zinc-500">{control.id}</span>
+                    </div>
+                    <p className="text-[13px] font-medium text-white">{control.title}</p>
+                  </div>
+                  <span className="text-[11px] font-mono text-rose-300 tabular-nums shrink-0">{matchedCount}×</span>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
 
       {/* Engineer attribution — who's been touching this provider */}
       {engineerRows.length > 0 && (
