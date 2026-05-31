@@ -139,6 +139,26 @@ export default async function WorkforcePage() {
     }
   }
 
+  // Workspace-wide AGI rationale total — one row across every
+  // targetKind, so the operator sees "the AGI ran N times for my
+  // engineers this month" without leaving the page.
+  let agiTotal30d = 0;
+  if (ctx.isAuthenticated && ctx.organizationId) {
+    try {
+      const rows = await prisma.aiRationaleEnrichment.groupBy({
+        by: ["outcome"],
+        where: {
+          organizationId: String(ctx.organizationId),
+          generatedAt: { gte: since30d },
+        },
+        _count: { _all: true },
+      });
+      for (const r of rows) agiTotal30d += r._count._all;
+    } catch {
+      // empty fallback — KPI shows honest zero.
+    }
+  }
+
   return (
     <div className="relative">
       <PageIntro
@@ -183,7 +203,7 @@ export default async function WorkforcePage() {
           </Link>
         </div>
       </div>
-      <section className="grid grid-cols-2 md:grid-cols-3 gap-3 mb-8">
+      <section className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">
         <LiveStat
           label="Attempts · 30d"
           value={Array.from(attemptCounts.values()).reduce((a, b) => a + b, 0)}
@@ -201,6 +221,12 @@ export default async function WorkforcePage() {
           value={attemptCounts.size}
           sub="engineers that emitted at least one attempt"
           tone="text-emerald-300"
+        />
+        <LiveStat
+          label="AGI rationale · 30d"
+          value={agiTotal30d}
+          sub="AGI thinking adjacent to your engineers"
+          tone="text-violet-300"
         />
       </section>
 
