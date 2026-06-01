@@ -49,6 +49,21 @@ export function AzureDeployConnect({
   const [credsJson, setCredsJson] = useState("");
   const [result, setResult] = useState<ValidationOk | ValidationErr | null>(null);
   const [copied, setCopied] = useState(false);
+  const [pasteHint, setPasteHint] = useState<string | null>(null);
+
+  async function pasteFromClipboard() {
+    setPasteHint(null);
+    try {
+      const text = await navigator.clipboard.readText();
+      if (!text || !text.trim()) {
+        setPasteHint("Clipboard is empty. Copy the JSON from Cloud Shell first (select it, then ⌘C / Ctrl+C).");
+        return;
+      }
+      setCredsJson(text);
+    } catch {
+      setPasteHint("Browser blocked clipboard read. Click in the box below and press ⌘V / Ctrl+V to paste.");
+    }
+  }
 
   useEffect(() => {
     let cancelled = false;
@@ -165,17 +180,31 @@ export function AzureDeployConnect({
             The az command prints a JSON block at the end. Copy the entire block (including the <code className="font-mono text-zinc-100">{"{"}</code> and <code className="font-mono text-zinc-100">{"}"}</code>) and paste it below.
           </p>
 
+          <div className="mt-4 flex items-center justify-between gap-3 flex-wrap">
+            <span className="text-[12px] font-mono uppercase tracking-wider text-zinc-400">paste the cloud shell JSON here ↓</span>
+            <button
+              type="button"
+              onClick={pasteFromClipboard}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 text-zinc-100 text-[12px] font-medium transition-colors"
+              title="Read the JSON from your clipboard"
+            >
+              Paste from clipboard
+            </button>
+          </div>
           <textarea
             value={credsJson}
-            onChange={(e) => setCredsJson(e.target.value)}
-            placeholder={'{\n  "clientId": "...",\n  "clientSecret": "...",\n  "subscriptionId": "...",\n  "tenantId": "..."\n}'}
+            onChange={(e) => { setCredsJson(e.target.value); setPasteHint(null); }}
+            placeholder={`Click here, then press ⌘V (Mac) or Ctrl+V (Windows) to paste the JSON\n\n{\n  "clientId": "...",\n  "clientSecret": "...",\n  "subscriptionId": "...",\n  "tenantId": "..."\n}`}
             rows={8}
-            className="mt-4 w-full px-3 py-2.5 rounded-lg bg-zinc-900 border border-zinc-800 text-zinc-100 text-[12.5px] font-mono placeholder:text-zinc-600 focus:border-indigo-500/50 focus:outline-none transition-colors resize-y"
+            className="mt-2 w-full px-3 py-2.5 rounded-lg bg-zinc-900 border border-zinc-800 text-zinc-100 text-[12.5px] font-mono placeholder:text-zinc-600 focus:border-indigo-500/50 focus:outline-none transition-colors resize-y"
             spellCheck={false}
             autoComplete="off"
           />
+          {pasteHint && (
+            <p className="mt-2 text-[12px] text-amber-300/90">{pasteHint}</p>
+          )}
 
-          <div className="mt-4 flex items-center gap-3">
+          <div className="mt-4 flex items-center gap-3 flex-wrap">
             <button
               type="button"
               onClick={handleValidate}
@@ -185,6 +214,11 @@ export function AzureDeployConnect({
               Finish connection
               <span aria-hidden className="opacity-70">→</span>
             </button>
+            {!credsJson.trim() && (
+              <span className="text-[12px] text-amber-300/85">
+                Paste your JSON above to enable the button.
+              </span>
+            )}
             {shellUrl && (
               <a
                 href={shellUrl}
@@ -252,15 +286,29 @@ export function AzureDeployConnect({
                   been opened so the operator can paste without hunting
                   for a 'paste it now' link. Same submit semantics as
                   the dedicated paste_json phase. */}
+              <div className="flex items-center justify-between gap-3 flex-wrap">
+                <span className="text-[12px] font-mono uppercase tracking-wider text-zinc-400">paste the cloud shell JSON here ↓</span>
+                <button
+                  type="button"
+                  onClick={pasteFromClipboard}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 text-zinc-100 text-[12px] font-medium transition-colors"
+                  title="Read the JSON from your clipboard"
+                >
+                  Paste from clipboard
+                </button>
+              </div>
               <textarea
                 value={credsJson}
-                onChange={(e) => setCredsJson(e.target.value)}
-                placeholder={'{\n  "clientId": "...",\n  "clientSecret": "...",\n  "subscriptionId": "...",\n  "tenantId": "..."\n}'}
+                onChange={(e) => { setCredsJson(e.target.value); setPasteHint(null); }}
+                placeholder={`Click here, then press ⌘V (Mac) or Ctrl+V (Windows) to paste the JSON\n\n{\n  "clientId": "...",\n  "clientSecret": "...",\n  "subscriptionId": "...",\n  "tenantId": "..."\n}`}
                 rows={8}
                 className="mt-1 w-full px-3 py-2.5 rounded-lg bg-zinc-900 border border-zinc-800 text-zinc-100 text-[12.5px] font-mono placeholder:text-zinc-600 focus:border-indigo-500/50 focus:outline-none transition-colors resize-y"
                 spellCheck={false}
                 autoComplete="off"
               />
+              {pasteHint && (
+                <p className="text-[12px] text-amber-300/90">{pasteHint}</p>
+              )}
               <div className="flex items-center gap-3 flex-wrap">
                 <button
                   type="button"
@@ -271,9 +319,15 @@ export function AzureDeployConnect({
                   Finish connection
                   <span aria-hidden className="opacity-70">→</span>
                 </button>
-                <span className="text-[12px] text-zinc-500">
-                  We validate the JSON against Microsoft Entra + ARM before saving anything.
-                </span>
+                {!credsJson.trim() ? (
+                  <span className="text-[12px] text-amber-300/85">
+                    Paste your JSON above to enable the button.
+                  </span>
+                ) : (
+                  <span className="text-[12px] text-zinc-500">
+                    We validate the JSON against Microsoft Entra + ARM before saving anything.
+                  </span>
+                )}
               </div>
 
               {result?.ok === false && (
