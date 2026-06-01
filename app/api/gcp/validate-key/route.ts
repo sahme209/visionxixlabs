@@ -36,6 +36,56 @@ interface ParsedKey {
   private_key?: string;
 }
 
+/**
+ * Robust JSON extraction. Cloud Shell mixes the gcloud key output
+ * with `Created key [...]` log lines, prompts, and shell echoes.
+ * Customers naturally select-all → copy → paste, and the resulting
+ * blob isn't strictly parseable. We try strict JSON first; if that
+ * fails we walk the text for the first balanced { ... } block.
+ *
+ * String-aware so a real { inside a JSON value never confuses the
+ * counter. Same shape as the Azure validator's extractor.
+ */
+function extractGcpKey(raw: string): ParsedKey | null {
+  const trimmed = raw.trim();
+  if (!trimmed) return null;
+
+  try {
+    const parsed = JSON.parse(trimmed) as ParsedKey;
+    if (parsed && typeof parsed === "object") return parsed;
+  } catch { /* fall through to walker */ }
+
+  let depth = 0;
+  let start = -1;
+  let inString = false;
+  let escapeNext = false;
+  for (let i = 0; i < trimmed.length; i++) {
+    const ch = trimmed[i];
+    if (escapeNext) { escapeNext = false; continue; }
+    if (ch === "\\" && inString) { escapeNext = true; continue; }
+    if (ch === '"') { inString = !inString; continue; }
+    if (inString) continue;
+    if (ch === "{") {
+      if (depth === 0) start = i;
+      depth++;
+    } else if (ch === "}") {
+      depth--;
+      if (depth === 0 && start !== -1) {
+        const candidate = trimmed.slice(start, i + 1);
+        try {
+          const parsed = JSON.parse(candidate) as ParsedKey;
+          // Service-account keys always carry "type":"service_account".
+          // If the first balanced block is some other JSON object, keep
+          // walking — the right one comes later in the stream.
+          if (parsed && typeof parsed === "object") return parsed;
+        } catch { /* keep walking */ }
+        start = -1;
+      }
+    }
+  }
+  return null;
+}
+
 export async function POST(req: NextRequest) {
   let body: Body = {};
   try { body = (await req.json()) as Body; } catch { /* empty body */ }
@@ -50,14 +100,18 @@ export async function POST(req: NextRequest) {
     }, { status: 400 });
   }
 
-  let parsed: ParsedKey;
-  try {
-    parsed = JSON.parse(raw) as ParsedKey;
-  } catch {
+  const parsed = extractGcpKey(raw);
+  if (!parsed) {
+    const looksLikeCommand = /gcloud\s+iam\s+service-accounts\s+create/i.test(raw.trim());
+    const hint = looksLikeCommand
+      ? "That's the gcloud command, not its output. Paste the command into Cloud Shell to run it; it prints a JSON key — copy that key (everything from { through the matching }) and paste here."
+      : raw.includes("{") && raw.includes("}")
+        ? "Found braces but couldn't parse a JSON object out of them. Make sure the closing } is included and the JSON isn't truncated."
+        : "No JSON key found in the pasted text. Run the gcloud command in Cloud Shell — it prints the JSON key on stdout.";
     return NextResponse.json({
       ok: false,
       error: "malformed_json",
-      hint: "That doesn't look like valid JSON. Re-copy the entire output from Cloud Shell, including the braces.",
+      hint,
     }, { status: 400 });
   }
 
@@ -65,7 +119,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({
       ok: false,
       error: "wrong_key_type",
-      hint: "Expected a service-account key (type: \"service_account\"). Re-run the Cloud Shell tutorial and copy the new JSON.",
+      hint: "Expected a service-account key (type: \"service_account\"). Re-run the gcloud setup command in Cloud Shell and paste the new JSON.",
     }, { status: 400 });
   }
 
