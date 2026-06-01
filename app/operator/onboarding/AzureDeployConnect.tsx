@@ -27,6 +27,42 @@ type Phase =
 
 const AZ_COMMAND = `az ad sp create-for-rbac --name axiom-agent-reader --role Reader --scopes /subscriptions/$(az account show --query id -o tsv) --sdk-auth`;
 
+/**
+ * Client mirror of the server's extractor. Same brace-walk so the
+ * empty/preview hint reflects what the server would do with the
+ * pasted text. We only need the "does this contain extractable JSON"
+ * verdict here, not the parsed object.
+ */
+function looksParseable(raw: string): { ok: boolean; reason: string } {
+  const trimmed = raw.trim();
+  if (!trimmed) return { ok: false, reason: "empty" };
+  try { const j = JSON.parse(trimmed); if (j && typeof j === "object") return { ok: true, reason: "strict_json" }; } catch { /* try walker */ }
+  let depth = 0; let start = -1; let inString = false; let escapeNext = false;
+  for (let i = 0; i < trimmed.length; i++) {
+    const ch = trimmed[i];
+    if (escapeNext) { escapeNext = false; continue; }
+    if (ch === "\\" && inString) { escapeNext = true; continue; }
+    if (ch === '"') { inString = !inString; continue; }
+    if (inString) continue;
+    if (ch === "{") { if (depth === 0) start = i; depth++; }
+    else if (ch === "}") {
+      depth--;
+      if (depth === 0 && start !== -1) {
+        const candidate = trimmed.slice(start, i + 1);
+        try { const j = JSON.parse(candidate); if (j && typeof j === "object") return { ok: true, reason: "extracted_block" }; } catch { /* keep walking */ }
+        start = -1;
+      }
+    }
+  }
+  if (/^az\s+ad\s+sp\s+create-for-rbac/i.test(trimmed)) {
+    return { ok: false, reason: "command_not_output" };
+  }
+  if (trimmed.includes("{") && trimmed.includes("}")) {
+    return { ok: false, reason: "braces_but_unparseable" };
+  }
+  return { ok: false, reason: "no_braces" };
+}
+
 interface ValidationOk {
   ok: true;
   tenantId: string;
@@ -177,7 +213,9 @@ export function AzureDeployConnect({
             Paste the JSON output from Cloud Shell.
           </h3>
           <p className="text-[13px] text-zinc-300 leading-relaxed mt-2 max-w-2xl">
-            The az command prints a JSON block at the end. Copy the entire block (including the <code className="font-mono text-zinc-100">{"{"}</code> and <code className="font-mono text-zinc-100">{"}"}</code>) and paste it below.
+            The az command prints a JSON block at the end. You can paste
+            either just that block <strong>or</strong> the entire Cloud
+            Shell output — we&apos;ll find the JSON automatically.
           </p>
 
           <div className="mt-4 flex items-center justify-between gap-3 flex-wrap">
@@ -203,12 +241,44 @@ export function AzureDeployConnect({
           {pasteHint && (
             <p className="mt-2 text-[12px] text-amber-300/90">{pasteHint}</p>
           )}
+          {(() => {
+            const v = looksParseable(credsJson);
+            if (v.ok) {
+              return (
+                <p className="mt-2 text-[12px] text-emerald-300/90">
+                  ✓ JSON detected — Finish connection will validate against Microsoft Entra + ARM.
+                </p>
+              );
+            }
+            if (v.reason === "command_not_output") {
+              return (
+                <p className="mt-2 text-[12px] text-amber-300/90">
+                  That&apos;s the az command, not its output. Run it in Cloud Shell, then copy the JSON block it prints.
+                </p>
+              );
+            }
+            if (v.reason === "braces_but_unparseable") {
+              return (
+                <p className="mt-2 text-[12px] text-amber-300/90">
+                  Found {"{ }"} braces but couldn&apos;t parse the JSON. Make sure the closing <code className="font-mono">{"}"}</code> is included.
+                </p>
+              );
+            }
+            if (v.reason === "no_braces" && credsJson.trim()) {
+              return (
+                <p className="mt-2 text-[12px] text-amber-300/90">
+                  No JSON found yet. Paste the Cloud Shell output (the block wrapped in <code className="font-mono">{"{ }"}</code>).
+                </p>
+              );
+            }
+            return null;
+          })()}
 
           <div className="mt-4 flex items-center gap-3 flex-wrap">
             <button
               type="button"
               onClick={handleValidate}
-              disabled={!credsJson.trim()}
+              disabled={!credsJson.trim() || !looksParseable(credsJson).ok}
               className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-indigo-600 hover:bg-indigo-500 disabled:bg-indigo-600/40 disabled:cursor-not-allowed text-white text-[14px] font-medium shadow-sm transition-colors"
             >
               Finish connection
@@ -309,23 +379,51 @@ export function AzureDeployConnect({
               {pasteHint && (
                 <p className="text-[12px] text-amber-300/90">{pasteHint}</p>
               )}
+              {(() => {
+                const v = looksParseable(credsJson);
+                if (v.ok) {
+                  return (
+                    <p className="text-[12px] text-emerald-300/90">
+                      ✓ JSON detected — Finish connection will validate against Microsoft Entra + ARM.
+                    </p>
+                  );
+                }
+                if (v.reason === "command_not_output") {
+                  return (
+                    <p className="text-[12px] text-amber-300/90">
+                      That&apos;s the az command, not its output. Run it in Cloud Shell, then copy the JSON block it prints (everything from <code className="font-mono text-zinc-300">{"{"}</code> to the closing <code className="font-mono text-zinc-300">{"}"}</code>).
+                    </p>
+                  );
+                }
+                if (v.reason === "braces_but_unparseable") {
+                  return (
+                    <p className="text-[12px] text-amber-300/90">
+                      Found {"{ }"} braces but couldn&apos;t parse the JSON. Make sure the closing <code className="font-mono">{"}"}</code> is included.
+                    </p>
+                  );
+                }
+                if (v.reason === "no_braces" && credsJson.trim()) {
+                  return (
+                    <p className="text-[12px] text-amber-300/90">
+                      No JSON found yet. Paste the Cloud Shell output (the block wrapped in <code className="font-mono">{"{ }"}</code>).
+                    </p>
+                  );
+                }
+                return null;
+              })()}
               <div className="flex items-center gap-3 flex-wrap">
                 <button
                   type="button"
                   onClick={handleValidate}
-                  disabled={!credsJson.trim()}
+                  disabled={!credsJson.trim() || !looksParseable(credsJson).ok}
                   className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-indigo-600 hover:bg-indigo-500 disabled:bg-indigo-600/40 disabled:cursor-not-allowed text-white text-[14px] font-medium shadow-sm transition-colors"
                 >
                   Finish connection
                   <span aria-hidden className="opacity-70">→</span>
                 </button>
-                {!credsJson.trim() ? (
+                {!credsJson.trim() && (
                   <span className="text-[12px] text-amber-300/85">
                     Paste your JSON above to enable the button.
-                  </span>
-                ) : (
-                  <span className="text-[12px] text-zinc-500">
-                    We validate the JSON against Microsoft Entra + ARM before saving anything.
                   </span>
                 )}
               </div>

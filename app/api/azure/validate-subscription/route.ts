@@ -44,6 +44,59 @@ interface ParsedCreds {
   password?: string;
 }
 
+/**
+ * Robust JSON extraction. Cloud Shell prints VERBOSE: lines, MOTD
+ * banners, role-assignment messages, and the JSON block all in one
+ * scroll. Customers naturally select-all → copy → paste, and the
+ * resulting blob isn't strictly parseable. We try strict JSON first
+ * (so a clean copy still hits the fast path), then walk the text to
+ * find the first balanced { ... } block and parse THAT.
+ *
+ * Balance is tracked with a tiny brace counter that respects string
+ * literals — the JSON output never contains nested unescaped braces
+ * inside strings in practice, but we honor the escape rules so a
+ * customer pasting a payload with a real {} inside a value still
+ * parses cleanly.
+ */
+function extractAzureJson(raw: string): ParsedCreds | null {
+  const trimmed = raw.trim();
+  if (!trimmed) return null;
+
+  // Fast path — strict JSON.
+  try {
+    const parsed = JSON.parse(trimmed) as ParsedCreds;
+    if (parsed && typeof parsed === "object") return parsed;
+  } catch { /* fall through to brace walker */ }
+
+  // Slow path — find the first balanced { ... } block in arbitrary text.
+  let depth = 0;
+  let start = -1;
+  let inString = false;
+  let escapeNext = false;
+  for (let i = 0; i < trimmed.length; i++) {
+    const ch = trimmed[i];
+    if (escapeNext) { escapeNext = false; continue; }
+    if (ch === "\\" && inString) { escapeNext = true; continue; }
+    if (ch === '"') { inString = !inString; continue; }
+    if (inString) continue;
+    if (ch === "{") {
+      if (depth === 0) start = i;
+      depth++;
+    } else if (ch === "}") {
+      depth--;
+      if (depth === 0 && start !== -1) {
+        const candidate = trimmed.slice(start, i + 1);
+        try {
+          const parsed = JSON.parse(candidate) as ParsedCreds;
+          if (parsed && typeof parsed === "object") return parsed;
+        } catch { /* try the next block */ }
+        start = -1;
+      }
+    }
+  }
+  return null;
+}
+
 export async function POST(req: NextRequest) {
   let body: Body = {};
   try { body = (await req.json()) as Body; } catch { /* empty body */ }
@@ -57,14 +110,27 @@ export async function POST(req: NextRequest) {
     }, { status: 400 });
   }
 
-  let parsed: ParsedCreds;
-  try {
-    parsed = JSON.parse(raw) as ParsedCreds;
-  } catch {
+  // We accept either strict JSON or arbitrary Cloud Shell terminal
+  // output that contains the JSON block. extractAzureJson walks
+  // braces to find the first balanced { ... } and parses that. This
+  // is the difference between "customer selects only the JSON" and
+  // "customer pastes everything visible in the terminal" — both
+  // should work.
+  const parsed = extractAzureJson(raw);
+  if (!parsed) {
+    // Heuristic: if the customer pasted ONLY the az command (no JSON
+    // braces at all), tell them where the JSON lives. Otherwise
+    // generic malformed message.
+    const looksLikeCommand = /^az\s+ad\s+sp\s+create-for-rbac/i.test(raw.trim());
+    const hint = looksLikeCommand
+      ? "That's the az command, not its output. Run the command in Cloud Shell first; when it finishes it prints a JSON block starting with { — copy that block (everything from { through the matching }) and paste it here."
+      : raw.includes("{") && raw.includes("}")
+        ? "Found braces but couldn't parse a JSON object out of them. Make sure the JSON block is complete — including the trailing } — and re-paste."
+        : "No JSON block found in the pasted text. Re-run the az command in Cloud Shell and copy the JSON output it prints (the part wrapped in { and }).";
     return NextResponse.json({
       ok: false,
       error: "malformed_json",
-      hint: "That doesn't look like valid JSON. Re-copy the entire output from Cloud Shell, including the braces.",
+      hint,
     }, { status: 400 });
   }
 
