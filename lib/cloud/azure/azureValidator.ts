@@ -97,7 +97,15 @@ export async function validateAzureConnection(opts: AzureValidateInput): Promise
   }
 
   // 3) Live requested but credentials not configured.
-  if (opts.requestLive && cfg.mode !== "live") {
+  // Operator-supplied SP creds from the form take precedence — when
+  // the body carries both clientId + clientSecret, we proceed with a
+  // live call even if the host env vars aren't set. This is the
+  // common path for "user connects their own Azure subscription via
+  // Cloud Shell SP" — we don't want to require platform-wide env.
+  const operatorSuppliedSp =
+    typeof opts.input.clientId === "string" && opts.input.clientId.length > 0 &&
+    typeof opts.input.clientSecret === "string" && opts.input.clientSecret.length > 0;
+  if (opts.requestLive && cfg.mode !== "live" && !operatorSuppliedSp) {
     const missing = listMissingAzureEnv();
     return {
       ok: true,
@@ -132,14 +140,23 @@ export async function validateAzureConnection(opts: AzureValidateInput): Promise
 // ---------------------------------------------------------------------------
 
 async function runLiveValidation(opts: AzureValidateInput): Promise<AzureValidationResult> {
-  const clientId = resolveAzureClientId();
-  const clientSecret = resolveAzureClientSecret();
+  // Prefer the operator's freshly-pasted SP creds from the form over
+  // the host env vars. The host env is the platform-wide fallback for
+  // self-hosted Axiom deployments; per-tenant connections happen
+  // through the form. We never log or persist the secret here — the
+  // ClientSecretCredential call below is the only consumer.
+  const clientId = (typeof opts.input.clientId === "string" && opts.input.clientId.length > 0)
+    ? opts.input.clientId
+    : resolveAzureClientId();
+  const clientSecret = (typeof opts.input.clientSecret === "string" && opts.input.clientSecret.length > 0)
+    ? opts.input.clientSecret
+    : resolveAzureClientSecret();
   if (!clientId || !clientSecret) {
     return {
       ok: false,
       outcome: "auth_failure",
       status: "validation_failed",
-      message: "Azure live validation requires AZURE_CLIENT_ID + AZURE_CLIENT_SECRET on the host.",
+      message: "Azure live validation needs a client id + client secret. Paste the JSON from `az ad sp create-for-rbac --sdk-auth` into the form, or set AZURE_CLIENT_ID + AZURE_CLIENT_SECRET on the host.",
       errorCode: "azure.no_credentials",
       mode: "expanding",
       missingRequirements: listMissingAzureEnv(),

@@ -7,13 +7,13 @@
 export const ENABLE_CLOUD_CONNECTORS_AWS =
   process.env.ENABLE_CLOUD_CONNECTORS_AWS !== "false";
 
-/** Azure connector — stub returns always valid. Enable when real validation is implemented. */
+/** Azure connector — real SP validation via @azure/identity. Disable with ENABLE_CLOUD_CONNECTORS_AZURE=false. */
 export const ENABLE_CLOUD_CONNECTORS_AZURE =
-  process.env.ENABLE_CLOUD_CONNECTORS_AZURE === "true";
+  process.env.ENABLE_CLOUD_CONNECTORS_AZURE !== "false";
 
-/** GCP connector — stub returns always valid. Enable when real validation is implemented. */
+/** GCP connector — real SA validation via google-auth-library. Disable with ENABLE_CLOUD_CONNECTORS_GCP=false. */
 export const ENABLE_CLOUD_CONNECTORS_GCP =
-  process.env.ENABLE_CLOUD_CONNECTORS_GCP === "true";
+  process.env.ENABLE_CLOUD_CONNECTORS_GCP !== "false";
 
 /** Placeholder plugins (analytics, domain-dns, deployment, AWS remediate, IAM scan, cost explorer). */
 export const ENABLE_PLACEHOLDER_PLUGINS =
