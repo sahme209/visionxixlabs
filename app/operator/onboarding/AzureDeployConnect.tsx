@@ -232,18 +232,55 @@ export function AzureDeployConnect({
               <span aria-hidden className="opacity-70">→</span>
             </a>
           ) : phase === "deploying" ? (
-            <div className="space-y-3">
-              <div className="inline-flex items-center gap-2.5 px-5 py-2.5 rounded-full bg-zinc-800/80 border border-zinc-700 text-zinc-200 text-[14px]">
-                <span className="w-3.5 h-3.5 rounded-full border-2 border-indigo-300/70 border-t-transparent animate-spin" />
-                Waiting for Cloud Shell…
+            <div className="space-y-4">
+              <div className="flex items-center gap-3 flex-wrap">
+                <a
+                  href={shellUrl ?? "#"}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 text-zinc-100 text-[13px] font-medium transition-colors"
+                >
+                  Re-open Cloud Shell
+                </a>
+                <span className="inline-flex items-center gap-2 text-[12.5px] text-zinc-400">
+                  <span className="w-2 h-2 rounded-full bg-indigo-400 animate-pulse" />
+                  Cloud Shell open — paste the JSON when ready
+                </span>
               </div>
-              <button
-                type="button"
-                onClick={() => setPhase("paste_json")}
-                className="block text-[13px] text-indigo-300 hover:text-indigo-200 transition-colors"
-              >
-                I have the JSON — paste it now →
-              </button>
+
+              {/* Inline paste form — visible as soon as Cloud Shell has
+                  been opened so the operator can paste without hunting
+                  for a 'paste it now' link. Same submit semantics as
+                  the dedicated paste_json phase. */}
+              <textarea
+                value={credsJson}
+                onChange={(e) => setCredsJson(e.target.value)}
+                placeholder={'{\n  "clientId": "...",\n  "clientSecret": "...",\n  "subscriptionId": "...",\n  "tenantId": "..."\n}'}
+                rows={8}
+                className="mt-1 w-full px-3 py-2.5 rounded-lg bg-zinc-900 border border-zinc-800 text-zinc-100 text-[12.5px] font-mono placeholder:text-zinc-600 focus:border-indigo-500/50 focus:outline-none transition-colors resize-y"
+                spellCheck={false}
+                autoComplete="off"
+              />
+              <div className="flex items-center gap-3 flex-wrap">
+                <button
+                  type="button"
+                  onClick={handleValidate}
+                  disabled={!credsJson.trim()}
+                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-indigo-600 hover:bg-indigo-500 disabled:bg-indigo-600/40 disabled:cursor-not-allowed text-white text-[14px] font-medium shadow-sm transition-colors"
+                >
+                  Finish connection
+                  <span aria-hidden className="opacity-70">→</span>
+                </button>
+                <span className="text-[12px] text-zinc-500">
+                  We validate the JSON against Microsoft Entra + ARM before saving anything.
+                </span>
+              </div>
+
+              {result?.ok === false && (
+                <div className="mt-1 rounded-xl border border-amber-500/25 bg-amber-500/[0.04] p-3 text-[12.5px] text-amber-100/90 leading-relaxed">
+                  {result.hint ?? "Couldn't validate that JSON."}
+                </div>
+              )}
             </div>
           ) : (
             <div className="inline-flex items-center gap-2.5 px-5 py-2.5 rounded-full bg-zinc-800/60 border border-zinc-800 text-zinc-400 text-[14px]">
