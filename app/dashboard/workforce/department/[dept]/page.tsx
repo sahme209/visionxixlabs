@@ -105,6 +105,38 @@ export default async function WorkforceDepartmentPage({
   }
   const totalPending = Array.from(pendingByEngineer.values()).reduce((a, b) => a + b, 0);
 
+  // Department-scoped audit timeline. Walks SecureAuditRecord for any
+  // engineer in the department by entityRef = `engineer:<id>`. Limit
+  // 20 so the panel stays glance-able.
+  const deptEntityRefs = engineerIds.map((id) => `engineer:${id}`);
+  const auditTrail = ctx.isAuthenticated && ctx.organizationId
+    ? await prisma.secureAuditRecord.findMany({
+        where: {
+          organizationId: String(ctx.organizationId),
+          entityRef: { in: deptEntityRefs },
+        },
+        orderBy: { occurredAt: "desc" },
+        take: 20,
+        select: {
+          id: true,
+          action: true,
+          outcome: true,
+          actorKind: true,
+          actorUserId: true,
+          entityRef: true,
+          occurredAt: true,
+        },
+      }).catch(() => [] as Array<{
+        id: string;
+        action: string;
+        outcome: string;
+        actorKind: string;
+        actorUserId: string | null;
+        entityRef: string | null;
+        occurredAt: Date;
+      }>)
+    : [];
+
   // AGI rationale rollup for this department. Mirrors the engineer
   // detail mapping (Phase 550): department → AGI targetKinds. The
   // groupBy gives us outcome split so operators see "the AGI ran for
@@ -284,6 +316,58 @@ export default async function WorkforceDepartmentPage({
           })}
         </ul>
       </section>
+
+      {/* Department-scoped audit timeline — Phase 578. Renders every
+          SecureAuditRecord whose entityRef points at any engineer in
+          this department. Lets operators see "what's changed in
+          Security recently" without clicking through each engineer's
+          per-page audit timeline. */}
+      {auditTrail.length > 0 && (
+        <section className="mb-10">
+          <div className="flex items-baseline justify-between mb-3">
+            <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-zinc-500">recent audit events · {auditTrail.length}</p>
+            <Link href="/dashboard/audit" className="text-[11px] font-mono text-zinc-500 hover:text-white transition-colors">
+              full audit log →
+            </Link>
+          </div>
+          <ul className="rounded-2xl border border-white/[0.06] bg-white/[0.015] divide-y divide-white/[0.04] overflow-hidden">
+            {auditTrail.map((r) => {
+              const engineerId = r.entityRef?.startsWith("engineer:") ? r.entityRef.slice("engineer:".length) : null;
+              const tone =
+                r.outcome === "success" ? "text-emerald-300" :
+                r.outcome === "blocked" ? "text-amber-300" :
+                r.outcome === "failure" ? "text-rose-300" :
+                "text-zinc-400";
+              return (
+                <li key={r.id} className="px-5 py-3">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center gap-2 flex-wrap text-[10px] font-mono uppercase tracking-wider">
+                        <span className={tone}>{r.outcome}</span>
+                        <span className="text-zinc-500">·</span>
+                        <span className="text-zinc-300">{r.action}</span>
+                        <span className="text-zinc-500">·</span>
+                        <span className="text-zinc-400">{r.actorKind}{r.actorUserId ? ` · ${r.actorUserId.slice(0, 8)}` : ""}</span>
+                      </div>
+                      {engineerId && (
+                        <Link
+                          href={`/dashboard/workforce/${engineerId}`}
+                          className="text-[11px] font-mono text-zinc-500 hover:text-white transition-colors mt-1 inline-block"
+                        >
+                          engineer:{engineerId}
+                        </Link>
+                      )}
+                    </div>
+                    <p className="text-[10px] font-mono text-zinc-600 shrink-0 text-right">
+                      {r.occurredAt.toISOString().slice(0, 16).replace("T", " ")}
+                    </p>
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
+        </section>
+      )}
 
       <p className="text-[11px] text-zinc-600 leading-relaxed">
         {totalMissingPieces > 0
