@@ -161,6 +161,7 @@ const GROUPS: NavGroup[] = [
     items: [
       // The four most-used workforce surfaces.
       { href: "/dashboard/workforce",            label: "AI engineers",      icon: CpuChipIcon  },
+      { href: "/dashboard/workforce/health",     label: "Workforce health",  icon: ChartBarIcon },
       { href: "/dashboard/workforce/ask-all",    label: "Ask the workforce", icon: SparklesIcon },
       { href: "/dashboard/agi-memory",           label: "AGI memory",        icon: SparklesIcon },
       { href: "/dashboard/agent-activity",       label: "Activity feed",     icon: ChartBarIcon },
