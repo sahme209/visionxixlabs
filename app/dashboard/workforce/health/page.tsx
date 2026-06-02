@@ -33,6 +33,7 @@ import { ArrowRightIcon, SparklesIcon } from "@heroicons/react/24/outline";
 import { currentContext } from "@/lib/auth/currentContext";
 import { prisma } from "@/lib/db";
 import { AGENT_WORKFORCE_REGISTRY } from "@/lib/workforce/agentWorkforceRegistry";
+import { rollupAiCallCost, formatCents } from "@/lib/billing/aiCallCostAttribution";
 
 export const dynamic = "force-dynamic";
 
@@ -86,6 +87,16 @@ export default async function WorkforceHealthPage() {
       },
     }).catch(() => 0),
   ]);
+
+  // Workspace-wide AI provider cost — Phase 580. Sample the same
+  // 24h window the provider-health tile uses so the two numbers
+  // (calls + dollars) line up on the page.
+  const costSampleRows = await prisma.aiCallLog.findMany({
+    where: { organizationId: org, startedAt: { gte: since24h } },
+    select: { model: true, promptTokens: true, completionTokens: true },
+    take: 5000,
+  }).catch(() => [] as Array<{ model: string | null; promptTokens: number | null; completionTokens: number | null }>);
+  const costRollup = await rollupAiCallCost(costSampleRows);
 
   // Specialty freshness.
   const now = Date.now();
@@ -185,6 +196,7 @@ export default async function WorkforceHealthPage() {
           <span className="text-[10px] font-mono text-zinc-500 tabular-nums">
             {aiTotal} call{aiTotal === 1 ? "" : "s"}
             {aiSuccessPct !== null && <> · {aiSuccessPct}% success</>}
+            {costRollup.totalCents > 0 && <> · {formatCents(costRollup.totalCents)} provider cost</>}
           </span>
         </div>
         <div className="grid grid-cols-4 rounded-2xl border border-white/[0.06] bg-white/[0.015] divide-x divide-white/[0.04] overflow-hidden">
@@ -193,6 +205,23 @@ export default async function WorkforceHealthPage() {
           <Tile label="timeout"       count={aiHealth.timeout}       tone={aiHealth.timeout > 0 ? "text-amber-300" : "text-zinc-600"} />
           <Tile label="short circuit" count={aiHealth.short_circuit} tone={aiHealth.short_circuit > 0 ? "text-violet-300" : "text-zinc-600"} />
         </div>
+        {/* Cost breakdown — per-model strip. Renders only when there's
+            attributed cost so empty workspaces stay tight. */}
+        {costRollup.perModel.length > 0 && (
+          <div className="mt-3 flex flex-wrap gap-2">
+            <span className="text-[10px] font-mono uppercase tracking-wider text-zinc-500">cost by model:</span>
+            {costRollup.perModel.map((m) => (
+              <span key={`${m.provider}_${m.modelId}`} className="text-[10.5px] font-mono text-zinc-300 bg-white/[0.025] border border-white/[0.06] rounded-full px-2 py-0.5">
+                {m.provider}/{m.modelId} · {formatCents(m.cents)}
+              </span>
+            ))}
+          </div>
+        )}
+        {costRollup.unattributedCallCount > 0 && (
+          <p className="text-[10.5px] text-amber-300/80 mt-2 leading-relaxed">
+            {costRollup.unattributedCallCount} call{costRollup.unattributedCallCount === 1 ? "" : "s"} not billed — no AIProviderRate row for the model. Seed via <code className="font-mono">lib/billing/providerRateSeeds.ts</code>.
+          </p>
+        )}
       </section>
 
       {/* Tile row 4 — synthesis + Q&A */}

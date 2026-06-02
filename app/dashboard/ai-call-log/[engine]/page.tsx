@@ -19,6 +19,7 @@ import { redirect } from "next/navigation";
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 import { currentContext } from "@/lib/auth/currentContext";
 import { prisma } from "@/lib/db";
+import { rollupAiCallCost, formatCents } from "@/lib/billing/aiCallCostAttribution";
 
 export const dynamic = "force-dynamic";
 
@@ -146,6 +147,12 @@ export default async function AiCallLogEnginePage({
     totalCompletionTokens += c.completionTokens ?? 0;
   }
 
+  // Cost rollup — bridges every call's (model, tokens) to the rate
+  // card via lib/billing. Honest 'rate not configured' when the
+  // model isn't in the rate table; never fabricates a $0 cost on
+  // unbilled usage. Phase 580.
+  const costRollup = await rollupAiCallCost(recentCalls);
+
   // Top error messages — folded by exact match. We trim to 120 chars
   // so a runaway stack trace doesn't blow up the bucket key.
   const errorBuckets = new Map<string, number>();
@@ -224,6 +231,36 @@ export default async function AiCallLogEnginePage({
         <MetricCard label="completion tokens" value={totalCompletionTokens.toLocaleString()} sub="window total · output" />
         <MetricCard label="window total"     value={totalCalls.toLocaleString()}            sub="every outcome counted" />
         <MetricCard label="sample size"      value={latencies.length.toLocaleString()}      sub="rows used for percentiles" />
+      </section>
+
+      {/* Cost rollup tile — Phase 580. Always renders so the
+          'rate not configured' state stays visible (operators see
+          when a model is uncovered, not a misleading $0). */}
+      <section className="mb-10 rounded-2xl border border-white/[0.06] bg-white/[0.015] p-5">
+        <div className="flex items-baseline justify-between gap-3 mb-3 flex-wrap">
+          <p className="text-[10px] font-mono uppercase tracking-[0.18em] text-zinc-500">provider cost · 24h window</p>
+          <span className="text-[10px] font-mono text-zinc-500 tabular-nums">
+            {costRollup.attributedCallCount} attributed
+            {costRollup.unattributedCallCount > 0 && <> · {costRollup.unattributedCallCount} unrated</>}
+          </span>
+        </div>
+        <p className={`text-[24px] font-semibold tabular-nums ${costRollup.totalCents > 0 ? "text-emerald-200" : "text-zinc-600"}`}>
+          {formatCents(costRollup.totalCents)}
+        </p>
+        {costRollup.perModel.length > 0 && (
+          <div className="mt-3 flex flex-wrap gap-2">
+            {costRollup.perModel.map((m) => (
+              <span key={`${m.provider}_${m.modelId}`} className="text-[10.5px] font-mono text-zinc-400 bg-white/[0.025] border border-white/[0.06] rounded-full px-2 py-0.5">
+                {m.provider}/{m.modelId} · {formatCents(m.cents)}
+              </span>
+            ))}
+          </div>
+        )}
+        {costRollup.unattributedCallCount > 0 && costRollup.attributedCallCount === 0 && (
+          <p className="text-[11px] text-amber-300/80 mt-2 leading-relaxed">
+            No AIProviderRate row covers the models this engine hit. Seed a rate via lib/billing/providerRateSeeds.ts or insert a row in AIProviderRate.
+          </p>
+        )}
       </section>
 
       {/* Top error messages */}
