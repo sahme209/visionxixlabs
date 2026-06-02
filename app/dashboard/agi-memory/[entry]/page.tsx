@@ -25,12 +25,13 @@ import { AGENT_WORKFORCE_REGISTRY } from "@/lib/workforce/agentWorkforceRegistry
 export const dynamic = "force-dynamic";
 
 const KIND_LABEL: Record<string, string> = {
-  council:               "Council",
-  triage:                "Triage",
-  remediation:           "Remediation",
-  engineer_specialty:    "Engineer specialty",
-  engineer_qa:           "Engineer Q&A",
-  workforce_synthesis:   "Workforce synthesis",
+  council:                       "Council",
+  triage:                        "Triage",
+  remediation:                   "Remediation",
+  engineer_specialty:            "Engineer specialty",
+  engineer_qa:                   "Engineer Q&A",
+  workforce_synthesis:           "Workforce synthesis",
+  engineer_compliance_report:    "Compliance engineer report",
 };
 
 const OUTCOME_TONE: Record<string, string> = {
@@ -132,6 +133,8 @@ export default async function AgiMemoryEntryPage({
     sourceHref = `/dashboard/workforce/${engineerId}/ask`;
   } else if (entry.targetKind === "workforce_synthesis") {
     sourceHref = `/dashboard/workforce/ask-all?sweep=${encodeURIComponent(entry.targetId)}`;
+  } else if (entry.targetKind === "engineer_compliance_report") {
+    sourceHref = `/dashboard/compliance`;
   } else {
     sourceHref = SOURCE_HREF[entry.targetKind];
   }

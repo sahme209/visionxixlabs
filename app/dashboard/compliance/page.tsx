@@ -16,7 +16,8 @@ import { redirect } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { currentContext } from "@/lib/auth/currentContext";
 import { COMPLIANCE_CONTROLS, scoreControl, type ControlStatus } from "@/lib/compliance/controls";
-import { ArrowRightIcon } from "@heroicons/react/24/outline";
+import { ArrowRightIcon, SparklesIcon } from "@heroicons/react/24/outline";
+import { COMPLIANCE_ENGINEER_TARGET_KIND } from "@/lib/workforce/domains/complianceEngineer";
 
 export const dynamic = "force-dynamic";
 
@@ -78,6 +79,44 @@ export default async function CompliancePage() {
     return acc;
   }, {});
 
+  // Phase 582 — compliance engineer's domain report, when one's been
+  // generated. Headline panel shows the AI-enriched executive
+  // summary + per-control evidence summaries. Operators see the
+  // gap-summary at the top instead of building it mentally from the
+  // failing-count tile.
+  const complianceReportRow = await prisma.aiRationaleEnrichment.findUnique({
+    where: {
+      organizationId_targetKind_targetId: {
+        organizationId: ctx.organizationId,
+        targetKind: COMPLIANCE_ENGINEER_TARGET_KIND,
+        targetId: "compliance_engineer",
+      },
+    },
+    select: {
+      narrative: true,
+      nextActionsJson: true,
+      outcome: true,
+      modelHint: true,
+      generatedAt: true,
+      updatedAt: true,
+    },
+  }).catch(() => null);
+
+  // Per-control evidence summaries — decoded from the pipe-delimited
+  // payload the engineer persists. Falls back to the rules-based
+  // summary if the row's missing (which the engineer also writes,
+  // so this only happens when no report has been generated yet).
+  const evidenceByControlId = new Map<string, string>();
+  if (complianceReportRow && Array.isArray(complianceReportRow.nextActionsJson)) {
+    for (const entry of complianceReportRow.nextActionsJson as unknown[]) {
+      if (typeof entry !== "string") continue;
+      const [controlId, , , ...summaryParts] = entry.split("|");
+      if (controlId && summaryParts.length > 0) {
+        evidenceByControlId.set(controlId, summaryParts.join("|"));
+      }
+    }
+  }
+
   return (
     <div className="max-w-4xl mx-auto px-1 -mt-2">
       <header className="mb-12">
@@ -100,6 +139,47 @@ export default async function CompliancePage() {
           </p>
         </div>
       )}
+
+      {/* Compliance engineer report — Phase 582. The AI-enriched
+          executive summary appears above the counts; per-control
+          evidence summaries appear inside each row in the framework
+          lists below. */}
+      <section className="mb-8 rounded-2xl border border-violet-500/15 bg-violet-500/[0.04] p-5">
+        <div className="flex items-center justify-between gap-3 mb-3 flex-wrap">
+          <p className="text-[10px] font-mono uppercase tracking-[0.18em] text-violet-300 inline-flex items-center gap-2">
+            <SparklesIcon className="h-3.5 w-3.5" /> compliance engineer · executive summary
+          </p>
+          <form action="/api/workforce/compliance_engineer/run-domain" method="POST">
+            <button
+              type="submit"
+              className="text-[11px] font-mono uppercase tracking-wider px-3 py-1.5 rounded-full border border-violet-500/30 text-violet-100 hover:text-white hover:border-violet-500/60 hover:bg-violet-500/15 transition-colors"
+              title="Run the Compliance Engineer over your current findings"
+            >
+              {complianceReportRow ? "re-run report" : "generate report"}
+            </button>
+          </form>
+        </div>
+        {complianceReportRow ? (
+          <>
+            <p className="text-[13.5px] text-zinc-100 leading-relaxed whitespace-pre-line">{complianceReportRow.narrative}</p>
+            <p className="text-[10px] font-mono text-zinc-500 mt-3">
+              {complianceReportRow.outcome.replace(/_/g, " ")}
+              {complianceReportRow.modelHint && <> · {complianceReportRow.modelHint}</>}
+              {" · "}{complianceReportRow.updatedAt.toISOString().slice(0, 19).replace("T", " ")}
+              {" · "}
+              <Link href={`/dashboard/agi-memory/${encodeURIComponent(`${COMPLIANCE_ENGINEER_TARGET_KIND}:compliance_engineer`)}`} className="hover:text-white">
+                permalink →
+              </Link>
+            </p>
+          </>
+        ) : (
+          <p className="text-[13px] text-zinc-300 leading-relaxed">
+            The Compliance Engineer hasn&apos;t produced a report for this workspace yet.
+            Hit <strong>generate report</strong> — it walks every control, scores it against your findings,
+            and writes the evidence summary in auditor language.
+          </p>
+        )}
+      </section>
 
       {/* Counts strip */}
       <section className="mb-4 rounded-2xl border border-white/[0.06] bg-white/[0.015] divide-x divide-white/[0.04] grid grid-cols-3 overflow-hidden">
@@ -142,6 +222,11 @@ export default async function CompliancePage() {
                         </div>
                         <p className="text-[14px] font-medium text-white">{control.title}</p>
                         <p className="text-[12px] text-zinc-500 leading-relaxed mt-1">{control.description}</p>
+                        {evidenceByControlId.has(control.id) && (
+                          <p className="text-[11.5px] text-violet-200/90 leading-relaxed mt-1.5 italic">
+                            ↳ {evidenceByControlId.get(control.id)}
+                          </p>
+                        )}
                         {matchedCount > 0 && (
                           <p className="text-[11px] text-rose-300/80 mt-1">
                             {matchedCount} finding{matchedCount === 1 ? "" : "s"} match this control
