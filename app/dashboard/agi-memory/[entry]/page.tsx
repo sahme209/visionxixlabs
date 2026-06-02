@@ -33,6 +33,7 @@ const KIND_LABEL: Record<string, string> = {
   workforce_synthesis:           "Workforce synthesis",
   engineer_compliance_report:    "Compliance engineer report",
   engineer_detector_signals:     "Detector engineer signals",
+  engineer_spec_writer_spec:     "Spec writer · written spec",
 };
 
 const OUTCOME_TONE: Record<string, string> = {
@@ -138,6 +139,8 @@ export default async function AgiMemoryEntryPage({
     sourceHref = `/dashboard/compliance`;
   } else if (entry.targetKind === "engineer_detector_signals") {
     sourceHref = `/dashboard/workforce/detector_engineer`;
+  } else if (entry.targetKind === "engineer_spec_writer_spec") {
+    sourceHref = `/dashboard/workforce/spec_writer_engineer/specs`;
   } else {
     sourceHref = SOURCE_HREF[entry.targetKind];
   }

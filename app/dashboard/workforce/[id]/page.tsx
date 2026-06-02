@@ -368,11 +368,13 @@ export default async function EngineerDetailPage({ params }: { params: Promise<{
 
   // Phase 583 — domain-work output for engineers that ship real
   // professional implementations. Looks the engineer up in the
-  // domain-impl registry; if present, loads the latest report row.
-  // The detail page renders a 'Run domain' button + the executive
-  // summary + the per-item payload only when this returns a hit.
+  // domain-impl registry; if present, loads either:
+  //   · the single keyed report row (no-input engineers — compliance,
+  //     detector — produce one canonical report per workspace)
+  //   · the count of recent rows (input-shape engineers — spec writer
+  //     — produce many keyed rows per operator submission)
   const domainImpl = findDomainImplementation(engineer.id);
-  const domainReport = domainImpl
+  const domainReport = domainImpl && !domainImpl.requiresInput
     ? await prisma.aiRationaleEnrichment.findUnique({
         where: {
           organizationId_targetKind_targetId: {
@@ -391,6 +393,14 @@ export default async function EngineerDetailPage({ params }: { params: Promise<{
         },
       }).catch(() => null)
     : null;
+  const domainSubmissionCount = domainImpl?.requiresInput
+    ? await prisma.aiRationaleEnrichment.count({
+        where: {
+          organizationId: String(ctx.organizationId),
+          targetKind: domainImpl.reportTargetKind,
+        },
+      }).catch(() => 0)
+    : 0;
   const domainRiskFactors = domainReport && Array.isArray(domainReport.riskFactorsJson)
     ? (domainReport.riskFactorsJson as unknown[]).filter((x): x is string => typeof x === "string")
     : [];
@@ -515,15 +525,25 @@ export default async function EngineerDetailPage({ params }: { params: Promise<{
               >
                 full report →
               </Link>
-              <form action={domainImpl.runDomainEndpoint} method="POST">
-                <button
-                  type="submit"
+              {domainImpl.requiresInput ? (
+                <Link
+                  href={domainImpl.runDomainEndpoint}
                   className="text-[11px] font-mono uppercase tracking-wider px-3 py-1.5 rounded-full border border-emerald-500/30 text-emerald-100 hover:text-white hover:border-emerald-500/60 hover:bg-emerald-500/15 transition-colors"
-                  title={`Run ${engineer.displayName}'s domain work over the current workspace state`}
+                  title={`Open the ${engineer.displayName} surface to provide input`}
                 >
-                  {domainReport ? "re-run domain" : "run domain"}
-                </button>
-              </form>
+                  open surface →
+                </Link>
+              ) : (
+                <form action={domainImpl.runDomainEndpoint} method="POST">
+                  <button
+                    type="submit"
+                    className="text-[11px] font-mono uppercase tracking-wider px-3 py-1.5 rounded-full border border-emerald-500/30 text-emerald-100 hover:text-white hover:border-emerald-500/60 hover:bg-emerald-500/15 transition-colors"
+                    title={`Run ${engineer.displayName}'s domain work over the current workspace state`}
+                  >
+                    {domainReport ? "re-run domain" : "run domain"}
+                  </button>
+                </form>
+              )}
             </div>
           </div>
           {domainReport ? (
@@ -565,6 +585,13 @@ export default async function EngineerDetailPage({ params }: { params: Promise<{
                 </p>
               )}
             </>
+          ) : domainImpl.requiresInput ? (
+            <p className="text-[13px] text-zinc-300 leading-relaxed">
+              {engineer.displayName} produces output from operator input.{" "}
+              {domainSubmissionCount > 0
+                ? <>{domainSubmissionCount} submission{domainSubmissionCount === 1 ? "" : "s"} on record — click <strong>open surface →</strong> to write a new one or browse history.</>
+                : <>No submissions yet — click <strong>open surface →</strong> to provide input and watch the engineer write its first piece.</>}
+            </p>
           ) : (
             <p className="text-[13px] text-zinc-300 leading-relaxed">
               {engineer.displayName} hasn&apos;t produced a domain report for this workspace yet.
