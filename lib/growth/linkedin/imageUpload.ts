@@ -13,7 +13,9 @@
 import "server-only";
 
 const INIT_UPLOAD_URL = "https://api.linkedin.com/rest/images?action=initializeUpload";
-const LINKEDIN_REST_VERSION = "202405";
+/* Kept in sync with lib/growth/linkedin/posting.ts — LinkedIn retires
+   versions >~12 months old with HTTP 426. Override via env to roll. */
+const LINKEDIN_REST_VERSION = process.env.LINKEDIN_REST_VERSION || "202605";
 
 export type ImageUploadResult =
   | { kind: "ok"; urn: string }

@@ -20,7 +20,10 @@ import { writeGrowthAudit } from "../audit";
 import { transitionStatus } from "../draftStore";
 
 const POSTS_URL = "https://api.linkedin.com/rest/posts";
-const LINKEDIN_REST_VERSION = "202405";
+/* LinkedIn rolls REST versions monthly and retires anything ~12 months old
+   with HTTP 426 NONEXISTENT_VERSION. Override via env when the default
+   ages out so we don't have to redeploy code to roll it forward. */
+const LINKEDIN_REST_VERSION = process.env.LINKEDIN_REST_VERSION || "202605";
 
 export type PublishOutcome =
   | { kind: "success"; urn: string; url?: string; runId: string }
