@@ -23,6 +23,7 @@ import {
 } from "@heroicons/react/24/outline";
 import { currentContext } from "@/lib/auth/currentContext";
 import { prisma } from "@/lib/db";
+import { findDomainImplementation } from "@/lib/workforce/domains";
 import {
   AGENT_WORKFORCE_REGISTRY,
   type ApprovalRule,
@@ -365,6 +366,38 @@ export default async function EngineerDetailPage({ params }: { params: Promise<{
     ? (ownRationale.nextActionsJson as unknown[]).filter((x): x is string => typeof x === "string")
     : [];
 
+  // Phase 583 — domain-work output for engineers that ship real
+  // professional implementations. Looks the engineer up in the
+  // domain-impl registry; if present, loads the latest report row.
+  // The detail page renders a 'Run domain' button + the executive
+  // summary + the per-item payload only when this returns a hit.
+  const domainImpl = findDomainImplementation(engineer.id);
+  const domainReport = domainImpl
+    ? await prisma.aiRationaleEnrichment.findUnique({
+        where: {
+          organizationId_targetKind_targetId: {
+            organizationId: String(ctx.organizationId),
+            targetKind: domainImpl.reportTargetKind,
+            targetId: engineer.id,
+          },
+        },
+        select: {
+          narrative: true,
+          riskFactorsJson: true,
+          nextActionsJson: true,
+          outcome: true,
+          modelHint: true,
+          updatedAt: true,
+        },
+      }).catch(() => null)
+    : null;
+  const domainRiskFactors = domainReport && Array.isArray(domainReport.riskFactorsJson)
+    ? (domainReport.riskFactorsJson as unknown[]).filter((x): x is string => typeof x === "string")
+    : [];
+  const domainPayload = domainReport && Array.isArray(domainReport.nextActionsJson)
+    ? (domainReport.nextActionsJson as unknown[]).filter((x): x is string => typeof x === "string")
+    : [];
+
   // Recent Q&A — Phase 564 persists each exchange as an
   // engineer_qa row with targetId=`<engineerId>:<ts36>`. The
   // startsWith prefix scopes cheaply to this engineer.
@@ -463,6 +496,84 @@ export default async function EngineerDetailPage({ params }: { params: Promise<{
         <h1 className="text-3xl md:text-4xl font-bold text-white tracking-[-0.04em] mb-2">{engineer.displayName}</h1>
         <p className="text-[15px] text-zinc-400 max-w-3xl leading-relaxed">{engineer.role}</p>
       </div>
+
+      {/* Phase 583 — domain work panel. Renders only when this
+          engineer has shipped real professional implementation. The
+          executive summary headlines, the per-item payload renders
+          as a structured list (compliance: per-control / detector:
+          per-signal). Refresh button POSTs the domain endpoint. */}
+      {domainImpl && (
+        <section className="mb-6 rounded-2xl border border-emerald-500/20 bg-emerald-500/[0.04] p-5">
+          <div className="flex items-center justify-between gap-3 mb-3 flex-wrap">
+            <p className="text-[10px] font-semibold uppercase tracking-widest text-emerald-300">
+              {domainImpl.reportLabel} · {engineer.displayName} doing its job
+            </p>
+            <div className="flex items-center gap-2">
+              <Link
+                href={domainImpl.reportHomeRoute}
+                className="text-[10px] font-mono text-zinc-500 hover:text-white transition-colors"
+              >
+                full report →
+              </Link>
+              <form action={domainImpl.runDomainEndpoint} method="POST">
+                <button
+                  type="submit"
+                  className="text-[11px] font-mono uppercase tracking-wider px-3 py-1.5 rounded-full border border-emerald-500/30 text-emerald-100 hover:text-white hover:border-emerald-500/60 hover:bg-emerald-500/15 transition-colors"
+                  title={`Run ${engineer.displayName}'s domain work over the current workspace state`}
+                >
+                  {domainReport ? "re-run domain" : "run domain"}
+                </button>
+              </form>
+            </div>
+          </div>
+          {domainReport ? (
+            <>
+              <div className="flex items-center gap-2 mb-2 flex-wrap text-[10px] font-mono uppercase tracking-wider">
+                <span className={
+                  domainReport.outcome === "ai_generated" ? "text-emerald-300" :
+                  domainReport.outcome === "fallback_rules" ? "text-amber-300" :
+                  "text-rose-300"
+                }>{domainReport.outcome.replace(/_/g, " ")}</span>
+                {domainReport.modelHint && (
+                  <>
+                    <span className="text-zinc-500">·</span>
+                    <span className="text-zinc-400">{domainReport.modelHint}</span>
+                  </>
+                )}
+                <span className="text-zinc-500 ml-auto">
+                  {domainReport.updatedAt.toISOString().slice(0, 19).replace("T", " ")}
+                </span>
+              </div>
+              <p className="text-[13.5px] text-zinc-100 leading-relaxed whitespace-pre-line">{domainReport.narrative}</p>
+              {domainRiskFactors.length > 0 && (
+                <div className="mt-3">
+                  <p className="text-[9.5px] font-mono uppercase tracking-wider text-zinc-500 mb-1">items · {domainRiskFactors.length}</p>
+                  <ul className="space-y-0.5">
+                    {domainRiskFactors.slice(0, 6).map((f, i) => (
+                      <li key={`${i}_${f.slice(0, 24)}`} className="text-[12px] text-zinc-200 flex gap-1.5">
+                        <span className="text-emerald-400">•</span>
+                        <span>{f}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+              {domainPayload.length > 0 && (
+                <p className="text-[10px] font-mono text-zinc-500 mt-3">
+                  {domainPayload.length} structured records persisted ·{" "}
+                  <Link href={`/dashboard/agi-memory/${encodeURIComponent(`${domainImpl.reportTargetKind}:${engineer.id}`)}`} className="hover:text-white">permalink →</Link>
+                </p>
+              )}
+            </>
+          ) : (
+            <p className="text-[13px] text-zinc-300 leading-relaxed">
+              {engineer.displayName} hasn&apos;t produced a domain report for this workspace yet.
+              Hit <strong>run domain</strong> — it walks the canonical inputs for its role, emits a
+              typed report, and persists the result.
+            </p>
+          )}
+        </section>
+      )}
 
       {/* Engineer's own AGI rationale — the engineer literally
           speaking for itself via Claude. POST /api/workforce/[id]/run-agi

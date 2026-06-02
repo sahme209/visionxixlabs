@@ -32,6 +32,7 @@ const KIND_LABEL: Record<string, string> = {
   engineer_qa:                   "Engineer Q&A",
   workforce_synthesis:           "Workforce synthesis",
   engineer_compliance_report:    "Compliance engineer report",
+  engineer_detector_signals:     "Detector engineer signals",
 };
 
 const OUTCOME_TONE: Record<string, string> = {
@@ -135,6 +136,8 @@ export default async function AgiMemoryEntryPage({
     sourceHref = `/dashboard/workforce/ask-all?sweep=${encodeURIComponent(entry.targetId)}`;
   } else if (entry.targetKind === "engineer_compliance_report") {
     sourceHref = `/dashboard/compliance`;
+  } else if (entry.targetKind === "engineer_detector_signals") {
+    sourceHref = `/dashboard/workforce/detector_engineer`;
   } else {
     sourceHref = SOURCE_HREF[entry.targetKind];
   }
