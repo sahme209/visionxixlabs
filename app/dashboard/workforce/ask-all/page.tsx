@@ -60,6 +60,27 @@ export default async function AskAllPage({
     }
   }
 
+  // Phase 573 — synthesis row for this sweep. Keyed at
+  // (org, workforce_synthesis, sweepCorrelation). Loaded in parallel
+  // with the engineer answers so the page render stays one-shot.
+  const synthesisRow = sweepId
+    ? await prisma.aiRationaleEnrichment.findUnique({
+        where: {
+          organizationId_targetKind_targetId: {
+            organizationId: org,
+            targetKind: "workforce_synthesis",
+            targetId: sweepId,
+          },
+        },
+        select: {
+          narrative: true,
+          outcome: true,
+          modelHint: true,
+          generatedAt: true,
+        },
+      }).catch(() => null)
+    : null;
+
   // Pull every row for this sweep. The targetId pattern is
   // `<engineerId>:<sweepCorrelation>` so a suffix match gets them all.
   const sweepRows = sweepId
@@ -248,6 +269,35 @@ export default async function AskAllPage({
               {sweepId && (
                 <p className="text-[10px] font-mono text-zinc-500 mt-3">sweep · {sweepId}</p>
               )}
+            </div>
+          )}
+
+          {/* Phase 573 — synthesis. One Claude call that read every
+              engineer answer and surfaced consensus, tensions, and
+              the recommended next action. Renders above the per-
+              engineer responses because that's how operators consume
+              this: TL;DR first, drilldown second. */}
+          {synthesisRow && (
+            <div className="mb-6 rounded-2xl border border-violet-500/25 bg-violet-500/[0.06] p-5">
+              <div className="flex items-center justify-between gap-3 mb-2 flex-wrap text-[10px] font-mono uppercase tracking-[0.18em]">
+                <div className="flex items-center gap-2">
+                  <SparklesIcon className="h-3.5 w-3.5 text-violet-300" />
+                  <span className="text-violet-300">workforce synthesis</span>
+                  {synthesisRow.modelHint && (
+                    <>
+                      <span className="text-zinc-500">·</span>
+                      <span className="text-zinc-400">{synthesisRow.modelHint}</span>
+                    </>
+                  )}
+                </div>
+                <Link
+                  href={`/dashboard/agi-memory/${encodeURIComponent(`workforce_synthesis:${sweepId}`)}`}
+                  className="text-zinc-500 hover:text-white transition-colors"
+                >
+                  permalink →
+                </Link>
+              </div>
+              <p className="text-[13.5px] text-zinc-100 leading-relaxed whitespace-pre-line">{synthesisRow.narrative}</p>
             </div>
           )}
           <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-zinc-500 mb-3">responses · {responses.length}</p>

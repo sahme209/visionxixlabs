@@ -25,11 +25,12 @@ import { AGENT_WORKFORCE_REGISTRY } from "@/lib/workforce/agentWorkforceRegistry
 export const dynamic = "force-dynamic";
 
 const KIND_LABEL: Record<string, string> = {
-  council:             "Council",
-  triage:              "Triage",
-  remediation:         "Remediation",
-  engineer_specialty:  "Engineer specialty",
-  engineer_qa:         "Engineer Q&A",
+  council:               "Council",
+  triage:                "Triage",
+  remediation:           "Remediation",
+  engineer_specialty:    "Engineer specialty",
+  engineer_qa:           "Engineer Q&A",
+  workforce_synthesis:   "Workforce synthesis",
 };
 
 const OUTCOME_TONE: Record<string, string> = {
@@ -119,7 +120,9 @@ export default async function AgiMemoryEntryPage({
   const kindLabel = KIND_LABEL[entry.targetKind] ?? entry.targetKind;
   // For engineer_specialty entries the targetId IS the engineer id;
   // for engineer_qa it's `<engineerId>:<timestamp>` — route both at
-  // the engineer's surface accordingly.
+  // the engineer's surface accordingly. For workforce_synthesis the
+  // targetId is a sweep correlation — route back to the ask-all view
+  // filtered to that sweep.
   let sourceHref: string | undefined;
   if (entry.targetKind === "engineer_specialty") {
     sourceHref = `/dashboard/workforce/${entry.targetId}`;
@@ -127,6 +130,8 @@ export default async function AgiMemoryEntryPage({
     const colon = entry.targetId.indexOf(":");
     const engineerId = colon === -1 ? entry.targetId : entry.targetId.slice(0, colon);
     sourceHref = `/dashboard/workforce/${engineerId}/ask`;
+  } else if (entry.targetKind === "workforce_synthesis") {
+    sourceHref = `/dashboard/workforce/ask-all?sweep=${encodeURIComponent(entry.targetId)}`;
   } else {
     sourceHref = SOURCE_HREF[entry.targetKind];
   }

@@ -133,6 +133,104 @@ export async function POST(req: Request) {
     }
   }
 
+  // ─── Phase 573 — synthesis pass ─────────────────────────────────
+  // After every engineer has answered, run ONE more Claude call that
+  // reads the question + all the answers and produces a 2-3 sentence
+  // synthesis (consensus, tensions, recommended next action). Stored
+  // as a new targetKind so the existing AGI memory surfaces render
+  // it without per-page conditionals.
+  //
+  // Synthesis runs ONLY when we have at least one ai_generated answer
+  // — synthesizing fallback rows would just produce a meta-fallback
+  // and waste tokens. Skipped synthesis is honest: the operator sees
+  // the engineer answers without a misleading consensus summary.
+  let synthesisOutcome: "ai_generated" | "fallback_rules" | "error" | "skipped" = "skipped";
+  if (counts.ai_generated > 0 && Date.now() - startedAt < HARD_DEADLINE_MS) {
+    try {
+      const synthFetcher = makeInstrumentedFetcher({
+        engineName: "workforce_synthesis",
+        organizationId: org,
+        timeoutMs: 30_000,
+      });
+      const answersForPrompt = await prisma.aiRationaleEnrichment.findMany({
+        where: {
+          organizationId: org,
+          targetKind: "engineer_qa",
+          targetId: { endsWith: `:${sweepCorrelation}` },
+          outcome: "ai_generated",
+        },
+        select: { targetId: true, narrative: true },
+      });
+      const engineerLookup = new Map(engineers.map((e) => [e.id, e]));
+      const blocks = answersForPrompt.map((row) => {
+        const colon = row.targetId.indexOf(":");
+        const eid = colon === -1 ? row.targetId : row.targetId.slice(0, colon);
+        const e = engineerLookup.get(eid);
+        return `## ${e?.displayName ?? eid} (${e?.department ?? "?"}):\n${row.narrative}`;
+      });
+      const synthPrompt = [
+        `You are the workforce meta-coordinator. ${answersForPrompt.length} engineers just answered a single operator question.`,
+        ``,
+        `Read all the answers and produce ONE response with three short paragraphs:`,
+        `  1. Consensus — what every engineer agrees on (or "no consensus" if they don't).`,
+        `  2. Tensions — where engineers disagreed, and why.`,
+        `  3. Recommended next action — the single most actionable step the operator should take, drawn from the answers.`,
+        ``,
+        `Plain prose, ≤ 700 chars total, no headings besides the bold labels Consensus: / Tensions: / Next action:. Refuse to invent — if engineers were vague, say so.`,
+        ``,
+        `---`,
+        ``,
+        `Operator question:`,
+        question,
+        ``,
+        `---`,
+        ``,
+        `Engineer answers:`,
+        ``,
+        blocks.join("\n\n"),
+      ].join("\n");
+
+      const synthResult = await synthFetcher(synthPrompt);
+      const synthText = (synthResult.text ?? "").trim().slice(0, 4000);
+      if (synthText) {
+        await prisma.aiRationaleEnrichment.upsert({
+          where: {
+            organizationId_targetKind_targetId: {
+              organizationId: org,
+              targetKind: "workforce_synthesis",
+              targetId: sweepCorrelation,
+            },
+          },
+          create: {
+            organizationId: org,
+            targetKind: "workforce_synthesis",
+            targetId: sweepCorrelation,
+            narrative: synthText,
+            riskFactorsJson: [question] as unknown as string[],
+            nextActionsJson: [] as unknown as string[],
+            outcome: "ai_generated",
+            errorMessage: null,
+            modelHint: synthResult.modelHint,
+            engineVersion: "workforce-synthesis-v1",
+          },
+          update: {
+            narrative: synthText,
+            riskFactorsJson: [question] as unknown as string[],
+            outcome: "ai_generated",
+            errorMessage: null,
+            modelHint: synthResult.modelHint,
+          },
+        });
+        synthesisOutcome = "ai_generated";
+      } else {
+        synthesisOutcome = "fallback_rules";
+      }
+    } catch (err) {
+      console.warn("[ask-all] synthesis failed:", err instanceof Error ? err.message : err);
+      synthesisOutcome = "error";
+    }
+  }
+
   void auditRecord({
     organizationId: ids.organization(org),
     actorUserId: ctx.userId ? ids.user(String(ctx.userId)) : undefined,
@@ -147,6 +245,7 @@ export async function POST(req: Request) {
       sweepCorrelation,
       durationMs: Date.now() - startedAt,
       result: counts,
+      synthesis: synthesisOutcome,
     },
   });
 
