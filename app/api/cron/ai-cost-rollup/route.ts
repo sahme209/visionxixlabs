@@ -102,9 +102,12 @@ export async function GET(req: NextRequest) {
 
       const cost = await rollupAiCallCost(monthRows);
 
-      // Token totals for the workspace summary.
-      let inputTokens = 0n;
-      let outputTokens = 0n;
+      // Token totals for the workspace summary. Use BigInt() ctor
+      // instead of `0n` literal — the project's tsconfig target is
+      // below ES2020 and rejects bigint literal syntax at compile
+      // time.
+      let inputTokens = BigInt(0);
+      let outputTokens = BigInt(0);
       for (const r of monthRows) {
         inputTokens += BigInt(r.promptTokens ?? 0);
         outputTokens += BigInt(r.completionTokens ?? 0);
