@@ -31,9 +31,11 @@ const KIND_LABEL: Record<string, string> = {
   engineer_specialty:            "Engineer specialty",
   engineer_qa:                   "Engineer Q&A",
   workforce_synthesis:           "Workforce synthesis",
-  engineer_compliance_report:    "Compliance engineer report",
-  engineer_detector_signals:     "Detector engineer signals",
-  engineer_spec_writer_spec:     "Spec writer · written spec",
+  engineer_compliance_report:           "Compliance engineer report",
+  engineer_detector_signals:            "Detector engineer signals",
+  engineer_spec_writer_spec:            "Spec writer · written spec",
+  engineer_incident_triage:             "Incident engineer triage",
+  engineer_secrets_hygiene_candidates:  "Secrets hygiene candidates",
 };
 
 const OUTCOME_TONE: Record<string, string> = {
@@ -141,6 +143,10 @@ export default async function AgiMemoryEntryPage({
     sourceHref = `/dashboard/workforce/detector_engineer`;
   } else if (entry.targetKind === "engineer_spec_writer_spec") {
     sourceHref = `/dashboard/workforce/spec_writer_engineer/specs`;
+  } else if (entry.targetKind === "engineer_incident_triage") {
+    sourceHref = `/dashboard/workforce/incident_engineer`;
+  } else if (entry.targetKind === "engineer_secrets_hygiene_candidates") {
+    sourceHref = `/dashboard/workforce/secrets_hygiene_engineer`;
   } else {
     sourceHref = SOURCE_HREF[entry.targetKind];
   }

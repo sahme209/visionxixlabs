@@ -51,6 +51,20 @@ export const ENGINEER_DOMAIN_IMPLEMENTATIONS: ReadonlyArray<DomainImplementation
     reportLabel: "Written specs",
     requiresInput: true,
   },
+  {
+    engineerId: "incident_engineer",
+    reportTargetKind: "engineer_incident_triage",
+    runDomainEndpoint: "/api/workforce/incident_engineer/run-domain",
+    reportHomeRoute: "/dashboard/workforce/incident_engineer",
+    reportLabel: "Incident triage",
+  },
+  {
+    engineerId: "secrets_hygiene_engineer",
+    reportTargetKind: "engineer_secrets_hygiene_candidates",
+    runDomainEndpoint: "/api/workforce/secrets_hygiene_engineer/run-domain",
+    reportHomeRoute: "/dashboard/workforce/secrets_hygiene_engineer",
+    reportLabel: "Secrets hygiene scan",
+  },
 ];
 
 export function findDomainImplementation(engineerId: string): DomainImplementation | undefined {
