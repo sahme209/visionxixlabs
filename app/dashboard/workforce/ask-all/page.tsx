@@ -245,7 +245,20 @@ export default async function AskAllPage({
           prior question without remembering the URL. */}
       {pastSweeps.length > 1 && (
         <section className="mb-8">
-          <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-zinc-500 mb-3">past sweeps · {pastSweeps.length}</p>
+          <div className="flex items-baseline justify-between mb-3 gap-3 flex-wrap">
+            <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-zinc-500">past sweeps · {pastSweeps.length}</p>
+            {pastSweeps.some((s) => !synthesizedSet.has(s.sweepId)) && (
+              <form action="/api/workforce/ask-all/synthesize-all" method="POST">
+                <button
+                  type="submit"
+                  className="text-[10px] font-mono uppercase tracking-wider px-2.5 py-1 rounded-full border border-violet-500/30 text-violet-200 hover:text-white hover:border-violet-500/60 hover:bg-violet-500/15 transition-colors"
+                  title="Backfill workforce synthesis for every past sweep that doesn't have one yet"
+                >
+                  synthesize all missing
+                </button>
+              </form>
+            )}
+          </div>
           <ul className="rounded-2xl border border-white/[0.06] bg-white/[0.015] divide-y divide-white/[0.04] overflow-hidden">
             {pastSweeps.map((s) => {
               const isCurrent = s.sweepId === sweepId;
