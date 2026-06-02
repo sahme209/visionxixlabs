@@ -175,6 +175,24 @@ export default async function AskAllPage({
     .sort((a, b) => b.latestAt.getTime() - a.latestAt.getTime())
     .slice(0, 10);
 
+  // Synthesis presence for each past sweep — one bulk findMany over
+  // every workforce_synthesis row keyed to a sweep id in pastSweeps.
+  // Built before render so each row knows whether to show '✓
+  // synthesized' or the 'Synthesize →' backfill button.
+  const synthesizedSet = new Set<string>();
+  if (pastSweeps.length > 0) {
+    const sweepIdSet = pastSweeps.map((s) => s.sweepId);
+    const synthRows = await prisma.aiRationaleEnrichment.findMany({
+      where: {
+        organizationId: org,
+        targetKind: "workforce_synthesis",
+        targetId: { in: sweepIdSet },
+      },
+      select: { targetId: true },
+    }).catch(() => [] as Array<{ targetId: string }>);
+    for (const r of synthRows) synthesizedSet.add(r.targetId);
+  }
+
   return (
     <div className="max-w-3xl mx-auto px-1 -mt-2">
       <Link href="/dashboard/workforce" className="inline-flex items-center gap-1.5 text-[12px] text-zinc-500 hover:text-white transition-colors mb-6">
@@ -231,22 +249,40 @@ export default async function AskAllPage({
           <ul className="rounded-2xl border border-white/[0.06] bg-white/[0.015] divide-y divide-white/[0.04] overflow-hidden">
             {pastSweeps.map((s) => {
               const isCurrent = s.sweepId === sweepId;
+              const hasSynth = synthesizedSet.has(s.sweepId);
               return (
-                <li key={s.sweepId}>
-                  <Link
-                    href={`/dashboard/workforce/ask-all?sweep=${encodeURIComponent(s.sweepId)}`}
-                    className={`group flex items-start justify-between gap-3 px-5 py-3 hover:bg-white/[0.015] transition-colors ${isCurrent ? "bg-violet-500/[0.05]" : ""}`}
-                  >
-                    <div className="min-w-0 flex-1">
+                <li key={s.sweepId} className={isCurrent ? "bg-violet-500/[0.05]" : ""}>
+                  <div className="flex items-start justify-between gap-3 px-5 py-3 hover:bg-white/[0.015] transition-colors">
+                    <Link
+                      href={`/dashboard/workforce/ask-all?sweep=${encodeURIComponent(s.sweepId)}`}
+                      className="min-w-0 flex-1 block"
+                    >
                       <p className="text-[12.5px] text-zinc-200 line-clamp-1">{s.question || "(no question recorded)"}</p>
                       <p className="text-[10px] font-mono text-zinc-500 mt-0.5">
                         {s.sweepId} · {s.rowCount} response{s.rowCount === 1 ? "" : "s"} · {s.latestAt.toISOString().slice(0, 16).replace("T", " ")}
                       </p>
+                    </Link>
+                    <div className="flex items-center gap-2 shrink-0">
+                      {hasSynth ? (
+                        <span className="text-[10px] font-mono text-violet-300/80" title="Workforce synthesis present">
+                          ✓ synth
+                        </span>
+                      ) : (
+                        <form action={`/api/workforce/ask-all/${encodeURIComponent(s.sweepId)}/synthesize`} method="POST">
+                          <button
+                            type="submit"
+                            className="text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded-full border border-violet-500/30 text-violet-200 hover:text-white hover:border-violet-500/60 hover:bg-violet-500/15 transition-colors"
+                            title="Generate the workforce synthesis for this sweep"
+                          >
+                            synthesize
+                          </button>
+                        </form>
+                      )}
+                      {isCurrent && (
+                        <span className="text-[10px] font-mono text-violet-300">current</span>
+                      )}
                     </div>
-                    {isCurrent && (
-                      <span className="text-[10px] font-mono text-violet-300 shrink-0">current</span>
-                    )}
-                  </Link>
+                  </div>
                 </li>
               );
             })}
