@@ -34,6 +34,7 @@ import { currentContext } from "@/lib/auth/currentContext";
 import { prisma } from "@/lib/db";
 import { AGENT_WORKFORCE_REGISTRY } from "@/lib/workforce/agentWorkforceRegistry";
 import { rollupAiCallCost, formatCents } from "@/lib/billing/aiCallCostAttribution";
+import { loadAiBillingMargin, applyMargin } from "@/lib/billing/aiBillingMargin";
 
 export const dynamic = "force-dynamic";
 
@@ -97,6 +98,20 @@ export default async function WorkforceHealthPage() {
     take: 5000,
   }).catch(() => [] as Array<{ model: string | null; promptTokens: number | null; completionTokens: number | null }>);
   const costRollup = await rollupAiCallCost(costSampleRows);
+
+  // Phase 581 — pull the current month's persisted summary so the
+  // operator sees the same number the daily ai-cost-rollup cron
+  // writes (and that Stripe metered billing will eventually push).
+  const period = (() => {
+    const d = new Date();
+    return `${d.getUTCFullYear()}-${(d.getUTCMonth() + 1).toString().padStart(2, "0")}`;
+  })();
+  const monthSummary = await prisma.workspaceUsageSummary.findUnique({
+    where: { organizationId_periodMonth: { organizationId: org, periodMonth: period } },
+    select: { aiCostCents: true, totalCostCents: true, aiInvocationCount: true, lastRebuiltAt: true },
+  }).catch(() => null);
+  const margin = loadAiBillingMargin();
+  const billedNowCents = applyMargin(costRollup.totalCents, margin);
 
   // Specialty freshness.
   const now = Date.now();
@@ -246,6 +261,50 @@ export default async function WorkforceHealthPage() {
               ? "Questions operators asked engineers in the last week (includes ask-all rows)."
               : "Nobody's asked an engineer anything this week."}
           </p>
+        </div>
+      </section>
+
+      {/* Billing strip — Phase 581. Three numbers operators care
+          about: this hour's provider cost, the month-to-date
+          rolled-up provider cost (from WorkspaceUsageSummary), and
+          the customer-billed total = provider × margin. Margin is
+          configurable via AI_BILLING_MARGIN_MULT on the host. */}
+      <section className="mb-10">
+        <div className="flex items-baseline justify-between mb-3 gap-3 flex-wrap">
+          <p className="text-[10px] font-mono uppercase tracking-[0.18em] text-zinc-500">AI billing · {period}</p>
+          <span className="text-[10px] font-mono text-zinc-500">
+            margin · {margin.toFixed(2)}x
+            {monthSummary?.lastRebuiltAt && <> · rollup {monthSummary.lastRebuiltAt.toISOString().slice(0, 16).replace("T", " ")}</>}
+          </span>
+        </div>
+        <div className="grid sm:grid-cols-3 gap-3">
+          <div className="rounded-2xl border border-white/[0.06] bg-white/[0.015] p-5">
+            <p className="text-[10px] font-mono uppercase tracking-[0.18em] text-zinc-500 mb-2">provider cost · 24h</p>
+            <p className={`text-[22px] font-semibold tabular-nums ${costRollup.totalCents > 0 ? "text-zinc-200" : "text-zinc-600"}`}>
+              {formatCents(costRollup.totalCents)}
+            </p>
+            <p className="text-[10px] text-zinc-500 mt-1">{costRollup.attributedCallCount} call{costRollup.attributedCallCount === 1 ? "" : "s"} attributed</p>
+          </div>
+          <div className="rounded-2xl border border-white/[0.06] bg-white/[0.015] p-5">
+            <p className="text-[10px] font-mono uppercase tracking-[0.18em] text-zinc-500 mb-2">provider cost · MTD</p>
+            <p className={`text-[22px] font-semibold tabular-nums ${monthSummary && monthSummary.aiCostCents > 0 ? "text-zinc-200" : "text-zinc-600"}`}>
+              {monthSummary ? formatCents(monthSummary.aiCostCents) : "—"}
+            </p>
+            <p className="text-[10px] text-zinc-500 mt-1">
+              {monthSummary
+                ? <>{monthSummary.aiInvocationCount.toLocaleString()} invocations from <code className="font-mono">WorkspaceUsageSummary</code></>
+                : "Awaiting first ai-cost-rollup tick."}
+            </p>
+          </div>
+          <div className="rounded-2xl border border-emerald-500/15 bg-emerald-500/[0.03] p-5">
+            <p className="text-[10px] font-mono uppercase tracking-[0.18em] text-emerald-300 mb-2">customer billed · MTD</p>
+            <p className={`text-[22px] font-semibold tabular-nums ${monthSummary && monthSummary.totalCostCents > 0 ? "text-emerald-200" : "text-zinc-600"}`}>
+              {monthSummary ? formatCents(monthSummary.totalCostCents) : formatCents(billedNowCents)}
+            </p>
+            <p className="text-[10px] text-zinc-500 mt-1">
+              provider × {margin.toFixed(2)}x{monthSummary ? "" : " · live preview (no rollup yet)"}
+            </p>
+          </div>
         </div>
       </section>
 
