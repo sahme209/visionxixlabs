@@ -137,8 +137,16 @@ export function CommandPalette() {
         if (target) void target.onActivate();
       }
     }
+    function onOpenEvent() { setOpen(true); }
     document.addEventListener("keydown", onKey);
-    return () => document.removeEventListener("keydown", onKey);
+    // Allow the header chip + any external surface to open the palette
+    // via a CustomEvent. Keeps the imperative DOM coupling tiny — the
+    // chip stays a plain <button>, no React context plumbing.
+    document.addEventListener("axiom:open-palette", onOpenEvent);
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      document.removeEventListener("axiom:open-palette", onOpenEvent);
+    };
   }, [open, ordered, cursor, close]);
 
   // Auto-focus input when opened.

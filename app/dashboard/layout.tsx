@@ -11,6 +11,7 @@ import { DemoModeBanner } from "./DemoModeBanner";
 import { PendingApprovalsBadge } from "./PendingApprovalsBadge";
 import { ProfileMenu } from "./ProfileMenu";
 import { CommandPalette } from "./CommandPalette";
+import { OpenPaletteChip } from "./OpenPaletteChip";
 
 export default async function DashboardLayout({
   children,
@@ -34,11 +35,7 @@ export default async function DashboardLayout({
               <CpuChipIcon className="h-7 w-7 text-violet-500" />
               <span className="font-bold text-white tracking-[-0.04em]">Axiom</span>
             </Link>
-            <span className="hidden md:inline-flex items-center gap-1 text-[10px] font-mono text-zinc-600">
-              <kbd className="border border-white/[0.08] rounded px-1 py-px">⌘</kbd>
-              <kbd className="border border-white/[0.08] rounded px-1 py-px">K</kbd>
-              <span className="ml-1">jump anywhere</span>
-            </span>
+            <OpenPaletteChip />
           </div>
           <div className="flex items-center gap-3">
             <PendingApprovalsBadge />
