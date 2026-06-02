@@ -488,10 +488,21 @@ function EngineerCard({ engineer, attempts30d, pending, disabled, agiStatus }: {
             </span>
           )}
         </div>
-        <Link href={`/dashboard/workforce/${engineer.id}`} className="text-[11px] text-zinc-300 hover:text-white inline-flex items-center gap-1">
-          Open
-          <ArrowRightIcon className="h-3 w-3" />
-        </Link>
+        <div className="flex items-center gap-2">
+          <form action={`/api/workforce/${engineer.id}/run-agi`} method="POST">
+            <button
+              type="submit"
+              className="text-[10.5px] font-mono uppercase tracking-wider px-2 py-0.5 rounded-full border border-violet-500/25 text-violet-200 hover:text-white hover:border-violet-500/55 hover:bg-violet-500/10 transition-colors"
+              title={agiStatus === "stale" ? "Re-run AGI to refresh the stale rationale" : agiStatus === null ? "Run the AGI flow to mint this engineer's specialty rationale" : "Re-run AGI for this engineer"}
+            >
+              {agiStatus === null ? "run AGI" : "↻"}
+            </button>
+          </form>
+          <Link href={`/dashboard/workforce/${engineer.id}`} className="text-[11px] text-zinc-300 hover:text-white inline-flex items-center gap-1">
+            Open
+            <ArrowRightIcon className="h-3 w-3" />
+          </Link>
+        </div>
       </div>
     </article>
   );
