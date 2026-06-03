@@ -86,6 +86,30 @@ export const ENGINEER_DOMAIN_IMPLEMENTATIONS: ReadonlyArray<DomainImplementation
     reportHomeRoute: "/dashboard/workforce/auditor_engineer",
     reportLabel: "Audit observations",
   },
+  {
+    engineerId: "test_coverage_engineer",
+    reportTargetKind: "engineer_test_coverage_proposal",
+    runDomainEndpoint: "/dashboard/workforce/test_coverage_engineer/proposals",
+    reportHomeRoute: "/dashboard/workforce/test_coverage_engineer/proposals",
+    reportLabel: "Test proposals",
+    requiresInput: true,
+  },
+  {
+    engineerId: "refactor_engineer",
+    reportTargetKind: "engineer_refactor_plan",
+    runDomainEndpoint: "/dashboard/workforce/refactor_engineer/plans",
+    reportHomeRoute: "/dashboard/workforce/refactor_engineer/plans",
+    reportLabel: "Refactor plans",
+    requiresInput: true,
+  },
+  {
+    engineerId: "release_notes_engineer",
+    reportTargetKind: "engineer_release_notes_draft",
+    runDomainEndpoint: "/dashboard/workforce/release_notes_engineer/drafts",
+    reportHomeRoute: "/dashboard/workforce/release_notes_engineer/drafts",
+    reportLabel: "Release notes drafts",
+    requiresInput: true,
+  },
 ];
 
 export function findDomainImplementation(engineerId: string): DomainImplementation | undefined {

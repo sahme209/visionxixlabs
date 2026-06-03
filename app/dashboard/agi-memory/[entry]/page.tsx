@@ -39,6 +39,9 @@ const KIND_LABEL: Record<string, string> = {
   engineer_finops_recommendations:      "FinOps recommendations",
   engineer_anomaly_notices:             "Anomaly notices",
   engineer_auditor_observations:        "Audit observations",
+  engineer_test_coverage_proposal:      "Test coverage · proposal",
+  engineer_refactor_plan:               "Refactor · plan",
+  engineer_release_notes_draft:         "Release notes · draft",
 };
 
 const OUTCOME_TONE: Record<string, string> = {
@@ -156,6 +159,12 @@ export default async function AgiMemoryEntryPage({
     sourceHref = `/dashboard/workforce/anomaly_engineer`;
   } else if (entry.targetKind === "engineer_auditor_observations") {
     sourceHref = `/dashboard/workforce/auditor_engineer`;
+  } else if (entry.targetKind === "engineer_test_coverage_proposal") {
+    sourceHref = `/dashboard/workforce/test_coverage_engineer/proposals`;
+  } else if (entry.targetKind === "engineer_refactor_plan") {
+    sourceHref = `/dashboard/workforce/refactor_engineer/plans`;
+  } else if (entry.targetKind === "engineer_release_notes_draft") {
+    sourceHref = `/dashboard/workforce/release_notes_engineer/drafts`;
   } else {
     sourceHref = SOURCE_HREF[entry.targetKind];
   }
