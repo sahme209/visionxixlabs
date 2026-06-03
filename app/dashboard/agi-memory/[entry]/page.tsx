@@ -46,6 +46,7 @@ const KIND_LABEL: Record<string, string> = {
   engineer_verifier_verdicts:           "Verifier verdicts",
   engineer_pipeline_repair_playbook:    "Pipeline repair playbook",
   engineer_schema_proposal:             "Schema proposal",
+  engineer_memory_consolidation:        "Memory consolidation",
 };
 
 const OUTCOME_TONE: Record<string, string> = {
@@ -177,6 +178,8 @@ export default async function AgiMemoryEntryPage({
     sourceHref = `/dashboard/workforce/pipeline_repair_engineer`;
   } else if (entry.targetKind === "engineer_schema_proposal") {
     sourceHref = `/dashboard/workforce/schema_engineer/proposals`;
+  } else if (entry.targetKind === "engineer_memory_consolidation") {
+    sourceHref = `/dashboard/workforce/memory_consolidator_engineer`;
   } else {
     sourceHref = SOURCE_HREF[entry.targetKind];
   }

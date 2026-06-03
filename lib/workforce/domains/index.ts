@@ -139,6 +139,13 @@ export const ENGINEER_DOMAIN_IMPLEMENTATIONS: ReadonlyArray<DomainImplementation
     reportLabel: "Schema proposals",
     requiresInput: true,
   },
+  {
+    engineerId: "memory_consolidator_engineer",
+    reportTargetKind: "engineer_memory_consolidation",
+    runDomainEndpoint: "/api/workforce/memory_consolidator_engineer/run-domain",
+    reportHomeRoute: "/dashboard/workforce/memory_consolidator_engineer",
+    reportLabel: "Memory consolidation",
+  },
 ];
 
 export function findDomainImplementation(engineerId: string): DomainImplementation | undefined {
