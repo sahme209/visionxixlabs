@@ -124,6 +124,13 @@ export const ENGINEER_DOMAIN_IMPLEMENTATIONS: ReadonlyArray<DomainImplementation
     reportHomeRoute: "/dashboard/workforce/verifier_engineer",
     reportLabel: "Verifier verdicts",
   },
+  {
+    engineerId: "pipeline_repair_engineer",
+    reportTargetKind: "engineer_pipeline_repair_playbook",
+    runDomainEndpoint: "/api/workforce/pipeline_repair_engineer/run-domain",
+    reportHomeRoute: "/dashboard/workforce/pipeline_repair_engineer",
+    reportLabel: "Pipeline repair playbook",
+  },
 ];
 
 export function findDomainImplementation(engineerId: string): DomainImplementation | undefined {
