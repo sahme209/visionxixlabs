@@ -153,6 +153,13 @@ export const ENGINEER_DOMAIN_IMPLEMENTATIONS: ReadonlyArray<DomainImplementation
     reportHomeRoute: "/dashboard/workforce/meta_reasoner_engineer",
     reportLabel: "Meta-reasoner resolutions",
   },
+  {
+    engineerId: "council_engineer",
+    reportTargetKind: "engineer_council_verdicts",
+    runDomainEndpoint: "/api/workforce/council_engineer/run-domain",
+    reportHomeRoute: "/dashboard/workforce/council_engineer",
+    reportLabel: "Council verdicts",
+  },
 ];
 
 export function findDomainImplementation(engineerId: string): DomainImplementation | undefined {
