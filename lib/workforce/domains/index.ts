@@ -176,6 +176,13 @@ export const ENGINEER_DOMAIN_IMPLEMENTATIONS: ReadonlyArray<DomainImplementation
     reportLabel: "Parsed workflows",
     requiresInput: true,
   },
+  {
+    engineerId: "improvement_engineer",
+    reportTargetKind: "engineer_improvement_proposals",
+    runDomainEndpoint: "/api/workforce/improvement_engineer/run-domain",
+    reportHomeRoute: "/dashboard/workforce/improvement_engineer",
+    reportLabel: "Improvement proposals",
+  },
 ];
 
 export function findDomainImplementation(engineerId: string): DomainImplementation | undefined {
