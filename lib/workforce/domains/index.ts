@@ -160,6 +160,14 @@ export const ENGINEER_DOMAIN_IMPLEMENTATIONS: ReadonlyArray<DomainImplementation
     reportHomeRoute: "/dashboard/workforce/council_engineer",
     reportLabel: "Council verdicts",
   },
+  {
+    engineerId: "migration_engineer",
+    reportTargetKind: "engineer_migration_runbook",
+    runDomainEndpoint: "/dashboard/workforce/migration_engineer/runbooks",
+    reportHomeRoute: "/dashboard/workforce/migration_engineer/runbooks",
+    reportLabel: "Migration runbooks",
+    requiresInput: true,
+  },
 ];
 
 export function findDomainImplementation(engineerId: string): DomainImplementation | undefined {

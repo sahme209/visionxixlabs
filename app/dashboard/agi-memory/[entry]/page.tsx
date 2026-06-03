@@ -49,6 +49,7 @@ const KIND_LABEL: Record<string, string> = {
   engineer_memory_consolidation:        "Memory consolidation",
   engineer_meta_reasoner_resolution:    "Meta-reasoner resolutions",
   engineer_council_verdicts:            "Council verdicts",
+  engineer_migration_runbook:           "Migration runbook",
 };
 
 const OUTCOME_TONE: Record<string, string> = {
@@ -186,6 +187,8 @@ export default async function AgiMemoryEntryPage({
     sourceHref = `/dashboard/workforce/meta_reasoner_engineer`;
   } else if (entry.targetKind === "engineer_council_verdicts") {
     sourceHref = `/dashboard/workforce/council_engineer`;
+  } else if (entry.targetKind === "engineer_migration_runbook") {
+    sourceHref = `/dashboard/workforce/migration_engineer/runbooks`;
   } else {
     sourceHref = SOURCE_HREF[entry.targetKind];
   }
