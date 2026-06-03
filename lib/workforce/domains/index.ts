@@ -183,6 +183,14 @@ export const ENGINEER_DOMAIN_IMPLEMENTATIONS: ReadonlyArray<DomainImplementation
     reportHomeRoute: "/dashboard/workforce/improvement_engineer",
     reportLabel: "Improvement proposals",
   },
+  {
+    engineerId: "reasoner_engineer",
+    reportTargetKind: "engineer_reasoner_hypothesis",
+    runDomainEndpoint: "/dashboard/workforce/reasoner_engineer/hypotheses",
+    reportHomeRoute: "/dashboard/workforce/reasoner_engineer/hypotheses",
+    reportLabel: "Reasoner hypotheses",
+    requiresInput: true,
+  },
 ];
 
 export function findDomainImplementation(engineerId: string): DomainImplementation | undefined {

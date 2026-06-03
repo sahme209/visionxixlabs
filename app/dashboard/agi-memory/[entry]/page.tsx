@@ -52,6 +52,7 @@ const KIND_LABEL: Record<string, string> = {
   engineer_migration_runbook:           "Migration runbook",
   engineer_intent_workflow:             "Parsed intent workflow",
   engineer_improvement_proposals:       "Improvement proposals",
+  engineer_reasoner_hypothesis:         "Reasoner hypothesis",
 };
 
 const OUTCOME_TONE: Record<string, string> = {
@@ -195,6 +196,8 @@ export default async function AgiMemoryEntryPage({
     sourceHref = `/dashboard/workforce/intent_parser_engineer/workflows`;
   } else if (entry.targetKind === "engineer_improvement_proposals") {
     sourceHref = `/dashboard/workforce/improvement_engineer`;
+  } else if (entry.targetKind === "engineer_reasoner_hypothesis") {
+    sourceHref = `/dashboard/workforce/reasoner_engineer/hypotheses`;
   } else {
     sourceHref = SOURCE_HREF[entry.targetKind];
   }
