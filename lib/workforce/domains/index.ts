@@ -191,6 +191,14 @@ export const ENGINEER_DOMAIN_IMPLEMENTATIONS: ReadonlyArray<DomainImplementation
     reportLabel: "Reasoner hypotheses",
     requiresInput: true,
   },
+  {
+    engineerId: "simulator_engineer",
+    reportTargetKind: "engineer_simulator_verdict",
+    runDomainEndpoint: "/dashboard/workforce/simulator_engineer/simulations",
+    reportHomeRoute: "/dashboard/workforce/simulator_engineer/simulations",
+    reportLabel: "Simulator verdicts",
+    requiresInput: true,
+  },
 ];
 
 export function findDomainImplementation(engineerId: string): DomainImplementation | undefined {
