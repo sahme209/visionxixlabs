@@ -43,6 +43,7 @@ const KIND_LABEL: Record<string, string> = {
   engineer_refactor_plan:               "Refactor · plan",
   engineer_release_notes_draft:         "Release notes · draft",
   engineer_alert_noise_classification:  "Alert noise classification",
+  engineer_verifier_verdicts:           "Verifier verdicts",
 };
 
 const OUTCOME_TONE: Record<string, string> = {
@@ -168,6 +169,8 @@ export default async function AgiMemoryEntryPage({
     sourceHref = `/dashboard/workforce/release_notes_engineer/drafts`;
   } else if (entry.targetKind === "engineer_alert_noise_classification") {
     sourceHref = `/dashboard/workforce/alert_noise_engineer`;
+  } else if (entry.targetKind === "engineer_verifier_verdicts") {
+    sourceHref = `/dashboard/workforce/verifier_engineer`;
   } else {
     sourceHref = SOURCE_HREF[entry.targetKind];
   }

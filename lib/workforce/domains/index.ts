@@ -117,6 +117,13 @@ export const ENGINEER_DOMAIN_IMPLEMENTATIONS: ReadonlyArray<DomainImplementation
     reportHomeRoute: "/dashboard/workforce/alert_noise_engineer",
     reportLabel: "Alert noise classification",
   },
+  {
+    engineerId: "verifier_engineer",
+    reportTargetKind: "engineer_verifier_verdicts",
+    runDomainEndpoint: "/api/workforce/verifier_engineer/run-domain",
+    reportHomeRoute: "/dashboard/workforce/verifier_engineer",
+    reportLabel: "Verifier verdicts",
+  },
 ];
 
 export function findDomainImplementation(engineerId: string): DomainImplementation | undefined {
