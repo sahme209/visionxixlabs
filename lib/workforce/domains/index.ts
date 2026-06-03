@@ -65,6 +65,27 @@ export const ENGINEER_DOMAIN_IMPLEMENTATIONS: ReadonlyArray<DomainImplementation
     reportHomeRoute: "/dashboard/workforce/secrets_hygiene_engineer",
     reportLabel: "Secrets hygiene scan",
   },
+  {
+    engineerId: "finops_engineer",
+    reportTargetKind: "engineer_finops_recommendations",
+    runDomainEndpoint: "/api/workforce/finops_engineer/run-domain",
+    reportHomeRoute: "/dashboard/workforce/finops_engineer",
+    reportLabel: "FinOps recommendations",
+  },
+  {
+    engineerId: "anomaly_engineer",
+    reportTargetKind: "engineer_anomaly_notices",
+    runDomainEndpoint: "/api/workforce/anomaly_engineer/run-domain",
+    reportHomeRoute: "/dashboard/workforce/anomaly_engineer",
+    reportLabel: "Anomaly notices",
+  },
+  {
+    engineerId: "auditor_engineer",
+    reportTargetKind: "engineer_auditor_observations",
+    runDomainEndpoint: "/api/workforce/auditor_engineer/run-domain",
+    reportHomeRoute: "/dashboard/workforce/auditor_engineer",
+    reportLabel: "Audit observations",
+  },
 ];
 
 export function findDomainImplementation(engineerId: string): DomainImplementation | undefined {
