@@ -199,6 +199,14 @@ export const ENGINEER_DOMAIN_IMPLEMENTATIONS: ReadonlyArray<DomainImplementation
     reportLabel: "Simulator verdicts",
     requiresInput: true,
   },
+  {
+    engineerId: "workflow_orchestrator_engineer",
+    reportTargetKind: "engineer_workflow_plan",
+    runDomainEndpoint: "/dashboard/workforce/workflow_orchestrator_engineer/plans",
+    reportHomeRoute: "/dashboard/workforce/workflow_orchestrator_engineer/plans",
+    reportLabel: "Workflow plans",
+    requiresInput: true,
+  },
 ];
 
 export function findDomainImplementation(engineerId: string): DomainImplementation | undefined {
