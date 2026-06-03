@@ -168,6 +168,14 @@ export const ENGINEER_DOMAIN_IMPLEMENTATIONS: ReadonlyArray<DomainImplementation
     reportLabel: "Migration runbooks",
     requiresInput: true,
   },
+  {
+    engineerId: "intent_parser_engineer",
+    reportTargetKind: "engineer_intent_workflow",
+    runDomainEndpoint: "/dashboard/workforce/intent_parser_engineer/workflows",
+    reportHomeRoute: "/dashboard/workforce/intent_parser_engineer/workflows",
+    reportLabel: "Parsed workflows",
+    requiresInput: true,
+  },
 ];
 
 export function findDomainImplementation(engineerId: string): DomainImplementation | undefined {
