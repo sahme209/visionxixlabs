@@ -146,6 +146,13 @@ export const ENGINEER_DOMAIN_IMPLEMENTATIONS: ReadonlyArray<DomainImplementation
     reportHomeRoute: "/dashboard/workforce/memory_consolidator_engineer",
     reportLabel: "Memory consolidation",
   },
+  {
+    engineerId: "meta_reasoner_engineer",
+    reportTargetKind: "engineer_meta_reasoner_resolution",
+    runDomainEndpoint: "/api/workforce/meta_reasoner_engineer/run-domain",
+    reportHomeRoute: "/dashboard/workforce/meta_reasoner_engineer",
+    reportLabel: "Meta-reasoner resolutions",
+  },
 ];
 
 export function findDomainImplementation(engineerId: string): DomainImplementation | undefined {
