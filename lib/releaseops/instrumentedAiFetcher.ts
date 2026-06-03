@@ -19,6 +19,7 @@
 import "server-only";
 import { prisma } from "@/lib/db";
 import { getAIProviderManager } from "@/lib/ai/AIProviderManager";
+import { callProvider, type PreferredProvider } from "@/lib/ai/directProviderCall";
 import type { RationaleAiFetcher } from "./aiRationaleEnricherEngine";
 import {
   lookupCircuitState,
@@ -40,6 +41,20 @@ export interface InstrumentedFetcherOptions {
   generateText?: (prompt: string, opts: { maxTokens: number; temperature: number }) => Promise<unknown>;
   /** Wall-clock provider for tests. */
   now?: () => Date;
+  /** Phase 593: per-engineer provider routing. When set, calls go
+   *  directly to the named provider (anthropic | openai) via
+   *  lib/ai/directProviderCall, bypassing the AIProviderManager
+   *  fallback chain. Lets cheap-volume engineers route to
+   *  gpt-4o-mini for cost control without surprise fail-over to a
+   *  more expensive provider. The recorded AiCallLog.model reflects
+   *  the actually-resolved model so Phase 580 attribution prices it. */
+  preferredProvider?: PreferredProvider;
+  /** Override sampling max_tokens. Defaults to 500 to match the
+   *  legacy path; domain engineers that need longer structured
+   *  output (specs, refactor plans) pass 2000+. */
+  maxTokens?: number;
+  /** Override sampling temperature. Defaults to 0.2 (deterministic). */
+  temperature?: number;
 }
 
 /**
@@ -78,8 +93,17 @@ export function makeInstrumentedFetcher(opts: InstrumentedFetcherOptions): Ratio
     // Provider call with timeout race.
     let raw: { text: string; model: string; usage: { promptTokens?: number; completionTokens?: number; totalTokens?: number } | null };
     try {
-      const generate = opts.generateText ?? ((p, o) => getAIProviderManager().generateText(p, o));
-      const result = await raceWithTimeout(generate(prompt, { maxTokens: 500, temperature: 0.2 }), timeoutMs);
+      const maxTokens = opts.maxTokens ?? 500;
+      const temperature = opts.temperature ?? 0.2;
+      // Phase 593: when preferredProvider is set, bypass the manager
+      // fallback chain and call the named provider directly. The
+      // AiCallLog.model column records the resolved model so the
+      // cost attribution path prices it correctly.
+      const generate = opts.generateText
+        ?? (opts.preferredProvider
+            ? (p: string, o: { maxTokens: number; temperature: number }) => callProvider(opts.preferredProvider!, p, o)
+            : (p: string, o: { maxTokens: number; temperature: number }) => getAIProviderManager().generateText(p, o));
+      const result = await raceWithTimeout(generate(prompt, { maxTokens, temperature }), timeoutMs);
       raw = result as typeof raw;
     } catch (err) {
       const latencyMs = now().getTime() - startMs;

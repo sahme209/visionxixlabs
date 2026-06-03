@@ -110,6 +110,13 @@ export const ENGINEER_DOMAIN_IMPLEMENTATIONS: ReadonlyArray<DomainImplementation
     reportLabel: "Release notes drafts",
     requiresInput: true,
   },
+  {
+    engineerId: "alert_noise_engineer",
+    reportTargetKind: "engineer_alert_noise_classification",
+    runDomainEndpoint: "/api/workforce/alert_noise_engineer/run-domain",
+    reportHomeRoute: "/dashboard/workforce/alert_noise_engineer",
+    reportLabel: "Alert noise classification",
+  },
 ];
 
 export function findDomainImplementation(engineerId: string): DomainImplementation | undefined {

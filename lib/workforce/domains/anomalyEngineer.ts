@@ -165,6 +165,11 @@ export async function runAnomalyEngineer(organizationId: string): Promise<Anomal
       engineName: "engineer_domain:anomaly_engineer",
       organizationId,
       timeoutMs: 30_000,
+      // Phase 593: route this engineer to OpenAI when available.
+      // Anomaly classification + short-text generation is the sweet
+      // spot for gpt-4o-mini's cost/quality curve. Operator can
+      // unset OPENAI_API_KEY to force Anthropic instead.
+      preferredProvider: process.env.OPENAI_API_KEY ? "openai" : "anthropic",
     });
     const prompt = `${buildSystemPrompt()}\n\n---\n\n${buildUserPrompt(candidates)}`;
     const result = await fetcher(prompt);
