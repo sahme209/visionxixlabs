@@ -111,9 +111,26 @@ export async function GET(req: NextRequest) {
     }).catch(() => [] as Array<{ targetKind: string; updatedAt: Date }>);
     const updatedAtByKind = new Map(existing.map((e) => [e.targetKind, e.updatedAt]));
 
-    // Pick K oldest-or-missing, then re-sort the picks by
-    // sweepPriority so chains land in the right order this tick.
+    // Phase 618: respect workspace-level engineer opt-outs. An
+    // engineer with AgentEngineerRecord.isEnabled = false is skipped
+    // entirely by the sweep — operators can quiet a noisy engineer
+    // without losing the rest of the workforce.
+    const disabledSet = new Set<string>();
+    try {
+      const disabledRows = await prisma.agentEngineerRecord.findMany({
+        where: { organizationId: orgId, isEnabled: false },
+        select: { engineerId: true },
+      });
+      for (const r of disabledRows) disabledSet.add(r.engineerId);
+    } catch {
+      // migration-pending or transient — fall through with empty set.
+    }
+
+    // Pick K oldest-or-missing among engineers that aren't disabled,
+    // then re-sort the picks by sweepPriority so chains land in the
+    // right order this tick.
     const ranked = sweepable
+      .filter((s) => !disabledSet.has(s.runner.engineerId))
       .map((s) => ({ ...s, updatedAt: updatedAtByKind.get(s.reportTargetKind) ?? null }))
       .sort((a, b) => {
         if (a.updatedAt === null && b.updatedAt === null) return 0;

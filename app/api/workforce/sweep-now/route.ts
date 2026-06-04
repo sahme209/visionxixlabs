@@ -15,6 +15,7 @@
 
 import { NextResponse } from "next/server";
 import { requireContext } from "@/lib/auth/currentContext";
+import { prisma } from "@/lib/db";
 import { ENGINEER_DOMAIN_IMPLEMENTATIONS } from "@/lib/workforce/domains";
 import { DOMAIN_RUNNERS } from "@/lib/workforce/domains/runners";
 import { record as auditRecord } from "@/lib/audit/secureAudit";
@@ -33,10 +34,24 @@ export async function POST(req: Request) {
   const correlationId = `sweep_now_${Date.now().toString(36)}` as CorrelationId;
 
   const startedAt = Date.now();
+
+  // Phase 618: respect workspace-level engineer opt-outs. An engineer
+  // with AgentEngineerRecord.isEnabled = false is skipped entirely.
+  const disabledSet = new Set<string>();
+  try {
+    const rows = await prisma.agentEngineerRecord.findMany({
+      where: { organizationId: org, isEnabled: false },
+      select: { engineerId: true },
+    });
+    for (const r of rows) disabledSet.add(r.engineerId);
+  } catch {
+    // migration-pending — fall through with empty set, no skips.
+  }
+
   const ranked = DOMAIN_RUNNERS
     .filter((runner) => {
       const reg = ENGINEER_DOMAIN_IMPLEMENTATIONS.find((d) => d.engineerId === runner.engineerId);
-      return reg && !reg.requiresInput;
+      return reg && !reg.requiresInput && !disabledSet.has(runner.engineerId);
     })
     .slice()
     .sort((a, b) => a.sweepPriority - b.sweepPriority);
@@ -63,6 +78,7 @@ export async function POST(req: Request) {
     detail: {
       action: "workforce.sweep_now",
       picked: stats.picked,
+      skippedDisabled: disabledSet.size,
       ai_generated: stats.ai_generated,
       fallback_rules: stats.fallback_rules,
       error: stats.error,
