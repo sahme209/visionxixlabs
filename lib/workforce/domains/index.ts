@@ -215,6 +215,14 @@ export const ENGINEER_DOMAIN_IMPLEMENTATIONS: ReadonlyArray<DomainImplementation
     reportLabel: "Operator copilot replies",
     requiresInput: true,
   },
+  {
+    engineerId: "approver_engineer",
+    reportTargetKind: "engineer_approval_packet",
+    runDomainEndpoint: "/dashboard/workforce/approver_engineer/packets",
+    reportHomeRoute: "/dashboard/workforce/approver_engineer/packets",
+    reportLabel: "Approval packets",
+    requiresInput: true,
+  },
 ];
 
 export function findDomainImplementation(engineerId: string): DomainImplementation | undefined {
