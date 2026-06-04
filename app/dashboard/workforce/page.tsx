@@ -224,6 +224,15 @@ export default async function WorkforcePage() {
               run AGI for all
             </button>
           </form>
+          <form action="/api/workforce/sweep-now" method="POST">
+            <button
+              type="submit"
+              className="text-[11px] font-mono uppercase tracking-wider px-3 py-1 rounded-full border border-emerald-500/30 text-emerald-200 hover:text-white hover:border-emerald-500/60 hover:bg-emerald-500/10 transition-colors"
+              title="Run every no-input domain engineer for this workspace now (mirrors the hourly cron sweep)"
+            >
+              sweep domains now
+            </button>
+          </form>
           <a
             href="/api/workforce/attempts.csv"
             download
