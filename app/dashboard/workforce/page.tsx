@@ -241,6 +241,9 @@ export default async function WorkforcePage() {
           >
             download .csv
           </a>
+          <Link href="/dashboard/workforce/cognition" className="text-[11px] font-mono text-violet-300 hover:text-white transition-colors">
+            cognition →
+          </Link>
           <Link href="/dashboard/workforce/timeline" className="text-[11px] font-mono text-zinc-500 hover:text-white transition-colors">
             timeline →
           </Link>
