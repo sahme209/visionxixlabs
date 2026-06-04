@@ -244,6 +244,9 @@ export default async function WorkforcePage() {
           <Link href="/dashboard/workforce/timeline" className="text-[11px] font-mono text-zinc-500 hover:text-white transition-colors">
             timeline →
           </Link>
+          <Link href="/dashboard/workforce/safety-preflight" className="text-[11px] font-mono text-zinc-500 hover:text-white transition-colors">
+            pre-flight →
+          </Link>
           <Link href="/dashboard/workforce/health" className="text-[11px] font-mono text-zinc-500 hover:text-white transition-colors">
             health →
           </Link>

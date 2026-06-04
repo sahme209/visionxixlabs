@@ -1,17 +1,64 @@
-/** /dashboard/workforce/safety-preflight — Phase 613. */
+/** /dashboard/workforce/safety-preflight — Phase 613 · recent verdicts added Phase 616. */
 
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { ArrowLeftIcon, ShieldCheckIcon } from "@heroicons/react/24/outline";
 import { currentContext } from "@/lib/auth/currentContext";
+import { prisma } from "@/lib/db";
 
 export const dynamic = "force-dynamic";
+
+const DECISION_TONE: Record<string, string> = {
+  approve: "text-emerald-300",
+  reject: "text-rose-300",
+  revise: "text-amber-300",
+  escalate: "text-sky-300",
+};
+
+interface PreflightRow {
+  preflightSlug: string;
+  title: string;
+  narrative: string;
+  decision: string | null;
+  updatedAt: Date;
+}
+
+async function recentPreflights(orgId: string): Promise<PreflightRow[]> {
+  // Pre-flight composes three engineers under slugs ending in
+  // "__approver", "__boundary", "__policy". Land on the approver row
+  // since it carries the recommended decision and the narrative.
+  const rows = await prisma.aiRationaleEnrichment.findMany({
+    where: {
+      organizationId: orgId,
+      targetKind: "engineer_approval_packet",
+      targetId: { endsWith: "__approver" },
+    },
+    orderBy: { updatedAt: "desc" },
+    take: 30,
+    select: { targetId: true, narrative: true, updatedAt: true, nextActionsJson: true },
+  }).catch(() => [] as Array<{ targetId: string; narrative: string; updatedAt: Date; nextActionsJson: unknown }>);
+
+  return rows.map((r) => {
+    let title = r.targetId.replace(/__approver$/, "");
+    let decision: string | null = null;
+    if (Array.isArray(r.nextActionsJson)) {
+      for (const e of r.nextActionsJson as unknown[]) {
+        if (typeof e !== "string") continue;
+        if (e.startsWith("title|")) title = e.slice("title|".length);
+        else if (e.startsWith("decision|")) decision = e.slice("decision|".length);
+      }
+    }
+    return { preflightSlug: r.targetId, title, narrative: r.narrative, decision, updatedAt: r.updatedAt };
+  });
+}
 
 export default async function SafetyPreflightPage() {
   const ctx = await currentContext();
   if (!ctx.isAuthenticated || !ctx.organizationId) {
     redirect("/auth/signin?callbackUrl=/dashboard/workforce/safety-preflight");
   }
+
+  const preflights = await recentPreflights(String(ctx.organizationId));
 
   return (
     <div className="max-w-3xl mx-auto px-1 -mt-2">
@@ -68,7 +115,7 @@ export default async function SafetyPreflightPage() {
         </form>
       </section>
 
-      <section className="rounded-2xl border border-white/[0.06] bg-white/[0.015] p-5">
+      <section className="rounded-2xl border border-white/[0.06] bg-white/[0.015] p-5 mb-8">
         <p className="text-[10px] font-mono uppercase tracking-[0.18em] text-zinc-500 mb-3">composed verdicts</p>
         <ul className="space-y-2 text-[13px] text-zinc-300 leading-relaxed">
           <li><span className="text-emerald-300 font-mono">allow</span> — all three engineers cleared the action. Safe to auto-advance without further human review.</li>
@@ -83,6 +130,34 @@ export default async function SafetyPreflightPage() {
           so the composed verdict is fully traceable in AGI memory.
         </p>
       </section>
+
+      {preflights.length === 0 ? (
+        <div className="rounded-2xl border border-white/[0.06] bg-white/[0.015] px-6 py-12 text-center">
+          <p className="text-[13px] text-zinc-400">No pre-flights run yet.</p>
+          <p className="text-[11px] text-zinc-500 mt-1">Submit the form above to run the first one.</p>
+        </div>
+      ) : (
+        <section>
+          <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-zinc-500 mb-3">recent pre-flights · {preflights.length}</p>
+          <ul className="rounded-2xl border border-white/[0.06] bg-white/[0.015] divide-y divide-white/[0.04] overflow-hidden">
+            {preflights.map((p) => (
+              <li key={p.preflightSlug}>
+                <Link
+                  href={`/dashboard/agi-memory/${encodeURIComponent(`engineer_approval_packet:${p.preflightSlug}`)}`}
+                  className="block px-5 py-3.5 hover:bg-white/[0.015] transition-colors"
+                >
+                  <div className="flex items-center justify-between gap-3 mb-1 flex-wrap text-[10px] font-mono uppercase tracking-wider">
+                    {p.decision && (<span className={DECISION_TONE[p.decision] ?? "text-zinc-400"}>{p.decision}</span>)}
+                    <span className="text-zinc-500 ml-auto">{p.updatedAt.toISOString().slice(0, 19).replace("T", " ")}</span>
+                  </div>
+                  <p className="text-[14px] font-medium text-white">{p.title}</p>
+                  <p className="text-[12.5px] text-zinc-400 leading-relaxed mt-1 line-clamp-2">{p.narrative}</p>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
     </div>
   );
 }
