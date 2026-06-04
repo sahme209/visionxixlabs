@@ -146,6 +146,13 @@ export default async function WorkforceTimelinePage() {
         </p>
       </header>
 
+      {/* Sweep health: infer "is the cron actually running?" from
+          the freshest updatedAt across any domain engineer row. The
+          hourly cron lands at :30, so >120m since the last row is
+          a soft warning, >180m is a hard warning. */}
+      <SweepHealth lastUpdatedAt={decoded[0]?.updatedAt ?? null} />
+
+
       {/* 24h KPI strip */}
       <section className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">
         <Stat label="Reports · 24h" value={last24Stats.total} tone="text-white" />
@@ -216,5 +223,49 @@ function Stat({ label, value, tone }: { label: string; value: number; tone: stri
       <p className="text-[10px] font-mono uppercase tracking-[0.18em] text-zinc-500 mb-1">{label}</p>
       <p className={`text-[22px] font-semibold tracking-tight ${tone}`}>{value}</p>
     </div>
+  );
+}
+
+function SweepHealth({ lastUpdatedAt }: { lastUpdatedAt: Date | null }) {
+  if (lastUpdatedAt === null) {
+    return (
+      <section className="mb-8 rounded-2xl border border-zinc-500/20 bg-zinc-500/[0.04] p-5">
+        <p className="text-[10px] font-mono uppercase tracking-[0.18em] text-zinc-500 mb-1">sweep health</p>
+        <p className="text-[13.5px] text-zinc-200 leading-relaxed">
+          No domain engineer activity recorded yet. Either the cron hasn't reached your workspace
+          or no engineer has triggering signal to act on. Use <span className="text-emerald-300">sweep domains now</span> to force a first run.
+        </p>
+      </section>
+    );
+  }
+  const ageMs = Date.now() - lastUpdatedAt.getTime();
+  const ageMin = Math.round(ageMs / 60_000);
+  const minutesFmt = ageMin < 60 ? `${ageMin}m` : ageMin < 24 * 60 ? `${Math.round(ageMin / 60)}h` : `${Math.round(ageMin / (24 * 60))}d`;
+  let tone = "border-emerald-500/20 bg-emerald-500/[0.04]";
+  let badge = "text-emerald-300";
+  let label = "healthy";
+  let note = "Last sweep landed within the expected hourly window.";
+  if (ageMs > 3 * 60 * 60 * 1000) {
+    tone = "border-rose-500/30 bg-rose-500/[0.06]";
+    badge = "text-rose-300";
+    label = "degraded";
+    note = "No domain activity in over 3 hours — the hourly cron may be sick or the workspace has no triggering signal. Try the manual sweep button.";
+  } else if (ageMs > 2 * 60 * 60 * 1000) {
+    tone = "border-amber-500/30 bg-amber-500/[0.06]";
+    badge = "text-amber-300";
+    label = "stale";
+    note = "Last sweep landed >2 hours ago — usually fine if the workspace is quiet, but worth a manual sweep if you expect activity.";
+  }
+  return (
+    <section className={`mb-8 rounded-2xl border p-5 ${tone}`}>
+      <div className="flex items-center justify-between gap-3 mb-2 flex-wrap text-[10px] font-mono uppercase tracking-wider">
+        <span className="text-zinc-500">sweep health</span>
+        <span className={badge}>{label}</span>
+      </div>
+      <p className="text-[14px] text-zinc-100 leading-relaxed">
+        Last domain engineer report landed <span className="font-semibold">{minutesFmt} ago</span> (at {lastUpdatedAt.toISOString().slice(0, 19).replace("T", " ")}).
+      </p>
+      <p className="text-[12px] text-zinc-400 leading-snug mt-1">{note}</p>
+    </section>
   );
 }
