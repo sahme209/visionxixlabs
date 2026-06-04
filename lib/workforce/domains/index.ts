@@ -207,6 +207,14 @@ export const ENGINEER_DOMAIN_IMPLEMENTATIONS: ReadonlyArray<DomainImplementation
     reportLabel: "Workflow plans",
     requiresInput: true,
   },
+  {
+    engineerId: "operator_assistant_engineer",
+    reportTargetKind: "engineer_operator_copilot_reply",
+    runDomainEndpoint: "/dashboard/workforce/operator_assistant_engineer/replies",
+    reportHomeRoute: "/dashboard/workforce/operator_assistant_engineer/replies",
+    reportLabel: "Operator copilot replies",
+    requiresInput: true,
+  },
 ];
 
 export function findDomainImplementation(engineerId: string): DomainImplementation | undefined {

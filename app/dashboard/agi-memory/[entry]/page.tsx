@@ -55,6 +55,7 @@ const KIND_LABEL: Record<string, string> = {
   engineer_reasoner_hypothesis:         "Reasoner hypothesis",
   engineer_simulator_verdict:           "Simulator verdict",
   engineer_workflow_plan:               "Workflow plan",
+  engineer_operator_copilot_reply:      "Operator copilot reply",
 };
 
 const OUTCOME_TONE: Record<string, string> = {
@@ -204,6 +205,8 @@ export default async function AgiMemoryEntryPage({
     sourceHref = `/dashboard/workforce/simulator_engineer/simulations`;
   } else if (entry.targetKind === "engineer_workflow_plan") {
     sourceHref = `/dashboard/workforce/workflow_orchestrator_engineer/plans`;
+  } else if (entry.targetKind === "engineer_operator_copilot_reply") {
+    sourceHref = `/dashboard/workforce/operator_assistant_engineer/replies`;
   } else {
     sourceHref = SOURCE_HREF[entry.targetKind];
   }
