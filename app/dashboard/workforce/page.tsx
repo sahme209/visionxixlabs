@@ -159,6 +159,35 @@ export default async function WorkforcePage() {
     }
   }
 
+  // Phase 621: autonomy KPI — fraction of last-7d engineer outputs
+  // that landed as ai_generated (vs fallback_rules / error). Honest
+  // measure of "how much of the workforce output is actually
+  // AI-produced right now". Computed only over domain-engineer rows
+  // so specialty rationales don't dominate.
+  let autonomyAiCount = 0;
+  let autonomyTotalCount = 0;
+  const since7d = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+  if (ctx.isAuthenticated && ctx.organizationId) {
+    try {
+      const rows = await prisma.aiRationaleEnrichment.groupBy({
+        by: ["outcome"],
+        where: {
+          organizationId: String(ctx.organizationId),
+          targetKind: { startsWith: "engineer_" },
+          updatedAt: { gte: since7d },
+        },
+        _count: { _all: true },
+      });
+      for (const r of rows) {
+        autonomyTotalCount += r._count._all;
+        if (r.outcome === "ai_generated") autonomyAiCount += r._count._all;
+      }
+    } catch {
+      // empty fallback — autonomy stat shows N/A honestly.
+    }
+  }
+  const autonomyPct = autonomyTotalCount > 0 ? Math.round((autonomyAiCount / autonomyTotalCount) * 100) : null;
+
   // Per-engineer specialty-rationale presence + freshness. The unique
   // constraint on (org, targetKind, targetId) means one row max per
   // engineer; we read updatedAt to mark stale (≥7 days) cards so the
@@ -264,7 +293,7 @@ export default async function WorkforcePage() {
           </Link>
         </div>
       </div>
-      <section className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">
+      <section className="grid grid-cols-2 md:grid-cols-5 gap-3 mb-8">
         <LiveStat
           label="Attempts · 30d"
           value={Array.from(attemptCounts.values()).reduce((a, b) => a + b, 0)}
@@ -288,6 +317,19 @@ export default async function WorkforcePage() {
           value={agiTotal30d}
           sub="AGI thinking adjacent to your engineers"
           tone="text-violet-300"
+        />
+        <LiveStat
+          label="Autonomy · 7d"
+          value={autonomyPct === null ? "—" : `${autonomyPct}%`}
+          sub={autonomyTotalCount > 0
+            ? `${autonomyAiCount} of ${autonomyTotalCount} engineer outputs produced by AI (vs fallback or error)`
+            : "no engineer outputs yet — run a sweep to seed"}
+          tone={
+            autonomyPct === null ? "text-zinc-400"
+            : autonomyPct >= 75 ? "text-emerald-300"
+            : autonomyPct >= 40 ? "text-amber-300"
+            : "text-rose-300"
+          }
         />
       </section>
 
@@ -401,11 +443,12 @@ function Stat({ label, value, icon: Icon, sub }: { label: string; value: number;
   );
 }
 
-function LiveStat({ label, value, sub, tone }: { label: string; value: number; sub: string; tone: string }) {
+function LiveStat({ label, value, sub, tone }: { label: string; value: number | string; sub: string; tone: string }) {
+  const isPositive = typeof value === "number" ? value > 0 : value !== "—" && value !== "0";
   return (
     <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
       <p className="text-[10px] font-mono text-zinc-500 uppercase tracking-[0.18em] mb-2">{label}</p>
-      <p className={`text-2xl font-bold tabular-nums ${value > 0 ? tone : "text-zinc-600"}`}>{value}</p>
+      <p className={`text-2xl font-bold tabular-nums ${isPositive ? tone : "text-zinc-600"}`}>{value}</p>
       <p className="text-[10px] text-zinc-500 mt-1 leading-snug">{sub}</p>
     </div>
   );
