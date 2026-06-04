@@ -57,6 +57,7 @@ const KIND_LABEL: Record<string, string> = {
   engineer_workflow_plan:               "Workflow plan",
   engineer_operator_copilot_reply:      "Operator copilot reply",
   engineer_approval_packet:             "Approval packet",
+  engineer_boundary_classification:     "Boundary classification",
 };
 
 const OUTCOME_TONE: Record<string, string> = {
@@ -210,6 +211,8 @@ export default async function AgiMemoryEntryPage({
     sourceHref = `/dashboard/workforce/operator_assistant_engineer/replies`;
   } else if (entry.targetKind === "engineer_approval_packet") {
     sourceHref = `/dashboard/workforce/approver_engineer/packets`;
+  } else if (entry.targetKind === "engineer_boundary_classification") {
+    sourceHref = `/dashboard/workforce/boundary_gate_engineer/classifications`;
   } else {
     sourceHref = SOURCE_HREF[entry.targetKind];
   }

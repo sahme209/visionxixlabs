@@ -223,6 +223,14 @@ export const ENGINEER_DOMAIN_IMPLEMENTATIONS: ReadonlyArray<DomainImplementation
     reportLabel: "Approval packets",
     requiresInput: true,
   },
+  {
+    engineerId: "boundary_gate_engineer",
+    reportTargetKind: "engineer_boundary_classification",
+    runDomainEndpoint: "/dashboard/workforce/boundary_gate_engineer/classifications",
+    reportHomeRoute: "/dashboard/workforce/boundary_gate_engineer/classifications",
+    reportLabel: "Boundary classifications",
+    requiresInput: true,
+  },
 ];
 
 export function findDomainImplementation(engineerId: string): DomainImplementation | undefined {
