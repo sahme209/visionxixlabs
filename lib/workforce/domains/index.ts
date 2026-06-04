@@ -231,6 +231,14 @@ export const ENGINEER_DOMAIN_IMPLEMENTATIONS: ReadonlyArray<DomainImplementation
     reportLabel: "Boundary classifications",
     requiresInput: true,
   },
+  {
+    engineerId: "policy_gate_engineer",
+    reportTargetKind: "engineer_policy_decision",
+    runDomainEndpoint: "/dashboard/workforce/policy_gate_engineer/decisions",
+    reportHomeRoute: "/dashboard/workforce/policy_gate_engineer/decisions",
+    reportLabel: "Policy decisions",
+    requiresInput: true,
+  },
 ];
 
 export function findDomainImplementation(engineerId: string): DomainImplementation | undefined {
