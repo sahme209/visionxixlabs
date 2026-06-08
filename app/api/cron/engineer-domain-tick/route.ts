@@ -127,11 +127,25 @@ export async function GET(req: NextRequest) {
       // migration-pending or transient — fall through with empty set.
     }
 
-    // Pick K oldest-or-missing among engineers that aren't disabled,
-    // then re-sort the picks by sweepPriority so chains land in the
-    // right order this tick.
+    // Phase 626: honor per-engineer cadence floors. An engineer
+    // whose persisted row is younger than its minIntervalMinutes
+    // floor is skipped this tick — composition engineers (meta,
+    // council, etc.) don't need to fire hourly when they summarize
+    // engineers that update less often.
+    const nowMs = Date.now();
+
+    // Pick K oldest-or-missing among engineers that aren't disabled
+    // AND are past their cadence floor, then re-sort the picks by
+    // sweepPriority so chains land in the right order this tick.
     const ranked = sweepable
       .filter((s) => !disabledSet.has(s.runner.engineerId))
+      .filter((s) => {
+        const updatedAt = updatedAtByKind.get(s.reportTargetKind);
+        if (!updatedAt) return true; // never run → always eligible.
+        const ageMs = nowMs - updatedAt.getTime();
+        const floorMs = s.runner.minIntervalMinutes * 60_000;
+        return ageMs >= floorMs;
+      })
       .map((s) => ({ ...s, updatedAt: updatedAtByKind.get(s.reportTargetKind) ?? null }))
       .sort((a, b) => {
         if (a.updatedAt === null && b.updatedAt === null) return 0;

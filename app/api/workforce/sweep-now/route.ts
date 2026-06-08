@@ -49,6 +49,10 @@ export async function POST(req: Request) {
     // migration-pending — fall through with empty set, no skips.
   }
 
+  // Manual sweep intentionally bypasses the per-engineer cadence
+  // floor (Phase 626) — the operator explicitly clicked "now"
+  // signaling they want fresh data regardless of the hourly cron's
+  // composition-engineer throttle.
   const ranked = DOMAIN_RUNNERS
     .filter((runner) => {
       const reg = ENGINEER_DOMAIN_IMPLEMENTATIONS.find((d) => d.engineerId === runner.engineerId);
