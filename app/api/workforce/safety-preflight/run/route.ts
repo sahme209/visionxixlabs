@@ -66,10 +66,20 @@ export async function POST(req: Request) {
     });
     return NextResponse.redirect(new URL("/dashboard/workforce/safety-preflight", req.url), 303);
   }
+  // Phase 623: emit a canonical audit-action code that downstream
+  // notification consumers can subscribe to without parsing the
+  // detail JSON. Maps composed verdict → canonical action:
+  //   · block  → engineer.action_blocked     (hard refusal)
+  //   · review → engineer.action_requires_approval (gate, operator review)
+  //   · allow  → engineer.action_allowed     (safe to advance)
+  const auditAction =
+    verdict === "block" ? "engineer.action_blocked" :
+    verdict === "review" ? "engineer.action_requires_approval" :
+    "engineer.action_allowed";
   void auditRecord({
     organizationId: ids.organization(org),
     actorUserId: ctx.userId ? ids.user(String(ctx.userId)) : undefined,
-    action: "engineer.action_attempted",
+    action: auditAction,
     outcome: verdict === "block" ? "blocked" : "success",
     entityRef: "safety-preflight",
     correlationId,
