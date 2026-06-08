@@ -18,6 +18,7 @@ import { requireContext } from "@/lib/auth/currentContext";
 import { prisma } from "@/lib/db";
 import { ENGINEER_DOMAIN_IMPLEMENTATIONS } from "@/lib/workforce/domains";
 import { DOMAIN_RUNNERS } from "@/lib/workforce/domains/runners";
+import { persistTickSummary } from "@/lib/workforce/domains/tickLog";
 import { record as auditRecord } from "@/lib/audit/secureAudit";
 import { id as ids } from "@/lib/domain/ids";
 import type { CorrelationId } from "@/lib/domain/ids";
@@ -57,16 +58,32 @@ export async function POST(req: Request) {
     .sort((a, b) => a.sweepPriority - b.sweepPriority);
 
   const stats = { picked: ranked.length, ai_generated: 0, fallback_rules: 0, error: 0 };
+  const ranEngineerIds: string[] = [];
   for (const runner of ranked) {
     if (Date.now() - startedAt > HARD_DEADLINE_MS) break;
     try {
       const result = await runner.runAndPersist(org);
       stats[result.outcome] += 1;
+      ranEngineerIds.push(runner.engineerId);
     } catch (err) {
       console.warn("[sweep-now]", org, runner.engineerId, "failed:", err instanceof Error ? err.message : err);
       stats.error += 1;
     }
   }
+
+  // Phase 622: persist the tick summary so the sweep-health badge
+  // and future history surfaces have the same source of truth as
+  // the cron path.
+  await persistTickSummary(org, {
+    trigger: "manual",
+    picked: stats.picked,
+    skippedDisabled: disabledSet.size,
+    aiGenerated: stats.ai_generated,
+    fallbackRules: stats.fallback_rules,
+    error: stats.error,
+    durationMs: Date.now() - startedAt,
+    engineerIds: ranEngineerIds,
+  });
 
   void auditRecord({
     organizationId: ids.organization(org),

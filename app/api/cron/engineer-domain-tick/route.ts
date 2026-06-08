@@ -30,6 +30,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { prisma } from "@/lib/db";
 import { ENGINEER_DOMAIN_IMPLEMENTATIONS } from "@/lib/workforce/domains";
 import { DOMAIN_RUNNERS, type DomainRunner, type DomainOutcome } from "@/lib/workforce/domains/runners";
+import { persistTickSummary } from "@/lib/workforce/domains/tickLog";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -142,6 +143,8 @@ export async function GET(req: NextRequest) {
       .sort((a, b) => a.runner.sweepPriority - b.runner.sweepPriority);
 
     const stats: Stats = { picked: ranked.length, ai_generated: 0, fallback_rules: 0, error: 0 };
+    const wsStartMs = Date.now();
+    const ranEngineerIds: string[] = [];
     for (const { runner } of ranked) {
       if (Date.now() - startedAt > HARD_DEADLINE_MS) {
         perWorkspace[orgId] = stats;
@@ -151,6 +154,7 @@ export async function GET(req: NextRequest) {
         const result = await runner.runAndPersist(orgId);
         const bucket: DomainOutcome = result.outcome;
         stats[bucket] += 1;
+        ranEngineerIds.push(runner.engineerId);
         totalRan += 1;
       } catch (err) {
         console.warn(
@@ -164,6 +168,19 @@ export async function GET(req: NextRequest) {
       }
     }
     perWorkspace[orgId] = stats;
+    // Phase 622: persist the per-workspace tick summary so the
+    // sweep-health badge + future degraded-state alerts have a real
+    // source of truth, not just freshness inference.
+    await persistTickSummary(orgId, {
+      trigger: "cron",
+      picked: stats.picked,
+      skippedDisabled: disabledSet.size,
+      aiGenerated: stats.ai_generated,
+      fallbackRules: stats.fallback_rules,
+      error: stats.error,
+      durationMs: Date.now() - wsStartMs,
+      engineerIds: ranEngineerIds,
+    });
   }
 
   return NextResponse.json({

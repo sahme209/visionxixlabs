@@ -17,6 +17,7 @@ import { ArrowLeftIcon, ClockIcon } from "@heroicons/react/24/outline";
 import { currentContext } from "@/lib/auth/currentContext";
 import { prisma } from "@/lib/db";
 import { ENGINEER_DOMAIN_IMPLEMENTATIONS } from "@/lib/workforce/domains";
+import { readTickSummary, type TickReadback } from "@/lib/workforce/domains/tickLog";
 
 export const dynamic = "force-dynamic";
 
@@ -56,6 +57,7 @@ export default async function WorkforceTimelinePage() {
   // Domain kinds we care about — the registry is the source of truth.
   // Any new domain engineer registered automatically appears here.
   const domainKindSet = new Set(ENGINEER_DOMAIN_IMPLEMENTATIONS.map((d) => d.reportTargetKind));
+  const tickSummary = await readTickSummary(String(ctx.organizationId));
   const labelByKind = new Map(ENGINEER_DOMAIN_IMPLEMENTATIONS.map((d) => [d.reportTargetKind, d.reportLabel]));
   const homeByKind = new Map(ENGINEER_DOMAIN_IMPLEMENTATIONS.map((d) => [d.reportTargetKind, d.reportHomeRoute]));
 
@@ -146,11 +148,10 @@ export default async function WorkforceTimelinePage() {
         </p>
       </header>
 
-      {/* Sweep health: infer "is the cron actually running?" from
-          the freshest updatedAt across any domain engineer row. The
-          hourly cron lands at :30, so >120m since the last row is
-          a soft warning, >180m is a hard warning. */}
-      <SweepHealth lastUpdatedAt={decoded[0]?.updatedAt ?? null} />
+      {/* Sweep health: prefers the persisted tick summary (Phase 622)
+          as the source of truth. Falls back to freshness inference
+          when no tick summary exists yet (first run). */}
+      <SweepHealth tick={tickSummary} fallbackUpdatedAt={decoded[0]?.updatedAt ?? null} />
 
 
       {/* 24h KPI strip */}
@@ -226,19 +227,23 @@ function Stat({ label, value, tone }: { label: string; value: number; tone: stri
   );
 }
 
-function SweepHealth({ lastUpdatedAt }: { lastUpdatedAt: Date | null }) {
-  if (lastUpdatedAt === null) {
+function SweepHealth({ tick, fallbackUpdatedAt }: { tick: TickReadback | null; fallbackUpdatedAt: Date | null }) {
+  // Prefer the persisted tick summary when available — it's the
+  // authoritative source for "did the cron actually run?". Falls
+  // back to row-freshness inference on cold start.
+  const updatedAt = tick?.updatedAt ?? fallbackUpdatedAt;
+  if (updatedAt === null) {
     return (
       <section className="mb-8 rounded-2xl border border-zinc-500/20 bg-zinc-500/[0.04] p-5">
         <p className="text-[10px] font-mono uppercase tracking-[0.18em] text-zinc-500 mb-1">sweep health</p>
         <p className="text-[13.5px] text-zinc-200 leading-relaxed">
-          No domain engineer activity recorded yet. Either the cron hasn't reached your workspace
+          No domain engineer activity recorded yet. Either the cron hasn&apos;t reached your workspace
           or no engineer has triggering signal to act on. Use <span className="text-emerald-300">sweep domains now</span> to force a first run.
         </p>
       </section>
     );
   }
-  const ageMs = Date.now() - lastUpdatedAt.getTime();
+  const ageMs = Date.now() - updatedAt.getTime();
   const ageMin = Math.round(ageMs / 60_000);
   const minutesFmt = ageMin < 60 ? `${ageMin}m` : ageMin < 24 * 60 ? `${Math.round(ageMin / 60)}h` : `${Math.round(ageMin / (24 * 60))}d`;
   let tone = "border-emerald-500/20 bg-emerald-500/[0.04]";
@@ -249,23 +254,39 @@ function SweepHealth({ lastUpdatedAt }: { lastUpdatedAt: Date | null }) {
     tone = "border-rose-500/30 bg-rose-500/[0.06]";
     badge = "text-rose-300";
     label = "degraded";
-    note = "No domain activity in over 3 hours — the hourly cron may be sick or the workspace has no triggering signal. Try the manual sweep button.";
+    note = "No tick recorded in over 3 hours — the hourly cron may be sick. Try the manual sweep button.";
   } else if (ageMs > 2 * 60 * 60 * 1000) {
     tone = "border-amber-500/30 bg-amber-500/[0.06]";
     badge = "text-amber-300";
     label = "stale";
-    note = "Last sweep landed >2 hours ago — usually fine if the workspace is quiet, but worth a manual sweep if you expect activity.";
+    note = "Last tick landed >2 hours ago — usually fine if the workspace is quiet, but worth a manual sweep if you expect activity.";
   }
+  // When tick summary is present, use its narrative — it's first-class
+  // ("4 engineers · 3 ai_generated · 1 fallback · 0 errors").
   return (
     <section className={`mb-8 rounded-2xl border p-5 ${tone}`}>
       <div className="flex items-center justify-between gap-3 mb-2 flex-wrap text-[10px] font-mono uppercase tracking-wider">
         <span className="text-zinc-500">sweep health</span>
-        <span className={badge}>{label}</span>
+        {tick && <span className="text-zinc-500">·</span>}
+        {tick && <span className="text-zinc-400">{tick.trigger} trigger</span>}
+        <span className={`${badge} ml-auto`}>{label}</span>
       </div>
-      <p className="text-[14px] text-zinc-100 leading-relaxed">
-        Last domain engineer report landed <span className="font-semibold">{minutesFmt} ago</span> (at {lastUpdatedAt.toISOString().slice(0, 19).replace("T", " ")}).
-      </p>
-      <p className="text-[12px] text-zinc-400 leading-snug mt-1">{note}</p>
+      {tick ? (
+        <>
+          <p className="text-[14px] text-zinc-100 leading-relaxed">{tick.narrative}</p>
+          <p className="text-[12px] text-zinc-400 leading-snug mt-1">
+            <span className="font-semibold">{minutesFmt} ago</span> · {updatedAt.toISOString().slice(0, 19).replace("T", " ")}
+          </p>
+          <p className="text-[12px] text-zinc-400 leading-snug mt-1">{note}</p>
+        </>
+      ) : (
+        <>
+          <p className="text-[14px] text-zinc-100 leading-relaxed">
+            Last domain engineer report landed <span className="font-semibold">{minutesFmt} ago</span> (at {updatedAt.toISOString().slice(0, 19).replace("T", " ")}).
+          </p>
+          <p className="text-[12px] text-zinc-400 leading-snug mt-1">{note}</p>
+        </>
+      )}
     </section>
   );
 }
