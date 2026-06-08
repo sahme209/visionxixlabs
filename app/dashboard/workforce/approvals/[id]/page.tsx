@@ -196,6 +196,28 @@ export default async function ApprovalDetailPage({ params }: { params: Promise<{
             />
           </div>
         )}
+
+        {/* Phase 624: pre-flight this approval — links to the
+            composed safety triad with the approval's engineer +
+            action + risk pre-filled. Operator adds the rest. */}
+        {snapshot.status === "pending" && (
+          <div className="mt-3 pt-3 border-t border-white/[0.04] flex items-center justify-between gap-3 flex-wrap">
+            <span className="text-[11px] text-zinc-500">
+              Want a safety triad verdict before deciding?
+            </span>
+            <Link
+              href={`/dashboard/workforce/safety-preflight?${new URLSearchParams({
+                title: `Pre-flight: ${engineer?.displayName ?? snapshot.engineerId} · ${snapshot.action}`,
+                actionDescription: `Engineer ${snapshot.engineerId} requested action "${snapshot.action}" at risk level ${snapshot.riskLevel}. Effective approval rule: ${snapshot.effectiveRule}. Requested by ${snapshot.requestedBy}.`,
+                currentState: `Workspace ${snapshot.organizationId}. Approval request id ${snapshot.approvalRequestId} currently pending with ${approvedCount}/${snapshot.requiredApprovers} approvers.`,
+                riskContext: `Engineer-staged action at ${snapshot.riskLevel} risk. Quorum required: ${snapshot.requiredApprovers}. Operator should articulate blast radius and reversibility specific to this proposal.`,
+              }).toString()}`}
+              className="text-[11px] font-mono uppercase tracking-wider px-3 py-1 rounded-full border border-emerald-500/30 text-emerald-200 hover:text-white hover:border-emerald-500/60 hover:bg-emerald-500/10 transition-colors"
+            >
+              pre-flight this →
+            </Link>
+          </div>
+        )}
         {snapshot.status !== "pending" && snapshot.decisionReason && (
           <p className="mt-4 pt-4 border-t border-white/[0.06] text-[11px] font-mono text-zinc-400">
             decision reason · "{snapshot.decisionReason}"

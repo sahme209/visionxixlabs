@@ -23,6 +23,11 @@ interface PreflightRow {
   updatedAt: Date;
 }
 
+function pickStr(v: string | string[] | undefined, max: number): string {
+  if (typeof v !== "string") return "";
+  return v.slice(0, max);
+}
+
 async function recentPreflights(orgId: string): Promise<PreflightRow[]> {
   // Pre-flight composes three engineers under slugs ending in
   // "__approver", "__boundary", "__policy". Land on the approver row
@@ -52,11 +57,24 @@ async function recentPreflights(orgId: string): Promise<PreflightRow[]> {
   });
 }
 
-export default async function SafetyPreflightPage() {
+export default async function SafetyPreflightPage({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
   const ctx = await currentContext();
   if (!ctx.isAuthenticated || !ctx.organizationId) {
     redirect("/auth/signin?callbackUrl=/dashboard/workforce/safety-preflight");
   }
+
+  const sp = (await searchParams) ?? {};
+  const prefill = {
+    title: pickStr(sp.title, 200),
+    actionDescription: pickStr(sp.actionDescription, 6000),
+    currentState: pickStr(sp.currentState, 6000),
+    riskContext: pickStr(sp.riskContext, 6000),
+    tenantCharter: pickStr(sp.tenantCharter, 6000),
+  };
 
   const preflights = await recentPreflights(String(ctx.organizationId));
 
@@ -83,27 +101,27 @@ export default async function SafetyPreflightPage() {
         <form action="/api/workforce/safety-preflight/run" method="POST" className="space-y-4">
           <div>
             <label htmlFor="title" className="text-[10px] font-mono uppercase tracking-[0.18em] text-emerald-300 mb-2 block">title</label>
-            <input id="title" name="title" required maxLength={200} placeholder="e.g. Apply Phase 4 schema migration"
+            <input id="title" name="title" required maxLength={200} defaultValue={prefill.title} placeholder="e.g. Apply Phase 4 schema migration"
               className="w-full rounded-lg border border-white/[0.06] bg-white/[0.02] px-3 py-2 text-[13px] text-zinc-200 placeholder:text-zinc-600 focus:outline-none focus:border-emerald-500/40 transition-colors" />
           </div>
           <div>
             <label htmlFor="actionDescription" className="text-[10px] font-mono uppercase tracking-[0.18em] text-emerald-300 mb-2 block">action description</label>
-            <textarea id="actionDescription" name="actionDescription" required rows={5} maxLength={6000} placeholder={"What action do you want pre-flighted?"}
+            <textarea id="actionDescription" name="actionDescription" required rows={5} maxLength={6000} defaultValue={prefill.actionDescription} placeholder={"What action do you want pre-flighted?"}
               className="w-full rounded-lg border border-white/[0.06] bg-white/[0.02] px-3 py-2 text-[12px] font-mono text-zinc-200 placeholder:text-zinc-600 focus:outline-none focus:border-emerald-500/40 transition-colors resize-none" />
           </div>
           <div>
             <label htmlFor="currentState" className="text-[10px] font-mono uppercase tracking-[0.18em] text-emerald-300 mb-2 block">current state</label>
-            <textarea id="currentState" name="currentState" required rows={4} maxLength={6000} placeholder={"What state will the action run against? Topology, scope, dependencies."}
+            <textarea id="currentState" name="currentState" required rows={4} maxLength={6000} defaultValue={prefill.currentState} placeholder={"What state will the action run against? Topology, scope, dependencies."}
               className="w-full rounded-lg border border-white/[0.06] bg-white/[0.02] px-3 py-2 text-[12px] font-mono text-zinc-200 placeholder:text-zinc-600 focus:outline-none focus:border-emerald-500/40 transition-colors resize-none" />
           </div>
           <div>
             <label htmlFor="riskContext" className="text-[10px] font-mono uppercase tracking-[0.18em] text-emerald-300 mb-2 block">risk context</label>
-            <textarea id="riskContext" name="riskContext" required rows={4} maxLength={6000} placeholder={"What could go wrong? Blast radius, irreversibility, mitigations."}
+            <textarea id="riskContext" name="riskContext" required rows={4} maxLength={6000} defaultValue={prefill.riskContext} placeholder={"What could go wrong? Blast radius, irreversibility, mitigations."}
               className="w-full rounded-lg border border-white/[0.06] bg-white/[0.02] px-3 py-2 text-[12px] font-mono text-zinc-200 placeholder:text-zinc-600 focus:outline-none focus:border-emerald-500/40 transition-colors resize-none" />
           </div>
           <div>
             <label htmlFor="tenantCharter" className="text-[10px] font-mono uppercase tracking-[0.18em] text-emerald-300 mb-2 block">tenant charter (optional — enables policy_gate)</label>
-            <textarea id="tenantCharter" name="tenantCharter" rows={5} maxLength={6000} placeholder={"Paste the operator-signed scope document. If empty, the pre-flight skips policy_gate and defaults the composed verdict to \"review\"."}
+            <textarea id="tenantCharter" name="tenantCharter" rows={5} maxLength={6000} defaultValue={prefill.tenantCharter} placeholder={"Paste the operator-signed scope document. If empty, the pre-flight skips policy_gate and defaults the composed verdict to \"review\"."}
               className="w-full rounded-lg border border-white/[0.06] bg-white/[0.02] px-3 py-2 text-[12px] font-mono text-zinc-200 placeholder:text-zinc-600 focus:outline-none focus:border-emerald-500/40 transition-colors resize-none" />
           </div>
           <div className="flex items-center justify-between gap-3 flex-wrap">
