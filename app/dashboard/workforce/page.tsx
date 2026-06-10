@@ -37,6 +37,7 @@ import {
 import { currentContext } from "@/lib/auth/currentContext";
 import { syncAgentEngineerRegistryForWorkspace } from "@/lib/workforce/workspaceRegistrySync";
 import { prisma } from "@/lib/db";
+import { readDailyDigest } from "@/lib/workforce/domains/dailyDigest";
 
 export const metadata: Metadata = {
   title: "AI Workforce · Axiom",
@@ -188,6 +189,12 @@ export default async function WorkforcePage() {
   }
   const autonomyPct = autonomyTotalCount > 0 ? Math.round((autonomyAiCount / autonomyTotalCount) * 100) : null;
 
+  // Phase 627: latest daily digest readback — surfaces "what
+  // happened in the last 24h" as the operator's first banner.
+  const dailyDigest = ctx.isAuthenticated && ctx.organizationId
+    ? await readDailyDigest(String(ctx.organizationId))
+    : null;
+
   // Per-engineer specialty-rationale presence + freshness. The unique
   // constraint on (org, targetKind, targetId) means one row max per
   // engineer; we read updatedAt to mark stale (≥7 days) cards so the
@@ -237,6 +244,36 @@ export default async function WorkforcePage() {
         <Stat label="Missing setup pieces" value={summary.totalMissingPieces} icon={ExclamationTriangleIcon} sub="implementation gaps tracked openly" />
         <Stat label="Departments"          value={groups.length}             icon={PuzzlePieceIcon} />
       </section>
+
+      {/* Phase 627: daily digest banner — top-of-fold "what happened
+          in the last 24h". Color-coded by outcome (calm/active/critical). */}
+      {dailyDigest && (
+        <section className={`mb-6 rounded-2xl border p-5 ${
+          dailyDigest.outcome === "critical"
+            ? "border-rose-500/30 bg-rose-500/[0.06]"
+            : dailyDigest.outcome === "active"
+            ? "border-emerald-500/20 bg-emerald-500/[0.04]"
+            : "border-white/[0.06] bg-white/[0.015]"
+        }`}>
+          <div className="flex items-center justify-between gap-3 mb-2 flex-wrap text-[10px] font-mono uppercase tracking-wider">
+            <span className="text-zinc-500">daily digest · last 24h</span>
+            <span className={
+              dailyDigest.outcome === "critical" ? "text-rose-300"
+              : dailyDigest.outcome === "active" ? "text-emerald-300"
+              : "text-zinc-400"
+            }>{dailyDigest.outcome}</span>
+            <span className="text-zinc-500 ml-auto">{dailyDigest.updatedAt.toISOString().slice(0, 19).replace("T", " ")}</span>
+          </div>
+          <p className="text-[14px] text-zinc-100 leading-relaxed">{dailyDigest.narrative}</p>
+          {(dailyDigest.counts.audit.blocked > 0 || dailyDigest.counts.safety.approverReject > 0) && (
+            <p className="text-[12px] text-rose-200 mt-2 leading-snug">
+              <Link href="/dashboard/workforce/criticals" className="underline underline-offset-2 hover:text-white">
+                Review criticals →
+              </Link>
+            </p>
+          )}
+        </section>
+      )}
 
       {/* Live workforce KPIs — totals across every client engineer in
           THIS workspace. Honest zeros when the workspace is empty,

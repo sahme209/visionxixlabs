@@ -60,6 +60,7 @@ const KIND_LABEL: Record<string, string> = {
   engineer_boundary_classification:     "Boundary classification",
   engineer_policy_decision:             "Policy decision",
   workforce_domain_tick:                "Workforce domain tick",
+  workforce_daily_digest:               "Workforce daily digest",
 };
 
 const OUTCOME_TONE: Record<string, string> = {
@@ -219,6 +220,8 @@ export default async function AgiMemoryEntryPage({
     sourceHref = `/dashboard/workforce/policy_gate_engineer/decisions`;
   } else if (entry.targetKind === "workforce_domain_tick") {
     sourceHref = `/dashboard/workforce/timeline`;
+  } else if (entry.targetKind === "workforce_daily_digest") {
+    sourceHref = `/dashboard/workforce`;
   } else {
     sourceHref = SOURCE_HREF[entry.targetKind];
   }
