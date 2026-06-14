@@ -3,6 +3,7 @@
 import { NextResponse } from "next/server";
 import { requireContext } from "@/lib/auth/currentContext";
 import { runSafetyPreflight } from "@/lib/workforce/domains/safetyPreflight";
+import { checkWorkspaceAICredits } from "@/lib/billing/checkWorkspaceAICredits";
 import { record as auditRecord } from "@/lib/audit/secureAudit";
 import { id as ids } from "@/lib/domain/ids";
 import type { CorrelationId } from "@/lib/domain/ids";
@@ -36,6 +37,33 @@ export async function POST(req: Request) {
   }
   const preflightSlug = `${slugify(title) || "preflight"}_${Date.now().toString(36)}`;
   const correlationId = `preflight_${Date.now().toString(36)}` as CorrelationId;
+
+  // Phase 628: gate on workspace AI credit pool before firing the
+  // three-engineer composed pre-flight (3 AI calls per click).
+  // Estimated cost ~ 30¢ assuming 2k input + 1k output tokens on
+  // Sonnet-class — conservative buffer against spam.
+  const creditDecision = await checkWorkspaceAICredits(org, 30);
+  if (creditDecision.kind === "block") {
+    void auditRecord({
+      organizationId: ids.organization(org),
+      actorUserId: ctx.userId ? ids.user(String(ctx.userId)) : undefined,
+      action: "billing.entitlement_blocked",
+      outcome: "blocked",
+      entityRef: "safety-preflight",
+      correlationId,
+      detail: {
+        action: "safety_preflight",
+        reason: creditDecision.reason,
+        threshold: creditDecision.threshold,
+        remainingCents: creditDecision.remainingCents,
+      },
+    });
+    return NextResponse.redirect(
+      new URL("/dashboard/workforce/safety-preflight?blocked=credits_exhausted", req.url),
+      303,
+    );
+  }
+
   let verdict: string = "review";
   let policyDecision: string | null = null;
   let boundaryTier: string | null = null;

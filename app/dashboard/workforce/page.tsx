@@ -72,9 +72,16 @@ const APPROVAL_TONE: Record<ApprovalRule, { label: string; tone: string }> = {
   blocked_always:          { label: "Policy gate",       tone: "text-zinc-300 bg-zinc-500/10 border-zinc-500/30" },
 };
 
-export default async function WorkforcePage() {
+export default async function WorkforcePage({
+  searchParams,
+}: {
+  searchParams?: Promise<Record<string, string | string[] | undefined>>;
+}) {
   const groups = engineersByDepartment("client");
   const summary = workforceSummary();
+  const sp = searchParams ? await searchParams : {};
+  const blockedParam = sp.blocked;
+  const blocked = typeof blockedParam === "string" ? blockedParam.slice(0, 60) : "";
 
   // Idempotent on every load — registers any new canonical engineers into
   // this workspace's record table. Safe to run on every page load; no
@@ -244,6 +251,20 @@ export default async function WorkforcePage() {
         <Stat label="Missing setup pieces" value={summary.totalMissingPieces} icon={ExclamationTriangleIcon} sub="implementation gaps tracked openly" />
         <Stat label="Departments"          value={groups.length}             icon={PuzzlePieceIcon} />
       </section>
+
+      {/* Phase 628: surface sweep-now credit-block result so the
+          operator knows why their click did nothing. */}
+      {blocked === "credits_exhausted" && (
+        <section className="mb-6 rounded-2xl border border-rose-500/30 bg-rose-500/[0.06] p-5">
+          <p className="text-[10px] font-mono uppercase tracking-[0.18em] text-rose-300 mb-1">sweep blocked · AI credit pool exhausted</p>
+          <p className="text-[13.5px] text-zinc-100 leading-relaxed">
+            Workspace AI credit pool is exhausted for this billing period — the manual sweep would have fired up to 14 AI calls. Wait for the next cycle or upgrade your plan.
+          </p>
+          <p className="text-[12px] text-zinc-400 leading-snug mt-2">
+            <Link href="/dashboard/billing" className="underline underline-offset-2 hover:text-white">View billing →</Link>
+          </p>
+        </section>
+      )}
 
       {/* Phase 627: daily digest banner — top-of-fold "what happened
           in the last 24h". Color-coded by outcome (calm/active/critical). */}

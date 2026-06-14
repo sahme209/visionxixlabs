@@ -75,6 +75,7 @@ export default async function SafetyPreflightPage({
     riskContext: pickStr(sp.riskContext, 6000),
     tenantCharter: pickStr(sp.tenantCharter, 6000),
   };
+  const blocked = pickStr(sp.blocked, 60);
 
   const preflights = await recentPreflights(String(ctx.organizationId));
 
@@ -96,6 +97,19 @@ export default async function SafetyPreflightPage({
           (allow / review / block). Each engineer also persists its own packet for trace.
         </p>
       </header>
+
+      {blocked === "credits_exhausted" && (
+        <section className="mb-6 rounded-2xl border border-rose-500/30 bg-rose-500/[0.06] p-5">
+          <p className="text-[10px] font-mono uppercase tracking-[0.18em] text-rose-300 mb-1">blocked · AI credit pool exhausted</p>
+          <p className="text-[13.5px] text-zinc-100 leading-relaxed">
+            Your workspace AI credit pool is exhausted for this billing period. The composed
+            pre-flight makes 3 metered AI calls, which would push usage past the plan limit.
+          </p>
+          <p className="text-[12px] text-zinc-400 leading-snug mt-2">
+            Upgrade your plan or wait for the next billing cycle. <Link href="/dashboard/billing" className="underline underline-offset-2 hover:text-white">View billing →</Link>
+          </p>
+        </section>
+      )}
 
       <section className="mb-10 rounded-2xl border border-emerald-500/20 bg-emerald-500/[0.04] p-5">
         <form action="/api/workforce/safety-preflight/run" method="POST" className="space-y-4">

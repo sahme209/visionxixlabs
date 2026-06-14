@@ -19,6 +19,7 @@ import { prisma } from "@/lib/db";
 import { ENGINEER_DOMAIN_IMPLEMENTATIONS } from "@/lib/workforce/domains";
 import { DOMAIN_RUNNERS } from "@/lib/workforce/domains/runners";
 import { persistTickSummary } from "@/lib/workforce/domains/tickLog";
+import { checkWorkspaceAICredits } from "@/lib/billing/checkWorkspaceAICredits";
 import { record as auditRecord } from "@/lib/audit/secureAudit";
 import { id as ids } from "@/lib/domain/ids";
 import type { CorrelationId } from "@/lib/domain/ids";
@@ -33,6 +34,31 @@ export async function POST(req: Request) {
   const ctx = await requireContext();
   const org = String(ctx.organizationId);
   const correlationId = `sweep_now_${Date.now().toString(36)}` as CorrelationId;
+
+  // Phase 628: gate on workspace AI credit pool before a manual
+  // sweep fires up to 14 AI calls sequentially. Estimated ~100¢
+  // for a full sweep on Sonnet-class (conservative buffer).
+  const creditDecision = await checkWorkspaceAICredits(org, 100);
+  if (creditDecision.kind === "block") {
+    void auditRecord({
+      organizationId: ids.organization(org),
+      actorUserId: ctx.userId ? ids.user(String(ctx.userId)) : undefined,
+      action: "billing.entitlement_blocked",
+      outcome: "blocked",
+      entityRef: "workforce:sweep-now",
+      correlationId,
+      detail: {
+        action: "workforce.sweep_now",
+        reason: creditDecision.reason,
+        threshold: creditDecision.threshold,
+        remainingCents: creditDecision.remainingCents,
+      },
+    });
+    return NextResponse.redirect(
+      new URL("/dashboard/workforce?blocked=credits_exhausted", req.url),
+      303,
+    );
+  }
 
   const startedAt = Date.now();
 
