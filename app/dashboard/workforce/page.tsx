@@ -27,6 +27,7 @@ import {
   PuzzlePieceIcon,
 } from "@heroicons/react/24/outline";
 import { PageIntro } from "@/components/dashboard/PageIntro";
+import { AxiomBootSequence } from "@/components/workforce/AxiomBootSequence";
 import {
   engineersByDepartment,
   workforceSummary,
@@ -37,6 +38,7 @@ import {
 import { currentContext } from "@/lib/auth/currentContext";
 import { syncAgentEngineerRegistryForWorkspace } from "@/lib/workforce/workspaceRegistrySync";
 import { prisma } from "@/lib/db";
+import { readDailyDigest } from "@/lib/workforce/domains/dailyDigest";
 
 export const metadata: Metadata = {
   title: "AI Workforce · Axiom",
@@ -71,9 +73,16 @@ const APPROVAL_TONE: Record<ApprovalRule, { label: string; tone: string }> = {
   blocked_always:          { label: "Policy gate",       tone: "text-zinc-300 bg-zinc-500/10 border-zinc-500/30" },
 };
 
-export default async function WorkforcePage() {
+export default async function WorkforcePage({
+  searchParams,
+}: {
+  searchParams?: Promise<Record<string, string | string[] | undefined>>;
+}) {
   const groups = engineersByDepartment("client");
   const summary = workforceSummary();
+  const sp = searchParams ? await searchParams : {};
+  const blockedParam = sp.blocked;
+  const blocked = typeof blockedParam === "string" ? blockedParam.slice(0, 60) : "";
 
   // Idempotent on every load — registers any new canonical engineers into
   // this workspace's record table. Safe to run on every page load; no
@@ -159,6 +168,66 @@ export default async function WorkforcePage() {
     }
   }
 
+  // Phase 621: autonomy KPI — fraction of last-7d engineer outputs
+  // that landed as ai_generated (vs fallback_rules / error). Honest
+  // measure of "how much of the workforce output is actually
+  // AI-produced right now". Computed only over domain-engineer rows
+  // so specialty rationales don't dominate.
+  let autonomyAiCount = 0;
+  let autonomyTotalCount = 0;
+  const since7d = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+  if (ctx.isAuthenticated && ctx.organizationId) {
+    try {
+      const rows = await prisma.aiRationaleEnrichment.groupBy({
+        by: ["outcome"],
+        where: {
+          organizationId: String(ctx.organizationId),
+          targetKind: { startsWith: "engineer_" },
+          updatedAt: { gte: since7d },
+        },
+        _count: { _all: true },
+      });
+      for (const r of rows) {
+        autonomyTotalCount += r._count._all;
+        if (r.outcome === "ai_generated") autonomyAiCount += r._count._all;
+      }
+    } catch {
+      // empty fallback — autonomy stat shows N/A honestly.
+    }
+  }
+  const autonomyPct = autonomyTotalCount > 0 ? Math.round((autonomyAiCount / autonomyTotalCount) * 100) : null;
+
+  // Phase 627: latest daily digest readback — surfaces "what
+  // happened in the last 24h" as the operator's first banner.
+  const dailyDigest = ctx.isAuthenticated && ctx.organizationId
+    ? await readDailyDigest(String(ctx.organizationId))
+    : null;
+
+  // Phase 633: first-run state — when the workspace has zero
+  // domain-engineer outputs AND zero cloud accounts, show a guided
+  // onboarding panel instead of empty stats. The panel auto-hides
+  // the moment any engineer report or cloud account exists.
+  let firstRunState: "fresh" | "needs_sweep" | "active" = "active";
+  if (ctx.isAuthenticated && ctx.organizationId) {
+    try {
+      const [domainReportCount, cloudAccountCount] = await Promise.all([
+        prisma.aiRationaleEnrichment.count({
+          where: {
+            organizationId: String(ctx.organizationId),
+            targetKind: { startsWith: "engineer_" },
+          },
+        }),
+        prisma.cloudAccount.count({
+          where: { organizationId: String(ctx.organizationId) },
+        }),
+      ]);
+      if (domainReportCount === 0 && cloudAccountCount === 0) firstRunState = "fresh";
+      else if (domainReportCount === 0) firstRunState = "needs_sweep";
+    } catch {
+      // migration_pending — leave as "active" so the panel doesn't render.
+    }
+  }
+
   // Per-engineer specialty-rationale presence + freshness. The unique
   // constraint on (org, targetKind, targetId) means one row max per
   // engineer; we read updatedAt to mark stale (≥7 days) cards so the
@@ -186,6 +255,7 @@ export default async function WorkforcePage() {
 
   return (
     <div className="relative">
+      <AxiomBootSequence text="VISIONXIXLABS" subtitle="AI workforce online" />
       <PageIntro
         kicker="AI workforce"
         title={<>Your AI engineering team, <span className="text-zinc-500">by department.</span></>}
@@ -209,6 +279,106 @@ export default async function WorkforcePage() {
         <Stat label="Departments"          value={groups.length}             icon={PuzzlePieceIcon} />
       </section>
 
+      {/* Phase 633: first-run onboarding panel — only when workspace
+          has zero domain-engineer outputs. Auto-hides once the first
+          sweep lands. */}
+      {firstRunState !== "active" && (
+        <section className="mb-6 rounded-2xl border border-emerald-500/30 bg-emerald-500/[0.06] p-6">
+          <div className="flex items-center gap-2 mb-3 flex-wrap">
+            <p className="text-[10px] font-mono uppercase tracking-[0.18em] text-emerald-300">your AI workforce is online</p>
+            <span className="text-zinc-500">·</span>
+            <p className="text-[10px] font-mono uppercase tracking-[0.18em] text-zinc-400">first-run setup</p>
+          </div>
+          <p className="text-[15px] text-white leading-relaxed mb-4">
+            {firstRunState === "fresh"
+              ? "All 28 engineers are provisioned and ready. Give them something to work with — connect a cloud account, then trigger the first sweep."
+              : "Cloud account connected. Trigger the first sweep to let the autonomous engineers walk your workspace state."}
+          </p>
+          <ol className="space-y-3 mb-5">
+            {firstRunState === "fresh" && (
+              <li className="flex items-start gap-3">
+                <span className="text-[11px] font-mono text-emerald-300 mt-1 shrink-0">01</span>
+                <div className="flex-1">
+                  <p className="text-[13.5px] text-zinc-200 leading-snug">
+                    <Link href="/dashboard/connectors" className="text-emerald-300 underline underline-offset-2 hover:text-white">
+                      Connect a cloud account
+                    </Link>{" "}
+                    — AWS, Azure, or GCP. Read-only role; the workforce never gets write access without the safety triad gating it.
+                  </p>
+                </div>
+              </li>
+            )}
+            <li className="flex items-start gap-3">
+              <span className="text-[11px] font-mono text-emerald-300 mt-1 shrink-0">{firstRunState === "fresh" ? "02" : "01"}</span>
+              <div className="flex-1">
+                <p className="text-[13.5px] text-zinc-200 leading-snug">
+                  Click <span className="font-mono text-emerald-300">sweep domains now</span> in the toolbar below — fires the 14 autonomous engineers across your workspace state in parallel. Takes ~30 seconds, costs ~$1.00 in AI credits.
+                </p>
+              </div>
+            </li>
+            <li className="flex items-start gap-3">
+              <span className="text-[11px] font-mono text-emerald-300 mt-1 shrink-0">{firstRunState === "fresh" ? "03" : "02"}</span>
+              <div className="flex-1">
+                <p className="text-[13.5px] text-zinc-200 leading-snug">
+                  Open the{" "}
+                  <Link href="/dashboard/workforce/cognition" className="text-emerald-300 underline underline-offset-2 hover:text-white">
+                    cognition view
+                  </Link>{" "}
+                  — that&apos;s where the chain composition lands. Meta-reasoner tensions paired with council verdicts inline.
+                </p>
+              </div>
+            </li>
+          </ol>
+          <p className="text-[11.5px] text-zinc-500 leading-snug">
+            Hourly cron also fires automatically — within 60 minutes of first connection, the 14 autonomous engineers populate your dashboard on their own. This panel disappears as soon as the first report lands.
+          </p>
+        </section>
+      )}
+
+      {/* Phase 628: surface sweep-now credit-block result so the
+          operator knows why their click did nothing. */}
+      {blocked === "credits_exhausted" && (
+        <section className="mb-6 rounded-2xl border border-rose-500/30 bg-rose-500/[0.06] p-5">
+          <p className="text-[10px] font-mono uppercase tracking-[0.18em] text-rose-300 mb-1">sweep blocked · AI credit pool exhausted</p>
+          <p className="text-[13.5px] text-zinc-100 leading-relaxed">
+            Workspace AI credit pool is exhausted for this billing period — the manual sweep would have fired up to 14 AI calls. Wait for the next cycle or upgrade your plan.
+          </p>
+          <p className="text-[12px] text-zinc-400 leading-snug mt-2">
+            <Link href="/dashboard/billing" className="underline underline-offset-2 hover:text-white">View billing →</Link>
+          </p>
+        </section>
+      )}
+
+      {/* Phase 627: daily digest banner — top-of-fold "what happened
+          in the last 24h". Color-coded by outcome (calm/active/critical). */}
+      {dailyDigest && (
+        <section className={`mb-6 rounded-2xl border p-5 ${
+          dailyDigest.outcome === "critical"
+            ? "border-rose-500/30 bg-rose-500/[0.06]"
+            : dailyDigest.outcome === "active"
+            ? "border-emerald-500/20 bg-emerald-500/[0.04]"
+            : "border-white/[0.06] bg-white/[0.015]"
+        }`}>
+          <div className="flex items-center justify-between gap-3 mb-2 flex-wrap text-[10px] font-mono uppercase tracking-wider">
+            <span className="text-zinc-500">daily digest · last 24h</span>
+            <span className={
+              dailyDigest.outcome === "critical" ? "text-rose-300"
+              : dailyDigest.outcome === "active" ? "text-emerald-300"
+              : "text-zinc-400"
+            }>{dailyDigest.outcome}</span>
+            <span className="text-zinc-500 ml-auto">{dailyDigest.updatedAt.toISOString().slice(0, 19).replace("T", " ")}</span>
+          </div>
+          <p className="text-[14px] text-zinc-100 leading-relaxed">{dailyDigest.narrative}</p>
+          {(dailyDigest.counts.audit.blocked > 0 || dailyDigest.counts.safety.approverReject > 0) && (
+            <p className="text-[12px] text-rose-200 mt-2 leading-snug">
+              <Link href="/dashboard/workforce/criticals" className="underline underline-offset-2 hover:text-white">
+                Review criticals →
+              </Link>
+            </p>
+          )}
+        </section>
+      )}
+
       {/* Live workforce KPIs — totals across every client engineer in
           THIS workspace. Honest zeros when the workspace is empty,
           no projected demo numbers. */}
@@ -224,6 +394,15 @@ export default async function WorkforcePage() {
               run AGI for all
             </button>
           </form>
+          <form action="/api/workforce/sweep-now" method="POST">
+            <button
+              type="submit"
+              className="text-[11px] font-mono uppercase tracking-wider px-3 py-1 rounded-full border border-emerald-500/30 text-emerald-200 hover:text-white hover:border-emerald-500/60 hover:bg-emerald-500/10 transition-colors"
+              title="Run every no-input domain engineer for this workspace now (mirrors the hourly cron sweep)"
+            >
+              sweep domains now
+            </button>
+          </form>
           <a
             href="/api/workforce/attempts.csv"
             download
@@ -232,6 +411,27 @@ export default async function WorkforcePage() {
           >
             download .csv
           </a>
+          <Link href="/dashboard/workforce/cognition" className="text-[11px] font-mono text-violet-300 hover:text-white transition-colors">
+            cognition →
+          </Link>
+          <Link href="/dashboard/workforce/cost" className="text-[11px] font-mono text-emerald-300 hover:text-white transition-colors">
+            cost →
+          </Link>
+          <Link href="/dashboard/workforce/proof-of-value" className="text-[11px] font-mono text-emerald-300 hover:text-white transition-colors">
+            proof of value →
+          </Link>
+          <Link href="/dashboard/workforce/slack-config" className="text-[11px] font-mono text-zinc-500 hover:text-white transition-colors">
+            slack →
+          </Link>
+          <Link href="/dashboard/workforce/timeline" className="text-[11px] font-mono text-zinc-500 hover:text-white transition-colors">
+            timeline →
+          </Link>
+          <Link href="/dashboard/workforce/criticals" className="text-[11px] font-mono text-rose-300 hover:text-white transition-colors">
+            criticals →
+          </Link>
+          <Link href="/dashboard/workforce/safety-preflight" className="text-[11px] font-mono text-zinc-500 hover:text-white transition-colors">
+            pre-flight →
+          </Link>
           <Link href="/dashboard/workforce/health" className="text-[11px] font-mono text-zinc-500 hover:text-white transition-colors">
             health →
           </Link>
@@ -243,7 +443,7 @@ export default async function WorkforcePage() {
           </Link>
         </div>
       </div>
-      <section className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">
+      <section className="grid grid-cols-2 md:grid-cols-5 gap-3 mb-8">
         <LiveStat
           label="Attempts · 30d"
           value={Array.from(attemptCounts.values()).reduce((a, b) => a + b, 0)}
@@ -267,6 +467,19 @@ export default async function WorkforcePage() {
           value={agiTotal30d}
           sub="AGI thinking adjacent to your engineers"
           tone="text-violet-300"
+        />
+        <LiveStat
+          label="Autonomy · 7d"
+          value={autonomyPct === null ? "—" : `${autonomyPct}%`}
+          sub={autonomyTotalCount > 0
+            ? `${autonomyAiCount} of ${autonomyTotalCount} engineer outputs produced by AI (vs fallback or error)`
+            : "no engineer outputs yet — run a sweep to seed"}
+          tone={
+            autonomyPct === null ? "text-zinc-400"
+            : autonomyPct >= 75 ? "text-emerald-300"
+            : autonomyPct >= 40 ? "text-amber-300"
+            : "text-rose-300"
+          }
         />
       </section>
 
@@ -380,11 +593,12 @@ function Stat({ label, value, icon: Icon, sub }: { label: string; value: number;
   );
 }
 
-function LiveStat({ label, value, sub, tone }: { label: string; value: number; sub: string; tone: string }) {
+function LiveStat({ label, value, sub, tone }: { label: string; value: number | string; sub: string; tone: string }) {
+  const isPositive = typeof value === "number" ? value > 0 : value !== "—" && value !== "0";
   return (
     <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
       <p className="text-[10px] font-mono text-zinc-500 uppercase tracking-[0.18em] mb-2">{label}</p>
-      <p className={`text-2xl font-bold tabular-nums ${value > 0 ? tone : "text-zinc-600"}`}>{value}</p>
+      <p className={`text-2xl font-bold tabular-nums ${isPositive ? tone : "text-zinc-600"}`}>{value}</p>
       <p className="text-[10px] text-zinc-500 mt-1 leading-snug">{sub}</p>
     </div>
   );
