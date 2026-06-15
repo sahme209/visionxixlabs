@@ -120,8 +120,8 @@ export async function deleteSlackConfig(organizationId: string): Promise<void> {
 
 /**
  * Validate that a webhook URL looks like a Slack incoming-webhook URL.
- * Slack URLs are https://hooks.slack.com/services/T*/B*/* — we
- * accept that shape and reject anything else to prevent SSRF.
+ * Slack URLs are https://hooks.slack.com/services/<team>/<bot>/<secret>
+ * - we accept that shape and reject anything else to prevent SSRF.
  */
 export function isValidSlackWebhookUrl(url: string): boolean {
   if (typeof url !== "string" || url.length === 0) return false;
