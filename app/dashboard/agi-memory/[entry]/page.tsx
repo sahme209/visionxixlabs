@@ -21,6 +21,7 @@ import { ArrowLeftIcon, ArrowRightIcon, ExclamationTriangleIcon, SparklesIcon } 
 import { currentContext } from "@/lib/auth/currentContext";
 import { prisma } from "@/lib/db";
 import { AGENT_WORKFORCE_REGISTRY } from "@/lib/workforce/agentWorkforceRegistry";
+import { ShareEntryButton } from "@/components/workforce/ShareEntryButton";
 
 export const dynamic = "force-dynamic";
 
@@ -43,6 +44,24 @@ const KIND_LABEL: Record<string, string> = {
   engineer_refactor_plan:               "Refactor · plan",
   engineer_release_notes_draft:         "Release notes · draft",
   engineer_alert_noise_classification:  "Alert noise classification",
+  engineer_verifier_verdicts:           "Verifier verdicts",
+  engineer_pipeline_repair_playbook:    "Pipeline repair playbook",
+  engineer_schema_proposal:             "Schema proposal",
+  engineer_memory_consolidation:        "Memory consolidation",
+  engineer_meta_reasoner_resolution:    "Meta-reasoner resolutions",
+  engineer_council_verdicts:            "Council verdicts",
+  engineer_migration_runbook:           "Migration runbook",
+  engineer_intent_workflow:             "Parsed intent workflow",
+  engineer_improvement_proposals:       "Improvement proposals",
+  engineer_reasoner_hypothesis:         "Reasoner hypothesis",
+  engineer_simulator_verdict:           "Simulator verdict",
+  engineer_workflow_plan:               "Workflow plan",
+  engineer_operator_copilot_reply:      "Operator copilot reply",
+  engineer_approval_packet:             "Approval packet",
+  engineer_boundary_classification:     "Boundary classification",
+  engineer_policy_decision:             "Policy decision",
+  workforce_domain_tick:                "Workforce domain tick",
+  workforce_daily_digest:               "Workforce daily digest",
 };
 
 const OUTCOME_TONE: Record<string, string> = {
@@ -168,6 +187,42 @@ export default async function AgiMemoryEntryPage({
     sourceHref = `/dashboard/workforce/release_notes_engineer/drafts`;
   } else if (entry.targetKind === "engineer_alert_noise_classification") {
     sourceHref = `/dashboard/workforce/alert_noise_engineer`;
+  } else if (entry.targetKind === "engineer_verifier_verdicts") {
+    sourceHref = `/dashboard/workforce/verifier_engineer`;
+  } else if (entry.targetKind === "engineer_pipeline_repair_playbook") {
+    sourceHref = `/dashboard/workforce/pipeline_repair_engineer`;
+  } else if (entry.targetKind === "engineer_schema_proposal") {
+    sourceHref = `/dashboard/workforce/schema_engineer/proposals`;
+  } else if (entry.targetKind === "engineer_memory_consolidation") {
+    sourceHref = `/dashboard/workforce/memory_consolidator_engineer`;
+  } else if (entry.targetKind === "engineer_meta_reasoner_resolution") {
+    sourceHref = `/dashboard/workforce/meta_reasoner_engineer`;
+  } else if (entry.targetKind === "engineer_council_verdicts") {
+    sourceHref = `/dashboard/workforce/council_engineer`;
+  } else if (entry.targetKind === "engineer_migration_runbook") {
+    sourceHref = `/dashboard/workforce/migration_engineer/runbooks`;
+  } else if (entry.targetKind === "engineer_intent_workflow") {
+    sourceHref = `/dashboard/workforce/intent_parser_engineer/workflows`;
+  } else if (entry.targetKind === "engineer_improvement_proposals") {
+    sourceHref = `/dashboard/workforce/improvement_engineer`;
+  } else if (entry.targetKind === "engineer_reasoner_hypothesis") {
+    sourceHref = `/dashboard/workforce/reasoner_engineer/hypotheses`;
+  } else if (entry.targetKind === "engineer_simulator_verdict") {
+    sourceHref = `/dashboard/workforce/simulator_engineer/simulations`;
+  } else if (entry.targetKind === "engineer_workflow_plan") {
+    sourceHref = `/dashboard/workforce/workflow_orchestrator_engineer/plans`;
+  } else if (entry.targetKind === "engineer_operator_copilot_reply") {
+    sourceHref = `/dashboard/workforce/operator_assistant_engineer/replies`;
+  } else if (entry.targetKind === "engineer_approval_packet") {
+    sourceHref = `/dashboard/workforce/approver_engineer/packets`;
+  } else if (entry.targetKind === "engineer_boundary_classification") {
+    sourceHref = `/dashboard/workforce/boundary_gate_engineer/classifications`;
+  } else if (entry.targetKind === "engineer_policy_decision") {
+    sourceHref = `/dashboard/workforce/policy_gate_engineer/decisions`;
+  } else if (entry.targetKind === "workforce_domain_tick") {
+    sourceHref = `/dashboard/workforce/timeline`;
+  } else if (entry.targetKind === "workforce_daily_digest") {
+    sourceHref = `/dashboard/workforce`;
   } else {
     sourceHref = SOURCE_HREF[entry.targetKind];
   }
@@ -182,10 +237,13 @@ export default async function AgiMemoryEntryPage({
 
   return (
     <div className="max-w-3xl mx-auto px-1 -mt-2">
-      <Link href="/dashboard/agi-memory" className="inline-flex items-center gap-1.5 text-[12px] text-zinc-500 hover:text-white transition-colors mb-6">
-        <ArrowLeftIcon className="h-3.5 w-3.5" />
-        AGI memory
-      </Link>
+      <div className="flex items-center justify-between gap-3 mb-6 flex-wrap">
+        <Link href="/dashboard/agi-memory" className="inline-flex items-center gap-1.5 text-[12px] text-zinc-500 hover:text-white transition-colors">
+          <ArrowLeftIcon className="h-3.5 w-3.5" />
+          AGI memory
+        </Link>
+        <ShareEntryButton targetKind={entry.targetKind} targetId={entry.targetId} />
+      </div>
 
       <header className="mb-10">
         <div className="flex items-center gap-2 mb-3 flex-wrap text-[10px] font-mono uppercase tracking-[0.18em]">
