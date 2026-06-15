@@ -23,7 +23,6 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import {
   CloudIcon,
-  ArrowRightIcon,
   CommandLineIcon,
   CpuChipIcon,
   ArrowsPointingOutIcon,
@@ -145,28 +144,50 @@ export default function DashboardPage() {
   });
 
   return (
-    <div className="max-w-5xl mx-auto px-1 -mt-2">
+    <div className="max-w-5xl mx-auto px-1 -mt-2 relative">
       {/* Robotic boot sequence — letter-by-letter glitch entry. Plays
           once per session via sessionStorage; honors prefers-reduced-motion. */}
       <AxiomBootSequence text="VISIONXIXLABS" subtitle="AI workforce online" />
-      {/* ─── Header ──────────────────────────────────────────────────────── */}
-      <header className="mb-14">
-        <div className="flex items-center gap-2 mb-4">
-          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-          <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-zinc-500">workspace · live</p>
+
+      {/* Subtle scan-grid backdrop — pure CSS, behind everything.
+          Robotic without overwhelming. */}
+      <div
+        aria-hidden
+        className="fixed inset-0 -z-10 pointer-events-none opacity-[0.025]"
+        style={{
+          backgroundImage:
+            "linear-gradient(to right, #10b981 1px, transparent 1px), linear-gradient(to bottom, #10b981 1px, transparent 1px)",
+          backgroundSize: "64px 64px",
+        }}
+      />
+
+      {/* ─── Terminal header banner ──────────────────────────────────────── */}
+      <header className="mb-12 border-b border-emerald-500/15 pb-8">
+        <div className="font-mono text-[10px] uppercase tracking-[0.32em] text-emerald-300/80 mb-5 flex items-center gap-3 flex-wrap">
+          <span className="inline-flex items-center gap-1.5">
+            <span className="w-1.5 h-1.5 bg-emerald-400 animate-pulse" />
+            session.established
+          </span>
+          <span className="text-zinc-700">::</span>
+          <span className="text-zinc-500">workspace · live</span>
+          <span className="text-zinc-700">::</span>
+          <span className="text-zinc-500">runtime · v1</span>
         </div>
-        <h1 className="text-[34px] sm:text-[40px] leading-[1.05] font-semibold text-white tracking-[-0.03em] mb-3">
-          Welcome back.
+        <h1 className="font-mono text-[26px] sm:text-[34px] leading-[1.1] font-semibold text-white tracking-[-0.01em] mb-3">
+          <span className="text-emerald-300">&gt;</span>{" "}
+          welcome back<span className="text-emerald-300/60">_</span>
         </h1>
-        <p className="text-[15px] text-zinc-400 leading-relaxed max-w-xl">
-          One workspace for cloud operations, governance, and execution-plan
-          approval — every action explainable, reversible, audited.
+        <p className="text-[13.5px] text-zinc-400 leading-relaxed max-w-xl font-mono">
+          one workspace · cloud ops · governance · execution-plan approval —
+          every action <span className="text-zinc-300">explainable</span>,{" "}
+          <span className="text-zinc-300">reversible</span>,{" "}
+          <span className="text-zinc-300">audited</span>.
         </p>
       </header>
 
       {/* ─── Next best action — real-state aware ──────────────────────────── */}
-      <section className="mb-12">
-        <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-zinc-500 mb-3">next</p>
+      <section className="mb-10">
+        <SectionKicker label="next-action" status="primary" />
         {(() => {
           // Live summary trumps the heuristic nextAction whenever it
           // can answer concretely. Order from most-urgent to least.
@@ -207,35 +228,41 @@ export default function DashboardPage() {
           return (
             <Link
               href={action.href}
-              className="group block rounded-2xl border border-white/[0.06] bg-white/[0.015] hover:border-white/[0.12] transition-colors px-7 py-7"
+              className="group block border border-emerald-500/20 bg-emerald-500/[0.03] hover:border-emerald-400/40 hover:bg-emerald-500/[0.06] transition-colors px-6 py-6 rounded-md"
             >
               <div className="flex items-start justify-between gap-6">
                 <div className="flex-1 min-w-0">
-                  <h2 className="text-[22px] font-semibold text-white tracking-[-0.02em] mb-2">
+                  <p className="font-mono text-[10px] uppercase tracking-[0.24em] text-emerald-300/70 mb-2.5">
+                    exec :: priority-1
+                  </p>
+                  <h2 className="text-[20px] font-semibold text-white tracking-[-0.01em] mb-2 leading-snug">
+                    <span className="text-emerald-300 font-mono">&gt;</span>{" "}
                     {action.label}
                   </h2>
-                  <p className="text-[14px] text-zinc-400 leading-relaxed max-w-xl">
+                  <p className="text-[13px] text-zinc-400 leading-relaxed max-w-xl">
                     {action.reason}
                   </p>
                 </div>
-                <ArrowRightIcon className="h-4 w-4 text-zinc-600 group-hover:text-white group-hover:translate-x-0.5 transition-all mt-1.5 shrink-0" />
+                <span className="font-mono text-[14px] text-emerald-300/60 group-hover:text-emerald-200 group-hover:translate-x-0.5 transition-all mt-1.5 shrink-0">
+                  →
+                </span>
               </div>
             </Link>
           );
         })()}
         {onboarding.nextStep && !summary?.findingCount && (
-          <p className="mt-3 text-[12px] text-zinc-600 leading-relaxed pl-1">
-            {onboarding.nextStep.label} · {onboarding.nextStep.detail}
+          <p className="mt-3 text-[11px] text-zinc-600 leading-relaxed pl-1 font-mono">
+            <span className="text-zinc-700">$</span> {onboarding.nextStep.label} · {onboarding.nextStep.detail}
           </p>
         )}
         {summary && summary.lastScanIso && (
           <Link
             href="/dashboard/briefing"
-            className="mt-3 inline-flex items-center gap-1.5 text-[12px] text-zinc-500 hover:text-white transition-colors pl-1"
+            className="mt-3 inline-flex items-center gap-1.5 text-[11px] font-mono text-zinc-500 hover:text-emerald-300 transition-colors pl-1"
           >
             <SparklesIcon className="h-3 w-3" />
-            Read today&apos;s briefing
-            <span aria-hidden className="text-zinc-700">→</span>
+            read.briefing.today
+            <span aria-hidden>→</span>
           </Link>
         )}
       </section>
@@ -252,24 +279,27 @@ export default function DashboardPage() {
 
       {/* ─── Live stats — only shows when there's signal ──────────────────── */}
       {summary && (summary.findingCount > 0 || summary.pendingApprovals > 0 || summary.lastScanIso) && (
-        <section className="mb-12 rounded-2xl border border-white/[0.06] bg-white/[0.015] grid grid-cols-2 sm:grid-cols-4 divide-x sm:divide-y-0 divide-y divide-white/[0.04] overflow-hidden">
-          <Stat label="findings"     value={summary.findingCount.toString()} href="/dashboard/findings"
-                spark={summary.findingsTrend7d} sparkTone="text-zinc-400" />
-          <Stat label="pending"      value={summary.pendingApprovals.toString()} href="/dashboard/approvals"
-                tone={summary.highRiskApprovals > 0 ? "text-amber-300" : undefined} />
-          <Stat label="potential/mo" value={summary.monthlyHigh > 0 ? `$${Math.round(summary.monthlyHigh).toLocaleString()}` : "—"} href="/dashboard/approvals" />
-          <Stat label="last scan"    value={timeAgoFromIso(summary.lastScanIso) ?? "—"} href="/dashboard/scans"
-                spark={summary.scansTrend7d} sparkTone="text-emerald-400/70" />
+        <section className="mb-10">
+          <SectionKicker label="telemetry" status="live" />
+          <div className="border border-white/[0.06] bg-white/[0.012] grid grid-cols-2 sm:grid-cols-4 divide-x sm:divide-y-0 divide-y divide-white/[0.04] overflow-hidden rounded-md">
+            <Stat label="findings"     value={summary.findingCount.toString()} href="/dashboard/findings"
+                  spark={summary.findingsTrend7d} sparkTone="text-zinc-400" />
+            <Stat label="pending"      value={summary.pendingApprovals.toString()} href="/dashboard/approvals"
+                  tone={summary.highRiskApprovals > 0 ? "text-amber-300" : undefined} />
+            <Stat label="potential/mo" value={summary.monthlyHigh > 0 ? `$${Math.round(summary.monthlyHigh).toLocaleString()}` : "—"} href="/dashboard/approvals" />
+            <Stat label="last.scan"    value={timeAgoFromIso(summary.lastScanIso) ?? "—"} href="/dashboard/scans"
+                  spark={summary.scansTrend7d} sparkTone="text-emerald-400/70" />
+          </div>
         </section>
       )}
 
       {/* ─── Connected accounts ──────────────────────────────────────────── */}
-      <section className="mb-12">
-        <div className="flex items-baseline justify-between mb-3">
-          <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-zinc-500">cloud accounts</p>
+      <section className="mb-10">
+        <div className="flex items-baseline justify-between mb-3 flex-wrap gap-2">
+          <SectionKicker label="cloud-accounts" status={connected.length > 0 ? "ok" : "empty"} count={connected.length} inline />
           {connected.length > 0 && (
-            <Link href="/dashboard/connect-cloud" className="text-[11px] text-zinc-500 hover:text-white transition-colors">
-              Manage
+            <Link href="/dashboard/connect-cloud" className="text-[10px] font-mono uppercase tracking-[0.18em] text-zinc-500 hover:text-emerald-300 transition-colors">
+              manage →
             </Link>
           )}
         </div>
@@ -277,39 +307,43 @@ export default function DashboardPage() {
         {connected.length === 0 ? (
           <Link
             href="/dashboard/connect-cloud"
-            className="group block rounded-2xl border border-white/[0.06] bg-white/[0.015] hover:border-white/[0.12] transition-colors px-7 py-7"
+            className="group block border border-dashed border-emerald-500/25 bg-emerald-500/[0.02] hover:border-emerald-400/50 hover:bg-emerald-500/[0.05] transition-colors px-6 py-6 rounded-md"
           >
-            <div className="flex items-center gap-5">
-              <div className="w-11 h-11 rounded-xl bg-white/[0.04] border border-white/[0.06] flex items-center justify-center shrink-0">
-                <CloudIcon className="h-5 w-5 text-zinc-400" />
+            <div className="flex items-center gap-4">
+              <div className="w-10 h-10 border border-emerald-500/30 bg-emerald-500/[0.06] flex items-center justify-center shrink-0 rounded-sm">
+                <CloudIcon className="h-5 w-5 text-emerald-300" />
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-[15px] font-semibold text-white mb-1">Connect your first cloud</p>
-                <p className="text-[12px] text-zinc-500 leading-relaxed">
-                  AWS, Azure, or Google — read-only by default, revoke anytime.
+                <p className="text-[14px] font-semibold text-white mb-1 font-mono">
+                  <span className="text-emerald-300">&gt;</span> connect.first_cloud
+                </p>
+                <p className="text-[11.5px] text-zinc-500 leading-relaxed font-mono">
+                  aws · azure · gcp — read-only by default, revoke anytime
                 </p>
               </div>
-              <ArrowRightIcon className="h-4 w-4 text-zinc-600 group-hover:text-white group-hover:translate-x-0.5 transition-all shrink-0" />
+              <span className="font-mono text-[14px] text-emerald-300/60 group-hover:text-emerald-200 group-hover:translate-x-0.5 transition-all shrink-0">→</span>
             </div>
           </Link>
         ) : (
           <>
-            <div className="rounded-2xl border border-white/[0.06] bg-white/[0.015] divide-y divide-white/[0.04] overflow-hidden">
+            <div className="border border-white/[0.06] bg-white/[0.012] divide-y divide-white/[0.04] overflow-hidden rounded-md">
               {connected.map((c) => (
                 <div key={c.accountId || c.provider}>
-                  <div className="px-6 py-4 flex items-center gap-4">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0" />
+                  <div className="px-5 py-3.5 flex items-center gap-4">
+                    <span className="w-1.5 h-1.5 bg-emerald-400 shrink-0" />
                     <div className="flex-1 min-w-0">
-                      <p className="text-[14px] font-medium text-white">
+                      <p className="text-[13.5px] font-medium text-white font-mono">
                         {PROVIDER_LABEL[c.provider] ?? c.provider}
                       </p>
                       {c.accountId && (
-                        <p className="text-[11px] font-mono text-zinc-500 mt-0.5">{c.accountId}</p>
+                        <p className="text-[10.5px] font-mono text-zinc-500 mt-0.5">
+                          <span className="text-zinc-700">0x</span>{c.accountId}
+                        </p>
                       )}
                     </div>
                     {c.lastScan && (
-                      <span className="text-[11px] text-zinc-500 shrink-0">
-                        {new Date(c.lastScan).toLocaleDateString()}
+                      <span className="text-[10.5px] font-mono text-zinc-500 shrink-0">
+                        {new Date(c.lastScan).toISOString().slice(0, 10)}
                       </span>
                     )}
                     {(c.provider === "aws" || c.provider === "azure" || c.provider === "gcp") && (
@@ -345,9 +379,9 @@ export default function DashboardPage() {
       <RecentActivity />
 
       {/* ─── Workspace ──────────────────────────────────────────────────── */}
-      <section className="mb-12">
-        <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-zinc-500 mb-5">workspace</p>
-        <div className="grid md:grid-cols-3 gap-x-10 gap-y-8">
+      <section className="mb-10">
+        <SectionKicker label="workspace" status="catalog" />
+        <div className="grid md:grid-cols-3 gap-x-8 gap-y-6 border border-white/[0.06] bg-white/[0.012] rounded-md p-6">
           <CapabilityGroup
             title="Operate"
             items={[
@@ -383,22 +417,79 @@ export default function DashboardPage() {
         <section className="mb-8">
           <Link
             href="/download"
-            className="group block rounded-2xl border border-white/[0.06] bg-white/[0.015] hover:border-white/[0.12] transition-colors px-7 py-5"
+            className="group block border border-cyan-500/15 bg-cyan-500/[0.02] hover:border-cyan-400/40 hover:bg-cyan-500/[0.05] transition-colors px-6 py-5 rounded-md"
           >
-            <div className="flex items-center gap-5">
-              <CommandLineIcon className="h-5 w-5 text-zinc-500 shrink-0" />
+            <div className="flex items-center gap-4">
+              <CommandLineIcon className="h-5 w-5 text-cyan-300/80 shrink-0" />
               <div className="flex-1 min-w-0">
-                <p className="text-[13px] font-medium text-white mb-0.5">Run Axiom on your workstation</p>
-                <p className="text-[11px] text-zinc-500 leading-relaxed">
-                  Receive signed handoffs, review Terraform locally, keep credentials in the keychain.
+                <p className="text-[12.5px] font-medium text-white mb-0.5 font-mono">
+                  <span className="text-cyan-300">$</span> axiom.runtime --desktop
+                </p>
+                <p className="text-[11px] text-zinc-500 leading-relaxed font-mono">
+                  signed handoffs · review terraform locally · credentials in keychain
                 </p>
               </div>
-              <ArrowRightIcon className="h-4 w-4 text-zinc-600 group-hover:text-white group-hover:translate-x-0.5 transition-all shrink-0" />
+              <span className="font-mono text-[14px] text-cyan-300/60 group-hover:text-cyan-200 group-hover:translate-x-0.5 transition-all shrink-0">→</span>
             </div>
           </Link>
         </section>
       )}
+
+      {/* ─── Robotic footer — terminal-style status line ─────────────────── */}
+      <footer className="mt-16 pt-6 border-t border-white/[0.04] font-mono text-[10px] uppercase tracking-[0.18em] text-zinc-600 flex items-center justify-between flex-wrap gap-3">
+        <span>
+          <span className="text-emerald-400">●</span> uptime.session :: {new Date().toISOString().slice(0, 10)}
+        </span>
+        <span className="text-zinc-700">visionxixlabs.runtime/v1</span>
+      </footer>
     </div>
+  );
+}
+
+// ────────────────────────────────────────────────────────────────────────────
+// Robotic helpers — terminal-style section kickers used across the page.
+// One source of truth for the kicker idiom so every section reads the same.
+// ────────────────────────────────────────────────────────────────────────────
+
+function SectionKicker({
+  label,
+  status,
+  count,
+  inline,
+}: {
+  label: string;
+  status: "primary" | "live" | "ok" | "empty" | "catalog";
+  count?: number;
+  inline?: boolean;
+}) {
+  const statusTone: Record<string, string> = {
+    primary: "text-emerald-300",
+    live: "text-emerald-300",
+    ok: "text-emerald-300",
+    empty: "text-zinc-500",
+    catalog: "text-cyan-300/80",
+  };
+  const dot = status === "empty" ? null : (
+    <span className={`w-1 h-1 ${status === "live" ? "bg-emerald-400 animate-pulse" : "bg-emerald-400/70"}`} />
+  );
+  return (
+    <p className={`font-mono text-[10px] uppercase tracking-[0.24em] text-zinc-500 mb-3 inline-flex items-center gap-2 ${inline ? "" : "block"}`}>
+      <span className="text-zinc-700">//</span>
+      <span className={statusTone[status]}>{label}</span>
+      {count !== undefined && (
+        <>
+          <span className="text-zinc-700">::</span>
+          <span className="text-zinc-400 tabular-nums">{count}</span>
+        </>
+      )}
+      {dot && (
+        <>
+          <span className="text-zinc-700">::</span>
+          {dot}
+          <span className={statusTone[status]}>{status}</span>
+        </>
+      )}
+    </p>
   );
 }
 
@@ -440,25 +531,30 @@ function JourneyChecklist({
     },
   ];
   return (
-    <section className="mb-12">
-      <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-zinc-500 mb-3">first run</p>
-      <ol className="rounded-2xl border border-white/[0.06] bg-white/[0.015] divide-y divide-white/[0.04] overflow-hidden">
+    <section className="mb-10">
+      <p className="font-mono text-[10px] uppercase tracking-[0.24em] text-zinc-500 mb-3 inline-flex items-center gap-2">
+        <span className="text-zinc-700">//</span>
+        <span className="text-emerald-300">first-run</span>
+        <span className="text-zinc-700">::</span>
+        <span className="text-zinc-500">setup-sequence</span>
+      </p>
+      <ol className="border border-white/[0.06] bg-white/[0.012] divide-y divide-white/[0.04] overflow-hidden rounded-md">
         {steps.map((s, i) => (
           <li key={s.label}>
             <Link
               href={s.href}
-              className="group flex items-start gap-4 px-6 py-4 hover:bg-white/[0.015] transition-colors"
+              className="group flex items-start gap-4 px-5 py-3.5 hover:bg-emerald-500/[0.04] transition-colors"
             >
-              <span className={`mt-1 w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0 ${
-                s.done ? "border-emerald-400 bg-emerald-400/20" : "border-white/[0.12]"
+              <span className={`mt-1 w-4 h-4 border flex items-center justify-center shrink-0 rounded-sm font-mono text-[9px] ${
+                s.done ? "border-emerald-400/60 bg-emerald-400/10 text-emerald-300" : "border-white/[0.12] text-zinc-700"
               }`}>
-                {s.done && <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />}
+                {s.done ? "✓" : (i + 1).toString().padStart(2, "0")}
               </span>
               <div className="flex-1 min-w-0">
-                <p className={`text-[14px] font-medium ${s.done ? "text-zinc-400 line-through decoration-zinc-700" : "text-white"}`}>
-                  {i + 1}. {s.label}
+                <p className={`text-[13px] font-medium font-mono ${s.done ? "text-zinc-500 line-through decoration-zinc-700" : "text-white"}`}>
+                  step.{(i + 1).toString().padStart(2, "0")} — {s.label.toLowerCase()}
                 </p>
-                <p className="text-[12px] text-zinc-500 leading-relaxed mt-0.5">{s.hint}</p>
+                <p className="text-[11px] text-zinc-500 leading-relaxed mt-0.5">{s.hint}</p>
               </div>
             </Link>
           </li>
@@ -486,15 +582,17 @@ function Stat({
   return (
     <Link
       href={href}
-      className="group block px-5 py-4 hover:bg-white/[0.015] transition-colors"
+      className="group block px-4 py-4 hover:bg-emerald-500/[0.04] transition-colors"
     >
-      <div className="flex items-baseline justify-between gap-2 mb-1">
-        <p className={`text-[22px] font-semibold tabular-nums ${tone ?? "text-white"}`}>{value}</p>
+      <div className="flex items-baseline justify-between gap-2 mb-1.5">
+        <p className={`text-[22px] font-mono font-semibold tabular-nums leading-none ${tone ?? "text-white"}`}>{value}</p>
         {spark && spark.length > 0 && (
           <Sparkline values={spark} tone={sparkTone ?? "text-zinc-500"} />
         )}
       </div>
-      <p className="text-[10px] font-mono uppercase tracking-[0.18em] text-zinc-500 mt-1 group-hover:text-zinc-300 transition-colors">{label}</p>
+      <p className="text-[9.5px] font-mono uppercase tracking-[0.18em] text-zinc-500 mt-1 group-hover:text-emerald-300 transition-colors">
+        <span className="text-zinc-700">▸</span> {label}
+      </p>
     </Link>
   );
 }
@@ -508,20 +606,26 @@ function CapabilityGroup({
 }) {
   return (
     <div>
-      <p className="text-[11px] text-zinc-500 mb-3.5">{title}</p>
-      <div className="space-y-3">
+      <p className="font-mono text-[10px] uppercase tracking-[0.24em] text-emerald-300/70 mb-4 inline-flex items-center gap-2">
+        <span className="text-zinc-700">[</span>
+        <span>{title.toLowerCase()}</span>
+        <span className="text-zinc-700">]</span>
+      </p>
+      <div className="space-y-2.5">
         {items.map((item) => {
           const Icon = item.icon;
           return (
             <Link
               key={item.href}
               href={item.href}
-              className="group flex items-start gap-3 py-1"
+              className="group flex items-start gap-3 py-1 hover:translate-x-0.5 transition-transform"
             >
-              <Icon className="h-4 w-4 text-zinc-500 group-hover:text-white transition-colors mt-0.5 shrink-0" />
+              <Icon className="h-3.5 w-3.5 text-zinc-600 group-hover:text-emerald-300 transition-colors mt-0.5 shrink-0" />
               <div className="flex-1 min-w-0">
-                <p className="text-[13px] font-medium text-zinc-200 group-hover:text-white transition-colors">{item.label}</p>
-                <p className="text-[11px] text-zinc-600 leading-relaxed">{item.sub}</p>
+                <p className="text-[12.5px] font-medium font-mono text-zinc-200 group-hover:text-white transition-colors">
+                  {item.label.toLowerCase().replace(/ /g, "_")}
+                </p>
+                <p className="text-[10.5px] text-zinc-600 leading-relaxed font-mono">{item.sub}</p>
               </div>
             </Link>
           );
