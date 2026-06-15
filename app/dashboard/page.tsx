@@ -45,6 +45,7 @@ import { DisconnectButton } from "./DisconnectButton";
 import { ConnectionHealth } from "./ConnectionHealth";
 import { RecentActivity } from "./RecentActivity";
 import { Sparkline } from "./Sparkline";
+import { AxiomBootSequence } from "@/components/workforce/AxiomBootSequence";
 
 type ConnectorStatus = {
   provider: string;
@@ -145,6 +146,9 @@ export default function DashboardPage() {
 
   return (
     <div className="max-w-5xl mx-auto px-1 -mt-2">
+      {/* Robotic boot sequence — letter-by-letter glitch entry. Plays
+          once per session via sessionStorage; honors prefers-reduced-motion. */}
+      <AxiomBootSequence text="VISIONXIXLABS" subtitle="AI workforce online" />
       {/* ─── Header ──────────────────────────────────────────────────────── */}
       <header className="mb-14">
         <div className="flex items-center gap-2 mb-4">
