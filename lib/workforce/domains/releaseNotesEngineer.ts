@@ -10,6 +10,7 @@ import "server-only";
 
 import { prisma } from "@/lib/db";
 import { makeInstrumentedFetcher } from "@/lib/releaseops/instrumentedAiFetcher";
+import { INJECTION_RESISTANCE_CLAUSE, buildUserInputSection } from "@/lib/workforce/domains/promptHardening";
 
 export const RELEASE_NOTES_TARGET_KIND = "engineer_release_notes_draft";
 
@@ -53,6 +54,8 @@ function buildSystemPrompt(): string {
     `You are the Release Notes Engineer on the Axiom platform.`,
     `Your job: take a raw commit log / PR list and draft polished release notes a customer would expect from a SaaS changelog.`,
     ``,
+    INJECTION_RESISTANCE_CLAUSE,
+    ``,
     `RULES:`,
     `  · Never invent changes that aren't visible in the input.`,
     `  · Executive summary: 2-3 sentences naming the headline change, the version's theme, and the most material customer-visible improvement.`,
@@ -67,16 +70,12 @@ function buildSystemPrompt(): string {
 }
 
 function buildUserPrompt(i: ReleaseNotesInput): string {
-  const lines: string[] = [];
-  lines.push(`Title: ${i.title}`);
-  if (i.releaseTag) lines.push(`Release tag: ${i.releaseTag}`);
-  if (i.audience)   lines.push(`Target audience: ${i.audience}`);
-  lines.push(``);
-  lines.push(`Commit log / PR list:`);
-  lines.push("```");
-  lines.push(i.commitLog);
-  lines.push("```");
-  return lines.join("\n");
+  return buildUserInputSection([
+    { label: "title", content: i.title },
+    { label: "release_tag", content: i.releaseTag ?? "" },
+    { label: "target_audience", content: i.audience ?? "" },
+    { label: "commit_log_or_pr_list", content: i.commitLog },
+  ]);
 }
 
 function parseAi(text: string): ParsedAi | null {

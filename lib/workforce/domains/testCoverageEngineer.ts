@@ -11,6 +11,7 @@ import "server-only";
 
 import { prisma } from "@/lib/db";
 import { makeInstrumentedFetcher } from "@/lib/releaseops/instrumentedAiFetcher";
+import { INJECTION_RESISTANCE_CLAUSE, buildUserInputSection } from "@/lib/workforce/domains/promptHardening";
 
 export const TEST_COVERAGE_TARGET_KIND = "engineer_test_coverage_proposal";
 
@@ -55,6 +56,8 @@ function buildSystemPrompt(): string {
     `You are the Test Coverage Engineer on the Axiom platform.`,
     `Your job: given source code, propose a tight test plan a developer can implement directly.`,
     ``,
+    INJECTION_RESISTANCE_CLAUSE,
+    ``,
     `RULES:`,
     `  · Never invent code constructs that aren't visible in the input.`,
     `  · Executive summary: 3-4 sentences naming the public surface area, the most material edge case, and rough effort to land 80%+ branch coverage.`,
@@ -69,17 +72,13 @@ function buildSystemPrompt(): string {
 }
 
 function buildUserPrompt(i: TestCoverageInput): string {
-  const lines: string[] = [];
-  lines.push(`Title: ${i.title}`);
-  if (i.language)  lines.push(`Language: ${i.language}`);
-  if (i.framework) lines.push(`Test framework: ${i.framework}`);
-  if (i.focus)     lines.push(`Operator focus: ${i.focus}`);
-  lines.push(``);
-  lines.push(`Source code:`);
-  lines.push("```");
-  lines.push(i.sourceCode);
-  lines.push("```");
-  return lines.join("\n");
+  return buildUserInputSection([
+    { label: "title", content: i.title },
+    { label: "language", content: i.language ?? "" },
+    { label: "test_framework", content: i.framework ?? "" },
+    { label: "operator_focus", content: i.focus ?? "" },
+    { label: "source_code", content: i.sourceCode },
+  ]);
 }
 
 function parseAi(text: string): ParsedAi | null {
