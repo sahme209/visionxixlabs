@@ -143,8 +143,8 @@ export default async function ComplianceFrameworkAssessmentsPage() {
           </p>
           <ul className="rounded-md border border-white/[0.06] bg-white/[0.012] divide-y divide-white/[0.04] overflow-hidden">
             {decoded.map((d) => (
-              <li key={d.targetId}>
-                <Link href={`/dashboard/agi-memory/${encodeURIComponent(`${COMPLIANCE_FRAMEWORK_TARGET_KIND}:${d.targetId}`)}`} className="block px-5 py-3.5 hover:bg-emerald-500/[0.04] transition-colors">
+              <li key={d.targetId} className="hover:bg-emerald-500/[0.04] transition-colors">
+                <div className="px-5 py-3.5">
                   <div className="flex items-center justify-between gap-3 mb-1 flex-wrap text-[10px] font-mono uppercase tracking-wider">
                     {d.framework && <span className="text-emerald-300">{d.framework}</span>}
                     {d.score !== null && (
@@ -165,7 +165,21 @@ export default async function ComplianceFrameworkAssessmentsPage() {
                     <p className="text-[11.5px] text-zinc-500 mt-0.5 font-mono">{d.frameworkLabel}</p>
                   )}
                   <p className="text-[12.5px] text-zinc-400 leading-relaxed mt-1 line-clamp-2">{d.narrative}</p>
-                </Link>
+                  <div className="flex items-center gap-4 mt-2.5 flex-wrap">
+                    <Link
+                      href={`/dashboard/workforce/compliance_framework_engineer/assessments/${encodeURIComponent(d.targetId)}/packet`}
+                      className="text-[11px] font-mono uppercase tracking-wider text-emerald-300 hover:text-white transition-colors"
+                    >
+                      audit-packet →
+                    </Link>
+                    <Link
+                      href={`/dashboard/agi-memory/${encodeURIComponent(`${COMPLIANCE_FRAMEWORK_TARGET_KIND}:${d.targetId}`)}`}
+                      className="text-[11px] font-mono uppercase tracking-wider text-zinc-500 hover:text-emerald-300 transition-colors"
+                    >
+                      raw-entry →
+                    </Link>
+                  </div>
+                </div>
               </li>
             ))}
           </ul>
