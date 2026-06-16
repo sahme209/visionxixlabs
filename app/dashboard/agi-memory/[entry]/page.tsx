@@ -62,6 +62,7 @@ const KIND_LABEL: Record<string, string> = {
   engineer_policy_decision:             "Policy decision",
   workforce_domain_tick:                "Workforce domain tick",
   workforce_daily_digest:               "Workforce daily digest",
+  engineer_compliance_framework_assessment: "Compliance framework assessment",
 };
 
 const OUTCOME_TONE: Record<string, string> = {
@@ -223,6 +224,8 @@ export default async function AgiMemoryEntryPage({
     sourceHref = `/dashboard/workforce/timeline`;
   } else if (entry.targetKind === "workforce_daily_digest") {
     sourceHref = `/dashboard/workforce`;
+  } else if (entry.targetKind === "engineer_compliance_framework_assessment") {
+    sourceHref = `/dashboard/workforce/compliance_framework_engineer/assessments`;
   } else {
     sourceHref = SOURCE_HREF[entry.targetKind];
   }

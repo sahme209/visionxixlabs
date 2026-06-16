@@ -224,6 +224,14 @@ export const ENGINEER_DOMAIN_IMPLEMENTATIONS: ReadonlyArray<DomainImplementation
     requiresInput: true,
   },
   {
+    engineerId: "compliance_framework_engineer",
+    reportTargetKind: "engineer_compliance_framework_assessment",
+    runDomainEndpoint: "/dashboard/workforce/compliance_framework_engineer/assessments",
+    reportHomeRoute: "/dashboard/workforce/compliance_framework_engineer/assessments",
+    reportLabel: "Compliance framework assessments",
+    requiresInput: true,
+  },
+  {
     engineerId: "boundary_gate_engineer",
     reportTargetKind: "engineer_boundary_classification",
     runDomainEndpoint: "/dashboard/workforce/boundary_gate_engineer/classifications",
