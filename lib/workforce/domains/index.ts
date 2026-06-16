@@ -232,6 +232,14 @@ export const ENGINEER_DOMAIN_IMPLEMENTATIONS: ReadonlyArray<DomainImplementation
     requiresInput: true,
   },
   {
+    engineerId: "dr_planner_engineer",
+    reportTargetKind: "engineer_dr_plan",
+    runDomainEndpoint: "/dashboard/workforce/dr_planner_engineer/plans",
+    reportHomeRoute: "/dashboard/workforce/dr_planner_engineer/plans",
+    reportLabel: "Disaster recovery plans",
+    requiresInput: true,
+  },
+  {
     engineerId: "boundary_gate_engineer",
     reportTargetKind: "engineer_boundary_classification",
     runDomainEndpoint: "/dashboard/workforce/boundary_gate_engineer/classifications",
