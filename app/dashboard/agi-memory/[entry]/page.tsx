@@ -67,6 +67,8 @@ const KIND_LABEL: Record<string, string> = {
   engineer_workload_performance_analysis: "Workload performance analysis",
   workforce_onprem_connector:           "On-prem connector",
   connector_scan_inventory:             "On-prem scan batch",
+  workforce_monitoring_alert:           "Monitoring alert",
+  workforce_monitoring_webhook:         "Monitoring webhook config",
 };
 
 const OUTCOME_TONE: Record<string, string> = {
@@ -240,6 +242,8 @@ export default async function AgiMemoryEntryPage({
     const colon = entry.targetId.indexOf(":");
     const connectorSlug = colon === -1 ? entry.targetId : entry.targetId.slice(0, colon);
     sourceHref = `/dashboard/workforce/on-prem-connectors/${encodeURIComponent(connectorSlug)}`;
+  } else if (entry.targetKind === "workforce_monitoring_alert" || entry.targetKind === "workforce_monitoring_webhook") {
+    sourceHref = `/dashboard/workforce/monitoring-webhook`;
   } else {
     sourceHref = SOURCE_HREF[entry.targetKind];
   }
