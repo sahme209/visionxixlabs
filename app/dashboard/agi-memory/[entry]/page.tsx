@@ -64,6 +64,7 @@ const KIND_LABEL: Record<string, string> = {
   workforce_daily_digest:               "Workforce daily digest",
   engineer_compliance_framework_assessment: "Compliance framework assessment",
   engineer_dr_plan:                     "Disaster recovery plan",
+  engineer_workload_performance_analysis: "Workload performance analysis",
 };
 
 const OUTCOME_TONE: Record<string, string> = {
@@ -229,6 +230,8 @@ export default async function AgiMemoryEntryPage({
     sourceHref = `/dashboard/workforce/compliance_framework_engineer/assessments`;
   } else if (entry.targetKind === "engineer_dr_plan") {
     sourceHref = `/dashboard/workforce/dr_planner_engineer/plans`;
+  } else if (entry.targetKind === "engineer_workload_performance_analysis") {
+    sourceHref = `/dashboard/workforce/workload_performance_engineer/analyses`;
   } else {
     sourceHref = SOURCE_HREF[entry.targetKind];
   }

@@ -240,6 +240,14 @@ export const ENGINEER_DOMAIN_IMPLEMENTATIONS: ReadonlyArray<DomainImplementation
     requiresInput: true,
   },
   {
+    engineerId: "workload_performance_engineer",
+    reportTargetKind: "engineer_workload_performance_analysis",
+    runDomainEndpoint: "/dashboard/workforce/workload_performance_engineer/analyses",
+    reportHomeRoute: "/dashboard/workforce/workload_performance_engineer/analyses",
+    reportLabel: "Workload performance analyses",
+    requiresInput: true,
+  },
+  {
     engineerId: "boundary_gate_engineer",
     reportTargetKind: "engineer_boundary_classification",
     runDomainEndpoint: "/dashboard/workforce/boundary_gate_engineer/classifications",
