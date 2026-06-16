@@ -66,6 +66,7 @@ const KIND_LABEL: Record<string, string> = {
   engineer_dr_plan:                     "Disaster recovery plan",
   engineer_workload_performance_analysis: "Workload performance analysis",
   workforce_onprem_connector:           "On-prem connector",
+  connector_scan_inventory:             "On-prem scan batch",
 };
 
 const OUTCOME_TONE: Record<string, string> = {
@@ -235,6 +236,10 @@ export default async function AgiMemoryEntryPage({
     sourceHref = `/dashboard/workforce/workload_performance_engineer/analyses`;
   } else if (entry.targetKind === "workforce_onprem_connector") {
     sourceHref = `/dashboard/workforce/on-prem-connectors`;
+  } else if (entry.targetKind === "connector_scan_inventory") {
+    const colon = entry.targetId.indexOf(":");
+    const connectorSlug = colon === -1 ? entry.targetId : entry.targetId.slice(0, colon);
+    sourceHref = `/dashboard/workforce/on-prem-connectors/${encodeURIComponent(connectorSlug)}`;
   } else {
     sourceHref = SOURCE_HREF[entry.targetKind];
   }

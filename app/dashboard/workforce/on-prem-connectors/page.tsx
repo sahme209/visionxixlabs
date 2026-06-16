@@ -192,14 +192,20 @@ export default async function OnPremConnectorsPage({
                     <dd className="text-zinc-400">{c.registeredAt.toISOString().slice(0, 19).replace("T", " ")}</dd>
                   </div>
                 </dl>
-                <div className="mt-3 flex items-center gap-3">
+                <div className="mt-3 flex items-center gap-3 flex-wrap">
+                  <Link
+                    href={`/dashboard/workforce/on-prem-connectors/${encodeURIComponent(c.slug)}`}
+                    className="text-[10px] font-mono uppercase tracking-wider px-2 py-1 rounded border border-emerald-500/30 text-emerald-200 hover:text-white hover:border-emerald-500/60 hover:bg-emerald-500/10 transition-colors"
+                  >
+                    open · mint token →
+                  </Link>
                   <form action="/api/workforce/on-prem-connectors/delete" method="POST">
                     <input type="hidden" name="slug" value={c.slug} />
                     <button type="submit" className="text-[10px] font-mono uppercase tracking-wider px-2 py-1 rounded border border-rose-500/30 text-rose-200 hover:text-white hover:border-rose-500/60 hover:bg-rose-500/10 transition-colors">
                       delete
                     </button>
                   </form>
-                  <span className="text-[10.5px] font-mono text-zinc-500">
+                  <span className="text-[10.5px] font-mono text-zinc-500 ml-auto">
                     scanner :: {PLATFORM_LABEL[c.platform].scannerPhase}
                   </span>
                 </div>
