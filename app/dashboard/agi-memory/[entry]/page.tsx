@@ -69,6 +69,8 @@ const KIND_LABEL: Record<string, string> = {
   connector_scan_inventory:             "On-prem scan batch",
   workforce_monitoring_alert:           "Monitoring alert",
   workforce_monitoring_webhook:         "Monitoring webhook config",
+  workforce_integration_config:         "Integration config",
+  workforce_action_execution:           "Action execution",
 };
 
 const OUTCOME_TONE: Record<string, string> = {

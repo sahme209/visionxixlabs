@@ -441,6 +441,9 @@ export default async function WorkforcePage({
           <Link href="/dashboard/workforce/compare" className="text-[11px] font-mono text-zinc-500 hover:text-white transition-colors">
             compare engineers →
           </Link>
+          <Link href="/dashboard/workforce/integrations" className="text-[11px] font-mono text-emerald-300 hover:text-white transition-colors">
+            integrations →
+          </Link>
         </div>
       </div>
       <section className="grid grid-cols-2 md:grid-cols-5 gap-3 mb-8">
