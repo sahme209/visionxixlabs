@@ -254,6 +254,85 @@ async function persistExecution(
 }
 
 /**
+ * Decide whether a signed approval packet should fan out to the
+ * action executor. Pure rule, so the gate is testable without DB.
+ *
+ * Rule: only dispatch when the packet was actually signed (decision=
+ * "approve") AND it's high-stakes — broader than workspace OR not
+ * fully reversible. Fully-reversible workspace-only auto-approvals
+ * would flood the channel.
+ */
+export function shouldDispatchApproval(p: {
+  recommendedDecision: string;
+  impactRadius: string;
+  reversibility: string;
+}): { dispatch: boolean; reason: string } {
+  if (p.recommendedDecision !== "approve") {
+    return { dispatch: false, reason: `decision=${p.recommendedDecision}` };
+  }
+  const broaderThanWorkspace = p.impactRadius === "tenant" || p.impactRadius === "org" || p.impactRadius === "global";
+  const notFullyReversible = p.reversibility !== "fully";
+  if (!broaderThanWorkspace && !notFullyReversible) {
+    return { dispatch: false, reason: "low_stakes_workspace_reversible" };
+  }
+  return { dispatch: true, reason: "high_stakes_signed" };
+}
+
+/**
+ * Fan out an approval packet to every configured integration.
+ * Each leg is best-effort — a Slack 500 must not block the GitHub
+ * issue from opening, and a missing integration must not be an error.
+ */
+export async function dispatchApprovalActions(
+  organizationId: string,
+  packet: {
+    slug: string;
+    title: string;
+    executiveSummary: string;
+    proposalSummary: string;
+    impactRadius: string;
+    decisionAuthority: string;
+    reversibility: string;
+    recommendedDecision: string;
+    approvalChecklist: ReadonlyArray<string>;
+  },
+): Promise<ReadonlyArray<{ kind: ActionKind; result: ExecutionResult; executionSlug: string }>> {
+  const gate = shouldDispatchApproval(packet);
+  if (!gate.dispatch) return [];
+
+  const upstreamRef = `${ACTION_EXECUTION_TARGET_KIND}:${packet.slug}`;
+  const checklist = packet.approvalChecklist.length === 0
+    ? ""
+    : ["", "Approval checklist:", ...packet.approvalChecklist.map((c) => `- [ ] ${c}`)].join("\n");
+  const body = [
+    `**Decision:** ${packet.recommendedDecision} (authority: ${packet.decisionAuthority})`,
+    `**Impact:** ${packet.impactRadius} · **Reversibility:** ${packet.reversibility}`,
+    "",
+    "**Executive summary:**",
+    packet.executiveSummary,
+    "",
+    "**Proposal:**",
+    packet.proposalSummary,
+    checklist,
+  ].filter(Boolean).join("\n");
+
+  const sharedPayload: ActionPayload = {
+    title: `[approver] ${packet.title}`,
+    body,
+    upstreamRef,
+  };
+
+  const results: Array<{ kind: ActionKind; result: ExecutionResult; executionSlug: string }> = [];
+  const [github, slack] = await Promise.all([
+    dispatchAction(organizationId, "github_issue", sharedPayload),
+    dispatchAction(organizationId, "slack_action_post", sharedPayload),
+  ]);
+  results.push({ kind: "github_issue", ...github });
+  results.push({ kind: "slack_action_post", ...slack });
+  return results;
+}
+
+/**
  * Dispatch an action. Reads the workspace's integration config,
  * routes to the matching integration handler, persists the result.
  */
