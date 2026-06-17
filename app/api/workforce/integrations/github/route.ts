@@ -50,6 +50,7 @@ export async function POST(req: Request) {
   await writeIntegrationConfig(org, {
     github: { enabled, repo, patReference, issueLabel },
     slackActions: existing.slackActions,
+    linear: existing.linear,
   });
 
   void auditRecord({

@@ -36,6 +36,7 @@ export async function POST(req: Request) {
   await writeIntegrationConfig(org, {
     github: existing.github,
     slackActions: { enabled, webhookUrl },
+    linear: existing.linear,
   });
 
   void auditRecord({
