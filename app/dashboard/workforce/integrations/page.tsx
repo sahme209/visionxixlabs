@@ -143,7 +143,7 @@ export default async function IntegrationsPage({
               className="w-full rounded border border-white/[0.06] bg-white/[0.02] px-3 py-2 text-[13px] font-mono text-zinc-200 placeholder:text-zinc-600 focus:outline-none focus:border-emerald-500/40 transition-colors"
             />
             <p className="text-[10.5px] text-zinc-500 mt-1 font-mono leading-relaxed">
-              env:// reads from process.env at action time · vault:// / secretsmanager:// requires Phase 647 resolver wiring
+              env://VAR reads process.env · vault://path reads VAULT_ADDR + VAULT_TOKEN (KV v1/v2, .data.value) · secretsmanager://name uses default AWS chain in AWS_REGION · azurekeyvault:// / gcpsecretmanager:// not yet wired
             </p>
           </div>
           <div className="grid sm:grid-cols-2 gap-3">

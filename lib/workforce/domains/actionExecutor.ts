@@ -28,7 +28,7 @@ import "server-only";
 import { prisma } from "@/lib/db";
 import {
   readIntegrationConfig,
-  resolveCredentialReference,
+  resolveCredentialReferenceAsync,
   type GitHubIntegration,
   type SlackActionIntegration,
 } from "@/lib/workforce/domains/integrationRegistry";
@@ -92,15 +92,16 @@ async function executeGithubIssue(
   if (!integration.repo || !integration.repo.includes("/")) {
     return { status: "failed", externalRef: null, detail: "github repo not configured", errorCode: "repo_missing" };
   }
-  const pat = resolveCredentialReference(integration.patReference);
-  if (!pat) {
+  const resolved = await resolveCredentialReferenceAsync(integration.patReference);
+  if (!resolved.ok) {
     return {
       status: "failed",
       externalRef: null,
-      detail: `github PAT could not be resolved from ${integration.patReference} — wire env:// or your secrets manager`,
-      errorCode: "pat_unresolved",
+      detail: `github PAT could not be resolved from ${integration.patReference}: ${resolved.error.detail}`,
+      errorCode: `pat_${resolved.error.errorCode}`,
     };
   }
+  const pat = resolved.value;
 
   const labels = [integration.issueLabel, ...(payload.extraLabels ?? [])].filter(Boolean).slice(0, 10);
   const url = `https://api.github.com/repos/${integration.repo}/issues`;

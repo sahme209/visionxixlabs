@@ -15,6 +15,7 @@ import {
   isValidGithubRepo,
   isValidSlackWebhookUrl,
   resolveCredentialReference,
+  resolveCredentialReferenceAsync,
 } from "../domains/integrationRegistry";
 import { shouldDispatchApproval } from "../domains/actionExecutor";
 
@@ -155,6 +156,136 @@ describe("resolveCredentialReference", () => {
     // (env://GITHUB_ACTION_PAT) matches this contract.
     expect(resolveCredentialReference("env://axiom_lower")).toBeNull();
     expect(resolveCredentialReference("env://AXIOM_LOWER")).toBe("lower-value");
+  });
+});
+
+describe("resolveCredentialReferenceAsync :: vault", () => {
+  const realFetch = globalThis.fetch;
+  const cleanup: string[] = [];
+
+  afterEach(() => {
+    globalThis.fetch = realFetch;
+    for (const k of cleanup.splice(0)) delete process.env[k];
+  });
+
+  it("returns vault_unauthorized when VAULT_ADDR or VAULT_TOKEN is missing", async () => {
+    const r = await resolveCredentialReferenceAsync("vault://secret/data/github/pat");
+    expect(r.ok).toBe(false);
+    if (!r.ok) expect(r.error.errorCode).toBe("vault_unauthorized");
+  });
+
+  it("reads value from a KV v2 response", async () => {
+    process.env.VAULT_ADDR = "https://vault.example.com";
+    process.env.VAULT_TOKEN = "hvs.aaaaaaaaaaaa";
+    cleanup.push("VAULT_ADDR", "VAULT_TOKEN");
+    globalThis.fetch = (async (url: string | URL | Request, init?: RequestInit) => {
+      expect(String(url)).toBe("https://vault.example.com/v1/secret/data/github/pat");
+      const headers = (init?.headers ?? {}) as Record<string, string>;
+      expect(headers["X-Vault-Token"]).toBe("hvs.aaaaaaaaaaaa");
+      return new Response(JSON.stringify({ data: { data: { value: "ghp_resolved_vault" } } }), {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+      });
+    }) as typeof fetch;
+    const r = await resolveCredentialReferenceAsync("vault://secret/data/github/pat");
+    expect(r.ok).toBe(true);
+    if (r.ok) expect(r.value).toBe("ghp_resolved_vault");
+  });
+
+  it("falls back to KV v1 shape (data.value at top level)", async () => {
+    process.env.VAULT_ADDR = "https://vault.example.com";
+    process.env.VAULT_TOKEN = "hvs.x";
+    cleanup.push("VAULT_ADDR", "VAULT_TOKEN");
+    globalThis.fetch = (async () => new Response(JSON.stringify({ data: { value: "ghp_v1" } }), { status: 200 })) as typeof fetch;
+    const r = await resolveCredentialReferenceAsync("vault://kv/github/pat");
+    expect(r.ok).toBe(true);
+    if (r.ok) expect(r.value).toBe("ghp_v1");
+  });
+
+  it("surfaces 403 as vault_unauthorized", async () => {
+    process.env.VAULT_ADDR = "https://vault.example.com";
+    process.env.VAULT_TOKEN = "bad-token";
+    cleanup.push("VAULT_ADDR", "VAULT_TOKEN");
+    globalThis.fetch = (async () => new Response("permission denied", { status: 403 })) as typeof fetch;
+    const r = await resolveCredentialReferenceAsync("vault://secret/data/github/pat");
+    expect(r.ok).toBe(false);
+    if (!r.ok) expect(r.error.errorCode).toBe("vault_unauthorized");
+  });
+
+  it("surfaces 404 as vault_not_found", async () => {
+    process.env.VAULT_ADDR = "https://vault.example.com";
+    process.env.VAULT_TOKEN = "ok";
+    cleanup.push("VAULT_ADDR", "VAULT_TOKEN");
+    globalThis.fetch = (async () => new Response("{}", { status: 404 })) as typeof fetch;
+    const r = await resolveCredentialReferenceAsync("vault://secret/data/missing");
+    expect(r.ok).toBe(false);
+    if (!r.ok) expect(r.error.errorCode).toBe("vault_not_found");
+  });
+
+  it("surfaces vault_no_value when the JSON has no value field", async () => {
+    process.env.VAULT_ADDR = "https://vault.example.com";
+    process.env.VAULT_TOKEN = "ok";
+    cleanup.push("VAULT_ADDR", "VAULT_TOKEN");
+    globalThis.fetch = (async () => new Response(JSON.stringify({ data: { data: { wrong_field: "x" } } }), { status: 200 })) as typeof fetch;
+    const r = await resolveCredentialReferenceAsync("vault://secret/data/odd");
+    expect(r.ok).toBe(false);
+    if (!r.ok) expect(r.error.errorCode).toBe("vault_no_value");
+  });
+
+  it("treats fetch rejection as vault_unreachable (never throws)", async () => {
+    process.env.VAULT_ADDR = "https://vault.example.com";
+    process.env.VAULT_TOKEN = "ok";
+    cleanup.push("VAULT_ADDR", "VAULT_TOKEN");
+    globalThis.fetch = (async () => { throw new Error("ECONNREFUSED"); }) as typeof fetch;
+    const r = await resolveCredentialReferenceAsync("vault://secret/data/x");
+    expect(r.ok).toBe(false);
+    if (!r.ok) expect(r.error.errorCode).toBe("vault_unreachable");
+  });
+});
+
+describe("resolveCredentialReferenceAsync :: env + scheme dispatch", () => {
+  const cleanup: string[] = [];
+  afterEach(() => {
+    for (const k of cleanup.splice(0)) delete process.env[k];
+  });
+
+  it("returns invalid_reference for garbage input", async () => {
+    const r = await resolveCredentialReferenceAsync("not a real reference");
+    expect(r.ok).toBe(false);
+    if (!r.ok) expect(r.error.errorCode).toBe("invalid_reference");
+  });
+
+  it("returns env_unset when the env var is missing", async () => {
+    const r = await resolveCredentialReferenceAsync("env://AXIOM_ABSOLUTELY_UNSET_VAR");
+    expect(r.ok).toBe(false);
+    if (!r.ok) expect(r.error.errorCode).toBe("env_unset");
+  });
+
+  it("resolves env:// successfully", async () => {
+    process.env.AXIOM_ASYNC_OK = "ok-value";
+    cleanup.push("AXIOM_ASYNC_OK");
+    const r = await resolveCredentialReferenceAsync("env://AXIOM_ASYNC_OK");
+    expect(r.ok).toBe(true);
+    if (r.ok) expect(r.value).toBe("ok-value");
+  });
+
+  it("returns scheme_not_wired for azurekeyvault://", async () => {
+    const r = await resolveCredentialReferenceAsync("azurekeyvault://my-vault/secret");
+    expect(r.ok).toBe(false);
+    if (!r.ok) expect(r.error.errorCode).toBe("scheme_not_wired");
+  });
+
+  it("returns scheme_not_wired for gcpsecretmanager://", async () => {
+    const r = await resolveCredentialReferenceAsync("gcpsecretmanager://projects/p/secrets/x");
+    expect(r.ok).toBe(false);
+    if (!r.ok) expect(r.error.errorCode).toBe("scheme_not_wired");
+  });
+
+  it("synchronous resolveCredentialReference still handles env:// only (back-compat)", () => {
+    process.env.AXIOM_SYNC_OK = "sync-value";
+    cleanup.push("AXIOM_SYNC_OK");
+    expect(resolveCredentialReference("env://AXIOM_SYNC_OK")).toBe("sync-value");
+    expect(resolveCredentialReference("vault://secret/data/x")).toBeNull();
   });
 });
 

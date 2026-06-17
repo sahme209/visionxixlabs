@@ -168,21 +168,176 @@ export async function writeIntegrationConfig(
 }
 
 /**
- * Resolve a credential reference into the actual secret at action
- * time. env:// is supported in-process; the other prefixes return
- * null and the caller surfaces a clear "secrets manager
- * integration not wired" error. Phase 647 wires vault and
- * secretsmanager via configurable resolvers.
+ * Pure env-var resolver. Kept synchronous + exported so the Phase
+ * 645 tests can assert the lowercase-stripping contract without
+ * touching the async dispatch path.
+ */
+export function resolveEnvReference(ref: string): string | null {
+  if (!isValidCredentialReference(ref)) return null;
+  if (!ref.toLowerCase().startsWith("env://")) return null;
+  const varName = ref.slice("env://".length).replace(/[^A-Z0-9_]/g, "");
+  if (!varName) return null;
+  const v = process.env[varName];
+  return v && v.length > 0 ? v : null;
+}
+
+export interface ResolveError {
+  errorCode: "invalid_reference" | "env_unset" | "vault_unreachable" | "vault_unauthorized" | "vault_not_found" | "vault_no_value" | "aws_unreachable" | "aws_not_found" | "aws_no_value" | "scheme_not_wired";
+  detail: string;
+}
+
+/**
+ * Async credential resolution at action time.
+ *
+ * Supported schemes (Phase 647):
+ *   · env://VAR_NAME   — process.env lookup (in-process)
+ *   · vault://path     — HashiCorp Vault KV v2 read. Reads
+ *                        VAULT_ADDR + VAULT_TOKEN from process.env.
+ *                        Path is the KV v2 mount path; we hit
+ *                        `{VAULT_ADDR}/v1/{path}` and pull `data.data.value`.
+ *   · secretsmanager://name  — AWS Secrets Manager. Reads
+ *                        AWS_REGION from process.env, uses the
+ *                        default credential chain (IRSA / instance
+ *                        profile / env / SSO). Returns SecretString.
+ *
+ * Not yet wired:
+ *   · azurekeyvault:// — needs @azure/keyvault-secrets binding
+ *   · gcpsecretmanager:// — needs @google-cloud/secret-manager package
+ *
+ * Returns the secret string on success, or a ResolveError describing
+ * exactly what's broken so the action-executor row gives the operator
+ * a clear path to fix it ("env var X is unset" / "vault returned 403"
+ * / "AWS secret not found in region us-east-1").
+ */
+export async function resolveCredentialReferenceAsync(
+  ref: string,
+): Promise<{ ok: true; value: string } | { ok: false; error: ResolveError }> {
+  if (!isValidCredentialReference(ref)) {
+    return { ok: false, error: { errorCode: "invalid_reference", detail: "reference did not match an accepted scheme" } };
+  }
+  const lower = ref.toLowerCase();
+  if (lower.startsWith("env://")) {
+    const v = resolveEnvReference(ref);
+    if (v !== null) return { ok: true, value: v };
+    return { ok: false, error: { errorCode: "env_unset", detail: `env var named by ${ref} is unset or empty` } };
+  }
+  if (lower.startsWith("vault://")) {
+    return resolveVault(ref);
+  }
+  if (lower.startsWith("secretsmanager://")) {
+    return resolveAwsSecretsManager(ref);
+  }
+  return {
+    ok: false,
+    error: {
+      errorCode: "scheme_not_wired",
+      detail: `${ref.split(":")[0]}:// resolver not wired in this build — open an issue to request it`,
+    },
+  };
+}
+
+async function resolveVault(
+  ref: string,
+): Promise<{ ok: true; value: string } | { ok: false; error: ResolveError }> {
+  const addr = process.env.VAULT_ADDR;
+  const token = process.env.VAULT_TOKEN;
+  if (!addr || !token) {
+    return {
+      ok: false,
+      error: {
+        errorCode: "vault_unauthorized",
+        detail: "VAULT_ADDR or VAULT_TOKEN is unset in process.env",
+      },
+    };
+  }
+  const path = ref.slice("vault://".length).replace(/^\/+/, "");
+  if (!path) {
+    return { ok: false, error: { errorCode: "invalid_reference", detail: "vault path is empty" } };
+  }
+  const base = addr.replace(/\/+$/, "");
+  const url = `${base}/v1/${path}`;
+  try {
+    const res = await fetch(url, {
+      method: "GET",
+      headers: {
+        "X-Vault-Token": token,
+        Accept: "application/json",
+        "User-Agent": "visionxixlabs-credential-resolver/1.0",
+      },
+      signal: AbortSignal.timeout(8_000),
+    });
+    if (res.status === 403 || res.status === 401) {
+      return { ok: false, error: { errorCode: "vault_unauthorized", detail: `vault returned ${res.status}` } };
+    }
+    if (res.status === 404) {
+      return { ok: false, error: { errorCode: "vault_not_found", detail: `vault path ${path} not found` } };
+    }
+    if (!res.ok) {
+      return { ok: false, error: { errorCode: "vault_unreachable", detail: `vault returned ${res.status}` } };
+    }
+    const json = (await res.json().catch(() => null)) as
+      | { data?: { data?: Record<string, unknown>; value?: unknown } }
+      | null;
+    // KV v2 nests under data.data.value; KV v1 puts it under data.value.
+    const v2Value = json?.data?.data?.value;
+    const v1Value = json?.data?.value;
+    const value = typeof v2Value === "string" ? v2Value : typeof v1Value === "string" ? v1Value : null;
+    if (!value) {
+      return { ok: false, error: { errorCode: "vault_no_value", detail: "vault response did not include a string 'value' field" } };
+    }
+    return { ok: true, value };
+  } catch (e) {
+    return {
+      ok: false,
+      error: {
+        errorCode: "vault_unreachable",
+        detail: e instanceof Error ? e.message.slice(0, 200) : "unknown error",
+      },
+    };
+  }
+}
+
+async function resolveAwsSecretsManager(
+  ref: string,
+): Promise<{ ok: true; value: string } | { ok: false; error: ResolveError }> {
+  const region = process.env.AWS_REGION ?? process.env.AWS_DEFAULT_REGION;
+  if (!region) {
+    return {
+      ok: false,
+      error: { errorCode: "aws_unreachable", detail: "AWS_REGION / AWS_DEFAULT_REGION unset" },
+    };
+  }
+  const secretId = ref.slice("secretsmanager://".length).replace(/^\/+/, "");
+  if (!secretId) {
+    return { ok: false, error: { errorCode: "invalid_reference", detail: "secretsmanager secret id is empty" } };
+  }
+  try {
+    const { SecretsManagerClient, GetSecretValueCommand } = await import("@aws-sdk/client-secrets-manager");
+    const client = new SecretsManagerClient({ region });
+    const out = await client.send(new GetSecretValueCommand({ SecretId: secretId }));
+    const v = out.SecretString;
+    if (!v) {
+      return {
+        ok: false,
+        error: { errorCode: "aws_no_value", detail: "AWS Secrets Manager returned no SecretString (binary secrets not supported here)" },
+      };
+    }
+    return { ok: true, value: v };
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : String(e);
+    if (/ResourceNotFoundException|not found/i.test(msg)) {
+      return { ok: false, error: { errorCode: "aws_not_found", detail: `secret ${secretId} not found in ${region}` } };
+    }
+    return { ok: false, error: { errorCode: "aws_unreachable", detail: msg.slice(0, 200) } };
+  }
+}
+
+/**
+ * Deprecated synchronous resolver. Retained as a thin wrapper for
+ * call sites we haven't migrated yet; new code should use
+ * resolveCredentialReferenceAsync. Synchronous lookup only handles
+ * env://.
  */
 export function resolveCredentialReference(ref: string): string | null {
-  if (!isValidCredentialReference(ref)) return null;
-  if (ref.toLowerCase().startsWith("env://")) {
-    const varName = ref.slice("env://".length).replace(/[^A-Z0-9_]/g, "");
-    if (!varName) return null;
-    const v = process.env[varName];
-    return v && v.length > 0 ? v : null;
-  }
-  // vault:// / secretsmanager:// / azurekeyvault:// / gcpsecretmanager://
-  // require external resolvers that aren't wired in this phase.
-  return null;
+  return resolveEnvReference(ref);
 }
