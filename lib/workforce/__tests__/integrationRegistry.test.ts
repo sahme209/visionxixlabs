@@ -13,6 +13,8 @@ import { describe, it, expect, afterEach } from "vitest";
 import {
   isValidCredentialReference,
   isValidGithubRepo,
+  isValidLinearLabel,
+  isValidLinearTeamId,
   isValidSlackWebhookUrl,
   resolveCredentialReference,
   resolveCredentialReferenceAsync,
@@ -77,6 +79,42 @@ describe("isValidCredentialReference", () => {
   it("rejects empty + pathologically long input", () => {
     expect(isValidCredentialReference("")).toBe(false);
     expect(isValidCredentialReference(`env://${"X".repeat(500)}`)).toBe(false);
+  });
+});
+
+describe("isValidLinearTeamId", () => {
+  it("accepts a UUID v4", () => {
+    expect(isValidLinearTeamId("b3c2a1d4-e5f6-4789-9abc-0123456789ab")).toBe(true);
+  });
+  it("accepts a short lowercase slug", () => {
+    expect(isValidLinearTeamId("eng")).toBe(true);
+    expect(isValidLinearTeamId("platform")).toBe(true);
+  });
+  it("rejects uppercase slugs", () => {
+    expect(isValidLinearTeamId("ENG")).toBe(false);
+  });
+  it("rejects empty / too-long", () => {
+    expect(isValidLinearTeamId("")).toBe(false);
+    expect(isValidLinearTeamId("a".repeat(81))).toBe(false);
+  });
+  it("rejects garbage", () => {
+    expect(isValidLinearTeamId("not a team")).toBe(false);
+    expect(isValidLinearTeamId("../etc/passwd")).toBe(false);
+  });
+});
+
+describe("isValidLinearLabel", () => {
+  it("accepts simple labels", () => {
+    expect(isValidLinearLabel("axiom-finding")).toBe(true);
+    expect(isValidLinearLabel("Axiom Finding")).toBe(true);
+    expect(isValidLinearLabel("")).toBe(true); // empty is allowed
+  });
+  it("rejects characters that could break the Linear label query", () => {
+    expect(isValidLinearLabel("foo&bar")).toBe(false);
+    expect(isValidLinearLabel("foo<script>")).toBe(false);
+  });
+  it("rejects oversized labels", () => {
+    expect(isValidLinearLabel("a".repeat(65))).toBe(false);
   });
 });
 

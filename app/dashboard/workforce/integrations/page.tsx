@@ -228,6 +228,80 @@ export default async function IntegrationsPage({
         </form>
       </section>
 
+      {/* Linear config */}
+      <form id="linear-test-form" action="/api/workforce/integrations/linear/test" method="POST" />
+      <section className="mb-8 rounded-md border border-emerald-500/20 bg-emerald-500/[0.04] p-5">
+        <p className="font-mono text-[10px] uppercase tracking-[0.24em] text-emerald-300 mb-3 inline-flex items-center gap-2">
+          <span className="text-zinc-700">//</span>
+          <span>linear-ticket</span>
+          <span className="text-zinc-700">::</span>
+          <span className={config.linear?.enabled ? "text-emerald-300" : "text-zinc-500"}>
+            {config.linear?.enabled ? "enabled" : "not configured"}
+          </span>
+        </p>
+        <p className="text-[11.5px] text-zinc-500 mb-3 font-mono">
+          fires when council / approver / finops verdicts need to land in a non-engineering tracker (PM, ops, finance)
+        </p>
+        <form action="/api/workforce/integrations/linear" method="POST" className="space-y-3">
+          <div>
+            <label htmlFor="teamId" className="text-[10px] font-mono uppercase tracking-[0.18em] text-emerald-300 mb-1.5 block">team id</label>
+            <input
+              id="teamId"
+              name="teamId"
+              required
+              maxLength={80}
+              defaultValue={config.linear?.teamId ?? ""}
+              placeholder="b3c2a1d4-e5f6-... (Linear team UUID)"
+              className="w-full rounded border border-white/[0.06] bg-white/[0.02] px-3 py-2 text-[13px] font-mono text-zinc-200 placeholder:text-zinc-600 focus:outline-none focus:border-emerald-500/40 transition-colors"
+            />
+          </div>
+          <div>
+            <label htmlFor="apiKeyReference" className="text-[10px] font-mono uppercase tracking-[0.18em] text-emerald-300 mb-1.5 block">api key reference</label>
+            <input
+              id="apiKeyReference"
+              name="apiKeyReference"
+              required
+              maxLength={400}
+              defaultValue={config.linear?.apiKeyReference ?? "env://LINEAR_API_KEY"}
+              placeholder="env://LINEAR_API_KEY or vault://kv/linear/api or secretsmanager://linear-key"
+              className="w-full rounded border border-white/[0.06] bg-white/[0.02] px-3 py-2 text-[13px] font-mono text-zinc-200 placeholder:text-zinc-600 focus:outline-none focus:border-emerald-500/40 transition-colors"
+            />
+          </div>
+          <div className="grid sm:grid-cols-2 gap-3">
+            <div>
+              <label htmlFor="labelName" className="text-[10px] font-mono uppercase tracking-[0.18em] text-emerald-300 mb-1.5 block">label name</label>
+              <input
+                id="labelName"
+                name="labelName"
+                maxLength={64}
+                defaultValue={config.linear?.labelName ?? "axiom-finding"}
+                className="w-full rounded border border-white/[0.06] bg-white/[0.02] px-3 py-2 text-[13px] font-mono text-zinc-200 focus:outline-none focus:border-emerald-500/40 transition-colors"
+              />
+            </div>
+            <div>
+              <label htmlFor="linearEnabled" className="text-[10px] font-mono uppercase tracking-[0.18em] text-emerald-300 mb-1.5 block">enabled</label>
+              <select
+                id="linearEnabled"
+                name="enabled"
+                defaultValue={config.linear?.enabled === false ? "false" : "true"}
+                className="w-full rounded border border-white/[0.06] bg-white/[0.02] px-3 py-2 text-[13px] text-zinc-200 focus:outline-none focus:border-emerald-500/40 transition-colors"
+              >
+                <option value="true">yes</option>
+                <option value="false">paused</option>
+              </select>
+            </div>
+          </div>
+          <div className="flex items-center justify-between gap-3 flex-wrap pt-1">
+            <button type="submit" form="linear-test-form" className="text-[11px] font-mono uppercase tracking-wider px-3 py-1.5 rounded-full border border-emerald-500/30 text-emerald-200 hover:text-white hover:border-emerald-500/60 hover:bg-emerald-500/10 transition-colors">
+              test :: file ticket →
+            </button>
+            <button type="submit" className="text-[11px] font-mono uppercase tracking-wider px-4 py-2 rounded-full border border-emerald-500/30 text-emerald-100 hover:text-white hover:border-emerald-500/60 hover:bg-emerald-500/15 transition-colors">
+              save →
+            </button>
+          </div>
+        </form>
+      </section>
+
       {/* Action history */}
       <section>
         <p className="font-mono text-[10px] uppercase tracking-[0.24em] text-zinc-500 mb-3 inline-flex items-center gap-2">

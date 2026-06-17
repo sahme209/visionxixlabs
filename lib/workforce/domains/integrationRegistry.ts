@@ -46,12 +46,24 @@ export interface SlackActionIntegration {
   webhookUrl: string;
 }
 
+export interface LinearIntegration {
+  enabled: boolean;
+  /** Linear team UUID. Required for issueCreate. */
+  teamId: string;
+  /** Reference to the API key. Linear personal API keys live anywhere
+   *  the customer wants — env://, vault://, secretsmanager://. */
+  apiKeyReference: string;
+  /** Optional label applied to every issue we file. */
+  labelName: string;
+}
+
 export interface IntegrationConfig {
   github: GitHubIntegration | null;
   slackActions: SlackActionIntegration | null;
+  linear: LinearIntegration | null;
 }
 
-const EMPTY: IntegrationConfig = { github: null, slackActions: null };
+const EMPTY: IntegrationConfig = { github: null, slackActions: null, linear: null };
 
 /** Recognized credential reference prefixes. We don't try to
  *  resolve them here — the action executor calls a resolver that
@@ -65,6 +77,19 @@ export function isValidGithubRepo(repo: string): boolean {
   if (typeof repo !== "string" || repo.length === 0 || repo.length > 200) return false;
   // owner/repo — alphanumerics, hyphens, underscores, dots.
   return /^[\w.-]+\/[\w.-]+$/.test(repo);
+}
+
+export function isValidLinearTeamId(id: string): boolean {
+  if (typeof id !== "string" || id.length === 0 || id.length > 80) return false;
+  // Linear team IDs are UUIDs. Accept UUID v4 shape; also allow the
+  // short slug form Linear sometimes returns (3-12 lowercase chars).
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id) ||
+    /^[a-z][a-z0-9]{2,11}$/.test(id);
+}
+
+export function isValidLinearLabel(label: string): boolean {
+  if (typeof label !== "string") return false;
+  return label.length >= 0 && label.length <= 64 && /^[\w .\-]*$/.test(label);
 }
 
 export function isValidSlackWebhookUrl(url: string): boolean {
@@ -114,7 +139,15 @@ export async function readIntegrationConfig(
           webhookUrl: tags.get("slack_actions_webhook_url") ?? "",
         }
       : null;
-    return { github, slackActions };
+    const linear: LinearIntegration | null = tags.get("linear_enabled") !== undefined
+      ? {
+          enabled: tags.get("linear_enabled") !== "false",
+          teamId: tags.get("linear_team_id") ?? "",
+          apiKeyReference: tags.get("linear_api_key_reference") ?? "",
+          labelName: tags.get("linear_label_name") ?? "axiom-finding",
+        }
+      : null;
+    return { github, slackActions, linear };
   } catch {
     return EMPTY;
   }
@@ -135,9 +168,16 @@ export async function writeIntegrationConfig(
     payload.push(`slack_actions_enabled|${config.slackActions.enabled ? "true" : "false"}`);
     payload.push(`slack_actions_webhook_url|${config.slackActions.webhookUrl}`);
   }
+  if (config.linear) {
+    payload.push(`linear_enabled|${config.linear.enabled ? "true" : "false"}`);
+    payload.push(`linear_team_id|${config.linear.teamId}`);
+    payload.push(`linear_api_key_reference|${config.linear.apiKeyReference}`);
+    payload.push(`linear_label_name|${config.linear.labelName}`);
+  }
   const enabledLines: string[] = [];
   if (config.github?.enabled) enabledLines.push(`github(${config.github.repo})`);
   if (config.slackActions?.enabled) enabledLines.push("slack");
+  if (config.linear?.enabled) enabledLines.push(`linear(${config.linear.teamId})`);
   const narrative = `Integration config · ${enabledLines.length === 0 ? "none enabled" : enabledLines.join(" · ")}.`;
 
   await prisma.aiRationaleEnrichment.upsert({
