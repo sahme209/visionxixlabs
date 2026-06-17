@@ -71,19 +71,26 @@ export default async function TeamPage({
     // migration_pending → fall through with null; page degrades to read-only.
   }
 
-  // All members in the workspace.
+  // All members in the workspace. OrgMembership has no User relation
+  // declared in the schema, so we fetch members + users separately and
+  // join in memory.
   let members: MemberRow[] = [];
   try {
     const rows = await prisma.orgMembership.findMany({
       where: { organizationId: String(ctx.organizationId) },
       orderBy: [{ role: "asc" }, { createdAt: "asc" }],
-      include: {
-        user: { select: { email: true, name: true } },
-      },
     });
+    const userIds = Array.from(new Set(rows.map((r) => r.userId)));
+    const users = userIds.length > 0
+      ? await prisma.user.findMany({
+          where: { id: { in: userIds } },
+          select: { id: true, email: true },
+        })
+      : [];
+    const emailByUserId = new Map(users.map((u) => [u.id, u.email]));
     members = rows.map((r) => ({
       id: r.id,
-      email: r.user?.email ?? "(no email)",
+      email: emailByUserId.get(r.userId) ?? "(no email)",
       role: r.role,
       isSelf: String(r.userId) === String(ctx.userId),
       acceptedAt: r.acceptedAt,
