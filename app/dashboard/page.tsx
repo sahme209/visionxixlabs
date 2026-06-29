@@ -403,10 +403,10 @@ export default function DashboardPage() {
           <CapabilityGroup
             title="Inspect"
             items={[
-              { href: "/dashboard/findings",    icon: CloudIcon,          label: "Findings",    sub: "What your latest scan found" },
-              { href: "/dashboard/scans",       icon: ArrowPathIcon,      label: "Scans",       sub: "History of every run" },
-              { href: "/dashboard/audit",       icon: DocumentTextIcon,   label: "Audit",       sub: "Every meaningful event" },
-              { href: "/dashboard/reliability", icon: BoltIcon,           label: "Reliability", sub: "Circuits + retries" },
+              { href: "/dashboard/findings",     icon: CloudIcon,          label: "Findings",     sub: "What your latest scan found" },
+              { href: "/dashboard/scans",        icon: ArrowPathIcon,      label: "Scans",        sub: "History of every run" },
+              { href: "/dashboard/audit",        icon: DocumentTextIcon,   label: "Audit",        sub: "Every meaningful event" },
+              { href: "/dashboard/capabilities", icon: CommandLineIcon,    label: "Capabilities", sub: "What Axiom can do right now" },
             ]}
           />
         </div>
