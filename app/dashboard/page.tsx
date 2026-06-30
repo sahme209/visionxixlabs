@@ -39,6 +39,7 @@ import {
 import { resolveNextAction } from "@/lib/product/nextAction";
 import { useDesktopRuntime } from "@/lib/desktop/useDesktopRuntime";
 import { assessOnboarding } from "@/lib/onboarding/onboardingState";
+import { computeHonestyCounts } from "@/lib/actions/actionRegistry";
 import { RunScanButton } from "./RunScanButton";
 import { DisconnectButton } from "./DisconnectButton";
 import { ConnectionHealth } from "./ConnectionHealth";
@@ -184,6 +185,9 @@ export default function DashboardPage() {
           <span className="text-zinc-300">audited</span>.
         </p>
       </header>
+
+      {/* ─── Phase 658: honest action-surface chip — answered above the fold ─ */}
+      <ActionSurfaceChip />
 
       {/* ─── Next best action — real-state aware ──────────────────────────── */}
       <section className="mb-10">
@@ -490,6 +494,45 @@ function SectionKicker({
         </>
       )}
     </p>
+  );
+}
+
+/**
+ * Phase 658: honest action-surface chip rendered above the fold on
+ * /dashboard. Pulls live counts from lib/actions/actionRegistry —
+ * answers the founder question ("what can Axiom do right now?")
+ * without requiring a click into /dashboard/command-center or
+ * /dashboard/capabilities. Pure typed metadata, no fetch.
+ */
+function ActionSurfaceChip() {
+  const counts = computeHonestyCounts();
+  return (
+    <section className="mb-6 -mt-2">
+      <Link
+        href="/dashboard/capabilities"
+        className="block rounded-md border border-emerald-500/20 bg-emerald-500/[0.025] px-4 py-3 hover:border-emerald-500/40 hover:bg-emerald-500/[0.05] transition-colors group"
+      >
+        <p className="font-mono text-[10px] uppercase tracking-[0.24em] text-emerald-300 mb-1.5 inline-flex items-center gap-2">
+          <span className="text-zinc-700">//</span>
+          <span>action-surface</span>
+          <span className="text-zinc-700">::</span>
+          <span className="text-zinc-500">{counts.total} typed actions</span>
+        </p>
+        <p className="text-[13px] text-zinc-200 leading-relaxed">
+          <span className="text-emerald-300 font-semibold">{counts.live} live</span>
+          <span className="text-zinc-500"> · </span>
+          <span className="text-sky-300 font-semibold">{counts.preview} preview</span>
+          <span className="text-zinc-500"> · </span>
+          <span className="text-emerald-300 font-semibold">{counts.governed} governed</span>
+          <span className="text-zinc-500"> · </span>
+          <span className="text-amber-300 font-semibold">{counts.needs_setup} need setup</span>
+          <span className="text-zinc-500"> · </span>
+          <span className="text-rose-300 font-semibold">{counts.unsafe} unsafe blocked by design</span>
+          <span className="text-zinc-500"> — </span>
+          <span className="text-emerald-300 group-hover:text-white transition-colors underline underline-offset-2">audit every action →</span>
+        </p>
+      </Link>
+    </section>
   );
 }
 
