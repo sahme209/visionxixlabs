@@ -18,7 +18,7 @@
 import { NextResponse } from "next/server";
 import { currentContext } from "@/lib/auth/currentContext";
 import { prisma } from "@/lib/db";
-import { computeHonestyCounts } from "@/lib/actions/actionRegistry";
+import { computeHonestyCounts, computeCompositeHealthScore } from "@/lib/actions/actionRegistry";
 import { summarizeValidation } from "@/lib/validation/platformValidationMatrix";
 
 export const dynamic = "force-dynamic";
@@ -57,11 +57,11 @@ export async function GET() {
   } catch { /* unauthenticated or table missing — leave null */ }
 
   // Composite "is the platform healthy enough to recommend" score.
-  // Honest: this is a weighted blend, not a synthetic SLO. Operators
-  // can debug each component via /dashboard/{capabilities,validation,command-center}.
+  // See computeCompositeHealthScore docs for the weighting rationale.
+  // Operators can debug each component via the dashboard links below.
   const liveRatio = actionCounts.total > 0 ? actionCounts.live / actionCounts.total : 0;
   const matrixScore = matrixSummary.score; // 0..1
-  const compositeScore = Math.round(((liveRatio * 0.4) + (matrixScore * 0.6)) * 100);
+  const compositeScore = computeCompositeHealthScore(liveRatio, matrixScore);
 
   return NextResponse.json({
     compositeScore,

@@ -803,3 +803,26 @@ export const SAFETY_LABEL: Record<SafetyTier, string> = {
   governed: "Governed (approval-gated)",
   unsafe: "Unsafe (execution-blocked)",
 };
+
+/**
+ * Phase 665: composite platform-state score for /api/capabilities/health.
+ *
+ * Pure function so external monitoring + Copilot get a stable
+ * 0..100 score they can chart. Weighted blend, NOT a synthetic SLO:
+ *
+ *   · 40% action liveness — (live actions) / (total actions in registry)
+ *   · 60% validation matrix score — already 0..1 weighted by status
+ *     (passing=1.0, partial=0.6, preview=0.4, blocked=0.2, failing=0)
+ *
+ * The matrix has more weight because it's evidence-backed; the
+ * registry counts what's CLAIMED to be live. A drift between the
+ * two (high registry liveness but low matrix score) signals
+ * overclaiming.
+ *
+ * Inputs clamped to [0, 1] for honest behavior on bad calls.
+ */
+export function computeCompositeHealthScore(liveActionRatio: number, matrixScore: number): number {
+  const a = Math.max(0, Math.min(1, liveActionRatio));
+  const m = Math.max(0, Math.min(1, matrixScore));
+  return Math.round(((a * 0.4) + (m * 0.6)) * 100);
+}

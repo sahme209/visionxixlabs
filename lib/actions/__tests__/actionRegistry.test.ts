@@ -16,6 +16,7 @@ import { describe, it, expect } from "vitest";
 import {
   ACTION_REGISTRY,
   computeHonestyCounts,
+  computeCompositeHealthScore,
   CATEGORY_LABEL,
   STATUS_LABEL,
   SAFETY_LABEL,
@@ -225,5 +226,37 @@ describe("ACTION_REGISTRY :: labels exhaustive", () => {
     for (const t of used) {
       expect(SAFETY_LABEL[t], `missing SAFETY_LABEL for ${t}`).toBeTruthy();
     }
+  });
+});
+
+describe("computeCompositeHealthScore (Phase 665)", () => {
+  it("perfect score = 100", () => {
+    expect(computeCompositeHealthScore(1, 1)).toBe(100);
+  });
+  it("zero on both axes = 0", () => {
+    expect(computeCompositeHealthScore(0, 0)).toBe(0);
+  });
+  it("weights matrix more than action liveness (60/40 split)", () => {
+    // Full action liveness alone = 40
+    expect(computeCompositeHealthScore(1, 0)).toBe(40);
+    // Full matrix alone = 60
+    expect(computeCompositeHealthScore(0, 1)).toBe(60);
+  });
+  it("rounds to the nearest integer", () => {
+    // 0.5 * 0.4 + 0.5 * 0.6 = 0.5 → 50
+    expect(computeCompositeHealthScore(0.5, 0.5)).toBe(50);
+    // 0.75 * 0.4 + 0.25 * 0.6 = 0.3 + 0.15 = 0.45 → 45
+    expect(computeCompositeHealthScore(0.75, 0.25)).toBe(45);
+  });
+  it("clamps inputs above 1 to honest 1.0", () => {
+    expect(computeCompositeHealthScore(2, 5)).toBe(100);
+  });
+  it("clamps negative inputs to 0", () => {
+    expect(computeCompositeHealthScore(-0.5, -1)).toBe(0);
+  });
+  it("realistic blend matches expected score", () => {
+    // 18 live / 36 total = 0.5 ; matrix 60/72 passing = ~0.83
+    // → 0.5 * 0.4 + 0.83 * 0.6 = 0.2 + 0.498 = 0.698 → 70
+    expect(computeCompositeHealthScore(0.5, 0.83)).toBe(70);
   });
 });
