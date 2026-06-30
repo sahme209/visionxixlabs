@@ -19,7 +19,9 @@ import {
   CATEGORY_LABEL,
   STATUS_LABEL,
   SAFETY_LABEL,
+  surfaceForAction,
 } from "../actionRegistry";
+import { listSafeTaskKinds } from "@/lib/controlPlane/safeTaskRunner";
 
 describe("ACTION_REGISTRY :: shape invariants", () => {
   it("every action has a unique kind", () => {
@@ -137,6 +139,69 @@ describe("ACTION_REGISTRY :: count math", () => {
     // counts line up so the Capabilities surface never overclaims.
     expect(c.unsafe).toBeLessThanOrEqual(c.blocked);
     expect(c.unsafe).toBe(unsafeCount);
+  });
+});
+
+describe("ACTION_REGISTRY :: cross-reference with safeTaskRunner (Phase 659)", () => {
+  // The control-plane safeTaskRunner exposes a typed allow-list of
+  // task kinds that the autonomous loop can invoke. Each safe-task
+  // kind should be representable in the action registry so the
+  // operator-facing audit (/dashboard/capabilities) reflects the
+  // same surface the loop can fire.
+  //
+  // Mapping is by intent — registry kind has its own namespace
+  // (aws.validate, security.run_scan, etc.) while safe-task kinds
+  // are coarser (validate_provider_config, run_security_scanner).
+  // The test asserts the COARSE intents are all represented by AT
+  // LEAST one registry entry.
+  const intentMapping: Record<string, ReadonlyArray<string>> = {
+    validate_provider_config:     ["aws.validate", "azure.validate", "gcp.validate"],
+    run_preview_scan:             ["aws.preview_scan", "azure.preview_scan", "gcp.preview_scan"],
+    run_live_readonly_scan:       ["aws.scan", "azure.scan", "gcp.scan"],
+    run_security_scanner:         ["security.run_scan"],
+    build_digital_twin:           ["simulation.digital_twin"],
+    build_remediation_candidates: ["remediation.generate"],
+    build_simulation:             ["simulation.create"],
+    run_preflight:                ["preflight.run"],
+    run_validation_loop:          ["audit.validation_run"],
+    run_deep_validation:          ["audit.validation_run"],
+    generate_audit_bundle:        ["audit.export_bundle"],
+    diagnose_failure:             ["copilot.explain"],
+    refresh_control_plane:        ["autonomy.refresh_state"],
+  };
+
+  it("every safe-task kind has at least one registered action", () => {
+    const registeredKinds = new Set(ACTION_REGISTRY.map((a) => a.kind as string));
+    for (const safeKind of listSafeTaskKinds()) {
+      const candidates = intentMapping[safeKind] ?? [];
+      expect(candidates.length, `safe-task '${safeKind}' has no entry in intentMapping`).toBeGreaterThan(0);
+      const matched = candidates.some((c) => registeredKinds.has(c));
+      expect(matched, `safe-task '${safeKind}' is not represented by any candidate ${candidates.join(", ")} in ACTION_REGISTRY`).toBe(true);
+    }
+  });
+});
+
+describe("ACTION_REGISTRY :: surfaceForAction (Phase 654)", () => {
+  it("every live or preview action with a surface returns a /dashboard/ path", () => {
+    for (const a of ACTION_REGISTRY) {
+      const s = surfaceForAction(a.kind);
+      if (s === undefined) continue;
+      expect(
+        s.startsWith("/dashboard/"),
+        `${a.kind} surface "${s}" is not under /dashboard/`,
+      ).toBe(true);
+    }
+  });
+
+  it("execution-tier actions never expose a surface (apply path is intentionally not fireable from UI)", () => {
+    for (const a of ACTION_REGISTRY) {
+      if (a.category === "execution") {
+        expect(
+          surfaceForAction(a.kind),
+          `${a.kind} is execution-tier but exposes surface ${surfaceForAction(a.kind)}`,
+        ).toBeUndefined();
+      }
+    }
   });
 });
 
