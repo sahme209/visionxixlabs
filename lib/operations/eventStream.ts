@@ -45,7 +45,11 @@ export type ActivityEventType =
   | "release.verification_passed"
   | "release.approval_pending"
   | "release.servicenow_synced"
-  | "release.terraform_plan";
+  | "release.terraform_plan"
+  // Phase 644-649 integration dispatches (workforce_action_execution)
+  | "integration.executed"
+  | "integration.skipped"
+  | "integration.failed";
 
 // ReleaseOps-specific operational types
 export type ReleaseSystemId = "github" | "gitlab" | "azure_devops" | "jenkins" | "argocd";
@@ -512,6 +516,71 @@ export interface EventStreamInput {
   agentRuns?: AxiomAgentRunRow[];
   findings?: AxiomFindingRow[];
   auditEvents?: AxiomAuditEventRow[];
+  actionExecutions?: ActionExecutionRow[];
+}
+
+/**
+ * Phase 644-649 action executor rows. Persisted in
+ * AiRationaleEnrichment at targetKind=workforce_action_execution.
+ * The tags are pipe-delimited "key|value" strings inside nextActionsJson.
+ */
+export interface ActionExecutionRow {
+  targetId: string;
+  narrative: string;
+  /** Pipe-delimited "key|value" tags. */
+  nextActionsJson: unknown;
+  outcome: string;
+  updatedAt: Date;
+}
+
+function tagsToMap(raw: unknown): Map<string, string> {
+  const out = new Map<string, string>();
+  if (!Array.isArray(raw)) return out;
+  for (const e of raw) {
+    if (typeof e !== "string") continue;
+    const idx = e.indexOf("|");
+    if (idx > 0) out.set(e.slice(0, idx), e.slice(idx + 1));
+  }
+  return out;
+}
+
+export function actionExecutionToActivityEvent(r: ActionExecutionRow): ActivityEvent {
+  const tags = tagsToMap(r.nextActionsJson);
+  const kind = tags.get("kind") ?? "unknown";
+  const status = tags.get("status") ?? "unknown";
+  const title = tags.get("title") ?? r.narrative.slice(0, 120);
+  const externalRef = tags.get("external_ref");
+  const upstreamRef = tags.get("upstream_ref");
+  const errorCode = tags.get("error_code");
+
+  const type: ActivityEventType =
+    status === "executed" ? "integration.executed" :
+    status === "skipped"  ? "integration.skipped"  :
+    "integration.failed";
+
+  const severity: ActivityEvent["severity"] =
+    status === "executed" ? "info" :
+    status === "skipped"  ? "low"  :
+    "medium";
+
+  const metadata: Record<string, string | number> = { kind, status };
+  if (externalRef) metadata.externalRef = externalRef;
+  if (upstreamRef) metadata.upstreamRef = upstreamRef;
+  if (errorCode)   metadata.errorCode   = errorCode;
+
+  return {
+    id: `action_exec_${r.targetId}`,
+    type,
+    title: kind === "github_issue"        ? `GitHub issue · ${status}` :
+           kind === "slack_action_post"   ? `Slack post · ${status}`   :
+           kind === "linear_ticket"       ? `Linear ticket · ${status}` :
+           `Action dispatch · ${status}`,
+    description: title,
+    provider: "system",
+    severity,
+    timestamp: r.updatedAt.toISOString(),
+    metadata,
+  };
 }
 
 /**
@@ -524,6 +593,7 @@ export function composeActivityStream(input: EventStreamInput): ActivityEvent[] 
   if (input.agentRuns) events.push(...input.agentRuns.map(agentRunToActivityEvent));
   if (input.findings) events.push(...input.findings.map(findingToActivityEvent));
   if (input.auditEvents) events.push(...input.auditEvents.map(auditEventToActivityEvent));
+  if (input.actionExecutions) events.push(...input.actionExecutions.map(actionExecutionToActivityEvent));
 
   const seen = new Set<string>();
   return events
