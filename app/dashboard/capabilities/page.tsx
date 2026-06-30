@@ -24,8 +24,10 @@ import {
   NoSymbolIcon,
   ClockIcon,
   BoltIcon,
+  XCircleIcon,
 } from "@heroicons/react/24/outline";
 import { currentContext } from "@/lib/auth/currentContext";
+import { prisma } from "@/lib/db";
 import {
   ACTION_REGISTRY,
   CATEGORY_LABEL,
@@ -119,6 +121,44 @@ export default async function CapabilitiesPage() {
   const matrixPassing = VALIDATION_MATRIX.filter((r) => r.status === "passing").length;
   const matrixTotal = VALIDATION_MATRIX.length;
 
+  // Phase 660: live workspace data — last 5 integration dispatches from
+  // the Phase 644-649 action executor (workforce_action_execution rows).
+  // Best-effort: empty array on read error so the capabilities page
+  // still renders without workspace state.
+  type DispatchRow = { targetId: string; narrative: string; nextActionsJson: unknown; updatedAt: Date };
+  let recentDispatches: DispatchRow[] = [];
+  if (ctx.organizationId) {
+    try {
+      recentDispatches = await prisma.aiRationaleEnrichment.findMany({
+        where: {
+          organizationId: String(ctx.organizationId),
+          targetKind: "workforce_action_execution",
+        },
+        orderBy: { updatedAt: "desc" },
+        take: 5,
+        select: { targetId: true, narrative: true, nextActionsJson: true, updatedAt: true },
+      });
+    } catch { /* table missing — skip */ }
+  }
+
+  function dispatchTags(d: DispatchRow): { kind: string; status: string; externalRef: string | null; title: string } {
+    let kind = "unknown", status = "unknown", externalRef: string | null = null, title = "";
+    if (Array.isArray(d.nextActionsJson)) {
+      for (const e of d.nextActionsJson as unknown[]) {
+        if (typeof e !== "string") continue;
+        const i = e.indexOf("|");
+        if (i <= 0) continue;
+        const k = e.slice(0, i);
+        const v = e.slice(i + 1);
+        if (k === "kind") kind = v;
+        else if (k === "status") status = v;
+        else if (k === "external_ref") externalRef = v;
+        else if (k === "title") title = v;
+      }
+    }
+    return { kind, status, externalRef, title: title || d.narrative.slice(0, 120) };
+  }
+
   return (
     <div className="max-w-5xl mx-auto px-1 -mt-2">
       <header className="mb-10">
@@ -209,6 +249,56 @@ export default async function CapabilitiesPage() {
           This is intentional — Axiom never executes unsafely.
         </p>
       </section>
+
+      {/* Phase 660: live workspace state — recent integration dispatches */}
+      {recentDispatches.length > 0 && (
+        <section className="mb-10">
+          <p className="font-mono text-[10px] uppercase tracking-[0.24em] text-zinc-500 mb-4 inline-flex items-center gap-2">
+            <span className="text-zinc-700">//</span>
+            <span className="text-emerald-300">recent-dispatches</span>
+            <span className="text-zinc-700">::</span>
+            <span className="text-zinc-400 tabular-nums">{recentDispatches.length}</span>
+            <span className="text-zinc-700">·</span>
+            <span className="text-zinc-500">what axiom actually did</span>
+          </p>
+          <ul className="rounded-md border border-white/[0.06] bg-white/[0.012] divide-y divide-white/[0.04] overflow-hidden">
+            {recentDispatches.map((d) => {
+              const t = dispatchTags(d);
+              const Icon = t.status === "executed" ? CheckCircleIcon : t.status === "failed" ? XCircleIcon : ClockIcon;
+              const toneText = t.status === "executed" ? "text-emerald-300" : t.status === "failed" ? "text-rose-300" : "text-amber-300";
+              return (
+                <li key={d.targetId} className="px-5 py-3.5">
+                  <div className="flex items-start gap-3">
+                    <Icon className={`h-4 w-4 ${toneText} shrink-0 mt-0.5`} />
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between gap-3 flex-wrap mb-1 text-[10px] font-mono uppercase tracking-wider">
+                        <span className={toneText}>{t.kind} · {t.status}</span>
+                        <span className="text-zinc-500">{d.updatedAt.toISOString().slice(0, 19).replace("T", " ")}</span>
+                      </div>
+                      <p className="text-[12.5px] text-zinc-100 leading-relaxed font-mono">{t.title}</p>
+                      {t.externalRef && (
+                        <a
+                          href={t.externalRef}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="text-[11px] text-emerald-300 hover:text-white transition-colors underline underline-offset-2 mt-1 inline-block break-all"
+                        >
+                          {t.externalRef}
+                        </a>
+                      )}
+                    </div>
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
+          <p className="text-[11px] text-zinc-500 mt-2 font-mono">
+            <Link href="/dashboard/workforce/integrations" className="text-emerald-300 hover:text-white transition-colors underline underline-offset-2">
+              full integration history →
+            </Link>
+          </p>
+        </section>
+      )}
 
       {/* Actions by category */}
       {Object.entries(byCategory).map(([cat, actions]) => (
