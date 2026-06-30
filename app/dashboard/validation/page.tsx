@@ -43,6 +43,15 @@ export default function ValidationPage() {
           <p className="text-sm text-zinc-400 max-w-2xl leading-relaxed">
             Every capability listed below carries an honest status and a pointer to the file or route that proves it. Nothing claims &quot;passing&quot; without backing evidence.
           </p>
+          <p className="text-[12px] text-zinc-500 mt-3 font-mono">
+            <Link href="/dashboard/capabilities" className="text-emerald-300 hover:text-white transition-colors underline underline-offset-2">
+              action surface · what axiom can do today →
+            </Link>
+            <span className="text-zinc-700 mx-2">·</span>
+            <Link href="/dashboard/command-center" className="text-emerald-300 hover:text-white transition-colors underline underline-offset-2">
+              live operating state →
+            </Link>
+          </p>
         </div>
       </Reveal>
 
