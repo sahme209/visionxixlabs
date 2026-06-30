@@ -117,6 +117,65 @@ export interface ActionDescriptor {
   runner?: string;
 }
 
+/**
+ * Phase 654: map an action to the operator-facing dashboard surface
+ * where the action can be fired. Distinct from `route` (the API
+ * endpoint). Returns undefined when no public surface fires this
+ * action (e.g., blocked execution kinds, generic template routes).
+ *
+ * Kept as a pure lookup so the registry stays a flat data table.
+ */
+export function surfaceForAction(kind: ActionKind): string | undefined {
+  // Cloud-provider validate + scan land on the connectors page where
+  // the operator sets credentials and fires the live/preview run.
+  if (kind === "aws.validate" || kind === "azure.validate" || kind === "gcp.validate") return "/dashboard/connectors";
+  if (kind === "aws.scan" || kind === "aws.preview_scan")     return "/dashboard/security-scanner";
+  if (kind === "azure.scan" || kind === "azure.preview_scan") return "/dashboard/security-scanner";
+  if (kind === "gcp.scan" || kind === "gcp.preview_scan")     return "/dashboard/security-scanner";
+
+  // GitHub + ReleaseOps
+  if (kind === "github.validate" || kind === "github.scan" || kind === "github.preview_sync") return "/dashboard/connectors";
+  if (kind === "releaseops.scan") return "/dashboard/releaseops";
+
+  // Security + remediation
+  if (kind === "security.run_scan") return "/dashboard/security-scanner";
+  if (kind === "remediation.generate" || kind === "remediation.terraform_preview" || kind === "remediation.cli_preview") {
+    return "/dashboard/remediation";
+  }
+  if (kind === "remediation.desktop_handoff") return "/dashboard/desktop";
+
+  // Simulation
+  if (kind === "simulation.create" || kind === "simulation.digital_twin") return "/dashboard/simulations";
+
+  // Approvals + governance
+  if (kind === "approval.request" || kind === "approval.decide" || kind === "preflight.run") return "/dashboard/approvals";
+
+  // Operating loop
+  if (kind === "autonomy.next_actions" || kind === "autonomy.run_safe_loop" || kind === "autonomy.refresh_state") {
+    return "/dashboard/command-center";
+  }
+
+  // Copilot
+  if (kind === "copilot.explain" || kind === "copilot.next_step") return "/dashboard/copilot";
+
+  // Audit / compliance
+  if (kind === "audit.export_bundle")  return "/dashboard/trust";
+  if (kind === "audit.validation_run") return "/dashboard/validation";
+
+  // Phase 644-649 integrations
+  if (kind === "integration.github_issue" || kind === "integration.slack_action_post" || kind === "integration.linear_ticket") {
+    return "/dashboard/workforce/integrations";
+  }
+  if (kind === "integration.dispatch_from_memory") return "/dashboard/agi-memory";
+
+  // Workforce engineers
+  if (kind === "engineer.run_domain" || kind === "engineer.ask") return "/dashboard/workforce";
+
+  // Execution (intentionally no surface — blocked actions can't be
+  // fired from the dashboard).
+  return undefined;
+}
+
 export const ACTION_REGISTRY: ReadonlyArray<ActionDescriptor> = [
   // ─── PROVIDERS ─────────────────────────────────────────────────
   {

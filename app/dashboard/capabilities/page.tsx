@@ -33,10 +33,55 @@ import {
   SAFETY_LABEL,
   computeHonestyCounts,
   getActionsByCategory,
+  surfaceForAction,
+  type ActionDescriptor,
   type WireStatus,
   type SafetyTier,
 } from "@/lib/actions/actionRegistry";
-import { VALIDATION_MATRIX } from "@/lib/validation/platformValidationMatrix";
+import { VALIDATION_MATRIX, type ValidationRow } from "@/lib/validation/platformValidationMatrix";
+
+/** Pull the area prefix (before first dot) from an action kind so we
+ *  can join action rows against validation-matrix rows. */
+function actionArea(kind: string): string {
+  const dot = kind.indexOf(".");
+  return dot === -1 ? kind : kind.slice(0, dot);
+}
+
+/** Map an action kind prefix to a validation matrix area. The matrix
+ *  uses coarse area buckets — keep the mapping honest, no fuzzy
+ *  guesses. */
+const KIND_PREFIX_TO_MATRIX_AREA: Record<string, ValidationRow["area"]> = {
+  aws: "aws",
+  azure: "azure",
+  gcp: "gcp",
+  github: "github",
+  releaseops: "release",
+  security: "security_scanner",
+  remediation: "security_scanner",
+  simulation: "security_scanner",
+  approval: "command_center",
+  preflight: "command_center",
+  execution: "security_scanner",
+  autonomy: "operating_loop",
+  copilot: "command_center",
+  audit: "compliance",
+  integration: "command_center",
+  engineer: "command_center",
+};
+
+/** Find the validation matrix rows that share an area with the
+ *  action's kind. Returns counts so the operator sees how many rows
+ *  in the matrix back this action's category. */
+function matrixSummaryForAction(a: ActionDescriptor): { total: number; passing: number; blocked: number } {
+  const area = KIND_PREFIX_TO_MATRIX_AREA[actionArea(a.kind)];
+  if (!area) return { total: 0, passing: 0, blocked: 0 };
+  const rows = VALIDATION_MATRIX.filter((r) => r.area === area);
+  return {
+    total: rows.length,
+    passing: rows.filter((r) => r.status === "passing").length,
+    blocked: rows.filter((r) => r.status === "blocked" || r.status === "failing").length,
+  };
+}
 
 export const dynamic = "force-dynamic";
 
@@ -179,39 +224,69 @@ export default async function CapabilitiesPage() {
             {actions.map((a) => {
               const tone = STATUS_TONE[a.wireStatus];
               const Icon = STATUS_ICON[a.wireStatus];
-              return (
-                <li key={a.kind} className="px-5 py-4">
-                  <div className="flex items-start gap-3 mb-2">
-                    <Icon className={`h-4 w-4 ${tone.text} shrink-0 mt-0.5`} />
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center justify-between gap-3 flex-wrap mb-1">
-                        <p className="text-[14px] font-medium text-white">{a.label}</p>
-                        <div className="flex items-center gap-2 text-[10px] font-mono uppercase tracking-wider">
-                          <span className={tone.text}>{STATUS_LABEL[a.wireStatus]}</span>
-                          <span className="text-zinc-700">·</span>
-                          <span className={SAFETY_TONE[a.safetyTier]}>{SAFETY_LABEL[a.safetyTier]}</span>
-                        </div>
-                      </div>
-                      <p className="text-[12.5px] text-zinc-400 leading-relaxed">{a.summary}</p>
-                      <div className="flex items-center gap-3 mt-2 flex-wrap text-[11px] font-mono text-zinc-500">
-                        <span className="text-zinc-600">kind:</span><span>{a.kind}</span>
+              const surface = surfaceForAction(a.kind);
+              const clickable = !!surface && (a.wireStatus === "live" || a.wireStatus === "preview");
+              const matrixSummary = matrixSummaryForAction(a);
+              const rowInner = (
+                <div className="flex items-start gap-3 mb-2">
+                  <Icon className={`h-4 w-4 ${tone.text} shrink-0 mt-0.5`} />
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center justify-between gap-3 flex-wrap mb-1">
+                      <p className="text-[14px] font-medium text-white">{a.label}</p>
+                      <div className="flex items-center gap-2 text-[10px] font-mono uppercase tracking-wider">
+                        <span className={tone.text}>{STATUS_LABEL[a.wireStatus]}</span>
                         <span className="text-zinc-700">·</span>
-                        <span className="text-zinc-600">route:</span><span className="text-zinc-400">{a.method} {a.route}</span>
-                        {a.requiresConnector && (
-                          <>
-                            <span className="text-zinc-700">·</span>
-                            <span className="text-zinc-600">connector:</span><span>{a.requiresConnector}</span>
-                          </>
-                        )}
+                        <span className={SAFETY_TONE[a.safetyTier]}>{SAFETY_LABEL[a.safetyTier]}</span>
                       </div>
-                      {a.blockedReason && (
-                        <p className="text-[11.5px] text-rose-200/80 leading-relaxed mt-2 font-mono">
-                          blocked :: {a.blockedReason}
-                        </p>
-                      )}
-                      <p className="text-[10.5px] text-zinc-600 mt-1.5 font-mono break-all">evidence :: {a.evidence}</p>
                     </div>
+                    <p className="text-[12.5px] text-zinc-400 leading-relaxed">{a.summary}</p>
+                    <div className="flex items-center gap-3 mt-2 flex-wrap text-[11px] font-mono text-zinc-500">
+                      <span className="text-zinc-600">kind:</span><span>{a.kind}</span>
+                      <span className="text-zinc-700">·</span>
+                      <span className="text-zinc-600">api:</span>
+                      <span className="text-zinc-400">{a.method} {a.route}</span>
+                      {surface && (
+                        <>
+                          <span className="text-zinc-700">·</span>
+                          <span className="text-zinc-600">surface:</span>
+                          <span className={clickable ? "text-emerald-300" : "text-zinc-400"}>{surface}</span>
+                        </>
+                      )}
+                      {a.requiresConnector && (
+                        <>
+                          <span className="text-zinc-700">·</span>
+                          <span className="text-zinc-600">connector:</span><span>{a.requiresConnector}</span>
+                        </>
+                      )}
+                      {matrixSummary.total > 0 && (
+                        <>
+                          <span className="text-zinc-700">·</span>
+                          <span className="text-zinc-600">matrix:</span>
+                          <span className={matrixSummary.blocked > 0 ? "text-amber-300" : "text-emerald-300"}>
+                            {matrixSummary.passing}/{matrixSummary.total} passing
+                            {matrixSummary.blocked > 0 && ` · ${matrixSummary.blocked} blocked`}
+                          </span>
+                        </>
+                      )}
+                    </div>
+                    {a.blockedReason && (
+                      <p className="text-[11.5px] text-rose-200/80 leading-relaxed mt-2 font-mono">
+                        blocked :: {a.blockedReason}
+                      </p>
+                    )}
+                    <p className="text-[10.5px] text-zinc-600 mt-1.5 font-mono break-all">evidence :: {a.evidence}</p>
                   </div>
+                </div>
+              );
+              return (
+                <li key={a.kind}>
+                  {clickable && surface ? (
+                    <Link href={surface} className="block px-5 py-4 hover:bg-white/[0.02] transition-colors">
+                      {rowInner}
+                    </Link>
+                  ) : (
+                    <div className="px-5 py-4">{rowInner}</div>
+                  )}
                 </li>
               );
             })}
