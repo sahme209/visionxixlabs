@@ -49,7 +49,11 @@ export type ActivityEventType =
   // Phase 644-649 integration dispatches (workforce_action_execution)
   | "integration.executed"
   | "integration.skipped"
-  | "integration.failed";
+  | "integration.failed"
+  // Phase 655 engineer dispatches (SecureAuditRecord)
+  | "engineer.executed"
+  | "engineer.attempted"
+  | "engineer.failed";
 
 // ReleaseOps-specific operational types
 export type ReleaseSystemId = "github" | "gitlab" | "azure_devops" | "jenkins" | "argocd";
@@ -517,6 +521,69 @@ export interface EventStreamInput {
   findings?: AxiomFindingRow[];
   auditEvents?: AxiomAuditEventRow[];
   actionExecutions?: ActionExecutionRow[];
+  secureAuditRecords?: SecureAuditRecordRow[];
+}
+
+/**
+ * Phase 655: SecureAuditRecord rows narrowed to the high-signal
+ * engineer.* actions we want to surface in the activity stream.
+ * Lower-signal audit chatter (auth.signin, etc.) stays out so the
+ * feed doesn't flood.
+ */
+export interface SecureAuditRecordRow {
+  id: string;
+  action: string;
+  outcome: string;
+  entityRef: string | null;
+  occurredAt: Date;
+  detail: unknown;
+}
+
+export function secureAuditToActivityEvent(r: SecureAuditRecordRow): ActivityEvent | null {
+  let type: ActivityEventType;
+  let severity: ActivityEvent["severity"];
+  if (r.action === "engineer.action_executed") {
+    type = "engineer.executed";
+    severity = "info";
+  } else if (r.action === "engineer.action_execution_failed") {
+    type = "engineer.failed";
+    severity = "medium";
+  } else if (r.action === "engineer.action_attempted") {
+    type = "engineer.attempted";
+    severity = r.outcome === "failure" ? "medium" : "info";
+  } else {
+    return null;
+  }
+
+  // Detail is a Prisma Json. Best-effort extraction without trusting shape.
+  const detail = (r.detail && typeof r.detail === "object") ? (r.detail as Record<string, unknown>) : {};
+  const kind = typeof detail.kind === "string" ? detail.kind : undefined;
+  const slug = typeof detail.slug === "string" ? detail.slug : undefined;
+  const result = typeof detail.result === "string" ? detail.result : undefined;
+  const action = typeof detail.action === "string" ? detail.action : undefined;
+
+  const entityName = r.entityRef?.replace(/^engineer:/, "") ?? "engineer";
+  const title = action
+    ? `${entityName} :: ${action}`
+    : kind
+      ? `${entityName} :: ${kind}`
+      : `${entityName} :: ${r.action.replace(/^engineer\./, "")}`;
+
+  const metadata: Record<string, string | number> = { outcome: r.outcome };
+  if (kind) metadata.kind = kind;
+  if (slug) metadata.slug = slug;
+  if (result) metadata.result = result;
+
+  return {
+    id: `secure_audit_${r.id}`,
+    type,
+    title,
+    description: r.entityRef ?? undefined,
+    provider: "system",
+    severity,
+    timestamp: r.occurredAt.toISOString(),
+    metadata,
+  };
 }
 
 /**
@@ -594,6 +661,12 @@ export function composeActivityStream(input: EventStreamInput): ActivityEvent[] 
   if (input.findings) events.push(...input.findings.map(findingToActivityEvent));
   if (input.auditEvents) events.push(...input.auditEvents.map(auditEventToActivityEvent));
   if (input.actionExecutions) events.push(...input.actionExecutions.map(actionExecutionToActivityEvent));
+  if (input.secureAuditRecords) {
+    for (const r of input.secureAuditRecords) {
+      const e = secureAuditToActivityEvent(r);
+      if (e) events.push(e);
+    }
+  }
 
   const seen = new Set<string>();
   return events

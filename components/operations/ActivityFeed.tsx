@@ -51,7 +51,11 @@ export type ActivityEventType =
   // Phase 644-649 integration dispatches
   | "integration.executed"
   | "integration.skipped"
-  | "integration.failed";
+  | "integration.failed"
+  // Phase 655 engineer dispatch audit events
+  | "engineer.executed"
+  | "engineer.attempted"
+  | "engineer.failed";
 
 export interface ActivityEvent {
   id: string;
@@ -251,6 +255,24 @@ const EVENT_CONFIG: Record<
     borderClass: "border-amber-500/20",
   },
   "integration.failed": {
+    icon: XCircleIcon,
+    iconClass: "text-rose-400",
+    bgClass: "bg-rose-500/10",
+    borderClass: "border-rose-500/20",
+  },
+  "engineer.executed": {
+    icon: CpuChipIcon,
+    iconClass: "text-emerald-400",
+    bgClass: "bg-emerald-500/10",
+    borderClass: "border-emerald-500/20",
+  },
+  "engineer.attempted": {
+    icon: CpuChipIcon,
+    iconClass: "text-sky-400",
+    bgClass: "bg-sky-500/10",
+    borderClass: "border-sky-500/20",
+  },
+  "engineer.failed": {
     icon: XCircleIcon,
     iconClass: "text-rose-400",
     bgClass: "bg-rose-500/10",
