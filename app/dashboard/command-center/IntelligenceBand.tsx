@@ -83,7 +83,17 @@ function ActionCard({ action }: { action: NextBestAction }) {
   return <div className="h-full">{inner}</div>;
 }
 
-export function IntelligenceBand({ state }: { state: ControlPlaneState | null }) {
+export function IntelligenceBand({
+  state,
+  dispatch24h = 0,
+  lastDispatchAt = null,
+}: {
+  state: ControlPlaneState | null;
+  /** Phase 663: count of workforce_action_execution rows updated in the last 24h. */
+  dispatch24h?: number;
+  /** Most recent dispatch timestamp — used to show "last activity" line. */
+  lastDispatchAt?: Date | null;
+}) {
   const counts = computeHonestyCounts();
   const top3: NextBestAction[] = state?.nextBestActions?.slice(0, 3) ?? [];
   const autonomousTasks = state?.autonomousTasks ?? { pending: 0, completed: 0, blocked: 0 };
@@ -226,7 +236,7 @@ export function IntelligenceBand({ state }: { state: ControlPlaneState | null })
       )}
 
       {/* Operating-loop status strip */}
-      <div className="grid sm:grid-cols-4 gap-3 pt-5 border-t border-white/[0.06]">
+      <div className="grid sm:grid-cols-5 gap-3 pt-5 border-t border-white/[0.06]">
         <StripCell
           icon={CommandLineIcon}
           label="Providers"
@@ -245,6 +255,15 @@ export function IntelligenceBand({ state }: { state: ControlPlaneState | null })
           label="Safe loop"
           value={`${autonomousTasks.completed} done · ${autonomousTasks.pending} pending · ${autonomousTasks.blocked} blocked`}
           tone={autonomousTasks.blocked > 0 ? "rose" : "zinc"}
+        />
+        <StripCell
+          icon={BoltIcon}
+          label="24h dispatches"
+          value={dispatch24h === 0
+            ? "none yet"
+            : `${dispatch24h} · last ${lastDispatchAt ? formatRelative(lastDispatchAt) : "n/a"}`}
+          href="/dashboard/capabilities"
+          tone={dispatch24h > 0 ? "emerald" : "zinc"}
         />
         <StripCell
           icon={ExclamationTriangleIcon}
@@ -363,4 +382,18 @@ export function IntelligenceBandFallback({ reason }: { reason?: string }) {
       </Link>
     </div>
   );
+}
+
+/** Compact relative-time formatter for the "24h dispatches · last X ago"
+ *  strip cell. Server-rendered, so no client tick — we accept the
+ *  snapshot-at-render-time tradeoff. */
+function formatRelative(d: Date): string {
+  const diffMs = Date.now() - d.getTime();
+  const diffMin = Math.max(0, Math.floor(diffMs / 60000));
+  if (diffMin < 1) return "just now";
+  if (diffMin < 60) return `${diffMin}m ago`;
+  const diffH = Math.floor(diffMin / 60);
+  if (diffH < 24) return `${diffH}h ago`;
+  const diffD = Math.floor(diffH / 24);
+  return `${diffD}d ago`;
 }

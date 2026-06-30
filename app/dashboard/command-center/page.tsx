@@ -18,6 +18,7 @@ import { redirect } from "next/navigation";
 import { currentContext } from "@/lib/auth/currentContext";
 import { buildControlPlaneState } from "@/lib/controlPlane/controlPlaneBuilder";
 import type { ControlPlaneState } from "@/lib/controlPlane/controlPlaneModel";
+import { prisma } from "@/lib/db";
 import CommandCenterClient from "./CommandCenterClient";
 import { IntelligenceBand, IntelligenceBandFallback } from "./IntelligenceBand";
 
@@ -37,10 +38,39 @@ export default async function CommandCenterPage() {
     fallbackReason = err instanceof Error ? err.message.slice(0, 200) : "control plane unavailable";
   }
 
+  // Phase 663: 24h dispatch count + most-recent dispatch timestamp.
+  // Best-effort — if the table is missing the band still renders.
+  let dispatch24h = 0;
+  let lastDispatchAt: Date | null = null;
+  if (ctx.organizationId) {
+    try {
+      const since = new Date(Date.now() - 24 * 60 * 60 * 1000);
+      const [count, latest] = await Promise.all([
+        prisma.aiRationaleEnrichment.count({
+          where: {
+            organizationId: String(ctx.organizationId),
+            targetKind: "workforce_action_execution",
+            updatedAt: { gte: since },
+          },
+        }),
+        prisma.aiRationaleEnrichment.findFirst({
+          where: {
+            organizationId: String(ctx.organizationId),
+            targetKind: "workforce_action_execution",
+          },
+          orderBy: { updatedAt: "desc" },
+          select: { updatedAt: true },
+        }),
+      ]);
+      dispatch24h = count;
+      lastDispatchAt = latest?.updatedAt ?? null;
+    } catch { /* skip */ }
+  }
+
   return (
     <>
       {state ? (
-        <IntelligenceBand state={state} />
+        <IntelligenceBand state={state} dispatch24h={dispatch24h} lastDispatchAt={lastDispatchAt} />
       ) : (
         <IntelligenceBandFallback reason={fallbackReason} />
       )}
