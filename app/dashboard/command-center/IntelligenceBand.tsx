@@ -88,6 +88,7 @@ export function IntelligenceBand({ state }: { state: ControlPlaneState | null })
   const top3: NextBestAction[] = state?.nextBestActions?.slice(0, 3) ?? [];
   const autonomousTasks = state?.autonomousTasks ?? { pending: 0, completed: 0, blocked: 0 };
   const blockerCount = state?.blockers?.length ?? 0;
+  const top3Blockers = state?.blockers?.slice(0, 3) ?? [];
   const validationStatus = state?.validationPosture?.status ?? "unknown";
   const validationScore = state?.validationPosture?.score ?? 0;
   const providersConnected = state?.providers?.filter((p) => p.mode === "live").length ?? 0;
@@ -180,6 +181,49 @@ export function IntelligenceBand({ state }: { state: ControlPlaneState | null })
           </div>
         )}
       </div>
+
+      {/* Phase 662: top-3 blockers — only when something is actually blocking the safe loop */}
+      {top3Blockers.length > 0 && (
+        <div className="mb-6">
+          <p className="font-mono text-[10px] uppercase tracking-[0.24em] text-zinc-500 mb-3 inline-flex items-center gap-2">
+            <span className="text-zinc-700">//</span>
+            <span className="text-amber-300">top-blockers</span>
+            <span className="text-zinc-700">::</span>
+            <span className="text-zinc-400 tabular-nums">{blockerCount}</span>
+            <span className="text-zinc-700">·</span>
+            <span className="text-zinc-500">what is stopping axiom from doing more</span>
+          </p>
+          <ul className="rounded-md border border-amber-500/20 bg-amber-500/[0.03] divide-y divide-white/[0.04] overflow-hidden">
+            {top3Blockers.map((b, i) => {
+              const inner = (
+                <div className="flex items-start gap-3 px-4 py-3">
+                  <ExclamationTriangleIcon className="h-4 w-4 text-amber-300 shrink-0 mt-0.5" />
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center justify-between gap-3 flex-wrap mb-0.5">
+                      <p className="text-[10px] font-mono uppercase tracking-wider text-amber-300">{b.code}</p>
+                      {b.route && (
+                        <span className="text-[10px] font-mono text-emerald-300 inline-flex items-center gap-1">resolve <ArrowRightIcon className="h-3 w-3" /></span>
+                      )}
+                    </div>
+                    <p className="text-[12.5px] text-zinc-100 leading-relaxed">{b.detail}</p>
+                  </div>
+                </div>
+              );
+              return (
+                <li key={`${b.code}_${i}`}>
+                  {b.route ? (
+                    <Link href={b.route} className="block hover:bg-white/[0.02] transition-colors">
+                      {inner}
+                    </Link>
+                  ) : (
+                    <div>{inner}</div>
+                  )}
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+      )}
 
       {/* Operating-loop status strip */}
       <div className="grid sm:grid-cols-4 gap-3 pt-5 border-t border-white/[0.06]">
