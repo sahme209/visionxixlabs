@@ -508,8 +508,24 @@ export default async function ConnectorsPage() {
         })}
       </div>
 
+      {/* Phase 668: cross-links to the founder-audit triad. Operator
+          finishing setup here immediately discovers the action surface. */}
+      <div className="mt-10 pt-6 border-t border-white/[0.06] flex items-center gap-4 flex-wrap text-[12px] font-mono">
+        <Link href="/dashboard/capabilities" className="text-emerald-300 hover:text-white transition-colors underline underline-offset-2">
+          action surface · what axiom can do →
+        </Link>
+        <span className="text-zinc-700">·</span>
+        <Link href="/dashboard/command-center" className="text-emerald-300 hover:text-white transition-colors underline underline-offset-2">
+          live operating state →
+        </Link>
+        <span className="text-zinc-700">·</span>
+        <Link href="/dashboard/validation" className="text-emerald-300 hover:text-white transition-colors underline underline-offset-2">
+          validation matrix →
+        </Link>
+      </div>
+
       {/* Footnote */}
-      <p className="mt-10 text-[12px] text-zinc-500 max-w-3xl leading-relaxed">
+      <p className="mt-6 text-[12px] text-zinc-500 max-w-3xl leading-relaxed">
         Connector status on this page is a static catalog. The Connector registry
         in <span className="font-mono">lib/connectors/connectorRegistry.ts</span> +
         per-tenant <span className="font-mono">CloudAccount</span> rows are the source of
