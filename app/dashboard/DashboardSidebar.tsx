@@ -276,6 +276,13 @@ const GROUPS: NavGroup[] = [
       { href: "/dashboard/evidence",                 label: "Evidence",             icon: DocumentTextIcon,     power: true },
       { href: "/dashboard/evidence-library",         label: "Evidence library",     icon: DocumentTextIcon,     power: true },
       { href: "/dashboard/compliance-packet",        label: "Compliance packet",    icon: DocumentTextIcon,     power: true },
+      // Phase 676: platform introspection surfaces (Phase 650-675 work)
+      { href: "/dashboard/capabilities",             label: "Action surface",       icon: BoltIcon                                    },
+      { href: "/dashboard/validation",               label: "Validation matrix",    icon: DocumentMagnifyingGlassIcon                 },
+      { href: "/dashboard/self-diagnostic",          label: "Self-diagnostic",      icon: BeakerIcon,           power: true            },
+      { href: "/dashboard/flags",                    label: "Feature flags",        icon: PuzzlePieceIcon,      power: true            },
+      { href: "/dashboard/cron-health",              label: "Cron health",          icon: ClockIcon,            power: true            },
+      { href: "/dashboard/admin-charters",           label: "Autonomy charters",    icon: ShieldCheckIcon,      power: true            },
     ],
   },
 ];
