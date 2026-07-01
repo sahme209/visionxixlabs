@@ -25,6 +25,9 @@ import {
   ArrowRightIcon,
   CommandLineIcon,
   ExclamationTriangleIcon,
+  ArrowPathIcon,
+  SparklesIcon,
+  CodeBracketIcon,
 } from "@heroicons/react/24/outline";
 import type { ControlPlaneState, NextBestAction } from "@/lib/controlPlane/controlPlaneModel";
 import { computeHonestyCounts, ACTION_REGISTRY } from "@/lib/actions/actionRegistry";
@@ -271,6 +274,43 @@ export function IntelligenceBand({
           value={blockerCount === 0 ? "none" : `${blockerCount} active`}
           tone={blockerCount === 0 ? "emerald" : "amber"}
         />
+      </div>
+
+      {/* Phase 666: operator quality-of-life footer — safe self-navigating
+          refresh + Copilot + machine-readable health JSON */}
+      <div className="mt-5 pt-4 border-t border-white/[0.06] flex items-center gap-4 flex-wrap text-[11px] font-mono">
+        <Link
+          href="/dashboard/command-center"
+          className="inline-flex items-center gap-1.5 text-zinc-400 hover:text-white transition-colors"
+          title="Re-fetches control-plane state — page is force-dynamic so navigating rebuilds"
+        >
+          <ArrowPathIcon className="h-3.5 w-3.5" />
+          refresh state
+        </Link>
+        <span className="text-zinc-700">·</span>
+        <Link
+          href="/dashboard/copilot"
+          className="inline-flex items-center gap-1.5 text-zinc-400 hover:text-white transition-colors"
+        >
+          <SparklesIcon className="h-3.5 w-3.5" />
+          ask copilot
+        </Link>
+        <span className="text-zinc-700">·</span>
+        <a
+          href="/api/capabilities/health"
+          target="_blank"
+          rel="noreferrer"
+          className="inline-flex items-center gap-1.5 text-zinc-400 hover:text-white transition-colors"
+          title="Machine-readable platform health JSON for external monitoring"
+        >
+          <CodeBracketIcon className="h-3.5 w-3.5" />
+          health json
+        </a>
+        {state?.generatedAt && (
+          <span className="ml-auto text-zinc-600">
+            state @ {state.generatedAt.slice(11, 19)} UTC
+          </span>
+        )}
       </div>
     </div>
   );
