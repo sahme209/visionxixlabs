@@ -13,7 +13,7 @@
  */
 
 import { describe, it, expect } from "vitest";
-import { existsSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { resolve as resolvePath } from "node:path";
 import {
   ACTION_REGISTRY,
@@ -228,6 +228,45 @@ describe("ACTION_REGISTRY :: labels exhaustive", () => {
     for (const t of used) {
       expect(SAFETY_LABEL[t], `missing SAFETY_LABEL for ${t}`).toBeTruthy();
     }
+  });
+});
+
+describe("DashboardSidebar :: every href resolves (Phase 677)", () => {
+  // The sidebar is the operator's primary discovery surface. If a link
+  // there points at a page that no longer exists, the operator lands
+  // on a Next.js 404 with no fallback — silent, embarrassing drift.
+  // This guard reads the sidebar source, extracts every dashboard
+  // href, and verifies each resolves to an app/**/page.tsx on disk.
+  const SIDEBAR_PATH = "app/dashboard/DashboardSidebar.tsx";
+
+  function extractDashboardHrefs(source: string): string[] {
+    const re = /href:\s*"(\/[^"]*)"/g;
+    const out = new Set<string>();
+    let m: RegExpExecArray | null;
+    while ((m = re.exec(source)) !== null) {
+      out.add(m[1]);
+    }
+    return Array.from(out);
+  }
+
+  it("every sidebar dashboard href resolves to an app/**/page.tsx", () => {
+    const src = readFileSync(resolvePath(process.cwd(), SIDEBAR_PATH), "utf8");
+    const hrefs = extractDashboardHrefs(src);
+    // Only enforce /dashboard/... hrefs — external links (/docs, /demo)
+    // may resolve to non-app-router routes.
+    const dashboardHrefs = hrefs.filter((h) => h.startsWith("/dashboard"));
+    const missing: string[] = [];
+    for (const href of dashboardHrefs) {
+      const page1 = resolvePath(process.cwd(), `app${href}/page.tsx`);
+      const page2 = resolvePath(process.cwd(), `app${href}/page.ts`);
+      if (!existsSync(page1) && !existsSync(page2)) {
+        missing.push(href);
+      }
+    }
+    expect(
+      missing,
+      `sidebar links to nonexistent pages: ${missing.join(", ")}`,
+    ).toEqual([]);
   });
 });
 
