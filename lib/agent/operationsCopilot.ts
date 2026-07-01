@@ -427,7 +427,7 @@ export function suggestedQuestions(ctx: CopilotContext): { intent: CopilotQueryI
   if (ctx.state.failedScans24h > 0) out.push({ intent: "diagnose_error", label: "Why did this scan fail?" });
   if (ctx.state.releasesBlocked > 0) out.push({ intent: "explain_release", label: "What's blocking my releases?" });
   if (!ctx.state.desktopAvailable) out.push({ intent: "explain_desktop", label: "What can the desktop agent do?" });
-  out.push({ intent: "explain_state", label: "What's the current platform state?" });
+  out.push({ intent: "explain_state", label: "What can Axiom do right now?" });
   out.push({ intent: "general_help", label: "How do I connect AWS securely?" });
   return out;
 }
