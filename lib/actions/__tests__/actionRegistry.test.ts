@@ -13,6 +13,8 @@
  */
 
 import { describe, it, expect } from "vitest";
+import { existsSync } from "node:fs";
+import { resolve as resolvePath } from "node:path";
 import {
   ACTION_REGISTRY,
   computeHonestyCounts,
@@ -225,6 +227,53 @@ describe("ACTION_REGISTRY :: labels exhaustive", () => {
     const used = new Set(ACTION_REGISTRY.map((a) => a.safetyTier));
     for (const t of used) {
       expect(SAFETY_LABEL[t], `missing SAFETY_LABEL for ${t}`).toBeTruthy();
+    }
+  });
+});
+
+describe("ACTION_REGISTRY :: evidence file paths resolve (Phase 669)", () => {
+  const PROJECT_ROOT = process.cwd();
+
+  /** Extract every fragment that looks like a source file path from
+   *  a compound evidence string (e.g. "lib/foo.ts + app/api/bar/route.ts
+   *  — comment"). Returns the fragments to fs-check. */
+  function extractPathCandidates(raw: string): string[] {
+    // Match .ts / .tsx / .prisma path-like tokens
+    const re = /(?:app|lib|prisma|components|desktop)\/[\w./-]+\.(?:ts|tsx|prisma)/g;
+    return Array.from(new Set(raw.match(re) ?? []));
+  }
+
+  it("every action's evidence file paths resolve on disk", () => {
+    const missing: { kind: string; path: string }[] = [];
+    for (const a of ACTION_REGISTRY) {
+      const paths = extractPathCandidates(a.evidence);
+      for (const p of paths) {
+        const abs = resolvePath(PROJECT_ROOT, p);
+        if (!existsSync(abs)) {
+          missing.push({ kind: a.kind, path: p });
+        }
+      }
+    }
+    expect(
+      missing,
+      `evidence file paths do not exist: ${missing.map((m) => `${m.kind}→${m.path}`).join("; ")}`,
+    ).toEqual([]);
+  });
+
+  it("actions with wireStatus=live have at least one resolvable evidence file", () => {
+    for (const a of ACTION_REGISTRY) {
+      if (a.wireStatus !== "live") continue;
+      // Some kinds (e.g., autonomy) are typed metadata not tied to a
+      // single file — skip those where evidence is deliberately
+      // conceptual. We enforce the "at least one" only when the
+      // evidence text CONTAINS a path-shaped token.
+      const paths = extractPathCandidates(a.evidence);
+      if (paths.length === 0) continue;
+      const anyResolves = paths.some((p) => existsSync(resolvePath(PROJECT_ROOT, p)));
+      expect(
+        anyResolves,
+        `${a.kind} is wireStatus=live but no evidence path exists: ${paths.join(", ")}`,
+      ).toBe(true);
     }
   });
 });
