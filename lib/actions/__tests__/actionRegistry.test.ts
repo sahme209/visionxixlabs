@@ -231,6 +231,52 @@ describe("ACTION_REGISTRY :: labels exhaustive", () => {
   });
 });
 
+describe("ACTION_REGISTRY :: API routes exist (Phase 678)", () => {
+  // Each ActionDescriptor.route is the API endpoint the registry
+  // claims. If the endpoint is missing, /dashboard/capabilities
+  // shows a route the operator can't actually call. This guard
+  // reads every route field and checks the corresponding
+  // app/**/route.ts on disk.
+  //
+  // Parameterized routes (e.g. /api/orchestration/approvals/[id]/decide)
+  // are only checked up to the first path segment containing "[" —
+  // the file layout of dynamic segments is fs-verifiable but only
+  // via directory presence, not exact file match. We assert the
+  // parent directory exists.
+  //
+  // Intentionally non-HTTP routes ("(desktop-only)", templates with
+  // "{engineer_id}") are skipped.
+
+  function verifyRouteExists(route: string): { ok: boolean; expectedPath: string } {
+    if (route.startsWith("(")) return { ok: true, expectedPath: route };
+    if (route.includes("{")) return { ok: true, expectedPath: route };
+    if (!route.startsWith("/api/")) return { ok: true, expectedPath: route };
+    // For dynamic-segment routes, verify the parent directory.
+    const bracketIdx = route.indexOf("[");
+    if (bracketIdx !== -1) {
+      const parent = route.slice(0, bracketIdx);
+      const abs = resolvePath(process.cwd(), `app${parent}`);
+      return { ok: existsSync(abs), expectedPath: parent };
+    }
+    const filePath = resolvePath(process.cwd(), `app${route}/route.ts`);
+    return { ok: existsSync(filePath), expectedPath: `app${route}/route.ts` };
+  }
+
+  it("every registered API route resolves to a route.ts on disk", () => {
+    const missing: { kind: string; route: string; expected: string }[] = [];
+    for (const a of ACTION_REGISTRY) {
+      const check = verifyRouteExists(a.route);
+      if (!check.ok) {
+        missing.push({ kind: a.kind, route: a.route, expected: check.expectedPath });
+      }
+    }
+    expect(
+      missing,
+      `action registry routes without a matching route.ts: ${missing.map((m) => `${m.kind}→${m.route}`).join("; ")}`,
+    ).toEqual([]);
+  });
+});
+
 describe("DashboardSidebar :: every href resolves (Phase 677)", () => {
   // The sidebar is the operator's primary discovery surface. If a link
   // there points at a page that no longer exists, the operator lands
