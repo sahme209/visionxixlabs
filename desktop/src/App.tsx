@@ -186,7 +186,7 @@ export default function App() {
           {activeView === "start-here"    && <StartHereView onNavigate={setActiveView} />}
           {activeView === "dashboard"     && <DashboardView onNavigate={setActiveView} />}
           {activeView === "docs"          && <DocsView />}
-          {activeView === "multi-cloud"   && <MultiCloudView />}
+          {activeView === "multi-cloud"   && <MultiCloudView onNavigate={setActiveView} />}
           {activeView === "security"      && <SecurityView />}
           {activeView === "scans"         && <ScansView />}
           {activeView === "releases"      && <ReleasesView onNavigate={setActiveView} />}

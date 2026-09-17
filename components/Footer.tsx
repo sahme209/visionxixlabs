@@ -31,7 +31,7 @@ function XIcon({ className }: { className?: string }) {
 const productLinks = [
   { href: "/demo", label: "Try the demo" },
   { href: "/integrations", label: "Integrations" },
-  { href: "/operator/onboarding", label: "Run Axiom" },
+  { href: "/download", label: "Download Axiom Agent" },
   { href: "/axiom/releaseops", label: "Axiom ReleaseOps" },
   { href: "/download", label: "Download Desktop" },
   { href: "/plans", label: "Pricing" },
@@ -101,10 +101,10 @@ export function Footer() {
             </p>
             <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-3">
               <Link
-                href="/operator/onboarding"
+                href="/download"
                 className="btn-press inline-flex items-center gap-2 px-7 py-3.5 rounded-full text-[14.5px] font-semibold tracking-tight"
               >
-                Run Axiom
+                Download Axiom Agent
                 <ArrowRightIcon className="h-4 w-4 opacity-70" />
               </Link>
               <a

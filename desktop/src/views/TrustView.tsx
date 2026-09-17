@@ -76,7 +76,7 @@ export function TrustView() {
         <p className="text-[12px] text-zinc-300 leading-relaxed">
           Every action a user OR AI engineer takes is logged via the <code className="font-mono text-zinc-200">secureAudit.record()</code> function with a closed-union <code className="font-mono text-zinc-200">AuditAction</code>. The full trail lives in the web app at{" "}
           <ExternalLink
-            href="https://visionxixlabs.com/dashboard/audit"
+            href="https://visionxixlabs.com/docs/security-model"
             className="text-violet-300 hover:text-violet-200 underline-offset-2 hover:underline"
           >
             /dashboard/audit ↗

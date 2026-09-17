@@ -133,11 +133,11 @@ export default async function BlogPostPage({ params }: Params) {
             </span>
           </h3>
           <p className="text-sm text-zinc-400 max-w-xl mx-auto mb-6">
-            Open the web app or download the signed desktop binaries for macOS, Windows, and Linux. No demo call required.
+            Explore the isolated web demo or download the desktop product for macOS, Windows, and Linux. No sales call required.
           </p>
           <div className="inline-flex gap-3 flex-wrap justify-center">
-            <Link href="/dashboard" className="btn-press inline-flex items-center gap-2 px-5 py-3 rounded-full text-sm font-semibold tracking-tight">
-              Open web app
+            <Link href="/demo" className="btn-press inline-flex items-center gap-2 px-5 py-3 rounded-full text-sm font-semibold tracking-tight">
+              Explore web demo
             </Link>
             <Link href="/download" className="btn-ghost-press inline-flex items-center gap-2 px-5 py-3 rounded-full text-sm font-medium tracking-tight">
               Download desktop

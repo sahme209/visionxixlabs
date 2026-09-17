@@ -5,7 +5,7 @@
 
 import { useEffect, useState } from "react";
 import { desktopClient, type ControlPlaneStateLite } from "../lib/desktopClient";
-import { Card, ExternalLink, SectionHeader, ViewShell, LoadingState, EmptyState, Badge, statusToneFor } from "../components/Primitives";
+import { Card, SectionHeader, ViewShell, LoadingState, EmptyState, Badge, statusToneFor } from "../components/Primitives";
 
 interface WorkspaceInfo {
   organizationId: string;
@@ -17,7 +17,7 @@ interface WorkspaceInfo {
   nearLimit: boolean;
 }
 
-export function MultiCloudView() {
+export function MultiCloudView({ onNavigate }: { onNavigate: (view: "connector-setup") => void }) {
   const [state, setState] = useState<ControlPlaneStateLite | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -67,8 +67,8 @@ export function MultiCloudView() {
         <EmptyState
           Icon={CloudIcon}
           title="No cloud state available"
-          detail={error ?? "Connect AWS, Azure, or GCP in the web app to populate this view."}
-          action={<ExternalLink href="https://visionxixlabs.com/operator/onboarding" className="btn-primary">Connect a provider</ExternalLink>}
+          detail={error ?? "Connect AWS, Azure, or GCP from the desktop connector setup to populate this view."}
+          action={<button type="button" onClick={() => onNavigate("connector-setup")} className="btn-primary">Connect a provider</button>}
         />
       </ViewShell>
     );
@@ -161,12 +161,13 @@ export function MultiCloudView() {
             )}
 
             {p.nextAction && (
-              <ExternalLink
-                href={p.nextAction.href ? `https://visionxixlabs.com${p.nextAction.href}` : "https://visionxixlabs.com/operator/onboarding"}
+              <button
+                type="button"
+                onClick={() => onNavigate("connector-setup")}
                 className="btn-secondary w-full justify-center text-[12px]"
               >
                 {p.nextAction.label} →
-              </ExternalLink>
+              </button>
             )}
           </Card>
         ))}

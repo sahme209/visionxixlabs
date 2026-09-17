@@ -32,7 +32,7 @@ export function RemediationView() {
           Icon={WrenchIcon}
           title="No remediation candidates yet"
           detail={error ?? "Run a security scan or connect a provider — every finding becomes a typed remediation candidate with Terraform / CLI / rollback / verification."}
-          action={<ExternalLink href="https://visionxixlabs.com/dashboard/remediation" className="btn-primary">Open in web</ExternalLink>}
+          action={<ExternalLink href="https://visionxixlabs.com/admin/api-keys" className="btn-primary">Pair workspace</ExternalLink>}
         />
       </ViewShell>
     );

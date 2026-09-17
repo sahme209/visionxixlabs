@@ -20,7 +20,7 @@ const DOCS: ReadonlyArray<{ section: string; links: DocLink[] }> = [
     section: "Getting started",
     links: [
       { title: "What is VisionXIXLabs?", body: "Platform overview + the operating model.", href: "https://visionxixlabs.com/docs" },
-      { title: "Setup guide",            body: "12 steps from cold start to first audited automation.", href: "https://visionxixlabs.com/dashboard/start-here" },
+      { title: "Setup guide",            body: "12 steps from cold start to first audited automation.", href: "https://visionxixlabs.com/docs/getting-started" },
       { title: "Permissions model",      body: "How approval rules + scopes + closed-union audit actions interact.", href: "https://visionxixlabs.com/docs/permissions-model" },
     ],
   },
@@ -36,7 +36,7 @@ const DOCS: ReadonlyArray<{ section: string; links: DocLink[] }> = [
   {
     section: "Engineering surfaces",
     links: [
-      { title: "AI engineers",         body: "Catalog of engineers + tool access + scope.", href: "https://visionxixlabs.com/dashboard/workforce" },
+      { title: "AI engineers",         body: "Catalog of engineers + tool access + scope.", href: "https://visionxixlabs.com/docs" },
       { title: "Approval workflow",    body: "How two-person approval works end-to-end.",   href: "https://visionxixlabs.com/docs/approval-workflow" },
       { title: "Scanning",             body: "Read-only scans + risk classification.",      href: "https://visionxixlabs.com/docs/scanning" },
       { title: "Glossary",             body: "Closed-union terminology in one place.",      href: "https://visionxixlabs.com/docs/glossary" },

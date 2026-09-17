@@ -284,10 +284,10 @@ function AuthStatusBanner({ previewMode }: { previewMode: boolean }) {
             Mint an API key →
           </ExternalLink>
           <ExternalLink
-            href="https://visionxixlabs.com/dashboard"
+            href="https://visionxixlabs.com/demo"
             className="inline-flex items-center gap-2 px-4 py-2.5 rounded-full border border-white/[0.12] bg-white/[0.03] hover:bg-white/[0.06] text-zinc-200 text-[12px] font-semibold transition-all"
           >
-            Open web app
+            Explore web demo
           </ExternalLink>
         </div>
       </div>

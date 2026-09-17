@@ -31,7 +31,7 @@ export function SimulationsView() {
           Icon={LayersIcon}
           title="No simulations yet"
           detail={error ?? "Connect a provider so remediation candidates appear, then this view simulates each one against the digital twin."}
-          action={<ExternalLink href="https://visionxixlabs.com/dashboard/simulations" className="btn-primary">Open in web</ExternalLink>}
+          action={<ExternalLink href="https://visionxixlabs.com/admin/api-keys" className="btn-primary">Pair workspace</ExternalLink>}
         />
       </ViewShell>
     );

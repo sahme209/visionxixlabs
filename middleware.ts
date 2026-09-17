@@ -2,6 +2,21 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
 export function middleware(request: NextRequest) {
+  const { pathname } = request.nextUrl;
+  const isWebOperationsRoute =
+    pathname === "/dashboard" ||
+    pathname.startsWith("/dashboard/") ||
+    pathname === "/operator" ||
+    pathname.startsWith("/operator/");
+
+  if (isWebOperationsRoute) {
+    const destination = request.nextUrl.clone();
+    destination.pathname = "/download";
+    destination.search = "";
+    destination.searchParams.set("from", pathname);
+    return NextResponse.redirect(destination, 307);
+  }
+
   const response = NextResponse.next();
 
   response.headers.set("Strict-Transport-Security", "max-age=31536000; includeSubDomains; preload");
@@ -14,3 +29,7 @@ export function middleware(request: NextRequest) {
 
   return response;
 }
+
+export const config = {
+  matcher: ["/((?!_next/static|_next/image|favicon.ico).*)"],
+};

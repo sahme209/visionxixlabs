@@ -207,7 +207,7 @@ export function OrchestrationView() {
           Icon={CtrlIcon}
           title="No orchestrations available"
           detail={error}
-          action={<ExternalLink href="https://visionxixlabs.com/dashboard/orchestration" className="btn-primary">Open in web</ExternalLink>}
+          action={<ExternalLink href="https://visionxixlabs.com/admin/api-keys" className="btn-primary">Pair workspace</ExternalLink>}
         />
       </ViewShell>
     );
