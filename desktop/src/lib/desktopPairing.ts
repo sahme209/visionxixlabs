@@ -38,7 +38,7 @@ export async function signInWithBrowser(onWaiting: () => void): Promise<PairedSe
       deviceFingerprint: await deviceFingerprint(),
       deviceLabel: `${navigator.platform || "Desktop"} · Axiom Agent`,
       platform: platform(),
-      desktopVersion: "0.1.1",
+      desktopVersion: "0.1.2",
     },
   );
   if (!start.response.ok || !start.body.challenge || !start.body.verificationUrl) {
