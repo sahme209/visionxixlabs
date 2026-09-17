@@ -1,6 +1,6 @@
 [package]
 name = "axiom-desktop"
-version = "0.1.2"
+version = "0.1.7"
 description = "Axiom Agent — Local AI Cloud Operations Command Center"
 authors = ["Vision XIX Labs"]
 edition = "2021"
