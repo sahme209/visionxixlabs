@@ -17,7 +17,7 @@ function SignInForm() {
   const [enabledProviders, setEnabledProviders] = useState<{ google: boolean; github: boolean } | null>(null);
   const router = useRouter();
   const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get("callbackUrl") || "/dashboard";
+  const callbackUrl = searchParams.get("callbackUrl") || "/auth/success";
 
   // Surface a clear hint when the OAuth callback errored.
   const oauthError = searchParams.get("error");

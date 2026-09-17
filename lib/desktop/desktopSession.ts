@@ -49,6 +49,8 @@ export interface DesktopSession {
 }
 
 export interface CreateSessionInput {
+  /** Optional server-verified id used by the browser-assisted pairing flow. */
+  id?: string;
   userId: UserId;
   organizationId: OrganizationId;
   deviceFingerprint: string;
@@ -116,7 +118,7 @@ export async function createDesktopSession(input: CreateSessionInput): Promise<D
   const ttlDays = Math.min(input.ttlDays ?? DEFAULT_TTL_DAYS, MAX_TTL_DAYS);
   const now = new Date();
   const session: DesktopSession = {
-    id: `dsk_${crypto.randomUUID().replaceAll("-", "")}`,
+    id: input.id ?? `dsk_${crypto.randomUUID().replaceAll("-", "")}`,
     userId: input.userId,
     organizationId: input.organizationId,
     deviceFingerprint: input.deviceFingerprint,

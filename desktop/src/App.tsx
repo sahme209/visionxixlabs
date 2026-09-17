@@ -54,6 +54,8 @@ import { SlackNotificationsView } from "./views/SlackNotificationsView";
 import { AgiMemoryView } from "./views/AgiMemoryView";
 import { AgiSuggestionsView } from "./views/AgiSuggestionsView";
 import { AiCallLogView } from "./views/AiCallLogView";
+import { DesktopSignInView } from "./views/DesktopSignInView";
+import { desktopClient } from "./lib/desktopClient";
 import { useTrayApprovalsBadge } from "./lib/useTrayApprovalsBadge";
 import { useConnectorHealthAmbientPoll } from "./lib/connectorHealthStore";
 import { useSseStream } from "./lib/useSseStream";
@@ -130,6 +132,8 @@ export type View =
 export default function App() {
   const [activeView, setActiveView] = useState<View>("start-here");
   const [booted, setBooted] = useState(false);
+  const [authenticated, setAuthenticated] = useState(() => desktopClient.hasAuth());
+  const [preview, setPreview] = useState(false);
 
   useEffect(() => {
     const t = setTimeout(() => setBooted(true), 600);
@@ -176,6 +180,9 @@ export default function App() {
   }, [sseStatus]);
 
   if (!booted) return <BootScreen />;
+  if (!authenticated && !preview) {
+    return <DesktopSignInView onSignedIn={() => setAuthenticated(true)} onPreview={() => setPreview(true)} />;
+  }
 
   return (
     <div className="flex h-screen bg-axiom-bg text-white overflow-hidden">

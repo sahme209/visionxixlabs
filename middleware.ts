@@ -3,6 +3,27 @@ import type { NextRequest } from "next/server";
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
+  const origin = request.headers.get("origin");
+  const allowedDesktopOrigins = new Set([
+    "tauri://localhost",
+    "http://tauri.localhost",
+    "https://tauri.localhost",
+    "http://localhost:1420",
+    "http://localhost:5173",
+  ]);
+  const desktopOrigin = origin && allowedDesktopOrigins.has(origin) ? origin : null;
+
+  if (request.method === "OPTIONS" && pathname.startsWith("/api/")) {
+    const preflight = new NextResponse(null, { status: 204 });
+    if (desktopOrigin) {
+      preflight.headers.set("Access-Control-Allow-Origin", desktopOrigin);
+      preflight.headers.set("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE, OPTIONS");
+      preflight.headers.set("Access-Control-Allow-Headers", "Authorization, Content-Type, Idempotency-Key");
+      preflight.headers.set("Access-Control-Max-Age", "86400");
+      preflight.headers.set("Vary", "Origin");
+    }
+    return preflight;
+  }
   const isWebOperationsRoute =
     pathname === "/dashboard" ||
     pathname.startsWith("/dashboard/") ||
@@ -18,6 +39,11 @@ export function middleware(request: NextRequest) {
   }
 
   const response = NextResponse.next();
+
+  if (desktopOrigin && pathname.startsWith("/api/")) {
+    response.headers.set("Access-Control-Allow-Origin", desktopOrigin);
+    response.headers.set("Vary", "Origin");
+  }
 
   response.headers.set("Strict-Transport-Security", "max-age=31536000; includeSubDomains; preload");
   response.headers.set("X-Frame-Options", "DENY");
