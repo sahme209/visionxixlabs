@@ -11,11 +11,11 @@
     },
     {
       "path": "/api/autonomy/scheduler",
-      "schedule": "*/15 * * * *"
+      "schedule": "0 0 * * *"
     },
     {
       "path": "/api/notifications/cron-dispatch-telemetry",
-      "schedule": "*/10 * * * *"
+      "schedule": "5 0 * * *"
     },
     {
       "path": "/api/notifications/cron-weekly-digest",
@@ -27,19 +27,19 @@
     },
     {
       "path": "/api/notifications/cron-drain-retries",
-      "schedule": "*/5 * * * *"
+      "schedule": "10 0 * * *"
     },
     {
       "path": "/api/cron/sweep-engineer-approvals",
-      "schedule": "*/15 * * * *"
+      "schedule": "15 0 * * *"
     },
     {
       "path": "/api/cron/rebuild-usage-summary",
-      "schedule": "0 */4 * * *"
+      "schedule": "20 0 * * *"
     },
     {
       "path": "/api/cron/check-billing-alerts",
-      "schedule": "*/30 * * * *"
+      "schedule": "25 0 * * *"
     },
     {
       "path": "/api/cron/run-coding-eval",
@@ -47,15 +47,15 @@
     },
     {
       "path": "/api/cron/webhook-queue",
-      "schedule": "* * * * *"
+      "schedule": "30 0 * * *"
     },
     {
       "path": "/api/cron/connector-health-scan",
-      "schedule": "*/5 * * * *"
+      "schedule": "35 0 * * *"
     },
     {
       "path": "/api/cron/alert-escalation-tick",
-      "schedule": "*/10 * * * *"
+      "schedule": "40 0 * * *"
     },
     {
       "path": "/api/cron/linkedin-daily-drafts",
@@ -63,43 +63,43 @@
     },
     {
       "path": "/api/cron/linkedin-publish",
-      "schedule": "*/15 * * * *"
+      "schedule": "45 0 * * *"
     },
     {
       "path": "/api/cron/releaseops-autonomous-tick",
-      "schedule": "0 * * * *"
+      "schedule": "50 0 * * *"
     },
     {
       "path": "/api/cron/scheduled-scan-tick",
-      "schedule": "*/15 * * * *"
+      "schedule": "55 0 * * *"
     },
     {
       "path": "/api/cron/expire-approvals",
-      "schedule": "0 * * * *"
+      "schedule": "0 1 * * *"
     },
     {
       "path": "/api/cron/scheduled-scan-watchdog",
-      "schedule": "0 * * * *"
+      "schedule": "5 1 * * *"
     },
     {
       "path": "/api/cron/engineer-health-watchdog",
-      "schedule": "0 * * * *"
+      "schedule": "10 1 * * *"
     },
     {
       "path": "/api/cron/ai-circuit-watchdog",
-      "schedule": "*/15 * * * *"
+      "schedule": "15 1 * * *"
     },
     {
       "path": "/api/cron/engineer-agi-tick",
-      "schedule": "*/30 * * * *"
+      "schedule": "20 1 * * *"
     },
     {
       "path": "/api/cron/ai-cost-rollup",
-      "schedule": "0 * * * *"
+      "schedule": "25 1 * * *"
     },
     {
       "path": "/api/cron/engineer-domain-tick",
-      "schedule": "30 * * * *"
+      "schedule": "30 1 * * *"
     },
     {
       "path": "/api/cron/workforce-daily-digest",
