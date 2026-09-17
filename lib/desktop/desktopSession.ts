@@ -20,7 +20,6 @@
 
 import "server-only";
 
-import { randomBytes } from "node:crypto";
 import type { OrganizationId, UserId } from "@/lib/domain/ids";
 
 // ---------------------------------------------------------------------------
@@ -117,7 +116,7 @@ export async function createDesktopSession(input: CreateSessionInput): Promise<D
   const ttlDays = Math.min(input.ttlDays ?? DEFAULT_TTL_DAYS, MAX_TTL_DAYS);
   const now = new Date();
   const session: DesktopSession = {
-    id: `dsk_${randomBytes(16).toString("hex")}`,
+    id: `dsk_${crypto.randomUUID().replaceAll("-", "")}`,
     userId: input.userId,
     organizationId: input.organizationId,
     deviceFingerprint: input.deviceFingerprint,
