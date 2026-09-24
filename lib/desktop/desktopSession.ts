@@ -20,7 +20,6 @@
 
 import "server-only";
 
-import { randomBytes } from "node:crypto";
 import type { OrganizationId, UserId } from "@/lib/domain/ids";
 
 // ---------------------------------------------------------------------------
@@ -50,6 +49,8 @@ export interface DesktopSession {
 }
 
 export interface CreateSessionInput {
+  /** Optional server-verified id used by the browser-assisted pairing flow. */
+  id?: string;
   userId: UserId;
   organizationId: OrganizationId;
   deviceFingerprint: string;
@@ -86,9 +87,15 @@ class InMemorySessionStore implements DesktopSessionStore {
 
 let storeOverride: DesktopSessionStore | undefined;
 const defaultStore = new InMemorySessionStore();
+let durableStorePromise: Promise<DesktopSessionStore> | undefined;
 
-function store(): DesktopSessionStore {
-  return storeOverride ?? defaultStore;
+async function store(): Promise<DesktopSessionStore> {
+  if (storeOverride) return storeOverride;
+  if (!process.env.DATABASE_URL?.trim()) return defaultStore;
+  durableStorePromise ??= import("./desktopSessionStore.prisma").then(
+    ({ prismaDesktopSessionStore }) => prismaDesktopSessionStore,
+  );
+  return durableStorePromise;
 }
 
 /** Used by the store factory to switch to the Prisma-backed adapter. */
@@ -117,7 +124,7 @@ export async function createDesktopSession(input: CreateSessionInput): Promise<D
   const ttlDays = Math.min(input.ttlDays ?? DEFAULT_TTL_DAYS, MAX_TTL_DAYS);
   const now = new Date();
   const session: DesktopSession = {
-    id: `dsk_${randomBytes(16).toString("hex")}`,
+    id: input.id ?? `dsk_${crypto.randomUUID().replaceAll("-", "")}`,
     userId: input.userId,
     organizationId: input.organizationId,
     deviceFingerprint: input.deviceFingerprint,
@@ -128,17 +135,18 @@ export async function createDesktopSession(input: CreateSessionInput): Promise<D
     expiresAt: new Date(now.getTime() + ttlDays * 86_400_000).toISOString(),
     lastSeenAt: now.toISOString(),
   };
-  await store().create(session);
+  await (await store()).create(session);
   return session;
 }
 
 export async function getDesktopSession(id: string): Promise<DesktopSession | undefined> {
-  return store().getById(id);
+  return (await store()).getById(id);
 }
 
 /** Resolve the session for an inbound desktop request — returns undefined if revoked / expired. */
 export async function resolveActiveSession(id: string): Promise<DesktopSession | undefined> {
-  const session = await store().getById(id);
+  const sessionStore = await store();
+  const session = await sessionStore.getById(id);
   if (!session) return undefined;
   if (statusFor(session) !== "active") return undefined;
   return session;
@@ -146,20 +154,22 @@ export async function resolveActiveSession(id: string): Promise<DesktopSession |
 
 /** Record a heartbeat. Updates `lastSeenAt` only; cheap, idempotent. */
 export async function touchDesktopSession(id: string): Promise<void> {
-  const s = await store().getById(id);
+  const sessionStore = await store();
+  const s = await sessionStore.getById(id);
   if (!s) return;
   if (statusFor(s) !== "active") return;
-  await store().update({ ...s, lastSeenAt: new Date().toISOString() });
+  await sessionStore.update({ ...s, lastSeenAt: new Date().toISOString() });
 }
 
 export async function revokeDesktopSession(id: string, reason: string): Promise<void> {
-  const s = await store().getById(id);
+  const sessionStore = await store();
+  const s = await sessionStore.getById(id);
   if (!s) return;
   if (s.revokedAt) return;
-  await store().update({ ...s, revokedAt: new Date().toISOString(), revokeReason: reason });
+  await sessionStore.update({ ...s, revokedAt: new Date().toISOString(), revokeReason: reason });
 }
 
 export async function listActiveSessions(userId: UserId): Promise<DesktopSession[]> {
-  const all = await store().listByUser(userId);
+  const all = await (await store()).listByUser(userId);
   return all.filter((s) => statusFor(s) === "active");
 }

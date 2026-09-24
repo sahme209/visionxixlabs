@@ -51,7 +51,7 @@ async function loadStore(): Promise<ReadonlyArray<VoteRecord>> {
     return cache;
   }
   try {
-    const store = await loadStorePlugin(STORE_FILE, { autoSave: true });
+    const store = await loadStorePlugin(STORE_FILE, { autoSave: true, defaults: {} });
     const raw = await store.get<unknown>(STORE_KEY);
     if (Array.isArray(raw)) {
       cache = raw.filter(isVoteRecord);
@@ -84,7 +84,7 @@ export async function recordVote(vote: VoteRecord): Promise<void> {
   for (const l of listeners) l();
   if (!isTauri()) return;
   try {
-    const store = await loadStorePlugin(STORE_FILE, { autoSave: true });
+    const store = await loadStorePlugin(STORE_FILE, { autoSave: true, defaults: {} });
     await store.set(STORE_KEY, cache as unknown as object);
     await store.save();
   } catch {

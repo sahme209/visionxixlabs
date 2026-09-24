@@ -47,7 +47,15 @@ export type ActivityEventType =
   | "release.verification_passed"
   | "release.approval_pending"
   | "release.servicenow_synced"
-  | "release.terraform_plan";
+  | "release.terraform_plan"
+  // Phase 644-649 integration dispatches
+  | "integration.executed"
+  | "integration.skipped"
+  | "integration.failed"
+  // Phase 655 engineer dispatch audit events
+  | "engineer.executed"
+  | "engineer.attempted"
+  | "engineer.failed";
 
 export interface ActivityEvent {
   id: string;
@@ -233,6 +241,42 @@ const EVENT_CONFIG: Record<
     iconClass: "text-violet-400",
     bgClass: "bg-violet-500/10",
     borderClass: "border-violet-500/20",
+  },
+  "integration.executed": {
+    icon: CheckCircleIcon,
+    iconClass: "text-emerald-400",
+    bgClass: "bg-emerald-500/10",
+    borderClass: "border-emerald-500/20",
+  },
+  "integration.skipped": {
+    icon: ClockIcon,
+    iconClass: "text-amber-400",
+    bgClass: "bg-amber-500/10",
+    borderClass: "border-amber-500/20",
+  },
+  "integration.failed": {
+    icon: XCircleIcon,
+    iconClass: "text-rose-400",
+    bgClass: "bg-rose-500/10",
+    borderClass: "border-rose-500/20",
+  },
+  "engineer.executed": {
+    icon: CpuChipIcon,
+    iconClass: "text-emerald-400",
+    bgClass: "bg-emerald-500/10",
+    borderClass: "border-emerald-500/20",
+  },
+  "engineer.attempted": {
+    icon: CpuChipIcon,
+    iconClass: "text-sky-400",
+    bgClass: "bg-sky-500/10",
+    borderClass: "border-sky-500/20",
+  },
+  "engineer.failed": {
+    icon: XCircleIcon,
+    iconClass: "text-rose-400",
+    bgClass: "bg-rose-500/10",
+    borderClass: "border-rose-500/20",
   },
 };
 

@@ -14,17 +14,25 @@ import { NextRequest, NextResponse } from "next/server";
 
 type Platform = "mac-arm" | "mac-intel" | "windows" | "linux";
 
+const RELEASE_BASE = "https://github.com/sahme209/axiom-releases/releases/download/desktop-v0.1.7";
+
 const PLATFORM_AVAILABILITY: Record<Platform, { available: boolean; releaseUrl?: string }> = {
   "mac-arm": {
-    available: false, // Flip to true once AXIOM_DESKTOP_RELEASE_MAC_ARM is set.
-    releaseUrl: process.env.AXIOM_DESKTOP_RELEASE_MAC_ARM,
+    available: true,
+    releaseUrl: `${RELEASE_BASE}/Axiom.Agent_0.1.7_aarch64.dmg`,
   },
   "mac-intel": {
-    available: false,
-    releaseUrl: process.env.AXIOM_DESKTOP_RELEASE_MAC_INTEL,
+    available: true,
+    releaseUrl: `${RELEASE_BASE}/Axiom.Agent_0.1.7_x64.dmg`,
   },
-  windows: { available: false },
-  linux: { available: false },
+  windows: {
+    available: true,
+    releaseUrl: `${RELEASE_BASE}/Axiom.Agent_0.1.7_x64-setup.exe`,
+  },
+  linux: {
+    available: true,
+    releaseUrl: `${RELEASE_BASE}/Axiom.Agent_0.1.7_amd64.AppImage`,
+  },
 };
 
 const VALID_PLATFORMS: Platform[] = ["mac-arm", "mac-intel", "windows", "linux"];

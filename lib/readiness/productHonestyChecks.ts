@@ -127,6 +127,11 @@ const RULES: ScanRule[] = [
       "lib/readiness/productHonestyChecks.ts",
       "lib/readiness/__tests__/productHonestyChecks.test.ts",
       "app/dashboard/autonomous-ops/page.tsx",
+      // Phase 654: the capabilities footer cites this phrase as a
+      // forbidden claim that fails honesty regression tests at build
+      // time — the literal string is in the explanation, not a product
+      // claim.
+      "app/dashboard/capabilities/page.tsx",
     ],
   },
   {
@@ -169,6 +174,11 @@ const SCAN_FILES = [
   "lib/onboarding/selfServeSetupOrchestrator.ts",
   // Validation matrix evidence strings
   "lib/validation/platformValidationMatrix.ts",
+  // Phase 650-654: action registry + capabilities surfaces are
+  // operator-facing copy and a high-leverage honesty target.
+  "lib/actions/actionRegistry.ts",
+  "app/dashboard/capabilities/page.tsx",
+  "app/dashboard/command-center/IntelligenceBand.tsx",
 ];
 
 // ---------------------------------------------------------------------------

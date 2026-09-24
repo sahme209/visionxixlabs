@@ -104,7 +104,7 @@ export function Footer() {
                 href="/download"
                 className="btn-press inline-flex items-center gap-2 px-7 py-3.5 rounded-full text-[14.5px] font-semibold tracking-tight"
               >
-                Run Axiom
+                Download Axiom Agent
                 <ArrowRightIcon className="h-4 w-4 opacity-70" />
               </Link>
               <a

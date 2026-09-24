@@ -39,7 +39,7 @@ function SignUpForm() {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
-  const redirect = searchParams.get("redirect") || "/dashboard";
+  const redirect = searchParams.get("redirect") || "/auth/success";
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -207,10 +207,20 @@ function SignUpForm() {
               <div className="flex-1 h-px bg-white/[0.06]" />
             </div>
             <div className="flex items-center justify-center gap-3">
-              <button type="button" className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-white/[0.08] bg-white/[0.02] text-sm text-zinc-400 hover:bg-white/[0.06] hover:text-white transition-all">
+              <button
+                type="button"
+                disabled={loading}
+                onClick={() => signIn("google", { callbackUrl: redirect })}
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-white/[0.08] bg-white/[0.02] text-sm text-zinc-400 hover:bg-white/[0.06] hover:text-white transition-all disabled:opacity-50"
+              >
                 Sign up with Google
               </button>
-              <button type="button" className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-white/[0.08] bg-white/[0.02] text-sm text-zinc-400 hover:bg-white/[0.06] hover:text-white transition-all">
+              <button
+                type="button"
+                disabled={loading}
+                onClick={() => signIn("github", { callbackUrl: redirect })}
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-white/[0.08] bg-white/[0.02] text-sm text-zinc-400 hover:bg-white/[0.06] hover:text-white transition-all disabled:opacity-50"
+              >
                 Sign up with GitHub
               </button>
             </div>

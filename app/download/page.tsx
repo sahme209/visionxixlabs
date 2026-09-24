@@ -258,7 +258,7 @@ export default function DownloadPage() {
               <span className="text-xs text-zinc-500 font-mono">
                 {manifest?.hasAnyAsset
                   ? `Latest desktop release: ${manifest.tag ?? "—"} · ${manifest.allSignedAndNotarized ? "signed + notarized" : "developer build · per-platform friction notes below"}`
-                  : "Web: isolated demo only · Desktop developer builds publish via CI on `desktop—v*` tags — signed binaries when platform certificates are configured"}
+                  : "Web: isolated demo only · Desktop developer builds publish via CI on `desktop-v*` tags — signed binaries when platform certificates are configured"}
               </span>
               {mounted && primaryPlatform.available && primaryPlatform.installFriction && (
                 <span className="text-[11px] text-amber-200/80 font-mono">{primaryPlatform.installFriction}</span>

@@ -22,6 +22,7 @@ import { currentContext } from "@/lib/auth/currentContext";
 import { prisma } from "@/lib/db";
 import { AGENT_WORKFORCE_REGISTRY } from "@/lib/workforce/agentWorkforceRegistry";
 import { ShareEntryButton } from "@/components/workforce/ShareEntryButton";
+import { readIntegrationConfig } from "@/lib/workforce/domains/integrationRegistry";
 
 export const dynamic = "force-dynamic";
 
@@ -69,6 +70,8 @@ const KIND_LABEL: Record<string, string> = {
   connector_scan_inventory:             "On-prem scan batch",
   workforce_monitoring_alert:           "Monitoring alert",
   workforce_monitoring_webhook:         "Monitoring webhook config",
+  workforce_integration_config:         "Integration config",
+  workforce_action_execution:           "Action execution",
 };
 
 const OUTCOME_TONE: Record<string, string> = {
@@ -111,13 +114,18 @@ function parseSlug(raw: string): { targetKind: string; targetId: string } | null
 
 export default async function AgiMemoryEntryPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ entry: string }>;
+  searchParams?: Promise<Record<string, string | string[] | undefined>>;
 }) {
   const ctx = await currentContext();
   if (!ctx.isAuthenticated || !ctx.organizationId) {
     redirect("/auth/signin?callbackUrl=/dashboard/agi-memory");
   }
+  const sp = searchParams ? await searchParams : {};
+  const notice = typeof sp.notice === "string" ? sp.notice : "";
+  const dispatchError = typeof sp.error === "string" ? sp.error : "";
   const { entry: entryRaw } = await params;
   const parsed = parseSlug(entryRaw);
   if (!parsed) notFound();
@@ -256,6 +264,20 @@ export default async function AgiMemoryEntryPage({
     (e) => e.productLayer === "client" && relevantDepts.includes(e.department),
   );
 
+  // Phase 649: dispatch-from-memory. Hide the section entirely on
+  // synthetic rows (integration config, action execution itself) so
+  // operators don't loop. Show enabled integrations only — if none,
+  // surface a hint linking to the integrations page.
+  const integrationConfig = await readIntegrationConfig(String(ctx.organizationId));
+  const dispatchableKinds: Array<{ kind: "github_issue" | "slack_action_post" | "linear_ticket"; label: string; enabled: boolean }> = [
+    { kind: "github_issue", label: "GitHub issue", enabled: !!integrationConfig.github?.enabled },
+    { kind: "slack_action_post", label: "Slack message", enabled: !!integrationConfig.slackActions?.enabled },
+    { kind: "linear_ticket", label: "Linear ticket", enabled: !!integrationConfig.linear?.enabled },
+  ];
+  const SELF_DISPATCH_KINDS = new Set(["workforce_integration_config", "workforce_action_execution"]);
+  const allowDispatch = !SELF_DISPATCH_KINDS.has(entry.targetKind);
+  const anyIntegrationEnabled = dispatchableKinds.some((d) => d.enabled);
+
   return (
     <div className="max-w-3xl mx-auto px-1 -mt-2">
       <div className="flex items-center justify-between gap-3 mb-6 flex-wrap">
@@ -327,6 +349,76 @@ export default async function AgiMemoryEntryPage({
               <li key={`${i}_${a.slice(0, 24)}`} className="px-5 py-3 text-[13px] text-emerald-100/90 leading-relaxed">{a}</li>
             ))}
           </ul>
+        </section>
+      )}
+
+      {/* Phase 649: dispatch this row to configured integrations.
+          Operator-initiated counterpart to Phase 646 approver auto-dispatch. */}
+      {allowDispatch && (
+        <section className="mb-8 rounded-2xl border border-emerald-500/15 bg-emerald-500/[0.04] p-5">
+          <p className="text-[10px] font-mono uppercase tracking-[0.18em] text-emerald-300 mb-3 inline-flex items-center gap-2">
+            <span className="text-zinc-700">//</span>
+            <span>dispatch</span>
+            <span className="text-zinc-700">::</span>
+            <span className="text-zinc-500">action layer</span>
+          </p>
+          {notice === "dispatched" && (
+            <p className="text-[12.5px] text-emerald-200 font-mono mb-3">dispatched · check /dashboard/workforce/integrations for the result</p>
+          )}
+          {notice === "dispatched_with_errors" && (
+            <p className="text-[12.5px] text-amber-200 font-mono mb-3">dispatched with errors · open integrations page for details</p>
+          )}
+          {notice === "dispatched_partial" && (
+            <p className="text-[12.5px] text-amber-200 font-mono mb-3">partial dispatch · some legs skipped</p>
+          )}
+          {dispatchError && (
+            <p className="text-[12.5px] text-rose-200 font-mono mb-3">error: {dispatchError}</p>
+          )}
+          {anyIntegrationEnabled ? (
+            <form action="/api/workforce/integrations/dispatch-from-memory" method="POST" className="space-y-3">
+              <input type="hidden" name="targetKind" value={entry.targetKind} />
+              <input type="hidden" name="targetId" value={entry.targetId} />
+              <p className="text-[12px] text-zinc-300 mb-1">Open this finding in:</p>
+              <div className="flex flex-wrap gap-2">
+                {dispatchableKinds.map((d) => (
+                  <label
+                    key={d.kind}
+                    className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full border text-[12px] font-mono ${d.enabled ? "border-emerald-500/30 text-emerald-100 cursor-pointer hover:bg-emerald-500/10" : "border-white/[0.06] text-zinc-600 cursor-not-allowed"}`}
+                  >
+                    <input
+                      type="checkbox"
+                      name="kind"
+                      value={d.kind}
+                      defaultChecked={d.enabled}
+                      disabled={!d.enabled}
+                      className="accent-emerald-400"
+                    />
+                    <span>{d.label}</span>
+                    {!d.enabled && <span className="text-[10px] text-zinc-700">· not configured</span>}
+                  </label>
+                ))}
+              </div>
+              <div className="flex items-center justify-between gap-3 flex-wrap pt-1">
+                <p className="text-[11px] text-zinc-500 font-mono">
+                  title = first line of narrative · body = narrative + risks + next actions · upstream = {entry.targetKind}:{entry.targetId.slice(0, 24)}…
+                </p>
+                <button
+                  type="submit"
+                  className="text-[11px] font-mono uppercase tracking-wider px-4 py-2 rounded-full border border-emerald-500/30 text-emerald-100 hover:text-white hover:border-emerald-500/60 hover:bg-emerald-500/15 transition-colors"
+                >
+                  dispatch →
+                </button>
+              </div>
+            </form>
+          ) : (
+            <p className="text-[12px] text-zinc-400">
+              No integrations enabled. Configure one in{" "}
+              <Link href="/dashboard/workforce/integrations" className="text-emerald-300 hover:text-white transition-colors underline underline-offset-2">
+                /dashboard/workforce/integrations
+              </Link>{" "}
+              to file this finding as a real ticket.
+            </p>
+          )}
         </section>
       )}
 
