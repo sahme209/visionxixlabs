@@ -18,9 +18,9 @@ type CloudProvider = "aws" | "azure" | "gcp" | "multi" | "none";
 type CompanySize = "1-10" | "11-50" | "51-200" | "201-1k" | "1k+";
 
 const TOPICS: ReadonlyArray<{ id: Topic; label: string; hint: string }> = [
-  { id: "demo",       label: "Book a walkthrough", hint: "30 minutes, one operator, your real cloud." },
-  { id: "trial",      label: "Start a trial",      hint: "Free Starter tier, read-only mode by default." },
-  { id: "enterprise", label: "Enterprise",         hint: "SSO, SCIM, custom charters, SOC 2 packets." },
+  { id: "demo",       label: "Book a walkthrough", hint: "Review the web product and its current sandbox boundary." },
+  { id: "trial",      label: "Product access",     hint: "Ask about a tenant workspace; no public trial terms are implied." },
+  { id: "enterprise", label: "Production needs",   hint: "Discuss requirements, integrations, security, and procurement." },
   { id: "support",    label: "Support",            hint: "Existing operator with an account question." },
   { id: "press",      label: "Press / partners",   hint: "Coverage, integration, or partnership." },
 ];
@@ -140,9 +140,8 @@ export function ContactClient() {
           transition={{ delay: 0.2 }}
           className="mt-5 max-w-2xl text-[15px] text-zinc-400 leading-relaxed"
         >
-          Tell us a bit about the operator surface you're trying to run. We
-          reply within one business day with a calendar link and the kernel
-          module most relevant to your environment.
+          Tell us about the deployment workflow you need to govern. We will
+          respond with the relevant web access, integration, and sandbox details.
         </motion.p>
       </section>
 
@@ -158,21 +157,21 @@ export function ContactClient() {
               className="rounded-2xl border border-emerald-500/30 bg-emerald-500/[0.06] p-6"
             >
               <p className="text-[12px] font-mono uppercase tracking-widest text-emerald-300">
-                approval packet staged
+                message sent
               </p>
               <h2 className="mt-2 text-xl font-semibold text-white">
                 Message received.
               </h2>
               <p className="mt-2 text-[14px] text-zinc-300 leading-relaxed">
-                The audit row is written. An operator on our side will reply with
-                a calendar link within one business day.
+                Your message was accepted by the contact endpoint. We will use
+                the email address you supplied to respond.
               </p>
               <div className="mt-5 flex flex-wrap items-center gap-2">
                 <Link
-                  href="/disciplines"
+                  href="/#capabilities"
                   className="inline-flex items-center gap-2 rounded-full bg-indigo-500 px-4 py-2 text-[12.5px] font-medium text-white shadow-[0_0_20px_rgba(99,102,241,0.45)] hover:bg-indigo-400 transition"
                 >
-                  Browse disciplines
+                  Review capabilities
                 </Link>
                 <Link
                   href="/plans"
@@ -328,7 +327,7 @@ export function ContactClient() {
                   {state.kind === "submitting" ? "Sending…" : "Send →"}
                 </button>
                 <span className="text-[11px] font-mono uppercase tracking-widest text-zinc-500">
-                  audit row written on submit
+                  sent through the contact endpoint
                 </span>
               </div>
             </motion.form>

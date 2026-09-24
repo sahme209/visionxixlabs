@@ -1,221 +1,61 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import {
-  RocketLaunchIcon,
-  CloudIcon,
-  ShieldCheckIcon,
-  CommandLineIcon,
-  CpuChipIcon,
-  LockClosedIcon,
-  QuestionMarkCircleIcon,
-  WrenchScrewdriverIcon,
-  ArrowRightIcon,
-  BookOpenIcon,
-} from "@heroicons/react/24/outline";
-import { DocHeader, Callout, DocFeedback } from "@/components/docs/DocPrimitives";
+import { integrationInventory, tauriCapabilities } from "@/lib/product/tauriCapabilityInventory";
 
 export const metadata: Metadata = {
-  title: "Documentation — Axiom Agent | Vision XIX Labs",
-  description: "Self-serve guides for connecting your cloud, running scans, generating Terraform, approving plans, rollback, ReleaseOps, and the Axiom desktop application.",
+  title: "TAURI product guide",
+  description: "Verified TAURI capabilities, access paths, sandbox boundaries, and connector status.",
 };
 
-const QUICK_PATHS = [
-  {
-    href: "/docs/quickstart-checklist",
-    icon: RocketLaunchIcon,
-    title: "Quickstart checklist",
-    desc: "The seven steps from signup to first scan, with time estimates.",
-    color: "violet",
-  },
-  {
-    href: "/docs/getting-started",
-    icon: RocketLaunchIcon,
-    title: "Getting started",
-    desc: "Sign up, connect AWS, run your first scan — under 5 minutes end-to-end.",
-    color: "violet",
-  },
-  {
-    href: "/docs/aws-setup",
-    icon: CloudIcon,
-    title: "AWS setup",
-    desc: "IAM role, External ID, read-only validation, region selection.",
-    color: "amber",
-  },
-  {
-    href: "/docs/security-model",
-    icon: ShieldCheckIcon,
-    title: "Security model",
-    desc: "What Axiom accesses, what gets stored, what is read-only, how to revoke.",
-    color: "emerald",
-  },
-  {
-    href: "/docs/troubleshooting",
-    icon: WrenchScrewdriverIcon,
-    title: "Troubleshooting",
-    desc: "Common errors and how to fix them — IAM, network, scan, approval, rollback.",
-    color: "blue",
-  },
-];
-
-const COLOR_MAP = {
-  violet: "bg-violet-500/10 border-violet-500/20 text-violet-400",
-  amber: "bg-amber-500/10 border-amber-500/20 text-amber-400",
-  emerald: "bg-emerald-500/10 border-emerald-500/20 text-emerald-400",
-  blue: "bg-blue-500/10 border-blue-500/20 text-blue-400",
-} as const;
-
-const TOPIC_GROUPS = [
-  {
-    title: "Connect a cloud",
-    icon: CloudIcon,
-    items: [
-      { href: "/docs/aws-setup", label: "AWS · IAM role + External ID", available: true },
-      { href: "/docs/azure-setup", label: "Azure · Service Principal", available: true },
-      { href: "/docs/gcp-setup", label: "GCP · Service Account", available: true },
-    ],
-  },
-  {
-    title: "Operate",
-    icon: CpuChipIcon,
-    items: [
-      { href: "/docs/scanning", label: "Infrastructure scanning", available: true },
-      { href: "/docs/approval-workflow", label: "Approval workflow", available: true },
-      { href: "/docs/execution-plans", label: "Execution plans", available: true },
-      { href: "/docs/terraform-export", label: "Terraform & CLI export", available: true },
-      { href: "/docs/rollback", label: "Rollback strategy", available: true },
-    ],
-  },
-  {
-    title: "ReleaseOps",
-    icon: ShieldCheckIcon,
-    items: [
-      { href: "/docs/releaseops", label: "ReleaseOps overview", available: true },
-      { href: "/docs/releaseops/connectors", label: "CI/CD connectors", available: true },
-      { href: "/docs/releaseops/readiness", label: "Readiness scoring", available: true },
-    ],
-  },
-  {
-    title: "Desktop",
-    icon: CommandLineIcon,
-    items: [
-      { href: "/docs/desktop-install", label: "Install the desktop app", available: true },
-      { href: "/docs/desktop-architecture", label: "Desktop architecture", available: true },
-    ],
-  },
-  {
-    title: "Trust & security",
-    icon: LockClosedIcon,
-    items: [
-      { href: "/docs/security-model", label: "Security model", available: true },
-      { href: "/docs/permissions-model", label: "Permissions model", available: true },
-      { href: "/docs/audit-logs", label: "Audit logs", available: true },
-    ],
-  },
-  {
-    title: "Production guides",
-    icon: ShieldCheckIcon,
-    items: [
-      { href: "/docs/quickstart-checklist", label: "Quickstart checklist · 5 min onboarding", available: true },
-      { href: "/docs/best-practices", label: "Best practices · production-readiness", available: true },
-    ],
-  },
-  {
-    title: "Reference",
-    icon: QuestionMarkCircleIcon,
-    items: [
-      { href: "/docs/troubleshooting", label: "Troubleshooting", available: true },
-      { href: "/docs/faq", label: "FAQ", available: true },
-      { href: "/docs/glossary", label: "Glossary", available: true },
-    ],
-  },
-];
-
-export default function DocsIndexPage() {
+export default function DocsPage() {
   return (
-    <>
-      <DocHeader
-        number="01"
-        kicker="Axiom documentation"
-        title="Self-serve guides for the entire platform."
-        summary="Every flow Axiom supports — cloud onboarding, scanning, approval, execution, rollback, ReleaseOps, desktop — is documented here. No tickets required to understand how it works."
-      />
+    <main className="min-h-screen bg-zinc-950 px-6 py-20 text-zinc-100">
+      <div className="mx-auto max-w-5xl space-y-12">
+        <header className="max-w-3xl space-y-4">
+          <p className="font-mono text-xs uppercase tracking-[0.22em] text-violet-300">TAURI product guide</p>
+          <h1 className="text-4xl font-semibold tracking-tight sm:text-5xl">What customers can use today</h1>
+          <p className="text-base leading-relaxed text-zinc-400">
+            TAURI is a web application. Production workspaces use tenant-scoped records. The deployment walkthrough is a labeled, in-browser sandbox with fictional data and no production execution.
+          </p>
+          <div className="flex flex-wrap gap-3">
+            <Link href="/auth/signup?redirect=/dashboard" className="rounded-full bg-white px-5 py-2.5 text-sm font-semibold text-zinc-950">Create a web workspace</Link>
+            <Link href="/demo" className="rounded-full border border-white/15 px-5 py-2.5 text-sm font-semibold">Open sandbox</Link>
+            <Link href="/contact" className="rounded-full border border-white/15 px-5 py-2.5 text-sm font-semibold">Contact</Link>
+          </div>
+        </header>
 
-      <Callout variant="safe" title="What this documentation covers">
-        Every product flow answers the same questions: <strong>what is happening, why is it needed, what access is required, is it safe, what does Axiom store, can access be revoked, what happens next, what if it fails, how do I fix it.</strong> Look for these answers in every guide.
-      </Callout>
+        <section className="space-y-4">
+          <h2 className="text-2xl font-semibold">Capability inventory</h2>
+          <div className="grid gap-3 md:grid-cols-2">
+            {tauriCapabilities.map((item) => (
+              <article key={item.id} className="rounded-2xl border border-white/10 bg-white/[0.03] p-5">
+                <p className="font-mono text-[10px] uppercase tracking-wider text-violet-300">{item.state.replaceAll("_", " ")}</p>
+                <h3 className="mt-2 font-semibold">{item.name}</h3>
+                <p className="mt-2 text-sm leading-relaxed text-zinc-400">{item.publicDescription}</p>
+                <p className="mt-3 text-xs leading-relaxed text-zinc-500">Limit: {item.limitation}</p>
+              </article>
+            ))}
+          </div>
+        </section>
 
-      {/* Quick paths */}
-      <div className="grid sm:grid-cols-2 gap-3 mb-12">
-        {QUICK_PATHS.map((p) => {
-          const Icon = p.icon;
-          return (
-            <Link
-              key={p.href}
-              href={p.href}
-              className="surface-glass rounded-2xl p-5 hover:border-white/[0.12] transition-all group"
-            >
-              <div className="flex items-start justify-between gap-3 mb-3">
-                <div className={`w-10 h-10 rounded-xl border flex items-center justify-center ${COLOR_MAP[p.color as keyof typeof COLOR_MAP]}`}>
-                  <Icon className="h-5 w-5" />
-                </div>
-                <ArrowRightIcon className="h-4 w-4 text-zinc-600 group-hover:text-white group-hover:translate-x-0.5 transition-all mt-2.5" />
-              </div>
-              <p className="text-base font-bold text-white mb-1">{p.title}</p>
-              <p className="text-sm text-zinc-400 leading-relaxed">{p.desc}</p>
-            </Link>
-          );
-        })}
-      </div>
-
-      {/* Topic groups — Huly-style numbered chapters */}
-      <div className="space-y-10">
-        {TOPIC_GROUPS.map((group, gi) => {
-          const Icon = group.icon;
-          return (
-            <div key={group.title}>
-              <div className="flex items-center gap-3 mb-4">
-                <span className="text-[10px] font-mono tabular-nums text-brand-coral/90">{String(gi + 1).padStart(2, "0")}</span>
-                <span className="h-px w-6 bg-gradient-to-r from-brand-coral/60 to-transparent" />
-                <Icon className="h-4 w-4 text-zinc-400" />
-                <h2 className="text-[11px] font-mono font-semibold text-white uppercase tracking-[0.22em]">{group.title}</h2>
-              </div>
-              <ul className="surface-glass rounded-xl divide-y divide-white/[0.04] overflow-hidden">
-                {group.items.map((item, ii) => (
-                  <li key={item.href}>
-                    {item.available ? (
-                      <Link href={item.href} className="relative flex items-center justify-between px-5 py-3.5 hover:bg-brand-coral/[0.04] transition-colors group overflow-hidden">
-                        {/* Coral hairline that appears on the left edge on hover */}
-                        <span aria-hidden className="absolute left-0 top-0 bottom-0 w-0.5 bg-gradient-to-b from-brand-coral via-fuchsia-400 to-brand-violet opacity-0 group-hover:opacity-100 transition-opacity" />
-                        <div className="flex items-center gap-3 min-w-0">
-                          <span className="text-[10px] font-mono tabular-nums text-zinc-600 group-hover:text-brand-coral/80 transition-colors">
-                            {String(ii + 1).padStart(2, "0")}
-                          </span>
-                          <span className="text-[13.5px] text-zinc-300 group-hover:text-white transition-colors">{item.label}</span>
-                        </div>
-                        <ArrowRightIcon className="h-3.5 w-3.5 text-zinc-700 group-hover:text-brand-coral group-hover:translate-x-0.5 transition-all" />
-                      </Link>
-                    ) : (
-                      <span className="flex items-center justify-between px-5 py-3.5 cursor-not-allowed">
-                        <span className="text-sm text-zinc-600">{item.label}</span>
-                        <span className="text-[9px] font-semibold uppercase tracking-wider text-amber-400/70 bg-amber-500/10 border border-amber-500/20 rounded-full px-1.5 py-px">
-                          Doc coming
-                        </span>
-                      </span>
-                    )}
-                  </li>
+        <section className="space-y-4">
+          <h2 className="text-2xl font-semibold">Integrations</h2>
+          <div className="overflow-x-auto rounded-2xl border border-white/10">
+            <table className="w-full min-w-[640px] text-left text-sm">
+              <thead className="bg-white/[0.04] text-zinc-300"><tr><th className="p-4">Integration</th><th className="p-4">State</th><th className="p-4">Customer boundary</th></tr></thead>
+              <tbody>
+                {integrationInventory.map((item) => (
+                  <tr key={item.name} className="border-t border-white/10"><td className="p-4 font-medium">{item.name}</td><td className="p-4 text-zinc-300">{item.level}</td><td className="p-4 text-zinc-400">{item.note}</td></tr>
                 ))}
-              </ul>
-            </div>
-          );
-        })}
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <aside className="rounded-2xl border border-amber-400/20 bg-amber-400/[0.05] p-5 text-sm leading-relaxed text-amber-100/80">
+          No verified current desktop installer is offered. Historical developer artifacts are not a supported customer distribution channel.
+        </aside>
       </div>
-
-      {/* Honest demo-state note */}
-      <Callout variant="info" title="Where the platform is right now">
-        AWS is the first fully-implemented provider — IAM-role onboarding, scan, reasoning, Terraform export, approval, and rollback are real. <strong>Azure and GCP have working connectors but the reasoning + execution layers are rolling out in Q2 and Q3 2026.</strong> ReleaseOps is in operational preview. The desktop app is in macOS preview. Documentation reflects each surface honestly — what works, what&apos;s coming, and when.
-      </Callout>
-
-      <DocFeedback />
-    </>
+    </main>
   );
 }

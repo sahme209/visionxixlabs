@@ -3,12 +3,12 @@ import { SITE_URL } from "@/lib/seo";
 import { ContactClient } from "./ContactClient";
 
 export const metadata: Metadata = {
-  title: "Contact — Axiom",
-  description: "Book a 30-minute walkthrough or send a question. The cockpit's audit row will record the conversation.",
+  title: "Contact TAURI",
+  description: "Ask about TAURI web access, supported integrations, deployment workflows, or production requirements.",
   alternates: { canonical: `${SITE_URL}/contact` },
   openGraph: {
-    title: "Contact — Axiom",
-    description: "Book a 30-minute walkthrough or send a question.",
+    title: "Contact TAURI",
+    description: "Ask about TAURI web access or production requirements.",
     url: `${SITE_URL}/contact`,
   },
 };

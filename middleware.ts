@@ -25,21 +25,59 @@ export function middleware(request: NextRequest) {
     return preflight;
   }
 
-  // The downloadable app is the canonical operational product. Keep the
-  // hosted API/control plane available to desktop clients, but do not expose
-  // live cloud operations through browser pages.
-  const isWebOperationsRoute =
-    pathname === "/dashboard" ||
-    pathname.startsWith("/dashboard/") ||
-    pathname === "/operator" ||
-    pathname.startsWith("/operator/");
+  // TAURI is delivered as a web application. Historical marketing routes
+  // contained desktop-first, autonomous-operation, and fabricated social-
+  // proof claims. Keep old inbound links working by routing them to the
+  // audited canonical sections instead of serving stale claims.
+  const canonicalMarketingRoute: Record<string, string> = {
+    "/axiom": "/#capabilities",
+    "/axiom/releaseops": "/#workflow",
+    "/capabilities": "/#capabilities",
+    "/compare": "/#capabilities",
+    "/disciplines": "/#capabilities",
+    "/faq": "/#capabilities",
+    "/how-it-works": "/#workflow",
+    "/integrations": "/#integrations",
+    "/platforms": "/download",
+    "/team-of-one": "/#capabilities",
+    "/trust": "/#capabilities",
+    "/case-studies": "/#capabilities",
+    "/changelog": "/docs",
+    "/press": "/",
+    "/insights": "/docs",
+    "/status": "/",
+    "/services": "/#capabilities",
+    "/blog": "/docs",
+    "/cloud-security": "/#capabilities",
+    "/cloud-solutions": "/#capabilities",
+    "/design": "/",
+    "/enterprise-readiness": "/#capabilities",
+    "/handbook": "/docs",
+    "/manifesto": "/",
+    "/operator": "/download",
+    "/pricing": "/plans",
+    "/principles": "/",
+    "/security": "/#capabilities",
+    "/team": "/",
+    "/docs/desktop-install": "/download",
+    "/docs/desktop-architecture": "/download",
+  };
 
-  if (isWebOperationsRoute) {
-    const destination = request.nextUrl.clone();
-    destination.pathname = "/download";
-    destination.search = "";
-    destination.searchParams.set("from", pathname);
-    return NextResponse.redirect(destination, 307);
+  const canonical = canonicalMarketingRoute[pathname];
+  if (canonical) {
+    return NextResponse.redirect(new URL(canonical, request.url), 308);
+  }
+
+  if (pathname.startsWith("/blog/") || pathname.startsWith("/case-studies/") || pathname.startsWith("/docs/") || pathname.startsWith("/insights/")) {
+    return NextResponse.redirect(new URL("/docs", request.url), 308);
+  }
+
+  if (pathname.startsWith("/axiom/") || pathname.startsWith("/cloud-solutions/")) {
+    return NextResponse.redirect(new URL("/#capabilities", request.url), 308);
+  }
+
+  if (pathname.startsWith("/desktop/") || pathname.startsWith("/download/") || pathname.startsWith("/operator/")) {
+    return NextResponse.redirect(new URL("/download", request.url), 308);
   }
 
   const response = NextResponse.next();

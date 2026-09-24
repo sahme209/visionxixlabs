@@ -14,8 +14,8 @@ export default async function AuthSuccessPage() {
         <h1 className="mt-3 text-3xl font-bold">Welcome back.</h1>
         <p className="mt-3 text-sm text-zinc-400">Authenticated as {context.email}.</p>
         <div className="mt-7 grid gap-3 sm:grid-cols-2">
-          <Link href="/download" className="rounded-full bg-violet-600 px-4 py-2.5 text-sm font-semibold hover:bg-violet-500">Download desktop</Link>
-          <Link href="/demo" className="rounded-full border border-white/10 px-4 py-2.5 text-sm font-semibold hover:bg-white/5">Open web demo</Link>
+          <Link href="/dashboard" className="rounded-full bg-violet-600 px-4 py-2.5 text-sm font-semibold hover:bg-violet-500">Open workspace</Link>
+          <Link href="/demo" className="rounded-full border border-white/10 px-4 py-2.5 text-sm font-semibold hover:bg-white/5">Open sandbox demo</Link>
         </div>
       </div>
     </main>

@@ -141,7 +141,7 @@ export default function QuickstartChecklistPage() {
             { href: "/docs/security-model", icon: ShieldCheckIcon, title: "Security model", desc: "What Axiom accesses, what gets stored, what's read-only." },
             { href: "/docs/best-practices", icon: CpuChipIcon, title: "Best practices", desc: "Production-readiness checklist. Tune autonomy, set up alerts." },
             { href: "/docs/scanning", icon: CloudIcon, title: "Scanning deep dive", desc: "How the 12-step cognitive loop reasons about your cloud." },
-            { href: "/docs/desktop-install", icon: CommandLineIcon, title: "Install desktop app", desc: "macOS, Windows, Linux command center for ops." },
+            { href: "/download", icon: CommandLineIcon, title: "Open product access", desc: "TAURI is delivered as a web application; no supported desktop installer is available." },
           ].map((card) => {
             const Icon = card.icon;
             return (
