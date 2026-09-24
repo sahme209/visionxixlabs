@@ -60,7 +60,7 @@ export default async function StatusPage() {
       <header className="relative z-20 border-b border-white/[0.06] sticky top-0 bg-[#09090b]/80 backdrop-blur-xl">
         <div className="max-w-6xl mx-auto px-6 md:px-10 py-3.5 flex items-center justify-between">
           <Link href="/" className="font-bold text-white tracking-[-0.04em]">Axiom</Link>
-          <Link href="/dashboard" className="text-[12px] text-zinc-300 hover:text-brand-coral transition-colors">Open dashboard →</Link>
+          <Link href="/download" className="text-[12px] text-zinc-300 hover:text-brand-coral transition-colors">Get desktop app →</Link>
         </div>
       </header>
 

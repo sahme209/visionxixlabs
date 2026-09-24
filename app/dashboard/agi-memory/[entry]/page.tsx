@@ -21,6 +21,7 @@ import { ArrowLeftIcon, ArrowRightIcon, ExclamationTriangleIcon, SparklesIcon } 
 import { currentContext } from "@/lib/auth/currentContext";
 import { prisma } from "@/lib/db";
 import { AGENT_WORKFORCE_REGISTRY } from "@/lib/workforce/agentWorkforceRegistry";
+import { ShareEntryButton } from "@/components/workforce/ShareEntryButton";
 
 export const dynamic = "force-dynamic";
 
@@ -61,6 +62,13 @@ const KIND_LABEL: Record<string, string> = {
   engineer_policy_decision:             "Policy decision",
   workforce_domain_tick:                "Workforce domain tick",
   workforce_daily_digest:               "Workforce daily digest",
+  engineer_compliance_framework_assessment: "Compliance framework assessment",
+  engineer_dr_plan:                     "Disaster recovery plan",
+  engineer_workload_performance_analysis: "Workload performance analysis",
+  workforce_onprem_connector:           "On-prem connector",
+  connector_scan_inventory:             "On-prem scan batch",
+  workforce_monitoring_alert:           "Monitoring alert",
+  workforce_monitoring_webhook:         "Monitoring webhook config",
 };
 
 const OUTCOME_TONE: Record<string, string> = {
@@ -222,6 +230,20 @@ export default async function AgiMemoryEntryPage({
     sourceHref = `/dashboard/workforce/timeline`;
   } else if (entry.targetKind === "workforce_daily_digest") {
     sourceHref = `/dashboard/workforce`;
+  } else if (entry.targetKind === "engineer_compliance_framework_assessment") {
+    sourceHref = `/dashboard/workforce/compliance_framework_engineer/assessments`;
+  } else if (entry.targetKind === "engineer_dr_plan") {
+    sourceHref = `/dashboard/workforce/dr_planner_engineer/plans`;
+  } else if (entry.targetKind === "engineer_workload_performance_analysis") {
+    sourceHref = `/dashboard/workforce/workload_performance_engineer/analyses`;
+  } else if (entry.targetKind === "workforce_onprem_connector") {
+    sourceHref = `/dashboard/workforce/on-prem-connectors`;
+  } else if (entry.targetKind === "connector_scan_inventory") {
+    const colon = entry.targetId.indexOf(":");
+    const connectorSlug = colon === -1 ? entry.targetId : entry.targetId.slice(0, colon);
+    sourceHref = `/dashboard/workforce/on-prem-connectors/${encodeURIComponent(connectorSlug)}`;
+  } else if (entry.targetKind === "workforce_monitoring_alert" || entry.targetKind === "workforce_monitoring_webhook") {
+    sourceHref = `/dashboard/workforce/monitoring-webhook`;
   } else {
     sourceHref = SOURCE_HREF[entry.targetKind];
   }
@@ -236,10 +258,13 @@ export default async function AgiMemoryEntryPage({
 
   return (
     <div className="max-w-3xl mx-auto px-1 -mt-2">
-      <Link href="/dashboard/agi-memory" className="inline-flex items-center gap-1.5 text-[12px] text-zinc-500 hover:text-white transition-colors mb-6">
-        <ArrowLeftIcon className="h-3.5 w-3.5" />
-        AGI memory
-      </Link>
+      <div className="flex items-center justify-between gap-3 mb-6 flex-wrap">
+        <Link href="/dashboard/agi-memory" className="inline-flex items-center gap-1.5 text-[12px] text-zinc-500 hover:text-white transition-colors">
+          <ArrowLeftIcon className="h-3.5 w-3.5" />
+          AGI memory
+        </Link>
+        <ShareEntryButton targetKind={entry.targetKind} targetId={entry.targetId} />
+      </div>
 
       <header className="mb-10">
         <div className="flex items-center gap-2 mb-3 flex-wrap text-[10px] font-mono uppercase tracking-[0.18em]">

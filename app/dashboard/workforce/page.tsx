@@ -27,6 +27,7 @@ import {
   PuzzlePieceIcon,
 } from "@heroicons/react/24/outline";
 import { PageIntro } from "@/components/dashboard/PageIntro";
+import { AxiomBootSequence } from "@/components/workforce/AxiomBootSequence";
 import {
   engineersByDepartment,
   workforceSummary,
@@ -202,6 +203,31 @@ export default async function WorkforcePage({
     ? await readDailyDigest(String(ctx.organizationId))
     : null;
 
+  // Phase 633: first-run state — when the workspace has zero
+  // domain-engineer outputs AND zero cloud accounts, show a guided
+  // onboarding panel instead of empty stats. The panel auto-hides
+  // the moment any engineer report or cloud account exists.
+  let firstRunState: "fresh" | "needs_sweep" | "active" = "active";
+  if (ctx.isAuthenticated && ctx.organizationId) {
+    try {
+      const [domainReportCount, cloudAccountCount] = await Promise.all([
+        prisma.aiRationaleEnrichment.count({
+          where: {
+            organizationId: String(ctx.organizationId),
+            targetKind: { startsWith: "engineer_" },
+          },
+        }),
+        prisma.cloudAccount.count({
+          where: { organizationId: String(ctx.organizationId) },
+        }),
+      ]);
+      if (domainReportCount === 0 && cloudAccountCount === 0) firstRunState = "fresh";
+      else if (domainReportCount === 0) firstRunState = "needs_sweep";
+    } catch {
+      // migration_pending — leave as "active" so the panel doesn't render.
+    }
+  }
+
   // Per-engineer specialty-rationale presence + freshness. The unique
   // constraint on (org, targetKind, targetId) means one row max per
   // engineer; we read updatedAt to mark stale (≥7 days) cards so the
@@ -229,6 +255,7 @@ export default async function WorkforcePage({
 
   return (
     <div className="relative">
+      <AxiomBootSequence text="VISIONXIXLABS" subtitle="AI workforce online" />
       <PageIntro
         kicker="AI workforce"
         title={<>Your AI engineering team, <span className="text-zinc-500">by department.</span></>}
@@ -251,6 +278,62 @@ export default async function WorkforcePage({
         <Stat label="Missing setup pieces" value={summary.totalMissingPieces} icon={ExclamationTriangleIcon} sub="implementation gaps tracked openly" />
         <Stat label="Departments"          value={groups.length}             icon={PuzzlePieceIcon} />
       </section>
+
+      {/* Phase 633: first-run onboarding panel — only when workspace
+          has zero domain-engineer outputs. Auto-hides once the first
+          sweep lands. */}
+      {firstRunState !== "active" && (
+        <section className="mb-6 rounded-2xl border border-emerald-500/30 bg-emerald-500/[0.06] p-6">
+          <div className="flex items-center gap-2 mb-3 flex-wrap">
+            <p className="text-[10px] font-mono uppercase tracking-[0.18em] text-emerald-300">your AI workforce is online</p>
+            <span className="text-zinc-500">·</span>
+            <p className="text-[10px] font-mono uppercase tracking-[0.18em] text-zinc-400">first-run setup</p>
+          </div>
+          <p className="text-[15px] text-white leading-relaxed mb-4">
+            {firstRunState === "fresh"
+              ? "All 28 engineers are provisioned and ready. Give them something to work with — connect a cloud account, then trigger the first sweep."
+              : "Cloud account connected. Trigger the first sweep to let the autonomous engineers walk your workspace state."}
+          </p>
+          <ol className="space-y-3 mb-5">
+            {firstRunState === "fresh" && (
+              <li className="flex items-start gap-3">
+                <span className="text-[11px] font-mono text-emerald-300 mt-1 shrink-0">01</span>
+                <div className="flex-1">
+                  <p className="text-[13.5px] text-zinc-200 leading-snug">
+                    <Link href="/dashboard/connectors" className="text-emerald-300 underline underline-offset-2 hover:text-white">
+                      Connect a cloud account
+                    </Link>{" "}
+                    — AWS, Azure, or GCP. Read-only role; the workforce never gets write access without the safety triad gating it.
+                  </p>
+                </div>
+              </li>
+            )}
+            <li className="flex items-start gap-3">
+              <span className="text-[11px] font-mono text-emerald-300 mt-1 shrink-0">{firstRunState === "fresh" ? "02" : "01"}</span>
+              <div className="flex-1">
+                <p className="text-[13.5px] text-zinc-200 leading-snug">
+                  Click <span className="font-mono text-emerald-300">sweep domains now</span> in the toolbar below — fires the 14 autonomous engineers across your workspace state in parallel. Takes ~30 seconds, costs ~$1.00 in AI credits.
+                </p>
+              </div>
+            </li>
+            <li className="flex items-start gap-3">
+              <span className="text-[11px] font-mono text-emerald-300 mt-1 shrink-0">{firstRunState === "fresh" ? "03" : "02"}</span>
+              <div className="flex-1">
+                <p className="text-[13.5px] text-zinc-200 leading-snug">
+                  Open the{" "}
+                  <Link href="/dashboard/workforce/cognition" className="text-emerald-300 underline underline-offset-2 hover:text-white">
+                    cognition view
+                  </Link>{" "}
+                  — that&apos;s where the chain composition lands. Meta-reasoner tensions paired with council verdicts inline.
+                </p>
+              </div>
+            </li>
+          </ol>
+          <p className="text-[11.5px] text-zinc-500 leading-snug">
+            Hourly cron also fires automatically — within 60 minutes of first connection, the 14 autonomous engineers populate your dashboard on their own. This panel disappears as soon as the first report lands.
+          </p>
+        </section>
+      )}
 
       {/* Phase 628: surface sweep-now credit-block result so the
           operator knows why their click did nothing. */}
@@ -333,6 +416,12 @@ export default async function WorkforcePage({
           </Link>
           <Link href="/dashboard/workforce/cost" className="text-[11px] font-mono text-emerald-300 hover:text-white transition-colors">
             cost →
+          </Link>
+          <Link href="/dashboard/workforce/proof-of-value" className="text-[11px] font-mono text-emerald-300 hover:text-white transition-colors">
+            proof of value →
+          </Link>
+          <Link href="/dashboard/workforce/slack-config" className="text-[11px] font-mono text-zinc-500 hover:text-white transition-colors">
+            slack →
           </Link>
           <Link href="/dashboard/workforce/timeline" className="text-[11px] font-mono text-zinc-500 hover:text-white transition-colors">
             timeline →

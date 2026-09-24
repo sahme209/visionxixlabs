@@ -16,6 +16,7 @@ import "server-only";
 
 import { prisma } from "@/lib/db";
 import { makeInstrumentedFetcher } from "@/lib/releaseops/instrumentedAiFetcher";
+import { INJECTION_RESISTANCE_CLAUSE, buildUserInputSection } from "@/lib/workforce/domains/promptHardening";
 
 export const OPERATOR_ASSISTANT_TARGET_KIND = "engineer_operator_copilot_reply";
 
@@ -77,6 +78,8 @@ function buildSystemPrompt(): string {
     `You are the Operator Assistant (Copilot) on the Axiom platform.`,
     `You are the operator-facing chat surface — the human-readable entry point into the rest of the workforce. Route questions, stage proposals, and ask clarifying questions when the operator request is under-specified.`,
     ``,
+    INJECTION_RESISTANCE_CLAUSE,
+    ``,
     `INTENTS:`,
     `  · question           — operator is asking how something works`,
     `  · proposal_request   — operator wants you to stage a concrete proposal`,
@@ -108,22 +111,12 @@ function buildSystemPrompt(): string {
 }
 
 function buildUserPrompt(i: OperatorAssistantInput): string {
-  const lines: string[] = [];
-  lines.push(`Title: ${i.title}`);
-  if (i.workspaceContext) lines.push(`Workspace context: ${i.workspaceContext}`);
-  if (i.conversationHistory) {
-    lines.push(``);
-    lines.push(`Conversation so far:`);
-    lines.push("```");
-    lines.push(i.conversationHistory);
-    lines.push("```");
-  }
-  lines.push(``);
-  lines.push(`Operator prompt:`);
-  lines.push("```");
-  lines.push(i.prompt);
-  lines.push("```");
-  return lines.join("\n");
+  return buildUserInputSection([
+    { label: "title", content: i.title },
+    { label: "workspace_context", content: i.workspaceContext ?? "" },
+    { label: "conversation_history", content: i.conversationHistory ?? "" },
+    { label: "operator_prompt", content: i.prompt },
+  ]);
 }
 
 function parseAi(text: string): ParsedAi | null {

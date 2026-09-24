@@ -229,12 +229,12 @@ export default async function PreviewPage(props: { searchParams: Promise<{ platf
 
           {/* Self-serve alternatives */}
           <div className="mb-10">
-            <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-3">Use Axiom now — without waiting</p>
+            <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-3">Explore Axiom while you wait</p>
             <div className="grid sm:grid-cols-3 gap-3">
-              <Link href="/dashboard" className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4 hover:border-violet-500/20 transition-all group">
+              <Link href="/demo" className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4 hover:border-violet-500/20 transition-all group">
                 <GlobeAltIcon className="h-5 w-5 text-violet-400 mb-2" />
-                <p className="text-sm font-bold text-white mb-1">Open web platform</p>
-                <p className="text-xs text-zinc-500 leading-snug">Full operational feature set in any browser. No install required.</p>
+                <p className="text-sm font-bold text-white mb-1">Explore web demo</p>
+                <p className="text-xs text-zinc-500 leading-snug">Walk through core flows using isolated synthetic data.</p>
               </Link>
               <Link href="/docs/desktop-install#cli" className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4 hover:border-violet-500/20 transition-all">
                 <CommandLineIcon className="h-5 w-5 text-violet-400 mb-2" />

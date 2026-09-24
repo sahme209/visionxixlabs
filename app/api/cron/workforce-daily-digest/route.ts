@@ -11,7 +11,8 @@
 
 import { NextResponse, type NextRequest } from "next/server";
 import { prisma } from "@/lib/db";
-import { buildDailyDigest, persistDailyDigest } from "@/lib/workforce/domains/dailyDigest";
+import { buildDailyDigest, persistDailyDigest, readDailyDigest } from "@/lib/workforce/domains/dailyDigest";
+import { readSlackConfig, postSlackMessage } from "@/lib/workforce/domains/slackNotify";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -54,12 +55,43 @@ export async function GET(req: NextRequest) {
 
   let digested = 0;
   let failed = 0;
+  let slackNotified = 0;
+  let slackFailed = 0;
   for (const org of activeOrgRows) {
     if (Date.now() - startedAt > HARD_DEADLINE_MS) break;
     try {
       const counts = await buildDailyDigest(org.organizationId);
       await persistDailyDigest(org.organizationId, counts);
       digested += 1;
+
+      // Phase 635: fan out to Slack when this workspace has a webhook
+      // configured AND the digest outcome crosses the operator's threshold.
+      // Best-effort — Slack failures log and continue. The digest row
+      // itself already landed above; this is just the notification layer.
+      try {
+        const slackConfig = await readSlackConfig(org.organizationId);
+        if (slackConfig && slackConfig.enabled) {
+          const digest = await readDailyDigest(org.organizationId);
+          if (digest) {
+            const shouldNotify =
+              slackConfig.minOutcome === "active"
+                ? digest.outcome === "active" || digest.outcome === "critical"
+                : digest.outcome === "critical";
+            if (shouldNotify) {
+              const title = digest.outcome === "critical"
+                ? "🚨 Workforce digest · critical"
+                : "ℹ️ Workforce digest · active";
+              const result = await postSlackMessage(slackConfig, digest.narrative, title);
+              if (result.ok) slackNotified += 1;
+              else slackFailed += 1;
+            }
+          }
+        }
+      } catch (err) {
+        // Never let Slack take down the cron.
+        console.warn("[workforce-daily-digest:slack]", org.organizationId, "fan-out failed:", err instanceof Error ? err.message : err);
+        slackFailed += 1;
+      }
     } catch (err) {
       console.warn("[workforce-daily-digest]", org.organizationId, "failed:", err instanceof Error ? err.message : err);
       failed += 1;
@@ -71,6 +103,8 @@ export async function GET(req: NextRequest) {
     workspaces: activeOrgRows.length,
     digested,
     failed,
+    slackNotified,
+    slackFailed,
     durationMs: Date.now() - startedAt,
     digestedAt: new Date().toISOString(),
   });

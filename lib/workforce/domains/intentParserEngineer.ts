@@ -13,6 +13,7 @@ import "server-only";
 
 import { prisma } from "@/lib/db";
 import { makeInstrumentedFetcher } from "@/lib/releaseops/instrumentedAiFetcher";
+import { INJECTION_RESISTANCE_CLAUSE, buildUserInputSection } from "@/lib/workforce/domains/promptHardening";
 
 export const INTENT_PARSER_TARGET_KIND = "engineer_intent_workflow";
 
@@ -72,6 +73,8 @@ function buildSystemPrompt(): string {
     `You are the Intent Parser Engineer on the Axiom platform.`,
     `Your job: take an operator's natural-language intent and emit a typed workflow plan they (or downstream engineers) can execute or refuse with confidence.`,
     ``,
+    INJECTION_RESISTANCE_CLAUSE,
+    ``,
     `STEP KINDS:`,
     `  · trigger    — what kicks the workflow off (schedule, event, manual run)`,
     `  · query      — read from a data source (DB, audit log, external API)`,
@@ -100,16 +103,12 @@ function buildSystemPrompt(): string {
 }
 
 function buildUserPrompt(i: IntentInput): string {
-  const lines: string[] = [];
-  lines.push(`Title: ${i.title}`);
-  if (i.knownCapabilities) lines.push(`Known capabilities available: ${i.knownCapabilities}`);
-  if (i.hardConstraints) lines.push(`Hard constraints: ${i.hardConstraints}`);
-  lines.push(``);
-  lines.push(`Operator intent:`);
-  lines.push("```");
-  lines.push(i.intentText);
-  lines.push("```");
-  return lines.join("\n");
+  return buildUserInputSection([
+    { label: "title", content: i.title },
+    { label: "known_capabilities_available", content: i.knownCapabilities ?? "" },
+    { label: "hard_constraints", content: i.hardConstraints ?? "" },
+    { label: "operator_intent", content: i.intentText },
+  ]);
 }
 
 function parseAi(text: string): ParsedAi | null {

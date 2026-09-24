@@ -56,10 +56,10 @@ export function DesktopShowcase() {
               Download desktop app
             </Link>
             <Link
-              href="/dashboard"
+              href="/demo"
               className="btn-ghost-press inline-flex items-center gap-2 px-5 py-3 rounded-full text-sm font-medium tracking-tight"
             >
-              Open web app <ArrowRightIcon className="h-3.5 w-3.5" />
+              Explore demo <ArrowRightIcon className="h-3.5 w-3.5" />
             </Link>
           </div>
         </div>

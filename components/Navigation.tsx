@@ -30,7 +30,7 @@ import { AnimatePresence, motion } from "framer-motion";
 const productDropdown = [
   { href: "/axiom",              label: "Axiom Agent",   desc: "Autonomous cloud operations",        icon: CpuChipIcon },
   { href: "/axiom/releaseops",   label: "ReleaseOps",    desc: "Deployment governance + monitoring", icon: ShieldCheckIcon },
-  { href: "/operator/onboarding",label: "Cloud Operator",desc: "Connect and scan your cloud",        icon: CloudIcon },
+  { href: "/demo",               label: "Cloud Operator Demo", desc: "Explore a safe, scripted cloud scan", icon: CloudIcon },
   { href: "/cloud-solutions",    label: "Multi-Cloud",   desc: "AWS · Azure · GCP intelligence",     icon: CogIcon },
   { href: "/integrations",       label: "Integrations",  desc: "Every tool we plug into",            icon: PuzzlePieceIcon },
   { href: "/download",           label: "Desktop App",   desc: "macOS, Windows, Linux command center", icon: ArrowDownTrayIcon },
@@ -259,10 +259,10 @@ export function Navigation() {
               <div className="w-px h-5 bg-white/[0.08] mx-1" aria-hidden />
 
               <Link
-                href="/auth/signin"
+                href="/download"
                 className="text-zinc-400 hover:text-white transition-colors text-sm font-medium whitespace-nowrap px-3 py-2"
               >
-                Sign in
+                Get the app
               </Link>
               <Link
                 href="/auth/signup"
@@ -300,11 +300,11 @@ export function Navigation() {
               <div className="py-4 border-t border-white/[0.06] mt-2">
                 <div className="flex flex-col space-y-1">
                   <Link
-                    href="/operator/onboarding"
+                    href="/download"
                     onClick={() => setMobileMenuOpen(false)}
                     className="mx-4 mb-3 inline-flex items-center justify-center gap-2 px-4 py-3 bg-white text-zinc-900 rounded-full text-sm font-semibold shadow-[0_0_20px_rgba(255,255,255,0.1)]"
                   >
-                    Start Free
+                    Get the desktop app
                     <ArrowRightIcon className="h-4 w-4" />
                   </Link>
 
@@ -372,11 +372,11 @@ export function Navigation() {
                   </Link>
 
                   <Link
-                    href="/auth/signin"
+                    href="/auth/signup?redirect=/download"
                     onClick={() => setMobileMenuOpen(false)}
                     className="mt-2 mx-4 inline-flex items-center justify-center px-5 py-2.5 border border-white/[0.12] text-white rounded-lg text-sm font-semibold hover:bg-white/5 transition-colors"
                   >
-                    Sign in
+                    Create desktop account
                     <ArrowRightIcon className="ml-1.5 h-4 w-4" />
                   </Link>
                 </div>

@@ -25,6 +25,7 @@ import "server-only";
 
 import { prisma } from "@/lib/db";
 import { makeInstrumentedFetcher } from "@/lib/releaseops/instrumentedAiFetcher";
+import { INJECTION_RESISTANCE_CLAUSE, buildUserInputSection } from "@/lib/workforce/domains/promptHardening";
 
 export const SPEC_WRITER_TARGET_KIND = "engineer_spec_writer_spec";
 
@@ -79,6 +80,8 @@ function buildSystemPrompt(): string {
     `You are the Spec Writer Engineer on the Axiom platform.`,
     `An operator just submitted a feature request. Your job: produce a CONCISE technical specification an engineering team could use to start implementation tomorrow.`,
     ``,
+    INJECTION_RESISTANCE_CLAUSE,
+    ``,
     `RULES:`,
     `  · Honest scope. If the request is ambiguous, surface that in the openQuestions array rather than inventing requirements.`,
     `  · Executive summary: 3-4 sentences naming the problem, the proposed solution, the most material risk, and the rough effort size (S/M/L).`,
@@ -100,21 +103,12 @@ function buildSystemPrompt(): string {
 }
 
 function buildUserPrompt(input: SpecWriterInput): string {
-  const lines: string[] = [];
-  lines.push(`Title: ${input.title}`);
-  lines.push(``);
-  lines.push(`Problem statement:`);
-  lines.push(input.problem);
-  if (input.audience) {
-    lines.push(``);
-    lines.push(`Target audience: ${input.audience}`);
-  }
-  if (input.constraints) {
-    lines.push(``);
-    lines.push(`Known constraints:`);
-    lines.push(input.constraints);
-  }
-  return lines.join("\n");
+  return buildUserInputSection([
+    { label: "title", content: input.title },
+    { label: "problem_statement", content: input.problem },
+    { label: "target_audience", content: input.audience ?? "" },
+    { label: "known_constraints", content: input.constraints ?? "" },
+  ]);
 }
 
 function parseAiResponse(text: string): ParsedAiSpec | null {

@@ -16,6 +16,7 @@ import "server-only";
 
 import { prisma } from "@/lib/db";
 import { makeInstrumentedFetcher } from "@/lib/releaseops/instrumentedAiFetcher";
+import { INJECTION_RESISTANCE_CLAUSE, buildUserInputSection } from "@/lib/workforce/domains/promptHardening";
 
 export const SIMULATOR_TARGET_KIND = "engineer_simulator_verdict";
 
@@ -70,6 +71,8 @@ function buildSystemPrompt(): string {
     `You are the Simulator Engineer on the Axiom platform.`,
     `Your job: dry-run the operator's proposed action against the stated current state and emit a typed verdict before any approval packet is built.`,
     ``,
+    INJECTION_RESISTANCE_CLAUSE,
+    ``,
     `VERDICTS:`,
     `  · safe     — predicted outcomes match intent, side effects are bounded, no pre-approval requirements blocked`,
     `  · caution  — outcome plausible but at least one side effect or pre-approval requirement needs verification`,
@@ -97,21 +100,13 @@ function buildSystemPrompt(): string {
 }
 
 function buildUserPrompt(i: SimulatorInput): string {
-  const lines: string[] = [];
-  lines.push(`Title: ${i.title}`);
-  if (i.knownConstraints) lines.push(`Known constraints: ${i.knownConstraints}`);
-  if (i.blastRadius) lines.push(`Blast radius hint: ${i.blastRadius}`);
-  lines.push(``);
-  lines.push(`Proposed action:`);
-  lines.push("```");
-  lines.push(i.proposedAction);
-  lines.push("```");
-  lines.push(``);
-  lines.push(`Current state:`);
-  lines.push("```");
-  lines.push(i.currentState);
-  lines.push("```");
-  return lines.join("\n");
+  return buildUserInputSection([
+    { label: "title", content: i.title },
+    { label: "known_constraints", content: i.knownConstraints ?? "" },
+    { label: "blast_radius_hint", content: i.blastRadius ?? "" },
+    { label: "proposed_action", content: i.proposedAction },
+    { label: "current_state", content: i.currentState },
+  ]);
 }
 
 function parseAi(text: string): ParsedAi | null {

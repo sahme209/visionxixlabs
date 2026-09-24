@@ -10,6 +10,7 @@ import "server-only";
 
 import { prisma } from "@/lib/db";
 import { makeInstrumentedFetcher } from "@/lib/releaseops/instrumentedAiFetcher";
+import { INJECTION_RESISTANCE_CLAUSE, buildUserInputSection } from "@/lib/workforce/domains/promptHardening";
 
 export const SCHEMA_TARGET_KIND = "engineer_schema_proposal";
 
@@ -62,6 +63,8 @@ function buildSystemPrompt(): string {
     `You are the Schema Engineer on the Axiom platform.`,
     `Your job: given a schema fragment + a slow-query log, propose targeted index changes + safe migration steps that close the worst query gaps.`,
     ``,
+    INJECTION_RESISTANCE_CLAUSE,
+    ``,
     `RULES:`,
     `  · Honest scope. If the slow queries are pathological joins or N+1 patterns rather than index gaps, surface that in riskFactors instead of inventing indexes.`,
     `  · Executive summary: 3-4 sentences naming the worst query, the smallest index intervention, the worst migration risk, and rough effort (S/M/L).`,
@@ -78,21 +81,13 @@ function buildSystemPrompt(): string {
 }
 
 function buildUserPrompt(i: SchemaInput): string {
-  const lines: string[] = [];
-  lines.push(`Title: ${i.title}`);
-  if (i.databaseEngine) lines.push(`Database engine: ${i.databaseEngine}`);
-  if (i.knownConstraints) lines.push(`Known constraints: ${i.knownConstraints}`);
-  lines.push(``);
-  lines.push(`Schema fragment:`);
-  lines.push("```");
-  lines.push(i.schemaFragment);
-  lines.push("```");
-  lines.push(``);
-  lines.push(`Slow query log:`);
-  lines.push("```");
-  lines.push(i.slowQueryLog);
-  lines.push("```");
-  return lines.join("\n");
+  return buildUserInputSection([
+    { label: "title", content: i.title },
+    { label: "database_engine", content: i.databaseEngine ?? "" },
+    { label: "known_constraints", content: i.knownConstraints ?? "" },
+    { label: "schema_fragment", content: i.schemaFragment },
+    { label: "slow_query_log", content: i.slowQueryLog },
+  ]);
 }
 
 function parseAi(text: string): ParsedAi | null {

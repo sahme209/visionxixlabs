@@ -15,6 +15,7 @@ import "server-only";
 
 import { prisma } from "@/lib/db";
 import { makeInstrumentedFetcher } from "@/lib/releaseops/instrumentedAiFetcher";
+import { INJECTION_RESISTANCE_CLAUSE, buildUserInputSection } from "@/lib/workforce/domains/promptHardening";
 
 export const APPROVER_TARGET_KIND = "engineer_approval_packet";
 
@@ -76,6 +77,8 @@ function buildSystemPrompt(): string {
     `You are the Approver Engineer on the Axiom platform.`,
     `Your job: assemble the structured approval packet a decision-maker needs to sign or refuse the proposal. This packet is the only gate that lets autonomy act.`,
     ``,
+    INJECTION_RESISTANCE_CLAUSE,
+    ``,
     `IMPACT RADIUS:`,
     `  · workspace   — affects one workspace only`,
     `  · tenant      — affects a single tenant across workspaces`,
@@ -124,21 +127,13 @@ function buildSystemPrompt(): string {
 }
 
 function buildUserPrompt(i: ApproverInput): string {
-  const lines: string[] = [];
-  lines.push(`Title: ${i.title}`);
-  if (i.requestedAuthority) lines.push(`Requested authority: ${i.requestedAuthority}`);
-  if (i.knownDependencies) lines.push(`Known dependencies: ${i.knownDependencies}`);
-  lines.push(``);
-  lines.push(`Proposal:`);
-  lines.push("```");
-  lines.push(i.proposalDescription);
-  lines.push("```");
-  lines.push(``);
-  lines.push(`Risk context:`);
-  lines.push("```");
-  lines.push(i.riskContext);
-  lines.push("```");
-  return lines.join("\n");
+  return buildUserInputSection([
+    { label: "title", content: i.title },
+    { label: "requested_authority", content: i.requestedAuthority ?? "" },
+    { label: "known_dependencies", content: i.knownDependencies ?? "" },
+    { label: "proposal_description", content: i.proposalDescription },
+    { label: "risk_context", content: i.riskContext },
+  ]);
 }
 
 function parseAi(text: string): ParsedAi | null {

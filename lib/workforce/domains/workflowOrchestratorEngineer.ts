@@ -16,6 +16,7 @@ import "server-only";
 
 import { prisma } from "@/lib/db";
 import { makeInstrumentedFetcher } from "@/lib/releaseops/instrumentedAiFetcher";
+import { INJECTION_RESISTANCE_CLAUSE, buildUserInputSection } from "@/lib/workforce/domains/promptHardening";
 
 export const WORKFLOW_ORCHESTRATOR_TARGET_KIND = "engineer_workflow_plan";
 
@@ -89,6 +90,8 @@ function buildSystemPrompt(): string {
     `You are the Workflow Orchestrator Engineer on the Axiom platform.`,
     `Your job: compose the operator's workflow spec into a runnable execution plan a runtime can pick up and execute with full concurrency + approval semantics.`,
     ``,
+    INJECTION_RESISTANCE_CLAUSE,
+    ``,
     `APPROVAL GATES:`,
     `  · auto      — runtime advances without human review`,
     `  · operator  — operator must click through before this step runs`,
@@ -128,16 +131,12 @@ function buildSystemPrompt(): string {
 }
 
 function buildUserPrompt(i: WorkflowInput): string {
-  const lines: string[] = [];
-  lines.push(`Title: ${i.title}`);
-  lines.push(`Approval policy: ${i.approvalPolicy ?? "per_step"}`);
-  if (i.guardrailRequirements) lines.push(`Guardrail requirements: ${i.guardrailRequirements}`);
-  lines.push(``);
-  lines.push(`Workflow spec:`);
-  lines.push("```");
-  lines.push(i.workflowSpec);
-  lines.push("```");
-  return lines.join("\n");
+  return buildUserInputSection([
+    { label: "title", content: i.title },
+    { label: "approval_policy", content: i.approvalPolicy ?? "per_step" },
+    { label: "guardrail_requirements", content: i.guardrailRequirements ?? "" },
+    { label: "workflow_spec", content: i.workflowSpec },
+  ]);
 }
 
 function parseAi(text: string): ParsedAi | null {

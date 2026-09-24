@@ -119,7 +119,7 @@ export async function POST(req: Request) {
     organizationId: ids.organization(org),
     actorUserId: ctx.userId ? ids.user(String(ctx.userId)) : undefined,
     action: "engineer.action_attempted",
-    outcome: stats.error > 0 ? "partial_failure" : "success",
+    outcome: stats.error > 0 ? "failure" : "success",
     entityRef: "workforce:sweep-now",
     correlationId,
     detail: {

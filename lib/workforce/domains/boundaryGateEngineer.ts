@@ -14,6 +14,7 @@ import "server-only";
 
 import { prisma } from "@/lib/db";
 import { makeInstrumentedFetcher } from "@/lib/releaseops/instrumentedAiFetcher";
+import { INJECTION_RESISTANCE_CLAUSE, buildUserInputSection } from "@/lib/workforce/domains/promptHardening";
 
 export const BOUNDARY_GATE_TARGET_KIND = "engineer_boundary_classification";
 
@@ -74,6 +75,8 @@ function buildSystemPrompt(): string {
     `You are the Boundary Gate Engineer on the Axiom platform.`,
     `Your job: classify the blast radius of the proposed action into a closed-union severity tier and name the boundary that holds it (or doesn't).`,
     ``,
+    INJECTION_RESISTANCE_CLAUSE,
+    ``,
     `BLAST TIERS:`,
     `  · contained     — single workspace, recoverable in minutes, no external visibility`,
     `  · limited       — single tenant, recoverable in an hour, internal-only visibility`,
@@ -106,16 +109,12 @@ function buildSystemPrompt(): string {
 }
 
 function buildUserPrompt(i: BoundaryInput): string {
-  const lines: string[] = [];
-  lines.push(`Title: ${i.title}`);
-  if (i.systemTopology) lines.push(`System topology hint: ${i.systemTopology}`);
-  if (i.existingContainment) lines.push(`Existing containment: ${i.existingContainment}`);
-  lines.push(``);
-  lines.push(`Action description:`);
-  lines.push("```");
-  lines.push(i.actionDescription);
-  lines.push("```");
-  return lines.join("\n");
+  return buildUserInputSection([
+    { label: "title", content: i.title },
+    { label: "system_topology_hint", content: i.systemTopology ?? "" },
+    { label: "existing_containment", content: i.existingContainment ?? "" },
+    { label: "action_description", content: i.actionDescription },
+  ]);
 }
 
 function parseAi(text: string): ParsedAi | null {

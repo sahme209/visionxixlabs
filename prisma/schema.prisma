@@ -3794,3 +3794,61 @@ model InboundWebhookDelivery {
   @@index([organizationId, receivedAt])
   @@index([organizationId, provider, eventKind])
 }
+
+/// TAURI intake is tenant-scoped; raw secrets are prohibited from payloadJson.
+model TauriDeploymentRequest {
+  id               String   @id @default(cuid())
+  organizationId   String
+  requesterUserId  String
+  title             String
+  status            String   @default("draft")
+  correlationId     String
+  intakeJson        Json
+  version           Int      @default(1)
+  submittedAt       DateTime?
+  closedAt          DateTime?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  playbooks         TauriPlaybook[]
+  auditEvents       TauriAuditEvent[]
+
+  @@unique([organizationId, correlationId])
+  @@index([organizationId, status, createdAt])
+}
+
+model TauriPlaybook {
+  id                  String   @id @default(cuid())
+  organizationId      String
+  deploymentRequestId String
+  version             Int
+  status              String   @default("submitted")
+  playbookJson        Json
+  contentHash         String
+  createdByUserId     String
+  createdAt           DateTime @default(now())
+  deploymentRequest   TauriDeploymentRequest @relation(fields: [deploymentRequestId], references: [id], onDelete: Cascade)
+
+  @@unique([deploymentRequestId, version])
+  @@index([organizationId, status, createdAt])
+}
+
+/// Append-only TAURI audit record. Application code exposes create/find only.
+model TauriAuditEvent {
+  id                  String   @id @default(cuid())
+  organizationId      String
+  deploymentRequestId String
+  actorUserId         String
+  actorRole           String
+  action              String
+  previousValueJson   Json?
+  newValueJson        Json?
+  source              String
+  correlationId       String
+  evidenceLink        String?
+  timeZone            String
+  occurredAt          DateTime @default(now())
+  deploymentRequest   TauriDeploymentRequest @relation(fields: [deploymentRequestId], references: [id], onDelete: Restrict)
+
+  @@index([organizationId, deploymentRequestId, occurredAt])
+  @@index([organizationId, correlationId])
+}

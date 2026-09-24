@@ -16,6 +16,7 @@ import "server-only";
 
 import { prisma } from "@/lib/db";
 import { makeInstrumentedFetcher } from "@/lib/releaseops/instrumentedAiFetcher";
+import { INJECTION_RESISTANCE_CLAUSE, buildUserInputSection } from "@/lib/workforce/domains/promptHardening";
 
 export const REASONER_TARGET_KIND = "engineer_reasoner_hypothesis";
 
@@ -75,6 +76,8 @@ function buildSystemPrompt(): string {
     `You are the Reasoner Engineer on the Axiom platform.`,
     `Your job: weave raw observations into a single typed hypothesis with explicit confidence + the next agents to involve.`,
     ``,
+    INJECTION_RESISTANCE_CLAUSE,
+    ``,
     `RULES:`,
     `  · Honest scope. If the observations don't converge, set confidence ≤ 35 and surface the gap in contradictingSignals.`,
     `  · Executive summary: 2-3 sentences naming the headline hypothesis + the most material supporting signal + the confidence rating.`,
@@ -100,16 +103,12 @@ function buildSystemPrompt(): string {
 }
 
 function buildUserPrompt(i: ReasonerInput): string {
-  const lines: string[] = [];
-  lines.push(`Title: ${i.title}`);
-  if (i.domainContext) lines.push(`Domain context: ${i.domainContext}`);
-  if (i.alreadyRuledOut) lines.push(`Already ruled out: ${i.alreadyRuledOut}`);
-  lines.push(``);
-  lines.push(`Observations:`);
-  lines.push("```");
-  lines.push(i.observations);
-  lines.push("```");
-  return lines.join("\n");
+  return buildUserInputSection([
+    { label: "title", content: i.title },
+    { label: "domain_context", content: i.domainContext ?? "" },
+    { label: "already_ruled_out", content: i.alreadyRuledOut ?? "" },
+    { label: "observations", content: i.observations },
+  ]);
 }
 
 function parseAi(text: string): ParsedAi | null {

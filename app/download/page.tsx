@@ -24,7 +24,7 @@ import { Reveal } from "@/components/motion/Reveal";
 import { Stagger } from "@/components/motion/Stagger";
 import { useDesktopRuntime } from "@/lib/desktop/useDesktopRuntime";
 
-type DetectedPlatform = "mac-arm" | "mac-intel" | "windows" | "linux" | "web";
+type DetectedPlatform = "mac-arm" | "mac-intel" | "windows" | "linux";
 
 interface PlatformInfo {
   id: DetectedPlatform;
@@ -59,7 +59,7 @@ interface ReleaseManifest {
   note?: string;
 }
 
-const PLATFORM_TO_MANIFEST: Record<Exclude<DetectedPlatform, "web">, keyof ReleaseManifest["assets"]> = {
+const PLATFORM_TO_MANIFEST: Record<DetectedPlatform, keyof ReleaseManifest["assets"]> = {
   "mac-arm":   "macos-arm",
   "mac-intel": "macos-intel",
   windows:     "windows-x64",
@@ -69,7 +69,8 @@ const PLATFORM_TO_MANIFEST: Record<Exclude<DetectedPlatform, "web">, keyof Relea
 // Honest platform availability — desktop binaries are in active development
 // but distribution requires signing/notarization (planned for 1.0). Every
 // desktop button routes to /download/preview, which explains the state and
-// captures interest. Web app is always live.
+// captures interest. Live operations are desktop-only; the website provides
+// an isolated, synthetic demo instead of a browser control plane.
 const PLATFORMS: Record<DetectedPlatform, PlatformInfo> = {
   "mac-arm": {
     id: "mac-arm",
@@ -99,13 +100,6 @@ const PLATFORMS: Record<DetectedPlatform, PlatformInfo> = {
     href: "/download/preview?platform=linux",
     available: false,
   },
-  web: {
-    id: "web",
-    label: "Open Web Application",
-    sublabel: "No install required · live",
-    href: "/dashboard",
-    available: true,
-  },
 };
 
 export default function DownloadPage() {
@@ -124,8 +118,6 @@ export default function DownloadPage() {
       setPrimary("windows");
     } else if (ua.includes("linux")) {
       setPrimary("linux");
-    } else {
-      setPrimary("web");
     }
   }, []);
 
@@ -232,21 +224,20 @@ export default function DownloadPage() {
           {/* Subhead with progressive dimming */}
           <Reveal direction="up" delay={0.12}>
             <p className="text-dim-paragraph text-lg md:text-xl max-w-2xl mx-auto mb-12 leading-relaxed">
-              Run Axiom Agent on macOS, Windows, Linux, <span className="dim-1">or directly in the browser.</span> <span className="dim-2">Operate your cloud from any workstation.</span>
+              Run the complete Axiom workspace on macOS, Windows, or Linux. <span className="dim-1">The website is an isolated product demo;</span> <span className="dim-2">live cloud operations stay in the downloadable app.</span>
             </p>
           </Reveal>
 
-          {/* Primary CTAs — honest self-serve options. Open the web app
-              right now, or sign up for the desktop preview. */}
+          {/* Primary CTAs — desktop is the product; web is the safe demo. */}
           <Reveal direction="up" delay={0.16}>
             <div className="flex flex-col items-center gap-4 mb-10">
               <div className="flex flex-wrap items-center justify-center gap-3">
                 <Link
-                  href="/dashboard"
+                  href="/demo"
                   className="btn-amber-shimmer group inline-flex items-center gap-3 px-8 py-4 rounded-full text-base font-semibold tracking-wide uppercase relative"
                 >
                   <BoltIcon className="h-5 w-5" />
-                  Open the web app
+                  Explore the web demo
                   <ArrowRightIcon className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
                 </Link>
                 <Link
@@ -267,7 +258,7 @@ export default function DownloadPage() {
               <span className="text-xs text-zinc-500 font-mono">
                 {manifest?.hasAnyAsset
                   ? `Latest desktop release: ${manifest.tag ?? "—"} · ${manifest.allSignedAndNotarized ? "signed + notarized" : "developer build · per-platform friction notes below"}`
-                  : "Web app: live · Desktop: developer builds publish via CI on `desktop-v*` tag — signed binaries when Apple/Windows certs are configured"}
+                  : "Web: isolated demo only · Desktop developer builds publish via CI on `desktop—v*` tags — signed binaries when platform certificates are configured"}
               </span>
               {mounted && primaryPlatform.available && primaryPlatform.installFriction && (
                 <span className="text-[11px] text-amber-200/80 font-mono">{primaryPlatform.installFriction}</span>
@@ -288,11 +279,11 @@ export default function DownloadPage() {
           {/* Platform availability table — live download when manifest has an
               asset, preview route + honest label otherwise. */}
           <Reveal direction="up" delay={0.2}>
-            <div className="mt-2 grid sm:grid-cols-2 md:grid-cols-5 gap-2 max-w-3xl mx-auto">
-              {(["mac-arm", "mac-intel", "windows", "linux", "web"] as DetectedPlatform[]).map((id) => {
+            <div className="mt-2 grid sm:grid-cols-2 md:grid-cols-4 gap-2 max-w-3xl mx-auto">
+              {(["mac-arm", "mac-intel", "windows", "linux"] as DetectedPlatform[]).map((id) => {
                 const p = platformsLive[id];
                 const isLive = p.available;
-                const downloadAttrs = isLive && p.fileName && id !== "web" ? { download: p.fileName } : {};
+                const downloadAttrs = isLive && p.fileName ? { download: p.fileName } : {};
                 return (
                   <Link
                     key={id}
@@ -313,11 +304,11 @@ export default function DownloadPage() {
                             : "text-amber-300 bg-amber-500/10 border-amber-500/20"
                         }`}
                       >
-                        {isLive ? (id === "web" ? "Live" : "Download") : "Preview"}
+                        {isLive ? "Download" : "Preview"}
                       </span>
                     </div>
                     <p className="text-[10px] text-zinc-500 leading-relaxed">{p.sublabel}</p>
-                    {p.installFriction && id !== "web" && (
+                    {p.installFriction && (
                       <p className="text-[9.5px] text-amber-200/70 mt-1 font-mono leading-snug">{p.installFriction}</p>
                     )}
                   </Link>
@@ -576,11 +567,11 @@ export default function DownloadPage() {
                 <ArrowRightIcon className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
               </a>
               <Link
-                href="/dashboard"
+                href="/demo"
                 className="inline-flex items-center gap-2 px-7 py-3.5 border border-white/[0.12] text-zinc-300 rounded-full text-sm font-semibold hover:bg-white/5 hover:border-white/20 transition-colors"
               >
                 <GlobeAltIcon className="h-4 w-4" />
-                Open Web App
+                Explore Web Demo
               </Link>
             </div>
             <div className="mt-8 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs text-zinc-500">

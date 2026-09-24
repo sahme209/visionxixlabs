@@ -10,6 +10,7 @@ import "server-only";
 
 import { prisma } from "@/lib/db";
 import { makeInstrumentedFetcher } from "@/lib/releaseops/instrumentedAiFetcher";
+import { INJECTION_RESISTANCE_CLAUSE, buildUserInputSection } from "@/lib/workforce/domains/promptHardening";
 
 export const REFACTOR_TARGET_KIND = "engineer_refactor_plan";
 
@@ -54,6 +55,8 @@ function buildSystemPrompt(): string {
     `You are the Refactor Engineer on the Axiom platform.`,
     `Your job: given source code + a refactor goal, propose the smallest sequence of mechanical refactor steps that achieves the goal.`,
     ``,
+    INJECTION_RESISTANCE_CLAUSE,
+    ``,
     `RULES:`,
     `  · Honest scope. If the refactor can't be done safely, surface that in riskFactors rather than papering over.`,
     `  · Executive summary: 3-4 sentences naming the goal, the smallest viable approach, the worst risk, and rough effort (S/M/L).`,
@@ -68,17 +71,13 @@ function buildSystemPrompt(): string {
 }
 
 function buildUserPrompt(i: RefactorInput): string {
-  const lines: string[] = [];
-  lines.push(`Title: ${i.title}`);
-  lines.push(`Refactor goal: ${i.refactorGoal}`);
-  if (i.language) lines.push(`Language: ${i.language}`);
-  if (i.smellsToAddress) lines.push(`Smells operator wants addressed: ${i.smellsToAddress}`);
-  lines.push(``);
-  lines.push(`Source code:`);
-  lines.push("```");
-  lines.push(i.sourceCode);
-  lines.push("```");
-  return lines.join("\n");
+  return buildUserInputSection([
+    { label: "title", content: i.title },
+    { label: "refactor_goal", content: i.refactorGoal },
+    { label: "language", content: i.language ?? "" },
+    { label: "smells_to_address", content: i.smellsToAddress ?? "" },
+    { label: "source_code", content: i.sourceCode },
+  ]);
 }
 
 function parseAi(text: string): ParsedAi | null {

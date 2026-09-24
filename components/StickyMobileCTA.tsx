@@ -18,10 +18,10 @@ export function StickyMobileCTA() {
       <div className="p-3 bg-[#09090b]/80 backdrop-blur-2xl border-t border-white/[0.08] shadow-[0_-8px_32px_rgba(0,0,0,0.5)]">
         <div className="relative flex items-center gap-2">
           <Link
-            href="/operator/onboarding"
+            href="/download"
             className="cta-shimmer-btn btn-huly block flex-1 text-center py-3 px-4 text-zinc-900 rounded-xl font-semibold text-sm transition-colors shadow-sm"
           >
-            Run Axiom — scan your cloud free
+            Download Axiom — operate from desktop
           </Link>
           <button
             type="button"

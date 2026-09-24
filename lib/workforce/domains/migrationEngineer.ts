@@ -16,6 +16,7 @@ import "server-only";
 
 import { prisma } from "@/lib/db";
 import { makeInstrumentedFetcher } from "@/lib/releaseops/instrumentedAiFetcher";
+import { INJECTION_RESISTANCE_CLAUSE, buildUserInputSection } from "@/lib/workforce/domains/promptHardening";
 
 export const MIGRATION_TARGET_KIND = "engineer_migration_runbook";
 
@@ -79,6 +80,8 @@ function buildSystemPrompt(): string {
     `You are the Migration Engineer on the Axiom platform.`,
     `Your job: given a "from state → to state" description, build a multi-stage migration runbook a workspace operator can execute safely with backwards-compat windows + per-stage gate checks.`,
     ``,
+    INJECTION_RESISTANCE_CLAUSE,
+    ``,
     `RULES:`,
     `  · Honest scope. If the migration requires brief downtime or a feature freeze, surface it in riskFactors — don't pretend it's seamless.`,
     `  · Executive summary: 3-4 sentences naming the headline transformation, the worst risk, the rough effort (S/M/L), and the minimum backwards-compat window.`,
@@ -100,21 +103,13 @@ function buildSystemPrompt(): string {
 }
 
 function buildUserPrompt(i: MigrationInput): string {
-  const lines: string[] = [];
-  lines.push(`Title: ${i.title}`);
-  if (i.constraints) lines.push(`Constraints: ${i.constraints}`);
-  if (i.rollbackBoundaries) lines.push(`Rollback boundaries: ${i.rollbackBoundaries}`);
-  lines.push(``);
-  lines.push(`From state:`);
-  lines.push("```");
-  lines.push(i.fromState);
-  lines.push("```");
-  lines.push(``);
-  lines.push(`To state:`);
-  lines.push("```");
-  lines.push(i.toState);
-  lines.push("```");
-  return lines.join("\n");
+  return buildUserInputSection([
+    { label: "title", content: i.title },
+    { label: "constraints", content: i.constraints ?? "" },
+    { label: "rollback_boundaries", content: i.rollbackBoundaries ?? "" },
+    { label: "from_state", content: i.fromState },
+    { label: "to_state", content: i.toState },
+  ]);
 }
 
 function parseAi(text: string): ParsedAi | null {
