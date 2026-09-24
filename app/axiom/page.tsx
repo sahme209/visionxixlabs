@@ -38,7 +38,7 @@ const WORKFLOW_STEPS = [
   { label: "Approve", icon: ShieldCheckIcon, desc: "Human-in-the-loop approval with full context" },
   { label: "Apply", icon: BoltIcon, desc: "Execute approved changes with pre-verified safety" },
   { label: "Verify", icon: CheckCircleIcon, desc: "Post-apply verification confirms expected state" },
-  { label: "Audit", icon: LockClosedIcon, desc: "Immutable audit trail with before/after state" },
+  { label: "Audit", icon: LockClosedIcon, desc: "Persisted audit history with before/after state" },
   { label: "Monitor", icon: EyeIcon, desc: "Continuous drift detection against known baselines" },
   { label: "Learn", icon: ArrowPathIcon, desc: "Outcome memory informs future recommendations" },
 ];
@@ -108,7 +108,7 @@ const TRUST_SIGNALS = [
     desc: "Every infrastructure change requires explicit human approval. Scheduled scans never auto-apply. The agent never escalates its own autonomy.",
   },
   {
-    title: "Immutable audit trail",
+    title: "Persisted audit history",
     desc: "Before/after state capture, timestamps, actor identity, and decision rationale for every action. Full chain of custody from finding to verification.",
   },
   {
@@ -167,7 +167,7 @@ export default function AxiomPage() {
           </Reveal>
           <Reveal direction="up" blur delay={0.2}>
             <p className="text-lg sm:text-xl text-zinc-400 max-w-2xl mx-auto mb-6 leading-relaxed">
-              Axiom scans your AWS infrastructure, identifies $12K+/mo in savings, hardens security, and generates Terraform execution plans — with approval gates, rollback strategies, and an immutable audit trail.
+              Axiom Agent coordinates deployment intake, readiness, approvals, plan review, validation, evidence, and closure. Live AWS analysis requires configured read-only access; local Terraform apply remains disabled.
             </p>
           </Reveal>
           <Reveal direction="up" blur delay={0.25}>
@@ -183,10 +183,10 @@ export default function AxiomPage() {
           <Reveal direction="up" blur delay={0.3}>
             <div className="flex flex-wrap justify-center gap-4">
               <Link
-                href="/auth/signup?redirect=/dashboard/connect-cloud"
+                href="/download"
                 className="btn-huly inline-flex items-center gap-2 px-8 py-3.5 bg-white text-zinc-900 rounded-full font-semibold text-sm uppercase tracking-wide hover:bg-zinc-100 transition-all shadow-lg shadow-white/10"
               >
-                Start free scan
+                Download Axiom Agent
                 <ArrowRightIcon className="h-4 w-4" />
               </Link>
               <Link
@@ -516,10 +516,10 @@ export default function AxiomPage() {
             </div>
             <div className="flex flex-wrap justify-center gap-4">
               <Link
-                href="/auth/signup?redirect=/dashboard/connect-cloud"
+                href="/download"
                 className="btn-huly inline-flex items-center gap-2 px-8 py-3.5 bg-white text-zinc-900 rounded-full font-semibold text-sm uppercase tracking-wide hover:bg-zinc-100 transition-all shadow-lg shadow-white/10"
               >
-                Start free scan
+                Download Axiom Agent
                 <ArrowRightIcon className="h-4 w-4" />
               </Link>
               <Link

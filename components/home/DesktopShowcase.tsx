@@ -44,8 +44,8 @@ export function DesktopShowcase() {
             </span>
           </h2>
           <p className="text-base md:text-lg text-zinc-400 max-w-2xl mx-auto leading-relaxed">
-            Axiom Agent on your workstation — AWS, Azure, GCP, GitHub, security scanner, remediation,
-            simulation, approvals and audit, all on one local control plane.
+            Axiom Agent on your workstation brings supported provider data, release workflows, approvals,
+            validation, and audit evidence into an installed workspace. Connector availability stays explicit.
           </p>
           <div className="mt-9 flex items-center justify-center gap-3 flex-wrap">
             <Link
@@ -78,7 +78,7 @@ export function DesktopShowcase() {
                 <span className="w-2.5 h-2.5 rounded-full bg-emerald-500/70" />
               </div>
               <div className="flex-1 text-center text-[10px] font-mono text-zinc-600">
-                Axiom Agent · v0.1.5 · workspace · visionxixlabs
+                Axiom Agent · v0.1.7 · product preview · sample data
               </div>
             </div>
 
@@ -112,7 +112,7 @@ export function DesktopShowcase() {
                 <div className="px-3 py-2.5 border-t border-white/[0.04]">
                   <div className="flex items-center gap-1.5 text-[10px] font-mono text-zinc-500">
                     <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_6px_rgba(52,211,153,0.7)]" />
-                    connected
+                    sample workspace
                   </div>
                 </div>
               </aside>
@@ -128,11 +128,11 @@ export function DesktopShowcase() {
                   <div className="flex items-center gap-2">
                     <span className="inline-flex items-center gap-1.5 px-2 py-1 rounded-full border border-violet-500/25 bg-violet-500/[0.05] text-[10px] font-mono text-violet-300">
                       <span className="w-1 h-1 rounded-full bg-violet-400" />
-                      visionxixlabs
+                      sample workspace
                     </span>
                     <span className="inline-flex items-center gap-1.5 px-2 py-1 rounded-full border border-emerald-500/25 bg-emerald-500/[0.05] text-[10px] font-mono text-emerald-300">
                       <span className="w-1 h-1 rounded-full bg-emerald-400 animate-pulse" />
-                      live
+                      example
                     </span>
                   </div>
                 </div>
@@ -142,7 +142,7 @@ export function DesktopShowcase() {
                   {/* KPI strip */}
                   <div className="grid grid-cols-4 gap-2.5">
                     <Kpi label="Resources"      value="247"  tone="text-violet-300" />
-                    <Kpi label="Providers live" value="3/3"  tone="text-emerald-300" />
+                    <Kpi label="Provider examples" value="3" tone="text-emerald-300" />
                     <Kpi label="Risks"          value="12"   tone="text-rose-300" />
                     <Kpi label="Next actions"   value="9"    tone="text-cyan-300" />
                   </div>
@@ -175,7 +175,7 @@ export function DesktopShowcase() {
           <FeatureTile
             Icon={CpuChipIcon}
             title="Control plane projection"
-            detail="Every web API surfaced locally — providers, security, releases, audit, validation."
+            detail="Supported APIs surface provider, release, approval, audit, and validation state in the installed app."
           />
           <FeatureTile
             Icon={ShieldCheckIcon}
@@ -184,13 +184,13 @@ export function DesktopShowcase() {
           />
           <FeatureTile
             Icon={CommandLineIcon}
-            title="Signed + reproducible"
-            detail="macOS notarized · all binaries GPG-signed · published from a public CI pipeline."
+            title="Release-aware downloads"
+            detail="The download page enables only manifest-backed assets and reports signing and notarization per platform."
           />
           <FeatureTile
             Icon={ArrowDownTrayIcon}
-            title="One install, three platforms"
-            detail="macOS · Windows · Linux. AppImage / .deb / .rpm / .dmg / .msi all from one tag."
+            title="Platform-specific builds"
+            detail="CI targets macOS, Windows, and Linux; the site advertises only the installers present in the verified release."
           />
         </div>
       </div>

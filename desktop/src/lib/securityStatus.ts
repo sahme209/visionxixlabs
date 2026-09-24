@@ -4,6 +4,8 @@
  * renders honest claims without independently re-deriving them.
  */
 
+import { DESKTOP_VERSION } from "./desktopMetadata";
+
 export type DesktopSecurityState = "unknown" | "trusted" | "version_blocked" | "signature_blocked" | "policy_blocked" | "revoked";
 
 export interface DesktopSecurityCheck {
@@ -26,8 +28,8 @@ export interface DesktopSecurityStatus {
 
 export function defaultDesktopSecurityStatus(): DesktopSecurityStatus {
   return {
-    state: "trusted",
-    appVersion: "0.1.0",
+    state: "unknown",
+    appVersion: DESKTOP_VERSION,
     channel: "preview",
     signing: { macos: "not_signed", windows: false, linux: false },
     applyGate: {
@@ -36,16 +38,16 @@ export function defaultDesktopSecurityStatus(): DesktopSecurityStatus {
         "Refused otherwise.",
       blockedByDefault: true,
     },
-    handoffSignerConfigured: true,
-    auditSyncReachable: true,
+    handoffSignerConfigured: false,
+    auditSyncReachable: false,
     checks: [
-      { id: "pairing",     label: "Pairing",                  detail: "Desktop is paired with the web workspace.",                           status: "ok" },
-      { id: "version",     label: "Version",                  detail: "v0.1.0 · preview channel.",                                            status: "warning" },
-      { id: "signature",   label: "Code signing",             detail: "Unsigned preview build. Signed builds ship with 1.0.",                 status: "warning" },
-      { id: "audit_sync",  label: "Audit sync",               detail: "Local audit events sync to the web store.",                            status: "ok" },
-      { id: "redaction",   label: "Log redaction",            detail: "Every log line passes through canonical redaction.",                   status: "ok" },
-      { id: "local_apply", label: "Local Terraform apply",    detail: "Disabled — approval-gated. Re-enable via tenant policy.",              status: "warning" },
-      { id: "handoff_sig", label: "Handoff signer",           detail: "HMAC-SHA256 over canonical JSON. Single-use nonce + 1h TTL.",          status: "ok" },
+      { id: "pairing",     label: "Pairing",               detail: "Not verified in this session.",                                      status: "unknown" },
+      { id: "version",     label: "Version",               detail: `v${DESKTOP_VERSION} · preview channel.`,                         status: "warning" },
+      { id: "signature",   label: "Code signing",          detail: "Read signing and notarization state from the release manifest.",        status: "unknown" },
+      { id: "audit_sync",  label: "Audit sync",            detail: "Reachability has not been checked.",                                   status: "unknown" },
+      { id: "redaction",   label: "Log redaction",         detail: "Canonical redaction is configured; runtime coverage still requires verification.", status: "warning" },
+      { id: "local_apply", label: "Local Terraform apply", detail: "Disabled by the current desktop safety contract.",                       status: "warning" },
+      { id: "handoff_sig", label: "Handoff signer",        detail: "Configuration and signature validity have not been checked.",           status: "unknown" },
     ],
   };
 }

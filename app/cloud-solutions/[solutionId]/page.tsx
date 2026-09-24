@@ -244,8 +244,8 @@ export default async function SolutionDetailPage({
               subtitle="If this area matches a pain point you're seeing today, we can walk through what it would look like in your environment and define clear next steps."
               primaryLabel="Talk to an Engineer"
               primaryHref="/contact"
-              secondaryLabel="Run Axiom"
-              secondaryHref="/auth/signup?redirect=/dashboard/connect-cloud"
+              secondaryLabel="Download Axiom Agent"
+              secondaryHref="/download"
               plansHref="/operator/pricing"
             />
           </Reveal>

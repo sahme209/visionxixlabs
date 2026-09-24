@@ -17,7 +17,7 @@ function SignInForm() {
   const [enabledProviders, setEnabledProviders] = useState<{ google: boolean; github: boolean } | null>(null);
   const router = useRouter();
   const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get("callbackUrl") || "/dashboard";
+  const callbackUrl = searchParams.get("callbackUrl") || "/auth/success";
 
   // Surface a clear hint when the OAuth callback errored.
   const oauthError = searchParams.get("error");
@@ -127,7 +127,7 @@ function SignInForm() {
           Sign in.
           <span aria-hidden className="block h-[3px] w-12 mt-1.5 rounded-full bg-gradient-to-r from-brand-coral via-fuchsia-400 to-transparent opacity-85" />
         </h1>
-        <p className="text-sm text-zinc-500 mb-8">Access your Axiom dashboard and operations.</p>
+        <p className="text-sm text-zinc-500 mb-8">Authenticate the Axiom Agent pairing request opened by the installed application.</p>
 
         <form onSubmit={handleSubmit} className="space-y-4" noValidate>
           <div>
@@ -235,14 +235,14 @@ function SignInForm() {
 
         <p className="mt-6 text-sm text-zinc-500 text-center">
           Don&apos;t have an account?{" "}
-          <Link href="/auth/signup" className="font-medium text-violet-400 hover:text-violet-300">
+          <Link href={`/auth/signup?redirect=${encodeURIComponent(callbackUrl)}`} className="font-medium text-violet-400 hover:text-violet-300">
             Sign up
           </Link>
         </p>
         <p className="mt-2 text-xs text-zinc-500 text-center">
-          Just looking?{" "}
-          <Link href="/demo" className="font-medium text-violet-300 hover:text-violet-200 underline decoration-violet-500/30 hover:decoration-violet-400 underline-offset-2">
-            Try the demo without signing in →
+          Need the application?{" "}
+          <Link href="/download" className="font-medium text-violet-300 hover:text-violet-200 underline decoration-violet-500/30 hover:decoration-violet-400 underline-offset-2">
+            Return to downloads →
           </Link>
         </p>
       </div>

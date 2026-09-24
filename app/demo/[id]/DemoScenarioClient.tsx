@@ -30,6 +30,7 @@ import {
 } from "@/lib/demo/scenarioKnowledge";
 import { endpointForStep } from "@/lib/demo/technicalReference";
 import { StepVisual } from "./StepVisual";
+import { SandboxNavigation } from "@/components/marketing/SandboxNavigation";
 
 const APPROVAL_TONE: Record<DemoStep["approval"], { label: string; cls: string }> = {
   none:         { label: "No approval needed",        cls: "bg-emerald-500/10 text-emerald-200 border-emerald-500/25" },
@@ -87,7 +88,9 @@ export function DemoScenarioClient({ scenario }: { scenario: DemoScenario }) {
   const diagram = SCENARIO_DIAGRAMS[scenario.id];
 
   return (
-    <main className="max-w-6xl mx-auto px-4 sm:px-6 py-10 space-y-8">
+    <>
+      <SandboxNavigation />
+      <main className="max-w-6xl mx-auto px-4 sm:px-6 py-10 space-y-8">
       {/* Sandbox marker — pinned, calm. */}
       <div className="rounded-lg border border-violet-500/20 bg-violet-500/[0.04] px-3 py-2 flex items-center gap-2">
         <span className="w-1.5 h-1.5 rounded-full bg-violet-400" />
@@ -302,10 +305,10 @@ export function DemoScenarioClient({ scenario }: { scenario: DemoScenario }) {
             <span className="text-[10px] font-mono text-zinc-600 hidden sm:inline">use ← / → to navigate</span>
             {activeOrd === scenario.steps.length - 1 ? (
               <Link
-                href="/dashboard/start-here"
+                href="/download"
                 className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-violet-600/90 hover:bg-violet-500 text-white text-[12px] font-semibold transition-colors"
               >
-                Try this for real →
+                Download the application →
               </Link>
             ) : (
               <NavButton onClick={next} disabled={false}>Next →</NavButton>
@@ -369,12 +372,13 @@ export function DemoScenarioClient({ scenario }: { scenario: DemoScenario }) {
           <Link href="/demo" className="text-[12px] text-zinc-400 hover:text-zinc-200 underline-offset-2 hover:underline">
             ← Back to all scenarios
           </Link>
-          <Link href="/dashboard/start-here" className="text-[12px] text-zinc-400 hover:text-zinc-200 underline-offset-2 hover:underline">
-            Set up your real workspace →
+          <Link href="/download" className="text-[12px] text-zinc-400 hover:text-zinc-200 underline-offset-2 hover:underline">
+            Download Axiom Agent →
           </Link>
         </div>
       </section>
-    </main>
+      </main>
+    </>
   );
 }
 

@@ -1,88 +1,79 @@
 /**
- * GET /api/desktop/download?platform={mac-arm|mac-intel|windows|linux}
- *
- * Resolves to one of three outcomes:
- *
- *   1. Real signed binary configured for the platform — 302 to the release URL.
- *   2. Preview-state platform — 302 to /download/preview?platform=X so the
- *      browser sees a styled page (not raw JSON).
- *   3. Programmatic caller (Accept: application/json or ?format=json) — JSON
- *      response so SDKs and curl probes still get a structured answer.
+ * Resolves a platform request against the same live release manifest used by
+ * the download page. Missing or unreachable assets never become guessed URLs.
  */
 
 import { NextRequest, NextResponse } from "next/server";
+import {
+    getDesktopReleaseManifest,
+    type DesktopPlatform,
+} from "@/lib/desktop/releaseManifest";
 
 type Platform = "mac-arm" | "mac-intel" | "windows" | "linux";
 
-const PLATFORM_AVAILABILITY: Record<Platform, { available: boolean; releaseUrl?: string }> = {
-  "mac-arm": {
-    available: false, // Flip to true once AXIOM_DESKTOP_RELEASE_MAC_ARM is set.
-    releaseUrl: process.env.AXIOM_DESKTOP_RELEASE_MAC_ARM,
-  },
-  "mac-intel": {
-    available: false,
-    releaseUrl: process.env.AXIOM_DESKTOP_RELEASE_MAC_INTEL,
-  },
-  windows: { available: false },
-  linux: { available: false },
+const PLATFORM_MAP: Record<Platform, DesktopPlatform> = {
+    "mac-arm": "macos-arm",
+    "mac-intel": "macos-intel",
+    windows: "windows-x64",
+    linux: "linux-x64",
 };
 
-const VALID_PLATFORMS: Platform[] = ["mac-arm", "mac-intel", "windows", "linux"];
+const VALID_PLATFORMS = Object.keys(PLATFORM_MAP) as Platform[];
 
-function isValidPlatform(p: string | null): p is Platform {
-  return p !== null && (VALID_PLATFORMS as string[]).includes(p);
+function isValidPlatform(platform: string | null): platform is Platform {
+    return platform !== null && VALID_PLATFORMS.includes(platform as Platform);
 }
 
-function wantsJson(req: NextRequest): boolean {
-  if (req.nextUrl.searchParams.get("format") === "json") return true;
-  const accept = req.headers.get("accept") ?? "";
-  // JSON-first clients explicitly ask for it. Browser default is text/html.
-  if (accept.includes("application/json") && !accept.includes("text/html")) return true;
-  return false;
+function wantsJson(request: NextRequest): boolean {
+    if (request.nextUrl.searchParams.get("format") === "json") return true;
+    const accept = request.headers.get("accept") ?? "";
+    return accept.includes("application/json") && !accept.includes("text/html");
 }
 
-export async function GET(req: NextRequest) {
-  const { searchParams } = new URL(req.url);
-  const platform = searchParams.get("platform");
-  const json = wantsJson(req);
+export async function GET(request: NextRequest) {
+    const platform = request.nextUrl.searchParams.get("platform");
+    const json = wantsJson(request);
 
-  if (!isValidPlatform(platform)) {
-    if (json) {
-      return NextResponse.json(
-        { error: "Invalid platform", validPlatforms: VALID_PLATFORMS },
-        { status: 400 }
-      );
+    if (!isValidPlatform(platform)) {
+        if (json) {
+            return NextResponse.json(
+                { error: "Invalid platform", validPlatforms: VALID_PLATFORMS },
+                { status: 400 },
+            );
+        }
+        return NextResponse.redirect(new URL("/download", request.url), 302);
     }
-    return NextResponse.redirect(new URL("/download", req.url), 302);
-  }
 
-  const config = PLATFORM_AVAILABILITY[platform];
+    const manifest = await getDesktopReleaseManifest();
+    const asset = manifest.assets[PLATFORM_MAP[platform]];
 
-  // Real binary available — redirect to the release URL.
-  if (config.available && config.releaseUrl) {
-    return NextResponse.redirect(config.releaseUrl, 302);
-  }
+    if (asset) {
+        if (json) {
+            return NextResponse.json({
+                status: "available",
+                platform,
+                version: manifest.tag,
+                asset,
+                releaseUrl: manifest.htmlUrl,
+            });
+        }
+        return NextResponse.redirect(asset.downloadUrl, 302);
+    }
 
-  // Preview / planned — JSON for programmatic clients, HTML preview page for browsers.
-  if (json) {
-    return NextResponse.json(
-      {
-        status: "preview",
-        platform,
-        message:
-          platform === "mac-arm" || platform === "mac-intel"
-            ? "macOS preview build available via early-access program."
-            : platform === "windows"
-              ? "Windows build ships Q2 2026 — join the early-access waitlist."
-              : "Linux build ships Q3 2026 — join the early-access waitlist.",
-        previewUrl: `/download/preview?platform=${platform}`,
-      },
-      { status: 202 }
+    if (json) {
+        return NextResponse.json(
+            {
+                status: "unavailable",
+                platform,
+                message: manifest.note ?? "No verified installable asset is published for this platform.",
+                releaseUrl: manifest.htmlUrl,
+            },
+            { status: 404 },
+        );
+    }
+
+    return NextResponse.redirect(
+        new URL(`/download/preview?platform=${platform}`, request.url),
+        302,
     );
-  }
-
-  return NextResponse.redirect(
-    new URL(`/download/preview?platform=${platform}`, req.url),
-    302
-  );
 }

@@ -175,17 +175,12 @@ async function fetchLatestRelease(): Promise<DesktopReleaseManifest> {
   // Most recent published.
   const latest = desktopReleases[0];
 
-  // Honest signing detection — parse body for `signed: true` / `notarized: true`
-  // markers. The CI workflow writes these when secrets are present.
-  // Signing detection — checks both the explicit body markers (`signed: true`
-  // / `notarized: true` written by older workflows) AND the body text for the
-  // honest copy our current workflow writes ("signed + notarized"). When the
-  // new workflow shipped macOS as signed + notarized via Apple Developer ID,
-  // the release notes contain that phrase; we honour it.
+  // Trust only explicit machine-readable attestations emitted after the
+  // signing steps complete. Prose such as "signed when configured" is not
+  // evidence and must never enable a signed/notarized badge.
   const body = latest.body?.toLowerCase() ?? "";
-  const sigMarker = (kw: string) => body.includes(`${kw}: true`);
-  const signedFlag = sigMarker("signed") || body.includes("signed + notarized");
-  const notarizedFlag = sigMarker("notarized") || body.includes("signed + notarized");
+  const signedFlag = body.includes("artifact-signed: true");
+  const notarizedFlag = body.includes("artifact-notarized: true");
 
   const assets: DesktopReleaseManifest["assets"] = {
     "macos-arm":   null,
@@ -194,10 +189,25 @@ async function fetchLatestRelease(): Promise<DesktopReleaseManifest> {
     "linux-x64":   null,
   };
 
+  const assetPreference = (platform: DesktopPlatform, fileName: string): number => {
+    const name = fileName.toLowerCase();
+    if (platform === "linux-x64") {
+      if (name.endsWith(".appimage")) return 3;
+      if (name.endsWith(".deb")) return 2;
+      if (name.endsWith(".rpm")) return 1;
+    }
+    if (platform === "windows-x64") {
+      if (name.endsWith(".msi")) return 2;
+      if (name.endsWith(".exe")) return 1;
+    }
+    return 1;
+  };
+
   for (const a of latest.assets ?? []) {
     const platform = classifyAsset(a.name);
     if (!platform) continue;
-    if (assets[platform]) continue; // keep the first match
+    const current = assets[platform];
+    if (current && assetPreference(platform, current.fileName) >= assetPreference(platform, a.name)) continue;
     const signed = signedFlag && (platform === "macos-arm" || platform === "macos-intel" || platform === "windows-x64");
     const notarized = notarizedFlag && (platform === "macos-arm" || platform === "macos-intel");
     assets[platform] = {
@@ -213,9 +223,12 @@ async function fetchLatestRelease(): Promise<DesktopReleaseManifest> {
   }
 
   const hasAnyAsset = Object.values(assets).some((a) => a !== null);
+  // This aggregate is intentionally strict: missing platforms, unsigned Linux
+  // artifacts, unsigned Windows installers, or unnotarized macOS bundles all
+  // keep the global badge false. Per-platform badges remain available above.
   const allSignedAndNotarized = Object.values(assets).every(
-    (a) => a === null || (a.signed && (a.platform === "linux-x64" || a.platform === "windows-x64" || a.notarized)),
-  ) && hasAnyAsset;
+    (a) => a !== null && a.signed && (!a.platform.startsWith("macos-") || a.notarized),
+  );
 
   return {
     source: "github_release",

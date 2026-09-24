@@ -238,9 +238,9 @@ export default function OperationsPage() {
         <div className="absolute inset-0 bg-dots opacity-20 pointer-events-none" aria-hidden />
         <div className="relative max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pt-24">
           <EmptyState
-            title="Sign in to view operations"
+            title="Install Axiom Agent to view operations"
             desc="The operations dashboard shows your agent activity, drift monitoring, and approval queue."
-            action={{ label: "Sign in", href: "/auth/signin" }}
+            action={{ label: "Download Axiom Agent", href: "/download" }}
           />
         </div>
       </div>
@@ -271,7 +271,7 @@ export default function OperationsPage() {
             </div>
             <div className="flex items-center gap-3">
               <Link
-                href="/auth/signup?redirect=/dashboard/connect-cloud"
+                href="/download"
                 className="btn-huly cta-glow inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white text-xs font-semibold transition-all shadow-sm shadow-violet-500/20"
               >
                 <BoltIcon className="h-3.5 w-3.5" />
@@ -347,7 +347,7 @@ export default function OperationsPage() {
                       <EmptyState
                         title="No agent runs yet"
                         desc="Run your first scan to see agent activity here."
-                        action={{ label: "Run Axiom", href: "/auth/signup?redirect=/dashboard/connect-cloud" }}
+                        action={{ label: "Download Axiom Agent", href: "/download" }}
                       />
                     )}
                   </div>
@@ -391,7 +391,7 @@ export default function OperationsPage() {
                     ) : (
                       <div className="text-center py-4">
                         <p className="text-xs text-zinc-500 mb-2">No accounts connected</p>
-                        <Link href="/auth/signup?redirect=/dashboard/connect-cloud" className="text-xs font-medium text-violet-400 hover:text-violet-300 transition-colors">
+                        <Link href="/download" className="text-xs font-medium text-violet-400 hover:text-violet-300 transition-colors">
                           Connect AWS
                         </Link>
                       </div>
@@ -469,7 +469,7 @@ export default function OperationsPage() {
                             </p>
                           </div>
                           <Link
-                            href={`/auth/signin?callbackUrl=${encodeURIComponent(`/dashboard?runId=${approval.runId}`)}`}
+                            href="/download"
                             className="text-xs font-medium text-violet-400 hover:text-violet-300 transition-colors"
                           >
                             Review

@@ -27,7 +27,6 @@ import { TiltCard } from "@/components/motion/TiltCard";
 import { Marquee } from "@/components/motion/Marquee";
 import { GradientBorder } from "@/components/motion/GradientBorder";
 import { DrippingBeam } from "@/components/motion/DrippingBeam";
-import { TestimonialsCarousel } from "@/components/TestimonialsCarousel";
 import { FAQAccordion } from "@/components/FAQAccordion";
 import { DesktopShowcase } from "@/components/home/DesktopShowcase";
 import { HomepageDemoAnimation } from "@/components/marketing/HomepageDemoAnimation";
@@ -50,12 +49,12 @@ const axiomFAQ = [
   {
     question: "What does Axiom actually do?",
     answer:
-      "Axiom is an autonomous cloud operations agent. It connects to your AWS account via a read-only IAM role, scans your infrastructure, runs a 12-step autonomous loop to identify and prioritize issues (cost waste, security gaps, drift, misconfigurations), generates phased execution plans with Terraform code, and learns from outcomes. Nothing changes without your explicit approval.",
+      "Axiom Agent is a downloadable operations workspace for release and cloud teams. It captures deployment intake, runs readiness checks, builds versioned playbooks, coordinates approvals, guides execution, validates outcomes, and collects evidence for closure. AWS connectivity uses an assume-role model; availability for every provider and action is shown in the product.",
   },
   {
     question: "Does Axiom modify my infrastructure?",
     answer:
-      "Never without your approval. Scans are always read-only. When you upgrade to the Agent tier, Axiom generates execution plans — but every change requires your explicit approval, includes a pre-verified rollback strategy, and is logged with a full audit trail.",
+      "Axiom separates analysis from write actions and requires the configured approval policy before an execution step can proceed. Generated Terraform and CLI artifacts remain reviewable. Local Terraform apply is disabled until the approval architecture is fully verified; failed or unavailable operations must remain visible as failures, not simulated success.",
   },
   {
     question: "What clouds are supported?",
@@ -70,7 +69,7 @@ const axiomFAQ = [
   {
     question: "How long does setup take?",
     answer:
-      "About 5 minutes. Create a read-only IAM role in AWS, paste the Role ARN, and Axiom starts scanning. Your first findings report is ready in under a minute.",
+      "Setup time depends on your identity provider, permissions, and integrations. Install the app, authenticate through the secure desktop flow, configure an AWS assume-role or another available connector, verify access, and review the first readiness result before enabling operational actions.",
   },
   {
     question: "What access does Axiom need?",
@@ -85,9 +84,9 @@ const axiomFAQ = [
 ];
 
 const TRUST_LOGOS = [
-  "Read-only IAM roles", "Zero stored credentials", "Approval-gated execution", "Immutable audit trail",
-  "Pre-verified rollback", "Blast radius limits", "Terraform-native IaC", "Outcome memory engine",
-  "Continuous drift monitoring", "Compliance-aware scanning",
+  "Assume-role AWS access", "Explicit approval gates", "Persisted audit history", "Redacted operational logs",
+  "Workspace isolation", "Feature-gated connectors", "Human-confirmed AI output", "Terraform artifact review",
+  "Synthetic web sandbox", "No browser control plane",
 ];
 
 /* ── Floating ambient particles ──────────────────────────────── */
@@ -204,23 +203,23 @@ export default function Home() {
               </h1>
               <Reveal direction="up" delay={0.06}>
                 <p className="body-lede text-zinc-400 mb-10">
-                  Axiom scans your infrastructure, reasons about cost and security, drafts Terraform changes, and ships them — with human approval. Up to 30–40% lower cloud spend in optimized accounts.
+                  Axiom Agent is the downloadable operations workspace for release teams and cloud operators. Turn deployment intake into approval-gated playbooks, guided execution, validation, evidence, and closure—without turning the website into a production control plane.
                 </p>
               </Reveal>
               <Reveal direction="up" delay={0.12}>
                 <div className="relative z-20 flex flex-wrap items-center gap-x-5 gap-y-3">
                   <Link
-                    href="/auth/signup?redirect=/dashboard/connect-cloud"
+                    href="/download"
                     className="btn-press inline-flex items-center gap-2.5 px-7 py-3.5 rounded-full text-[14.5px] font-semibold tracking-tight"
                   >
-                    See Axiom in action
+                    Download Axiom Agent
                     <ArrowRightIcon className="h-4 w-4 opacity-60" />
                   </Link>
                   <Link
                     href="/demo"
                     className="btn-ghost-press inline-flex items-center gap-2 px-6 py-3.5 rounded-full text-[14px] font-medium tracking-tight"
                   >
-                    Try the demo
+                    Explore the sandbox
                   </Link>
                 </div>
               </Reveal>
@@ -242,9 +241,9 @@ export default function Home() {
                     <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-70" />
                     <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-300" />
                   </span>
-                  <span className="text-[10.5px] font-mono uppercase tracking-[0.16em] text-emerald-300/90">Audit · live</span>
+                  <span className="text-[10.5px] font-mono uppercase tracking-[0.16em] text-amber-200/90">Example workflow</span>
                   <span className="text-zinc-600">·</span>
-                  <span className="text-[11.5px] text-zinc-200">Plan #142 approved</span>
+                  <span className="text-[11.5px] text-zinc-200">Sample approval gate</span>
                 </div>
               </Reveal>
             </div>
@@ -273,14 +272,14 @@ export default function Home() {
                       <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-60" />
                       <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-300" />
                     </span>
-                    <p className="mono-label text-emerald-300/90 text-[9.5px]">Audit · live</p>
+                    <p className="mono-label text-amber-200/90 text-[9.5px]">Product example · sample data</p>
                   </div>
-                  <p className="text-[12.5px] font-semibold text-white leading-tight tracking-tight">Plan #142 approved</p>
-                  <p className="text-[10.5px] text-zinc-400 mt-1.5 leading-snug">Rollback verified · sha-256 rationale persisted.</p>
+                  <p className="text-[12.5px] font-semibold text-white leading-tight tracking-tight">Approval gate completed</p>
+                  <p className="text-[10.5px] text-zinc-400 mt-1.5 leading-snug">Illustrative workflow · no live tenant activity.</p>
                   <div className="mt-2.5 pt-2.5 border-t border-white/[0.04] flex items-center gap-2 text-[9.5px] font-mono tabular-nums">
-                    <span className="text-zinc-500">18:42 UTC</span>
+                    <span className="text-zinc-500">Sample record</span>
                     <span className="text-zinc-700">·</span>
-                    <span className="text-brand-coral/85">payments-api</span>
+                    <span className="text-brand-coral/85">demo workspace</span>
                   </div>
                 </div>
               </div>
@@ -334,10 +333,10 @@ export default function Home() {
           <Reveal direction="up" delay={0.05}>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-x-4 sm:gap-x-6 gap-y-10 sm:gap-y-12">
               {[
-                { idx: "01", value: 35,  suffix: "%", duration: 1600, label: "Avg cloud spend cut" },
-                { idx: "02", value: 60,  suffix: "s", duration: 1400, label: "First findings report" },
-                { idx: "03", value: 3,   suffix: "",  duration: 1200, label: "Clouds wired today" },
-                { idx: "04", value: 100, suffix: "%", duration: 1500, label: "Approval-gated execution" },
+                { idx: "01", value: 1, suffix: "", duration: 800, label: "Intake & readiness" },
+                { idx: "02", value: 2, suffix: "", duration: 900, label: "Approval & playbook" },
+                { idx: "03", value: 3, suffix: "", duration: 1000, label: "Execution & validation" },
+                { idx: "04", value: 4, suffix: "", duration: 1100, label: "Evidence & closure" },
               ].map((s) => (
                 <div key={s.idx} className="relative pl-4 sm:pl-5 border-l border-white/[0.05]">
                   <p className="mono-label text-brand-coral/75 mb-3">
@@ -364,10 +363,10 @@ export default function Home() {
           </Reveal>
           <Stagger delay={0.1} interval={0.06} className="flex flex-wrap justify-center gap-3">
             {[
-              "YC-backed startups",
-              "Series A–C teams",
+              "Release managers",
               "Platform engineering",
-              "FinOps teams",
+              "Cloud operations",
+              "Change approvers",
             ].map((label) => (
               <span
                 key={label}
@@ -400,15 +399,15 @@ export default function Home() {
               <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-zinc-500 mb-6 inline-flex items-center gap-3">
                 <span className="text-rose-300/90 tabular-nums">02</span>
                 <span className="h-px w-6 bg-gradient-to-r from-rose-400/60 to-transparent" />
-                The team you&apos;d otherwise be paying for
+                One governed operational thread
               </p>
               <h2 className="text-[34px] sm:text-[44px] md:text-[52px] font-medium tracking-[-0.025em] leading-[1.05] text-white max-w-3xl">
-                A $<CountUp to={5.27} duration={2000} decimals={2} />M per year team. <span className="text-zinc-500">Most teams don&apos;t have it.</span>
+                Coordinate every handoff. <span className="text-zinc-500">Keep people in control.</span>
               </h2>
               <ScrollRevealText
                 as="p"
                 className="mt-6 max-w-2xl text-[15px] leading-relaxed"
-                text="The fully-loaded annual cost of hiring the engineering and operations bench most companies need but never ship. Axiom doesn't replace that team — it gives the team you already have AI-assisted coverage across every discipline below, with a human approval before any change runs."
+                text="Axiom Agent does not replace your engineering or change-management teams. It gives them one installed workspace for intake, permissions, approvals, guided work, validation, evidence, and follow-up."
               />
             </div>
           </Reveal>
@@ -416,18 +415,18 @@ export default function Home() {
           {/* Discipline grid — curated 12 to fit a compact home-page block */}
           <Stagger delay={0.1} interval={0.04} className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2.5 sm:gap-3">
             {[
-              { name: "Cloud Architect",     rate: "$260k+/yr", scope: "Multi-cloud topology + boundaries" },
-              { name: "Security Engineer",   rate: "$240k+/yr", scope: "Threat model + secret hygiene" },
-              { name: "ML Engineer",         rate: "$245k+/yr", scope: "Provider routing + fallback" },
-              { name: "AI Researcher",       rate: "$260k+/yr", scope: "Council weighting + drift" },
-              { name: "Kubernetes Engineer", rate: "$225k+/yr", scope: "Workload + control-plane drift" },
-              { name: "SRE / On-call",       rate: "$225k+/yr", scope: "Error budgets + paging" },
-              { name: "AWS Specialist",      rate: "$220k+/yr", scope: "CloudTrail + IAM least-priv" },
-              { name: "Mobile Engineer",     rate: "$220k+/yr", scope: "Push + offline + deep-link" },
-              { name: "Incident Commander",  rate: "$220k+/yr", scope: "Approval staging + rollback" },
-              { name: "Compliance Officer",  rate: "$200k+/yr", scope: "SOC 2 + GDPR evidence" },
-              { name: "Build / CI Engineer", rate: "$195k+/yr", scope: "Gating + deploy windows" },
-              { name: "Customer Success",    rate: "$170k+/yr", scope: "Trial → growth conversion" },
+              { name: "Deployment intake",   rate: "Request", scope: "Scope, ownership, dependencies, and environment" },
+              { name: "Readiness",           rate: "Preflight", scope: "Permissions, credentials, prerequisites, and risk" },
+              { name: "Versioned playbook",  rate: "Plan", scope: "Ordered actions with owners and expected outcomes" },
+              { name: "Approval gates",      rate: "Decision", scope: "Human sign-off and separation of duties" },
+              { name: "Scheduling",          rate: "Window", scope: "Change windows, dependencies, and coordination" },
+              { name: "Guided execution",    rate: "Run", scope: "Approved steps with visible status and failures" },
+              { name: "Retries & rollback",  rate: "Recover", scope: "Explicit recovery paths—never silent success" },
+              { name: "Validation",          rate: "Verify", scope: "Expected results, deferred checks, and follow-ups" },
+              { name: "Evidence collection", rate: "Record", scope: "Artifacts, decisions, timestamps, and provenance" },
+              { name: "Audit history",       rate: "Review", scope: "Who did what, when, and with which authorization" },
+              { name: "Reports & exports",   rate: "Share", scope: "Openable output for operators and reviewers" },
+              { name: "Closure",             rate: "Complete", scope: "Final sign-off, unresolved work, and ownership" },
             ].map((d) => (
               <SpotlightCard
                 key={d.name}
@@ -447,10 +446,10 @@ export default function Home() {
           <Reveal direction="up" delay={0.1}>
             <div className="mt-12 flex flex-wrap items-center gap-x-6 gap-y-3">
               <Link
-                href="/disciplines"
+                href="/capabilities"
                 className="inline-flex items-center gap-2 rounded-full bg-white text-zinc-950 px-6 py-3 text-[14px] font-medium hover:bg-zinc-100 transition-colors"
               >
-                See all 26 disciplines
+                Explore product capabilities
                 <ArrowRightIcon className="h-4 w-4 opacity-60" />
               </Link>
               <Link
@@ -459,7 +458,7 @@ export default function Home() {
               >
                 See pricing
               </Link>
-              <p className="text-[12px] text-zinc-500">Twelve of twenty-six shown.</p>
+              <p className="text-[12px] text-zinc-500">Twelve stages shown from intake through closure.</p>
             </div>
           </Reveal>
         </div>
@@ -484,7 +483,7 @@ export default function Home() {
               <ScrollRevealText
                 as="p"
                 className="text-[15.5px] max-w-2xl leading-relaxed"
-                text="Axiom scans your infrastructure, reasons about what matters, builds execution plans, and applies approved changes — then learns from outcomes."
+                text="Axiom turns operational inputs into reviewable plans, routes required approvals, guides supported execution adapters, and records validation and evidence. Availability and failures stay visible at each stage."
               />
             </div>
           </Reveal>
@@ -495,7 +494,7 @@ export default function Home() {
                 accentClass: "card-accent-violet",
                 title: "Deep Scanning",
                 icon: MagnifyingGlassIcon,
-                metric: "3 clouds",
+                metric: "Availability shown",
                 desc: "Full infrastructure snapshot — cost waste, security gaps, misconfigurations, and drift from desired state.",
                 items: [
                   { dot: "bg-violet-400/60", text: "Cost optimization and rightsizing" },
@@ -508,7 +507,7 @@ export default function Home() {
                 accentClass: "card-accent-fuchsia",
                 title: "Autonomous Reasoning",
                 icon: CpuChipIcon,
-                metric: "12-step loop",
+                metric: "Source-aware",
                 desc: "AI reasoning engine that prioritizes findings, builds dependency-aware execution plans, and generates Terraform code.",
                 items: [
                   { dot: "bg-fuchsia-400/60", text: "Multi-phase cognitive reasoning" },
@@ -522,10 +521,10 @@ export default function Home() {
                 title: "Governed Execution",
                 icon: ShieldCheckIcon,
                 metric: "Audited",
-                desc: "Enterprise-grade safety — approval gates, blast radius limits, verified rollback, and immutable audit trail.",
+                desc: "Governance controls connect approval gates, scoped execution, rollback planning, and persisted audit evidence.",
                 items: [
                   { dot: "bg-emerald-400/60", text: "Human approval for high-risk changes" },
-                  { dot: "bg-emerald-400/60", text: "Pre-verified rollback strategies" },
+                  { dot: "bg-emerald-400/60", text: "Explicit rollback plans and recovery status" },
                   { dot: "bg-emerald-400/60", text: "Outcome learning and safety gates" },
                 ],
               },
@@ -566,15 +565,15 @@ export default function Home() {
       {/* ── How it works — huly.io FeatureRow ───────────────────────── */}
       <FeatureRow
         kicker={<><span className="text-rose-300/90 tabular-nums">04</span><span className="mx-2 inline-block h-px w-6 align-middle bg-gradient-to-r from-rose-400/60 to-transparent" />How Axiom operates</>}
-        headline={<>Twelve steps from <span className="text-zinc-500">scan to ship</span>.</>}
+        headline={<>From request to <span className="text-zinc-500">verified closure</span>.</>}
         body={
-          <>Axiom runs a 12-step cognitive loop: observe the cloud, interpret findings, reason about priority, plan dependency-aware execution, and learn from outcomes. Every step is auditable.</>
+          <>Inside the installed app, teams turn deployment intake into a versioned playbook, complete readiness checks, collect approvals, guide execution, validate outcomes, and preserve evidence for closure.</>
         }
         bullets={[
-          { label: "Phase 1 — Observe", description: "Multi-region inventory, cost waste detection, security drift" },
-          { label: "Phase 2 — Reason", description: "Council-weighted priority, blast radius, ROI estimation" },
-          { label: "Phase 3 — Plan", description: "Phased Terraform with dependency graph + rollback strategy" },
-          { label: "Phase 4 — Approve · Execute · Learn", description: "Human gate, audited execution, outcome scoring" },
+          { label: "Intake & readiness", description: "Capture scope, dependencies, ownership, permissions, and preflight checks" },
+          { label: "Approval & playbook", description: "Version the request, resolve gates, and produce a guided execution sequence" },
+          { label: "Execute & validate", description: "Run approved steps, surface failures honestly, retry safely, and track deferred checks" },
+          { label: "Evidence & closure", description: "Collect outcomes, audit history, exports, follow-ups, and final sign-off" },
         ]}
         mediaSide="right"
         media={
@@ -592,13 +591,13 @@ export default function Home() {
         kicker={<><span className="text-rose-300/90 tabular-nums">05</span><span className="mx-2 inline-block h-px w-6 align-middle bg-gradient-to-r from-rose-400/60 to-transparent" />Multi-cloud intelligence</>}
         headline={<>One agent. <span className="text-zinc-500">Every cloud.</span></>}
         body={
-          <>Axiom&apos;s provider-abstraction layer normalizes AWS, Azure, and GCP into a unified operational model. One scan, one reasoning loop, one execution plan — no matter where your workloads live.</>
+          <>Axiom uses a shared provider model while keeping availability explicit. AWS supports the complete operational path; Azure and Google Cloud connections currently provide analysis capabilities and remain feature-gated where execution is not verified.</>
         }
         bullets={[
-          { label: "Amazon Web Services", description: "Full operations · CloudFormation one-click connect · assume-role" },
-          { label: "Microsoft Azure", description: "Reader role · service principal via Cloud Shell · ARM-aware" },
-          { label: "Google Cloud Platform", description: "Service account · Cloud Shell tutorial · project-scoped" },
-          { label: "Terraform native output", description: "Auto-generated IaC with dependency graphs + rollback strategies" },
+          { label: "Amazon Web Services", description: "Operational · assume-role connection · scanning, planning, and governed execution" },
+          { label: "Microsoft Azure", description: "Feature-gated · reader/service-principal setup · analysis only unless enabled" },
+          { label: "Google Cloud Platform", description: "Feature-gated · project-scoped service account · analysis only unless enabled" },
+          { label: "Terraform output", description: "Generated artifacts require review, approval, and an available Terraform runtime" },
         ]}
         mediaSide="left"
         media={
@@ -631,15 +630,15 @@ export default function Home() {
       {/* ── Governance + safety — huly.io FeatureRow ────────────────── */}
       <FeatureRow
         kicker={<><span className="text-rose-300/90 tabular-nums">06</span><span className="mx-2 inline-block h-px w-6 align-middle bg-gradient-to-r from-rose-400/60 to-transparent" />Governance & safety</>}
-        headline={<>Approval-gated. <span className="text-zinc-500">Always.</span></>}
+        headline={<>Human-controlled. <span className="text-zinc-500">Policy-enforced.</span></>}
         body={
-          <>Every change passes a human approval gate. Blast radius is capped, compliance policy enforced, rollback pre-verified, and every action recorded in an immutable audit trail.</>
+          <>Write actions follow the configured approval and permission policy. The app exposes scope, rollback planning, validation, and persisted audit evidence so reviewers can see what actually happened.</>
         }
         bullets={[
           { label: "Approval required", description: "No write action runs without explicit human sign-off" },
           { label: "Blast radius limits", description: "Plans that touch more than N resources are auto-staged" },
-          { label: "Rollback verified", description: "Every plan ships with a tested rollback path before approval" },
-          { label: "Immutable audit", description: "SHA-256 rationale rows · who · what · why · when" },
+          { label: "Rollback planning", description: "Recovery steps and their verification state remain explicit" },
+          { label: "Audit evidence", description: "Persisted actor, action, rationale, timestamps, and outcomes" },
         ]}
         mediaSide="right"
         media={
@@ -670,11 +669,6 @@ export default function Home() {
 
       {/* ── Section Divider ────────────────────────────────────────── */}
       <SectionDivider />
-
-      {/* ── Testimonials ───────────────────────────────────────────── */}
-      <Reveal direction="up">
-        <TestimonialsCarousel />
-      </Reveal>
 
       {/* ── FAQ ────────────────────────────────────────────────────── */}
       <AnimateOnScroll>

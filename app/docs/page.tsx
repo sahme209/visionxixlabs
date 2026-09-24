@@ -24,14 +24,14 @@ const QUICK_PATHS = [
     href: "/docs/quickstart-checklist",
     icon: RocketLaunchIcon,
     title: "Quickstart checklist",
-    desc: "The seven steps from signup to first scan, with time estimates.",
+    desc: "Seven steps from verified installer to a first non-production workflow.",
     color: "violet",
   },
   {
     href: "/docs/getting-started",
     icon: RocketLaunchIcon,
     title: "Getting started",
-    desc: "Sign up, connect AWS, run your first scan — under 5 minutes end-to-end.",
+    desc: "Download, authenticate the desktop, configure integrations, and complete a workflow.",
     color: "violet",
   },
   {
@@ -115,7 +115,7 @@ const TOPIC_GROUPS = [
     title: "Production guides",
     icon: ShieldCheckIcon,
     items: [
-      { href: "/docs/quickstart-checklist", label: "Quickstart checklist · 5 min onboarding", available: true },
+      { href: "/docs/quickstart-checklist", label: "Quickstart checklist · installed application", available: true },
       { href: "/docs/best-practices", label: "Best practices · production-readiness", available: true },
     ],
   },

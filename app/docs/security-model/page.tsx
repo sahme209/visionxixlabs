@@ -13,7 +13,7 @@ export default function SecurityModelPage() {
       <DocHeader
         kicker="Trust & security"
         title="The Axiom security model."
-        summary="Read-only by default. Assume-role over stored credentials. Multi-tenant isolation at the data layer. Immutable audit trail for every action. Revoke anytime by deleting one IAM role."
+        summary="Read-only by default. Assume-role over stored credentials. Multi-tenant isolation at the data layer. Persisted, tenant-scoped audit evidence for supported actions. Revoke anytime by deleting one IAM role."
       />
 
       <Callout variant="safe" title="One sentence">

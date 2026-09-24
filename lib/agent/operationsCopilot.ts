@@ -18,6 +18,7 @@ import { type Diagnosis, diagnose } from "@/lib/agent/troubleshootingAdvisor";
 import { type OperationalTask } from "@/lib/agent/taskOrchestrator";
 import { classifyReliabilityIntent, composeReliabilityAnswer } from "@/lib/agent/copilotReliabilityIntent";
 import type { ClassifiedFailure } from "@/lib/reliability/failureClassifier";
+import { computeHonestyCounts as computeActionRegistryCounts } from "@/lib/actions/actionRegistry";
 import type { CircuitSnapshot } from "@/lib/reliability/circuitBreaker";
 import type { DeadLetterRecord } from "@/lib/reliability/deadLetter";
 import type { WorkflowDiagnosis } from "@/lib/reliability/workflowRecovery";
@@ -234,16 +235,22 @@ function composeNextBestAction(_query: CopilotQuery, ctx: CopilotContext): Copil
     };
   }
 
-  // Default — everything is healthy
+  // Default — everything is healthy. Pull live action-registry
+  // counts so the operator sees how much surface they have access
+  // to right now (Phase 657).
+  const counts = computeActionRegistryCounts();
   return {
-    summary: "Everything is operational. Continue current cadence — no immediate action required.",
+    summary: `Everything is operational — ${counts.live} live actions ready, ${counts.governed} approval-gated, ${counts.unsafe} unsafe blocked by design. Continue current cadence or audit the full action surface.`,
     evidence: [
       { source: "connected_clouds", detail: String(ctx.state.connectedClouds) },
       { source: "pending_approvals", detail: "0" },
       { source: "failed_scans_24h", detail: "0" },
+      { source: "registry_live", detail: String(counts.live) },
+      { source: "registry_governed", detail: String(counts.governed) },
     ],
     recommendedActions: [
       { label: "Open Command Center", href: "/dashboard/command-center" },
+      { label: "Audit Axiom's action surface", href: "/dashboard/capabilities" },
       { label: "Open Topology", href: "/dashboard/topology" },
     ],
     confidence: 0.85,
@@ -253,8 +260,9 @@ function composeNextBestAction(_query: CopilotQuery, ctx: CopilotContext): Copil
 }
 
 function composeExplainState(_query: CopilotQuery, ctx: CopilotContext): CopilotResponse {
+  const counts = computeActionRegistryCounts();
   return {
-    summary: `${ctx.state.connectedClouds} cloud${ctx.state.connectedClouds !== 1 ? "s" : ""} connected, ${ctx.state.pendingApprovals} pending approval${ctx.state.pendingApprovals !== 1 ? "s" : ""}, ${ctx.state.openTasks} open task${ctx.state.openTasks !== 1 ? "s" : ""}.`,
+    summary: `${ctx.state.connectedClouds} cloud${ctx.state.connectedClouds !== 1 ? "s" : ""} connected, ${ctx.state.pendingApprovals} pending approval${ctx.state.pendingApprovals !== 1 ? "s" : ""}, ${ctx.state.openTasks} open task${ctx.state.openTasks !== 1 ? "s" : ""}. Axiom catalogs ${counts.total} typed actions — ${counts.live} live, ${counts.preview} preview, ${counts.unsafe} unsafe blocked by design.`,
     evidence: [
       { source: "connected_clouds", detail: String(ctx.state.connectedClouds) },
       { source: "pending_approvals", detail: String(ctx.state.pendingApprovals) },
@@ -262,8 +270,13 @@ function composeExplainState(_query: CopilotQuery, ctx: CopilotContext): Copilot
       { source: "failed_scans_24h", detail: String(ctx.state.failedScans24h) },
       { source: "rollbacks_pending", detail: String(ctx.state.rollbacksPending) },
       { source: "releases_blocked", detail: String(ctx.state.releasesBlocked) },
+      { source: "registry_live", detail: String(counts.live) },
+      { source: "registry_total", detail: String(counts.total) },
     ],
-    recommendedActions: [{ label: "Open Command Center", href: "/dashboard/command-center" }],
+    recommendedActions: [
+      { label: "Open Command Center", href: "/dashboard/command-center" },
+      { label: "Audit Axiom's action surface", href: "/dashboard/capabilities" },
+    ],
     confidence: 0.95,
     source: "typed_state",
   };
@@ -414,7 +427,7 @@ export function suggestedQuestions(ctx: CopilotContext): { intent: CopilotQueryI
   if (ctx.state.failedScans24h > 0) out.push({ intent: "diagnose_error", label: "Why did this scan fail?" });
   if (ctx.state.releasesBlocked > 0) out.push({ intent: "explain_release", label: "What's blocking my releases?" });
   if (!ctx.state.desktopAvailable) out.push({ intent: "explain_desktop", label: "What can the desktop agent do?" });
-  out.push({ intent: "explain_state", label: "What's the current platform state?" });
+  out.push({ intent: "explain_state", label: "What can Axiom do right now?" });
   out.push({ intent: "general_help", label: "How do I connect AWS securely?" });
   return out;
 }

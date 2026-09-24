@@ -160,7 +160,7 @@ export function TrustClient() {
             Public status
           </Link>
           <Link
-            href="/dashboard/compliance-packet"
+            href="/docs/audit-logs"
             className="inline-flex items-center gap-2 rounded-full bg-emerald-500 px-5 py-2.5 text-sm font-medium text-white shadow-[0_0_24px_rgba(52,211,153,0.45)] hover:bg-emerald-400 transition"
           >
             Generate a compliance packet →

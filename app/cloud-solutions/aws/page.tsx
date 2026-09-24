@@ -374,8 +374,8 @@ export default function AwsCloudSolutionsPage() {
               subtitle="Talk to us about your AWS foundations, CI/CD, cost, or operations. We'll help you chart a practical path."
               primaryLabel="Book a Call"
               primaryHref="/contact"
-              secondaryLabel="Run Axiom"
-              secondaryHref="/auth/signup?redirect=/dashboard/connect-cloud"
+              secondaryLabel="Download Axiom Agent"
+              secondaryHref="/download"
               plansHref="/operator/pricing"
             />
 

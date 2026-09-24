@@ -96,15 +96,15 @@ export function Footer() {
               <span className="text-white">.</span>
             </h2>
             <p className="text-[15px] text-zinc-400 mb-9 max-w-xl mx-auto leading-relaxed">
-              Connect your cloud once. Let approval-gated AI engineers do the rest.
-              Five minutes to first scan. Cancel anytime.
+              Download the installed workspace for intake, approval-gated execution,
+              validation, evidence collection, and closure.
             </p>
             <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-3">
               <Link
                 href="/download"
                 className="btn-press inline-flex items-center gap-2 px-7 py-3.5 rounded-full text-[14.5px] font-semibold tracking-tight"
               >
-                Run Axiom
+                Download Axiom Agent
                 <ArrowRightIcon className="h-4 w-4 opacity-70" />
               </Link>
               <a

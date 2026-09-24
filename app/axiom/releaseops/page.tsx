@@ -84,7 +84,7 @@ const RELEASEOPS_FAQ = [
   {
     question: "Is this enterprise-safe for regulated environments?",
     answer:
-      "Yes. ReleaseOps is approval-gated by default, runs least-privilege, ships immutable audit trail, supports SOC 2/ISO 27001 control mapping, and integrates with SSO + SAML. Multi-tenant isolation is enforced at the operational memory layer.",
+      "ReleaseOps records approvals, authorization context, and audit evidence. Identity, compliance mapping, and connector availability depend on the configured deployment and must be verified for the installed release.",
   },
   {
     question: "How does ReleaseOps relate to the rest of the Axiom platform?",
@@ -225,7 +225,7 @@ export default function ReleaseOpsPage() {
           <Reveal direction="up" delay={0.14}>
             <div className="flex flex-wrap gap-4 mb-10">
               <AnimatedButton
-                href="/dashboard/releaseops"
+                href="/download"
                 variant="primary"
                 className="btn-amber-shimmer relative z-10 rounded-full text-zinc-900 font-semibold"
               >
@@ -248,7 +248,7 @@ export default function ReleaseOpsPage() {
                 "GitHub · GitLab · Azure DevOps · Jenkins",
                 "Terraform-native governance",
                 "Approval-gated execution",
-                "Immutable audit trail",
+                "Persisted audit history",
               ].map((label) => (
                 <span key={label} className="flex items-center gap-1.5">
                   <span className="w-1 h-1 rounded-full bg-emerald-500" />
@@ -461,7 +461,7 @@ export default function ReleaseOpsPage() {
               { href: "/dashboard/topology", icon: ArrowsRightLeftIcon, title: "Topology", desc: "Releases overlay onto the live infrastructure graph. See which deploy targets which resources." },
               { href: "/dashboard/memory", icon: CpuChipIcon, title: "Operational memory", desc: "Every release outcome persists. Agent learns per service, per change type, per team." },
               { href: "/dashboard/workflows", icon: Cog6ToothIcon, title: "Continuous workflows", desc: "Drift monitors, compliance sweeps, and post-execution verification run on releases too." },
-              { href: "/dashboard/command-center", icon: BoltIcon, title: "Command center", desc: "Releases appear in the unified activity feed alongside scans, plans, and audit events." },
+              { href: "/download", icon: BoltIcon, title: "Command center", desc: "Releases appear in the unified activity feed alongside scans, plans, and audit events." },
             ].map((item) => {
               const Icon = item.icon;
               return (
@@ -514,7 +514,7 @@ export default function ReleaseOpsPage() {
                       Download Axiom
                     </Link>
                     <Link
-                      href="/dashboard/command-center"
+                      href="/download"
                       className="inline-flex items-center gap-2 px-5 py-2.5 border border-white/[0.12] text-zinc-300 rounded-full text-sm font-medium hover:bg-white/5 hover:border-white/20 transition-colors"
                     >
                       <GlobeAltIcon className="h-4 w-4" />
@@ -555,7 +555,7 @@ export default function ReleaseOpsPage() {
                 <span className="text-zinc-500">Auditable end-to-end.</span>
               </h2>
               <p className="text-dim-paragraph text-lg max-w-3xl leading-relaxed">
-                ReleaseOps inherits the governance posture of the broader Axiom platform. <span className="dim-1">Approval-gated execution. Least-privilege by default. Immutable audit trail. Pre-verified rollback.</span>
+                ReleaseOps inherits the governance posture of the broader Axiom platform. <span className="dim-1">Approval-gated workflows. Explicit permissions. Persisted audit evidence. Rollback state remains visible.</span>
               </p>
             </div>
           </Reveal>
@@ -565,7 +565,7 @@ export default function ReleaseOpsPage() {
               { icon: LockClosedIcon, label: "Approval-based execution", desc: "Nothing ships without explicit approval at the policy gate. Multi-party for production." },
               { icon: ShieldCheckIcon, label: "Least-privilege direction", desc: "Read-only by default. Scoped credentials. Time-bound elevation." },
               { icon: DocumentCheckIcon, label: "Audit visibility", desc: "Immutable trail of every approval, deploy, rollback, and policy event." },
-              { icon: CloudArrowDownIcon, label: "Rollback orchestration", desc: "Pre-verified rollback paths per release. Measured RTO. Auto-revert on health failure." },
+              { icon: CloudArrowDownIcon, label: "Rollback coordination", desc: "Records recovery expectations and adapter availability; automatic rollback requires a verified configured execution path." },
               { icon: CheckCircleIcon, label: "Operational verification", desc: "Post-execution verification confirms cost shift, drift, and intended behavior." },
               { icon: CubeTransparentIcon, label: "Governance alignment", desc: "SOC 2 / ISO 27001 / HIPAA control mapping built into the audit layer." },
               { icon: BoltIcon, label: "Enterprise-safe workflows", desc: "Blast radius limits. Approval-required for high-risk classes. Outcome memory." },
@@ -602,7 +602,7 @@ export default function ReleaseOpsPage() {
             </p>
             <div className="flex flex-wrap items-center justify-center gap-4 mb-8">
               <Link
-                href="/dashboard/releaseops"
+                href="/download"
                 className="btn-amber-shimmer group inline-flex items-center gap-2.5 px-7 py-3.5 rounded-full text-sm font-semibold uppercase tracking-wide"
               >
                 Open Command Center

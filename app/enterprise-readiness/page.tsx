@@ -253,10 +253,10 @@ export default function EnterpriseReadinessPage() {
                 </div>
                 <div className="flex flex-wrap gap-3">
                   <Link
-                    href="/auth/signup?redirect=/dashboard/connect-cloud"
+                    href="/download"
                     className="btn-huly inline-flex items-center px-7 py-3 rounded-full bg-white text-zinc-900 text-sm font-semibold uppercase tracking-wide hover:bg-zinc-100 transition-all shadow-lg shadow-white/10"
                   >
-                    Run Axiom
+                    Download Axiom Agent
                     <ArrowRightIcon className="ml-2 h-4 w-4" />
                   </Link>
                   <Link

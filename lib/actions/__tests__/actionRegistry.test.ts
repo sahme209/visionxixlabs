@@ -1,0 +1,396 @@
+/**
+ * actionRegistry honesty invariants — Phase 653.
+ *
+ * The Phase 650 registry is the operator's promise:
+ *   · what's live actually works
+ *   · what's blocked is blocked for a reason
+ *   · unsafe actions stay unsafe-blocked
+ *
+ * These regression tests enforce the promise at build time so the
+ * registry can't quietly drift into overclaiming. Adding "live" to
+ * an unsafe action, dropping a blocker reason, or duplicating a
+ * kind ID fails CI here before it reaches Vercel.
+ */
+
+import { describe, it, expect } from "vitest";
+import { existsSync, readFileSync } from "node:fs";
+import { resolve as resolvePath } from "node:path";
+import {
+  ACTION_REGISTRY,
+  computeHonestyCounts,
+  computeCompositeHealthScore,
+  CATEGORY_LABEL,
+  STATUS_LABEL,
+  SAFETY_LABEL,
+  surfaceForAction,
+} from "../actionRegistry";
+import { listSafeTaskKinds } from "@/lib/controlPlane/safeTaskRunner";
+
+describe("ACTION_REGISTRY :: shape invariants", () => {
+  it("every action has a unique kind", () => {
+    const seen = new Set<string>();
+    for (const a of ACTION_REGISTRY) {
+      expect(seen.has(a.kind), `duplicate kind: ${a.kind}`).toBe(false);
+      seen.add(a.kind);
+    }
+  });
+
+  it("every action has a non-empty label and summary", () => {
+    for (const a of ACTION_REGISTRY) {
+      expect(a.label.trim().length, `${a.kind} has empty label`).toBeGreaterThan(0);
+      expect(a.summary.trim().length, `${a.kind} has empty summary`).toBeGreaterThan(0);
+    }
+  });
+
+  it("every action's route starts with / or is intentionally non-HTTP", () => {
+    for (const a of ACTION_REGISTRY) {
+      const ok = a.route.startsWith("/") || a.route.startsWith("(") || a.route.includes("{");
+      expect(ok, `${a.kind} route="${a.route}" is malformed`).toBe(true);
+    }
+  });
+
+  it("every action has a non-empty evidence reference", () => {
+    for (const a of ACTION_REGISTRY) {
+      expect(a.evidence.trim().length, `${a.kind} has empty evidence`).toBeGreaterThan(0);
+    }
+  });
+});
+
+describe("ACTION_REGISTRY :: honesty invariants", () => {
+  it("every blocked action has a blockedReason", () => {
+    for (const a of ACTION_REGISTRY) {
+      if (a.wireStatus === "blocked") {
+        expect(
+          a.blockedReason && a.blockedReason.trim().length > 0,
+          `${a.kind} is blocked but has no blockedReason`,
+        ).toBe(true);
+      }
+    }
+  });
+
+  it("every needs_setup action has a blockedReason explaining the setup", () => {
+    for (const a of ACTION_REGISTRY) {
+      if (a.wireStatus === "needs_setup") {
+        expect(
+          a.blockedReason && a.blockedReason.trim().length > 0,
+          `${a.kind} needs_setup but has no blockedReason`,
+        ).toBe(true);
+      }
+    }
+  });
+
+  it("UNSAFE actions MUST be blocked — never live or preview", () => {
+    for (const a of ACTION_REGISTRY) {
+      if (a.safetyTier === "unsafe") {
+        expect(
+          a.wireStatus,
+          `${a.kind} is unsafe but wireStatus="${a.wireStatus}" — unsafe must always be blocked by design`,
+        ).toBe("blocked");
+      }
+    }
+  });
+
+  it("read_only actions never claim isMutation=true", () => {
+    for (const a of ACTION_REGISTRY) {
+      if (a.safetyTier === "read_only") {
+        expect(a.isMutation, `${a.kind} is read_only but isMutation=true`).toBe(false);
+      }
+    }
+  });
+
+  it("preview-tier actions never claim isMutation=true", () => {
+    for (const a of ACTION_REGISTRY) {
+      if (a.safetyTier === "preview") {
+        expect(a.isMutation, `${a.kind} is preview but isMutation=true`).toBe(false);
+      }
+    }
+  });
+
+  it("integrations that require a connector declare it explicitly", () => {
+    // Phase 644-649 integrations always require a connector.
+    for (const a of ACTION_REGISTRY) {
+      if (a.category === "integrations" && a.kind !== "integration.dispatch_from_memory") {
+        expect(
+          a.requiresConnector,
+          `${a.kind} is an integration but does not declare requiresConnector`,
+        ).toBeTruthy();
+      }
+    }
+  });
+
+  it("execution-category actions are all marked unsafe + blocked (no surprise apply path)", () => {
+    for (const a of ACTION_REGISTRY) {
+      if (a.category === "execution") {
+        expect(a.safetyTier, `${a.kind} is execution-category but safetyTier=${a.safetyTier}`).toBe("unsafe");
+        expect(a.wireStatus, `${a.kind} is execution-category but wireStatus=${a.wireStatus}`).toBe("blocked");
+      }
+    }
+  });
+});
+
+describe("ACTION_REGISTRY :: count math", () => {
+  it("status counts sum to total", () => {
+    const c = computeHonestyCounts();
+    expect(c.live + c.preview + c.needs_setup + c.blocked + c.planned).toBe(c.total);
+    expect(c.total).toBe(ACTION_REGISTRY.length);
+  });
+
+  it("all unsafe actions are counted as blocked", () => {
+    const c = computeHonestyCounts();
+    const unsafeCount = ACTION_REGISTRY.filter((a) => a.safetyTier === "unsafe").length;
+    // unsafe ⊆ blocked is enforced by another test; assert the
+    // counts line up so the Capabilities surface never overclaims.
+    expect(c.unsafe).toBeLessThanOrEqual(c.blocked);
+    expect(c.unsafe).toBe(unsafeCount);
+  });
+});
+
+describe("ACTION_REGISTRY :: cross-reference with safeTaskRunner (Phase 659)", () => {
+  // The control-plane safeTaskRunner exposes a typed allow-list of
+  // task kinds that the autonomous loop can invoke. Each safe-task
+  // kind should be representable in the action registry so the
+  // operator-facing audit (/dashboard/capabilities) reflects the
+  // same surface the loop can fire.
+  //
+  // Mapping is by intent — registry kind has its own namespace
+  // (aws.validate, security.run_scan, etc.) while safe-task kinds
+  // are coarser (validate_provider_config, run_security_scanner).
+  // The test asserts the COARSE intents are all represented by AT
+  // LEAST one registry entry.
+  const intentMapping: Record<string, ReadonlyArray<string>> = {
+    validate_provider_config:     ["aws.validate", "azure.validate", "gcp.validate"],
+    run_preview_scan:             ["aws.preview_scan", "azure.preview_scan", "gcp.preview_scan"],
+    run_live_readonly_scan:       ["aws.scan", "azure.scan", "gcp.scan"],
+    run_security_scanner:         ["security.run_scan"],
+    build_digital_twin:           ["simulation.digital_twin"],
+    build_remediation_candidates: ["remediation.generate"],
+    build_simulation:             ["simulation.create"],
+    run_preflight:                ["preflight.run"],
+    run_validation_loop:          ["audit.validation_run"],
+    run_deep_validation:          ["audit.validation_run"],
+    generate_audit_bundle:        ["audit.export_bundle"],
+    diagnose_failure:             ["copilot.explain"],
+    refresh_control_plane:        ["autonomy.refresh_state"],
+  };
+
+  it("every safe-task kind has at least one registered action", () => {
+    const registeredKinds = new Set(ACTION_REGISTRY.map((a) => a.kind as string));
+    for (const safeKind of listSafeTaskKinds()) {
+      const candidates = intentMapping[safeKind] ?? [];
+      expect(candidates.length, `safe-task '${safeKind}' has no entry in intentMapping`).toBeGreaterThan(0);
+      const matched = candidates.some((c) => registeredKinds.has(c));
+      expect(matched, `safe-task '${safeKind}' is not represented by any candidate ${candidates.join(", ")} in ACTION_REGISTRY`).toBe(true);
+    }
+  });
+});
+
+describe("ACTION_REGISTRY :: surfaceForAction (Phase 654)", () => {
+  it("every live or preview action with a surface returns a /dashboard/ path", () => {
+    for (const a of ACTION_REGISTRY) {
+      const s = surfaceForAction(a.kind);
+      if (s === undefined) continue;
+      expect(
+        s.startsWith("/dashboard/"),
+        `${a.kind} surface "${s}" is not under /dashboard/`,
+      ).toBe(true);
+    }
+  });
+
+  it("execution-tier actions never expose a surface (apply path is intentionally not fireable from UI)", () => {
+    for (const a of ACTION_REGISTRY) {
+      if (a.category === "execution") {
+        expect(
+          surfaceForAction(a.kind),
+          `${a.kind} is execution-tier but exposes surface ${surfaceForAction(a.kind)}`,
+        ).toBeUndefined();
+      }
+    }
+  });
+});
+
+describe("ACTION_REGISTRY :: labels exhaustive", () => {
+  it("every category appearing in the registry has a CATEGORY_LABEL", () => {
+    const used = new Set(ACTION_REGISTRY.map((a) => a.category));
+    for (const c of used) {
+      expect(CATEGORY_LABEL[c], `missing CATEGORY_LABEL for ${c}`).toBeTruthy();
+    }
+  });
+
+  it("every wireStatus appearing has a STATUS_LABEL", () => {
+    const used = new Set(ACTION_REGISTRY.map((a) => a.wireStatus));
+    for (const s of used) {
+      expect(STATUS_LABEL[s], `missing STATUS_LABEL for ${s}`).toBeTruthy();
+    }
+  });
+
+  it("every safetyTier appearing has a SAFETY_LABEL", () => {
+    const used = new Set(ACTION_REGISTRY.map((a) => a.safetyTier));
+    for (const t of used) {
+      expect(SAFETY_LABEL[t], `missing SAFETY_LABEL for ${t}`).toBeTruthy();
+    }
+  });
+});
+
+describe("ACTION_REGISTRY :: API routes exist (Phase 678)", () => {
+  // Each ActionDescriptor.route is the API endpoint the registry
+  // claims. If the endpoint is missing, /dashboard/capabilities
+  // shows a route the operator can't actually call. This guard
+  // reads every route field and checks the corresponding
+  // app/**/route.ts on disk.
+  //
+  // Parameterized routes (e.g. /api/orchestration/approvals/[id]/decide)
+  // are only checked up to the first path segment containing "[" —
+  // the file layout of dynamic segments is fs-verifiable but only
+  // via directory presence, not exact file match. We assert the
+  // parent directory exists.
+  //
+  // Intentionally non-HTTP routes ("(desktop-only)", templates with
+  // "{engineer_id}") are skipped.
+
+  function verifyRouteExists(route: string): { ok: boolean; expectedPath: string } {
+    if (route.startsWith("(")) return { ok: true, expectedPath: route };
+    if (route.includes("{")) return { ok: true, expectedPath: route };
+    if (!route.startsWith("/api/")) return { ok: true, expectedPath: route };
+    // For dynamic-segment routes, verify the parent directory.
+    const bracketIdx = route.indexOf("[");
+    if (bracketIdx !== -1) {
+      const parent = route.slice(0, bracketIdx);
+      const abs = resolvePath(process.cwd(), `app${parent}`);
+      return { ok: existsSync(abs), expectedPath: parent };
+    }
+    const filePath = resolvePath(process.cwd(), `app${route}/route.ts`);
+    return { ok: existsSync(filePath), expectedPath: `app${route}/route.ts` };
+  }
+
+  it("every registered API route resolves to a route.ts on disk", () => {
+    const missing: { kind: string; route: string; expected: string }[] = [];
+    for (const a of ACTION_REGISTRY) {
+      const check = verifyRouteExists(a.route);
+      if (!check.ok) {
+        missing.push({ kind: a.kind, route: a.route, expected: check.expectedPath });
+      }
+    }
+    expect(
+      missing,
+      `action registry routes without a matching route.ts: ${missing.map((m) => `${m.kind}→${m.route}`).join("; ")}`,
+    ).toEqual([]);
+  });
+});
+
+describe("DashboardSidebar :: every href resolves (Phase 677)", () => {
+  // The sidebar is the operator's primary discovery surface. If a link
+  // there points at a page that no longer exists, the operator lands
+  // on a Next.js 404 with no fallback — silent, embarrassing drift.
+  // This guard reads the sidebar source, extracts every dashboard
+  // href, and verifies each resolves to an app/**/page.tsx on disk.
+  const SIDEBAR_PATH = "app/dashboard/DashboardSidebar.tsx";
+
+  function extractDashboardHrefs(source: string): string[] {
+    const re = /href:\s*"(\/[^"]*)"/g;
+    const out = new Set<string>();
+    let m: RegExpExecArray | null;
+    while ((m = re.exec(source)) !== null) {
+      out.add(m[1]);
+    }
+    return Array.from(out);
+  }
+
+  it("every sidebar dashboard href resolves to an app/**/page.tsx", () => {
+    const src = readFileSync(resolvePath(process.cwd(), SIDEBAR_PATH), "utf8");
+    const hrefs = extractDashboardHrefs(src);
+    // Only enforce /dashboard/... hrefs — external links (/docs, /demo)
+    // may resolve to non-app-router routes.
+    const dashboardHrefs = hrefs.filter((h) => h.startsWith("/dashboard"));
+    const missing: string[] = [];
+    for (const href of dashboardHrefs) {
+      const page1 = resolvePath(process.cwd(), `app${href}/page.tsx`);
+      const page2 = resolvePath(process.cwd(), `app${href}/page.ts`);
+      if (!existsSync(page1) && !existsSync(page2)) {
+        missing.push(href);
+      }
+    }
+    expect(
+      missing,
+      `sidebar links to nonexistent pages: ${missing.join(", ")}`,
+    ).toEqual([]);
+  });
+});
+
+describe("ACTION_REGISTRY :: evidence file paths resolve (Phase 669)", () => {
+  const PROJECT_ROOT = process.cwd();
+
+  /** Extract every fragment that looks like a source file path from
+   *  a compound evidence string (e.g. "lib/foo.ts + app/api/bar/route.ts
+   *  — comment"). Returns the fragments to fs-check. */
+  function extractPathCandidates(raw: string): string[] {
+    // Match .ts / .tsx / .prisma path-like tokens
+    const re = /(?:app|lib|prisma|components|desktop)\/[\w./-]+\.(?:ts|tsx|prisma)/g;
+    return Array.from(new Set(raw.match(re) ?? []));
+  }
+
+  it("every action's evidence file paths resolve on disk", () => {
+    const missing: { kind: string; path: string }[] = [];
+    for (const a of ACTION_REGISTRY) {
+      const paths = extractPathCandidates(a.evidence);
+      for (const p of paths) {
+        const abs = resolvePath(PROJECT_ROOT, p);
+        if (!existsSync(abs)) {
+          missing.push({ kind: a.kind, path: p });
+        }
+      }
+    }
+    expect(
+      missing,
+      `evidence file paths do not exist: ${missing.map((m) => `${m.kind}→${m.path}`).join("; ")}`,
+    ).toEqual([]);
+  });
+
+  it("actions with wireStatus=live have at least one resolvable evidence file", () => {
+    for (const a of ACTION_REGISTRY) {
+      if (a.wireStatus !== "live") continue;
+      // Some kinds (e.g., autonomy) are typed metadata not tied to a
+      // single file — skip those where evidence is deliberately
+      // conceptual. We enforce the "at least one" only when the
+      // evidence text CONTAINS a path-shaped token.
+      const paths = extractPathCandidates(a.evidence);
+      if (paths.length === 0) continue;
+      const anyResolves = paths.some((p) => existsSync(resolvePath(PROJECT_ROOT, p)));
+      expect(
+        anyResolves,
+        `${a.kind} is wireStatus=live but no evidence path exists: ${paths.join(", ")}`,
+      ).toBe(true);
+    }
+  });
+});
+
+describe("computeCompositeHealthScore (Phase 665)", () => {
+  it("perfect score = 100", () => {
+    expect(computeCompositeHealthScore(1, 1)).toBe(100);
+  });
+  it("zero on both axes = 0", () => {
+    expect(computeCompositeHealthScore(0, 0)).toBe(0);
+  });
+  it("weights matrix more than action liveness (60/40 split)", () => {
+    // Full action liveness alone = 40
+    expect(computeCompositeHealthScore(1, 0)).toBe(40);
+    // Full matrix alone = 60
+    expect(computeCompositeHealthScore(0, 1)).toBe(60);
+  });
+  it("rounds to the nearest integer", () => {
+    // 0.5 * 0.4 + 0.5 * 0.6 = 0.5 → 50
+    expect(computeCompositeHealthScore(0.5, 0.5)).toBe(50);
+    // 0.75 * 0.4 + 0.25 * 0.6 = 0.3 + 0.15 = 0.45 → 45
+    expect(computeCompositeHealthScore(0.75, 0.25)).toBe(45);
+  });
+  it("clamps inputs above 1 to honest 1.0", () => {
+    expect(computeCompositeHealthScore(2, 5)).toBe(100);
+  });
+  it("clamps negative inputs to 0", () => {
+    expect(computeCompositeHealthScore(-0.5, -1)).toBe(0);
+  });
+  it("realistic blend matches expected score", () => {
+    // 18 live / 36 total = 0.5 ; matrix 60/72 passing = ~0.83
+    // → 0.5 * 0.4 + 0.83 * 0.6 = 0.2 + 0.498 = 0.698 → 70
+    expect(computeCompositeHealthScore(0.5, 0.83)).toBe(70);
+  });
+});

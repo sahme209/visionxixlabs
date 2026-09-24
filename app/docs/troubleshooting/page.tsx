@@ -11,7 +11,7 @@ const ISSUES = [
   {
     section: "AWS connection",
     items: [
-      { code: "AccessDenied (sts:AssumeRole)", cause: "Trust policy points at the wrong Axiom AWS account, or the role doesn't exist.", fix: "Sign in and re-copy the trust policy from /dashboard/connect-cloud exactly. Confirm the role appears in IAM → Roles." },
+      { code: "AccessDenied (sts:AssumeRole)", cause: "Trust policy points at the wrong Axiom AWS account, or the role doesn't exist.", fix: "Open the AWS connector in Axiom Agent and re-copy the displayed trust policy. Confirm the role appears in IAM → Roles." },
       { code: "InvalidExternalId", cause: "The External ID in your trust policy condition doesn't match what Axiom sends.", fix: "Re-paste the External ID from the onboarding screen. It must match character-for-character. If you rotated, re-onboard to get a fresh ID." },
       { code: "Cannot assume role: TokenSignatureInvalid", cause: "Clock skew on the role's account, or a permissions boundary blocks sts:AssumeRole.", fix: "Check the role has no Permissions Boundary that excludes sts:AssumeRole. Confirm AWS account-level clock is in sync." },
       { code: "MalformedPolicyDocumentException", cause: "JSON syntax error in the trust or permission policy.", fix: "Use AWS Console's built-in JSON validator. Common issues: trailing commas, missing quotes, copy-paste line breaks." },
@@ -32,7 +32,7 @@ const ISSUES = [
       { code: "Plan blocked: blast radius too broad", cause: "Plan affects more resources than the configured blast-radius threshold.", fix: "Split the plan into smaller phases. Or raise the blast-radius threshold in governance settings (requires approval)." },
       { code: "Plan blocked: rollback path unverified", cause: "Axiom can't construct a pre-verified rollback for at least one item.", fix: "Review the plan items — usually a missing AWS backup, snapshot, or version. Enable the missing capability and re-plan." },
       { code: "Approval expired", cause: "Plan items expire after 24 hours if not approved.", fix: "Re-run the scan to generate a fresh plan with current state. Approve within the window." },
-      { code: "Apply failed mid-execution", cause: "Network, AWS API throttling, or pre-flight condition changed between approval and apply.", fix: "Rollback fires automatically. Check audit log for the exact failure. Re-plan and re-approve." },
+      { code: "Apply failed mid-execution", cause: "Network, AWS API throttling, or pre-flight condition changed between approval and apply.", fix: "Keep the failure visible and check the audit evidence. Use rollback only when the configured adapter reports an available, validated rollback action; otherwise stop and recover manually." },
     ],
   },
   {

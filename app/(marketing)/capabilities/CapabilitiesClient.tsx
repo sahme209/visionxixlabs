@@ -33,8 +33,8 @@ interface Capability {
 
 const CAPABILITIES: readonly Capability[] = [
   // perception
-  { name: "Detector",            role: "perception",   kernel: "lib/agents/detectorSignalEmitter",       proves: "Watches telemetry and emits typed signals to the bus.",                                 evidence: { href: "/dashboard/agent-bus",       label: "agent bus" } },
-  { name: "Reasoner",            role: "reasoning",    kernel: "lib/agents/reasonerHypothesisWeaver",    proves: "Weaves 1..N signals into a typed hypothesis with a confidence score.",                  evidence: { href: "/dashboard/agent-bus",       label: "agent bus" } },
+  { name: "Detector",            role: "perception",   kernel: "lib/agents/detectorSignalEmitter",       proves: "Watches telemetry and emits typed signals to the bus.",                                 evidence: { href: "/download",       label: "agent bus" } },
+  { name: "Reasoner",            role: "reasoning",    kernel: "lib/agents/reasonerHypothesisWeaver",    proves: "Weaves 1..N signals into a typed hypothesis with a confidence score.",                  evidence: { href: "/download",       label: "agent bus" } },
   { name: "Simulator",           role: "reasoning",    kernel: "lib/agents/simulatorSandboxSpec",        proves: "Sandboxes the proposed action end-to-end and returns a verdict before any approval packet is built." },
 
   // planning
@@ -66,7 +66,7 @@ const CAPABILITIES: readonly Capability[] = [
   // safety
   { name: "Policy Gate",         role: "safety",       kernel: "lib/agents/policyGateEvaluator",         proves: "Applies the tenant charter to every proposal — refuses anything outside the operator-signed scope.",         evidence: { href: "/dashboard/charter",  label: "autonomy charter" } },
   { name: "Boundary Gate",       role: "safety",       kernel: "lib/agents/boundaryGateCatalog",         proves: "Classifies the blast radius of every proposal into a closed-union severity tier.",                          evidence: { href: "/dashboard/automation-boundaries", label: "boundary catalog" } },
-  { name: "Council",             role: "safety",       kernel: "lib/agents/council",                     proves: "Weighted-vote consensus — ⅔ default — across the planning + safety agents.",                                 evidence: { href: "/dashboard/agent-bus",       label: "agent bus" } },
+  { name: "Council",             role: "safety",       kernel: "lib/agents/council",                     proves: "Weighted-vote consensus — ⅔ default — across the planning + safety agents.",                                 evidence: { href: "/download",       label: "agent bus" } },
   { name: "Approver",            role: "safety",       kernel: "lib/agents/approverPacketAssembler",     proves: "Assembles the approval packet the operator sees — the only gate that ever lets autonomy act.",               evidence: { href: "/dashboard/approvals",       label: "approvals" } },
 
   // verification
@@ -233,7 +233,7 @@ export function CapabilitiesClient() {
             See the changelog
           </Link>
           <Link
-            href="/dashboard/agent-bus"
+            href="/download"
             className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-4 py-2 text-[12.5px] font-medium text-zinc-200 hover:bg-white/[0.07] transition"
           >
             Open the bus

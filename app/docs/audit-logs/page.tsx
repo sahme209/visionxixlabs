@@ -53,7 +53,7 @@ export default function AuditLogsPage() {
 
       <DocSection id="where-to-find" title="Where to find audit logs" kicker="02 · Access">
         <ul className="list-disc list-inside space-y-1.5 text-zinc-400 ml-1">
-          <li><strong>Dashboard</strong> — <Link href="/dashboard/command-center" className="text-violet-300 hover:text-violet-200">/dashboard/command-center</Link> shows live activity feed; <Link href="/dashboard/memory" className="text-violet-300 hover:text-violet-200">/dashboard/memory</Link> shows 90-day timeline with filtering</li>
+          <li><strong>Dashboard</strong> — <Link href="/download" className="text-violet-300 hover:text-violet-200">/download</Link> shows live activity feed; <Link href="/download" className="text-violet-300 hover:text-violet-200">/download</Link> shows 90-day timeline with filtering</li>
           <li><strong>API</strong> — REST endpoint at <code>GET /api/operations/events</code> returns recent activity stream</li>
           <li><strong>Export</strong> — full audit export from <code>Settings → Audit → Export</code> (CSV, JSON, or SIEM-formatted)</li>
           <li><strong>SIEM integration</strong> — webhook delivery to your SIEM for real-time forwarding (Enterprise tier)</li>

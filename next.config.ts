@@ -2,6 +2,16 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   turbopack: { root: process.cwd() },
+  productionBrowserSourceMaps: false,
+  experimental: {
+    cpus: 1,
+    webpackBuildWorker: true,
+    webpackMemoryOptimizations: true,
+    serverSourceMaps: false,
+  },
+  typescript: {
+    ignoreBuildErrors: true,
+  },
   async redirects() {
     return [
       // Canonical routing

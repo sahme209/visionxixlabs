@@ -18,6 +18,8 @@ name: Desktop release
 #   APPLE_ID                  — Apple ID email for notarization
 #   APPLE_PASSWORD            — App-Specific password for notarization
 #   APPLE_TEAM_ID
+#   GPG_PRIVATE_KEY          — armored private key used for detached asset signatures
+#   GPG_KEY_ID               — signing key id corresponding to the published public key
 
 on:
   push:
@@ -106,7 +108,7 @@ jobs:
             desktop/src-tauri/target/${{ matrix.target }}/release/bundle/**/*.AppImage
             desktop/src-tauri/target/${{ matrix.target }}/release/bundle/**/*.deb
             desktop/src-tauri/target/${{ matrix.target }}/release/bundle/**/*.rpm
-          if-no-files-found: warn
+          if-no-files-found: error
 
   publish:
     name: Publish to public releases repo
@@ -173,8 +175,6 @@ jobs:
               gpg --import axiom-public-key.asc
               gpg --verify <file>.asc <file>
               ```
-          - **Windows (x64 .msi / .exe):** unsigned executable + GPG-signed for origin verification. SmartScreen still shows "More info → Run anyway" prompt.
-
           Every build carries the same HMAC-signed handoff contract and refuses local apply by default.
           NOTES
 

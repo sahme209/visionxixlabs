@@ -438,8 +438,8 @@ export default function CloudSolutionsPage() {
             subtitle="Talk to us about where you are today and where you want your AWS, Azure, or GCP platform to be. We'll help you chart a practical path forward."
             primaryLabel="Book a Call"
             primaryHref="/contact"
-            secondaryLabel="Run Axiom"
-            secondaryHref="/auth/signup?redirect=/dashboard/connect-cloud"
+            secondaryLabel="Download Axiom Agent"
+            secondaryHref="/download"
             plansHref="/operator/pricing"
           />
         </div>

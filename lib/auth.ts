@@ -19,7 +19,7 @@ function buildProviders(): NextAuthOptions["providers"] {
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) return null;
         try {
-          const user = await prisma.user.findUnique({ where: { email: credentials.email } });
+          const user = await prisma.user.findUnique({ where: { email: credentials.email.trim().toLowerCase() } });
           if (!user?.passwordHash) return null;
           const valid = await compare(credentials.password, user.passwordHash);
           if (!valid) return null;
@@ -62,7 +62,7 @@ export const authOptions: NextAuthOptions = {
   secret: process.env.NEXTAUTH_SECRET,
   providers: buildProviders(),
   session: { strategy: "jwt", maxAge: 30 * 24 * 60 * 60 },
-  pages: { signIn: "/auth/signin", newUser: "/dashboard" },
+  pages: { signIn: "/auth/signin", newUser: "/auth/success" },
   callbacks: {
     async signIn({ user, account }) {
       // For OAuth sign-ins (Google/GitHub), ensure a User row exists.
@@ -71,9 +71,9 @@ export const authOptions: NextAuthOptions = {
         if (!user.email) return false;
         try {
           await prisma.user.upsert({
-            where: { email: user.email },
+            where: { email: user.email.trim().toLowerCase() },
             create: {
-              email: user.email,
+              email: user.email.trim().toLowerCase(),
               name: user.name ?? null,
               image: user.image ?? null,
             },
@@ -90,17 +90,19 @@ export const authOptions: NextAuthOptions = {
       return true;
     },
     async jwt({ token, user }) {
-      if (user) {
-        token.id = (user as { id?: string }).id ?? token.id;
-        // Persist the database-backed id once we have it.
-        if (!token.id && user.email) {
-          try {
-            const dbUser = await prisma.user.findUnique({ where: { email: user.email }, select: { id: true } });
-            if (dbUser) token.id = dbUser.id;
-          } catch {
-            // Don't break sign-in if the lookup fails — id resolution
-            // happens on the first authenticated request anyway.
-          }
+      // OAuth's `user.id` is provider-owned and must never become the
+      // platform user id. Resolve the canonical database id by email for
+      // every newly authenticated user and for legacy JWTs missing it.
+      const email = user?.email ?? token.email;
+      if (email && (user || !token.id)) {
+        try {
+          const dbUser = await prisma.user.findUnique({
+            where: { email: email.trim().toLowerCase() },
+            select: { id: true },
+          });
+          if (dbUser) token.id = dbUser.id;
+        } catch (error) {
+          console.error("[NextAuth jwt] user id lookup failed:", error);
         }
       }
       return token;

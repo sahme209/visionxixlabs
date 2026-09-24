@@ -114,18 +114,17 @@ function MockBrowserChrome({ route }: { route?: string }) {
         <span className="w-2.5 h-2.5 rounded-full bg-zinc-700" />
       </div>
       <div className="flex-1 mx-3 px-3 py-1 rounded-md bg-black/40 text-[11px] font-mono text-zinc-500 truncate">
-        visionxixlabs.com{route ?? ""}
+        Axiom Agent · sample workspace{route ? ` · ${route.replace("/dashboard/", "")}` : ""}
       </div>
     </div>
   );
 }
 
-// ─── Web dashboard frame ─────────────────────────────────────────────
+// ─── Installed workspace frame ────────────────────────────────────────
 //
-// Stylized HTML "screenshot" of the real /dashboard layout: header strip
-// (workspace label · email · sign-out) + 7-group sidebar nav + main
-// content area. The sidebar entry whose href matches step.route lights
-// up in violet so the user instantly sees WHERE in the app this happens.
+// Stylized sample-data preview of the installed Axiom Agent workspace.
+// The internal route identifiers select a sidebar entry; they are not
+// customer-facing website URLs.
 
 interface SidebarItem { label: string; route: string }
 interface SidebarGroup { kind: string; label: string; items: ReadonlyArray<SidebarItem> }

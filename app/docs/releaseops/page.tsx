@@ -1,111 +1,77 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { DocHeader, DocSection, Callout, TrustGrid, DocFooterNav, DocFeedback } from "@/components/docs/DocPrimitives";
+import { Callout, DocFeedback, DocFooterNav, DocHeader, DocSection, TrustGrid } from "@/components/docs/DocPrimitives";
 
 export const metadata: Metadata = {
-  title: "ReleaseOps overview — Axiom Documentation",
-  description: "What Axiom ReleaseOps is, how it fits inside the Axiom platform, and why it sits above existing CI/CD systems rather than replacing them.",
+    title: "ReleaseOps overview — Axiom Documentation",
+    description: "How the installed Axiom Agent coordinates deployment intake, readiness, approval, execution, validation, evidence, and closure.",
 };
 
 export default function ReleaseOpsDocOverviewPage() {
-  return (
-    <>
-      <DocHeader
-        kicker="ReleaseOps"
-        title="ReleaseOps overview."
-        summary="ReleaseOps is the AI-native deployment governance and release intelligence layer of the Axiom platform. It coordinates above GitHub, GitLab, Azure DevOps, Jenkins, Terraform, Kubernetes, and ServiceNow — it does not replace any of them."
-      />
+    return (
+        <>
+            <DocHeader
+                kicker="ReleaseOps"
+                title="ReleaseOps overview."
+                summary="ReleaseOps is the deployment-governance workflow inside Axiom Agent. It records and coordinates work around existing source-control, CI/CD, infrastructure, change-management, and communication systems."
+            />
 
-      <Callout variant="safe" title="The principle">
-        Above. Never instead. ReleaseOps adds operational intelligence to the release ecosystem you already have. Every release still ships through your existing pipelines; ReleaseOps adds the governance layer on top.
-      </Callout>
+            <Callout variant="safe" title="Coordinate existing tools; do not impersonate them">
+                A connector logo is not proof of availability. Each configured adapter must report its real connection state and source. Preview adapters cannot execute, and an approval in Axiom does not prove an external deployment occurred without provider evidence.
+            </Callout>
 
-      <DocSection id="what" title="What ReleaseOps is" kicker="01">
-        <p>An operational intelligence + deployment governance layer that:</p>
-        <ul className="list-disc list-inside space-y-1.5 text-zinc-400 ml-1">
-          <li>Ingests release telemetry from connected CI/CD systems (read-only)</li>
-          <li>Builds an operational release graph: services, pipelines, environments, approvals, dependencies</li>
-          <li>Scores every service on 9 release-readiness dimensions</li>
-          <li>Surfaces operational risk before it becomes an incident</li>
-          <li>Optionally orchestrates approval-gated deployments through your existing pipelines</li>
-          <li>Records every release, approval, deployment, and rollback in the same audit fabric as the cloud ops side</li>
-        </ul>
-      </DocSection>
+            <DocSection id="lifecycle" title="The deployment lifecycle" kicker="01">
+                <ol className="list-decimal list-inside space-y-1.5 text-zinc-400">
+                    <li>Capture deployment intake, ownership, scope, dependencies, and timing.</li>
+                    <li>Run readiness checks and surface missing permissions or evidence.</li>
+                    <li>Create or select a versioned playbook with validation and rollback expectations.</li>
+                    <li>Collect approval gates and enforce separation of duties.</li>
+                    <li>Guide execution through an available adapter or an explicitly manual step.</li>
+                    <li>Validate the observed result or assign deferred validation with an owner and deadline.</li>
+                    <li>Collect evidence, update audit history, communicate status, and close only when exit criteria pass.</li>
+                </ol>
+            </DocSection>
 
-      <DocSection id="positioning" title="How it positions vs. existing tools" kicker="02 · Above. Never instead.">
-        <ul className="list-disc list-inside space-y-1.5 text-zinc-400 ml-1">
-          <li><strong>GitHub Actions / GitLab CI / Azure DevOps / Jenkins</strong> — execute. ReleaseOps ingests their telemetry and scores the operational maturity of each pipeline.</li>
-          <li><strong>Terraform / OpenTofu</strong> — declare infrastructure. ReleaseOps governs the plans surfaced in CI, classifies risk before merge, blocks drift-amplifying changes at the gate.</li>
-          <li><strong>Kubernetes / ArgoCD</strong> — orchestrate runtime. ReleaseOps tracks ArgoCD application sync state as a release event and correlates with cloud topology.</li>
-          <li><strong>ServiceNow / change management</strong> — track approvals. ReleaseOps auto-creates Change Requests with risk justification and rollback strategy attached.</li>
-          <li><strong>PagerDuty / Slack / status pages</strong> — communicate. ReleaseOps can orchestrate release-event communication through these systems.</li>
-        </ul>
-      </DocSection>
+            <DocSection id="catalogs" title="What users manage" kicker="02">
+                <ul className="list-disc list-inside space-y-1.5 text-zinc-400">
+                    <li>Deployment requests and their version history</li>
+                    <li>Repositories, applications, clients, environments, and dependencies</li>
+                    <li>Playbooks, approval policies, schedules, retries, and rollback expectations</li>
+                    <li>Change records, knowledge-transfer sessions, and extracted evidence</li>
+                    <li>Validation results, deferred follow-ups, audit history, reports, and exports</li>
+                    <li>Connector configuration and actual availability state</li>
+                </ul>
+            </DocSection>
 
-      <DocSection id="fits-in" title="How ReleaseOps fits inside Axiom" kicker="03 · Platform integration">
-        <p>ReleaseOps shares core platform infrastructure with cloud ops:</p>
-        <ul className="list-disc list-inside space-y-1.5 text-zinc-400 ml-1">
-          <li><strong>Same reasoning engine</strong> — the 12-step cognitive loop applies to releases as well as cloud findings</li>
-          <li><strong>Same operational memory</strong> — release outcomes feed the same confidence-calibration system</li>
-          <li><strong>Same topology graph</strong> — releases overlay onto the live infrastructure topology, showing what each deploy targets</li>
-          <li><strong>Same approval center</strong> — release approvals route through the same gate model as cloud ops approvals</li>
-          <li><strong>Same audit fabric</strong> — every release event lives in <code>AxiomAuditEvent</code> alongside cloud audit events</li>
-        </ul>
-      </DocSection>
+            <DocSection id="availability" title="Availability rules" kicker="03">
+                <ul className="list-disc list-inside space-y-1.5 text-zinc-400">
+                    <li>GitHub and AWS live paths require configured, scoped credentials and safe test accounts.</li>
+                    <li>Azure and GCP analysis remain preview until live inventory is implemented and verified.</li>
+                    <li>Terraform and CLI artifacts can be reviewed; local Terraform apply remains disabled by the desktop safety contract.</li>
+                    <li>Communication actions require configured adapters and must surface delivery failures.</li>
+                    <li>Every external operation needs resulting evidence before it is marked successful.</li>
+                </ul>
+                <p>Use the <Link href="/download">download page</Link> for the current installer and release status.</p>
+            </DocSection>
 
-      <DocSection id="capabilities" title="What ReleaseOps delivers" kicker="04 · Capabilities">
-        <p>12 operational capabilities, all live in the ReleaseOps Command Center at <Link href="/dashboard/releaseops" className="text-violet-300 hover:text-violet-200">/dashboard/releaseops</Link>:</p>
-        <ul className="list-disc list-inside space-y-1 text-zinc-400 ml-1">
-          <li>Deployment ecosystem mapping</li>
-          <li>Release readiness scoring (composite + 9 dimensions per service)</li>
-          <li>Operational risk analysis (per release)</li>
-          <li>Approval orchestration</li>
-          <li>Drift detection (pipeline + runtime config)</li>
-          <li>Terraform governance</li>
-          <li>Rollback readiness tracking</li>
-          <li>Deployment dependency visibility</li>
-          <li>Release communication orchestration</li>
-          <li>Executive operational visibility</li>
-          <li>Audit intelligence</li>
-          <li>Operational memory for releases</li>
-        </ul>
-      </DocSection>
+            <DocSection id="trust" title="Trust questions" kicker="04">
+                <TrustGrid
+                    items={[
+                        { question: "Does ReleaseOps replace CI/CD?", answer: "No. It coordinates governance and evidence around existing systems." },
+                        { question: "Where do users work?", answer: "In the installed Axiom Agent application." },
+                        { question: "Can a preview adapter execute?", answer: "No. Preview must remain labeled and must not return synthetic success." },
+                        { question: "What proves execution?", answer: "An actual adapter response plus persisted validation and audit evidence." },
+                        { question: "Can validation be deferred?", answer: "Yes, when policy allows it and an owner, deadline, and follow-up state are recorded." },
+                        { question: "When is a request closed?", answer: "Only after required approvals, execution or manual steps, validation, evidence, and closure criteria are satisfied." },
+                    ]}
+                />
+            </DocSection>
 
-      <DocSection id="next" title="Next steps" kicker="05">
-        <ul className="space-y-2">
-          <li>
-            <Link href="/docs/releaseops/connectors" className="text-violet-300 hover:text-violet-200 font-medium">→ CI/CD connectors</Link>
-            <span className="text-zinc-500"> · what each connector reads and how to authorize</span>
-          </li>
-          <li>
-            <Link href="/docs/releaseops/readiness" className="text-violet-300 hover:text-violet-200 font-medium">→ Readiness scoring</Link>
-            <span className="text-zinc-500"> · the 9 dimensions, how scores are computed, and how to improve them</span>
-          </li>
-          <li>
-            <Link href="/axiom/releaseops" className="text-violet-300 hover:text-violet-200 font-medium">→ Marketing page</Link>
-            <span className="text-zinc-500"> · the full ReleaseOps story for stakeholders</span>
-          </li>
-        </ul>
-      </DocSection>
-
-      <DocSection id="trust" title="Trust questions">
-        <TrustGrid
-          items={[
-            { question: "What is ReleaseOps?", answer: "An operational intelligence and deployment governance layer that runs above your existing CI/CD systems." },
-            { question: "Why is it needed?", answer: "Modern release surfaces are fragmented across many systems. ReleaseOps adds the operational intelligence layer those systems don't ship with." },
-            { question: "Is it safe?", answer: "Yes — observation-only by default. Orchestration is opt-in and always goes through your existing pipelines, never bypassing them." },
-            { question: "What is stored?", answer: "Release telemetry, readiness scores, approval events, audit trail. Never source code, never secrets, never credentials." },
-            { question: "What happens after we connect?", answer: "ReleaseOps starts mapping your release graph and scoring services. First full readiness report typically available within 24 hours." },
-            { question: "How is it different from a CI/CD tool?", answer: "It doesn't execute deployments — it governs and reasons about them. The operational intelligence above your pipelines." },
-          ]}
-        />
-      </DocSection>
-
-      <DocFooterNav
-        prev={{ href: "/docs/rollback", label: "Rollback strategy" }}
-        next={{ href: "/docs/releaseops/connectors", label: "CI/CD connectors" }}
-      />
-      <DocFeedback />
-    </>
-  );
+            <DocFooterNav
+                prev={{ href: "/docs/rollback", label: "Rollback strategy" }}
+                next={{ href: "/docs/releaseops/connectors", label: "CI/CD connectors" }}
+            />
+            <DocFeedback />
+        </>
+    );
 }

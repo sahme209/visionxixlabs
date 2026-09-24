@@ -92,8 +92,8 @@ const ENTRIES: readonly FaqEntry[] = [
   },
   {
     category: "fit",
-    q: "Is there a free trial?",
-    a: "Yes. The Starter tier is free and runs against your real cloud accounts in read-only mode. You see the proposals stack up without any of them executing until you toggle write access on a per-boundary basis.",
+    q: "Can I evaluate Axiom before connecting production systems?",
+    a: "Yes. Explore the isolated website sandbox with labeled sample data, then download Axiom Agent. Any evaluation using real services requires an agreed non-production scope and appropriate credentials.",
     proof: { href: "/plans", label: "plans" },
   },
 ];

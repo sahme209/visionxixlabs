@@ -45,7 +45,15 @@ export type ActivityEventType =
   | "release.verification_passed"
   | "release.approval_pending"
   | "release.servicenow_synced"
-  | "release.terraform_plan";
+  | "release.terraform_plan"
+  // Phase 644-649 integration dispatches (workforce_action_execution)
+  | "integration.executed"
+  | "integration.skipped"
+  | "integration.failed"
+  // Phase 655 engineer dispatches (SecureAuditRecord)
+  | "engineer.executed"
+  | "engineer.attempted"
+  | "engineer.failed";
 
 // ReleaseOps-specific operational types
 export type ReleaseSystemId = "github" | "gitlab" | "azure_devops" | "jenkins" | "argocd";
@@ -512,6 +520,134 @@ export interface EventStreamInput {
   agentRuns?: AxiomAgentRunRow[];
   findings?: AxiomFindingRow[];
   auditEvents?: AxiomAuditEventRow[];
+  actionExecutions?: ActionExecutionRow[];
+  secureAuditRecords?: SecureAuditRecordRow[];
+}
+
+/**
+ * Phase 655: SecureAuditRecord rows narrowed to the high-signal
+ * engineer.* actions we want to surface in the activity stream.
+ * Lower-signal audit chatter (auth.signin, etc.) stays out so the
+ * feed doesn't flood.
+ */
+export interface SecureAuditRecordRow {
+  id: string;
+  action: string;
+  outcome: string;
+  entityRef: string | null;
+  occurredAt: Date;
+  detail: unknown;
+}
+
+export function secureAuditToActivityEvent(r: SecureAuditRecordRow): ActivityEvent | null {
+  let type: ActivityEventType;
+  let severity: ActivityEvent["severity"];
+  if (r.action === "engineer.action_executed") {
+    type = "engineer.executed";
+    severity = "info";
+  } else if (r.action === "engineer.action_execution_failed") {
+    type = "engineer.failed";
+    severity = "medium";
+  } else if (r.action === "engineer.action_attempted") {
+    type = "engineer.attempted";
+    severity = r.outcome === "failure" ? "medium" : "info";
+  } else {
+    return null;
+  }
+
+  // Detail is a Prisma Json. Best-effort extraction without trusting shape.
+  const detail = (r.detail && typeof r.detail === "object") ? (r.detail as Record<string, unknown>) : {};
+  const kind = typeof detail.kind === "string" ? detail.kind : undefined;
+  const slug = typeof detail.slug === "string" ? detail.slug : undefined;
+  const result = typeof detail.result === "string" ? detail.result : undefined;
+  const action = typeof detail.action === "string" ? detail.action : undefined;
+
+  const entityName = r.entityRef?.replace(/^engineer:/, "") ?? "engineer";
+  const title = action
+    ? `${entityName} :: ${action}`
+    : kind
+      ? `${entityName} :: ${kind}`
+      : `${entityName} :: ${r.action.replace(/^engineer\./, "")}`;
+
+  const metadata: Record<string, string | number> = { outcome: r.outcome };
+  if (kind) metadata.kind = kind;
+  if (slug) metadata.slug = slug;
+  if (result) metadata.result = result;
+
+  return {
+    id: `secure_audit_${r.id}`,
+    type,
+    title,
+    description: r.entityRef ?? undefined,
+    provider: "system",
+    severity,
+    timestamp: r.occurredAt.toISOString(),
+    metadata,
+  };
+}
+
+/**
+ * Phase 644-649 action executor rows. Persisted in
+ * AiRationaleEnrichment at targetKind=workforce_action_execution.
+ * The tags are pipe-delimited "key|value" strings inside nextActionsJson.
+ */
+export interface ActionExecutionRow {
+  targetId: string;
+  narrative: string;
+  /** Pipe-delimited "key|value" tags. */
+  nextActionsJson: unknown;
+  outcome: string;
+  updatedAt: Date;
+}
+
+function tagsToMap(raw: unknown): Map<string, string> {
+  const out = new Map<string, string>();
+  if (!Array.isArray(raw)) return out;
+  for (const e of raw) {
+    if (typeof e !== "string") continue;
+    const idx = e.indexOf("|");
+    if (idx > 0) out.set(e.slice(0, idx), e.slice(idx + 1));
+  }
+  return out;
+}
+
+export function actionExecutionToActivityEvent(r: ActionExecutionRow): ActivityEvent {
+  const tags = tagsToMap(r.nextActionsJson);
+  const kind = tags.get("kind") ?? "unknown";
+  const status = tags.get("status") ?? "unknown";
+  const title = tags.get("title") ?? r.narrative.slice(0, 120);
+  const externalRef = tags.get("external_ref");
+  const upstreamRef = tags.get("upstream_ref");
+  const errorCode = tags.get("error_code");
+
+  const type: ActivityEventType =
+    status === "executed" ? "integration.executed" :
+    status === "skipped"  ? "integration.skipped"  :
+    "integration.failed";
+
+  const severity: ActivityEvent["severity"] =
+    status === "executed" ? "info" :
+    status === "skipped"  ? "low"  :
+    "medium";
+
+  const metadata: Record<string, string | number> = { kind, status };
+  if (externalRef) metadata.externalRef = externalRef;
+  if (upstreamRef) metadata.upstreamRef = upstreamRef;
+  if (errorCode)   metadata.errorCode   = errorCode;
+
+  return {
+    id: `action_exec_${r.targetId}`,
+    type,
+    title: kind === "github_issue"        ? `GitHub issue · ${status}` :
+           kind === "slack_action_post"   ? `Slack post · ${status}`   :
+           kind === "linear_ticket"       ? `Linear ticket · ${status}` :
+           `Action dispatch · ${status}`,
+    description: title,
+    provider: "system",
+    severity,
+    timestamp: r.updatedAt.toISOString(),
+    metadata,
+  };
 }
 
 /**
@@ -524,6 +660,13 @@ export function composeActivityStream(input: EventStreamInput): ActivityEvent[] 
   if (input.agentRuns) events.push(...input.agentRuns.map(agentRunToActivityEvent));
   if (input.findings) events.push(...input.findings.map(findingToActivityEvent));
   if (input.auditEvents) events.push(...input.auditEvents.map(auditEventToActivityEvent));
+  if (input.actionExecutions) events.push(...input.actionExecutions.map(actionExecutionToActivityEvent));
+  if (input.secureAuditRecords) {
+    for (const r of input.secureAuditRecords) {
+      const e = secureAuditToActivityEvent(r);
+      if (e) events.push(e);
+    }
+  }
 
   const seen = new Set<string>();
   return events

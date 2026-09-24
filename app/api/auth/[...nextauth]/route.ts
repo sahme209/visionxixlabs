@@ -5,7 +5,7 @@ const handler = NextAuth(authOptions);
 
 async function withEnvCheck(
   req: Request,
-  ctx: { params?: Promise<{ nextauth?: string[] }> }
+  ctx: { params: Promise<{ nextauth: string[] }> }
 ) {
   const secret = process.env.NEXTAUTH_SECRET;
   const url = process.env.NEXTAUTH_URL;

@@ -16,7 +16,7 @@ const GLOSSARY: { term: string; def: string }[] = [
   { term: "Confidence Calibration", def: "The agent's self-assessment of how reliable its reasoning is for a given action class. Outcome of every executed action feeds back into confidence per-class, per-service." },
   { term: "Connector", def: "An integration adapter for a specific external system (AWS, Azure, GCP, GitHub, GitLab, Jenkins, ServiceNow). Connectors are read-only by default and never store credentials." },
   { term: "Drift", def: "Configuration that has diverged from its declared/desired state. Axiom detects drift continuously and can either alert, auto-correct (with approval), or block downstream releases until resolved." },
-  { term: "Execution Plan", def: "A phased, dependency-aware sequence of changes Axiom proposes after a scan. Each item includes Terraform, blast radius, pre-verified rollback, and approval requirements." },
+  { term: "Execution Plan", def: "A phased, dependency-aware sequence of proposed steps. Items record artifacts, blast-radius context, approval requirements, validation, and rollback availability where verified." },
   { term: "External ID", def: "A unique secret per Axiom connection used in the AWS trust policy condition. Prevents confused-deputy attacks across tenants." },
   { term: "Finding", def: "A discrete issue detected during a scan — categorized (cost, security, drift, performance, compliance) and severity-scored (info, low, medium, high, critical)." },
   { term: "Operational Memory", def: "Persistent 90-day history of scans, recommendations, executions, approvals, and outcomes. Powers the agent's per-service confidence calibration." },

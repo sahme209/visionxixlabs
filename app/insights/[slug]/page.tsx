@@ -109,10 +109,10 @@ export default async function InsightArticlePage({ params }: Props) {
               Autonomous cloud operations for AWS, Azure, and GCP. Connect your cloud in minutes.
             </p>
             <Link
-              href="/auth/signup?redirect=/dashboard/connect-cloud"
+              href="/download"
               className="btn-huly cta-glow inline-flex items-center px-5 py-2.5 rounded-full bg-white text-zinc-900 text-sm font-semibold hover:bg-zinc-100 transition-colors"
             >
-              Run Axiom
+              Download Axiom Agent
               <ArrowRightIcon className="ml-2 h-4 w-4" />
             </Link>
           </section>

@@ -133,10 +133,10 @@ export default function ManifestoPage() {
 
           {/* Single closing CTA */}
           <Link
-            href="/auth/signup?redirect=/dashboard/connect-cloud"
+            href="/download"
             className="btn-press inline-flex items-center gap-2 px-7 py-3.5 rounded-full text-[14.5px] font-semibold tracking-tight"
           >
-            Run Axiom
+            Download Axiom Agent
             <ArrowRightIcon className="h-4 w-4 opacity-60" />
           </Link>
 

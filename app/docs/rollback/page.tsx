@@ -13,7 +13,7 @@ export default function RollbackPage() {
       <DocHeader
         kicker="Operate · Rollback"
         title="Rollback strategy."
-        summary="Every Axiom execution ships with a pre-verified rollback path and a measured time-to-restore. Rollback is not aspirational — it's tested before approval, never inferred at incident time."
+        summary="Axiom records rollback expectations and availability for each execution path. A rollback may be described as verified only when its active adapter, prerequisites, and safe test evidence support that claim."
       />
 
       <Callout variant="safe" title="The principle">

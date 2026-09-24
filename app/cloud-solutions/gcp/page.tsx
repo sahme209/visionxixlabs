@@ -382,8 +382,8 @@ export default function GcpCloudSolutionsPage() {
               subtitle="Talk to us about your GCP project structure, CI/CD, cost, or operations. We'll help you chart a practical path."
               primaryLabel="Book a Call"
               primaryHref="/contact"
-              secondaryLabel="Run Axiom"
-              secondaryHref="/auth/signup?redirect=/dashboard/connect-cloud"
+              secondaryLabel="Download Axiom Agent"
+              secondaryHref="/download"
               plansHref="/operator/pricing"
             />
 

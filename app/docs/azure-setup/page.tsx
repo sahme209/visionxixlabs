@@ -1,108 +1,75 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { DocHeader, DocSection, Callout, TrustGrid, DocFooterNav, DocFeedback } from "@/components/docs/DocPrimitives";
+import { Callout, DocFeedback, DocFooterNav, DocHeader, DocSection, TrustGrid } from "@/components/docs/DocPrimitives";
 
 export const metadata: Metadata = {
-  title: "Azure setup — Axiom Documentation",
-  description: "How Axiom connects to Azure today (Service Principal + scan), and what's rolling out in Q2 2026 (reasoning + execution).",
+    title: "Azure setup — Axiom Documentation",
+    description: "Current Azure preview availability, required configuration, and the work needed before live inventory or execution can be enabled.",
 };
 
 export default function AzureSetupPage() {
-  return (
-    <>
-      <DocHeader
-        kicker="Connect a cloud · Azure · Expanding"
-        title="Azure setup."
-        summary="Axiom's Azure connector is live for scan + topology mapping. Reasoning + execution roll out in Q2 2026. This page documents what works today and what's coming honestly."
-      />
+    return (
+        <>
+            <DocHeader
+                kicker="Connect a cloud · Azure · Preview"
+                title="Azure setup."
+                summary="Axiom currently provides Azure configuration validation and preview-derived analysis. Live Azure inventory and write execution are not enabled by the verified release."
+            />
 
-      <Callout variant="warning" title="Honest state — Azure is expanding">
-        <strong>Live today:</strong> Service Principal onboarding, subscription enumeration, VM + Storage + Network + IAM scanning, topology mapping, drift detection (basic).
-        <br /><br />
-        <strong>Q2 2026:</strong> Full 12-step reasoning loop, execution plans, Terraform export, approval workflow, rollback orchestration — the same surface AWS has today.
-        <br /><br />
-        Subscribe at <Link href="/contact?topic=azure-preview">/contact</Link> for the early-access invitation.
-      </Callout>
+            <Callout variant="warning" title="Preview is not a live connector">
+                The current Azure path validates configuration shape and can render preview findings. It must not be presented as a successful live subscription scan. Before live availability, the product needs authenticated Azure Resource Manager inventory traversal, least-privilege verification, tenant-scoped persistence, error handling, and safe integration tests.
+            </Callout>
 
-      <DocSection id="live-today" title="What works today" kicker="01">
-        <p>The Azure connector covers:</p>
-        <ul className="list-disc list-inside space-y-1.5 text-zinc-400 ml-1">
-          <li><strong>Service Principal onboarding</strong> — federated identity (workload identity federation) preferred; client secret supported as fallback</li>
-          <li><strong>Subscription + resource-group scanning</strong> — scoped by your role assignment</li>
-          <li><strong>Virtual Machines</strong> — VM size, OS, disk attachments, NIC config, availability sets</li>
-          <li><strong>Storage Accounts</strong> — blob containers, tier, encryption settings, network rules</li>
-          <li><strong>Networking</strong> — VNets, subnets, NSGs, NSG rules, public IPs, load balancers</li>
-          <li><strong>IAM</strong> — role assignments, custom roles, Azure AD identities used for RBAC</li>
-          <li><strong>Topology mapping</strong> — Azure resources appear in <Link href="/dashboard/topology" className="text-violet-300 hover:text-violet-200">/dashboard/topology</Link> alongside AWS/GCP</li>
-          <li><strong>Basic drift detection</strong> — out-of-band changes flagged in the activity feed</li>
-        </ul>
-      </DocSection>
+            <DocSection id="available" title="What is available" kicker="01">
+                <ul className="list-disc list-inside space-y-1.5 text-zinc-400">
+                    <li>Azure credential and configuration-shape validation</li>
+                    <li>Runtime mode and credential-presence reporting without exposing secrets</li>
+                    <li>Preview snapshots, findings, and recommendations that remain labeled preview</li>
+                    <li>An audited scan API that reports whether its source is preview or live</li>
+                    <li>Desktop UI states for unavailable, disconnected, and failed connectors</li>
+                </ul>
+            </DocSection>
 
-      <DocSection id="onboarding" title="Onboarding (preview path)" kicker="02 · Onboarding">
-        <p>Onboarding is preview-only — the wizard exists; reasoning + execution arrive later. Today you can:</p>
-        <ol className="list-decimal list-inside space-y-1.5 text-zinc-400 ml-1">
-          <li>Register an Application in your Azure AD tenant</li>
-          <li>Create a Service Principal for that Application</li>
-          <li>Assign the <code>Reader</code> built-in role at subscription or resource-group scope</li>
-          <li>Configure federated identity credentials pointing at Axiom&apos;s issuer (no client secret to share)</li>
-          <li>Paste the Tenant ID + Subscription ID + Application ID into the Axiom onboarding wizard</li>
-        </ol>
-        <p>Sign in, then see the <Link href="/dashboard/connect-cloud" className="text-violet-300 hover:text-violet-200">in-dashboard connect flow</Link> for the exact values to copy.</p>
-      </DocSection>
+            <DocSection id="not-available" title="What is not verified" kicker="02">
+                <ul className="list-disc list-inside space-y-1.5 text-zinc-400">
+                    <li>Live VM, Storage, VNet, NSG, SQL, IAM, or cost inventory</li>
+                    <li>Production topology and drift claims derived from live Azure responses</li>
+                    <li>Azure action dispatch, retries, validation, or rollback</li>
+                    <li>Provider-side evidence proving a real operation occurred</li>
+                </ul>
+            </DocSection>
 
-      <DocSection id="permissions" title="Expected permissions" kicker="03 · Permissions">
-        <p>Scan role (today):</p>
-        <ul className="list-disc list-inside space-y-1 text-zinc-400 ml-1">
-          <li><code>Reader</code> built-in role at subscription scope (or resource-group scope for tighter isolation)</li>
-          <li>Custom role for Cost Management read access (we provide the exact role definition during onboarding)</li>
-        </ul>
-        <p>Execution role (Q2 2026):</p>
-        <ul className="list-disc list-inside space-y-1 text-zinc-400 ml-1">
-          <li>Separate custom role with the smallest possible Modify/Delete actions per opt-in action class</li>
-          <li>Approval-gated assumption — same model as AWS</li>
-        </ul>
-        <p>Full permissions model at <Link href="/docs/permissions-model" className="text-violet-300 hover:text-violet-200">/docs/permissions-model</Link>.</p>
-      </DocSection>
+            <DocSection id="planned-setup" title="Configuration required for a future live path" kicker="03">
+                <ol className="list-decimal list-inside space-y-1.5 text-zinc-400">
+                    <li>Register an application in the organization&apos;s Microsoft Entra tenant.</li>
+                    <li>Create a service principal and prefer workload identity federation over a long-lived client secret.</li>
+                    <li>Grant only the read permissions needed at subscription or resource-group scope.</li>
+                    <li>Enter the Tenant ID, Subscription ID, and Application ID in the installed application.</li>
+                    <li>Run a connector test in a dedicated non-production subscription and require an actual ARM response before reporting connected.</li>
+                </ol>
+                <p>
+                    Download Axiom Agent from <Link href="/download">the release page</Link>. Do not create Azure credentials solely for the preview path unless your administrator has supplied an approved evaluation plan.
+                </p>
+            </DocSection>
 
-      <DocSection id="roadmap" title="Q2 2026 roadmap" kicker="04 · Roadmap">
-        <ul className="list-disc list-inside space-y-1.5 text-zinc-400 ml-1">
-          <li><strong>April 2026</strong> — Signal engine for Azure (cost waste, security exposure, drift signals)</li>
-          <li><strong>May 2026</strong> — Reasoning loop adapted for Azure resource model</li>
-          <li><strong>June 2026</strong> — Execution planning + Bicep / Terraform generation for Azure</li>
-          <li><strong>Late Q2 2026</strong> — Approval workflow + rollback orchestration parity with AWS</li>
-        </ul>
-        <p>Roadmap visible at <Link href="/dashboard/workflows" className="text-violet-300 hover:text-violet-200">/dashboard/workflows</Link> as the reasoning loop ships.</p>
-      </DocSection>
+            <DocSection id="trust" title="Trust questions" kicker="04">
+                <TrustGrid
+                    items={[
+                        { question: "Is Azure live today?", answer: "Not in the verified release. The current path is configuration validation plus preview-derived analysis." },
+                        { question: "Does preview data come from my tenant?", answer: "No. Preview output must remain labeled and cannot be treated as live provider evidence." },
+                        { question: "Can Axiom change Azure resources?", answer: "No verified Azure execution adapter is enabled." },
+                        { question: "What should a missing credential show?", answer: "Disconnected or unavailable, never a synthetic success." },
+                        { question: "When can the status change?", answer: "After live inventory and action paths are implemented, permission-reviewed, integration-tested, and recorded in the release availability matrix." },
+                        { question: "Where do I verify release status?", answer: "Use the download page, release notes, and in-app capability status for the installed version." },
+                    ]}
+                />
+            </DocSection>
 
-      <DocSection id="security" title="Security model" kicker="05">
-        <p>Same constraints as AWS:</p>
-        <ul className="list-disc list-inside space-y-1 text-zinc-400 ml-1">
-          <li>Federated identity preferred — no client secret stored on Axiom&apos;s side</li>
-          <li>Read-only by default</li>
-          <li>Subscription/resource-group scoping enforced at the role assignment level</li>
-          <li>Revocable instantly by removing the role assignment or disabling the Service Principal</li>
-          <li>All assume / scan events captured in Azure Activity Log on your side</li>
-        </ul>
-      </DocSection>
-
-      <DocSection id="trust" title="Trust questions">
-        <TrustGrid
-          items={[
-            { question: "Is Azure fully live?", answer: "Scan + topology + basic drift are live today. Reasoning + execution + approval ship Q2 2026." },
-            { question: "Why connect now if reasoning isn't live?", answer: "Topology mapping + drift detection are immediately useful for multi-cloud teams. You'll be ready when reasoning ships." },
-            { question: "Is the Azure connection safe?", answer: "Yes — read-only Reader role at the scope you choose. Federated identity over client secrets where possible." },
-            { question: "What does Axiom store?", answer: "Resource metadata and topology graph. Never blob contents, never database row data, never secrets." },
-            { question: "Can I revoke?", answer: "Yes — remove the role assignment or disable the Service Principal. Axiom loses access immediately." },
-            { question: "How do I get early access to Q2 features?", answer: "Subscribe at /contact?topic=azure-preview. We invite teams in waves as each capability ships." },
-          ]}
-        />
-      </DocSection>
-
-      <DocFooterNav
-        prev={{ href: "/docs/aws-setup", label: "AWS setup" }}
-        next={{ href: "/docs/gcp-setup", label: "GCP setup" }}
-      />
-      <DocFeedback />
-    </>
-  );
+            <DocFooterNav
+                prev={{ href: "/docs/aws-setup", label: "AWS setup" }}
+                next={{ href: "/docs/gcp-setup", label: "GCP setup" }}
+            />
+            <DocFeedback />
+        </>
+    );
 }

@@ -21,7 +21,6 @@
 
 import { motion } from "framer-motion";
 import Link from "next/link";
-import { SocialProofRail } from "../_components/SocialProofRail";
 
 /* ──────────────────────────────────────────────────────────────────
    Content tables.
@@ -36,13 +35,13 @@ interface ChargeCategory {
 const VXL_CHARGES: ReadonlyArray<ChargeCategory> = [
   {
     label: "Platform base",
-    basis: "Monthly fee for access to the platform.",
-    example: "Covers dashboard, audit log, security baseline, and read-only scans.",
+    basis: "Quote line item for the installed application and configured services.",
+    example: "The written quote must identify included capabilities and their verified availability.",
   },
   {
     label: "Workspace seats",
     basis: "Per active operator on the workspace.",
-    example: "Only counted on humans who actually sign in during the billing period.",
+    example: "Only roles and operators listed in the written agreement are chargeable."
   },
   {
     label: "AI engineers enabled",
@@ -88,12 +87,12 @@ interface EstimateStep {
 }
 
 const ESTIMATE_FLOW: ReadonlyArray<EstimateStep> = [
-  { n: 1, label: "Sign in",                 detail: "Create a workspace. No card required to look around." },
-  { n: 2, label: "Connect a cloud (read-only)", detail: "AWS / Azure / GCP — read-only, no write scopes ever asked for." },
-  { n: 3, label: "Discovery scan",          detail: "We scan resources, services, regions, and recent usage. No data leaves your control." },
-  { n: 4, label: "Estimate appears",        detail: "Cloud provider line items + VisionXIXLabs operations layer, side by side." },
-  { n: 5, label: "Pick a service level",    detail: "Adjust what's enabled — AI engineers, automation depth, monitoring scope, support tier." },
-  { n: 6, label: "Approve the quote",       detail: "Usage caps and approval gates land before activation. No surprise overruns." },
+  { n: 1, label: "Download Axiom Agent", detail: "Install the manifest-backed build for your operating system." },
+  { n: 2, label: "Define the deployment scope", detail: "List the teams, environments, connectors, controls, and support requirements you need." },
+  { n: 3, label: "Verify feature availability", detail: "Separate shipped behavior from preview, credential-dependent, and roadmap capabilities." },
+  { n: 4, label: "Review an itemized quote", detail: "Cloud-provider charges remain separate from any Vision XIX Labs software or service charges." },
+  { n: 5, label: "Agree limits and approvals", detail: "Record usage limits, approval gates, retention, and escalation terms in writing." },
+  { n: 6, label: "Configure the installed app", detail: "Authenticate the desktop and enable only the connectors covered by the agreement." },
 ];
 
 interface EngagementShape {
@@ -115,7 +114,7 @@ const ENGAGEMENTS: ReadonlyArray<EngagementShape> = [
       "FinOps recommendations queue (drafts only)",
       "Slack integration",
     ],
-    charge: "Free during trial · usage-aware after activation.",
+    charge: "Availability and price confirmed in a written quote."
   },
   {
     label: "Growth Operations",
@@ -193,11 +192,11 @@ const FAQ: ReadonlyArray<FaqEntry> = [
   },
   {
     q: "Can I see numbers without talking to sales?",
-    a: "Yes. Sign in, connect a cloud in read-only mode, let the discovery scan run. The estimator inside the app shows your projected monthly cost split by line item.",
+    a: "Download the app to review the delivered workflow, or contact us for an itemized quote tied to your required connectors, controls, and support level."
   },
   {
     q: "Do I have to commit to see the estimate?",
-    a: "No. The trial supports a read-only scan with no card. You see the estimate, decide whether the operations layer is worth it, then activate the service tiers you want.",
+    a: "No public self-service trial is promised here. The isolated website sandbox uses sample data; any evaluation using real systems requires an agreed non-production scope and credentials."
   },
   {
     q: "What's the smallest realistic VxL operations bill?",
@@ -327,9 +326,9 @@ export function PricingClient() {
       {/* How the estimate works — numbered flow ──────────────────── */}
       <section className="relative z-10 mx-auto max-w-6xl px-6 md:px-10 py-16">
         <p className="kicker-mono">// how the estimate works</p>
-        <h2 className="display-headline text-white mt-4">Sign in. Connect. See real numbers.</h2>
+        <h2 className="display-headline text-white mt-4">Scope. Verify. Review the quote.</h2>
         <p className="mt-4 text-[14px] text-zinc-400 leading-relaxed">
-          Six steps. No sales call required. The whole flow is reversible — disconnect any time, and the read-only scope means we never had write access in the first place.
+          Pricing begins with the installed product and a verified capability scope. Connector permissions and any external-service charges are documented separately.
         </p>
 
         <ol className="mt-8 space-y-4">
@@ -430,8 +429,6 @@ export function PricingClient() {
         <div className="hairline-divider" />
       </div>
 
-      <SocialProofRail />
-
       {/* FAQ ──────────────────────────────────────────────────────── */}
       <section className="relative z-10 mx-auto max-w-6xl px-6 md:px-10 pb-16 pt-16">
         <p className="kicker-mono">// common questions</p>
@@ -464,10 +461,10 @@ export function PricingClient() {
           </p>
           <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-3 text-[13px]">
             <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
-              <p className="text-white font-medium mb-1">See your real estimate</p>
-              <p className="text-zinc-400 text-[12.5px] leading-relaxed mb-3">Sign in, connect a cloud read-only, let the scan run.</p>
-              <Link href="/login" className="text-[12.5px] text-zinc-200 hover:text-white underline underline-offset-4 decoration-white/30">
-                Estimate after login →
+              <p className="text-white font-medium mb-1">Review the delivered product</p>
+              <p className="text-zinc-400 text-[12.5px] leading-relaxed mb-3">Install Axiom Agent and review the documented capability and release status.</p>
+              <Link href="/download" className="text-[12.5px] text-zinc-200 hover:text-white underline underline-offset-4 decoration-white/30">
+                Download Axiom Agent →
               </Link>
             </div>
             <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
@@ -479,9 +476,9 @@ export function PricingClient() {
             </div>
             <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
               <p className="text-white font-medium mb-1">Walk through with us</p>
-              <p className="text-zinc-400 text-[12.5px] leading-relaxed mb-3">Live demo on a real workspace. Optional.</p>
+              <p className="text-zinc-400 text-[12.5px] leading-relaxed mb-3">Explore the isolated sample-data sandbox without production access.</p>
               <Link href="/demo" className="text-[12.5px] text-zinc-200 hover:text-white underline underline-offset-4 decoration-white/30">
-                Book a demo →
+                Explore the sandbox →
               </Link>
             </div>
           </div>

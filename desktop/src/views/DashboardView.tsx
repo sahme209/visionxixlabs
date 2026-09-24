@@ -1,8 +1,7 @@
 /**
- * Dashboard view — projects from `/api/control-plane/state` or falls
- * back to realistic mock data when the desktop can't share cross-origin
- * cookies with the web app. Always renders the full UI with a clear
- * preview-mode banner when not connected.
+ * Dashboard view — projects persisted workspace state from the authenticated
+ * control-plane API. Missing authentication and service failures render an
+ * explicit unavailable state; production screens never substitute mock data.
  */
 
 import { useEffect, useState } from "react";
@@ -14,6 +13,7 @@ import { OnboardingChecklist } from "../components/OnboardingChecklist";
 export function DashboardView({ onNavigate }: { onNavigate?: (v: View) => void } = {}) {
   const [state, setState] = useState<ControlPlaneStateLite | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [previewMode, setPreviewMode] = useState(false);
 
   useEffect(() => {
@@ -21,14 +21,34 @@ export function DashboardView({ onNavigate }: { onNavigate?: (v: View) => void }
     setLoading(true);
     desktopClient.controlPlaneState().then((res) => {
       if (cancelled) return;
-      if (res.ok) setState(res.data);
+      if (res.ok) {
+        setState(res.data);
+        setError(null);
+      } else {
+        setState(null);
+        setError(res.error);
+      }
       setPreviewMode(desktopClient.isPreviewMode);
       setLoading(false);
     });
     return () => { cancelled = true; };
   }, []);
 
-  if (loading || !state) return <ViewShell><LoadingState label="Composing control plane state…" /></ViewShell>;
+  if (loading) return <ViewShell><LoadingState label="Loading control plane state…" /></ViewShell>;
+  if (error || !state) {
+    return (
+      <ViewShell>
+        <Card className="p-6" tint="rose">
+          <p className="text-[10px] font-mono uppercase tracking-[0.2em] text-rose-300 mb-2">workspace unavailable</p>
+          <h2 className="text-lg font-semibold text-white">No operational data was loaded.</h2>
+          <p className="mt-2 text-sm text-zinc-400">
+            {error ?? "Connect an authenticated workspace in Settings, then try again."}
+          </p>
+          <p className="mt-3 text-xs text-zinc-500">No sample records or simulated success state are shown in the installed application.</p>
+        </Card>
+      </ViewShell>
+    );
+  }
 
   const liveCount = state.providers.filter((p) => p.sourceMode === "live").length;
 

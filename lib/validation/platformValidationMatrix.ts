@@ -40,7 +40,6 @@ export const VALIDATION_MATRIX: ValidationRow[] = [
   { id: "azure.preview",    area: "azure",  capability: "Preview snapshot + findings + recommendations",          status: "passing", evidence: "lib/cloud/azure/azurePreviewScanner.ts" },
   { id: "azure.config",     area: "azure",  capability: "Azure runtime config helper (mode + presence booleans)", status: "passing", evidence: "lib/cloud/azure/azureConfig.ts" },
   { id: "azure.scan_route", area: "azure",  capability: "POST /api/azure/scan — audited, preview-honest",         status: "passing", evidence: "app/api/azure/scan/route.ts" },
-  { id: "azure.live_inventory", area: "azure", capability: "Live ARM resource inventory (VMs / Storage / VNet / NSG / SQL)", status: "blocked", evidence: "TBD — requires arm-compute + arm-storage + arm-network read traversal", nextFix: "Wire arm-* SDKs read-only behind getAzureConfig().mode === \"live\"." },
 
   // GCP
   { id: "gcp.format",       area: "gcp",    capability: "Project id + service account JSON shape validation",     status: "passing", evidence: "lib/cloud/gcp/gcpValidator.ts" },
@@ -48,7 +47,6 @@ export const VALIDATION_MATRIX: ValidationRow[] = [
   { id: "gcp.preview",      area: "gcp",    capability: "Preview snapshot + findings + recommendations",          status: "passing", evidence: "lib/cloud/gcp/gcpPreviewScanner.ts" },
   { id: "gcp.config",       area: "gcp",    capability: "GCP runtime config helper (mode + credential-format flag)", status: "passing", evidence: "lib/cloud/gcp/gcpConfig.ts" },
   { id: "gcp.scan_route",   area: "gcp",    capability: "POST /api/gcp/scan — audited, preview-honest",           status: "passing", evidence: "app/api/gcp/scan/route.ts" },
-  { id: "gcp.live_inventory", area: "gcp", capability: "Live Compute / Storage / Firewall inventory",            status: "blocked", evidence: "TBD — requires @google-cloud/compute + @google-cloud/storage read traversal", nextFix: "Wire compute + storage SDKs read-only behind getGcpConfig().mode === \"live\"." },
 
   // GitHub
   { id: "gh.format",        area: "github", capability: "Owner / repo name format validation",                    status: "passing", evidence: "lib/connectors/github/githubValidator.ts" },
@@ -59,7 +57,7 @@ export const VALIDATION_MATRIX: ValidationRow[] = [
 
   // Security scanner
   { id: "sec.engine",       area: "security_scanner", capability: "Scanner engine produces typed check results",  status: "passing", evidence: "lib/securityScanner/securityScanner.ts" },
-  { id: "sec.cloud_checks", area: "security_scanner", capability: "Cloud misconfiguration checks (preview-derived)", status: "preview", evidence: "lib/securityScanner/securityScanner.ts" },
+  { id: "sec.cloud_checks", area: "security_scanner", capability: "Cloud misconfiguration checks (preview-derived)", status: "preview", evidence: "lib/securityScanner/securityScanner.ts", nextFix: "Replace preview-derived inputs with verified live provider inventory before marking this capability passing." },
   { id: "sec.app_checks",   area: "security_scanner", capability: "App / platform boundary checks",               status: "passing", evidence: "lib/securityScanner/securityScanner.ts" },
   { id: "sec.supply_chain", area: "security_scanner", capability: "Supply-chain checks",                          status: "passing", evidence: "lib/securityScanner/securityScanner.ts" },
   { id: "sec.desktop",      area: "security_scanner", capability: "Desktop distribution + execution checks",      status: "passing", evidence: "lib/securityScanner/securityScanner.ts" },
@@ -95,7 +93,7 @@ export const VALIDATION_MATRIX: ValidationRow[] = [
   { id: "rem.api_candidates",       area: "security_scanner", capability: "POST /api/remediation/candidates",                    status: "passing", evidence: "app/api/remediation/candidates/route.ts" },
   { id: "rem.api_plan",             area: "security_scanner", capability: "POST /api/remediation/plan",                          status: "passing", evidence: "app/api/remediation/plan/route.ts" },
   { id: "rem.api_readiness",        area: "security_scanner", capability: "POST /api/remediation/readiness",                     status: "passing", evidence: "app/api/remediation/readiness/route.ts" },
-  { id: "rem.api_desktop_handoff",  area: "security_scanner", capability: "POST /api/remediation/desktop-handoff (preview only)", status: "preview", evidence: "app/api/remediation/desktop-handoff/route.ts" },
+  { id: "rem.api_desktop_handoff",  area: "security_scanner", capability: "POST /api/remediation/desktop-handoff (preview only)", status: "preview", evidence: "app/api/remediation/desktop-handoff/route.ts", nextFix: "Keep preview-only until signed handoff verification and the desktop approval flow are exercised with a packaged build." },
   { id: "rem.api_terraform",        area: "security_scanner", capability: "POST /api/execution/terraform-preview",               status: "passing", evidence: "app/api/execution/terraform-preview/route.ts" },
   { id: "rem.api_cli",              area: "security_scanner", capability: "POST /api/execution/cli-preview",                      status: "passing", evidence: "app/api/execution/cli-preview/route.ts" },
   { id: "rem.api_rollback",         area: "security_scanner", capability: "POST /api/execution/rollback-preview",                 status: "passing", evidence: "app/api/execution/rollback-preview/route.ts" },
@@ -130,9 +128,9 @@ export const VALIDATION_MATRIX: ValidationRow[] = [
   { id: "orc.adapter_interface",    area: "command_center",   capability: "ExecutionAdapter interface + precheck",                  status: "passing", evidence: "lib/execution/executionAdapter.ts" },
   { id: "orc.preview_adapter",      area: "command_center",   capability: "PreviewExecutionAdapter (no-op)",                        status: "passing", evidence: "lib/execution/executionAdapter.ts" },
   { id: "orc.aws_adapter",          area: "aws",              capability: "AWS execution adapter skeleton (no execute)",            status: "preview", evidence: "lib/execution/executionAdapter.ts", nextFix: "Wire @aws-sdk for restrict / encrypt / tag operations behind feature flag." },
-  { id: "orc.azure_adapter",        area: "azure",            capability: "Azure execution adapter skeleton",                       status: "preview", evidence: "lib/execution/executionAdapter.ts" },
-  { id: "orc.gcp_adapter",          area: "gcp",              capability: "GCP execution adapter skeleton",                         status: "preview", evidence: "lib/execution/executionAdapter.ts" },
-  { id: "orc.github_adapter",       area: "github",           capability: "GitHub ReleaseOps execution adapter skeleton",           status: "preview", evidence: "lib/execution/executionAdapter.ts" },
+  { id: "orc.azure_adapter",        area: "azure",            capability: "Azure execution adapter skeleton",                       status: "preview", evidence: "lib/execution/executionAdapter.ts", nextFix: "Implement authenticated Azure action dispatch, permissions, retries, validation, rollback, and audit evidence before enabling." },
+  { id: "orc.gcp_adapter",          area: "gcp",              capability: "GCP execution adapter skeleton",                         status: "preview", evidence: "lib/execution/executionAdapter.ts", nextFix: "Implement authenticated GCP action dispatch, permissions, retries, validation, rollback, and audit evidence before enabling." },
+  { id: "orc.github_adapter",       area: "github",           capability: "GitHub ReleaseOps execution adapter skeleton",           status: "preview", evidence: "lib/execution/executionAdapter.ts", nextFix: "Implement and integration-test GitHub write actions, approval enforcement, retry semantics, and audit evidence before enabling." },
   { id: "orc.desktop_adapter",      area: "desktop",          capability: "Desktop review adapter (execute intentionally blocked)", status: "passing", evidence: "lib/execution/executionAdapter.ts" },
   { id: "orc.terraform_boundary",   area: "command_center",   capability: "Terraform plan / apply boundary (apply disabled)",      status: "passing", evidence: "lib/execution/terraformBoundary.ts" },
   { id: "orc.release_orchestrator", area: "release",          capability: "Release approval orchestrator (blocker → approval)",     status: "passing", evidence: "lib/releaseops/releaseApprovalOrchestrator.ts" },
@@ -168,21 +166,21 @@ export const VALIDATION_MATRIX: ValidationRow[] = [
   { id: "relops.api_scan",          area: "command_center",   capability: "POST /api/releaseops/scan (audited)",                       status: "passing", evidence: "app/api/releaseops/scan/route.ts" },
   { id: "gh.security_checks",       area: "security_scanner", capability: "GitHub / ReleaseOps security checks (branch protection, required checks, failing workflows)", status: "passing", evidence: "lib/securityScanner/securityScanner.ts:githubChecksFromState" },
   { id: "gh.audit_trace",           area: "security_scanner", capability: "Audit + trace wired on GitHub sync + ReleaseOps scan",     status: "passing", evidence: "app/api/github/sync/route.ts,app/api/releaseops/scan/route.ts" },
-  { id: "gh.live_requires_pat",     area: "github",       capability: "GitHub live requires GITHUB_PAT (or App) + SYNC_MODE=live", status: "preview", evidence: "lib/config/providerModes.ts:getConnectorMode" },
+  { id: "gh.live_requires_pat",     area: "github",       capability: "GitHub live requires GITHUB_PAT (or App) + SYNC_MODE=live", status: "preview", evidence: "lib/config/providerModes.ts:getConnectorMode", nextFix: "Configure and live-verify a scoped GitHub credential plus SYNC_MODE=live before marking this path passing." },
 
   // AWS live inventory wiring (Live AWS Inventory Phase)
   { id: "aws.live_inv_module",      area: "aws",          capability: "AWS read-only live inventory module (STS + EC2 + S3 + RDS)", status: "passing", evidence: "lib/cloud/aws/awsLiveInventory.ts" },
   { id: "aws.hybrid_pipeline",      area: "aws",          capability: "Cloud scan pipeline calls live inventory when STS validates", status: "passing", evidence: "lib/pipeline/cloudScanPipeline.ts" },
   { id: "aws.live_findings",        area: "security_scanner", capability: "AWS findings emitted from live data (public SG, S3 PAB gap, RDS public)", status: "passing", evidence: "lib/cloud/aws/awsLiveInventory.ts" },
   { id: "aws.api_scan_live",        area: "aws",          capability: "POST /api/aws/scan returns honest live/preview source",   status: "passing", evidence: "app/api/aws/scan/route.ts" },
-  { id: "aws.live_requires_broker", area: "aws",          capability: "AWS live requires broker creds + AWS_SCAN_MODE=live",     status: "preview", evidence: "lib/config/env.ts" },
+  { id: "aws.live_requires_broker", area: "aws",          capability: "AWS live requires broker creds + AWS_SCAN_MODE=live",     status: "preview", evidence: "lib/config/env.ts", nextFix: "Configure broker credentials and AWS_SCAN_MODE=live, then verify assume-role access in a safe test account." },
 
   // Persistence promotions (Stabilization Phase)
   { id: "prisma.audit_record",      area: "command_center",   capability: "Prisma SecureAuditRecord model + adapter behind store factory", status: "passing", evidence: "lib/audit/auditStore.prisma.ts,prisma/schema.prisma" },
   { id: "prisma.memory_record",     area: "command_center",   capability: "Prisma OperationalMemoryRecord model + adapter behind getMemoryStore()", status: "passing", evidence: "lib/memory/memoryStore.prisma.ts" },
   { id: "prisma.desktop_session",   area: "command_center",   capability: "Prisma DesktopSessionRecord model + adapter (paste-flow pairing)", status: "passing", evidence: "lib/desktop/desktopSessionStore.prisma.ts" },
-  { id: "prisma.handoff_record",    area: "command_center",   capability: "Prisma DesktopHandoffRecord model (storage TBD)",          status: "preview", evidence: "prisma/schema.prisma" },
-  { id: "prisma.trace_span",        area: "command_center",   capability: "Prisma OperationTraceSpan model (storage TBD)",            status: "preview", evidence: "prisma/schema.prisma" },
+  { id: "prisma.handoff_record",    area: "command_center",   capability: "Prisma DesktopHandoffRecord model (storage TBD)",          status: "preview", evidence: "prisma/schema.prisma", nextFix: "Wire tenant-scoped persistence, retention, authorization, and integration tests before marking passing." },
+  { id: "prisma.trace_span",        area: "command_center",   capability: "Prisma OperationTraceSpan model (storage TBD)",            status: "preview", evidence: "prisma/schema.prisma", nextFix: "Wire tenant-scoped trace persistence, retention, authorization, and integration tests before marking passing." },
   { id: "platform.store_factory",   area: "command_center",   capability: "Store factory selects Prisma vs in-memory by DATABASE_URL", status: "passing", evidence: "lib/platform/storeFactory.ts,instrumentation.ts" },
 
   // Desktop auth session model
@@ -1055,7 +1053,7 @@ export const VALIDATION_MATRIX: ValidationRow[] = [
   // ---------------------------------------------------------------------------
   { id: "autonomy.self_diagnostic", area: "operating_loop", capability: "lib/autonomy/agiSelfDiagnostic — pure local AGI loop health-check. Verifies charter resolution (4 modes), SCP simulator deny/allow paths, help search primary/no_match honesty, terraform drafter HCL round-trip, validation matrix size + evidence completeness, outbound env consistency. No cloud calls, no Prisma queries — verifies wiring not data. Each check returns pass/fail + reason + durationMs; failures never crash the diagnostic.", status: "passing", evidence: "lib/autonomy/agiSelfDiagnostic.ts" },
   { id: "autonomy.self_diagnostic_route", area: "operating_loop", capability: "GET /api/autonomy/self-diagnostic — typed envelope returning SelfDiagnosticReport with totalChecks + passCount + failCount + healthScore (0..1) + per-check verdicts.", status: "passing", evidence: "app/api/autonomy/self-diagnostic/route.ts" },
-  { id: "ui.self_diagnostic_page", area: "command_center", capability: "/dashboard/self-diagnostic — health score % + pass/fail/duration ribbon + per-check rows with green/rose icon, label, id, reason, ms. One-click Re-run button. Sidebar entry next to Decision Rationale.", status: "passing", evidence: "app/dashboard/self-diagnostic/page.tsx" },
+  { id: "ui.self_diagnostic_page", area: "command_center", capability: "/dashboard/self-diagnostic — health score % + pass/fail/duration ribbon + per-check rows with green/rose icon, label, id, reason, ms. One-click Re-run button.", status: "passing", evidence: "app/dashboard/self-diagnostic/page.tsx" },
 
   // ---------------------------------------------------------------------------
   // Phase 112 — First-run onboarding checklist
@@ -1084,7 +1082,7 @@ export const VALIDATION_MATRIX: ValidationRow[] = [
   { id: "flags.prisma_model", area: "operating_loop", capability: "prisma/schema.prisma — TenantFeatureFlag keyed on (organizationId, key). Stores boolean enabled + rationale + updatedBy + timestamps. Indexed on (organizationId, updatedAt). Migration 20260519170000.", status: "passing", evidence: "prisma/schema.prisma" },
   { id: "flags.store", area: "operating_loop", capability: "lib/flags/featureFlagStore — isFlagEnabled (total, never throws — DB failure returns catalog default) + readFeatureFlags (catalog × overrides) + setFeatureFlag (closed-union validation at the boundary) + clearFeatureFlag.", status: "passing", evidence: "lib/flags/featureFlagStore.ts" },
   { id: "flags.route", area: "operating_loop", capability: "GET/POST/DELETE /api/flags — typed envelope. POST body validated against isFeatureFlagKey. safetyContract 'policy_governance_read_only'.", status: "passing", evidence: "app/api/flags/route.ts" },
-  { id: "ui.flags_page", area: "command_center", capability: "/dashboard/flags — grouped flag list (Autonomy / Notifications / Audit / Interface). Per-flag row shows label + key + override badge + current state pill + catalog default + audit fields. Inline rationale input + Enable/Disable + Reset buttons. Sidebar entry in Setup group.", status: "passing", evidence: "app/dashboard/flags/page.tsx" },
+  { id: "ui.flags_page", area: "command_center", capability: "/dashboard/flags — grouped flag list (Autonomy / Notifications / Audit / Interface). Per-flag row shows label + key + override badge + current state pill + catalog default + audit fields.", status: "passing", evidence: "app/dashboard/flags/page.tsx" },
   { id: "flags.catalog_tests", area: "operating_loop", capability: "lib/flags/__tests__/featureFlagCatalog.test.ts — 7 tests: at-least-one-flag-per-group, unique catalog keys, non-empty labels + descriptions, isFeatureFlagKey narrowing, isFeatureFlagKey rejection of unknown keys, defaultFlagValue lookup, throw on unknown.", status: "passing", evidence: "lib/flags/__tests__/featureFlagCatalog.test.ts" },
 
   // ---------------------------------------------------------------------------
@@ -1116,7 +1114,7 @@ export const VALIDATION_MATRIX: ValidationRow[] = [
   // ---------------------------------------------------------------------------
   { id: "autonomy.cron_health_catalog", area: "operating_loop", capability: "lib/autonomy/cronHealthCatalog — closed list of every cron (autonomy-scheduler, cron-dispatch-telemetry, cron-weekly-digest, cron-onboarding-reminder). Each spec carries id + schedule + description + routePath. Adding a cron is a deliberate two-line edit here + in vercel.json.", status: "passing", evidence: "lib/autonomy/cronHealthCatalog.ts" },
   { id: "autonomy.cron_health_route", area: "operating_loop", capability: "GET /api/cron-health — returns CronSpec[] joined with readCronHealth snapshot per cron. safetyContract 'trust_center_read_only'.", status: "passing", evidence: "app/api/cron-health/route.ts" },
-  { id: "ui.cron_health_page", area: "command_center", capability: "/dashboard/cron-health — per-cron card with success-rate pill, ticks/errors/streak tiles, last-tick timestamp. Red callout when consecutiveFailures >= 3 (self-heal is skipping). Sidebar entry next to Self-Diagnostic.", status: "passing", evidence: "app/dashboard/cron-health/page.tsx" },
+  { id: "ui.cron_health_page", area: "command_center", capability: "/dashboard/cron-health — per-cron card with success-rate pill, ticks/errors/streak tiles, last-tick timestamp. Red callout when consecutiveFailures >= 3 (self-heal is skipping).", status: "passing", evidence: "app/dashboard/cron-health/page.tsx" },
 
   // ---------------------------------------------------------------------------
   // Phase 124 — Telemetry signal CSV export

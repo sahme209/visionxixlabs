@@ -13,11 +13,11 @@ export default function ExecutionPlansPage() {
       <DocHeader
         kicker="Operate · Execution"
         title="Execution plans."
-        summary="A phased, dependency-aware sequence of changes Axiom proposes after a scan. Every item ships with Terraform, blast radius, pre-verified rollback, expected impact, and approval requirements."
+        summary="A phased, dependency-aware sequence of changes Axiom proposes after a scan. Items can include generated Terraform or CLI review artifacts, blast-radius context, rollback expectations, evidence sources, and approval requirements."
       />
 
       <Callout variant="safe" title="The contract">
-        An execution plan is a proposal — not an action. Nothing applies until you approve. Every item is reversible via a pre-verified rollback path with a measured RTO.
+        An execution plan is a proposal — not an action. Nothing applies until you approve. A rollback path is available only when the active adapter and evidence verify it; otherwise the plan must remain blocked or require an explicit manual recovery procedure.
       </Callout>
 
       <DocSection id="anatomy" title="Anatomy of an execution plan" kicker="01">

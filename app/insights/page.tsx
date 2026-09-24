@@ -98,8 +98,8 @@ export default function InsightsPage() {
             <p className="text-zinc-400 text-sm mb-4 max-w-xl mx-auto">
               Autonomous cloud operations for AWS, Azure, and GCP. Connect your cloud and let Axiom handle the rest.
             </p>
-            <AnimatedButton variant="primary" href="/auth/signup?redirect=/dashboard/connect-cloud">
-              Run Axiom
+            <AnimatedButton variant="primary" href="/download">
+              Download Axiom Agent
             </AnimatedButton>
           </section>
         </Reveal>

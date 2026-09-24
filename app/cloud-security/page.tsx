@@ -23,7 +23,7 @@ export const metadata: Metadata = {
     "Secure-by-design cloud engineering. Security baseline enforcement, DevOps hardening, AI security review, zero-trust deployment, and measurable risk reduction.",
   openGraph: {
     title: "Cloud Security & Infrastructure Hardening | Vision XIX Labs",
-    description: "Zero-trust cloud security: immutable audit trails, role-based access with auto-revocation, and cost tracking per team.",
+    description: "Cloud security workflows with persisted audit evidence, role-aware access controls, and explicit connector state.",
     url: "https://visionxixlabs.com/cloud-security",
   },
   alternates: { canonical: "https://visionxixlabs.com/cloud-security" },

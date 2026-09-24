@@ -14,6 +14,7 @@
 import Link from "next/link";
 import { ArrowRightIcon, PlayCircleIcon, BookOpenIcon, ShieldCheckIcon } from "@heroicons/react/24/outline";
 import { listScenarios, type DemoScenario } from "@/lib/demo/demoScenarios";
+import { SandboxNavigation } from "@/components/marketing/SandboxNavigation";
 
 export const dynamic = "force-dynamic";
 
@@ -22,7 +23,9 @@ export default function DemoLanding() {
   const scenarios = listScenarios("client");
 
   return (
-    <main className="relative max-w-6xl mx-auto px-6 md:px-10 py-16 space-y-10">
+    <>
+      <SandboxNavigation />
+      <main className="relative max-w-6xl mx-auto px-6 md:px-10 py-16 space-y-10">
       {/* Coral × violet aurora — Huly-style warm wash behind the hero */}
       <div aria-hidden className="pointer-events-none absolute inset-x-0 -top-8 h-[520px] -z-10 overflow-hidden">
         <div className="ambient-drift absolute -top-24 left-1/2 -translate-x-1/2 w-[860px] h-[440px] rounded-full bg-brand-violet/[0.08] blur-[140px]" />
@@ -114,7 +117,8 @@ export default function DemoLanding() {
           <li>· No connector credentials are stored. No webhooks fire. No AI tokens are spent.</li>
         </ul>
       </section>
-    </main>
+      </main>
+    </>
   );
 }
 

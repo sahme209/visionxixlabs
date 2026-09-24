@@ -203,11 +203,11 @@ const CTA_REGISTRY: Record<string, Cta> = {
   },
   start_free_trial: {
     id: "start_free_trial",
-    label: "Start free trial",
-    href: "/auth/signup?redirect=/download",
-    intent: "sign_up",
+    label: "Download Axiom Agent",
+    href: "/download",
+    intent: "download_desktop",
     kind: "self_serve",
-    iconHint: "arrow_right",
+    iconHint: "download",
   },
   how_it_works: {
     id: "how_it_works",

@@ -110,6 +110,45 @@ export async function GET(req: NextRequest) {
       });
     } catch { /* skip */ }
 
+    // Phase 652: pull Phase 644-649 integration dispatches.
+    // Stored at AiRationaleEnrichment / targetKind=workforce_action_execution,
+    // scoped by organizationId. We need to look up the user's
+    // organization via OrgMembership (no schema relation to OrgMembership).
+    let actionExecutions: { targetId: string; narrative: string; nextActionsJson: unknown; outcome: string; updatedAt: Date }[] = [];
+    let secureAuditRecords: { id: string; action: string; outcome: string; entityRef: string | null; occurredAt: Date; detail: unknown }[] = [];
+    try {
+      const membership = await prisma.orgMembership.findFirst({
+        where: { userId },
+        select: { organizationId: true },
+      });
+      if (membership?.organizationId) {
+        const rows = await prisma.aiRationaleEnrichment.findMany({
+          where: {
+            organizationId: membership.organizationId,
+            targetKind: "workforce_action_execution",
+          },
+          orderBy: { updatedAt: "desc" },
+          take: Math.min(20, limit),
+          select: { targetId: true, narrative: true, nextActionsJson: true, outcome: true, updatedAt: true },
+        });
+        actionExecutions = rows;
+
+        // Phase 655: pull engineer.* audit events for this org.
+        try {
+          const audits = await prisma.secureAuditRecord.findMany({
+            where: {
+              organizationId: membership.organizationId,
+              action: { in: ["engineer.action_executed", "engineer.action_execution_failed", "engineer.action_attempted"] },
+            },
+            orderBy: { occurredAt: "desc" },
+            take: Math.min(30, limit),
+            select: { id: true, action: true, outcome: true, entityRef: true, occurredAt: true, detail: true },
+          });
+          secureAuditRecords = audits;
+        } catch { /* skip — table may not exist */ }
+      }
+    } catch { /* skip — table or relation may not exist in this deployment */ }
+
     const events = composeActivityStream({
       executionLogs,
       agentRuns: agentRuns.map((r) => ({
@@ -144,6 +183,8 @@ export async function GET(req: NextRequest) {
         createdAt: a.createdAt,
         appliedAt: a.appliedAt,
       })),
+      actionExecutions,
+      secureAuditRecords,
     });
 
     return NextResponse.json({
@@ -155,6 +196,8 @@ export async function GET(req: NextRequest) {
           agentRuns: agentRuns.length,
           findings: findings.length,
           auditEvents: auditEvents.length,
+          actionExecutions: actionExecutions.length,
+          secureAuditRecords: secureAuditRecords.length,
         },
         generatedAt: new Date().toISOString(),
       },

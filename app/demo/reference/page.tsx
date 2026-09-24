@@ -18,12 +18,15 @@ import {
   SAFETY_INVARIANTS,
   WEBHOOK_EVENTS,
 } from "@/lib/demo/technicalReference";
+import { SandboxNavigation } from "@/components/marketing/SandboxNavigation";
 
 export const dynamic = "force-dynamic";
 
 export default function ReferencePage() {
   return (
-    <main className="max-w-6xl mx-auto px-4 sm:px-6 py-10 space-y-10">
+    <>
+      <SandboxNavigation />
+      <main className="max-w-6xl mx-auto px-4 sm:px-6 py-10 space-y-10">
       {/* Sandbox marker for symmetry with /demo/[id] */}
       <div className="rounded-lg border border-violet-500/20 bg-violet-500/[0.04] px-3 py-2 flex items-center gap-2">
         <span className="w-1.5 h-1.5 rounded-full bg-violet-400" />
@@ -249,10 +252,11 @@ export default function ReferencePage() {
           <Link href="/docs/architecture" className="text-[12px] text-zinc-300 hover:text-white underline-offset-2 hover:underline">Architecture overview →</Link>
           <Link href="/docs/approval-workflow" className="text-[12px] text-zinc-300 hover:text-white underline-offset-2 hover:underline">Approval workflow →</Link>
           <Link href="/docs/audit-logs" className="text-[12px] text-zinc-300 hover:text-white underline-offset-2 hover:underline">Audit logs →</Link>
-          <Link href="/dashboard/start-here" className="text-[12px] text-zinc-300 hover:text-white underline-offset-2 hover:underline">Set up your real workspace →</Link>
+          <Link href="/download" className="text-[12px] text-zinc-300 hover:text-white underline-offset-2 hover:underline">Download Axiom Agent →</Link>
         </div>
       </footer>
-    </main>
+      </main>
+    </>
   );
 }
 

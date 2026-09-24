@@ -201,7 +201,7 @@ export function Navigation() {
               Pricing
             </Link>
 
-            {/* Right-side cluster: Shipped pill · GitHub · Demo · Sign in · Sign up */}
+            {/* Right-side cluster: release status · source · sandbox · docs · download */}
             <div className="flex items-center gap-1 ml-2">
               {/* "What's shipped" — small live indicator linking to /changelog.
                   Pinging coral dot + monospace phase number reads as "alive
@@ -216,8 +216,7 @@ export function Navigation() {
                   <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-brand-coral opacity-60" />
                   <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-brand-coral" />
                 </span>
-                <span className="text-zinc-400">Shipped</span>
-                <span className="text-brand-coral tabular-nums">489</span>
+                <span className="text-zinc-400">Release notes</span>
               </Link>
 
               {/* ⌘K hint — discoverability for the global command palette */}
@@ -259,16 +258,16 @@ export function Navigation() {
               <div className="w-px h-5 bg-white/[0.08] mx-1" aria-hidden />
 
               <Link
-                href="/download"
+                href="/docs"
                 className="text-zinc-400 hover:text-white transition-colors text-sm font-medium whitespace-nowrap px-3 py-2"
               >
-                Get the app
+                Documentation
               </Link>
               <Link
-                href="/auth/signup"
+                href="/download"
                 className="btn-press inline-flex items-center gap-2 px-5 py-2 rounded-full text-sm font-semibold whitespace-nowrap tracking-tight"
               >
-                Sign up
+                Download
                 <ArrowRightIcon className="h-3.5 w-3.5 shrink-0" />
               </Link>
             </div>
@@ -372,11 +371,11 @@ export function Navigation() {
                   </Link>
 
                   <Link
-                    href="/auth/signup?redirect=/download"
+                    href="/docs"
                     onClick={() => setMobileMenuOpen(false)}
                     className="mt-2 mx-4 inline-flex items-center justify-center px-5 py-2.5 border border-white/[0.12] text-white rounded-lg text-sm font-semibold hover:bg-white/5 transition-colors"
                   >
-                    Create desktop account
+                    Read documentation
                     <ArrowRightIcon className="ml-1.5 h-4 w-4" />
                   </Link>
                 </div>

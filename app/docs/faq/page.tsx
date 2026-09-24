@@ -13,7 +13,7 @@ const FAQ_GROUPS = [
     items: [
       {
         q: "What is Axiom Agent?",
-        a: "An AI-native autonomous cloud operations system. It connects to your AWS (Azure/GCP soon) via read-only IAM role, scans your infrastructure, reasons about cost/security/drift, generates Terraform-backed execution plans, and applies approved changes — with a full audit trail and pre-verified rollback.",
+        a: "A downloadable deployment-operations workspace for intake, readiness, approvals, plan review, guided execution, validation, evidence, and closure. Connector and execution availability is shown in the installed release.",
       },
       {
         q: "How is this different from a regular cloud cost tool?",
@@ -76,7 +76,7 @@ const FAQ_GROUPS = [
       },
       {
         q: "What if an execution fails?",
-        a: "Rollback fires automatically. Every plan item ships with a pre-verified rollback strategy and a measured RTO (typically under 60 seconds). The audit log records both the failure and the rollback outcome.",
+        a: "Rollback availability depends on the active adapter, prerequisites, and verified recovery evidence. When automatic rollback is unavailable, the app must keep the failure visible and require an explicit manual recovery path.",
       },
       {
         q: "Can I export the Terraform plan instead of applying?",
@@ -122,16 +122,16 @@ const FAQ_GROUPS = [
     title: "Pricing & access",
     items: [
       {
-        q: "Is there a free tier?",
-        a: "Yes — Starter is free forever with 1 cloud account and monthly scans. Growth ($149/mo) adds the full cognitive loop, execution plans, and unlimited scans. Scale, Enterprise tiers add more accounts, multi-cloud, and compliance frameworks. Pricing at /operator/pricing.",
+        q: "How is Axiom priced?",
+        a: "Pricing is quote-based and tied to the installed application, verified capabilities, connector scope, usage limits, and support terms. The public site does not promise an unverified free tier.",
       },
       {
-        q: "Do I need a credit card to start?",
-        a: "No. Starter tier requires no payment. All higher tiers include a 7-day free trial.",
+        q: "Can I review the product before requesting a quote?",
+        a: "Yes. Use the labeled sample-data sandbox, read the documentation, and download the current release. Connecting real systems requires appropriate accounts and permissions.",
       },
       {
-        q: "Is enterprise SSO available?",
-        a: "Yes — SAML + OIDC on the Growth tier and above. Enterprise tier adds custom IdP integration and SCIM.",
+        q: "Which identity options are available?",
+        a: "Desktop sign-in uses the identity providers configured on the deployment. Confirm SAML, OIDC, SCIM, and provider availability in the written implementation scope rather than inferring it from a logo.",
       },
     ],
   },

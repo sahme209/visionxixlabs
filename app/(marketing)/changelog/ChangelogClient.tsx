@@ -319,7 +319,7 @@ export function ChangelogClient() {
         </p>
         <div className="mt-6 flex items-center justify-center gap-2">
           <Link
-            href="/dashboard/audit"
+            href="/docs/audit-logs"
             className="inline-flex items-center gap-2 rounded-full bg-indigo-500 px-4 py-2 text-[12.5px] font-medium text-white shadow-[0_0_20px_rgba(99,102,241,0.45)] hover:bg-indigo-400 transition"
           >
             Open audit log

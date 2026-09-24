@@ -35,7 +35,7 @@ interface Discipline {
 const DISCIPLINES: readonly Discipline[] = [
   // engineering
   { name: "Backend Engineer",        category: "engineering", marketRate: "$210k+", scope: "API design, service contracts, request routing.",                 evidence: "/dashboard/agent-bus",            evidenceLabel: "agent bus + typed contracts" },
-  { name: "Frontend Engineer",       category: "engineering", marketRate: "$200k+", scope: "Operator UI, accessibility, design system.",                       evidence: "/dashboard/command-center",       evidenceLabel: "command center" },
+  { name: "Frontend Engineer",       category: "engineering", marketRate: "$200k+", scope: "Operator UI, accessibility, design system.",                       evidence: "/download",       evidenceLabel: "command center" },
   { name: "Mobile Engineer (iOS)",   category: "engineering", marketRate: "$220k+", scope: "Swift surface, biometric auth, APNS push payloads.",              evidence: "/platforms",                       evidenceLabel: "platforms · mobile" },
   { name: "Mobile Engineer (Android)", category: "engineering", marketRate: "$215k+", scope: "Kotlin surface, FCM push, offline queue conflicts.",            evidence: "/platforms",                       evidenceLabel: "platforms · mobile" },
   { name: "Desktop Engineer",        category: "engineering", marketRate: "$200k+", scope: "macOS / Windows / Linux shells, tray state, keychain.",          evidence: "/dashboard/desktop",              evidenceLabel: "desktop companion" },
@@ -222,7 +222,7 @@ export function DisciplinesClient() {
             See plans
           </Link>
           <Link
-            href="/dashboard/command-center"
+            href="/download"
             className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-4 py-2 text-[12.5px] font-medium text-zinc-200 hover:bg-white/[0.07] transition"
           >
             Open cockpit
