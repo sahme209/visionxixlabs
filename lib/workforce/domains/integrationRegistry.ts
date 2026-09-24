@@ -215,8 +215,8 @@ export async function writeIntegrationConfig(
 export function resolveEnvReference(ref: string): string | null {
   if (!isValidCredentialReference(ref)) return null;
   if (!ref.toLowerCase().startsWith("env://")) return null;
-  const varName = ref.slice("env://".length).replace(/[^A-Z0-9_]/g, "");
-  if (!varName) return null;
+  const varName = ref.slice("env://".length);
+  if (!/^[A-Z0-9_]+$/.test(varName)) return null;
   const v = process.env[varName];
   return v && v.length > 0 ? v : null;
 }
