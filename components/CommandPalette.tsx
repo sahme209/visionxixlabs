@@ -29,7 +29,6 @@ import {
   CodeBracketIcon,
   DocumentTextIcon,
   PlayCircleIcon,
-  ArrowDownTrayIcon,
 } from "@heroicons/react/24/outline";
 
 interface CommandItem {
@@ -46,13 +45,13 @@ interface CommandItem {
 const COMMANDS: readonly CommandItem[] = [
   // Product
   { id: "home",       label: "Home",              href: "/",                       category: "Product",   icon: SparklesIcon,      hint: "The landing page" },
-  { id: "axiom",      label: "Axiom Agent",       href: "/axiom",                  category: "Product",   icon: RocketLaunchIcon,  hint: "Autonomous cloud operations" },
-  { id: "releaseops", label: "Axiom ReleaseOps",  href: "/axiom/releaseops",       category: "Product",   icon: ShieldCheckIcon,   hint: "Deployment governance + monitoring" },
-  { id: "demo",       label: "Try the demo",      href: "/demo",                   category: "Product",   icon: PlayCircleIcon,    hint: "Scripted walkthrough, no signup" },
-  { id: "operator",   label: "Download Axiom Agent", href: "/download", category: "Product", icon: CloudIcon, hint: "Install the desktop command center", keywords: ["start", "signup", "onboard", "download"] },
-  { id: "plans",      label: "Pricing",           href: "/plans",                  category: "Product",   icon: DocumentTextIcon,  hint: "Custom pricing based on cloud usage", keywords: ["pricing", "cost"] },
+  { id: "axiom",      label: "TAURI capabilities", href: "/#capabilities",          category: "Product",   icon: RocketLaunchIcon,  hint: "Verified product capability inventory" },
+  { id: "releaseops", label: "TAURI workflow",     href: "/#workflow",              category: "Product",   icon: ShieldCheckIcon,   hint: "Deployment intake through audit history" },
+  { id: "demo",       label: "Try the sandbox",   href: "/demo",                   category: "Product",   icon: PlayCircleIcon,    hint: "Fictional sample data; no production execution" },
+  { id: "operator",   label: "Open web app",      href: "/auth/signup?redirect=/dashboard", category: "Product", icon: CloudIcon, hint: "Create a browser workspace", keywords: ["start", "signup", "onboard", "access"] },
+  { id: "plans",      label: "Access and pricing", href: "/plans",                  category: "Product",   icon: DocumentTextIcon,  hint: "Contact-based production access", keywords: ["pricing", "cost"] },
   { id: "integrations", label: "Integrations",    href: "/integrations",           category: "Product",   icon: CommandLineIcon,   hint: "Every connector we ship" },
-  { id: "download",   label: "Download desktop",  href: "/download",               category: "Product",   icon: ArrowDownTrayIcon, hint: "macOS, Windows, Linux" },
+  { id: "download",   label: "Product access",    href: "/download",               category: "Product",   icon: CloudIcon, hint: "TAURI is delivered as a web application" },
 
   // Resources
   { id: "docs",       label: "Documentation",     href: "/docs",                   category: "Resources", icon: BookOpenIcon,      hint: "Self-serve guides for the platform" },

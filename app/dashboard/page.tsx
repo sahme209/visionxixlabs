@@ -37,7 +37,6 @@ import {
   BoltIcon,
 } from "@heroicons/react/24/outline";
 import { resolveNextAction } from "@/lib/product/nextAction";
-import { useDesktopRuntime } from "@/lib/desktop/useDesktopRuntime";
 import { assessOnboarding } from "@/lib/onboarding/onboardingState";
 import { computeHonestyCounts } from "@/lib/actions/actionRegistry";
 import { RunScanButton } from "./RunScanButton";
@@ -88,7 +87,6 @@ export default function DashboardPage() {
   const [connectors, setConnectors] = useState<ConnectorStatus[]>([]);
   const [summary, setSummary] = useState<DashboardSummary | null>(null);
   const [loading, setLoading] = useState(true);
-  const { isDesktop } = useDesktopRuntime();
 
   async function refresh() {
     await Promise.all([
@@ -139,7 +137,7 @@ export default function DashboardPage() {
     readyPlans: 0,
     releaseopsConnected: false,
     releaseopsServicesAtRisk: 0,
-    desktopAvailable: isDesktop,
+    desktopAvailable: false,
     hasRunScan: connected.length > 0,
     isAuthenticated: true,
   });
@@ -416,28 +414,6 @@ export default function DashboardPage() {
         </div>
       </section>
 
-      {/* ─── Desktop footer — only when relevant ────────────────────────── */}
-      {!isDesktop && (
-        <section className="mb-8">
-          <Link
-            href="/download"
-            className="group block border border-cyan-500/15 bg-cyan-500/[0.02] hover:border-cyan-400/40 hover:bg-cyan-500/[0.05] transition-colors px-6 py-5 rounded-md"
-          >
-            <div className="flex items-center gap-4">
-              <CommandLineIcon className="h-5 w-5 text-cyan-300/80 shrink-0" />
-              <div className="flex-1 min-w-0">
-                <p className="text-[12.5px] font-medium text-white mb-0.5 font-mono">
-                  <span className="text-cyan-300">$</span> axiom.runtime --desktop
-                </p>
-                <p className="text-[11px] text-zinc-500 leading-relaxed font-mono">
-                  signed handoffs · review terraform locally · credentials in keychain
-                </p>
-              </div>
-              <span className="font-mono text-[14px] text-cyan-300/60 group-hover:text-cyan-200 group-hover:translate-x-0.5 transition-all shrink-0">→</span>
-            </div>
-          </Link>
-        </section>
-      )}
 
       {/* ─── Robotic footer — terminal-style status line ─────────────────── */}
       <footer className="mt-16 pt-6 border-t border-white/[0.04] font-mono text-[10px] uppercase tracking-[0.18em] text-zinc-600 flex items-center justify-between flex-wrap gap-3">

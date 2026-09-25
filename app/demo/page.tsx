@@ -62,10 +62,10 @@ export default function DemoLanding() {
 
         <div className="flex flex-wrap items-center gap-x-4 gap-y-3">
           <Link
-            href="/download"
+            href="/auth/signup?redirect=/dashboard"
             className="btn-press inline-flex items-center gap-2 px-7 py-3.5 rounded-full text-[14px] font-semibold tracking-tight"
           >
-            Download the real workspace
+            Create a web workspace
             <ArrowRightIcon className="h-4 w-4 opacity-60" />
           </Link>
           <Link
