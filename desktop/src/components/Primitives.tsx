@@ -6,7 +6,7 @@
  * add it here.
  */
 
-import { type ReactNode, type ComponentType, type ButtonHTMLAttributes, type HTMLAttributes, type MouseEvent } from "react";
+import { type ReactNode, type ComponentType, type ButtonHTMLAttributes, type HTMLAttributes } from "react";
 import { openExternal } from "../lib/notifications";
 
 // ---------------------------------------------------------------------------
@@ -199,9 +199,9 @@ export function EmptyState({
 
 // ---------------------------------------------------------------------------
 // DataSourceBanner — closed-union of the three states every desktop view
-// can be in. Replaces the silent mock-data fallback with an honest signal:
+// can be in. Production surfaces never substitute sample records:
 //
-//   "preview"          — no API key paired; view is showing mock data
+//   "preview"          — user explicitly entered the isolated sample preview
 //   "authenticated_no_data" — key paired, but the upstream endpoint
 //                             returned nothing (legacy /api/* not
 //                             implemented yet on the platform)
@@ -213,20 +213,8 @@ export function EmptyState({
 
 export type DataSourceMode = "preview" | "authenticated_no_data" | "live";
 
-function openInWebClick(webPath: string): (e: MouseEvent) => void {
-  // Anchor clicks inside a Tauri webview can sometimes navigate the app
-  // itself (depending on platform + webview policy). Always route through
-  // tauri-plugin-shell so the link reliably opens in the OS browser, then
-  // suppress the default to avoid the in-app navigation race.
-  return (e) => {
-    e.preventDefault();
-    void openExternal(`https://visionxixlabs.com${webPath}`);
-  };
-}
-
 export function DataSourceBanner({
   mode,
-  webPath,
   surfaceName,
 }: {
   mode: DataSourceMode;
@@ -250,15 +238,8 @@ export function DataSourceBanner({
           <span className="text-amber-300 uppercase tracking-[0.18em]">no live data yet</span>
         </div>
         <p className="text-zinc-400 leading-relaxed font-sans text-[12px]">
-          API key paired, but the {surfaceName} surface isn&apos;t implemented for this workspace yet.
-          Showing realistic mock data so the UI stays useful while the backend catches up.
-          <a
-            href={`https://visionxixlabs.com${webPath}`}
-            onClick={openInWebClick(webPath)}
-            target="_blank"
-            rel="noreferrer"
-            className="text-violet-300 hover:text-violet-200 ml-1 underline-offset-2 hover:underline"
-          >Open the web view →</a>
+          The authenticated workspace returned no {surfaceName} records, or this service is unavailable.
+          This screen does not substitute sample data. Check the error or empty state below and retry after the dependency is available.
         </p>
       </div>
     );
@@ -268,18 +249,11 @@ export function DataSourceBanner({
     <div className="rounded-lg border border-violet-500/25 bg-violet-500/[0.06] px-3 py-2.5 text-[11px] font-mono">
       <div className="flex items-center gap-2 mb-1">
         <span className="w-1.5 h-1.5 rounded-full bg-violet-400 animate-pulse" />
-        <span className="text-violet-300 uppercase tracking-[0.18em]">preview · mock data</span>
+        <span className="text-violet-300 uppercase tracking-[0.18em]">sample preview · isolated</span>
       </div>
       <p className="text-zinc-400 leading-relaxed font-sans text-[12px]">
-        No API key configured. Paste a <span className="font-mono text-zinc-300">vxlk_live_…</span> key in
-        <span className="font-mono text-zinc-300"> Settings → VisionXIXLabs API key</span> to load real {surfaceName} from your workspace.
-        <a
-          href={`https://visionxixlabs.com${webPath}`}
-          onClick={openInWebClick(webPath)}
-          target="_blank"
-          rel="noreferrer"
-          className="text-violet-300 hover:text-violet-200 ml-1 underline-offset-2 hover:underline"
-        >Open in web →</a>
+        This is an explicitly selected demonstration mode. No production operation will run and no sample record is presented as live.
+        Sign in from the desktop welcome screen to load real {surfaceName} from your workspace.
       </p>
     </div>
   );

@@ -7,7 +7,7 @@
 import { useEffect, useState } from "react";
 import type { View } from "../App";
 import { desktopClient, type ControlPlaneStateLite } from "../lib/desktopClient";
-import { Card, ExternalLink, Kpi, PostureTile, SectionHeader, ViewShell, LoadingState, Badge, statusToneFor, riskToneFor } from "../components/Primitives";
+import { Card, Kpi, PostureTile, SectionHeader, ViewShell, LoadingState, Badge, statusToneFor, riskToneFor } from "../components/Primitives";
 import { OnboardingChecklist } from "../components/OnboardingChecklist";
 
 export function DashboardView({ onNavigate }: { onNavigate?: (v: View) => void } = {}) {
@@ -124,14 +124,6 @@ export function DashboardView({ onNavigate }: { onNavigate?: (v: View) => void }
                     <p className="text-sm font-semibold text-white truncate">{a.title}</p>
                     <p className="text-[11px] text-zinc-500 line-clamp-2 mt-0.5">{a.description}</p>
                   </div>
-                  {a.route && (
-                    <ExternalLink
-                      href={`https://visionxixlabs.com${a.route}`}
-                      className="shrink-0 btn-ghost"
-                    >
-                      Open ↗
-                    </ExternalLink>
-                  )}
                 </div>
               </li>
             ))}
@@ -289,26 +281,11 @@ function AuthStatusBanner({ previewMode }: { previewMode: boolean }) {
             </div>
             <h3 className="text-lg font-bold text-white tracking-tight mb-1.5">Connect a workspace API key to load live state.</h3>
             <p className="text-[12px] text-zinc-400 leading-relaxed max-w-xl">
-              Mint a key on the web at{" "}
-              <span className="font-mono text-zinc-300">visionxixlabs.com/admin/api-keys</span>{" "}
-              with scope <span className="font-mono text-zinc-300">release_gate:read</span> (or broader), then paste it in{" "}
-              <span className="font-mono text-zinc-300">Settings → VisionXIXLabs API key</span>. The desktop will switch from mock data to your real workspace immediately.
+              Use browser sign-in from the welcome screen, or ask a workspace administrator for a key with{" "}
+              <span className="font-mono text-zinc-300">release_gate:read</span> scope (or broader), then paste it in{" "}
+              <span className="font-mono text-zinc-300">Settings → VisionXIXLabs API key</span>. The installed application will load your persisted workspace state after authentication.
             </p>
           </div>
-        </div>
-        <div className="flex items-center gap-2 shrink-0">
-          <ExternalLink
-            href="https://visionxixlabs.com/admin/api-keys"
-            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-full bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500 text-white text-[12px] font-semibold shadow-glow-violet transition-all"
-          >
-            Mint an API key →
-          </ExternalLink>
-          <ExternalLink
-            href="https://visionxixlabs.com/demo"
-            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-full border border-white/[0.12] bg-white/[0.03] hover:bg-white/[0.06] text-zinc-200 text-[12px] font-semibold transition-all"
-          >
-            Explore web demo
-          </ExternalLink>
         </div>
       </div>
     </div>

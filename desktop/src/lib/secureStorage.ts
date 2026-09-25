@@ -1,56 +1,41 @@
 /**
- * Persistent storage for the desktop app. Uses Tauri's `plugin-store`
- * which writes JSON to the app's OS-private app-data directory (encrypted
- * at rest on macOS via FileVault, Windows via DPAPI, Linux via the
- * filesystem permissions of the per-user data dir).
+ * Secret storage for the desktop app. The packaged application delegates to
+ * Rust commands backed by the operating-system credential vault (Keychain,
+ * Credential Manager, or Secret Service).
  *
  * Falls back to in-memory storage when the Tauri runtime isn't present
  * (e.g. when the React app is running under `vite preview` in a browser
  * for development).
  */
 
-import { Store } from "@tauri-apps/plugin-store";
-
-const STORE_FILE = "axiom-desktop.dat";
+import { invoke } from "@tauri-apps/api/core";
 
 let memoryStore: Map<string, unknown> | null = null;
-let tauriStore: Store | null = null;
-
-async function getStore(): Promise<Store | null> {
-  if (tauriStore) return tauriStore;
-  try {
-    tauriStore = await Store.load(STORE_FILE);
-    return tauriStore;
-  } catch {
-    if (!memoryStore) memoryStore = new Map();
-    return null;
-  }
+function isTauri(): boolean {
+  return typeof window !== "undefined" && "__TAURI_INTERNALS__" in window;
 }
 
 export async function readSecret<T = string>(key: string): Promise<T | undefined> {
-  const store = await getStore();
-  if (store) {
-    const value = await store.get<T>(key);
+  if (isTauri()) {
+    const value = await invoke<T | null>("read_secure_value", { key });
     return value ?? undefined;
   }
+  if (!memoryStore) memoryStore = new Map();
   return memoryStore?.get(key) as T | undefined;
 }
 
 export async function writeSecret(key: string, value: unknown): Promise<void> {
-  const store = await getStore();
-  if (store) {
-    await store.set(key, value);
-    await store.save();
+  if (isTauri()) {
+    await invoke("write_secure_value", { key, value });
     return;
   }
+  if (!memoryStore) memoryStore = new Map();
   memoryStore?.set(key, value);
 }
 
 export async function clearSecret(key: string): Promise<void> {
-  const store = await getStore();
-  if (store) {
-    await store.delete(key);
-    await store.save();
+  if (isTauri()) {
+    await invoke("delete_secure_value", { key });
     return;
   }
   memoryStore?.delete(key);

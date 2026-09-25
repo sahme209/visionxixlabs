@@ -136,6 +136,10 @@ export default function App() {
   const [preview, setPreview] = useState(false);
 
   useEffect(() => {
+    desktopClient.isPreviewMode = preview;
+  }, [preview]);
+
+  useEffect(() => {
     const t = setTimeout(() => setBooted(true), 600);
     return () => clearTimeout(t);
   }, []);
@@ -181,12 +185,15 @@ export default function App() {
 
   if (!booted) return <BootScreen />;
   if (!authenticated && !preview) {
-    return <DesktopSignInView onSignedIn={() => setAuthenticated(true)} onPreview={() => setPreview(true)} />;
+    return <DesktopSignInView
+      onSignedIn={() => { setPreview(false); setAuthenticated(true); }}
+      onPreview={() => setPreview(true)}
+    />;
   }
 
   return (
     <div className="flex h-screen bg-axiom-bg text-white overflow-hidden">
-      <Sidebar activeView={activeView} onNavigate={setActiveView} />
+      <Sidebar activeView={activeView} onNavigate={setActiveView} authenticated={authenticated} preview={preview} />
       <main className="flex-1 flex flex-col min-w-0 min-h-0">
         <TopBar activeView={activeView} onNavigate={setActiveView} />
         <div className="flex-1 min-h-0 flex flex-col">

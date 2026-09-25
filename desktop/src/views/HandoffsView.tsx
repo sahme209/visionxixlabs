@@ -1,81 +1,36 @@
 /**
- * Handoff inbox — desktop-side view of execution-plan handoffs delivered
- * from the web app.
+ * Handoff inbox — desktop-side view of signed execution-plan handoffs.
  *
  * The lifecycle taxonomy mirrors `/lib/desktop/handoffLifecycle.ts` in the
  * parent Next.js project. The shape is intentionally a small mirror — when
  * the cross-package path is wired up, this file will import directly.
  */
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { DataSourceBanner, ViewShell } from "../components/Primitives";
 import { desktopClient } from "../lib/desktopClient";
-
-type HandoffState =
-  | "not_available"
-  | "eligible"
-  | "preparing"
-  | "ready"
-  | "opened_in_desktop"
-  | "expired"
-  | "failed"
-  | "completed"
-  | "audit_sync_pending"
-  | "audit_synced";
-
-interface HandoffRow {
-  id: string;
-  planLabel: string;
-  approver: string;
-  preparedAt: string;
-  expiresAt: string;
-  state: HandoffState;
-  steps: number;
-  risk: "low" | "medium" | "high";
-  resources: number;
-  errorSummary?: string;
-}
-
-const SAMPLE_HANDOFFS: HandoffRow[] = [
-  {
-    id: "hf_close_s3_public",
-    planLabel: "Close public S3 buckets · prod-account",
-    approver: "bob@example.com",
-    preparedAt: nowMinus(38),
-    expiresAt: nowPlus(22 * 60),
-    state: "ready",
-    steps: 4,
-    risk: "high",
-    resources: 7,
-  },
-  {
-    id: "hf_rightsize_compute",
-    planLabel: "Rightsize idle EC2 fleet · staging-account",
-    approver: "alice@example.com",
-    preparedAt: nowMinus(2 * 60),
-    expiresAt: nowPlus(21 * 60),
-    state: "opened_in_desktop",
-    steps: 12,
-    risk: "medium",
-    resources: 14,
-  },
-  {
-    id: "hf_drift_db_subnet",
-    planLabel: "Drift correction · RDS subnet group",
-    approver: "alice@example.com",
-    preparedAt: nowMinus(6 * 60),
-    expiresAt: nowMinus(2 * 60),
-    state: "audit_sync_pending",
-    steps: 3,
-    risk: "low",
-    resources: 2,
-  },
-];
+import { handoffInbox, type HandoffLifecycleState, type InboxHandoff } from "../lib/handoffInbox";
 
 export function HandoffsView() {
   const [filter, setFilter] = useState<"all" | "active" | "terminal">("all");
+  const [handoffs, setHandoffs] = useState<InboxHandoff[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const visible = SAMPLE_HANDOFFS.filter((h) => {
+  const refresh = async () => {
+    try {
+      setHandoffs(await handoffInbox.list());
+      setError(null);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : String(err));
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => { void refresh(); }, []);
+
+  const visible = handoffs.filter((h) => {
     if (filter === "active") return h.state !== "audit_synced" && h.state !== "expired" && h.state !== "failed";
     if (filter === "terminal") return h.state === "audit_synced" || h.state === "expired" || h.state === "failed";
     return true;
@@ -91,7 +46,7 @@ export function HandoffsView() {
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
           <h1 className="text-xl font-bold tracking-tight">Handoff Inbox</h1>
-          <p className="text-sm text-zinc-500 mt-0.5">Execution plans signed by the web app, awaiting local review</p>
+          <p className="text-sm text-zinc-500 mt-0.5">Signed execution plans received by this installed application</p>
         </div>
         <div className="flex items-center gap-1 rounded-lg border border-zinc-800/60 p-0.5 text-xs">
           {(["all", "active", "terminal"] as const).map((f) => (
@@ -114,26 +69,30 @@ export function HandoffsView() {
           <ShieldIcon className="h-4 w-4 text-amber-300" />
         </div>
         <div className="text-xs text-zinc-300 leading-relaxed">
-          <span className="font-semibold text-amber-300">Approval-gated.</span> Desktop apply requires an approval grant
-          from the web app plus tenant policy allowance. Review and preview are always available; destructive operations
+          <span className="font-semibold text-amber-300">Approval-gated.</span> Desktop apply requires a persisted approval grant
+          plus tenant policy allowance. Review and preview are always available; destructive operations
           are blocked locally until those gates pass.
         </div>
       </div>
 
       {/* Handoff list */}
       <div className="space-y-2">
-        {visible.length === 0 ? (
+        {loading ? (
+          <div className="rounded-xl border border-zinc-800/40 bg-zinc-900/30 p-8 text-center text-sm text-zinc-500">Loading handoffs…</div>
+        ) : error ? (
+          <div role="alert" className="rounded-xl border border-red-500/20 bg-red-500/[0.06] p-4 text-sm text-red-300">Handoff inbox unavailable: {error}</div>
+        ) : visible.length === 0 ? (
           <div className="rounded-xl border border-zinc-800/40 bg-zinc-900/30 p-8 text-center">
             <p className="text-sm text-zinc-400">No handoffs in this view.</p>
-            <p className="text-xs text-zinc-500 mt-1">When the web app issues a signed handoff, it will appear here.</p>
+            <p className="text-xs text-zinc-500 mt-1">Signed handoffs received for this authenticated desktop will appear here. No sample records are shown.</p>
           </div>
-        ) : visible.map((h) => <HandoffRowCard key={h.id} handoff={h} />)}
+        ) : visible.map((h) => <HandoffRowCard key={h.id} handoff={h} onChanged={refresh} />)}
       </div>
     </ViewShell>
   );
 }
 
-function HandoffRowCard({ handoff }: { handoff: HandoffRow }) {
+function HandoffRowCard({ handoff, onChanged }: { handoff: InboxHandoff; onChanged: () => Promise<void> }) {
   const display = displayFor(handoff.state);
   const expiresIn = Math.max(0, Math.round((Date.parse(handoff.expiresAt) - Date.now()) / 60_000));
   const expiresLabel = expiresIn === 0
@@ -165,23 +124,21 @@ function HandoffRowCard({ handoff }: { handoff: HandoffRow }) {
         </div>
         <div className="flex items-center gap-2 shrink-0">
           {handoff.state === "ready" && (
-            <button className="px-3 py-1.5 rounded-md bg-violet-600 hover:bg-violet-500 text-white text-xs font-medium">
+            <button
+              onClick={async () => { await handoffInbox.setState(handoff.id, "opened_in_desktop"); await onChanged(); }}
+              className="px-3 py-1.5 rounded-md bg-violet-600 hover:bg-violet-500 text-white text-xs font-medium"
+            >
               Open & review
             </button>
           )}
           {handoff.state === "opened_in_desktop" && (
-            <button className="px-3 py-1.5 rounded-md bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-medium">
-              Run terraform plan
+            <button disabled title="Local apply is not available in this release" className="px-3 py-1.5 rounded-md bg-zinc-800 text-zinc-500 text-xs font-medium cursor-not-allowed">
+              Apply unavailable
             </button>
           )}
           {handoff.state === "audit_sync_pending" && (
-            <button className="px-3 py-1.5 rounded-md bg-amber-600/80 hover:bg-amber-500 text-white text-xs font-medium">
-              Retry audit sync
-            </button>
-          )}
-          {(handoff.state === "expired" || handoff.state === "audit_synced" || handoff.state === "failed") && (
-            <button className="px-3 py-1.5 rounded-md bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-xs font-medium">
-              View timeline
+            <button disabled title="Automatic audit retry is unavailable" className="px-3 py-1.5 rounded-md bg-zinc-800 text-zinc-500 text-xs font-medium cursor-not-allowed">
+              Sync pending
             </button>
           )}
         </div>
@@ -190,10 +147,10 @@ function HandoffRowCard({ handoff }: { handoff: HandoffRow }) {
   );
 }
 
-function displayFor(state: HandoffState): { pill: string; detail: string; semantic: "neutral" | "running" | "success" | "warning" | "error" } {
+function displayFor(state: HandoffLifecycleState): { pill: string; detail: string; semantic: "neutral" | "running" | "success" | "warning" | "error" } {
   switch (state) {
     case "not_available":      return { pill: "Unavailable",   detail: "Desktop handoff isn't available — see the eligibility checklist.",   semantic: "neutral" };
-    case "eligible":           return { pill: "Eligible",      detail: "All gates pass. Request a handoff from the web app.",                semantic: "success" };
+    case "eligible":           return { pill: "Eligible",      detail: "All gates pass. Request a signed desktop handoff.",                 semantic: "success" };
     case "preparing":          return { pill: "Preparing",     detail: "Packaging plan + Terraform + CLI + rollback + verification.",       semantic: "running" };
     case "ready":              return { pill: "Ready",         detail: "Bundle prepared and signed. Awaiting desktop pickup.",              semantic: "success" };
     case "opened_in_desktop":  return { pill: "In desktop",    detail: "Desktop confirmed receipt and opened the bundle.",                  semantic: "running" };
@@ -220,9 +177,6 @@ function riskBadge(r: "low" | "medium" | "high"): string {
   if (r === "medium") return "text-amber-300 bg-amber-500/10 border-amber-500/20";
   return "text-emerald-300 bg-emerald-500/10 border-emerald-500/20";
 }
-
-function nowMinus(mins: number) { return new Date(Date.now() - mins * 60_000).toISOString(); }
-function nowPlus(mins: number)  { return new Date(Date.now() + mins * 60_000).toISOString(); }
 
 function ShieldIcon(props: { className?: string }) {
   return (

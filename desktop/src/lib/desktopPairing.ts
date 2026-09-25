@@ -1,4 +1,5 @@
 import { open } from "@tauri-apps/plugin-shell";
+import { invoke } from "@tauri-apps/api/core";
 import { saveAuthSession, type PairedSession } from "./authSession";
 import { readSecret, writeSecret } from "./secureStorage";
 import { DESKTOP_VERSION } from "./desktopMetadata";
@@ -14,22 +15,49 @@ async function deviceFingerprint(): Promise<string> {
   return value;
 }
 
-function platform(): "macos-arm" | "macos-intel" | "windows" | "linux" | "unknown" {
-  const value = navigator.platform.toLowerCase();
-  if (value.includes("mac")) return value.includes("arm") ? "macos-arm" : "macos-intel";
-  if (value.includes("win")) return "windows";
-  if (value.includes("linux")) return "linux";
+export type DesktopPlatform = "macos-arm" | "macos-intel" | "windows" | "linux" | "unknown";
+
+export function platformFromSystemInfo(platform: string, arch: string): DesktopPlatform {
+  const os = platform.toLowerCase();
+  const cpu = arch.toLowerCase();
+  if (os === "macos") return cpu === "aarch64" || cpu === "arm64" ? "macos-arm" : "macos-intel";
+  if (os === "windows") return "windows";
+  if (os === "linux") return "linux";
   return "unknown";
 }
 
+async function platform(): Promise<DesktopPlatform> {
+  try {
+    const info = await invoke<{ platform: string; arch: string }>("get_system_info");
+    return platformFromSystemInfo(info.platform, info.arch);
+  } catch {
+    const value = navigator.platform.toLowerCase();
+    if (value.includes("win")) return "windows";
+    if (value.includes("linux")) return "linux";
+    return "unknown";
+  }
+}
+
 async function jsonRequest<T>(path: string, body: unknown): Promise<{ response: Response; body: T }> {
-  const response = await fetch(`${API_BASE}${path}`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body),
-  });
-  const parsed = await response.json() as T;
-  return { response, body: parsed };
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 30_000);
+  try {
+    const response = await fetch(`${API_BASE}${path}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+      signal: controller.signal,
+    });
+    const parsed = await response.json().catch(() => ({})) as T;
+    return { response, body: parsed };
+  } catch (error) {
+    if (error instanceof DOMException && error.name === "AbortError") {
+      throw new Error("Desktop sign-in timed out while contacting the service.");
+    }
+    throw error;
+  } finally {
+    clearTimeout(timeout);
+  }
 }
 
 export async function signInWithBrowser(onWaiting: () => void): Promise<PairedSession> {
@@ -38,7 +66,7 @@ export async function signInWithBrowser(onWaiting: () => void): Promise<PairedSe
     {
       deviceFingerprint: await deviceFingerprint(),
       deviceLabel: `${navigator.platform || "Desktop"} · Axiom Agent`,
-      platform: platform(),
+      platform: await platform(),
       desktopVersion: DESKTOP_VERSION,
     },
   );

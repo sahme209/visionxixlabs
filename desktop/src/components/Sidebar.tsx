@@ -16,6 +16,7 @@
 
 import { useState, type ComponentType, type SVGProps } from "react";
 import type { View } from "../App";
+import { DESKTOP_VERSION } from "../lib/desktopMetadata";
 
 interface NavItem {
   id: View;
@@ -152,7 +153,17 @@ const GROUPS: NavGroup[] = [
 // Sidebar
 // ---------------------------------------------------------------------------
 
-export function Sidebar({ activeView, onNavigate }: { activeView: View; onNavigate: (view: View) => void }) {
+export function Sidebar({
+  activeView,
+  onNavigate,
+  authenticated,
+  preview,
+}: {
+  activeView: View;
+  onNavigate: (view: View) => void;
+  authenticated: boolean;
+  preview: boolean;
+}) {
   const [openGroups, setOpenGroups] = useState<Record<string, boolean>>(() => {
     const out: Record<string, boolean> = {};
     for (const g of GROUPS) {
@@ -174,7 +185,7 @@ export function Sidebar({ activeView, onNavigate }: { activeView: View; onNaviga
           </div>
           <div>
             <div className="text-sm font-semibold tracking-tight text-white">Axiom Agent</div>
-            <div className="text-[9px] font-mono text-zinc-600 tracking-[0.18em] uppercase">v0.1.0 · preview</div>
+            <div className="text-[9px] font-mono text-zinc-600 tracking-[0.18em] uppercase">v{DESKTOP_VERSION} · desktop</div>
           </div>
         </div>
       </div>
@@ -221,8 +232,10 @@ export function Sidebar({ activeView, onNavigate }: { activeView: View; onNaviga
       {/* Footer */}
       <div className="px-3 py-3 border-t border-axiom-border">
         <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-white/[0.02]">
-          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse-glow shadow-[0_0_8px_rgba(52,211,153,0.7)]" />
-          <span className="text-[11px] font-mono text-zinc-400">connected · workspace</span>
+          <span className={`w-1.5 h-1.5 rounded-full ${authenticated ? "bg-emerald-400" : "bg-amber-400"}`} />
+          <span className="text-[11px] font-mono text-zinc-400">
+            {authenticated ? "credentials loaded" : preview ? "sample preview · isolated" : "not connected"}
+          </span>
         </div>
       </div>
     </aside>

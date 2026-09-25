@@ -57,8 +57,7 @@ export function TrustView() {
         <p className="text-[10px] font-mono text-zinc-500 uppercase tracking-[0.18em] mb-1">business · trust center</p>
         <h1 className="text-2xl font-bold tracking-tight">Trust &amp; safety guarantees</h1>
         <p className="text-sm text-zinc-500 mt-1 max-w-2xl leading-relaxed">
-          What the platform promises by construction. Editable policies + automation boundaries
-          live on the web at <span className="font-mono text-zinc-400">/dashboard/policies</span>.
+          Security guarantees and automation boundaries enforced by the installed application and workspace services.
         </p>
       </div>
 
@@ -74,12 +73,12 @@ export function TrustView() {
       <Card className="p-5">
         <p className="text-[10px] font-mono text-zinc-500 uppercase tracking-[0.18em] mb-2">audit trail</p>
         <p className="text-[12px] text-zinc-300 leading-relaxed">
-          Every action a user OR AI engineer takes is logged via the <code className="font-mono text-zinc-200">secureAudit.record()</code> function with a closed-union <code className="font-mono text-zinc-200">AuditAction</code>. The full trail lives in the web app at{" "}
+          Audited service actions use a closed-union <code className="font-mono text-zinc-200">AuditAction</code>. Read the security model at{" "}
           <ExternalLink
             href="https://visionxixlabs.com/docs/security-model"
             className="text-violet-300 hover:text-violet-200 underline-offset-2 hover:underline"
           >
-            /dashboard/audit ↗
+            documentation ↗
           </ExternalLink>
           .
         </p>

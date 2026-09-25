@@ -63,8 +63,7 @@ export function BillingView() {
         <p className="text-[10px] font-mono text-zinc-500 uppercase tracking-[0.18em] mb-1">business · billing</p>
         <h1 className="text-2xl font-bold tracking-tight">Billing &amp; usage</h1>
         <p className="text-sm text-zinc-500 mt-1 max-w-2xl leading-relaxed">
-          Plan tier, monthly v1 API quota, and quota-status indicator. Full invoice details +
-          plan upgrades live on the web at <span className="font-mono text-zinc-400">/dashboard/billing</span>.
+          Plan tier, monthly v1 API quota, and quota-status indicator for the authenticated workspace.
         </p>
       </div>
 
@@ -114,7 +113,7 @@ export function BillingView() {
             )}
             {state.nearLimit && (
               <p className="text-[11px] text-amber-300 mt-2">
-                You&apos;re near the monthly cap. Upgrade your plan on the web at <span className="font-mono">/dashboard/billing</span>.
+                You&apos;re near the monthly cap. Contact your workspace administrator to review plan limits.
               </p>
             )}
           </Card>

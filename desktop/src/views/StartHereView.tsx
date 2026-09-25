@@ -24,7 +24,7 @@ interface SetupStep {
 
 const STEPS: SetupStep[] = [
   { ord: 1,  title: "Open the dashboard",            purpose: "See the workspace at a glance: release-gate verdict, quota, and recent runs.", estimateMins: 1, desktopView: "dashboard",   ctaLabel: "Open Dashboard"   },
-  { ord: 2,  title: "Paste your API key",            purpose: "Settings → VisionXIXLabs API key → paste the vxlk_live_… string from the web admin panel.", estimateMins: 1, desktopView: "settings",   ctaLabel: "Open Settings"    },
+  { ord: 2,  title: "Authenticate the desktop",      purpose: "Use browser sign-in from the welcome screen or paste an administrator-issued vxlk_live_… key in Settings.", estimateMins: 1, desktopView: "settings",   ctaLabel: "Open Settings"    },
   { ord: 3,  title: "Test the connection",           purpose: "Confirms the key works against your workspace.", estimateMins: 1, desktopView: "settings",    ctaLabel: "Test connection"  },
   { ord: 4,  title: "Connect a cloud provider",      purpose: "AWS, Azure, or GCP — read-only by default.", estimateMins: 5, desktopView: "connectors",  ctaLabel: "Open Connectors"  },
   { ord: 5,  title: "Inspect cloud overview",        purpose: "Workspace + plan tier + per-provider state from /api/v1/whoami.", estimateMins: 2, desktopView: "multi-cloud", ctaLabel: "Open Multi-cloud" },

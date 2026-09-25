@@ -24,6 +24,8 @@ export function SettingsView() {
   const [prefs, setPrefs] = useState<Preferences | null>(null);
   const [apiEndpoint, setApiEndpoint] = useState("");
   const [saved, setSaved] = useState(false);
+  const [loadError, setLoadError] = useState<string | null>(null);
+  const [saveError, setSaveError] = useState<string | null>(null);
   const workspace = useWorkspaceState();
   const [pasteValue, setPasteValue] = useState("");
   const [pasteError, setPasteError] = useState<string | null>(null);
@@ -40,13 +42,14 @@ export function SettingsView() {
   >(null);
 
   useEffect(() => {
-    invoke<Preferences>("get_preferences").then(setPrefs).catch(console.error);
-    invoke<string>("get_api_endpoint").then(setApiEndpoint).catch(console.error);
-    readPersistedApiKey().then(setStoredKey).catch(console.error);
+    invoke<Preferences>("get_preferences").then(setPrefs).catch((err) => setLoadError(String(err)));
+    invoke<string>("get_api_endpoint").then(setApiEndpoint).catch((err) => setLoadError(String(err)));
+    readPersistedApiKey().then(setStoredKey).catch((err) => setLoadError(String(err)));
   }, []);
 
   const savePrefs = async () => {
     if (!prefs) return;
+    setSaveError(null);
     try {
       await invoke("set_preferences", { prefs });
       await invoke("set_api_endpoint", { endpoint: apiEndpoint });
@@ -57,7 +60,7 @@ export function SettingsView() {
       setSaved(true);
       setTimeout(() => setSaved(false), 2000);
     } catch (err) {
-      console.error("Failed to save preferences:", err);
+      setSaveError(err instanceof Error ? err.message : String(err));
     }
   };
 
@@ -68,7 +71,7 @@ export function SettingsView() {
   if (!prefs) {
     return (
       <ViewShell>
-        <div className="text-sm text-zinc-500">Loading preferences...</div>
+        <div className="text-sm text-zinc-500">{loadError ? `Preferences unavailable: ${loadError}` : "Loading preferences..."}</div>
       </ViewShell>
     );
   }
@@ -160,10 +163,8 @@ export function SettingsView() {
         ) : (
           <div className="space-y-3">
             <p className="text-xs text-zinc-500">
-              Mint a key on the web admin panel at{" "}
-              <span className="font-mono text-zinc-400">/admin/api-keys</span>{" "}
-              with at least <span className="font-mono text-zinc-400">release_gate:read</span> scope, then paste the <span className="font-mono text-zinc-400">vxlk_live_…</span> string here.
-              The plaintext is shown to you exactly once at mint time.
+              Paste an administrator-issued <span className="font-mono text-zinc-400">vxlk_live_…</span> key with at least{" "}
+              <span className="font-mono text-zinc-400">release_gate:read</span> scope. The installed application stores it in the operating-system credential vault.
             </p>
             <input
               type="password"
@@ -220,13 +221,13 @@ export function SettingsView() {
         ) : (
           <div className="space-y-3">
             <p className="text-xs text-zinc-500">
-              Mint a pairing token on the web app at <span className="font-mono text-zinc-400">visionxixlabs.com/settings/desktop</span>, then paste it here.
+              Paste a desktop pairing credential issued by an authorized workspace administrator. Browser authentication is used only to authorize this installed application.
             </p>
             <textarea
               rows={3}
               value={pasteValue}
               onChange={(e) => { setPasteValue(e.target.value); setPasteError(null); }}
-              placeholder="Paste the JSON the web app showed you (token + session)…"
+              placeholder="Paste desktop pairing JSON (token + session)…"
               className="w-full bg-zinc-800/60 border border-zinc-700/50 rounded-lg px-3 py-2 text-xs font-mono text-zinc-200 placeholder-zinc-600 focus:outline-none focus:border-violet-500/50 resize-none"
             />
             {pasteError && <div className="text-xs text-red-400">{pasteError}</div>}
@@ -389,6 +390,11 @@ export function SettingsView() {
       )}
 
       {/* Save button */}
+      {saveError && (
+        <div role="alert" className="text-xs rounded-lg border border-red-500/20 bg-red-500/10 text-red-300 px-3 py-2">
+          Preferences were not saved: {saveError}
+        </div>
+      )}
       <button
         onClick={savePrefs}
         className="px-5 py-2.5 rounded-lg bg-violet-600 hover:bg-violet-500 text-white text-sm font-medium transition-colors"

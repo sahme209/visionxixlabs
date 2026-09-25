@@ -2,8 +2,8 @@
  * Workspace state hook for the desktop app.
  *
  * Hydrates the auth session at mount, exposes the active paired session
- * (if any), and provides a `connect()` helper the UI can call after the
- * user pastes a token issued from the web app's /settings/desktop page.
+ * (if any), and provides a `connect()` helper for an administrator-issued
+ * desktop pairing credential.
  *
  * Single source of truth for whether the app is in "paired" or "preview"
  * mode. Views consume `useWorkspaceState()` instead of reading
@@ -24,7 +24,7 @@ export type WorkspaceStatus = "loading" | "paired" | "unpaired";
 export interface WorkspaceState {
   status: WorkspaceStatus;
   session?: PairedSession;
-  /** True when the latest API call fell back to mock data. */
+  /** True only when the user explicitly entered the isolated sample preview. */
   previewMode: boolean;
 }
 

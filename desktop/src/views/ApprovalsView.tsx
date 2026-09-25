@@ -17,11 +17,9 @@
 import { useEffect, useRef, useState } from "react";
 import { desktopClient } from "../lib/desktopClient";
 import { Badge, Card, DataSourceBanner, LoadingState, ViewShell } from "../components/Primitives";
-import { openExternal, setTrayApprovalBadge } from "../lib/notifications";
+import { setTrayApprovalBadge } from "../lib/notifications";
 import { clearTrayPendingSelection, useTrayPendingSelection } from "../lib/useTrayPendingSelection";
 import { recordVote } from "../lib/voteHistory";
-
-const WEB_BASE = "https://visionxixlabs.com";
 
 interface PendingRun {
   id: string;
@@ -234,14 +232,6 @@ export function ApprovalsView() {
                               className="px-2.5 py-1 rounded-md text-[11px] font-semibold bg-red-500/15 text-red-300 border border-red-500/30 hover:bg-red-500/25 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                             >
                               {isDeciding && fb?.decision === "rejected" ? "voting…" : "reject"}
-                            </button>
-                            <button
-                              type="button"
-                              title="Open in web dashboard"
-                              onClick={() => void openExternal(`${WEB_BASE}/dashboard/workforce/pipelines/runs/${r.id}`)}
-                              className="px-2 py-1 rounded-md text-[11px] font-mono text-zinc-400 hover:text-zinc-100 hover:bg-white/[0.04] border border-transparent hover:border-white/[0.08] transition-colors"
-                            >
-                              ↗
                             </button>
                             <Badge tone="warning">awaiting</Badge>
                           </>

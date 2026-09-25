@@ -3,8 +3,8 @@
  *
  * Honest banner — there's no /api/v1/audit endpoint yet on the
  * platform (audit rows are queryable internally via Prisma, but not
- * via v1 API). Surfaces what we DO have: a synthesized audit summary
- * from the last 25 pipeline runs + a deep-link to the web /dashboard/audit.
+ * via v1 API). Surfaces what we DO have: a clearly labelled summary
+ * derived from the last 25 persisted pipeline runs.
  */
 
 import { useEffect, useState } from "react";
@@ -88,9 +88,8 @@ export function AuditView() {
         <p className="text-[10px] font-mono text-zinc-500 uppercase tracking-[0.18em] mb-1">automation · audit log</p>
         <h1 className="text-2xl font-bold tracking-tight">Audit log</h1>
         <p className="text-sm text-zinc-500 mt-1 max-w-2xl leading-relaxed">
-          Every closed-union audit action emitted across the workspace. Synthesized from the last
-          25 pipeline runs in this iteration; the full audit table lives in the web app at{" "}
-          <span className="font-mono text-zinc-400">/dashboard/audit</span>.
+          Derived execution history from the last 25 persisted pipeline runs. This is not a substitute
+          for the complete append-only audit API, which is not exposed by this release.
         </p>
       </div>
 

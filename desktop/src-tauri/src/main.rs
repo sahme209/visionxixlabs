@@ -3,6 +3,7 @@
 mod cloud;
 mod config;
 mod menu;
+mod secure;
 mod tray;
 mod window_state;
 
@@ -34,6 +35,9 @@ fn main() {
         .invoke_handler(tauri::generate_handler![
             get_system_info,
             get_health,
+            secure::read_secure_value,
+            secure::write_secure_value,
+            secure::delete_secure_value,
             cloud::validate_aws_credentials,
             cloud::validate_azure_credentials,
             cloud::validate_gcp_credentials,

@@ -32,9 +32,19 @@ pub fn build<R: Runtime>(app: &AppHandle<R>) -> tauri::Result<Menu<R>> {
     // App menu (macOS only) — name comes from CFBundleName but the items
     // need to be defined here.
     let app_submenu = SubmenuBuilder::new(app, "Axiom Agent")
-        .item(&PredefinedMenuItem::about(app, Some("About Axiom Agent"), Some(about_meta.clone()))?)
+        .item(&PredefinedMenuItem::about(
+            app,
+            Some("About Axiom Agent"),
+            Some(about_meta.clone()),
+        )?)
         .separator()
-        .item(&MenuItem::with_id(app, "menu_open_settings", "Settings…", true, Some("CmdOrCtrl+,"))?)
+        .item(&MenuItem::with_id(
+            app,
+            "menu_open_settings",
+            "Settings…",
+            true,
+            Some("CmdOrCtrl+,"),
+        )?)
         .separator()
         .item(&PredefinedMenuItem::services(app, Some("Services"))?)
         .separator()
@@ -65,11 +75,41 @@ pub fn build<R: Runtime>(app: &AppHandle<R>) -> tauri::Result<Menu<R>> {
     // View — quick jump shortcuts to the most-used sidebar destinations.
     // These dispatch a frontend event the App component listens for.
     let view_submenu = SubmenuBuilder::new(app, "View")
-        .item(&MenuItem::with_id(app, "menu_view_start_here", "Start Here",     true, Some("CmdOrCtrl+0"))?)
-        .item(&MenuItem::with_id(app, "menu_view_dashboard",  "Dashboard",      true, Some("CmdOrCtrl+1"))?)
-        .item(&MenuItem::with_id(app, "menu_view_approvals",  "Approvals",      true, Some("CmdOrCtrl+2"))?)
-        .item(&MenuItem::with_id(app, "menu_view_workflows",  "Workflows",      true, Some("CmdOrCtrl+3"))?)
-        .item(&MenuItem::with_id(app, "menu_view_audit",      "Audit log",      true, Some("CmdOrCtrl+4"))?)
+        .item(&MenuItem::with_id(
+            app,
+            "menu_view_start_here",
+            "Start Here",
+            true,
+            Some("CmdOrCtrl+0"),
+        )?)
+        .item(&MenuItem::with_id(
+            app,
+            "menu_view_dashboard",
+            "Dashboard",
+            true,
+            Some("CmdOrCtrl+1"),
+        )?)
+        .item(&MenuItem::with_id(
+            app,
+            "menu_view_approvals",
+            "Approvals",
+            true,
+            Some("CmdOrCtrl+2"),
+        )?)
+        .item(&MenuItem::with_id(
+            app,
+            "menu_view_workflows",
+            "Workflows",
+            true,
+            Some("CmdOrCtrl+3"),
+        )?)
+        .item(&MenuItem::with_id(
+            app,
+            "menu_view_audit",
+            "Audit log",
+            true,
+            Some("CmdOrCtrl+4"),
+        )?)
         .separator()
         .item(&PredefinedMenuItem::fullscreen(app, None)?)
         .build()?;
@@ -80,8 +120,20 @@ pub fn build<R: Runtime>(app: &AppHandle<R>) -> tauri::Result<Menu<R>> {
         .build()?;
 
     let help_submenu = SubmenuBuilder::new(app, "Help")
-        .item(&MenuItem::with_id(app, "menu_help_docs",     "Documentation",   true, None::<&str>)?)
-        .item(&MenuItem::with_id(app, "menu_help_homepage", "VisionXIXLabs",   true, None::<&str>)?)
+        .item(&MenuItem::with_id(
+            app,
+            "menu_help_docs",
+            "Documentation",
+            true,
+            None::<&str>,
+        )?)
+        .item(&MenuItem::with_id(
+            app,
+            "menu_help_homepage",
+            "VisionXIXLabs",
+            true,
+            None::<&str>,
+        )?)
         .build()?;
 
     MenuBuilder::new(app)
@@ -100,14 +152,14 @@ const MENU_EVENT: &str = "menu://action";
 
 pub fn handle_menu_event<R: Runtime>(app: &AppHandle<R>, id: &str) {
     match id {
-        "menu_open_settings"     => emit(app, "open_settings"),
-        "menu_view_start_here"   => emit(app, "view:start-here"),
-        "menu_view_dashboard"    => emit(app, "view:dashboard"),
-        "menu_view_approvals"    => emit(app, "view:approvals"),
-        "menu_view_workflows"    => emit(app, "view:workflows"),
-        "menu_view_audit"        => emit(app, "view:audit"),
-        "menu_help_docs"         => open_url(app, "https://visionxixlabs.com/docs"),
-        "menu_help_homepage"     => open_url(app, "https://visionxixlabs.com"),
+        "menu_open_settings" => emit(app, "open_settings"),
+        "menu_view_start_here" => emit(app, "view:start-here"),
+        "menu_view_dashboard" => emit(app, "view:dashboard"),
+        "menu_view_approvals" => emit(app, "view:approvals"),
+        "menu_view_workflows" => emit(app, "view:workflows"),
+        "menu_view_audit" => emit(app, "view:audit"),
+        "menu_help_docs" => open_url(app, "https://visionxixlabs.com/docs"),
+        "menu_help_homepage" => open_url(app, "https://visionxixlabs.com"),
         _ => {}
     }
 }

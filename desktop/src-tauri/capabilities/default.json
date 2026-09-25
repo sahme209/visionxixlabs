@@ -1,7 +1,7 @@
 {
   "$schema": "../gen/schemas/desktop-schema.json",
   "identifier": "default",
-  "description": "Default capability for the main webview — grants the plugins the desktop needs: shell.open (open links in the OS browser), store (persist API key + prefs), notifications (new-approval alerts), and the core IPC surface for the tray badge command.",
+  "description": "Default capability for the main webview — grants only link opening, non-secret preference storage, notifications, and the core IPC surface. Credentials are handled by Rust commands backed by the OS credential vault.",
   "windows": ["main"],
   "permissions": [
     "core:default",

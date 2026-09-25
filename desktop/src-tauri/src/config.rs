@@ -54,6 +54,15 @@ pub async fn get_preferences(app: tauri::AppHandle) -> Result<Preferences, Strin
 
 #[tauri::command]
 pub async fn set_preferences(app: tauri::AppHandle, prefs: Preferences) -> Result<(), String> {
+    if prefs.theme != "dark" {
+        return Err("Only the dark theme is supported in this release.".to_string());
+    }
+    if ![15, 30, 60, 360, 1440].contains(&prefs.auto_scan_interval_minutes) {
+        return Err("Auto-scan interval must be one of the supported values.".to_string());
+    }
+    if !["aws", "azure", "gcp"].contains(&prefs.default_provider.as_str()) {
+        return Err("Default provider must be AWS, Azure, or GCP.".to_string());
+    }
     let store = app.store("config.json").map_err(|e| e.to_string())?;
 
     store.set("theme", serde_json::json!(prefs.theme));
@@ -87,8 +96,60 @@ pub async fn get_api_endpoint(app: tauri::AppHandle) -> Result<String, String> {
 
 #[tauri::command]
 pub async fn set_api_endpoint(app: tauri::AppHandle, endpoint: String) -> Result<(), String> {
+    let endpoint = normalize_api_endpoint(&endpoint)?;
     let store = app.store("config.json").map_err(|e| e.to_string())?;
     store.set("api_endpoint", serde_json::json!(endpoint));
     store.save().map_err(|e| e.to_string())?;
     Ok(())
+}
+
+fn normalize_api_endpoint(input: &str) -> Result<String, String> {
+    let trimmed = input.trim().trim_end_matches('/');
+    let parsed = reqwest::Url::parse(trimmed)
+        .map_err(|_| "API endpoint must be a valid URL.".to_string())?;
+    let is_loopback = matches!(parsed.host_str(), Some("localhost" | "127.0.0.1" | "::1"));
+    if parsed.scheme() != "https"
+        && !(cfg!(debug_assertions) && is_loopback && parsed.scheme() == "http")
+    {
+        return Err(
+            "API endpoint must use HTTPS (HTTP is allowed only for local development).".to_string(),
+        );
+    }
+    if parsed.username() != ""
+        || parsed.password().is_some()
+        || parsed.query().is_some()
+        || parsed.fragment().is_some()
+    {
+        return Err("API endpoint cannot contain credentials, a query, or a fragment.".to_string());
+    }
+    if parsed.path() != "/" && !parsed.path().is_empty() {
+        return Err("API endpoint must be an origin without a path.".to_string());
+    }
+    Ok(trimmed.to_string())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::normalize_api_endpoint;
+
+    #[test]
+    fn accepts_and_normalizes_https_origin() {
+        assert_eq!(
+            normalize_api_endpoint(" https://visionxixlabs.com/ ").unwrap(),
+            "https://visionxixlabs.com"
+        );
+    }
+
+    #[test]
+    fn rejects_insecure_remote_and_embedded_credentials() {
+        assert!(normalize_api_endpoint("http://example.com").is_err());
+        assert!(normalize_api_endpoint("https://user:pass@example.com").is_err());
+    }
+
+    #[test]
+    fn rejects_paths_queries_and_malformed_urls() {
+        assert!(normalize_api_endpoint("https://example.com/api").is_err());
+        assert!(normalize_api_endpoint("https://example.com?tenant=x").is_err());
+        assert!(normalize_api_endpoint("not a url").is_err());
+    }
 }

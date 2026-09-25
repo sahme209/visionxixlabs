@@ -47,10 +47,16 @@ pub fn restore<R: Runtime>(app: &AppHandle<R>) {
             return;
         }
     };
-    let Some(value) = store.get(STORE_KEY) else { return; };
-    let Ok(state) = serde_json::from_value::<PersistedWindowState>(value) else { return; };
+    let Some(value) = store.get(STORE_KEY) else {
+        return;
+    };
+    let Ok(state) = serde_json::from_value::<PersistedWindowState>(value) else {
+        return;
+    };
 
-    let Some(window) = app.get_webview_window("main") else { return; };
+    let Some(window) = app.get_webview_window("main") else {
+        return;
+    };
 
     // Apply size first — almost always safe.
     if state.width >= MIN_USABLE_DIM && state.height >= MIN_USABLE_DIM {
@@ -72,8 +78,12 @@ pub fn restore<R: Runtime>(app: &AppHandle<R>) {
 }
 
 fn position_visible<R: Runtime>(window: &tauri::WebviewWindow<R>, x: f64, y: f64) -> bool {
-    let Ok(monitors) = window.available_monitors() else { return true; };
-    if monitors.is_empty() { return true; }
+    let Ok(monitors) = window.available_monitors() else {
+        return true;
+    };
+    if monitors.is_empty() {
+        return true;
+    }
     for m in monitors.iter() {
         let pos = m.position();
         let size = m.size();
@@ -97,7 +107,9 @@ fn position_visible<R: Runtime>(window: &tauri::WebviewWindow<R>, x: f64, y: f64
 /// is cheap-Clone (internally Arc'd), so the closure captures its own
 /// clone without any extra synchronization.
 pub fn attach_listeners<R: Runtime>(app: &AppHandle<R>) {
-    let Some(window) = app.get_webview_window("main") else { return; };
+    let Some(window) = app.get_webview_window("main") else {
+        return;
+    };
     let handle_for_listener = app.clone();
 
     window.on_window_event(move |event| {
@@ -105,11 +117,21 @@ pub fn attach_listeners<R: Runtime>(app: &AppHandle<R>) {
             event,
             WindowEvent::Resized(_) | WindowEvent::Moved(_) | WindowEvent::CloseRequested { .. },
         );
-        if !needs_persist { return; }
-        let Some(w) = handle_for_listener.get_webview_window("main") else { return; };
-        let Ok(size)  = w.outer_size()     else { return; };
-        let Ok(pos)   = w.outer_position() else { return; };
-        let Ok(scale) = w.scale_factor()   else { return; };
+        if !needs_persist {
+            return;
+        }
+        let Some(w) = handle_for_listener.get_webview_window("main") else {
+            return;
+        };
+        let Ok(size) = w.outer_size() else {
+            return;
+        };
+        let Ok(pos) = w.outer_position() else {
+            return;
+        };
+        let Ok(scale) = w.scale_factor() else {
+            return;
+        };
         let maximized = w.is_maximized().unwrap_or(false);
         persist_state(&handle_for_listener, size, pos, scale, maximized);
     });
@@ -133,7 +155,9 @@ fn persist_state<R: Runtime>(
         y: Some(logical_y),
         maximized,
     };
-    let Ok(store) = app.store(STORE_FILE) else { return; };
+    let Ok(store) = app.store(STORE_FILE) else {
+        return;
+    };
     if let Ok(value) = serde_json::to_value(state) {
         store.set(STORE_KEY, value);
         // Best-effort flush — a missed save just means we lose this frame

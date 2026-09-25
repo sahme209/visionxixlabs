@@ -1,4 +1,5 @@
 use serde::{Deserialize, Serialize};
+use std::time::Duration;
 use tauri_plugin_store::StoreExt;
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -15,25 +16,45 @@ pub struct ConnectorStatus {
 /// `Authorization: Bearer <token>` so the platform's connector / v1
 /// routes don't reject the call with "Token required".
 fn read_bearer_token(app: &tauri::AppHandle) -> Option<String> {
-    // Phase 399+ vxlk_* API key (modern surface).
-    if let Ok(store) = app.store("axiom-desktop.dat") {
-        if let Some(value) = store.get("desktop.api_key") {
-            if let Some(s) = value.as_str() {
-                if !s.is_empty() {
-                    return Some(s.to_string());
-                }
-            }
-        }
-        // Legacy pairing token (kept for backward compat).
-        if let Some(value) = store.get("desktop.session.token") {
-            if let Some(s) = value.as_str() {
-                if !s.is_empty() {
-                    return Some(s.to_string());
-                }
+    for key in ["desktop.api_key", "desktop.session.token"] {
+        if let Ok(Some(value)) = crate::secure::read_string(app, key) {
+            if !value.is_empty() {
+                return Some(value);
             }
         }
     }
     None
+}
+
+fn http_client() -> Result<reqwest::Client, String> {
+    reqwest::Client::builder()
+        .connect_timeout(Duration::from_secs(10))
+        .timeout(Duration::from_secs(30))
+        .build()
+        .map_err(|_| "HTTP client could not be initialized.".to_string())
+}
+
+async fn response_error(resp: reqwest::Response, operation: &str) -> String {
+    let status = resp.status();
+    if status == reqwest::StatusCode::UNAUTHORIZED || status == reqwest::StatusCode::FORBIDDEN {
+        return "Authentication required. Reconnect the workspace or API key in Settings."
+            .to_string();
+    }
+    let body = resp.text().await.unwrap_or_default();
+    let detail = serde_json::from_str::<serde_json::Value>(&body)
+        .ok()
+        .and_then(|v| {
+            v.get("error")
+                .and_then(|e| e.as_str())
+                .map(ToOwned::to_owned)
+                .or_else(|| {
+                    v.get("message")
+                        .and_then(|m| m.as_str())
+                        .map(ToOwned::to_owned)
+                })
+        })
+        .unwrap_or_else(|| format!("HTTP {status}"));
+    format!("{operation} failed: {detail}")
 }
 
 /// Build a reqwest builder with the bearer token attached when present.
@@ -64,7 +85,7 @@ pub async fn validate_aws_credentials(
     role_arn: String,
     external_id: String,
 ) -> Result<ConnectorStatus, String> {
-    let client = reqwest::Client::new();
+    let client = http_client()?;
     let store = app.store("config.json").map_err(|e| e.to_string())?;
     let endpoint = store
         .get("api_endpoint")
@@ -98,10 +119,12 @@ pub async fn validate_aws_credentials(
     } else if resp.status() == reqwest::StatusCode::UNAUTHORIZED
         || resp.status() == reqwest::StatusCode::FORBIDDEN
     {
-        Err("Authentication required. Set a vxlk_* API key in Settings → VisionXIXLabs API key.".to_string())
+        Err(
+            "Authentication required. Set a vxlk_* API key in Settings → VisionXIXLabs API key."
+                .to_string(),
+        )
     } else {
-        let body = resp.text().await.unwrap_or_default();
-        Err(format!("AWS validation failed: {}", body))
+        Err(response_error(resp, "AWS validation").await)
     }
 }
 
@@ -112,7 +135,7 @@ pub async fn validate_azure_credentials(
     client_id: String,
     client_secret: String,
 ) -> Result<ConnectorStatus, String> {
-    let client = reqwest::Client::new();
+    let client = http_client()?;
     let store = app.store("config.json").map_err(|e| e.to_string())?;
     let endpoint = store
         .get("api_endpoint")
@@ -147,10 +170,12 @@ pub async fn validate_azure_credentials(
     } else if resp.status() == reqwest::StatusCode::UNAUTHORIZED
         || resp.status() == reqwest::StatusCode::FORBIDDEN
     {
-        Err("Authentication required. Set a vxlk_* API key in Settings → VisionXIXLabs API key.".to_string())
+        Err(
+            "Authentication required. Set a vxlk_* API key in Settings → VisionXIXLabs API key."
+                .to_string(),
+        )
     } else {
-        let body = resp.text().await.unwrap_or_default();
-        Err(format!("Azure validation failed: {}", body))
+        Err(response_error(resp, "Azure validation").await)
     }
 }
 
@@ -160,7 +185,7 @@ pub async fn validate_gcp_credentials(
     project_id: String,
     service_account_key: String,
 ) -> Result<ConnectorStatus, String> {
-    let client = reqwest::Client::new();
+    let client = http_client()?;
     let store = app.store("config.json").map_err(|e| e.to_string())?;
     let endpoint = store
         .get("api_endpoint")
@@ -194,18 +219,18 @@ pub async fn validate_gcp_credentials(
     } else if resp.status() == reqwest::StatusCode::UNAUTHORIZED
         || resp.status() == reqwest::StatusCode::FORBIDDEN
     {
-        Err("Authentication required. Set a vxlk_* API key in Settings → VisionXIXLabs API key.".to_string())
+        Err(
+            "Authentication required. Set a vxlk_* API key in Settings → VisionXIXLabs API key."
+                .to_string(),
+        )
     } else {
-        let body = resp.text().await.unwrap_or_default();
-        Err(format!("GCP validation failed: {}", body))
+        Err(response_error(resp, "GCP validation").await)
     }
 }
 
 #[tauri::command]
-pub async fn get_connector_status(
-    app: tauri::AppHandle,
-) -> Result<Vec<ConnectorStatus>, String> {
-    let client = reqwest::Client::new();
+pub async fn get_connector_status(app: tauri::AppHandle) -> Result<Vec<ConnectorStatus>, String> {
+    let client = http_client()?;
     let store = app.store("config.json").map_err(|e| e.to_string())?;
     let endpoint = store
         .get("api_endpoint")
@@ -237,7 +262,7 @@ pub async fn get_connector_status(
             .collect();
         Ok(connectors)
     } else {
-        Ok(vec![])
+        Err(response_error(resp, "Connector status refresh").await)
     }
 }
 
@@ -247,7 +272,7 @@ pub async fn run_cloud_scan(
     provider: String,
     scan_type: String,
 ) -> Result<ScanResult, String> {
-    let client = reqwest::Client::new();
+    let client = http_client()?;
     let store = app.store("config.json").map_err(|e| e.to_string())?;
     let endpoint = store
         .get("api_endpoint")
@@ -287,7 +312,6 @@ pub async fn run_cloud_scan(
             timestamp: chrono::Utc::now().to_rfc3339(),
         })
     } else {
-        let body = resp.text().await.unwrap_or_default();
-        Err(format!("Scan failed: {}", body))
+        Err(response_error(resp, "Scan").await)
     }
 }

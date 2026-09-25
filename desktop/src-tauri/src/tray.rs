@@ -75,12 +75,18 @@ pub fn build<R: Runtime>(app: &AppHandle<R>) -> tauri::Result<()> {
             } else if let Some(run_id) = id.strip_prefix(MENU_ID_APPROVE_PREFIX) {
                 let _ = app.emit(
                     "tray://decide",
-                    TrayDecisionRequest { run_id: run_id.to_string(), decision: "approved" },
+                    TrayDecisionRequest {
+                        run_id: run_id.to_string(),
+                        decision: "approved",
+                    },
                 );
             } else if let Some(run_id) = id.strip_prefix(MENU_ID_REJECT_PREFIX) {
                 let _ = app.emit(
                     "tray://decide",
-                    TrayDecisionRequest { run_id: run_id.to_string(), decision: "rejected" },
+                    TrayDecisionRequest {
+                        run_id: run_id.to_string(),
+                        decision: "rejected",
+                    },
                 );
             } else if let Some(run_id) = id.strip_prefix(MENU_ID_PENDING_PREFIX) {
                 // Plain "Open in window" item — jump to the Approvals view
@@ -148,7 +154,13 @@ fn build_pending_submenu<R: Runtime>(
     let mut builder = SubmenuBuilder::new(app, label);
 
     if pending.is_empty() {
-        let none = MenuItem::with_id(app, "tray_pending_none", "No runs awaiting review", false, None::<&str>)?;
+        let none = MenuItem::with_id(
+            app,
+            "tray_pending_none",
+            "No runs awaiting review",
+            false,
+            None::<&str>,
+        )?;
         builder = builder.item(&none);
         return builder.build();
     }
@@ -168,13 +180,13 @@ fn build_pending_submenu<R: Runtime>(
         let label = format!("{} · {}…", run.pipeline_id, short_id);
 
         let approve_id = format!("{MENU_ID_APPROVE_PREFIX}{}", run.id);
-        let reject_id  = format!("{MENU_ID_REJECT_PREFIX}{}", run.id);
-        let open_id    = format!("{MENU_ID_PENDING_PREFIX}{}", run.id);
+        let reject_id = format!("{MENU_ID_REJECT_PREFIX}{}", run.id);
+        let open_id = format!("{MENU_ID_PENDING_PREFIX}{}", run.id);
 
         let approve = MenuItem::with_id(app, &approve_id, "✓ Approve", true, None::<&str>)?;
-        let reject  = MenuItem::with_id(app, &reject_id,  "✗ Reject",  true, None::<&str>)?;
-        let sep     = PredefinedMenuItem::separator(app)?;
-        let open    = MenuItem::with_id(app, &open_id, "Open in window", true, None::<&str>)?;
+        let reject = MenuItem::with_id(app, &reject_id, "✗ Reject", true, None::<&str>)?;
+        let sep = PredefinedMenuItem::separator(app)?;
+        let open = MenuItem::with_id(app, &open_id, "Open in window", true, None::<&str>)?;
         // Per-run disabled-header item — id has to be unique within the
         // menu, so it's namespaced with the runId rather than a constant.
         let triggered_id = format!("tray_triggered_disabled:{}", run.id);
@@ -199,7 +211,8 @@ fn build_pending_submenu<R: Runtime>(
     if pending.len() > max_items {
         let extra = pending.len() - max_items;
         let footer_label = format!("+{extra} more in the Approvals view");
-        let footer = MenuItem::with_id(app, "tray_pending_more", footer_label, false, None::<&str>)?;
+        let footer =
+            MenuItem::with_id(app, "tray_pending_more", footer_label, false, None::<&str>)?;
         builder = builder.item(&footer);
     }
     builder.build()
@@ -215,7 +228,11 @@ pub fn set_tray_badge<R: Runtime>(app: AppHandle<R>, count: u32) -> Result<(), S
         return Ok(());
     };
 
-    let title = if count == 0 { None } else { Some(count.to_string()) };
+    let title = if count == 0 {
+        None
+    } else {
+        Some(count.to_string())
+    };
     let tooltip = if count == 0 {
         "Axiom Agent".to_string()
     } else if count == 1 {

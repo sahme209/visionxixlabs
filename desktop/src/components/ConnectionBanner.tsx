@@ -26,7 +26,7 @@ export function ConnectionBanner() {
   if (probe.connection === "online" && probe.auditPending === 0 && !probe.updateReady) return null;
 
   const messages: { tone: "warning" | "error" | "info"; text: string }[] = [];
-  if (probe.connection === "offline") messages.push({ tone: "error", text: "Offline — handoffs and audit sync are paused until the web app is reachable." });
+  if (probe.connection === "offline") messages.push({ tone: "error", text: "Offline — handoffs and audit sync are paused until the workspace service is reachable." });
   if (probe.connection === "degraded") messages.push({ tone: "warning", text: "Connection unstable — retrying in the background." });
   if (probe.auditPending > 0) messages.push({ tone: "warning", text: `${probe.auditPending} local audit event(s) waiting to sync.` });
   if (probe.updateReady) messages.push({ tone: "info", text: "An update has been downloaded — restart to apply." });

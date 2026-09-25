@@ -115,8 +115,8 @@ export function BranchValidationView() {
               {detail.hint && <p className="text-xs text-zinc-400">{detail.hint}</p>}
               {detail.error === "invalid_payload" && (
                 <p className="text-xs text-zinc-400 mt-2">
-                  Desktop branch-detail needs a release→repository projection that lands in a follow-on phase.
-                  In the meantime, open this release on the web dashboard for the full check breakdown.
+                  Branch detail is unavailable because this release does not yet expose the required release-to-repository projection.
+                  No validation result is inferred while that dependency is missing.
                 </p>
               )}
             </div>

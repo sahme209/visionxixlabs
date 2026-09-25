@@ -138,7 +138,7 @@ export function RemediationView() {
 
       <section className="rounded-xl border border-amber-500/20 bg-amber-500/[0.04] p-4">
         <p className="text-[10px] font-mono text-amber-300 uppercase tracking-[0.22em] mb-1.5">// honest limitations</p>
-        <p className="text-[12px] text-zinc-300">No remediation runs from the desktop. Apply is approval-gated and routes through the web orchestration center.</p>
+        <p className="text-[12px] text-zinc-300">This release does not execute remediation locally. Apply remains disabled until the installed runtime can verify a signed approval and tenant policy.</p>
       </section>
     </ViewShell>
   );

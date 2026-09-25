@@ -70,7 +70,7 @@ const VIEW_TITLES: Record<View, { title: string; subtitle: string }> = {
  * Three auth states the TopBar renders:
  *   - LIVE       — vxlk_* key paired AND /api/v1/whoami succeeded.
  *                  Shows the real workspace id from the response.
- *   - PREVIEW    — no key paired. Shows "preview · mock data".
+ *   - PREVIEW    — explicit isolated sample preview.
  *   - AUTH FAIL  — key paired but /whoami rejected.
  */
 type AuthBadgeState =
@@ -173,7 +173,7 @@ function AuthBadge({ badge }: { badge: AuthBadgeState }) {
     return (
       <div className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-violet-500/25 bg-violet-500/[0.06] text-[11px] font-mono text-violet-300">
         <span className="w-1.5 h-1.5 rounded-full bg-violet-400 animate-pulse" />
-        <span>preview · mock data</span>
+        <span>sample preview · isolated</span>
       </div>
     );
   }
