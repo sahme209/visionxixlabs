@@ -2,7 +2,7 @@
 
 ## Conclusion
 
-**Not ready for release.** The repaired source candidate passes strict root TypeScript, the full automated behavior suite, the optimized website build, focused changed-file lint, and the desktop frontend release build. It is not the same binary as the currently published download. Native Tauri packaging and installed-app journeys remain blocked by the missing Rust toolchain and unavailable Windows/Linux hosts; the macOS DMG verifies but cannot be attached in this environment. Repository-wide ESLint debt and two transitive production advisories also remain open.
+**Not ready for release.** The repaired source candidate passes strict root TypeScript, the full automated behavior suite, the optimized website build under a constrained 4 GB Node heap, focused changed-file lint, and the desktop frontend release build. It is not the same binary as the currently published download. Native Tauri packaging and installed-app journeys remain blocked by the missing Rust toolchain and unavailable Windows/Linux hosts; the macOS DMG verifies but cannot be attached in this environment. Repository-wide ESLint debt and the moderate Google Storage dependency-chain advisory also remain open.
 
 ## Exact candidates and environments
 
@@ -10,7 +10,7 @@
 | --- | --- |
 | Product | Axiom Agent |
 | Desktop version | 0.1.7 |
-| Coordinated-pass parent commit | `22a36250bcf353eb5d28114c323f170eb8ea1fed` |
+| Vercel-repair parent commit | `2740967d01194b38152929a7a32eadd01fe857de` |
 | Repaired source | Coordinated application/website candidate; exact tested commit is recorded in the final handoff |
 | Verification scope | Source, strict TypeScript, unit/service tests, optimized website build, desktop frontend build, and static release assertions |
 | Verification host | macOS arm64; Node 25.2.1; npm 11.6.2; no Cargo/Rust |
@@ -50,7 +50,7 @@ The published DMG is the prior 0.1.7 release, not a package built from the repai
 | Uninstall and retained data | Desktop user | OS uninstall | OS package manager | uninstall; retained keychain/store documentation | Not executable on available host | Blocked |
 | Website → sandbox → return home | Visitor | Public sandbox | Browser | enter; sample labels; navigate; exit | Sandbox remains labeled “SANDBOX · example only,” shared navigation has homepage exits, and the primary CTA now downloads the desktop app; automated boundary checks pass. Interactive browser verification is blocked by the local Chrome launch failure. | Passed (source/automated); blocked (interactive) |
 | Secondary iOS capability mention is truthful and visually subordinate | Visitor | Shared footer | Verified App Store developer URL | Copy presence; visual hierarchy; accessible external link; destination ownership | “We also build iOS applications.” added beneath the brand description. No link was enabled because no developer-page URL was supplied. | Blocked (destination) |
-| Dependency/security posture | Maintainer | Package manifests | npm registry | production audit; CSP; secret persistence | Desktop audit 0; root reduced from critical/high findings to 2 moderate transitive uuid/gaxios findings; CSP and secure storage repaired | Failed |
+| Dependency/security posture | Maintainer | Package manifests | npm registry | production audit; CSP; secret persistence | Desktop audit 0; root audit reports 6 moderate package findings in the Google Storage → gaxios → uuid chain, no high/critical findings, and no upstream direct fix; CSP and secure storage repaired | Failed |
 | Final packaged release matches repaired source | Customer | Downloaded installer | Rust, CI, signing | build, checksum, install, full journeys | Published 0.1.7 predates this dirty repair set; no final native package was produced | Failed |
 
 ## Executable checks
@@ -64,14 +64,15 @@ The published DMG is the prior 0.1.7 release, not a package built from the repai
 | Root TypeScript | 1 | 0 | 0 | 0 | Strict `tsc --noEmit --incremental false` passed with zero diagnostics |
 | Focused changed-file ESLint | 1 | 0 | 0 | 0 | All files changed in this pass passed |
 | Repository-wide ESLint | 0 | 1 | 0 | 0 | Existing 686-error / 402-warning backlog remains; no rules were weakened |
-| Optimized Next.js website build | 1 | 0 | 0 | 0 | 283 static pages generated; build passed with Google GAX, Edge-runtime, and middleware-deprecation warnings |
+| Optimized Next.js website build | 1 | 0 | 0 | 0 | 283 static pages generated under `NODE_OPTIONS=--max-old-space-size=4096`; compile completed in 41s with no Google GAX warning or OOM; middleware deprecation remains |
 | Interactive desktop/mobile browser verification | 0 | 0 | 1 | 0 | `agent-browser` installed, but local Chrome exited before creating its DevTools port |
-| Production dependency audits | 1 | 1 | 0 | 0 | desktop 0 vulnerabilities; root 2 moderate transitive findings |
+| Vercel build-safety contract | 1 | 0 | 0 | 0 | Build has no Prisma migration side effects; all 36 direct AWS/Azure/GCP SDK packages are server externals |
+| Production dependency audits | 1 | 1 | 0 | 0 | desktop 0 vulnerabilities; root has 6 moderate package findings in one transitive Google Storage/uuid chain, with no high/critical findings or upstream direct fix |
 | Native Tauri package/build | 0 | 0 | 1 | 0 | Cargo/Rust unavailable |
 | macOS DMG integrity/attach | 1 | 0 | 1 | 0 | checksum/verify passed; attach blocked |
 | Windows/Linux install journeys | 0 | 0 | 2 | 0 | platforms unavailable |
 | Live provider/identity journeys | 0 | 0 | 1 | 0 | safe credentials/tenants unavailable |
-| **Totals** | **4,473** | **2** | **6** | **0** | Counts combine cases and explicit executable checks; platform entries are environment blocks |
+| **Totals** | **4,474** | **2** | **6** | **0** | Counts combine cases and explicit executable checks; platform entries are environment blocks |
 
 ## Defect and repair log
 
@@ -86,11 +87,12 @@ The published DMG is the prior 0.1.7 release, not a package built from the repai
 | Desktop sidebar omitted expanded/current/status accessibility semantics | Added labeled navigation, `aria-expanded`/`aria-controls`, `aria-current`, decorative-icon hiding, and live status semantics | Desktop TypeScript and Vite production build passed |
 | Sandbox primary CTA advertised a hosted web workspace and linked to sign-up | Redirected the CTA to `/download` with “Download the desktop app” and added a release assertion prohibiting browser-product wording | Full 4,083-test suite and optimized website build passed |
 | Shared footer repeated the desktop download and had no approved iOS mention | Removed the duplicate product link and added one secondary sentence beneath the brand copy; App Store link intentionally withheld pending verified URL | Focused lint, full suite, and optimized website build passed |
+| Vercel build exhausted 8 GB RAM after webpack bundled generated Google GKE clients; the build also silently altered and deployed Prisma migration state | Marked every direct AWS/Azure/GCP SDK as a Node server external; removed all migration operations from the build and exposed explicit `db:migrate:deploy`; added a build-contract regression check | Constrained 4 GB Next.js build passed, 283 pages generated, GAX warning absent, strict TypeScript passed, and 4,083 tests passed |
 
 ## Remaining requirements to reach “ready”
 
 1. Continue reducing the repository-wide ESLint backlog without weakening rules; strict root TypeScript is now clean.
-2. Resolve or formally risk-assess the two remaining transitive production advisories.
+2. Resolve or formally risk-assess the remaining Google Storage/gaxios/uuid advisory when an upstream-compatible fix becomes available.
 3. Install Rust/Cargo, build a new native 0.1.7+ candidate from a committed tree, and publish checksums/attestations.
 4. Install and exercise that exact candidate on clean macOS arm64/x64, Windows x64, and Linux x64 hosts.
 5. Complete real non-production identity, provider, notification, persistence, export, upgrade, accessibility, offline, and recovery journeys.

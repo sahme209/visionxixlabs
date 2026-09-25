@@ -4,7 +4,9 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "prisma generate && (npx prisma migrate resolve --applied 20260219120000_add_lead_model 2>/dev/null || true) && (npx prisma migrate resolve --rolled-back 20260522150000_add_coding_task 2>/dev/null || true) && (npx prisma migrate resolve --rolled-back 20260526110000_add_releaseops_foundation 2>/dev/null || true) && prisma migrate deploy && next build --webpack",
+    "build": "npm run check:vercel-build && prisma generate && next build --webpack",
+    "check:vercel-build": "node scripts/check-vercel-build.mjs",
+    "db:migrate:deploy": "prisma migrate deploy",
     "postinstall": "prisma generate",
     "migrate:resolve": "npx prisma migrate resolve --applied 20260219120000_add_lead_model",
     "start": "next start",
