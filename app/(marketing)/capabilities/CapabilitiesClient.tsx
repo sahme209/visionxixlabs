@@ -205,7 +205,7 @@ export function CapabilitiesClient() {
               </p>
               {c.evidence ? (
                 <Link
-                  href={c.evidence.href}
+                  href={c.evidence.href.startsWith("/dashboard") ? "/docs" : c.evidence.href}
                   className="mt-3 inline-flex items-center gap-1 text-[11px] font-mono text-indigo-300 hover:text-indigo-200 transition"
                 >
                   → {c.evidence.label}

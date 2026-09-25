@@ -55,7 +55,7 @@ const FAQ_GROUPS = [
       },
       {
         q: "Can scans run on a schedule?",
-        a: "Yes — daily, hourly, or custom. Recurring scans live under /dashboard/workflows. Each scan feeds the operational memory.",
+        a: "Yes — daily, hourly, or custom. Recurring scans live in Axiom Agent under Workflows. Each scan feeds the operational memory.",
       },
       {
         q: "What does the agent learn over time?",

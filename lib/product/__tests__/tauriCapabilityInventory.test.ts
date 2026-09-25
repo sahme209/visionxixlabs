@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { integrationInventory, tauriCapabilities } from "../tauriCapabilityInventory";
 
-describe("TAURI public capability inventory", () => {
+describe("Axiom Agent public capability inventory", () => {
     it("classifies every public capability and documents evidence and limitations", () => {
         expect(tauriCapabilities.length).toBeGreaterThanOrEqual(8);
         for (const capability of tauriCapabilities) {
@@ -12,8 +12,11 @@ describe("TAURI public capability inventory", () => {
         }
     });
 
-    it("does not advertise the desktop installer as available", () => {
-        expect(tauriCapabilities.find((item) => item.id === "desktop-distribution")?.state).toBe("planned_blocked");
+    it("advertises only the verified desktop distribution with its limitations", () => {
+        const distribution = tauriCapabilities.find((item) => item.id === "desktop-distribution");
+        expect(distribution?.state).toBe("working_tested");
+        expect(distribution?.publicDescription).toContain("installable desktop application");
+        expect(distribution?.limitation).toContain("unsigned and not notarized");
     });
 
     it("states a setup requirement for every integration", () => {

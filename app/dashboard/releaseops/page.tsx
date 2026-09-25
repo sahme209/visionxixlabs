@@ -7,7 +7,7 @@ export default function ReleaseOpsPage() {
     <HonestEmptyPage
       kicker="release operations"
       title="No tenant release records yet"
-      description="Release activity appears here only after this workspace connects a supported source and records a deployment. TAURI does not substitute sample deployments for tenant data."
+      description="Release activity appears here only after this workspace connects a supported source and records a deployment. Axiom Agent does not substitute sample deployments for tenant data."
       needs={[
         "Deployment requests recorded for this workspace",
         "Approval and change events from configured connectors",

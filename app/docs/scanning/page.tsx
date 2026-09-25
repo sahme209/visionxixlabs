@@ -91,7 +91,7 @@ export default function ScanningPage() {
             { question: "Why does Axiom need this?", answer: "To reason about your infrastructure it needs an accurate snapshot. Snapshots refresh on schedule or on demand." },
             { question: "Is the scan safe?", answer: "Yes — assume-role + read-only IAM permissions. Throttled to avoid impact on production APIs." },
             { question: "What does Axiom store after the scan?", answer: "Configuration metadata + findings + plan. Never object/row contents, never secrets, never access keys." },
-            { question: "Can I revoke or pause scans?", answer: "Yes — disable the recurring workflow under /dashboard/workflows or delete the IAM role to revoke completely." },
+            { question: "Can I revoke or pause scans?", answer: "Yes — disable the recurring workflow in Axiom Agent under Workflows or delete the IAM role to revoke completely." },
             { question: "What if the scan fails?", answer: "Exact AWS error code is shown with a link to troubleshooting. Failed scans do not consume execution quota." },
           ]}
         />

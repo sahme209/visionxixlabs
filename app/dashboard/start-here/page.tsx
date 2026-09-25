@@ -23,12 +23,12 @@ const steps = [
   },
   {
     title: "Review runbooks and audit history",
-    description: "Reusable runbooks, evidence, and audit events appear when your workspace has created them; TAURI does not prefill operational history.",
+    description: "Reusable runbooks, evidence, and audit events appear when your workspace has created them; Axiom Agent does not prefill operational history.",
     href: "/dashboard/runbooks",
     label: "Open runbooks",
   },
   {
-    title: "Explore the TAURI sandbox",
+    title: "Explore the Axiom sandbox",
     description: "The sandbox demonstrates intake, playbook generation, guided steps, and validation with clearly labeled fictional data. It does not execute production changes or persist tenant records.",
     href: "/dashboard/tauri",
     label: "Open sandbox",
@@ -40,9 +40,9 @@ export default function StartHerePage() {
     <main className="mx-auto max-w-4xl space-y-8 px-2 py-4">
       <header className="space-y-3">
         <p className="text-[10px] font-mono uppercase tracking-[0.24em] text-zinc-500">start here</p>
-        <h1 className="text-3xl font-semibold tracking-tight text-white">Set up your web workspace</h1>
+        <h1 className="text-3xl font-semibold tracking-tight text-white">Set up your desktop workspace</h1>
         <p className="max-w-2xl text-sm leading-relaxed text-zinc-400">
-          TAURI runs in the browser. These paths use your workspace records; the separate sandbox is explicitly simulated.
+          Axiom Agent runs as an installed application. These paths use your workspace records; the separate website sandbox is explicitly simulated.
         </p>
       </header>
 

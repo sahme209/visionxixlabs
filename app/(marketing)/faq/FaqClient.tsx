@@ -232,7 +232,7 @@ export function FaqClient() {
                         <p className="mt-3">{e.a}</p>
                         {e.proof ? (
                           <Link
-                            href={e.proof.href}
+                            href={e.proof.href.startsWith("/dashboard") ? "/docs" : e.proof.href}
                             className="mt-3 inline-flex items-center gap-1 text-[11.5px] font-mono text-indigo-300 hover:text-indigo-200 transition"
                           >
                             → {e.proof.label}

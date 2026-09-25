@@ -53,14 +53,14 @@ const PRACTICES: readonly Practice[] = [
     category: "security",
     title: "Lock down who can approve high-risk plans",
     body: "By default, any workspace admin can approve any plan. For regulated environments, configure two-step approval: one engineer drafts, one (different) approves. Both must be in the org's RBAC role allowlist.",
-    recommendation: "SOC 2 / compliance environments: enable two-step approval for plans tagged 'high-risk'. Configure in /dashboard/approvals.",
+    recommendation: "SOC 2 / compliance environments: enable two-step approval for plans tagged 'high-risk'. Configure it in Axiom Agent under Approvals.",
   },
   {
     num: "05",
     category: "ops",
     title: "Wire incident alerts to your on-call tool",
     body: "Axiom emits alerts via Slack, PagerDuty, Opsgenie, and webhooks. When a finding crosses your severity threshold, you want it in the same surface your team already monitors — not an Axiom inbox they have to remember to check.",
-    recommendation: "Connect at least one alert sink before the first scan. /dashboard/notifications.",
+    recommendation: "Connect at least one alert sink before the first scan in Axiom Agent under Notifications.",
   },
   {
     num: "06",
@@ -87,7 +87,7 @@ const PRACTICES: readonly Practice[] = [
     num: "09",
     category: "team",
     title: "Run a monthly drift review with the platform team",
-    body: "Even with daily scans, take 30 min once a month to flip through the trend graphs in /dashboard/analytics. Look for: which categories keep recurring (process gap), which fixes get rejected (Axiom's reasoning has a blind spot), which accounts produce 80% of the findings (concentration risk).",
+    body: "Even with daily scans, take 30 min once a month to review the trend graphs in Axiom Agent under Analytics. Look for: which categories keep recurring (process gap), which fixes get rejected (Axiom's reasoning has a blind spot), which accounts produce 80% of the findings (concentration risk).",
     recommendation: "Recurring calendar invite. Platform lead + one ops engineer. 30 min max.",
   },
 ];

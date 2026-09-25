@@ -123,7 +123,7 @@ const GROUPS: NavGroup[] = [
     kind: "operations",
     items: [
       // Most-clicked operating surfaces only.
-      { href: "/dashboard/tauri",            label: "TAURI Deployments", icon: RocketLaunchIcon },
+      { href: "/dashboard/tauri",            label: "Axiom Deployments", icon: RocketLaunchIcon },
       { href: "/dashboard/multi-cloud",      label: "Cloud overview",    icon: ServerStackIcon },
       { href: "/dashboard/cloud-accounts",   label: "Cloud accounts",    icon: CloudIcon       },
       { href: "/dashboard/findings",         label: "Findings",         icon: EyeIcon         },

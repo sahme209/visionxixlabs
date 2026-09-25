@@ -215,7 +215,7 @@ export const DEMO_SCENARIOS: Readonly<Record<DemoScenarioId, DemoScenario>> = {
     audience: "internal_only",
     lastReviewed: REVIEWED,
     steps: [
-      { id: "1", title: "Desktop distribution blocked", description: "No verified current customer build or installation path exists.", route: "/download", approval: "none", expectedResult: "Customer is directed to the web application." },
+      { id: "1", title: "Verify desktop distribution", description: "Confirm that every enabled platform points to a verified release asset and unavailable platforms remain disabled.", route: "/download", approval: "none", expectedResult: "Customer receives the verified desktop build or an accurate unavailable state." },
       { id: "2", title: "Pair workspace",             description: "Paste a vxlk_live_* API key minted in /admin/api-keys.", approval: "none", expectedResult: "Test connection shows ✓ + workspace + plan tier." },
       { id: "3", title: "Authorize local capability", description: "Operator approves the local filesystem scope.", approval: "self_approve", expectedResult: "Capability badge shows 'local: read'." },
       { id: "4", title: "Analyze local repo",         description: "Desktop scans a repo + sends summary to platform.", approval: "none", relatedAgent: "Engineer Workspace", expectedResult: "Repo summary appears in web view." },

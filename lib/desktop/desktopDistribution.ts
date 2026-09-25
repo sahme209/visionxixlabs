@@ -46,9 +46,9 @@ export function buildDistributionTable(): DistributionPlatform[] {
       return {
         platform: s.platform,
         state: "live",
-        headline: "Open the web app",
-        detail: "No install required. Sign in with email or Google/GitHub.",
-        cta: { label: "Open web app", href: "/dashboard" },
+        headline: "Explore the website sandbox",
+        detail: "Fictional sample data only. Production operations require the installed application.",
+        cta: { label: "Open sandbox", href: "/demo" },
         gateChecklist: [{ label: "Public origin", ok: true, detail: "https://visionxixlabs.com" }],
         liveVersion: s.version,
         channel: s.channel,
@@ -83,7 +83,7 @@ export function buildDistributionTable(): DistributionPlatform[] {
 
 function humanise(p: ReleasePlatform): string {
   switch (p) {
-    case "web":         return "Web app";
+    case "web":         return "Website sandbox";
     case "macos_arm":   return "macOS · Apple Silicon";
     case "macos_intel": return "macOS · Intel";
     case "windows":     return "Windows";

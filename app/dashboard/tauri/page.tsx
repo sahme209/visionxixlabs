@@ -121,7 +121,7 @@ export default function TauriDashboardPage() {
   return (
     <div className="space-y-6">
       <header className="rounded-2xl border border-violet-500/20 bg-gradient-to-br from-violet-500/10 via-white/[0.025] to-cyan-500/5 p-6">
-        <p className="text-[10px] font-mono uppercase tracking-[0.24em] text-violet-300">TAURI · Deployment Operations</p>
+        <p className="text-[10px] font-mono uppercase tracking-[0.24em] text-violet-300">Axiom Agent · Deployment Operations</p>
         <div className="mt-2 flex flex-wrap items-end justify-between gap-4">
           <div>
             <h1 className="text-3xl font-bold tracking-tight text-white">The request becomes the playbook.</h1>

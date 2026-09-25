@@ -111,7 +111,7 @@ GITHUB_CLIENT_SECRET=ghp_xxxxxxxxxxxxxxxxxxxxxxxx`}</CodeBlock>
           <li>Redeploy after setting the env vars (env changes don&apos;t auto-rebuild on most hosts).</li>
           <li>Open the sign-in page in an incognito window.</li>
           <li>Both buttons should activate (no <span className="font-mono">Not set</span> badge).</li>
-          <li>Click → OAuth consent → you land in <code>/dashboard</code>.</li>
+          <li>Click → OAuth consent → the secure callback returns you to the installed Axiom Agent application.</li>
         </ol>
         <Callout variant="warning">
           If you see <code>error=Configuration</code> after the OAuth round-trip, the env var is set

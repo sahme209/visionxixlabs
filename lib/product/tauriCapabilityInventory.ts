@@ -16,7 +16,7 @@ export const capabilityStateLabel: Record<CapabilityState, string> = {
 };
 
 /**
- * Public source of truth for TAURI claims.
+ * Public source of truth for Axiom Agent capability claims.
  *
  * A capability must not be promoted to working_tested without a tenant-scoped
  * product route and automated test evidence. UI-only prototypes belong in
@@ -29,7 +29,7 @@ export const tauriCapabilities: readonly TauriCapability[] = [
         state: "demo_sandbox",
         publicDescription: "A guided form captures change scope, timing, repository, approval, validation, and rollback facts.",
         evidence: ["app/dashboard/tauri/page.tsx", "lib/tauri/__tests__/deploymentOperations.test.ts"],
-        limitation: "The current TAURI intake is a sanitized in-browser sandbox and is not persisted as a tenant deployment record.",
+        limitation: "The public intake is a sanitized sandbox and is not persisted as a tenant deployment record.",
     },
     {
         id: "playbook-generation",
@@ -37,7 +37,7 @@ export const tauriCapabilities: readonly TauriCapability[] = [
         state: "demo_sandbox",
         publicDescription: "Validated intake can generate a deterministic, versioned sequence of approval, execution, validation, evidence, and closure steps.",
         evidence: ["lib/tauri/deploymentOperations.ts", "lib/tauri/__tests__/deploymentOperations.test.ts"],
-        limitation: "Generation is tested, but the TAURI screen does not yet persist or dispatch a production playbook.",
+        limitation: "Generation is tested, but the public sandbox does not persist or dispatch a production playbook.",
     },
     {
         id: "approval-change-tracking",
@@ -45,7 +45,7 @@ export const tauriCapabilities: readonly TauriCapability[] = [
         state: "working_tested",
         publicDescription: "Authenticated workspaces can review approval queues and preserve decisions and change context in tenant-scoped records.",
         evidence: ["app/dashboard/approvals/page.tsx", "lib/approvals/__tests__/quorumCalculator.test.ts", "app/api/workforce/approvals/[id]/decide/route.ts"],
-        limitation: "TAURI intake is not yet automatically linked to every external change-management system.",
+        limitation: "Axiom Agent intake is not yet automatically linked to every external change-management system.",
     },
     {
         id: "guided-execution",
@@ -53,7 +53,7 @@ export const tauriCapabilities: readonly TauriCapability[] = [
         state: "demo_sandbox",
         publicDescription: "The sandbox walks an operator through one controlled step at a time and records completed or blocked status.",
         evidence: ["app/dashboard/tauri/page.tsx", "lib/tauri/__tests__/deploymentOperations.test.ts"],
-        limitation: "The TAURI flow does not execute production commands or deployments.",
+        limitation: "The public sandbox does not execute production commands or deployments.",
     },
     {
         id: "validation-evidence",
@@ -61,7 +61,7 @@ export const tauriCapabilities: readonly TauriCapability[] = [
         state: "working_tested",
         publicDescription: "Authenticated workspaces provide evidence records, exports, and audit-linked validation artifacts.",
         evidence: ["app/dashboard/evidence-library/page.tsx", "app/api/evidence/library/route.ts", "lib/compliance/__tests__/evidencePacketBuilder.test.ts"],
-        limitation: "The TAURI sandbox demonstrates evidence requirements but does not upload production evidence from its local form.",
+        limitation: "The public sandbox demonstrates evidence requirements but does not upload production evidence from its local form.",
     },
     {
         id: "audit-history",
@@ -90,10 +90,10 @@ export const tauriCapabilities: readonly TauriCapability[] = [
     {
         id: "desktop-distribution",
         name: "Desktop installer",
-        state: "planned_blocked",
-        publicDescription: "The customer product is currently accessed as a web application.",
-        evidence: ["app/dashboard/page.tsx", "app/auth/signin/page.tsx"],
-        limitation: "A historical unsigned developer release exists, but no current desktop build has been verified for customer distribution.",
+        state: "working_tested",
+        publicDescription: "Axiom Agent is distributed as an installable desktop application through verified release assets.",
+        evidence: ["app/api/desktop/release-manifest/route.ts", "lib/release/releaseRegistry.ts"],
+        limitation: "The current macOS Apple Silicon developer build is unsigned and not notarized; Windows, Linux, and Intel macOS remain unavailable until verified artifacts exist.",
     },
 ] as const;
 

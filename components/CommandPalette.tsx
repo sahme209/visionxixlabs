@@ -45,13 +45,13 @@ interface CommandItem {
 const COMMANDS: readonly CommandItem[] = [
   // Product
   { id: "home",       label: "Home",              href: "/",                       category: "Product",   icon: SparklesIcon,      hint: "The landing page" },
-  { id: "axiom",      label: "TAURI capabilities", href: "/#capabilities",          category: "Product",   icon: RocketLaunchIcon,  hint: "Verified product capability inventory" },
-  { id: "releaseops", label: "TAURI workflow",     href: "/#workflow",              category: "Product",   icon: ShieldCheckIcon,   hint: "Deployment intake through audit history" },
+  { id: "axiom",      label: "Axiom capabilities", href: "/#capabilities",          category: "Product",   icon: RocketLaunchIcon,  hint: "Verified product capability inventory" },
+  { id: "releaseops", label: "Axiom workflow",     href: "/#workflow",              category: "Product",   icon: ShieldCheckIcon,   hint: "Deployment intake through audit history" },
   { id: "demo",       label: "Try the sandbox",   href: "/demo",                   category: "Product",   icon: PlayCircleIcon,    hint: "Fictional sample data; no production execution" },
-  { id: "operator",   label: "Open web app",      href: "/auth/signup?redirect=/dashboard", category: "Product", icon: CloudIcon, hint: "Create a browser workspace", keywords: ["start", "signup", "onboard", "access"] },
+  { id: "operator",   label: "Download Axiom Agent", href: "/download",               category: "Product", icon: CloudIcon, hint: "Install the application", keywords: ["start", "install", "onboard", "access"] },
   { id: "plans",      label: "Access and pricing", href: "/plans",                  category: "Product",   icon: DocumentTextIcon,  hint: "Contact-based production access", keywords: ["pricing", "cost"] },
   { id: "integrations", label: "Integrations",    href: "/integrations",           category: "Product",   icon: CommandLineIcon,   hint: "Every connector we ship" },
-  { id: "download",   label: "Product access",    href: "/download",               category: "Product",   icon: CloudIcon, hint: "TAURI is delivered as a web application" },
+  { id: "download",   label: "Product download",  href: "/download",               category: "Product",   icon: CloudIcon, hint: "Axiom Agent is delivered as an installed application" },
 
   // Resources
   { id: "docs",       label: "Documentation",     href: "/docs",                   category: "Resources", icon: BookOpenIcon,      hint: "Self-serve guides for the platform" },

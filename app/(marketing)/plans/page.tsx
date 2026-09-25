@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-    title: "TAURI Access and Pricing",
-    description: "TAURI access is scoped with the Vision XIX Labs team. No unverified self-serve price is advertised.",
+    title: "Axiom Agent Access and Pricing",
+    description: "Axiom Agent production access is scoped with the Vision XIX Labs team. No unverified self-serve price is advertised.",
 };
 
 export default function PlansPage() {
@@ -12,7 +12,7 @@ export default function PlansPage() {
             <p className="font-mono text-xs uppercase tracking-[0.22em] text-violet-300">Access and pricing</p>
             <h1 className="mt-4 max-w-3xl text-4xl font-semibold tracking-tight sm:text-6xl">Start with the sandbox. Scope production access with us.</h1>
             <p className="mt-6 max-w-3xl text-lg leading-8 text-zinc-300">
-                The repository contains billing infrastructure for several products, but it does not establish a verified public self-serve TAURI price. We therefore do not publish invented tiers or savings claims.
+                The repository contains billing infrastructure for several products, but it does not establish a verified public self-serve Axiom Agent price. We therefore do not publish invented tiers or savings claims.
             </p>
             <div className="mt-12 grid gap-4 md:grid-cols-2">
                 <section className="rounded-2xl border border-sky-500/25 bg-sky-500/[0.05] p-6">
@@ -28,7 +28,7 @@ export default function PlansPage() {
                     <Link href="/contact" className="mt-6 inline-block text-sm font-semibold text-violet-200">Discuss production access →</Link>
                 </section>
             </div>
-            <p className="mt-8 text-sm text-zinc-500">No credit-card checkout or fixed TAURI subscription price is promised on this page.</p>
+            <p className="mt-8 text-sm text-zinc-500">No credit-card checkout or fixed Axiom Agent subscription price is promised on this page.</p>
         </main>
     );
 }

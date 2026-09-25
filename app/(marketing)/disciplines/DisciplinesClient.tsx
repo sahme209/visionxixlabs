@@ -192,7 +192,7 @@ export function DisciplinesClient() {
               </div>
               <p className="mt-2 text-[12.5px] text-zinc-400 leading-snug">{d.scope}</p>
               <Link
-                href={d.evidence}
+                href={d.evidence.startsWith("/dashboard") ? "/docs" : d.evidence}
                 className="mt-3 inline-flex items-center gap-1 text-[11px] font-mono text-indigo-300 hover:text-indigo-200 transition"
               >
                 → {d.evidenceLabel}

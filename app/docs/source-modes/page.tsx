@@ -125,7 +125,7 @@ export default function SourceModesPage() {
       <DocSection id="where-to-look" kicker="in the product" title="Where source modes appear">
         <ul className="space-y-2 text-zinc-300 leading-relaxed list-disc pl-5 text-[13px]">
           <li><strong className="text-white">Command Center hero</strong> — the eyebrow pill reflects the overall <code className="font-mono text-[12px]">AxiomOSState.sourceMode</code>.</li>
-          <li><strong className="text-white">/dashboard/sources</strong> — each provider card shows its per-provider mode.</li>
+          <li><strong className="text-white">Axiom Agent → Sources</strong> — each provider card shows its per-provider mode.</li>
           <li><strong className="text-white">Posture strips</strong> — security / reliability / observability each show their section sourceMode.</li>
           <li><strong className="text-white">Approval queue</strong> — the queue header shows <code className="font-mono text-[12px]">approvalPosture.sourceMode</code>.</li>
           <li><strong className="text-white">Desktop runtime panel</strong> — header pill reflects <code className="font-mono text-[12px]">DesktopState.sourceMode</code>.</li>
