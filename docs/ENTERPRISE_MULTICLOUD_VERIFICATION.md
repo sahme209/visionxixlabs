@@ -8,7 +8,7 @@
 | `lib/credentialEncrypt.ts` | AES-256-GCM credential encryption/decryption |
 | `lib/infrastructureAddOns.ts` | Provider-specific add-on definitions |
 | `lib/rateLimit.ts` | In-memory rate limiting for preview update endpoint |
-| `middleware.ts` | Security headers: HSTS, X-Frame-Options, X-Content-Type-Options, CSP |
+| `proxy.ts` | Next.js 16 request boundary: desktop CORS, browser-product redirects, and security headers |
 
 ## 2) Files Modified
 
@@ -50,9 +50,9 @@ Preview flow uses Vercel by default. Non-Vercel providers are prepared for futur
 - Professional and Done-For-You tiers show CI/CD as enabled in the UI.
 - No Git-based auto-deploy or environment config management implemented yet; structure is modular for future extension (e.g., webhook on Git push).
 
-## 6) Security Middleware Implementation
+## 6) Security Proxy Implementation
 
-**`middleware.ts`** applies to all routes:
+**`proxy.ts`** applies to all matched routes and every response path, including redirects and CORS preflights:
 
 - **HSTS:** `Strict-Transport-Security: max-age=31536000; includeSubDomains; preload`
 - **X-Frame-Options:** `DENY`
@@ -94,8 +94,8 @@ Preview flow uses Vercel by default. Non-Vercel providers are prepared for futur
 
 If build fails with `migrate found failed migrations` for `20260219120000_add_lead_model`:
 
-1. **Automatic (during build):** The build script now runs `prisma migrate resolve --applied` before deploy to clear failed state.
-2. **Manual:** Run `npm run migrate:resolve` with `DATABASE_URL` set, then re-run build.
+1. **Resolve deliberately:** Run `npm run migrate:resolve` with `DATABASE_URL` set only after confirming the named migration was applied successfully.
+2. **Deploy deliberately:** Run `npm run db:migrate:deploy` as a separate release step. Application compilation never mutates migration state.
 
 ## 8) Assumptions and Simplifications
 

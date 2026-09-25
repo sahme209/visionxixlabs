@@ -1,17 +1,29 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-export function middleware(request: NextRequest) {
+const ALLOWED_DESKTOP_ORIGINS = new Set([
+  "tauri://localhost",
+  "http://tauri.localhost",
+  "https://tauri.localhost",
+  "http://localhost:1420",
+  "http://localhost:5173",
+]);
+
+function applySecurityHeaders(response: NextResponse): NextResponse {
+  response.headers.set("Strict-Transport-Security", "max-age=31536000; includeSubDomains; preload");
+  response.headers.set("X-Frame-Options", "DENY");
+  response.headers.set("X-Content-Type-Options", "nosniff");
+  response.headers.set(
+    "Content-Security-Policy",
+    "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; style-src-elem 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https: blob:; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self' https:; frame-src 'self' data: blob:; frame-ancestors 'self';",
+  );
+  return response;
+}
+
+export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const origin = request.headers.get("origin");
-  const allowedDesktopOrigins = new Set([
-    "tauri://localhost",
-    "http://tauri.localhost",
-    "https://tauri.localhost",
-    "http://localhost:1420",
-    "http://localhost:5173",
-  ]);
-  const desktopOrigin = origin && allowedDesktopOrigins.has(origin) ? origin : null;
+  const desktopOrigin = origin && ALLOWED_DESKTOP_ORIGINS.has(origin) ? origin : null;
 
   if (request.method === "OPTIONS" && pathname.startsWith("/api/")) {
     const preflight = new NextResponse(null, { status: 204 });
@@ -22,7 +34,7 @@ export function middleware(request: NextRequest) {
       preflight.headers.set("Access-Control-Max-Age", "86400");
       preflight.headers.set("Vary", "Origin");
     }
-    return preflight;
+    return applySecurityHeaders(preflight);
   }
 
   // The downloadable app is the canonical operational product. Keep the
@@ -49,7 +61,7 @@ export function middleware(request: NextRequest) {
     destination.pathname = "/download";
     destination.search = "";
     destination.searchParams.set("from", pathname);
-    return NextResponse.redirect(destination, 307);
+    return applySecurityHeaders(NextResponse.redirect(destination, 307));
   }
 
   const response = NextResponse.next();
@@ -59,15 +71,7 @@ export function middleware(request: NextRequest) {
     response.headers.set("Vary", "Origin");
   }
 
-  response.headers.set("Strict-Transport-Security", "max-age=31536000; includeSubDomains; preload");
-  response.headers.set("X-Frame-Options", "DENY");
-  response.headers.set("X-Content-Type-Options", "nosniff");
-  response.headers.set(
-    "Content-Security-Policy",
-    "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; style-src-elem 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https: blob:; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self' https:; frame-src 'self' data: blob:; frame-ancestors 'self';"
-  );
-
-  return response;
+  return applySecurityHeaders(response);
 }
 
 export const config = {

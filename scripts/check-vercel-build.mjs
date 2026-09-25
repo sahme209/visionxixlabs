@@ -1,4 +1,4 @@
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 
@@ -11,6 +11,14 @@ if (/\bprisma\s+migrate\b/.test(buildCommand)) {
   throw new Error(
     "The application build must not mutate database migration state. Run npm run db:migrate:deploy explicitly.",
   );
+}
+
+if (nextConfig.includes("ignoreBuildErrors")) {
+  throw new Error("Production builds must enforce Next.js TypeScript validation.");
+}
+
+if (!existsSync(join(projectRoot, "proxy.ts")) || existsSync(join(projectRoot, "middleware.ts"))) {
+  throw new Error("Next.js 16 routing must use proxy.ts, not the deprecated middleware.ts convention.");
 }
 
 const cloudSdkPackages = Object.keys(packageJson.dependencies ?? {}).filter((name) =>
@@ -27,5 +35,5 @@ if (missingExternals.length > 0) {
 }
 
 console.log(
-  `Vercel build contract verified: no migration side effects; ${cloudSdkPackages.length} cloud SDK packages externalized.`,
+  `Vercel build contract verified: type checks enforced, proxy convention current, no migration side effects, and ${cloudSdkPackages.length} cloud SDK packages externalized.`,
 );
