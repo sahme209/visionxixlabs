@@ -2,7 +2,7 @@
 
 ## Conclusion
 
-**Not ready for release.** The repaired source candidate passes the full automated behavior suite and the desktop frontend release build, but it is not the same binary as the currently published download. Native Tauri packaging and installed-app journeys remain blocked by the missing Rust toolchain and unavailable Windows/Linux hosts; the macOS DMG verifies but cannot be attached in this environment. Root TypeScript, ESLint, and two transitive production advisories also remain open.
+**Not ready for release.** The repaired source candidate passes strict root TypeScript, the full automated behavior suite, the optimized website build, focused changed-file lint, and the desktop frontend release build. It is not the same binary as the currently published download. Native Tauri packaging and installed-app journeys remain blocked by the missing Rust toolchain and unavailable Windows/Linux hosts; the macOS DMG verifies but cannot be attached in this environment. Repository-wide ESLint debt and two transitive production advisories also remain open.
 
 ## Exact candidates and environments
 
@@ -10,9 +10,9 @@
 | --- | --- |
 | Product | Axiom Agent |
 | Desktop version | 0.1.7 |
-| Base commit | `453ba80d10d1de7e0cebbe3aac9cb5da5195fd65` |
-| Repaired source | Dirty working tree based on the commit above; do not publish as an identified release until committed |
-| Source diff SHA-256 before this report | `b638215ad0799783d592eabade9269a1ce9570e4af40f05c1cefc2045c6c53fc` |
+| Coordinated-pass parent commit | `22a36250bcf353eb5d28114c323f170eb8ea1fed` |
+| Repaired source | Coordinated application/website candidate; exact tested commit is recorded in the final handoff |
+| Verification scope | Source, strict TypeScript, unit/service tests, optimized website build, desktop frontend build, and static release assertions |
 | Verification host | macOS arm64; Node 25.2.1; npm 11.6.2; no Cargo/Rust |
 | Isolated build copy | `/tmp/axiom-verify.7dNM90` |
 | Published package checked | `Axiom.Agent_0.1.7_aarch64.dmg` |
@@ -48,7 +48,8 @@ The published DMG is the prior 0.1.7 release, not a package built from the repai
 | Imports, exports, file selection and malformed files | Operator | Import/export surfaces | OS file picker/storage | unsupported/malformed/oversized; unavailable storage; open exported file | Service tests pass; native picker/export-open journey unavailable | Blocked |
 | Upgrade and data preservation | Existing desktop user | Installer/update docs | Prior install, OS | upgrade 0.1.6→0.1.7; retain auth/settings/data | Automatic updater absent; clean upgrade hosts unavailable | Blocked |
 | Uninstall and retained data | Desktop user | OS uninstall | OS package manager | uninstall; retained keychain/store documentation | Not executable on available host | Blocked |
-| Website → sandbox → return home | Visitor | Public sandbox | Browser | enter; sample labels; navigate; exit | Sandbox regression suite passes; prior focused suite 15/15 | Passed |
+| Website → sandbox → return home | Visitor | Public sandbox | Browser | enter; sample labels; navigate; exit | Sandbox remains labeled “SANDBOX · example only,” shared navigation has homepage exits, and the primary CTA now downloads the desktop app; automated boundary checks pass. Interactive browser verification is blocked by the local Chrome launch failure. | Passed (source/automated); blocked (interactive) |
+| Secondary iOS capability mention is truthful and visually subordinate | Visitor | Shared footer | Verified App Store developer URL | Copy presence; visual hierarchy; accessible external link; destination ownership | “We also build iOS applications.” added beneath the brand description. No link was enabled because no developer-page URL was supplied. | Blocked (destination) |
 | Dependency/security posture | Maintainer | Package manifests | npm registry | production audit; CSP; secret persistence | Desktop audit 0; root reduced from critical/high findings to 2 moderate transitive uuid/gaxios findings; CSP and secure storage repaired | Failed |
 | Final packaged release matches repaired source | Customer | Downloaded installer | Rust, CI, signing | build, checksum, install, full journeys | Published 0.1.7 predates this dirty repair set; no final native package was produced | Failed |
 
@@ -60,14 +61,17 @@ The published DMG is the prior 0.1.7 release, not a package built from the repai
 | Vitest cases | 4,083 | 0 | 0 | 0 | Final isolated run completed without unhandled errors |
 | Python CLI | 30 | 0 | 0 | 0 | `unittest` OK |
 | Desktop TypeScript/frontend release build | 1 | 0 | 0 | 0 | release alignment, TypeScript, and Vite build passed |
-| Root TypeScript | 0 | 1 | 0 | 0 | 31 test-code diagnostics |
-| ESLint | 0 | 1 | 0 | 0 | 686 errors and 402 warnings across 440 files |
+| Root TypeScript | 1 | 0 | 0 | 0 | Strict `tsc --noEmit --incremental false` passed with zero diagnostics |
+| Focused changed-file ESLint | 1 | 0 | 0 | 0 | All files changed in this pass passed |
+| Repository-wide ESLint | 0 | 1 | 0 | 0 | Existing 686-error / 402-warning backlog remains; no rules were weakened |
+| Optimized Next.js website build | 1 | 0 | 0 | 0 | 283 static pages generated; build passed with Google GAX, Edge-runtime, and middleware-deprecation warnings |
+| Interactive desktop/mobile browser verification | 0 | 0 | 1 | 0 | `agent-browser` installed, but local Chrome exited before creating its DevTools port |
 | Production dependency audits | 1 | 1 | 0 | 0 | desktop 0 vulnerabilities; root 2 moderate transitive findings |
 | Native Tauri package/build | 0 | 0 | 1 | 0 | Cargo/Rust unavailable |
 | macOS DMG integrity/attach | 1 | 0 | 1 | 0 | checksum/verify passed; attach blocked |
 | Windows/Linux install journeys | 0 | 0 | 2 | 0 | platforms unavailable |
 | Live provider/identity journeys | 0 | 0 | 1 | 0 | safe credentials/tenants unavailable |
-| **Totals** | **4,470** | **3** | **5** | **0** | Counts combine cases and explicit executable checks; platform entries are environment blocks |
+| **Totals** | **4,473** | **2** | **6** | **0** | Counts combine cases and explicit executable checks; platform entries are environment blocks |
 
 ## Defect and repair log
 
@@ -78,10 +82,14 @@ The published DMG is the prior 0.1.7 release, not a package built from the repai
 | ESLint configuration used legacy FlatCompat against native Next 16 flat configs and crashed | Replaced it with direct `eslint-config-next/core-web-vitals` and `typescript` flat-config imports | Linter now executes and exposes the existing 686-error backlog |
 | Desktop build failed on unused `MouseEvent` import | Removed unused type import | Desktop TypeScript and Vite release build passed |
 | Prior desktop state could imply trust/success without verification | Preserved current repair set: CSP, secure persistence, auth/pairing validation, truthful preview/offline states, and safer handoff/menu/window behavior | Automated suite and frontend build pass; packaged runtime verification blocked |
+| Desktop connection banner was permanently hard-coded to online and its effect was a no-op | Replaced the placeholder with the workstation's real online/offline state and browser connectivity events; removed unsupported audit-sync/update claims | Release assertion, strict desktop TypeScript, and Vite production build passed |
+| Desktop sidebar omitted expanded/current/status accessibility semantics | Added labeled navigation, `aria-expanded`/`aria-controls`, `aria-current`, decorative-icon hiding, and live status semantics | Desktop TypeScript and Vite production build passed |
+| Sandbox primary CTA advertised a hosted web workspace and linked to sign-up | Redirected the CTA to `/download` with “Download the desktop app” and added a release assertion prohibiting browser-product wording | Full 4,083-test suite and optimized website build passed |
+| Shared footer repeated the desktop download and had no approved iOS mention | Removed the duplicate product link and added one secondary sentence beneath the brand copy; App Store link intentionally withheld pending verified URL | Focused lint, full suite, and optimized website build passed |
 
 ## Remaining requirements to reach “ready”
 
-1. Fix the 31 root TypeScript diagnostics and 686 ESLint errors without weakening rules.
+1. Continue reducing the repository-wide ESLint backlog without weakening rules; strict root TypeScript is now clean.
 2. Resolve or formally risk-assess the two remaining transitive production advisories.
 3. Install Rust/Cargo, build a new native 0.1.7+ candidate from a committed tree, and publish checksums/attestations.
 4. Install and exercise that exact candidate on clean macOS arm64/x64, Windows x64, and Linux x64 hosts.

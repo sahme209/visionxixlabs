@@ -6,17 +6,20 @@ import {
   type DiffSymbol,
 } from "../testCoverageProposer";
 
-const SYM = (partial: Partial<DiffSymbol> & { id: string }): DiffSymbol => ({
-  id: partial.id,
-  kind: "function",
-  changeKind: "added",
-  exported: false,
-  hasBranches: false,
-  canError: false,
-  hasClosedUnionReturn: false,
-  existingTests: [],
-  ...partial,
-});
+const SYM = (partial: Partial<DiffSymbol> & { id: string }): DiffSymbol => {
+  const { id, ...overrides } = partial;
+  return {
+    kind: "function",
+    changeKind: "added",
+    exported: false,
+    hasBranches: false,
+    canError: false,
+    hasClosedUnionReturn: false,
+    existingTests: [],
+    ...overrides,
+    id,
+  };
+};
 
 beforeEach(() => __resetProposalCounter());
 

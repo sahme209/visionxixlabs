@@ -199,11 +199,13 @@ describe("buildSuggestionListResponse", () => {
     await stub.proactiveAgiSuggestion.createMany({
       data: [
         { organizationId: "o", kind: "review_release", title: "T1", rationale: "R1", targetKind: "release", targetId: "rel_1", confidence: 80, citationsJson: ["e1"], operatorDecision: "pending", outcome: "ai_generated", errorMessage: null, modelHint: null, engineVersion: "v1", windowSize: 5 },
-        { organizationId: "o", kind: "tighten_protection", title: "T2", rationale: "R2", targetKind: "repo", targetId: "r_1", confidence: 70, citationsJson: [], operatorDecision: "acted", outcome: "ai_generated", errorMessage: null, modelHint: null, engineVersion: "v1", windowSize: 5 },
-        { organizationId: "o", kind: "review_release", title: "T3", rationale: "R3", targetKind: "release", targetId: "rel_2", confidence: 60, citationsJson: [], operatorDecision: "dismissed", outcome: "fallback_rules", errorMessage: null, modelHint: null, engineVersion: "v1", windowSize: 5 },
+        { organizationId: "o", kind: "tighten_protection", title: "T2", rationale: "R2", targetKind: "repo", targetId: "r_1", confidence: 70, citationsJson: [], operatorDecision: "pending", outcome: "ai_generated", errorMessage: null, modelHint: null, engineVersion: "v1", windowSize: 5 },
+        { organizationId: "o", kind: "review_release", title: "T3", rationale: "R3", targetKind: "release", targetId: "rel_2", confidence: 60, citationsJson: [], operatorDecision: "pending", outcome: "fallback_rules", errorMessage: null, modelHint: null, engineVersion: "v1", windowSize: 5 },
         { organizationId: "other", kind: "review_release", title: "Tx", rationale: "Rx", targetKind: "release", targetId: "rel_x", confidence: 90, citationsJson: [], operatorDecision: "pending", outcome: "ai_generated", errorMessage: null, modelHint: null, engineVersion: "v1", windowSize: 5 },
       ],
     });
+    stub._rows[1].operatorDecision = "acted";
+    stub._rows[2].operatorDecision = "dismissed";
   }
 
   it("returns scoped to org, newest first, with summary", async () => {

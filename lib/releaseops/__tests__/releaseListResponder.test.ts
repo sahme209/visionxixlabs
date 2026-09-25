@@ -101,13 +101,13 @@ function makeRepo(): Stub {
         const ex = packs.find((p) => p.releaseId === where.releaseId);
         if (ex) { Object.assign(ex, update, { updatedAt: now() }); return { ...ex }; }
         const row: ReleaseEvidencePackRow = {
+          ...create,
           id: nextId(),
           generatedAt: create.generatedAt ?? now(),
           createdAt: now(), updatedAt: now(),
           signedAt: create.signedAt ?? null,
           contentHash: create.contentHash ?? null,
           exportRefsJson: create.exportRefsJson ?? null,
-          ...create,
         };
         packs.push(row);
         return { ...row };

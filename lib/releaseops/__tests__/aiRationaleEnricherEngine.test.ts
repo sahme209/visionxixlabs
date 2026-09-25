@@ -174,7 +174,7 @@ describe("buildFallbackRationale", () => {
       policyViolations: { blocking: 3, warning: 0, advisory: 0 },
       pendingManualFixes: { total: 0, inProd: 2 },
       branchProtection: { snapshotsTotal: 1, weakOrNone: 1, forcePushAllowedOnMain: true },
-    }));
+    }), "test_fixture");
     expect(out.riskFactors.some((r) => r.includes("3 blocking policy violation"))).toBe(true);
     expect(out.riskFactors.some((r) => r.includes("2 unreconciled manual fix"))).toBe(true);
     expect(out.riskFactors.some((r) => r.includes("Force-push is allowed"))).toBe(true);
@@ -188,7 +188,7 @@ describe("buildFallbackRationale", () => {
       branchProtection: { snapshotsTotal: 1, weakOrNone: 0, forcePushAllowedOnMain: false },
       readiness: { overallScore: 95, riskLevel: "low", blockerCount: 0, branchGovernance: 95, changeCompliance: 95, secretTraceability: 95, rollbackReadiness: 95, manualReconciliation: 95 },
       previousReleaseStatus: null,
-    }));
+    }), "test_fixture");
     expect(out.riskFactors.length).toBeGreaterThan(0);
   });
 
@@ -200,7 +200,7 @@ describe("buildFallbackRationale", () => {
       branchProtection: { snapshotsTotal: 1, weakOrNone: 1, forcePushAllowedOnMain: true },
       readiness: { overallScore: 30, riskLevel: "critical", blockerCount: 5, branchGovernance: 30, changeCompliance: 30, secretTraceability: 30, rollbackReadiness: 30, manualReconciliation: 30 },
       previousReleaseStatus: "rolled_back",
-    }));
+    }), "test_fixture");
     expect(out.riskFactors.length).toBeLessThanOrEqual(5);
   });
 

@@ -133,6 +133,7 @@ function makeRepo(start = new Date("2026-06-01T12:00:00Z")): Stub {
           return { ...existing };
         }
         const row: ReleaseEvidencePackRow = {
+          ...create,
           id: nextId(),
           generatedAt: create.generatedAt ?? now(),
           createdAt: now(),
@@ -140,7 +141,6 @@ function makeRepo(start = new Date("2026-06-01T12:00:00Z")): Stub {
           signedAt: create.signedAt ?? null,
           contentHash: create.contentHash ?? null,
           exportRefsJson: create.exportRefsJson ?? null,
-          ...create,
         };
         packs.push(row);
         return { ...row };

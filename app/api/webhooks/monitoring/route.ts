@@ -26,10 +26,7 @@
  */
 
 import { NextResponse } from "next/server";
-import {
-  findWorkspaceFromWebhookSignature,
-  MONITORING_WEBHOOK_TARGET_KIND,
-} from "@/lib/workforce/domains/monitoringWebhookConfig";
+import { findWorkspaceFromWebhookSignature } from "@/lib/workforce/domains/monitoringWebhookConfig";
 import {
   parseWebhookPayload,
   type NormalizedAlert,
@@ -49,7 +46,7 @@ export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 export const maxDuration = 90;
 
-export const MONITORING_ALERT_TARGET_KIND = "workforce_monitoring_alert";
+const MONITORING_ALERT_TARGET_KIND = "workforce_monitoring_alert";
 
 function readSignatureHeader(req: Request): string {
   // Order of preference — generic header first, provider-specific

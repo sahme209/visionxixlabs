@@ -8,15 +8,16 @@ import {
 import type { SchemaTable } from "../databaseSchemaReviewer";
 
 function row(overrides: Partial<SlowQueryRow> & { id: string; sql: string }): SlowQueryRow {
+  const { id, sql, ...optionalOverrides } = overrides;
   return {
-    id: overrides.id,
-    sql: overrides.sql,
     p95Ms: 800,
     callsInWindow: 1_000,
     totalTimeMs: 600_000,
     meanRows: 50,
     planSummary: "Seq Scan on orders rows=100000",
-    ...overrides,
+    ...optionalOverrides,
+    id,
+    sql,
   };
 }
 

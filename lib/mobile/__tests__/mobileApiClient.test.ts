@@ -69,22 +69,22 @@ describe("MobileApiClient", () => {
   });
 
   it("includes bearer token + clientId in headers", async () => {
-    const mock = vi.fn(async () => ok({ packets: [] }));
+    const mock = vi.fn<typeof fetch>(async () => ok({ packets: [] }));
     const client = makeClient(mock, { clientId: "ios/1.2.3" });
     await client.listApprovalPackets();
-    const callHeaders = mock.mock.calls[0][1].headers;
-    expect(callHeaders.authorization).toBe("Bearer tok_123");
-    expect(callHeaders["x-client-id"]).toBe("ios/1.2.3");
+    const callHeaders = new Headers(mock.mock.calls[0]?.[1]?.headers);
+    expect(callHeaders.get("authorization")).toBe("Bearer tok_123");
+    expect(callHeaders.get("x-client-id")).toBe("ios/1.2.3");
     globalThis.fetch = originalFetch;
   });
 
   it("uses POST + JSON body for decideApproval", async () => {
-    const mock = vi.fn(async () => ok({ ok: true }));
+    const mock = vi.fn<typeof fetch>(async () => ok({ ok: true }));
     const client = makeClient(mock);
     await client.decideApproval({ packetId: "p1", decision: "approved" });
-    const call = mock.mock.calls[0][1];
-    expect(call.method).toBe("POST");
-    expect(JSON.parse(call.body)).toEqual({ packetId: "p1", decision: "approved" });
+    const call = mock.mock.calls[0]?.[1];
+    expect(call?.method).toBe("POST");
+    expect(JSON.parse(String(call?.body))).toEqual({ packetId: "p1", decision: "approved" });
     globalThis.fetch = originalFetch;
   });
 
@@ -111,14 +111,14 @@ describe("MobileApiClient", () => {
   });
 
   it("baseUrl trailing slash is normalized", async () => {
-    const mock = vi.fn(async () => ok({ overall: "ok", components: [], generatedAt: "x" }));
+    const mock = vi.fn<typeof fetch>(async () => ok({ overall: "ok", components: [], generatedAt: "x" }));
     globalThis.fetch = mock;
     const client = new MobileApiClient({
       baseUrl: "https://example.com///",
       getAccessToken: () => null,
     });
     await client.getPublicStatus();
-    expect(mock.mock.calls[0][0]).toBe("https://example.com/api/status");
+    expect(mock.mock.calls[0]?.[0]).toBe("https://example.com/api/status");
     globalThis.fetch = originalFetch;
   });
 });

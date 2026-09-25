@@ -1,16 +1,19 @@
 import { describe, it, expect } from "vitest";
 import { sequenceRefactor, summarize, type RefactorStep } from "../refactorSequencer";
 
-const STEP = (partial: Partial<RefactorStep> & { id: string }): RefactorStep => ({
-  id: partial.id,
-  kind: "behavior_neutral",
-  touches: [],
-  dependsOn: [],
-  coveredBy: [],
-  preservesBehavior: true,
-  rationale: partial.id,
-  ...partial,
-});
+const STEP = (partial: Partial<RefactorStep> & { id: string }): RefactorStep => {
+  const { id, ...overrides } = partial;
+  return {
+    kind: "behavior_neutral",
+    touches: [],
+    dependsOn: [],
+    coveredBy: [],
+    preservesBehavior: true,
+    ...overrides,
+    id,
+    rationale: partial.rationale ?? id,
+  };
+};
 
 describe("refactorSequencer", () => {
   it("empty input → empty sequence", () => {

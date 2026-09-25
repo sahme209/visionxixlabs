@@ -10,13 +10,17 @@ import {
   type RepoLookupRow,
 } from "../githubWebhookResponder";
 
-interface Stub extends GithubWebhookRepo, DeliveryListRepo {
-  _deliveries: DeliveryRow[];
-  _repos: RepoLookupRow[];
-  _installations: Array<{ organizationId: string; githubInstallationId: string; status: string }>;
-  _nextId: number;
-  _nextRepoId: number;
-}
+type Stub = Omit<GithubWebhookRepo, "inboundWebhookDelivery">
+  & Omit<DeliveryListRepo, "inboundWebhookDelivery">
+  & {
+    inboundWebhookDelivery: GithubWebhookRepo["inboundWebhookDelivery"]
+      & DeliveryListRepo["inboundWebhookDelivery"];
+    _deliveries: DeliveryRow[];
+    _repos: RepoLookupRow[];
+    _installations: Array<{ organizationId: string; githubInstallationId: string; status: string }>;
+    _nextId: number;
+    _nextRepoId: number;
+  };
 
 function makeRepo(): Stub {
   const stub: Stub = {

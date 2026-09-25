@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { NextRequest } from "next/server";
 import { middleware } from "../../../middleware";
 
-function request(path: string, init?: RequestInit) {
+function request(path: string, init?: ConstructorParameters<typeof NextRequest>[1]) {
     return new NextRequest(new URL(path, "https://visionxixlabs.com"), init);
 }
 

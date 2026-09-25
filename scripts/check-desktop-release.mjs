@@ -7,6 +7,9 @@ const desktopPackage = readJson("desktop/package.json");
 const tauriConfig = readJson("desktop/src-tauri/tauri.conf.json");
 const workflow = readText(".github/workflows/desktop-release.yml");
 const releaseManifest = readText("lib/desktop/releaseManifest.ts");
+const connectionBanner = readText("desktop/src/components/ConnectionBanner.tsx");
+const footer = readText("components/Footer.tsx");
+const demoLanding = readText("app/demo/page.tsx");
 
 const errors = [];
 
@@ -33,6 +36,24 @@ if (!releaseManifest.includes('"sahme209"') || !releaseManifest.includes('"axiom
 }
 if (!releaseManifest.includes("artifact-signed: true") || !releaseManifest.includes("artifact-notarized: true")) {
   errors.push("release manifest must require machine-readable signing attestations");
+}
+if (!connectionBanner.includes("navigator.onLine") || !connectionBanner.includes('addEventListener("offline"')) {
+  errors.push("desktop connectivity banner must respond to the workstation's real online/offline state");
+}
+if (connectionBanner.includes('connection: "online"')) {
+  errors.push("desktop connectivity banner must not hard-code a healthy connection");
+}
+if (!footer.includes("We also build iOS applications.")) {
+  errors.push("website footer must retain the approved secondary iOS capability mention");
+}
+if (footer.includes("apps.apple.com")) {
+  errors.push("App Store link must remain disabled until the developer-page URL is supplied and verified");
+}
+if (demoLanding.includes("Create a web workspace") || demoLanding.includes("/auth/signup")) {
+  errors.push("sandbox must direct customers to the downloadable app, not advertise a browser product");
+}
+if (!demoLanding.includes('href="/download"') || !demoLanding.includes("Download the desktop app")) {
+  errors.push("sandbox must provide a clear path to the downloadable app");
 }
 
 if (errors.length > 0) {

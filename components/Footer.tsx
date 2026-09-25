@@ -33,7 +33,6 @@ const productLinks = [
   { href: "/integrations", label: "Integrations" },
   { href: "/download", label: "Download Axiom Agent" },
   { href: "/axiom/releaseops", label: "Axiom ReleaseOps" },
-  { href: "/download", label: "Download Desktop" },
   { href: "/plans", label: "Pricing" },
   { href: "/axiom", label: "About Axiom" },
   { href: "/cloud-solutions", label: "Multi-Cloud" },
@@ -137,11 +136,15 @@ export function Footer() {
                 Vision XIX Labs
               </span>
             </div>
-            <p className="text-zinc-500 text-sm leading-relaxed max-w-sm mb-6">
+            <p className="text-zinc-500 text-sm leading-relaxed max-w-sm mb-4">
               Cloud infrastructure, AI engineering, and autonomous operations.
               We design, build, and operate systems that scale — with governance,
               security, and full audit trail.
             </p>
+            <p className="mb-6 text-xs text-zinc-600">
+              We also build iOS applications.
+            </p>
+            {/* The App Store developer-page link stays disabled until its owner URL is supplied and verified. */}
             {/* Social links */}
             <div className="flex items-center gap-3">
               <a
