@@ -51,6 +51,11 @@ const nextConfig: NextConfig = {
     webpackMemoryOptimizations: true,
     serverSourceMaps: false,
   },
+  // The website build validates production web sources. Desktop sources and
+  // their Tauri-only dependencies are validated by desktop/tsconfig.json.
+  typescript: {
+    tsconfigPath: "tsconfig.next.json",
+  },
   async redirects() {
     return [
       // Canonical routing

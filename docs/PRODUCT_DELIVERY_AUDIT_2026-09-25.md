@@ -10,7 +10,7 @@
 | --- | --- |
 | Product | Axiom Agent |
 | Desktop version | 0.1.7 |
-| Routing-hardening parent commit | `8fdd4f66a1f3bc20aa161004f1f52b7cd45eb18f` |
+| Type-boundary repair parent commit | `4dac548eb8949b51163e1694589ce9d504c47fc1` |
 | Repaired source | Coordinated application/website candidate; exact tested commit is recorded in the final handoff |
 | Verification scope | Source, strict TypeScript, unit/service tests, optimized website build, desktop frontend build, and static release assertions |
 | Verification host | macOS arm64; Node 25.2.1; npm 11.6.2; no Cargo/Rust |
@@ -64,9 +64,9 @@ The published DMG is the prior 0.1.7 release, not a package built from the repai
 | Root TypeScript | 1 | 0 | 0 | 0 | Strict `tsc --noEmit --incremental false` passed; Next.js production type validation also passed with no bypass |
 | Focused changed-file ESLint | 1 | 0 | 0 | 0 | All files changed in this pass passed |
 | Repository-wide ESLint | 0 | 1 | 0 | 0 | Existing 686-error / 402-warning backlog remains; no rules were weakened |
-| Optimized Next.js website build | 1 | 0 | 0 | 0 | 283 static pages generated under `NODE_OPTIONS=--max-old-space-size=4096`; compile completed in 27.6s, production TypeScript validation in 32.3s, with no GAX or middleware-deprecation warning |
+| Optimized Next.js website build | 1 | 0 | 0 | 0 | With `desktop/node_modules` deliberately absent, 283 pages generated under a 4 GB heap; compile completed in 11.8s and production-web TypeScript validation in 19.7s, with no GAX or middleware-deprecation warning |
 | Interactive desktop/mobile browser verification | 0 | 0 | 1 | 0 | `agent-browser` installed, but local Chrome exited before creating its DevTools port |
-| Vercel build-safety contract | 1 | 0 | 0 | 0 | Build enforces type validation and `proxy.ts`, has no Prisma migration side effects, and externalizes all 36 direct AWS/Azure/GCP SDK packages |
+| Vercel build-safety contract | 1 | 0 | 0 | 0 | Build enforces separate web/desktop TypeScript boundaries and `proxy.ts`, has no Prisma migration side effects, and externalizes all 36 direct AWS/Azure/GCP SDK packages |
 | Production dependency audits | 1 | 1 | 0 | 0 | desktop 0 vulnerabilities; root has 6 moderate package findings in one transitive Google Storage/uuid chain, with no high/critical findings or upstream direct fix |
 | Native Tauri package/build | 0 | 0 | 1 | 0 | Cargo/Rust unavailable |
 | macOS DMG integrity/attach | 1 | 0 | 1 | 0 | checksum/verify passed; attach blocked |
@@ -89,6 +89,7 @@ The published DMG is the prior 0.1.7 release, not a package built from the repai
 | Shared footer repeated the desktop download and had no approved iOS mention | Removed the duplicate product link and added one secondary sentence beneath the brand copy; App Store link intentionally withheld pending verified URL | Focused lint, full suite, and optimized website build passed |
 | Vercel build exhausted 8 GB RAM after webpack bundled generated Google GKE clients; the build also silently altered and deployed Prisma migration state | Marked every direct AWS/Azure/GCP SDK as a Node server external; removed all migration operations from the build and exposed explicit `db:migrate:deploy`; added a build-contract regression check | Constrained 4 GB Next.js build passed, 283 pages generated, GAX warning absent, strict TypeScript passed, and 4,086 tests passed |
 | Production builds ignored TypeScript failures; deprecated `middleware.ts` omitted security headers from redirects and preflights | Removed `ignoreBuildErrors`, migrated intact routing rules to Next.js 16 `proxy.ts`, centralized security headers across every response path, and added trusted/untrusted CORS regression cases | Next production type validation passed; focused boundary suite 12/12; full suite 4,086/4,086; constrained production build passed without the middleware warning |
+| Vercel production type checking followed root tests into `desktop/src`, where the website-only install correctly lacked Tauri packages | Added `tsconfig.next.json` for production web sources/tests separation while retaining the strict root and `desktop/tsconfig.json` gates; extended the build contract to enforce the boundary | Reproduced with `desktop/node_modules` removed: Next compile/type check/283 pages passed; restored dependencies and desktop release build passed; strict root TypeScript and 4,086 tests passed |
 
 ## Remaining requirements to reach “ready”
 
