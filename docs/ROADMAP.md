@@ -1,0 +1,43 @@
+# Roadmap
+
+Last updated: 2026-09-26
+
+## P0 — integrity and authoritative scope
+
+1. Preserve the reattached 36-section master specification verbatim and expand `REQUIREMENTS_MATRIX.md` to one row per subsection, every section 11–20 detail, and scenarios A–L.
+2. Apply and verify the tenant-scoped operation-ledger migration; wire every merge, release, tag, change, dispatch, environment approval, and rollback adapter through the tested coordinator and reconciliation policy.
+3. Continue the new desktop request/playbook path through immutable revision editing and diffs, approval/readiness, execution, validation/deferred follow-up, and closure.
+4. Remove customer-browser assumptions from desktop documentation and architecture while retaining shared-service/browser-PKCE support.
+5. Build a fresh artifact from a committed tree; record commit/version/checksum/SBOM/signing/notarization.
+
+## P1 — missing original behavior
+
+1. Replace the linear playbook with dependency-aware branching and parallel joins; make rollback conditional and escalation/retry policy explicit.
+2. Complete immutable request editing/diffs and playbook history retrieval, including active/superseded policy.
+3. Separate technical and functional validation ownership and evidence.
+4. Implement KT/shadow sessions, consent, source evidence, unresolved questions, and readiness.
+5. Implement Word/PDF/Confluence export verification.
+6. Implement scenarios A–L exactly after source restoration.
+
+## P2 — recovery and integration
+
+1. Startup/reconnect/sleep/wake/crash reconciliation and stale-data indicators.
+2. Provider-sandbox tests for identity, SCM, workflows, change systems, communications, environment approval, and cloud validation.
+3. Deferred-validation scheduling, ownership, monitoring triggers, reminders, and closure policy.
+4. Backup/restore and supported-version migration exercises.
+5. Signed updater with rollback/recovery behavior, or explicit absence in product/UI.
+
+## P3 — usability, accessibility, performance
+
+1. A mission-focused desktop information architecture centered on active deployments rather than disconnected modules.
+2. Field-level blocker messages, verified defaults, progress, and recovery guidance.
+3. Keyboard, screen-reader, contrast, scaling, reduced-motion, and platform accessibility passes.
+4. Large-record, offline-cache, and reconnect performance tests.
+
+## Exit criteria for “ready”
+
+- Every authoritative requirement has implemented and independently verified evidence.
+- All ten templates and scenarios A–L pass normal and failure journeys.
+- Exact packaged artifacts pass clean install, upgrade, recovery, auth, integrations, and accessibility on every claimed platform.
+- No high/critical unresolved security defect; other risks are explicitly accepted with owner and expiry.
+- Website claims match the delivered verified release.

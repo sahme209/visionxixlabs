@@ -1,15 +1,16 @@
 # Axiom Desktop
 
-The Axiom desktop runtime is a **local infrastructure operations
-workstation**. It receives signed execution-plan handoffs from the web app,
-lets the user review Terraform/CLI artifacts under local custody, and (with
-future approval architecture) executes those plans against credentials the
-user holds on the device.
+The Axiom desktop runtime is the **customer deployment-operations
+workstation**. It captures governed deployment requests, receives signed
+execution-plan handoffs from shared services, lets the user review local
+artifacts under their custody, and initiates authorized provider operations
+without making the public website a customer application.
 
-The desktop app is **not** a way around web governance. Approvals, policy
-decisions, audit, and rollback requirements are evaluated on the web before
-a handoff is issued — the desktop runtime enforces those same constraints
-locally.
+The desktop app is not a way around governance. Approvals, policy decisions,
+audit, idempotency, reconciliation, and rollback requirements are authoritative
+in shared services and enforced again at the desktop action boundary. A system
+browser may be used for secure authorization, but customers do not operate the
+product through a hosted dashboard.
 
 ## Stack decision: Tauri (locked)
 
@@ -100,6 +101,8 @@ duplicated taxonomy.
 | Capability                       | Status     |
 | -------------------------------- | ---------- |
 | Tauri shell + React frontend     | Live       |
+| Governed deployment intake UI/API | Implemented; packaged/live DB verification pending |
+| Durable consequential-operation ledger | Implemented; migration/provider wiring verification pending |
 | Sidebar nav + Dashboard view     | Live       |
 | Connectors/Scans/Settings stubs  | Live       |
 | Handoff inbox UI                 | Preview    |

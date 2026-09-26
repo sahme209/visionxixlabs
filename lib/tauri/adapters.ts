@@ -28,6 +28,10 @@ export interface AdapterRequest<TPayload = unknown> {
   actorId: string;
   payload: TPayload;
   humanConfirmationId?: string;
+  /** Durable identity supplied for consequential operations. */
+  operationId?: string;
+  /** Provider adapters must forward this when the provider supports idempotency. */
+  idempotencyKey?: string;
 }
 
 export interface AdapterResult<TData = unknown> {

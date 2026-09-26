@@ -1,4 +1,8 @@
-export type CapabilityState = "working_tested" | "demo_sandbox" | "planned_blocked";
+export type CapabilityState =
+    | "working_tested"
+    | "implemented_unverified"
+    | "demo_sandbox"
+    | "planned_blocked";
 
 export interface TauriCapability {
     id: string;
@@ -11,6 +15,7 @@ export interface TauriCapability {
 
 export const capabilityStateLabel: Record<CapabilityState, string> = {
     working_tested: "Working and tested",
+    implemented_unverified: "Implemented · verification pending",
     demo_sandbox: "Demo / sandbox",
     planned_blocked: "Planned or blocked",
 };
@@ -19,17 +24,18 @@ export const capabilityStateLabel: Record<CapabilityState, string> = {
  * Public source of truth for Axiom Agent capability claims.
  *
  * A capability must not be promoted to working_tested without a tenant-scoped
- * product route and automated test evidence. UI-only prototypes belong in
- * demo_sandbox, even when their local interactions are complete.
+ * product route plus executable verification at the claimed boundary.
+ * Implemented code awaiting live/packaged verification is implemented_unverified;
+ * UI-only prototypes belong in demo_sandbox.
  */
 export const tauriCapabilities: readonly TauriCapability[] = [
     {
         id: "deployment-intake",
         name: "Deployment intake",
-        state: "demo_sandbox",
-        publicDescription: "A guided form captures change scope, timing, repository, approval, validation, and rollback facts.",
-        evidence: ["app/dashboard/tauri/page.tsx", "lib/tauri/__tests__/deploymentOperations.test.ts"],
-        limitation: "The public intake is a sanitized sandbox and is not persisted as a tenant deployment record.",
+        state: "implemented_unverified",
+        publicDescription: "The desktop guided form captures change scope, timing, repository, approval, validation, evidence, deferred follow-up, and rollback facts.",
+        evidence: ["desktop/src/views/DeploymentRequestsView.tsx", "app/api/desktop/deployments/route.ts", "lib/tauri/__tests__/deploymentRequestRepo.test.ts"],
+        limitation: "The tenant-scoped persistence path is implemented, but its migration and packaged UI-to-database journey have not been verified.",
     },
     {
         id: "playbook-generation",
@@ -93,7 +99,7 @@ export const tauriCapabilities: readonly TauriCapability[] = [
         state: "working_tested",
         publicDescription: "Axiom Agent is distributed as an installable desktop application through verified release assets.",
         evidence: ["app/api/desktop/release-manifest/route.ts", "lib/release/releaseRegistry.ts"],
-        limitation: "The current macOS Apple Silicon developer build is unsigned and not notarized; Windows, Linux, and Intel macOS remain unavailable until verified artifacts exist.",
+        limitation: "Published 0.1.7 artifacts exist, but this changed source has not produced an exact signed/notarized candidate or completed clean-host installation tests.",
     },
 ] as const;
 
