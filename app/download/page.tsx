@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useSyncExternalStore } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -102,24 +102,24 @@ const PLATFORMS: Record<DetectedPlatform, PlatformInfo> = {
   },
 };
 
+const subscribeToClientEnvironment = () => () => {};
+
+function detectPlatform(): DetectedPlatform {
+  const ua = navigator.userAgent.toLowerCase();
+  if (ua.includes("win")) return "windows";
+  if (ua.includes("linux")) return "linux";
+  return "mac-arm";
+}
+
 export default function DownloadPage() {
-  const [primary, setPrimary] = useState<DetectedPlatform>("mac-arm");
-  const [mounted, setMounted] = useState(false);
+  const primary = useSyncExternalStore<DetectedPlatform>(
+    subscribeToClientEnvironment,
+    detectPlatform,
+    () => "mac-arm",
+  );
+  const mounted = useSyncExternalStore(subscribeToClientEnvironment, () => true, () => false);
   const [manifest, setManifest] = useState<ReleaseManifest | null>(null);
   const { isDesktop, status: desktopStatus } = useDesktopRuntime();
-
-  useEffect(() => {
-    setMounted(true);
-    if (typeof navigator === "undefined") return;
-    const ua = navigator.userAgent.toLowerCase();
-    if (ua.includes("mac")) {
-      setPrimary("mac-arm");
-    } else if (ua.includes("win")) {
-      setPrimary("windows");
-    } else if (ua.includes("linux")) {
-      setPrimary("linux");
-    }
-  }, []);
 
   // Fetch the live release manifest so download buttons resolve to real
   // GitHub-hosted binaries when a release exists. Falls back to preview
@@ -164,18 +164,18 @@ export default function DownloadPage() {
     <div className="min-h-screen bg-[#09090b] text-white relative overflow-hidden">
       {/* Cinematic background layers */}
       <div className="absolute inset-0 bg-grid-mesh opacity-30 pointer-events-none" aria-hidden />
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[600px] spotlight-orb opacity-60 pointer-events-none" aria-hidden />
-      <div className="ambient-drift absolute top-[20%] -right-40 w-[500px] h-[500px] rounded-full bg-brand-violet/[0.07] blur-[140px] pointer-events-none" aria-hidden />
-      <div className="ambient-drift absolute top-[40%] -left-40 w-[480px] h-[460px] rounded-full bg-brand-coral/[0.06] blur-[140px] pointer-events-none" style={{ animationDelay: "-8s" }} aria-hidden />
-      <div className="ambient-drift absolute bottom-[10%] left-1/2 -translate-x-1/2 w-[600px] h-[300px] rounded-full bg-cyan-500/[0.05] blur-[120px] pointer-events-none" style={{ animationDelay: "-14s" }} aria-hidden />
+      <div className="hidden md:block absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[600px] spotlight-orb opacity-60 pointer-events-none" aria-hidden />
+      <div className="hidden md:block ambient-drift absolute top-[20%] -right-40 w-[500px] h-[500px] rounded-full bg-brand-violet/[0.07] blur-[140px] pointer-events-none" aria-hidden />
+      <div className="hidden md:block ambient-drift absolute top-[40%] -left-40 w-[480px] h-[460px] rounded-full bg-brand-coral/[0.06] blur-[140px] pointer-events-none" style={{ animationDelay: "-8s" }} aria-hidden />
+      <div className="hidden md:block ambient-drift absolute bottom-[10%] left-1/2 -translate-x-1/2 w-[600px] h-[300px] rounded-full bg-cyan-500/[0.05] blur-[120px] pointer-events-none" style={{ animationDelay: "-14s" }} aria-hidden />
 
       <Navigation />
 
       {/* Hero ───────────────────────────────────────────────────── */}
       <section className="relative pt-32 pb-20 px-4 sm:px-6 lg:px-8 overflow-hidden">
-        <div className="hero-beam-vertical pointer-events-none" aria-hidden />
-        <div className="hero-beam-flare pointer-events-none" aria-hidden />
-        <div className="hero-beam-converge pointer-events-none" aria-hidden />
+        <div className="hidden md:block hero-beam-vertical pointer-events-none" aria-hidden />
+        <div className="hidden md:block hero-beam-flare pointer-events-none" aria-hidden />
+        <div className="hidden md:block hero-beam-converge pointer-events-none" aria-hidden />
 
         <div className="max-w-4xl mx-auto text-center relative z-10">
           {/* Floating app icon with glow */}
@@ -220,9 +220,9 @@ export default function DownloadPage() {
 
           {/* Headline */}
           <Reveal direction="up" blur delay={0.08}>
-            <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold mb-6 leading-[1.05] tracking-[-0.04em]">
-              Autonomous cloud operations.<br />
-              <span className="text-gradient">Anywhere.</span>
+            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-6 leading-[1.05] tracking-[-0.04em]">
+              Govern every deployment.<br />
+              <span className="text-gradient">From request to closure.</span>
             </h1>
           </Reveal>
 
@@ -236,21 +236,13 @@ export default function DownloadPage() {
           {/* Primary CTAs — desktop is the product; web is the safe demo. */}
           <Reveal direction="up" delay={0.16}>
             <div className="flex flex-col items-center gap-4 mb-10">
-              <div className="flex flex-wrap items-center justify-center gap-3">
-                <Link
-                  href="/demo"
-                  className="btn-amber-shimmer group inline-flex items-center gap-3 px-8 py-4 rounded-full text-base font-semibold tracking-wide uppercase relative"
-                >
-                  <BoltIcon className="h-5 w-5" />
-                  Explore the web demo
-                  <ArrowRightIcon className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
-                </Link>
+              <div className="flex w-full flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3">
                 <Link
                   href={mounted ? primaryPlatform.href : "/download/preview"}
-                  className={`inline-flex items-center gap-2 px-6 py-3.5 rounded-full text-sm font-semibold border transition-colors ${
+                  className={`group inline-flex items-center justify-center gap-2 px-7 py-4 rounded-full text-sm font-semibold border transition-colors ${
                     mounted && primaryPlatform.available
-                      ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-200 hover:bg-emerald-500/20 hover:border-emerald-500/50"
-                      : "border-white/[0.12] bg-white/[0.03] hover:bg-white/[0.06] hover:border-white/[0.2]"
+                      ? "bg-white text-zinc-950 border-white hover:bg-zinc-100"
+                      : "border-amber-500/30 bg-amber-500/10 text-amber-100 hover:bg-amber-500/20 hover:border-amber-500/50"
                   }`}
                   {...(mounted && primaryPlatform.available && primaryPlatform.fileName ? { download: primaryPlatform.fileName } : {})}
                 >
@@ -259,8 +251,16 @@ export default function DownloadPage() {
                     ? `Download for ${primaryPlatform.label}`
                     : `Join ${mounted ? primaryPlatform.label : "desktop"} preview`}
                 </Link>
+                <Link
+                  href="/demo"
+                  className="group inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-full text-sm font-semibold border border-white/[0.12] bg-white/[0.03] text-zinc-200 hover:bg-white/[0.06] hover:border-white/[0.2] transition-colors"
+                >
+                  <BoltIcon className="h-4 w-4 text-amber-300" />
+                  Explore the isolated demo
+                  <ArrowRightIcon className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+                </Link>
               </div>
-              <span className="text-xs text-zinc-500 font-mono">
+              <span className="max-w-full break-words text-xs text-zinc-500 font-mono">
                 {manifest?.hasAnyAsset
                   ? `Latest desktop release: ${manifest.tag ?? "—"} · ${manifest.allSignedAndNotarized ? "signed + notarized" : "developer build · per-platform friction notes below"}`
                   : "Web: isolated demo only · Desktop developer builds publish via CI on `desktop-v*` tags — signed binaries when platform certificates are configured"}
@@ -541,9 +541,9 @@ export default function DownloadPage() {
       </section>
 
       {/* Final CTA ────────────────────────────────────────────────── */}
-      <section className="py-28 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+      <section className="py-20 sm:py-28 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
         <div className="absolute inset-0 diagonal-streak opacity-20 pointer-events-none" aria-hidden />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[400px] rounded-full bg-amber-500/[0.06] blur-[120px] pointer-events-none" aria-hidden />
+        <div className="hidden md:block absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[400px] rounded-full bg-amber-500/[0.06] blur-[120px] pointer-events-none" aria-hidden />
 
         <div className="max-w-3xl mx-auto text-center relative">
           <Reveal direction="up" blur>
@@ -554,11 +554,11 @@ export default function DownloadPage() {
             <p className="text-dim-paragraph text-lg max-w-xl mx-auto mb-10 leading-relaxed">
               Install the platform-specific release shown above. <span className="dim-1">Desktop authentication may open your browser for secure approval.</span> <span className="dim-2">Connector accounts and permissions are configured after first launch.</span>
             </p>
-            <div className="flex flex-wrap items-center justify-center gap-4">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-4">
               <a
                 href={mounted ? primaryPlatform.href : "/download/preview"}
                 {...(mounted && primaryPlatform.available && primaryPlatform.fileName ? { download: primaryPlatform.fileName } : {})}
-                className="btn-amber-shimmer group inline-flex items-center gap-2.5 px-7 py-3.5 rounded-full text-sm font-semibold uppercase tracking-wide"
+                className="btn-amber-shimmer group inline-flex items-center justify-center gap-2.5 px-7 py-3.5 rounded-full text-sm font-semibold uppercase tracking-wide"
               >
                 <ArrowDownTrayIcon className="h-4 w-4" />
                 {mounted && primaryPlatform.available ? `Download for ${primaryPlatform.label}` : "View desktop preview status"}
@@ -566,7 +566,7 @@ export default function DownloadPage() {
               </a>
               <Link
                 href="/demo"
-                className="inline-flex items-center gap-2 px-7 py-3.5 border border-white/[0.12] text-zinc-300 rounded-full text-sm font-semibold hover:bg-white/5 hover:border-white/20 transition-colors"
+                className="inline-flex items-center justify-center gap-2 px-7 py-3.5 border border-white/[0.12] text-zinc-300 rounded-full text-sm font-semibold hover:bg-white/5 hover:border-white/20 transition-colors"
               >
                 <GlobeAltIcon className="h-4 w-4" />
                 Explore sample-data sandbox

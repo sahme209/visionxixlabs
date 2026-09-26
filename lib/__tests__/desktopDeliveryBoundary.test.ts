@@ -1,0 +1,52 @@
+import { describe, expect, it } from "vitest";
+import { NextRequest } from "next/server";
+
+import { proxy } from "../../proxy";
+
+function request(path: string, init?: RequestInit): NextRequest {
+  return new NextRequest(new URL(path, "https://example.test"), init);
+}
+
+describe("desktop-only website boundary", () => {
+  it.each(["/dashboard", "/dashboard/command-center", "/operator", "/operator/onboarding"])(
+    "redirects browser operations route %s to the download page",
+    (path) => {
+      const response = proxy(request(path));
+
+      expect(response.status).toBe(307);
+      expect(response.headers.get("location")).toBe(
+        `https://example.test/download?from=${encodeURIComponent(path)}`,
+      );
+    },
+  );
+
+  it.each(["/auth/signin", "/auth/signup"])(
+    "redirects unsolicited browser auth page %s to the download page",
+    (path) => {
+      const response = proxy(request(path));
+
+      expect(response.status).toBe(307);
+      expect(response.headers.get("location")).toBe(
+        `https://example.test/download?from=${encodeURIComponent(path)}`,
+      );
+    },
+  );
+
+  it("allows a sign-in page only for an installed-app return path", () => {
+    const response = proxy(request("/auth/signin?callbackUrl=/desktop/pair"));
+
+    expect(response.status).toBe(200);
+    expect(response.headers.get("x-middleware-next")).toBe("1");
+  });
+
+  it("does not treat an external callback URL as an installed-app flow", () => {
+    const response = proxy(
+      request("/auth/signin?callbackUrl=https://attacker.example/desktop/pair"),
+    );
+
+    expect(response.status).toBe(307);
+    expect(response.headers.get("location")).toBe(
+      "https://example.test/download?from=%2Fauth%2Fsignin",
+    );
+  });
+});

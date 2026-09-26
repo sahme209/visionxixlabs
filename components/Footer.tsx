@@ -67,7 +67,7 @@ const resourceLinks = [
 
 export function Footer() {
   return (
-    <footer className="relative pt-24 pb-12 px-4 sm:px-6 lg:px-8 overflow-hidden">
+    <footer className="relative pt-16 sm:pt-24 pb-12 px-4 sm:px-6 lg:px-8 overflow-hidden">
       {/* Coral × violet aurora behind the Huly-style footer composition. */}
       <div aria-hidden className="pointer-events-none absolute inset-0">
         <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-brand-coral/30 to-transparent" />
@@ -80,7 +80,7 @@ export function Footer() {
       <div className="max-w-7xl mx-auto">
 
         {/* Huly-style Join CTA — big, gradient text, numbered marker */}
-        <div className="relative mb-20">
+        <div className="relative mb-14 sm:mb-20">
           <div className="text-center max-w-3xl mx-auto">
             <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-zinc-500 mb-6 inline-flex items-center gap-3">
               <span className="text-brand-coral/90 tabular-nums">10</span>
@@ -98,17 +98,17 @@ export function Footer() {
               Download the installed workspace for intake, approval-gated execution,
               validation, evidence collection, and closure.
             </p>
-            <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-3">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3 sm:gap-x-4">
               <Link
                 href="/download"
-                className="btn-press inline-flex items-center gap-2 px-7 py-3.5 rounded-full text-[14.5px] font-semibold tracking-tight"
+                className="btn-press inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-full text-[14.5px] font-semibold tracking-tight"
               >
                 Download Axiom Agent
                 <ArrowRightIcon className="h-4 w-4 opacity-70" />
               </Link>
               <a
                 href="mailto:support@visionxixlabs.com"
-                className="inline-flex items-center gap-2 px-6 py-3 rounded-full border border-brand-coral/30 bg-brand-coral/[0.06] text-zinc-200 text-[14px] font-medium transition-all hover:bg-brand-coral/[0.10] hover:border-brand-coral/50"
+                className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full border border-brand-coral/30 bg-brand-coral/[0.06] text-zinc-200 text-[14px] font-medium transition-all hover:bg-brand-coral/[0.10] hover:border-brand-coral/50"
               >
                 Talk to us
               </a>
@@ -116,14 +116,14 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="gradient-line mb-16" />
+        <div className="gradient-line mb-12 sm:mb-16" />
         {/* Width aligned to Navigation (max-w-7xl). The layout audit
             found chrome width inconsistency was the most visible
             "feels disconnected" cue. Top + bottom chrome share one
             container width now. */}
-        <div className="grid md:grid-cols-5 gap-10 mb-12">
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-x-6 gap-y-10 md:gap-10 mb-12">
           {/* Brand column */}
-          <div className="md:col-span-2">
+          <div className="col-span-2 md:col-span-2">
             <div className="flex items-center space-x-3 mb-5">
               <Image
                 src="/vision-xix-logo.png"
@@ -181,9 +181,9 @@ export function Footer() {
           </div>
 
           {/* Product links */}
-          <div>
+          <div className="col-span-2 md:col-span-1">
             <h4 className="text-[10px] font-mono uppercase tracking-[0.22em] text-brand-coral/80 mb-4">Product</h4>
-            <ul className="space-y-2.5 text-sm text-zinc-500">
+            <ul className="grid grid-cols-2 gap-x-4 gap-y-2.5 text-sm text-zinc-500 md:block md:space-y-2.5">
               {productLinks.map((link) => (
                 <li key={link.href}>
                   <Link

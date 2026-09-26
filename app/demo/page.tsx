@@ -25,9 +25,9 @@ export default function DemoLanding() {
   return (
     <>
       <SandboxNavigation />
-      <main className="relative max-w-6xl mx-auto px-6 md:px-10 py-16 space-y-10">
+      <main className="relative max-w-6xl mx-auto px-4 sm:px-6 md:px-10 py-10 sm:py-16 space-y-10">
       {/* Coral × violet aurora — Huly-style warm wash behind the hero */}
-      <div aria-hidden className="pointer-events-none absolute inset-x-0 -top-8 h-[520px] -z-10 overflow-hidden">
+      <div aria-hidden className="pointer-events-none absolute inset-x-0 -top-8 h-[520px] -z-10 overflow-hidden hidden sm:block">
         <div className="ambient-drift absolute -top-24 left-1/2 -translate-x-1/2 w-[860px] h-[440px] rounded-full bg-brand-violet/[0.08] blur-[140px]" />
         <div className="ambient-drift absolute top-12 right-[5%] w-[460px] h-[340px] rounded-full bg-brand-coral/[0.07] blur-[130px]" style={{ animationDelay: "-8s" }} />
         <div className="ambient-drift absolute top-20 left-[5%] w-[380px] h-[280px] rounded-full bg-cyan-500/[0.04] blur-[120px]" style={{ animationDelay: "-14s" }} />
@@ -60,24 +60,24 @@ export default function DemoLanding() {
           or burns AI credits. Pick a scenario to walk through one of the {scenarios.length} core product flows.
         </p>
 
-        <div className="flex flex-wrap items-center gap-x-4 gap-y-3">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-x-4">
           <Link
             href="/download"
-            className="btn-press inline-flex items-center gap-2 px-7 py-3.5 rounded-full text-[14px] font-semibold tracking-tight"
+            className="btn-press inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-full text-[14px] font-semibold tracking-tight"
           >
             Download the desktop app
             <ArrowRightIcon className="h-4 w-4 opacity-60" />
           </Link>
           <Link
             href="/demo/reference"
-            className="btn-ghost-press inline-flex items-center gap-2 px-6 py-3.5 rounded-full text-[13.5px] font-medium tracking-tight"
+            className="btn-ghost-press inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-full text-[13.5px] font-medium tracking-tight"
           >
             <BookOpenIcon className="h-4 w-4 text-brand-coral/80" />
             Platform reference
           </Link>
           <Link
             href="/docs"
-            className="link-underline-soft text-[13.5px] text-zinc-400 hover:text-brand-coral transition-colors"
+            className="inline-flex items-center justify-center text-[13.5px] text-zinc-400 hover:text-brand-coral transition-colors"
           >
             Read documentation
           </Link>

@@ -129,6 +129,8 @@ export function Navigation() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
+  const mobileMenuButtonRef = useRef<HTMLButtonElement>(null);
+  const mobileMenuPanelRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const onScroll = () => {
@@ -139,8 +141,55 @@ export function Navigation() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  useEffect(() => {
+    if (!mobileMenuOpen) return;
+
+    const previousOverflow = document.body.style.overflow;
+    const desktopQuery = window.matchMedia("(min-width: 768px)");
+    const closeForDesktop = (event: MediaQueryListEvent) => {
+      if (event.matches) setMobileMenuOpen(false);
+    };
+    const handleMenuKeyboard = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setMobileMenuOpen(false);
+        requestAnimationFrame(() => mobileMenuButtonRef.current?.focus());
+        return;
+      }
+
+      if (event.key !== "Tab") return;
+      const focusable = mobileMenuPanelRef.current?.querySelectorAll<HTMLElement>(
+        'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])',
+      );
+      if (!focusable?.length) return;
+
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    };
+
+    document.body.style.overflow = "hidden";
+    document.addEventListener("keydown", handleMenuKeyboard);
+    desktopQuery.addEventListener("change", closeForDesktop);
+    requestAnimationFrame(() => {
+      mobileMenuPanelRef.current?.querySelector<HTMLElement>("a[href]")?.focus();
+    });
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      document.removeEventListener("keydown", handleMenuKeyboard);
+      desktopQuery.removeEventListener("change", closeForDesktop);
+    };
+  }, [mobileMenuOpen]);
+
   return (
     <nav
+      aria-label="Primary navigation"
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         scrolled
           ? "bg-[#09090b]/90 backdrop-blur-xl border-b border-white/[0.06] shadow-[0_8px_30px_rgba(0,0,0,0.5)]"
@@ -275,8 +324,13 @@ export function Navigation() {
 
           {/* Mobile hamburger */}
           <button
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="md:hidden p-2 rounded-lg text-zinc-400 hover:text-white hover:bg-white/5"
+            ref={mobileMenuButtonRef}
+            type="button"
+            onClick={() => setMobileMenuOpen((open) => !open)}
+            aria-label={mobileMenuOpen ? "Close navigation menu" : "Open navigation menu"}
+            aria-expanded={mobileMenuOpen}
+            aria-controls="mobile-navigation-panel"
+            className="md:hidden inline-flex h-11 w-11 items-center justify-center rounded-lg text-zinc-300 hover:text-white hover:bg-white/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-coral/70"
           >
             {mobileMenuOpen ? (
               <XMarkIcon className="h-6 w-6" />
@@ -290,14 +344,19 @@ export function Navigation() {
         <AnimatePresence>
           {mobileMenuOpen && (
             <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: "auto" }}
-              exit={{ opacity: 0, height: 0 }}
+              ref={mobileMenuPanelRef}
+              id="mobile-navigation-panel"
+              role="dialog"
+              aria-modal="true"
+              aria-label="Site navigation"
+              initial={{ opacity: 0, y: -8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
               transition={{ duration: 0.25, ease: "easeInOut" }}
-              className="md:hidden overflow-hidden"
+              className="fixed inset-x-0 top-16 bottom-0 md:hidden overflow-y-auto overscroll-contain bg-[#09090b]/98 backdrop-blur-xl border-t border-white/[0.06] shadow-2xl"
             >
-              <div className="py-4 border-t border-white/[0.06] mt-2">
-                <div className="flex flex-col space-y-1">
+              <div className="mx-auto max-w-7xl px-4 pt-4 pb-[max(2rem,env(safe-area-inset-bottom))]">
+                <div className="flex flex-col space-y-1" aria-label="Mobile navigation links">
                   <Link
                     href="/download"
                     onClick={() => setMobileMenuOpen(false)}
@@ -316,7 +375,7 @@ export function Navigation() {
                       key={item.href}
                       href={item.href}
                       onClick={() => setMobileMenuOpen(false)}
-                      className="px-4 py-2.5 text-zinc-400 font-medium hover:text-white hover:bg-white/5 rounded-lg text-sm transition-colors flex items-center gap-2"
+                      className="min-h-11 px-4 py-2.5 text-zinc-300 font-medium hover:text-white hover:bg-white/5 rounded-lg text-sm transition-colors flex items-center gap-3"
                     >
                       <item.icon className="h-4 w-4 text-zinc-500" />
                       {item.label}
@@ -332,7 +391,7 @@ export function Navigation() {
                       key={item.href}
                       href={item.href}
                       onClick={() => setMobileMenuOpen(false)}
-                      className="px-4 py-2.5 text-zinc-400 font-medium hover:text-white hover:bg-white/5 rounded-lg text-sm transition-colors flex items-center gap-2"
+                      className="min-h-11 px-4 py-2.5 text-zinc-300 font-medium hover:text-white hover:bg-white/5 rounded-lg text-sm transition-colors flex items-center gap-3"
                     >
                       <item.icon className="h-4 w-4 text-zinc-500" />
                       {item.label}
@@ -346,7 +405,7 @@ export function Navigation() {
                   <Link
                     href="/plans"
                     onClick={() => setMobileMenuOpen(false)}
-                    className="px-4 py-2.5 text-zinc-400 font-medium hover:text-white hover:bg-white/5 rounded-lg text-sm transition-colors flex items-center gap-2"
+                    className="min-h-11 px-4 py-2.5 text-zinc-300 font-medium hover:text-white hover:bg-white/5 rounded-lg text-sm transition-colors flex items-center gap-3"
                   >
                     Pricing
                   </Link>
@@ -355,7 +414,7 @@ export function Navigation() {
                     target="_blank"
                     rel="noopener noreferrer"
                     onClick={() => setMobileMenuOpen(false)}
-                    className="px-4 py-2.5 text-zinc-400 font-medium hover:text-white hover:bg-white/5 rounded-lg text-sm transition-colors flex items-center gap-2"
+                    className="min-h-11 px-4 py-2.5 text-zinc-300 font-medium hover:text-white hover:bg-white/5 rounded-lg text-sm transition-colors flex items-center gap-3"
                   >
                     <StarIcon className="h-4 w-4" />
                     GitHub

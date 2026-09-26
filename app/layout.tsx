@@ -94,7 +94,7 @@ export default function RootLayout({
             <WebSiteJsonLd />
             <ScrollProgress />
             <CommandPalette />
-            <div className="pb-20 md:pb-0">{children}</div>
+            <div>{children}</div>
             <StickyMobileCTA />
             <AIChatWidget />
             <Analytics />

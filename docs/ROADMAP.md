@@ -7,7 +7,7 @@ Last updated: 2026-09-26
 1. Preserve the reattached 36-section master specification verbatim and expand `REQUIREMENTS_MATRIX.md` to one row per subsection, every section 11–20 detail, and scenarios A–L.
 2. Apply and verify the tenant-scoped operation-ledger migration; wire every merge, release, tag, change, dispatch, environment approval, and rollback adapter through the tested coordinator and reconciliation policy.
 3. Continue the new desktop request/playbook path through immutable revision editing and diffs, approval/readiness, execution, validation/deferred follow-up, and closure.
-4. Remove customer-browser assumptions from desktop documentation and architecture while retaining shared-service/browser-PKCE support.
+4. Audit every browser route against the verified desktop-only edge policy; keep dashboard/operator and unsolicited auth entry points redirected while retaining shared-service callbacks and native system-browser PKCE support.
 5. Build a fresh artifact from a committed tree; record commit/version/checksum/SBOM/signing/notarization.
 
 ## P1 — missing original behavior
@@ -33,6 +33,7 @@ Last updated: 2026-09-26
 2. Field-level blocker messages, verified defaults, progress, and recovery guidance.
 3. Keyboard, screen-reader, contrast, scaling, reduced-motion, and platform accessibility passes.
 4. Large-record, offline-cache, and reconnect performance tests.
+5. Verify the responsive website on real Mobile Safari and Chrome/Android at 320, 390, 430, and 768 CSS pixels, including menu focus, safe areas, scrolling, CTA overlap, reduced motion, and every download/documentation link.
 
 ## Exit criteria for “ready”
 

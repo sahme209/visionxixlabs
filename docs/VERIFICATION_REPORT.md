@@ -13,7 +13,7 @@ Last updated: 2026-09-26
 | Product observed | Axiom Agent |
 | Desktop package/version | `axiom-desktop` 0.1.7 |
 | Framework | Tauri 2 + React 19 + Vite + Rust |
-| Base commit for dirty working tree | `662567fd8026d55d37c9da315388af640f283775` |
+| Base commit for dirty working tree | `4b12cb83e42242359571df5bccb0ec6b4ae695c4` |
 | Current native artifact | None produced in this pass |
 | Current test environment | macOS; repository in iCloud; isolated Vitest/TypeScript runner under `/private/tmp` because repository Rollup metadata is dataless |
 | Master-spec identity | Attachment requested again; not present in repository during audit |
@@ -31,6 +31,8 @@ Last updated: 2026-09-26
 - `DeploymentRequestsView`, `/api/desktop/deployments`, and `/api/desktop/deployments/[id]/playbooks` create tenant-scoped request snapshots and versioned, hashed playbooks with audit events without performing deployment actions. Request refresh returns the latest persisted playbook identity/hash so restart does not erase the user-visible service state.
 - A duplicated `TauriDeploymentOperation` Prisma model was found and removed; malformed desktop bearer tokens now fail closed as unauthenticated instead of surfacing as server errors.
 - Desktop request submission now carries a stable retry identity. Same-content retries return the original record without duplicate request-version/audit writes; conflicting reuse is rejected and database uniqueness races surface as retryable conflicts.
+- The public marketing home, download, demo, navigation, footer, and mobile CTA now use phone-first layouts, 44-point controls, safe-area spacing, a scrollable focus-trapped mobile menu, lighter phone rendering, and mission-aligned request-to-playbook wording.
+- The production route manifest contains dashboard/operator/auth implementation, but runtime edge enforcement redirects ordinary browser operations and unsolicited sign-in/signup visits to `/download`; an explicit `/desktop/...` return path remains available for installed-app authentication.
 
 ## Checks executed in this pass
 
@@ -44,7 +46,15 @@ Last updated: 2026-09-26
 | Focused deployment-domain TypeScript | Passed | Strict TypeScript 5.9.3 compile of kernels, repositories, schemas, and tests exited 0 |
 | Desktop TypeScript | Passed | `desktop/node_modules/.bin/tsc --noEmit` exited 0 after the new view/client wiring |
 | Desktop frontend production build | Passed with warning | Clean temporary dependency tree; TypeScript plus Vite 6.4.2 transformed 115 modules and built in 0.82s; existing >500 kB and mixed static/dynamic import warnings remain. The release precheck was not rerun because the isolated folder does not reproduce repository-relative layout. |
-| Root TypeScript | Inconclusive | Earlier pass succeeded before this continuation; current full run stalled on iCloud with no diagnostics and was terminated |
+| Focused website TypeScript | Passed | Strict compile of the eight changed React/Next files exited 0 in a clean temporary dependency tree |
+| Focused website ESLint | Passed | Eight changed React/Next files passed with 0 errors and 0 warnings after removing synchronous effect state and unused imports |
+| Full Vitest suite | Passed | 361 files and 4,136 tests passed after the final test change in the isolated runner with an explicit local Prisma engine; temporary Tauri JavaScript adapter packages were installed only in that runner |
+| Next.js production build | Passed | Next.js 16.3.6 webpack build compiled, type-checked, and generated 283 static pages |
+| Desktop-only browser boundary | Passed | Production server returned 307 to `/download` for direct dashboard, operator, sign-in, and signup visits; desktop pairing sign-in returned 200. New focused regression suite passed 8/8, including an external callback rejection. |
+| Website internal-link audit | Passed | 40 static internal destinations referenced by the changed marketing surfaces returned HTTP 200 from the production server |
+| Website external-link probe | Partial | GitHub release and X returned HTTP 200; LinkedIn returned automated-request status 999, so it is not claimed verified or broken |
+| Mobile visual/touch verification | Blocked | Chromium launch was denied by the macOS sandbox and Xcode Device Interaction requires an unavailable iOS Simulator 27.0+ runtime; no device-level rendering claim is made |
+| Root TypeScript | Passed through production build | Next.js build completed its full TypeScript phase; direct root `tsc` in the iCloud worktree remained unsuitable because of dataless dependencies and metadata permissions |
 | Worktree whitespace/error-marker check | Passed | `git diff --check` exited 0 after the final source changes |
 | Prisma schema inspection / CLI validation | Static defect fixed; CLI blocked | Removed a duplicate operation model found by source inspection. Prisma 5.22 still attempted to update `~/.cache/prisma` outside sandbox and failed `EPERM`; schema/migration was not engine-validated or applied to a database. |
 | Native Tauri packaging | Blocked | `cargo` is not installed in this environment (exit 127); no new exact native candidate was produced |
@@ -56,4 +66,4 @@ The dated `docs/PRODUCT_DELIVERY_AUDIT_2026-09-25.md` reports 4,086 Vitest cases
 
 ## Limitations
 
-No claim of fully functional, production-ready, or complete is supported. Mocked/pure tests do not verify live connectors. Static template presence does not verify complete workflows. A published older installer does not verify the current source.
+No claim of fully functional, production-ready, or complete is supported. Mocked/pure tests do not verify live connectors. Static template presence does not verify complete workflows. A published older installer does not verify the current source. The mobile changes are statically checked, linted, production-built, and link-audited, but remain visually and interactively unverified on a physical phone or supported simulator.
