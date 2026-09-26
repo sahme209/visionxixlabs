@@ -7,7 +7,6 @@ import { OrganizationJsonLd, WebSiteJsonLd } from "@/components/JsonLd";
 import AIChatWidget from "@/components/AIChatWidget";
 import { AxiomPanelProvider } from "@/lib/contexts/AxiomPanelContext";
 import { Providers } from "@/components/Providers";
-import { StickyMobileCTA } from "@/components/StickyMobileCTA";
 import { ScrollProgress } from "@/components/motion/ScrollProgress";
 import { CommandPalette } from "@/components/CommandPalette";
 import { SITE_URL, defaultOgImage, primaryKeywords, secondaryKeywords } from "@/lib/seo";
@@ -95,7 +94,6 @@ export default function RootLayout({
             <ScrollProgress />
             <CommandPalette />
             <div>{children}</div>
-            <StickyMobileCTA />
             <AIChatWidget />
             <Analytics />
           </AxiomPanelProvider>

@@ -69,7 +69,7 @@ export function Footer() {
   return (
     <footer className="relative pt-16 sm:pt-24 pb-12 px-4 sm:px-6 lg:px-8 overflow-hidden">
       {/* Coral × violet aurora behind the Huly-style footer composition. */}
-      <div aria-hidden className="pointer-events-none absolute inset-0">
+      <div aria-hidden className="pointer-events-none absolute inset-0 hidden md:block">
         <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-brand-coral/30 to-transparent" />
         <div className="absolute -top-32 left-1/4 w-[520px] h-[420px] rounded-full bg-brand-coral/[0.06] blur-[140px] ambient-drift" />
         <div className="absolute top-1/3 right-[10%] w-[460px] h-[360px] rounded-full bg-brand-violet/[0.07] blur-[130px] ambient-drift" style={{ animationDelay: "-9s" }} />
@@ -79,8 +79,45 @@ export function Footer() {
       <div className="relative">
       <div className="max-w-7xl mx-auto">
 
+        <div className="md:hidden mb-10">
+          <p className="text-[11px] font-mono uppercase tracking-[0.18em] text-brand-coral">
+            Axiom Agent
+          </p>
+          <h2 className="mt-3 text-2xl font-bold tracking-[-0.035em] text-white">
+            Deployment operations belong in the desktop app.
+          </h2>
+          <p className="mt-3 text-sm leading-6 text-zinc-400">
+            Use this site for the isolated demo, documentation, release status, and verified downloads.
+          </p>
+          <div className="mt-6 grid grid-cols-2 gap-2">
+            <Link href="/download" className="inline-flex min-h-12 items-center justify-center rounded-xl bg-white px-3 py-3 text-sm font-semibold text-zinc-950">
+              Download
+            </Link>
+            <Link href="/demo" className="inline-flex min-h-12 items-center justify-center rounded-xl border border-white/10 px-3 py-3 text-sm font-semibold text-white">
+              Demo
+            </Link>
+            <Link href="/docs" className="inline-flex min-h-11 items-center justify-center rounded-xl border border-white/[0.07] px-3 text-sm text-zinc-300">
+              Documentation
+            </Link>
+            <Link href="/security" className="inline-flex min-h-11 items-center justify-center rounded-xl border border-white/[0.07] px-3 text-sm text-zinc-300">
+              Security
+            </Link>
+          </div>
+          <div className="mt-6 flex items-center gap-3">
+            <a href="https://github.com/sahme209/axiom-releases" target="_blank" rel="noopener noreferrer" className="social-link" aria-label="GitHub — Axiom releases">
+              <GitHubIcon className="h-4 w-4" />
+            </a>
+            <a href="https://www.linkedin.com/company/vision-xix-labs/" target="_blank" rel="noopener noreferrer" className="social-link" aria-label="LinkedIn — Vision XIX Labs">
+              <LinkedInIcon className="h-4 w-4" />
+            </a>
+            <a href="https://x.com/VisionXIXLabs" target="_blank" rel="noopener noreferrer" className="social-link" aria-label="X — Vision XIX Labs">
+              <XIcon className="h-4 w-4" />
+            </a>
+          </div>
+        </div>
+
         {/* Huly-style Join CTA — big, gradient text, numbered marker */}
-        <div className="relative mb-14 sm:mb-20">
+        <div className="relative mb-14 hidden md:block sm:mb-20">
           <div className="text-center max-w-3xl mx-auto">
             <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-zinc-500 mb-6 inline-flex items-center gap-3">
               <span className="text-brand-coral/90 tabular-nums">10</span>
@@ -121,7 +158,7 @@ export function Footer() {
             found chrome width inconsistency was the most visible
             "feels disconnected" cue. Top + bottom chrome share one
             container width now. */}
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-x-6 gap-y-10 md:gap-10 mb-12">
+        <div className="hidden md:grid md:grid-cols-5 gap-x-6 gap-y-10 md:gap-10 mb-12">
           {/* Brand column */}
           <div className="col-span-2 md:col-span-2">
             <div className="flex items-center space-x-3 mb-5">
@@ -241,7 +278,7 @@ export function Footer() {
         </div>
 
         {/* Tagline */}
-        <div className="text-center mb-8">
+        <div className="hidden md:block text-center mb-8">
           <p className="text-[11px] font-mono uppercase tracking-[0.22em] text-zinc-600">
             Made in NYC <span className="text-zinc-700 mx-2">·</span> shipped from the cloud
           </p>

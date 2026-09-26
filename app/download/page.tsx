@@ -172,7 +172,7 @@ export default function DownloadPage() {
       <Navigation />
 
       {/* Hero ───────────────────────────────────────────────────── */}
-      <section className="relative pt-32 pb-20 px-4 sm:px-6 lg:px-8 overflow-hidden">
+      <section className="relative pt-24 pb-12 px-4 sm:px-6 sm:pt-32 sm:pb-20 lg:px-8 overflow-hidden">
         <div className="hidden md:block hero-beam-vertical pointer-events-none" aria-hidden />
         <div className="hidden md:block hero-beam-flare pointer-events-none" aria-hidden />
         <div className="hidden md:block hero-beam-converge pointer-events-none" aria-hidden />
@@ -180,17 +180,17 @@ export default function DownloadPage() {
         <div className="max-w-4xl mx-auto text-center relative z-10">
           {/* Floating app icon with glow */}
           <Reveal direction="up" blur>
-            <div className="relative inline-flex items-center justify-center mb-10">
-              <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-violet-500/30 via-blue-500/20 to-fuchsia-500/30 blur-[40px] scale-150 animate-pulse" aria-hidden />
-              <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-violet-600/40 to-fuchsia-600/40 blur-[20px] scale-110" aria-hidden />
-              <div className="relative w-28 h-28 rounded-3xl bg-gradient-to-br from-[#1e1e24] via-[#1a1a20] to-[#0f0f12] border border-white/[0.08] flex items-center justify-center shadow-2xl shadow-violet-900/40">
+            <div className="relative inline-flex items-center justify-center mb-6 sm:mb-10">
+              <div className="hidden sm:block absolute inset-0 rounded-3xl bg-gradient-to-br from-violet-500/30 via-blue-500/20 to-fuchsia-500/30 blur-[40px] scale-150 animate-pulse" aria-hidden />
+              <div className="hidden sm:block absolute inset-0 rounded-3xl bg-gradient-to-br from-violet-600/40 to-fuchsia-600/40 blur-[20px] scale-110" aria-hidden />
+              <div className="relative w-20 h-20 sm:w-28 sm:h-28 rounded-2xl sm:rounded-3xl bg-gradient-to-br from-[#1e1e24] via-[#1a1a20] to-[#0f0f12] border border-white/[0.08] flex items-center justify-center shadow-2xl shadow-violet-900/40">
                 <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-white/[0.04] via-transparent to-transparent" aria-hidden />
                 <Image
                   src="/vision-xix-logo.png"
                   alt="Axiom Agent"
-                  width={64}
-                  height={64}
-                  className="rounded-xl drop-shadow-2xl relative z-10"
+                  width={52}
+                  height={52}
+                  className="w-12 h-12 sm:w-16 sm:h-16 rounded-xl drop-shadow-2xl relative z-10"
                   priority
                 />
               </div>
@@ -200,18 +200,18 @@ export default function DownloadPage() {
           {/* Build badge — derived from the live release manifest. */}
           <Reveal direction="up" delay={0.05}>
             {isDesktop && desktopStatus.available ? (
-              <span className="badge-shimmer badge-shimmer-border inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 text-xs font-medium mb-8 backdrop-blur-sm cursor-default">
+              <span className="badge-shimmer badge-shimmer-border inline-flex max-w-full items-center justify-center gap-2 px-3 sm:px-4 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 text-[11px] sm:text-xs leading-5 font-medium mb-5 sm:mb-8 backdrop-blur-sm cursor-default">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
                 Desktop runtime detected {desktopStatus.version ? `· v${desktopStatus.version}` : ""}
                 {desktopStatus.platform ? ` · ${desktopStatus.platform}` : ""}
               </span>
             ) : manifest?.hasAnyAsset ? (
-              <span className="badge-shimmer badge-shimmer-border inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 text-xs font-medium mb-8 backdrop-blur-sm cursor-default">
+              <span className="badge-shimmer badge-shimmer-border inline-flex max-w-full items-center justify-center gap-2 px-3 sm:px-4 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 text-[11px] sm:text-xs leading-5 font-medium mb-5 sm:mb-8 backdrop-blur-sm cursor-default">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
                 Released {manifest.tag ? `· ${manifest.tag.replace("desktop-v", "v")}` : ""}
               </span>
             ) : (
-              <span className="badge-shimmer badge-shimmer-border inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-200 text-xs font-medium mb-8 backdrop-blur-sm cursor-default">
+              <span className="badge-shimmer badge-shimmer-border inline-flex max-w-full items-center justify-center gap-2 px-3 sm:px-4 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-200 text-[11px] sm:text-xs leading-5 font-medium mb-5 sm:mb-8 backdrop-blur-sm cursor-default">
                 <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
                 No verified installer is currently available
               </span>
@@ -220,7 +220,7 @@ export default function DownloadPage() {
 
           {/* Headline */}
           <Reveal direction="up" blur delay={0.08}>
-            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-6 leading-[1.05] tracking-[-0.04em]">
+            <h1 className="text-[2.35rem] sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-5 sm:mb-6 leading-[1.02] tracking-[-0.045em]">
               Govern every deployment.<br />
               <span className="text-gradient">From request to closure.</span>
             </h1>
@@ -228,7 +228,7 @@ export default function DownloadPage() {
 
           {/* Subhead with progressive dimming */}
           <Reveal direction="up" delay={0.12}>
-            <p className="text-dim-paragraph text-lg md:text-xl max-w-2xl mx-auto mb-12 leading-relaxed">
+            <p className="text-dim-paragraph text-base sm:text-lg md:text-xl max-w-2xl mx-auto mb-8 sm:mb-12 leading-7 sm:leading-relaxed">
               Run the complete Axiom workspace on macOS, Windows, or Linux. <span className="dim-1">The website is an isolated product demo;</span> <span className="dim-2">live cloud operations stay in the downloadable app.</span>
             </p>
           </Reveal>
@@ -239,7 +239,7 @@ export default function DownloadPage() {
               <div className="flex w-full flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3">
                 <Link
                   href={mounted ? primaryPlatform.href : "/download/preview"}
-                  className={`group inline-flex items-center justify-center gap-2 px-7 py-4 rounded-full text-sm font-semibold border transition-colors ${
+                  className={`group inline-flex min-h-12 items-center justify-center gap-2 px-5 sm:px-7 py-3.5 sm:py-4 rounded-xl sm:rounded-full text-sm font-semibold border transition-colors ${
                     mounted && primaryPlatform.available
                       ? "bg-white text-zinc-950 border-white hover:bg-zinc-100"
                       : "border-amber-500/30 bg-amber-500/10 text-amber-100 hover:bg-amber-500/20 hover:border-amber-500/50"
@@ -253,7 +253,7 @@ export default function DownloadPage() {
                 </Link>
                 <Link
                   href="/demo"
-                  className="group inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-full text-sm font-semibold border border-white/[0.12] bg-white/[0.03] text-zinc-200 hover:bg-white/[0.06] hover:border-white/[0.2] transition-colors"
+                  className="group inline-flex min-h-12 items-center justify-center gap-2 px-5 sm:px-7 py-3.5 rounded-xl sm:rounded-full text-sm font-semibold border border-white/[0.12] bg-white/[0.03] text-zinc-200 hover:bg-white/[0.06] hover:border-white/[0.2] transition-colors"
                 >
                   <BoltIcon className="h-4 w-4 text-amber-300" />
                   Explore the isolated demo

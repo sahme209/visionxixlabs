@@ -50,6 +50,15 @@ const resourcesDropdown = [
   { href: "/security",             label: "Security",   desc: "Trust center and policies",       icon: ShieldCheckIcon },
 ];
 
+const mobileLinks = [
+  { href: "/axiom/releaseops", label: "Deployment operations", desc: "Request-to-playbook workflow", icon: ShieldCheckIcon },
+  { href: "/demo", label: "Isolated demo", desc: "Explore safe synthetic data", icon: PlayCircleIcon },
+  { href: "/download", label: "Desktop downloads", desc: "Installers and release status", icon: ArrowDownTrayIcon },
+  { href: "/docs", label: "Documentation", desc: "Setup, security, and runbooks", icon: BookOpenIcon },
+  { href: "/changelog", label: "What shipped", desc: "Verified product changes", icon: RocketLaunchIcon },
+  { href: "/plans", label: "Plans", desc: "Product options", icon: DocumentTextIcon },
+];
+
 /* ── Dropdown component ──────────────────────────────────────── */
 function NavDropdown({
   label,
@@ -144,7 +153,8 @@ export function Navigation() {
   useEffect(() => {
     if (!mobileMenuOpen) return;
 
-    const previousOverflow = document.body.style.overflow;
+    const previousBodyOverflow = document.body.style.overflow;
+    const previousRootOverflow = document.documentElement.style.overflow;
     const desktopQuery = window.matchMedia("(min-width: 768px)");
     const closeForDesktop = (event: MediaQueryListEvent) => {
       if (event.matches) setMobileMenuOpen(false);
@@ -174,6 +184,7 @@ export function Navigation() {
     };
 
     document.body.style.overflow = "hidden";
+    document.documentElement.style.overflow = "hidden";
     document.addEventListener("keydown", handleMenuKeyboard);
     desktopQuery.addEventListener("change", closeForDesktop);
     requestAnimationFrame(() => {
@@ -181,7 +192,8 @@ export function Navigation() {
     });
 
     return () => {
-      document.body.style.overflow = previousOverflow;
+      document.body.style.overflow = previousBodyOverflow;
+      document.documentElement.style.overflow = previousRootOverflow;
       document.removeEventListener("keydown", handleMenuKeyboard);
       desktopQuery.removeEventListener("change", closeForDesktop);
     };
@@ -355,88 +367,47 @@ export function Navigation() {
               transition={{ duration: 0.25, ease: "easeInOut" }}
               className="fixed inset-x-0 top-16 bottom-0 md:hidden overflow-y-auto overscroll-contain bg-[#09090b]/98 backdrop-blur-xl border-t border-white/[0.06] shadow-2xl"
             >
-              <div className="mx-auto max-w-7xl px-4 pt-4 pb-[max(2rem,env(safe-area-inset-bottom))]">
-                <div className="flex flex-col space-y-1" aria-label="Mobile navigation links">
+              <div className="mx-auto max-w-md px-4 pt-5 pb-[max(2rem,env(safe-area-inset-bottom))]">
+                <div className="flex flex-col" aria-label="Mobile navigation links">
+                  <p className="px-1 text-[11px] font-mono uppercase tracking-[0.18em] text-zinc-500">
+                    Axiom desktop workspace
+                  </p>
                   <Link
                     href="/download"
                     onClick={() => setMobileMenuOpen(false)}
-                    className="mx-4 mb-3 inline-flex items-center justify-center gap-2 px-4 py-3 bg-white text-zinc-900 rounded-full text-sm font-semibold shadow-[0_0_20px_rgba(255,255,255,0.1)]"
+                    className="mt-3 inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-white px-4 py-3 text-sm font-semibold text-zinc-900 shadow-[0_0_20px_rgba(255,255,255,0.1)]"
                   >
                     Get the desktop app
                     <ArrowRightIcon className="h-4 w-4" />
                   </Link>
 
-                  {/* Product section */}
-                  <div className="px-4 pt-2 pb-1 text-xs font-semibold text-zinc-500 uppercase tracking-wider">
-                    Product
-                  </div>
-                  {productDropdown.map((item) => (
+                  <div className="mt-5 overflow-hidden rounded-2xl border border-white/[0.08] bg-white/[0.025]">
+                  {mobileLinks.map((item) => (
                     <Link
                       key={item.href}
                       href={item.href}
                       onClick={() => setMobileMenuOpen(false)}
-                      className="min-h-11 px-4 py-2.5 text-zinc-300 font-medium hover:text-white hover:bg-white/5 rounded-lg text-sm transition-colors flex items-center gap-3"
+                      className="flex min-h-[60px] items-center gap-3 border-b border-white/[0.06] px-4 py-3 text-zinc-200 transition-colors last:border-b-0 hover:bg-white/[0.05]"
                     >
-                      <item.icon className="h-4 w-4 text-zinc-500" />
-                      {item.label}
+                      <item.icon className="h-5 w-5 shrink-0 text-brand-coral" />
+                      <span className="min-w-0">
+                        <span className="block text-sm font-semibold text-white">{item.label}</span>
+                        <span className="mt-0.5 block text-xs text-zinc-500">{item.desc}</span>
+                      </span>
                     </Link>
                   ))}
-
-                  {/* Resources section */}
-                  <div className="px-4 pt-3 pb-1 text-xs font-semibold text-zinc-500 uppercase tracking-wider">
-                    Resources
                   </div>
-                  {resourcesDropdown.map((item) => (
-                    <Link
-                      key={item.href}
-                      href={item.href}
-                      onClick={() => setMobileMenuOpen(false)}
-                      className="min-h-11 px-4 py-2.5 text-zinc-300 font-medium hover:text-white hover:bg-white/5 rounded-lg text-sm transition-colors flex items-center gap-3"
-                    >
-                      <item.icon className="h-4 w-4 text-zinc-500" />
-                      {item.label}
-                    </Link>
-                  ))}
 
-                  {/* Quick links */}
-                  <div className="px-4 pt-3 pb-1 text-xs font-semibold text-zinc-500 uppercase tracking-wider">
-                    Quick links
-                  </div>
-                  <Link
-                    href="/plans"
-                    onClick={() => setMobileMenuOpen(false)}
-                    className="min-h-11 px-4 py-2.5 text-zinc-300 font-medium hover:text-white hover:bg-white/5 rounded-lg text-sm transition-colors flex items-center gap-3"
-                  >
-                    Pricing
-                  </Link>
                   <a
                     href="https://github.com/sahme209/axiom-releases"
                     target="_blank"
                     rel="noopener noreferrer"
                     onClick={() => setMobileMenuOpen(false)}
-                    className="min-h-11 px-4 py-2.5 text-zinc-300 font-medium hover:text-white hover:bg-white/5 rounded-lg text-sm transition-colors flex items-center gap-3"
+                    className="mt-5 inline-flex min-h-11 items-center gap-2 self-center px-4 text-sm font-medium text-zinc-400 hover:text-white"
                   >
                     <StarIcon className="h-4 w-4" />
-                    GitHub
+                    Release repository
                   </a>
-
-                  <Link
-                    href="/demo"
-                    onClick={() => setMobileMenuOpen(false)}
-                    className="mt-3 mx-4 inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-full border border-violet-500/30 bg-violet-500/10 text-violet-100 hover:bg-violet-500/20 text-sm font-semibold transition-colors"
-                  >
-                    <PlayCircleIcon className="h-4 w-4 text-violet-300" />
-                    See the demo
-                  </Link>
-
-                  <Link
-                    href="/docs"
-                    onClick={() => setMobileMenuOpen(false)}
-                    className="mt-2 mx-4 inline-flex items-center justify-center px-5 py-2.5 border border-white/[0.12] text-white rounded-lg text-sm font-semibold hover:bg-white/5 transition-colors"
-                  >
-                    Read documentation
-                    <ArrowRightIcon className="ml-1.5 h-4 w-4" />
-                  </Link>
                 </div>
               </div>
             </motion.div>

@@ -35,11 +35,13 @@ Verified in this continuation:
 - Clean temporary desktop TypeScript and production build passed: 115 modules transformed in 0.82s; existing large-chunk and mixed-import warnings remain.
 - Ten distinct templates and 26 lifecycle states remain present.
 - Original master source and labeled scenarios A–L remain unavailable.
-- Full Vitest after the final test change: 361 files and 4,136 tests passed in the isolated runner.
+- Full Vitest after the dedicated mobile-layout regression change: 362 files and 4,142 tests passed in the isolated runner.
 - Focused TypeScript and ESLint passed for all eight changed website files.
 - Next.js 16.3.6 production build passed, including its TypeScript phase, and generated 283 static pages.
 - 40 internal links from the changed marketing surfaces returned HTTP 200 from the production server.
 - Desktop-only boundary regression tests passed 8/8; production redirects were also probed directly.
+- Replaced the compressed desktop homepage on phones with a purpose-built mobile journey; shortened the phone menu, compacted the footer, removed competing floating controls, and tightened download/demo touch layouts.
+- Final Next.js production build and TypeScript phase passed after the redesign; rendered home, download, and demo routes returned 200 with expected mobile content.
 
 The full root TypeScript run stalled on iCloud with no diagnostics and was terminated. Prisma CLI schema validation was blocked by sandbox access to the user Prisma engine cache. No database migration, packaged-app, or live provider journey was claimed.
 

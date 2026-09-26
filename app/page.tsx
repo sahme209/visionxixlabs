@@ -23,6 +23,7 @@ import { CountUp } from "@/components/motion/CountUp";
 import { TextReveal } from "@/components/motion/TextReveal";
 import { FAQAccordion } from "@/components/FAQAccordion";
 import { DesktopShowcase } from "@/components/home/DesktopShowcase";
+import { MobileHome } from "@/components/home/MobileHome";
 import { HomepageDemoAnimation } from "@/components/marketing/HomepageDemoAnimation";
 import { Footer } from "@/components/Footer";
 import { listProviders, capabilitySummary } from "@/lib/cloud/providerRegistry";
@@ -115,6 +116,9 @@ export default function Home() {
       <div className="absolute inset-0 bg-grid-mesh opacity-40 pointer-events-none" aria-hidden />
       <div className="relative z-10">
       <Navigation />
+
+      <MobileHome />
+      <div className="hidden md:block">
 
       {/* ── Hero ───────────────────────────────────────────────────── */}
       <section className="pt-24 sm:pt-28 md:pt-32 pb-16 sm:pb-20 md:pb-24 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
@@ -744,6 +748,8 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      </div>
 
       {/* ── Footer ─────────────────────────────────────────────────── */}
       <Footer />

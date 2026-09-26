@@ -13,7 +13,7 @@ Last updated: 2026-09-26
 | Product observed | Axiom Agent |
 | Desktop package/version | `axiom-desktop` 0.1.7 |
 | Framework | Tauri 2 + React 19 + Vite + Rust |
-| Base commit for dirty working tree | `4b12cb83e42242359571df5bccb0ec6b4ae695c4` |
+| Base commit for dirty working tree | `160cd76750a6510b3c6c6b615d9f4b61e92459f2` |
 | Current native artifact | None produced in this pass |
 | Current test environment | macOS; repository in iCloud; isolated Vitest/TypeScript runner under `/private/tmp` because repository Rollup metadata is dataless |
 | Master-spec identity | Attachment requested again; not present in repository during audit |
@@ -48,12 +48,13 @@ Last updated: 2026-09-26
 | Desktop frontend production build | Passed with warning | Clean temporary dependency tree; TypeScript plus Vite 6.4.2 transformed 115 modules and built in 0.82s; existing >500 kB and mixed static/dynamic import warnings remain. The release precheck was not rerun because the isolated folder does not reproduce repository-relative layout. |
 | Focused website TypeScript | Passed | Strict compile of the eight changed React/Next files exited 0 in a clean temporary dependency tree |
 | Focused website ESLint | Passed | Eight changed React/Next files passed with 0 errors and 0 warnings after removing synchronous effect state and unused imports |
-| Full Vitest suite | Passed | 361 files and 4,136 tests passed after the final test change in the isolated runner with an explicit local Prisma engine; temporary Tauri JavaScript adapter packages were installed only in that runner |
+| Full Vitest suite | Passed | 362 files and 4,142 tests passed after the dedicated mobile-layout regression suite was added; isolated runner used an explicit local Prisma engine and runner-only Tauri JavaScript adapter packages |
 | Next.js production build | Passed | Next.js 16.3.6 webpack build compiled, type-checked, and generated 283 static pages |
 | Desktop-only browser boundary | Passed | Production server returned 307 to `/download` for direct dashboard, operator, sign-in, and signup visits; desktop pairing sign-in returned 200. New focused regression suite passed 8/8, including an external callback rejection. |
 | Website internal-link audit | Passed | 40 static internal destinations referenced by the changed marketing surfaces returned HTTP 200 from the production server |
 | Website external-link probe | Partial | GitHub release and X returned HTTP 200; LinkedIn returned automated-request status 999, so it is not claimed verified or broken |
 | Mobile visual/touch verification | Blocked | Chromium launch was denied by the macOS sandbox and Xcode Device Interaction requires an unavailable iOS Simulator 27.0+ runtime; no device-level rendering claim is made |
+| Mobile information architecture | Passed (source/build/render contract) | Phone homepage is now a dedicated concise layout rather than the desktop page stacked into one column; mobile navigation is reduced to six primary destinations; floating chat/download overlays are removed on phones; phone footer is compact; rendered home/download/demo routes returned 200 with expected mobile content |
 | Root TypeScript | Passed through production build | Next.js build completed its full TypeScript phase; direct root `tsc` in the iCloud worktree remained unsuitable because of dataless dependencies and metadata permissions |
 | Worktree whitespace/error-marker check | Passed | `git diff --check` exited 0 after the final source changes |
 | Prisma schema inspection / CLI validation | Static defect fixed; CLI blocked | Removed a duplicate operation model found by source inspection. Prisma 5.22 still attempted to update `~/.cache/prisma` outside sandbox and failed `EPERM`; schema/migration was not engine-validated or applied to a database. |
@@ -66,4 +67,4 @@ The dated `docs/PRODUCT_DELIVERY_AUDIT_2026-09-25.md` reports 4,086 Vitest cases
 
 ## Limitations
 
-No claim of fully functional, production-ready, or complete is supported. Mocked/pure tests do not verify live connectors. Static template presence does not verify complete workflows. A published older installer does not verify the current source. The mobile changes are statically checked, linted, production-built, and link-audited, but remain visually and interactively unverified on a physical phone or supported simulator.
+No claim of fully functional, production-ready, or complete is supported. Mocked/pure tests do not verify live connectors. Static template presence does not verify complete workflows. A published older installer does not verify the current source. The redesigned mobile information architecture is linted, regression-tested, production-built, and rendered-route checked, but physical-device touch behavior remains unverified until a supported simulator or device is available.
