@@ -60,6 +60,8 @@ const STEPS: readonly Step[] = [
   { id: 9, label: "Dashboard healthy",  description: "All services back to green. Cycle loops.",                   state: "dashboard_healthy",    holdMs: 2400 },
 ];
 
+const PLAYBOOK_STAGES = ["Intake", "Approve", "Execute", "Validate"] as const;
+
 export function HomepageDemoAnimation() {
   const [stepIdx, setStepIdx] = useState(0);
   const [cursorXY, setCursorXY] = useState<{ x: number; y: number } | null>(null);
@@ -72,6 +74,7 @@ export function HomepageDemoAnimation() {
   }, [stepIdx]);
 
   const step = STEPS[stepIdx];
+  const activeStage = Math.min(PLAYBOOK_STAGES.length - 1, Math.floor(stepIdx / 2.25));
 
   // Measure the active target element and pin the cursor to its centre.
   // Runs after the AnimatePresence enter (~400ms), then again on resize.
@@ -134,7 +137,7 @@ export function HomepageDemoAnimation() {
         </div>
 
         {/* App viewport — ref-tracked for cursor positioning */}
-        <div ref={viewportRef} className="relative bg-[#0c0c0e] aspect-[16/11] overflow-hidden">
+        <div ref={viewportRef} className="relative aspect-[16/10] overflow-hidden bg-[#0c0c0e]">
           {/* Step label ribbon — Huly-style 01 / 09 numerals + coral hairline */}
           <div className="absolute top-3 left-3 right-3 z-20 flex items-center gap-2">
             <span className="text-[9px] font-mono uppercase tracking-[0.18em] text-rose-200/90 bg-rose-500/[0.12] border border-rose-400/30 rounded-full px-2 py-0.5 tabular-nums">
@@ -144,7 +147,7 @@ export function HomepageDemoAnimation() {
           </div>
 
           {/* App body — content swaps based on state */}
-          <div className="absolute inset-0 p-4 pt-10">
+          <div className="absolute inset-0 p-4 pb-16 pt-10">
             <AnimatePresence mode="wait">
               <motion.div
                 key={step.state}
@@ -157,6 +160,23 @@ export function HomepageDemoAnimation() {
                 <AppStateBody state={step.state} />
               </motion.div>
             </AnimatePresence>
+          </div>
+
+          <div className="absolute inset-x-4 bottom-3 z-20 rounded-lg border border-white/[0.06] bg-black/25 p-2.5 backdrop-blur-sm">
+            <div className="grid grid-cols-4 gap-1" aria-label="Deployment playbook progress">
+              {PLAYBOOK_STAGES.map((label, index) => {
+                const complete = index < activeStage;
+                const active = index === activeStage;
+                return (
+                  <div key={label} className="min-w-0">
+                    <div className={`mb-1.5 h-0.5 rounded-full ${complete ? "bg-emerald-400/70" : active ? "bg-brand-coral" : "bg-white/[0.08]"}`} />
+                    <span className={`block truncate text-[8px] font-mono uppercase tracking-[0.12em] ${active ? "text-zinc-200" : "text-zinc-600"}`}>
+                      {label}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
           </div>
 
           {/* Animated cursor — only render once we have a real target. */}
@@ -188,8 +208,8 @@ export function HomepageDemoAnimation() {
         </div>
       </div>
 
-      {/* Step pips — coral active, white rest */}
-      <div className="mt-3 flex items-center justify-center gap-1.5">
+      {/* Step pips — quiet direct controls for the walkthrough. */}
+      <div className="my-2.5 flex items-center justify-center gap-1.5">
         {STEPS.map((s, i) => (
           <button
             key={s.id}

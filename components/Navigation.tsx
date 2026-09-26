@@ -22,7 +22,6 @@ import {
   NewspaperIcon,
   RocketLaunchIcon,
   CommandLineIcon,
-  MagnifyingGlassIcon,
 } from "@heroicons/react/24/outline";
 import { AnimatePresence, motion } from "framer-motion";
 
@@ -155,7 +154,7 @@ export function Navigation() {
 
     const previousBodyOverflow = document.body.style.overflow;
     const previousRootOverflow = document.documentElement.style.overflow;
-    const desktopQuery = window.matchMedia("(min-width: 768px)");
+    const desktopQuery = window.matchMedia("(min-width: 1024px)");
     const closeForDesktop = (event: MediaQueryListEvent) => {
       if (event.matches) setMobileMenuOpen(false);
     };
@@ -208,8 +207,8 @@ export function Navigation() {
           : "bg-transparent border-b border-transparent"
       }`}
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
+      <div className="mx-auto max-w-[1400px] px-4 sm:px-6 lg:px-10">
+        <div className="flex h-16 items-center justify-between lg:h-[72px]">
           {/* Logo with hover scale */}
           <Link
             href="/"
@@ -229,7 +228,7 @@ export function Navigation() {
           </Link>
 
           {/* Desktop nav */}
-          <div className="hidden md:flex items-center gap-1">
+          <div className="hidden items-center gap-1 lg:flex">
             {/* Product dropdown */}
             <NavDropdown
               label="Product"
@@ -262,8 +261,8 @@ export function Navigation() {
               Pricing
             </Link>
 
-            {/* Right-side cluster: release status · source · sandbox · docs · download */}
-            <div className="flex items-center gap-1 ml-2">
+            {/* Focused action cluster: release status · sandbox · download. */}
+            <div className="ml-3 flex items-center gap-2 border-l border-white/[0.07] pl-4">
               {/* "What's shipped" — small live indicator linking to /changelog.
                   Pinging coral dot + monospace phase number reads as "alive
                   and being actively built". Apple-style restrained badge. */}
@@ -280,53 +279,16 @@ export function Navigation() {
                 <span className="text-zinc-400">Release notes</span>
               </Link>
 
-              {/* ⌘K hint — discoverability for the global command palette */}
-              <button
-                type="button"
-                onClick={() => {
-                  // Synthesize a ⌘K event so the palette opens via the same global listener.
-                  window.dispatchEvent(new KeyboardEvent("keydown", { key: "k", metaKey: true }));
-                }}
-                aria-label="Open command palette (⌘K)"
-                title="Search anywhere — ⌘K"
-                className="hidden xl:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md border border-white/[0.08] bg-white/[0.02] text-[10.5px] font-mono uppercase tracking-[0.14em] text-zinc-400 hover:text-brand-coral hover:border-brand-coral/30 transition-colors"
-              >
-                <MagnifyingGlassIcon className="h-3 w-3" />
-                <span>Search</span>
-                <span className="text-zinc-700">·</span>
-                <kbd className="text-zinc-400 font-normal">⌘K</kbd>
-              </button>
-
-              <a
-                href="https://github.com/sahme209/axiom-releases"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="GitHub"
-                title="GitHub"
-                className="p-2 rounded-lg text-zinc-400 hover:text-white hover:bg-white/[0.05] transition-colors"
-              >
-                <StarIcon className="h-4 w-4" />
-              </a>
-
               <Link
                 href="/demo"
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-brand-coral/30 bg-brand-coral/[0.08] text-zinc-100 hover:bg-brand-coral/[0.14] hover:border-brand-coral/55 transition-all text-sm font-medium whitespace-nowrap tracking-tight"
+                className="inline-flex min-h-10 items-center gap-1.5 rounded-full border border-white/[0.09] bg-white/[0.025] px-4 py-2 text-sm font-medium tracking-tight text-zinc-200 transition-all hover:border-brand-coral/30 hover:bg-brand-coral/[0.07]"
               >
                 <PlayCircleIcon className="h-4 w-4 text-brand-coral" />
                 Demo
               </Link>
-
-              <div className="w-px h-5 bg-white/[0.08] mx-1" aria-hidden />
-
-              <Link
-                href="/docs"
-                className="text-zinc-400 hover:text-white transition-colors text-sm font-medium whitespace-nowrap px-3 py-2"
-              >
-                Documentation
-              </Link>
               <Link
                 href="/download"
-                className="btn-press inline-flex items-center gap-2 px-5 py-2 rounded-full text-sm font-semibold whitespace-nowrap tracking-tight"
+                className="btn-press inline-flex min-h-10 items-center gap-2 whitespace-nowrap rounded-full px-5 py-2 text-sm font-semibold tracking-tight"
               >
                 Download
                 <ArrowRightIcon className="h-3.5 w-3.5 shrink-0" />
@@ -342,7 +304,7 @@ export function Navigation() {
             aria-label={mobileMenuOpen ? "Close navigation menu" : "Open navigation menu"}
             aria-expanded={mobileMenuOpen}
             aria-controls="mobile-navigation-panel"
-            className="md:hidden inline-flex h-11 w-11 items-center justify-center rounded-lg text-zinc-300 hover:text-white hover:bg-white/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-coral/70"
+            className="inline-flex h-11 w-11 items-center justify-center rounded-lg text-zinc-300 hover:bg-white/5 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-coral/70 lg:hidden"
           >
             {mobileMenuOpen ? (
               <XMarkIcon className="h-6 w-6" />
@@ -365,7 +327,7 @@ export function Navigation() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -8 }}
               transition={{ duration: 0.25, ease: "easeInOut" }}
-              className="fixed inset-x-0 top-16 bottom-0 md:hidden overflow-y-auto overscroll-contain bg-[#09090b]/98 backdrop-blur-xl border-t border-white/[0.06] shadow-2xl"
+              className="fixed inset-x-0 bottom-0 top-16 overflow-y-auto overscroll-contain border-t border-white/[0.06] bg-[#09090b]/98 shadow-2xl backdrop-blur-xl lg:hidden"
             >
               <div className="mx-auto max-w-md px-4 pt-5 pb-[max(2rem,env(safe-area-inset-bottom))]">
                 <div className="flex flex-col" aria-label="Mobile navigation links">

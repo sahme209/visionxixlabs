@@ -13,9 +13,6 @@ import { AnimateOnScroll } from "@/components/AnimateOnScroll";
 import { ServicePipeline } from "@/components/ServicePipeline";
 import { Reveal } from "@/components/motion/Reveal";
 import { Stagger } from "@/components/motion/Stagger";
-import { RealisticFogBackground } from "@/components/ui/realistic-fog-background";
-import { MotherboardBackdrop } from "@/components/ui/MotherboardBackdrop";
-import { Spotlight } from "@/components/motion/Spotlight";
 import { SpotlightCard } from "@/components/motion/SpotlightCard";
 import { ScrollRevealText } from "@/components/motion/ScrollRevealText";
 import { FeatureRow } from "@/components/marketing/FeatureRow";
@@ -73,33 +70,17 @@ const TRUST_LOGOS = [
   "Synthetic web sandbox", "No browser control plane",
 ];
 
-/* ── Floating ambient particles ──────────────────────────────── */
-function AmbientParticles() {
-  return (
-    <div className="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden>
-      <div
-        className="ambient-particle w-1.5 h-1.5 bg-blue-400/40"
-        style={{ top: "15%", left: "20%", animationDelay: "0s", animationDuration: "14s" }}
-      />
-      <div
-        className="ambient-particle w-1 h-1 bg-fuchsia-400/30"
-        style={{ top: "30%", right: "25%", animationDelay: "-3s", animationDuration: "11s" }}
-      />
-      <div
-        className="ambient-particle w-2 h-2 bg-indigo-300/20"
-        style={{ top: "55%", left: "65%", animationDelay: "-6s", animationDuration: "16s" }}
-      />
-      <div
-        className="ambient-particle w-1 h-1 bg-fuchsia-300/30"
-        style={{ top: "70%", left: "35%", animationDelay: "-9s", animationDuration: "13s" }}
-      />
-      <div
-        className="ambient-particle w-1.5 h-1.5 bg-cyan-500/25"
-        style={{ top: "45%", right: "15%", animationDelay: "-4s", animationDuration: "15s" }}
-      />
-    </div>
-  );
-}
+const HERO_ASSURANCES = [
+  ["01", "Human approval"],
+  ["02", "Visible execution"],
+  ["03", "Audit-ready evidence"],
+] as const;
+
+const HERO_FRAME_METADATA = [
+  ["Control", "Approval gated"],
+  ["State", "Explicit outcomes"],
+  ["Evidence", "Persisted trail"],
+] as const;
 
 /* ── Section divider — coral-tinted hairline with center diamond, Huly-style */
 function SectionDivider() {
@@ -113,7 +94,7 @@ function SectionDivider() {
 export default function Home() {
   return (
     <div className="min-h-screen bg-[#0a0a0d] text-white relative">
-      <div className="absolute inset-0 bg-grid-mesh opacity-40 pointer-events-none" aria-hidden />
+      <div className="absolute inset-0 bg-grid-mesh opacity-20 pointer-events-none" aria-hidden />
       <div className="relative z-10">
       <Navigation />
 
@@ -121,154 +102,86 @@ export default function Home() {
       <div className="hidden md:block">
 
       {/* ── Hero ───────────────────────────────────────────────────── */}
-      <section className="pt-24 sm:pt-28 md:pt-32 pb-16 sm:pb-20 md:pb-24 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
-        {/* Heavy decoratives — all hidden on mobile so the hero scrolls smoothly.
-            Each of these is a fillrate-heavy element (large filter:blur, full-section
-            SVG / canvas, infinite CSS animation) and stacking them tanks first paint
-            + scroll perf on phones. Desktop stack is unchanged. */}
-        <div className="hidden md:block">
-          <RealisticFogBackground backgroundColor="transparent" opacity={0.3} darken contained />
-          <MotherboardBackdrop radius={420} tint="violet" baseOpacity={0.05} peakOpacity={0.22} />
-          <div className="absolute inset-0 hero-grid-mesh opacity-40 pointer-events-none" aria-hidden />
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[500px] spotlight-orb opacity-60 pointer-events-none" aria-hidden />
-          <div className="absolute top-40 -right-40 w-[500px] h-[500px] rounded-full bg-violet-600/5 blur-[120px] pointer-events-none" aria-hidden />
-          <div className="absolute top-60 -left-40 w-[400px] h-[400px] rounded-full bg-fuchsia-600/5 blur-[120px] pointer-events-none" aria-hidden />
-          <div className="hero-beam-vertical pointer-events-none" aria-hidden />
-          <div className="hero-beam-flare pointer-events-none" aria-hidden />
-          <div className="hero-beam-converge pointer-events-none" aria-hidden />
-          <AmbientParticles />
-          <div className="hero-noise-grain" aria-hidden />
-          <Spotlight tint="violet" size={680} intensity={0.9} />
-        </div>
+      <section className="relative overflow-hidden px-6 pb-24 pt-32 lg:px-10 lg:pb-28 lg:pt-36">
+        <div className="absolute inset-0 hero-grid-mesh opacity-[0.16] pointer-events-none" aria-hidden />
+        <div className="hero-atmosphere pointer-events-none absolute inset-0" aria-hidden />
+        <div className="hero-noise-grain opacity-30" aria-hidden />
 
-        {/* Light-weight mobile-only backdrop: one static gradient orb, zero animation,
-            zero filter:blur, zero JS — paints once and never repaints. */}
-        <div
-          className="md:hidden absolute -top-32 left-1/2 -translate-x-1/2 w-[420px] h-[420px] pointer-events-none"
-          aria-hidden
-          style={{
-            background: "radial-gradient(circle, rgba(139, 92, 246, 0.18) 0%, transparent 65%)",
-          }}
-        />
-
-        {/* Calm ambient atmosphere — three drifting pools (violet · coral · cyan)
-            giving the hero a 'living dark' Huly-style aurora without an
-            animated beam parade. The coral pool is the new accent. */}
-        <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden hidden md:block">
-          <div className="ambient-drift absolute top-[-180px] left-1/2 -translate-x-1/2 w-[900px] h-[520px] rounded-full bg-violet-500/[0.07] blur-[140px]" />
-          <div className="ambient-drift absolute top-[60px] right-[2%] w-[520px] h-[400px] rounded-full bg-rose-500/[0.06] blur-[130px]" style={{ animationDelay: "-8s" }} />
-          <div className="ambient-drift absolute top-[260px] left-[-6%] w-[380px] h-[300px] rounded-full bg-cyan-500/[0.035] blur-[120px]" style={{ animationDelay: "-16s" }} />
-          <div className="ambient-drift absolute top-[120px] right-[40%] w-[320px] h-[260px] rounded-full bg-fuchsia-500/[0.035] blur-[120px]" style={{ animationDelay: "-12s" }} />
-        </div>
-
-        <div className="max-w-6xl mx-auto relative">
-          <div className="grid lg:grid-cols-[1.05fr_1fr] gap-12 lg:gap-20 items-center">
-            {/* Left — editorial hero, now using the calm design system. */}
-            <div className="relative z-10">
-              {/* Refined eyebrow — Apple product-page style: mono label, no border, no pill */}
+        <div className="relative mx-auto max-w-[1400px]">
+          <div className="grid items-center gap-16 xl:grid-cols-[minmax(0,0.92fr)_minmax(560px,1.08fr)] xl:gap-20">
+            <div className="relative z-10 max-w-[690px]">
               <Reveal direction="up" blur>
                 <div className="mb-7 flex items-center gap-3">
-                  <span className="relative flex h-1.5 w-1.5">
-                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-brand-coral opacity-60" />
-                    <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-brand-coral" />
-                  </span>
+                  <span className="h-1.5 w-1.5 rounded-full bg-brand-coral shadow-[0_0_16px_rgba(244,114,182,0.7)]" />
                   <p className="mono-label text-zinc-400">
-                    Axiom <span className="text-zinc-600 mx-1.5">·</span> Deployment operations workspace
+                    Axiom <span className="mx-1.5 text-zinc-600">·</span> Deployment operations workspace
                   </p>
                 </div>
               </Reveal>
-              <h1 className="display-headline-lg font-display text-white break-words mb-7">
-                <TextReveal text="Your request" splitBy="char" stagger={22} startDelay={120} className="block" />
-                <span className="block relative">
-                  <TextReveal text="becomes the playbook." splitBy="char" stagger={22} startDelay={520} className="relative inline-block" />
-                  {/* Single thin coral hairline — pulled back from the bold 3px gradient */}
-                  <span
-                    aria-hidden
-                    className="absolute left-0 -bottom-0.5 h-[2px] w-[44%] rounded-full bg-gradient-to-r from-brand-coral via-fuchsia-400/70 to-transparent"
-                  />
+
+              <h1 className="mb-8 max-w-[670px] font-display text-[clamp(3.4rem,4.4vw,4.8rem)] font-medium leading-[0.98] tracking-[-0.052em] text-white">
+                <TextReveal text="Your request" splitBy="word" stagger={80} startDelay={100} className="block" />
+                <TextReveal text="becomes the" splitBy="word" stagger={80} startDelay={280} className="block text-zinc-100" />
+                <span className="relative inline-block pb-2">
+                  <TextReveal text="playbook." splitBy="word" stagger={80} startDelay={440} />
+                  <span aria-hidden className="absolute bottom-0.5 left-0 h-px w-[72%] bg-gradient-to-r from-brand-coral via-violet-400/70 to-transparent" />
                 </span>
               </h1>
+
               <Reveal direction="up" delay={0.06}>
-                <p className="body-lede text-zinc-400 mb-10">
-                  Axiom Agent is the downloadable operations workspace for release teams and cloud operators. Turn deployment intake into approval-gated playbooks, guided execution, validation, evidence, and closure—without turning the website into a production control plane.
+                <p className="max-w-[620px] text-[18px] leading-[1.7] tracking-[-0.012em] text-zinc-400">
+                  Turn deployment intake into a versioned, approval-gated playbook—then guide execution, validate production, and preserve the evidence required to close with confidence.
                 </p>
               </Reveal>
+
               <Reveal direction="up" delay={0.12}>
-                <div className="relative z-20 flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-x-5">
-                  <Link
-                    href="/download"
-                    className="btn-press inline-flex items-center justify-center gap-2.5 px-7 py-3.5 rounded-full text-[14.5px] font-semibold tracking-tight"
-                  >
+                <div className="relative z-20 mt-9 flex flex-wrap items-center gap-4">
+                  <Link href="/download" className="btn-press inline-flex min-h-12 items-center justify-center gap-2.5 rounded-full px-7 py-3.5 text-[14.5px] font-semibold tracking-tight">
                     Download Axiom Agent
                     <ArrowRightIcon className="h-4 w-4 opacity-60" />
                   </Link>
-                  <Link
-                    href="/demo"
-                    className="btn-ghost-press inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-full text-[14px] font-medium tracking-tight"
-                  >
-                    Explore the sandbox
+                  <Link href="/demo" className="btn-ghost-press inline-flex min-h-12 items-center justify-center gap-2 rounded-full px-6 py-3.5 text-[14px] font-medium tracking-tight">
+                    Explore the isolated demo
                   </Link>
                 </div>
               </Reveal>
-              <Reveal direction="up" delay={0.2}>
-                <div className="mt-10 pt-7 relative flex flex-wrap gap-x-8 gap-y-3 text-[12px] text-zinc-500">
-                  <span className="hairline-divider absolute inset-x-0 top-0" aria-hidden />
-                  {["Assume-role model", "Human approval gates", "Immutable audit trail"].map((item) => (
-                    <span key={item}>{item}</span>
-                  ))}
-                </div>
-              </Reveal>
 
-              {/* Mobile-only live indicator — lighter version of the desktop overlay cards.
-                  Sits below the hero on phones so mobile visitors get the "live audit"
-                  signal too, without the heavy two-card composition that needs xl+. */}
-              <Reveal direction="up" delay={0.28}>
-                <div className="lg:hidden mt-6 inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-brand-coral/25 bg-brand-coral/[0.05] backdrop-blur-sm">
-                  <span className="relative flex h-1.5 w-1.5">
-                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-70" />
-                    <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-300" />
-                  </span>
-                  <span className="text-[10.5px] font-mono uppercase tracking-[0.16em] text-amber-200/90">Example workflow</span>
-                  <span className="text-zinc-600">·</span>
-                  <span className="text-[11.5px] text-zinc-200">Sample approval gate</span>
+              <Reveal direction="up" delay={0.18}>
+                <div className="mt-10 grid max-w-[620px] grid-cols-3 border-y border-white/[0.07] py-5">
+                  {HERO_ASSURANCES.map(([number, label], index) => (
+                    <div key={number} className={`min-w-0 ${index > 0 ? "border-l border-white/[0.07] pl-5" : "pr-5"}`}>
+                      <span className="block text-[10px] font-mono tracking-[0.18em] text-brand-coral/80">{number}</span>
+                      <span className="mt-1.5 block text-[12px] font-medium leading-snug text-zinc-300">{label}</span>
+                    </div>
+                  ))}
                 </div>
               </Reveal>
             </div>
 
-            {/* Right — product walkthrough wrapped in a cursor-aware
-                SpotlightCard with a glow-edge top highlight. A small
-                floating audit card overlaps the top-right corner —
-                Huly's "detail floats out of the product" composition. */}
-            <Reveal direction="up" delay={0.15}>
-              <div className="relative hidden lg:block">
-                <SpotlightCard
-                  className="surface-frost rounded-2xl p-6"
-                >
+            <Reveal direction="up" delay={0.12}>
+              <div className="relative hidden xl:block">
+                <div className="absolute -inset-12 -z-10 rounded-full bg-violet-500/[0.08] blur-[90px]" aria-hidden />
+                <SpotlightCard className="hero-product-shell overflow-hidden rounded-[28px] p-2.5">
+                  <div className="flex items-center justify-between px-4 pb-3 pt-2">
+                    <div>
+                      <p className="text-[11px] font-semibold tracking-[-0.01em] text-zinc-200">Axiom Agent walkthrough</p>
+                      <p className="mt-0.5 text-[10px] text-zinc-500">Installed workspace · illustrative data</p>
+                    </div>
+                    <div className="inline-flex items-center gap-2 rounded-full border border-emerald-400/15 bg-emerald-400/[0.06] px-3 py-1.5">
+                      <span className="h-1.5 w-1.5 rounded-full bg-emerald-300 shadow-[0_0_10px_rgba(110,231,183,0.65)]" />
+                      <span className="text-[9px] font-mono uppercase tracking-[0.16em] text-emerald-200/80">Sample workspace</span>
+                    </div>
+                  </div>
                   <HomepageDemoAnimation />
+                  <div className="grid grid-cols-3 gap-px overflow-hidden rounded-b-[18px] bg-white/[0.06]">
+                    {HERO_FRAME_METADATA.map(([label, value]) => (
+                      <div key={label} className="bg-[#0c0c0f] px-4 py-3">
+                        <span className="block text-[9px] font-mono uppercase tracking-[0.16em] text-zinc-600">{label}</span>
+                        <span className="mt-1 block text-[11px] font-medium text-zinc-300">{value}</span>
+                      </div>
+                    ))}
+                  </div>
                 </SpotlightCard>
-
-                {/* Single floating audit card — material glass surface, breaks
-                    out the top-right corner. Apple product-page sensibility:
-                    one focal accessory, not two. */}
-                <div
-                  className="surface-glass absolute -top-5 -right-5 z-20 w-[240px] rounded-2xl p-4 hidden xl:block"
-                  style={{ animation: "ambient-drift 11s ease-in-out infinite" }}
-                >
-                  <div className="flex items-center gap-2 mb-2.5">
-                    <span className="relative flex h-1.5 w-1.5">
-                      <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-60" />
-                      <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-300" />
-                    </span>
-                    <p className="mono-label text-amber-200/90 text-[9.5px]">Product example · sample data</p>
-                  </div>
-                  <p className="text-[12.5px] font-semibold text-white leading-tight tracking-tight">Approval gate completed</p>
-                  <p className="text-[10.5px] text-zinc-400 mt-1.5 leading-snug">Illustrative workflow · no live tenant activity.</p>
-                  <div className="mt-2.5 pt-2.5 border-t border-white/[0.04] flex items-center gap-2 text-[9.5px] font-mono tabular-nums">
-                    <span className="text-zinc-500">Sample record</span>
-                    <span className="text-zinc-700">·</span>
-                    <span className="text-brand-coral/85">demo workspace</span>
-                  </div>
-                </div>
               </div>
             </Reveal>
           </div>

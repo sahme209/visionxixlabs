@@ -2749,6 +2749,29 @@ h1, h2, h3, h4, h5, h6 {
     0 30px 80px -30px rgba(0, 0, 0, 0.55);
 }
 
+/* Homepage hero atmosphere: one restrained light field instead of a hard
+   center beam. The composition stays calm while retaining the product's
+   violet/coral identity. */
+.hero-atmosphere {
+  background:
+    radial-gradient(58% 72% at 83% 40%, rgba(124, 58, 237, 0.13) 0%, transparent 68%),
+    radial-gradient(42% 58% at 18% 28%, rgba(244, 114, 182, 0.055) 0%, transparent 72%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.015) 0%, transparent 42%, rgba(0, 0, 0, 0.12) 100%);
+}
+
+.hero-product-shell {
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.018) 38%, rgba(124, 58, 237, 0.025)),
+    rgba(10, 10, 13, 0.86);
+  border: 1px solid rgba(255, 255, 255, 0.085);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 36px 90px -42px rgba(0, 0, 0, 0.95),
+    0 18px 70px -45px rgba(139, 92, 246, 0.55);
+  backdrop-filter: blur(28px) saturate(130%);
+  -webkit-backdrop-filter: blur(28px) saturate(130%);
+}
+
 /* Tactile press button — Apple-style. Subtle inner highlight + crisp
    outer shadow, both react to hover and active. Inertial cubic-bezier
    makes it feel weighted instead of springy. */

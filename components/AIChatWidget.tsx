@@ -138,12 +138,13 @@ export default function AIChatWidget() {
       <button
         onClick={() => setOpen(true)}
         aria-label="Open Axiom Assistant"
-        className="fixed right-4 z-[9998] hidden md:flex items-center gap-2 rounded-full bg-white/[0.02] px-4 py-3 text-white shadow-lg border-2 border-white/[0.06] hover:border-violet-400 hover:border-white/[0.08] hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-violet-500 focus:ring-offset-2 transition-all hover:scale-[1.02] active:scale-[0.98] bottom-6 chat-bubble-glow"
+        className="fixed bottom-6 right-6 z-[9998] hidden min-h-11 items-center gap-2.5 rounded-full border border-white/[0.08] bg-[#111115]/90 px-3.5 py-2 text-zinc-200 shadow-[0_14px_40px_-20px_rgba(0,0,0,0.9)] backdrop-blur-xl transition-all hover:border-white/[0.16] hover:bg-[#15151a] hover:text-white focus:outline-none focus:ring-2 focus:ring-brand-coral/50 md:flex"
       >
-        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-violet-500/10">
-          <ChatBubbleLeftRightIcon className="h-4 w-4 text-violet-400" />
+        <div className="relative flex h-7 w-7 items-center justify-center rounded-full border border-white/[0.07] bg-white/[0.035]">
+          <ChatBubbleLeftRightIcon className="h-3.5 w-3.5 text-zinc-300" />
+          <span className="absolute -right-0.5 -top-0.5 h-1.5 w-1.5 rounded-full bg-emerald-300 ring-2 ring-[#111115]" />
         </div>
-        <span className="text-sm font-semibold pr-1">Let&apos;s chat</span>
+        <span className="pr-1 text-[12px] font-medium tracking-[-0.01em]">Ask Axiom</span>
       </button>
 
       {open && (

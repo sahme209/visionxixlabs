@@ -23,6 +23,7 @@ The answer to “Does the current downloadable application deliver everything re
 - Split technical and optional application-functional validation intake into separately owned, evidence-required playbook steps.
 - Made manual-step validation explicit: owner, exact instruction, evidence, and a validation instruction are now required and preserved in the playbook/UI.
 - Reworked the public website for phones: accessible full-screen navigation, focus trapping and scroll locking, route-aware safe-area CTA spacing, stacked CTAs, responsive footer/demo/download layouts, and reduced mobile animation load.
+- Rebuilt the desktop homepage above the fold around a calm, aligned 1400px composition: intentional three-line headline, simplified navigation, restrained lighting, stronger copy hierarchy, an installed-app walkthrough with visible playbook stages, and quieter support affordance.
 - Replaced generic automation language on the home/download surfaces with the approved mission: a deployment request becomes a governed, versioned playbook.
 - Verified the desktop-only delivery boundary at runtime: ordinary dashboard/operator/auth page requests redirect to `/download`, while explicit installed-app authentication return paths remain available.
 
@@ -35,13 +36,14 @@ Verified in this continuation:
 - Clean temporary desktop TypeScript and production build passed: 115 modules transformed in 0.82s; existing large-chunk and mixed-import warnings remain.
 - Ten distinct templates and 26 lifecycle states remain present.
 - Original master source and labeled scenarios A–L remain unavailable.
-- Full Vitest after the dedicated mobile-layout regression change: 362 files and 4,142 tests passed in the isolated runner.
+- Full Vitest after the mobile and desktop presentation regression changes: 363 files and 4,147 tests passed in the isolated runner.
 - Focused TypeScript and ESLint passed for all eight changed website files.
 - Next.js 16.3.6 production build passed, including its TypeScript phase, and generated 283 static pages.
 - 40 internal links from the changed marketing surfaces returned HTTP 200 from the production server.
 - Desktop-only boundary regression tests passed 8/8; production redirects were also probed directly.
 - Replaced the compressed desktop homepage on phones with a purpose-built mobile journey; shortened the phone menu, compacted the footer, removed competing floating controls, and tightened download/demo touch layouts.
 - Final Next.js production build and TypeScript phase passed after the redesign; rendered home, download, and demo routes returned 200 with expected mobile content.
+- Desktop presentation contract passed 5/5; focused website/mobile/boundary suite passed 19/19; focused ESLint passed with zero diagnostics. Automated desktop screenshots remain blocked because Chromium exits before opening a DevTools port in the Xcode sandbox.
 
 The full root TypeScript run stalled on iCloud with no diagnostics and was terminated. Prisma CLI schema validation was blocked by sandbox access to the user Prisma engine cache. No database migration, packaged-app, or live provider journey was claimed.
 
