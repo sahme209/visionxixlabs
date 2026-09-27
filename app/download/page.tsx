@@ -80,29 +80,29 @@ const PLATFORMS: Record<DetectedPlatform, PlatformInfo> = {
   "mac-arm": {
     id: "mac-arm",
     label: "macOS · Apple Silicon",
-    sublabel: "No current release asset detected",
-    href: "/download/preview?platform=mac-arm",
+    sublabel: "Resolve the current release manifest",
+    href: "/api/desktop/download?platform=mac-arm",
     available: false,
   },
   "mac-intel": {
     id: "mac-intel",
     label: "macOS · Intel",
-    sublabel: "No current release asset detected",
-    href: "/download/preview?platform=mac-intel",
+    sublabel: "Resolve the current release manifest",
+    href: "/api/desktop/download?platform=mac-intel",
     available: false,
   },
   windows: {
     id: "windows",
     label: "Windows",
-    sublabel: "Preview · MSI + EV signing in 1.0",
-    href: "/download/preview?platform=windows",
+    sublabel: "Resolve the current release manifest",
+    href: "/api/desktop/download?platform=windows",
     available: false,
   },
   linux: {
     id: "linux",
     label: "Linux",
-    sublabel: "Preview · AppImage / .deb / .rpm",
-    href: "/download/preview?platform=linux",
+    sublabel: "Resolve the current release manifest",
+    href: "/api/desktop/download?platform=linux",
     available: false,
   },
 };
@@ -257,7 +257,7 @@ export default function DownloadPage() {
                   {mounted && primaryPlatform.available ? <ArrowDownTrayIcon className="h-4 w-4" /> : <CloudArrowDownIcon className="h-4 w-4 text-amber-300" />}
                   {mounted && primaryPlatform.available
                     ? `Download for ${primaryPlatform.label}`
-                    : `Join ${mounted ? primaryPlatform.label : "desktop"} preview`}
+                    : `Check current release for ${mounted ? primaryPlatform.label : "desktop"}`}
                 </Link>
                 <Link
                   href="/demo"
@@ -317,7 +317,7 @@ export default function DownloadPage() {
                             : "text-amber-300 bg-amber-500/10 border-amber-500/20"
                         }`}
                       >
-                        {isLive ? "Download" : "Preview"}
+                        {isLive ? "Download" : "Check"}
                       </span>
                     </div>
                     <p className="text-[10px] text-zinc-500 leading-relaxed">{p.sublabel}</p>
@@ -590,7 +590,7 @@ export default function DownloadPage() {
                 className="btn-amber-shimmer group inline-flex items-center justify-center gap-2.5 px-7 py-3.5 rounded-full text-sm font-semibold uppercase tracking-wide"
               >
                 <ArrowDownTrayIcon className="h-4 w-4" />
-                {mounted && primaryPlatform.available ? `Download for ${primaryPlatform.label}` : "View desktop preview status"}
+                {mounted && primaryPlatform.available ? `Download for ${primaryPlatform.label}` : "Check current platform release"}
                 <ArrowRightIcon className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
               </a>
               <Link

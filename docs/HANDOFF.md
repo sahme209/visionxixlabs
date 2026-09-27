@@ -71,7 +71,7 @@ The full root TypeScript run stalled on iCloud with no diagnostics and was termi
 ## Website claims/customer-path pass — 2026-09-27
 
 - Reconciled public AWS/Azure/GCP wording to the conservative capability coverage map; no provider is represented by a generic “live/full support” badge.
-- Added digest and detached-signature metadata to the desktop release manifest. Public v0.1.7 assets exist; ARM DMG SHA-256 matched GitHub and `hdiutil verify` passed, but mount/install/first launch were blocked.
+- Added digest and detached-signature metadata to the desktop release manifest. Every platform CTA now resolves through the server manifest before client hydration; final built-server probes returned exact v0.1.7 DMG/MSI/AppImage redirects. ARM DMG SHA-256 matched GitHub and `hdiutil verify` passed, but mount/install/first launch were blocked.
 - Contact now separates durable database acceptance from email delivery, validates/bounds fields, adds a honeypot, checks Resend HTTP failures, and returns a reference ID. Four focused route tests pass.
 - Removed fictional testimonials/logos and unsupported certification/auditor/BAA/DPA claims.
 - Replaced the stale download-preview page that advertised a browser product and unverified CLI/signing/keychain behavior.
