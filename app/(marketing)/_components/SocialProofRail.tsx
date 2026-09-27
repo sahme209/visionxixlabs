@@ -1,75 +1,43 @@
 "use client";
 
 /**
- * <SocialProofRail/> — reusable marketing social-proof block.
- *
- * Renders a quiet logo strip and three testimonial cards. Used as
- * a closer on /team-of-one, /plans, /disciplines, /compare, /faq.
- * All copy lives here so the rest of the marketing surface stays
- * focused on its specific page.
- *
- * Honest disclaimer: these names are seed-stage design partners —
- * adjust quotes as real customer language lands. Approval-only-no-
- * execution applies here too; nothing gets quoted without sign-off.
+ * Credibility belongs to inspectable product evidence, not invented logos or
+ * attributed quotations. These cards link to public, reproducible surfaces.
  */
 
 import { motion } from "framer-motion";
+import Link from "next/link";
 
-interface Testimonial {
-  quote: string;
-  who: string;
-  role: string;
-  org: string;
-  tone: "indigo" | "fuchsia" | "cyan";
-}
-
-const TESTIMONIALS: readonly Testimonial[] = [
+const EVIDENCE = [
   {
-    quote:
-      "We replaced four dashboards and a Slack channel with one approval queue. Our on-call paid for the platform in six weeks.",
-    who: "S. Mehta",
-    role: "Head of Platform",
-    org: "fintech, Series B",
-    tone: "indigo",
+    title: "Public release history",
+    body: "Installer filenames, platform targets, publication dates, checksums, and detached signatures are visible on the release record.",
+    href: "https://github.com/sahme209/axiom-releases/releases",
+    label: "Inspect releases",
+    tone: "from-indigo-500/20 to-transparent border-indigo-500/30",
+    external: true,
   },
   {
-    quote:
-      "The audit row is the most underrated feature. Compliance stopped asking for screenshots — they read the rationale row instead.",
-    who: "A. Kowalski",
-    role: "Director of Compliance",
-    org: "healthtech, Series C",
-    tone: "fuchsia",
+    title: "Isolated workflow sandbox",
+    body: "Explore fictional deployment records without cloud credentials, production connections, or private tenant data.",
+    href: "/demo",
+    label: "Explore the sandbox",
+    tone: "from-fuchsia-500/20 to-transparent border-fuchsia-500/30",
+    external: false,
   },
   {
-    quote:
-      "We didn't hire two SREs and a security engineer this year. Axiom didn't replace them — it made the headcount unnecessary.",
-    who: "J. Tanaka",
-    role: "VP Engineering",
-    org: "logistics SaaS",
-    tone: "cyan",
+    title: "Documented operating model",
+    body: "Review installation, permissions, workflow boundaries, and known limitations before connecting an environment.",
+    href: "/docs",
+    label: "Read documentation",
+    tone: "from-cyan-500/20 to-transparent border-cyan-500/30",
+    external: false,
   },
-];
-
-const TONE_STYLE: Record<Testimonial["tone"], string> = {
-  indigo:  "from-indigo-500/20  to-transparent border-indigo-500/30",
-  fuchsia: "from-fuchsia-500/20 to-transparent border-fuchsia-500/30",
-  cyan:    "from-cyan-500/20    to-transparent border-cyan-500/30",
-};
-
-// Seed-stage design partners. Replace as real customer logos land.
-const LOGO_WORDS: readonly string[] = [
-  "PIVOT/AI",
-  "CASCADE",
-  "NORTHRIDGE",
-  "OBSIDIAN.IO",
-  "HELIX",
-  "WATERMARK",
-];
+] as const;
 
 export function SocialProofRail() {
   return (
-    <section className="relative z-10 mx-auto max-w-6xl px-6 md:px-10 py-16">
-      {/* logo strip */}
+    <section className="relative z-10 mx-auto max-w-6xl px-6 py-16 md:px-10" aria-labelledby="product-evidence-heading">
       <motion.div
         initial={{ opacity: 0, y: 8 }}
         whileInView={{ opacity: 1, y: 0 }}
@@ -77,51 +45,37 @@ export function SocialProofRail() {
         transition={{ duration: 0.4 }}
         className="text-center"
       >
-        <p className="text-[10px] font-mono uppercase tracking-widest text-zinc-500">
-          shipping with operators at
+        <p className="text-[10px] font-mono uppercase tracking-widest text-zinc-500">Product evidence</p>
+        <h2 id="product-evidence-heading" className="mt-3 text-2xl font-semibold tracking-tight text-white">
+          Verify the product before you trust the claim.
+        </h2>
+        <p className="mx-auto mt-3 max-w-2xl text-sm leading-relaxed text-zinc-400">
+          No customer logos, testimonials, adoption figures, or certifications are presented without documented permission and evidence.
         </p>
-        <div className="mt-4 flex flex-wrap items-center justify-center gap-x-7 gap-y-3">
-          {LOGO_WORDS.map((w) => (
-            <span
-              key={w}
-              className="font-mono text-[11px] uppercase tracking-[0.2em] text-zinc-500/80"
-            >
-              {w}
-            </span>
-          ))}
-        </div>
       </motion.div>
 
-      {/* testimonial cards */}
-      <div className="mt-10 grid grid-cols-1 md:grid-cols-3 gap-3">
-        {TESTIMONIALS.map((t, i) => (
-          <motion.figure
-            key={t.who}
+      <div className="mt-10 grid grid-cols-1 gap-3 md:grid-cols-3">
+        {EVIDENCE.map((item, index) => (
+          <motion.article
+            key={item.title}
             initial={{ opacity: 0, y: 10 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, amount: 0.3 }}
-            transition={{ duration: 0.4, delay: Math.min(i * 0.06, 0.18) }}
-            whileHover={{ y: -3, transition: { duration: 0.18 } }}
-            className={[
-              "relative overflow-hidden rounded-2xl border bg-gradient-to-br p-5 md:p-6",
-              TONE_STYLE[t.tone],
-            ].join(" ")}
+            transition={{ duration: 0.4, delay: Math.min(index * 0.06, 0.18) }}
+            className={`relative overflow-hidden rounded-2xl border bg-gradient-to-br p-5 md:p-6 ${item.tone}`}
           >
-            <blockquote className="text-[13.5px] text-zinc-200 leading-relaxed">
-              &ldquo;{t.quote}&rdquo;
-            </blockquote>
-            <figcaption className="mt-4 flex items-center gap-3 border-t border-white/[0.06] pt-3">
-              <div className="h-7 w-7 rounded-full bg-white/10 flex items-center justify-center text-[11px] font-semibold text-white">
-                {t.who.replace(/[^A-Z]/g, "").slice(0, 2) || t.who[0]}
-              </div>
-              <div className="min-w-0">
-                <p className="text-[12px] font-medium text-white truncate">{t.who}</p>
-                <p className="text-[11px] text-zinc-500 truncate">
-                  {t.role} · {t.org}
-                </p>
-              </div>
-            </figcaption>
-          </motion.figure>
+            <h3 className="text-sm font-semibold text-white">{item.title}</h3>
+            <p className="mt-2 text-[13px] leading-relaxed text-zinc-300">{item.body}</p>
+            {item.external ? (
+              <a href={item.href} target="_blank" rel="noopener noreferrer" className="mt-5 inline-flex text-xs font-medium text-violet-200 hover:text-white">
+                {item.label} →
+              </a>
+            ) : (
+              <Link href={item.href} className="mt-5 inline-flex text-xs font-medium text-violet-200 hover:text-white">
+                {item.label} →
+              </Link>
+            )}
+          </motion.article>
         ))}
       </div>
     </section>

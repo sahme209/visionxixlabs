@@ -146,10 +146,30 @@ export function CapabilitiesClient() {
           className="mt-5 max-w-2xl text-[15px] text-zinc-400 leading-relaxed"
         >
           Each engineer is a pure-function kernel in <span className="font-mono text-zinc-300">lib/agents/</span>{" "}
-          with closed-union types and a vitest suite. None of them act on their own —
-          every action they propose is gated through the council, the boundary
-          tier, and a signed approval packet.
+          with closed-union types. A listed kernel proves that application logic exists;
+          it does not by itself prove a live provider connection or a released execution path.
         </motion.p>
+      </section>
+
+      <section className="relative z-10 mx-auto max-w-6xl px-6 pb-12 md:px-10" aria-labelledby="operational-terms-heading">
+        <div className="rounded-2xl border border-white/[0.07] bg-white/[0.02] p-6 md:p-8">
+          <p className="mono-label">Operational terms</p>
+          <h2 id="operational-terms-heading" className="mt-3 text-2xl font-semibold tracking-tight text-white">What two common claims mean today.</h2>
+          <div className="mt-6 grid gap-4 md:grid-cols-2">
+            <article className="rounded-xl border border-amber-500/20 bg-amber-500/[0.04] p-5">
+              <h3 className="font-semibold text-amber-100">Blast radius limits</h3>
+              <p className="mt-2 text-sm leading-relaxed text-zinc-300">
+                The operation-planning kernel batches resources to the configured maximum, rejects an invalid oversized step, and records a boundary event. Example: a 12-resource plan with a five-resource limit becomes 5 + 5 + 2 planning batches. This is kernel enforcement; live cloud mutation enforcement is not release-verified.
+              </p>
+            </article>
+            <article className="rounded-xl border border-cyan-500/20 bg-cyan-500/[0.04] p-5">
+              <h3 className="font-semibold text-cyan-100">Outcome memory</h3>
+              <p className="mt-2 text-sm leading-relaxed text-zinc-300">
+                The application-side module stores action outcome metadata in the audit store under an organization and cloud-account context. A previous failure can downgrade guidance for that resource to human review. Example: a failed resize recommendation makes the next resize proposal more cautious. Consistent retention/deletion controls and the released desktop journey remain unverified.
+              </p>
+            </article>
+          </div>
+        </div>
       </section>
 
       {/* ===== FILTERS ===== */}
@@ -219,11 +239,10 @@ export function CapabilitiesClient() {
       {/* ===== CLOSER ===== */}
       <section className="relative z-10 mx-auto max-w-3xl px-6 md:px-10 py-16 text-center">
         <h3 className="text-xl md:text-2xl font-semibold tracking-tight">
-          Every engineer above ships with a vitest suite.
+          Capability logic is only one layer of the product.
         </h3>
         <p className="mt-3 text-zinc-400 text-[14px]">
-          The same safety contract — closed-union types, sha-256 rationale rows,
-          approval-only-no-execution — applies across every kernel on the bus.
+          Provider configuration, authorization, persistence, recovery, and a verified customer journey must also be present before a capability is described as available.
         </p>
         <div className="mt-6 flex items-center justify-center gap-2">
           <Link
@@ -236,7 +255,7 @@ export function CapabilitiesClient() {
             href="/download"
             className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-4 py-2 text-[12.5px] font-medium text-zinc-200 hover:bg-white/[0.07] transition"
           >
-            Open the bus
+            View desktop downloads
           </Link>
         </div>
       </section>

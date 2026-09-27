@@ -21,12 +21,29 @@ import {
 
 export const dynamic = "force-dynamic";
 
+const PUBLIC_AVAILABILITY: Record<string, { label: string; detail: string; href: string; enabled: boolean }> = {
+  aws: { label: "configuration required", detail: "Assume-role connection code is implemented. Live validation requires broker credentials and customer IAM setup; inventory/security analysis remains preview-grade and write execution is not released.", href: "/docs/aws-setup", enabled: true },
+  azure: { label: "preview", detail: "Credential-format validation and preview inventory are implemented. Live Azure SDK validation and provider-specific execution are not released.", href: "/cloud-solutions/azure", enabled: true },
+  gcp: { label: "preview", detail: "Credential-format validation and preview inventory are implemented. Live Asset Inventory validation and provider-specific execution are not released.", href: "/cloud-solutions/gcp", enabled: true },
+  github: { label: "preview", detail: "Repository and workflow inventory adapters are preview-grade. An organization-scoped live installation and dispatch path are not verified.", href: "/docs", enabled: true },
+  gitlab: { label: "planned", detail: "No customer-ready activation path is published.", href: "/docs", enabled: false },
+  cloudwatch: { label: "implementation review", detail: "Inbound event code exists; a released customer setup and end-to-end delivery path have not been verified.", href: "/docs", enabled: true },
+  grafana: { label: "implementation review", detail: "Inbound event code exists; a released customer setup and end-to-end delivery path have not been verified.", href: "/docs", enabled: true },
+  dynatrace: { label: "planned", detail: "No verified customer activation path is published.", href: "/docs", enabled: false },
+  slack: { label: "implementation review", detail: "Notification code must not be confused with workflow synchronization. Customer OAuth and message delivery are not release-verified.", href: "/docs", enabled: true },
+  linear: { label: "planned", detail: "Issue creation/update is not advertised as available until OAuth and write behavior are release-verified.", href: "/docs", enabled: false },
+  pagerduty: { label: "planned", detail: "No released paging connection is available.", href: "/docs", enabled: false },
+  vscode: { label: "preview", detail: "Extension code is tracked separately; marketplace installation and the shared authentication path require release verification.", href: "/docs", enabled: true },
+  postgres: { label: "implementation review", detail: "DDL generation exists. A released connection, permissions test, and revocation journey are not end-to-end verified.", href: "/docs", enabled: true },
+  mysql: { label: "implementation review", detail: "DDL generation exists. A released connection, permissions test, and revocation journey are not end-to-end verified.", href: "/docs", enabled: true },
+};
+
 export default function IntegrationsCatalog() {
   const categories = listAllCategories();
   const totals = {
-    live:    INTEGRATIONS.filter((i) => i.status === "live").length,
-    beta:    INTEGRATIONS.filter((i) => i.status === "beta").length,
-    planned: INTEGRATIONS.filter((i) => i.status === "planned").length,
+    configured: Object.values(PUBLIC_AVAILABILITY).filter((item) => item.label === "configuration required").length,
+    preview: Object.values(PUBLIC_AVAILABILITY).filter((item) => item.label === "preview" || item.label === "implementation review").length,
+    planned: Object.values(PUBLIC_AVAILABILITY).filter((item) => item.label === "planned").length,
   };
   return (
     <main className="relative max-w-6xl mx-auto py-16 px-4 sm:px-6 space-y-10">
@@ -44,25 +61,24 @@ export default function IntegrationsCatalog() {
           Integrations · {INTEGRATIONS.length} total
         </p>
         <h1 className="text-3xl md:text-5xl font-bold text-white tracking-[-0.04em] leading-[1.04]">
-          Connect anything in{" "}
+          Connector availability,{" "}
           <span className="relative inline-block">
-            one click.
+            stated precisely.
             <span aria-hidden className="absolute left-0 -bottom-1 h-[3px] w-full rounded-full bg-gradient-to-r from-brand-coral via-fuchsia-400 to-transparent opacity-90" />
           </span>
         </h1>
         <p className="text-zinc-300 leading-relaxed max-w-3xl text-[15px]">
-          Every connection here activates with a single button. No JSON copy-paste, no wizard
-          navigation, no long-lived secrets pasted into our app.
+          This is an implementation inventory—not a promise that every provider is live. Connections are configured in the installed application; the website does not become a browser control plane.
         </p>
         <ul className="text-[13px] text-zinc-400 leading-relaxed space-y-1 max-w-3xl">
-          <li>· <strong className="text-zinc-200">Cloud providers</strong> activate via CloudFormation (AWS), ARM templates (Azure), and Cloud Shell tutorials (GCP).</li>
-          <li>· <strong className="text-zinc-200">Source control + chat + paging</strong> use OAuth — you grant scoped read access, never a long-lived token.</li>
-          <li>· <strong className="text-zinc-200">Monitoring tools</strong> push inbound HMAC-SHA256 + ES256 signed alerts; we never poll their API.</li>
-          <li>· <strong className="text-zinc-200">Databases</strong> get a one-line GRANT-only DDL that creates a read-only role you control.</li>
+          <li>· <strong className="text-zinc-200">Configuration required</strong> means connector code exists but customer and service credentials are still required.</li>
+          <li>· <strong className="text-zinc-200">Preview</strong> means deterministic analysis or adapter behavior exists without a verified live customer journey.</li>
+          <li>· <strong className="text-zinc-200">Implementation review</strong> means code exists but activation, permissions, delivery, and recovery have not all been release-verified.</li>
+          <li>· <strong className="text-zinc-200">Planned</strong> means it is not available to customers today.</li>
         </ul>
         <div className="flex flex-wrap gap-2 text-[11px] font-mono pt-2">
-          <span className="px-2 py-0.5 rounded-full border border-emerald-500/25 bg-emerald-500/[0.06] text-emerald-200">{totals.live} live</span>
-          <span className="px-2 py-0.5 rounded-full border border-amber-500/25 bg-amber-500/[0.06] text-amber-200">{totals.beta} beta</span>
+          <span className="px-2 py-0.5 rounded-full border border-amber-500/25 bg-amber-500/[0.06] text-amber-200">{totals.configured} configuration required</span>
+          <span className="px-2 py-0.5 rounded-full border border-cyan-500/25 bg-cyan-500/[0.06] text-cyan-200">{totals.preview} preview / review</span>
           <span className="px-2 py-0.5 rounded-full border border-white/[0.08] bg-white/[0.02] text-zinc-400">{totals.planned} planned</span>
         </div>
       </header>
@@ -103,20 +119,14 @@ export default function IntegrationsCatalog() {
 }
 
 function IntegrationCard({ integration: i }: { integration: Integration }) {
-  const statusTone =
-    i.status === "live"    ? "border-emerald-500/25 bg-emerald-500/[0.05] text-emerald-200" :
-    i.status === "beta"    ? "border-amber-500/25 bg-amber-500/[0.05] text-amber-200" :
-                             "border-white/[0.06] bg-white/[0.02] text-zinc-400";
-  const writeTone =
-    i.writeAccess === "auto"            ? "border-violet-500/25 bg-violet-500/[0.06] text-violet-200" :
-    i.writeAccess === "approval_gated"  ? "border-cyan-500/25 bg-cyan-500/[0.06] text-cyan-200" :
-                                          "border-emerald-500/25 bg-emerald-500/[0.06] text-emerald-200";
-  const writeLabel =
-    i.writeAccess === "auto"            ? "write · auto" :
-    i.writeAccess === "approval_gated"  ? "write · two-person gated" :
-                                          "read-only";
+  const availability = PUBLIC_AVAILABILITY[i.id] ?? { label: "planned", detail: "No verified customer path is published.", href: "/docs", enabled: false };
+  const statusTone = availability.enabled
+    ? "border-amber-500/25 bg-amber-500/[0.05] text-amber-200"
+    : "border-white/[0.06] bg-white/[0.02] text-zinc-400";
+  const writeTone = "border-white/[0.08] bg-white/[0.02] text-zinc-400";
+  const writeLabel = i.writeAccess === "none" ? "no write path" : "write not release-verified";
 
-  const disabled = i.status === "planned";
+  const disabled = !availability.enabled;
   const ctaCommon = "inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-[12px] font-semibold tracking-tight transition-all";
   const ctaCls = disabled
     ? `${ctaCommon} border border-white/[0.06] bg-white/[0.02] text-zinc-500 cursor-not-allowed`
@@ -127,22 +137,20 @@ function IntegrationCard({ integration: i }: { integration: Integration }) {
       <div className="flex items-baseline justify-between gap-2 flex-wrap mb-1.5">
         <h3 className="text-[15px] font-semibold text-white tracking-tight group-hover:text-white transition-colors">{i.name}</h3>
         <div className="flex items-center gap-1.5">
-          <span className={`text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border ${statusTone}`}>{i.status}</span>
+          <span className={`text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border ${statusTone}`}>{availability.label}</span>
           <span className={`text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border ${writeTone}`}>{writeLabel}</span>
         </div>
       </div>
-      <p className="text-[12.5px] text-zinc-300 leading-relaxed mb-2">{i.blurb}</p>
+      <p className="text-[12.5px] text-zinc-300 leading-relaxed mb-2">{availability.detail}</p>
       <p className="text-[10px] font-mono text-zinc-500 mb-3 truncate" title={i.permissionsSummary}>
         {i.permissionsSummary}
       </p>
       {disabled ? (
-        <button disabled className={ctaCls}>{i.cta}</button>
-      ) : i.startHref ? (
-        <Link href={i.startHref} target={i.startHref.startsWith("http") ? "_blank" : undefined} className={ctaCls}>
-          {i.cta} →
-        </Link>
+        <button disabled className={ctaCls}>Not available</button>
       ) : (
-        <span className={ctaCls + " opacity-60"}>{i.cta} (coming soon)</span>
+        <Link href={availability.href} className={ctaCls}>
+          View setup status →
+        </Link>
       )}
     </div>
   );

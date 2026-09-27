@@ -68,3 +68,13 @@ The full root TypeScript run stalled on iCloud with no diagnostics and was termi
 5. Complete evidence, technical/functional validation, deferred follow-up, rollback, and closure.
 6. Run the website on real iPhone/Android browsers or supported simulators at 320, 390, 430, and 768 CSS pixels, including menu focus, safe areas, scrolling, CTA overlap, and link behavior.
 7. Package and test the exact candidate after the last source change.
+## Website claims/customer-path pass — 2026-09-27
+
+- Reconciled public AWS/Azure/GCP wording to the conservative capability coverage map; no provider is represented by a generic “live/full support” badge.
+- Added digest and detached-signature metadata to the desktop release manifest. Public v0.1.7 assets exist; ARM DMG SHA-256 matched GitHub and `hdiutil verify` passed, but mount/install/first launch were blocked.
+- Contact now separates durable database acceptance from email delivery, validates/bounds fields, adds a honeypot, checks Resend HTTP failures, and returns a reference ID. Four focused route tests pass.
+- Removed fictional testimonials/logos and unsupported certification/auditor/BAA/DPA claims.
+- Replaced the stale download-preview page that advertised a browser product and unverified CLI/signing/keychain behavior.
+- Clarified sandbox reset/isolation, blast-radius kernel enforcement, outcome-memory storage/limitations, and connector availability.
+- Added `docs/WEBSITE_CLAIMS_AUDIT_2026-09-27.md` and `docs/CLAIM_EVIDENCE_MAP.md`.
+- Remaining external inputs: configured provider sandboxes, production email sender access, exact App Store developer-page URL, sanitized application account/artifact for screenshots, clean OS install hosts, and the missing 36-section master source.

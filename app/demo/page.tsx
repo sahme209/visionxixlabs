@@ -57,7 +57,8 @@ export default function DemoLanding() {
 
         <p className="text-[15.5px] text-zinc-400 max-w-2xl leading-relaxed mb-8">
           Every screen below uses scripted example data. Nothing here touches a real cloud account
-          or burns AI credits. Pick a scenario to walk through one of the {scenarios.length} core product flows.
+          or burns AI credits. Visitors can step through fictional intake, approval, execution,
+          validation, and evidence states. Pick a scenario to walk through one of the {scenarios.length} core product flows.
         </p>
 
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-x-4">
@@ -115,6 +116,8 @@ export default function DemoLanding() {
           <li>· <code className="font-mono text-brand-coral/80">assertNotDemoLeak()</code> throws at the boundary if a real workspace ever asks for demo content.</li>
           <li>· Scenarios live in source control (<code className="font-mono text-zinc-300">lib/demo/demoScenarios.ts</code>), not the workspace database. They can&apos;t bleed across tenants.</li>
           <li>· No connector credentials are stored. No webhooks fire. No AI tokens are spent.</li>
+          <li>· Step position lives only in the current browser page. Refreshing or reopening a scenario resets it; there is no account, saved workspace, or production state.</li>
+          <li>· The sandbox illustrates the installed application&apos;s workflow model. It is not the downloadable app and cannot execute a deployment.</li>
         </ul>
       </section>
       </main>

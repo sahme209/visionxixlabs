@@ -116,18 +116,19 @@ export function Footer() {
           </div>
         </div>
 
-        {/* Huly-style Join CTA — big, gradient text, numbered marker */}
+        {/* Final utility CTA is intentionally unnumbered. Page section sequences
+            end before the shared site footer. */}
         <div className="relative mb-14 hidden md:block sm:mb-20">
           <div className="text-center max-w-3xl mx-auto">
             <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-zinc-500 mb-6 inline-flex items-center gap-3">
-              <span className="text-brand-coral/90 tabular-nums">10</span>
+              <span className="text-brand-coral/90">Desktop application</span>
               <span className="h-px w-6 bg-gradient-to-r from-brand-coral/60 to-transparent" />
-              Begin
+              Verified distribution
             </p>
             <h2 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-[-0.04em] leading-[1.02] mb-5">
-              <span className="text-white">Join the </span>
+              <span className="text-white">Download the </span>
               <span className="bg-clip-text text-transparent bg-gradient-to-r from-brand-coral via-fuchsia-400 to-brand-violet">
-                movement
+                application
               </span>
               <span className="text-white">.</span>
             </h2>
@@ -140,14 +141,14 @@ export function Footer() {
                 href="/download"
                 className="btn-press inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-full text-[14.5px] font-semibold tracking-tight"
               >
-                Download Axiom Agent
+                View verified downloads
                 <ArrowRightIcon className="h-4 w-4 opacity-70" />
               </Link>
               <a
                 href="mailto:support@visionxixlabs.com"
                 className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full border border-brand-coral/30 bg-brand-coral/[0.06] text-zinc-200 text-[14px] font-medium transition-all hover:bg-brand-coral/[0.10] hover:border-brand-coral/50"
               >
-                Talk to us
+                Contact support
               </a>
             </div>
           </div>

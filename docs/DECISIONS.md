@@ -1,6 +1,6 @@
 # Decisions
 
-Last updated: 2026-09-26
+Last updated: 2026-09-27
 
 | ID | Decision | Status | Evidence / consequence |
 | --- | --- | --- | --- |
@@ -15,6 +15,9 @@ Last updated: 2026-09-26
 | ADR-009 | Permission and trigger distinctions are modeled separately. | Active | Template capability lists distinguish PR approval, merge, workflow run, environment approval, release, and change authority. UI/service enforcement needs journey-level verification. |
 | ADR-010 | No final-release claim without exact packaged-build verification. | Active | Published 0.1.7 predates the most recently audited repair tree; native packaging and installed journeys were blocked in the prior report. |
 | ADR-011 | Generating a playbook is a record-creation action, not deployment authorization or execution. | Active | The desktop/API persist a hashed version and audit event, and explicitly state that no merge, release, dispatch, or environment approval occurred. |
+| ADR-012 | Public availability claims use the conservative capability coverage map and exact release evidence. | Active | Connector code, customer configuration, preview analysis, live execution, and certification are separate statuses. Marketing registry labels cannot override verification evidence. |
+| ADR-013 | Durable contact acceptance and email delivery are reported separately. | Active | A stored lead/reference may succeed while notification delivery is failed or unconfigured; the UI must disclose that state and promise no response time. |
+| ADR-014 | Unverified social proof is prohibited. | Active | No customer logo, testimonial, adoption figure, certification, active audit, or commercial entitlement is published without approval and supporting evidence. |
 
 ## Superseded instructions
 

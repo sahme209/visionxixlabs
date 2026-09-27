@@ -11,6 +11,31 @@ function escapeHtml(s: string): string {
     .replace(/"/g, "&quot;");
 }
 
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const MAX_FIELD_LENGTH = 240;
+const MAX_MESSAGE_LENGTH = 8_000;
+
+function normalized(value: unknown, maxLength = MAX_FIELD_LENGTH): string {
+  return String(value ?? "").trim().slice(0, maxLength);
+}
+
+async function sendResend(apiKey: string, payload: object): Promise<boolean> {
+  try {
+    const response = await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${apiKey}`,
+      },
+      body: JSON.stringify(payload),
+    });
+    return response.ok;
+  } catch (error) {
+    console.warn("[Contact] Email delivery request failed:", error);
+    return false;
+  }
+}
+
 export async function POST(request: NextRequest) {
   const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || request.headers.get("x-real-ip") || "anon";
   if (!checkRateLimit(`contact:${ip}`)) {
@@ -33,38 +58,50 @@ export async function POST(request: NextRequest) {
       message,
       source,
       aiUsageStatus,
+      website,
     } = body;
+
+    // Hidden honeypot. Return a neutral response so bots cannot tune around it.
+    if (normalized(website)) {
+      return NextResponse.json({ success: true, accepted: false }, { status: 200 });
+    }
 
     const isFreeReview = source === "free-review";
     const isCloudHealthSnapshot = source === "cloud-health-snapshot";
-    if (!name || !email) {
+    const cleanName = normalized(name);
+    const cleanEmail = normalized(email).toLowerCase();
+    const cleanMessage = normalized(message, MAX_MESSAGE_LENGTH);
+    if (!cleanName || !cleanEmail) {
       return NextResponse.json(
         { error: "Name and email are required" },
         { status: 400 }
       );
     }
-    if (!isFreeReview && !isCloudHealthSnapshot && !message) {
+    if (!EMAIL_PATTERN.test(cleanEmail)) {
+      return NextResponse.json({ error: "Enter a valid email address" }, { status: 400 });
+    }
+    if (!isFreeReview && !isCloudHealthSnapshot && !cleanMessage) {
       return NextResponse.json(
         { error: "Message is required" },
         { status: 400 }
       );
     }
 
-    const rawMessage = String(message || (isFreeReview ? "Free Cloud & AI Infrastructure Review request." : isCloudHealthSnapshot ? "Cloud Health Snapshot request." : ""));
+    const rawMessage = cleanMessage || (isFreeReview ? "Free Cloud & AI Infrastructure Review request." : isCloudHealthSnapshot ? "Cloud Health Snapshot request." : "");
     const redactedMessage = redactSecrets(rawMessage);
 
     const safe = {
-      name: escapeHtml(String(name)),
-      email: escapeHtml(String(email)),
-      company: escapeHtml(String(company || "Not provided")),
-      topic: escapeHtml(String(topic || "Not specified")),
-      companySize: escapeHtml(String(companySize || "Not specified")),
-      cloudProvider: escapeHtml(String(cloudProvider || "Not specified")),
-      mainConcern: escapeHtml(String(mainConcern || "Not specified")),
-      setupMaturity: escapeHtml(String(setupMaturity || "Not specified")),
+      name: escapeHtml(cleanName),
+      email: escapeHtml(cleanEmail),
+      company: escapeHtml(normalized(company) || "Not provided"),
+      topic: escapeHtml(normalized(topic) || "Not specified"),
+      companySize: escapeHtml(normalized(companySize) || "Not specified"),
+      cloudProvider: escapeHtml(normalized(cloudProvider) || "Not specified"),
+      mainConcern: escapeHtml(normalized(mainConcern) || "Not specified"),
+      setupMaturity: escapeHtml(normalized(setupMaturity) || "Not specified"),
       message: escapeHtml(redactedMessage),
-      source: escapeHtml(String(source || "contact")),
-      aiUsageStatus: escapeHtml(String(aiUsageStatus || "Not specified")),
+      source: escapeHtml(normalized(source) || "contact"),
+      aiUsageStatus: escapeHtml(normalized(aiUsageStatus) || "Not specified"),
     };
 
     const lead = await prisma.lead.create({
@@ -102,6 +139,7 @@ export async function POST(request: NextRequest) {
     const FROM_EMAIL = process.env.RESEND_FROM_EMAIL || "onboarding@resend.dev";
     const TO_EMAIL = process.env.CONTACT_EMAIL || "support@visionxixlabs.com";
 
+    let delivery: "sent" | "failed" | "not_configured" = "not_configured";
     if (RESEND_API_KEY) {
       const emailSubject = safe.source === "free-review"
         ? `[Free Review] ${safe.company} – ${safe.name}`
@@ -135,46 +173,24 @@ Lead ID: ${lead.id}
           ? "onboarding@resend.dev"
           : `Vision XIX Labs <${FROM_EMAIL}>`;
 
-      try {
-        await fetch("https://api.resend.com/emails", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${RESEND_API_KEY}`,
-          },
-          body: JSON.stringify({
-            from: fromHeader,
-            to: [TO_EMAIL],
-            reply_to: safe.email,
-            subject: emailSubject,
-            text: emailContent,
-          }),
-        });
-      } catch (e) {
-        console.warn("[Contact] Failed to send internal notification:", e);
-      }
+      const internalSent = await sendResend(RESEND_API_KEY, {
+        from: fromHeader,
+        to: [TO_EMAIL],
+        reply_to: safe.email,
+        subject: emailSubject,
+        text: emailContent,
+      });
+      delivery = internalSent ? "sent" : "failed";
 
-      try {
-        await fetch("https://api.resend.com/emails", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${RESEND_API_KEY}`,
-          },
-          body: JSON.stringify({
-            from: fromHeader,
-            to: [safe.email],
-            subject: "Thanks for reaching out to Vision XIX Labs",
-            text:
-              "Thank you for contacting Vision XIX Labs.\n\n" +
-              "We've received your message. Our AI resolution system is reviewing it and will respond shortly—often within minutes for common requests.\n\n" +
-              "If you requested a cloud or security review, we'll use the details you provided to prepare the best response.\n\n" +
-              "If this was sent in error, you can ignore this message.\n",
-          }),
-        });
-      } catch {
-        // best-effort confirmation
-      }
+      await sendResend(RESEND_API_KEY, {
+        from: fromHeader,
+        to: [safe.email],
+        subject: "Vision XIX Labs received your message",
+        text:
+          `Your message was recorded with reference ${lead.id}.\n\n` +
+          "This confirmation does not promise a response time or support entitlement. " +
+          "For download help, you can also email support@visionxixlabs.com.\n",
+      });
     } else {
       console.warn("[Contact] RESEND_API_KEY not configured; emails not sent");
     }
@@ -182,7 +198,10 @@ Lead ID: ${lead.id}
     return NextResponse.json(
       {
         success: true,
-        message: "Thank you for your message. Our AI resolution system is reviewing it and will respond shortly.",
+        accepted: true,
+        referenceId: lead.id,
+        delivery,
+        message: "Your message was recorded.",
       },
       { status: 200 }
     );

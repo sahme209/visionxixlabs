@@ -1,6 +1,6 @@
 # Product Vision
 
-Last updated: 2026-09-26
+Last updated: 2026-09-27
 
 ## Authority
 
@@ -55,3 +55,5 @@ Private organizations, repositories, groups, clients, and operational examples a
 ## Non-negotiable truthfulness
 
 Implementation and verification are separate. Mock, sandbox, provider-sandbox, and live results must be labeled distinctly. A screen, button, toast, generated message, or passing pure test is not proof of a persisted authorized integration outcome.
+
+Public claims follow the same rule. Connector code does not imply a configured customer connection; a configured connection does not imply live discovery; discovery does not imply execution authority; product control mapping does not imply an independent certification. The current claim-to-evidence policy is recorded in `docs/CLAIM_EVIDENCE_MAP.md`.

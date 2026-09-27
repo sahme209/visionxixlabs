@@ -36,10 +36,10 @@ export function DesktopShowcase() {
             Axiom Desktop
           </p>
           <h2 className="font-display text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-[1.04] mb-5">
-            One operating system
+            One deployment workspace
             <br />
             <span className="relative inline-block">
-              for every cloud.
+              with explicit provider status.
               <span aria-hidden className="absolute left-0 -bottom-0.5 h-[2px] w-full rounded-full bg-gradient-to-r from-brand-coral via-fuchsia-400/70 to-transparent" />
             </span>
           </h2>

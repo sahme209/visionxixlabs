@@ -146,7 +146,7 @@ const faqs = [
   },
   {
     q: "What clouds are supported?",
-    a: "AWS has full support — scan, plan, and execution. Azure and GCP currently support scan-only analysis, with plan and execution on the roadmap.",
+    a: "AWS has an implemented assume-role connector that requires service and customer configuration; current inventory and security analysis are preview-grade, and local apply is disabled. Azure and GCP currently provide format validation and preview analysis; live SDK validation and execution are not released.",
   },
   {
     q: "How does Axiom keep my infrastructure safe?",

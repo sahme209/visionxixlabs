@@ -1,6 +1,6 @@
 # Roadmap
 
-Last updated: 2026-09-26
+Last updated: 2026-09-27
 
 ## P0 — integrity and authoritative scope
 
@@ -9,6 +9,8 @@ Last updated: 2026-09-26
 3. Continue the new desktop request/playbook path through immutable revision editing and diffs, approval/readiness, execution, validation/deferred follow-up, and closure.
 4. Audit every browser route against the verified desktop-only edge policy; keep dashboard/operator and unsolicited auth entry points redirected while retaining shared-service callbacks and native system-browser PKCE support.
 5. Build a fresh artifact from a committed tree; record commit/version/checksum/SBOM/signing/notarization.
+6. Configure and verify the production contact sender; exercise durable acceptance, provider delivery, bounce/failure visibility, and abuse controls.
+7. Replace preview cloud paths with live SDK validation only after safe-tenant contract tests; keep the claim map synchronized.
 
 ## P1 — missing original behavior
 
@@ -26,6 +28,7 @@ Last updated: 2026-09-26
 3. Deferred-validation scheduling, ownership, monitoring triggers, reminders, and closure policy.
 4. Backup/restore and supported-version migration exercises.
 5. Signed updater with rollback/recovery behavior, or explicit absence in product/UI.
+6. Add outcome-memory retention/deletion controls and store-level tenant scoping; verify the same behavior through the packaged desktop journey.
 
 ## P3 — usability, accessibility, performance
 

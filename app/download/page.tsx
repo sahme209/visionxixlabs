@@ -36,6 +36,9 @@ interface PlatformInfo {
   fileName?: string;
   /** Honest one-line friction note (rendered when available === true). */
   installFriction?: string;
+  digest?: string | null;
+  signatureUrl?: string | null;
+  sizeBytes?: number;
 }
 
 interface ManifestAsset {
@@ -43,6 +46,8 @@ interface ManifestAsset {
   fileName: string;
   downloadUrl: string;
   sizeBytes: number;
+  digest: string | null;
+  signatureUrl: string | null;
   signed: boolean;
   notarized: boolean;
   installFriction: string;
@@ -75,14 +80,14 @@ const PLATFORMS: Record<DetectedPlatform, PlatformInfo> = {
   "mac-arm": {
     id: "mac-arm",
     label: "macOS · Apple Silicon",
-    sublabel: "Preview · signed builds in 1.0",
+    sublabel: "No current release asset detected",
     href: "/download/preview?platform=mac-arm",
     available: false,
   },
   "mac-intel": {
     id: "mac-intel",
     label: "macOS · Intel",
-    sublabel: "Preview · signed builds in 1.0",
+    sublabel: "No current release asset detected",
     href: "/download/preview?platform=mac-intel",
     available: false,
   },
@@ -153,6 +158,9 @@ export default function DownloadPage() {
           available: true,
           fileName: asset.fileName,
           installFriction: asset.installFriction,
+          digest: asset.digest,
+          signatureUrl: asset.signatureUrl,
+          sizeBytes: asset.sizeBytes,
         }] as const;
       }),
     ),
@@ -316,10 +324,31 @@ export default function DownloadPage() {
                     {p.installFriction && (
                       <p className="text-[9.5px] text-amber-200/70 mt-1 font-mono leading-snug">{p.installFriction}</p>
                     )}
+                    {p.sizeBytes ? (
+                      <p className="mt-1 text-[9.5px] font-mono text-zinc-500">
+                        {(p.sizeBytes / 1_048_576).toFixed(1)} MB
+                      </p>
+                    ) : null}
+                    {p.digest ? (
+                      <p className="mt-1 break-all text-[9px] font-mono text-zinc-600" title={p.digest}>
+                        SHA-256 {p.digest.replace(/^sha256:/, "").slice(0, 12)}…
+                      </p>
+                    ) : null}
+                    {p.signatureUrl ? (
+                      <p className="mt-1 text-[9.5px] font-mono text-violet-300">Detached signature published</p>
+                    ) : null}
                   </Link>
                 );
               })}
             </div>
+            {manifest?.htmlUrl ? (
+              <p className="mt-4 text-center text-[11px] text-zinc-500">
+                Verify full SHA-256 digests and download detached signatures on the{" "}
+                <a href={manifest.htmlUrl} target="_blank" rel="noopener noreferrer" className="text-violet-300 hover:text-violet-200 underline underline-offset-4">
+                  public release record
+                </a>.
+              </p>
+            ) : null}
           </Reveal>
         </div>
       </section>

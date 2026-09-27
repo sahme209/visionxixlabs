@@ -29,6 +29,10 @@ export interface DesktopAsset {
   downloadUrl: string;
   sizeBytes: number;
   contentType: string;
+  /** GitHub-computed digest, normally `sha256:<hex>`, when published. */
+  digest: string | null;
+  /** Detached signature asset published beside the installer, when present. */
+  signatureUrl: string | null;
   /** True when the asset was code-signed in CI (Apple Developer ID / Windows EV). */
   signed: boolean;
   /** Apple-only — true when notarytool stapled the binary. */
@@ -130,6 +134,7 @@ interface GhAsset {
   browser_download_url: string;
   size: number;
   content_type: string;
+  digest?: string | null;
 }
 
 interface GhRelease {
@@ -189,6 +194,13 @@ async function fetchLatestRelease(): Promise<DesktopReleaseManifest> {
     "linux-x64":   null,
   };
 
+  const releaseAssets = latest.assets ?? [];
+  const signatureByInstaller = new Map(
+    releaseAssets
+      .filter((asset) => asset.name.toLowerCase().endsWith(".asc"))
+      .map((asset) => [asset.name.slice(0, -4), asset.browser_download_url]),
+  );
+
   const assetPreference = (platform: DesktopPlatform, fileName: string): number => {
     const name = fileName.toLowerCase();
     if (platform === "linux-x64") {
@@ -203,7 +215,7 @@ async function fetchLatestRelease(): Promise<DesktopReleaseManifest> {
     return 1;
   };
 
-  for (const a of latest.assets ?? []) {
+  for (const a of releaseAssets) {
     const platform = classifyAsset(a.name);
     if (!platform) continue;
     const current = assets[platform];
@@ -216,6 +228,8 @@ async function fetchLatestRelease(): Promise<DesktopReleaseManifest> {
       downloadUrl: a.browser_download_url,
       sizeBytes: a.size,
       contentType: a.content_type,
+      digest: a.digest ?? null,
+      signatureUrl: signatureByInstaller.get(a.name) ?? null,
       signed,
       notarized,
       installFriction: frictionFor(platform, signed, notarized),

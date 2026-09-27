@@ -23,7 +23,6 @@ import { DesktopShowcase } from "@/components/home/DesktopShowcase";
 import { MobileHome } from "@/components/home/MobileHome";
 import { HomepageDemoAnimation } from "@/components/marketing/HomepageDemoAnimation";
 import { Footer } from "@/components/Footer";
-import { listProviders, capabilitySummary } from "@/lib/cloud/providerRegistry";
 import { primaryCta, secondaryCta, fallbackCta } from "@/lib/product/ctaMap";
 
 const axiomFAQ = [
@@ -40,7 +39,7 @@ const axiomFAQ = [
   {
     question: "What clouds are supported?",
     answer:
-      "AWS has full support — scan, plan, and execution. Azure and GCP currently support scan-only analysis, with plan and execution capabilities on the roadmap.",
+      "AWS has an implemented assume-role connection that requires customer and broker configuration; its current inventory and security scan are preview-grade, and generated execution artifacts remain dry-run/review only. Azure and GCP currently provide credential-format validation and preview analysis. Their live SDK validation and provider-specific execution paths are not released.",
   },
   {
     question: "How does Axiom keep my infrastructure safe?",
@@ -60,14 +59,14 @@ const axiomFAQ = [
   {
     question: "Does Axiom learn from past actions?",
     answer:
-      "Yes. Axiom records the outcome of every action — whether it succeeded or failed, for which resource and action type. If a resource has a prior failure, it automatically downgrades future recommendations from auto-fix to human review. This outcome memory makes the agent safer over time.",
+      "The application-side outcome-memory module records success and failure metadata in the audit store and can downgrade a recommendation when the same resource has failed before. Its retention and deletion controls are not yet complete, and this behavior has not been verified as an end-to-end released desktop workflow.",
   },
 ];
 
 const TRUST_LOGOS = [
   "Assume-role AWS access", "Explicit approval gates", "Persisted audit history", "Redacted operational logs",
   "Workspace isolation", "Feature-gated connectors", "Human-confirmed AI output", "Terraform artifact review",
-  "Synthetic web sandbox", "No browser control plane",
+  "Isolated sample-data sandbox", "No browser control plane",
 ];
 
 const HERO_ASSURANCES = [
@@ -80,6 +79,12 @@ const HERO_FRAME_METADATA = [
   ["Control", "Approval gated"],
   ["State", "Explicit outcomes"],
   ["Evidence", "Persisted trail"],
+] as const;
+
+const PROVIDER_AVAILABILITY = [
+  { id: "aws", shortName: "AWS", displayName: "Amazon Web Services", detail: "Connection implemented · customer configuration required", tone: "bg-amber-400" },
+  { id: "azure", shortName: "AZ", displayName: "Microsoft Azure", detail: "Format validation + preview analysis · execution planned", tone: "bg-zinc-500" },
+  { id: "gcp", shortName: "GCP", displayName: "Google Cloud", detail: "Format validation + preview analysis · execution planned", tone: "bg-zinc-500" },
 ] as const;
 
 /* ── Section divider — coral-tinted hairline with center diamond, Huly-style */
@@ -489,37 +494,31 @@ export default function Home() {
       {/* ── Multi-cloud — huly.io FeatureRow (alternates, media on left) ── */}
       <FeatureRow
         kicker={<><span className="text-rose-300/90 tabular-nums">05</span><span className="mx-2 inline-block h-px w-6 align-middle bg-gradient-to-r from-rose-400/60 to-transparent" />Multi-cloud intelligence</>}
-        headline={<>One agent. <span className="text-zinc-500">Every cloud.</span></>}
+        headline={<>One operating model. <span className="text-zinc-500">Provider-specific availability.</span></>}
         body={
-          <>Axiom uses a shared provider model while keeping availability explicit. AWS supports the complete operational path; Azure and Google Cloud connections currently provide analysis capabilities and remain feature-gated where execution is not verified.</>
+          <>Axiom uses a shared provider model while keeping released behavior explicit. Connector code, customer configuration, live discovery, and write execution are separate milestones—not one generic “supported” badge.</>
         }
         bullets={[
-          { label: "Amazon Web Services", description: "Operational · assume-role connection · scanning, planning, and governed execution" },
-          { label: "Microsoft Azure", description: "Feature-gated · reader/service-principal setup · analysis only unless enabled" },
-          { label: "Google Cloud Platform", description: "Feature-gated · project-scoped service account · analysis only unless enabled" },
-          { label: "Terraform output", description: "Generated artifacts require review, approval, and an available Terraform runtime" },
+          { label: "Amazon Web Services", description: "Assume-role connector implemented · live use requires broker and customer configuration · analysis is preview-grade" },
+          { label: "Microsoft Azure", description: "Credential-format validation and preview analysis · live SDK validation and execution not released" },
+          { label: "Google Cloud Platform", description: "Credential-format validation and preview analysis · live SDK validation and execution not released" },
+          { label: "Execution", description: "Generated artifacts are review-only today; local apply is disabled by the desktop safety contract" },
         ]}
         mediaSide="left"
         media={
           <div className="p-8 lg:p-10 space-y-3">
-            {listProviders().map((p) => {
-              const isOperational = p.status === "operational";
-              const summary = capabilitySummary(p.provider);
-              return (
-                <div key={p.provider} className="flex items-center gap-3 py-2.5 px-3 rounded-xl bg-white/[0.02] border border-white/[0.04]">
+            {PROVIDER_AVAILABILITY.map((p) => (
+                <div key={p.id} className="flex items-center gap-3 py-2.5 px-3 rounded-xl bg-white/[0.02] border border-white/[0.04]">
                   <div className="w-9 h-9 rounded-lg bg-white/[0.04] border border-white/[0.06] flex items-center justify-center flex-shrink-0">
                     <span className="text-[11px] font-mono text-zinc-300">{p.shortName}</span>
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-[13px] font-medium text-white truncate">{p.displayName}</p>
-                    <p className="text-[11px] text-zinc-500 truncate">
-                      {isOperational ? "Full operations" : `${summary.live + summary.preview} live · ${summary.building + summary.planned} expanding`}
-                    </p>
+                    <p className="text-[11px] text-zinc-500">{p.detail}</p>
                   </div>
-                  <span className={`w-1.5 h-1.5 rounded-full breathe ${isOperational ? "bg-emerald-400" : "bg-zinc-500"}`} />
+                  <span className={`w-1.5 h-1.5 rounded-full ${p.tone}`} />
                 </div>
-              );
-            })}
+            ))}
           </div>
         }
       />
@@ -536,7 +535,7 @@ export default function Home() {
         }
         bullets={[
           { label: "Approval required", description: "No write action runs without explicit human sign-off" },
-          { label: "Blast radius limits", description: "Plans that touch more than N resources are auto-staged" },
+          { label: "Blast radius limits", description: "The planning kernel splits oversized steps and blocks invalid scope; released cloud mutation enforcement is not yet verified" },
           { label: "Rollback planning", description: "Recovery steps and their verification state remain explicit" },
           { label: "Audit evidence", description: "Persisted actor, action, rationale, timestamps, and outcomes" },
         ]}
@@ -545,7 +544,7 @@ export default function Home() {
           <div className="p-8 lg:p-10 space-y-3">
             {[
               { label: "Approval required", value: "Enforced", dot: "bg-emerald-400" },
-              { label: "Blast radius", value: "< 5 resources", dot: "bg-amber-400" },
+              { label: "Blast radius", value: "Configured per plan", dot: "bg-amber-400" },
               { label: "Rollback verified", value: "Ready", dot: "bg-emerald-400" },
               { label: "Audit trail", value: "Immutable · SHA-256", dot: "bg-emerald-400" },
             ].map((row) => (

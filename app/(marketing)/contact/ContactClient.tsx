@@ -13,15 +13,15 @@ import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { useState, type FormEvent } from "react";
 
-type Topic = "demo" | "trial" | "enterprise" | "support" | "press";
+type Topic = "product" | "download" | "security" | "support" | "press";
 type CloudProvider = "aws" | "azure" | "gcp" | "multi" | "none";
 type CompanySize = "1-10" | "11-50" | "51-200" | "201-1k" | "1k+";
 
 const TOPICS: ReadonlyArray<{ id: Topic; label: string; hint: string }> = [
-  { id: "demo",       label: "Book a walkthrough", hint: "Review the web product and its current sandbox boundary." },
-  { id: "trial",      label: "Product access",     hint: "Ask about a tenant workspace; no public trial terms are implied." },
-  { id: "enterprise", label: "Production needs",   hint: "Discuss requirements, integrations, security, and procurement." },
-  { id: "support",    label: "Support",            hint: "Existing operator with an account question." },
+  { id: "product",    label: "Product question",   hint: "Ask how the installed application supports your deployment workflow." },
+  { id: "download",   label: "Download help",      hint: "Installer, platform, signing, or first-launch assistance." },
+  { id: "security",   label: "Security",           hint: "Ask about implemented controls, data handling, or connector setup." },
+  { id: "support",    label: "Support",            hint: "Help with an existing installation or account." },
   { id: "press",      label: "Press / partners",   hint: "Coverage, integration, or partnership." },
 ];
 
@@ -49,22 +49,24 @@ interface FormState {
   cloudProvider: CloudProvider;
   companySize: CompanySize;
   message: string;
+  website: string;
 }
 
 const INITIAL: FormState = {
   name: "",
   email: "",
   company: "",
-  topic: "demo",
+  topic: "product",
   cloudProvider: "aws",
   companySize: "11-50",
   message: "",
+  website: "",
 };
 
 type SubmitState =
   | { kind: "idle" }
   | { kind: "submitting" }
-  | { kind: "ok" }
+  | { kind: "ok"; referenceId: string; delivery: "sent" | "failed" | "not_configured" }
   | { kind: "error"; message: string };
 
 export function ContactClient() {
@@ -92,7 +94,12 @@ export function ContactClient() {
         const data = await res.json().catch(() => ({}));
         throw new Error(data?.error ?? "Send failed. Try again in a minute.");
       }
-      setState({ kind: "ok" });
+      const data = await res.json();
+      setState({
+        kind: "ok",
+        referenceId: String(data.referenceId ?? "unavailable"),
+        delivery: data.delivery === "sent" || data.delivery === "failed" ? data.delivery : "not_configured",
+      });
       setForm(INITIAL);
     } catch (err) {
       setState({
@@ -128,9 +135,9 @@ export function ContactClient() {
           transition={{ delay: 0.1 }}
           className="font-display mt-5 text-4xl md:text-5xl font-bold leading-[1.04]"
         >
-          Get the{" "}
+          Contact{" "}
           <span className="relative inline-block">
-            walkthrough.
+            Vision XIX Labs.
             <span aria-hidden className="absolute left-0 -bottom-0.5 h-[2px] w-full rounded-full bg-gradient-to-r from-brand-coral via-fuchsia-400/70 to-transparent" />
           </span>
         </motion.h1>
@@ -140,8 +147,9 @@ export function ContactClient() {
           transition={{ delay: 0.2 }}
           className="mt-5 max-w-2xl text-[15px] text-zinc-400 leading-relaxed"
         >
-          Tell us about the deployment workflow you need to govern. We will
-          respond with the relevant web access, integration, and sandbox details.
+          Ask about the installed application, a verified download, connector setup,
+          security controls, or an existing installation. You can also email{" "}
+          <a href="mailto:support@visionxixlabs.com" className="text-violet-300 hover:text-violet-200 underline underline-offset-4">support@visionxixlabs.com</a>.
         </motion.p>
       </section>
 
@@ -157,14 +165,14 @@ export function ContactClient() {
               className="rounded-2xl border border-emerald-500/30 bg-emerald-500/[0.06] p-6"
             >
               <p className="text-[12px] font-mono uppercase tracking-widest text-emerald-300">
-                message sent
+                request recorded
               </p>
               <h2 className="mt-2 text-xl font-semibold text-white">
-                Message received.
+                Your message was durably accepted.
               </h2>
               <p className="mt-2 text-[14px] text-zinc-300 leading-relaxed">
-                Your message was accepted by the contact endpoint. We will use
-                the email address you supplied to respond.
+                Reference <span className="font-mono text-white">{state.referenceId}</span>. Email delivery status: {state.delivery.replace("_", " ")}.
+                No response-time or support entitlement is implied.
               </p>
               <div className="mt-5 flex flex-wrap items-center gap-2">
                 <Link
@@ -198,6 +206,7 @@ export function ContactClient() {
                     required
                     autoComplete="name"
                     value={form.name}
+                    maxLength={240}
                     onChange={(e) => update("name", e.target.value)}
                     className="form-input"
                   />
@@ -209,6 +218,7 @@ export function ContactClient() {
                     required
                     autoComplete="email"
                     value={form.email}
+                    maxLength={240}
                     onChange={(e) => update("email", e.target.value)}
                     className="form-input"
                   />
@@ -221,6 +231,7 @@ export function ContactClient() {
                   type="text"
                   autoComplete="organization"
                   value={form.company}
+                  maxLength={240}
                   onChange={(e) => update("company", e.target.value)}
                   className="form-input"
                 />
@@ -228,7 +239,7 @@ export function ContactClient() {
 
               <div>
                 <p className="text-[11px] font-mono uppercase tracking-widest text-zinc-500 mb-2">
-                  What's the reason?
+                  What&apos;s the reason?
                 </p>
                 <div className="flex flex-wrap gap-2">
                   {TOPICS.map((t) => (
@@ -306,11 +317,17 @@ export function ContactClient() {
                   rows={4}
                   required
                   value={form.message}
+                  maxLength={8000}
                   onChange={(e) => update("message", e.target.value)}
                   className="form-input resize-none"
                   placeholder="What's the operator surface you're trying to run? What proposals would you want staged first?"
                 />
               </Field>
+
+              <div className="hidden" aria-hidden="true">
+                <label htmlFor="website">Website</label>
+                <input id="website" name="website" type="text" tabIndex={-1} autoComplete="off" value={form.website} onChange={(event) => update("website", event.target.value)} />
+              </div>
 
               {state.kind === "error" ? (
                 <div className="rounded-xl border border-red-500/30 bg-red-500/[0.06] px-4 py-3 text-[13px] text-red-300">

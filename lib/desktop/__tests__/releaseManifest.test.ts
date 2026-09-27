@@ -23,6 +23,7 @@ describe("desktop release manifest", () => {
         asset("Axiom.Agent_0.1.7_x64-setup.exe"),
         asset("Axiom.Agent_0.1.7_x64_en-US.msi"),
         asset("Axiom.Agent_0.1.7_aarch64.dmg"),
+        asset("Axiom.Agent_0.1.7_aarch64.dmg.asc"),
         asset("Axiom.Agent_0.1.7_x64.dmg"),
       ],
     };
@@ -42,6 +43,8 @@ describe("desktop release manifest", () => {
     expect(manifest.assets["windows-x64"]?.fileName).toBe("Axiom.Agent_0.1.7_x64_en-US.msi");
     expect(manifest.assets["macos-arm"]?.fileName).toBe("Axiom.Agent_0.1.7_aarch64.dmg");
     expect(manifest.assets["macos-intel"]?.fileName).toBe("Axiom.Agent_0.1.7_x64.dmg");
+    expect(manifest.assets["macos-arm"]?.digest).toBe("sha256:abc123");
+    expect(manifest.assets["macos-arm"]?.signatureUrl).toBe("https://example.test/Axiom.Agent_0.1.7_aarch64.dmg.asc");
     expect(manifest.allSignedAndNotarized).toBe(false);
     expect(Object.values(manifest.assets).every((entry) => entry?.signed === false)).toBe(true);
   });
@@ -53,5 +56,6 @@ function asset(name: string) {
     browser_download_url: `https://example.test/${encodeURIComponent(name)}`,
     size: 1234,
     content_type: "application/octet-stream",
+    digest: name.endsWith(".asc") ? null : "sha256:abc123",
   };
 }

@@ -1,6 +1,6 @@
 # Requirements Matrix
 
-Last updated: 2026-09-26
+Last updated: 2026-09-27
 
 Status vocabulary: **Verified** = exercised against the stated environment; **Implemented, unverified** = code exists without current executable proof; **Partial** = only part of expected behavior exists; **Missing** = no implementation found; **Blocked** = external input/environment prevents verification.
 
@@ -53,3 +53,9 @@ The 36-section master source is not currently present in the repository or conne
 | TMP-20 | Original section 20 | BTP reset remains idempotent across schedule/fallback cases. | `btp_reset` | Workflow/Oracle | Partial | Static template only | Execute all schedule/fallback cases |
 | S27-A-L | Original section 27 scenarios A–L | Each scenario retains distinct setup, actions, outcomes, and failures. | No A–L suite located | Varies | Missing/blocked | Repository search found no labeled A–L scenarios | Reattached master source required to create twelve exact rows and tests |
 | PKG-01 | Acceptance | Exact final package is built and tested after last change. | Release workflow/package | Rust, signing, macOS/Windows/Linux hosts | Blocked | Prior report: published 0.1.7 is older than repaired tree | Build new candidate, checksum, sign/notarize, clean-host install/upgrade tests |
+| WEB-CLAIM-01 | Website accuracy | Provider availability separates connector implementation, configuration, analysis, and execution. | Homepage, capabilities, integrations, claim map | Coverage map and provider adapters | Implemented, live verification blocked | Focused lint passes; source reconciled to conservative coverage map | Verify with safe configured AWS/Azure/GCP tenants |
+| WEB-SUP-01 | Contact/support | Customer receives durable acceptance, honest delivery state, validation, and an obvious verified support path. | `/contact`; `/api/contact` | Prisma lead/job, Resend when configured, rate limit, honeypot | Implemented, provider delivery blocked | 4 route tests pass: invalid email, persistence, provider rejection, honeypot | Configure/verify production sender and observe actual delivery |
+| WEB-DL-01 | Installer distribution | Every CTA resolves through the current manifest to an actual installer with platform/version/signing/checksum context. | `/download`; release manifest | GitHub Releases | Partial | v0.1.7 asset identity, ARM SHA-256, and DMG container verify pass; manifest regression passes | Install/first launch/upgrade on claimed hosts; signing/notarization absent |
+| WEB-PROOF-01 | Social proof | No fabricated customer proof; credibility comes from inspectable evidence. | Evidence rail | Public releases, docs, isolated sandbox | Implemented | Fictional testimonials/logos removed; lint passes | Add customer proof only with documented permission |
+| WEB-SEC-01 | Security claims | Product controls are distinct from certifications and customer obligations. | `/security`; `/trust`; security docs | Auth, redaction, audit, tenant context | Implemented copy; controls partial | Unsupported SOC/ISO/auditor/BAA/DPA claims removed | Independent evidence required before certification claims |
+| WEB-SBX-01 | Sandbox | Purpose, simulated behavior, persistence/reset, connections, and installed-app relationship are explicit. | `/demo`; sandbox navigation | Source-controlled sample scenarios | Implemented, interaction test blocked | Source/build inspection | Run keyboard/mobile/browser automation outside sandbox |

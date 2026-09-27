@@ -6,43 +6,43 @@ import Link from "next/link";
 const CONTRACTS: ReadonlyArray<{ title: string; body: string; symbol: string }> = [
   {
     symbol: "✓",
-    title: "approval_only_no_execution",
-    body: "Every action becomes a packet for human review. Axiom never auto-applies, never auto-rolls-back. The IaC pipeline picks up approved rows through real change control.",
+    title: "Approval is not execution",
+    body: "The product model keeps review, approval, merge, workflow dispatch, environment approval, and change management distinct. Current desktop builds keep local infrastructure apply disabled.",
   },
   {
     symbol: "△",
-    title: "Closed unions end-to-end",
-    body: "Agent roles, message kinds, severities, trigger types — every dimension is a closed-union TypeScript type. Hallucinated values break the build, never reach prod.",
+    title: "Typed workflow states",
+    body: "Core roles, workflow states, severities, and trigger kinds use closed-union types so unknown values are rejected by application validation.",
   },
   {
     symbol: "◊",
-    title: "sha-256 rationale rows",
-    body: "Every decision the council reaches is hash-stamped over a canonical-key-sorted JSON body. Auditors verify by recomputing the hash — no trust required.",
+    title: "Attributable evidence",
+    body: "Supported workflows preserve actor, action, rationale, timestamp, and outcome records. Hash utilities exist, but export and integrity coverage remain workflow-specific.",
   },
   {
     symbol: "○",
-    title: "Free AI providers only",
-    body: "Nine providers in a deterministic fallback chain. No paid OpenAI / Anthropic dependency. Mock provider is always last so the platform never hard-fails on missing keys.",
+    title: "Human-confirmed AI output",
+    body: "AI output is guidance until a person confirms it. Uncertainty and unavailable providers must stay visible rather than falling back to simulated production success.",
   },
   {
     symbol: "▽",
-    title: "Prompt-free + secret-free logging",
-    body: "Usage logger records provider / model / latency / status — never prompts, never tokens, never response bodies. Safe to share with anyone in the org.",
+    title: "Secret-aware handling",
+    body: "Redaction utilities protect supported input and logging paths. This does not make every record safe to share; operators must still apply tenant and data-classification policy.",
   },
   {
     symbol: "◇",
-    title: "Tiered boundary gate",
-    body: "Six blast-radius classes (read_only → data_plane). data_plane + org_scoped require ALL approver roles (strict mode). One slip can't ship.",
+    title: "Bounded planning kernel",
+    body: "The orchestration kernel splits oversized resource groups and rejects steps outside configured limits. Enforcement against a released live cloud mutation path is not yet verified.",
   },
 ];
 
-const COMPLIANCE: ReadonlyArray<{ tag: string; status: "live" | "in_progress" | "planned"; detail: string }> = [
-  { tag: "SOC 2 Type II",       status: "in_progress", detail: "controls mapped, evidence stream live; auditor onboarding underway" },
-  { tag: "GDPR Art-12 DSR",     status: "live",        detail: "DSR workflow tracker with 30/60-day deadlines + per-system status" },
-  { tag: "Approval traceability", status: "live",     detail: "deterministic compliance packet with sha-256 integrity hash" },
-  { tag: "Tenant data export",  status: "live",        detail: "GDPR-shaped tenant data export builder" },
-  { tag: "HIPAA",               status: "planned",     detail: "data-plane boundary already strict-all-roles; BAA workflow on roadmap" },
-  { tag: "ISO 27001",           status: "planned",     detail: "controls inventoried via the platform validation matrix" },
+const COMPLIANCE: ReadonlyArray<{ tag: string; status: "implemented" | "unverified" | "not_certified"; detail: string }> = [
+  { tag: "Approval traceability", status: "implemented", detail: "Actor, decision, and outcome models exist in supported workflows; end-to-end export coverage varies." },
+  { tag: "Secret redaction", status: "implemented", detail: "Application utilities redact supported secret patterns before selected storage and notification paths." },
+  { tag: "Tenant isolation", status: "unverified", detail: "Organization identifiers and access checks exist; every service and restore path still needs deployment-specific verification." },
+  { tag: "Retention + deletion", status: "unverified", detail: "Requirements are tracked, but consistent customer-configurable retention and deletion are not verified across every store." },
+  { tag: "SOC 2 / ISO 27001", status: "not_certified", detail: "No independent certification or active audit is claimed." },
+  { tag: "Customer compliance", status: "not_certified", detail: "Product controls can support a customer program; they do not make a customer compliant automatically." },
 ];
 
 export function TrustClient() {
@@ -85,8 +85,7 @@ export function TrustClient() {
           transition={{ delay: 0.2 }}
           className="mt-5 max-w-2xl text-[16px] text-zinc-400 leading-relaxed"
         >
-          Axiom is an approval-only platform. Six guarantees keep the cockpit safe
-          even when the agents disagree.
+          These are implemented product controls and explicit limitations—not certification badges. Each control still depends on configuration, permissions, and verification of the exact workflow being used.
         </motion.p>
       </section>
 
@@ -117,17 +116,17 @@ export function TrustClient() {
           viewport={{ once: true, amount: 0.3 }}
           className="text-2xl md:text-3xl font-bold tracking-[-0.02em]"
         >
-          Compliance roster
+          Control and assurance status
         </motion.h2>
         <p className="mt-2 text-zinc-400 text-[14px]">
-          Live status of the audit-frameworks Axiom maps to. No vendor-supplied stamps — every row links to evidence the cockpit produces.
+          Product controls are separate from independent certifications and from each customer&apos;s own legal and compliance obligations.
         </p>
         <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-3">
           {COMPLIANCE.map((c) => {
             const tone =
-              c.status === "live"
+              c.status === "implemented"
                 ? "border-emerald-500/30 bg-emerald-500/[0.06] text-emerald-200"
-                : c.status === "in_progress"
+                : c.status === "unverified"
                 ? "border-amber-500/30 bg-amber-500/[0.06] text-amber-200"
                 : "border-white/[0.06] bg-white/[0.02] text-zinc-400";
             return (
@@ -147,10 +146,10 @@ export function TrustClient() {
 
       <section className="relative z-10 mx-auto max-w-3xl px-6 md:px-10 py-20 text-center">
         <h2 className="text-2xl md:text-3xl font-bold tracking-[-0.02em]">
-          Want the live evidence?
+          Review the evidence model.
         </h2>
         <p className="mt-3 text-zinc-400">
-          The compliance packet endpoint produces a deterministic, hash-stamped JSON document covering the last N days of platform activity.
+          The documentation describes the audit records the application is designed to preserve, along with workflow-specific limitations.
         </p>
         <div className="mt-6 flex items-center justify-center gap-3">
           <Link
@@ -163,7 +162,7 @@ export function TrustClient() {
             href="/docs/audit-logs"
             className="inline-flex items-center gap-2 rounded-full bg-emerald-500 px-5 py-2.5 text-sm font-medium text-white shadow-[0_0_24px_rgba(52,211,153,0.45)] hover:bg-emerald-400 transition"
           >
-            Generate a compliance packet →
+            Read audit documentation →
           </Link>
         </div>
       </section>

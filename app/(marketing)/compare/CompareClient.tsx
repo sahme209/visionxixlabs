@@ -78,7 +78,7 @@ const TABS: readonly CompareTab[] = [
       { capability: "Single bill, single contract",            axiom: "full", rival: "none" },
       { capability: "Unified blast-radius classifier",         axiom: "full", rival: "none" },
       { capability: "Cross-tool causal timeline",              axiom: "full", rival: "partial" },
-      { capability: "SOC 2 + GDPR + HIPAA + ISO evidence",     axiom: "full", rival: "partial", note: "Stack has the data; assembly is on the operator." },
+      { capability: "Control-mapping assistance (not certification)", axiom: "partial", rival: "partial", note: "Availability and evidence coverage vary by configured workflow." },
       { capability: "Closed-loop autonomous remediation",      axiom: "full", rival: "none" },
       { capability: "Council + approval gate across surfaces", axiom: "full", rival: "none" },
       { capability: "AI-routed free-tier provider fallback",   axiom: "full", rival: "none" },
@@ -218,9 +218,8 @@ export function CompareClient() {
           Comparing on dashboards alone misses the point.
         </h3>
         <p className="mt-3 text-zinc-400 text-[14px]">
-          The cockpit ships approval packets across every surface above, with
-          sha-256 rationale rows for every action. That's the line the
-          alternatives won't cross.
+          Compare the exact released workflow, connector configuration, authorization,
+          persistence, and recovery behavior—not a generic feature count.
         </p>
         <div className="mt-6 flex items-center justify-center gap-2">
           <Link

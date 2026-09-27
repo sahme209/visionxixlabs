@@ -1,10 +1,12 @@
 # Verification Report
 
-Last updated: 2026-09-26
+Last updated: 2026-09-27
 
 ## Current-pass conclusion
 
 **The current downloadable application does not yet deliver everything required by the original vision.** It now contains a first-class desktop deployment-request intake, authenticated request and playbook APIs, an immutable version-1 request snapshot, persisted versioned playbook generation with content hashes and audit events, ten distinct templates, and a durable consequential-operation ledger/coordinator. Request editing/revision diffs, complete execution/validation/closure, native packaging, real identity/provider, recovery, update, and exact-build acceptance remain partial, unverified, or blocked.
+
+The 2026-09-27 website pass also verified that public provider, security, social-proof, contact, and download claims had drifted beyond released evidence. Those claims were corrected. The final changed tree passed 364 Vitest files / 4,151 tests, changed-file ESLint, the Next.js 16.3.6 production build and TypeScript phase, 283-page generation, 40/40 prominent internal links, direct route/redirect checks, and the desktop release alignment check.
 
 ## Build identity
 
@@ -62,6 +64,12 @@ Last updated: 2026-09-26
 | Prisma schema inspection / CLI validation | Static defect fixed; CLI blocked | Removed a duplicate operation model found by source inspection. Prisma 5.22 still attempted to update `~/.cache/prisma` outside sandbox and failed `EPERM`; schema/migration was not engine-validated or applied to a database. |
 | Native Tauri packaging | Blocked | `cargo` is not installed in this environment (exit 127); no new exact native candidate was produced |
 | Installed app / live providers | Not run | No exact current artifact or safe provider tenants supplied |
+| Website claims regression suite | Passed | Final tree: 364 files and 4,151 tests; new contact tests cover invalid email, durable acceptance, rejected email delivery, and honeypot; release test covers digest/signature metadata |
+| Final website production build | Passed | Next.js 16.3.6 compiled, completed TypeScript, and generated 283 static pages after the last source change |
+| Final customer-path route check | Passed | 40/40 prominent internal links returned <400; capability, plans/pricing redirect, contact, security, trust, integrations, demo, downloads, docs, and AWS/Azure/GCP pages returned expected 200/307 states |
+| Published artifact integrity | Partial | `desktop-v0.1.7` manifest reports exact SHA-256 values and detached signatures for four platform assets; downloaded ARM DMG hash matched and `hdiutil verify` passed |
+| Published artifact install/launch | Blocked | `hdiutil attach` failed in the sandbox with `Device not configured`; no clean-host install or first launch is claimed |
+| Contact live delivery | Blocked | Application-side success/failure semantics are tested; production sender credentials and delivery observability were not available |
 
 ## Prior evidence (not current-tree proof)
 
