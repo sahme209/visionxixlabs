@@ -34,8 +34,11 @@ if (!workflow.includes("if-no-files-found: error")) {
 if (!releaseManifest.includes('"sahme209"') || !releaseManifest.includes('"axiom-releases"')) {
   errors.push("website release manifest no longer defaults to the public Axiom Agent release repository");
 }
-if (!releaseManifest.includes("artifact-signed: true") || !releaseManifest.includes("artifact-notarized: true")) {
-  errors.push("release manifest must require machine-readable signing attestations");
+if (!releaseManifest.includes("macos-artifact-signed") || !releaseManifest.includes("macos-artifact-notarized") || !releaseManifest.includes("windows-artifact-signed")) {
+  errors.push("release manifest must require per-platform machine-readable signing attestations");
+}
+if (!workflow.includes("codesign --verify --deep --strict") || !workflow.includes("spctl --assess --type execute") || !workflow.includes("xcrun stapler validate")) {
+  errors.push("desktop release workflow must verify the app signature, Gatekeeper acceptance, and notarization ticket before publishing");
 }
 if (!connectionBanner.includes("navigator.onLine") || !connectionBanner.includes('addEventListener("offline"')) {
   errors.push("desktop connectivity banner must respond to the workstation's real online/offline state");

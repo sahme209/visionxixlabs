@@ -184,8 +184,25 @@ async function fetchLatestRelease(): Promise<DesktopReleaseManifest> {
   // signing steps complete. Prose such as "signed when configured" is not
   // evidence and must never enable a signed/notarized badge.
   const body = latest.body?.toLowerCase() ?? "";
-  const signedFlag = body.includes("artifact-signed: true");
-  const notarizedFlag = body.includes("artifact-notarized: true");
+  const attested = (key: string) => new RegExp(`(?:^|\\n)${key}: true(?:\\n|$)`, "m").test(body);
+  const signingByPlatform: Record<DesktopPlatform, { signed: boolean; notarized: boolean }> = {
+    "macos-arm": {
+      signed: attested("macos-artifact-signed"),
+      notarized: attested("macos-artifact-notarized"),
+    },
+    "macos-intel": {
+      signed: attested("macos-artifact-signed"),
+      notarized: attested("macos-artifact-notarized"),
+    },
+    "windows-x64": {
+      signed: attested("windows-artifact-signed"),
+      notarized: false,
+    },
+    "linux-x64": {
+      signed: attested("linux-artifact-signed"),
+      notarized: false,
+    },
+  };
 
   const assets: DesktopReleaseManifest["assets"] = {
     "macos-arm":   null,
@@ -220,8 +237,7 @@ async function fetchLatestRelease(): Promise<DesktopReleaseManifest> {
     if (!platform) continue;
     const current = assets[platform];
     if (current && assetPreference(platform, current.fileName) >= assetPreference(platform, a.name)) continue;
-    const signed = signedFlag && (platform === "macos-arm" || platform === "macos-intel" || platform === "windows-x64");
-    const notarized = notarizedFlag && (platform === "macos-arm" || platform === "macos-intel");
+    const { signed, notarized } = signingByPlatform[platform];
     assets[platform] = {
       platform,
       fileName: a.name,

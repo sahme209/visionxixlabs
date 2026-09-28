@@ -26,13 +26,43 @@ on:
     tags:
       - 'desktop-v*'
   workflow_dispatch:
+    inputs:
+      release_tag:
+        description: 'Exact release tag, for example desktop-v0.1.8'
+        required: true
+        type: string
 
 permissions:
   contents: write
 
 jobs:
+  validate-release:
+    name: Validate release identity
+    runs-on: ubuntu-latest
+    outputs:
+      release_tag: ${{ steps.identity.outputs.release_tag }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Match tag to the desktop package version
+        id: identity
+        env:
+          REQUESTED_TAG: ${{ github.event_name == 'workflow_dispatch' && inputs.release_tag || github.ref_name }}
+        run: |
+          expected_tag="desktop-v$(node -p "require('./desktop/package.json').version")"
+          if [ "$REQUESTED_TAG" != "$expected_tag" ]; then
+            echo "Release tag $REQUESTED_TAG does not match package version $expected_tag" >&2
+            exit 1
+          fi
+          echo "release_tag=$REQUESTED_TAG" >> "$GITHUB_OUTPUT"
+
   build:
     name: Build (${{ matrix.label }})
+    needs: validate-release
     strategy:
       fail-fast: false
       matrix:
@@ -97,6 +127,34 @@ jobs:
           projectPath: desktop
           args: --target ${{ matrix.target }}
 
+      - name: Verify Apple signature, Gatekeeper acceptance, and notarization ticket
+        if: startsWith(matrix.platform, 'macos-')
+        shell: bash
+        run: |
+          app_path=$(find "desktop/src-tauri/target/${{ matrix.target }}/release/bundle/macos" -maxdepth 1 -name '*.app' -print -quit)
+          dmg_path=$(find "desktop/src-tauri/target/${{ matrix.target }}/release/bundle/dmg" -maxdepth 1 -name '*.dmg' -print -quit)
+          test -n "$app_path" && test -n "$dmg_path"
+          codesign --verify --deep --strict --verbose=4 "$app_path"
+          spctl --assess --type execute --verbose=4 "$app_path"
+          xcrun stapler validate "$app_path"
+          codesign --verify --verbose=4 "$dmg_path"
+          hdiutil verify "$dmg_path"
+
+      - name: Record platform release attestation
+        shell: bash
+        run: |
+          signed=false
+          notarized=false
+          if [[ "${{ matrix.label }}" == macos-* ]]; then
+            signed=true
+            notarized=true
+          fi
+          {
+            echo "platform=${{ matrix.label }}"
+            echo "artifact_signed=$signed"
+            echo "artifact_notarized=$notarized"
+          } > "desktop/release-attestation-${{ matrix.label }}.env"
+
       - name: Upload artefact
         uses: actions/upload-artifact@v4
         with:
@@ -108,11 +166,12 @@ jobs:
             desktop/src-tauri/target/${{ matrix.target }}/release/bundle/**/*.AppImage
             desktop/src-tauri/target/${{ matrix.target }}/release/bundle/**/*.deb
             desktop/src-tauri/target/${{ matrix.target }}/release/bundle/**/*.rpm
+            desktop/release-attestation-${{ matrix.label }}.env
           if-no-files-found: error
 
   publish:
     name: Publish to public releases repo
-    needs: build
+    needs: [validate-release, build]
     runs-on: ubuntu-latest
     steps:
       - name: Download every build's artefacts
@@ -162,12 +221,27 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.RELEASES_REPO_TOKEN }}
         run: |
+          require_attestation() {
+            label="$1"
+            expected_signed="$2"
+            expected_notarized="$3"
+            file=$(find artifacts -name "release-attestation-${label}.env" -print -quit)
+            test -n "$file"
+            grep -qx "artifact_signed=${expected_signed}" "$file"
+            grep -qx "artifact_notarized=${expected_notarized}" "$file"
+          }
+
+          require_attestation macos-arm true true
+          require_attestation macos-intel true true
+          require_attestation windows-x64 false false
+          require_attestation linux-x64 false false
+
           cat > release-notes.md <<'NOTES'
-          # Axiom Agent ${{ github.ref_name }}
+          # Axiom Agent ${{ needs.validate-release.outputs.release_tag }}
 
           Cross-platform desktop builds. Signing status per platform:
 
-          - **macOS (Apple Silicon + Intel):** signed + notarized when Apple Developer secrets are configured on the build (right-click → Open only if your Apple cert hasn't propagated yet).
+          - **macOS (Apple Silicon + Intel):** Apple Developer ID signed, accepted by Gatekeeper, and notarization ticket validated in this release build.
           - **Windows (x64 .msi / .exe):** unsigned — click "More info" → "Run anyway" on the SmartScreen prompt. Signed builds activate when a Windows EV cert is configured.
           - **Every artefact** ships with a detached GPG signature (`.asc` file alongside each download). Verify origin with:
               ```
@@ -176,11 +250,28 @@ jobs:
               gpg --verify <file>.asc <file>
               ```
           Every build carries the same HMAC-signed handoff contract and refuses local apply by default.
+
+          <!-- Machine-readable release attestations. These are emitted only after the checks above pass. -->
+          source-commit: ${{ github.sha }}
+          macos-artifact-signed: true
+          macos-artifact-notarized: true
+          windows-artifact-signed: false
+          linux-artifact-signed: false
           NOTES
 
-          # Create (or update) the release in the public repo and upload all bundles.
-          gh release create "${{ github.ref_name }}" \
-            --repo sahme209/axiom-releases \
-            --title "Axiom Agent ${{ github.ref_name }}" \
-            --notes-file release-notes.md \
-            flat/* || gh release upload "${{ github.ref_name }}" flat/* --repo sahme209/axiom-releases --clobber
+          # Create or deterministically update the release. Never mask a failed
+          # create with an asset upload that leaves stale release notes behind.
+          if gh release view "${{ needs.validate-release.outputs.release_tag }}" --repo sahme209/axiom-releases >/dev/null 2>&1; then
+            gh release edit "${{ needs.validate-release.outputs.release_tag }}" \
+              --repo sahme209/axiom-releases \
+              --title "Axiom Agent ${{ needs.validate-release.outputs.release_tag }}" \
+              --notes-file release-notes.md
+            gh release upload "${{ needs.validate-release.outputs.release_tag }}" flat/* \
+              --repo sahme209/axiom-releases --clobber
+          else
+            gh release create "${{ needs.validate-release.outputs.release_tag }}" \
+              --repo sahme209/axiom-releases \
+              --title "Axiom Agent ${{ needs.validate-release.outputs.release_tag }}" \
+              --notes-file release-notes.md \
+              flat/*
+          fi

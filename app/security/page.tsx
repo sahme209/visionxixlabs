@@ -38,7 +38,7 @@ const CONTROLS = [
 ] as const;
 
 const LIMITATIONS = [
-  "Current desktop-v0.1.7 installers are developer builds; the release manifest does not attest code signing or macOS notarization.",
+  "Installer trust status is release-specific. The download page reports only the per-platform attestations emitted by the release pipeline.",
   "AWS live validation requires broker configuration and customer IAM setup. Current inventory and security analysis are preview-grade.",
   "Azure and GCP live SDK validation and provider-specific execution are not released.",
   "Local Terraform apply is disabled; generated artifacts remain review-only.",

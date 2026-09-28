@@ -48,6 +48,39 @@ describe("desktop release manifest", () => {
     expect(manifest.allSignedAndNotarized).toBe(false);
     expect(Object.values(manifest.assets).every((entry) => entry?.signed === false)).toBe(true);
   });
+
+  it("applies machine attestations to the correct platform only", async () => {
+    const release = {
+      tag_name: "desktop-v0.1.8",
+      html_url: "https://github.com/sahme209/axiom-releases/releases/tag/desktop-v0.1.8",
+      published_at: "2026-09-28T12:00:00Z",
+      prerelease: false,
+      draft: false,
+      body: [
+        "macos-artifact-signed: true",
+        "macos-artifact-notarized: true",
+        "windows-artifact-signed: false",
+        "linux-artifact-signed: false",
+      ].join("\n"),
+      assets: [
+        asset("Axiom.Agent_0.1.8_aarch64.dmg"),
+        asset("Axiom.Agent_0.1.8_x64.dmg"),
+        asset("Axiom.Agent_0.1.8_x64_en-US.msi"),
+        asset("Axiom.Agent_0.1.8_amd64.AppImage"),
+      ],
+    };
+
+    vi.mocked(fetch).mockResolvedValue(new Response(JSON.stringify([release]), { status: 200 }));
+
+    const { getDesktopReleaseManifest } = await import("../releaseManifest");
+    const manifest = await getDesktopReleaseManifest();
+
+    expect(manifest.assets["macos-arm"]).toMatchObject({ signed: true, notarized: true });
+    expect(manifest.assets["macos-intel"]).toMatchObject({ signed: true, notarized: true });
+    expect(manifest.assets["windows-x64"]).toMatchObject({ signed: false, notarized: false });
+    expect(manifest.assets["linux-x64"]).toMatchObject({ signed: false, notarized: false });
+    expect(manifest.allSignedAndNotarized).toBe(false);
+  });
 });
 
 function asset(name: string) {

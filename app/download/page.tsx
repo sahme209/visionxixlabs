@@ -270,7 +270,7 @@ export default function DownloadPage() {
               </div>
               <span className="max-w-full break-words text-xs text-zinc-500 font-mono">
                 {manifest?.hasAnyAsset
-                  ? `Latest desktop release: ${manifest.tag ?? "—"} · ${manifest.allSignedAndNotarized ? "signed + notarized" : "developer build · per-platform friction notes below"}`
+                  ? `Latest desktop release: ${manifest.tag ?? "—"} · signing status is reported per platform below`
                   : "Web: isolated demo only · Desktop developer builds publish via CI on `desktop-v*` tags — signed binaries when platform certificates are configured"}
               </span>
               {mounted && primaryPlatform.available && primaryPlatform.installFriction && (
@@ -470,7 +470,7 @@ export default function DownloadPage() {
                 <span className="text-zinc-500">Clearly stated.</span>
               </h2>
               <p className="text-dim-paragraph text-lg max-w-2xl leading-relaxed">
-                The Axiom desktop agent is designed for security-first organizations. <span className="dim-1">Code-signing + notarization pipeline ready for 1.0 — current developer builds run unsigned.</span>
+                The Axiom desktop agent is designed for security-first organizations. <span className="dim-1">Installer signing and notarization status comes from verification performed for each published release.</span>
               </p>
             </div>
           </Reveal>

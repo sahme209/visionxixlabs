@@ -87,7 +87,7 @@ export default function DesktopArchitecturePage() {
           items={[
             { question: "What does the desktop app do at runtime?", answer: "Renders the same operational UI as the web, plus shells out to local terraform/aws CLIs for execution, plus syncs with the cloud platform unless workstation mode is enabled." },
             { question: "Why is it safer than the web?", answer: "AWS credentials never leave your machine. Execution runs locally. Audit log persists locally. Workstation mode disables all outbound network." },
-            { question: "Is it safe for regulated environments?", answer: "Yes — Apple-notarized + Microsoft-signed. Telemetry can be disabled at install time. Workstation mode + local reasoning available on Enterprise tier." },
+            { question: "Is it safe for regulated environments?", answer: "No blanket certification is claimed. Review the current release's platform-specific signing status, the documented product controls, and your organization's deployment requirements before use." },
             { question: "What gets stored locally?", answer: "Operational memory (encrypted), audit log, session token (OS keychain), optional local reasoning model. No source code, no AWS credentials." },
             { question: "Can I revoke?", answer: "Sign out + uninstall. OS keychain entries are removed on sign-out. Audit log can be exported before removal." },
             { question: "What if the org bans local AWS CLI usage?", answer: "Set Tauri policy to disable shell execution. Desktop app falls back to cloud execution path through the Axiom platform — same as web." },
