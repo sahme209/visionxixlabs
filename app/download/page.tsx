@@ -61,6 +61,8 @@ interface ReleaseManifest {
   assets: Record<"macos-arm" | "macos-intel" | "windows-x64" | "linux-x64", ManifestAsset | null>;
   hasAnyAsset: boolean;
   allSignedAndNotarized: boolean;
+  runtimeReady: boolean;
+  runtimeMessage?: string;
   note?: string;
 }
 
@@ -150,7 +152,7 @@ export default function DownloadPage() {
         const base = PLATFORMS[id];
         const key = PLATFORM_TO_MANIFEST[id];
         const asset = manifest?.assets[key] ?? null;
-        if (!asset) return [id, base];
+        if (!asset || manifest?.runtimeReady !== true) return [id, base];
         return [id, {
           ...base,
           href: asset.downloadUrl,
@@ -213,7 +215,7 @@ export default function DownloadPage() {
                 Desktop runtime detected {desktopStatus.version ? `· v${desktopStatus.version}` : ""}
                 {desktopStatus.platform ? ` · ${desktopStatus.platform}` : ""}
               </span>
-            ) : manifest?.hasAnyAsset ? (
+            ) : manifest?.hasAnyAsset && manifest.runtimeReady ? (
               <span className="badge-shimmer badge-shimmer-border inline-flex max-w-full items-center justify-center gap-2 px-3 sm:px-4 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 text-[11px] sm:text-xs leading-5 font-medium mb-5 sm:mb-8 backdrop-blur-sm cursor-default">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
                 Released {manifest.tag ? `· ${manifest.tag.replace("desktop-v", "v")}` : ""}
@@ -221,7 +223,9 @@ export default function DownloadPage() {
             ) : (
               <span className="badge-shimmer badge-shimmer-border inline-flex max-w-full items-center justify-center gap-2 px-3 sm:px-4 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-200 text-[11px] sm:text-xs leading-5 font-medium mb-5 sm:mb-8 backdrop-blur-sm cursor-default">
                 <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
-                No verified installer is currently available
+                {manifest?.hasAnyAsset && manifest.runtimeReady === false
+                  ? "Installer ready · desktop sign-in temporarily unavailable"
+                  : "No verified installer is currently available"}
               </span>
             )}
           </Reveal>
@@ -269,8 +273,10 @@ export default function DownloadPage() {
                 </Link>
               </div>
               <span className="max-w-full break-words text-xs text-zinc-500 font-mono">
-                {manifest?.hasAnyAsset
+                {manifest?.hasAnyAsset && manifest.runtimeReady
                   ? `Latest desktop release: ${manifest.tag ?? "—"} · signing status is reported per platform below`
+                  : manifest?.hasAnyAsset && manifest.runtimeReady === false
+                    ? manifest.runtimeMessage ?? "Desktop sign-in is temporarily unavailable. Downloads are paused until service is restored."
                   : "Web: isolated demo only · Desktop developer builds publish via CI on `desktop-v*` tags — signed binaries when platform certificates are configured"}
               </span>
               {mounted && primaryPlatform.available && primaryPlatform.installFriction && (

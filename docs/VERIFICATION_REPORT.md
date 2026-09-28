@@ -13,10 +13,10 @@ The 2026-09-27 website pass also verified that public provider, security, social
 | Item | Value |
 | --- | --- |
 | Product observed | Axiom Agent |
-| Desktop package/version | `axiom-desktop` 0.1.8; published as `desktop-v0.1.8` |
+| Desktop package/version | `axiom-desktop` 0.1.9; published as `desktop-v0.1.9` |
 | Framework | Tauri 2 + React 19 + Vite + Rust |
-| Released source commit | `2b562da7776b85d5e50e513b6c2393797d181bad` |
-| Current native artifact | Apple Silicon DMG SHA-256 `4ecfda8058c2cd2411833ef668a481047e913d28790ffcbdc89506f81378606a`; Intel DMG, Windows MSI/EXE, Linux AppImage/DEB/RPM also published with detached signatures |
+| Released source commit | `353eb983aa579474b2e22fd829b27f9a47709306` |
+| Current native artifact | Apple Silicon DMG SHA-256 `c44e241489a1ad7cc0a1fc061ed62b4f6b4b4635d196b3aae25a4a553cd15bb6`; Intel DMG, Windows MSI/EXE, Linux AppImage/DEB/RPM also published with detached signatures |
 | Current test environment | macOS; repository in iCloud; isolated Vitest/TypeScript runner under `/private/tmp` because repository Rollup metadata is dataless |
 | Master-spec identity | Attachment requested again; not present in repository during audit |
 
@@ -100,5 +100,8 @@ No claim of fully functional, production-ready, or complete is supported. Mocked
 - Bound credentials signup to a live desktop challenge, removed automatic Starter entitlement and free-plan claims, added Terms/Privacy acceptance, input bounds, a 12-character minimum password, and request throttling.
 - Verification after these changes: desktop v0.1.9 release alignment, TypeScript, and Vite production build passed with 56 transformed modules; changed-file ESLint passed; 360 suites/4,063 tests passed. Seven additional suites were unable to load because `.prisma/client/default` is absent and Prisma generation is blocked by `EPERM` on the sandboxed user cache. Final focused signup/first-run/entitlement/authentication tests passed 25/25.
 - Not verified: live signup email ownership, production payment collection, production webhook delivery, entitlement provisioning, database pairing, or exact packaged-app transitions. Fixed pricing and payment configuration are not approved/evidenced, so no checkout was fabricated.
+- Credentials signup authenticates account/password possession; email ownership verification is not implemented and the UI does not claim it. OAuth provider verification remains dependent on configured providers. Email verification infrastructure is required before credentials signup can be described as verified identity.
+- Exact release evidence: GitHub Actions run `36472258963` passed all build and publish jobs for `desktop-v0.1.9` from commit `353eb983aa579474b2e22fd829b27f9a47709306`. The independently downloaded ARM DMG matched its published digest, passed `hdiutil verify`, and satisfied its code-signing designated requirement; this environment could not mount it (`Device not configured`).
+- Live integration result: the production release manifest and download resolver selected v0.1.9, but desktop pairing and challenge-bound signup returned 503 because required production database migrations are not applied. Production distribution is therefore failed closed by a runtime-readiness check; this is a blocker, not a verified sign-up journey.
 
-The screenshot supplied on 2026-09-27 shows a `v0.1.0 · preview` shell with contradictory `connected`, `auth failed`, and raw URL-pattern states. That binary is not the published v0.1.8 build. Release CI has compiled the Rust bridge and produced verified signed/notarized macOS artifacts, but the pairing migration and independent clean-host first-launch journey remain unverified. Distribution is therefore available with those limitations, not represented as fully production-ready.
+The screenshot supplied on 2026-09-27 shows a `v0.1.0 · preview` shell with contradictory `connected`, `auth failed`, and raw URL-pattern states. That binary is not the published v0.1.9 build. Release CI compiled the Rust bridge and produced signed/notarized macOS artifacts, but the live pairing migration and independent clean-host first-launch journey remain unverified. Website distribution is paused until the runtime dependency is repaired and retested.

@@ -47,6 +47,19 @@ describe("desktop first-run contract", () => {
     expect(signupPage).toContain("paid workspace entitlement");
   });
 
+  it("fails public distribution closed when the production desktop data plane is unavailable", () => {
+    const readiness = readFileSync(join(root, "lib/desktop/desktopRuntimeReadiness.ts"), "utf8");
+    const downloadRoute = readFileSync(join(root, "app/api/desktop/download/route.ts"), "utf8");
+    const manifestRoute = readFileSync(join(root, "app/api/desktop/release-manifest/route.ts"), "utf8");
+    expect(readiness).toContain("desktopPairingChallengeRecord.findFirst");
+    expect(readiness).toContain("tenantBillingPlan.findFirst");
+    expect(readiness).toContain("tauriDeploymentRequest.findFirst");
+    expect(readiness).toContain("ready: false");
+    expect(downloadRoute).toContain('status: "temporarily_unavailable"');
+    expect(downloadRoute).toContain("{ status: 503 }");
+    expect(manifestRoute).toContain("runtimeReady: runtime.ready");
+  });
+
   it("keeps browser pairing durable, expiring, and one-time", () => {
     const schema = readFileSync(join(root, "prisma/schema.prisma"), "utf8");
     const startRoute = readFileSync(join(root, "app/api/desktop/pair/start/route.ts"), "utf8");

@@ -4,7 +4,7 @@ Last updated: 2026-09-28
 
 ## Current state
 
-The product is Axiom Agent 0.1.8. Public release `desktop-v0.1.8` was built from `2b562da7776b85d5e50e513b6c2393797d181bad` and published on 2026-09-28. It uses a React/Vite desktop UI and a Tauri 2 Rust shell. The desktop now gates the workspace on verified authentication, supports system-browser approval and administrator workspace-key sign-in, routes installed-app API traffic through a native allow-listed transport, and repairs the Connector Setup URL/auth failure shown in the supplied screenshot. Request editing/diffs, provider reconciliation workers, the complete execution-to-closure journey, live pairing migration, and clean-host first-launch verification remain incomplete or unverified.
+The product is Axiom Agent 0.1.9. Public release `desktop-v0.1.9` was built from `353eb983aa579474b2e22fd829b27f9a47709306` and published on 2026-09-28. It uses a React/Vite desktop UI and a Tauri 2 Rust shell. The desktop now separates verified identity from paid production access, supports desktop-initiated system-browser approval and administrator workspace-key sign-in, and routes installed-app API traffic through a native allow-listed transport. The production pairing service currently returns 503 because its required migration is absent, so website downloads are being failed closed until the complete first-run path works. Request editing/diffs, provider reconciliation workers, the complete execution-to-closure journey, and clean-host first-launch verification remain incomplete or unverified.
 
 The answer to “Does the current downloadable application deliver everything required by the original vision?” is **no**. See `REQUIREMENTS_MATRIX.md` and `VERIFICATION_REPORT.md`.
 
@@ -43,6 +43,11 @@ The answer to “Does the current downloadable application deliver everything re
 - Verified the desktop-only delivery boundary at runtime: ordinary dashboard/operator/auth page requests redirect to `/download`, while explicit installed-app authentication return paths remain available.
 
 ## Last verified
+
+- Release run `36472258963` passed from commit `353eb983aa579474b2e22fd829b27f9a47709306`; macOS Apple Silicon/Intel, Windows x64, Linux x64, and publication jobs succeeded for `desktop-v0.1.9`.
+- The downloaded Apple Silicon v0.1.9 DMG is 6,165,434 bytes with SHA-256 `c44e241489a1ad7cc0a1fc061ed62b4f6b4b4635d196b3aae25a4a553cd15bb6`; `hdiutil verify` and code-signature designated-requirement verification passed. Local mounting remains blocked by `Device not configured`.
+- Live `/api/desktop/access` returns the expected unauthenticated response, but `/api/desktop/pair/start` and challenge-bound signup return 503. The signup response identified unapplied Prisma migrations; Vercel access available in this environment is invalid, so the production migration could not be safely applied.
+- Public distribution now checks the pairing/session/billing/request/playbook data plane before redirecting to an installer. If any required table is unavailable, JSON clients receive 503 and browser users receive an explanatory availability page.
 
 - Release run `36456768604` passed from commit `2b562da7776b85d5e50e513b6c2393797d181bad`; all four platform builds and publication succeeded.
 - The live website manifest returned `desktop-v0.1.8`; the macOS ARM download endpoint redirected to the exact v0.1.8 GitHub DMG.
@@ -84,8 +89,8 @@ The full root TypeScript run stalled on iCloud with no diagnostics and was termi
 | --- | --- |
 | Original 36-section attachment unavailable | Reattach it and preserve unchanged at `docs/MASTER_BUILD_PROMPT_TAURI_DEPLOYMENT_OPERATIONS_PLATFORM.md` |
 | Vitest dependency is an iCloud dataless placeholder and sandbox cannot restore `node_modules` | Hydrate the repository locally or run `npm install`/`npm ci` with normal filesystem permission, then rerun the focused and full suites |
-| Independent clean-host install/first launch not run | Install v0.1.8 on clean supported macOS ARM/Intel, Windows x64, and Linux x64 hosts; record launch, login, restart, uninstall, and recovery results |
-| Prisma pairing migration not applied | Run `prisma migrate deploy` with a writable Prisma engine cache against a safe development database, then exercise start → browser consent → one-time status consumption → restart hydration |
+| Independent clean-host install/first launch not run | Install v0.1.9 on clean supported macOS ARM/Intel, Windows x64, and Linux x64 hosts; record launch, login, restart, uninstall, and recovery results |
+| Production pairing migration not applied | With authorized production Vercel/database access and a reviewed backup, run `prisma migrate deploy`, then exercise start → signup/sign-in → browser consent → one-time status consumption → entitlement block/grant → restart hydration. Current Vercel token is invalid. |
 | Browser automation executable absent | Install/provide the approved browser harness and run clean first-launch, invalid credential, preview, reconnect, keyboard, and visual checks |
 | Live identity/provider journeys unavailable | Supply safe non-production tenants and least-privilege test identities/credentials |
 | Naming discrepancy | Product owner confirms Axiom Agent versus TAURI; record decision without casual rename |
@@ -100,8 +105,8 @@ The full root TypeScript run stalled on iCloud with no diagnostics and was termi
 4. Route one real non-production workflow-dispatch adapter through the operation coordinator and implement startup reconciliation.
 5. Complete evidence, technical/functional validation, deferred follow-up, rollback, and closure.
 6. Run the website on real iPhone/Android browsers or supported simulators at 320, 390, 430, and 768 CSS pixels, including menu focus, safe areas, scrolling, CTA overlap, and link behavior.
-7. Compile the 0.1.8 Rust transport, apply the pairing migration, and test first launch/auth/restart before packaging.
-8. Package, sign, checksum, install, launch, upgrade, and recovery-test the exact candidate after the last source change; only then update the public manifest.
+7. Apply the production pairing migration with authorized access, then test v0.1.9 first launch/auth/entitlement/restart before reopening downloads.
+8. Install, launch, upgrade, and recovery-test the exact v0.1.9 artifact on clean supported hosts; publish a successor only after any resulting source changes pass the same gates.
 ## Website claims/customer-path pass — 2026-09-27
 
 - Reconciled public AWS/Azure/GCP wording to the conservative capability coverage map; no provider is represented by a generic “live/full support” badge.
@@ -121,4 +126,4 @@ The full root TypeScript run stalled on iCloud with no diagnostics and was termi
 - Signup no longer assigns `plan: "starter"` or advertises a free plan. It requires a live desktop challenge, Terms/Privacy acceptance, bounded fields, a 12–128 character password, and request throttling.
 - The current commercial path is intentionally requirements-based because no approved public prices or verified production payment configuration were found. The desktop access wall links to a prefilled, durably persisted production-access request and to `/plans`.
 - Last local evidence: desktop v0.1.9 release-alignment/TypeScript/Vite build passed (56 modules); changed-file ESLint passed; final signup/entitlement/first-run/auth focused suite passed 25/25; full Vitest ran 360 passing suites/4,063 tests with seven module-load failures caused by the missing generated Prisma client. Root Prisma generation remains blocked by sandbox cache permissions.
-- Do not publish these changes as v0.1.8 evidence. Bump/package/sign/test a new candidate, then update the manifest only after the exact artifact passes release CI and first-launch entitlement checks.
+- The source was published as v0.1.9 and release CI passed, but production first-launch failed at the unapplied pairing migration. Keep website distribution paused until migration and entitlement-path verification pass; a successful package build alone is insufficient.

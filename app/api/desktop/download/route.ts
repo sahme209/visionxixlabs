@@ -8,6 +8,7 @@ import {
     getDesktopReleaseManifest,
     type DesktopPlatform,
 } from "@/lib/desktop/releaseManifest";
+import { readDesktopRuntimeReadiness } from "@/lib/desktop/desktopRuntimeReadiness";
 
 type Platform = "mac-arm" | "mac-intel" | "windows" | "linux";
 
@@ -44,7 +45,24 @@ export async function GET(request: NextRequest) {
         return NextResponse.redirect(new URL("/download", request.url), 302);
     }
 
-    const manifest = await getDesktopReleaseManifest();
+    const [manifest, runtime] = await Promise.all([
+        getDesktopReleaseManifest(),
+        readDesktopRuntimeReadiness(),
+    ]);
+    if (!runtime.ready) {
+        if (json) {
+            return NextResponse.json(
+                {
+                    status: "temporarily_unavailable",
+                    platform,
+                    message: runtime.message,
+                    releaseUrl: manifest.htmlUrl,
+                },
+                { status: 503 },
+            );
+        }
+        return NextResponse.redirect(new URL(`/download/preview?platform=${platform}&reason=runtime`, request.url), 302);
+    }
     const asset = manifest.assets[PLATFORM_MAP[platform]];
 
     if (asset) {
