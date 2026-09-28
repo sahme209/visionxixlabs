@@ -17,6 +17,7 @@ import { resolveActiveSession, touchDesktopSession } from "@/lib/desktop/desktop
 import { buildControlPlaneState } from "@/lib/controlPlane/controlPlaneBuilder";
 import { apiFailure, apiSuccess } from "@/lib/api/dtoMappers";
 import { AxiomErrors, httpStatusFor, toAxiomError } from "@/lib/errors/axiomErrors";
+import { readDesktopCommercialAccess } from "@/lib/desktop/desktopCommercialAccess";
 
 export const dynamic = "force-dynamic";
 
@@ -30,6 +31,13 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     const session = await resolveActiveSession(sessionId);
     if (!session) {
       throw AxiomErrors.validation("desktop.state.session_inactive", "Session is revoked or expired. Re-pair from the web app.");
+    }
+    const commercialAccess = await readDesktopCommercialAccess(session.organizationId);
+    if (!commercialAccess.allowed) {
+      return NextResponse.json(
+        apiFailure(AxiomErrors.policy(`desktop.access.${commercialAccess.code}`, commercialAccess.message)),
+        { status: 402 },
+      );
     }
     await touchDesktopSession(session.id);
 

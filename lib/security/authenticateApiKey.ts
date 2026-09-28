@@ -43,6 +43,7 @@ export type AuthFailureKind =
   | "token_expired"
   | "token_revoked"
   | "missing_scope"
+  | "commercial_access_required"
   | "rate_limited"
   | "quota_exhausted";  // Phase 398 — monthly plan quota
 
@@ -78,6 +79,8 @@ export interface AuthenticateInput {
   correlationId: string;
   /** Route name for the audit detail (e.g. "GET /api/v1/release-gate"). */
   route: string;
+  /** False only for identity/access introspection routes that must explain a blocked entitlement. */
+  requireActiveCommercialAccess?: boolean;
 }
 
 function bearerToken(header: string | null): string | null {
@@ -186,6 +189,18 @@ export async function authenticateApiKey(input: AuthenticateInput): Promise<Auth
       requiredScope: scopeCheck.required,
       httpStatus: 403,
     };
+  }
+
+  // Authentication, API-key possession, and commercial entitlement are
+  // separate controls. Operational API calls fail closed unless the tenant
+  // has an active paid plan. The dedicated desktop access-introspection route
+  // opts out so it can tell a verified caller how to resolve the block.
+  if (input.requireActiveCommercialAccess !== false) {
+    const billing = await readBillingPlan(matched.organizationId);
+    if (billing.status !== "active" || billing.tier === "trial") {
+      await emitDeniedAudit("commercial_access_required", input, matched.id, matched.organizationId);
+      return { ok: false, reason: "commercial_access_required", httpStatus: 403 };
+    }
   }
 
   // Phase 398: monthly v1 quota gate. Reads the workspace's plan, counts

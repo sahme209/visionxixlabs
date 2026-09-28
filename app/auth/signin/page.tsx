@@ -128,6 +128,7 @@ function SignInForm() {
           <span aria-hidden className="block h-[3px] w-12 mt-1.5 rounded-full bg-gradient-to-r from-brand-coral via-fuchsia-400 to-transparent opacity-85" />
         </h1>
         <p className="text-sm text-zinc-500 mb-8">Authenticate the Axiom Agent pairing request opened by the installed application.</p>
+        <p className="-mt-5 mb-7 text-xs leading-5 text-zinc-600">Signing in verifies identity. Deployment operations remain locked until the workspace has an active paid entitlement.</p>
 
         <form onSubmit={handleSubmit} className="space-y-4" noValidate>
           <div>

@@ -4,17 +4,18 @@ Last updated: 2026-09-28
 
 ## P0 — integrity and authoritative scope
 
-1. Apply and live-test the persisted desktop pairing challenge migration; verify expiry, replay denial, concurrent approval/consumption, revocation, logout, and tenant attribution.
-2. Complete clean-host acceptance for the published 0.1.8 native HTTP bridge on every target; verify TLS failures, redirect denial, timeouts, sleep/wake, and secret redaction before broader rollout.
-3. Replace each hidden legacy dashboard module with a desktop-session-authenticated, tenant-scoped end-to-end journey before reintroducing it to customer navigation; prioritize execution, validation, evidence, deferred follow-up, rollback, and closure.
-4. Remove or migrate the remaining desktop dashboard-cookie endpoints: each installed-app screen must use an explicit bearer-authenticated desktop/v1 service route with enforced permissions.
-5. Preserve the reattached 36-section master specification verbatim and expand `REQUIREMENTS_MATRIX.md` to one row per subsection, every section 11–20 detail, and scenarios A–L.
-6. Apply and verify the tenant-scoped operation-ledger migration; wire every merge, release, tag, change, dispatch, environment approval, and rollback adapter through the tested coordinator and reconciliation policy.
-7. Continue the new desktop request/playbook path through immutable revision editing and diffs, approval/readiness, execution, validation/deferred follow-up, and closure.
-8. Audit every browser route against the verified desktop-only edge policy; keep dashboard/operator and unsolicited auth entry points redirected while retaining shared-service callbacks and native system-browser PKCE support.
-9. Add SBOM generation and independent clean-host evidence to the recorded v0.1.8 commit/version/checksum/signing/notarization evidence.
-10. Configure and verify the production contact sender; exercise durable acceptance, provider delivery, bounce/failure visibility, and abuse controls.
-11. Replace preview cloud paths with live SDK validation only after safe-tenant contract tests; keep the claim map synchronized.
+1. Configure the approved commercial fulfillment path: confirm written prices/terms, production payment processor account and webhook secret if self-serve checkout is desired, tax/invoice policy, refund/cancellation policy, and entitlement provisioning owner. Until then, keep requirements-based production access and the fail-closed desktop wall.
+2. Apply and live-test the persisted desktop pairing challenge migration; verify expiry, replay denial, concurrent approval/consumption, revocation, logout, tenant attribution, and the unentitled-account handoff into the desktop access wall.
+3. Complete clean-host acceptance for the published 0.1.8 native HTTP bridge on every target; verify TLS failures, redirect denial, timeouts, sleep/wake, and secret redaction before broader rollout.
+4. Replace each hidden legacy dashboard module with a desktop-session-authenticated, tenant-scoped end-to-end journey before reintroducing it to customer navigation; prioritize execution, validation, evidence, deferred follow-up, rollback, and closure.
+5. Remove or migrate the remaining desktop dashboard-cookie endpoints: each installed-app screen must use an explicit bearer-authenticated desktop/v1 service route with enforced permissions.
+6. Preserve the reattached 36-section master specification verbatim and expand `REQUIREMENTS_MATRIX.md` to one row per subsection, every section 11–20 detail, and scenarios A–L.
+7. Apply and verify the tenant-scoped operation-ledger migration; wire every merge, release, tag, change, dispatch, environment approval, and rollback adapter through the tested coordinator and reconciliation policy.
+8. Continue the new desktop request/playbook path through immutable revision editing and diffs, approval/readiness, execution, validation/deferred follow-up, and closure.
+9. Audit every browser route against the verified desktop-only edge policy; keep dashboard/operator and unsolicited auth entry points redirected while retaining shared-service callbacks and native system-browser PKCE support.
+10. Add SBOM generation and independent clean-host evidence to the recorded v0.1.8 commit/version/checksum/signing/notarization evidence.
+11. Configure and verify the production contact sender; exercise durable acceptance, provider delivery, bounce/failure visibility, and abuse controls.
+12. Replace preview cloud paths with live SDK validation only after safe-tenant contract tests; keep the claim map synchronized.
 
 ## P1 — missing original behavior
 

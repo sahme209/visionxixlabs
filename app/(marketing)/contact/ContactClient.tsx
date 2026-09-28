@@ -52,16 +52,20 @@ interface FormState {
   website: string;
 }
 
-const INITIAL: FormState = {
-  name: "",
-  email: "",
-  company: "",
-  topic: "product",
-  cloudProvider: "aws",
-  companySize: "11-50",
-  message: "",
-  website: "",
-};
+function initialForm(intent?: "production-access"): FormState {
+  return {
+    name: "",
+    email: "",
+    company: "",
+    topic: "product",
+    cloudProvider: "aws",
+    companySize: "11-50",
+    message: intent === "production-access"
+      ? "I would like to scope paid production access for our Axiom Agent workspace."
+      : "",
+    website: "",
+  };
+}
 
 type SubmitState =
   | { kind: "idle" }
@@ -69,8 +73,8 @@ type SubmitState =
   | { kind: "ok"; referenceId: string; delivery: "sent" | "failed" | "not_configured" }
   | { kind: "error"; message: string };
 
-export function ContactClient() {
-  const [form, setForm] = useState<FormState>(INITIAL);
+export function ContactClient({ intent }: { intent?: "production-access" }) {
+  const [form, setForm] = useState<FormState>(() => initialForm(intent));
   const [state, setState] = useState<SubmitState>({ kind: "idle" });
 
   function update<K extends keyof FormState>(key: K, value: FormState[K]) {
@@ -88,7 +92,7 @@ export function ContactClient() {
       const res = await fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...form, source: "marketing-contact" }),
+        body: JSON.stringify({ ...form, source: intent === "production-access" ? "axiom-production-access" : "marketing-contact" }),
       });
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
@@ -100,7 +104,7 @@ export function ContactClient() {
         referenceId: String(data.referenceId ?? "unavailable"),
         delivery: data.delivery === "sent" || data.delivery === "failed" ? data.delivery : "not_configured",
       });
-      setForm(INITIAL);
+      setForm(initialForm(intent));
     } catch (err) {
       setState({
         kind: "error",

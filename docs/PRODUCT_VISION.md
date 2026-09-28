@@ -1,6 +1,6 @@
 # Product Vision
 
-Last updated: 2026-09-27
+Last updated: 2026-09-28
 
 ## Authority
 
@@ -39,6 +39,8 @@ Private organizations, repositories, groups, clients, and operational examples a
 6. Release Compliance Automation and Root Cause Analysis are separate concepts.
 7. Approval, merge authority, workflow dispatch, environment approval, release publication, tags, and deployment triggers remain separate configurable controls.
 8. Completed with Deferred Validation is not fully validated completion.
+9. A recognized identity, a paired desktop session, and paid production access are separate states. Account creation never grants operational access by itself.
+10. Until the product owner approves fixed prices and production payment configuration is verified, Axiom production access is contract-scoped through the durable contact path; no invented self-serve price or free tier is offered.
 
 ## Responsibility split
 

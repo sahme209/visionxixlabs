@@ -21,9 +21,22 @@ export interface DesktopClientConfig {
 
 export type ApiResult<T> = { ok: true; data: T } | { ok: false; error: string };
 
-export type VerifiedDesktopIdentity =
-  | { kind: "api_key"; organizationId: string; planTier: string; scopes: ReadonlyArray<string> }
-  | { kind: "desktop_session"; organizationId?: string };
+export interface DesktopCommercialAccess {
+  allowed: boolean;
+  code: "active" | "production_access_required" | "payment_past_due" | "access_canceled";
+  title: string;
+  message: string;
+  planTier: string;
+  billingStatus: string;
+  accessRequestPath: string;
+  pricingPath: string;
+}
+
+export interface VerifiedDesktopIdentity {
+  kind: "api_key" | "desktop_session";
+  organizationId: string;
+  access: DesktopCommercialAccess;
+}
 
 interface LegacyApiErrorBody {
   error?: string | { userMessage?: string };
@@ -55,6 +68,8 @@ export function v1ApiError(body: Record<string, unknown>, status: number): strin
     case "token_revoked":
     case "unknown_token":
       return "Your workspace sign-in is no longer valid. Sign in again to continue.";
+    case "commercial_access_required":
+      return "This workspace does not have active paid production access.";
     case "rate_limited":
       return "The service is temporarily rate-limiting requests. Wait a moment, then try again.";
   }
@@ -287,33 +302,16 @@ export class DesktopClient {
     const token = this.config.sessionToken;
     if (!token) return { ok: false, error: "No saved workspace credential was found." };
 
-    if (token.startsWith("vxlk_")) {
-      const result = await this.v1Whoami();
-      if (!result.ok) return result;
-      return {
-        ok: true,
-        data: {
-          kind: "api_key",
-          organizationId: result.data.organization.id,
-          planTier: result.data.organization.planTier,
-          scopes: result.data.apiKey.scopes,
-        },
-      };
+    if (!token.startsWith("vxlk_") && !token.startsWith("axm.desk.")) {
+      return { ok: false, error: "The saved credential type is not supported." };
     }
 
-    if (token.startsWith("axm.desk.")) {
-      const result = await this.get<{ state?: { tenantId?: string } }>("/api/desktop/state");
-      if (!result.ok) return result;
-      return {
-        ok: true,
-        data: {
-          kind: "desktop_session",
-          organizationId: result.data.state?.tenantId,
-        },
-      };
-    }
-
-    return { ok: false, error: "The saved credential type is not supported." };
+    const result = await this.get<{
+      identity: { kind: "api_key" | "desktop_session"; organizationId: string };
+      access: DesktopCommercialAccess;
+    }>("/api/desktop/access");
+    if (!result.ok) return result;
+    return { ok: true, data: { ...result.data.identity, access: result.data.access } };
   }
 
   /**

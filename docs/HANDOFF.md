@@ -112,3 +112,13 @@ The full root TypeScript run stalled on iCloud with no diagnostics and was termi
 - Clarified sandbox reset/isolation, blast-radius kernel enforcement, outcome-memory storage/limitations, and connector availability.
 - Added `docs/WEBSITE_CLAIMS_AUDIT_2026-09-27.md` and `docs/CLAIM_EVIDENCE_MAP.md`.
 - Remaining external inputs: configured provider sandboxes, production email sender access, exact App Store developer-page URL, sanitized application account/artifact for screenshots, clean OS install hosts, and the missing 36-section master source.
+
+## Identity versus paid access correction — 2026-09-28
+
+- Root cause of the reported automatic login: the desktop restored a valid credential from the OS vault and verified identity, but did not independently require an active tenant entitlement before mounting the workspace.
+- Current source now restores identity separately, calls `/api/desktop/access`, and routes unentitled/no-plan, past-due, and canceled tenants to `DesktopAccessRequiredView`. Only active non-trial plans enter the workspace.
+- Server enforcement is not cosmetic: desktop deployment resolution, desktop state, and public v1 API-key authentication now fail closed on missing commercial access. The introspection route alone may authenticate without entitlement so it can explain the block.
+- Signup no longer assigns `plan: "starter"` or advertises a free plan. It requires a live desktop challenge, Terms/Privacy acceptance, bounded fields, a 12–128 character password, and request throttling.
+- The current commercial path is intentionally requirements-based because no approved public prices or verified production payment configuration were found. The desktop access wall links to a prefilled, durably persisted production-access request and to `/plans`.
+- Last local evidence: desktop v0.1.9 release-alignment/TypeScript/Vite build passed (56 modules); changed-file ESLint passed; final signup/entitlement/first-run/auth focused suite passed 25/25; full Vitest ran 360 passing suites/4,063 tests with seven module-load failures caused by the missing generated Prisma client. Root Prisma generation remains blocked by sandbox cache permissions.
+- Do not publish these changes as v0.1.8 evidence. Bump/package/sign/test a new candidate, then update the manifest only after the exact artifact passes release CI and first-launch entitlement checks.

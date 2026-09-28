@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { currentContext } from "@/lib/auth/currentContext";
 import { prisma } from "@/lib/db";
 import { PairDesktopClient } from "./PairDesktopClient";
+import { readDesktopCommercialAccess } from "@/lib/desktop/desktopCommercialAccess";
 
 export const dynamic = "force-dynamic";
 
@@ -23,6 +24,7 @@ export default async function DesktopConnectPage({ searchParams }: { searchParam
     const callbackUrl = `/desktop/connect?challenge=${encodeURIComponent(challenge)}`;
     redirect(`/auth/signin?callbackUrl=${encodeURIComponent(callbackUrl)}`);
   }
+  const access = await readDesktopCommercialAccess(context.organizationId!);
 
   return (
     <main className="min-h-screen bg-[#09090b] px-4 py-16 text-white">
@@ -38,6 +40,20 @@ export default async function DesktopConnectPage({ searchParams }: { searchParam
           <Row label="App version" value={pairing.desktopVersion ?? "Not reported"} />
           <Row label="Request expires" value={pairing.expiresAt.toLocaleString()} />
         </dl>
+        {!access.allowed && (
+          <div className="mb-5 rounded-xl border border-amber-400/20 bg-amber-400/[0.07] p-5">
+            <p className="text-sm font-semibold text-amber-100">{access.title}</p>
+            <p className="mt-2 text-sm leading-6 text-zinc-300">{access.message}</p>
+            <div className="mt-5 flex flex-col gap-2 sm:flex-row">
+              <Link href={access.accessRequestPath} className="rounded-full bg-white px-4 py-2 text-center text-sm font-semibold text-black">
+                Request production access
+              </Link>
+              <Link href={access.pricingPath} className="rounded-full border border-white/15 px-4 py-2 text-center text-sm font-semibold text-white">
+                Review access model
+              </Link>
+            </div>
+          </div>
+        )}
         <PairDesktopClient challenge={challenge} deviceLabel={pairing.deviceLabel} />
       </div>
     </main>

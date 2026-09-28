@@ -104,7 +104,7 @@ export function Sidebar({ activeView, onNavigate }: { activeView: View; onNaviga
       <div className="px-3 py-3 border-t border-axiom-border">
         <div role="status" className="flex items-center gap-2 px-3 py-2 rounded-lg bg-white/[0.02]">
           <span aria-hidden className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-          <span className="text-[11px] font-mono text-zinc-400">identity verified</span>
+          <span className="text-[11px] font-mono text-zinc-400">production access active</span>
         </div>
       </div>
     </aside>

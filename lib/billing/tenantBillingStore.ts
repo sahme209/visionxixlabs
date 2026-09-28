@@ -1,9 +1,8 @@
 /**
  * Tenant billing plan store.
  *
- * Reads + writes the TenantBillingPlan row. Defaults to a 14-day
- * trial when no row exists for a tenant — operators are never
- * locked out by missing billing setup.
+ * Reads + writes the TenantBillingPlan row. A missing or unreadable row
+ * resolves to `no_plan`; commercial desktop access therefore fails closed.
  *
  * Hard rules:
  *   - Tier + status validated at the boundary against the closed

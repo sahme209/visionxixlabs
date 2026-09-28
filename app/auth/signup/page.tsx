@@ -7,14 +7,11 @@ import Link from "next/link";
 import Image from "next/image";
 import {
   ArrowRightIcon,
-  CheckCircleIcon,
-  ShieldCheckIcon,
   EyeIcon,
   EyeSlashIcon,
 } from "@heroicons/react/24/outline";
 import { RealisticFogBackground } from "@/components/ui/realistic-fog-background";
 import { Reveal } from "@/components/motion/Reveal";
-import { Stagger } from "@/components/motion/Stagger";
 
 export default function SignUpPage() {
   return (
@@ -35,11 +32,13 @@ function SignUpForm() {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [name, setName] = useState("");
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
   const redirect = searchParams.get("redirect") || "/download";
+  const desktopChallenge = desktopChallengeFromRedirect(redirect);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -49,7 +48,13 @@ function SignUpForm() {
       const res = await fetch("/api/auth/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: email.trim(), password, name: name.trim() || undefined }),
+        body: JSON.stringify({
+          email: email.trim(),
+          password,
+          name: name.trim() || undefined,
+          desktopChallenge,
+          acceptedTerms,
+        }),
       });
       const data = await res.json();
       if (!res.ok) {
@@ -81,8 +86,6 @@ function SignUpForm() {
       setLoading(false);
     }
   };
-
-  const isOperatorFlow = redirect.includes("operator");
 
   return (
     <div className="min-h-screen flex bg-[#09090b] relative overflow-hidden">
@@ -127,9 +130,7 @@ function SignUpForm() {
               <span aria-hidden className="block h-[3px] w-14 mt-1.5 rounded-full bg-gradient-to-r from-brand-coral via-fuchsia-400 to-transparent opacity-85" />
             </h1>
             <p className="text-sm text-zinc-500 mb-8">
-              {isOperatorFlow
-                ? "Create the organization identity required by Axiom Agent."
-                : "Create the identity used to pair the installed application."}
+              Create the identity used to pair this installed application. Account creation does not include production access.
             </p>
 
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -171,8 +172,9 @@ function SignUpForm() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
-                    minLength={8}
-                    placeholder="8+ characters"
+                    minLength={12}
+                    maxLength={128}
+                    placeholder="12+ characters"
                     autoComplete="new-password"
                     className="auth-input w-full rounded-lg border border-white/[0.06] bg-white/[0.03] px-3.5 py-2.5 pr-10 text-sm text-white placeholder:text-zinc-600 transition-all duration-300"
                   />
@@ -186,6 +188,10 @@ function SignUpForm() {
                   </button>
                 </div>
               </div>
+              <label className="flex items-start gap-3 rounded-xl border border-white/[0.06] bg-white/[0.02] p-3 text-xs leading-5 text-zinc-400">
+                <input type="checkbox" checked={acceptedTerms} onChange={(event) => setAcceptedTerms(event.target.checked)} required className="mt-0.5 h-4 w-4 rounded border-white/20 bg-black/30 accent-violet-500" />
+                <span>I agree to the <Link href="/terms" target="_blank" className="text-violet-300 underline">Terms</Link> and acknowledge the <Link href="/privacy" target="_blank" className="text-violet-300 underline">Privacy Policy</Link>.</span>
+              </label>
               {error && (
                 <div className="rounded-lg border border-red-500/20 bg-red-500/[0.06] px-3.5 py-2.5 text-sm text-red-400">
                   {error}
@@ -193,7 +199,7 @@ function SignUpForm() {
               )}
               <button
                 type="submit"
-                disabled={loading}
+                disabled={loading || !acceptedTerms || !desktopChallenge}
                 className="btn-press w-full rounded-full py-3 text-sm font-semibold tracking-tight disabled:opacity-50 flex items-center justify-center gap-2"
               >
                 {loading ? "Creating account..." : "Create account"}
@@ -209,7 +215,7 @@ function SignUpForm() {
             <div className="flex items-center justify-center gap-3">
               <button
                 type="button"
-                disabled={loading}
+                disabled={loading || !acceptedTerms || !desktopChallenge}
                 onClick={() => signIn("google", { callbackUrl: redirect })}
                 className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-white/[0.08] bg-white/[0.02] text-sm text-zinc-400 hover:bg-white/[0.06] hover:text-white transition-all disabled:opacity-50"
               >
@@ -217,7 +223,7 @@ function SignUpForm() {
               </button>
               <button
                 type="button"
-                disabled={loading}
+                disabled={loading || !acceptedTerms || !desktopChallenge}
                 onClick={() => signIn("github", { callbackUrl: redirect })}
                 className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-white/[0.08] bg-white/[0.02] text-sm text-zinc-400 hover:bg-white/[0.06] hover:text-white transition-all disabled:opacity-50"
               >
@@ -235,37 +241,21 @@ function SignUpForm() {
             </p>
 
             <p className="mt-4 text-xs text-zinc-600 text-center">
-              No credit card required. Free plan includes 1 cloud account.
+              A paid workspace entitlement is provisioned separately under approved commercial terms before deployment operations unlock.
             </p>
+            {!desktopChallenge && <p role="alert" className="mt-3 text-xs text-amber-300 text-center">This sign-up link is not attached to a valid desktop pairing request. Return to Axiom Agent and choose Continue securely in browser.</p>}
           </div>
         </Reveal>
       </div>
-
-      {isOperatorFlow && (
-        <div className="hidden lg:flex flex-1 items-center justify-center border-l border-white/[0.04] px-12 relative z-10">
-          <Reveal direction="up" blur delay={0.2}>
-            <div className="max-w-xs">
-              <h2 className="text-sm font-semibold mb-6 tracking-[-0.04em]">
-                What you get — <span className="text-gradient">free</span>
-              </h2>
-              <Stagger delay={0.1} interval={0.06}>
-                {[
-                  { icon: ShieldCheckIcon, text: "Read-only AWS access via assume-role" },
-                  { icon: CheckCircleIcon, text: "Full infrastructure scan and analysis" },
-                  { icon: CheckCircleIcon, text: "Cost, security, and drift findings" },
-                  { icon: CheckCircleIcon, text: "Prioritized recommendations" },
-                  { icon: CheckCircleIcon, text: "Execution plans on upgrade" },
-                ].map((item, i) => (
-                  <div key={i} className="flex items-center gap-2.5 text-sm text-zinc-400">
-                    <item.icon className="h-4 w-4 text-emerald-500 flex-shrink-0" />
-                    {item.text}
-                  </div>
-                ))}
-              </Stagger>
-            </div>
-          </Reveal>
-        </div>
-      )}
     </div>
   );
+}
+
+function desktopChallengeFromRedirect(redirect: string): string {
+  try {
+    const url = new URL(redirect, "https://desktop-auth.invalid");
+    return url.pathname === "/desktop/connect" ? url.searchParams.get("challenge")?.trim() ?? "" : "";
+  } catch {
+    return "";
+  }
 }

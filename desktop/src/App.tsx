@@ -5,6 +5,7 @@ import { DeploymentRequestsView } from "./views/DeploymentRequestsView";
 import { DocsView } from "./views/DocsView";
 import { SettingsView } from "./views/SettingsView";
 import { DesktopSignInView } from "./views/DesktopSignInView";
+import { DesktopAccessRequiredView } from "./views/DesktopAccessRequiredView";
 import { desktopClient, type VerifiedDesktopIdentity } from "./lib/desktopClient";
 import { clearApiKey } from "./lib/apiKeyStore";
 import { clearAuthSession } from "./lib/authSession";
@@ -30,7 +31,7 @@ export type View =
   | "billing" | "trust";
 
 export default function App() {
-  const [authState, setAuthState] = useState<"checking" | "authenticated" | "unauthenticated">("checking");
+  const [authState, setAuthState] = useState<"checking" | "authenticated" | "access_required" | "unauthenticated">("checking");
   const [authError, setAuthError] = useState<string | null>(null);
   const [identity, setIdentity] = useState<VerifiedDesktopIdentity | null>(null);
 
@@ -46,7 +47,7 @@ export default function App() {
       if (cancelled) return;
       if (verified.ok) {
         setIdentity(verified.data);
-        setAuthState("authenticated");
+        setAuthState(verified.data.access.allowed ? "authenticated" : "access_required");
         return;
       }
 
@@ -68,12 +69,28 @@ export default function App() {
         onSignedIn={(verifiedIdentity) => {
           setAuthError(null);
           setIdentity(verifiedIdentity);
-          setAuthState("authenticated");
+          setAuthState(verifiedIdentity.access.allowed ? "authenticated" : "access_required");
         }}
       />
     );
   }
   if (!identity) return <BootScreen status="Loading verified identity" />;
+  if (authState === "access_required") {
+    return (
+      <DesktopAccessRequiredView
+        identity={identity}
+        onAccessGranted={(verifiedIdentity) => {
+          setIdentity(verifiedIdentity);
+          setAuthState("authenticated");
+        }}
+        onSignedOut={() => {
+          setIdentity(null);
+          setAuthError(null);
+          setAuthState("unauthenticated");
+        }}
+      />
+    );
+  }
   return <AuthenticatedWorkspace identity={identity} />;
 }
 

@@ -28,7 +28,7 @@ on:
   workflow_dispatch:
     inputs:
       release_tag:
-        description: 'Exact release tag, for example desktop-v0.1.8'
+        description: 'Exact release tag, for example desktop-v0.1.9'
         required: true
         type: string
 

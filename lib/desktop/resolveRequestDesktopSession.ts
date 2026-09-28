@@ -8,6 +8,7 @@ import {
     resolveActiveSession,
     touchDesktopSession,
 } from "./desktopSession";
+import { readDesktopCommercialAccess } from "./desktopCommercialAccess";
 
 export interface DesktopRequestPrincipal {
     id: string;
@@ -19,6 +20,7 @@ export interface DesktopRequestPrincipal {
 interface ResolveOptions {
     requiredScope: RequiredScope;
     route: string;
+    requireActiveAccess?: boolean;
 }
 
 /**
@@ -44,26 +46,37 @@ export async function resolveRequestDesktopSession(
                 requiredScope: options.requiredScope,
                 correlationId: request.headers.get("x-correlation-id") ?? crypto.randomUUID(),
                 route: options.route,
+                requireActiveCommercialAccess: options.requireActiveAccess !== false,
             });
             if (!auth.ok) return undefined;
-            return {
+            const principal: DesktopRequestPrincipal = {
                 id: `api_key:${auth.apiKeyId}`,
                 userId: `api_key:${auth.apiKeyId}`,
                 organizationId: auth.organizationId,
                 credentialKind: "api_key",
             };
+            if (options.requireActiveAccess !== false) {
+                const access = await readDesktopCommercialAccess(principal.organizationId);
+                if (!access.allowed) return undefined;
+            }
+            return principal;
         }
 
         const { sessionId } = verifyDesktopToken(token);
         const session = await resolveActiveSession(sessionId);
         if (!session) return undefined;
         await touchDesktopSession(session.id);
-        return {
+        const principal: DesktopRequestPrincipal = {
             id: session.id,
             userId: session.userId,
             organizationId: session.organizationId,
             credentialKind: "desktop_session",
         };
+        if (options.requireActiveAccess !== false) {
+            const access = await readDesktopCommercialAccess(principal.organizationId);
+            if (!access.allowed) return undefined;
+        }
+        return principal;
     } catch {
         return undefined;
     }

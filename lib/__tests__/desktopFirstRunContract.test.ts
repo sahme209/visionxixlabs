@@ -9,9 +9,42 @@ describe("desktop first-run contract", () => {
 
   it("requires server verification before mounting an authenticated workspace", () => {
     const app = readFileSync(join(root, "desktop/src/App.tsx"), "utf8");
-    expect(app).toContain('useState<"checking" | "authenticated" | "unauthenticated">("checking")');
+    const client = readFileSync(join(root, "desktop/src/lib/desktopClient.ts"), "utf8");
+    expect(app).toContain('"access_required"');
     expect(app).toContain("desktopClient.verifyCurrentCredential()");
+    expect(app).toContain("verified.data.access.allowed");
+    expect(app).toContain("<DesktopAccessRequiredView");
+    expect(client).toContain('>("/api/desktop/access")');
     expect(app.indexOf('if (authState === "checking")')).toBeLessThan(app.indexOf("<AuthenticatedWorkspace"));
+  });
+
+  it("separates verified identity from paid workspace access and enforces the gate server-side", () => {
+    const accessPolicy = readFileSync(join(root, "lib/desktop/desktopCommercialAccessPolicy.ts"), "utf8");
+    const accessRoute = readFileSync(join(root, "app/api/desktop/access/route.ts"), "utf8");
+    const resolver = readFileSync(join(root, "lib/desktop/resolveRequestDesktopSession.ts"), "utf8");
+    const apiKeyAuth = readFileSync(join(root, "lib/security/authenticateApiKey.ts"), "utf8");
+    const stateRoute = readFileSync(join(root, "app/api/desktop/state/route.ts"), "utf8");
+    expect(accessPolicy).toContain('plan.status === "active"');
+    expect(accessPolicy).toContain('plan.tier !== "trial"');
+    expect(accessPolicy).toContain('code: "payment_past_due"');
+    expect(accessRoute).toContain("requireActiveAccess: false");
+    expect(resolver).toContain("options.requireActiveAccess !== false");
+    expect(resolver).toContain("if (!access.allowed) return undefined");
+    expect(apiKeyAuth).toContain('billing.status !== "active"');
+    expect(apiKeyAuth).toContain('reason: "commercial_access_required"');
+    expect(stateRoute).toContain("{ status: 402 }");
+  });
+
+  it("binds account creation to a live desktop request without granting a free plan", () => {
+    const signupRoute = readFileSync(join(root, "app/api/auth/signup/route.ts"), "utf8");
+    const signupPage = readFileSync(join(root, "app/auth/signup/page.tsx"), "utf8");
+    expect(signupRoute).toContain("desktopPairingChallengeRecord.findUnique");
+    expect(signupRoute).toContain("acceptedTerms !== true");
+    expect(signupRoute).toContain("password.length < 12");
+    expect(signupRoute).not.toContain('plan: "starter"');
+    expect(signupPage).not.toContain("No credit card required");
+    expect(signupPage).not.toContain("What you get");
+    expect(signupPage).toContain("paid workspace entitlement");
   });
 
   it("keeps browser pairing durable, expiring, and one-time", () => {

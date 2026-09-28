@@ -13,6 +13,7 @@ export const metadata: Metadata = {
   },
 };
 
-export default function ContactPage() {
-  return <ContactClient />;
+export default async function ContactPage({ searchParams }: { searchParams: Promise<{ topic?: string }> }) {
+  const topic = (await searchParams).topic;
+  return <ContactClient intent={topic === "axiom-production-access" ? "production-access" : undefined} />;
 }
