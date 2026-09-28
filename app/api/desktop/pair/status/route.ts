@@ -1,27 +1,69 @@
-import { NextResponse } from "next/server";
+import { NextResponse, type NextRequest } from "next/server";
+import { prisma } from "@/lib/db";
 import { getDesktopSession, statusFor } from "@/lib/desktop/desktopSession";
 import { mintDesktopToken } from "@/lib/desktop/desktopToken";
-import { verifyPairingChallenge } from "@/lib/desktop/pairingChallenge";
+import { asRecord, requireString } from "@/lib/security/validation";
 
 export const dynamic = "force-dynamic";
 
-export async function POST(request: Request) {
+function presentSession(session: NonNullable<Awaited<ReturnType<typeof getDesktopSession>>>) {
+  return {
+    id: session.id,
+    deviceLabel: session.deviceLabel,
+    issuedAt: session.issuedAt,
+    expiresAt: session.expiresAt,
+    lastSeenAt: session.lastSeenAt,
+    status: statusFor(session),
+  };
+}
+
+export async function POST(request: NextRequest) {
+  let challenge: string;
   try {
-    const { challenge } = await request.json() as { challenge?: string };
-    const pending = verifyPairingChallenge(challenge ?? "");
-    const session = await getDesktopSession(pending.pairingId);
-    if (!session) return NextResponse.json({ status: "pending" }, { status: 202 });
-    if (statusFor(session) !== "active") return NextResponse.json({ error: "Pairing session is no longer active." }, { status: 410 });
+    const body = asRecord(await request.json().catch(() => ({})));
+    challenge = requireString(body.challenge, "challenge", { max: 96 });
+  } catch (error) {
+    return NextResponse.json(
+      { error: error instanceof Error ? error.message : "The pairing request is invalid." },
+      { status: 400 },
+    );
+  }
+
+  try {
+    const record = await prisma.desktopPairingChallengeRecord.findUnique({ where: { id: challenge } });
+    if (!record) return NextResponse.json({ error: "Pairing request not found." }, { status: 404 });
+    if (record.expiresAt.getTime() <= Date.now()) {
+      return NextResponse.json({ error: "Pairing request expired. Start again from the desktop app." }, { status: 410 });
+    }
+    if (record.consumedAt) {
+      return NextResponse.json({ error: "Pairing request was already used. Start a new sign-in." }, { status: 409 });
+    }
+    if (!record.sessionId || record.status !== "approved") {
+      return NextResponse.json({ status: "pending" }, { status: 202 });
+    }
+
+    const session = await getDesktopSession(record.sessionId);
+    if (!session || statusFor(session) !== "active") {
+      return NextResponse.json({ error: "The approved desktop session is no longer active." }, { status: 410 });
+    }
+    const claimed = await prisma.desktopPairingChallengeRecord.updateMany({
+      where: { id: challenge, consumedAt: null },
+      data: { consumedAt: new Date(), status: "consumed" },
+    });
+    if (claimed.count !== 1) {
+      return NextResponse.json({ error: "Pairing request was already used. Start a new sign-in." }, { status: 409 });
+    }
     return NextResponse.json({
       status: "approved",
       token: mintDesktopToken(session.id),
-      session: {
-        id: session.id,
-        deviceLabel: session.deviceLabel,
-        expiresAt: session.expiresAt,
-      },
+      session: presentSession(session),
     });
   } catch (error) {
-    return NextResponse.json({ error: error instanceof Error ? error.message : "Unable to check pairing." }, { status: 400 });
+    const correlationId = `desktop_pair_status_${crypto.randomUUID()}`;
+    console.error(`[${correlationId}] Desktop pairing status failed`, error);
+    return NextResponse.json(
+      { error: "Desktop sign-in status could not be checked.", correlationId },
+      { status: 503 },
+    );
   }
 }

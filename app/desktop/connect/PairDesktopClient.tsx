@@ -16,7 +16,7 @@ export function PairDesktopClient({ challenge, deviceLabel }: { challenge: strin
         body: JSON.stringify({ challenge }),
       });
       const body = await response.json();
-      if (!response.ok) throw new Error(body.error || "Pairing failed.");
+      if (!response.ok) throw new Error(body.message || body.error || "Pairing failed.");
       setState("done");
     } catch (cause) {
       setState("idle");
@@ -27,8 +27,8 @@ export function PairDesktopClient({ challenge, deviceLabel }: { challenge: strin
   if (state === "done") {
     return (
       <div className="rounded-xl border border-emerald-500/25 bg-emerald-500/10 p-5 text-emerald-100">
-        <p className="font-semibold">Desktop connected</p>
-        <p className="mt-1 text-sm text-emerald-200/75">Return to Axiom Agent. This browser tab can be closed.</p>
+        <p className="font-semibold">Desktop approved</p>
+        <p className="mt-1 text-sm text-emerald-200/75">Return to Axiom Agent to finish sign-in. This one-time browser tab can be closed.</p>
       </div>
     );
   }

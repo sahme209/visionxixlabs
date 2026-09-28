@@ -1,6 +1,6 @@
 # Decisions
 
-Last updated: 2026-09-27
+Last updated: 2026-09-28
 
 | ID | Decision | Status | Evidence / consequence |
 | --- | --- | --- | --- |
@@ -18,6 +18,12 @@ Last updated: 2026-09-27
 | ADR-012 | Public availability claims use the conservative capability coverage map and exact release evidence. | Active | Connector code, customer configuration, preview analysis, live execution, and certification are separate statuses. Marketing registry labels cannot override verification evidence. |
 | ADR-013 | Durable contact acceptance and email delivery are reported separately. | Active | A stored lead/reference may succeed while notification delivery is failed or unconfigured; the UI must disclose that state and promise no response time. |
 | ADR-014 | Unverified social proof is prohibited. | Active | No customer logo, testimonial, adoption figure, certification, active audit, or commercial entitlement is published without approval and supporting evidence. |
+| ADR-015 | A stored desktop credential is not authenticated state until the service verifies it during startup. | Active | Expired, revoked, malformed, or unknown credentials are cleared before the workspace shell and pollers mount. |
+| ADR-016 | Browser approval and desktop connection are distinct states. | Active | Pairing challenges expire after ten minutes, require explicit device consent, and can be consumed once; the browser says approved until the installed app retrieves and verifies the session. |
+| ADR-017 | Installed-app HTTP traffic uses a native, fixed-origin allowlist. | Active; native compile pending | The Rust bridge accepts only `/api/*` paths on `https://visionxixlabs.com`, denies redirects and unsupported methods/headers, and provides bounded timeout/failure semantics. The webview CSP and fetch bridge also reject requests to other HTTPS origins. |
+| ADR-018 | Desktop connector enrollment fails closed until one canonical tenant-scoped management API exists. | Active | The legacy form used an incompatible starter-token browser API and accepted long-lived provider secrets. The candidate exposes verified status only and does not claim connection success. |
+| ADR-019 | The installed customer shell exposes only verified mission workflows. | Active | Legacy cloud posture, AGI, billing, simulation, connector-health, synthetic audit, and cookie-auth dashboard screens remain source references but are not imported, rendered, or navigable in the 0.1.8 customer bundle. Missing requirements remain matrix gaps rather than decorative screens. |
+| ADR-020 | Demonstration data belongs to the isolated website sandbox, not the installed production workspace. | Active | The desktop sample-mode entry was removed. Authentication is required before the shell mounts, and production errors/empty states never fall back to mock records. |
 
 ## Superseded instructions
 
@@ -30,5 +36,5 @@ Last updated: 2026-09-27
 - Product-owner confirmation of the Axiom Agent name versus the original TAURI title.
 - Supported OS/platform matrix for the first production release.
 - Shared-service ownership and persistence technology for the operation ledger.
-- Approved identity provider and native PKCE/deep-link design.
+- Approved identity-provider list and whether the browser device flow must add formal OAuth PKCE beyond the current one-time signed desktop-session exchange.
 - Policy for whether a deferred-validation change may close before follow-up completion.

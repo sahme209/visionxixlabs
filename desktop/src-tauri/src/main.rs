@@ -2,6 +2,7 @@
 
 mod cloud;
 mod config;
+mod http;
 mod menu;
 mod secure;
 mod tray;
@@ -35,6 +36,7 @@ fn main() {
         .invoke_handler(tauri::generate_handler![
             get_system_info,
             get_health,
+            http::desktop_http_request,
             secure::read_secure_value,
             secure::write_secure_value,
             secure::delete_secure_value,

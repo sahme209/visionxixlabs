@@ -1541,6 +1541,28 @@ model DesktopSessionRecord {
   @@index([expiresAt])
 }
 
+/// Short-lived, one-time browser authorization request created by an
+/// installed desktop. It contains device metadata only—never cloud secrets.
+model DesktopPairingChallengeRecord {
+  id                   String    @id
+  deviceFingerprint    String
+  deviceLabel          String
+  platform             String
+  desktopVersion       String?
+  status               String    @default("pending")
+  approvedByUserId     String?
+  approvedOrganizationId String?
+  sessionId            String?
+  createdAt            DateTime  @default(now())
+  expiresAt            DateTime
+  approvedAt           DateTime?
+  consumedAt           DateTime?
+
+  @@index([expiresAt])
+  @@index([approvedByUserId])
+  @@index([sessionId])
+}
+
 /// Desktop handoff bundle persistence — packaged execution plans the
 /// desktop opens. Backs the handoff lifecycle in lib/desktop/.
 model DesktopHandoffRecord {

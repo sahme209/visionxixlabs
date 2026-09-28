@@ -7,6 +7,8 @@
  * data. UI surfaces show preview state accordingly.
  */
 
+import { setDesktopTransportCredential } from "./desktopTransport";
+
 const DEFAULT_API_BASE = "https://visionxixlabs.com";
 
 export type DesktopConnectionState = "connecting" | "connected" | "disconnected" | "auth_required";
@@ -18,6 +20,10 @@ export interface DesktopClientConfig {
 }
 
 export type ApiResult<T> = { ok: true; data: T } | { ok: false; error: string };
+
+export type VerifiedDesktopIdentity =
+  | { kind: "api_key"; organizationId: string; planTier: string; scopes: ReadonlyArray<string> }
+  | { kind: "desktop_session"; organizationId?: string };
 
 interface LegacyApiErrorBody {
   error?: string | { userMessage?: string };
@@ -34,6 +40,26 @@ export function legacyApiError(body: LegacyApiErrorBody, status: number): string
   if (typeof body.error === "string") return body.error;
   if (body.error?.userMessage) return body.error.userMessage;
   if (typeof body.message === "string") return body.message;
+  return `HTTP ${status}`;
+}
+
+export function v1ApiError(body: Record<string, unknown>, status: number): string {
+  const code = typeof body.error === "string" ? body.error : undefined;
+  const requiredScope = typeof body.requiredScope === "string" ? body.requiredScope : undefined;
+  switch (code) {
+    case "missing_scope":
+      return requiredScope
+        ? `Your workspace credential lacks the ${requiredScope} permission. Ask a workspace administrator to issue the required scope.`
+        : "Your workspace credential lacks permission for this action.";
+    case "token_expired":
+    case "token_revoked":
+    case "unknown_token":
+      return "Your workspace sign-in is no longer valid. Sign in again to continue.";
+    case "rate_limited":
+      return "The service is temporarily rate-limiting requests. Wait a moment, then try again.";
+  }
+  if (typeof body.message === "string" && body.message.trim()) return body.message;
+  if (code) return code.replaceAll("_", " ");
   return `HTTP ${status}`;
 }
 
@@ -230,10 +256,12 @@ export class DesktopClient {
       apiBase: config?.apiBase ?? DEFAULT_API_BASE,
       sessionToken: config?.sessionToken,
     };
+    if (config?.sessionToken) setDesktopTransportCredential(config.sessionToken);
   }
 
   setSession(token: string | undefined) {
     this.config = { ...this.config, sessionToken: token };
+    setDesktopTransportCredential(token);
   }
 
   setApiBase(base: string) {
@@ -249,6 +277,43 @@ export class DesktopClient {
    */
   hasAuth(): boolean {
     return Boolean(this.config.sessionToken);
+  }
+
+  /**
+   * A credential being present in the OS vault is not proof that it is still
+   * valid. Startup calls this before mounting any authenticated workspace UI.
+   */
+  async verifyCurrentCredential(): Promise<ApiResult<VerifiedDesktopIdentity>> {
+    const token = this.config.sessionToken;
+    if (!token) return { ok: false, error: "No saved workspace credential was found." };
+
+    if (token.startsWith("vxlk_")) {
+      const result = await this.v1Whoami();
+      if (!result.ok) return result;
+      return {
+        ok: true,
+        data: {
+          kind: "api_key",
+          organizationId: result.data.organization.id,
+          planTier: result.data.organization.planTier,
+          scopes: result.data.apiKey.scopes,
+        },
+      };
+    }
+
+    if (token.startsWith("axm.desk.")) {
+      const result = await this.get<{ state?: { tenantId?: string } }>("/api/desktop/state");
+      if (!result.ok) return result;
+      return {
+        ok: true,
+        data: {
+          kind: "desktop_session",
+          organizationId: result.data.state?.tenantId,
+        },
+      };
+    }
+
+    return { ok: false, error: "The saved credential type is not supported." };
   }
 
   /**
@@ -383,6 +448,10 @@ export class DesktopClient {
     }>;
   }>> {
     return this.getV1("/api/v1/connectors/health");
+  }
+
+  async v1ConnectorSetupDigest<T>(): Promise<ApiResult<T>> {
+    return this.getV1<T>("/api/v1/connectors/setup-digest");
   }
 
   /**
@@ -657,12 +726,7 @@ export class DesktopClient {
       if (res.ok && parsed.ok === true) {
         return { ok: true, data: parsed as unknown as T };
       }
-      const error = typeof parsed.error === "string"
-        ? parsed.error
-        : typeof parsed.message === "string"
-        ? parsed.message
-        : `HTTP ${res.status}`;
-      return { ok: false, error };
+      return { ok: false, error: v1ApiError(parsed, res.status) };
     } catch (err) {
       return { ok: false, error: err instanceof Error ? err.message : String(err) };
     }

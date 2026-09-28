@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { DesktopClient, legacyApiError } from "../../../desktop/src/lib/desktopClient";
+import { DesktopClient, legacyApiError, v1ApiError } from "../../../desktop/src/lib/desktopClient";
 
 afterEach(() => {
   vi.unstubAllGlobals();
@@ -63,5 +63,17 @@ describe("legacyApiError", () => {
       "Content-Type": "application/json",
       "x-correlation-id": "retry-identity-01",
     }));
+  });
+});
+
+describe("v1ApiError", () => {
+  it("turns permission codes into customer recovery guidance", () => {
+    expect(v1ApiError({ error: "missing_scope", requiredScope: "pipeline:read" }, 403))
+      .toContain("pipeline:read permission");
+  });
+
+  it("does not expose token implementation codes as the primary message", () => {
+    expect(v1ApiError({ error: "token_revoked" }, 401))
+      .toBe("Your workspace sign-in is no longer valid. Sign in again to continue.");
   });
 });

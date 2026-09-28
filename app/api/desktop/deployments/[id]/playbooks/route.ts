@@ -22,7 +22,10 @@ export async function POST(
     request: NextRequest,
     context: { params: Promise<{ id: string }> },
 ): Promise<NextResponse> {
-    const session = await resolveRequestDesktopSession(request);
+    const session = await resolveRequestDesktopSession(request, {
+        requiredScope: "pipeline:trigger",
+        route: "POST /api/desktop/deployments/:id/playbooks",
+    });
     if (!session) {
         return NextResponse.json(
             { ok: false, error: "desktop_session_required" },

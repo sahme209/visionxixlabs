@@ -1,21 +1,21 @@
 # Verification Report
 
-Last updated: 2026-09-27
+Last updated: 2026-09-28
 
 ## Current-pass conclusion
 
 **The current downloadable application does not yet deliver everything required by the original vision.** It now contains a first-class desktop deployment-request intake, authenticated request and playbook APIs, an immutable version-1 request snapshot, persisted versioned playbook generation with content hashes and audit events, ten distinct templates, and a durable consequential-operation ledger/coordinator. Request editing/revision diffs, complete execution/validation/closure, native packaging, real identity/provider, recovery, update, and exact-build acceptance remain partial, unverified, or blocked.
 
-The 2026-09-27 website pass also verified that public provider, security, social-proof, contact, and download claims had drifted beyond released evidence. Those claims were corrected. The final changed tree passed 365 Vitest files / 4,153 tests, changed-file ESLint, the Next.js 16.3.6 production build and TypeScript phase, 283-page generation, 40/40 prominent internal links, direct route/redirect checks, and the desktop release alignment check.
+The 2026-09-27 website pass also verified that public provider, security, social-proof, contact, and download claims had drifted beyond released evidence. Those claims were corrected. Before the later desktop-auth changes, that website tree passed 365 Vitest files / 4,153 tests, changed-file ESLint, the Next.js 16.3.6 production build and TypeScript phase, 283-page generation, 40/40 prominent internal links, direct route/redirect checks, and the desktop release alignment check. Exact-current-tree evidence for the later desktop changes is recorded separately below.
 
 ## Build identity
 
 | Item | Value |
 | --- | --- |
 | Product observed | Axiom Agent |
-| Desktop package/version | `axiom-desktop` 0.1.7 |
+| Desktop package/version | `axiom-desktop` 0.1.8 candidate source; published installer remains 0.1.7 |
 | Framework | Tauri 2 + React 19 + Vite + Rust |
-| Base commit for dirty working tree | `ce90cbd3edd5222292cb0c2f400e7d2bdbf9854b` |
+| Base commit for current working tree | `312b71c5b6674e95183e69028f6a0e142fcd7718` |
 | Current native artifact | None produced in this pass |
 | Current test environment | macOS; repository in iCloud; isolated Vitest/TypeScript runner under `/private/tmp` because repository Rollup metadata is dataless |
 | Master-spec identity | Attachment requested again; not present in repository during audit |
@@ -63,6 +63,7 @@ The 2026-09-27 website pass also verified that public provider, security, social
 | Worktree whitespace/error-marker check | Passed | `git diff --check` exited 0 after the final source changes |
 | Prisma schema inspection / CLI validation | Static defect fixed; CLI blocked | Removed a duplicate operation model found by source inspection. Prisma 5.22 still attempted to update `~/.cache/prisma` outside sandbox and failed `EPERM`; schema/migration was not engine-validated or applied to a database. |
 | Native Tauri packaging | Blocked | `cargo` is not installed in this environment (exit 127); no new exact native candidate was produced |
+| Xcode native build route | Not applicable | Xcode reported zero schemes in the current workspace; this React/Tauri desktop is not exposed as an Xcode build target |
 | Installed app / live providers | Not run | No exact current artifact or safe provider tenants supplied |
 | Website claims regression suite | Passed | Final tree: 365 files and 4,153 tests; contact tests cover invalid email, durable acceptance, rejected email delivery, and honeypot; release/download tests cover digest/signature metadata and pre-hydration manifest-resolver links |
 | Final website production build | Passed | Next.js 16.3.6 compiled, completed TypeScript, and generated 283 static pages after the last source change |
@@ -71,6 +72,16 @@ The 2026-09-27 website pass also verified that public provider, security, social
 | Published artifact install/launch | Blocked | `hdiutil attach` failed in the sandbox with `Device not configured`; no clean-host install or first launch is claimed |
 | Pre-hydration/no-JavaScript download path | Passed | All four platform CTAs route through `/api/desktop/download`; the final built server returned HTTP 302 to the exact current GitHub DMG/MSI/AppImage asset for each platform |
 | Contact live delivery | Blocked | Application-side success/failure semantics are tested; production sender credentials and delivery observability were not available |
+| First-launch/auth regression | Passed (source/frontend) | Fresh launch is gated by server credential verification; invalid stored credentials are cleared; browser and workspace-key choices are visible; exact-current-tree focused run passed 5 files / 32 tests |
+| Desktop native HTTP bridge | Implemented, native compile blocked | Installed runtime routes product API calls through a Rust `reqwest` command restricted to `https://visionxixlabs.com/api/*`, with redirects disabled and bounded timeouts; webview CSP and fetch bridge reject other HTTPS origins; frontend 0.1.8 build passed; Cargo unavailable so the Rust command is not compiled evidence |
+| Browser-assisted desktop authorization | Implemented, database/live verification blocked | Ten-minute persisted challenge, explicit device/platform/version consent, policy check, single-consumption claim, OS-vault session save, and startup verification are present; Prisma engine cache permissions blocked local generation/migration and no live identity was supplied |
+| Connector Setup screenshot defect | Reproduced and fixed in source | Root cause was a browser-relative, cookie-auth dashboard request inside the native webview. The view now calls `/api/v1/connectors/setup-digest` through the bearer client, shows retry guidance, and does not claim a setup mutation succeeded |
+| Desktop provider enrollment | Failed safely | The prior native form called a starter-token-only browser API with an incompatible bearer/body contract. Secret-entry fields and false-success UI are removed from the 0.1.8 candidate; provider cards state setup blocked until a scoped tenant-audited desktop connector service exists |
+| Exact-current changed-file ESLint | Passed | Desktop auth/transport/connector views, desktop pairing routes/pages, security/getting-started copy, and the new contract test passed with zero diagnostics |
+| Vercel build contract | Passed | `npm run check:vercel-build` verified explicit web/desktop type boundaries, enforced type checks, proxy convention, no migration build side effects, and externalized cloud SDKs |
+| Customer-shell scope audit | Passed (compiled frontend) | Production App imports only requests/playbooks, documentation, settings, and authentication. Bundle fell from about 697 kB to 265 kB; prohibited legacy/sample/status strings were absent from `dist`. Dormant source files are not verification evidence or customer navigation. |
+| Guided intake | Passed (source/frontend) | Five sequential stages preserve window, scope, trigger/execution, validation/deferred follow-up, rollback/backup/change/evidence controls; per-stage validation prevents silent omission. Packaged visual/keyboard testing remains blocked. |
+| Root production build after shell reduction | Blocked before compilation | `check:vercel-build` passed, then Prisma `generate` failed `EPERM` updating the user engine cache. Direct root TypeScript was not usable because the generated Prisma client is missing/stale and produced repository-wide derivative type errors. |
 
 ## Prior evidence (not current-tree proof)
 
@@ -79,3 +90,5 @@ The dated `docs/PRODUCT_DELIVERY_AUDIT_2026-09-25.md` reports 4,086 Vitest cases
 ## Limitations
 
 No claim of fully functional, production-ready, or complete is supported. Mocked/pure tests do not verify live connectors. Static template presence does not verify complete workflows. A published older installer does not verify the current source. The redesigned mobile information architecture is linted, regression-tested, production-built, and rendered-route checked, but physical-device touch behavior remains unverified until a supported simulator or device is available. The desktop presentation has source, lint, contract, TypeScript, and production-build evidence; final visual acceptance still requires a browser or physical display outside the restricted harness.
+
+The screenshot supplied on 2026-09-27 shows a `v0.1.0 · preview` shell with contradictory `connected`, `auth failed`, and raw URL-pattern states. That exact installed binary is not the 0.1.8 candidate source verified here. Do not distribute 0.1.8 until CI compiles the Rust bridge, applies the pairing migration in a safe environment, produces signed artifacts, and completes clean-install first-launch tests.

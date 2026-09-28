@@ -14,7 +14,7 @@ const CONTROLS = [
   {
     icon: KeyIcon,
     title: "Authentication and credentials",
-    body: "The desktop flow uses a browser approval handoff and a scoped application session. Provider credentials remain connector-specific. OS-keychain-backed session persistence is not yet shipped, and no privileged shared secret belongs in a distributed installer.",
+    body: "The desktop flow uses a browser approval handoff and a scoped application session. Source uses the operating-system credential vault for session persistence; the exact packaged keychain journey remains unverified. Provider credentials remain connector-specific, and no privileged shared secret belongs in a distributed installer.",
     status: "Implemented with documented gap",
   },
   {

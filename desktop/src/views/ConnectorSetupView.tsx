@@ -1,17 +1,16 @@
 import { useEffect, useState } from "react";
 import { ViewShell } from "../components/Primitives";
+import { desktopClient } from "../lib/desktopClient";
+import type { View } from "../App";
 
 /**
  * Phase 441b — desktop catch-up for the web's Phase 423 connector-setup
  * panel. Same digest endpoint, same render shape, native Tauri styling.
  *
- * Reads from /api/dashboard/connector-setup-digest. The endpoint already
- * supports the session-auth pattern the web dashboard uses; the desktop
- * runtime forwards the user's session cookie via the standard Tauri
- * fetch proxy, so no extra auth glue is needed at the view level.
- *
- * CTAs post to /api/dashboard/connector-setup-event with operator-allowed
- * event kinds only — server validates the closed union.
+ * Reads through the bearer-authenticated v1 desktop client. This avoids
+ * relying on browser cookies or resolving a relative /api URL inside the
+ * native webview. Setup routes to the capability screen; disconnect remains
+ * disabled until a scoped connector-management service is available.
  */
 
 type SidebarDotColor = "green" | "amber" | "red" | "gray";
@@ -106,7 +105,7 @@ function humanAge(seconds: number): string {
   return `${Math.floor(h / 24)}d ago`;
 }
 
-export function ConnectorSetupView() {
+export function ConnectorSetupView({ onNavigate }: { onNavigate: (view: View) => void }) {
   const [resp, setResp] = useState<RespBody | null>(null);
   const [loading, setLoading] = useState(true);
   const [networkError, setNetworkError] = useState<string | null>(null);
@@ -114,16 +113,19 @@ export function ConnectorSetupView() {
   const [actionError, setActionError] = useState<string | null>(null);
 
   const refresh = async () => {
-    const r = await fetch("/api/dashboard/connector-setup-digest", { credentials: "include" });
-    setResp((await r.json()) as RespBody);
+    const result = await desktopClient.v1ConnectorSetupDigest<RespBody>();
+    setResp(result.ok ? result.data : { ok: false, error: result.error });
   };
 
   useEffect(() => {
     let cancelled = false;
-    fetch("/api/dashboard/connector-setup-digest", { credentials: "include" })
-      .then((r) => r.json())
-      .then((json: RespBody) => { if (!cancelled) setResp(json); })
-      .catch((err) => { if (!cancelled) setNetworkError(err instanceof Error ? err.message : "Network error."); })
+    desktopClient.v1ConnectorSetupDigest<RespBody>()
+      .then((result) => {
+        if (cancelled) return;
+        if (result.ok) setResp(result.data);
+        else setNetworkError(`Connector setup could not be loaded. ${result.error}`);
+      })
+      .catch(() => { if (!cancelled) setNetworkError("Connector setup could not be loaded. Check your connection and try again."); })
       .finally(() => { if (!cancelled) setLoading(false); });
     return () => { cancelled = true; };
   }, []);
@@ -131,20 +133,16 @@ export function ConnectorSetupView() {
   const emit = async (provider: string, status: string) => {
     const eventKind = ctaEventKindFor(status);
     if (!eventKind) return;
+    if (eventKind === "operator_started") {
+      onNavigate("connectors");
+      return;
+    }
     setPendingProvider(provider);
     setActionError(null);
     try {
-      const r = await fetch("/api/dashboard/connector-setup-event", {
-        method: "POST",
-        credentials: "include",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify({ provider, eventKind }),
-      });
-      const body = await r.json() as { ok: boolean; error?: string; hint?: string };
-      if (!body.ok) setActionError(body.hint ?? body.error ?? `Request failed (${r.status})`);
-      else await refresh();
-    } catch (err) {
-      setActionError(err instanceof Error ? err.message : "Network error.");
+      setActionError(
+        `${PROVIDER_LABEL[provider] ?? provider} disconnect is not available from this screen yet. No change was made.`,
+      );
     } finally {
       setPendingProvider(null);
     }
@@ -167,7 +165,10 @@ export function ConnectorSetupView() {
       )}
 
       {!loading && networkError && (
-        <div className="glass-card p-4 text-sm text-rose-300 border border-rose-500/20">{networkError}</div>
+        <div role="alert" className="glass-card p-4 text-sm text-rose-300 border border-rose-500/20">
+          <p>{networkError}</p>
+          <button type="button" onClick={() => { setLoading(true); setNetworkError(null); void refresh().finally(() => setLoading(false)); }} className="mt-3 rounded-md bg-white/[0.06] px-3 py-1.5 text-xs text-white hover:bg-white/[0.10]">Try again</button>
+        </div>
       )}
 
       {!loading && errorBody?.error === "migration_pending" && (

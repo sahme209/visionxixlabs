@@ -93,6 +93,35 @@ const initialDraft = {
   factConfirmedBy: "",
 };
 
+const INTAKE_STEPS = ["Window", "Scope", "Execution", "Validation", "Recovery"] as const;
+type IntakeDraft = typeof initialDraft;
+
+function validateStep(step: number, draft: IntakeDraft): string | undefined {
+  const missing = (pairs: Array<[string, string]>) => pairs.find(([, value]) => !value.trim())?.[0];
+  let field: string | undefined;
+  if (step === 0) {
+    field = missing([["request title", draft.title], ["window start", draft.windowStart], ["window end", draft.windowEnd]]);
+    if (!field && (draft.requestClass === "ad_hoc" || draft.requestClass === "emergency")) {
+      field = missing([["reason", draft.adHocReason], ["priority", draft.adHocPriority], ["business impact", draft.businessImpact], ["schedule exception", draft.scheduleExceptionReason]]);
+    }
+  } else if (step === 1) {
+    field = missing([["applications", draft.applications], ["clients", draft.clients], ["deployment owner", draft.deploymentContact], ["application owner", draft.applicationContact], ["escalation owner", draft.escalationContact], ["repository URLs", draft.repositoryUrls], ["source branch", draft.sourceBranch], ["target branch", draft.targetBranch]]);
+    if (!field && !draft.noPrRequired) field = missing([["production PR URLs", draft.productionPrUrls]]);
+  } else if (step === 2) {
+    field = missing([["deployment method", draft.deploymentMethod], ["workflow name or trigger", draft.workflowName], ["target environment", draft.targetEnvironment], ["workflow inputs", draft.workflowInputs]]);
+    if (!field && draft.manualInstruction.trim()) field = missing([["manual-step owner", draft.manualOwner], ["manual-step validation", draft.manualValidationInstruction]]);
+  } else if (step === 3) {
+    field = missing([["tested lower environments", draft.lowerEnvironments], ["technical validation", draft.validationInstruction], ["expected production result", draft.expectedProductionResult]]);
+    if (!field && draft.functionalValidationRequired) field = missing([["functional validation", draft.functionalValidationInstruction]]);
+    if (!field && draft.deferredValidation) field = missing([["deferral reason", draft.deferredReason], ["follow-up trigger", draft.deferredTrigger], ["follow-up date", draft.deferredDate], ["follow-up owner", draft.deferredOwner], ["monitoring plan", draft.monitoringPlan]]);
+  } else {
+    if (draft.rollbackAvailability === "yes") field = missing([["rollback instruction", draft.rollbackInstruction], ["rollback owner", draft.rollbackOwner]]);
+    if (!field && draft.backupRequired) field = missing([["backup evidence identifiers", draft.backupEvidenceIds]]);
+    if (!field) field = missing([["confirmed operational fact", draft.confirmedFact], ["source evidence identifier", draft.sourceEvidenceId], ["confirmed by", draft.factConfirmedBy]]);
+  }
+  return field ? `Complete ${field} before continuing.` : undefined;
+}
+
 function splitLines(value: string): string[] {
   return value.split(/[\n,]/).map((item) => item.trim()).filter(Boolean);
 }
@@ -121,7 +150,16 @@ export function DeploymentRequestsView() {
     setLoading(false);
   }, []);
 
-  useEffect(() => { void load(); }, [load]);
+  useEffect(() => {
+    let cancelled = false;
+    desktopClient.deploymentRequests().then((result) => {
+      if (cancelled) return;
+      if (result.ok) setRequests(result.data);
+      else setLoadError(result.error);
+      setLoading(false);
+    });
+    return () => { cancelled = true; };
+  }, []);
 
   async function generatePlaybook(requestId: string) {
     setGeneratingRequestId(requestId);
@@ -270,6 +308,7 @@ export function DeploymentRequestsView() {
 
 function DeploymentIntakeForm({ onCreated }: { onCreated: () => void }) {
   const [draft, setDraft] = useState(initialDraft);
+  const [step, setStep] = useState(0);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string>();
   const [submissionId] = useState(() => crypto.randomUUID());
@@ -282,6 +321,15 @@ function DeploymentIntakeForm({ onCreated }: { onCreated: () => void }) {
   async function submit(event: FormEvent) {
     event.preventDefault();
     setError(undefined);
+
+    for (let candidate = 0; candidate < INTAKE_STEPS.length; candidate += 1) {
+      const issue = validateStep(candidate, draft);
+      if (issue) {
+        setStep(candidate);
+        setError(issue);
+        return;
+      }
+    }
 
     let workflowInputs: Record<string, string>;
     try {
@@ -408,7 +456,24 @@ function DeploymentIntakeForm({ onCreated }: { onCreated: () => void }) {
 
   return (
     <form onSubmit={(event) => void submit(event)} className="glass-card p-5 space-y-5">
-      <Section title="Change and deployment window">
+      <div>
+        <div className="flex items-center justify-between gap-3">
+          <div>
+            <p className="text-sm font-semibold text-white">New governed deployment request</p>
+            <p className="mt-1 text-xs text-zinc-500">Step {step + 1} of {INTAKE_STEPS.length} · {INTAKE_STEPS[step]}</p>
+          </div>
+          <span className="text-[10px] font-mono uppercase tracking-wider text-zinc-500">Required controls stay visible in sequence</span>
+        </div>
+        <div className="mt-4 grid grid-cols-5 gap-2" aria-label="Intake progress">
+          {INTAKE_STEPS.map((label, index) => (
+            <button key={label} type="button" onClick={() => { if (index <= step) { setStep(index); setError(undefined); } }} className={`rounded-lg border px-2 py-2 text-[10px] font-mono transition-colors ${index === step ? "border-violet-500/40 bg-violet-500/10 text-violet-200" : index < step ? "border-emerald-500/20 bg-emerald-500/5 text-emerald-300" : "cursor-default border-white/5 text-zinc-600"}`}>
+              {index + 1}. {label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {step === 0 && <Section title="Change and deployment window">
         <Field label="Request title" value={draft.title} onChange={(value) => update("title", value)} required />
         <SelectField label="Request class" value={draft.requestClass} onChange={(value) => update("requestClass", value)}
           options={["planned_biweekly_release", "planned_release", "ad_hoc", "emergency", "maintenance", "other"]} />
@@ -426,9 +491,9 @@ function DeploymentIntakeForm({ onCreated }: { onCreated: () => void }) {
           options={["ET", "CT", "MT", "PT", "UTC", "Other"]} />
         <SelectField label="Change type" value={draft.changeType} onChange={(value) => update("changeType", value)}
           options={["enhancement", "new_feature", "new_client_implementation", "configuration_change", "infrastructure_change", "database_change", "security_image_refresh", "credential_rotation", "workflow_change", "manual_configuration", "bug_fix", "other"]} />
-      </Section>
+      </Section>}
 
-      <Section title="Scope, ownership, and source control">
+      {step === 1 && <Section title="Scope, ownership, and source control">
         <Field label="Applications (comma or line separated)" value={draft.applications} onChange={(value) => update("applications", value)} required />
         <Field label="Clients (comma or line separated)" value={draft.clients} onChange={(value) => update("clients", value)} required />
         <Field label="Deployment owner" value={draft.deploymentContact} onChange={(value) => update("deploymentContact", value)} required />
@@ -445,9 +510,9 @@ function DeploymentIntakeForm({ onCreated }: { onCreated: () => void }) {
         )}
         <Field label="Source branch" value={draft.sourceBranch} onChange={(value) => update("sourceBranch", value)} required />
         <Field label="Target branch" value={draft.targetBranch} onChange={(value) => update("targetBranch", value)} required />
-      </Section>
+      </Section>}
 
-      <Section title="Production trigger and exact execution">
+      {step === 2 && <Section title="Production trigger and exact execution">
         <Field label="Deployment method" value={draft.deploymentMethod} onChange={(value) => update("deploymentMethod", value)} required />
         <Field label="Workflow name / trigger" value={draft.workflowName} onChange={(value) => update("workflowName", value)} required />
         <Field label="Target environment" value={draft.targetEnvironment} onChange={(value) => update("targetEnvironment", value)} required />
@@ -459,9 +524,9 @@ function DeploymentIntakeForm({ onCreated }: { onCreated: () => void }) {
             <TextArea label="How to validate the manual step" value={draft.manualValidationInstruction} onChange={(value) => update("manualValidationInstruction", value)} required />
           </>
         )}
-      </Section>
+      </Section>}
 
-      <Section title="Readiness and production validation">
+      {step === 3 && <Section title="Readiness and production validation">
         <Field label="Tested lower environments" value={draft.lowerEnvironments} onChange={(value) => update("lowerEnvironments", value)} required />
         <Check label="Development ready" checked={draft.developmentReady} onChange={(value) => update("developmentReady", value)} />
         <Check label="Production ready" checked={draft.productionReady} onChange={(value) => update("productionReady", value)} />
@@ -487,9 +552,9 @@ function DeploymentIntakeForm({ onCreated }: { onCreated: () => void }) {
             <TextArea label="Monitoring plan" value={draft.monitoringPlan} onChange={(value) => update("monitoringPlan", value)} required />
           </>
         )}
-      </Section>
+      </Section>}
 
-      <Section title="Rollback, backup, change, and source evidence">
+      {step === 4 && <Section title="Rollback, backup, change, and source evidence">
         <SelectField label="Rollback availability" value={draft.rollbackAvailability} onChange={(value) => update("rollbackAvailability", value)}
           options={["yes", "no", "not_applicable"]} />
         {draft.rollbackAvailability === "yes" && (
@@ -505,16 +570,24 @@ function DeploymentIntakeForm({ onCreated }: { onCreated: () => void }) {
         <TextArea label="Confirmed operational fact" value={draft.confirmedFact} onChange={(value) => update("confirmedFact", value)} required />
         <Field label="Source evidence identifier" value={draft.sourceEvidenceId} onChange={(value) => update("sourceEvidenceId", value)} required />
         <Field label="Confirmed by" value={draft.factConfirmedBy} onChange={(value) => update("factConfirmedBy", value)} required />
-      </Section>
+      </Section>}
 
       {error && <p role="alert" className="text-sm text-rose-300">{error}</p>}
       <div className="flex items-center justify-between gap-3">
-        <p className="text-xs text-zinc-500">
-          Submission creates a tenant-scoped version 1 record and append-only audit event. It does not deploy.
-        </p>
-        <button type="submit" disabled={submitting} className="btn-primary disabled:opacity-50">
-          {submitting ? "Submitting…" : "Submit governed request"}
-        </button>
+        <button type="button" disabled={step === 0 || submitting} onClick={() => { setStep((current) => Math.max(0, current - 1)); setError(undefined); }} className="btn-secondary disabled:opacity-40">Back</button>
+        <p className="text-xs text-zinc-500">This creates a tenant-scoped record and audit event. It does not deploy.</p>
+        {step < INTAKE_STEPS.length - 1 ? (
+          <button type="button" className="btn-primary" onClick={() => {
+            const issue = validateStep(step, draft);
+            if (issue) { setError(issue); return; }
+            setError(undefined);
+            setStep((current) => Math.min(INTAKE_STEPS.length - 1, current + 1));
+          }}>Continue</button>
+        ) : (
+          <button type="submit" disabled={submitting} className="btn-primary disabled:opacity-50">
+            {submitting ? "Submitting…" : "Submit governed request"}
+          </button>
+        )}
       </div>
     </form>
   );

@@ -9,6 +9,7 @@ import {
   saveApiKey,
 } from "../lib/apiKeyStore";
 import { desktopClient } from "../lib/desktopClient";
+import { clearAuthSession } from "../lib/authSession";
 import { markNotificationPrefDirty, notifyResult } from "../lib/notifications";
 import { useVoteHistory } from "../lib/voteHistory";
 
@@ -22,7 +23,6 @@ interface Preferences {
 
 export function SettingsView() {
   const [prefs, setPrefs] = useState<Preferences | null>(null);
-  const [apiEndpoint, setApiEndpoint] = useState("");
   const [saved, setSaved] = useState(false);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [saveError, setSaveError] = useState<string | null>(null);
@@ -43,7 +43,6 @@ export function SettingsView() {
 
   useEffect(() => {
     invoke<Preferences>("get_preferences").then(setPrefs).catch((err) => setLoadError(String(err)));
-    invoke<string>("get_api_endpoint").then(setApiEndpoint).catch((err) => setLoadError(String(err)));
     readPersistedApiKey().then(setStoredKey).catch((err) => setLoadError(String(err)));
   }, []);
 
@@ -52,7 +51,6 @@ export function SettingsView() {
     setSaveError(null);
     try {
       await invoke("set_preferences", { prefs });
-      await invoke("set_api_endpoint", { endpoint: apiEndpoint });
       // Notification helper caches the pref between polls — force a re-read
       // so toggling here takes effect on the very next approval, not on
       // page reload.
@@ -87,13 +85,27 @@ export function SettingsView() {
       <section className="glass-card p-5 space-y-4">
         <h2 className="text-sm font-semibold text-zinc-300">API Connection</h2>
         <div>
-          <label className="block text-xs text-zinc-400 mb-1.5">API Endpoint</label>
-          <input
-            type="text"
-            value={apiEndpoint}
-            onChange={(e) => setApiEndpoint(e.target.value)}
-            className="w-full bg-zinc-800/60 border border-zinc-700/50 rounded-lg px-3 py-2 text-sm font-mono text-zinc-200 focus:outline-none focus:border-violet-500/50"
-          />
+          <p className="text-xs text-zinc-400 mb-1.5">Service endpoint</p>
+          <div className="rounded-lg border border-zinc-700/50 bg-zinc-800/40 px-3 py-2 text-sm font-mono text-zinc-300">
+            https://visionxixlabs.com
+          </div>
+          <p className="mt-1.5 text-[11px] leading-5 text-zinc-500">Fixed for this signed release. The native client allows only Vision XIX Labs API paths.</p>
+        </div>
+        <div className="flex items-center justify-between gap-4 border-t border-white/[0.06] pt-4">
+          <div>
+            <p className="text-sm text-zinc-200">Sign out of this desktop</p>
+            <p className="text-xs text-zinc-500">Removes both workspace-key and browser-session credentials from the OS vault.</p>
+          </div>
+          <button
+            type="button"
+            onClick={async () => {
+              await Promise.allSettled([clearApiKey(), clearAuthSession()]);
+              window.location.reload();
+            }}
+            className="shrink-0 rounded-lg border border-red-500/20 bg-red-500/10 px-3 py-2 text-xs font-medium text-red-200 hover:bg-red-500/15"
+          >
+            Sign out
+          </button>
         </div>
       </section>
 

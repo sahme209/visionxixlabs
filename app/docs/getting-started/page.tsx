@@ -81,7 +81,7 @@ export default function GettingStartedPage() {
                 </Step>
                 <Step number={3} title="Test each connector">
                     <p>
-                        Use the connector test inside the desktop app. A successful status must come from the real configured integration response; sample connectors and the website sandbox are never presented as live.
+                        First check whether desktop enrollment is enabled for that provider and workspace. If the app labels setup blocked, it will not request provider secrets; an administrator must complete the scoped connector-management setup. A successful status must come from a real configured integration response—sample connectors and the website sandbox are never presented as live.
                     </p>
                 </Step>
             </DocSection>

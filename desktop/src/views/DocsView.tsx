@@ -7,7 +7,7 @@
  * search, browser back/forward, and link sharing.
  */
 
-import { Card, DataSourceBanner, ExternalLink, ViewShell } from "../components/Primitives";
+import { Card, ExternalLink, ViewShell } from "../components/Primitives";
 
 interface DocLink {
   title: string;
@@ -19,34 +19,16 @@ const DOCS: ReadonlyArray<{ section: string; links: DocLink[] }> = [
   {
     section: "Getting started",
     links: [
-      { title: "What is VisionXIXLabs?", body: "Platform overview + the operating model.", href: "https://visionxixlabs.com/docs" },
-      { title: "Setup guide",            body: "12 steps from cold start to first audited automation.", href: "https://visionxixlabs.com/docs/getting-started" },
-      { title: "Permissions model",      body: "How approval rules + scopes + closed-union audit actions interact.", href: "https://visionxixlabs.com/docs/permissions-model" },
+      { title: "Product documentation", body: "Installed application overview and operating model.", href: "https://visionxixlabs.com/docs" },
+      { title: "Getting started", body: "Install, authenticate, and create the first deployment request.", href: "https://visionxixlabs.com/docs/getting-started" },
+      { title: "Permissions model", body: "Approval, merge, execution, and environment authority boundaries.", href: "https://visionxixlabs.com/docs/permissions-model" },
     ],
   },
   {
-    section: "Connectors",
+    section: "Deployment operations",
     links: [
-      { title: "AWS setup",   body: "Cross-account IAM role assumption.", href: "https://visionxixlabs.com/docs/aws-setup" },
-      { title: "Azure setup", body: "Service principal + Reader scope.",  href: "https://visionxixlabs.com/docs/azure-setup" },
-      { title: "GCP setup",   body: "Service account + Viewer scope.",     href: "https://visionxixlabs.com/docs/gcp-setup" },
-      { title: "GitHub setup",body: "OAuth or fine-grained PAT.",          href: "https://visionxixlabs.com/docs/github-setup" },
-    ],
-  },
-  {
-    section: "Engineering surfaces",
-    links: [
-      { title: "AI engineers",         body: "Catalog of engineers + tool access + scope.", href: "https://visionxixlabs.com/docs" },
-      { title: "Approval workflow",    body: "How two-person approval works end-to-end.",   href: "https://visionxixlabs.com/docs/approval-workflow" },
-      { title: "Scanning",             body: "Read-only scans + risk classification.",      href: "https://visionxixlabs.com/docs/scanning" },
-      { title: "Glossary",             body: "Closed-union terminology in one place.",      href: "https://visionxixlabs.com/docs/glossary" },
-    ],
-  },
-  {
-    section: "Demo + sandbox",
-    links: [
-      { title: "Sandbox workspace",  body: "13 scripted scenarios with example data.", href: "https://visionxixlabs.com/demo" },
-      { title: "Platform reference", body: "Every endpoint, event, audit action.",      href: "https://visionxixlabs.com/demo/reference" },
+      { title: "Approval workflow", body: "Human gates and separation of duties.", href: "https://visionxixlabs.com/docs/approval-workflow" },
+      { title: "Glossary", body: "Deployment and governance terminology.", href: "https://visionxixlabs.com/docs/glossary" },
     ],
   },
   {
@@ -61,14 +43,8 @@ const DOCS: ReadonlyArray<{ section: string; links: DocLink[] }> = [
 export function DocsView() {
   return (
     <ViewShell>
-      <DataSourceBanner
-        mode="live"
-        surfaceName="documentation"
-        webPath="/docs"
-      />
-
       <div>
-        <p className="text-[10px] font-mono text-zinc-500 uppercase tracking-[0.18em] mb-1">start here · docs</p>
+        <p className="text-[10px] font-mono text-zinc-500 uppercase tracking-[0.18em] mb-1">workspace · documentation</p>
         <h1 className="text-2xl font-bold tracking-tight">Documentation</h1>
         <p className="text-sm text-zinc-500 mt-1 max-w-2xl leading-relaxed">
           The complete documentation lives on the web at{" "}
@@ -81,7 +57,7 @@ export function DocsView() {
         {DOCS.map((sec) => (
           <section key={sec.section}>
             <h2 className="text-[11px] font-mono text-zinc-500 uppercase tracking-[0.22em] mb-2">
-              // {sec.section}
+              {sec.section}
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
               {sec.links.map((link) => (

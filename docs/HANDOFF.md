@@ -1,14 +1,28 @@
 # Handoff
 
-Last updated: 2026-09-26
+Last updated: 2026-09-28
 
 ## Current state
 
-The product is Axiom Agent 0.1.7 in current repository metadata. It uses a React/Vite desktop UI and a Tauri 2 Rust shell. The desktop now has a governed Deployment Requests entry, authenticated request/playbook APIs, strict intake parsing, immutable version-1 request snapshots, persisted hashed playbook versions, append-only audit evidence, and a durable operation-ledger/coordinator foundation. Request editing/diffs, provider reconciliation workers, and the complete execution-to-closure journey remain incomplete or unverified. The capability inventory now describes intake as implemented but not live-verified.
+The product is Axiom Agent 0.1.8 in current candidate metadata; the public installer is still 0.1.7 and must not be described as containing this pass. It uses a React/Vite desktop UI and a Tauri 2 Rust shell. The desktop now gates the workspace on verified authentication, supports system-browser approval and administrator workspace-key sign-in, routes installed-app API traffic through a native allow-listed transport, and repairs the Connector Setup URL/auth failure shown in the supplied screenshot. Request editing/diffs, provider reconciliation workers, the complete execution-to-closure journey, and exact packaged verification remain incomplete or unverified.
 
 The answer to “Does the current downloadable application deliver everything required by the original vision?” is **no**. See `REQUIREMENTS_MATRIX.md` and `VERIFICATION_REPORT.md`.
 
 ## Changes in this pass
+
+- Reproduced the first-launch contradiction shown by the customer: an old preview shell could display `connected`, `auth failed`, and a raw URL-pattern error at the same time.
+- Changed startup from “credential bytes exist” to a server-verified auth gate; rejected credentials are cleared before the operational shell mounts.
+- Added a visible first-launch workspace-key path with format validation, live `/api/v1/whoami` verification, OS-vault persistence, Enter-key submission, and honest failure state.
+- Upgraded browser pairing to a persisted ten-minute, explicit-consent, policy-checked, one-time challenge; approval and actual desktop consumption are distinct states.
+- Added a Rust `reqwest` transport restricted to the product `/api/*` origin so installed webviews do not resolve relative URLs against `tauri://localhost`; redirects and unsupported methods/headers are denied.
+- Moved Connector Setup reads to the bearer-authenticated v1 API and replaced unsupported setup mutation with an explicit no-change message.
+- Removed the broken desktop provider-enrollment form after tracing it to a starter-token-only browser API; the candidate no longer asks for Azure/GCP secrets or claims connection without a valid scoped desktop service.
+- Removed legacy AGI, cloud posture, billing, simulation, connector health, synthetic audit, and cookie-auth dashboard modules from the compiled customer shell and navigation. Dormant source remains for requirements recovery only.
+- Removed installed-app sample mode; demonstration remains a website-sandbox responsibility.
+- Replaced the oversized intake form with a five-stage Window → Scope → Execution → Validation → Recovery flow with stage-specific validation.
+- Fixed the contradictory identity badges by carrying the already verified desktop identity into the top bar; removed unverified ambient SSE/connector polling.
+- Deployment request/playbook routes now accept either a verified browser-paired desktop session or an appropriately scoped workspace API key.
+- Bumped candidate metadata to 0.1.8; no 0.1.8 native installer has been produced or published.
 
 - Added durable continuity documents: Product Vision, Decisions, Requirements Matrix, Verification Report, Roadmap, and this Handoff.
 - Added reliability kernel, execution coordinator, tenant-bound Prisma operation ledger, schema migration, and regression tests for durable IDs, reconcile-before-retry, atomic claims, duplicate prevention, adapter-mode truthfulness, and app-close semantics.
@@ -28,6 +42,17 @@ The answer to “Does the current downloadable application deliver everything re
 - Verified the desktop-only delivery boundary at runtime: ordinary dashboard/operator/auth page requests redirect to `/download`, while explicit installed-app authentication return paths remain available.
 
 ## Last verified
+
+- Desktop 0.1.8 release alignment passed.
+- Desktop TypeScript + Vite production build passed (116 modules); existing mixed-import and >500 kB chunk warnings remain.
+- Exact-current-tree desktop/auth/platform/web-boundary tests passed: 5 files / 32 tests, including customer-shell, no-sample-mode, guided-intake, webview-origin, and first-run contracts.
+- Exact-current desktop frontend build passed at 55 transformed modules and about 265 kB main JS; legacy/customer-irrelevant strings were absent from the built output.
+- Exact-current changed-file ESLint and `check:vercel-build` passed; `git diff --check` passed.
+- `git diff --check` passed.
+- Clean browser automation remained blocked because the documented `agent-browser` executable is absent.
+- Native Rust compile/package remained blocked because `cargo` is absent.
+- Xcode reported zero build schemes, so there is no alternate Xcode-native target for this React/Tauri package.
+- Prisma schema generation/migration remained blocked because the sandbox cannot update the user Prisma engine cache; no database pairing journey is claimed.
 
 Verified in this continuation:
 - 9 focused deployment/desktop-client/capability-inventory test files: 66 tests passed, 0 failed.
@@ -54,6 +79,8 @@ The full root TypeScript run stalled on iCloud with no diagnostics and was termi
 | Original 36-section attachment unavailable | Reattach it and preserve unchanged at `docs/MASTER_BUILD_PROMPT_TAURI_DEPLOYMENT_OPERATIONS_PLATFORM.md` |
 | Vitest dependency is an iCloud dataless placeholder and sandbox cannot restore `node_modules` | Hydrate the repository locally or run `npm install`/`npm ci` with normal filesystem permission, then rerun the focused and full suites |
 | No exact current native artifact | Install Rust/Cargo and platform packaging/signing prerequisites; build after final code change |
+| Prisma pairing migration not applied | Run `prisma migrate deploy` with a writable Prisma engine cache against a safe development database, then exercise start → browser consent → one-time status consumption → restart hydration |
+| Browser automation executable absent | Install/provide the approved browser harness and run clean first-launch, invalid credential, preview, reconnect, keyboard, and visual checks |
 | Live identity/provider journeys unavailable | Supply safe non-production tenants and least-privilege test identities/credentials |
 | Naming discrepancy | Product owner confirms Axiom Agent versus TAURI; record decision without casual rename |
 | Supported platform acceptance hosts unavailable | Provide clean macOS arm64/x64, Windows x64, and Linux x64 hosts for claimed targets |
@@ -67,7 +94,8 @@ The full root TypeScript run stalled on iCloud with no diagnostics and was termi
 4. Route one real non-production workflow-dispatch adapter through the operation coordinator and implement startup reconciliation.
 5. Complete evidence, technical/functional validation, deferred follow-up, rollback, and closure.
 6. Run the website on real iPhone/Android browsers or supported simulators at 320, 390, 430, and 768 CSS pixels, including menu focus, safe areas, scrolling, CTA overlap, and link behavior.
-7. Package and test the exact candidate after the last source change.
+7. Compile the 0.1.8 Rust transport, apply the pairing migration, and test first launch/auth/restart before packaging.
+8. Package, sign, checksum, install, launch, upgrade, and recovery-test the exact candidate after the last source change; only then update the public manifest.
 ## Website claims/customer-path pass — 2026-09-27
 
 - Reconciled public AWS/Azure/GCP wording to the conservative capability coverage map; no provider is represented by a generic “live/full support” badge.

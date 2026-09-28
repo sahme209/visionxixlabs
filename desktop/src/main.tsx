@@ -4,6 +4,9 @@ import App from "./App";
 import "./styles.css";
 import { hydrateApiKey } from "./lib/apiKeyStore";
 import { hydrateAuthSession } from "./lib/authSession";
+import { installDesktopFetchBridge } from "./lib/desktopTransport";
+
+installDesktopFetchBridge();
 
 // Hydrate persisted credentials BEFORE rendering so the very first
 // data fetch (in the Dashboard's useEffect) already carries auth.

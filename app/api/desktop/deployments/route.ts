@@ -52,7 +52,10 @@ function isUniqueConflict(cause: unknown): boolean {
 
 export async function GET(request: NextRequest): Promise<NextResponse> {
     try {
-        const session = await resolveRequestDesktopSession(request);
+        const session = await resolveRequestDesktopSession(request, {
+            requiredScope: "pipeline:read",
+            route: "GET /api/desktop/deployments",
+        });
         if (!session) {
             return NextResponse.json(
                 { ok: false, error: "desktop_session_required" },
@@ -121,7 +124,10 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
     try {
-        const session = await resolveRequestDesktopSession(request);
+        const session = await resolveRequestDesktopSession(request, {
+            requiredScope: "pipeline:trigger",
+            route: "POST /api/desktop/deployments",
+        });
         if (!session) {
             return NextResponse.json(
                 { ok: false, error: "desktop_session_required" },

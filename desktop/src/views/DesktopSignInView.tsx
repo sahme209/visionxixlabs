@@ -1,19 +1,52 @@
 import { useState } from "react";
 import { signInWithBrowser } from "../lib/desktopPairing";
+import { clearApiKey, saveApiKey } from "../lib/apiKeyStore";
+import { desktopClient, type VerifiedDesktopIdentity } from "../lib/desktopClient";
+import { clearAuthSession } from "../lib/authSession";
 
-export function DesktopSignInView({ onSignedIn, onPreview }: { onSignedIn: () => void; onPreview: () => void }) {
+export function DesktopSignInView({
+  onSignedIn,
+  initialError,
+}: {
+  onSignedIn: (identity: VerifiedDesktopIdentity) => void;
+  initialError?: string | null;
+}) {
   const [state, setState] = useState<"idle" | "opening" | "waiting">("idle");
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(initialError ?? null);
+  const [apiKey, setApiKey] = useState("");
+  const [checkingKey, setCheckingKey] = useState(false);
 
   async function signIn() {
     setError(null);
     setState("opening");
     try {
       await signInWithBrowser(() => setState("waiting"));
-      onSignedIn();
+      const verified = await desktopClient.verifyCurrentCredential();
+      if (!verified.ok) {
+        await clearAuthSession().catch(() => undefined);
+        throw new Error(`The approved desktop session could not be verified. ${verified.error}`);
+      }
+      onSignedIn(verified.data);
     } catch (cause) {
       setState("idle");
       setError(cause instanceof Error ? cause.message : "Sign-in failed.");
+    }
+  }
+
+  async function signInWithKey() {
+    setError(null);
+    setCheckingKey(true);
+    try {
+      await saveApiKey(apiKey);
+      const verified = await desktopClient.verifyCurrentCredential();
+      if (!verified.ok) throw new Error(verified.error);
+      setApiKey("");
+      onSignedIn(verified.data);
+    } catch (cause) {
+      await clearApiKey().catch(() => undefined);
+      setError(cause instanceof Error ? cause.message : "The workspace key could not be verified.");
+    } finally {
+      setCheckingKey(false);
     }
   }
 
@@ -27,9 +60,9 @@ export function DesktopSignInView({ onSignedIn, onPreview }: { onSignedIn: () =>
         <p className="text-[10px] font-mono uppercase tracking-[0.22em] text-violet-300">Axiom Agent</p>
         <h1 className="mt-2 text-2xl font-bold">Sign in to your workspace</h1>
         <p className="mt-2 text-sm leading-6 text-zinc-400">
-          Your browser handles Google, GitHub, or email authentication securely. Return here after approving this desktop.
+          Sign in before opening operational data. Your credential stays in the operating-system password vault.
         </p>
-        {error && <div className="mt-5 rounded-lg border border-red-500/20 bg-red-500/10 p-3 text-left text-xs text-red-200">{error}</div>}
+        {error && <div role="alert" className="mt-5 rounded-lg border border-red-500/20 bg-red-500/10 p-3 text-left text-xs text-red-200">{error}</div>}
         <button
           type="button"
           onClick={signIn}
@@ -38,9 +71,32 @@ export function DesktopSignInView({ onSignedIn, onPreview }: { onSignedIn: () =>
         >
           {state === "opening" ? "Opening browser…" : state === "waiting" ? "Waiting for approval…" : "Continue in browser"}
         </button>
-        <button type="button" onClick={onPreview} className="mt-4 text-xs text-zinc-500 hover:text-zinc-300">
-          Explore preview without signing in
+        <div className="my-5 flex items-center gap-3 text-[10px] font-mono uppercase tracking-[0.16em] text-zinc-600">
+          <span className="h-px flex-1 bg-white/[0.08]" />or use a workspace key<span className="h-px flex-1 bg-white/[0.08]" />
+        </div>
+        <label htmlFor="workspace-key" className="block text-left text-xs font-medium text-zinc-300">Workspace API key</label>
+        <input
+          id="workspace-key"
+          type="password"
+          autoComplete="off"
+          spellCheck={false}
+          value={apiKey}
+          onChange={(event) => { setApiKey(event.target.value); setError(null); }}
+          onKeyDown={(event) => { if (event.key === "Enter" && apiKey.trim() && !checkingKey) void signInWithKey(); }}
+          placeholder="vxlk_live_…"
+          className="mt-2 w-full rounded-xl border border-white/[0.10] bg-black/30 px-4 py-3 text-sm font-mono text-white outline-none placeholder:text-zinc-700 focus:border-violet-500/60 focus:ring-2 focus:ring-violet-500/15"
+        />
+        <button
+          type="button"
+          onClick={() => void signInWithKey()}
+          disabled={!apiKey.trim() || checkingKey || state !== "idle"}
+          className="mt-3 w-full rounded-full border border-white/[0.10] bg-white/[0.05] px-5 py-3 text-sm font-semibold text-zinc-100 hover:bg-white/[0.09] disabled:cursor-not-allowed disabled:opacity-50"
+        >
+          {checkingKey ? "Verifying workspace…" : "Sign in with workspace key"}
         </button>
+        <p className="mt-5 text-xs leading-5 text-zinc-600">
+          Product demonstrations use the isolated website sandbox. This installed workspace never substitutes sample records for service data.
+        </p>
       </div>
     </main>
   );

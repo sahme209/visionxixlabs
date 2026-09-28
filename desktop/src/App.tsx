@@ -1,295 +1,123 @@
 import { useEffect, useState } from "react";
 import { Sidebar } from "./components/Sidebar";
 import { TopBar } from "./components/TopBar";
-import { DashboardView } from "./views/DashboardView";
-import { ConnectorsView } from "./views/ConnectorsView";
-import { ScansView } from "./views/ScansView";
-import { SettingsView } from "./views/SettingsView";
-import { HandoffsView } from "./views/HandoffsView";
-import { SecurityView } from "./views/SecurityView";
-import { MultiCloudView } from "./views/MultiCloudView";
-import { RemediationView } from "./views/RemediationView";
-import { SimulationsView } from "./views/SimulationsView";
-import { OrchestrationView } from "./views/OrchestrationView";
-import { StartHereView } from "./views/StartHereView";
-import { ApprovalsView } from "./views/ApprovalsView";
-import { WorkflowsView } from "./views/WorkflowsView";
-import { AuditView } from "./views/AuditView";
-import { BillingView } from "./views/BillingView";
-import { TrustView } from "./views/TrustView";
-import { DocsView } from "./views/DocsView";
-import { ActivityView } from "./views/ActivityView";
-import { ConnectorHealthView } from "./views/ConnectorHealthView";
-import { ConnectorSetupView } from "./views/ConnectorSetupView";
-import { AlertEscalationsView } from "./views/AlertEscalationsView";
-import { ReleasesView } from "./views/ReleasesView";
 import { DeploymentRequestsView } from "./views/DeploymentRequestsView";
-import { SopsView } from "./views/SopsView";
-import { RepositoriesView } from "./views/RepositoriesView";
-import { BranchValidationView } from "./views/BranchValidationView";
-import { CherryPicksView } from "./views/CherryPicksView";
-import { ReleaseFreezeView } from "./views/ReleaseFreezeView";
-import { ChangeTicketsView } from "./views/ChangeTicketsView";
-import { PolicyViolationsView } from "./views/PolicyViolationsView";
-import { ReleaseReadinessView } from "./views/ReleaseReadinessView";
-import { ReleaseOverviewView } from "./views/ReleaseOverviewView";
-import { DriftView } from "./views/DriftView";
-import { ApplicationsView } from "./views/ApplicationsView";
-import { ManualFixesView } from "./views/ManualFixesView";
-import { ReleaseAuditView } from "./views/ReleaseAuditView";
-import { WebhookDeliveriesView } from "./views/WebhookDeliveriesView";
-import { BranchProtectionView } from "./views/BranchProtectionView";
-import { ReleaseNotesView } from "./views/ReleaseNotesView";
-import { DeploymentIncidentsView } from "./views/DeploymentIncidentsView";
-import { GitHubAppView } from "./views/GitHubAppView";
-import { StartHereReleaseOpsView } from "./views/StartHereReleaseOpsView";
-import { ReleaseAdvisorView } from "./views/ReleaseAdvisorView";
-import { PolicyProposalsView } from "./views/PolicyProposalsView";
-import { AgiCockpitView } from "./views/AgiCockpitView";
-import { IncidentTriageView } from "./views/IncidentTriageView";
-import { LearningLoopView } from "./views/LearningLoopView";
-import { RemediationProposalsView } from "./views/RemediationProposalsView";
-import { ReleaseOpsAutonomyView } from "./views/ReleaseOpsAutonomyView";
-import { AdvisorCouncilView } from "./views/AdvisorCouncilView";
-import { SlackNotificationsView } from "./views/SlackNotificationsView";
-import { AgiMemoryView } from "./views/AgiMemoryView";
-import { AgiSuggestionsView } from "./views/AgiSuggestionsView";
-import { AiCallLogView } from "./views/AiCallLogView";
+import { DocsView } from "./views/DocsView";
+import { SettingsView } from "./views/SettingsView";
 import { DesktopSignInView } from "./views/DesktopSignInView";
-import { desktopClient } from "./lib/desktopClient";
-import { useTrayApprovalsBadge } from "./lib/useTrayApprovalsBadge";
-import { useConnectorHealthAmbientPoll } from "./lib/connectorHealthStore";
-import { useSseStream } from "./lib/useSseStream";
-import { useNativeMenuActions } from "./lib/useNativeMenuActions";
-import { useTrayPendingSelectionBootstrap } from "./lib/useTrayPendingSelection";
-import { useTrayDecisions } from "./lib/useTrayDecisions";
+import { desktopClient, type VerifiedDesktopIdentity } from "./lib/desktopClient";
+import { clearApiKey } from "./lib/apiKeyStore";
+import { clearAuthSession } from "./lib/authSession";
 
 /**
- * Closed-union of every desktop view. Phase 406-desktop expands the
- * surface to mirror the web's 7-group structure: Start Here, Operations,
- * Team Workflows, AI Workforce, Automation, Integrations, Admin.
+ * Source-level identifiers remain broad so dormant requirement work can be
+ * audited without deletion. Only the three imported/rendered customer views
+ * below are reachable or included through the production App module.
  */
 export type View =
-  // Start Here
-  | "start-here"
-  | "dashboard"
-  | "docs"
-  // Operations
-  | "multi-cloud"
-  | "security"
-  | "scans"
-  // Operations — release management
-  | "deployment-requests"
-  | "releases"
-  | "sops"
-  | "repositories"
-  | "branch-validation"
-  | "cherry-picks"
-  | "release-freeze"
-  | "change-tickets"
-  | "policy-violations"
-  | "release-readiness"
-  | "release-overview"
-  | "drift"
-  | "applications"
-  | "manual-fixes"
-  | "release-audit"
-  | "webhook-deliveries"
-  | "branch-protection"
-  | "release-notes"
-  | "deployment-incidents"
-  | "github-app"
-  | "start-here-releaseops"
-  | "release-advisor"
-  | "policy-proposals"
-  | "agi-cockpit"
-  | "incident-triage"
-  | "learning-loop"
-  | "remediation-proposals"
-  | "releaseops-autonomy"
-  | "advisor-council"
-  | "agi-memory"
-  | "agi-suggestions"
-  | "ai-call-log"
-  // Automation
-  | "activity"
-  | "workflows"
-  | "approvals"
-  | "remediation"
-  | "simulations"
-  | "orchestration"
-  | "handoffs"
-  | "audit"
-  // Integrations
-  | "connectors"
-  | "connector-health"
-  | "connector-setup"
-  | "alert-escalations"
-  | "slack-notifications"
-  // Business / Admin
-  | "billing"
-  | "trust"
-  | "settings";
+  | "deployment-requests" | "docs" | "settings"
+  | "start-here" | "dashboard" | "multi-cloud" | "security" | "scans"
+  | "releases" | "sops" | "repositories" | "branch-validation" | "cherry-picks"
+  | "release-freeze" | "change-tickets" | "policy-violations" | "release-readiness"
+  | "release-overview" | "drift" | "applications" | "manual-fixes" | "release-audit"
+  | "webhook-deliveries" | "branch-protection" | "release-notes" | "deployment-incidents"
+  | "github-app" | "start-here-releaseops" | "release-advisor" | "policy-proposals"
+  | "agi-cockpit" | "incident-triage" | "learning-loop" | "remediation-proposals"
+  | "releaseops-autonomy" | "advisor-council" | "agi-memory" | "agi-suggestions"
+  | "ai-call-log" | "activity" | "workflows" | "approvals" | "remediation"
+  | "simulations" | "orchestration" | "handoffs" | "audit" | "connectors"
+  | "connector-health" | "connector-setup" | "alert-escalations" | "slack-notifications"
+  | "billing" | "trust";
 
 export default function App() {
-  const [activeView, setActiveView] = useState<View>("start-here");
-  const [booted, setBooted] = useState(false);
-  const [authenticated, setAuthenticated] = useState(() => desktopClient.hasAuth());
-  const [preview, setPreview] = useState(false);
+  const [authState, setAuthState] = useState<"checking" | "authenticated" | "unauthenticated">("checking");
+  const [authError, setAuthError] = useState<string | null>(null);
+  const [identity, setIdentity] = useState<VerifiedDesktopIdentity | null>(null);
 
   useEffect(() => {
-    desktopClient.isPreviewMode = preview;
-  }, [preview]);
+    let cancelled = false;
+    async function verifySavedCredential() {
+      if (!desktopClient.hasAuth()) {
+        if (!cancelled) setAuthState("unauthenticated");
+        return;
+      }
 
-  useEffect(() => {
-    const t = setTimeout(() => setBooted(true), 600);
-    return () => clearTimeout(t);
+      const verified = await desktopClient.verifyCurrentCredential();
+      if (cancelled) return;
+      if (verified.ok) {
+        setIdentity(verified.data);
+        setAuthState("authenticated");
+        return;
+      }
+
+      await Promise.allSettled([clearApiKey(), clearAuthSession()]);
+      if (cancelled) return;
+      setAuthError(`Your saved sign-in could not be verified. ${verified.error}`);
+      setAuthState("unauthenticated");
+    }
+
+    void verifySavedCredential();
+    return () => { cancelled = true; };
   }, []);
 
-  // Keep the menubar/tray pending-approval badge fresh even when the user
-  // is on a non-Approvals view. Independent of (and slower than) the
-  // 5s per-view poll inside ApprovalsView itself.
-  useTrayApprovalsBadge();
-
-  // macOS app menu / cross-platform shortcuts (Cmd+1..4 jump to views,
-  // Cmd+, opens Settings). Backed by the menu items in `src-tauri/src/menu.rs`.
-  useNativeMenuActions(setActiveView);
-
-  // Capture tray-menu pending-run clicks. ApprovalsView reads the selected
-  // runId via useTrayPendingSelection() and scrolls it into view.
-  useTrayPendingSelectionBootstrap();
-
-  // Quick-approve / quick-reject from the tray submenu. Fires the v1
-  // decide endpoint and surfaces the outcome as a native notification —
-  // operator never has to open the main window.
-  useTrayDecisions();
-
-  // Phase 408 — ambient connector-health poll. One producer at App
-  // level; ConnectorHealthView + TopBar pill subscribe via the shared
-  // store. 30s cadence (slower than approvals because connector status
-  // changes on the minute scale, not the second).
-  useConnectorHealthAmbientPoll();
-
-  // Phase 409 — long-lived SSE connection. Pushes approvals snapshots
-  // into the same approvalsStore the pollers write into, so SSE is the
-  // primary transport and the pollers are the safety net (they keep
-  // running and refresh state on the slower cadence if SSE drops or
-  // falls back). Subscribed to approvals + heartbeat only — the
-  // connector store still uses its own poll for now.
-  const sseStatus = useSseStream({ subscribe: "approvals.snapshot,heartbeat" });
-  // Expose the live status as a body data attribute so TopBar (or any
-  // surface) can render a "live" indicator without prop-drilling.
-  useEffect(() => {
-    if (typeof document !== "undefined") {
-      document.body.dataset.sseStatus = sseStatus;
-    }
-  }, [sseStatus]);
-
-  if (!booted) return <BootScreen />;
-  if (!authenticated && !preview) {
-    return <DesktopSignInView
-      onSignedIn={() => { setPreview(false); setAuthenticated(true); }}
-      onPreview={() => setPreview(true)}
-    />;
+  if (authState === "checking") return <BootScreen status="Verifying saved sign-in" />;
+  if (authState === "unauthenticated") {
+    return (
+      <DesktopSignInView
+        initialError={authError}
+        onSignedIn={(verifiedIdentity) => {
+          setAuthError(null);
+          setIdentity(verifiedIdentity);
+          setAuthState("authenticated");
+        }}
+      />
+    );
   }
+  if (!identity) return <BootScreen status="Loading verified identity" />;
+  return <AuthenticatedWorkspace identity={identity} />;
+}
+
+function AuthenticatedWorkspace({ identity }: { identity: VerifiedDesktopIdentity }) {
+  const [activeView, setActiveView] = useState<View>("deployment-requests");
+  const [booted, setBooted] = useState(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setBooted(true), 250);
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (!booted) return <BootScreen status="Loading deployment workspace" />;
 
   return (
     <div className="flex h-screen bg-axiom-bg text-white overflow-hidden">
-      <Sidebar activeView={activeView} onNavigate={setActiveView} authenticated={authenticated} preview={preview} />
+      <Sidebar activeView={activeView} onNavigate={setActiveView} />
       <main className="flex-1 flex flex-col min-w-0 min-h-0">
-        <TopBar activeView={activeView} onNavigate={setActiveView} />
+        <TopBar activeView={activeView} identity={identity} />
         <div className="flex-1 min-h-0 flex flex-col">
-          {activeView === "start-here"    && <StartHereView onNavigate={setActiveView} />}
-          {activeView === "dashboard"     && <DashboardView onNavigate={setActiveView} />}
-          {activeView === "docs"          && <DocsView />}
-          {activeView === "multi-cloud"   && <MultiCloudView onNavigate={setActiveView} />}
-          {activeView === "security"      && <SecurityView />}
-          {activeView === "scans"         && <ScansView />}
           {activeView === "deployment-requests" && <DeploymentRequestsView />}
-          {activeView === "releases"      && <ReleasesView onNavigate={setActiveView} />}
-          {activeView === "sops"          && <SopsView />}
-          {activeView === "repositories"  && <RepositoriesView />}
-          {activeView === "branch-validation" && <BranchValidationView />}
-          {activeView === "cherry-picks"  && <CherryPicksView />}
-          {activeView === "release-freeze" && <ReleaseFreezeView />}
-          {activeView === "change-tickets" && <ChangeTicketsView />}
-          {activeView === "policy-violations" && <PolicyViolationsView />}
-          {activeView === "release-readiness" && <ReleaseReadinessView />}
-          {activeView === "release-overview"  && <ReleaseOverviewView />}
-          {activeView === "drift"             && <DriftView />}
-          {activeView === "applications"      && <ApplicationsView />}
-          {activeView === "manual-fixes"      && <ManualFixesView />}
-          {activeView === "release-audit"     && <ReleaseAuditView />}
-          {activeView === "webhook-deliveries" && <WebhookDeliveriesView />}
-          {activeView === "branch-protection" && <BranchProtectionView />}
-          {activeView === "release-notes"    && <ReleaseNotesView />}
-          {activeView === "deployment-incidents" && <DeploymentIncidentsView />}
-          {activeView === "github-app"       && <GitHubAppView />}
-          {activeView === "start-here-releaseops" && <StartHereReleaseOpsView onNavigate={setActiveView} />}
-          {activeView === "release-advisor"  && <ReleaseAdvisorView />}
-          {activeView === "policy-proposals" && <PolicyProposalsView />}
-          {activeView === "agi-cockpit"      && <AgiCockpitView onNavigate={setActiveView} />}
-          {activeView === "incident-triage"  && <IncidentTriageView />}
-          {activeView === "learning-loop"    && <LearningLoopView />}
-          {activeView === "remediation-proposals" && <RemediationProposalsView />}
-          {activeView === "releaseops-autonomy" && <ReleaseOpsAutonomyView />}
-          {activeView === "advisor-council"  && <AdvisorCouncilView />}
-          {activeView === "agi-memory"       && <AgiMemoryView />}
-          {activeView === "agi-suggestions"  && <AgiSuggestionsView />}
-          {activeView === "ai-call-log"      && <AiCallLogView />}
-          {activeView === "activity"      && <ActivityView />}
-          {activeView === "workflows"     && <WorkflowsView />}
-          {activeView === "approvals"     && <ApprovalsView />}
-          {activeView === "remediation"   && <RemediationView />}
-          {activeView === "simulations"   && <SimulationsView />}
-          {activeView === "orchestration" && <OrchestrationView />}
-          {activeView === "handoffs"      && <HandoffsView />}
-          {activeView === "audit"         && <AuditView />}
-          {activeView === "connectors"        && <ConnectorsView />}
-          {activeView === "connector-health"  && <ConnectorHealthView />}
-          {activeView === "connector-setup"   && <ConnectorSetupView />}
-          {activeView === "alert-escalations" && <AlertEscalationsView />}
-          {activeView === "slack-notifications" && <SlackNotificationsView />}
-          {activeView === "billing"       && <BillingView />}
-          {activeView === "trust"         && <TrustView />}
-          {activeView === "settings"      && <SettingsView />}
+          {activeView === "docs" && <DocsView />}
+          {activeView === "settings" && <SettingsView />}
         </div>
       </main>
     </div>
   );
 }
 
-// ---------------------------------------------------------------------------
-// Boot screen — cinematic loading
-// ---------------------------------------------------------------------------
-
-function BootScreen() {
+function BootScreen({ status }: { status: string }) {
   return (
     <div className="h-screen w-screen flex items-center justify-center bg-axiom-bg text-white relative overflow-hidden">
       <div className="absolute inset-0 pointer-events-none" aria-hidden>
         <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[720px] h-[720px] rounded-full bg-violet-500/[0.10] blur-[160px] animate-pulse" />
-        <div className="absolute bottom-0 right-0 w-[520px] h-[520px] rounded-full bg-fuchsia-500/[0.07] blur-[140px]" />
-        <div className="absolute top-0 left-0 w-[420px] h-[420px] rounded-full bg-cyan-500/[0.05] blur-[120px]" />
       </div>
       <div className="relative z-10 flex flex-col items-center">
-        <div className="relative mb-6">
-          <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-violet-500 to-fuchsia-500 blur-2xl opacity-50 scale-110 animate-pulse" />
-          <div className="relative w-16 h-16 rounded-2xl bg-gradient-to-br from-violet-500 to-fuchsia-500 flex items-center justify-center text-2xl font-bold shadow-[0_0_60px_rgba(139,92,246,0.5)]">
-            A
-          </div>
-        </div>
-        <p className="text-base font-semibold tracking-tight text-white">Axiom Agent</p>
-        <p className="text-[10px] font-mono text-zinc-500 tracking-[0.22em] uppercase mt-2">Initialising local runtime</p>
+        <div className="relative w-16 h-16 rounded-2xl bg-gradient-to-br from-violet-500 to-fuchsia-500 flex items-center justify-center text-2xl font-bold shadow-[0_0_60px_rgba(139,92,246,0.5)]">A</div>
+        <p className="mt-6 text-base font-semibold tracking-tight text-white">Axiom Agent</p>
+        <p className="mt-2 text-[10px] font-mono text-zinc-500 tracking-[0.22em] uppercase">{status}</p>
         <div className="mt-6 w-48 h-[2px] bg-zinc-800/70 rounded-full overflow-hidden">
           <div className="h-full w-1/3 bg-gradient-to-r from-violet-500 via-fuchsia-500 to-cyan-500 animate-[boot-bar_1s_ease-in-out_infinite]" />
         </div>
       </div>
-      <style>{`
-        @keyframes boot-bar {
-          0%   { transform: translateX(-100%); }
-          100% { transform: translateX(300%); }
-        }
-      `}</style>
+      <style>{`@keyframes boot-bar { 0% { transform: translateX(-100%); } 100% { transform: translateX(300%); } }`}</style>
     </div>
   );
 }
