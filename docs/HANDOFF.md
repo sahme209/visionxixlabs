@@ -4,7 +4,7 @@ Last updated: 2026-09-28
 
 ## Current state
 
-The product is Axiom Agent 0.1.8 in current candidate metadata; the public installer is still 0.1.7 and must not be described as containing this pass. It uses a React/Vite desktop UI and a Tauri 2 Rust shell. The desktop now gates the workspace on verified authentication, supports system-browser approval and administrator workspace-key sign-in, routes installed-app API traffic through a native allow-listed transport, and repairs the Connector Setup URL/auth failure shown in the supplied screenshot. Request editing/diffs, provider reconciliation workers, the complete execution-to-closure journey, and exact packaged verification remain incomplete or unverified.
+The product is Axiom Agent 0.1.8. Public release `desktop-v0.1.8` was built from `2b562da7776b85d5e50e513b6c2393797d181bad` and published on 2026-09-28. It uses a React/Vite desktop UI and a Tauri 2 Rust shell. The desktop now gates the workspace on verified authentication, supports system-browser approval and administrator workspace-key sign-in, routes installed-app API traffic through a native allow-listed transport, and repairs the Connector Setup URL/auth failure shown in the supplied screenshot. Request editing/diffs, provider reconciliation workers, the complete execution-to-closure journey, live pairing migration, and clean-host first-launch verification remain incomplete or unverified.
 
 The answer to “Does the current downloadable application deliver everything required by the original vision?” is **no**. See `REQUIREMENTS_MATRIX.md` and `VERIFICATION_REPORT.md`.
 
@@ -22,7 +22,8 @@ The answer to “Does the current downloadable application deliver everything re
 - Replaced the oversized intake form with a five-stage Window → Scope → Execution → Validation → Recovery flow with stage-specific validation.
 - Fixed the contradictory identity badges by carrying the already verified desktop identity into the top bar; removed unverified ambient SSE/connector polling.
 - Deployment request/playbook routes now accept either a verified browser-paired desktop session or an appropriately scoped workspace API key.
-- Bumped candidate metadata to 0.1.8; no 0.1.8 native installer has been produced or published.
+- Published 0.1.8 installers for macOS Apple Silicon/Intel, Windows x64, and Linux x64 after aligning the Tauri notification plugin and adding fail-closed release verification.
+- Added per-platform signing attestations; macOS artifacts are Apple-signed, Gatekeeper-accepted, and notarization-ticket validated. Windows remains honestly marked unsigned.
 
 - Added durable continuity documents: Product Vision, Decisions, Requirements Matrix, Verification Report, Roadmap, and this Handoff.
 - Added reliability kernel, execution coordinator, tenant-bound Prisma operation ledger, schema migration, and regression tests for durable IDs, reconcile-before-retry, atomic claims, duplicate prevention, adapter-mode truthfulness, and app-close semantics.
@@ -42,6 +43,11 @@ The answer to “Does the current downloadable application deliver everything re
 - Verified the desktop-only delivery boundary at runtime: ordinary dashboard/operator/auth page requests redirect to `/download`, while explicit installed-app authentication return paths remain available.
 
 ## Last verified
+
+- Release run `36456768604` passed from commit `2b562da7776b85d5e50e513b6c2393797d181bad`; all four platform builds and publication succeeded.
+- The live website manifest returned `desktop-v0.1.8`; the macOS ARM download endpoint redirected to the exact v0.1.8 GitHub DMG.
+- Downloaded Apple Silicon DMG SHA-256 is `4ecfda8058c2cd2411833ef668a481047e913d28790ffcbdc89506f81378606a`; disk-image integrity and container code-signature verification passed locally.
+- Independent DMG mount/install/first launch remains blocked by this environment's disk-image device restriction. Do not equate CI signing checks with full clean-host acceptance.
 
 - Desktop 0.1.8 release alignment passed.
 - Desktop TypeScript + Vite production build passed (116 modules); existing mixed-import and >500 kB chunk warnings remain.
@@ -78,7 +84,7 @@ The full root TypeScript run stalled on iCloud with no diagnostics and was termi
 | --- | --- |
 | Original 36-section attachment unavailable | Reattach it and preserve unchanged at `docs/MASTER_BUILD_PROMPT_TAURI_DEPLOYMENT_OPERATIONS_PLATFORM.md` |
 | Vitest dependency is an iCloud dataless placeholder and sandbox cannot restore `node_modules` | Hydrate the repository locally or run `npm install`/`npm ci` with normal filesystem permission, then rerun the focused and full suites |
-| No exact current native artifact | Install Rust/Cargo and platform packaging/signing prerequisites; build after final code change |
+| Independent clean-host install/first launch not run | Install v0.1.8 on clean supported macOS ARM/Intel, Windows x64, and Linux x64 hosts; record launch, login, restart, uninstall, and recovery results |
 | Prisma pairing migration not applied | Run `prisma migrate deploy` with a writable Prisma engine cache against a safe development database, then exercise start → browser consent → one-time status consumption → restart hydration |
 | Browser automation executable absent | Install/provide the approved browser harness and run clean first-launch, invalid credential, preview, reconnect, keyboard, and visual checks |
 | Live identity/provider journeys unavailable | Supply safe non-production tenants and least-privilege test identities/credentials |

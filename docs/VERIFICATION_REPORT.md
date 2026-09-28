@@ -13,10 +13,10 @@ The 2026-09-27 website pass also verified that public provider, security, social
 | Item | Value |
 | --- | --- |
 | Product observed | Axiom Agent |
-| Desktop package/version | `axiom-desktop` 0.1.8 candidate source; published installer remains 0.1.7 |
+| Desktop package/version | `axiom-desktop` 0.1.8; published as `desktop-v0.1.8` |
 | Framework | Tauri 2 + React 19 + Vite + Rust |
-| Base commit for current working tree | `312b71c5b6674e95183e69028f6a0e142fcd7718` |
-| Current native artifact | None produced in this pass |
+| Released source commit | `2b562da7776b85d5e50e513b6c2393797d181bad` |
+| Current native artifact | Apple Silicon DMG SHA-256 `4ecfda8058c2cd2411833ef668a481047e913d28790ffcbdc89506f81378606a`; Intel DMG, Windows MSI/EXE, Linux AppImage/DEB/RPM also published with detached signatures |
 | Current test environment | macOS; repository in iCloud; isolated Vitest/TypeScript runner under `/private/tmp` because repository Rollup metadata is dataless |
 | Master-spec identity | Attachment requested again; not present in repository during audit |
 
@@ -62,15 +62,15 @@ The 2026-09-27 website pass also verified that public provider, security, social
 | Root TypeScript | Passed through production build | Next.js build completed its full TypeScript phase; direct root `tsc` in the iCloud worktree remained unsuitable because of dataless dependencies and metadata permissions |
 | Worktree whitespace/error-marker check | Passed | `git diff --check` exited 0 after the final source changes |
 | Prisma schema inspection / CLI validation | Static defect fixed; CLI blocked | Removed a duplicate operation model found by source inspection. Prisma 5.22 still attempted to update `~/.cache/prisma` outside sandbox and failed `EPERM`; schema/migration was not engine-validated or applied to a database. |
-| Native Tauri packaging | Blocked | `cargo` is not installed in this environment (exit 127); no new exact native candidate was produced |
+| Native Tauri packaging | Passed in release CI | GitHub Actions run `36456768604` built all four target jobs and published `desktop-v0.1.8`; both macOS jobs passed app signature, Gatekeeper, stapler, DMG signature, and DMG integrity gates |
 | Xcode native build route | Not applicable | Xcode reported zero schemes in the current workspace; this React/Tauri desktop is not exposed as an Xcode build target |
 | Installed app / live providers | Not run | No exact current artifact or safe provider tenants supplied |
 | Website claims regression suite | Passed | Final tree: 365 files and 4,153 tests; contact tests cover invalid email, durable acceptance, rejected email delivery, and honeypot; release/download tests cover digest/signature metadata and pre-hydration manifest-resolver links |
 | Final website production build | Passed | Next.js 16.3.6 compiled, completed TypeScript, and generated 283 static pages after the last source change |
 | Final customer-path route check | Passed | 40/40 prominent internal links returned <400; capability, plans/pricing redirect, contact, security, trust, integrations, demo, downloads, docs, and AWS/Azure/GCP pages returned expected 200/307 states |
-| Published artifact integrity | Partial | `desktop-v0.1.7` manifest reports exact SHA-256 values and detached signatures for four platform assets; downloaded ARM DMG hash matched and `hdiutil verify` passed |
-| Published artifact install/launch | Blocked | `hdiutil attach` failed in the sandbox with `Device not configured`; no clean-host install or first launch is claimed |
-| Pre-hydration/no-JavaScript download path | Passed | All four platform CTAs route through `/api/desktop/download`; the final built server returned HTTP 302 to the exact current GitHub DMG/MSI/AppImage asset for each platform |
+| Published artifact integrity | Passed for release inventory and ARM DMG | `desktop-v0.1.8` publishes fourteen installers/signatures. The downloaded ARM DMG matched GitHub SHA-256, passed `hdiutil verify`, and satisfied its code-signing designated requirement |
+| Published artifact install/launch | Blocked locally | CI verified the contained macOS app before publication. This sandbox still cannot attach a DMG (`Device not configured`), so independent clean-host drag-install and first launch are not claimed |
+| Pre-hydration/no-JavaScript download path | Passed | On 2026-09-28 the live endpoint returned HTTP 302 to `Axiom.Agent_0.1.8_aarch64.dmg`; the live manifest reported v0.1.8 and platform-specific signing state |
 | Contact live delivery | Blocked | Application-side success/failure semantics are tested; production sender credentials and delivery observability were not available |
 | First-launch/auth regression | Passed (source/frontend) | Fresh launch is gated by server credential verification; invalid stored credentials are cleared; browser and workspace-key choices are visible; exact-current-tree focused run passed 5 files / 32 tests |
 | Desktop native HTTP bridge | Implemented, native compile blocked | Installed runtime routes product API calls through a Rust `reqwest` command restricted to `https://visionxixlabs.com/api/*`, with redirects disabled and bounded timeouts; webview CSP and fetch bridge reject other HTTPS origins; frontend 0.1.8 build passed; Cargo unavailable so the Rust command is not compiled evidence |
@@ -91,4 +91,4 @@ The dated `docs/PRODUCT_DELIVERY_AUDIT_2026-09-25.md` reports 4,086 Vitest cases
 
 No claim of fully functional, production-ready, or complete is supported. Mocked/pure tests do not verify live connectors. Static template presence does not verify complete workflows. A published older installer does not verify the current source. The redesigned mobile information architecture is linted, regression-tested, production-built, and rendered-route checked, but physical-device touch behavior remains unverified until a supported simulator or device is available. The desktop presentation has source, lint, contract, TypeScript, and production-build evidence; final visual acceptance still requires a browser or physical display outside the restricted harness.
 
-The screenshot supplied on 2026-09-27 shows a `v0.1.0 · preview` shell with contradictory `connected`, `auth failed`, and raw URL-pattern states. That exact installed binary is not the 0.1.8 candidate source verified here. Do not distribute 0.1.8 until CI compiles the Rust bridge, applies the pairing migration in a safe environment, produces signed artifacts, and completes clean-install first-launch tests.
+The screenshot supplied on 2026-09-27 shows a `v0.1.0 · preview` shell with contradictory `connected`, `auth failed`, and raw URL-pattern states. That binary is not the published v0.1.8 build. Release CI has compiled the Rust bridge and produced verified signed/notarized macOS artifacts, but the pairing migration and independent clean-host first-launch journey remain unverified. Distribution is therefore available with those limitations, not represented as fully production-ready.
