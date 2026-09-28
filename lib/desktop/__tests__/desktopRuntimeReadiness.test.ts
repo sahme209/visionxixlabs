@@ -29,9 +29,11 @@ describe("desktop runtime readiness", () => {
 
   it("allows distribution when every required store is queryable, even when empty", async () => {
     await expect(readDesktopRuntimeReadiness()).resolves.toEqual({ ready: true });
-    for (const probe of Object.values(mocks)) {
-      expect(probe).toHaveBeenCalledWith({ select: { id: true } });
-    }
+    expect(mocks.pairing).toHaveBeenCalledWith({ select: { id: true } });
+    expect(mocks.session).toHaveBeenCalledWith({ select: { id: true } });
+    expect(mocks.billing).toHaveBeenCalledWith({ select: { organizationId: true } });
+    expect(mocks.request).toHaveBeenCalledWith({ select: { id: true } });
+    expect(mocks.playbook).toHaveBeenCalledWith({ select: { id: true } });
   });
 
   it("fails closed without exposing database details when any required store is unavailable", async () => {

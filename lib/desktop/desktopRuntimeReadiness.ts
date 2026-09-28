@@ -18,7 +18,7 @@ export async function readDesktopRuntimeReadiness(): Promise<DesktopRuntimeReadi
     await Promise.all([
       prisma.desktopPairingChallengeRecord.findFirst({ select: { id: true } }),
       prisma.desktopSessionRecord.findFirst({ select: { id: true } }),
-      prisma.tenantBillingPlan.findFirst({ select: { id: true } }),
+      prisma.tenantBillingPlan.findFirst({ select: { organizationId: true } }),
       prisma.tauriDeploymentRequest.findFirst({ select: { id: true } }),
       prisma.tauriPlaybook.findFirst({ select: { id: true } }),
     ]);
