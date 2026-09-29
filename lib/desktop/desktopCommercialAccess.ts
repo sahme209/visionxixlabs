@@ -8,5 +8,9 @@ export type { DesktopCommercialAccess, DesktopCommercialAccessCode } from "./des
 
 export async function readDesktopCommercialAccess(organizationId: string): Promise<DesktopCommercialAccess> {
   const plan = await readBillingPlan(organizationId);
-  return decideDesktopCommercialAccess(plan);
+  return {
+    ...decideDesktopCommercialAccess(plan),
+    currentPeriodEndsAt: plan.currentPeriodEndsAt,
+    cancelAtPeriodEnd: plan.cancelAtPeriodEnd,
+  };
 }

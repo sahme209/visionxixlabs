@@ -1,10 +1,10 @@
 # Handoff
 
-Last updated: 2026-09-28
+Last updated: 2026-09-29
 
 ## Current state
 
-The product is Axiom Agent 0.1.9. Public release `desktop-v0.1.9` was built from `353eb983aa579474b2e22fd829b27f9a47709306` and published on 2026-09-28. It uses a React/Vite desktop UI and a Tauri 2 Rust shell. The desktop separates verified identity from paid production access, supports desktop-initiated system-browser approval and administrator workspace-key sign-in, and routes installed-app API traffic through a native allow-listed transport. The production pairing and operation-ledger migrations were applied on 2026-09-29; release discovery, download resolution, and pairing-start are live again. Request editing/diffs, provider reconciliation workers, the complete execution-to-closure journey, entitlement provisioning, and clean-host first-launch verification remain incomplete or unverified.
+The product is Axiom Agent. Public release `desktop-v0.1.9` was built from `353eb983aa579474b2e22fd829b27f9a47709306` and published on 2026-09-28; the current successor candidate is 0.1.10. It uses a React/Vite desktop UI and a Tauri 2 Rust shell. The desktop separates verified identity from paid production access, supports desktop-initiated system-browser login and account creation with a registered native return, and routes installed-app API traffic through a native allow-listed transport. The production pairing and operation-ledger migrations were applied on 2026-09-29; release discovery, download resolution, and pairing-start are live again. Request editing/diffs, provider reconciliation workers, the complete execution-to-closure journey, entitlement provisioning, and clean-host first-launch verification remain incomplete or unverified.
 
 The answer to “Does the current downloadable application deliver everything required by the original vision?” is **no**. See `REQUIREMENTS_MATRIX.md` and `VERIFICATION_REPORT.md`.
 
@@ -43,6 +43,13 @@ The answer to “Does the current downloadable application deliver everything re
 - Verified the desktop-only delivery boundary at runtime: ordinary dashboard/operator/auth page requests redirect to `/download`, while explicit installed-app authentication return paths remain available.
 
 ## Last verified
+
+- 2026-09-29 current working tree: the installed app now presents separate Log in and Create account actions, preserves the intent through the system-browser flow, and returns through the registered `axiom-agent://` desktop scheme after explicit device authorization. The credential still arrives only through the one-time server exchange.
+- Customer Settings were rebuilt around verified identity, paid access, hosted billing, local notification behavior, immutable safety controls, repository/trigger separation, and honestly labeled tenant-admin integrations. Legacy API-key paste, pairing JSON, scan-on-launch, and arbitrary default-provider controls are no longer customer-facing.
+- Website optional analytics is consent-gated; essential-only remains available and the choice can be reopened. Base typography and reduced-motion behavior were tightened without replacing the approved visual system.
+- Exact 0.1.10 source evidence: 369 test files / 4,186 tests passed after the final billing-path change; Next.js compiled, type-checked, and generated 284 pages; changed-file ESLint passed; desktop TypeScript/Vite production build passed; Rust `cargo check --locked` passed with one pre-existing shell-plugin deprecation warning.
+- A local arm64 release build produced `Axiom Agent.app` with version 0.1.10, bundle identifier `com.visionxixlabs.axiom`, and registered `axiom-agent` URL scheme. Its executable SHA-256 is `e0368e52c783f26eec69887a73fdc3773ac22930c86850f634c25f1077f22a2a`. The local app is ad-hoc signed; disk-image creation failed in the restricted environment. Launch Services also rejected registration from the Xcode/Codex temporary container (`-10822`), and direct launch aborted inside macOS `_RegisterApplication` before Tauri setup. Signed/notarized multi-platform artifacts and a clean-host installed deep-link round trip remain required; no successful local launch is claimed.
+- Desktop billing no longer opens the browser-only `/dashboard/billing` route. A browser-paired desktop session requests a short-lived Stripe portal URL through `/api/desktop/billing/portal`; API keys are rejected, missing customer/configuration states fail visibly, Stripe hosts are allow-listed by the client, and `/desktop/billing/return` returns focus to the app so entitlement is re-read.
 
 - Release run `36472258963` passed from commit `353eb983aa579474b2e22fd829b27f9a47709306`; macOS Apple Silicon/Intel, Windows x64, Linux x64, and publication jobs succeeded for `desktop-v0.1.9`.
 - The downloaded Apple Silicon v0.1.9 DMG is 6,165,434 bytes with SHA-256 `c44e241489a1ad7cc0a1fc061ed62b4f6b4b4635d196b3aae25a4a553cd15bb6`; `hdiutil verify` and code-signature designated-requirement verification passed. Local mounting remains blocked by `Device not configured`.
@@ -88,8 +95,7 @@ Earlier root TypeScript and Prisma attempts were blocked by the sandboxed user e
 | Blocker | Exact resolution |
 | --- | --- |
 | Original 36-section attachment unavailable | Reattach it and preserve unchanged at `docs/MASTER_BUILD_PROMPT_TAURI_DEPLOYMENT_OPERATIONS_PLATFORM.md` |
-| Vitest dependency is an iCloud dataless placeholder and sandbox cannot restore `node_modules` | Hydrate the repository locally or run `npm install`/`npm ci` with normal filesystem permission, then rerun the focused and full suites |
-| Independent clean-host install/first launch not run | Install v0.1.9 on clean supported macOS ARM/Intel, Windows x64, and Linux x64 hosts; record launch, login, restart, uninstall, and recovery results |
+| Independent clean-host install/first launch not run | After release CI publishes 0.1.10, install it on clean supported macOS ARM/Intel, Windows x64, and Linux x64 hosts; record launch, login, signup, native return, restart, uninstall, and recovery results |
 | Pairing approval/consumption and entitlement transition not live-tested | Use an authorized non-production customer identity and entitlement fixture to exercise start → signup/sign-in → browser consent → one-time consumption → access block/grant → restart/revocation without creating fictional production customers |
 | Browser automation executable absent | Install/provide the approved browser harness and run clean first-launch, invalid credential, preview, reconnect, keyboard, and visual checks |
 | Live identity/provider journeys unavailable | Supply safe non-production tenants and least-privilege test identities/credentials |
@@ -105,8 +111,8 @@ Earlier root TypeScript and Prisma attempts were blocked by the sandboxed user e
 4. Route one real non-production workflow-dispatch adapter through the operation coordinator and implement startup reconciliation.
 5. Complete evidence, technical/functional validation, deferred follow-up, rollback, and closure.
 6. Run the website on real iPhone/Android browsers or supported simulators at 320, 390, 430, and 768 CSS pixels, including menu focus, safe areas, scrolling, CTA overlap, and link behavior.
-7. Test v0.1.9 first launch, browser approval, one-time consumption, entitlement transition, revocation, and restart on clean hosts.
-8. Install, launch, upgrade, and recovery-test the exact v0.1.9 artifact on clean supported hosts; publish a successor only after any resulting source changes pass the same gates.
+7. Test 0.1.10 first launch, browser approval/native return, cancellation, one-time consumption, entitlement transition, revocation, and restart on clean hosts.
+8. Install, launch, upgrade, and recovery-test the exact 0.1.10 release artifacts on clean supported hosts; keep public availability failed closed if a required runtime path regresses.
 ## Website claims/customer-path pass — 2026-09-27
 
 - Reconciled public AWS/Azure/GCP wording to the conservative capability coverage map; no provider is represented by a generic “live/full support” badge.

@@ -18,6 +18,8 @@ export interface DesktopCommercialAccess {
   billingStatus: string;
   accessRequestPath: string;
   pricingPath: string;
+  currentPeriodEndsAt?: string;
+  cancelAtPeriodEnd?: boolean;
 }
 
 export function decideDesktopCommercialAccess(plan: CommercialPlanSnapshot): DesktopCommercialAccess {

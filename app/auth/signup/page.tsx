@@ -1,8 +1,8 @@
 "use client";
 
-import { Suspense, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { signIn } from "next-auth/react";
+import { getProviders, signIn } from "next-auth/react";
 import Link from "next/link";
 import Image from "next/image";
 import {
@@ -35,10 +35,40 @@ function SignUpForm() {
   const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [oauthLoading, setOauthLoading] = useState<null | "google" | "github">(null);
+  const [enabledProviders, setEnabledProviders] = useState<{ google: boolean; github: boolean } | null>(null);
   const router = useRouter();
   const searchParams = useSearchParams();
   const redirect = searchParams.get("redirect") || "/download";
   const desktopChallenge = desktopChallengeFromRedirect(redirect);
+
+  useEffect(() => {
+    let cancelled = false;
+    getProviders().then((providers) => {
+      if (cancelled) return;
+      setEnabledProviders({
+        google: Boolean(providers && "google" in providers),
+        github: Boolean(providers && "github" in providers),
+      });
+    }).catch(() => {
+      if (!cancelled) setEnabledProviders({ google: false, github: false });
+    });
+    return () => { cancelled = true; };
+  }, []);
+
+  const handleOAuth = async (provider: "google" | "github") => {
+    if (!acceptedTerms || !desktopChallenge || enabledProviders?.[provider] !== true) return;
+    setOauthLoading(provider);
+    setError("");
+    try {
+      const result = await signIn(provider, { callbackUrl: redirect, redirect: true });
+      if (result?.error) setError(`Could not start ${provider} sign-up: ${result.error}`);
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : `Could not start ${provider} sign-up.`);
+    } finally {
+      setOauthLoading(null);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -207,29 +237,37 @@ function SignUpForm() {
               </button>
             </form>
 
-            <div className="flex items-center gap-3 my-6">
-              <div className="flex-1 h-px bg-white/[0.06]" />
-              <span className="text-xs text-zinc-600">Or</span>
-              <div className="flex-1 h-px bg-white/[0.06]" />
-            </div>
-            <div className="flex items-center justify-center gap-3">
-              <button
-                type="button"
-                disabled={loading || !acceptedTerms || !desktopChallenge}
-                onClick={() => signIn("google", { callbackUrl: redirect })}
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-white/[0.08] bg-white/[0.02] text-sm text-zinc-400 hover:bg-white/[0.06] hover:text-white transition-all disabled:opacity-50"
-              >
-                Sign up with Google
-              </button>
-              <button
-                type="button"
-                disabled={loading || !acceptedTerms || !desktopChallenge}
-                onClick={() => signIn("github", { callbackUrl: redirect })}
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-white/[0.08] bg-white/[0.02] text-sm text-zinc-400 hover:bg-white/[0.06] hover:text-white transition-all disabled:opacity-50"
-              >
-                Sign up with GitHub
-              </button>
-            </div>
+            {(enabledProviders?.google || enabledProviders?.github) && (
+              <>
+                <div className="flex items-center gap-3 my-6">
+                  <div className="flex-1 h-px bg-white/[0.06]" />
+                  <span className="text-xs text-zinc-600">Or use your organization identity</span>
+                  <div className="flex-1 h-px bg-white/[0.06]" />
+                </div>
+                <div className={`grid gap-3 ${enabledProviders.google && enabledProviders.github ? "grid-cols-2" : "grid-cols-1"}`}>
+                  {enabledProviders.google && (
+                    <button
+                      type="button"
+                      disabled={loading || oauthLoading !== null || !acceptedTerms || !desktopChallenge}
+                      onClick={() => void handleOAuth("google")}
+                      className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-full border border-white/[0.08] bg-white/[0.02] text-sm text-zinc-300 hover:bg-white/[0.06] hover:text-white transition-all disabled:opacity-50"
+                    >
+                      {oauthLoading === "google" ? "Opening…" : "Continue with Google"}
+                    </button>
+                  )}
+                  {enabledProviders.github && (
+                    <button
+                      type="button"
+                      disabled={loading || oauthLoading !== null || !acceptedTerms || !desktopChallenge}
+                      onClick={() => void handleOAuth("github")}
+                      className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-full border border-white/[0.08] bg-white/[0.02] text-sm text-zinc-300 hover:bg-white/[0.06] hover:text-white transition-all disabled:opacity-50"
+                    >
+                      {oauthLoading === "github" ? "Opening…" : "Continue with GitHub"}
+                    </button>
+                  )}
+                </div>
+              </>
+            )}
             <p className="mt-6 text-sm text-zinc-500 text-center">
               Already have an account?{" "}
               <Link

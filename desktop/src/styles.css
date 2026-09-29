@@ -13,6 +13,9 @@
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    font-size: 16px;
+    line-height: 1.5;
+    text-rendering: optimizeLegibility;
   }
 
   * {
@@ -44,6 +47,14 @@
     outline: 2px solid rgba(139, 92, 246, 0.5);
     outline-offset: 2px;
     border-radius: 4px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }
 

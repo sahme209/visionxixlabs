@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { apiSuccess } from "@/lib/api/dtoMappers";
 import { readDesktopCommercialAccess } from "@/lib/desktop/desktopCommercialAccess";
 import { resolveRequestDesktopSession } from "@/lib/desktop/resolveRequestDesktopSession";
+import { prisma } from "@/lib/db";
 
 export const dynamic = "force-dynamic";
 
@@ -20,10 +21,18 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
   }
 
   const access = await readDesktopCommercialAccess(principal.organizationId);
+  const user = principal.credentialKind === "desktop_session"
+    ? await prisma.user.findUnique({
+        where: { id: principal.userId },
+        select: { email: true, name: true },
+      }).catch(() => null)
+    : null;
   return NextResponse.json(apiSuccess({
     identity: {
       kind: principal.credentialKind,
       organizationId: principal.organizationId,
+      email: user?.email ?? undefined,
+      displayName: user?.name ?? user?.email ?? undefined,
     },
     access,
   }));

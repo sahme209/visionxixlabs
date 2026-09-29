@@ -58,7 +58,12 @@ export default function App() {
     }
 
     void verifySavedCredential();
-    return () => { cancelled = true; };
+    const verifyAfterBrowserReturn = () => { void verifySavedCredential(); };
+    window.addEventListener("focus", verifyAfterBrowserReturn);
+    return () => {
+      cancelled = true;
+      window.removeEventListener("focus", verifyAfterBrowserReturn);
+    };
   }, []);
 
   if (authState === "checking") return <BootScreen status="Verifying saved sign-in" />;
@@ -113,7 +118,7 @@ function AuthenticatedWorkspace({ identity }: { identity: VerifiedDesktopIdentit
         <div className="flex-1 min-h-0 flex flex-col">
           {activeView === "deployment-requests" && <DeploymentRequestsView />}
           {activeView === "docs" && <DocsView />}
-          {activeView === "settings" && <SettingsView />}
+          {activeView === "settings" && <SettingsView identity={identity} />}
         </div>
       </main>
     </div>

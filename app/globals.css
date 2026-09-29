@@ -62,6 +62,22 @@ body {
   line-height: 1.6;
   /* Prevent horizontal scroll from any decorative absolute element overflowing on small screens. */
   overflow-x: hidden;
+  font-size: 16px;
+  text-rendering: optimizeLegibility;
+}
+
+p, li, dd, dt, label, input, textarea, select, button {
+  text-wrap: pretty;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
 }
 
 /* iOS Safari: prevent the soft-keyboard from zooming in on input focus.

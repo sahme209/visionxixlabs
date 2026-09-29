@@ -1,6 +1,6 @@
 [package]
 name = "axiom-desktop"
-version = "0.1.9"
+version = "0.1.10"
 description = "Axiom Agent — Local AI Cloud Operations Command Center"
 authors = ["Vision XIX Labs"]
 edition = "2021"
@@ -13,6 +13,8 @@ tauri = { version = "2", features = ["tray-icon"] }
 tauri-plugin-shell = "2"
 tauri-plugin-notification = "2"
 tauri-plugin-store = "2"
+tauri-plugin-deep-link = "2"
+tauri-plugin-single-instance = { version = "2", features = ["deep-link"] }
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 tokio = { version = "1", features = ["full"] }

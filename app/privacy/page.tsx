@@ -1,7 +1,6 @@
 "use client";
 
 import { ShieldCheckIcon } from "@heroicons/react/24/outline";
-import Link from "next/link";
 import { Navigation } from "../../components/Navigation";
 
 export default function PrivacyPolicyPage() {
@@ -147,7 +146,7 @@ export default function PrivacyPolicyPage() {
                 <li><strong>Contact Information:</strong> Name, email address, company name, phone number (if provided)</li>
                 <li><strong>Inquiry Data:</strong> Information about your cloud provider, company size, technical requirements, and other details you provide</li>
                 <li><strong>Technical Data:</strong> IP address, browser type, device information, pages visited, referral sources</li>
-                <li><strong>Cookies and Tracking:</strong> We use essential cookies for website functionality. We do not use third-party advertising cookies or tracking pixels.</li>
+                <li><strong>Cookies and Measurement:</strong> Essential cookies support account and desktop-pairing flows. Optional, privacy-conscious site measurement loads only after consent. We do not use third-party advertising cookies.</li>
               </ul>
             </div>
           </section>

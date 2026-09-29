@@ -18,6 +18,7 @@ export function PairDesktopClient({ challenge, deviceLabel }: { challenge: strin
       const body = await response.json();
       if (!response.ok) throw new Error(body.message || body.error || "Pairing failed.");
       setState("done");
+      window.location.assign("axiom-agent://auth/complete");
     } catch (cause) {
       setState("idle");
       setError(cause instanceof Error ? cause.message : "Pairing failed.");
@@ -27,8 +28,11 @@ export function PairDesktopClient({ challenge, deviceLabel }: { challenge: strin
   if (state === "done") {
     return (
       <div className="rounded-xl border border-emerald-500/25 bg-emerald-500/10 p-5 text-emerald-100">
-        <p className="font-semibold">Desktop approved</p>
-        <p className="mt-1 text-sm text-emerald-200/75">Return to Axiom Agent to finish sign-in. This one-time browser tab can be closed.</p>
+        <p className="font-semibold">Axiom Agent is authorized</p>
+        <p className="mt-1 text-sm text-emerald-200/75">Your browser will return you to the installed application. If it does not open automatically, use the button below.</p>
+        <a href="axiom-agent://auth/complete" className="mt-4 inline-flex w-full items-center justify-center rounded-full bg-white px-5 py-3 text-sm font-semibold text-black hover:bg-zinc-100">
+          Open Axiom Agent
+        </a>
       </div>
     );
   }

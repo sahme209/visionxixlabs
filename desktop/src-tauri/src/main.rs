@@ -30,6 +30,13 @@ async fn get_health() -> Result<serde_json::Value, String> {
 
 fn main() {
     tauri::Builder::default()
+        .plugin(tauri_plugin_single_instance::init(|app, _argv, _cwd| {
+            if let Some(window) = app.get_webview_window("main") {
+                let _ = window.show();
+                let _ = window.set_focus();
+            }
+        }))
+        .plugin(tauri_plugin_deep_link::init())
         .plugin(tauri_plugin_shell::init())
         .plugin(tauri_plugin_notification::init())
         .plugin(tauri_plugin_store::Builder::new().build())
@@ -53,9 +60,10 @@ fn main() {
             tray::set_tray_pending_list,
         ])
         .setup(|app| {
-            let window = app.get_webview_window("main").unwrap();
             #[cfg(debug_assertions)]
-            window.open_devtools();
+            if let Some(window) = app.get_webview_window("main") {
+                window.open_devtools();
+            }
 
             // Tray icon — best-effort. A failed tray build (e.g. on a
             // headless CI machine) should not block the app from starting.

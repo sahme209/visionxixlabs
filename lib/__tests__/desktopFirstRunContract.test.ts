@@ -75,10 +75,80 @@ describe("desktop first-run contract", () => {
     expect(startRoute).toContain('new URL("/desktop/connect"');
     expect(consentPage).toContain("App version");
     expect(consentPage).toContain("Request expires");
-    expect(consentClient).toContain("Desktop approved");
+    expect(consentClient).toContain("Axiom Agent is authorized");
+    expect(consentClient).toContain("axiom-agent://auth/complete");
     expect(consentClient).not.toContain("Desktop connected");
     expect(statusRoute).toContain("consumedAt: null");
     expect(statusRoute).toContain('status: "consumed"');
+  });
+
+  it("offers distinct sign-in and account-creation paths and returns to the native app", () => {
+    const signIn = readFileSync(join(root, "desktop/src/views/DesktopSignInView.tsx"), "utf8");
+    const pairing = readFileSync(join(root, "desktop/src/lib/desktopPairing.ts"), "utf8");
+    const startRoute = readFileSync(join(root, "app/api/desktop/pair/start/route.ts"), "utf8");
+    const connectPage = readFileSync(join(root, "app/desktop/connect/page.tsx"), "utf8");
+    const tauriConfig = readFileSync(join(root, "desktop/src-tauri/tauri.conf.json"), "utf8");
+    expect(signIn).toContain('continueInBrowser("sign_in")');
+    expect(signIn).toContain('continueInBrowser("sign_up")');
+    expect(signIn).toContain("cancelBrowserSignIn");
+    expect(pairing).toContain("signal?: AbortSignal");
+    expect(pairing).toContain("intent: DesktopAuthIntent");
+    expect(startRoute).toContain('INTENTS = new Set(["sign_in", "sign_up"])');
+    expect(connectPage).toContain('/auth/signup?redirect=');
+    expect(connectPage).toContain('/auth/signin?callbackUrl=');
+    expect(tauriConfig).toContain('"axiom-agent"');
+  });
+
+  it("shows account providers only when the identity service actually configures them", () => {
+    const signupPage = readFileSync(join(root, "app/auth/signup/page.tsx"), "utf8");
+    expect(signupPage).toContain("getProviders()");
+    expect(signupPage).toContain("enabledProviders.google");
+    expect(signupPage).toContain("enabledProviders.github");
+    expect(signupPage).toContain("enabledProviders?.[provider] !== true");
+  });
+
+  it("does not expose legacy customer credential and scan controls in Settings", () => {
+    const settings = readFileSync(join(root, "desktop/src/views/SettingsView.tsx"), "utf8");
+    expect(settings).toContain("Account & session");
+    expect(settings).toContain("Plan & billing");
+    expect(settings).toContain("Repositories & triggers");
+    expect(settings).toContain("A return from Checkout does not grant access by itself");
+    expect(settings).not.toContain("Paste desktop pairing JSON");
+    expect(settings).not.toContain("Save API key");
+    expect(settings).not.toContain("Default provider");
+    expect(settings).not.toContain("Scan on launch");
+  });
+
+  it("opens billing through a bearer-authenticated desktop portal session", () => {
+    const settings = readFileSync(join(root, "desktop/src/views/SettingsView.tsx"), "utf8");
+    const accessWall = readFileSync(join(root, "desktop/src/views/DesktopAccessRequiredView.tsx"), "utf8");
+    const client = readFileSync(join(root, "desktop/src/lib/desktopClient.ts"), "utf8");
+    const app = readFileSync(join(root, "desktop/src/App.tsx"), "utf8");
+    const portal = readFileSync(join(root, "app/api/desktop/billing/portal/route.ts"), "utf8");
+    const returned = readFileSync(join(root, "app/desktop/billing/return/page.tsx"), "utf8");
+    expect(settings).toContain("desktopClient.desktopBillingPortal()");
+    expect(settings).not.toContain("/dashboard/billing");
+    expect(accessWall).toContain('identity.access.code === "payment_past_due"');
+    expect(accessWall).toContain("desktopClient.desktopBillingPortal()");
+    expect(client).toContain('this.post("/api/desktop/billing/portal", {})');
+    expect(portal).toContain("resolveRequestDesktopSession");
+    expect(portal).toContain("requireActiveAccess: false");
+    expect(portal).toContain('principal.credentialKind !== "desktop_session"');
+    expect(portal).toContain("createBillingPortalSession");
+    expect(portal).toContain("billing_customer_missing");
+    expect(returned).toContain("axiom-agent://billing/complete");
+    expect(returned).toContain("does not grant access by itself");
+    expect(app).toContain('window.addEventListener("focus", verifyAfterBrowserReturn)');
+  });
+
+  it("gates optional website measurement behind an explicit privacy choice", () => {
+    const layout = readFileSync(join(root, "app/layout.tsx"), "utf8");
+    const consent = readFileSync(join(root, "components/PrivacyConsent.tsx"), "utf8");
+    expect(layout).toContain("<PrivacyConsent />");
+    expect(layout).not.toContain("<Analytics />");
+    expect(consent).toContain('consent === "accepted" && <Analytics />');
+    expect(consent).toContain("Essential only");
+    expect(consent).toContain("Accept optional");
   });
 
   it("routes connector setup through the bearer-authenticated desktop client", () => {

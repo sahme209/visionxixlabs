@@ -38,6 +38,7 @@ prisma/dev.db-journal
 
 # generated scaffolds
 /data/scaffolds
+/desktop/src-tauri/gen/
 
 # local scratch scripts (AI Gateway test, etc.)
 /index.mjs

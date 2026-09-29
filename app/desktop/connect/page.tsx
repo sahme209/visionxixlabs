@@ -7,8 +7,10 @@ import { readDesktopCommercialAccess } from "@/lib/desktop/desktopCommercialAcce
 
 export const dynamic = "force-dynamic";
 
-export default async function DesktopConnectPage({ searchParams }: { searchParams: Promise<{ challenge?: string }> }) {
-  const challenge = (await searchParams).challenge ?? "";
+export default async function DesktopConnectPage({ searchParams }: { searchParams: Promise<{ challenge?: string; intent?: string }> }) {
+  const params = await searchParams;
+  const challenge = params.challenge ?? "";
+  const intent = params.intent === "sign_up" ? "sign_up" : "sign_in";
   const pairing = challenge
     ? await prisma.desktopPairingChallengeRecord.findUnique({ where: { id: challenge } })
     : null;
@@ -21,8 +23,10 @@ export default async function DesktopConnectPage({ searchParams }: { searchParam
 
   const context = await currentContext();
   if (!context.isAuthenticated) {
-    const callbackUrl = `/desktop/connect?challenge=${encodeURIComponent(challenge)}`;
-    redirect(`/auth/signin?callbackUrl=${encodeURIComponent(callbackUrl)}`);
+    const callbackUrl = `/desktop/connect?challenge=${encodeURIComponent(challenge)}&intent=${intent}`;
+    redirect(intent === "sign_up"
+      ? `/auth/signup?redirect=${encodeURIComponent(callbackUrl)}`
+      : `/auth/signin?callbackUrl=${encodeURIComponent(callbackUrl)}`);
   }
   const access = await readDesktopCommercialAccess(context.organizationId!);
 
@@ -30,7 +34,7 @@ export default async function DesktopConnectPage({ searchParams }: { searchParam
     <main className="min-h-screen bg-[#09090b] px-4 py-16 text-white">
       <div className="mx-auto max-w-md rounded-2xl border border-white/10 bg-[#101014] p-8 shadow-2xl">
         <Link href="/" className="text-xs uppercase tracking-widest text-violet-300">Vision XIX Labs</Link>
-        <h1 className="mt-6 text-3xl font-bold">Connect Axiom Agent</h1>
+        <h1 className="mt-6 text-3xl font-bold">Authorize Axiom Agent</h1>
         <p className="mb-7 mt-2 text-sm leading-6 text-zinc-400">
           Signed in as <span className="text-zinc-200">{context.email}</span>. Approve only if this is your desktop.
         </p>

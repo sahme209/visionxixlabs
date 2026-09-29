@@ -1,17 +1,27 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { invoke } from "@tauri-apps/api/core";
-import { ViewShell } from "../components/Primitives";
-import { useWorkspaceState } from "../lib/workspaceState";
+import { open } from "@tauri-apps/plugin-shell";
 import {
-  apiKeyPrefix,
-  clearApiKey,
-  readPersistedApiKey,
-  saveApiKey,
-} from "../lib/apiKeyStore";
-import { desktopClient } from "../lib/desktopClient";
+  Bell,
+  Check,
+  ChevronRight,
+  CircleUserRound,
+  CreditCard,
+  GitBranch,
+  Link2,
+  LockKeyhole,
+  LogOut,
+  MessageSquare,
+  MonitorCheck,
+  ShieldCheck,
+} from "lucide-react";
+import { ViewShell } from "../components/Primitives";
+import { desktopClient, type VerifiedDesktopIdentity } from "../lib/desktopClient";
+import { clearApiKey } from "../lib/apiKeyStore";
 import { clearAuthSession } from "../lib/authSession";
 import { markNotificationPrefDirty, notifyResult } from "../lib/notifications";
-import { useVoteHistory } from "../lib/voteHistory";
+
+const WEB_BASE = "https://visionxixlabs.com";
 
 interface Preferences {
   theme: string;
@@ -21,398 +31,184 @@ interface Preferences {
   scan_on_launch: boolean;
 }
 
-export function SettingsView() {
+type Section = "account" | "billing" | "workflow" | "repositories" | "integrations";
+
+const sections: Array<{ id: Section; label: string; icon: typeof CircleUserRound }> = [
+  { id: "account", label: "Account & session", icon: CircleUserRound },
+  { id: "billing", label: "Plan & billing", icon: CreditCard },
+  { id: "workflow", label: "Workflow behavior", icon: ShieldCheck },
+  { id: "repositories", label: "Repositories & triggers", icon: GitBranch },
+  { id: "integrations", label: "Integrations", icon: Link2 },
+];
+
+export function SettingsView({ identity }: { identity: VerifiedDesktopIdentity }) {
+  const [active, setActive] = useState<Section>("account");
   const [prefs, setPrefs] = useState<Preferences | null>(null);
   const [saved, setSaved] = useState(false);
-  const [loadError, setLoadError] = useState<string | null>(null);
-  const [saveError, setSaveError] = useState<string | null>(null);
-  const workspace = useWorkspaceState();
-  const [pasteValue, setPasteValue] = useState("");
-  const [pasteError, setPasteError] = useState<string | null>(null);
-  const voteHistory = useVoteHistory();
-
-  // Phase 399+ vxlk_* API key state.
-  const [storedKey, setStoredKey] = useState<string | undefined>(undefined);
-  const [keyPasteValue, setKeyPasteValue] = useState("");
-  const [keyPasteError, setKeyPasteError] = useState<string | null>(null);
-  const [keyTestStatus, setKeyTestStatus] = useState<
-    { kind: "ok"; workspace: string; planTier: string; scopes: ReadonlyArray<string> } |
-    { kind: "err"; message: string } |
-    null
-  >(null);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    invoke<Preferences>("get_preferences").then(setPrefs).catch((err) => setLoadError(String(err)));
-    readPersistedApiKey().then(setStoredKey).catch((err) => setLoadError(String(err)));
+    invoke<Preferences>("get_preferences").then(setPrefs).catch((cause) => setError(String(cause)));
   }, []);
 
-  const savePrefs = async () => {
-    if (!prefs) return;
-    setSaveError(null);
+  async function savePreferences(next: Preferences) {
+    setError(null);
+    setPrefs(next);
     try {
-      await invoke("set_preferences", { prefs });
-      // Notification helper caches the pref between polls — force a re-read
-      // so toggling here takes effect on the very next approval, not on
-      // page reload.
+      await invoke("set_preferences", { prefs: next });
       markNotificationPrefDirty();
       setSaved(true);
-      setTimeout(() => setSaved(false), 2000);
-    } catch (err) {
-      setSaveError(err instanceof Error ? err.message : String(err));
+      window.setTimeout(() => setSaved(false), 1800);
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : String(cause));
     }
-  };
+  }
 
-  const updatePref = <K extends keyof Preferences>(key: K, value: Preferences[K]) => {
-    setPrefs((prev) => (prev ? { ...prev, [key]: value } : null));
-  };
-
-  if (!prefs) {
-    return (
-      <ViewShell>
-        <div className="text-sm text-zinc-500">{loadError ? `Preferences unavailable: ${loadError}` : "Loading preferences..."}</div>
-      </ViewShell>
-    );
+  async function signOut() {
+    await Promise.allSettled([clearApiKey(), clearAuthSession()]);
+    window.location.reload();
   }
 
   return (
     <ViewShell>
       <div>
-        <h1 className="text-xl font-bold tracking-tight">Settings</h1>
-        <p className="text-sm text-zinc-500 mt-0.5">Configure Axiom Agent preferences</p>
+        <h1 className="text-2xl font-semibold tracking-[-0.035em]">Settings</h1>
+        <p className="mt-1 text-sm text-zinc-500">Your account, commercial access, workstation behavior, and governed connections.</p>
       </div>
 
-      {/* API Endpoint */}
-      <section className="glass-card p-5 space-y-4">
-        <h2 className="text-sm font-semibold text-zinc-300">API Connection</h2>
-        <div>
-          <p className="text-xs text-zinc-400 mb-1.5">Service endpoint</p>
-          <div className="rounded-lg border border-zinc-700/50 bg-zinc-800/40 px-3 py-2 text-sm font-mono text-zinc-300">
-            https://visionxixlabs.com
-          </div>
-          <p className="mt-1.5 text-[11px] leading-5 text-zinc-500">Fixed for this signed release. The native client allows only Vision XIX Labs API paths.</p>
-        </div>
-        <div className="flex items-center justify-between gap-4 border-t border-white/[0.06] pt-4">
-          <div>
-            <p className="text-sm text-zinc-200">Sign out of this desktop</p>
-            <p className="text-xs text-zinc-500">Removes both workspace-key and browser-session credentials from the OS vault.</p>
-          </div>
-          <button
-            type="button"
-            onClick={async () => {
-              await Promise.allSettled([clearApiKey(), clearAuthSession()]);
-              window.location.reload();
-            }}
-            className="shrink-0 rounded-lg border border-red-500/20 bg-red-500/10 px-3 py-2 text-xs font-medium text-red-200 hover:bg-red-500/15"
-          >
-            Sign out
-          </button>
-        </div>
-      </section>
-
-      {/* API Key (vxlk_*) — Phase 399 surface */}
-      <section className="glass-card p-5 space-y-4">
-        <div className="flex items-center justify-between gap-2">
-          <h2 className="text-sm font-semibold text-zinc-300">VisionXIXLabs API key</h2>
-          <span className={`text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded ${
-            storedKey ? "bg-emerald-500/15 text-emerald-300" : "bg-zinc-700/40 text-zinc-400"
-          }`}>{storedKey ? "active" : "not set"}</span>
-        </div>
-
-        {storedKey ? (
-          <div className="space-y-3">
-            <div className="text-xs text-zinc-400">
-              Stored key:{" "}
-              <span className="text-zinc-200 font-mono">{apiKeyPrefix(storedKey)}…</span>{" "}
-              <span className="text-zinc-500">(plaintext never re-shown — mint a new key if lost)</span>
-            </div>
-            {keyTestStatus?.kind === "ok" && (
-              <div className="text-xs rounded-lg border border-emerald-500/20 bg-emerald-500/10 text-emerald-300 px-3 py-2">
-                ✓ Authenticated as <span className="font-mono">{keyTestStatus.workspace}</span> on <span className="font-mono">{keyTestStatus.planTier}</span>.
-                Scopes: <span className="font-mono">{keyTestStatus.scopes.join(", ")}</span>
-              </div>
-            )}
-            {keyTestStatus?.kind === "err" && (
-              <div className="text-xs rounded-lg border border-red-500/20 bg-red-500/10 text-red-300 px-3 py-2">
-                ✗ {keyTestStatus.message}
-              </div>
-            )}
-            <div className="flex gap-2">
-              <button
-                onClick={async () => {
-                  setKeyTestStatus(null);
-                  const r = await desktopClient.v1Whoami();
-                  if (r.ok) {
-                    const d = r.data as {
-                      apiKey: { scopes: ReadonlyArray<string> };
-                      organization: { id: string; planTier: string };
-                    };
-                    setKeyTestStatus({
-                      kind: "ok",
-                      workspace: d.organization.id,
-                      planTier: d.organization.planTier,
-                      scopes: d.apiKey.scopes,
-                    });
-                  } else {
-                    setKeyTestStatus({ kind: "err", message: r.error });
-                  }
-                }}
-                className="px-3 py-1.5 rounded-lg bg-violet-600 hover:bg-violet-500 text-white text-xs font-medium transition-colors"
-              >
-                Test connection
-              </button>
-              <button
-                onClick={async () => {
-                  await clearApiKey();
-                  setStoredKey(undefined);
-                  setKeyTestStatus(null);
-                }}
-                className="px-3 py-1.5 rounded-lg bg-zinc-800/60 hover:bg-zinc-700/60 text-xs text-zinc-200 transition-colors"
-              >
-                Remove key
-              </button>
-            </div>
-          </div>
-        ) : (
-          <div className="space-y-3">
-            <p className="text-xs text-zinc-500">
-              Paste an administrator-issued <span className="font-mono text-zinc-400">vxlk_live_…</span> key with at least{" "}
-              <span className="font-mono text-zinc-400">release_gate:read</span> scope. The installed application stores it in the operating-system credential vault.
-            </p>
-            <input
-              type="password"
-              value={keyPasteValue}
-              onChange={(e) => { setKeyPasteValue(e.target.value); setKeyPasteError(null); }}
-              placeholder="vxlk_live_…_……"
-              className="w-full bg-zinc-800/60 border border-zinc-700/50 rounded-lg px-3 py-2 text-xs font-mono text-zinc-200 placeholder-zinc-600 focus:outline-none focus:border-violet-500/50"
-            />
-            {keyPasteError && <div className="text-xs text-red-400">{keyPasteError}</div>}
-            <button
-              onClick={async () => {
-                try {
-                  await saveApiKey(keyPasteValue);
-                  setStoredKey(keyPasteValue.trim());
-                  setKeyPasteValue("");
-                  setKeyTestStatus(null);
-                } catch (err) {
-                  setKeyPasteError(err instanceof Error ? err.message : String(err));
-                }
-              }}
-              disabled={!keyPasteValue.trim()}
-              className="px-3 py-1.5 rounded-lg bg-violet-600 hover:bg-violet-500 text-white text-xs font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              Save API key
+      <div className="grid min-h-[560px] grid-cols-[220px_minmax(0,1fr)] overflow-hidden rounded-2xl border border-white/[0.07] bg-[#0c0c10]">
+        <nav aria-label="Settings sections" className="border-r border-white/[0.07] bg-black/20 p-3">
+          {sections.map(({ id, label, icon: Icon }) => (
+            <button key={id} type="button" onClick={() => setActive(id)} aria-current={active === id ? "page" : undefined} className={`flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-[13px] transition ${active === id ? "bg-white/[0.07] text-white" : "text-zinc-500 hover:bg-white/[0.035] hover:text-zinc-200"}`}>
+              <Icon aria-hidden className="h-4 w-4" />
+              <span>{label}</span>
             </button>
+          ))}
+          <div className="mt-5 border-t border-white/[0.06] px-3 pt-5">
+            <p className="text-[10px] font-mono uppercase tracking-[0.18em] text-zinc-600">Signed in workspace</p>
+            <p className="mt-2 truncate text-xs text-zinc-300" title={identity.organizationId}>{identity.organizationId}</p>
+            <p className="mt-1 text-[11px] text-emerald-300">Production access active</p>
           </div>
-        )}
-      </section>
+        </nav>
 
-      {/* Workspace pairing */}
-      <section className="glass-card p-5 space-y-4">
-        <div className="flex items-center justify-between gap-2">
-          <h2 className="text-sm font-semibold text-zinc-300">Workspace pairing</h2>
-          <span className={`text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded ${
-            workspace.status === "paired"   ? "bg-emerald-500/15 text-emerald-300" :
-            workspace.status === "unpaired" ? "bg-zinc-700/40 text-zinc-400" :
-                                              "bg-zinc-700/40 text-zinc-500"
-          }`}>{workspace.status}</span>
+        <div className="p-7">
+          {error && <div role="alert" className="mb-5 rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-200">{error}</div>}
+          {saved && <div role="status" className="mb-5 flex items-center gap-2 rounded-xl border border-emerald-500/20 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-200"><Check className="h-4 w-4" />Preference saved on this computer.</div>}
+          {active === "account" && <AccountSection identity={identity} onSignOut={signOut} />}
+          {active === "billing" && <BillingSection identity={identity} />}
+          {active === "workflow" && <WorkflowSection prefs={prefs} onSave={savePreferences} />}
+          {active === "repositories" && <RepositorySection />}
+          {active === "integrations" && <IntegrationsSection />}
         </div>
-
-        {workspace.status === "paired" && workspace.session ? (
-          <div className="space-y-3">
-            <div className="text-xs text-zinc-400">
-              Paired as <span className="text-zinc-200 font-mono">{workspace.session.deviceLabel}</span>
-              {" · expires "}<span className="font-mono">{new Date(workspace.session.expiresAt).toLocaleDateString()}</span>
-            </div>
-            <button
-              onClick={() => workspace.disconnect()}
-              className="px-3 py-1.5 rounded-lg bg-zinc-800/60 hover:bg-zinc-700/60 text-xs text-zinc-200 transition-colors"
-            >
-              Disconnect
-            </button>
-          </div>
-        ) : (
-          <div className="space-y-3">
-            <p className="text-xs text-zinc-500">
-              Paste a desktop pairing credential issued by an authorized workspace administrator. Browser authentication is used only to authorize this installed application.
-            </p>
-            <textarea
-              rows={3}
-              value={pasteValue}
-              onChange={(e) => { setPasteValue(e.target.value); setPasteError(null); }}
-              placeholder="Paste desktop pairing JSON (token + session)…"
-              className="w-full bg-zinc-800/60 border border-zinc-700/50 rounded-lg px-3 py-2 text-xs font-mono text-zinc-200 placeholder-zinc-600 focus:outline-none focus:border-violet-500/50 resize-none"
-            />
-            {pasteError && <div className="text-xs text-red-400">{pasteError}</div>}
-            <button
-              onClick={async () => {
-                try {
-                  const parsed = JSON.parse(pasteValue.trim());
-                  if (!parsed.token || !parsed.session?.id) {
-                    setPasteError("Paste must include both `token` and `session.id`.");
-                    return;
-                  }
-                  await workspace.connect({ token: parsed.token, session: parsed.session });
-                  setPasteValue("");
-                } catch (err) {
-                  setPasteError(err instanceof Error ? err.message : "Invalid JSON.");
-                }
-              }}
-              disabled={!pasteValue.trim()}
-              className="px-3 py-1.5 rounded-lg bg-violet-600 hover:bg-violet-500 text-white text-xs font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              Pair workspace
-            </button>
-          </div>
-        )}
-      </section>
-
-      {/* General */}
-      <section className="glass-card p-5 space-y-4">
-        <h2 className="text-sm font-semibold text-zinc-300">General</h2>
-
-        <div className="flex items-center justify-between">
-          <div>
-            <div className="text-sm text-zinc-200">Desktop notifications</div>
-            <div className="text-xs text-zinc-500">Scan results, alerts, and approvals</div>
-          </div>
-          <div className="flex items-center gap-3">
-            <button
-              onClick={async () => {
-                await notifyResult({
-                  title: "Axiom Agent · test notification",
-                  body: "If you can read this, native OS notifications are working.",
-                });
-              }}
-              disabled={!prefs.notifications_enabled}
-              title={prefs.notifications_enabled
-                ? "Fire a test notification right now"
-                : "Enable notifications first"}
-              className="px-2.5 py-1 rounded-md text-[11px] font-medium border border-white/[0.08] bg-white/[0.03] text-zinc-300 hover:bg-white/[0.06] hover:text-white disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-            >
-              Test
-            </button>
-            <button
-              onClick={() => updatePref("notifications_enabled", !prefs.notifications_enabled)}
-              className={`w-10 h-5 rounded-full transition-colors relative ${
-                prefs.notifications_enabled ? "bg-violet-600" : "bg-zinc-700"
-              }`}
-            >
-              <span
-                className={`absolute top-0.5 w-4 h-4 rounded-full bg-white transition-transform ${
-                  prefs.notifications_enabled ? "left-5" : "left-0.5"
-                }`}
-              />
-            </button>
-          </div>
-        </div>
-
-        <div className="flex items-center justify-between">
-          <div>
-            <div className="text-sm text-zinc-200">Scan on launch</div>
-            <div className="text-xs text-zinc-500">Automatically scan connected providers on startup</div>
-          </div>
-          <button
-            onClick={() => updatePref("scan_on_launch", !prefs.scan_on_launch)}
-            className={`w-10 h-5 rounded-full transition-colors relative ${
-              prefs.scan_on_launch ? "bg-violet-600" : "bg-zinc-700"
-            }`}
-          >
-            <span
-              className={`absolute top-0.5 w-4 h-4 rounded-full bg-white transition-transform ${
-                prefs.scan_on_launch ? "left-5" : "left-0.5"
-              }`}
-            />
-          </button>
-        </div>
-
-        <div>
-          <label className="block text-sm text-zinc-200 mb-1">Auto-scan interval</label>
-          <select
-            value={prefs.auto_scan_interval_minutes}
-            onChange={(e) => updatePref("auto_scan_interval_minutes", Number(e.target.value))}
-            className="bg-zinc-800/60 border border-zinc-700/50 rounded-lg px-3 py-2 text-sm text-zinc-200 focus:outline-none focus:border-violet-500/50"
-          >
-            <option value={15}>Every 15 minutes</option>
-            <option value={30}>Every 30 minutes</option>
-            <option value={60}>Every hour</option>
-            <option value={360}>Every 6 hours</option>
-            <option value={1440}>Daily</option>
-          </select>
-        </div>
-
-        <div>
-          <label className="block text-sm text-zinc-200 mb-1">Default provider</label>
-          <select
-            value={prefs.default_provider}
-            onChange={(e) => updatePref("default_provider", e.target.value)}
-            className="bg-zinc-800/60 border border-zinc-700/50 rounded-lg px-3 py-2 text-sm text-zinc-200 focus:outline-none focus:border-violet-500/50"
-          >
-            <option value="aws">AWS</option>
-            <option value="azure">Azure</option>
-            <option value="gcp">GCP</option>
-          </select>
-        </div>
-      </section>
-
-      {/* Recent votes — local audit log of approvals/rejections cast from this
-          desktop. Last 25 entries persist across restarts via tauri-plugin-store.
-          Empty state is the silent no-op for first-launch / unpaired sessions. */}
-      {voteHistory.length > 0 && (
-        <section className="glass-card p-5 space-y-3">
-          <div className="flex items-center justify-between gap-2">
-            <h2 className="text-sm font-semibold text-zinc-300">Recent votes from this desktop</h2>
-            <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-wider">{voteHistory.length}/25</span>
-          </div>
-          <ul className="space-y-2">
-            {voteHistory.map((v) => (
-              <li
-                key={`${v.runId}:${v.castAt}`}
-                className="flex items-start justify-between gap-3 px-3 py-2 rounded-lg bg-zinc-900/40 border border-zinc-800/50"
-              >
-                <div className="min-w-0 flex-1">
-                  <div className="flex items-center gap-2 mb-0.5">
-                    <span className={`text-[10px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded ${
-                      v.decision === "approved"
-                        ? "bg-emerald-500/15 text-emerald-300"
-                        : "bg-red-500/15 text-red-300"
-                    }`}>
-                      {v.decision}
-                    </span>
-                    <span className="text-[10px] font-mono text-zinc-500">{v.source}</span>
-                    {v.isTerminal && (
-                      <span className="text-[10px] font-mono text-violet-300">→ run {v.snapshotStatus}</span>
-                    )}
-                  </div>
-                  <div className="text-[11px] font-mono text-zinc-400 truncate" title={v.runId}>
-                    {v.runId.slice(0, 24)}…
-                  </div>
-                </div>
-                <div className="text-right shrink-0">
-                  <div className="text-[10px] font-mono text-zinc-500">
-                    {v.approvedCount}/{v.requiredApprovers} approved
-                  </div>
-                  <div className="text-[10px] font-mono text-zinc-600">
-                    {new Date(v.castAt).toLocaleString()}
-                  </div>
-                </div>
-              </li>
-            ))}
-          </ul>
-        </section>
-      )}
-
-      {/* Save button */}
-      {saveError && (
-        <div role="alert" className="text-xs rounded-lg border border-red-500/20 bg-red-500/10 text-red-300 px-3 py-2">
-          Preferences were not saved: {saveError}
-        </div>
-      )}
-      <button
-        onClick={savePrefs}
-        className="px-5 py-2.5 rounded-lg bg-violet-600 hover:bg-violet-500 text-white text-sm font-medium transition-colors"
-      >
-        {saved ? "Saved" : "Save preferences"}
-      </button>
+      </div>
     </ViewShell>
   );
 }
+
+function SectionHeading({ eyebrow, title, detail }: { eyebrow: string; title: string; detail: string }) {
+  return <div className="mb-7"><p className="text-[10px] font-mono uppercase tracking-[0.2em] text-violet-300">{eyebrow}</p><h2 className="mt-2 text-xl font-semibold tracking-tight">{title}</h2><p className="mt-2 max-w-2xl text-sm leading-6 text-zinc-500">{detail}</p></div>;
+}
+
+function AccountSection({ identity, onSignOut }: { identity: VerifiedDesktopIdentity; onSignOut: () => Promise<void> }) {
+  return <div>
+    <SectionHeading eyebrow="Identity" title="Account & desktop session" detail="The browser verified your identity and authorized this installed copy of Axiom Agent. Credentials remain in the operating-system credential vault." />
+    <SettingsCard>
+      <InfoRow label="Name" value={identity.displayName ?? "Not provided"} />
+      <InfoRow label="Email" value={identity.email ?? (identity.kind === "api_key" ? "Administrator credential" : "Not available")} />
+      <InfoRow label="Workspace" value={identity.organizationId} mono />
+      <InfoRow label="Authentication" value={identity.kind === "desktop_session" ? "Browser-authorized desktop session" : "Enterprise recovery credential"} />
+      <InfoRow label="Service" value="visionxixlabs.com · verified" />
+    </SettingsCard>
+    <div className="mt-5 flex items-center justify-between gap-5 rounded-xl border border-white/[0.07] bg-white/[0.02] p-4">
+      <div><p className="text-sm font-medium text-zinc-200">Sign out on this computer</p><p className="mt-1 text-xs leading-5 text-zinc-500">Removes the local desktop credential. It does not cancel externally running workflows.</p></div>
+      <button type="button" onClick={() => void onSignOut()} className="inline-flex shrink-0 items-center gap-2 rounded-lg border border-red-500/20 bg-red-500/10 px-3 py-2 text-xs font-medium text-red-200 hover:bg-red-500/15"><LogOut className="h-3.5 w-3.5" />Sign out</button>
+    </div>
+  </div>;
+}
+
+function BillingSection({ identity }: { identity: VerifiedDesktopIdentity }) {
+  const access = identity.access;
+  const [opening, setOpening] = useState(false);
+  const [portalError, setPortalError] = useState<string | null>(null);
+
+  async function openBillingPortal() {
+    setOpening(true);
+    setPortalError(null);
+    try {
+      const result = await desktopClient.desktopBillingPortal();
+      if (!result.ok) throw new Error(result.error);
+      const destination = new URL(result.data.url);
+      if (destination.protocol !== "https:" || !(destination.hostname === "stripe.com" || destination.hostname.endsWith(".stripe.com"))) {
+        throw new Error("The billing service returned an unexpected destination.");
+      }
+      await open(destination.toString());
+    } catch (cause) {
+      setPortalError(cause instanceof Error ? cause.message : "The billing portal could not be opened.");
+    } finally {
+      setOpening(false);
+    }
+  }
+
+  return <div>
+    <SectionHeading eyebrow="Commercial access" title="Plan & billing" detail="Axiom verifies entitlement with the service before loading deployment records. Payment redirects use hosted billing pages; card data is never collected by the desktop app." />
+    <div className="grid gap-4 sm:grid-cols-2">
+      <SettingsCard className="p-5">
+        <p className="text-xs text-zinc-500">Current plan</p><p className="mt-2 text-2xl font-semibold capitalize">{access.planTier}</p>
+        <p className="mt-2 text-sm text-emerald-300">{access.title}</p>
+      </SettingsCard>
+      <SettingsCard className="p-5">
+        <p className="text-xs text-zinc-500">Billing state</p><p className="mt-2 text-2xl font-semibold capitalize">{access.billingStatus.replaceAll("_", " ")}</p>
+        <p className="mt-2 text-sm text-zinc-500">{access.cancelAtPeriodEnd ? "Ends after the current period" : access.currentPeriodEndsAt ? `Current period ends ${new Date(access.currentPeriodEndsAt).toLocaleDateString()}` : "Managed under your workspace agreement"}</p>
+      </SettingsCard>
+    </div>
+    <div className="mt-5 rounded-xl border border-white/[0.07] bg-white/[0.02] p-5">
+      <div className="flex items-start justify-between gap-5"><div><p className="text-sm font-medium">Manage billing securely</p><p className="mt-1 max-w-xl text-xs leading-5 text-zinc-500">Request a short-lived portal session from the authenticated desktop service, then continue in Stripe’s hosted billing portal. Card data is never handled by Axiom Agent.</p></div><button type="button" disabled={opening} onClick={() => void openBillingPortal()} className="inline-flex shrink-0 items-center gap-2 rounded-lg bg-white px-4 py-2.5 text-xs font-semibold text-black hover:bg-zinc-100 disabled:opacity-50">{opening ? "Opening…" : "Open billing"} <ChevronRight className="h-3.5 w-3.5" /></button></div>
+      {portalError && <p role="alert" className="mt-4 rounded-lg border border-red-500/20 bg-red-500/10 px-3 py-2 text-xs leading-5 text-red-200">{portalError}</p>}
+      <p className="mt-4 border-t border-white/[0.06] pt-4 text-[11px] leading-5 text-zinc-600">A return from Checkout does not grant access by itself. Axiom waits for verified subscription state from the billing service before unlocking production controls.</p>
+    </div>
+  </div>;
+}
+
+function WorkflowSection({ prefs, onSave }: { prefs: Preferences | null; onSave: (prefs: Preferences) => Promise<void> }) {
+  return <div>
+    <SectionHeading eyebrow="Workstation" title="Workflow behavior" detail="Local preferences can make the app calmer without weakening deployment controls. Consequential actions always keep server-enforced authorization and confirmation." />
+    <SettingsCard>
+      <ToggleRow icon={<Bell className="h-4 w-4" />} title="Desktop notifications" detail="Notify when a deployment needs attention or an approval decision." enabled={prefs?.notifications_enabled ?? false} disabled={!prefs} onToggle={() => prefs && void onSave({ ...prefs, notifications_enabled: !prefs.notifications_enabled })} action={<button type="button" disabled={!prefs?.notifications_enabled} onClick={() => void notifyResult({ title: "Axiom Agent", body: "Desktop notifications are ready." })} className="rounded-md border border-white/10 px-2.5 py-1 text-[11px] text-zinc-400 hover:text-white disabled:opacity-40">Test</button>} />
+      <LockedRow icon={<ShieldCheck className="h-4 w-4" />} title="Confirm consequential actions" detail="Merge, release, workflow dispatch, environment approval, rollback, and change closure always require the applicable policy checks." />
+      <LockedRow icon={<MonitorCheck className="h-4 w-4" />} title="Resume observation after restart" detail="Axiom reconciles durable operation IDs with external status; closing the window never reports externally running work as canceled." />
+    </SettingsCard>
+  </div>;
+}
+
+function RepositorySection() {
+  return <div>
+    <SectionHeading eyebrow="Source control" title="Repositories & deployment triggers" detail="Axiom keeps repository visibility, review, merge, release publication, workflow dispatch, tags, and environment approval as separate capabilities." />
+    <SettingsCard>
+      <PolicyRow title="Pull-request review" detail="Review permission does not grant merge permission." />
+      <PolicyRow title="Merge & release" detail="Merge and release publication remain separately authorized production triggers." />
+      <PolicyRow title="Workflow dispatch" detail="Repository visibility never implies permission to run a workflow." />
+      <PolicyRow title="Environment approval" detail="Approval can release a gate without automatically starting deployment unless the playbook explicitly says so." />
+    </SettingsCard>
+    <ActionLink label="Review repository and trigger setup" href="/docs/releaseops/connectors" />
+  </div>;
+}
+
+function IntegrationsSection() {
+  return <div>
+    <SectionHeading eyebrow="External systems" title="Integrations" detail="Connections are tenant-scoped and administrator configured. The app does not mark a provider connected until the service validates the required permissions." />
+    <div className="space-y-3">
+      <IntegrationRow icon={<GitBranch className="h-4 w-4" />} name="GitHub" capability="Repository discovery, reviews, merges, releases, and workflow dispatch remain separately permissioned." />
+      <IntegrationRow icon={<MessageSquare className="h-4 w-4" />} name="Slack" capability="Outbound deployment notifications only when a tenant adapter is configured; this is not workflow synchronization." />
+      <IntegrationRow icon={<Link2 className="h-4 w-4" />} name="Change systems" capability="Change creation and updates depend on the configured adapter and playbook policy; links alone are not synchronization." />
+    </div>
+    <ActionLink label="Open integration setup documentation" href="/docs/releaseops/connectors" />
+  </div>;
+}
+
+function SettingsCard({ children, className = "" }: { children: ReactNode; className?: string }) { return <div className={`overflow-hidden rounded-xl border border-white/[0.07] bg-white/[0.025] ${className}`}>{children}</div>; }
+function InfoRow({ label, value, mono = false }: { label: string; value: string; mono?: boolean }) { return <div className="flex items-start justify-between gap-8 border-b border-white/[0.055] px-5 py-4 last:border-b-0"><span className="text-sm text-zinc-500">{label}</span><span className={`max-w-[65%] break-all text-right text-sm text-zinc-200 ${mono ? "font-mono text-xs" : ""}`}>{value}</span></div>; }
+function ToggleRow({ icon, title, detail, enabled, disabled, onToggle, action }: { icon: ReactNode; title: string; detail: string; enabled: boolean; disabled: boolean; onToggle: () => void; action?: ReactNode }) { return <div className="flex items-center gap-4 border-b border-white/[0.055] px-5 py-4"><span className="text-zinc-500">{icon}</span><div className="min-w-0 flex-1"><p className="text-sm text-zinc-200">{title}</p><p className="mt-1 text-xs leading-5 text-zinc-500">{detail}</p></div>{action}<button type="button" role="switch" aria-checked={enabled} aria-label={title} disabled={disabled} onClick={onToggle} className={`relative h-6 w-11 shrink-0 rounded-full transition ${enabled ? "bg-violet-600" : "bg-zinc-700"}`}><span className={`absolute left-1 top-1 h-4 w-4 rounded-full bg-white transition-transform ${enabled ? "translate-x-5" : "translate-x-0"}`} /></button></div>; }
+function LockedRow({ icon, title, detail }: { icon: ReactNode; title: string; detail: string }) { return <div className="flex items-center gap-4 border-b border-white/[0.055] px-5 py-4 last:border-b-0"><span className="text-zinc-500">{icon}</span><div className="min-w-0 flex-1"><p className="text-sm text-zinc-200">{title}</p><p className="mt-1 text-xs leading-5 text-zinc-500">{detail}</p></div><span className="inline-flex items-center gap-1 rounded-full border border-emerald-500/20 bg-emerald-500/10 px-2 py-1 text-[10px] font-medium text-emerald-300"><LockKeyhole className="h-3 w-3" />Always on</span></div>; }
+function PolicyRow({ title, detail }: { title: string; detail: string }) { return <div className="flex items-start gap-3 border-b border-white/[0.055] px-5 py-4 last:border-b-0"><ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-violet-300" /><div><p className="text-sm text-zinc-200">{title}</p><p className="mt-1 text-xs leading-5 text-zinc-500">{detail}</p></div></div>; }
+function IntegrationRow({ icon, name, capability }: { icon: ReactNode; name: string; capability: string }) { return <div className="flex items-center gap-4 rounded-xl border border-white/[0.07] bg-white/[0.025] p-4"><span className="flex h-9 w-9 items-center justify-center rounded-lg border border-white/[0.07] bg-black/25 text-violet-300">{icon}</span><div className="min-w-0 flex-1"><p className="text-sm font-medium text-zinc-200">{name}</p><p className="mt-1 text-xs leading-5 text-zinc-500">{capability}</p></div><span className="rounded-full border border-amber-500/20 bg-amber-500/10 px-2 py-1 text-[10px] font-medium text-amber-200">Admin configured</span></div>; }
+function ActionLink({ label, href }: { label: string; href: string }) { return <button type="button" onClick={() => void open(`${WEB_BASE}${href}`)} className="mt-5 inline-flex items-center gap-2 text-sm font-medium text-violet-300 hover:text-violet-200">{label}<ChevronRight className="h-4 w-4" /></button>; }

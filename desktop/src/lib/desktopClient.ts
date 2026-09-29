@@ -30,11 +30,15 @@ export interface DesktopCommercialAccess {
   billingStatus: string;
   accessRequestPath: string;
   pricingPath: string;
+  currentPeriodEndsAt?: string;
+  cancelAtPeriodEnd?: boolean;
 }
 
 export interface VerifiedDesktopIdentity {
   kind: "api_key" | "desktop_session";
   organizationId: string;
+  email?: string;
+  displayName?: string;
   access: DesktopCommercialAccess;
 }
 
@@ -307,11 +311,15 @@ export class DesktopClient {
     }
 
     const result = await this.get<{
-      identity: { kind: "api_key" | "desktop_session"; organizationId: string };
+      identity: { kind: "api_key" | "desktop_session"; organizationId: string; email?: string; displayName?: string };
       access: DesktopCommercialAccess;
     }>("/api/desktop/access");
     if (!result.ok) return result;
     return { ok: true, data: { ...result.data.identity, access: result.data.access } };
+  }
+
+  desktopBillingPortal(): Promise<ApiResult<{ url: string }>> {
+    return this.post("/api/desktop/billing/portal", {});
   }
 
   /**

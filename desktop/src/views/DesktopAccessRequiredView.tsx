@@ -16,6 +16,7 @@ export function DesktopAccessRequiredView({
   onSignedOut: () => void;
 }) {
   const [checking, setChecking] = useState(false);
+  const [openingBilling, setOpeningBilling] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   async function checkAgain() {
@@ -40,6 +41,24 @@ export function DesktopAccessRequiredView({
     onSignedOut();
   }
 
+  async function openBillingPortal() {
+    setOpeningBilling(true);
+    setError(null);
+    try {
+      const result = await desktopClient.desktopBillingPortal();
+      if (!result.ok) throw new Error(result.error);
+      const destination = new URL(result.data.url);
+      if (destination.protocol !== "https:" || !(destination.hostname === "stripe.com" || destination.hostname.endsWith(".stripe.com"))) {
+        throw new Error("The billing service returned an unexpected destination.");
+      }
+      await open(destination.toString());
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : "The billing portal could not be opened.");
+    } finally {
+      setOpeningBilling(false);
+    }
+  }
+
   return (
     <main className="h-screen w-screen bg-axiom-bg text-white flex items-center justify-center px-6 relative overflow-hidden">
       <div className="absolute inset-0 pointer-events-none" aria-hidden>
@@ -59,9 +78,15 @@ export function DesktopAccessRequiredView({
           <div className="mt-2 flex justify-between gap-4"><span>Access status</span><span className="font-mono text-amber-200">{identity.access.billingStatus.replaceAll("_", " ")}</span></div>
         </div>
         {error && <div role="alert" className="mt-4 rounded-lg border border-red-500/20 bg-red-500/10 p-3 text-xs text-red-200">{error}</div>}
-        <button type="button" onClick={() => void open(`${WEB_BASE}${identity.access.accessRequestPath}`)} className="mt-6 w-full rounded-full bg-white px-5 py-3 text-sm font-semibold text-black hover:bg-zinc-100">
-          Request production access
-        </button>
+        {identity.access.code === "payment_past_due" || identity.access.code === "access_canceled" ? (
+          <button type="button" disabled={openingBilling} onClick={() => void openBillingPortal()} className="mt-6 w-full rounded-full bg-white px-5 py-3 text-sm font-semibold text-black hover:bg-zinc-100 disabled:opacity-60">
+            {openingBilling ? "Opening billing…" : "Manage billing"}
+          </button>
+        ) : (
+          <button type="button" onClick={() => void open(`${WEB_BASE}${identity.access.accessRequestPath}`)} className="mt-6 w-full rounded-full bg-white px-5 py-3 text-sm font-semibold text-black hover:bg-zinc-100">
+            Request production access
+          </button>
+        )}
         <button type="button" onClick={() => void checkAgain()} disabled={checking} className="mt-3 w-full rounded-full bg-violet-600 px-5 py-3 text-sm font-semibold hover:bg-violet-500 disabled:opacity-60">
           {checking ? "Checking access…" : "Check access again"}
         </button>

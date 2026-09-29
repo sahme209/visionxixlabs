@@ -38,8 +38,10 @@ async function platform(): Promise<DesktopPlatform> {
   }
 }
 
-async function jsonRequest<T>(path: string, body: unknown): Promise<{ response: Response; body: T }> {
+async function jsonRequest<T>(path: string, body: unknown, signal?: AbortSignal): Promise<{ response: Response; body: T }> {
   const controller = new AbortController();
+  const abort = () => controller.abort();
+  signal?.addEventListener("abort", abort, { once: true });
   const timeout = setTimeout(() => controller.abort(), 30_000);
   try {
     const response = await fetch(`${API_BASE}${path}`, {
@@ -52,15 +54,19 @@ async function jsonRequest<T>(path: string, body: unknown): Promise<{ response: 
     return { response, body: parsed };
   } catch (error) {
     if (error instanceof DOMException && error.name === "AbortError") {
+      if (signal?.aborted) throw new DOMException("Desktop sign-in cancelled.", "AbortError");
       throw new Error("Desktop sign-in timed out while contacting the service.");
     }
     throw error;
   } finally {
     clearTimeout(timeout);
+    signal?.removeEventListener("abort", abort);
   }
 }
 
-export async function signInWithBrowser(onWaiting: () => void): Promise<PairedSession> {
+export type DesktopAuthIntent = "sign_in" | "sign_up";
+
+export async function signInWithBrowser(intent: DesktopAuthIntent, onWaiting: () => void, signal?: AbortSignal): Promise<PairedSession> {
   const start = await jsonRequest<{ challenge?: string; verificationUrl?: string; error?: string }>(
     "/api/desktop/pair/start",
     {
@@ -68,7 +74,9 @@ export async function signInWithBrowser(onWaiting: () => void): Promise<PairedSe
       deviceLabel: `${navigator.platform || "Desktop"} · Axiom Agent`,
       platform: await platform(),
       desktopVersion: DESKTOP_VERSION,
+      intent,
     },
+    signal,
   );
   if (!start.response.ok || !start.body.challenge || !start.body.verificationUrl) {
     throw new Error(start.body.error || "Could not start desktop sign-in.");
@@ -79,13 +87,13 @@ export async function signInWithBrowser(onWaiting: () => void): Promise<PairedSe
 
   const deadline = Date.now() + 10 * 60 * 1000;
   while (Date.now() < deadline) {
-    await new Promise((resolve) => setTimeout(resolve, 2000));
+    await waitForNextPoll(signal);
     const status = await jsonRequest<{
       status?: "pending" | "approved";
       token?: string;
       session?: PairedSession;
       error?: string;
-    }>("/api/desktop/pair/status", { challenge: start.body.challenge });
+    }>("/api/desktop/pair/status", { challenge: start.body.challenge }, signal);
     if (status.response.status === 202) continue;
     if (!status.response.ok) throw new Error(status.body.error || "Desktop sign-in failed.");
     if (status.body.status === "approved" && status.body.token && status.body.session) {
@@ -94,4 +102,22 @@ export async function signInWithBrowser(onWaiting: () => void): Promise<PairedSe
     }
   }
   throw new Error("Sign-in expired. Please try again.");
+}
+
+function waitForNextPoll(signal?: AbortSignal): Promise<void> {
+  return new Promise((resolve, reject) => {
+    if (signal?.aborted) {
+      reject(new DOMException("Desktop sign-in cancelled.", "AbortError"));
+      return;
+    }
+    const onAbort = () => {
+      clearTimeout(timeout);
+      reject(new DOMException("Desktop sign-in cancelled.", "AbortError"));
+    };
+    const timeout = setTimeout(() => {
+      signal?.removeEventListener("abort", onAbort);
+      resolve();
+    }, 2000);
+    signal?.addEventListener("abort", onAbort, { once: true });
+  });
 }

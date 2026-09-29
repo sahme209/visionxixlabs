@@ -2,7 +2,6 @@ import type { Metadata, Viewport } from "next";
 import { Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import "../styles/axiom-theme.css";
-import { Analytics } from "@vercel/analytics/next";
 import { OrganizationJsonLd, WebSiteJsonLd } from "@/components/JsonLd";
 import AIChatWidget from "@/components/AIChatWidget";
 import { AxiomPanelProvider } from "@/lib/contexts/AxiomPanelContext";
@@ -10,6 +9,7 @@ import { Providers } from "@/components/Providers";
 import { ScrollProgress } from "@/components/motion/ScrollProgress";
 import { CommandPalette } from "@/components/CommandPalette";
 import { SITE_URL, defaultOgImage, primaryKeywords, secondaryKeywords } from "@/lib/seo";
+import { PrivacyConsent } from "@/components/PrivacyConsent";
 
 // Inter with the SF-Pro-leaning OpenType features baked in:
 // - `cv02` rounded 'g'  - `cv11` single-storey 'a'  - `ss03` shorter '8'
@@ -95,7 +95,7 @@ export default function RootLayout({
             <CommandPalette />
             <div>{children}</div>
             <AIChatWidget />
-            <Analytics />
+            <PrivacyConsent />
           </AxiomPanelProvider>
         </Providers>
       </body>
