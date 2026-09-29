@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { ArrowLeftIcon, EnvelopeIcon, ShieldCheckIcon } from "@heroicons/react/24/outline";
 import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
+import { readDesktopRuntimeReadiness } from "@/lib/desktop/desktopRuntimeReadiness";
 
 export const metadata: Metadata = {
   title: "Installer availability — Axiom Agent",
@@ -16,6 +18,9 @@ interface DownloadPreviewPageProps {
 export default async function DownloadPreviewPage({ searchParams }: DownloadPreviewPageProps) {
   const { reason } = await searchParams;
   const runtimeUnavailable = reason === "runtime";
+  if (runtimeUnavailable && (await readDesktopRuntimeReadiness()).ready) {
+    redirect("/download?status=recovered");
+  }
 
   return (
     <div className="min-h-screen bg-[#09090b] text-white">

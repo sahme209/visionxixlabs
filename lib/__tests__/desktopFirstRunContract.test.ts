@@ -51,6 +51,7 @@ describe("desktop first-run contract", () => {
     const readiness = readFileSync(join(root, "lib/desktop/desktopRuntimeReadiness.ts"), "utf8");
     const downloadRoute = readFileSync(join(root, "app/api/desktop/download/route.ts"), "utf8");
     const manifestRoute = readFileSync(join(root, "app/api/desktop/release-manifest/route.ts"), "utf8");
+    const previewPage = readFileSync(join(root, "app/download/preview/page.tsx"), "utf8");
     expect(readiness).toContain("desktopPairingChallengeRecord.findFirst");
     expect(readiness).toContain("tenantBillingPlan.findFirst");
     expect(readiness).toContain("tauriDeploymentRequest.findFirst");
@@ -58,6 +59,8 @@ describe("desktop first-run contract", () => {
     expect(downloadRoute).toContain('status: "temporarily_unavailable"');
     expect(downloadRoute).toContain("{ status: 503 }");
     expect(manifestRoute).toContain("runtimeReady: runtime.ready");
+    expect(previewPage).toContain("readDesktopRuntimeReadiness");
+    expect(previewPage).toContain('redirect("/download?status=recovered")');
   });
 
   it("keeps browser pairing durable, expiring, and one-time", () => {
