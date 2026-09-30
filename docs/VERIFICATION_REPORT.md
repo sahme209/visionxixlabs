@@ -19,16 +19,18 @@ The 2026-09-27 website pass also verified that public provider, security, social
 - Passed on exact 0.1.10 source: 369 test files / 4,186 tests; Next.js compile, TypeScript, and 284-page generation; changed-file ESLint; desktop production frontend build; Rust `cargo check --locked`; release-app compilation; whitespace check.
 - Local release-app evidence: arm64 `Axiom Agent.app`, version 0.1.10, identifier `com.visionxixlabs.axiom`, `axiom-agent` URL scheme, executable SHA-256 `e0368e52c783f26eec69887a73fdc3773ac22930c86850f634c25f1077f22a2a`. It is ad-hoc signed; local DMG creation failed at the disk-image script in the restricted environment. Launch Services rejected the temporary-container bundle with `-10822`; direct execution aborted in macOS `_RegisterApplication` before Tauri setup. This is recorded as a harness/clean-host blocker, not a successful launch.
 - Billing path evidence: Settings and the access wall call a bearer-authenticated desktop endpoint; only a browser-paired desktop session can create a portal; missing Stripe customer/configuration returns an honest error; the desktop permits only HTTPS Stripe destinations; the return page invokes the registered native scheme and focus triggers entitlement verification. Live Stripe creation remains unverified.
-- Post-release visual/flow pass: simplified public navigation to verified customer destinations, lowered decorative grid/noise/glow density, removed download-page beams and ambient animation, and calmed native welcome/loading surfaces. All 369 Vitest files / 4,186 tests passed; changed-file ESLint passed; the 0.1.11 desktop candidate production build passed; Next.js compiled, type-checked, and generated 284 pages. The candidate is not release-verified until platform CI and publication pass; visual acceptance on physical phone and clean installed-app hosts remains outstanding.
-- Release-CI verified and published the signed/notarized 0.1.10 artifacts. Not yet verified: browser-to-app focus on installed clean hosts, OAuth-provider account creation, live Stripe portal/checkout for a real tenant, and physical mobile-browser consent layout.
+- Post-release visual/flow pass: simplified public navigation to verified customer destinations, lowered decorative grid/noise/glow density, removed download-page beams and ambient animation, and calmed native welcome/loading surfaces. All 369 Vitest files / 4,186 tests passed; changed-file ESLint passed; the 0.1.11 desktop production build passed; Next.js compiled, type-checked, and generated 284 pages. Release run `36653889931` then passed every platform build and publication job. Visual acceptance on physical phone and clean installed-app hosts remains outstanding.
+- Published 0.1.11 artifact evidence: Apple Silicon DMG size 6,234,710 bytes and SHA-256 `551e5c3f4dfaa009120479032d31aa43415ff7a1d2cb2af156274305d6901ec9`; independently downloaded digest matched GitHub and `hdiutil verify` passed. Intel DMG, Windows MSI/EXE, and Linux AppImage/DEB/RPM were also published with detached signatures.
+- Website release-path verification failed after desktop publication: Vercel deployment `9pswSS12jDNwnGTQBrtNy1qw1aix` remained pending, the live manifest still returned 0.1.9, and `/api/desktop/billing/portal` still returned 404. No 0.1.11 website-download claim is made.
+- Release-CI verified and published the signed/notarized 0.1.11 artifacts. Not yet verified: browser-to-app focus on installed clean hosts, OAuth-provider account creation, live Stripe portal/checkout for a real tenant, and physical mobile-browser consent layout.
 
 | Item | Value |
 | --- | --- |
 | Product observed | Axiom Agent |
-| Desktop package/version | `axiom-desktop` 0.1.10; published as `desktop-v0.1.10` |
+| Desktop package/version | `axiom-desktop` 0.1.11; published as `desktop-v0.1.11` |
 | Framework | Tauri 2 + React 19 + Vite + Rust |
-| Released source commit | `d0c074a21a4014e18d848cbc9d53385f1d65baae` |
-| Published native artifact | 0.1.10 Apple Silicon DMG SHA-256 `30291e113f65b6ada70ee7dcf65c73b184efd8edca96707bfee98ed923ec64b3`; Intel DMG, Windows MSI/EXE, Linux AppImage/DEB/RPM also published with detached signatures |
+| Released source commit | `c14eb00e872ca7dcd89dfbcd3a48e673f3ed14c9` |
+| Published native artifact | 0.1.11 Apple Silicon DMG SHA-256 `551e5c3f4dfaa009120479032d31aa43415ff7a1d2cb2af156274305d6901ec9`; Intel DMG, Windows MSI/EXE, Linux AppImage/DEB/RPM also published with detached signatures |
 | Current test environment | macOS; repository in iCloud; isolated Vitest/TypeScript runner under `/private/tmp` because repository Rollup metadata is dataless |
 | Master-spec identity | Attachment requested again; not present in repository during audit |
 
