@@ -1,9 +1,9 @@
 import { useState, type ComponentType, type SVGProps } from "react";
-import type { View } from "../App";
+import type { CustomerView } from "../App";
 import { DESKTOP_VERSION } from "../lib/desktopMetadata";
 
 interface NavItem {
-  id: View;
+  id: CustomerView;
   label: string;
   Icon: ComponentType<SVGProps<SVGSVGElement>>;
 }
@@ -53,7 +53,7 @@ export const CUSTOMER_NAV_GROUPS: NavGroup[] = [
   },
 ];
 
-export function Sidebar({ activeView, onNavigate }: { activeView: View; onNavigate: (view: View) => void }) {
+export function Sidebar({ activeView, onNavigate }: { activeView: CustomerView; onNavigate: (view: CustomerView) => void }) {
   const [openGroups, setOpenGroups] = useState<Record<string, boolean>>(() =>
     Object.fromEntries(CUSTOMER_NAV_GROUPS.map((group) => [
       group.kind,

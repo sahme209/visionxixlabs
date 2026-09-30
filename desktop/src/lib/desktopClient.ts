@@ -290,10 +290,7 @@ export class DesktopClient {
   /** True when the desktop is not connected to an authenticated workspace. */
   isPreviewMode = false;
 
-  /**
-   * True when a Bearer token (legacy pairing token OR vxlk_* API key) is
-   * loaded. Used by views to decide whether to render mock-data banners.
-   */
+  /** True when a supported desktop credential is loaded for verification. */
   hasAuth(): boolean {
     return Boolean(this.config.sessionToken);
   }

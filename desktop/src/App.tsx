@@ -10,13 +10,14 @@ import { desktopClient, type VerifiedDesktopIdentity } from "./lib/desktopClient
 import { clearApiKey } from "./lib/apiKeyStore";
 import { clearAuthSession } from "./lib/authSession";
 
+/** Only verified, customer-reachable desktop destinations belong here. */
+export type CustomerView = "deployment-requests" | "docs" | "settings";
+
 /**
- * Source-level identifiers remain broad so dormant requirement work can be
- * audited without deletion. Only the three imported/rendered customer views
- * below are reachable or included through the production App module.
+ * Dormant source modules remain type-checked for requirements recovery, but
+ * these identifiers are not accepted by the customer sidebar or App state.
  */
-export type View =
-  | "deployment-requests" | "docs" | "settings"
+export type View = CustomerView
   | "start-here" | "dashboard" | "multi-cloud" | "security" | "scans"
   | "releases" | "sops" | "repositories" | "branch-validation" | "cherry-picks"
   | "release-freeze" | "change-tickets" | "policy-violations" | "release-readiness"
@@ -100,7 +101,7 @@ export default function App() {
 }
 
 function AuthenticatedWorkspace({ identity }: { identity: VerifiedDesktopIdentity }) {
-  const [activeView, setActiveView] = useState<View>("deployment-requests");
+  const [activeView, setActiveView] = useState<CustomerView>("deployment-requests");
   const [booted, setBooted] = useState(false);
 
   useEffect(() => {
