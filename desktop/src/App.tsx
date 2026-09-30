@@ -129,10 +129,10 @@ function BootScreen({ status }: { status: string }) {
   return (
     <div className="h-screen w-screen flex items-center justify-center bg-axiom-bg text-white relative overflow-hidden">
       <div className="absolute inset-0 pointer-events-none" aria-hidden>
-        <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[720px] h-[720px] rounded-full bg-violet-500/[0.10] blur-[160px] animate-pulse" />
+        <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[680px] h-[680px] rounded-full bg-violet-500/[0.06] blur-[160px]" />
       </div>
       <div className="relative z-10 flex flex-col items-center">
-        <div className="relative w-16 h-16 rounded-2xl bg-gradient-to-br from-violet-500 to-fuchsia-500 flex items-center justify-center text-2xl font-bold shadow-[0_0_60px_rgba(139,92,246,0.5)]">A</div>
+        <div className="relative w-16 h-16 rounded-2xl bg-gradient-to-br from-violet-500 to-fuchsia-500 flex items-center justify-center text-2xl font-bold shadow-[0_14px_40px_rgba(124,58,237,0.25)]">A</div>
         <p className="mt-6 text-base font-semibold tracking-tight text-white">Axiom Agent</p>
         <p className="mt-2 text-[10px] font-mono text-zinc-500 tracking-[0.22em] uppercase">{status}</p>
         <div className="mt-6 w-48 h-[2px] bg-zinc-800/70 rounded-full overflow-hidden">

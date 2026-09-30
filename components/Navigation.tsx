@@ -10,43 +10,31 @@ import {
   ChevronDownIcon,
   StarIcon,
   CpuChipIcon,
-  CogIcon,
   CloudIcon,
-  SparklesIcon,
   BookOpenIcon,
   DocumentTextIcon,
   ShieldCheckIcon,
   PlayCircleIcon,
   ArrowDownTrayIcon,
   PuzzlePieceIcon,
-  NewspaperIcon,
   RocketLaunchIcon,
-  CommandLineIcon,
 } from "@heroicons/react/24/outline";
 import { AnimatePresence, motion } from "framer-motion";
 
 /* ── Dropdown items ──────────────────────────────────────────── */
 const productDropdown = [
-  { href: "/axiom",              label: "Axiom Agent",   desc: "Autonomous cloud operations",        icon: CpuChipIcon },
-  { href: "/axiom/releaseops",   label: "ReleaseOps",    desc: "Deployment governance + monitoring", icon: ShieldCheckIcon },
-  { href: "/demo",               label: "Cloud Operator Demo", desc: "Explore a safe, scripted cloud scan", icon: CloudIcon },
-  { href: "/cloud-solutions",    label: "Multi-Cloud",   desc: "AWS · Azure · GCP intelligence",     icon: CogIcon },
-  { href: "/integrations",       label: "Integrations",  desc: "Every tool we plug into",            icon: PuzzlePieceIcon },
-  { href: "/download",           label: "Desktop App",   desc: "macOS, Windows, Linux command center", icon: ArrowDownTrayIcon },
+  { href: "/axiom/releaseops", label: "Deployment operations", desc: "Request-to-playbook workflow", icon: ShieldCheckIcon },
+  { href: "/capabilities", label: "Capabilities", desc: "Released, preview, and planned behavior", icon: CpuChipIcon },
+  { href: "/integrations", label: "Integrations", desc: "Supported systems and exact connection scope", icon: PuzzlePieceIcon },
+  { href: "/demo", label: "Isolated demo", desc: "Explore the workflow with fictional sample data", icon: PlayCircleIcon },
 ];
 
 const resourcesDropdown = [
-  { href: "/docs",                 label: "Docs",       desc: "Guides, APIs, runbooks",          icon: BookOpenIcon },
-  { href: "/blog",                 label: "Blog",       desc: "Product notes + deep dives",      icon: NewspaperIcon },
-  { href: "/changelog",            label: "Changelog",  desc: "What we shipped recently",        icon: RocketLaunchIcon },
-  { href: "/manifesto",            label: "Manifesto",  desc: "The seven things we believe",     icon: SparklesIcon },
-  { href: "/principles",           label: "Principles", desc: "How we make visual decisions",    icon: SparklesIcon },
-  { href: "/design",               label: "Design system", desc: "Tokens, materials, primitives",icon: SparklesIcon },
-  { href: "/handbook",             label: "Handbook",   desc: "How we build it — engineering",   icon: CommandLineIcon },
-  { href: "/team",                 label: "Team",       desc: "How a small team ships carefully",icon: SparklesIcon },
-  { href: "/insights",             label: "Insights",   desc: "Customer stories + frameworks",   icon: BookOpenIcon },
-  { href: "/enterprise-readiness", label: "Enterprise", desc: "Compliance and readiness",        icon: DocumentTextIcon },
-  { href: "/security",             label: "Security",   desc: "Trust center and policies",       icon: ShieldCheckIcon },
+  { href: "/docs", label: "Documentation", desc: "Installation, setup, and operating guidance", icon: BookOpenIcon },
+  { href: "/security", label: "Security", desc: "Implemented controls and current limitations", icon: ShieldCheckIcon },
+  { href: "/changelog", label: "Release notes", desc: "What shipped and what was verified", icon: RocketLaunchIcon },
+  { href: "/status", label: "Service status", desc: "Current availability and incidents", icon: CloudIcon },
+  { href: "/contact", label: "Contact & support", desc: "Reach the verified business support path", icon: DocumentTextIcon },
 ];
 
 const mobileLinks = [
@@ -222,7 +210,7 @@ export function Navigation() {
               className="rounded-xl shadow-lg group-hover:shadow-violet-500/20 transition-shadow"
               priority
             />
-            <span className="text-lg font-bold text-gradient">
+            <span className="text-lg font-semibold tracking-[-0.025em] text-zinc-100 transition-colors group-hover:text-white">
               Vision XIX Labs
             </span>
           </Link>
@@ -261,24 +249,8 @@ export function Navigation() {
               Pricing
             </Link>
 
-            {/* Focused action cluster: release status · sandbox · download. */}
+            {/* Focused action cluster: isolated demo and desktop download. */}
             <div className="ml-3 flex items-center gap-2 border-l border-white/[0.07] pl-4">
-              {/* "What's shipped" — small live indicator linking to /changelog.
-                  Pinging coral dot + monospace phase number reads as "alive
-                  and being actively built". Apple-style restrained badge. */}
-              <Link
-                href="/changelog"
-                aria-label="What's shipped — view changelog"
-                title="What's shipped — view changelog"
-                className="hidden xl:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border border-brand-coral/20 bg-brand-coral/[0.04] text-[10.5px] font-mono uppercase tracking-[0.12em] text-brand-coral/85 hover:bg-brand-coral/[0.08] hover:border-brand-coral/35 transition-all group"
-              >
-                <span className="relative flex h-1.5 w-1.5">
-                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-brand-coral opacity-60" />
-                  <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-brand-coral" />
-                </span>
-                <span className="text-zinc-400">Release notes</span>
-              </Link>
-
               <Link
                 href="/demo"
                 className="inline-flex min-h-10 items-center gap-1.5 rounded-full border border-white/[0.09] bg-white/[0.025] px-4 py-2 text-sm font-medium tracking-tight text-zinc-200 transition-all hover:border-brand-coral/30 hover:bg-brand-coral/[0.07]"

@@ -1,11 +1,11 @@
 # Public Claim-to-Evidence Map
 
-Last updated: 2026-09-27
+Last updated: 2026-09-29
 
 | Public claim | Allowed wording | Product evidence | Verification class | Limitation |
 | --- | --- | --- | --- | --- |
-| Downloadable desktop application | Axiom Agent is distributed as platform installers | Release manifest API and public `desktop-v0.1.7` assets | Artifact existence verified | Installation/first launch not verified in this environment |
-| macOS/Windows/Linux availability | Name the exact available asset and architecture from the current manifest | `lib/desktop/releaseManifest.ts` | Manifest verified | Current assets are unsigned; macOS is not attested notarized |
+| Downloadable desktop application | Axiom Agent is distributed as platform installers | Release manifest API and public `desktop-v0.1.10` assets | Artifact existence, CI build, and publication verified | Website production still selects 0.1.9 until the failed Vercel rollout is repaired; clean-host first launch is not verified |
+| macOS/Windows/Linux availability | Name the exact available asset, architecture, and signing state from the current manifest | `lib/desktop/releaseManifest.ts`; release run `36625741154` | Manifest and release-CI verified | macOS 0.1.10 is Developer ID signed, Gatekeeper accepted, and notarized; Windows/Linux remain honestly marked unsigned; clean-host installation is outstanding |
 | AWS connection | Assume-role connector implemented; configuration required | `awsValidator.ts`, `awsConnection.ts`, coverage map | Application-side implementation | Live customer account validation unavailable |
 | AWS analysis | Preview-grade inventory and security analysis | `awsPreviewScanner.ts`, security scanner | Mock/pure verification | Do not call full live scanning |
 | Azure/GCP | Format validation and preview analysis | provider validators/preview scanners | Application-side preview | Live SDK validation/execution not released |

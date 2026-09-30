@@ -172,27 +172,18 @@ export default function DownloadPage() {
 
   return (
     <div className="min-h-screen bg-[#09090b] text-white relative overflow-hidden">
-      {/* Cinematic background layers */}
-      <div className="absolute inset-0 bg-grid-mesh opacity-30 pointer-events-none" aria-hidden />
-      <div className="hidden md:block absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[600px] spotlight-orb opacity-60 pointer-events-none" aria-hidden />
-      <div className="hidden md:block ambient-drift absolute top-[20%] -right-40 w-[500px] h-[500px] rounded-full bg-brand-violet/[0.07] blur-[140px] pointer-events-none" aria-hidden />
-      <div className="hidden md:block ambient-drift absolute top-[40%] -left-40 w-[480px] h-[460px] rounded-full bg-brand-coral/[0.06] blur-[140px] pointer-events-none" style={{ animationDelay: "-8s" }} aria-hidden />
-      <div className="hidden md:block ambient-drift absolute bottom-[10%] left-1/2 -translate-x-1/2 w-[600px] h-[300px] rounded-full bg-cyan-500/[0.05] blur-[120px] pointer-events-none" style={{ animationDelay: "-14s" }} aria-hidden />
+      <div className="absolute inset-0 bg-grid-mesh opacity-[0.08] pointer-events-none" aria-hidden />
+      <div className="hidden md:block absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[540px] spotlight-orb opacity-25 pointer-events-none" aria-hidden />
 
       <Navigation />
 
       {/* Hero ───────────────────────────────────────────────────── */}
       <section className="relative pt-24 pb-12 px-4 sm:px-6 sm:pt-32 sm:pb-20 lg:px-8 overflow-hidden">
-        <div className="hidden md:block hero-beam-vertical pointer-events-none" aria-hidden />
-        <div className="hidden md:block hero-beam-flare pointer-events-none" aria-hidden />
-        <div className="hidden md:block hero-beam-converge pointer-events-none" aria-hidden />
-
         <div className="max-w-4xl mx-auto text-center relative z-10">
           {/* Floating app icon with glow */}
           <Reveal direction="up" blur>
             <div className="relative inline-flex items-center justify-center mb-6 sm:mb-10">
-              <div className="hidden sm:block absolute inset-0 rounded-3xl bg-gradient-to-br from-violet-500/30 via-blue-500/20 to-fuchsia-500/30 blur-[40px] scale-150 animate-pulse" aria-hidden />
-              <div className="hidden sm:block absolute inset-0 rounded-3xl bg-gradient-to-br from-violet-600/40 to-fuchsia-600/40 blur-[20px] scale-110" aria-hidden />
+              <div className="hidden sm:block absolute inset-0 rounded-3xl bg-violet-500/15 blur-[36px] scale-125" aria-hidden />
               <div className="relative w-20 h-20 sm:w-28 sm:h-28 rounded-2xl sm:rounded-3xl bg-gradient-to-br from-[#1e1e24] via-[#1a1a20] to-[#0f0f12] border border-white/[0.08] flex items-center justify-center shadow-2xl shadow-violet-900/40">
                 <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-white/[0.04] via-transparent to-transparent" aria-hidden />
                 <Image
@@ -232,9 +223,9 @@ export default function DownloadPage() {
 
           {/* Headline */}
           <Reveal direction="up" blur delay={0.08}>
-            <h1 className="text-[2.35rem] sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-5 sm:mb-6 leading-[1.02] tracking-[-0.045em]">
+            <h1 className="text-[2.35rem] sm:text-5xl md:text-6xl lg:text-7xl font-semibold mb-5 sm:mb-6 leading-[1.02] tracking-[-0.045em]">
               Govern every deployment.<br />
-              <span className="text-gradient">From request to closure.</span>
+              <span className="text-zinc-200">From request to closure.</span>
             </h1>
           </Reveal>
 

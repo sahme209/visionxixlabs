@@ -1,5 +1,7 @@
 # Website Messaging + UX Audit
 
+> **Historical document — superseded.** This March 2025 audit predates the authoritative desktop-delivery decision. Recommendations below for a customer-facing browser product, website sign-in, “Run Axiom,” Builder-led navigation, or a hosted control plane must not be implemented. Use `PRODUCT_VISION.md`, `DECISIONS.md`, `REQUIREMENTS_MATRIX.md`, and `WEBSITE_CLAIMS_AUDIT_2026-09-27.md` for current direction. This file remains only as historical context.
+
 **Date:** March 1, 2025  
 **Vision:** Axiom is primary (deep, trustworthy enterprise cloud automation); Builder and chatbots secondary.
 

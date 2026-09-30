@@ -99,7 +99,7 @@ function SectionDivider() {
 export default function Home() {
   return (
     <div className="min-h-screen bg-[#0a0a0d] text-white relative">
-      <div className="absolute inset-0 bg-grid-mesh opacity-20 pointer-events-none" aria-hidden />
+      <div className="absolute inset-0 bg-grid-mesh opacity-[0.08] pointer-events-none" aria-hidden />
       <div className="relative z-10">
       <Navigation />
 
@@ -108,9 +108,9 @@ export default function Home() {
 
       {/* ── Hero ───────────────────────────────────────────────────── */}
       <section className="relative overflow-hidden px-6 pb-24 pt-32 lg:px-10 lg:pb-28 lg:pt-36">
-        <div className="absolute inset-0 hero-grid-mesh opacity-[0.16] pointer-events-none" aria-hidden />
+        <div className="absolute inset-0 hero-grid-mesh opacity-[0.08] pointer-events-none" aria-hidden />
         <div className="hero-atmosphere pointer-events-none absolute inset-0" aria-hidden />
-        <div className="hero-noise-grain opacity-30" aria-hidden />
+        <div className="hero-noise-grain opacity-[0.14]" aria-hidden />
 
         <div className="relative mx-auto max-w-[1400px]">
           <div className="grid items-center gap-16 xl:grid-cols-[minmax(0,0.92fr)_minmax(560px,1.08fr)] xl:gap-20">
@@ -134,7 +134,7 @@ export default function Home() {
               </h1>
 
               <Reveal direction="up" delay={0.06}>
-                <p className="max-w-[620px] text-[18px] leading-[1.7] tracking-[-0.012em] text-zinc-400">
+                <p className="max-w-[620px] text-[18px] leading-[1.58] tracking-[-0.012em] text-zinc-400">
                   Turn deployment intake into a versioned, approval-gated playbook—then guide execution, validate production, and preserve the evidence required to close with confidence.
                 </p>
               </Reveal>
