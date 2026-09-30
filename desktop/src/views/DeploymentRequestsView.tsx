@@ -136,6 +136,7 @@ export function DeploymentRequestsView() {
   const [requests, setRequests] = useState<RequestSummary[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState<string>();
+  const [lastSuccessfulLoadAt, setLastSuccessfulLoadAt] = useState<Date>();
   const [showForm, setShowForm] = useState(false);
   const [generatingRequestId, setGeneratingRequestId] = useState<string>();
   const [generatedPlaybooks, setGeneratedPlaybooks] = useState<Record<string, GeneratedPlaybook>>({});
@@ -145,8 +146,10 @@ export function DeploymentRequestsView() {
     setLoading(true);
     setLoadError(undefined);
     const result = await desktopClient.deploymentRequests();
-    if (result.ok) setRequests(result.data);
-    else setLoadError(result.error);
+    if (result.ok) {
+      setRequests(result.data);
+      setLastSuccessfulLoadAt(new Date());
+    } else setLoadError(result.error);
     setLoading(false);
   }, []);
 
@@ -154,8 +157,10 @@ export function DeploymentRequestsView() {
     let cancelled = false;
     desktopClient.deploymentRequests().then((result) => {
       if (cancelled) return;
-      if (result.ok) setRequests(result.data);
-      else setLoadError(result.error);
+      if (result.ok) {
+        setRequests(result.data);
+        setLastSuccessfulLoadAt(new Date());
+      } else setLoadError(result.error);
       setLoading(false);
     });
     return () => { cancelled = true; };
@@ -205,10 +210,17 @@ export function DeploymentRequestsView() {
         />
       )}
 
-      {loading && <StateCard>Loading current workspace requests…</StateCard>}
+      {lastSuccessfulLoadAt && (
+        <p role="status" className="text-[11px] text-zinc-500">
+          Service last responded {lastSuccessfulLoadAt.toLocaleString()}.
+        </p>
+      )}
+      {loading && requests.length === 0 && <StateCard>Loading current workspace requests…</StateCard>}
       {!loading && loadError && (
         <StateCard tone="error">
-          Could not verify deployment requests: {loadError}. Nothing has been simulated.
+          {requests.length > 0
+            ? `Refresh failed: ${loadError}. Showing the last successfully loaded records; they may be stale.`
+            : `Could not load deployment requests: ${loadError}. Nothing has been simulated.`}
         </StateCard>
       )}
       {!loading && !loadError && requests.length === 0 && (
@@ -217,7 +229,7 @@ export function DeploymentRequestsView() {
           authority, production trigger, validation, evidence, and rollback requirements.
         </StateCard>
       )}
-      {!loading && !loadError && requests.length > 0 && (
+      {requests.length > 0 && (
         <div className="space-y-2">
           {requests.map((request) => (
             <div key={request.id} className="glass-card p-4">
@@ -234,7 +246,7 @@ export function DeploymentRequestsView() {
               </div>
               <div className="flex items-end justify-between gap-3 mt-3">
                 <p className="text-xs text-zinc-500">
-                  Last verified by the service {new Date(request.updatedAt).toLocaleString()}.
+                  Request updated {new Date(request.updatedAt).toLocaleString()}.
                 </p>
                 <button
                   type="button"

@@ -3,12 +3,12 @@
 @tailwind utilities;
 
 /* ===========================================================================
-   GLOBAL BASE — cinematic dark Huly-style theme.
+   GLOBAL BASE — restrained, native-feeling dark workspace.
    =========================================================================== */
 @layer base {
   html, body, #root {
     height: 100%;
-    background: #09090b;
+    background: #111214;
     color: #e4e4e7;
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
     -webkit-font-smoothing: antialiased;
@@ -42,9 +42,9 @@
     -webkit-app-region: no-drag;
   }
 
-  /* Focus ring — subtle violet. */
+  /* Focus ring stays visible without turning every control into an accent. */
   *:focus-visible {
-    outline: 2px solid rgba(139, 92, 246, 0.5);
+    outline: 2px solid rgba(255, 255, 255, 0.42);
     outline-offset: 2px;
     border-radius: 4px;
   }
@@ -62,20 +62,20 @@
    COMPONENT-CLASS UTILITIES
    =========================================================================== */
 @layer components {
-  /* ── Glass surfaces ───────────────────────────────────────────────── */
+  /* ── Matte surfaces ───────────────────────────────────────────────── */
   .glass-panel {
-    @apply bg-axiom-bg-elev/80 backdrop-blur-xl border border-axiom-border;
+    @apply bg-axiom-bg-elev border border-axiom-border;
   }
   .glass-card {
-    @apply bg-axiom-surface/70 backdrop-blur-md border border-axiom-border rounded-xl;
+    @apply bg-axiom-surface border border-axiom-border rounded-xl;
   }
   .glass-card-lift {
     @apply glass-card transition-all duration-200;
-    box-shadow: 0 1px 0 rgba(255,255,255,0.03) inset;
+    box-shadow: none;
   }
   .glass-card-lift:hover {
-    @apply border-axiom-accent/30;
-    box-shadow: 0 1px 0 rgba(255,255,255,0.05) inset, 0 10px 28px -20px rgba(139,92,246,0.20);
+    @apply border-white/15;
+    box-shadow: none;
   }
 
   /* ── Text gradients ───────────────────────────────────────────────── */
@@ -93,11 +93,7 @@
            relative;
   }
   .sidebar-item-active {
-    @apply text-white bg-gradient-to-r from-violet-500/10 to-transparent border border-violet-500/20;
-  }
-  .sidebar-item-active::before {
-    content: "";
-    @apply absolute left-0 top-1.5 bottom-1.5 w-[2px] rounded-r bg-gradient-to-b from-violet-400 to-fuchsia-400;
+    @apply text-white bg-white/[0.075] border border-white/[0.07];
   }
 
   /* ── Metric / KPI cards ───────────────────────────────────────────── */
@@ -128,10 +124,8 @@
   /* ── Buttons ──────────────────────────────────────────────────────── */
   .btn-primary {
     @apply inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg
-           text-sm font-semibold text-white
-           bg-gradient-to-r from-violet-600 to-fuchsia-600
-           hover:from-violet-500 hover:to-fuchsia-500
-           transition-all shadow-glow-violet;
+           text-sm font-semibold text-zinc-950 bg-zinc-100 hover:bg-white
+           transition-colors;
   }
   .btn-secondary {
     @apply inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg
@@ -162,23 +156,6 @@
   .aurora-bg {
     position: relative;
     overflow: hidden;
-  }
-  .aurora-bg::before, .aurora-bg::after {
-    content: "";
-    position: absolute;
-    pointer-events: none;
-    filter: blur(80px);
-    z-index: 0;
-  }
-  .aurora-bg::before {
-    top: -20%; left: -10%;
-    width: 60%; height: 60%;
-    background: radial-gradient(circle, rgba(139,92,246,0.10), transparent 70%);
-  }
-  .aurora-bg::after {
-    bottom: -20%; right: -10%;
-    width: 60%; height: 60%;
-    background: radial-gradient(circle, rgba(217,70,239,0.07), transparent 70%);
   }
 }
 

@@ -98,8 +98,7 @@ function SectionDivider() {
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-[#0a0a0d] text-white relative">
-      <div className="absolute inset-0 bg-grid-mesh opacity-[0.08] pointer-events-none" aria-hidden />
+    <div className="min-h-screen bg-[#0d0e0e] text-white relative">
       <div className="relative z-10">
       <Navigation />
 
@@ -107,17 +106,14 @@ export default function Home() {
       <div className="hidden md:block">
 
       {/* ── Hero ───────────────────────────────────────────────────── */}
-      <section className="relative overflow-hidden px-6 pb-24 pt-32 lg:px-10 lg:pb-28 lg:pt-36">
-        <div className="absolute inset-0 hero-grid-mesh opacity-[0.08] pointer-events-none" aria-hidden />
-        <div className="hero-atmosphere pointer-events-none absolute inset-0" aria-hidden />
-        <div className="hero-noise-grain opacity-[0.14]" aria-hidden />
+      <section className="hero-atmosphere relative overflow-hidden px-6 pb-24 pt-40 lg:px-10 lg:pb-32 lg:pt-48">
 
         <div className="relative mx-auto max-w-[1400px]">
           <div className="grid items-center gap-16 xl:grid-cols-[minmax(0,0.92fr)_minmax(560px,1.08fr)] xl:gap-20">
             <div className="relative z-10 max-w-[690px]">
               <Reveal direction="up" blur>
                 <div className="mb-7 flex items-center gap-3">
-                  <span className="h-1.5 w-1.5 rounded-full bg-brand-coral shadow-[0_0_16px_rgba(244,114,182,0.7)]" />
+                  <span className="h-1.5 w-1.5 rounded-full bg-zinc-400" />
                   <p className="mono-label text-zinc-400">
                     Axiom <span className="mx-1.5 text-zinc-600">·</span> Deployment operations workspace
                   </p>
@@ -129,7 +125,7 @@ export default function Home() {
                 <TextReveal text="becomes the" splitBy="word" stagger={80} startDelay={280} className="block text-zinc-100" />
                 <span className="relative inline-block pb-2">
                   <TextReveal text="playbook." splitBy="word" stagger={80} startDelay={440} />
-                  <span aria-hidden className="absolute bottom-0.5 left-0 h-px w-[72%] bg-gradient-to-r from-brand-coral via-violet-400/70 to-transparent" />
+                  <span aria-hidden className="absolute bottom-0.5 left-0 h-px w-[72%] bg-gradient-to-r from-zinc-400 to-transparent" />
                 </span>
               </h1>
 
@@ -165,7 +161,6 @@ export default function Home() {
 
             <Reveal direction="up" delay={0.12}>
               <div className="relative hidden xl:block">
-                <div className="absolute -inset-12 -z-10 rounded-full bg-violet-500/[0.08] blur-[90px]" aria-hidden />
                 <SpotlightCard className="hero-product-shell overflow-hidden rounded-[28px] p-2.5">
                   <div className="flex items-center justify-between px-4 pb-3 pt-2">
                     <div>
@@ -173,7 +168,7 @@ export default function Home() {
                       <p className="mt-0.5 text-[10px] text-zinc-500">Installed workspace · illustrative data</p>
                     </div>
                     <div className="inline-flex items-center gap-2 rounded-full border border-emerald-400/15 bg-emerald-400/[0.06] px-3 py-1.5">
-                      <span className="h-1.5 w-1.5 rounded-full bg-emerald-300 shadow-[0_0_10px_rgba(110,231,183,0.65)]" />
+                      <span className="h-1.5 w-1.5 rounded-full bg-emerald-300" />
                       <span className="text-[9px] font-mono uppercase tracking-[0.16em] text-emerald-200/80">Sample workspace</span>
                     </div>
                   </div>
@@ -397,27 +392,27 @@ export default function Home() {
               {
                 dot: "bg-violet-500",
                 accentClass: "card-accent-violet",
-                title: "Deep Scanning",
+                title: "Governed intake",
                 icon: MagnifyingGlassIcon,
-                metric: "Availability shown",
-                desc: "Full infrastructure snapshot — cost waste, security gaps, misconfigurations, and drift from desired state.",
+                metric: "Structured",
+                desc: "Capture the deployment window, scope, responsible owners, source-control references, validation, evidence, and recovery requirements.",
                 items: [
-                  { dot: "bg-violet-400/60", text: "Cost optimization and rightsizing" },
-                  { dot: "bg-violet-400/60", text: "Security findings with severity scoring" },
-                  { dot: "bg-violet-400/60", text: "Continuous drift detection" },
+                  { dot: "bg-violet-400/60", text: "Required fields remain visible in sequence" },
+                  { dot: "bg-violet-400/60", text: "Ownership and production scope stay explicit" },
+                  { dot: "bg-violet-400/60", text: "Confirmed facts retain source references" },
                 ],
               },
               {
                 dot: "bg-fuchsia-500",
                 accentClass: "card-accent-fuchsia",
-                title: "Autonomous Reasoning",
+                title: "Versioned playbooks",
                 icon: CpuChipIcon,
-                metric: "Source-aware",
-                desc: "AI reasoning engine that prioritizes findings, builds dependency-aware execution plans, and generates Terraform code.",
+                metric: "Reviewable",
+                desc: "Turn accepted intake into an ordered playbook with explicit roles, activation conditions, validation instructions, and content hashes.",
                 items: [
-                  { dot: "bg-fuchsia-400/60", text: "Multi-phase cognitive reasoning" },
-                  { dot: "bg-fuchsia-400/60", text: "Phased plans with dependency graphs" },
-                  { dot: "bg-fuchsia-400/60", text: "Terraform and CLI code generation" },
+                  { dot: "bg-fuchsia-400/60", text: "Persisted playbook versions" },
+                  { dot: "bg-fuchsia-400/60", text: "Content hashes remain visible" },
+                  { dot: "bg-fuchsia-400/60", text: "Required roles stay attached to each step" },
                 ],
               },
               {
@@ -426,7 +421,7 @@ export default function Home() {
                 title: "Governed Execution",
                 icon: ShieldCheckIcon,
                 metric: "Audited",
-                desc: "Governance controls connect approval gates, scoped execution, rollback planning, and persisted audit evidence.",
+                desc: "Approval gates connect guided execution, rollback planning, validation ownership, and persisted evidence without implying work occurred.",
                 items: [
                   { dot: "bg-emerald-400/60", text: "Human approval for high-risk changes" },
                   { dot: "bg-emerald-400/60", text: "Explicit rollback plans and recovery status" },

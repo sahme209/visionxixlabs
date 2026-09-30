@@ -78,7 +78,7 @@ function NavDropdown({
     <div ref={ref} className="relative">
       <button
         onClick={onToggle}
-        className="nav-link-underline relative flex items-center gap-1 px-4 py-2 text-zinc-400 hover:text-white rounded-lg transition-colors text-sm font-medium"
+        className="relative flex items-center gap-1 px-4 py-2 text-zinc-400 hover:text-white rounded-lg transition-colors text-sm font-medium"
       >
         {label}
         <ChevronDownIcon
@@ -92,7 +92,7 @@ function NavDropdown({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.2, ease: "easeOut" }}
-            className="absolute top-full left-0 mt-2 w-64 bg-[#09090b]/95 backdrop-blur-xl border border-white/[0.06] rounded-xl shadow-2xl shadow-black/40 p-1.5 z-50"
+            className="absolute top-full left-0 mt-2 w-72 bg-[#151615] border border-white/[0.08] rounded-xl shadow-2xl shadow-black/40 p-1.5 z-50"
           >
             {items.map((item) => {
               const Icon = item.icon;
@@ -103,7 +103,7 @@ function NavDropdown({
                   onClick={onClose}
                   className="flex items-start gap-3 px-4 py-2.5 text-sm text-zinc-400 hover:text-white hover:bg-white/[0.04] rounded-lg transition-all duration-200 group/item"
                 >
-                  <Icon className="h-4 w-4 mt-0.5 text-zinc-500 group-hover/item:text-violet-400 transition-colors shrink-0" />
+                  <Icon className="h-4 w-4 mt-0.5 text-zinc-500 group-hover/item:text-zinc-200 transition-colors shrink-0" />
                   <div>
                     <div className="font-medium text-zinc-300 group-hover/item:text-white transition-colors">
                       {item.label}
@@ -191,8 +191,8 @@ export function Navigation() {
       aria-label="Primary navigation"
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         scrolled
-          ? "bg-[#09090b]/90 backdrop-blur-xl border-b border-white/[0.06] shadow-[0_8px_30px_rgba(0,0,0,0.5)]"
-          : "bg-transparent border-b border-transparent"
+          ? "bg-[#0d0e0e]/96 backdrop-blur-xl border-b border-white/[0.07]"
+          : "bg-[#0d0e0e]/92 backdrop-blur-xl border-b border-white/[0.05]"
       }`}
     >
       <div className="mx-auto max-w-[1400px] px-4 sm:px-6 lg:px-10">
@@ -200,14 +200,14 @@ export function Navigation() {
           {/* Logo with hover scale */}
           <Link
             href="/"
-            className="flex items-center space-x-3 group shrink-0 transition-transform duration-200 hover:scale-[1.02]"
+            className="flex items-center space-x-3 group shrink-0"
           >
             <Image
               src="/vision-xix-logo.png"
               alt="Vision XIX Labs"
               width={34}
               height={34}
-              className="rounded-xl shadow-lg group-hover:shadow-violet-500/20 transition-shadow"
+              className="rounded-lg"
               priority
             />
             <span className="text-lg font-semibold tracking-[-0.025em] text-zinc-100 transition-colors group-hover:text-white">
@@ -244,18 +244,18 @@ export function Navigation() {
             {/* Pricing — the only standalone middle nav link. */}
             <Link
               href="/plans"
-              className="nav-link-underline relative px-4 py-2 text-zinc-400 hover:text-white rounded-lg transition-colors text-sm font-medium"
+              className="relative px-4 py-2 text-zinc-400 hover:text-white rounded-lg transition-colors text-sm font-medium"
             >
               Pricing
             </Link>
 
             {/* Focused action cluster: isolated demo and desktop download. */}
-            <div className="ml-3 flex items-center gap-2 border-l border-white/[0.07] pl-4">
+            <div className="ml-3 flex items-center gap-2 border-l border-white/[0.08] pl-4">
               <Link
                 href="/demo"
-                className="inline-flex min-h-10 items-center gap-1.5 rounded-full border border-white/[0.09] bg-white/[0.025] px-4 py-2 text-sm font-medium tracking-tight text-zinc-200 transition-all hover:border-brand-coral/30 hover:bg-brand-coral/[0.07]"
+                className="inline-flex min-h-10 items-center gap-1.5 rounded-full border border-white/[0.10] bg-white/[0.025] px-4 py-2 text-sm font-medium tracking-tight text-zinc-200 transition-colors hover:bg-white/[0.07]"
               >
-                <PlayCircleIcon className="h-4 w-4 text-brand-coral" />
+                <PlayCircleIcon className="h-4 w-4 text-zinc-400" />
                 Demo
               </Link>
               <Link

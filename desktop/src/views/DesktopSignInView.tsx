@@ -64,14 +64,11 @@ export function DesktopSignInView({
   }
 
   return (
-    <main className="h-screen w-screen bg-axiom-bg text-white flex items-center justify-center px-6 relative overflow-hidden">
-      <div className="absolute inset-0 pointer-events-none" aria-hidden>
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[640px] h-[640px] rounded-full bg-violet-500/[0.07] blur-[150px]" />
-      </div>
-      <div className="relative w-full max-w-md rounded-3xl border border-white/[0.09] bg-zinc-950/90 p-9 shadow-[0_24px_80px_rgba(0,0,0,0.38)] text-center">
-        <div className="mx-auto mb-6 h-16 w-16 rounded-2xl border border-white/10 bg-gradient-to-br from-violet-500 to-fuchsia-500 flex items-center justify-center text-2xl font-bold shadow-[0_12px_36px_rgba(124,58,237,0.24)]">A</div>
-        <p className="text-[10px] font-mono uppercase tracking-[0.24em] text-violet-300">Axiom Agent</p>
-        <h1 className="mt-3 text-[28px] font-semibold leading-[1.12] tracking-[-0.035em]">Deployment control, from request to closure.</h1>
+    <main className="h-screen w-screen bg-[#111214] text-white flex items-center justify-center px-6 relative overflow-hidden">
+      <div className="relative w-full max-w-[430px] text-center">
+        <div className="mx-auto mb-7 h-16 w-16 rounded-2xl border border-white/[0.10] bg-[#202225] flex items-center justify-center text-2xl font-semibold">A</div>
+        <p className="text-xs font-medium text-zinc-400">Axiom Agent</p>
+        <h1 className="mt-3 text-[30px] font-medium leading-[1.12] tracking-[-0.035em]">Deployment control, from request to closure.</h1>
         <p className="mx-auto mt-3 max-w-sm text-[15px] leading-6 text-zinc-400">
           Sign in through your system browser, then return here automatically. Your workspace and paid access are verified before operational data loads.
         </p>
@@ -93,7 +90,7 @@ export function DesktopSignInView({
           </button>
         )}
         <p className="mt-4 text-xs leading-5 text-zinc-500">Both options open visionxixlabs.com in your default browser. Axiom never embeds your identity-provider password.</p>
-        <details className="mt-5 rounded-xl border border-white/[0.07] bg-black/20 p-4 text-left">
+        <details className="mt-5 rounded-xl border border-white/[0.07] bg-white/[0.025] p-4 text-left">
           <summary className="cursor-pointer text-xs font-medium text-zinc-500">Enterprise recovery sign-in</summary>
           <p className="mt-3 text-xs leading-5 text-zinc-600">For administrator-issued recovery access only. The workspace must still have an active commercial entitlement.</p>
           <label htmlFor="workspace-key" className="mt-3 block text-xs font-medium text-zinc-300">Workspace API key</label>
