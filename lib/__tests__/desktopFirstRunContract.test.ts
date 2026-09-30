@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 
 const root = process.cwd();
@@ -174,9 +174,11 @@ describe("desktop first-run contract", () => {
   it("ships only the verified deployment-request journey in customer navigation", () => {
     const app = readFileSync(join(root, "desktop/src/App.tsx"), "utf8");
     const sidebar = readFileSync(join(root, "desktop/src/components/Sidebar.tsx"), "utf8");
-    expect(app).toContain('useState<View>("deployment-requests")');
+    expect(app).toContain('useState<CustomerView>("deployment-requests")');
+    expect(sidebar).toContain('import type { CustomerView } from "../App"');
     expect(app).toContain("<DeploymentRequestsView />");
     expect(app).not.toContain('from "./lib/mockData"');
+    expect(existsSync(join(root, "desktop/src/lib/mockData.ts"))).toBe(false);
     expect(app).not.toContain("<GitHubAppView");
     expect(app).not.toContain("<AgiCockpitView");
     expect(app).not.toContain("<BillingView");
