@@ -1,6 +1,6 @@
 # Roadmap
 
-Last updated: 2026-09-29
+Last updated: 2026-09-30
 
 ## P0 — integrity and authoritative scope
 

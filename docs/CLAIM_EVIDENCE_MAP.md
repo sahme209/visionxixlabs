@@ -1,10 +1,10 @@
 # Public Claim-to-Evidence Map
 
-Last updated: 2026-09-29
+Last updated: 2026-09-30
 
 | Public claim | Allowed wording | Product evidence | Verification class | Limitation |
 | --- | --- | --- | --- | --- |
-| Downloadable desktop application | Axiom Agent is distributed as platform installers | Release manifest API and public `desktop-v0.1.11` assets | Artifact existence, CI build, publication, independent ARM DMG digest, and disk-image integrity verified | Website production still selects 0.1.9 until the stuck Vercel rollout is repaired; clean-host first launch is not verified |
+| Downloadable desktop application | Axiom Agent is distributed as platform installers | Production release manifest/download API and public `desktop-v0.1.11` assets | Artifact existence, CI build, publication, independent ARM DMG digest/integrity, live manifest, and all four live redirects verified | Clean-host installation and first launch are not verified |
 | macOS/Windows/Linux availability | Name the exact available asset, architecture, and signing state from the current manifest | `lib/desktop/releaseManifest.ts`; release run `36653889931` | Manifest and release-CI verified | macOS 0.1.11 is Developer ID signed, Gatekeeper accepted, and notarized; Windows/Linux remain honestly marked unsigned; clean-host installation is outstanding |
 | AWS connection | Assume-role connector implemented; configuration required | `awsValidator.ts`, `awsConnection.ts`, coverage map | Application-side implementation | Live customer account validation unavailable |
 | AWS analysis | Preview-grade inventory and security analysis | `awsPreviewScanner.ts`, security scanner | Mock/pure verification | Do not call full live scanning |
