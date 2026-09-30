@@ -81,6 +81,31 @@ describe("desktop release manifest", () => {
     expect(manifest.assets["linux-x64"]).toMatchObject({ signed: false, notarized: false });
     expect(manifest.allSignedAndNotarized).toBe(false);
   });
+
+  it("selects the newest publication even when GitHub returns releases out of order", async () => {
+    const release = (tag: string, publishedAt: string, prerelease = false) => ({
+      tag_name: tag,
+      html_url: `https://github.com/sahme209/axiom-releases/releases/tag/${tag}`,
+      published_at: publishedAt,
+      prerelease,
+      draft: false,
+      body: "macos-artifact-signed: true\nmacos-artifact-notarized: true",
+      assets: [asset(`Axiom.Agent_${tag.replace("desktop-v", "")}_aarch64.dmg`)],
+    });
+
+    vi.mocked(fetch).mockResolvedValue(new Response(JSON.stringify([
+      release("desktop-v0.1.9", "2026-09-28T19:40:56Z"),
+      release("desktop-v0.1.12-preview", "2026-10-01T10:00:00Z", true),
+      release("desktop-v0.1.11", "2026-09-30T01:25:46Z"),
+      release("desktop-v0.1.10", "2026-09-29T20:36:18Z"),
+    ]), { status: 200 }));
+
+    const { getDesktopReleaseManifest } = await import("../releaseManifest");
+    const manifest = await getDesktopReleaseManifest();
+
+    expect(manifest.tag).toBe("desktop-v0.1.11");
+    expect(manifest.assets["macos-arm"]?.fileName).toBe("Axiom.Agent_0.1.11_aarch64.dmg");
+  });
 });
 
 function asset(name: string) {

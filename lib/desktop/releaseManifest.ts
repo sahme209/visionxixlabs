@@ -171,14 +171,23 @@ async function fetchLatestRelease(): Promise<DesktopReleaseManifest> {
   }
 
   const desktopReleases = releases.filter((r) =>
-    r.tag_name?.startsWith(TAG_PREFIX) && !r.draft,
+    r.tag_name?.startsWith(TAG_PREFIX) && !r.draft && !r.prerelease,
   );
   if (desktopReleases.length === 0) {
     return emptyManifest("No published desktop release yet. Tag a `desktop-v*` commit to publish.");
   }
 
-  // Most recent published.
-  const latest = desktopReleases[0];
+  // GitHub's list order follows release creation metadata, which can differ
+  // from publication order when CI mirrors multiple tags from the same source
+  // history. Select explicitly so an older installer can never remain current
+  // merely because it occupies array position zero.
+  const latest = desktopReleases.reduce((current, candidate) => {
+    const currentPublished = Date.parse(current.published_at);
+    const candidatePublished = Date.parse(candidate.published_at);
+    if (!Number.isFinite(candidatePublished)) return current;
+    if (!Number.isFinite(currentPublished) || candidatePublished > currentPublished) return candidate;
+    return current;
+  });
 
   // Trust only explicit machine-readable attestations emitted after the
   // signing steps complete. Prose such as "signed when configured" is not
