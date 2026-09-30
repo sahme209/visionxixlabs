@@ -19,15 +19,15 @@ The 2026-09-27 website pass also verified that public provider, security, social
 - Passed on exact 0.1.10 source: 369 test files / 4,186 tests; Next.js compile, TypeScript, and 284-page generation; changed-file ESLint; desktop production frontend build; Rust `cargo check --locked`; release-app compilation; whitespace check.
 - Local release-app evidence: arm64 `Axiom Agent.app`, version 0.1.10, identifier `com.visionxixlabs.axiom`, `axiom-agent` URL scheme, executable SHA-256 `e0368e52c783f26eec69887a73fdc3773ac22930c86850f634c25f1077f22a2a`. It is ad-hoc signed; local DMG creation failed at the disk-image script in the restricted environment. Launch Services rejected the temporary-container bundle with `-10822`; direct execution aborted in macOS `_RegisterApplication` before Tauri setup. This is recorded as a harness/clean-host blocker, not a successful launch.
 - Billing path evidence: Settings and the access wall call a bearer-authenticated desktop endpoint; only a browser-paired desktop session can create a portal; missing Stripe customer/configuration returns an honest error; the desktop permits only HTTPS Stripe destinations; the return page invokes the registered native scheme and focus triggers entitlement verification. Live Stripe creation remains unverified.
-- Not yet verified: release-CI signed/notarized 0.1.10 artifacts, browser-to-app focus on installed clean hosts, OAuth-provider account creation, live Stripe portal/checkout for a real tenant, and physical mobile-browser consent layout.
+- Release-CI verified and published the signed/notarized 0.1.10 artifacts. Not yet verified: browser-to-app focus on installed clean hosts, OAuth-provider account creation, live Stripe portal/checkout for a real tenant, and physical mobile-browser consent layout.
 
 | Item | Value |
 | --- | --- |
 | Product observed | Axiom Agent |
-| Desktop package/version | `axiom-desktop` 0.1.10 candidate; latest published release remains `desktop-v0.1.9` until release CI succeeds |
+| Desktop package/version | `axiom-desktop` 0.1.10; published as `desktop-v0.1.10` |
 | Framework | Tauri 2 + React 19 + Vite + Rust |
-| Released source commit | `353eb983aa579474b2e22fd829b27f9a47709306` |
-| Published native artifact | 0.1.9 Apple Silicon DMG SHA-256 `c44e241489a1ad7cc0a1fc061ed62b4f6b4b4635d196b3aae25a4a553cd15bb6`; Intel DMG, Windows MSI/EXE, Linux AppImage/DEB/RPM also published with detached signatures |
+| Released source commit | `d0c074a21a4014e18d848cbc9d53385f1d65baae` |
+| Published native artifact | 0.1.10 Apple Silicon DMG SHA-256 `30291e113f65b6ada70ee7dcf65c73b184efd8edca96707bfee98ed923ec64b3`; Intel DMG, Windows MSI/EXE, Linux AppImage/DEB/RPM also published with detached signatures |
 | Current test environment | macOS; repository in iCloud; isolated Vitest/TypeScript runner under `/private/tmp` because repository Rollup metadata is dataless |
 | Master-spec identity | Attachment requested again; not present in repository during audit |
 
