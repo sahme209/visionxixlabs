@@ -104,6 +104,35 @@ describe("validateIntake", () => {
     expect(validateIntake(intake).map((issue) => issue.code)).toContain("backup_evidence_required");
   });
 
+  it("requires complete manual-step ownership, evidence, and validation", () => {
+    const intake = validIntake();
+    intake.manualSteps = [{
+      id: "manual-1",
+      instruction: "Apply the approved client configuration.",
+      owner: "application_team",
+      evidenceRequired: true,
+      completed: false,
+    }];
+
+    expect(validateIntake(intake).map((issue) => issue.code))
+      .toContain("manual_step_incomplete");
+
+    intake.manualSteps[0].validationInstruction =
+      "Compare the active configuration to the approved evidence.";
+    expect(validateIntake(intake).map((issue) => issue.code))
+      .not.toContain("manual_step_incomplete");
+
+    const manual = generatePlaybook(
+      intake,
+      "2026-09-24T12:00:00.000Z",
+    ).steps.find((step) => step.type === "manual_step");
+    expect(manual).toMatchObject({
+      requiredRole: "application_team",
+      evidenceRequired: true,
+      validationInstruction: "Compare the active configuration to the approved evidence.",
+    });
+  });
+
   it("does not convert uncertain sourced facts into executable steps", () => {
     const intake = validIntake();
     intake.facts[0] = {
@@ -139,6 +168,17 @@ describe("deployment state machine", () => {
     ]));
   });
 
+  it("rechecks operation-specific access immediately before execution", () => {
+    expect(transitionBlockers(validIntake(), "ready_to_deploy", "in_progress", {
+      nowUtc: "2026-10-10T19:00:00.000Z",
+      actorId: "executor",
+      requesterId: "requester",
+      approverIds: ["approver"],
+      hasRequiredAccess: false,
+      approvalsComplete: true,
+    })).toContain("Repository, workflow, change, and environment permissions must be reverified immediately before execution.");
+  });
+
   it("permits a distinct executor inside an approved window", () => {
     expect(transitionBlockers(validIntake(), "ready_to_deploy", "in_progress", {
       nowUtc: "2026-10-10T19:00:00.000Z",
@@ -152,6 +192,42 @@ describe("deployment state machine", () => {
 });
 
 describe("generatePlaybook", () => {
+  it("preserves separate technical and functional validation ownership", () => {
+    const intake = validIntake();
+    intake.validationSteps = [
+      {
+        id: "technical-validation",
+        instruction: "Verify workflow and infrastructure health.",
+        owner: "devops",
+        evidenceRequired: true,
+        completed: false,
+      },
+      {
+        id: "functional-validation",
+        instruction: "Verify the client-specific business journey.",
+        owner: "application_team",
+        evidenceRequired: true,
+        completed: false,
+      },
+    ];
+
+    const playbook = generatePlaybook(intake, "2026-09-24T12:00:00.000Z");
+    const validations = playbook.steps.filter((step) => step.type === "validate");
+
+    expect(validations).toEqual([
+      expect.objectContaining({
+        requiredRole: "devops",
+        instructions: "Verify workflow and infrastructure health.",
+        activation: "on_success",
+      }),
+      expect.objectContaining({
+        requiredRole: "application_team",
+        instructions: "Verify the client-specific business journey.",
+        activation: "on_success",
+      }),
+    ]);
+  });
+
   it("creates an ordered, versioned, tenant-scoped, human-gated playbook", () => {
     const playbook = generatePlaybook(validIntake(), "2026-09-24T12:00:00.000Z", 3);
     expect(playbook.tenantId).toBe("tenant-fictional");
@@ -160,7 +236,11 @@ describe("generatePlaybook", () => {
     expect(playbook.steps.every((step) => step.requiresHumanConfirmation)).toBe(true);
     expect(playbook.steps.some((step) => step.type === "dispatch_workflow")).toBe(true);
     expect(playbook.steps.some((step) => step.type === "validate")).toBe(true);
-    expect(playbook.steps.some((step) => step.type === "rollback")).toBe(true);
+    const rollback = playbook.steps.find((step) => step.type === "rollback");
+    const close = playbook.steps.find((step) => step.type === "close_change");
+    expect(rollback).toMatchObject({ activation: "on_failure" });
+    expect(close).toMatchObject({ activation: "on_success" });
+    expect(rollback!.order).toBeLessThan(close!.order);
     expect(playbook.sourceFactIds).toEqual(["fact-1"]);
   });
 });

@@ -13,35 +13,19 @@ import { AnimateOnScroll } from "@/components/AnimateOnScroll";
 import { ServicePipeline } from "@/components/ServicePipeline";
 import { Reveal } from "@/components/motion/Reveal";
 import { Stagger } from "@/components/motion/Stagger";
-import { AnimatedButton } from "@/components/ui/AnimatedButton";
 import { RealisticFogBackground } from "@/components/ui/realistic-fog-background";
 import { MotherboardBackdrop } from "@/components/ui/MotherboardBackdrop";
 import { Spotlight } from "@/components/motion/Spotlight";
 import { SpotlightCard } from "@/components/motion/SpotlightCard";
 import { ScrollRevealText } from "@/components/motion/ScrollRevealText";
 import { FeatureRow } from "@/components/marketing/FeatureRow";
-import { MagneticButton } from "@/components/motion/MagneticButton";
 import { CountUp } from "@/components/motion/CountUp";
 import { TextReveal } from "@/components/motion/TextReveal";
-import { TiltCard } from "@/components/motion/TiltCard";
-import { Marquee } from "@/components/motion/Marquee";
-import { GradientBorder } from "@/components/motion/GradientBorder";
-import { DrippingBeam } from "@/components/motion/DrippingBeam";
 import { FAQAccordion } from "@/components/FAQAccordion";
 import { DesktopShowcase } from "@/components/home/DesktopShowcase";
+import { MobileHome } from "@/components/home/MobileHome";
 import { HomepageDemoAnimation } from "@/components/marketing/HomepageDemoAnimation";
 import { Footer } from "@/components/Footer";
-import {
-  CurrencyDollarIcon,
-  LockClosedIcon,
-  ArrowPathIcon,
-  BoltIcon,
-  CloudArrowUpIcon,
-  EyeIcon,
-  CommandLineIcon,
-  ChartBarIcon,
-  DocumentCheckIcon,
-} from "@heroicons/react/24/outline";
 import { listProviders, capabilitySummary } from "@/lib/cloud/providerRegistry";
 import { primaryCta, secondaryCta, fallbackCta } from "@/lib/product/ctaMap";
 
@@ -133,6 +117,9 @@ export default function Home() {
       <div className="relative z-10">
       <Navigation />
 
+      <MobileHome />
+      <div className="hidden md:block">
+
       {/* ── Hero ───────────────────────────────────────────────────── */}
       <section className="pt-24 sm:pt-28 md:pt-32 pb-16 sm:pb-20 md:pb-24 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
         {/* Heavy decoratives — all hidden on mobile so the hero scrolls smoothly.
@@ -167,7 +154,7 @@ export default function Home() {
         {/* Calm ambient atmosphere — three drifting pools (violet · coral · cyan)
             giving the hero a 'living dark' Huly-style aurora without an
             animated beam parade. The coral pool is the new accent. */}
-        <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
+        <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden hidden md:block">
           <div className="ambient-drift absolute top-[-180px] left-1/2 -translate-x-1/2 w-[900px] h-[520px] rounded-full bg-violet-500/[0.07] blur-[140px]" />
           <div className="ambient-drift absolute top-[60px] right-[2%] w-[520px] h-[400px] rounded-full bg-rose-500/[0.06] blur-[130px]" style={{ animationDelay: "-8s" }} />
           <div className="ambient-drift absolute top-[260px] left-[-6%] w-[380px] h-[300px] rounded-full bg-cyan-500/[0.035] blur-[120px]" style={{ animationDelay: "-16s" }} />
@@ -186,14 +173,14 @@ export default function Home() {
                     <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-brand-coral" />
                   </span>
                   <p className="mono-label text-zinc-400">
-                    Axiom <span className="text-zinc-600 mx-1.5">·</span> Cloud operations agent
+                    Axiom <span className="text-zinc-600 mx-1.5">·</span> Deployment operations workspace
                   </p>
                 </div>
               </Reveal>
               <h1 className="display-headline-lg font-display text-white break-words mb-7">
-                <TextReveal text="Your cloud" splitBy="char" stagger={22} startDelay={120} className="block" />
+                <TextReveal text="Your request" splitBy="char" stagger={22} startDelay={120} className="block" />
                 <span className="block relative">
-                  <TextReveal text="runs itself." splitBy="char" stagger={22} startDelay={520} className="relative inline-block" />
+                  <TextReveal text="becomes the playbook." splitBy="char" stagger={22} startDelay={520} className="relative inline-block" />
                   {/* Single thin coral hairline — pulled back from the bold 3px gradient */}
                   <span
                     aria-hidden
@@ -207,17 +194,17 @@ export default function Home() {
                 </p>
               </Reveal>
               <Reveal direction="up" delay={0.12}>
-                <div className="relative z-20 flex flex-wrap items-center gap-x-5 gap-y-3">
+                <div className="relative z-20 flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-x-5">
                   <Link
                     href="/download"
-                    className="btn-press inline-flex items-center gap-2.5 px-7 py-3.5 rounded-full text-[14.5px] font-semibold tracking-tight"
+                    className="btn-press inline-flex items-center justify-center gap-2.5 px-7 py-3.5 rounded-full text-[14.5px] font-semibold tracking-tight"
                   >
                     Download Axiom Agent
                     <ArrowRightIcon className="h-4 w-4 opacity-60" />
                   </Link>
                   <Link
                     href="/demo"
-                    className="btn-ghost-press inline-flex items-center gap-2 px-6 py-3.5 rounded-full text-[14px] font-medium tracking-tight"
+                    className="btn-ghost-press inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-full text-[14px] font-medium tracking-tight"
                   >
                     Explore the sandbox
                   </Link>
@@ -413,7 +400,7 @@ export default function Home() {
           </Reveal>
 
           {/* Discipline grid — curated 12 to fit a compact home-page block */}
-          <Stagger delay={0.1} interval={0.04} className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2.5 sm:gap-3">
+          <Stagger delay={0.1} interval={0.04} className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2.5 sm:gap-3">
             {[
               { name: "Deployment intake",   rate: "Request", scope: "Scope, ownership, dependencies, and environment" },
               { name: "Readiness",           rate: "Preflight", scope: "Permissions, credentials, prerequisites, and risk" },
@@ -684,9 +671,9 @@ export default function Home() {
       </AnimateOnScroll>
 
       {/* ── Closing CTA banner — huly.io 'Join the Movement' style ───── */}
-      <section className="py-32 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+      <section className="py-20 sm:py-32 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
         {/* Coral + white drifting pools — the warm bookend to the cool hero */}
-        <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden>
+        <div className="pointer-events-none absolute inset-0 overflow-hidden hidden md:block" aria-hidden>
           <div className="ambient-drift absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[820px] h-[520px] rounded-full bg-white/[0.04] blur-[140px]" />
           <div className="ambient-drift absolute top-[20%] left-[10%] w-[420px] h-[320px] rounded-full bg-rose-500/[0.06] blur-[130px]" style={{ animationDelay: "-7s" }} />
           <div className="ambient-drift absolute bottom-[10%] right-[8%] w-[360px] h-[280px] rounded-full bg-violet-500/[0.05] blur-[120px]" style={{ animationDelay: "-13s" }} />
@@ -700,15 +687,15 @@ export default function Home() {
             </span>
             <span className="font-mono text-[10px] tracking-[0.18em] uppercase text-rose-200/90">09 / 09</span>
             <span className="text-zinc-500">·</span>
-            5 minutes to first scan
+            Downloadable operations workspace
           </span>
           <h2 className="display-headline-lg text-white">
-            Your first scan takes 5 minutes.
+            Turn a request into a governed playbook.
           </h2>
           <ScrollRevealText
             as="p"
             className="body-lede mt-6 mx-auto"
-            text="Connect a read-only IAM role. Axiom delivers your infrastructure intelligence report — cost savings, security findings, and execution plan — before your coffee gets cold."
+            text="Use the downloadable Axiom workspace to capture scope, approvals, execution steps, validation, evidence, rollback, and closure in one versioned operational record."
           />
 
           <div className="mt-10 mb-10 max-w-md mx-auto">
@@ -716,14 +703,14 @@ export default function Home() {
           </div>
 
           <div className="flex flex-col md:flex-row items-center justify-center gap-x-8 gap-y-3 mb-10 text-[12px] font-mono uppercase tracking-[0.22em] text-zinc-500">
-            <span>No credit card</span>
+            <span>Desktop application</span>
             <span className="hidden md:inline text-zinc-700">·</span>
-            <span>Read-only access</span>
+            <span>Approval gated</span>
             <span className="hidden md:inline text-zinc-700">·</span>
-            <span>Revoke anytime</span>
+            <span>Audit ready</span>
           </div>
 
-          <div className="flex flex-wrap justify-center items-center gap-x-6 gap-y-3">
+          <div className="flex flex-col sm:flex-row justify-center items-stretch sm:items-center gap-3 sm:gap-x-6">
             {(() => {
               const primary = primaryCta("homepage_cta");
               const secondary = secondaryCta("homepage_cta");
@@ -733,7 +720,7 @@ export default function Home() {
                   {primary && (
                     <Link
                       href={primary.href}
-                      className="btn-press inline-flex items-center gap-2.5 px-7 py-3.5 rounded-full text-[14.5px] font-semibold tracking-tight"
+                      className="btn-press inline-flex items-center justify-center gap-2.5 px-7 py-3.5 rounded-full text-[14.5px] font-semibold tracking-tight"
                     >
                       {primary.label}
                       <ArrowRightIcon className="h-4 w-4 opacity-60" />
@@ -761,6 +748,8 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      </div>
 
       {/* ── Footer ─────────────────────────────────────────────────── */}
       <Footer />

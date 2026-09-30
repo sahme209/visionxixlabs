@@ -5,7 +5,7 @@ describe("Axiom Agent public capability inventory", () => {
     it("classifies every public capability and documents evidence and limitations", () => {
         expect(tauriCapabilities.length).toBeGreaterThanOrEqual(8);
         for (const capability of tauriCapabilities) {
-            expect(["working_tested", "demo_sandbox", "planned_blocked"]).toContain(capability.state);
+            expect(["working_tested", "implemented_unverified", "demo_sandbox", "planned_blocked"]).toContain(capability.state);
             expect(capability.publicDescription.length).toBeGreaterThan(20);
             expect(capability.evidence.length).toBeGreaterThan(0);
             expect(capability.limitation.length).toBeGreaterThan(20);
@@ -16,7 +16,8 @@ describe("Axiom Agent public capability inventory", () => {
         const distribution = tauriCapabilities.find((item) => item.id === "desktop-distribution");
         expect(distribution?.state).toBe("working_tested");
         expect(distribution?.publicDescription).toContain("installable desktop application");
-        expect(distribution?.limitation).toContain("unsigned and not notarized");
+        expect(distribution?.limitation).toContain("changed source");
+        expect(distribution?.limitation).toContain("clean-host installation");
     });
 
     it("states a setup requirement for every integration", () => {

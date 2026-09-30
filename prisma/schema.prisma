@@ -3809,11 +3809,28 @@ model TauriDeploymentRequest {
   closedAt          DateTime?
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
+  versions          TauriDeploymentRequestVersion[]
   playbooks         TauriPlaybook[]
   auditEvents       TauriAuditEvent[]
 
   @@unique([organizationId, correlationId])
   @@index([organizationId, status, createdAt])
+}
+
+/// Immutable snapshot of each submitted or revised deployment request.
+model TauriDeploymentRequestVersion {
+  id                  String   @id @default(cuid())
+  organizationId      String
+  deploymentRequestId String
+  version             Int
+  intakeJson          Json
+  contentHash         String
+  createdByUserId     String
+  createdAt           DateTime @default(now())
+  deploymentRequest   TauriDeploymentRequest @relation(fields: [deploymentRequestId], references: [id], onDelete: Cascade)
+
+  @@unique([deploymentRequestId, version])
+  @@index([organizationId, createdAt])
 }
 
 model TauriPlaybook {
@@ -3851,4 +3868,29 @@ model TauriAuditEvent {
 
   @@index([organizationId, deploymentRequestId, occurredAt])
   @@index([organizationId, correlationId])
+}
+
+/// Durable idempotency and reconciliation ledger for consequential deployment
+/// actions. The application layer owns the closed status/kind unions.
+model TauriDeploymentOperation {
+  id                   String   @id
+  organizationId       String
+  deploymentRequestId  String
+  idempotencyKey       String
+  kind                 String
+  clientId             String
+  environmentId        String
+  contextDigest        String
+  status               String   @default("queued")
+  attemptCount         Int      @default(0)
+  lastAttemptAt        DateTime?
+  lastReconciledAt     DateTime?
+  externalReference    String?
+  errorSummary         String?
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+
+  @@unique([organizationId, idempotencyKey])
+  @@index([organizationId, deploymentRequestId, createdAt])
+  @@index([organizationId, status, updatedAt])
 }

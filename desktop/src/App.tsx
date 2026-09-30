@@ -23,6 +23,7 @@ import { ConnectorHealthView } from "./views/ConnectorHealthView";
 import { ConnectorSetupView } from "./views/ConnectorSetupView";
 import { AlertEscalationsView } from "./views/AlertEscalationsView";
 import { ReleasesView } from "./views/ReleasesView";
+import { DeploymentRequestsView } from "./views/DeploymentRequestsView";
 import { SopsView } from "./views/SopsView";
 import { RepositoriesView } from "./views/RepositoriesView";
 import { BranchValidationView } from "./views/BranchValidationView";
@@ -78,6 +79,7 @@ export type View =
   | "security"
   | "scans"
   // Operations — release management
+  | "deployment-requests"
   | "releases"
   | "sops"
   | "repositories"
@@ -203,6 +205,7 @@ export default function App() {
           {activeView === "multi-cloud"   && <MultiCloudView onNavigate={setActiveView} />}
           {activeView === "security"      && <SecurityView />}
           {activeView === "scans"         && <ScansView />}
+          {activeView === "deployment-requests" && <DeploymentRequestsView />}
           {activeView === "releases"      && <ReleasesView onNavigate={setActiveView} />}
           {activeView === "sops"          && <SopsView />}
           {activeView === "repositories"  && <RepositoriesView />}

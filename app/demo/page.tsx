@@ -25,9 +25,9 @@ export default function DemoLanding() {
   return (
     <>
       <SandboxNavigation />
-      <main className="relative max-w-6xl mx-auto px-6 md:px-10 py-16 space-y-10">
+      <main className="relative max-w-6xl mx-auto overflow-x-clip px-4 sm:px-6 md:px-10 py-8 sm:py-16 space-y-10">
       {/* Coral × violet aurora — Huly-style warm wash behind the hero */}
-      <div aria-hidden className="pointer-events-none absolute inset-x-0 -top-8 h-[520px] -z-10 overflow-hidden">
+      <div aria-hidden className="pointer-events-none absolute inset-x-0 -top-8 h-[520px] -z-10 overflow-hidden hidden sm:block">
         <div className="ambient-drift absolute -top-24 left-1/2 -translate-x-1/2 w-[860px] h-[440px] rounded-full bg-brand-violet/[0.08] blur-[140px]" />
         <div className="ambient-drift absolute top-12 right-[5%] w-[460px] h-[340px] rounded-full bg-brand-coral/[0.07] blur-[130px]" style={{ animationDelay: "-8s" }} />
         <div className="ambient-drift absolute top-20 left-[5%] w-[380px] h-[280px] rounded-full bg-cyan-500/[0.04] blur-[120px]" style={{ animationDelay: "-14s" }} />
@@ -47,7 +47,7 @@ export default function DemoLanding() {
           </span>
         </div>
 
-        <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white tracking-[-0.04em] leading-[1.04] mb-5">
+        <h1 className="text-[2.35rem] sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white tracking-[-0.045em] leading-[1.02] mb-5">
           See VisionXIXLabs{" "}
           <span className="relative inline-block">
             in motion.
@@ -60,24 +60,24 @@ export default function DemoLanding() {
           or burns AI credits. Pick a scenario to walk through one of the {scenarios.length} core product flows.
         </p>
 
-        <div className="flex flex-wrap items-center gap-x-4 gap-y-3">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-x-4">
           <Link
             href="/download"
-            className="btn-press inline-flex items-center gap-2 px-7 py-3.5 rounded-full text-[14px] font-semibold tracking-tight"
+            className="btn-press inline-flex min-h-12 items-center justify-center gap-2 px-5 sm:px-7 py-3.5 rounded-xl sm:rounded-full text-[14px] font-semibold tracking-tight"
           >
             Download the desktop app
             <ArrowRightIcon className="h-4 w-4 opacity-60" />
           </Link>
           <Link
             href="/demo/reference"
-            className="btn-ghost-press inline-flex items-center gap-2 px-6 py-3.5 rounded-full text-[13.5px] font-medium tracking-tight"
+            className="btn-ghost-press inline-flex min-h-12 items-center justify-center gap-2 px-5 sm:px-6 py-3.5 rounded-xl sm:rounded-full text-[13.5px] font-medium tracking-tight"
           >
             <BookOpenIcon className="h-4 w-4 text-brand-coral/80" />
             Platform reference
           </Link>
           <Link
             href="/docs"
-            className="link-underline-soft text-[13.5px] text-zinc-400 hover:text-brand-coral transition-colors"
+            className="inline-flex items-center justify-center text-[13.5px] text-zinc-400 hover:text-brand-coral transition-colors"
           >
             Read documentation
           </Link>
@@ -126,7 +126,7 @@ function ScenarioCard({ scenario, index }: { scenario: DemoScenario; index: numb
   return (
     <Link
       href={`/demo/${scenario.id}`}
-      className="group relative rounded-xl border border-white/[0.06] bg-white/[0.01] p-5 hover:border-brand-coral/30 hover:bg-brand-coral/[0.04] transition-all overflow-hidden"
+      className="group relative rounded-xl border border-white/[0.06] bg-white/[0.01] p-4 sm:p-5 hover:border-brand-coral/30 hover:bg-brand-coral/[0.04] transition-all overflow-hidden"
     >
       {/* Subtle coral halo on hover */}
       <span
@@ -134,19 +134,19 @@ function ScenarioCard({ scenario, index }: { scenario: DemoScenario; index: numb
         className="absolute -inset-px rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"
         style={{ background: "radial-gradient(60% 80% at 0% 0%, rgba(244,114,182,0.10), transparent 60%)" }}
       />
-      <div className="relative flex items-baseline justify-between gap-2 mb-1.5">
-        <div className="flex items-center gap-2 min-w-0">
+      <div className="relative flex items-start justify-between gap-3 mb-2">
+        <div className="flex items-start gap-2 min-w-0">
           <span className="text-[10px] font-mono tabular-nums text-brand-coral/70 group-hover:text-brand-coral transition-colors">
             {String(index + 1).padStart(2, "0")}
           </span>
-          <h3 className="text-[14.5px] font-semibold text-white group-hover:text-white transition-colors truncate">
+          <h3 className="text-[14.5px] font-semibold leading-5 text-white group-hover:text-white transition-colors">
             {scenario.title}
           </h3>
         </div>
         <span className="text-[10px] font-mono text-zinc-600 whitespace-nowrap">~{scenario.estimatedMinutes} min</span>
       </div>
       <p className="relative text-[12.5px] text-zinc-400 leading-relaxed mb-3">{scenario.pitch}</p>
-      <div className="relative flex items-center justify-between gap-2">
+      <div className="relative flex flex-wrap items-center justify-between gap-x-3 gap-y-1.5">
         <span className="inline-flex items-center gap-1.5 text-[10.5px] font-mono text-zinc-500 group-hover:text-brand-coral/90 transition-colors">
           <PlayCircleIcon className="h-3 w-3" />
           {scenario.steps.length} steps

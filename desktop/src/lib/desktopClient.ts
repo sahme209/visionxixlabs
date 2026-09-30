@@ -19,6 +19,24 @@ export interface DesktopClientConfig {
 
 export type ApiResult<T> = { ok: true; data: T } | { ok: false; error: string };
 
+interface LegacyApiErrorBody {
+  error?: string | { userMessage?: string };
+  message?: string;
+  issues?: Array<{ field?: string; message?: string }>;
+}
+
+export function legacyApiError(body: LegacyApiErrorBody, status: number): string {
+  const issues = body.issues
+    ?.filter((issue) => typeof issue.message === "string")
+    .map((issue) => issue.field ? `${issue.field}: ${issue.message}` : issue.message)
+    .filter((message): message is string => Boolean(message));
+  if (issues?.length) return issues.join(" · ");
+  if (typeof body.error === "string") return body.error;
+  if (body.error?.userMessage) return body.error.userMessage;
+  if (typeof body.message === "string") return body.message;
+  return `HTTP ${status}`;
+}
+
 // ---------------------------------------------------------------------------
 // Typed result shapes (subset of the server API surface — keeps the
 // desktop bundle lean by only typing fields it renders).
@@ -505,6 +523,74 @@ export class DesktopClient {
     return this.post(`/api/orchestration/approvals/${encodeURIComponent(id)}/decide`, { decision, reason });
   }
 
+  // ── Deployment operations ─────────────────────────────────────────
+  deploymentRequests(): Promise<ApiResult<Array<{
+    id: string;
+    title: string;
+    status: string;
+    version: number;
+    correlationId: string;
+    submittedAt: string | null;
+    updatedAt: string;
+    latestPlaybook: {
+      id: string;
+      version: number;
+      status: string;
+      contentHash: string;
+      createdAt: string;
+    } | null;
+  }>>> {
+    return this.get("/api/desktop/deployments");
+  }
+
+  createDeploymentRequest(
+    intake: Record<string, unknown>,
+    idempotencyId: string,
+  ): Promise<ApiResult<{
+    id: string;
+    title: string;
+    status: string;
+    version: number;
+    correlationId: string;
+    submittedAt: string | null;
+    replayed: boolean;
+  }>> {
+    return this.post(
+      "/api/desktop/deployments",
+      intake,
+      { "x-correlation-id": idempotencyId },
+    );
+  }
+
+  generateDeploymentPlaybook(requestId: string): Promise<ApiResult<{
+    id: string;
+    requestId: string;
+    version: number;
+    status: string;
+    contentHash: string;
+    generatedAtUtc: string;
+    scope: string;
+    stepCount: number;
+    steps: Array<{
+      id: string;
+      order: number;
+      type: string;
+      title: string;
+      requiredRole: string;
+      requiresHumanConfirmation: boolean;
+      evidenceRequired: boolean;
+      instructions: string;
+      validationInstruction?: string;
+      activation: "always" | "on_success" | "on_failure";
+      status: string;
+    }>;
+  }>> {
+    return this.post(
+      `/api/desktop/deployments/${encodeURIComponent(requestId)}/playbooks`,
+      {},
+    );
+  }
+
   // ── Release manifest ──────────────────────────────────────────────
   releaseManifest(): Promise<ApiResult<{ source: string; tag?: string; assets: Record<string, unknown> }>> {
     return this.get("/api/desktop/release-manifest");
@@ -520,9 +606,9 @@ export class DesktopClient {
         headers: this.headers(),
         credentials: "include",
       });
-      const json = (await res.json().catch(() => ({}))) as { ok?: boolean; data?: unknown; error?: { userMessage?: string } };
+      const json = (await res.json().catch(() => ({}))) as LegacyApiErrorBody & { ok?: boolean; data?: unknown };
       if (json.ok && json.data !== undefined) return { ok: true, data: json.data as T };
-      return { ok: false, error: json.error?.userMessage ?? `HTTP ${res.status}` };
+      return { ok: false, error: legacyApiError(json, res.status) };
     } catch (err) {
       return { ok: false, error: err instanceof Error ? err.message : String(err) };
     }
@@ -582,17 +668,25 @@ export class DesktopClient {
     }
   }
 
-  private async post<T>(path: string, body: unknown): Promise<ApiResult<T>> {
+  private async post<T>(
+    path: string,
+    body: unknown,
+    extraHeaders?: Record<string, string>,
+  ): Promise<ApiResult<T>> {
     try {
       const res = await fetch(`${this.config.apiBase}${path}`, {
         method: "POST",
-        headers: { ...this.headers(), "Content-Type": "application/json" },
+        headers: {
+          ...this.headers(),
+          "Content-Type": "application/json",
+          ...(extraHeaders ?? {}),
+        },
         credentials: "include",
         body: JSON.stringify(body),
       });
-      const json = (await res.json().catch(() => ({}))) as { ok?: boolean; data?: unknown; error?: { userMessage?: string } };
+      const json = (await res.json().catch(() => ({}))) as LegacyApiErrorBody & { ok?: boolean; data?: unknown };
       if (json.ok && json.data !== undefined) return { ok: true, data: json.data as T };
-      return { ok: false, error: json.error?.userMessage ?? `HTTP ${res.status}` };
+      return { ok: false, error: legacyApiError(json, res.status) };
     } catch (err) {
       return { ok: false, error: err instanceof Error ? err.message : String(err) };
     }

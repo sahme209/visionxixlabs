@@ -18,6 +18,7 @@ const VIEW_TITLES: Record<View, { title: string; subtitle: string }> = {
   "multi-cloud": { title: "Multi-cloud",   subtitle: "AWS · Azure · GCP" },
   security:      { title: "Security",      subtitle: "Posture + checks + diagnoses" },
   scans:         { title: "Scans",         subtitle: "Run cloud + security scans" },
+  "deployment-requests": { title: "Deployment requests", subtitle: "Governed intake → versioned deployment playbook" },
   releases:      { title: "Releases",      subtitle: "Per-release status, readiness, evidence" },
   sops:          { title: "SOPs",           subtitle: "10 deployment types · 16 sections each" },
   repositories:  { title: "Repositories",   subtitle: "GitHub / GitLab / Azure DevOps inventory" },

@@ -43,6 +43,7 @@ export interface ChecklistItem {
   owner: string;
   evidenceRequired: boolean;
   completed: boolean;
+  validationInstruction?: string;
 }
 
 export interface DeploymentIntake {
@@ -104,7 +105,7 @@ export type IntakeIssueCode =
   | "tenant_required" | "incident_route_required" | "ad_hoc_details_required"
   | "window_invalid" | "scope_required" | "contact_required"
   | "repository_required" | "pr_required" | "source_control_required"
-  | "workflow_required" | "readiness_incomplete" | "validation_required"
+  | "workflow_required" | "readiness_incomplete" | "validation_required" | "manual_step_incomplete"
   | "rollback_required" | "backup_evidence_required" | "uncertain_executable_fact";
 
 export interface IntakeIssue {
@@ -158,6 +159,18 @@ export function validateIntake(intake: DeploymentIntake): IntakeIssue[] {
   if (!intake.developmentReady || !intake.productionReady ||
       intake.lowerEnvironmentValidation === "no" || !intake.lowerEnvironmentTested.length) {
     add("readiness_incomplete", "productionReady", "Development, lower-environment, and production readiness must be complete.");
+  }
+  if (intake.manualSteps.some((item) =>
+    !item.instruction.trim()
+    || !item.owner.trim()
+    || !item.evidenceRequired
+    || !item.validationInstruction?.trim()
+  )) {
+    add(
+      "manual_step_incomplete",
+      "manualSteps",
+      "Every manual step requires an owner, exact instruction, evidence, and a validation instruction.",
+    );
   }
   if (!intake.validationSteps.length || !intake.expectedProductionResult.trim()) {
     add("validation_required", "validationSteps", "Validation steps and the expected production result are required.");
@@ -236,6 +249,9 @@ export function transitionBlockers(
     blockers.push("Required approvals are incomplete.");
   }
   if (to === "in_progress") {
+    if (!context.hasRequiredAccess) {
+      blockers.push("Repository, workflow, change, and environment permissions must be reverified immediately before execution.");
+    }
     const now = Date.parse(context.nowUtc);
     if (now < Date.parse(intake.windowStartUtc) || now > Date.parse(intake.windowEndUtc)) {
       blockers.push("Production execution is outside the approved deployment window.");
@@ -262,6 +278,8 @@ export interface PlaybookStep {
   requiresHumanConfirmation: boolean;
   evidenceRequired: boolean;
   instructions: string;
+  validationInstruction?: string;
+  activation: "always" | "on_success" | "on_failure";
   status: "pending" | "blocked" | "completed" | "skipped";
 }
 
@@ -285,9 +303,18 @@ export function generatePlaybook(intake: DeploymentIntake, generatedAtUtc: strin
   const step = (
     type: PlaybookStepType, title: string, role: string, instructions: string,
     evidenceRequired = false,
+    activation: PlaybookStep["activation"] = "always",
+    validationInstruction?: string,
   ): Omit<PlaybookStep, "id" | "order"> => ({
-    type, title, requiredRole: role, instructions, evidenceRequired,
-    requiresHumanConfirmation: true, status: "pending",
+    type,
+    title,
+    requiredRole: role,
+    instructions,
+    evidenceRequired,
+    activation,
+    ...(validationInstruction ? { validationInstruction } : {}),
+    requiresHumanConfirmation: true,
+    status: "pending",
   });
   const raw = [
     step("verify_pr_approval", "Verify peer and Code Owner approvals", "devops", "Confirm each production PR approval independently from merge capability."),
@@ -297,11 +324,19 @@ export function generatePlaybook(intake: DeploymentIntake, generatedAtUtc: strin
     step("wait_for_change_approval", "Confirm change approvals", "it_approver", "IT and business approval remain separate from merge access."),
     step("merge_pr", "Perform authorized production merge", "devops", "Merge only during the approved window.", true),
     step("dispatch_workflow", `Run ${intake.workflowName}`, "devops", "Use the exact immutable workflow inputs shown in this playbook.", true),
-    ...intake.manualSteps.map((item) => step("manual_step", item.instruction, item.owner, item.instruction, item.evidenceRequired)),
-    ...intake.validationSteps.map((item) => step("validate", item.instruction, item.owner, item.instruction, item.evidenceRequired)),
+    ...intake.manualSteps.map((item) => step(
+      "manual_step",
+      item.instruction,
+      item.owner,
+      item.instruction,
+      item.evidenceRequired,
+      "always",
+      item.validationInstruction,
+    )),
+    ...intake.validationSteps.map((item) => step("validate", item.instruction, item.owner, item.instruction, item.evidenceRequired, "on_success")),
+    ...intake.rollbackSteps.map((item) => step("rollback", item.instruction, intake.rollbackOwner ?? item.owner, item.instruction, item.evidenceRequired, "on_failure")),
     step("notify_support", "Notify support", "devops", "Communicate deployment and validation outcome."),
-    step("close_change", "Close change", "devops", "Close only after validation evidence or documented deferred validation.", true),
-    ...intake.rollbackSteps.map((item) => step("rollback", item.instruction, intake.rollbackOwner ?? item.owner, item.instruction, item.evidenceRequired)),
+    step("close_change", "Close change", "devops", "Close only after validation evidence or documented deferred validation.", true, "on_success"),
   ];
   return {
     deploymentId: intake.id, tenantId: intake.tenantId, version, generatedAtUtc,
