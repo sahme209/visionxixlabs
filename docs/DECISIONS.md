@@ -4,7 +4,7 @@ Last updated: 2026-09-29
 
 | ID | Decision | Status | Evidence / consequence |
 | --- | --- | --- | --- |
-| ADR-001 | Customer product is downloadable desktop software. | Active; supersedes hosted-web delivery | Website may market, document, demo in isolation, and distribute installers; no customer browser product or website sign-in. |
+| ADR-001 | Customer product is downloadable desktop software. | Active; supersedes hosted-web delivery | Website may market, document, demo in isolation, distribute installers, and authenticate an existing identity. Governed customer operations remain in the installed app. |
 | ADR-002 | Master specification remains authoritative and must be preserved verbatim. | Active | Source attachment is not currently present in repository; subsection reconciliation is blocked until reattached. |
 | ADR-003 | Current product identity is Axiom Agent; do not casually rename it to TAURI. | Active pending owner confirmation | `desktop/package.json`, `desktop/src/App.tsx`, dated delivery audit, and release naming use Axiom Agent. |
 | ADR-004 | “TAURI” did not mandate the Rust Tauri framework. | Active clarification | It does not itself require a re-platform. |

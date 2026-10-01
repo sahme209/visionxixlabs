@@ -208,9 +208,15 @@ function SignInForm() {
 
         <p className="mt-6 text-sm text-zinc-500 text-center">
           Don&apos;t have an account?{" "}
-          <Link href={`/auth/signup?redirect=${encodeURIComponent(callbackUrl)}`} className="font-medium text-zinc-200 hover:text-white">
-            Sign up
-          </Link>
+          {callbackUrl.startsWith("/desktop/") ? (
+            <Link href={`/auth/signup?redirect=${encodeURIComponent(callbackUrl)}`} className="font-medium text-zinc-200 hover:text-white">
+              Create one
+            </Link>
+          ) : (
+            <Link href="/download" className="font-medium text-zinc-200 hover:text-white">
+              Create one from Axiom Agent
+            </Link>
+          )}
         </p>
         <p className="mt-2 text-xs text-zinc-500 text-center">
           Need the application?{" "}

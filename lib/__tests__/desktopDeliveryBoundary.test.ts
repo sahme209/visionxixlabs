@@ -22,17 +22,21 @@ describe("desktop-only website boundary", () => {
     },
   );
 
-  it.each(["/auth/signin", "/auth/signup"])(
-    "redirects unsolicited browser auth page %s to the download page",
-    (path) => {
-      const response = proxy(request(path));
+  it("allows direct browser sign-in without exposing the web workspace", () => {
+    const response = proxy(request("/auth/signin"));
 
-      expect(response.status).toBe(307);
-      expect(response.headers.get("location")).toBe(
-        `https://example.test/download?from=${encodeURIComponent(path)}`,
-      );
-    },
-  );
+    expect(response.status).toBe(200);
+    expect(response.headers.get("location")).toBeNull();
+  });
+
+  it("keeps direct browser signup bound to the installed-app pairing flow", () => {
+    const response = proxy(request("/auth/signup"));
+
+    expect(response.status).toBe(307);
+    expect(response.headers.get("location")).toBe(
+      "https://example.test/download?from=%2Fauth%2Fsignup",
+    );
+  });
 
   it("allows a sign-in page only for an installed-app return path", () => {
     const response = proxy(request("/auth/signin?callbackUrl=/desktop/pair"));

@@ -46,7 +46,7 @@ export function proxy(request: NextRequest) {
     pathname === "/operator" ||
     pathname.startsWith("/operator/");
 
-  const isBrowserAuthPage = pathname === "/auth/signin" || pathname === "/auth/signup";
+  const isBrowserSignupPage = pathname === "/auth/signup";
   const requestedReturnPath =
     request.nextUrl.searchParams.get("callbackUrl") ??
     request.nextUrl.searchParams.get("redirect") ??
@@ -56,7 +56,11 @@ export function proxy(request: NextRequest) {
     requestedReturnPath.startsWith("/accept-invite/") ||
     requestedReturnPath.startsWith("/admin/");
 
-  if (isWebOperationsRoute || (isBrowserAuthPage && !isApprovedBrowserAuthFlow)) {
+  // Anyone may authenticate an existing identity in the browser. This is a
+  // calm entry point and never exposes the hosted operations product. New
+  // account creation remains desktop-initiated so it is bound to a short-lived
+  // device pairing challenge rather than becoming an unrestricted signup API.
+  if (isWebOperationsRoute || (isBrowserSignupPage && !isApprovedBrowserAuthFlow)) {
     const destination = request.nextUrl.clone();
     destination.pathname = "/download";
     destination.search = "";
