@@ -81,7 +81,9 @@ export const authOptions: NextAuthOptions = {
               image: user.image ?? null,
             },
             update: {
-              name: user.name ?? undefined,
+              // Axiom account settings own the display name after account
+              // creation. Do not silently replace a user-selected name with
+              // the OAuth provider's profile value on every sign-in.
               image: user.image ?? undefined,
             },
           });

@@ -11,6 +11,7 @@ export function AuthCompanionHeader({ email }: { email: string | null }) {
       <nav aria-label="Signed-in companion navigation" className="flex flex-wrap items-center gap-x-5 gap-y-3 text-xs text-zinc-400">
         <Link href="/auth/success" className="text-zinc-100">Overview</Link>
         <Link href="/integrations" className="hover:text-white">Integrations</Link>
+        <Link href="/account" className="hover:text-white">Settings</Link>
         <Link href="/docs" className="hover:text-white">Help</Link>
         <span className="hidden h-4 w-px bg-white/[0.08] sm:block" aria-hidden />
         <span className="max-w-[13rem] truncate text-zinc-500" title={email ?? undefined}>{email}</span>
