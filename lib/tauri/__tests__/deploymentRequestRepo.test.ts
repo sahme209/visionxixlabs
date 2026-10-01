@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+    closeDeploymentRequest,
     createDeploymentRequest,
     listDeploymentRequests,
     reviseDeploymentRequest,
@@ -44,12 +45,15 @@ class FakeRepo implements DeploymentRequestRepo {
                 const row = this.requests.find((candidate) =>
                     candidate.id === where.id
                     && candidate.organizationId === where.organizationId
-                    && candidate.version === where.version,
+                    && candidate.version === where.version
+                    && (where.status === undefined || candidate.status === where.status),
                 );
                 if (!row) return { count: 0 };
-                row.title = data.title;
-                row.intakeJson = data.intakeJson;
-                row.version += data.version.increment;
+                if (data.title !== undefined) row.title = data.title;
+                if (data.intakeJson !== undefined) row.intakeJson = data.intakeJson;
+                if (data.version) row.version += data.version.increment;
+                if (data.status !== undefined) row.status = data.status;
+                if (data.closedAt !== undefined) row.closedAt = data.closedAt;
                 row.updatedAt = new Date("2026-09-25T15:00:00.000Z");
                 return { count: 1 };
             },
@@ -326,6 +330,43 @@ describe("deployment request persistence", () => {
         expect(result).toMatchObject({ ok: false, reason: "version_conflict" });
         expect(repo.requests[0]).toMatchObject({ version: 2, title: "First revision" });
         expect(repo.versions).toHaveLength(2);
+    });
+
+    it("records evidence-backed closure without dispatching an external action", async () => {
+        const repo = new FakeRepo();
+        await createDeploymentRequest(repo, input());
+
+        const result = await closeDeploymentRequest(repo, {
+            organizationId: "tenant-a",
+            requesterUserId: "user-01",
+            actorRole: "requester",
+            correlationId: "closure-01",
+            requestId: "request-01",
+            expectedVersion: 1,
+            closureEvidenceId: "release-validation-42",
+            closureSummary: "External validation was completed and recorded by the release owner.",
+            closedAtUtc: "2026-09-25T16:00:00.000Z",
+        });
+
+        expect(result).toMatchObject({ ok: true, request: { status: "closed" } });
+        expect(repo.requests[0].closedAt?.toISOString()).toBe("2026-09-25T16:00:00.000Z");
+        expect(repo.audits.at(-1)).toEqual(expect.objectContaining({
+            action: "deployment_request.closed",
+            evidenceLink: "release-validation-42",
+        }));
+    });
+
+    it("requires closure evidence and preserves an open request when it is absent", async () => {
+        const repo = new FakeRepo();
+        await createDeploymentRequest(repo, input());
+
+        const result = await closeDeploymentRequest(repo, {
+            organizationId: "tenant-a", requesterUserId: "user-01", actorRole: "requester", correlationId: "closure-01", requestId: "request-01", expectedVersion: 1,
+            closureEvidenceId: "", closureSummary: "", closedAtUtc: "2026-09-25T16:00:00.000Z",
+        });
+
+        expect(result).toEqual({ ok: false, reason: "closure_evidence_required" });
+        expect(repo.requests[0]).toMatchObject({ status: "submitted", closedAt: null });
     });
 });
 

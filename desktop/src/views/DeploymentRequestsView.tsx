@@ -9,6 +9,7 @@ interface RequestSummary {
   version: number;
   correlationId: string;
   submittedAt: string | null;
+  closedAt: string | null;
   updatedAt: string;
   releaseContext: {
     window: { startUtc: string; endUtc: string; displayTimeZone: string } | null;
@@ -202,6 +203,11 @@ export function DeploymentRequestsView() {
   const [showForm, setShowForm] = useState(false);
   const [revision, setRevision] = useState<RevisionSeed>();
   const [loadingRevisionId, setLoadingRevisionId] = useState<string>();
+  const [closingRequestId, setClosingRequestId] = useState<string>();
+  const [closureEvidenceId, setClosureEvidenceId] = useState("");
+  const [closureSummary, setClosureSummary] = useState("");
+  const [closingBusy, setClosingBusy] = useState(false);
+  const [closureError, setClosureError] = useState<string>();
   const [generatingRequestId, setGeneratingRequestId] = useState<string>();
   const [loadingPlaybookId, setLoadingPlaybookId] = useState<string>();
   const [generatedPlaybooks, setGeneratedPlaybooks] = useState<Record<string, GeneratedPlaybook>>({});
@@ -273,6 +279,26 @@ export function DeploymentRequestsView() {
     }
     setRevision(result.data);
     setShowForm(true);
+  }
+
+  async function closeRequest(request: RequestSummary) {
+    setClosingBusy(true);
+    setClosureError(undefined);
+    const result = await desktopClient.closeDeploymentRequest(
+      request.id,
+      request.version,
+      closureEvidenceId,
+      closureSummary,
+    );
+    setClosingBusy(false);
+    if (!result.ok) {
+      setClosureError(result.error);
+      return;
+    }
+    setClosingRequestId(undefined);
+    setClosureEvidenceId("");
+    setClosureSummary("");
+    void load();
   }
 
   return (
@@ -362,6 +388,29 @@ export function DeploymentRequestsView() {
                 </button>
               </div>
               <ReleaseContext request={request} />
+              {request.status === "closed" ? (
+                <div className="mt-3 rounded-lg border border-emerald-500/20 bg-emerald-500/5 px-3 py-2 text-xs text-emerald-100">
+                  Closure recorded{request.closedAt ? ` ${new Date(request.closedAt).toLocaleString()}` : ""}. This record documents a reported external outcome; it did not dispatch a deployment.
+                </div>
+              ) : closingRequestId === request.id ? (
+                <div className="mt-3 rounded-lg border border-amber-500/20 bg-amber-500/5 p-3">
+                  <p className="text-xs font-medium text-amber-100">Record external outcome</p>
+                  <p className="mt-1 text-[10px] leading-4 text-zinc-500">Attach the external validation or change reference. This closes only the Axiom record; it cannot deploy, merge, or approve anything.</p>
+                  <div className="mt-3 grid gap-2 sm:grid-cols-2">
+                    <input value={closureEvidenceId} onChange={(event) => setClosureEvidenceId(event.target.value)} placeholder="Validation or change reference" className="rounded-lg border border-white/10 bg-black/20 px-3 py-2 text-xs text-white" />
+                    <input value={closureSummary} onChange={(event) => setClosureSummary(event.target.value)} placeholder="Recorded outcome summary" className="rounded-lg border border-white/10 bg-black/20 px-3 py-2 text-xs text-white" />
+                  </div>
+                  {closureError && <p role="alert" className="mt-2 text-xs text-rose-300">Closure was not recorded: {closureError}</p>}
+                  <div className="mt-3 flex justify-end gap-2">
+                    <button type="button" onClick={() => { setClosingRequestId(undefined); setClosureError(undefined); }} className="btn-secondary">Cancel</button>
+                    <button type="button" disabled={closingBusy} onClick={() => void closeRequest(request)} className="btn-primary disabled:opacity-50">{closingBusy ? "Recording…" : "Record closure"}</button>
+                  </div>
+                </div>
+              ) : (
+                <button type="button" onClick={() => { setClosingRequestId(request.id); setClosureEvidenceId(""); setClosureSummary(""); setClosureError(undefined); }} className="mt-3 text-[11px] font-medium text-zinc-400 transition hover:text-white">
+                  Record external outcome and close request →
+                </button>
+              )}
               {request.latestPlaybook && !generatedPlaybooks[request.id] && (
                 <div className={`mt-3 rounded-lg border px-3 py-2 ${request.latestPlaybook.status === "superseded" ? "border-amber-500/15 bg-amber-500/5" : "border-violet-500/15 bg-violet-500/5"}`}>
                   <p className={`text-xs ${request.latestPlaybook.status === "superseded" ? "text-amber-100" : "text-violet-100"}`}>

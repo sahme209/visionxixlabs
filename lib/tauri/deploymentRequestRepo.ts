@@ -35,11 +35,13 @@ interface DeploymentRequestDelegate {
         where: { organizationId: string; correlationId?: string; id?: string };
     }): Promise<DeploymentRequestRow | null>;
     updateMany(args: {
-        where: { id: string; organizationId: string; version: number };
+        where: { id: string; organizationId: string; version: number; status?: string };
         data: {
-            title: string;
-            intakeJson: unknown;
-            version: { increment: number };
+            title?: string;
+            intakeJson?: unknown;
+            version?: { increment: number };
+            status?: string;
+            closedAt?: Date;
         };
     }): Promise<{ count: number }>;
     findMany(args: {
@@ -81,6 +83,7 @@ interface DeploymentAuditDelegate {
             newValueJson: unknown;
             source: string;
             correlationId: string;
+            evidenceLink?: string;
             timeZone: string;
         };
     }): Promise<unknown>;
@@ -132,6 +135,22 @@ export interface ReviseDeploymentRequestInput {
     requestId: string;
     expectedVersion: number;
     intake: DeploymentIntake;
+}
+
+export type CloseDeploymentRequestResult =
+    | { ok: true; request: DeploymentRequestRow }
+    | { ok: false; reason: "not_found" | "closed" | "version_conflict" | "closure_evidence_required" };
+
+export interface CloseDeploymentRequestInput {
+    organizationId: string;
+    requesterUserId: string;
+    actorRole: string;
+    correlationId: string;
+    requestId: string;
+    expectedVersion: number;
+    closureEvidenceId: string;
+    closureSummary: string;
+    closedAtUtc: string;
 }
 
 export async function createDeploymentRequest(
@@ -336,6 +355,61 @@ export async function reviseDeploymentRequest(
         reason: result.kind,
         issues: [{ code: result.kind, field: "version", message: messages[result.kind] }],
     };
+}
+
+/**
+ * Records a human-confirmed external outcome and closes the governed record.
+ * This is intentionally evidence-only: it cannot dispatch, merge, approve,
+ * or otherwise mutate an external release system.
+ */
+export async function closeDeploymentRequest(
+    repo: DeploymentRequestRepo,
+    input: CloseDeploymentRequestInput,
+): Promise<CloseDeploymentRequestResult> {
+    const evidenceId = input.closureEvidenceId.trim();
+    const summary = input.closureSummary.trim();
+    if (!evidenceId || !summary || evidenceId.length > 240 || summary.length > 2_000) {
+        return { ok: false, reason: "closure_evidence_required" };
+    }
+
+    const result = await repo.$transaction(async (tx) => {
+        const existing = await tx.tauriDeploymentRequest.findFirst({
+            where: { organizationId: input.organizationId, id: input.requestId },
+        });
+        if (!existing) return { kind: "not_found" as const };
+        if (existing.closedAt || existing.status === "closed") return { kind: "closed" as const };
+        if (existing.version !== input.expectedVersion) return { kind: "version_conflict" as const };
+
+        const claimed = await tx.tauriDeploymentRequest.updateMany({
+            where: { id: existing.id, organizationId: input.organizationId, version: input.expectedVersion, status: existing.status },
+            data: { status: "closed", closedAt: new Date(input.closedAtUtc) },
+        });
+        if (claimed.count !== 1) return { kind: "version_conflict" as const };
+        const closed = await tx.tauriDeploymentRequest.findFirst({
+            where: { organizationId: input.organizationId, id: existing.id },
+        });
+        if (!closed) return { kind: "not_found" as const };
+
+        await tx.tauriAuditEvent.create({
+            data: {
+                organizationId: input.organizationId,
+                deploymentRequestId: closed.id,
+                actorUserId: input.requesterUserId,
+                actorRole: input.actorRole,
+                action: "deployment_request.closed",
+                previousValueJson: { version: existing.version, status: existing.status },
+                newValueJson: { version: closed.version, status: closed.status, closureSummary: summary },
+                source: "desktop",
+                correlationId: input.correlationId,
+                evidenceLink: evidenceId,
+                timeZone: (existing.intakeJson as { displayTimeZone?: string }).displayTimeZone ?? "UTC",
+            },
+        });
+        return { kind: "closed" as const, request: closed };
+    });
+
+    if (result.kind === "closed" && "request" in result) return { ok: true, request: result.request };
+    return { ok: false, reason: result.kind };
 }
 
 export async function listDeploymentRequests(

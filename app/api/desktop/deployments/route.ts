@@ -199,6 +199,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
                     version: row.version,
                     correlationId: row.correlationId,
                     submittedAt: row.submittedAt?.toISOString() ?? null,
+                    closedAt: row.closedAt?.toISOString() ?? null,
                     updatedAt: row.updatedAt.toISOString(),
                     releaseContext: summarizeReleaseContext(row.intakeJson),
                     latestPlaybook: latest ? {

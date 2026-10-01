@@ -630,6 +630,7 @@ export class DesktopClient {
     version: number;
     correlationId: string;
     submittedAt: string | null;
+    closedAt: string | null;
     updatedAt: string;
     releaseContext: {
       window: { startUtc: string; endUtc: string; displayTimeZone: string } | null;
@@ -697,6 +698,18 @@ export class DesktopClient {
     return this.put(
       `/api/desktop/deployments/${encodeURIComponent(requestId)}`,
       { ...intake, expectedVersion },
+    );
+  }
+
+  closeDeploymentRequest(
+    requestId: string,
+    expectedVersion: number,
+    closureEvidenceId: string,
+    closureSummary: string,
+  ): Promise<ApiResult<{ id: string; status: string; closedAt: string | null }>> {
+    return this.post(
+      `/api/desktop/deployments/${encodeURIComponent(requestId)}/close`,
+      { expectedVersion, closureEvidenceId, closureSummary },
     );
   }
 
