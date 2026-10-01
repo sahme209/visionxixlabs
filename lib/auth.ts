@@ -62,7 +62,10 @@ export const authOptions: NextAuthOptions = {
   secret: process.env.NEXTAUTH_SECRET,
   providers: buildProviders(),
   session: { strategy: "jwt", maxAge: 30 * 24 * 60 * 60 },
-  pages: { signIn: "/auth/signin", newUser: "/auth/success" },
+  // OAuth must honor the original callback so a newly created identity returns
+  // to its short-lived desktop pairing request just like an existing one.
+  // A static new-user page would strand the browser outside Axiom Agent.
+  pages: { signIn: "/auth/signin" },
   callbacks: {
     async signIn({ user, account }) {
       // For OAuth sign-ins (Google/GitHub), ensure a User row exists.

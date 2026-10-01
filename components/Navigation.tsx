@@ -82,7 +82,7 @@ export function Navigation() {
         </div>
 
         <div className="hidden items-center gap-3 lg:flex">
-          <Link href="/auth/signin" className="px-2 py-2 text-sm text-zinc-300 transition-colors hover:text-white">Sign in</Link>
+          <Link href="/download#sign-in" className="px-2 py-2 text-sm text-zinc-300 transition-colors hover:text-white">Sign in to app</Link>
           <Link href="/contact" className="rounded-full border border-white/[0.14] px-4 py-2 text-sm text-zinc-200 transition-colors hover:bg-white/[0.06]">Contact</Link>
           <Link href="/download" className="rounded-full bg-zinc-100 px-4 py-2 text-sm font-medium text-zinc-950 transition-colors hover:bg-white">Download</Link>
         </div>
@@ -109,7 +109,7 @@ export function Navigation() {
               </Link>
             ))}
             <div className="mt-8 grid grid-cols-2 gap-3">
-              <Link href="/auth/signin" onClick={closeMenu} className="rounded-full border border-white/[0.14] px-4 py-3 text-center text-sm text-zinc-200">Sign in</Link>
+              <Link href="/download#sign-in" onClick={closeMenu} className="rounded-full border border-white/[0.14] px-4 py-3 text-center text-sm text-zinc-200">Sign in to app</Link>
               <Link href="/download" onClick={closeMenu} className="rounded-full bg-white px-4 py-3 text-center text-sm font-medium text-black">Download</Link>
             </div>
           </div>

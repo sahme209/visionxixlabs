@@ -46,7 +46,10 @@ export function proxy(request: NextRequest) {
     pathname === "/operator" ||
     pathname.startsWith("/operator/");
 
-  const isBrowserSignupPage = pathname === "/auth/signup";
+  const isBrowserIdentityPage =
+    pathname === "/auth/signin" ||
+    pathname === "/auth/signup" ||
+    pathname === "/auth/success";
   const requestedReturnPath =
     request.nextUrl.searchParams.get("callbackUrl") ??
     request.nextUrl.searchParams.get("redirect") ??
@@ -56,11 +59,11 @@ export function proxy(request: NextRequest) {
     requestedReturnPath.startsWith("/accept-invite/") ||
     requestedReturnPath.startsWith("/admin/");
 
-  // Anyone may authenticate an existing identity in the browser. This is a
-  // calm entry point and never exposes the hosted operations product. New
-  // account creation remains desktop-initiated so it is bound to a short-lived
-  // device pairing challenge rather than becoming an unrestricted signup API.
-  if (isWebOperationsRoute || (isBrowserSignupPage && !isApprovedBrowserAuthFlow)) {
+  // Authentication is initiated by Axiom Agent. A browser is only used to
+  // complete its short-lived pairing request, then returns to the installed
+  // app. Public navigation therefore goes to download rather than presenting
+  // a second, incomplete browser workspace.
+  if (isWebOperationsRoute || (isBrowserIdentityPage && !isApprovedBrowserAuthFlow)) {
     const destination = request.nextUrl.clone();
     destination.pathname = "/download";
     destination.search = "";

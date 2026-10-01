@@ -22,11 +22,13 @@ describe("desktop-only website boundary", () => {
     },
   );
 
-  it("allows direct browser sign-in without exposing the web workspace", () => {
+  it("routes direct browser sign-in to the installed app", () => {
     const response = proxy(request("/auth/signin"));
 
-    expect(response.status).toBe(200);
-    expect(response.headers.get("location")).toBeNull();
+    expect(response.status).toBe(307);
+    expect(response.headers.get("location")).toBe(
+      "https://example.test/download?from=%2Fauth%2Fsignin",
+    );
   });
 
   it("keeps direct browser signup bound to the installed-app pairing flow", () => {
