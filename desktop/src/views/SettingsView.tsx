@@ -1,4 +1,4 @@
-import { useEffect, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useState, type ReactNode } from "react";
 import { open } from "@tauri-apps/plugin-shell";
 import {
   Bot,
@@ -289,14 +289,20 @@ function IntegrationsSection() {
     status: string;
     lastTransitionAt: string | null;
   }> | null>(null);
+  const [refreshing, setRefreshing] = useState(false);
+
+  const loadCloudConnections = useCallback(async () => {
+    setRefreshing(true);
+    const result = await desktopClient.integrationStatus();
+    if (result.ok) setCloudConnections(result.data);
+    setRefreshing(false);
+  }, []);
 
   useEffect(() => {
-    let cancelled = false;
-    void desktopClient.integrationStatus().then((result) => {
-      if (!cancelled && result.ok) setCloudConnections(result.data);
-    });
-    return () => { cancelled = true; };
-  }, []);
+    void loadCloudConnections();
+    window.addEventListener("focus", loadCloudConnections);
+    return () => window.removeEventListener("focus", loadCloudConnections);
+  }, [loadCloudConnections]);
 
   const cloudState = cloudConnections
     ? cloudConnections.some((connection) => connection.status === "connected")
@@ -325,7 +331,12 @@ function IntegrationsSection() {
       <p className="text-sm text-zinc-200">What happens when you connect</p>
       <p className="mt-1 text-xs leading-5 text-zinc-500">You review the requested access in your browser, approve only the workspace you intend to connect, then return here to see the service-verified status and any required next action.</p>
     </div>
-    <WebButton href="/dashboard/integrations" label="Open connection center" standalone />
+    <div className="mt-5 flex items-center gap-3">
+      <WebButton href="/dashboard/integrations" label="Open connection center" />
+      <button type="button" onClick={() => void loadCloudConnections()} disabled={refreshing} className="rounded-lg border border-white/10 px-3 py-2 text-xs text-zinc-300 hover:bg-white/[0.06] disabled:opacity-50">
+        {refreshing ? "Checking…" : "Refresh verified status"}
+      </button>
+    </div>
   </div>;
 }
 
