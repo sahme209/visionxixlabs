@@ -739,6 +739,26 @@ export class DesktopClient {
     return this.get(`/api/desktop/deployments/${encodeURIComponent(requestId)}/operations`);
   }
 
+  collectGitHubReleaseEvidence(requestId: string): Promise<ApiResult<{
+    mode: "read_only_evidence";
+    repositories: Array<{
+      repository: string;
+      state: "observed" | "unavailable";
+      branchProtection: "protected" | "not_protected" | "unavailable";
+      repositoryEnabled: boolean | null;
+    }>;
+    pullRequests: Array<{
+      repository: string;
+      number: number;
+      state: "observed" | "unavailable";
+      pullRequestState: "open" | "closed" | "merged" | "draft" | "unknown";
+      targetBranchMatches: boolean | null;
+      checks: "passed" | "failed" | "in_progress" | "not_reported" | "unavailable";
+    }>;
+  }>> {
+    return this.post(`/api/desktop/deployments/${encodeURIComponent(requestId)}/github-evidence`, {});
+  }
+
   generateDeploymentPlaybook(requestId: string): Promise<ApiResult<{
     id: string;
     requestId: string;

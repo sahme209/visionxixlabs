@@ -77,6 +77,24 @@ interface OperationLedgerEntry {
   externallyReferenced: boolean;
 }
 
+interface GitHubReleaseEvidence {
+  mode: "read_only_evidence";
+  repositories: Array<{
+    repository: string;
+    state: "observed" | "unavailable";
+    branchProtection: "protected" | "not_protected" | "unavailable";
+    repositoryEnabled: boolean | null;
+  }>;
+  pullRequests: Array<{
+    repository: string;
+    number: number;
+    state: "observed" | "unavailable";
+    pullRequestState: "open" | "closed" | "merged" | "draft" | "unknown";
+    targetBranchMatches: boolean | null;
+    checks: "passed" | "failed" | "in_progress" | "not_reported" | "unavailable";
+  }>;
+}
+
 const initialDraft = {
   title: "",
   requestClass: "planned_release",
@@ -236,6 +254,9 @@ export function DeploymentRequestsView() {
   const [loadingOperationsId, setLoadingOperationsId] = useState<string>();
   const [operationLedger, setOperationLedger] = useState<Record<string, OperationLedgerEntry[]>>({});
   const [operationErrors, setOperationErrors] = useState<Record<string, string>>({});
+  const [collectingGitHubEvidenceId, setCollectingGitHubEvidenceId] = useState<string>();
+  const [githubEvidence, setGitHubEvidence] = useState<Record<string, GitHubReleaseEvidence>>({});
+  const [githubEvidenceErrors, setGitHubEvidenceErrors] = useState<Record<string, string>>({});
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -335,6 +356,22 @@ export function DeploymentRequestsView() {
       return;
     }
     setOperationLedger((current) => ({ ...current, [requestId]: result.data }));
+  }
+
+  async function collectGitHubEvidence(requestId: string) {
+    setCollectingGitHubEvidenceId(requestId);
+    setGitHubEvidenceErrors((current) => {
+      const next = { ...current };
+      delete next[requestId];
+      return next;
+    });
+    const result = await desktopClient.collectGitHubReleaseEvidence(requestId);
+    setCollectingGitHubEvidenceId(undefined);
+    if (!result.ok) {
+      setGitHubEvidenceErrors((current) => ({ ...current, [requestId]: result.error }));
+      return;
+    }
+    setGitHubEvidence((current) => ({ ...current, [requestId]: result.data }));
   }
 
   async function closeRequest(request: RequestSummary) {
@@ -459,9 +496,25 @@ export function DeploymentRequestsView() {
                   >
                     {loadingOperationsId === request.id ? "Loading controls…" : "Review execution controls"}
                   </button>
+                  <button
+                    type="button"
+                    className="btn-secondary disabled:opacity-50"
+                    disabled={collectingGitHubEvidenceId === request.id}
+                    onClick={() => void collectGitHubEvidence(request.id)}
+                  >
+                    {collectingGitHubEvidenceId === request.id ? "Reading GitHub…" : "Collect GitHub evidence"}
+                  </button>
                 </div>
               </div>
               <ReleaseContext request={request} />
+              {githubEvidenceErrors[request.id] && (
+                <p role="alert" className="mt-3 text-xs text-rose-300">
+                  GitHub evidence could not be collected: {githubEvidenceErrors[request.id]}
+                </p>
+              )}
+              {githubEvidence[request.id] && (
+                <GitHubEvidenceCard evidence={githubEvidence[request.id]} />
+              )}
               {request.status === "closed" ? (
                 <div className="mt-3 rounded-lg border border-emerald-500/20 bg-emerald-500/5 px-3 py-2 text-xs text-emerald-100">
                   Closure recorded{request.closedAt ? ` ${new Date(request.closedAt).toLocaleString()}` : ""}. This record documents a reported external outcome; it did not dispatch a deployment.
@@ -678,6 +731,34 @@ function ReleaseContext({ request }: { request: RequestSummary }) {
           Open Approval Center →
         </ExternalLink>
       </div>
+    </div>
+  );
+}
+
+function GitHubEvidenceCard({ evidence }: { evidence: GitHubReleaseEvidence }) {
+  return (
+    <div className="mt-3 rounded-lg border border-sky-500/15 bg-sky-500/5 px-3 py-3">
+      <p className="text-xs font-medium text-sky-100">GitHub release evidence</p>
+      <p className="mt-1 text-[10px] leading-4 text-zinc-500">
+        Read-only signals from the repositories and pull requests already recorded on this request. No workflow, pull request, deployment, or approval was changed.
+      </p>
+      <ul className="mt-3 space-y-2">
+        {evidence.repositories.map((repository) => (
+          <li key={repository.repository} className="rounded-md border border-white/5 bg-black/10 px-2.5 py-2 text-[11px] text-zinc-300">
+            <span className="font-medium text-zinc-100">{repository.repository}</span>
+            <span className="text-zinc-500"> · {repository.state === "observed" ? "read" : "not available"} · branch {repository.branchProtection.replaceAll("_", " ")}</span>
+          </li>
+        ))}
+        {evidence.pullRequests.map((pullRequest) => (
+          <li key={`${pullRequest.repository}-${pullRequest.number}`} className="rounded-md border border-white/5 bg-black/10 px-2.5 py-2 text-[11px] text-zinc-300">
+            <span className="font-medium text-zinc-100">{pullRequest.repository} · PR #{pullRequest.number}</span>
+            <span className="text-zinc-500"> · {pullRequest.pullRequestState.replaceAll("_", " ")} · checks {pullRequest.checks.replaceAll("_", " ")}</span>
+          </li>
+        ))}
+      </ul>
+      {evidence.pullRequests.length === 0 && (
+        <p className="mt-3 text-[11px] text-zinc-500">No matching production pull request was recorded for this request.</p>
+      )}
     </div>
   );
 }
