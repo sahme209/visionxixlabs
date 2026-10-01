@@ -100,7 +100,7 @@ function SignInForm() {
         </div>
         <h1 className="mb-2 text-3xl font-normal tracking-[-0.045em]">Welcome back</h1>
         <p className="text-sm text-zinc-500 mb-8">Authenticate the Axiom Agent pairing request opened by the installed application.</p>
-        <p className="-mt-5 mb-7 text-xs leading-5 text-zinc-600">Signing in verifies identity. Deployment operations remain locked until the workspace has an active paid entitlement.</p>
+        <p className="-mt-5 mb-7 text-xs leading-5 text-zinc-600">Signing in verifies identity. Deployment operations remain locked until the workspace has an approved pilot or commercial entitlement.</p>
 
         <form onSubmit={handleSubmit} className="space-y-4" noValidate>
           <div>

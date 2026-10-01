@@ -30,6 +30,15 @@ export function decideDesktopCommercialAccess(plan: CommercialPlanSnapshot): Des
     pricingPath: "/plans",
   };
 
+  if (plan.status === "active" && plan.tier === "pilot") {
+    return {
+      ...shared,
+      allowed: true,
+      code: "active",
+      title: "Pilot access active",
+      message: "This workspace has an approved no-charge pilot entitlement. Its configured governance controls remain in force.",
+    };
+  }
   if (plan.status === "active" && plan.tier !== "trial") {
     return { ...shared, allowed: true, code: "active", title: "Production access active", message: "This workspace has an active commercial entitlement." };
   }
@@ -39,5 +48,5 @@ export function decideDesktopCommercialAccess(plan: CommercialPlanSnapshot): Des
   if (plan.status === "canceled") {
     return { ...shared, allowed: false, code: "access_canceled", title: "Production access ended", message: "Your identity is verified, but this workspace no longer has an active commercial entitlement." };
   }
-  return { ...shared, allowed: false, code: "production_access_required", title: "Production access required", message: "Your identity is verified. An approved paid workspace entitlement is required before operational data and deployment controls are available." };
+  return { ...shared, allowed: false, code: "production_access_required", title: "Workspace access required", message: "Your identity is verified. An approved pilot or commercial workspace entitlement is required before operational data and deployment controls are available." };
 }

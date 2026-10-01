@@ -2,12 +2,21 @@ import { describe, expect, it } from "vitest";
 import { decideDesktopCommercialAccess } from "../desktopCommercialAccessPolicy";
 
 describe("desktop commercial access policy", () => {
+  it("allows an explicitly provisioned no-charge pilot without making access public", () => {
+    expect(decideDesktopCommercialAccess({ tier: "pilot", status: "active" })).toMatchObject({
+      allowed: true,
+      code: "active",
+      title: "Pilot access active",
+    });
+  });
+
   it.each(["starter", "growth", "enterprise"])("allows an active paid %s workspace", (tier) => {
     expect(decideDesktopCommercialAccess({ tier, status: "active" })).toMatchObject({ allowed: true, code: "active" });
   });
 
   it.each([
     [{ tier: "trial", status: "active" }, "production_access_required"],
+    [{ tier: "pilot", status: "no_plan" }, "production_access_required"],
     [{ tier: "trial", status: "trialing" }, "production_access_required"],
     [{ tier: "starter", status: "no_plan" }, "production_access_required"],
     [{ tier: "growth", status: "past_due" }, "payment_past_due"],

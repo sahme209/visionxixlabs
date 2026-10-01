@@ -248,7 +248,7 @@ function SignUpForm() {
             </p>
 
             <p className="mt-4 text-xs text-zinc-600 text-center">
-              A paid workspace entitlement is provisioned separately under approved commercial terms before deployment operations unlock.
+              A pilot or commercial workspace entitlement is provisioned separately before deployment operations unlock.
             </p>
             {!desktopChallenge && <p role="alert" className="mt-3 text-xs text-amber-300 text-center">This sign-up link is not attached to a valid desktop pairing request. Return to Axiom Agent and choose Continue securely in browser.</p>}
           </div>
