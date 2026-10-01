@@ -115,7 +115,7 @@ export async function resolveGithubInstallationToken(input: { installationId?: n
   }
 
   const cached = cachedByInstallation.get(installationId);
-  if (tokenIsFresh(cached)) {
+  if (cached && tokenIsFresh(cached)) {
     return { ok: true, token: cached.token, installationId: cached.installationId, expiresAt: cached.expiresAt };
   }
 
