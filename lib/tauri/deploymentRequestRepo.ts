@@ -372,12 +372,18 @@ export async function closeDeploymentRequest(
         return { ok: false, reason: "closure_evidence_required" };
     }
 
-    const result = await repo.$transaction(async (tx) => {
+    type CloseTransactionResult =
+        | { kind: "not_found" }
+        | { kind: "already_closed" }
+        | { kind: "version_conflict" }
+        | { kind: "closed"; request: DeploymentRequestRow };
+
+    const result = await repo.$transaction(async (tx): Promise<CloseTransactionResult> => {
         const existing = await tx.tauriDeploymentRequest.findFirst({
             where: { organizationId: input.organizationId, id: input.requestId },
         });
         if (!existing) return { kind: "not_found" as const };
-        if (existing.closedAt || existing.status === "closed") return { kind: "closed" as const };
+        if (existing.closedAt || existing.status === "closed") return { kind: "already_closed" as const };
         if (existing.version !== input.expectedVersion) return { kind: "version_conflict" as const };
 
         const claimed = await tx.tauriDeploymentRequest.updateMany({
@@ -408,7 +414,8 @@ export async function closeDeploymentRequest(
         return { kind: "closed" as const, request: closed };
     });
 
-    if (result.kind === "closed" && "request" in result) return { ok: true, request: result.request };
+    if (result.kind === "closed") return { ok: true, request: result.request };
+    if (result.kind === "already_closed") return { ok: false, reason: "closed" };
     return { ok: false, reason: result.kind };
 }
 
