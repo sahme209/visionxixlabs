@@ -604,6 +604,13 @@ export class DesktopClient {
     correlationId: string;
     submittedAt: string | null;
     updatedAt: string;
+    releaseContext: {
+      window: { startUtc: string; endUtc: string; displayTimeZone: string } | null;
+      scope: { applicationCount: number; repositoryCount: number; targetEnvironment: string | null };
+      approval: { prStatus: string; noPrRequired: boolean };
+      readiness: { developmentReady: boolean; productionReady: boolean; validationStepCount: number; deferredValidation: boolean };
+      recovery: { rollbackAvailability: string; backupRequired: boolean; evidenceCount: number };
+    };
     latestPlaybook: {
       id: string;
       version: number;

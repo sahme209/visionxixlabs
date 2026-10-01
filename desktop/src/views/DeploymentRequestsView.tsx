@@ -10,6 +10,13 @@ interface RequestSummary {
   correlationId: string;
   submittedAt: string | null;
   updatedAt: string;
+  releaseContext: {
+    window: { startUtc: string; endUtc: string; displayTimeZone: string } | null;
+    scope: { applicationCount: number; repositoryCount: number; targetEnvironment: string | null };
+    approval: { prStatus: string; noPrRequired: boolean };
+    readiness: { developmentReady: boolean; productionReady: boolean; validationStepCount: number; deferredValidation: boolean };
+    recovery: { rollbackAvailability: string; backupRequired: boolean; evidenceCount: number };
+  };
   latestPlaybook: {
     id: string;
     version: number;
@@ -186,9 +193,9 @@ export function DeploymentRequestsView() {
     <ViewShell>
       <div className="flex items-start justify-between gap-4">
         <div>
-          <h1 className="text-xl font-bold tracking-tight">Deployment requests</h1>
+          <h1 className="text-xl font-bold tracking-tight">Release workspace</h1>
           <p className="text-sm text-zinc-500 mt-0.5">
-            Capture the change once, then generate and execute a governed, versioned playbook.
+            One governed record for scope, readiness, approval evidence, recovery, and the next playbook.
           </p>
         </div>
         <div className="flex gap-2">
@@ -257,6 +264,7 @@ export function DeploymentRequestsView() {
                   {generatingRequestId === request.id ? "Generating…" : "Generate next playbook"}
                 </button>
               </div>
+              <ReleaseContext request={request} />
               {request.latestPlaybook && !generatedPlaybooks[request.id] && (
                 <div className="mt-3 rounded-lg border border-violet-500/15 bg-violet-500/5 px-3 py-2">
                   <p className="text-xs text-violet-100">
@@ -315,6 +323,63 @@ export function DeploymentRequestsView() {
         </div>
       )}
     </ViewShell>
+  );
+}
+
+function ReleaseContext({ request }: { request: RequestSummary }) {
+  const context = request.releaseContext;
+  const readiness = context.readiness.developmentReady && context.readiness.productionReady;
+  const approval = context.approval.noPrRequired
+    ? "PR not required"
+    : context.approval.prStatus.replaceAll("_", " ");
+  const rollback = context.recovery.rollbackAvailability.replaceAll("_", " ");
+
+  return (
+    <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-4" aria-label="Release context">
+      <ContextSignal
+        label="Scope"
+        value={`${context.scope.applicationCount} app${context.scope.applicationCount === 1 ? "" : "s"} · ${context.scope.repositoryCount} repo${context.scope.repositoryCount === 1 ? "" : "s"}`}
+        detail={context.scope.targetEnvironment ?? "Environment not recorded"}
+      />
+      <ContextSignal
+        label="Readiness"
+        value={readiness ? "Ready signals recorded" : "Signals need review"}
+        detail={`${context.readiness.validationStepCount} validation step${context.readiness.validationStepCount === 1 ? "" : "s"}${context.readiness.deferredValidation ? " · deferred" : ""}`}
+        tone={readiness ? "good" : "attention"}
+      />
+      <ContextSignal
+        label="Approval"
+        value={approval}
+        detail={`${context.recovery.evidenceCount} evidence reference${context.recovery.evidenceCount === 1 ? "" : "s"}`}
+        tone={context.approval.prStatus === "approved" || context.approval.noPrRequired ? "good" : "attention"}
+      />
+      <ContextSignal
+        label="Recovery"
+        value={`Rollback ${rollback}`}
+        detail={context.recovery.backupRequired ? "Backup evidence required" : "No backup evidence required"}
+        tone={context.recovery.rollbackAvailability === "yes" ? "good" : "attention"}
+      />
+    </div>
+  );
+}
+
+function ContextSignal({ label, value, detail, tone = "neutral" }: {
+  label: string;
+  value: string;
+  detail: string;
+  tone?: "neutral" | "good" | "attention";
+}) {
+  const color = tone === "good"
+    ? "border-emerald-500/20 bg-emerald-500/5"
+    : tone === "attention"
+    ? "border-amber-500/20 bg-amber-500/5"
+    : "border-white/5 bg-white/[0.02]";
+  return (
+    <div className={`rounded-lg border px-3 py-2 ${color}`}>
+      <p className="text-[10px] font-mono uppercase tracking-wider text-zinc-500">{label}</p>
+      <p className="mt-1 text-xs font-medium text-zinc-200">{value}</p>
+      <p className="mt-0.5 text-[10px] text-zinc-500">{detail}</p>
+    </div>
   );
 }
 

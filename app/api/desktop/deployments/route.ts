@@ -41,6 +41,84 @@ interface PlaybookSummaryRepo {
     };
 }
 
+interface ReleaseContextSummary {
+    window: {
+        startUtc: string;
+        endUtc: string;
+        displayTimeZone: string;
+    } | null;
+    scope: {
+        applicationCount: number;
+        repositoryCount: number;
+        targetEnvironment: string | null;
+    };
+    approval: {
+        prStatus: string;
+        noPrRequired: boolean;
+    };
+    readiness: {
+        developmentReady: boolean;
+        productionReady: boolean;
+        validationStepCount: number;
+        deferredValidation: boolean;
+    };
+    recovery: {
+        rollbackAvailability: string;
+        backupRequired: boolean;
+        evidenceCount: number;
+    };
+}
+
+function record(value: unknown): Record<string, unknown> {
+    return value && typeof value === "object" && !Array.isArray(value)
+        ? value as Record<string, unknown>
+        : {};
+}
+
+function text(value: unknown): string | null {
+    return typeof value === "string" && value.trim() ? value : null;
+}
+
+function count(value: unknown): number {
+    return Array.isArray(value) ? value.length : 0;
+}
+
+/**
+ * Redacts the full intake into the small set of operational signals the
+ * desktop needs to orient a release. Raw URLs, contacts, workflow inputs,
+ * and evidence identifiers remain inside the governed request record.
+ */
+function summarizeReleaseContext(intakeJson: unknown): ReleaseContextSummary {
+    const intake = record(intakeJson);
+    return {
+        window: text(intake.windowStartUtc) && text(intake.windowEndUtc) ? {
+            startUtc: text(intake.windowStartUtc)!,
+            endUtc: text(intake.windowEndUtc)!,
+            displayTimeZone: text(intake.displayTimeZone) ?? "UTC",
+        } : null,
+        scope: {
+            applicationCount: count(intake.applications),
+            repositoryCount: count(intake.repositoryUrls),
+            targetEnvironment: text(intake.targetEnvironment),
+        },
+        approval: {
+            prStatus: text(intake.prApprovalStatus) ?? "unknown",
+            noPrRequired: intake.noPrRequired === true,
+        },
+        readiness: {
+            developmentReady: intake.developmentReady === true,
+            productionReady: intake.productionReady === true,
+            validationStepCount: count(intake.validationSteps),
+            deferredValidation: Boolean(intake.deferredValidation),
+        },
+        recovery: {
+            rollbackAvailability: text(intake.rollbackAvailability) ?? "unknown",
+            backupRequired: intake.backupRequired === true,
+            evidenceCount: count(intake.facts) + count(intake.backupEvidenceIds),
+        },
+    };
+}
+
 function isUniqueConflict(cause: unknown): boolean {
     return Boolean(
         cause
@@ -104,6 +182,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
                     correlationId: row.correlationId,
                     submittedAt: row.submittedAt?.toISOString() ?? null,
                     updatedAt: row.updatedAt.toISOString(),
+                    releaseContext: summarizeReleaseContext(row.intakeJson),
                     latestPlaybook: latest ? {
                         id: latest.id,
                         version: latest.version,
