@@ -32,7 +32,7 @@ const highlights = [
 
 export default function Home() {
   return (
-    <div className="axiom-canvas min-h-screen text-[#ecece8]">
+    <div className="axiom-canvas axiom-product-canvas min-h-screen text-[#ecece8]">
       <Navigation />
       <main>
         <section className="mx-auto max-w-[1720px] px-5 pb-20 pt-36 sm:px-8 lg:px-12 lg:pb-28 lg:pt-44">

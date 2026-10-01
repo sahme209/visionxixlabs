@@ -48,7 +48,7 @@ const LIMITATIONS = [
 
 export default function SecurityPage() {
   return (
-    <div className="relative min-h-screen overflow-hidden bg-[#09090b] text-white">
+    <div className="axiom-canvas axiom-product-canvas relative min-h-screen overflow-hidden text-white">
       <div className="absolute inset-0 bg-dots opacity-10 pointer-events-none" aria-hidden />
       <div className="ambient-drift absolute -top-40 right-0 h-[480px] w-[480px] rounded-full bg-brand-violet/[0.08] blur-[130px] pointer-events-none" aria-hidden />
       <div className="ambient-drift absolute top-1/4 left-1/4 h-[340px] w-[420px] rounded-full bg-brand-coral/[0.06] blur-[120px] pointer-events-none" aria-hidden />

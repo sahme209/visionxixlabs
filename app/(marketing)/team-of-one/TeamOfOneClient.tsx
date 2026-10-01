@@ -130,7 +130,7 @@ export function TeamOfOneClient() {
   );
 
   return (
-    <div className="relative min-h-screen bg-[#070713] text-zinc-100 overflow-x-hidden">
+    <div className="relative min-h-screen text-zinc-100 overflow-x-hidden">
       {/* Cursor-tracking aurora — pointer is hidden when prefers-reduced-motion */}
       {!reduce && <div className="pointer-events-none fixed inset-0 z-0" style={cursorStyle} />}
 

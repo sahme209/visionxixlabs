@@ -177,7 +177,7 @@ export default function ReleaseOpsPage() {
   );
 
   return (
-    <div className="min-h-screen bg-[#09090b] text-white relative overflow-hidden">
+    <div className="axiom-canvas axiom-product-canvas min-h-screen text-white relative overflow-hidden">
       {/* Background layers */}
       <div className="absolute inset-0 bg-grid-mesh opacity-30 pointer-events-none" aria-hidden />
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[600px] spotlight-orb opacity-60 pointer-events-none" aria-hidden />

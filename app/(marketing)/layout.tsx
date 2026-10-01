@@ -22,7 +22,7 @@ import { Footer } from "@/components/Footer";
 
 export default function MarketingLayout({ children }: { children: ReactNode }) {
   return (
-    <div className="axiom-canvas min-h-screen text-zinc-100">
+    <div className="axiom-canvas axiom-product-canvas min-h-screen text-zinc-100">
       <Navigation />
       {/* Top padding matches the fixed-height main nav so content
           doesn't slip beneath it. */}

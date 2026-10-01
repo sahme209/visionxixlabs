@@ -4,7 +4,7 @@ import { DocsSidebar } from "@/components/docs/DocsSidebar";
 
 export default function DocsLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="min-h-screen bg-[#09090b] text-white relative overflow-hidden">
+    <div className="axiom-canvas axiom-product-canvas min-h-screen text-white relative overflow-hidden">
       <div className="absolute inset-0 bg-grid-mesh opacity-20 pointer-events-none" aria-hidden />
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-[400px] spotlight-orb opacity-40 pointer-events-none" aria-hidden />
       <div className="absolute top-[30%] -right-40 w-[400px] h-[400px] rounded-full bg-violet-600/[0.04] blur-[140px] pointer-events-none" aria-hidden />

@@ -12,6 +12,8 @@
  */
 
 import Link from "next/link";
+import { Footer } from "@/components/Footer";
+import { Navigation } from "@/components/Navigation";
 import {
   INTEGRATIONS,
   listAllCategories,
@@ -46,7 +48,9 @@ export default function IntegrationsCatalog() {
     planned: Object.values(PUBLIC_AVAILABILITY).filter((item) => item.label === "planned").length,
   };
   return (
-    <main className="relative max-w-6xl mx-auto py-16 px-4 sm:px-6 space-y-10">
+    <div className="axiom-canvas axiom-product-canvas min-h-screen text-zinc-100">
+      <Navigation />
+      <main className="relative mx-auto max-w-6xl space-y-10 px-4 pb-16 pt-28 sm:px-6">
       {/* Coral × violet aurora — Huly-style warm wash behind the hero */}
       <div aria-hidden className="pointer-events-none absolute inset-x-0 -top-8 h-[480px] -z-10 overflow-hidden">
         <div className="ambient-drift absolute -top-24 left-1/2 -translate-x-1/2 w-[820px] h-[420px] rounded-full bg-brand-violet/[0.07] blur-[140px]" />
@@ -114,7 +118,9 @@ export default function IntegrationsCatalog() {
           <Link href="/docs/security-model" className="text-[13px] text-zinc-300 hover:text-white underline-offset-2 hover:underline">Security model →</Link>
         </div>
       </footer>
-    </main>
+      </main>
+      <Footer />
+    </div>
   );
 }
 

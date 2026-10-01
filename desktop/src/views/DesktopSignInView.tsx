@@ -70,7 +70,7 @@ export function DesktopSignInView({
         <p className="text-xs font-medium text-zinc-400">Axiom Agent</p>
         <h1 className="mt-3 text-[30px] font-medium leading-[1.12] tracking-[-0.035em]">Deployment control, from request to closure.</h1>
         <p className="mx-auto mt-3 max-w-sm text-[15px] leading-6 text-zinc-400">
-          Sign in through your system browser, then return here automatically. Your workspace and paid access are verified before operational data loads.
+          Sign in through your system browser, then return here automatically. Your workspace access is verified before operational data loads.
         </p>
         {error && <div role="alert" className="mt-5 rounded-lg border border-red-500/20 bg-red-500/10 p-3 text-left text-xs text-red-200">{error}</div>}
         <button
