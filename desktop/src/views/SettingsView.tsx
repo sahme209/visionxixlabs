@@ -335,6 +335,8 @@ function IntegrationsSection() {
     summary: { total: number; healthy: number; degraded: number; preview: number; blocked: number; disabled: number };
   } | null>(null);
   const [refreshing, setRefreshing] = useState(false);
+  const [validatingGitHub, setValidatingGitHub] = useState(false);
+  const [githubValidationNote, setGithubValidationNote] = useState<string | null>(null);
 
   const loadCloudConnections = useCallback(async () => {
     setRefreshing(true);
@@ -364,13 +366,28 @@ function IntegrationsSection() {
     ? cloudConnections.map((connection) => `${connection.provider.toUpperCase()} ${connection.status.replaceAll("_", " ")}`).join(" · ")
     : "Loading the service-verified state for AWS, Azure, and Google Cloud.";
   const githubState = github
-    ? github.status === "installation_recorded" ? "Consent recorded" : github.status.replaceAll("_", " ")
+    ? github.status === "validated_read_only" ? "Validated read-only" : github.status === "installation_recorded" ? "Consent recorded" : github.status.replaceAll("_", " ")
     : "Checking status";
   const githubDetail = github
-    ? github.status === "installation_recorded"
+    ? github.status === "validated_read_only"
+      ? `GitHub App access was verified with a scoped, read-only request. ${github.repositorySelection === "all" ? "All-repository" : "Selected-repository"} scope remains managed by GitHub.`
+      : github.status === "installation_recorded"
       ? `GitHub App consent and ${github.repositorySelection === "all" ? "all-repository" : "selected-repository"} scope were recorded. Live read-only access is not shown as verified until service validation succeeds.`
       : "No active GitHub App installation is recorded for this workspace. Connect in the browser to choose repository scope."
     : "Loading the service-verified GitHub App state.";
+
+  async function validateGitHub() {
+    setValidatingGitHub(true);
+    setGithubValidationNote(null);
+    const result = await desktopClient.validateGitHubReadOnly();
+    if (result.ok) {
+      setGithubValidationNote("GitHub read-only access is verified for this workspace.");
+      await loadCloudConnections();
+    } else {
+      setGithubValidationNote("GitHub could not complete a read-only validation. Review the App installation and try again.");
+    }
+    setValidatingGitHub(false);
+  }
 
   return <div>
     <SectionHeading title="Integration Center" detail="Connect the systems that already run your releases. Every connection is tenant-scoped, least-privilege, and shown as connected only after server-side validation." />
@@ -401,10 +418,14 @@ function IntegrationsSection() {
     </div>
     <div className="mt-5 flex items-center gap-3">
       <WebButton href="/connect/github" label="Connect GitHub" />
+      <button type="button" onClick={() => void validateGitHub()} disabled={validatingGitHub || github?.status !== "installation_recorded"} className="rounded-lg border border-white/10 px-3 py-2 text-xs text-zinc-300 hover:bg-white/[0.06] disabled:opacity-50">
+        {validatingGitHub ? "Validating GitHub…" : "Validate read-only access"}
+      </button>
       <button type="button" onClick={() => void loadCloudConnections()} disabled={refreshing} className="rounded-lg border border-white/10 px-3 py-2 text-xs text-zinc-300 hover:bg-white/[0.06] disabled:opacity-50">
         {refreshing ? "Checking…" : "Refresh verified status"}
       </button>
     </div>
+    {githubValidationNote && <p className="mt-3 text-xs text-zinc-400">{githubValidationNote}</p>}
   </div>;
 }
 

@@ -607,6 +607,10 @@ export class DesktopClient {
     return this.get("/api/desktop/integrations");
   }
 
+  validateGitHubReadOnly(): Promise<ApiResult<{ status: "validated_read_only" }>> {
+    return this.post("/api/desktop/integrations/github/validate", {});
+  }
+
   aiProviderStatus(): Promise<ApiResult<Array<{
     provider: string;
     configured: boolean;

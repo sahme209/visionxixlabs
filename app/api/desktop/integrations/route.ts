@@ -24,6 +24,7 @@ interface ConnectorSessionRepo {
 interface GitHubInstallationRow {
     status: string;
     repositorySelection: string;
+    lastSeenAt: Date | null;
 }
 
 interface GitHubInstallationRepo {
@@ -31,7 +32,7 @@ interface GitHubInstallationRepo {
         findFirst(args: {
             where: { organizationId: string; status: { in: string[] } };
             orderBy: { installedAt: "desc" };
-            select: { status: true; repositorySelection: true };
+            select: { status: true; repositorySelection: true; lastSeenAt: true };
         }): Promise<GitHubInstallationRow | null>;
     };
 }
@@ -71,7 +72,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
                     status: { in: ["active", "suspended", "revoked"] },
                 },
                 orderBy: { installedAt: "desc" },
-                select: { status: true, repositorySelection: true },
+                select: { status: true, repositorySelection: true, lastSeenAt: true },
             });
             if (installation) {
                 // A callback proves that GitHub accepted the installation, but
@@ -79,7 +80,9 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
                 // a scoped read. Keep that distinction explicit until the live
                 // read-only validation lifecycle exists.
                 github = {
-                    status: installation.status === "active" ? "installation_recorded" : installation.status,
+                    status: installation.status === "active"
+                        ? (installation.lastSeenAt ? "validated_read_only" : "installation_recorded")
+                        : installation.status,
                     repositorySelection: installation.repositorySelection,
                 };
             }

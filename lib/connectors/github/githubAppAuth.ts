@@ -78,7 +78,7 @@ interface CachedInstallationToken {
   installationId: number;
 }
 
-let cached: CachedInstallationToken | undefined;
+const cachedByInstallation = new Map<number, CachedInstallationToken>();
 
 function tokenIsFresh(c: CachedInstallationToken | undefined): boolean {
   if (!c) return false;
@@ -104,17 +104,19 @@ export interface InstallationTokenError {
 
 export type InstallationTokenOutcome = InstallationTokenResult | InstallationTokenError;
 
-export async function resolveGithubInstallationToken(): Promise<InstallationTokenOutcome> {
+export async function resolveGithubInstallationToken(input: { installationId?: number } = {}): Promise<InstallationTokenOutcome> {
   const cfg = getGithubConfig();
   if (!cfg.appConfigured || !cfg.appId) {
     return { ok: false, errorCode: "github.app_not_configured", message: "GITHUB_APP_ID + GITHUB_PRIVATE_KEY required for App auth." };
   }
-  if (!cfg.installationId) {
+  const installationId = input.installationId ?? cfg.installationId;
+  if (!installationId || !Number.isSafeInteger(installationId) || installationId < 1) {
     return { ok: false, errorCode: "github.app_no_installation", message: "GITHUB_INSTALLATION_ID required to mint an installation access token." };
   }
 
-  if (tokenIsFresh(cached) && cached!.installationId === cfg.installationId) {
-    return { ok: true, token: cached!.token, installationId: cached!.installationId, expiresAt: cached!.expiresAt };
+  const cached = cachedByInstallation.get(installationId);
+  if (tokenIsFresh(cached)) {
+    return { ok: true, token: cached.token, installationId: cached.installationId, expiresAt: cached.expiresAt };
   }
 
   const privateKey = resolveGithubAppPrivateKey();
@@ -134,7 +136,7 @@ export async function resolveGithubInstallationToken(): Promise<InstallationToke
   }
 
   try {
-    const res = await fetch(`${GITHUB_API}/app/installations/${cfg.installationId}/access_tokens`, {
+    const res = await fetch(`${GITHUB_API}/app/installations/${installationId}/access_tokens`, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${appJwt}`,
@@ -157,12 +159,13 @@ export async function resolveGithubInstallationToken(): Promise<InstallationToke
       return { ok: false, errorCode: "github.app_token_malformed", message: "GitHub returned no token / expiry." };
     }
     const expiresAt = Date.parse(body.expires_at);
-    cached = {
+    const nextCached: CachedInstallationToken = {
       token: body.token,
       expiresAt: Number.isFinite(expiresAt) ? expiresAt : Date.now() + 50 * 60_000,
-      installationId: cfg.installationId,
+      installationId,
     };
-    return { ok: true, token: cached.token, installationId: cached.installationId, expiresAt: cached.expiresAt };
+    cachedByInstallation.set(installationId, nextCached);
+    return { ok: true, token: nextCached.token, installationId: nextCached.installationId, expiresAt: nextCached.expiresAt };
   } catch (err) {
     return { ok: false, errorCode: "github.app_token_network", message: `Network error: ${redact(err)}` };
   }
@@ -170,7 +173,7 @@ export async function resolveGithubInstallationToken(): Promise<InstallationToke
 
 /** Test seam — drop the cache so a subsequent call re-mints. */
 export function clearInstallationTokenCache(): void {
-  cached = undefined;
+  cachedByInstallation.clear();
 }
 
 // ---------------------------------------------------------------------------
