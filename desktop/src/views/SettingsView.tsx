@@ -216,16 +216,26 @@ function PlanSection({ identity }: { identity: VerifiedDesktopIdentity }) {
     } catch (cause) { setError(cause instanceof Error ? cause.message : "The billing portal could not be opened."); }
     finally { setOpening(false); }
   }
+  const isPilot = access.planTier === "pilot" && access.billingStatus === "active";
   return <div>
-    <SectionHeading title="Plan & usage" detail="Commercial access is verified by the service before production records load." />
+    <SectionHeading title="Access & usage" detail="Approved pilot or commercial access is verified by the service before production records load." />
     <div className="grid gap-4 sm:grid-cols-2">
-      <SummaryCard label="Current plan" value={access.planTier} detail={access.title} />
-      <SummaryCard label="Billing state" value={access.billingStatus.replaceAll("_", " ")} detail={access.currentPeriodEndsAt ? `Period ends ${new Date(access.currentPeriodEndsAt).toLocaleDateString()}` : "Managed by your workspace agreement"} />
+      <SummaryCard label="Access model" value={isPilot ? "No-charge pilot" : access.planTier} detail={access.title} />
+      <SummaryCard label="Access state" value={access.billingStatus.replaceAll("_", " ")} detail={isPilot ? "Provisioned for this pilot workspace" : access.currentPeriodEndsAt ? `Period ends ${new Date(access.currentPeriodEndsAt).toLocaleDateString()}` : "Managed by your workspace agreement"} />
     </div>
     <div className="mt-5 rounded-xl border border-white/[0.07] bg-white/[0.025] p-5">
-      <div className="flex items-start justify-between gap-5"><div><p className="text-sm text-zinc-200">Manage billing securely</p><p className="mt-1 max-w-xl text-xs leading-5 text-zinc-500">A short-lived portal session opens in Stripe. Card data is never collected by this app.</p></div><button type="button" disabled={opening} onClick={() => void openBillingPortal()} className="rounded-lg bg-white px-4 py-2 text-xs font-semibold text-black disabled:opacity-50">{opening ? "Opening…" : "Open billing"}</button></div>
-      {error && <p role="alert" className="mt-4 text-xs text-red-300">{error}</p>}
-      <p className="mt-4 border-t border-white/[0.06] pt-4 text-[11px] leading-5 text-zinc-600">A return from Checkout does not grant access by itself. Verified subscription state remains authoritative.</p>
+      {isPilot ? (
+        <div>
+          <p className="text-sm text-zinc-200">Pilot access is no-charge</p>
+          <p className="mt-1 max-w-xl text-xs leading-5 text-zinc-500">This workspace is in an approved early-access pilot. No card or checkout is needed, and production safeguards remain enforced.</p>
+        </div>
+      ) : (
+        <>
+          <div className="flex items-start justify-between gap-5"><div><p className="text-sm text-zinc-200">Manage billing securely</p><p className="mt-1 max-w-xl text-xs leading-5 text-zinc-500">A short-lived portal session opens in Stripe. Card data is never collected by this app.</p></div><button type="button" disabled={opening} onClick={() => void openBillingPortal()} className="rounded-lg bg-white px-4 py-2 text-xs font-semibold text-black disabled:opacity-50">{opening ? "Opening…" : "Open billing"}</button></div>
+          {error && <p role="alert" className="mt-4 text-xs text-red-300">{error}</p>}
+          <p className="mt-4 border-t border-white/[0.06] pt-4 text-[11px] leading-5 text-zinc-600">A return from Checkout does not grant access by itself. Verified subscription state remains authoritative.</p>
+        </>
+      )}
     </div>
   </div>;
 }

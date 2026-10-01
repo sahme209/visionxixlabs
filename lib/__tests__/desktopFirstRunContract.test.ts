@@ -114,7 +114,8 @@ describe("desktop first-run contract", () => {
   it("does not expose legacy customer credential and scan controls in Settings", () => {
     const settings = readFileSync(join(root, "desktop/src/views/SettingsView.tsx"), "utf8");
     expect(settings).toContain("Account & session");
-    expect(settings).toContain("Plan & billing");
+    expect(settings).toContain("Access & usage");
+    expect(settings).toContain("Pilot access is no-charge");
     expect(settings).toContain("Repositories & triggers");
     expect(settings).toContain("A return from Checkout does not grant access by itself");
     expect(settings).not.toContain("Paste desktop pairing JSON");
