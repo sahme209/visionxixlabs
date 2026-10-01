@@ -596,6 +596,14 @@ export class DesktopClient {
   }
 
   // ── Deployment operations ─────────────────────────────────────────
+  integrationStatus(): Promise<ApiResult<Array<{
+    provider: "aws" | "azure" | "gcp";
+    status: string;
+    lastTransitionAt: string | null;
+  }>>> {
+    return this.get("/api/desktop/integrations");
+  }
+
   deploymentRequests(): Promise<ApiResult<Array<{
     id: string;
     title: string;

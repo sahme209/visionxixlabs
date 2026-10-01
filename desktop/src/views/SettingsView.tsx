@@ -284,12 +284,41 @@ function WorktreesSection({ prefs }: { prefs: DesktopPreferences | null }) {
 }
 
 function IntegrationsSection() {
+  const [cloudConnections, setCloudConnections] = useState<Array<{
+    provider: "aws" | "azure" | "gcp";
+    status: string;
+    lastTransitionAt: string | null;
+  }> | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    void desktopClient.integrationStatus().then((result) => {
+      if (!cancelled && result.ok) setCloudConnections(result.data);
+    });
+    return () => { cancelled = true; };
+  }, []);
+
+  const cloudState = cloudConnections
+    ? cloudConnections.some((connection) => connection.status === "connected")
+      ? `${cloudConnections.filter((connection) => connection.status === "connected").length} verified`
+      : "Not connected"
+    : "Checking status";
+  const cloudDetail = cloudConnections
+    ? cloudConnections.map((connection) => `${connection.provider.toUpperCase()} ${connection.status.replaceAll("_", " ")}`).join(" · ")
+    : "Loading the service-verified state for AWS, Azure, and Google Cloud.";
+
   return <div>
     <SectionHeading title="Integration Center" detail="Connect the systems that already run your releases. Every connection is tenant-scoped, least-privilege, and shown as connected only after server-side validation." />
     <Notice title="No secrets in the desktop app" detail="Connections open in the secure browser. The desktop app never collects an identity-provider password or long-lived provider secret, and no connection can silently gain write access." />
     <div className="space-y-3">
       {INTEGRATION_CENTER_ITEMS.map((item) => (
-        <IntegrationRow key={item.name} name={item.name} group={item.group} detail={item.detail} state={item.state} />
+        <IntegrationRow
+          key={item.name}
+          name={item.name}
+          group={item.group}
+          detail={item.name === "AWS, Azure & Google Cloud" ? `${item.detail} Current workspace state: ${cloudDetail}` : item.detail}
+          state={item.name === "AWS, Azure & Google Cloud" ? cloudState : item.state}
+        />
       ))}
     </div>
     <div className="mt-5 rounded-xl border border-white/[0.07] bg-white/[0.025] p-4">
@@ -314,6 +343,9 @@ function LockedRow({ title, detail }: { title: string; detail: string }) { retur
 function PolicyRow({ title, detail }: { title: string; detail: string }) { return <div className="flex items-start gap-3 border-b border-white/[0.055] px-5 py-4 last:border-b-0"><ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-zinc-400" /><div><p className="text-sm text-zinc-200">{title}</p><p className="mt-1 text-xs leading-5 text-zinc-500">{detail}</p></div></div>; }
 function Notice({ title, detail }: { title: string; detail: string }) { return <div className="mb-6 rounded-xl border border-amber-400/15 bg-amber-400/[0.05] p-5"><p className="text-sm font-medium text-amber-100">{title}</p><p className="mt-2 text-xs leading-5 text-zinc-400">{detail}</p></div>; }
 function SummaryCard({ label, value, detail }: { label: string; value: string; detail: string }) { return <div className="rounded-xl border border-white/[0.07] bg-white/[0.025] p-5"><p className="text-xs text-zinc-500">{label}</p><p className="mt-2 text-2xl font-semibold capitalize">{value}</p><p className="mt-2 text-sm text-zinc-500">{detail}</p></div>; }
-function IntegrationRow({ name, group, detail, state }: { name: string; group: string; detail: string; state: string }) { return <div className="flex items-start gap-4 rounded-xl border border-white/[0.07] bg-white/[0.025] p-4"><span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-white/[0.07] bg-black/25 text-zinc-300"><Link2 className="h-4 w-4" /></span><div className="min-w-0 flex-1"><p className="text-[10px] uppercase tracking-[0.14em] text-zinc-600">{group}</p><p className="mt-0.5 text-sm text-zinc-200">{name}</p><p className="mt-1 text-xs leading-5 text-zinc-500">{detail}</p></div><span className="shrink-0 rounded-full border border-amber-500/20 bg-amber-500/10 px-2 py-1 text-[10px] text-amber-200">{state}</span></div>; }
+function IntegrationRow({ name, group, detail, state }: { name: string; group: string; detail: string; state: string }) {
+  const connected = /verified|connected/i.test(state) && !/not connected/i.test(state);
+  return <div className="flex items-start gap-4 rounded-xl border border-white/[0.07] bg-white/[0.025] p-4"><span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-white/[0.07] bg-black/25 text-zinc-300"><Link2 className="h-4 w-4" /></span><div className="min-w-0 flex-1"><p className="text-[10px] uppercase tracking-[0.14em] text-zinc-600">{group}</p><p className="mt-0.5 text-sm text-zinc-200">{name}</p><p className="mt-1 text-xs leading-5 text-zinc-500">{detail}</p></div><span className={`shrink-0 rounded-full border px-2 py-1 text-[10px] ${connected ? "border-emerald-500/20 bg-emerald-500/10 text-emerald-200" : "border-amber-500/20 bg-amber-500/10 text-amber-200"}`}>{state}</span></div>;
+}
 function ModelProviderRow({ name, detail, state }: { name: string; detail: string; state: string }) { return <div className="flex items-start gap-4 border-b border-white/[0.055] px-5 py-4 last:border-b-0"><span className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-violet-500/20 bg-violet-500/10 text-[10px] font-semibold text-violet-200">AI</span><div className="min-w-0 flex-1"><p className="text-sm text-zinc-200">{name}</p><p className="mt-1 text-xs leading-5 text-zinc-500">{detail}</p></div><span className="shrink-0 rounded-full border border-white/[0.08] bg-white/[0.025] px-2 py-1 text-[10px] text-zinc-400">{state}</span></div>; }
 function WebButton({ href, label, standalone = false }: { href: string; label: string; standalone?: boolean }) { return <button type="button" onClick={() => void open(`${WEB_BASE}${href}`)} className={`${standalone ? "mt-1" : ""} inline-flex items-center gap-1.5 rounded-lg border border-white/10 px-3 py-2 text-xs text-zinc-300 hover:bg-white/[0.06]`}>{label}<ChevronRight className="h-3.5 w-3.5" /></button>; }
