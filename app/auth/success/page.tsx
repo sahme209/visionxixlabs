@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { currentContext } from "@/lib/auth/currentContext";
+import { AuthCompanionHeader } from "@/components/auth/AuthCompanionHeader";
 
 export const dynamic = "force-dynamic";
 
@@ -10,16 +11,10 @@ export default async function AuthSuccessPage() {
   return (
     <main className="axiom-canvas min-h-screen px-5 py-8 text-white sm:px-8 lg:px-12">
       <div className="mx-auto max-w-6xl">
-        <header className="flex items-center justify-between border-b border-white/[0.07] pb-6">
-          <Link href="/" className="text-sm font-semibold tracking-[-0.02em] text-zinc-100">Vision XIX Labs</Link>
-          <div className="text-right">
-            <p className="text-[10px] uppercase tracking-[0.18em] text-emerald-300">Signed in</p>
-            <p className="mt-1 text-xs text-zinc-400">{context.email}</p>
-          </div>
-        </header>
+        <AuthCompanionHeader email={context.email} />
 
         <section className="py-14 sm:py-20">
-          <p className="text-[10px] uppercase tracking-[0.22em] text-violet-300">Axiom web companion</p>
+          <p className="text-[10px] uppercase tracking-[0.22em] text-violet-300">Axiom web companion · signed in</p>
           <h1 className="mt-4 max-w-2xl text-4xl font-semibold tracking-[-0.045em] sm:text-5xl">Your workspace is ready.</h1>
           <p className="mt-5 max-w-2xl text-base leading-7 text-zinc-400">
             Use this lightweight companion to confirm your account and understand the workspace. The installed Axiom Agent is where release records, approvals, integrations, and governed operations live.
