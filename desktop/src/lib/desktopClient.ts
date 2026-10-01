@@ -604,6 +604,14 @@ export class DesktopClient {
     return this.get("/api/desktop/integrations");
   }
 
+  aiProviderStatus(): Promise<ApiResult<Array<{
+    provider: string;
+    configured: boolean;
+    defaultModel: string;
+  }>>> {
+    return this.get("/api/desktop/ai-providers");
+  }
+
   deploymentRequests(): Promise<ApiResult<Array<{
     id: string;
     title: string;

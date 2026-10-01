@@ -242,18 +242,47 @@ function AgentsSection({ prefs, onSave }: PreferenceSectionProps) {
   </div>;
 }
 
+const PROVIDER_LABELS: Record<string, string> = {
+  github_models: "GitHub Models",
+  ollama: "Ollama",
+  lm_studio: "LM Studio",
+  groq: "Groq",
+  hugging_face: "Hugging Face",
+  openrouter: "OpenRouter",
+  gemini: "Google Gemini",
+  cloudflare: "Cloudflare Workers AI",
+};
+
 function ModelsSection() {
+  const [providers, setProviders] = useState<Array<{ provider: string; configured: boolean; defaultModel: string }> | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    void desktopClient.aiProviderStatus().then((result) => {
+      if (!cancelled && result.ok) setProviders(result.data);
+    });
+    return () => { cancelled = true; };
+  }, []);
+
+  const configured = providers?.filter((provider) => provider.configured) ?? [];
   return <div>
     <SectionHeading title="AI Provider Center" detail="Choose from models approved by your workspace. Axiom keeps provider credentials, routing rules, spend controls, and safety policy in the service—not on this device." />
-    <Group label="Workspace-managed providers">
-      <ModelProviderRow name="OpenAI" detail="GPT-family models can support concise release summaries, classification, and structured operational work when your workspace enables them." state="Workspace managed" />
-      <ModelProviderRow name="Anthropic" detail="Claude-family models can support long-form reasoning, playbooks, and evidence review when enabled by your workspace." state="Workspace managed" />
-      <ModelProviderRow name="Google" detail="Gemini models can be used through the organization routing policy when the workspace enables them." state="Workspace managed" />
+    <Group label="Service-approved providers">
+      {providers === null && <ModelProviderRow name="Provider availability" detail="Checking the service-approved provider set." state="Checking" />}
+      {providers !== null && configured.length === 0 && <ModelProviderRow name="No live provider enabled" detail="This workspace has no non-simulated provider enabled by the service. Add or approve a provider in the service before it can appear available here." state="Not enabled" />}
+      {configured.map((provider) => (
+        <ModelProviderRow
+          key={provider.provider}
+          name={PROVIDER_LABELS[provider.provider] ?? provider.provider}
+          detail={`Default service model: ${provider.defaultModel}. Workspace policy, not this device, determines whether it may be used for a task.`}
+          state="Service enabled"
+        />
+      ))}
     </Group>
     <Group label="Provider policy">
       <PolicyRow title="Human-confirmed AI output" detail="Generated playbook content remains proposed until a person reviews it." />
       <PolicyRow title="No desktop BYOK fields" detail="Provider credentials are not accepted by this build. Organization-managed routing is configured outside the desktop client." />
-      <PolicyRow title="Availability is explicit" detail="Providers such as Grok or other requested models appear only after a supported, approved integration exists. Unconfigured providers are never rendered as usable choices." />
+      <PolicyRow title="Availability is explicit" detail="A provider appears as enabled only when the service has configured it. Requested families such as GPT, Claude, Grok, or others are not shown as usable until a supported, approved route exists." />
     </Group>
     <WebButton href="/capabilities" label="Review released capabilities" standalone />
   </div>;
