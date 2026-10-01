@@ -361,6 +361,7 @@ function IntegrationsSection() {
       <p className="mt-1 text-xs leading-5 text-zinc-500">You review the requested access in your browser, approve only the workspace you intend to connect, then return here to see the service-verified status and any required next action.</p>
     </div>
     <div className="mt-5 flex items-center gap-3">
+      <WebButton href="/dashboard/github-app" label="Connect GitHub" />
       <WebButton href="/dashboard/integrations" label="Open connection center" />
       <button type="button" onClick={() => void loadCloudConnections()} disabled={refreshing} className="rounded-lg border border-white/10 px-3 py-2 text-xs text-zinc-300 hover:bg-white/[0.06] disabled:opacity-50">
         {refreshing ? "Checking…" : "Refresh verified status"}
