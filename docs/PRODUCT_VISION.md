@@ -1,6 +1,6 @@
 # Product Vision
 
-Last updated: 2026-09-28
+Last updated: 2026-10-01
 
 ## Authority
 
@@ -14,8 +14,9 @@ The deployment request becomes the deployment playbook. An engineer unfamiliar w
 
 - Customers use the downloadable desktop application.
 - The public website explains the product, provides an isolated labeled demonstration and documentation, and distributes verified installers.
-- There is no customer-facing browser product and no website sign-in.
-- Shared services, databases, identity providers, and secure system-browser authentication redirects may support the installed app.
+- Direct browser sign-in opens a lightweight signed-in Axiom companion for account status, no-charge pilot access, installation, integration guidance, settings guidance, and help. It is not an operational control plane.
+- The installed desktop application remains the only customer surface for governed release records, approvals, connection management, execution guidance, validation, and closure.
+- Shared services, databases, identity providers, and secure system-browser authentication redirects support both the companion and desktop pairing. Browser account creation remains desktop-initiated and bound to a short-lived device challenge.
 - Closing the desktop app does not imply cancellation of work already running externally.
 - Production state must never silently fall back to demo data or simulated success.
 
@@ -39,8 +40,8 @@ Private organizations, repositories, groups, clients, and operational examples a
 6. Release Compliance Automation and Root Cause Analysis are separate concepts.
 7. Approval, merge authority, workflow dispatch, environment approval, release publication, tags, and deployment triggers remain separate configurable controls.
 8. Completed with Deferred Validation is not fully validated completion.
-9. A recognized identity, a paired desktop session, and paid production access are separate states. Account creation never grants operational access by itself.
-10. Until the product owner approves fixed prices and production payment configuration is verified, Axiom production access is contract-scoped through the durable contact path; no invented self-serve price or free tier is offered.
+9. A recognized identity, a paired desktop session, pilot entitlement, and production authority are separate states. Account creation never grants operational access by itself.
+10. Early Axiom access is invite-only and no-charge while the governed deployment workflow is proven with design partners. No fixed self-serve price, credit-card checkout, or promise of unrestricted production authority is advertised.
 
 ## Responsibility split
 
