@@ -13,9 +13,10 @@
  * to read repos / workflows / branch protection on behalf of the
  * installed organisation.
  *
- * This module caches the installation token in-memory until ~5 minutes
- * before its real expiry, so we don't pay the JWT-sign + HTTP round-trip
- * on every API call.
+ * This module caches each installation-token scope in-memory until ~5 minutes
+ * before its real expiry, so we don't pay the JWT-sign + HTTP round-trip on
+ * every API call. A token narrowed to selected repositories never shares a
+ * cache entry with an installation-wide token.
  *
  * Hard rules:
  *  - Never returns the private key or the JWT. Only the installation
@@ -76,9 +77,10 @@ interface CachedInstallationToken {
   token: string;
   expiresAt: number;
   installationId: number;
+  scopeKey: string;
 }
 
-const cachedByInstallation = new Map<number, CachedInstallationToken>();
+const cachedByScope = new Map<string, CachedInstallationToken>();
 
 function tokenIsFresh(c: CachedInstallationToken | undefined): boolean {
   if (!c) return false;
@@ -104,7 +106,24 @@ export interface InstallationTokenError {
 
 export type InstallationTokenOutcome = InstallationTokenResult | InstallationTokenError;
 
-export async function resolveGithubInstallationToken(input: { installationId?: number } = {}): Promise<InstallationTokenOutcome> {
+const REPOSITORY_NAME = /^[A-Za-z0-9][A-Za-z0-9_.-]{0,99}$/;
+
+function normalizeRepositoryScope(repositories: readonly string[] | undefined): string[] | null {
+  if (repositories === undefined) return [];
+  const normalized = [...new Set(repositories.map((name) => name.trim().toLowerCase()))].sort();
+  if (normalized.length === 0 || normalized.length > 500 || normalized.some((name) => !REPOSITORY_NAME.test(name))) return null;
+  return normalized;
+}
+
+/**
+ * Mints an installation token. Callers that already know the exact repository
+ * scope must provide it, which asks GitHub for a token restricted to only
+ * those repositories. Unscoped calls remain for legacy read paths and are
+ * deliberately cached separately from every narrowed token.
+ */
+export async function resolveGithubInstallationToken(
+  input: { installationId?: number; repositories?: readonly string[] } = {},
+): Promise<InstallationTokenOutcome> {
   const cfg = getGithubConfig();
   if (!cfg.appConfigured || !cfg.appId) {
     return { ok: false, errorCode: "github.app_not_configured", message: "GITHUB_APP_ID + GITHUB_PRIVATE_KEY required for App auth." };
@@ -113,8 +132,13 @@ export async function resolveGithubInstallationToken(input: { installationId?: n
   if (!installationId || !Number.isSafeInteger(installationId) || installationId < 1) {
     return { ok: false, errorCode: "github.app_no_installation", message: "GITHUB_INSTALLATION_ID required to mint an installation access token." };
   }
+  const repositories = normalizeRepositoryScope(input.repositories);
+  if (!repositories) {
+    return { ok: false, errorCode: "github.app_invalid_repository_scope", message: "Repository-scoped installation tokens require 1–500 valid repository names." };
+  }
+  const scopeKey = `${installationId}:${repositories.length ? repositories.join("\u0000") : "*"}`;
 
-  const cached = cachedByInstallation.get(installationId);
+  const cached = cachedByScope.get(scopeKey);
   if (cached && tokenIsFresh(cached)) {
     return { ok: true, token: cached.token, installationId: cached.installationId, expiresAt: cached.expiresAt };
   }
@@ -141,9 +165,11 @@ export async function resolveGithubInstallationToken(input: { installationId?: n
       headers: {
         Authorization: `Bearer ${appJwt}`,
         Accept: "application/vnd.github+json",
+        "Content-Type": "application/json",
         "X-GitHub-Api-Version": "2022-11-28",
         "User-Agent": "axiom-agent/1.0",
       },
+      body: repositories.length ? JSON.stringify({ repositories }) : undefined,
     });
     if (res.status === 401) {
       return { ok: false, errorCode: "github.app_jwt_rejected", message: "GitHub rejected the App JWT (401). Verify GITHUB_APP_ID + GITHUB_PRIVATE_KEY match." };
@@ -163,8 +189,9 @@ export async function resolveGithubInstallationToken(input: { installationId?: n
       token: body.token,
       expiresAt: Number.isFinite(expiresAt) ? expiresAt : Date.now() + 50 * 60_000,
       installationId,
+      scopeKey,
     };
-    cachedByInstallation.set(installationId, nextCached);
+    cachedByScope.set(scopeKey, nextCached);
     return { ok: true, token: nextCached.token, installationId: nextCached.installationId, expiresAt: nextCached.expiresAt };
   } catch (err) {
     return { ok: false, errorCode: "github.app_token_network", message: `Network error: ${redact(err)}` };
@@ -173,7 +200,7 @@ export async function resolveGithubInstallationToken(input: { installationId?: n
 
 /** Test seam — drop the cache so a subsequent call re-mints. */
 export function clearInstallationTokenCache(): void {
-  cachedByInstallation.clear();
+  cachedByScope.clear();
 }
 
 // ---------------------------------------------------------------------------

@@ -158,13 +158,16 @@ export async function POST(
   }).catch(() => null);
   if (!installation) return NextResponse.json({ ok: false, error: "github_not_connected" }, { status: 409 });
 
-  const installationId = Number(installation.githubInstallationId);
-  const token = await resolveGithubInstallationToken({ installationId });
-  if (!token.ok) return NextResponse.json({ ok: false, error: "github_read_validation_unavailable" }, { status: 503 });
-
   const intake = parsed.intake;
   const repositories = uniqueGithubRepositories(intake.repositoryUrls);
   if (!repositories.length) return NextResponse.json({ ok: false, error: "github_repository_urls_required" }, { status: 422 });
+
+  const installationId = Number(installation.githubInstallationId);
+  const token = await resolveGithubInstallationToken({
+    installationId,
+    repositories: repositories.map((repository) => repository.repository),
+  });
+  if (!token.ok) return NextResponse.json({ ok: false, error: "github_read_validation_unavailable" }, { status: 503 });
 
   const repositoryEvidence = await Promise.all(repositories.map(async (ref): Promise<RepositoryEvidence> => {
     const path = githubPath(ref);
