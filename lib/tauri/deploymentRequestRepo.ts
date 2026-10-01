@@ -70,6 +70,7 @@ interface DeploymentAuditDelegate {
             actorUserId: string;
             actorRole: string;
             action: string;
+            previousValueJson?: unknown;
             newValueJson: unknown;
             source: string;
             correlationId: string;
