@@ -8,7 +8,7 @@ export default async function AuthSuccessPage() {
   const context = await currentContext();
   if (!context.isAuthenticated) redirect("/auth/signin?callbackUrl=/auth/success");
   return (
-    <main className="flex min-h-screen items-center justify-center bg-[#09090b] px-4 text-white">
+    <main className="axiom-canvas flex min-h-screen items-center justify-center px-4 text-white">
       <div className="w-full max-w-md rounded-2xl border border-emerald-500/20 bg-[#101014] p-8 text-center">
         <p className="text-xs uppercase tracking-[0.22em] text-emerald-300">Signed in</p>
         <h1 className="mt-3 text-3xl font-bold">Welcome back.</h1>

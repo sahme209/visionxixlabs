@@ -171,7 +171,7 @@ export default function DownloadPage() {
   const primaryPlatform = platformsLive[primary];
 
   return (
-    <div className="min-h-screen bg-[#09090b] text-white relative overflow-hidden">
+    <div className="axiom-canvas min-h-screen text-white relative overflow-hidden">
       <div className="absolute inset-0 bg-grid-mesh opacity-[0.08] pointer-events-none" aria-hidden />
       <div className="hidden md:block absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[540px] spotlight-orb opacity-25 pointer-events-none" aria-hidden />
 

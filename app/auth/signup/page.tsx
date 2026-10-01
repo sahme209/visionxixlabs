@@ -15,7 +15,7 @@ export default function SignUpPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen flex items-center justify-center bg-[#09090b]">
+        <div className="axiom-canvas min-h-screen flex items-center justify-center">
           <div className="h-6 w-6 animate-spin rounded-full border-2 border-violet-500 border-t-transparent" />
         </div>
       }
@@ -116,7 +116,7 @@ function SignUpForm() {
   };
 
   return (
-    <div className="relative flex min-h-screen overflow-hidden bg-[#0d0e0c]">
+    <div className="axiom-canvas relative flex min-h-screen overflow-hidden">
       <Link href="/" className="absolute left-6 top-6 z-20 flex items-center gap-2.5 text-sm font-semibold text-zinc-200 transition-colors hover:text-white">
         <Image src="/vision-xix-logo.png" alt="" width={27} height={27} className="rounded-md" />
         Vision XIX Labs
