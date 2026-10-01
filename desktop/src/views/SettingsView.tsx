@@ -253,6 +253,8 @@ function AgentsSection({ prefs, onSave }: PreferenceSectionProps) {
 }
 
 const PROVIDER_LABELS: Record<string, string> = {
+  openai: "OpenAI GPT",
+  anthropic: "Anthropic Claude",
   github_models: "GitHub Models",
   ollama: "Ollama",
   lm_studio: "LM Studio",

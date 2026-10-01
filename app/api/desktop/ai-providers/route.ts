@@ -1,5 +1,5 @@
 import { NextResponse, type NextRequest } from "next/server";
-import { getAIProviderManager } from "@/lib/ai/AIProviderManager";
+import { listDesktopAIProviderAvailability } from "@/lib/ai/desktopProviderAvailability";
 import { resolveRequestDesktopSession } from "@/lib/desktop/resolveRequestDesktopSession";
 
 export const dynamic = "force-dynamic";
@@ -19,14 +19,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
             return NextResponse.json({ ok: false, error: "desktop_session_required" }, { status: 401 });
         }
 
-        const providers = getAIProviderManager().status()
-            .filter((provider) => provider.provider !== "mock")
-            .map((provider) => ({
-                provider: provider.provider,
-                configured: provider.configured,
-                defaultModel: provider.defaultModel,
-            }));
-        return NextResponse.json({ ok: true, data: providers });
+        return NextResponse.json({ ok: true, data: listDesktopAIProviderAvailability() });
     } catch {
         return NextResponse.json({ ok: false, error: "ai_provider_status_failed" }, { status: 500 });
     }
