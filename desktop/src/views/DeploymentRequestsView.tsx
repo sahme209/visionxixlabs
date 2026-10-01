@@ -203,6 +203,7 @@ export function DeploymentRequestsView() {
   const [revision, setRevision] = useState<RevisionSeed>();
   const [loadingRevisionId, setLoadingRevisionId] = useState<string>();
   const [generatingRequestId, setGeneratingRequestId] = useState<string>();
+  const [loadingPlaybookId, setLoadingPlaybookId] = useState<string>();
   const [generatedPlaybooks, setGeneratedPlaybooks] = useState<Record<string, GeneratedPlaybook>>({});
   const [generationErrors, setGenerationErrors] = useState<Record<string, string>>({});
 
@@ -239,6 +240,22 @@ export function DeploymentRequestsView() {
     });
     const result = await desktopClient.generateDeploymentPlaybook(requestId);
     setGeneratingRequestId(undefined);
+    if (!result.ok) {
+      setGenerationErrors((current) => ({ ...current, [requestId]: result.error }));
+      return;
+    }
+    setGeneratedPlaybooks((current) => ({ ...current, [requestId]: result.data }));
+  }
+
+  async function loadLatestPlaybook(requestId: string) {
+    setLoadingPlaybookId(requestId);
+    setGenerationErrors((current) => {
+      const next = { ...current };
+      delete next[requestId];
+      return next;
+    });
+    const result = await desktopClient.latestDeploymentPlaybook(requestId);
+    setLoadingPlaybookId(undefined);
     if (!result.ok) {
       setGenerationErrors((current) => ({ ...current, [requestId]: result.error }));
       return;
@@ -353,6 +370,14 @@ export function DeploymentRequestsView() {
                   <p className="text-[10px] font-mono text-zinc-500 mt-1 break-all">
                     SHA-256 {request.latestPlaybook.contentHash} · stored {new Date(request.latestPlaybook.createdAt).toLocaleString()}
                   </p>
+                  <button
+                    type="button"
+                    className="mt-2 text-[11px] font-medium text-violet-200 transition hover:text-white disabled:opacity-50"
+                    disabled={loadingPlaybookId === request.id}
+                    onClick={() => void loadLatestPlaybook(request.id)}
+                  >
+                    {loadingPlaybookId === request.id ? "Opening playbook…" : "Review persisted playbook"}
+                  </button>
                 </div>
               )}
               {generationErrors[request.id] && (

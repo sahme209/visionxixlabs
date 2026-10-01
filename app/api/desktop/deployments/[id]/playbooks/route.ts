@@ -4,6 +4,7 @@ import { resolveCorrelationId } from "@/lib/api/correlation";
 import { resolveRequestDesktopSession } from "@/lib/desktop/resolveRequestDesktopSession";
 import {
     persistNextPlaybook,
+    readLatestPlaybook,
     type PlaybookRepo,
 } from "@/lib/tauri/deploymentPlaybookRepo";
 
@@ -16,6 +17,48 @@ function isUniqueConflict(cause: unknown): boolean {
         && "code" in cause
         && cause.code === "P2002",
     );
+}
+
+export async function GET(
+    request: NextRequest,
+    context: { params: Promise<{ id: string }> },
+): Promise<NextResponse> {
+    const session = await resolveRequestDesktopSession(request, {
+        requiredScope: "pipeline:read",
+        route: "GET /api/desktop/deployments/:id/playbooks",
+    });
+    if (!session) {
+        return NextResponse.json({ ok: false, error: "desktop_session_required" }, { status: 401 });
+    }
+
+    try {
+        const { id } = await context.params;
+        const result = await readLatestPlaybook(
+            prisma as unknown as Pick<PlaybookRepo, "tauriPlaybook">,
+            { organizationId: String(session.organizationId), deploymentRequestId: id },
+        );
+        if (!result.ok) {
+            return NextResponse.json({ ok: false, error: result.reason }, {
+                status: result.reason === "playbook_not_found" ? 404 : 422,
+            });
+        }
+        return NextResponse.json({
+            ok: true,
+            data: {
+                id: result.row.id,
+                requestId: result.row.deploymentRequestId,
+                version: result.row.version,
+                status: result.row.status,
+                contentHash: result.row.contentHash,
+                generatedAtUtc: result.playbook.generatedAtUtc,
+                scope: result.playbook.scope,
+                stepCount: result.playbook.steps.length,
+                steps: result.playbook.steps,
+            },
+        });
+    } catch {
+        return NextResponse.json({ ok: false, error: "deployment_playbook_load_failed" }, { status: 500 });
+    }
 }
 
 export async function POST(

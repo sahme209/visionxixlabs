@@ -729,6 +729,28 @@ export class DesktopClient {
     );
   }
 
+  latestDeploymentPlaybook(requestId: string): Promise<ApiResult<{
+    id: string;
+    requestId: string;
+    version: number;
+    status: string;
+    contentHash: string;
+    generatedAtUtc: string;
+    scope: string;
+    stepCount: number;
+    steps: Array<{
+      id: string;
+      order: number;
+      title: string;
+      requiredRole: string;
+      activation: "always" | "on_success" | "on_failure";
+      evidenceRequired: boolean;
+      validationInstruction?: string;
+    }>;
+  }>> {
+    return this.get(`/api/desktop/deployments/${encodeURIComponent(requestId)}/playbooks`);
+  }
+
   // ── Release manifest ──────────────────────────────────────────────
   releaseManifest(): Promise<ApiResult<{ source: string; tag?: string; assets: Record<string, unknown> }>> {
     return this.get("/api/desktop/release-manifest");
