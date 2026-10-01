@@ -19,11 +19,11 @@ describe("website delivery boundary", () => {
         },
     );
 
-    it("routes direct browser sign-in to the installed app", () => {
+    it("allows direct browser sign-in without exposing web operations", () => {
         const response = proxy(request("/auth/signin"));
 
-        expect(response.status).toBe(307);
-        expect(new URL(response.headers.get("location") ?? "").pathname).toBe("/download");
+        expect(response.status).toBe(200);
+        expect(response.headers.get("location")).toBeNull();
     });
 
     it("keeps direct account creation bound to a desktop pairing request", () => {
