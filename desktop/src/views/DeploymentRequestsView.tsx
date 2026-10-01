@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState, type FormEvent } from "react";
-import { ViewShell } from "../components/Primitives";
+import { ExternalLink, ViewShell } from "../components/Primitives";
 import { desktopClient } from "../lib/desktopClient";
 
 interface RequestSummary {
@@ -382,6 +382,17 @@ function ReleaseContext({ request }: { request: RequestSummary }) {
         detail={context.recovery.backupRequired ? "Backup evidence required" : "No backup evidence required"}
         tone={context.recovery.rollbackAvailability === "yes" ? "good" : "attention"}
       />
+      </div>
+      <div className="mt-2 flex flex-wrap items-center justify-between gap-3 rounded-lg border border-white/5 bg-white/[0.015] px-3 py-2">
+        <p className="text-[10px] leading-4 text-zinc-500">
+          Human decisions stay in the authenticated browser Approval Center. This release record cannot approve or dispatch a deployment.
+        </p>
+        <ExternalLink
+          href="https://visionxixlabs.com/dashboard/approvals"
+          className="shrink-0 text-[11px] font-medium text-zinc-300 transition hover:text-white"
+        >
+          Open Approval Center →
+        </ExternalLink>
       </div>
     </div>
   );
