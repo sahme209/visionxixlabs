@@ -363,9 +363,11 @@ export function DeploymentRequestsView() {
               </div>
               <ReleaseContext request={request} />
               {request.latestPlaybook && !generatedPlaybooks[request.id] && (
-                <div className="mt-3 rounded-lg border border-violet-500/15 bg-violet-500/5 px-3 py-2">
-                  <p className="text-xs text-violet-100">
-                    Latest persisted playbook: v{request.latestPlaybook.version} · {request.latestPlaybook.status.replaceAll("_", " ")}
+                <div className={`mt-3 rounded-lg border px-3 py-2 ${request.latestPlaybook.status === "superseded" ? "border-amber-500/15 bg-amber-500/5" : "border-violet-500/15 bg-violet-500/5"}`}>
+                  <p className={`text-xs ${request.latestPlaybook.status === "superseded" ? "text-amber-100" : "text-violet-100"}`}>
+                    {request.latestPlaybook.status === "superseded"
+                      ? `Previous playbook v${request.latestPlaybook.version} was superseded by a request revision.`
+                      : `Latest persisted playbook: v${request.latestPlaybook.version} · ${request.latestPlaybook.status.replaceAll("_", " ")}`}
                   </p>
                   <p className="text-[10px] font-mono text-zinc-500 mt-1 break-all">
                     SHA-256 {request.latestPlaybook.contentHash} · stored {new Date(request.latestPlaybook.createdAt).toLocaleString()}
@@ -376,7 +378,7 @@ export function DeploymentRequestsView() {
                     disabled={loadingPlaybookId === request.id}
                     onClick={() => void loadLatestPlaybook(request.id)}
                   >
-                    {loadingPlaybookId === request.id ? "Opening playbook…" : "Review persisted playbook"}
+                    {loadingPlaybookId === request.id ? "Opening playbook…" : request.latestPlaybook.status === "superseded" ? "Review historical playbook" : "Review persisted playbook"}
                   </button>
                 </div>
               )}
