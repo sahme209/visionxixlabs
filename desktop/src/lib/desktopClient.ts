@@ -746,6 +746,7 @@ export class DesktopClient {
       state: "observed" | "unavailable";
       branchProtection: "protected" | "not_protected" | "unavailable";
       repositoryEnabled: boolean | null;
+      latestWorkflow: "passed" | "failed" | "in_progress" | "not_reported" | "unavailable";
     }>;
     pullRequests: Array<{
       repository: string;

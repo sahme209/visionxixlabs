@@ -58,6 +58,10 @@ interface GithubChecksBody {
   check_runs?: Array<{ status?: string; conclusion?: string | null }>;
 }
 
+interface GithubWorkflowRunsBody {
+  workflow_runs?: Array<{ status?: string; conclusion?: string | null }>;
+}
+
 type EvidenceState = "observed" | "unavailable";
 
 interface RepositoryEvidence {
@@ -65,6 +69,7 @@ interface RepositoryEvidence {
   state: EvidenceState;
   branchProtection: "protected" | "not_protected" | "unavailable";
   repositoryEnabled: boolean | null;
+  latestWorkflow: "passed" | "failed" | "in_progress" | "not_reported" | "unavailable";
 }
 
 interface PullRequestEvidence {
@@ -112,6 +117,14 @@ function toChecks(body: GithubChecksBody | null): PullRequestEvidence["checks"] 
     : "failed";
 }
 
+function toWorkflowState(body: GithubWorkflowRunsBody | null): RepositoryEvidence["latestWorkflow"] {
+  const run = body?.workflow_runs?.[0];
+  if (!body) return "unavailable";
+  if (!run) return "not_reported";
+  if (run.status !== "completed") return "in_progress";
+  return ["success", "neutral", "skipped"].includes(run.conclusion ?? "") ? "passed" : "failed";
+}
+
 function toPullRequestState(body: GithubPullBody): PullRequestEvidence["pullRequestState"] {
   if (body.merged) return "merged";
   if (body.draft) return "draft";
@@ -157,17 +170,30 @@ export async function POST(
     const path = githubPath(ref);
     const source = await getJson<GithubRepositoryBody>(`/repos/${path}`, token.token);
     if (!source) {
-      return { repository: `${ref.owner}/${ref.repository}`, state: "unavailable", branchProtection: "unavailable", repositoryEnabled: null };
+      return {
+        repository: `${ref.owner}/${ref.repository}`,
+        state: "unavailable",
+        branchProtection: "unavailable",
+        repositoryEnabled: null,
+        latestWorkflow: "unavailable",
+      };
     }
     const branchName = intake.targetBranch.trim() || source.default_branch;
-    const branch = branchName
-      ? await getJson<GithubBranchBody>(`/repos/${path}/branches/${encodeURIComponent(branchName)}`, token.token)
-      : null;
+    const workflowBranch = intake.sourceBranch.trim() || source.default_branch;
+    const [branch, workflows] = await Promise.all([
+      branchName
+        ? getJson<GithubBranchBody>(`/repos/${path}/branches/${encodeURIComponent(branchName)}`, token.token)
+        : null,
+      workflowBranch
+        ? getJson<GithubWorkflowRunsBody>(`/repos/${path}/actions/runs?branch=${encodeURIComponent(workflowBranch)}&per_page=1`, token.token)
+        : null,
+    ]);
     return {
       repository: `${ref.owner}/${ref.repository}`,
       state: "observed",
       branchProtection: branch ? (branch.protected ? "protected" : "not_protected") : "unavailable",
       repositoryEnabled: !source.archived && !source.disabled,
+      latestWorkflow: toWorkflowState(workflows),
     };
   }));
 

@@ -84,6 +84,7 @@ interface GitHubReleaseEvidence {
     state: "observed" | "unavailable";
     branchProtection: "protected" | "not_protected" | "unavailable";
     repositoryEnabled: boolean | null;
+    latestWorkflow: "passed" | "failed" | "in_progress" | "not_reported" | "unavailable";
   }>;
   pullRequests: Array<{
     repository: string;
@@ -746,7 +747,7 @@ function GitHubEvidenceCard({ evidence }: { evidence: GitHubReleaseEvidence }) {
         {evidence.repositories.map((repository) => (
           <li key={repository.repository} className="rounded-md border border-white/5 bg-black/10 px-2.5 py-2 text-[11px] text-zinc-300">
             <span className="font-medium text-zinc-100">{repository.repository}</span>
-            <span className="text-zinc-500"> · {repository.state === "observed" ? "read" : "not available"} · branch {repository.branchProtection.replaceAll("_", " ")}</span>
+            <span className="text-zinc-500"> · {repository.state === "observed" ? "read" : "not available"} · branch {repository.branchProtection.replaceAll("_", " ")} · workflow {repository.latestWorkflow.replaceAll("_", " ")}</span>
           </li>
         ))}
         {evidence.pullRequests.map((pullRequest) => (
