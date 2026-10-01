@@ -313,17 +313,16 @@ function WorktreesSection({ prefs }: { prefs: DesktopPreferences | null }) {
 }
 
 function IntegrationsSection() {
-  const [cloudConnections, setCloudConnections] = useState<Array<{
-    provider: "aws" | "azure" | "gcp";
-    status: string;
-    lastTransitionAt: string | null;
-  }> | null>(null);
+  const [integrationStatus, setIntegrationStatus] = useState<{
+    cloud: Array<{ provider: "aws" | "azure" | "gcp"; status: string; lastTransitionAt: string | null }>;
+    github: { status: string; repositorySelection: string };
+  } | null>(null);
   const [refreshing, setRefreshing] = useState(false);
 
   const loadCloudConnections = useCallback(async () => {
     setRefreshing(true);
     const result = await desktopClient.integrationStatus();
-    if (result.ok) setCloudConnections(result.data);
+    if (result.ok) setIntegrationStatus(result.data);
     setRefreshing(false);
   }, []);
 
@@ -333,6 +332,8 @@ function IntegrationsSection() {
     return () => window.removeEventListener("focus", loadCloudConnections);
   }, [loadCloudConnections]);
 
+  const cloudConnections = integrationStatus?.cloud ?? null;
+  const github = integrationStatus?.github ?? null;
   const cloudState = cloudConnections
     ? cloudConnections.some((connection) => connection.status === "connected")
       ? `${cloudConnections.filter((connection) => connection.status === "connected").length} verified`
@@ -341,6 +342,14 @@ function IntegrationsSection() {
   const cloudDetail = cloudConnections
     ? cloudConnections.map((connection) => `${connection.provider.toUpperCase()} ${connection.status.replaceAll("_", " ")}`).join(" · ")
     : "Loading the service-verified state for AWS, Azure, and Google Cloud.";
+  const githubState = github
+    ? github.status === "active" ? "Verified connection" : github.status.replaceAll("_", " ")
+    : "Checking status";
+  const githubDetail = github
+    ? github.status === "active"
+      ? `GitHub App active · ${github.repositorySelection === "all" ? "all repositories" : "selected repositories"}. Browser consent and repository scope remain managed by GitHub.`
+      : "No active GitHub App installation is recorded for this workspace. Connect in the browser to choose repository scope."
+    : "Loading the service-verified GitHub App state.";
 
   return <div>
     <SectionHeading title="Integration Center" detail="Connect the systems that already run your releases. Every connection is tenant-scoped, least-privilege, and shown as connected only after server-side validation." />
@@ -351,8 +360,8 @@ function IntegrationsSection() {
           key={item.name}
           name={item.name}
           group={item.group}
-          detail={item.name === "AWS, Azure & Google Cloud" ? `${item.detail} Current workspace state: ${cloudDetail}` : item.detail}
-          state={item.name === "AWS, Azure & Google Cloud" ? cloudState : item.state}
+          detail={item.name === "AWS, Azure & Google Cloud" ? `${item.detail} Current workspace state: ${cloudDetail}` : item.name === "GitHub" ? githubDetail : item.detail}
+          state={item.name === "AWS, Azure & Google Cloud" ? cloudState : item.name === "GitHub" ? githubState : item.state}
         />
       ))}
     </div>

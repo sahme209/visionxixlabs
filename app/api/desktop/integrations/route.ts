@@ -21,6 +21,21 @@ interface ConnectorSessionRepo {
     };
 }
 
+interface GitHubInstallationRow {
+    status: string;
+    repositorySelection: string;
+}
+
+interface GitHubInstallationRepo {
+    gitHubInstallation: {
+        findFirst(args: {
+            where: { organizationId: string; status: { in: string[] } };
+            orderBy: { installedAt: "desc" };
+            select: { status: true; repositorySelection: true };
+        }): Promise<GitHubInstallationRow | null>;
+    };
+}
+
 /**
  * Tenant-scoped, read-only connection state for the native application.
  * This intentionally returns no credentials, provider account identifiers,
@@ -45,17 +60,38 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
             select: { provider: true, status: true, lastTransitionAt: true },
         });
         const byProvider = new Map(rows.map((row) => [row.provider, row]));
+        let github: { status: string; repositorySelection: string } = {
+            status: "not_connected",
+            repositorySelection: "unknown",
+        };
+        try {
+            const installation = await (prisma as unknown as GitHubInstallationRepo).gitHubInstallation.findFirst({
+                where: {
+                    organizationId: String(session.organizationId),
+                    status: { in: ["active", "suspended", "revoked"] },
+                },
+                orderBy: { installedAt: "desc" },
+                select: { status: true, repositorySelection: true },
+            });
+            if (installation) github = installation;
+        } catch {
+            // GitHub App installation is optional and may not be migrated yet.
+            // Cloud connection state remains available when it is absent.
+        }
 
         return NextResponse.json({
             ok: true,
-            data: CLOUD_PROVIDERS.map((provider) => {
-                const row = byProvider.get(provider);
-                return {
-                    provider,
-                    status: row?.status ?? "not_connected",
-                    lastTransitionAt: row?.lastTransitionAt.toISOString() ?? null,
-                };
-            }),
+            data: {
+                cloud: CLOUD_PROVIDERS.map((provider) => {
+                    const row = byProvider.get(provider);
+                    return {
+                        provider,
+                        status: row?.status ?? "not_connected",
+                        lastTransitionAt: row?.lastTransitionAt.toISOString() ?? null,
+                    };
+                }),
+                github,
+            },
         });
     } catch {
         return NextResponse.json({ ok: false, error: "integration_status_list_failed" }, { status: 500 });
