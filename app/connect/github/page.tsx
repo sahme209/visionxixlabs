@@ -8,6 +8,7 @@
  */
 
 import GitHubAppPage from "@/app/dashboard/github-app/page";
+import { Suspense } from "react";
 
 export const metadata = {
   title: "Connect GitHub · Axiom",
@@ -15,5 +16,9 @@ export const metadata = {
 };
 
 export default function ConnectGitHubPage() {
-  return <GitHubAppPage />;
+  return (
+    <Suspense fallback={<main className="axiom-canvas min-h-screen" aria-busy="true" />}>
+      <GitHubAppPage />
+    </Suspense>
+  );
 }
