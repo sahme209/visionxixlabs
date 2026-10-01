@@ -27,24 +27,38 @@ describe("slackOauth.buildSlackInstallUrl", () => {
 
 describe("slackOauth.encode/decode state", () => {
   it("round-trips tenantId + nonce", () => {
-    const encoded = encodeSlackState({ tenantId: "tenant-1", nonce: "n", nowSec: 100 });
-    const r = decodeSlackState(encoded, 200);
+    const encoded = encodeSlackState({ tenantId: "tenant-1", nonce: "n", secret: "test-secret", nowSec: 100 });
+    const r = decodeSlackState({ state: encoded, secret: "test-secret", nowSec: 200 });
     expect(r.ok).toBe(true);
     expect(r.state?.tenantId).toBe("tenant-1");
     expect(r.state?.nonce).toBe("n");
   });
 
   it("rejects malformed state", () => {
-    const r = decodeSlackState("not-base64-json-blob");
+    const r = decodeSlackState({ state: "not-base64-json-blob", secret: "test-secret" });
     expect(r.ok).toBe(false);
     expect(r.reason).toBe("malformed");
   });
 
   it("rejects expired state (>10min)", () => {
-    const encoded = encodeSlackState({ tenantId: "t", nonce: "n", nowSec: 0 });
-    const r = decodeSlackState(encoded, 11 * 60);
+    const encoded = encodeSlackState({ tenantId: "t", nonce: "n", secret: "test-secret", nowSec: 0 });
+    const r = decodeSlackState({ state: encoded, secret: "test-secret", nowSec: 11 * 60 });
     expect(r.ok).toBe(false);
     expect(r.reason).toBe("expired");
+  });
+
+  it("rejects a tenant substitution or changed signature", () => {
+    const encoded = encodeSlackState({ tenantId: "tenant-a", nonce: "n", secret: "test-secret", nowSec: 100 });
+    const [payload, signature] = encoded.split(".");
+    const json = JSON.parse(Buffer.from(payload, "base64url").toString("utf8"));
+    const swappedPayload = Buffer.from(JSON.stringify({ ...json, tenantId: "tenant-b" })).toString("base64url");
+
+    expect(decodeSlackState({ state: `${swappedPayload}.${signature}`, secret: "test-secret", nowSec: 200 })).toEqual({ ok: false, reason: "tampered" });
+    expect(decodeSlackState({ state: encoded, secret: "other-secret", nowSec: 200 })).toEqual({ ok: false, reason: "tampered" });
+  });
+
+  it("never creates state without a signing secret", () => {
+    expect(() => encodeSlackState({ tenantId: "tenant-a", nonce: "n", secret: "", nowSec: 100 })).toThrow("signing secret");
   });
 });
 
