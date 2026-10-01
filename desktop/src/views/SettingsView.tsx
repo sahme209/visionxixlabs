@@ -400,8 +400,7 @@ function IntegrationsSection() {
       <p className="mt-2 text-[11px] text-zinc-600">This is integration health only. Production release observation remains unavailable until an observability connection is verified.</p>
     </div>
     <div className="mt-5 flex items-center gap-3">
-      <WebButton href="/dashboard/github-app" label="Connect GitHub" />
-      <WebButton href="/dashboard/integrations" label="Open connection center" />
+      <WebButton href="/connect/github" label="Connect GitHub" />
       <button type="button" onClick={() => void loadCloudConnections()} disabled={refreshing} className="rounded-lg border border-white/10 px-3 py-2 text-xs text-zinc-300 hover:bg-white/[0.06] disabled:opacity-50">
         {refreshing ? "Checking…" : "Refresh verified status"}
       </button>

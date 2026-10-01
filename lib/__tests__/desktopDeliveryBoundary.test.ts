@@ -29,6 +29,13 @@ describe("desktop-only website boundary", () => {
     expect(response.headers.get("location")).toBeNull();
   });
 
+  it("allows the browser-only GitHub consent companion without exposing dashboard operations", () => {
+    const response = proxy(request("/connect/github"));
+
+    expect(response.status).toBe(200);
+    expect(response.headers.get("location")).toBeNull();
+  });
+
   it("keeps direct browser signup bound to the installed-app pairing flow", () => {
     const response = proxy(request("/auth/signup"));
 
