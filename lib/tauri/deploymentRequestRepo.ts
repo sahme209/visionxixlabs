@@ -332,3 +332,15 @@ export async function listDeploymentRequests(
         take: safeLimit,
     });
 }
+
+/** Read one request only when it belongs to the authenticated workspace. */
+export async function getDeploymentRequest(
+    repo: DeploymentRequestRepo,
+    organizationId: string,
+    requestId: string,
+): Promise<DeploymentRequestRow | null> {
+    if (!organizationId.trim() || !requestId.trim()) return null;
+    return repo.tauriDeploymentRequest.findFirst({
+        where: { organizationId, id: requestId },
+    });
+}

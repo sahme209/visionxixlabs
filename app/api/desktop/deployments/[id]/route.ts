@@ -4,11 +4,43 @@ import { resolveCorrelationId } from "@/lib/api/correlation";
 import { resolveRequestDesktopSession } from "@/lib/desktop/resolveRequestDesktopSession";
 import { parseDeploymentIntake } from "@/lib/tauri/deploymentIntakeSchema";
 import {
+    getDeploymentRequest,
     reviseDeploymentRequest,
     type DeploymentRequestRepo,
 } from "@/lib/tauri/deploymentRequestRepo";
 
 export const dynamic = "force-dynamic";
+
+/**
+ * Loads the validated request snapshot for an authenticated editor. Intake
+ * data can include release contacts and evidence identifiers, so this needs
+ * trigger scope rather than the lower-privilege workspace list scope.
+ */
+export async function GET(
+    request: NextRequest,
+    { params }: { params: Promise<{ id: string }> },
+): Promise<NextResponse> {
+    try {
+        const session = await resolveRequestDesktopSession(request, {
+            requiredScope: "pipeline:trigger",
+            route: "GET /api/desktop/deployments/:id",
+        });
+        if (!session) return NextResponse.json({ ok: false, error: "desktop_session_required" }, { status: 401 });
+        const { id } = await params;
+        const row = await getDeploymentRequest(
+            prisma as unknown as DeploymentRequestRepo,
+            String(session.organizationId),
+            id,
+        );
+        if (!row) return NextResponse.json({ ok: false, error: "not_found" }, { status: 404 });
+        return NextResponse.json({
+            ok: true,
+            data: { id: row.id, version: row.version, intake: row.intakeJson },
+        });
+    } catch {
+        return NextResponse.json({ ok: false, error: "deployment_request_load_failed" }, { status: 500 });
+    }
+}
 
 /**
  * PUT /api/desktop/deployments/:id

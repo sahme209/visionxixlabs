@@ -52,6 +52,12 @@ interface GeneratedPlaybook {
   }>;
 }
 
+interface RevisionSeed {
+  id: string;
+  version: number;
+  intake: Record<string, unknown>;
+}
+
 const initialDraft = {
   title: "",
   requestClass: "planned_release",
@@ -110,6 +116,48 @@ const initialDraft = {
 const INTAKE_STEPS = ["Window", "Scope", "Execution", "Validation", "Recovery"] as const;
 type IntakeDraft = typeof initialDraft;
 
+function objectValue(value: unknown): Record<string, unknown> {
+  return value && typeof value === "object" && !Array.isArray(value) ? value as Record<string, unknown> : {};
+}
+
+function stringsValue(value: unknown): string[] {
+  return Array.isArray(value) ? value.filter((item): item is string => typeof item === "string") : [];
+}
+
+function textValue(value: unknown): string {
+  return typeof value === "string" ? value : "";
+}
+
+function dateInputValue(value: unknown): string {
+  const date = new Date(textValue(value));
+  return Number.isFinite(date.getTime()) ? date.toISOString().slice(0, 16) : "";
+}
+
+function draftFromIntake(intake: Record<string, unknown>): IntakeDraft {
+  const manual = objectValue(Array.isArray(intake.manualSteps) ? intake.manualSteps[0] : undefined);
+  const validation = Array.isArray(intake.validationSteps) ? intake.validationSteps.map(objectValue) : [];
+  const technical = validation[0] ?? {};
+  const functional = validation[1] ?? {};
+  const rollback = objectValue(Array.isArray(intake.rollbackSteps) ? intake.rollbackSteps[0] : undefined);
+  const deferred = objectValue(intake.deferredValidation);
+  const fact = objectValue(Array.isArray(intake.facts) ? intake.facts[0] : undefined);
+  return {
+    ...initialDraft,
+    title: textValue(intake.title), requestClass: textValue(intake.requestClass) || initialDraft.requestClass,
+    adHocReason: textValue(intake.adHocReason), adHocPriority: textValue(intake.adHocPriority), businessImpact: textValue(intake.businessImpact), scheduleExceptionReason: textValue(intake.scheduleExceptionReason),
+    windowStart: dateInputValue(intake.windowStartUtc), windowEnd: dateInputValue(intake.windowEndUtc), displayTimeZone: textValue(intake.displayTimeZone) || initialDraft.displayTimeZone,
+    changeType: stringsValue(intake.changeTypes)[0] || initialDraft.changeType,
+    applications: stringsValue(intake.applications).join("\n"), clients: stringsValue(intake.clients).join("\n"), deploymentContact: textValue(intake.deploymentContact), applicationContact: textValue(intake.applicationContact), escalationContact: textValue(intake.escalationContact),
+    repositoryUrls: stringsValue(intake.repositoryUrls).join("\n"), productionPrUrls: stringsValue(intake.productionPrUrls).join("\n"), noPrRequired: intake.noPrRequired === true, prApprovalStatus: textValue(intake.prApprovalStatus) || initialDraft.prApprovalStatus, sourceBranch: textValue(intake.sourceBranch), targetBranch: textValue(intake.targetBranch) || initialDraft.targetBranch,
+    deploymentMethod: textValue(intake.deploymentMethod), workflowName: textValue(intake.workflowName), targetEnvironment: textValue(intake.targetEnvironment) || initialDraft.targetEnvironment, workflowInputs: JSON.stringify(objectValue(intake.workflowInputs), null, 2),
+    manualInstruction: textValue(manual.instruction), manualOwner: textValue(manual.owner), manualValidationInstruction: textValue(manual.validationInstruction),
+    lowerEnvironments: stringsValue(intake.lowerEnvironmentTested).join("\n"), developmentReady: intake.developmentReady === true, productionReady: intake.productionReady === true, validationInstruction: textValue(technical.instruction), validationOwner: textValue(technical.owner) || initialDraft.validationOwner, functionalValidationRequired: validation.length > 1, functionalValidationInstruction: textValue(functional.instruction), functionalValidationOwner: textValue(functional.owner) || initialDraft.functionalValidationOwner, expectedProductionResult: textValue(intake.expectedProductionResult),
+    rollbackAvailability: textValue(intake.rollbackAvailability) || initialDraft.rollbackAvailability, rollbackInstruction: textValue(rollback.instruction), rollbackOwner: textValue(rollback.owner), backupRequired: intake.backupRequired === true, backupEvidenceIds: stringsValue(intake.backupEvidenceIds).join("\n"), changeCreationMethod: textValue(intake.changeCreationMethod) || initialDraft.changeCreationMethod,
+    deferredValidation: Boolean(intake.deferredValidation), deferredReason: textValue(deferred.reason), deferredTrigger: textValue(deferred.trigger), deferredDate: dateInputValue(deferred.expectedDateUtc), deferredOwner: textValue(deferred.owner), monitoringPlan: textValue(deferred.monitoringPlan),
+    confirmedFact: textValue(fact.value), sourceEvidenceId: textValue(fact.sourceEvidenceId), factConfirmedBy: textValue(fact.confirmedBy),
+  };
+}
+
 function validateStep(step: number, draft: IntakeDraft): string | undefined {
   const missing = (pairs: Array<[string, string]>) => pairs.find(([, value]) => !value.trim())?.[0];
   let field: string | undefined;
@@ -152,6 +200,8 @@ export function DeploymentRequestsView() {
   const [loadError, setLoadError] = useState<string>();
   const [lastSuccessfulLoadAt, setLastSuccessfulLoadAt] = useState<Date>();
   const [showForm, setShowForm] = useState(false);
+  const [revision, setRevision] = useState<RevisionSeed>();
+  const [loadingRevisionId, setLoadingRevisionId] = useState<string>();
   const [generatingRequestId, setGeneratingRequestId] = useState<string>();
   const [generatedPlaybooks, setGeneratedPlaybooks] = useState<Record<string, GeneratedPlaybook>>({});
   const [generationErrors, setGenerationErrors] = useState<Record<string, string>>({});
@@ -196,6 +246,18 @@ export function DeploymentRequestsView() {
     setGeneratedPlaybooks((current) => ({ ...current, [requestId]: result.data }));
   }
 
+  async function startRevision(requestId: string) {
+    setLoadingRevisionId(requestId);
+    const result = await desktopClient.deploymentRequestForRevision(requestId);
+    setLoadingRevisionId(undefined);
+    if (!result.ok) {
+      setLoadError(`Could not load the request for revision: ${result.error}`);
+      return;
+    }
+    setRevision(result.data);
+    setShowForm(true);
+  }
+
   return (
     <ViewShell>
       <div className="flex items-start justify-between gap-4">
@@ -209,7 +271,7 @@ export function DeploymentRequestsView() {
           <button type="button" onClick={() => void load()} className="btn-secondary">
             Refresh
           </button>
-          <button type="button" onClick={() => setShowForm((value) => !value)} className="btn-primary">
+          <button type="button" onClick={() => { setRevision(undefined); setShowForm((value) => !value); }} className="btn-primary">
             {showForm ? "Cancel intake" : "New request"}
           </button>
         </div>
@@ -217,8 +279,11 @@ export function DeploymentRequestsView() {
 
       {showForm && (
         <DeploymentIntakeForm
+          key={revision?.id ?? "new"}
+          revision={revision}
           onCreated={() => {
             setShowForm(false);
+            setRevision(undefined);
             void load();
           }}
         />
@@ -269,6 +334,14 @@ export function DeploymentRequestsView() {
                   onClick={() => void generatePlaybook(request.id)}
                 >
                   {generatingRequestId === request.id ? "Generating…" : "Generate next playbook"}
+                </button>
+                <button
+                  type="button"
+                  className="btn-secondary disabled:opacity-50"
+                  disabled={loadingRevisionId === request.id}
+                  onClick={() => void startRevision(request.id)}
+                >
+                  {loadingRevisionId === request.id ? "Opening…" : "Revise"}
                 </button>
               </div>
               <ReleaseContext request={request} />
@@ -418,8 +491,8 @@ function ContextSignal({ label, value, detail, tone = "neutral" }: {
   );
 }
 
-function DeploymentIntakeForm({ onCreated }: { onCreated: () => void }) {
-  const [draft, setDraft] = useState(initialDraft);
+function DeploymentIntakeForm({ onCreated, revision }: { onCreated: () => void; revision?: RevisionSeed }) {
+  const [draft, setDraft] = useState(() => revision ? draftFromIntake(revision.intake) : initialDraft);
   const [step, setStep] = useState(0);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string>();
@@ -465,7 +538,7 @@ function DeploymentIntakeForm({ onCreated }: { onCreated: () => void }) {
 
     const manualSteps = draft.manualInstruction.trim()
       ? [{
-          id: crypto.randomUUID(),
+          id: textValue(objectValue(Array.isArray(revision?.intake.manualSteps) ? revision?.intake.manualSteps[0] : undefined).id) || crypto.randomUUID(),
           instruction: draft.manualInstruction.trim(),
           owner: draft.manualOwner.trim(),
           evidenceRequired: true,
@@ -508,14 +581,14 @@ function DeploymentIntakeForm({ onCreated }: { onCreated: () => void }) {
       productionReady: draft.productionReady,
       validationSteps: [
         {
-          id: crypto.randomUUID(),
+          id: textValue(objectValue(Array.isArray(revision?.intake.validationSteps) ? revision?.intake.validationSteps[0] : undefined).id) || crypto.randomUUID(),
           instruction: draft.validationInstruction,
           owner: draft.validationOwner,
           evidenceRequired: true,
           completed: false,
         },
         ...(draft.functionalValidationRequired ? [{
-          id: crypto.randomUUID(),
+          id: textValue(objectValue(Array.isArray(revision?.intake.validationSteps) ? revision?.intake.validationSteps[1] : undefined).id) || crypto.randomUUID(),
           instruction: draft.functionalValidationInstruction,
           owner: draft.functionalValidationOwner,
           evidenceRequired: true,
@@ -535,7 +608,7 @@ function DeploymentIntakeForm({ onCreated }: { onCreated: () => void }) {
       } : {}),
       rollbackAvailability: draft.rollbackAvailability,
       rollbackSteps: draft.rollbackAvailability === "yes" ? [{
-        id: crypto.randomUUID(),
+        id: textValue(objectValue(Array.isArray(revision?.intake.rollbackSteps) ? revision?.intake.rollbackSteps[0] : undefined).id) || crypto.randomUUID(),
         instruction: draft.rollbackInstruction,
         owner: draft.rollbackOwner,
         evidenceRequired: true,
@@ -548,7 +621,7 @@ function DeploymentIntakeForm({ onCreated }: { onCreated: () => void }) {
       applicationContact: draft.applicationContact,
       escalationContact: draft.escalationContact,
       facts: [{
-        id: crypto.randomUUID(),
+        id: textValue(objectValue(Array.isArray(revision?.intake.facts) ? revision?.intake.facts[0] : undefined).id) || crypto.randomUUID(),
         classification: "confirmed",
         value: draft.confirmedFact,
         sourceEvidenceId: draft.sourceEvidenceId,
@@ -557,7 +630,9 @@ function DeploymentIntakeForm({ onCreated }: { onCreated: () => void }) {
     };
 
     setSubmitting(true);
-    const result = await desktopClient.createDeploymentRequest(payload, submissionId);
+    const result = revision
+      ? await desktopClient.reviseDeploymentRequest(revision.id, revision.version, payload)
+      : await desktopClient.createDeploymentRequest(payload, submissionId);
     setSubmitting(false);
     if (!result.ok) {
       setError(result.error);
@@ -571,7 +646,7 @@ function DeploymentIntakeForm({ onCreated }: { onCreated: () => void }) {
       <div>
         <div className="flex items-center justify-between gap-3">
           <div>
-            <p className="text-sm font-semibold text-white">New governed deployment request</p>
+            <p className="text-sm font-semibold text-white">{revision ? `Revise governed request · v${revision.version} → v${revision.version + 1}` : "New governed deployment request"}</p>
             <p className="mt-1 text-xs text-zinc-500">Step {step + 1} of {INTAKE_STEPS.length} · {INTAKE_STEPS[step]}</p>
           </div>
           <span className="text-[10px] font-mono uppercase tracking-wider text-zinc-500">Required controls stay visible in sequence</span>
@@ -687,7 +762,7 @@ function DeploymentIntakeForm({ onCreated }: { onCreated: () => void }) {
       {error && <p role="alert" className="text-sm text-rose-300">{error}</p>}
       <div className="flex items-center justify-between gap-3">
         <button type="button" disabled={step === 0 || submitting} onClick={() => { setStep((current) => Math.max(0, current - 1)); setError(undefined); }} className="btn-secondary disabled:opacity-40">Back</button>
-        <p className="text-xs text-zinc-500">This creates a tenant-scoped record and audit event. It does not deploy.</p>
+        <p className="text-xs text-zinc-500">{revision ? "This appends an immutable revision and audit event. It does not deploy." : "This creates a tenant-scoped record and audit event. It does not deploy."}</p>
         {step < INTAKE_STEPS.length - 1 ? (
           <button type="button" className="btn-primary" onClick={() => {
             const issue = validateStep(step, draft);
@@ -697,7 +772,7 @@ function DeploymentIntakeForm({ onCreated }: { onCreated: () => void }) {
           }}>Continue</button>
         ) : (
           <button type="submit" disabled={submitting} className="btn-primary disabled:opacity-50">
-            {submitting ? "Submitting…" : "Submit governed request"}
+            {submitting ? (revision ? "Saving revision…" : "Submitting…") : (revision ? "Save immutable revision" : "Submit governed request")}
           </button>
         )}
       </div>

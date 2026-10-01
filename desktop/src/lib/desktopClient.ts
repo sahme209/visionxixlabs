@@ -675,6 +675,31 @@ export class DesktopClient {
     );
   }
 
+  deploymentRequestForRevision(requestId: string): Promise<ApiResult<{
+    id: string;
+    version: number;
+    intake: Record<string, unknown>;
+  }>> {
+    return this.get(`/api/desktop/deployments/${encodeURIComponent(requestId)}`);
+  }
+
+  reviseDeploymentRequest(
+    requestId: string,
+    expectedVersion: number,
+    intake: Record<string, unknown>,
+  ): Promise<ApiResult<{
+    id: string;
+    title: string;
+    status: string;
+    version: number;
+    changed: boolean;
+  }>> {
+    return this.put(
+      `/api/desktop/deployments/${encodeURIComponent(requestId)}`,
+      { ...intake, expectedVersion },
+    );
+  }
+
   generateDeploymentPlaybook(requestId: string): Promise<ApiResult<{
     id: string;
     requestId: string;
@@ -789,6 +814,22 @@ export class DesktopClient {
           "Content-Type": "application/json",
           ...(extraHeaders ?? {}),
         },
+        credentials: "include",
+        body: JSON.stringify(body),
+      });
+      const json = (await res.json().catch(() => ({}))) as LegacyApiErrorBody & { ok?: boolean; data?: unknown };
+      if (json.ok && json.data !== undefined) return { ok: true, data: json.data as T };
+      return { ok: false, error: legacyApiError(json, res.status) };
+    } catch (err) {
+      return { ok: false, error: err instanceof Error ? err.message : String(err) };
+    }
+  }
+
+  private async put<T>(path: string, body: unknown): Promise<ApiResult<T>> {
+    try {
+      const res = await fetch(`${this.config.apiBase}${path}`, {
+        method: "PUT",
+        headers: { ...this.headers(), "Content-Type": "application/json" },
         credentials: "include",
         body: JSON.stringify(body),
       });
