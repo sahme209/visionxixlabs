@@ -59,6 +59,13 @@ interface RevisionSeed {
   intake: Record<string, unknown>;
 }
 
+interface RevisionHistoryEntry {
+  version: number;
+  createdAt: string;
+  author: "You" | "Workspace member";
+  changes: string[];
+}
+
 const initialDraft = {
   title: "",
   requestClass: "planned_release",
@@ -212,6 +219,9 @@ export function DeploymentRequestsView() {
   const [loadingPlaybookId, setLoadingPlaybookId] = useState<string>();
   const [generatedPlaybooks, setGeneratedPlaybooks] = useState<Record<string, GeneratedPlaybook>>({});
   const [generationErrors, setGenerationErrors] = useState<Record<string, string>>({});
+  const [loadingHistoryId, setLoadingHistoryId] = useState<string>();
+  const [revisionHistory, setRevisionHistory] = useState<Record<string, RevisionHistoryEntry[]>>({});
+  const [historyErrors, setHistoryErrors] = useState<Record<string, string>>({});
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -279,6 +289,22 @@ export function DeploymentRequestsView() {
     }
     setRevision(result.data);
     setShowForm(true);
+  }
+
+  async function loadRevisionHistory(requestId: string) {
+    setLoadingHistoryId(requestId);
+    setHistoryErrors((current) => {
+      const next = { ...current };
+      delete next[requestId];
+      return next;
+    });
+    const result = await desktopClient.deploymentRequestHistory(requestId);
+    setLoadingHistoryId(undefined);
+    if (!result.ok) {
+      setHistoryErrors((current) => ({ ...current, [requestId]: result.error }));
+      return;
+    }
+    setRevisionHistory((current) => ({ ...current, [requestId]: result.data }));
   }
 
   async function closeRequest(request: RequestSummary) {
@@ -366,26 +392,36 @@ export function DeploymentRequestsView() {
                   {request.status.replaceAll("_", " ")}
                 </span>
               </div>
-              <div className="flex items-end justify-between gap-3 mt-3">
+              <div className="flex flex-wrap items-end justify-between gap-3 mt-3">
                 <p className="text-xs text-zinc-500">
                   Request updated {new Date(request.updatedAt).toLocaleString()}.
                 </p>
-                <button
-                  type="button"
-                  className="btn-secondary disabled:opacity-50"
-                  disabled={generatingRequestId === request.id}
-                  onClick={() => void generatePlaybook(request.id)}
-                >
-                  {generatingRequestId === request.id ? "Generating…" : "Generate next playbook"}
-                </button>
-                <button
-                  type="button"
-                  className="btn-secondary disabled:opacity-50"
-                  disabled={loadingRevisionId === request.id}
-                  onClick={() => void startRevision(request.id)}
-                >
-                  {loadingRevisionId === request.id ? "Opening…" : "Revise"}
-                </button>
+                <div className="flex flex-wrap gap-2">
+                  <button
+                    type="button"
+                    className="btn-secondary disabled:opacity-50"
+                    disabled={request.status === "closed" || generatingRequestId === request.id}
+                    onClick={() => void generatePlaybook(request.id)}
+                  >
+                    {generatingRequestId === request.id ? "Generating…" : "Generate next playbook"}
+                  </button>
+                  <button
+                    type="button"
+                    className="btn-secondary disabled:opacity-50"
+                    disabled={request.status === "closed" || loadingRevisionId === request.id}
+                    onClick={() => void startRevision(request.id)}
+                  >
+                    {loadingRevisionId === request.id ? "Opening…" : "Revise"}
+                  </button>
+                  <button
+                    type="button"
+                    className="btn-secondary disabled:opacity-50"
+                    disabled={loadingHistoryId === request.id}
+                    onClick={() => void loadRevisionHistory(request.id)}
+                  >
+                    {loadingHistoryId === request.id ? "Loading history…" : "Review history"}
+                  </button>
+                </div>
               </div>
               <ReleaseContext request={request} />
               {request.status === "closed" ? (
@@ -410,6 +446,30 @@ export function DeploymentRequestsView() {
                 <button type="button" onClick={() => { setClosingRequestId(request.id); setClosureEvidenceId(""); setClosureSummary(""); setClosureError(undefined); }} className="mt-3 text-[11px] font-medium text-zinc-400 transition hover:text-white">
                   Record external outcome and close request →
                 </button>
+              )}
+              {historyErrors[request.id] && (
+                <p role="alert" className="mt-3 text-xs text-rose-300">
+                  Revision history could not be loaded: {historyErrors[request.id]}
+                </p>
+              )}
+              {revisionHistory[request.id] && (
+                <div className="mt-3 rounded-lg border border-sky-500/15 bg-sky-500/5 px-3 py-2">
+                  <p className="text-xs font-medium text-sky-100">Governed revision history</p>
+                  <p className="mt-1 text-[10px] leading-4 text-zinc-500">
+                    This view lists only safe field categories. Contacts, URLs, workflow inputs, evidence references, and full member identities remain private.
+                  </p>
+                  <ol className="mt-3 space-y-2">
+                    {revisionHistory[request.id].map((entry) => (
+                      <li key={`${request.id}-${entry.version}`} className="rounded-md border border-white/5 bg-black/10 px-2.5 py-2">
+                        <p className="text-[11px] font-medium text-zinc-200">
+                          Version {entry.version} · {entry.author}
+                          <span className="font-normal text-zinc-500"> · {new Date(entry.createdAt).toLocaleString()}</span>
+                        </p>
+                        <p className="mt-1 text-[10px] leading-4 text-zinc-400">{entry.changes.join(" · ")}</p>
+                      </li>
+                    ))}
+                  </ol>
+                </div>
               )}
               {request.latestPlaybook && !generatedPlaybooks[request.id] && (
                 <div className={`mt-3 rounded-lg border px-3 py-2 ${request.latestPlaybook.status === "superseded" ? "border-amber-500/15 bg-amber-500/5" : "border-violet-500/15 bg-violet-500/5"}`}>

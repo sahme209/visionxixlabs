@@ -713,6 +713,15 @@ export class DesktopClient {
     );
   }
 
+  deploymentRequestHistory(requestId: string): Promise<ApiResult<Array<{
+    version: number;
+    createdAt: string;
+    author: "You" | "Workspace member";
+    changes: string[];
+  }>>> {
+    return this.get(`/api/desktop/deployments/${encodeURIComponent(requestId)}/history`);
+  }
+
   generateDeploymentPlaybook(requestId: string): Promise<ApiResult<{
     id: string;
     requestId: string;
