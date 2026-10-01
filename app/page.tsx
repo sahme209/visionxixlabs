@@ -58,7 +58,7 @@ export default function Home() {
           <div className="relative mt-16 overflow-hidden rounded-2xl border border-white/[0.12] bg-[#171714] p-3 shadow-2xl shadow-black/30 sm:p-6 lg:mt-20 lg:p-10">
             <div
               aria-hidden
-              className="absolute inset-0 scale-105 bg-cover bg-center opacity-75"
+              className="absolute inset-0 scale-105 bg-cover bg-[position:60%_center] opacity-75 sm:bg-center"
               style={{ backgroundImage: "url('/images/axiom-hero-landscape-v1.png')" }}
             />
             <div aria-hidden className="absolute inset-0 bg-[linear-gradient(180deg,rgba(9,10,12,0.12),rgba(9,10,12,0.42)_42%,rgba(9,10,12,0.86))]" />
