@@ -328,6 +328,7 @@ function IntegrationsSection() {
   const [integrationStatus, setIntegrationStatus] = useState<{
     cloud: Array<{ provider: "aws" | "azure" | "gcp"; status: string; lastTransitionAt: string | null }>;
     github: { status: string; repositorySelection: string };
+    collaboration: Array<{ provider: "slack" | "teams"; status: string; lastValidatedAt: string | null }>;
   } | null>(null);
   const [health, setHealth] = useState<{
     status: "healthy" | "degraded" | "preview" | "blocked" | "disabled" | "unknown";
@@ -357,6 +358,7 @@ function IntegrationsSection() {
 
   const cloudConnections = integrationStatus?.cloud ?? null;
   const github = integrationStatus?.github ?? null;
+  const collaboration = integrationStatus?.collaboration ?? null;
   const cloudState = cloudConnections
     ? cloudConnections.some((connection) => connection.status === "connected")
       ? `${cloudConnections.filter((connection) => connection.status === "connected").length} verified`
@@ -375,6 +377,16 @@ function IntegrationsSection() {
       ? `GitHub App consent and ${github.repositorySelection === "all" ? "all-repository" : "selected-repository"} scope were recorded. Live read-only access is not shown as verified until service validation succeeds.`
       : "No active GitHub App installation is recorded for this workspace. Connect in the browser to choose repository scope."
     : "Loading the service-verified GitHub App state.";
+  const collaborationState = collaboration
+    ? collaboration.some((connection) => connection.status === "active")
+      ? `${collaboration.filter((connection) => connection.status === "active").length} verified`
+      : collaboration.some((connection) => connection.status === "pending")
+      ? "Consent in progress"
+      : "Not connected"
+    : "Checking status";
+  const collaborationDetail = collaboration
+    ? collaboration.map((connection) => `${connection.provider === "teams" ? "Teams" : "Slack"} ${connection.status.replaceAll("_", " ")}`).join(" · ")
+    : "Loading the service-verified Slack and Teams connection state.";
 
   async function validateGitHub() {
     setValidatingGitHub(true);
@@ -398,8 +410,8 @@ function IntegrationsSection() {
           key={item.name}
           name={item.name}
           group={item.group}
-          detail={item.name === "AWS, Azure & Google Cloud" ? `${item.detail} Current workspace state: ${cloudDetail}` : item.name === "GitHub" ? githubDetail : item.detail}
-          state={item.name === "AWS, Azure & Google Cloud" ? cloudState : item.name === "GitHub" ? githubState : item.state}
+          detail={item.name === "AWS, Azure & Google Cloud" ? `${item.detail} Current workspace state: ${cloudDetail}` : item.name === "GitHub" ? githubDetail : item.name === "Slack & Microsoft Teams" ? `${item.detail} Current workspace state: ${collaborationDetail}` : item.detail}
+          state={item.name === "AWS, Azure & Google Cloud" ? cloudState : item.name === "GitHub" ? githubState : item.name === "Slack & Microsoft Teams" ? collaborationState : item.state}
         />
       ))}
     </div>

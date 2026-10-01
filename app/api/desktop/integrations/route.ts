@@ -5,6 +5,7 @@ import { resolveRequestDesktopSession } from "@/lib/desktop/resolveRequestDeskto
 export const dynamic = "force-dynamic";
 
 const CLOUD_PROVIDERS = ["aws", "azure", "gcp"] as const;
+const COLLABORATION_PROVIDERS = ["slack", "teams"] as const;
 
 interface ConnectorSessionRow {
     provider: string;
@@ -37,6 +38,21 @@ interface GitHubInstallationRepo {
     };
 }
 
+interface TenantIntegrationConnectionRow {
+    provider: string;
+    status: string;
+    lastValidatedAt: Date | null;
+}
+
+interface TenantIntegrationConnectionRepo {
+    tenantIntegrationConnection: {
+        findMany(args: {
+            where: { organizationId: string; provider: { in: string[] } };
+            select: { provider: true; status: true; lastValidatedAt: true };
+        }): Promise<TenantIntegrationConnectionRow[]>;
+    };
+}
+
 /**
  * Tenant-scoped, read-only connection state for the native application.
  * This intentionally returns no credentials, provider account identifiers,
@@ -61,6 +77,30 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
             select: { provider: true, status: true, lastTransitionAt: true },
         });
         const byProvider = new Map(rows.map((row) => [row.provider, row]));
+        let collaboration: Array<{ provider: "slack" | "teams"; status: string; lastValidatedAt: string | null }> =
+            COLLABORATION_PROVIDERS.map((provider) => ({ provider, status: "not_connected", lastValidatedAt: null }));
+        try {
+            const connections = await (prisma as unknown as TenantIntegrationConnectionRepo).tenantIntegrationConnection.findMany({
+                where: {
+                    organizationId: String(session.organizationId),
+                    provider: { in: [...COLLABORATION_PROVIDERS] },
+                },
+                select: { provider: true, status: true, lastValidatedAt: true },
+            });
+            const byCollaborationProvider = new Map(connections.map((connection) => [connection.provider, connection]));
+            collaboration = COLLABORATION_PROVIDERS.map((provider) => {
+                const connection = byCollaborationProvider.get(provider);
+                return {
+                    provider,
+                    // A pending consent record is not a usable connection.
+                    status: connection?.status ?? "not_connected",
+                    lastValidatedAt: connection?.lastValidatedAt?.toISOString() ?? null,
+                };
+            });
+        } catch {
+            // The migration may not yet be deployed. Do not infer a connection
+            // from webhook configuration or browser UI presence.
+        }
         let github: { status: string; repositorySelection: string } = {
             status: "not_connected",
             repositorySelection: "unknown",
@@ -103,6 +143,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
                     };
                 }),
                 github,
+                collaboration,
             },
         });
     } catch {

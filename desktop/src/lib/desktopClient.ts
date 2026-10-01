@@ -603,6 +603,11 @@ export class DesktopClient {
       lastTransitionAt: string | null;
     }>;
     github: { status: string; repositorySelection: string };
+    collaboration: Array<{
+      provider: "slack" | "teams";
+      status: string;
+      lastValidatedAt: string | null;
+    }>;
   }>> {
     return this.get("/api/desktop/integrations");
   }
