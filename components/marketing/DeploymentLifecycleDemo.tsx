@@ -63,13 +63,23 @@ const STAGES = [
 
 export function DeploymentLifecycleDemo() {
   const [activeIndex, setActiveIndex] = useState(0);
+  const [reducedMotion, setReducedMotion] = useState(false);
 
   useEffect(() => {
+    const media = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const update = () => setReducedMotion(media.matches);
+    update();
+    media.addEventListener("change", update);
+    return () => media.removeEventListener("change", update);
+  }, []);
+
+  useEffect(() => {
+    if (reducedMotion) return;
     const timer = window.setInterval(() => {
       setActiveIndex((current) => (current + 1) % STAGES.length);
     }, 5200);
     return () => window.clearInterval(timer);
-  }, []);
+  }, [reducedMotion]);
 
   const active = STAGES[activeIndex];
   const Icon = active.icon;
