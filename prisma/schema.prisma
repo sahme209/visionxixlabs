@@ -3678,6 +3678,55 @@ model GitHubInstallation {
   @@index([githubInstallationId])
 }
 
+/// Tenant-owned OAuth connection for a deployment integration.
+///
+/// This intentionally does not reuse cloud connector records: the encrypted
+/// OAuth payload and authorization-attempt history have different lifecycle,
+/// revocation, and retention requirements. Provider is a closed union in the
+/// application layer: slack | teams.
+model TenantIntegrationConnection {
+  id                    String   @id @default(cuid())
+  organizationId        String
+  provider              String
+  /// pending | active | needs_attention | revoked.
+  status                String   @default("pending")
+  /// Context-bound AES-GCM v2 envelope. Never returned to browser or desktop.
+  encryptedCredential   String
+  /// Provider workspace / Entra tenant identifier, when available.
+  externalAccountId     String?
+  /// Granted scopes only; no bearer token or provider payload.
+  scopesJson            Json?
+  consentedByUserId     String?
+  consentedAt           DateTime @default(now())
+  lastValidatedAt       DateTime?
+  revokedAt             DateTime?
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  @@unique([organizationId, provider])
+  @@index([organizationId, status])
+}
+
+/// A one-time browser authorization attempt. State is stored as a digest;
+/// the raw value never reaches the database. PKCE verifier ciphertext is
+/// optional because Slack does not use PKCE while Microsoft authorization
+/// code flow does.
+model TenantIntegrationAuthorizationAttempt {
+  id                    String   @id @default(cuid())
+  organizationId        String
+  provider              String
+  stateDigest           String   @unique
+  redirectUri           String
+  encryptedPkceVerifier String?
+  initiatedByUserId     String
+  expiresAt             DateTime
+  consumedAt            DateTime?
+  createdAt             DateTime @default(now())
+
+  @@index([organizationId, provider, expiresAt])
+  @@index([expiresAt])
+}
+
 /// Phase 501 — Deployment incident linked to a release.
 ///
 /// Captures post-deploy spikes / regressions attributed to a specific
