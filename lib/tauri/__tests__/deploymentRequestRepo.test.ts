@@ -356,6 +356,18 @@ describe("deployment request persistence", () => {
         }));
     });
 
+    it("reports an already closed request without returning an absent record", async () => {
+        const repo = new FakeRepo();
+        await createDeploymentRequest(repo, input());
+        const closeInput = {
+            organizationId: "tenant-a", requesterUserId: "user-01", actorRole: "requester", correlationId: "closure-01", requestId: "request-01", expectedVersion: 1,
+            closureEvidenceId: "release-validation-42", closureSummary: "External validation was completed and recorded by the release owner.", closedAtUtc: "2026-09-25T16:00:00.000Z",
+        };
+
+        await closeDeploymentRequest(repo, closeInput);
+        await expect(closeDeploymentRequest(repo, closeInput)).resolves.toEqual({ ok: false, reason: "closed" });
+    });
+
     it("requires closure evidence and preserves an open request when it is absent", async () => {
         const repo = new FakeRepo();
         await createDeploymentRequest(repo, input());
