@@ -67,10 +67,11 @@ async function jsonRequest<T>(path: string, body: unknown, signal?: AbortSignal)
 export type DesktopAuthIntent = "sign_in" | "sign_up";
 
 export async function signInWithBrowser(intent: DesktopAuthIntent, onWaiting: () => void, signal?: AbortSignal): Promise<PairedSession> {
+  const fingerprint = await deviceFingerprint();
   const start = await jsonRequest<{ challenge?: string; verificationUrl?: string; error?: string }>(
     "/api/desktop/pair/start",
     {
-      deviceFingerprint: await deviceFingerprint(),
+      deviceFingerprint: fingerprint,
       deviceLabel: `${navigator.platform || "Desktop"} · Axiom Agent`,
       platform: await platform(),
       desktopVersion: DESKTOP_VERSION,
@@ -93,7 +94,10 @@ export async function signInWithBrowser(intent: DesktopAuthIntent, onWaiting: ()
       token?: string;
       session?: PairedSession;
       error?: string;
-    }>("/api/desktop/pair/status", { challenge: start.body.challenge }, signal);
+    }>("/api/desktop/pair/status", {
+      challenge: start.body.challenge,
+      deviceFingerprint: fingerprint,
+    }, signal);
     if (status.response.status === 202) continue;
     if (!status.response.ok) throw new Error(status.body.error || "Desktop sign-in failed.");
     if (status.body.status === "approved" && status.body.token && status.body.session) {

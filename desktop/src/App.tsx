@@ -9,6 +9,7 @@ import { DesktopAccessRequiredView } from "./views/DesktopAccessRequiredView";
 import { desktopClient, type VerifiedDesktopIdentity } from "./lib/desktopClient";
 import { clearApiKey } from "./lib/apiKeyStore";
 import { clearAuthSession } from "./lib/authSession";
+import { readDesktopPreferences } from "./lib/preferences";
 
 /** Only verified, customer-reachable desktop destinations belong here. */
 export type CustomerView = "deployment-requests" | "docs" | "settings";
@@ -37,6 +38,7 @@ export default function App() {
   const [identity, setIdentity] = useState<VerifiedDesktopIdentity | null>(null);
 
   useEffect(() => {
+    void readDesktopPreferences().catch(() => undefined);
     let cancelled = false;
     async function verifySavedCredential() {
       if (!desktopClient.hasAuth()) {
@@ -129,15 +131,12 @@ function AuthenticatedWorkspace({ identity }: { identity: VerifiedDesktopIdentit
 function BootScreen({ status }: { status: string }) {
   return (
     <div className="h-screen w-screen flex items-center justify-center bg-axiom-bg text-white relative overflow-hidden">
-      <div className="absolute inset-0 pointer-events-none" aria-hidden>
-        <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[680px] h-[680px] rounded-full bg-violet-500/[0.06] blur-[160px]" />
-      </div>
       <div className="relative z-10 flex flex-col items-center">
-        <div className="relative w-16 h-16 rounded-2xl bg-gradient-to-br from-violet-500 to-fuchsia-500 flex items-center justify-center text-2xl font-bold shadow-[0_14px_40px_rgba(124,58,237,0.25)]">A</div>
+        <div className="relative w-14 h-14 rounded-xl border border-white/[0.10] bg-[#202225] flex items-center justify-center text-xl font-semibold">A</div>
         <p className="mt-6 text-base font-semibold tracking-tight text-white">Axiom Agent</p>
         <p className="mt-2 text-[10px] font-mono text-zinc-500 tracking-[0.22em] uppercase">{status}</p>
         <div className="mt-6 w-48 h-[2px] bg-zinc-800/70 rounded-full overflow-hidden">
-          <div className="h-full w-1/3 bg-gradient-to-r from-violet-500 via-fuchsia-500 to-cyan-500 animate-[boot-bar_1s_ease-in-out_infinite]" />
+          <div className="h-full w-1/3 bg-zinc-200 animate-[boot-bar_1s_ease-in-out_infinite]" />
         </div>
       </div>
       <style>{`@keyframes boot-bar { 0% { transform: translateX(-100%); } 100% { transform: translateX(300%); } }`}</style>

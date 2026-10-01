@@ -8,6 +8,18 @@ pub struct Preferences {
     pub auto_scan_interval_minutes: u32,
     pub default_provider: String,
     pub scan_on_launch: bool,
+    pub interface_density: String,
+    pub reduce_motion: bool,
+    pub high_contrast: bool,
+    pub hide_email: bool,
+    pub new_message_behavior: String,
+    pub review_provider: String,
+    pub pr_link_destination: String,
+    pub commit_attribution: bool,
+    pub pr_attribution: bool,
+    pub branch_prefix: String,
+    pub max_worktrees: u32,
+    pub max_worktree_size_gb: u32,
 }
 
 impl Default for Preferences {
@@ -18,6 +30,18 @@ impl Default for Preferences {
             auto_scan_interval_minutes: 60,
             default_provider: "aws".into(),
             scan_on_launch: false,
+            interface_density: "comfortable".into(),
+            reduce_motion: false,
+            high_contrast: false,
+            hide_email: false,
+            new_message_behavior: "queue".into(),
+            review_provider: "github".into(),
+            pr_link_destination: "browser".into(),
+            commit_attribution: true,
+            pr_attribution: true,
+            branch_prefix: "axiom/".into(),
+            max_worktrees: 25,
+            max_worktree_size_gb: 50,
         }
     }
 }
@@ -47,6 +71,33 @@ pub async fn get_preferences(app: tauri::AppHandle) -> Result<Preferences, Strin
             .get("scan_on_launch")
             .and_then(|v| v.as_bool())
             .unwrap_or(false),
+        interface_density: store
+            .get("interface_density")
+            .and_then(|v| v.as_str().map(String::from))
+            .unwrap_or_else(|| "comfortable".into()),
+        reduce_motion: store.get("reduce_motion").and_then(|v| v.as_bool()).unwrap_or(false),
+        high_contrast: store.get("high_contrast").and_then(|v| v.as_bool()).unwrap_or(false),
+        hide_email: store.get("hide_email").and_then(|v| v.as_bool()).unwrap_or(false),
+        new_message_behavior: store
+            .get("new_message_behavior")
+            .and_then(|v| v.as_str().map(String::from))
+            .unwrap_or_else(|| "queue".into()),
+        review_provider: store
+            .get("review_provider")
+            .and_then(|v| v.as_str().map(String::from))
+            .unwrap_or_else(|| "github".into()),
+        pr_link_destination: store
+            .get("pr_link_destination")
+            .and_then(|v| v.as_str().map(String::from))
+            .unwrap_or_else(|| "browser".into()),
+        commit_attribution: store.get("commit_attribution").and_then(|v| v.as_bool()).unwrap_or(true),
+        pr_attribution: store.get("pr_attribution").and_then(|v| v.as_bool()).unwrap_or(true),
+        branch_prefix: store
+            .get("branch_prefix")
+            .and_then(|v| v.as_str().map(String::from))
+            .unwrap_or_else(|| "axiom/".into()),
+        max_worktrees: store.get("max_worktrees").and_then(|v| v.as_u64()).unwrap_or(25) as u32,
+        max_worktree_size_gb: store.get("max_worktree_size_gb").and_then(|v| v.as_u64()).unwrap_or(50) as u32,
     };
 
     Ok(prefs)
@@ -62,6 +113,24 @@ pub async fn set_preferences(app: tauri::AppHandle, prefs: Preferences) -> Resul
     }
     if !["aws", "azure", "gcp"].contains(&prefs.default_provider.as_str()) {
         return Err("Default provider must be AWS, Azure, or GCP.".to_string());
+    }
+    if !["comfortable", "compact"].contains(&prefs.interface_density.as_str()) {
+        return Err("Interface density must be comfortable or compact.".to_string());
+    }
+    if !["queue", "interrupt"].contains(&prefs.new_message_behavior.as_str()) {
+        return Err("New-message behavior must be queue or interrupt.".to_string());
+    }
+    if !["github", "origin"].contains(&prefs.review_provider.as_str()) {
+        return Err("Review provider must be GitHub or Origin.".to_string());
+    }
+    if !["browser", "inside_app"].contains(&prefs.pr_link_destination.as_str()) {
+        return Err("PR link destination must be browser or inside_app.".to_string());
+    }
+    if prefs.branch_prefix.len() > 64 || prefs.branch_prefix.chars().any(char::is_whitespace) {
+        return Err("Branch prefix must be 64 characters or fewer and contain no spaces.".to_string());
+    }
+    if !(1..=100).contains(&prefs.max_worktrees) || !(1..=500).contains(&prefs.max_worktree_size_gb) {
+        return Err("Worktree limits are outside the supported range.".to_string());
     }
     let store = app.store("config.json").map_err(|e| e.to_string())?;
 
@@ -79,6 +148,18 @@ pub async fn set_preferences(app: tauri::AppHandle, prefs: Preferences) -> Resul
         serde_json::json!(prefs.default_provider),
     );
     store.set("scan_on_launch", serde_json::json!(prefs.scan_on_launch));
+    store.set("interface_density", serde_json::json!(prefs.interface_density));
+    store.set("reduce_motion", serde_json::json!(prefs.reduce_motion));
+    store.set("high_contrast", serde_json::json!(prefs.high_contrast));
+    store.set("hide_email", serde_json::json!(prefs.hide_email));
+    store.set("new_message_behavior", serde_json::json!(prefs.new_message_behavior));
+    store.set("review_provider", serde_json::json!(prefs.review_provider));
+    store.set("pr_link_destination", serde_json::json!(prefs.pr_link_destination));
+    store.set("commit_attribution", serde_json::json!(prefs.commit_attribution));
+    store.set("pr_attribution", serde_json::json!(prefs.pr_attribution));
+    store.set("branch_prefix", serde_json::json!(prefs.branch_prefix));
+    store.set("max_worktrees", serde_json::json!(prefs.max_worktrees));
+    store.set("max_worktree_size_gb", serde_json::json!(prefs.max_worktree_size_gb));
 
     store.save().map_err(|e| e.to_string())?;
     Ok(())

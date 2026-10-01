@@ -62,25 +62,25 @@ export function Sidebar({ activeView, onNavigate }: { activeView: CustomerView; 
   );
 
   return (
-    <aside className="w-60 flex flex-col bg-axiom-bg-elev border-r border-axiom-border" data-tauri-drag-region>
-      <div className="h-14 flex items-center px-4 border-b border-axiom-border" data-tauri-drag-region>
+    <aside className="w-[268px] flex flex-col bg-[#151719] border-r border-white/[0.07]" data-tauri-drag-region>
+      <div className="h-[68px] flex items-center px-5 border-b border-white/[0.06]" data-tauri-drag-region>
         <div className="flex items-center gap-2.5">
-          <div className="relative w-8 h-8 rounded-lg bg-gradient-to-br from-violet-500 to-fuchsia-500 flex items-center justify-center text-sm font-bold text-white shadow-glow-violet">A</div>
+          <div className="relative w-8 h-8 rounded-lg border border-white/[0.10] bg-[#202225] flex items-center justify-center text-sm font-semibold text-white">A</div>
           <div>
             <div className="text-sm font-semibold tracking-tight text-white">Axiom Agent</div>
-            <div className="text-[9px] font-mono text-zinc-600 tracking-[0.18em] uppercase">v{DESKTOP_VERSION} · desktop</div>
+            <div className="text-[10px] text-zinc-500 tracking-tight">v{DESKTOP_VERSION} · Desktop</div>
           </div>
         </div>
       </div>
 
-      <nav aria-label="Deployment workspace" className="flex-1 px-3 py-4 space-y-4 overflow-y-auto no-drag">
+      <nav aria-label="Deployment workspace" className="flex-1 px-3 py-5 space-y-5 overflow-y-auto no-drag">
         {CUSTOMER_NAV_GROUPS.map((group) => {
           const isOpen = openGroups[group.kind] !== false;
           const panelId = `sidebar-group-${group.kind}`;
           return (
             <div key={group.kind}>
               <button type="button" aria-expanded={isOpen} aria-controls={panelId} onClick={() => setOpenGroups((current) => ({ ...current, [group.kind]: !isOpen }))} className="flex items-center justify-between gap-1.5 px-3 mb-1.5 w-full text-left group hover:text-zinc-300">
-                <span className="text-[9px] font-mono text-zinc-600 group-hover:text-zinc-400 uppercase tracking-[0.22em] transition-colors">{group.label}</span>
+                <span className="text-[11px] text-zinc-500 group-hover:text-zinc-300 transition-colors">{group.label}</span>
                 <span aria-hidden className={`text-[8px] text-zinc-700 transition-transform ${isOpen ? "rotate-0" : "-rotate-90"}`}>▼</span>
               </button>
               {isOpen && (
@@ -101,10 +101,10 @@ export function Sidebar({ activeView, onNavigate }: { activeView: CustomerView; 
         })}
       </nav>
 
-      <div className="px-3 py-3 border-t border-axiom-border">
-        <div role="status" className="flex items-center gap-2 px-3 py-2 rounded-lg bg-white/[0.02]">
+      <div className="px-3 py-3 border-t border-white/[0.06]">
+        <div role="status" className="flex items-center gap-2 px-3 py-2.5 rounded-lg bg-white/[0.025]">
           <span aria-hidden className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-          <span className="text-[11px] font-mono text-zinc-400">production access active</span>
+          <span className="text-[11px] text-zinc-400">Production access active</span>
         </div>
       </div>
     </aside>

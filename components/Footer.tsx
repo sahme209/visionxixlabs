@@ -1,318 +1,84 @@
-import Link from "next/link";
 import Image from "next/image";
-import { ArrowRightIcon } from "@heroicons/react/24/outline";
+import Link from "next/link";
 
-/* ── Social icon SVGs ────────────────────────────────────────── */
-function GitHubIcon({ className }: { className?: string }) {
-  return (
-    <svg className={className} viewBox="0 0 24 24" fill="currentColor">
-      <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
-    </svg>
-  );
-}
-
-function LinkedInIcon({ className }: { className?: string }) {
-  return (
-    <svg className={className} viewBox="0 0 24 24" fill="currentColor">
-      <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
-    </svg>
-  );
-}
-
-function XIcon({ className }: { className?: string }) {
-  return (
-    <svg className={className} viewBox="0 0 24 24" fill="currentColor">
-      <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-    </svg>
-  );
-}
-
-/* ── Footer links data ───────────────────────────────────────── */
-const productLinks = [
-  { href: "/demo", label: "Try the demo" },
-  { href: "/integrations", label: "Integrations" },
-  { href: "/download", label: "Download Axiom Agent" },
-  { href: "/axiom/releaseops", label: "Axiom ReleaseOps" },
-  { href: "/plans", label: "Pricing" },
-  { href: "/axiom", label: "About Axiom" },
-  { href: "/cloud-solutions", label: "Multi-Cloud" },
-];
-
-const companyLinks = [
-  { href: "/manifesto", label: "Manifesto" },
-  { href: "/principles", label: "Principles" },
-  { href: "/design", label: "Design system" },
-  { href: "/handbook", label: "Handbook" },
-  { href: "/team", label: "Team" },
-  { href: "/contact", label: "Contact" },
-  { href: "/case-studies", label: "Case Studies" },
-  { href: "/press", label: "Press & Media" },
-  { href: "/insights", label: "Insights" },
-  { href: "/status", label: "Status" },
-  { href: "/privacy", label: "Privacy" },
-  { href: "/terms", label: "Terms" },
-  { href: "/security", label: "Security" },
-];
-
-const resourceLinks = [
-  { href: "/docs", label: "Documentation" },
-  { href: "/docs/getting-started", label: "Getting Started" },
-  { href: "/docs/aws-setup", label: "AWS Setup Guide" },
-  { href: "/docs/security-model", label: "Security Model" },
-  { href: "/docs/faq", label: "FAQ" },
-  { href: "/cloud-solutions/aws", label: "AWS Intelligence" },
-  { href: "/cloud-solutions/azure", label: "Azure Intelligence" },
-  { href: "/cloud-solutions/gcp", label: "GCP Intelligence" },
-];
+const columns = [
+  {
+    title: "Product",
+    links: [
+      ["Deployment operations", "/axiom/releaseops"],
+      ["Capabilities", "/capabilities"],
+      ["Integrations", "/integrations"],
+      ["Plans", "/plans"],
+      ["Desktop app", "/download"],
+    ],
+  },
+  {
+    title: "Resources",
+    links: [
+      ["Documentation", "/docs"],
+      ["Getting started", "/docs/getting-started"],
+      ["Security model", "/docs/security-model"],
+      ["Release readiness", "/docs/releaseops/readiness"],
+      ["Service status", "/status"],
+    ],
+  },
+  {
+    title: "Company",
+    links: [
+      ["About", "/axiom"],
+      ["Principles", "/principles"],
+      ["Case studies", "/case-studies"],
+      ["Contact", "/contact"],
+    ],
+  },
+  {
+    title: "Legal",
+    links: [
+      ["Privacy", "/privacy"],
+      ["Terms", "/terms"],
+      ["Security", "/security"],
+    ],
+  },
+] as const;
 
 export function Footer() {
   return (
-    <footer className="relative pt-16 sm:pt-24 pb-12 px-4 sm:px-6 lg:px-8 overflow-hidden">
-      {/* Coral × violet aurora behind the Huly-style footer composition. */}
-      <div aria-hidden className="pointer-events-none absolute inset-0 hidden md:block">
-        <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-brand-coral/30 to-transparent" />
-        <div className="absolute -top-32 left-1/4 w-[520px] h-[420px] rounded-full bg-brand-coral/[0.06] blur-[140px] ambient-drift" />
-        <div className="absolute top-1/3 right-[10%] w-[460px] h-[360px] rounded-full bg-brand-violet/[0.07] blur-[130px] ambient-drift" style={{ animationDelay: "-9s" }} />
-        <div className="absolute bottom-0 left-[5%] w-[380px] h-[280px] rounded-full bg-cyan-500/[0.04] blur-[120px] ambient-drift" style={{ animationDelay: "-15s" }} />
-      </div>
-
-      <div className="relative">
-      <div className="max-w-7xl mx-auto">
-
-        <div className="md:hidden mb-10">
-          <p className="text-[11px] font-mono uppercase tracking-[0.18em] text-brand-coral">
-            Axiom Agent
-          </p>
-          <h2 className="mt-3 text-2xl font-bold tracking-[-0.035em] text-white">
-            Deployment operations belong in the desktop app.
-          </h2>
-          <p className="mt-3 text-sm leading-6 text-zinc-400">
-            Use this site for the isolated demo, documentation, release status, and verified downloads.
-          </p>
-          <div className="mt-6 grid grid-cols-2 gap-2">
-            <Link href="/download" className="inline-flex min-h-12 items-center justify-center rounded-xl bg-white px-3 py-3 text-sm font-semibold text-zinc-950">
-              Download
-            </Link>
-            <Link href="/demo" className="inline-flex min-h-12 items-center justify-center rounded-xl border border-white/10 px-3 py-3 text-sm font-semibold text-white">
-              Demo
-            </Link>
-            <Link href="/docs" className="inline-flex min-h-11 items-center justify-center rounded-xl border border-white/[0.07] px-3 text-sm text-zinc-300">
-              Documentation
-            </Link>
-            <Link href="/security" className="inline-flex min-h-11 items-center justify-center rounded-xl border border-white/[0.07] px-3 text-sm text-zinc-300">
-              Security
-            </Link>
+    <footer className="border-t border-white/[0.06] bg-[#11120f] px-5 pb-8 pt-20 sm:px-8 lg:px-12 lg:pt-24">
+      <div className="mx-auto max-w-[1720px]">
+        <section className="border-b border-white/[0.07] pb-20 text-center lg:pb-24" aria-labelledby="footer-cta-heading">
+          <h2 id="footer-cta-heading" className="text-4xl font-normal tracking-[-0.045em] text-zinc-100 sm:text-6xl lg:text-7xl">Put the workflow to work.</h2>
+          <p className="mx-auto mt-5 max-w-xl text-sm leading-6 text-zinc-500">Use the installed workspace for authenticated intake, approval-gated execution, evidence, and closure.</p>
+          <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
+            <Link href="/download" className="rounded-full bg-zinc-100 px-6 py-3 text-sm font-medium text-zinc-950 hover:bg-white">Download desktop</Link>
+            <Link href="/contact" className="rounded-full border border-white/[0.14] px-6 py-3 text-sm text-zinc-200 hover:bg-white/[0.05]">Contact the team</Link>
           </div>
-          <div className="mt-6 flex items-center gap-3">
-            <a href="https://github.com/sahme209/axiom-releases" target="_blank" rel="noopener noreferrer" className="social-link" aria-label="GitHub — Axiom releases">
-              <GitHubIcon className="h-4 w-4" />
-            </a>
-            <a href="https://www.linkedin.com/company/vision-xix-labs/" target="_blank" rel="noopener noreferrer" className="social-link" aria-label="LinkedIn — Vision XIX Labs">
-              <LinkedInIcon className="h-4 w-4" />
-            </a>
-            <a href="https://x.com/VisionXIXLabs" target="_blank" rel="noopener noreferrer" className="social-link" aria-label="X — Vision XIX Labs">
-              <XIcon className="h-4 w-4" />
-            </a>
-          </div>
-        </div>
+        </section>
 
-        {/* Final utility CTA is intentionally unnumbered. Page section sequences
-            end before the shared site footer. */}
-        <div className="relative mb-14 hidden md:block sm:mb-20">
-          <div className="text-center max-w-3xl mx-auto">
-            <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-zinc-500 mb-6 inline-flex items-center gap-3">
-              <span className="text-brand-coral/90">Desktop application</span>
-              <span className="h-px w-6 bg-gradient-to-r from-brand-coral/60 to-transparent" />
-              Verified distribution
-            </p>
-            <h2 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-[-0.04em] leading-[1.02] mb-5">
-              <span className="text-white">Download the </span>
-              <span className="bg-clip-text text-transparent bg-gradient-to-r from-brand-coral via-fuchsia-400 to-brand-violet">
-                application
-              </span>
-              <span className="text-white">.</span>
-            </h2>
-            <p className="text-[15px] text-zinc-400 mb-9 max-w-xl mx-auto leading-relaxed">
-              Download the installed workspace for intake, approval-gated execution,
-              validation, evidence collection, and closure.
-            </p>
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3 sm:gap-x-4">
-              <Link
-                href="/download"
-                className="btn-press inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-full text-[14.5px] font-semibold tracking-tight"
-              >
-                View verified downloads
-                <ArrowRightIcon className="h-4 w-4 opacity-70" />
-              </Link>
-              <a
-                href="mailto:support@visionxixlabs.com"
-                className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full border border-brand-coral/30 bg-brand-coral/[0.06] text-zinc-200 text-[14px] font-medium transition-all hover:bg-brand-coral/[0.10] hover:border-brand-coral/50"
-              >
-                Contact support
-              </a>
-            </div>
-          </div>
-        </div>
-
-        <div className="gradient-line mb-12 sm:mb-16" />
-        {/* Width aligned to Navigation (max-w-7xl). The layout audit
-            found chrome width inconsistency was the most visible
-            "feels disconnected" cue. Top + bottom chrome share one
-            container width now. */}
-        <div className="hidden md:grid md:grid-cols-5 gap-x-6 gap-y-10 md:gap-10 mb-12">
-          {/* Brand column */}
-          <div className="col-span-2 md:col-span-2">
-            <div className="flex items-center space-x-3 mb-5">
-              <Image
-                src="/vision-xix-logo.png"
-                alt="Vision XIX Labs"
-                width={32}
-                height={32}
-                className="rounded-lg"
-              />
-              <span className="text-lg font-bold text-gradient">
-                Vision XIX Labs
-              </span>
-            </div>
-            <p className="text-zinc-500 text-sm leading-relaxed max-w-sm mb-4">
-              Cloud infrastructure, AI engineering, and autonomous operations.
-              We design, build, and operate systems that scale — with governance,
-              security, and full audit trail.
-            </p>
-            <p className="mb-6 text-xs text-zinc-600">
-              We also build iOS applications.
-            </p>
-            {/* The App Store developer-page link stays disabled until its owner URL is supplied and verified. */}
-            {/* Social links */}
-            <div className="flex items-center gap-3">
-              <a
-                href="https://github.com/sahme209/axiom-releases"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="social-link card-border-glow-hover"
-                aria-label="GitHub — Axiom repo"
-                title="GitHub — Axiom repo"
-              >
-                <GitHubIcon className="h-4 w-4" />
-              </a>
-              <a
-                href="https://www.linkedin.com/company/vision-xix-labs/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="social-link card-border-glow-hover"
-                aria-label="LinkedIn — Vision XIX Labs"
-                title="LinkedIn — Vision XIX Labs"
-              >
-                <LinkedInIcon className="h-4 w-4" />
-              </a>
-              <a
-                href="https://x.com/VisionXIXLabs"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="social-link card-border-glow-hover"
-                aria-label="X (Twitter) — @visionxixlabs"
-                title="X (Twitter) — @visionxixlabs"
-              >
-                <XIcon className="h-4 w-4" />
-              </a>
-            </div>
-          </div>
-
-          {/* Product links */}
-          <div className="col-span-2 md:col-span-1">
-            <h4 className="text-[10px] font-mono uppercase tracking-[0.22em] text-brand-coral/80 mb-4">Product</h4>
-            <ul className="grid grid-cols-2 gap-x-4 gap-y-2.5 text-sm text-zinc-500 md:block md:space-y-2.5">
-              {productLinks.map((link) => (
-                <li key={link.href}>
-                  <Link
-                    href={link.href}
-                    className="hover:text-white nav-glow transition-colors"
-                  >
-                    {link.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Company links */}
+        <div className="grid gap-12 py-16 sm:grid-cols-2 lg:grid-cols-[1.6fr_repeat(4,1fr)] lg:gap-8 lg:py-20">
           <div>
-            <h4 className="text-[10px] font-mono uppercase tracking-[0.22em] text-brand-coral/80 mb-4">Company</h4>
-            <ul className="space-y-2.5 text-sm text-zinc-500">
-              {companyLinks.map((link) => (
-                <li key={link.href}>
-                  <Link
-                    href={link.href}
-                    className="hover:text-white nav-glow transition-colors"
-                  >
-                    {link.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
+            <Link href="/" className="inline-flex items-center gap-2.5 text-sm font-semibold text-zinc-100">
+              <Image src="/vision-xix-logo.png" alt="" width={28} height={28} className="rounded-md" />
+              Vision XIX Labs
+            </Link>
+            <p className="mt-5 max-w-sm text-sm leading-6 text-zinc-500">Governed deployment operations with explicit authorization, verifiable evidence, and honest service state. We also build iOS applications.</p>
           </div>
 
-          {/* Resources links */}
-          <div>
-            <h4 className="text-[10px] font-mono uppercase tracking-[0.22em] text-brand-coral/80 mb-4">Resources</h4>
-            <ul className="space-y-2.5 text-sm text-zinc-500">
-              {resourceLinks.map((link) => (
-                <li key={link.href}>
-                  <Link
-                    href={link.href}
-                    className="hover:text-white nav-glow transition-colors"
-                  >
-                    {link.label}
-                  </Link>
-                </li>
-              ))}
-              <li>
-                <a
-                  href="mailto:support@visionxixlabs.com"
-                  className="hover:text-white nav-glow transition-colors"
-                >
-                  Support
-                </a>
-              </li>
-            </ul>
-          </div>
+          {columns.map((column) => (
+            <div key={column.title}>
+              <h3 className="text-xs text-zinc-600">{column.title}</h3>
+              <ul className="mt-5 space-y-3">
+                {column.links.map(([label, href]) => (
+                  <li key={href}><Link href={href} className="text-sm text-zinc-400 transition-colors hover:text-white">{label}</Link></li>
+                ))}
+              </ul>
+            </div>
+          ))}
         </div>
 
-        {/* Tagline */}
-        <div className="hidden md:block text-center mb-8">
-          <p className="text-[11px] font-mono uppercase tracking-[0.22em] text-zinc-600">
-            Made in NYC <span className="text-zinc-700 mx-2">·</span> shipped from the cloud
-          </p>
+        <div className="flex flex-col gap-4 border-t border-white/[0.07] pt-7 text-xs text-zinc-600 sm:flex-row sm:items-center sm:justify-between">
+          <p>© {new Date().getFullYear()} Vision XIX Labs. All rights reserved.</p>
+          <p>Production access is service-verified. Demonstrations are clearly labeled.</p>
         </div>
-
-        {/* Bottom bar with dot separators */}
-        <div className="gradient-line mb-8" />
-        <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-          <p className="text-zinc-600 text-sm">
-            &copy; {new Date().getFullYear()} Vision XIX Labs LLC. All rights
-            reserved.
-          </p>
-          <div className="flex items-center gap-2 text-sm text-zinc-600">
-            <Link
-              href="/privacy"
-              className="hover:text-white nav-glow transition-colors"
-            >
-              Privacy
-            </Link>
-            <span className="text-zinc-700">&middot;</span>
-            <Link href="/terms" className="hover:text-white nav-glow transition-colors">
-              Terms
-            </Link>
-            <span className="text-zinc-700">&middot;</span>
-            <Link
-              href="/security"
-              className="hover:text-white nav-glow transition-colors"
-            >
-              Security
-            </Link>
-          </div>
-        </div>
-      </div>
       </div>
     </footer>
   );

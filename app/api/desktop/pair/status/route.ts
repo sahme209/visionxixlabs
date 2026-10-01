@@ -19,9 +19,11 @@ function presentSession(session: NonNullable<Awaited<ReturnType<typeof getDeskto
 
 export async function POST(request: NextRequest) {
   let challenge: string;
+  let deviceFingerprint: string;
   try {
     const body = asRecord(await request.json().catch(() => ({})));
     challenge = requireString(body.challenge, "challenge", { max: 96 });
+    deviceFingerprint = requireString(body.deviceFingerprint, "deviceFingerprint", { max: 256 });
   } catch (error) {
     return NextResponse.json(
       { error: error instanceof Error ? error.message : "The pairing request is invalid." },
@@ -32,6 +34,9 @@ export async function POST(request: NextRequest) {
   try {
     const record = await prisma.desktopPairingChallengeRecord.findUnique({ where: { id: challenge } });
     if (!record) return NextResponse.json({ error: "Pairing request not found." }, { status: 404 });
+    if (record.deviceFingerprint !== deviceFingerprint) {
+      return NextResponse.json({ error: "This pairing request belongs to another device." }, { status: 403 });
+    }
     if (record.expiresAt.getTime() <= Date.now()) {
       return NextResponse.json({ error: "Pairing request expired. Start again from the desktop app." }, { status: 410 });
     }

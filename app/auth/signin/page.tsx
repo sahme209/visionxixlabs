@@ -17,7 +17,7 @@ function SignInForm() {
   const [enabledProviders, setEnabledProviders] = useState<{ google: boolean; github: boolean } | null>(null);
   const router = useRouter();
   const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get("callbackUrl") || "/auth/success";
+  const callbackUrl = safeInternalPath(searchParams.get("callbackUrl"), "/auth/success");
 
   // Surface a clear hint when the OAuth callback errored.
   const oauthError = searchParams.get("error");
@@ -88,45 +88,17 @@ function SignInForm() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#09090b] px-4 relative overflow-hidden">
-      {/* Huly-style coral × violet aurora — warm welcome */}
-      <div className="absolute inset-0 pointer-events-none" aria-hidden>
-        <div className="ambient-drift absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-[500px] rounded-full bg-brand-violet/[0.12] blur-[100px]" />
-        <div className="ambient-drift absolute -top-32 -left-32 w-[420px] h-[420px] rounded-full bg-brand-coral/[0.10] blur-[120px]" style={{ animationDelay: "-8s" }} />
-        <div className="ambient-drift absolute bottom-0 right-0 w-[460px] h-[460px] rounded-full bg-cyan-500/[0.06] blur-[130px]" style={{ animationDelay: "-15s" }} />
-        <div
-          className="absolute inset-0 opacity-[0.04]"
-          style={{
-            backgroundImage:
-              "linear-gradient(to right, rgba(255,255,255,0.5) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,0.5) 1px, transparent 1px)",
-            backgroundSize: "48px 48px",
-          }}
-        />
-      </div>
-
-      <Link href="/" className="absolute top-6 left-6 text-[12px] font-mono uppercase tracking-[0.18em] text-zinc-500 hover:text-brand-coral transition-colors z-20">
-        ← Home
+    <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[#0d0e0c] px-5 py-20">
+      <Link href="/" className="absolute left-6 top-6 z-20 flex items-center gap-2.5 text-sm font-semibold text-zinc-200 transition-colors hover:text-white">
+        <Image src="/vision-xix-logo.png" alt="" width={27} height={27} className="rounded-md" />
+        Vision XIX Labs
       </Link>
 
-      <div className="w-full max-w-sm relative z-10 rounded-2xl border border-brand-coral/[0.10] bg-[#0c0c10]/85 backdrop-blur-xl p-8 shadow-huly-card">
-        {/* Subtle coral top-edge hairline on the card */}
-        <span aria-hidden className="absolute inset-x-6 top-0 h-px bg-gradient-to-r from-transparent via-brand-coral/30 to-transparent" />
-
-        <Link href="/" className="flex items-center gap-2.5 mb-10">
-          <Image src="/vision-xix-logo.png" alt="Vision XIX Labs" width={28} height={28} className="rounded-lg" />
-          <span className="text-sm font-semibold bg-gradient-to-r from-brand-coral via-fuchsia-400 to-brand-violet bg-clip-text text-transparent">
-            Vision XIX Labs
-          </span>
-        </Link>
-        <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-zinc-500 inline-flex items-center gap-2 mb-2">
-          <span className="text-brand-coral/90 tabular-nums">A</span>
-          <span className="h-px w-5 bg-gradient-to-r from-brand-coral/60 to-transparent" />
-          Welcome back
-        </p>
-        <h1 className="text-3xl font-bold mb-2 tracking-[-0.04em]">
-          Sign in.
-          <span aria-hidden className="block h-[3px] w-12 mt-1.5 rounded-full bg-gradient-to-r from-brand-coral via-fuchsia-400 to-transparent opacity-85" />
-        </h1>
+      <div className="relative z-10 w-full max-w-lg p-2 sm:p-8">
+        <div className="mb-8 flex h-12 w-12 items-center justify-center rounded-xl border border-white/[0.08] bg-white/[0.035]">
+          <Image src="/vision-xix-logo.png" alt="" width={30} height={30} className="rounded-md" />
+        </div>
+        <h1 className="mb-2 text-3xl font-normal tracking-[-0.045em]">Welcome back</h1>
         <p className="text-sm text-zinc-500 mb-8">Authenticate the Axiom Agent pairing request opened by the installed application.</p>
         <p className="-mt-5 mb-7 text-xs leading-5 text-zinc-600">Signing in verifies identity. Deployment operations remain locked until the workspace has an active paid entitlement.</p>
 
@@ -183,7 +155,7 @@ function SignInForm() {
           <button
             type="submit"
             disabled={loading || oauthLoading !== null}
-            className="btn-press w-full inline-flex items-center justify-center gap-2 rounded-full px-4 py-3 text-sm font-semibold tracking-tight disabled:opacity-50 disabled:cursor-not-allowed"
+            className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-zinc-100 px-4 py-3 text-sm font-semibold text-zinc-950 transition hover:bg-white disabled:cursor-not-allowed disabled:opacity-50"
           >
             {loading ? "Signing in…" : "Sign in"}
             {!loading && <ArrowRightIcon className="h-4 w-4" />}
@@ -236,19 +208,29 @@ function SignInForm() {
 
         <p className="mt-6 text-sm text-zinc-500 text-center">
           Don&apos;t have an account?{" "}
-          <Link href={`/auth/signup?redirect=${encodeURIComponent(callbackUrl)}`} className="font-medium text-violet-400 hover:text-violet-300">
+          <Link href={`/auth/signup?redirect=${encodeURIComponent(callbackUrl)}`} className="font-medium text-zinc-200 hover:text-white">
             Sign up
           </Link>
         </p>
         <p className="mt-2 text-xs text-zinc-500 text-center">
           Need the application?{" "}
-          <Link href="/download" className="font-medium text-violet-300 hover:text-violet-200 underline decoration-violet-500/30 hover:decoration-violet-400 underline-offset-2">
+          <Link href="/download" className="font-medium text-zinc-300 underline decoration-white/20 underline-offset-2 hover:text-white">
             Return to downloads →
           </Link>
         </p>
       </div>
     </div>
   );
+}
+
+function safeInternalPath(value: string | null, fallback: string): string {
+  if (!value || !value.startsWith("/") || value.startsWith("//")) return fallback;
+  try {
+    const parsed = new URL(value, "https://visionxixlabs.com");
+    return parsed.origin === "https://visionxixlabs.com" ? `${parsed.pathname}${parsed.search}${parsed.hash}` : fallback;
+  } catch {
+    return fallback;
+  }
 }
 
 function GoogleMark({ className }: { className?: string }) {

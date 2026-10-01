@@ -6,48 +6,39 @@ function source(path: string): string {
 }
 
 describe("desktop homepage presentation contract", () => {
-  it("uses intentional headline lines without character-level word breaks", () => {
+  it("uses a direct, stable headline without character-level animation", () => {
     const page = source("app/page.tsx");
 
-    expect(page).toContain('text="Your request" splitBy="word"');
-    expect(page).toContain('text="becomes the" splitBy="word"');
-    expect(page).toContain('text="playbook." splitBy="word"');
-    expect(page).not.toContain('text="becomes the playbook." splitBy="char"');
+    expect(page).toContain("Turn the request into the playbook.");
+    expect(page).not.toContain("SplitText");
+    expect(page).not.toContain('splitBy="char"');
   });
 
   it("aligns navigation and hero to the same wide desktop grid", () => {
     const page = source("app/page.tsx");
     const navigation = source("components/Navigation.tsx");
 
-    expect(page).toContain('max-w-[1400px]');
-    expect(navigation).toContain('max-w-[1400px]');
+    expect(page).toContain('max-w-[1720px]');
+    expect(navigation).toContain('max-w-[1720px]');
     expect(navigation).toContain('lg:flex');
     expect(navigation).toContain('lg:hidden');
-    expect(navigation).toContain('(min-width: 1024px)');
   });
 
   it("keeps the hero atmosphere calm and removes the split-screen beam", () => {
     const page = source("app/page.tsx");
-    const styles = source("app/globals.css");
-
-    expect(page).toContain('hero-atmosphere');
+    expect(page).toContain('bg-[#0d0d0b]');
     expect(page).not.toContain('hero-beam-vertical');
     expect(page).not.toContain('hero-beam-flare');
     expect(page).not.toContain('hero-beam-converge');
-    expect(styles).toContain('.hero-product-shell');
   });
 
   it("gives the product walkthrough a complete operational frame", () => {
     const page = source("app/page.tsx");
-    const walkthrough = source("components/marketing/HomepageDemoAnimation.tsx");
-
-    expect(page).toContain('Axiom Agent walkthrough');
-    expect(page).toContain('Installed workspace · illustrative data');
-    expect(page).toContain('Approval gated');
-    expect(page).toContain('Explicit outcomes');
-    expect(page).toContain('Persisted trail');
-    expect(walkthrough).toContain('Deployment playbook progress');
-    expect(walkthrough).toContain('const PLAYBOOK_STAGES = ["Intake", "Approve", "Execute", "Validate"]');
+    expect(page).toContain('Illustrative workflow · no live action');
+    expect(page).toContain('Awaiting approval');
+    expect(page).toContain('Request version');
+    expect(page).toContain('Content digest');
+    expect(page).toContain('Last service response verified moments ago.');
   });
 
   it("uses a quiet support control instead of the oversized glowing pill", () => {

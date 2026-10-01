@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { redirect } from "next/navigation";
 import { currentContext } from "@/lib/auth/currentContext";
 import { prisma } from "@/lib/db";
@@ -31,14 +32,18 @@ export default async function DesktopConnectPage({ searchParams }: { searchParam
   const access = await readDesktopCommercialAccess(context.organizationId!);
 
   return (
-    <main className="min-h-screen bg-[#09090b] px-4 py-16 text-white">
-      <div className="mx-auto max-w-md rounded-2xl border border-white/10 bg-[#101014] p-8 shadow-2xl">
-        <Link href="/" className="text-xs uppercase tracking-widest text-violet-300">Vision XIX Labs</Link>
-        <h1 className="mt-6 text-3xl font-bold">Authorize Axiom Agent</h1>
+    <main className="flex min-h-screen items-center justify-center bg-[#0d0e0c] px-5 py-20 text-white">
+      <Link href="/" className="absolute left-6 top-6 flex items-center gap-2.5 text-sm font-semibold text-zinc-200">
+        <Image src="/vision-xix-logo.png" alt="" width={27} height={27} className="rounded-md" />
+        Vision XIX Labs
+      </Link>
+      <div className="w-full max-w-lg p-2 sm:p-8">
+        <div className="flex h-12 w-12 items-center justify-center rounded-xl border border-white/[0.08] bg-white/[0.035]"><Image src="/vision-xix-logo.png" alt="" width={30} height={30} className="rounded-md" /></div>
+        <h1 className="mt-7 text-3xl font-normal tracking-[-0.045em]">Authorize Axiom Agent</h1>
         <p className="mb-7 mt-2 text-sm leading-6 text-zinc-400">
           Signed in as <span className="text-zinc-200">{context.email}</span>. Approve only if this is your desktop.
         </p>
-        <dl className="mb-6 divide-y divide-white/[0.07] rounded-xl border border-white/[0.08] bg-black/20 px-4 text-sm">
+        <dl className="mb-6 divide-y divide-white/[0.07] rounded-xl border border-white/[0.08] bg-white/[0.025] px-4 text-sm">
           <Row label="Device" value={pairing.deviceLabel} />
           <Row label="Platform" value={pairing.platform} />
           <Row label="App version" value={pairing.desktopVersion ?? "Not reported"} />
@@ -70,9 +75,10 @@ function Row({ label, value }: { label: string; value: string }) {
 
 function Message({ title, detail }: { title: string; detail: string }) {
   return (
-    <main className="flex min-h-screen items-center justify-center bg-[#09090b] px-4 text-white">
-      <div className="max-w-md rounded-2xl border border-white/10 bg-[#101014] p-8 text-center">
-        <h1 className="text-2xl font-bold">{title}</h1>
+    <main className="flex min-h-screen items-center justify-center bg-[#0d0e0c] px-5 text-white">
+      <div className="max-w-md p-8 text-center">
+        <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl border border-white/[0.08] bg-white/[0.035]"><Image src="/vision-xix-logo.png" alt="" width={30} height={30} className="rounded-md" /></div>
+        <h1 className="mt-7 text-2xl font-normal">{title}</h1>
         <p className="mt-3 text-sm text-zinc-400">{detail}</p>
       </div>
     </main>
