@@ -14,7 +14,14 @@ interface RequestSummary {
     window: { startUtc: string; endUtc: string; displayTimeZone: string } | null;
     scope: { applicationCount: number; repositoryCount: number; targetEnvironment: string | null };
     approval: { prStatus: string; noPrRequired: boolean };
-    readiness: { developmentReady: boolean; productionReady: boolean; validationStepCount: number; deferredValidation: boolean };
+    readiness: {
+      developmentReady: boolean;
+      productionReady: boolean;
+      validationStepCount: number;
+      deferredValidation: boolean;
+      approvalDecision: "ready_for_human_approval" | "needs_attention";
+      blockers: string[];
+    };
     recovery: { rollbackAvailability: string; backupRequired: boolean; evidenceCount: number };
   };
   latestPlaybook: {
@@ -328,14 +335,30 @@ export function DeploymentRequestsView() {
 
 function ReleaseContext({ request }: { request: RequestSummary }) {
   const context = request.releaseContext;
-  const readiness = context.readiness.developmentReady && context.readiness.productionReady;
+  const readiness = context.readiness.approvalDecision === "ready_for_human_approval";
   const approval = context.approval.noPrRequired
     ? "PR not required"
     : context.approval.prStatus.replaceAll("_", " ");
   const rollback = context.recovery.rollbackAvailability.replaceAll("_", " ");
 
   return (
-    <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-4" aria-label="Release context">
+    <div className="mt-3" aria-label="Release context">
+      <div className={`mb-2 rounded-lg border px-3 py-2 ${readiness ? "border-emerald-500/20 bg-emerald-500/5" : "border-amber-500/20 bg-amber-500/5"}`}>
+        <p className={`text-xs font-semibold ${readiness ? "text-emerald-100" : "text-amber-100"}`}>
+          {readiness ? "Ready for human approval" : "Not ready for human approval"}
+        </p>
+        <p className="mt-0.5 text-[10px] text-zinc-500">
+          {readiness
+            ? "Required recorded signals are present. Approval is still required; nothing can deploy from this view."
+            : `${context.readiness.blockers.length} recorded item${context.readiness.blockers.length === 1 ? "" : "s"} needs attention before approval.`}
+        </p>
+        {!readiness && (
+          <ul className="mt-2 space-y-1 text-[10px] text-amber-100/80">
+            {context.readiness.blockers.map((blocker) => <li key={blocker}>• {blocker}</li>)}
+          </ul>
+        )}
+      </div>
+      <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
       <ContextSignal
         label="Scope"
         value={`${context.scope.applicationCount} app${context.scope.applicationCount === 1 ? "" : "s"} · ${context.scope.repositoryCount} repo${context.scope.repositoryCount === 1 ? "" : "s"}`}
@@ -359,6 +382,7 @@ function ReleaseContext({ request }: { request: RequestSummary }) {
         detail={context.recovery.backupRequired ? "Backup evidence required" : "No backup evidence required"}
         tone={context.recovery.rollbackAvailability === "yes" ? "good" : "attention"}
       />
+      </div>
     </div>
   );
 }

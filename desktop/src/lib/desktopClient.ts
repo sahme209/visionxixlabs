@@ -608,7 +608,14 @@ export class DesktopClient {
       window: { startUtc: string; endUtc: string; displayTimeZone: string } | null;
       scope: { applicationCount: number; repositoryCount: number; targetEnvironment: string | null };
       approval: { prStatus: string; noPrRequired: boolean };
-      readiness: { developmentReady: boolean; productionReady: boolean; validationStepCount: number; deferredValidation: boolean };
+      readiness: {
+        developmentReady: boolean;
+        productionReady: boolean;
+        validationStepCount: number;
+        deferredValidation: boolean;
+        approvalDecision: "ready_for_human_approval" | "needs_attention";
+        blockers: string[];
+      };
       recovery: { rollbackAvailability: string; backupRequired: boolean; evidenceCount: number };
     };
     latestPlaybook: {

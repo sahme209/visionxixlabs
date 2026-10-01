@@ -61,6 +61,8 @@ interface ReleaseContextSummary {
         productionReady: boolean;
         validationStepCount: number;
         deferredValidation: boolean;
+        approvalDecision: "ready_for_human_approval" | "needs_attention";
+        blockers: string[];
     };
     recovery: {
         rollbackAvailability: string;
@@ -90,6 +92,20 @@ function count(value: unknown): number {
  */
 function summarizeReleaseContext(intakeJson: unknown): ReleaseContextSummary {
     const intake = record(intakeJson);
+    const noPrRequired = intake.noPrRequired === true;
+    const developmentReady = intake.developmentReady === true;
+    const productionReady = intake.productionReady === true;
+    const validationStepCount = count(intake.validationSteps);
+    const rollbackAvailability = text(intake.rollbackAvailability) ?? "unknown";
+    const blockers = [
+        !developmentReady ? "Development readiness has not been recorded." : null,
+        !productionReady ? "Production readiness has not been recorded." : null,
+        !noPrRequired && text(intake.prApprovalStatus) !== "approved"
+            ? "Production pull-request approval has not been recorded."
+            : null,
+        validationStepCount === 0 ? "No production validation step has been recorded." : null,
+        rollbackAvailability !== "yes" ? "A verified rollback path has not been recorded." : null,
+    ].filter((value): value is string => Boolean(value));
     return {
         window: text(intake.windowStartUtc) && text(intake.windowEndUtc) ? {
             startUtc: text(intake.windowStartUtc)!,
@@ -103,16 +119,18 @@ function summarizeReleaseContext(intakeJson: unknown): ReleaseContextSummary {
         },
         approval: {
             prStatus: text(intake.prApprovalStatus) ?? "unknown",
-            noPrRequired: intake.noPrRequired === true,
+            noPrRequired,
         },
         readiness: {
-            developmentReady: intake.developmentReady === true,
-            productionReady: intake.productionReady === true,
-            validationStepCount: count(intake.validationSteps),
+            developmentReady,
+            productionReady,
+            validationStepCount,
             deferredValidation: Boolean(intake.deferredValidation),
+            approvalDecision: blockers.length === 0 ? "ready_for_human_approval" : "needs_attention",
+            blockers,
         },
         recovery: {
-            rollbackAvailability: text(intake.rollbackAvailability) ?? "unknown",
+            rollbackAvailability,
             backupRequired: intake.backupRequired === true,
             evidenceCount: count(intake.facts) + count(intake.backupEvidenceIds),
         },
