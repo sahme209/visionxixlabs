@@ -17,7 +17,7 @@ export function TopBar({ activeView, identity }: { activeView: View; identity: V
         <h2 className="text-[14px] font-semibold tracking-tight text-white leading-tight">{meta.title}</h2>
         <span className="mt-0.5 truncate text-[11px] text-zinc-500">{meta.subtitle}</span>
       </div>
-      <div className="no-drag ml-4 flex shrink-0 items-center gap-2 rounded-lg border border-white/[0.08] bg-white/[0.03] px-3 py-1.5 text-[11px] text-zinc-300" title={`Verified ${identity.kind.replace("_", " ")} with active commercial access`}>
+      <div className="no-drag ml-4 flex shrink-0 items-center gap-2 rounded-lg border border-white/[0.08] bg-white/[0.03] px-3 py-1.5 text-[11px] text-zinc-300" title={`Verified ${identity.kind.replace("_", " ")} with active approved workspace access`}>
         <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
         <span className="max-w-[180px] truncate">{workspace}</span>
         <span className="text-zinc-500">· access active</span>

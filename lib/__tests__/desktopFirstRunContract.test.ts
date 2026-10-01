@@ -18,7 +18,7 @@ describe("desktop first-run contract", () => {
     expect(app.indexOf('if (authState === "checking")')).toBeLessThan(app.indexOf("<AuthenticatedWorkspace"));
   });
 
-  it("separates verified identity from paid workspace access and enforces the gate server-side", () => {
+  it("separates verified identity from approved workspace access and enforces the gate server-side", () => {
     const accessPolicy = readFileSync(join(root, "lib/desktop/desktopCommercialAccessPolicy.ts"), "utf8");
     const accessRoute = readFileSync(join(root, "app/api/desktop/access/route.ts"), "utf8");
     const resolver = readFileSync(join(root, "lib/desktop/resolveRequestDesktopSession.ts"), "utf8");
@@ -44,7 +44,7 @@ describe("desktop first-run contract", () => {
     expect(signupRoute).not.toContain('plan: "starter"');
     expect(signupPage).not.toContain("No credit card required");
     expect(signupPage).not.toContain("What you get");
-    expect(signupPage).toContain("paid workspace entitlement");
+    expect(signupPage).toContain("approved pilot or commercial workspace entitlement");
   });
 
   it("fails public distribution closed when the production desktop data plane is unavailable", () => {

@@ -95,7 +95,7 @@ export function DesktopAccessRequiredView({
           <span className="text-zinc-700">•</span>
           <button type="button" onClick={() => void signOut()} className="text-zinc-400 hover:text-white">Use another account</button>
         </div>
-        <p className="mt-6 text-center text-xs leading-5 text-zinc-600">Creating an account verifies identity only. Deployment operations require a separately provisioned paid workspace entitlement.</p>
+        <p className="mt-6 text-center text-xs leading-5 text-zinc-600">Creating an account verifies identity only. Deployment operations require a separately provisioned approved pilot or commercial workspace entitlement.</p>
       </div>
     </main>
   );
