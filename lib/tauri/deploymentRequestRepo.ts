@@ -62,6 +62,13 @@ interface DeploymentRequestVersionDelegate {
     }): Promise<unknown>;
 }
 
+interface ExistingPlaybookDelegate {
+    updateMany(args: {
+        where: { organizationId: string; deploymentRequestId: string; status: { not: string } };
+        data: { status: string };
+    }): Promise<{ count: number }>;
+}
+
 interface DeploymentAuditDelegate {
     create(args: {
         data: {
@@ -82,6 +89,7 @@ interface DeploymentAuditDelegate {
 export interface DeploymentRequestRepo {
     tauriDeploymentRequest: DeploymentRequestDelegate;
     tauriDeploymentRequestVersion: DeploymentRequestVersionDelegate;
+    tauriPlaybook: ExistingPlaybookDelegate;
     tauriAuditEvent: DeploymentAuditDelegate;
     $transaction<T>(fn: (tx: DeploymentRequestRepo) => Promise<T>): Promise<T>;
 }
@@ -276,6 +284,18 @@ export async function reviseDeploymentRequest(
             where: { organizationId: input.organizationId, id: existing.id },
         });
         if (!updated) return { kind: "not_found" as const };
+
+        // A playbook is derived from a specific request snapshot. Once the
+        // request changes, prior playbooks remain auditable but must never be
+        // presented as current release instructions.
+        await tx.tauriPlaybook.updateMany({
+            where: {
+                organizationId: input.organizationId,
+                deploymentRequestId: updated.id,
+                status: { not: "superseded" },
+            },
+            data: { status: "superseded" },
+        });
 
         await tx.tauriDeploymentRequestVersion.create({
             data: {

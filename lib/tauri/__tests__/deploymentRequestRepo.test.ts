@@ -12,10 +12,12 @@ import { parseDeploymentIntake } from "../deploymentIntakeSchema";
 class FakeRepo implements DeploymentRequestRepo {
     readonly requests: DeploymentRequestRow[] = [];
     readonly versions: unknown[] = [];
+    readonly playbooks: Array<{ organizationId: string; deploymentRequestId: string; status: string }> = [];
     readonly audits: unknown[] = [];
 
     tauriDeploymentRequest: DeploymentRequestRepo["tauriDeploymentRequest"];
     tauriDeploymentRequestVersion: DeploymentRequestRepo["tauriDeploymentRequestVersion"];
+    tauriPlaybook: DeploymentRequestRepo["tauriPlaybook"];
     tauriAuditEvent: DeploymentRequestRepo["tauriAuditEvent"];
 
     constructor() {
@@ -60,6 +62,17 @@ class FakeRepo implements DeploymentRequestRepo {
             create: async ({ data }) => {
                 this.versions.push(data);
                 return data;
+            },
+        };
+        this.tauriPlaybook = {
+            updateMany: async ({ where, data }) => {
+                const matches = this.playbooks.filter((playbook) =>
+                    playbook.organizationId === where.organizationId
+                    && playbook.deploymentRequestId === where.deploymentRequestId
+                    && playbook.status !== where.status.not,
+                );
+                for (const playbook of matches) playbook.status = data.status;
+                return { count: matches.length };
             },
         };
         this.tauriAuditEvent = {
@@ -266,6 +279,7 @@ describe("deployment request persistence", () => {
     it("appends an immutable revision and audit event without replacing the original snapshot", async () => {
         const repo = new FakeRepo();
         await createDeploymentRequest(repo, input());
+        repo.playbooks.push({ organizationId: "tenant-a", deploymentRequestId: "request-01", status: "submitted" });
         const revised = intake();
         revised.id = "dep-02";
         revised.title = "Production configuration release — revised";
@@ -282,6 +296,7 @@ describe("deployment request persistence", () => {
 
         expect(result).toMatchObject({ ok: true, changed: true, request: { version: 2, title: revised.title } });
         expect(repo.versions).toHaveLength(2);
+        expect(repo.playbooks).toEqual([{ organizationId: "tenant-a", deploymentRequestId: "request-01", status: "superseded" }]);
         expect(repo.versions[0]).toEqual(expect.objectContaining({ version: 1, intakeJson: expect.objectContaining({ title: "Production configuration release" }) }));
         expect(repo.versions[1]).toEqual(expect.objectContaining({ version: 2, intakeJson: expect.objectContaining({ title: revised.title }) }));
         expect(repo.audits.at(-1)).toEqual(expect.objectContaining({
