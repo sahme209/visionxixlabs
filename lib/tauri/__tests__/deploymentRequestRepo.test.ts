@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
     createDeploymentRequest,
     listDeploymentRequests,
+    reviseDeploymentRequest,
     type DeploymentRequestRepo,
     type DeploymentRequestRow,
 } from "../deploymentRequestRepo";
@@ -34,8 +35,22 @@ class FakeRepo implements DeploymentRequestRepo {
             findFirst: async ({ where }) =>
                 this.requests.find((row) =>
                     row.organizationId === where.organizationId
-                    && row.correlationId === where.correlationId,
+                    && (where.correlationId === undefined || row.correlationId === where.correlationId)
+                    && (where.id === undefined || row.id === where.id),
                 ) ?? null,
+            updateMany: async ({ where, data }) => {
+                const row = this.requests.find((candidate) =>
+                    candidate.id === where.id
+                    && candidate.organizationId === where.organizationId
+                    && candidate.version === where.version,
+                );
+                if (!row) return { count: 0 };
+                row.title = data.title;
+                row.intakeJson = data.intakeJson;
+                row.version += data.version.increment;
+                row.updatedAt = new Date("2026-09-25T15:00:00.000Z");
+                return { count: 1 };
+            },
             findMany: async ({ where, take }) =>
                 this.requests
                     .filter((row) => row.organizationId === where.organizationId)
@@ -246,6 +261,56 @@ describe("deployment request persistence", () => {
 
         const rows = await listDeploymentRequests(repo, "tenant-a", 1_000);
         expect(rows.map((row) => row.organizationId)).toEqual(["tenant-a"]);
+    });
+
+    it("appends an immutable revision and audit event without replacing the original snapshot", async () => {
+        const repo = new FakeRepo();
+        await createDeploymentRequest(repo, input());
+        const revised = intake();
+        revised.id = "dep-02";
+        revised.title = "Production configuration release — revised";
+
+        const result = await reviseDeploymentRequest(repo, {
+            organizationId: "tenant-a",
+            requesterUserId: "user-02",
+            actorRole: "requester",
+            correlationId: "revision-01",
+            requestId: "request-01",
+            expectedVersion: 1,
+            intake: revised,
+        });
+
+        expect(result).toMatchObject({ ok: true, changed: true, request: { version: 2, title: revised.title } });
+        expect(repo.versions).toHaveLength(2);
+        expect(repo.versions[0]).toEqual(expect.objectContaining({ version: 1, intakeJson: expect.objectContaining({ title: "Production configuration release" }) }));
+        expect(repo.versions[1]).toEqual(expect.objectContaining({ version: 2, intakeJson: expect.objectContaining({ title: revised.title }) }));
+        expect(repo.audits.at(-1)).toEqual(expect.objectContaining({
+            action: "deployment_request.revised",
+            previousValueJson: { version: 1, title: "Production configuration release" },
+            newValueJson: { version: 2, title: revised.title },
+        }));
+    });
+
+    it("refuses a stale revision rather than overwriting a newer request", async () => {
+        const repo = new FakeRepo();
+        await createDeploymentRequest(repo, input());
+        const revised = intake();
+        revised.id = "dep-02";
+        revised.title = "First revision";
+        await reviseDeploymentRequest(repo, {
+            organizationId: "tenant-a", requesterUserId: "user-01", actorRole: "requester", correlationId: "revision-01", requestId: "request-01", expectedVersion: 1, intake: revised,
+        });
+
+        const stale = intake();
+        stale.id = "dep-03";
+        stale.title = "Stale revision";
+        const result = await reviseDeploymentRequest(repo, {
+            organizationId: "tenant-a", requesterUserId: "user-03", actorRole: "requester", correlationId: "revision-02", requestId: "request-01", expectedVersion: 1, intake: stale,
+        });
+
+        expect(result).toMatchObject({ ok: false, reason: "version_conflict" });
+        expect(repo.requests[0]).toMatchObject({ version: 2, title: "First revision" });
+        expect(repo.versions).toHaveLength(2);
     });
 });
 
