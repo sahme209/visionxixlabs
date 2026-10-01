@@ -40,7 +40,7 @@ export const CUSTOMER_NAV_GROUPS: NavGroup[] = [
     kind: "deployment",
     label: "Deployment",
     items: [
-      { id: "deployment-requests", label: "Requests & playbooks", Icon: IconRequest },
+      { id: "deployment-requests", label: "Release workspace", Icon: IconRequest },
     ],
   },
   {

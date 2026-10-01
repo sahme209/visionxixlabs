@@ -2,7 +2,7 @@ import type { View } from "../App";
 import type { VerifiedDesktopIdentity } from "../lib/desktopClient";
 
 const VIEW_TITLES: Partial<Record<View, { title: string; subtitle: string }>> = {
-  "deployment-requests": { title: "Requests & playbooks", subtitle: "Turn governed intake into a versioned deployment playbook" },
+  "deployment-requests": { title: "Release workspace", subtitle: "Bring governed intake, readiness, approval evidence, recovery, and playbooks into one place" },
   docs: { title: "Documentation", subtitle: "Product guidance and operating references" },
   settings: { title: "Settings", subtitle: "Authentication and workstation configuration" },
 };

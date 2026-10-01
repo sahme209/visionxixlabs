@@ -186,7 +186,7 @@ describe("desktop first-run contract", () => {
     expect(app).not.toContain("<GitHubAppView");
     expect(app).not.toContain("<AgiCockpitView");
     expect(app).not.toContain("<BillingView");
-    expect(sidebar).toContain("Requests & playbooks");
+    expect(sidebar).toContain("Release workspace");
     for (const hiddenLabel of ["AGI cockpit", "GitHub App", "Billing & usage", "Simulations", "Connector health"]) {
       expect(sidebar).not.toContain(hiddenLabel);
     }
