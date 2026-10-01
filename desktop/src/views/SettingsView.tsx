@@ -30,6 +30,23 @@ import {
 
 const WEB_BASE = "https://visionxixlabs.com";
 
+/**
+ * Desktop-safe integration inventory.
+ *
+ * The installed app must never imply that a provider is connected merely
+ * because a browser setup page exists. These states are intentionally
+ * conservative until the server has completed the tenant-scoped consent,
+ * validation, and audit journey for the provider.
+ */
+const INTEGRATION_CENTER_ITEMS = [
+  { group: "Source control", name: "GitHub", detail: "Repositories, pull requests, workflows, and release evidence. Connection remains read-only until a workspace policy explicitly permits a write action.", state: "Browser setup" },
+  { group: "Source control", name: "GitLab & Azure DevOps", detail: "Adapters and release data foundations exist, but customer activation is not presented as complete until OAuth, permissions, and recovery are verified end to end.", state: "In review" },
+  { group: "Work management", name: "Jira, Linear & ServiceNow", detail: "Change-ticket context belongs on each release. Ticket creation or updates must be approval-gated and recorded in the release audit trail.", state: "In review" },
+  { group: "Communication", name: "Slack & Microsoft Teams", detail: "Approval requests and release notifications are scoped to an approved workspace channel. Notifications never grant deployment authority.", state: "In review" },
+  { group: "Cloud & delivery", name: "AWS, Azure & Google Cloud", detail: "Cloud access is tenant-scoped and least-privilege. A provider is not marked connected until server-side validation succeeds.", state: "Admin setup" },
+  { group: "Observability", name: "Sentry, Datadog & Grafana", detail: "Release-health signals should be inbound and read-only first, with signed delivery and clear source provenance.", state: "Planned" },
+] as const;
+
 type Section =
   | "general"
   | "profile"
@@ -263,13 +280,18 @@ function WorktreesSection({ prefs }: { prefs: DesktopPreferences | null }) {
 
 function IntegrationsSection() {
   return <div>
-    <SectionHeading title="Integrations" detail="Connections are tenant-scoped and administrator configured. A provider is not called connected until the service validates it." />
+    <SectionHeading title="Integration Center" detail="Connect the systems that already run your releases. Every connection is tenant-scoped, least-privilege, and shown as connected only after server-side validation." />
+    <Notice title="No secrets in the desktop app" detail="Connections open in the secure browser. The desktop app never collects an identity-provider password or long-lived provider secret, and no connection can silently gain write access." />
     <div className="space-y-3">
-      <IntegrationRow icon={<GitBranch className="h-4 w-4" />} name="GitHub" detail="Repository discovery, reviews, merges, releases, and workflow dispatch remain separately permissioned." />
-      <IntegrationRow icon={<Cloud className="h-4 w-4" />} name="AWS" detail="Assume-role connectivity requires customer and broker configuration before verification." />
-      <IntegrationRow icon={<Link2 className="h-4 w-4" />} name="Change systems" detail="Change creation and updates depend on the configured adapter and playbook policy." />
+      {INTEGRATION_CENTER_ITEMS.map((item) => (
+        <IntegrationRow key={item.name} name={item.name} group={item.group} detail={item.detail} state={item.state} />
+      ))}
     </div>
-    <WebButton href="/integrations" label="Open integration setup" standalone />
+    <div className="mt-5 rounded-xl border border-white/[0.07] bg-white/[0.025] p-4">
+      <p className="text-sm text-zinc-200">What happens when you connect</p>
+      <p className="mt-1 text-xs leading-5 text-zinc-500">You review the requested access in your browser, approve only the workspace you intend to connect, then return here to see the service-verified status and any required next action.</p>
+    </div>
+    <WebButton href="/dashboard/integrations" label="Open connection center" standalone />
   </div>;
 }
 
@@ -287,5 +309,5 @@ function LockedRow({ title, detail }: { title: string; detail: string }) { retur
 function PolicyRow({ title, detail }: { title: string; detail: string }) { return <div className="flex items-start gap-3 border-b border-white/[0.055] px-5 py-4 last:border-b-0"><ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-zinc-400" /><div><p className="text-sm text-zinc-200">{title}</p><p className="mt-1 text-xs leading-5 text-zinc-500">{detail}</p></div></div>; }
 function Notice({ title, detail }: { title: string; detail: string }) { return <div className="mb-6 rounded-xl border border-amber-400/15 bg-amber-400/[0.05] p-5"><p className="text-sm font-medium text-amber-100">{title}</p><p className="mt-2 text-xs leading-5 text-zinc-400">{detail}</p></div>; }
 function SummaryCard({ label, value, detail }: { label: string; value: string; detail: string }) { return <div className="rounded-xl border border-white/[0.07] bg-white/[0.025] p-5"><p className="text-xs text-zinc-500">{label}</p><p className="mt-2 text-2xl font-semibold capitalize">{value}</p><p className="mt-2 text-sm text-zinc-500">{detail}</p></div>; }
-function IntegrationRow({ icon, name, detail }: { icon: ReactNode; name: string; detail: string }) { return <div className="flex items-center gap-4 rounded-xl border border-white/[0.07] bg-white/[0.025] p-4"><span className="flex h-9 w-9 items-center justify-center rounded-lg border border-white/[0.07] bg-black/25 text-zinc-300">{icon}</span><div className="min-w-0 flex-1"><p className="text-sm text-zinc-200">{name}</p><p className="mt-1 text-xs leading-5 text-zinc-500">{detail}</p></div><span className="rounded-full border border-amber-500/20 bg-amber-500/10 px-2 py-1 text-[10px] text-amber-200">Admin setup</span></div>; }
+function IntegrationRow({ name, group, detail, state }: { name: string; group: string; detail: string; state: string }) { return <div className="flex items-start gap-4 rounded-xl border border-white/[0.07] bg-white/[0.025] p-4"><span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-white/[0.07] bg-black/25 text-zinc-300"><Link2 className="h-4 w-4" /></span><div className="min-w-0 flex-1"><p className="text-[10px] uppercase tracking-[0.14em] text-zinc-600">{group}</p><p className="mt-0.5 text-sm text-zinc-200">{name}</p><p className="mt-1 text-xs leading-5 text-zinc-500">{detail}</p></div><span className="shrink-0 rounded-full border border-amber-500/20 bg-amber-500/10 px-2 py-1 text-[10px] text-amber-200">{state}</span></div>; }
 function WebButton({ href, label, standalone = false }: { href: string; label: string; standalone?: boolean }) { return <button type="button" onClick={() => void open(`${WEB_BASE}${href}`)} className={`${standalone ? "mt-1" : ""} inline-flex items-center gap-1.5 rounded-lg border border-white/10 px-3 py-2 text-xs text-zinc-300 hover:bg-white/[0.06]`}>{label}<ChevronRight className="h-3.5 w-3.5" /></button>; }

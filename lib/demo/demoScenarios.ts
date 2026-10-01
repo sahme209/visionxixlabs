@@ -208,18 +208,19 @@ export const DEMO_SCENARIOS: Readonly<Record<DemoScenarioId, DemoScenario>> = {
   },
   desktop_app_pairing: {
     id: "desktop_app_pairing",
-    title: "Desktop concept (not available)",
-    pitch: "Historical developer concept; no supported customer installer is available.",
-    description: "Internal-only record retained for product planning. It is not a customer-accessible workflow.",
+    title: "Desktop pairing and integration concept (not available)",
+    pitch: "Internal product flow for browser pairing and governed release-tool connections.",
+    description: "Internal-only record retained for product planning. It documents the secure browser handoff and the Integration Center without representing an unsupported customer workflow as available.",
     estimatedMinutes: 6,
     audience: "internal_only",
-    lastReviewed: REVIEWED,
+    lastReviewed: "2026-10-01",
     steps: [
       { id: "1", title: "Verify desktop distribution", description: "Confirm that every enabled platform points to a verified release asset and unavailable platforms remain disabled.", route: "/download", approval: "none", expectedResult: "Customer receives the verified desktop build or an accurate unavailable state." },
       { id: "2", title: "Pair workspace",             description: "Paste a vxlk_live_* API key minted in /admin/api-keys.", approval: "none", expectedResult: "Test connection shows ✓ + workspace + plan tier." },
       { id: "3", title: "Authorize local capability", description: "Operator approves the local filesystem scope.", approval: "self_approve", expectedResult: "Capability badge shows 'local: read'." },
       { id: "4", title: "Analyze local repo",         description: "Desktop scans a repo + sends summary to platform.", approval: "none", relatedAgent: "Engineer Workspace", expectedResult: "Repo summary appears in web view." },
       { id: "5", title: "Sync results to web",        description: "Findings stream back to the workspace dashboard.", route: "/dashboard/desktop", approval: "none", expectedResult: "Desktop runtime status shows last sync." },
+      { id: "6", title: "Review Integration Center",  description: "Operator sees source control, work-management, communication, cloud, and observability connections with conservative availability states.", approval: "none", expectedResult: "Only service-verified connections can appear connected; unavailable providers remain clearly labeled." },
     ],
   },
   developer_tools: {
