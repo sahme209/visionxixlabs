@@ -364,11 +364,11 @@ function IntegrationsSection() {
     ? cloudConnections.map((connection) => `${connection.provider.toUpperCase()} ${connection.status.replaceAll("_", " ")}`).join(" · ")
     : "Loading the service-verified state for AWS, Azure, and Google Cloud.";
   const githubState = github
-    ? github.status === "active" ? "Verified connection" : github.status.replaceAll("_", " ")
+    ? github.status === "installation_recorded" ? "Consent recorded" : github.status.replaceAll("_", " ")
     : "Checking status";
   const githubDetail = github
-    ? github.status === "active"
-      ? `GitHub App active · ${github.repositorySelection === "all" ? "all repositories" : "selected repositories"}. Browser consent and repository scope remain managed by GitHub.`
+    ? github.status === "installation_recorded"
+      ? `GitHub App consent and ${github.repositorySelection === "all" ? "all-repository" : "selected-repository"} scope were recorded. Live read-only access is not shown as verified until service validation succeeds.`
       : "No active GitHub App installation is recorded for this workspace. Connect in the browser to choose repository scope."
     : "Loading the service-verified GitHub App state.";
 

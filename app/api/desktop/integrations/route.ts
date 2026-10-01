@@ -73,7 +73,16 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
                 orderBy: { installedAt: "desc" },
                 select: { status: true, repositorySelection: true },
             });
-            if (installation) github = installation;
+            if (installation) {
+                // A callback proves that GitHub accepted the installation, but
+                // not yet that Axiom can mint an installation token and perform
+                // a scoped read. Keep that distinction explicit until the live
+                // read-only validation lifecycle exists.
+                github = {
+                    status: installation.status === "active" ? "installation_recorded" : installation.status,
+                    repositorySelection: installation.repositorySelection,
+                };
+            }
         } catch {
             // GitHub App installation is optional and may not be migrated yet.
             // Cloud connection state remains available when it is absent.
