@@ -722,6 +722,18 @@ export class DesktopClient {
     return this.get(`/api/desktop/deployments/${encodeURIComponent(requestId)}/history`);
   }
 
+  deploymentOperations(requestId: string): Promise<ApiResult<Array<{
+    kind: string;
+    status: string;
+    attemptCount: number;
+    createdAt: string;
+    lastAttemptAt: string | null;
+    lastReconciledAt: string | null;
+    externallyReferenced: boolean;
+  }>>> {
+    return this.get(`/api/desktop/deployments/${encodeURIComponent(requestId)}/operations`);
+  }
+
   generateDeploymentPlaybook(requestId: string): Promise<ApiResult<{
     id: string;
     requestId: string;

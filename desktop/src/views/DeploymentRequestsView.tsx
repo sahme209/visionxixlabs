@@ -66,6 +66,16 @@ interface RevisionHistoryEntry {
   changes: string[];
 }
 
+interface OperationLedgerEntry {
+  kind: string;
+  status: string;
+  attemptCount: number;
+  createdAt: string;
+  lastAttemptAt: string | null;
+  lastReconciledAt: string | null;
+  externallyReferenced: boolean;
+}
+
 const initialDraft = {
   title: "",
   requestClass: "planned_release",
@@ -222,6 +232,9 @@ export function DeploymentRequestsView() {
   const [loadingHistoryId, setLoadingHistoryId] = useState<string>();
   const [revisionHistory, setRevisionHistory] = useState<Record<string, RevisionHistoryEntry[]>>({});
   const [historyErrors, setHistoryErrors] = useState<Record<string, string>>({});
+  const [loadingOperationsId, setLoadingOperationsId] = useState<string>();
+  const [operationLedger, setOperationLedger] = useState<Record<string, OperationLedgerEntry[]>>({});
+  const [operationErrors, setOperationErrors] = useState<Record<string, string>>({});
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -305,6 +318,22 @@ export function DeploymentRequestsView() {
       return;
     }
     setRevisionHistory((current) => ({ ...current, [requestId]: result.data }));
+  }
+
+  async function loadOperations(requestId: string) {
+    setLoadingOperationsId(requestId);
+    setOperationErrors((current) => {
+      const next = { ...current };
+      delete next[requestId];
+      return next;
+    });
+    const result = await desktopClient.deploymentOperations(requestId);
+    setLoadingOperationsId(undefined);
+    if (!result.ok) {
+      setOperationErrors((current) => ({ ...current, [requestId]: result.error }));
+      return;
+    }
+    setOperationLedger((current) => ({ ...current, [requestId]: result.data }));
   }
 
   async function closeRequest(request: RequestSummary) {
@@ -421,6 +450,14 @@ export function DeploymentRequestsView() {
                   >
                     {loadingHistoryId === request.id ? "Loading history…" : "Review history"}
                   </button>
+                  <button
+                    type="button"
+                    className="btn-secondary disabled:opacity-50"
+                    disabled={loadingOperationsId === request.id}
+                    onClick={() => void loadOperations(request.id)}
+                  >
+                    {loadingOperationsId === request.id ? "Loading controls…" : "Review execution controls"}
+                  </button>
                 </div>
               </div>
               <ReleaseContext request={request} />
@@ -469,6 +506,37 @@ export function DeploymentRequestsView() {
                       </li>
                     ))}
                   </ol>
+                </div>
+              )}
+              {operationErrors[request.id] && (
+                <p role="alert" className="mt-3 text-xs text-rose-300">
+                  Execution-control history could not be loaded: {operationErrors[request.id]}
+                </p>
+              )}
+              {operationLedger[request.id] && (
+                <div className="mt-3 rounded-lg border border-cyan-500/15 bg-cyan-500/5 px-3 py-2">
+                  <p className="text-xs font-medium text-cyan-100">Execution controls</p>
+                  <p className="mt-1 text-[10px] leading-4 text-zinc-500">
+                    Read-only durable operation status. This workspace cannot create, retry, approve, or dispatch an operation from this view.
+                  </p>
+                  {operationLedger[request.id].length === 0 ? (
+                    <p className="mt-3 text-[11px] text-zinc-400">No consequential operation has been recorded for this request.</p>
+                  ) : (
+                    <ol className="mt-3 space-y-2">
+                      {operationLedger[request.id].map((operation, index) => (
+                        <li key={`${request.id}-${operation.kind}-${operation.createdAt}-${index}`} className="rounded-md border border-white/5 bg-black/10 px-2.5 py-2">
+                          <p className="text-[11px] font-medium text-zinc-200">
+                            {operation.kind.replaceAll("_", " ")} · {operation.status.replaceAll("_", " ")}
+                          </p>
+                          <p className="mt-1 text-[10px] leading-4 text-zinc-500">
+                            Recorded {new Date(operation.createdAt).toLocaleString()} · {operation.attemptCount} attempt{operation.attemptCount === 1 ? "" : "s"}
+                            {operation.lastReconciledAt ? ` · reconciled ${new Date(operation.lastReconciledAt).toLocaleString()}` : ""}
+                            {operation.externallyReferenced ? " · external outcome reference recorded" : ""}
+                          </p>
+                        </li>
+                      ))}
+                    </ol>
+                  )}
                 </div>
               )}
               {request.latestPlaybook && !generatedPlaybooks[request.id] && (
