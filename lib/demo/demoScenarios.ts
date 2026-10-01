@@ -221,6 +221,7 @@ export const DEMO_SCENARIOS: Readonly<Record<DemoScenarioId, DemoScenario>> = {
       { id: "4", title: "Analyze local repo",         description: "Desktop scans a repo + sends summary to platform.", approval: "none", relatedAgent: "Engineer Workspace", expectedResult: "Repo summary appears in web view." },
       { id: "5", title: "Sync results to web",        description: "Findings stream back to the workspace dashboard.", route: "/dashboard/desktop", approval: "none", expectedResult: "Desktop runtime status shows last sync." },
       { id: "6", title: "Review Integration Center",  description: "Operator sees source control, work-management, communication, cloud, and observability connections with conservative availability states.", approval: "none", expectedResult: "Only service-verified connections can appear connected; unavailable providers remain clearly labeled." },
+      { id: "7", title: "Review AI Provider Center",  description: "Operator sees workspace-managed OpenAI, Anthropic, and Google provider families without entering credentials into the desktop app.", approval: "none", expectedResult: "Only providers supported and enabled by the workspace are presented as available; provider routing and credentials remain server governed." },
     ],
   },
   developer_tools: {

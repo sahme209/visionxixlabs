@@ -244,11 +244,16 @@ function AgentsSection({ prefs, onSave }: PreferenceSectionProps) {
 
 function ModelsSection() {
   return <div>
-    <SectionHeading title="Models" detail="Model availability is provisioned by the workspace service. Axiom does not imply that an unconfigured provider is active." />
-    <Group label="Current product behavior">
+    <SectionHeading title="AI Provider Center" detail="Choose from models approved by your workspace. Axiom keeps provider credentials, routing rules, spend controls, and safety policy in the service—not on this device." />
+    <Group label="Workspace-managed providers">
+      <ModelProviderRow name="OpenAI" detail="GPT-family models can support concise release summaries, classification, and structured operational work when your workspace enables them." state="Workspace managed" />
+      <ModelProviderRow name="Anthropic" detail="Claude-family models can support long-form reasoning, playbooks, and evidence review when enabled by your workspace." state="Workspace managed" />
+      <ModelProviderRow name="Google" detail="Gemini models can be used through the organization routing policy when the workspace enables them." state="Workspace managed" />
+    </Group>
+    <Group label="Provider policy">
       <PolicyRow title="Human-confirmed AI output" detail="Generated playbook content remains proposed until a person reviews it." />
-      <PolicyRow title="No desktop BYOK fields" detail="Provider credentials are not accepted by this build. Organization-managed model routing is configured outside the desktop client." />
-      <PolicyRow title="Availability is explicit" detail="Unsupported models and providers are not rendered as usable choices." />
+      <PolicyRow title="No desktop BYOK fields" detail="Provider credentials are not accepted by this build. Organization-managed routing is configured outside the desktop client." />
+      <PolicyRow title="Availability is explicit" detail="Providers such as Grok or other requested models appear only after a supported, approved integration exists. Unconfigured providers are never rendered as usable choices." />
     </Group>
     <WebButton href="/capabilities" label="Review released capabilities" standalone />
   </div>;
@@ -310,4 +315,5 @@ function PolicyRow({ title, detail }: { title: string; detail: string }) { retur
 function Notice({ title, detail }: { title: string; detail: string }) { return <div className="mb-6 rounded-xl border border-amber-400/15 bg-amber-400/[0.05] p-5"><p className="text-sm font-medium text-amber-100">{title}</p><p className="mt-2 text-xs leading-5 text-zinc-400">{detail}</p></div>; }
 function SummaryCard({ label, value, detail }: { label: string; value: string; detail: string }) { return <div className="rounded-xl border border-white/[0.07] bg-white/[0.025] p-5"><p className="text-xs text-zinc-500">{label}</p><p className="mt-2 text-2xl font-semibold capitalize">{value}</p><p className="mt-2 text-sm text-zinc-500">{detail}</p></div>; }
 function IntegrationRow({ name, group, detail, state }: { name: string; group: string; detail: string; state: string }) { return <div className="flex items-start gap-4 rounded-xl border border-white/[0.07] bg-white/[0.025] p-4"><span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-white/[0.07] bg-black/25 text-zinc-300"><Link2 className="h-4 w-4" /></span><div className="min-w-0 flex-1"><p className="text-[10px] uppercase tracking-[0.14em] text-zinc-600">{group}</p><p className="mt-0.5 text-sm text-zinc-200">{name}</p><p className="mt-1 text-xs leading-5 text-zinc-500">{detail}</p></div><span className="shrink-0 rounded-full border border-amber-500/20 bg-amber-500/10 px-2 py-1 text-[10px] text-amber-200">{state}</span></div>; }
+function ModelProviderRow({ name, detail, state }: { name: string; detail: string; state: string }) { return <div className="flex items-start gap-4 border-b border-white/[0.055] px-5 py-4 last:border-b-0"><span className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-violet-500/20 bg-violet-500/10 text-[10px] font-semibold text-violet-200">AI</span><div className="min-w-0 flex-1"><p className="text-sm text-zinc-200">{name}</p><p className="mt-1 text-xs leading-5 text-zinc-500">{detail}</p></div><span className="shrink-0 rounded-full border border-white/[0.08] bg-white/[0.025] px-2 py-1 text-[10px] text-zinc-400">{state}</span></div>; }
 function WebButton({ href, label, standalone = false }: { href: string; label: string; standalone?: boolean }) { return <button type="button" onClick={() => void open(`${WEB_BASE}${href}`)} className={`${standalone ? "mt-1" : ""} inline-flex items-center gap-1.5 rounded-lg border border-white/10 px-3 py-2 text-xs text-zinc-300 hover:bg-white/[0.06]`}>{label}<ChevronRight className="h-3.5 w-3.5" /></button>; }
