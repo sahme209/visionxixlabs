@@ -10,8 +10,6 @@ import {
   EyeIcon,
   EyeSlashIcon,
 } from "@heroicons/react/24/outline";
-import { RealisticFogBackground } from "@/components/ui/realistic-fog-background";
-import { Reveal } from "@/components/motion/Reveal";
 
 export default function SignUpPage() {
   return (
@@ -39,7 +37,7 @@ function SignUpForm() {
   const [enabledProviders, setEnabledProviders] = useState<{ google: boolean; github: boolean } | null>(null);
   const router = useRouter();
   const searchParams = useSearchParams();
-  const redirect = searchParams.get("redirect") || "/download";
+  const redirect = safeInternalPath(searchParams.get("redirect"), "/download");
   const desktopChallenge = desktopChallengeFromRedirect(redirect);
 
   useEffect(() => {
@@ -118,47 +116,18 @@ function SignUpForm() {
   };
 
   return (
-    <div className="min-h-screen flex bg-[#09090b] relative overflow-hidden">
-      <RealisticFogBackground backgroundColor="transparent" opacity={0.15} darken contained />
-      {/* Spotlight orb */}
-      <div className="absolute top-0 left-1/4 w-[600px] h-[400px] spotlight-orb opacity-30 pointer-events-none" aria-hidden />
-      {/* Huly-style coral + violet drifting pools (warm welcome) */}
-      <div className="ambient-drift absolute -top-40 right-0 w-[460px] h-[460px] rounded-full bg-brand-violet/[0.10] blur-[120px] pointer-events-none" aria-hidden />
-      <div className="ambient-drift absolute top-1/4 right-1/4 w-[420px] h-[320px] rounded-full bg-brand-coral/[0.09] blur-[110px] pointer-events-none" style={{ animationDelay: "-8s" }} aria-hidden />
-      <div className="ambient-drift absolute bottom-20 -left-20 w-[360px] h-[360px] rounded-full bg-cyan-500/[0.07] blur-[100px] pointer-events-none" style={{ animationDelay: "-14s" }} aria-hidden />
-      {/* Grid mesh background */}
-      <div className="absolute inset-0 bg-grid-mesh opacity-30 pointer-events-none" aria-hidden />
-
-      <Link href="/" className="absolute top-6 left-6 text-[12px] font-mono uppercase tracking-[0.18em] text-zinc-500 hover:text-brand-coral transition-colors z-20">
-        ← Home
+    <div className="relative flex min-h-screen overflow-hidden bg-[#0d0e0c]">
+      <Link href="/" className="absolute left-6 top-6 z-20 flex items-center gap-2.5 text-sm font-semibold text-zinc-200 transition-colors hover:text-white">
+        <Image src="/vision-xix-logo.png" alt="" width={27} height={27} className="rounded-md" />
+        Vision XIX Labs
       </Link>
 
-      <div className="flex-1 flex items-center justify-center px-4 sm:px-8 relative z-10">
-        <Reveal direction="up" blur delay={0.05}>
-          <div className="w-full max-w-sm glass-card auth-gradient-border auth-card-huly rounded-2xl border border-white/[0.06] p-8">
-            <div className="auth-gradient-corner" aria-hidden />
-            <Link href="/" className="flex items-center gap-2.5 mb-10">
-              <Image
-                src="/vision-xix-logo.png"
-                alt="Vision XIX Labs"
-                width={28}
-                height={28}
-                className="rounded-lg"
-              />
-              <span className="text-sm font-semibold bg-gradient-to-r from-brand-coral via-fuchsia-400 to-brand-violet bg-clip-text text-transparent">
-                Vision XIX Labs
-              </span>
-            </Link>
-
-            <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-zinc-500 inline-flex items-center gap-2 mb-2">
-              <span className="text-brand-coral/90 tabular-nums">B</span>
-              <span className="h-px w-5 bg-gradient-to-r from-brand-coral/60 to-transparent" />
-              New account
-            </p>
-            <h1 className="text-3xl font-bold mb-2 tracking-[-0.04em]">
-              Create yours.
-              <span aria-hidden className="block h-[3px] w-14 mt-1.5 rounded-full bg-gradient-to-r from-brand-coral via-fuchsia-400 to-transparent opacity-85" />
-            </h1>
+      <div className="relative z-10 flex flex-1 items-center justify-center px-5 py-24 sm:px-8">
+          <div className="w-full max-w-lg p-2 sm:p-8">
+            <div className="mb-8 flex h-12 w-12 items-center justify-center rounded-xl border border-white/[0.08] bg-white/[0.035]">
+              <Image src="/vision-xix-logo.png" alt="" width={30} height={30} className="rounded-md" />
+            </div>
+            <h1 className="mb-2 text-3xl font-normal tracking-[-0.045em]">Create your account</h1>
             <p className="text-sm text-zinc-500 mb-8">
               Create the identity used to pair this installed application. Account creation does not include production access.
             </p>
@@ -230,7 +199,7 @@ function SignUpForm() {
               <button
                 type="submit"
                 disabled={loading || !acceptedTerms || !desktopChallenge}
-                className="btn-press w-full rounded-full py-3 text-sm font-semibold tracking-tight disabled:opacity-50 flex items-center justify-center gap-2"
+                className="flex w-full items-center justify-center gap-2 rounded-lg bg-zinc-100 py-3 text-sm font-semibold text-zinc-950 transition hover:bg-white disabled:opacity-50"
               >
                 {loading ? "Creating account..." : "Create account"}
                 {!loading && <ArrowRightIcon className="h-4 w-4" />}
@@ -272,7 +241,7 @@ function SignUpForm() {
               Already have an account?{" "}
               <Link
                 href={`/auth/signin?callbackUrl=${encodeURIComponent(redirect)}`}
-                className="font-medium text-violet-400 hover:text-violet-300"
+                className="font-medium text-zinc-200 hover:text-white"
               >
                 Sign in
               </Link>
@@ -283,7 +252,6 @@ function SignUpForm() {
             </p>
             {!desktopChallenge && <p role="alert" className="mt-3 text-xs text-amber-300 text-center">This sign-up link is not attached to a valid desktop pairing request. Return to Axiom Agent and choose Continue securely in browser.</p>}
           </div>
-        </Reveal>
       </div>
     </div>
   );
@@ -295,5 +263,15 @@ function desktopChallengeFromRedirect(redirect: string): string {
     return url.pathname === "/desktop/connect" ? url.searchParams.get("challenge")?.trim() ?? "" : "";
   } catch {
     return "";
+  }
+}
+
+function safeInternalPath(value: string | null, fallback: string): string {
+  if (!value || !value.startsWith("/") || value.startsWith("//")) return fallback;
+  try {
+    const parsed = new URL(value, "https://visionxixlabs.com");
+    return parsed.origin === "https://visionxixlabs.com" ? `${parsed.pathname}${parsed.search}${parsed.hash}` : fallback;
+  } catch {
+    return fallback;
   }
 }

@@ -6,22 +6,20 @@ function source(path: string): string {
 }
 
 describe("mobile website contract", () => {
-  it("uses a dedicated mobile homepage instead of compressing the desktop page", () => {
+  it("uses one responsive homepage with phone-first spacing and actions", () => {
     const page = source("app/page.tsx");
-    const mobileHome = source("components/home/MobileHome.tsx");
 
-    expect(page).toContain("<MobileHome />");
-    expect(page).toContain('<div className="hidden md:block">');
-    expect(mobileHome).toContain('<main className="md:hidden overflow-x-clip">');
-    expect(mobileHome).toContain("Your request becomes the playbook.");
+    expect(page).toContain("Turn the request into the playbook.");
+    expect(page).toContain("flex flex-col gap-3 sm:flex-row");
+    expect(page).toContain("grid min-h-[460px] lg:grid-cols");
   });
 
   it("keeps primary mobile actions large and full width", () => {
-    const mobileHome = source("components/home/MobileHome.tsx");
+    const page = source("app/page.tsx");
 
-    expect(mobileHome).toContain("min-h-12 w-full");
-    expect(mobileHome).toContain("Get the desktop app");
-    expect(mobileHome).toContain("Explore the isolated demo");
+    expect(page).toContain("min-h-12 items-center justify-center");
+    expect(page).toContain("Download Axiom Agent");
+    expect(page).toContain("Explore the isolated demo");
   });
 
   it("uses a concise mobile menu and locks both root scroll containers", () => {
@@ -30,7 +28,7 @@ describe("mobile website contract", () => {
     expect(navigation).toContain("const mobileLinks = [");
     expect(navigation).toContain('document.body.style.overflow = "hidden"');
     expect(navigation).toContain('document.documentElement.style.overflow = "hidden"');
-    expect(navigation).toContain('min-h-[60px]');
+    expect(navigation).toContain('h-16');
     expect(navigation).not.toContain("Mobile navigation links\">\n                  <Link");
   });
 
@@ -52,11 +50,11 @@ describe("mobile website contract", () => {
     expect(demo).not.toContain("transition-colors truncate");
   });
 
-  it("uses a compact phone footer instead of desktop link directories", () => {
+  it("uses a responsive footer that keeps links readable on phones", () => {
     const footer = source("components/Footer.tsx");
 
-    expect(footer).toContain('<div className="md:hidden mb-10">');
-    expect(footer).toContain("hidden md:grid md:grid-cols-5");
-    expect(footer).toContain("Deployment operations belong in the desktop app.");
+    expect(footer).toContain("grid gap-12 py-16 sm:grid-cols-2");
+    expect(footer).toContain("flex flex-col items-center justify-center");
+    expect(footer).toContain("Production access is service-verified");
   });
 });

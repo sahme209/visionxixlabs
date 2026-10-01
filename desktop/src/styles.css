@@ -58,6 +58,23 @@
   }
 }
 
+html[data-reduce-motion="true"] *,
+html[data-reduce-motion="true"] *::before,
+html[data-reduce-motion="true"] *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  scroll-behavior: auto !important;
+  transition-duration: 0.01ms !important;
+}
+
+html[data-high-contrast="true"] {
+  filter: contrast(1.14);
+}
+
+html[data-density="compact"] {
+  font-size: 14px;
+}
+
 /* ===========================================================================
    COMPONENT-CLASS UTILITIES
    =========================================================================== */

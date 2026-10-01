@@ -3,7 +3,9 @@ import { NextRequest } from "next/server";
 
 import { proxy } from "../../proxy";
 
-function request(path: string, init?: RequestInit): NextRequest {
+type NextRequestInit = ConstructorParameters<typeof NextRequest>[1];
+
+function request(path: string, init?: NextRequestInit): NextRequest {
   return new NextRequest(new URL(path, "https://example.test"), init);
 }
 

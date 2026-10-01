@@ -93,6 +93,10 @@ describe("desktop first-run contract", () => {
     expect(signIn).toContain("cancelBrowserSignIn");
     expect(pairing).toContain("signal?: AbortSignal");
     expect(pairing).toContain("intent: DesktopAuthIntent");
+    expect(pairing).toContain("deviceFingerprint: fingerprint");
+    const statusRoute = readFileSync(join(root, "app/api/desktop/pair/status/route.ts"), "utf8");
+    expect(statusRoute).toContain('requireString(body.deviceFingerprint, "deviceFingerprint"');
+    expect(statusRoute).toContain("record.deviceFingerprint !== deviceFingerprint");
     expect(startRoute).toContain('INTENTS = new Set(["sign_in", "sign_up"])');
     expect(connectPage).toContain('/auth/signup?redirect=');
     expect(connectPage).toContain('/auth/signin?callbackUrl=');

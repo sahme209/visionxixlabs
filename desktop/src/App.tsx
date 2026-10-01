@@ -9,6 +9,7 @@ import { DesktopAccessRequiredView } from "./views/DesktopAccessRequiredView";
 import { desktopClient, type VerifiedDesktopIdentity } from "./lib/desktopClient";
 import { clearApiKey } from "./lib/apiKeyStore";
 import { clearAuthSession } from "./lib/authSession";
+import { readDesktopPreferences } from "./lib/preferences";
 
 /** Only verified, customer-reachable desktop destinations belong here. */
 export type CustomerView = "deployment-requests" | "docs" | "settings";
@@ -37,6 +38,7 @@ export default function App() {
   const [identity, setIdentity] = useState<VerifiedDesktopIdentity | null>(null);
 
   useEffect(() => {
+    void readDesktopPreferences().catch(() => undefined);
     let cancelled = false;
     async function verifySavedCredential() {
       if (!desktopClient.hasAuth()) {
