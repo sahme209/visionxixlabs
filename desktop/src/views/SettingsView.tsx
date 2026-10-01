@@ -317,12 +317,21 @@ function IntegrationsSection() {
     cloud: Array<{ provider: "aws" | "azure" | "gcp"; status: string; lastTransitionAt: string | null }>;
     github: { status: string; repositorySelection: string };
   } | null>(null);
+  const [health, setHealth] = useState<{
+    status: "healthy" | "degraded" | "preview" | "blocked" | "disabled" | "unknown";
+    sourceMode: string;
+    summary: { total: number; healthy: number; degraded: number; preview: number; blocked: number; disabled: number };
+  } | null>(null);
   const [refreshing, setRefreshing] = useState(false);
 
   const loadCloudConnections = useCallback(async () => {
     setRefreshing(true);
-    const result = await desktopClient.integrationStatus();
+    const [result, healthResult] = await Promise.all([
+      desktopClient.integrationStatus(),
+      desktopClient.integrationHealth(),
+    ]);
     if (result.ok) setIntegrationStatus(result.data);
+    if (healthResult.ok) setHealth(healthResult.data);
     setRefreshing(false);
   }, []);
 
@@ -368,6 +377,15 @@ function IntegrationsSection() {
     <div className="mt-5 rounded-xl border border-white/[0.07] bg-white/[0.025] p-4">
       <p className="text-sm text-zinc-200">What happens when you connect</p>
       <p className="mt-1 text-xs leading-5 text-zinc-500">You review the requested access in your browser, approve only the workspace you intend to connect, then return here to see the service-verified status and any required next action.</p>
+    </div>
+    <div className="mt-3 rounded-xl border border-white/[0.07] bg-white/[0.025] p-4">
+      <p className="text-sm text-zinc-200">Connected-system health</p>
+      <p className="mt-1 text-xs leading-5 text-zinc-500">
+        {health
+          ? `${health.status.replaceAll("_", " ")} · ${health.summary.healthy} healthy · ${health.summary.degraded} needs attention · ${health.summary.preview} not yet live.`
+          : "Checking the read-only health of connected-system foundations."}
+      </p>
+      <p className="mt-2 text-[11px] text-zinc-600">This is integration health only. Production release observation remains unavailable until an observability connection is verified.</p>
     </div>
     <div className="mt-5 flex items-center gap-3">
       <WebButton href="/dashboard/github-app" label="Connect GitHub" />

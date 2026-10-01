@@ -615,6 +615,14 @@ export class DesktopClient {
     return this.get("/api/desktop/ai-providers");
   }
 
+  integrationHealth(): Promise<ApiResult<{
+    status: "healthy" | "degraded" | "preview" | "blocked" | "disabled" | "unknown";
+    sourceMode: string;
+    summary: { total: number; healthy: number; degraded: number; preview: number; blocked: number; disabled: number };
+  }>> {
+    return this.get("/api/desktop/integration-health");
+  }
+
   deploymentRequests(): Promise<ApiResult<Array<{
     id: string;
     title: string;
