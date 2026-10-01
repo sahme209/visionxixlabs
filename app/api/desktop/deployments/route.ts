@@ -69,6 +69,10 @@ interface ReleaseContextSummary {
         backupRequired: boolean;
         evidenceCount: number;
     };
+    observation: {
+        status: "not_connected";
+        recordedMonitoringPlan: boolean;
+    };
 }
 
 function record(value: unknown): Record<string, unknown> {
@@ -97,6 +101,7 @@ function summarizeReleaseContext(intakeJson: unknown): ReleaseContextSummary {
     const productionReady = intake.productionReady === true;
     const validationStepCount = count(intake.validationSteps);
     const rollbackAvailability = text(intake.rollbackAvailability) ?? "unknown";
+    const deferredValidation = record(intake.deferredValidation);
     const blockers = [
         !developmentReady ? "Development readiness has not been recorded." : null,
         !productionReady ? "Production readiness has not been recorded." : null,
@@ -133,6 +138,14 @@ function summarizeReleaseContext(intakeJson: unknown): ReleaseContextSummary {
             rollbackAvailability,
             backupRequired: intake.backupRequired === true,
             evidenceCount: count(intake.facts) + count(intake.backupEvidenceIds),
+        },
+        // A deployment intake can describe how someone intends to observe a
+        // deferred validation, but that is not evidence that Axiom is
+        // receiving production telemetry. Keep the absence explicit until a
+        // tenant-scoped observability connector proves otherwise.
+        observation: {
+            status: "not_connected",
+            recordedMonitoringPlan: Boolean(text(deferredValidation.monitoringPlan)),
         },
     };
 }

@@ -645,6 +645,7 @@ export class DesktopClient {
         blockers: string[];
       };
       recovery: { rollbackAvailability: string; backupRequired: boolean; evidenceCount: number };
+      observation: { status: "not_connected"; recordedMonitoringPlan: boolean };
     };
     latestPlaybook: {
       id: string;

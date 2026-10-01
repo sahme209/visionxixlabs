@@ -24,6 +24,7 @@ interface RequestSummary {
       blockers: string[];
     };
     recovery: { rollbackAvailability: string; backupRequired: boolean; evidenceCount: number };
+    observation: { status: "not_connected"; recordedMonitoringPlan: boolean };
   };
   latestPlaybook: {
     id: string;
@@ -635,7 +636,7 @@ function ReleaseContext({ request }: { request: RequestSummary }) {
           </ul>
         )}
       </div>
-      <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 xl:grid-cols-5">
       <ContextSignal
         label="Scope"
         value={`${context.scope.applicationCount} app${context.scope.applicationCount === 1 ? "" : "s"} · ${context.scope.repositoryCount} repo${context.scope.repositoryCount === 1 ? "" : "s"}`}
@@ -659,10 +660,16 @@ function ReleaseContext({ request }: { request: RequestSummary }) {
         detail={context.recovery.backupRequired ? "Backup evidence required" : "No backup evidence required"}
         tone={context.recovery.rollbackAvailability === "yes" ? "good" : "attention"}
       />
+      <ContextSignal
+        label="Post-release observation"
+        value="Not connected"
+        detail={context.observation.recordedMonitoringPlan ? "Follow-up monitoring plan recorded" : "No verified observability signal"}
+        tone="attention"
+      />
       </div>
       <div className="mt-2 flex flex-wrap items-center justify-between gap-3 rounded-lg border border-white/5 bg-white/[0.015] px-3 py-2">
         <p className="text-[10px] leading-4 text-zinc-500">
-          Human decisions stay in the authenticated browser Approval Center. This release record cannot approve or dispatch a deployment.
+          Human decisions stay in the authenticated browser Approval Center. This record cannot approve or dispatch a deployment, and it does not claim production health until observability is verified.
         </p>
         <ExternalLink
           href="https://visionxixlabs.com/dashboard/approvals"
