@@ -55,8 +55,21 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="mt-16 overflow-hidden rounded-2xl border border-white/[0.07] bg-[#171714] p-3 sm:p-6 lg:mt-20 lg:p-10">
-            <DeploymentLifecycleDemo />
+          <div className="relative mt-16 overflow-hidden rounded-2xl border border-white/[0.12] bg-[#171714] p-3 shadow-2xl shadow-black/30 sm:p-6 lg:mt-20 lg:p-10">
+            <div
+              aria-hidden
+              className="absolute inset-0 scale-105 bg-cover bg-center opacity-75"
+              style={{ backgroundImage: "url('/images/axiom-hero-landscape-v1.png')" }}
+            />
+            <div aria-hidden className="absolute inset-0 bg-[linear-gradient(180deg,rgba(9,10,12,0.12),rgba(9,10,12,0.42)_42%,rgba(9,10,12,0.86))]" />
+            <div aria-hidden className="absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-black/35 to-transparent" />
+            <div className="relative">
+              <div className="mb-3 flex items-center justify-between px-1 text-[10px] uppercase tracking-[0.16em] text-zinc-300/80">
+                <span>Release operations, made visible</span>
+                <span className="hidden sm:inline">Axiom Agent preview</span>
+              </div>
+              <DeploymentLifecycleDemo />
+            </div>
           </div>
         </section>
 
