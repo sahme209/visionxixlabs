@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { prisma } from "@/lib/db";
 import { resolveRequestDesktopSession } from "@/lib/desktop/resolveRequestDesktopSession";
+import { visibleTenantConnectionStatus } from "@/lib/integrations/tenantConnectionState";
 
 export const dynamic = "force-dynamic";
 
@@ -92,8 +93,12 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
                 const connection = byCollaborationProvider.get(provider);
                 return {
                     provider,
-                    // A pending consent record is not a usable connection.
-                    status: connection?.status ?? "not_connected",
+                    // A credential or callback is not enough: only a live
+                    // server-side validation may appear as an active connection.
+                    status: visibleTenantConnectionStatus({
+                        status: connection?.status,
+                        lastValidatedAt: connection?.lastValidatedAt,
+                    }),
                     lastValidatedAt: connection?.lastValidatedAt?.toISOString() ?? null,
                 };
             });
