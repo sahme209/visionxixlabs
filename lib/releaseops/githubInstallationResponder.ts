@@ -283,6 +283,8 @@ export async function buildInstallationCaptureResponse(
 export interface StatusContext {
   appSlug: string;
   callbackBaseUrl: string;
+  /** Dedicated signing key, or a securely configured application secret. */
+  stateSigningSecret?: string;
 }
 
 export type StatusBody =
@@ -301,14 +303,42 @@ export type StatusBody =
 export interface StatusResult { status: number; body: StatusBody }
 
 /**
- * Build the GitHub App install URL. Embeds organizationId in the
- * `state` param so the post-install callback knows which tenant
- * the install belongs to.
+ * Build the GitHub App install URL with a short-lived signed state. The
+ * callback never trusts a plain organization ID supplied by the browser.
  */
 export function buildInstallUrl(ctx: StatusContext, organizationId: string): string {
-  if (!ctx.appSlug) return "";
-  const state = encodeURIComponent(organizationId);
+  if (!ctx.appSlug || !ctx.stateSigningSecret) return "";
+  const state = encodeURIComponent(createGitHubInstallState({ organizationId, secret: ctx.stateSigningSecret }));
   return `https://github.com/apps/${ctx.appSlug}/installations/new?state=${state}`;
+}
+
+const INSTALL_STATE_TTL_SECONDS = 10 * 60;
+
+interface GitHubInstallStatePayload { organizationId: string; issuedAtSec: number; nonce: string }
+
+export function createGitHubInstallState(input: { organizationId: string; secret: string; nowSec?: number; nonce?: string }): string {
+  const payload = Buffer.from(JSON.stringify({
+    organizationId: input.organizationId,
+    issuedAtSec: input.nowSec ?? Math.floor(Date.now() / 1000),
+    nonce: input.nonce ?? randomBytes(16).toString("base64url"),
+  } satisfies GitHubInstallStatePayload), "utf8").toString("base64url");
+  const signature = createHmac("sha256", input.secret).update(`github-install-v1.${payload}`).digest("base64url");
+  return `${payload}.${signature}`;
+}
+
+export function verifyGitHubInstallState(input: { state: string; secret: string; nowSec?: number }): { ok: true; organizationId: string } | { ok: false; reason: "malformed" | "invalid" | "expired" } {
+  const [payload, supplied] = input.state.split(".");
+  if (!payload || !supplied || input.state.split(".").length !== 2) return { ok: false, reason: "malformed" };
+  const expected = createHmac("sha256", input.secret).update(`github-install-v1.${payload}`).digest();
+  const actual = Buffer.from(supplied, "base64url");
+  if (actual.length !== expected.length || !timingSafeEqual(actual, expected)) return { ok: false, reason: "invalid" };
+  try {
+    const parsed = JSON.parse(Buffer.from(payload, "base64url").toString("utf8")) as Partial<GitHubInstallStatePayload>;
+    if (!parsed.organizationId || !parsed.nonce || typeof parsed.issuedAtSec !== "number") return { ok: false, reason: "malformed" };
+    const now = input.nowSec ?? Math.floor(Date.now() / 1000);
+    if (parsed.issuedAtSec > now || now - parsed.issuedAtSec > INSTALL_STATE_TTL_SECONDS) return { ok: false, reason: "expired" };
+    return { ok: true, organizationId: parsed.organizationId };
+  } catch { return { ok: false, reason: "malformed" }; }
 }
 
 export async function buildInstallationStatusResponse(
@@ -435,3 +465,4 @@ export async function buildInstallationTransitionResponse(
     };
   }
 }
+import { createHmac, randomBytes, timingSafeEqual } from "node:crypto";

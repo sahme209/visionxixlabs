@@ -4,6 +4,8 @@ import {
   buildInstallationStatusResponse,
   buildInstallationTransitionResponse,
   buildInstallUrl,
+  createGitHubInstallState,
+  verifyGitHubInstallState,
   planInstallTransition,
   type GitHubInstallationRepo,
   type InstallationRow,
@@ -121,12 +123,20 @@ describe("planInstallTransition", () => {
 });
 
 describe("buildInstallUrl", () => {
-  it("encodes org id in state param", () => {
-    const url = buildInstallUrl({ appSlug: "axiom-releaseops", callbackBaseUrl: "https://x" }, "org_abc");
-    expect(url).toBe("https://github.com/apps/axiom-releaseops/installations/new?state=org_abc");
+  const installCtx = { appSlug: "axiom-releaseops", callbackBaseUrl: "https://x", stateSigningSecret: "test-signing-secret" };
+  it("uses a signed state param instead of exposing the org id", () => {
+    const url = new URL(buildInstallUrl(installCtx, "org_abc"));
+    const state = url.searchParams.get("state")!;
+    expect(state).not.toBe("org_abc");
+    expect(verifyGitHubInstallState({ state, secret: "test-signing-secret" })).toEqual({ ok: true, organizationId: "org_abc" });
   });
   it("returns empty string when app slug not configured", () => {
-    expect(buildInstallUrl({ appSlug: "", callbackBaseUrl: "https://x" }, "org_abc")).toBe("");
+    expect(buildInstallUrl({ ...installCtx, appSlug: "" }, "org_abc")).toBe("");
+  });
+  it("rejects modified and expired signed state", () => {
+    const state = createGitHubInstallState({ organizationId: "org_abc", secret: "test-signing-secret", nowSec: 10, nonce: "fixed" });
+    expect(verifyGitHubInstallState({ state: `${state}x`, secret: "test-signing-secret", nowSec: 11 }).ok).toBe(false);
+    expect(verifyGitHubInstallState({ state, secret: "test-signing-secret", nowSec: 611 })).toEqual({ ok: false, reason: "expired" });
   });
 });
 
@@ -210,15 +220,16 @@ describe("buildInstallationCaptureResponse", () => {
 });
 
 describe("buildInstallationStatusResponse", () => {
+  const installCtx = { appSlug: "axiom", callbackBaseUrl: "https://x", stateSigningSecret: "test-signing-secret" };
   it("200 not installed when empty", async () => {
     const stub = makeRepo();
-    const r = await buildInstallationStatusResponse(stub, "o", { appSlug: "axiom", callbackBaseUrl: "https://x" });
+    const r = await buildInstallationStatusResponse(stub, "o", installCtx);
     expect(r.status).toBe(200);
     if (!r.body.ok) throw new Error("expected ok");
     expect(r.body.data.installed).toBe(false);
     expect(r.body.data.active).toBeNull();
     expect(r.body.data.installUrl).toContain("axiom");
-    expect(r.body.data.installUrl).toContain("state=o");
+    expect(r.body.data.installUrl).not.toContain("state=o");
   });
 
   it("200 reports active installation when present", async () => {
@@ -226,7 +237,7 @@ describe("buildInstallationStatusResponse", () => {
     await buildInstallationCaptureResponse(stub, {
       organizationId: "o", githubInstallationId: "123", accountLogin: "acme", accountType: "Organization",
     });
-    const r = await buildInstallationStatusResponse(stub, "o", { appSlug: "axiom", callbackBaseUrl: "https://x" });
+    const r = await buildInstallationStatusResponse(stub, "o", installCtx);
     if (!r.body.ok) throw new Error("expected ok");
     expect(r.body.data.installed).toBe(true);
     expect(r.body.data.active?.accountLogin).toBe("acme");
@@ -239,7 +250,7 @@ describe("buildInstallationStatusResponse", () => {
     });
     stub._rows[0].status = "revoked";
     stub._rows[0].revokedAt = new Date();
-    const r = await buildInstallationStatusResponse(stub, "o", { appSlug: "axiom", callbackBaseUrl: "https://x" });
+    const r = await buildInstallationStatusResponse(stub, "o", installCtx);
     if (!r.body.ok) throw new Error("expected ok");
     expect(r.body.data.installed).toBe(false);
     expect(r.body.data.history).toHaveLength(1);
@@ -250,7 +261,7 @@ describe("buildInstallationStatusResponse", () => {
     stub.gitHubInstallation.findMany = async () => {
       throw Object.assign(new Error("relation does not exist"), { code: "P2021" });
     };
-    const r = await buildInstallationStatusResponse(stub, "o", { appSlug: "axiom", callbackBaseUrl: "https://x" });
+    const r = await buildInstallationStatusResponse(stub, "o", installCtx);
     expect(r.status).toBe(503);
   });
 });

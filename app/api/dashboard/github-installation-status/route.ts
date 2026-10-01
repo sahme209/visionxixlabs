@@ -22,10 +22,11 @@ export async function GET(_req: NextRequest) {
   }
   const appSlug = process.env.GITHUB_APP_SLUG ?? "";
   const callbackBaseUrl = process.env.NEXTAUTH_URL ?? "";
+  const stateSigningSecret = process.env.GITHUB_INSTALL_STATE_SECRET ?? process.env.NEXTAUTH_SECRET ?? "";
   const r = await buildInstallationStatusResponse(
     prisma as unknown as GitHubInstallationRepo,
     ctx.organizationId,
-    { appSlug, callbackBaseUrl },
+    { appSlug, callbackBaseUrl, stateSigningSecret },
   );
   return NextResponse.json(r.body, { status: r.status });
 }

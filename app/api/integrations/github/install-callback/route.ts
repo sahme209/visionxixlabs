@@ -5,10 +5,10 @@
  * install flow. Query params from GitHub:
  *   installation_id  — the new installation
  *   setup_action     — "install" | "update" | "request"
- *   state            — the organizationId we embedded in the install URL
+ *   state            — a short-lived, signed workspace binding
  *
  * This handler captures the installation_id, then redirects back into
- * the dashboard. The actual GitHub API account-info fetch (to enrich
+ * the lightweight web companion. The actual GitHub API account-info fetch (to enrich
  * accountLogin / accountType) lands in a follow-on phase that wires
  * the App's private key for installation-token minting; for now we
  * default to a synthesized login so the rest of the flow can ship.
@@ -19,6 +19,7 @@ import { currentContext } from "@/lib/auth/currentContext";
 import { prisma } from "@/lib/db";
 import {
   buildInstallationCaptureResponse,
+  verifyGitHubInstallState,
   type GitHubInstallationRepo,
 } from "@/lib/releaseops/githubInstallationResponder";
 import { appendAuditEvent, type AuditEventRepo } from "@/lib/releaseops/auditEventResponder";
@@ -31,26 +32,26 @@ export async function GET(req: NextRequest): Promise<Response> {
   const installationId = url.searchParams.get("installation_id");
   const setupAction = url.searchParams.get("setup_action") ?? "install";
   const state = url.searchParams.get("state") ?? "";
+  const stateSecret = process.env.GITHUB_INSTALL_STATE_SECRET ?? process.env.NEXTAUTH_SECRET ?? "";
+  const verifiedState = stateSecret ? verifyGitHubInstallState({ state, secret: stateSecret }) : { ok: false as const, reason: "invalid" as const };
+
+  if (!verifiedState.ok) {
+    return NextResponse.redirect(new URL("/auth/success?integration=github&status=invalid_state", req.url));
+  }
 
   // GitHub sends users here after a "request to install" flow even
   // when they don't have admin access to the org. We acknowledge but
   // do not persist.
   if (setupAction === "request") {
-    return NextResponse.redirect(new URL("/dashboard/connector-setup?install_request=1", req.url));
+    return NextResponse.redirect(new URL("/auth/success?integration=github&status=approval_requested", req.url));
   }
 
   if (!installationId) {
-    return NextResponse.redirect(new URL("/dashboard/connector-setup?install_error=missing_installation_id", req.url));
+    return NextResponse.redirect(new URL("/auth/success?integration=github&status=missing_installation", req.url));
   }
 
   const ctx = await currentContext();
-  // Trust the `state` we embedded over the session context — the user
-  // may complete the install in a different browser/session. Fall back
-  // to ctx.organizationId if state was lost.
-  const organizationId = state || ctx.organizationId || "";
-  if (!organizationId) {
-    return NextResponse.redirect(new URL("/dashboard/connector-setup?install_error=no_org_in_state", req.url));
-  }
+  const organizationId = verifiedState.organizationId;
 
   const r = await buildInstallationCaptureResponse(
     prisma as unknown as GitHubInstallationRepo,
@@ -80,7 +81,7 @@ export async function GET(req: NextRequest): Promise<Response> {
     });
   }
 
-  const status = r.body.ok ? "ok" : "error";
-  const redirectUrl = new URL(`/dashboard/connector-setup?install=${status}`, req.url);
+  const status = r.body.ok ? "connected" : "error";
+  const redirectUrl = new URL(`/auth/success?integration=github&status=${status}`, req.url);
   return NextResponse.redirect(redirectUrl);
 }
