@@ -3,13 +3,21 @@ import { currentContext } from "@/lib/auth/currentContext";
 import { isAdminOrOwner } from "@/lib/auth/platformAdmin";
 import { record as recordAudit } from "@/lib/audit/secureAudit";
 import { id as idFactory } from "@/lib/domain/ids";
+import { getAIProviderManager } from "@/lib/ai/AIProviderManager";
 import {
   loadWorkspaceAIProviderPolicy,
   normalizeWorkspaceAIProviderPolicy,
+  resolveWorkspaceAIProviderPolicy,
   saveWorkspaceAIProviderPolicy,
 } from "@/lib/ai/workspaceProviderPolicy";
 
 export const dynamic = "force-dynamic";
+
+function serviceEnabledProviders() {
+  return getAIProviderManager().status()
+    .filter((provider) => provider.provider !== "mock" && provider.configured)
+    .map((provider) => provider.provider);
+}
 
 async function ownerContext(): Promise<{ organizationId: string; userId: string } | null> {
   const ctx = await currentContext();
@@ -20,7 +28,10 @@ async function ownerContext(): Promise<{ organizationId: string; userId: string 
 export async function GET(): Promise<NextResponse> {
   const ctx = await ownerContext();
   if (!ctx) return NextResponse.json({ ok: false, error: "workspace_owner_required" }, { status: 403 });
-  const policy = await loadWorkspaceAIProviderPolicy(ctx.organizationId);
+  const policy = resolveWorkspaceAIProviderPolicy({
+    stored: await loadWorkspaceAIProviderPolicy(ctx.organizationId),
+    serviceEnabled: serviceEnabledProviders(),
+  });
   return NextResponse.json({ ok: true, data: { policy } });
 }
 
@@ -30,6 +41,10 @@ export async function PUT(request: NextRequest): Promise<NextResponse> {
   const body = await request.json().catch(() => null) as { allowedProviders?: unknown; fallbackOrder?: unknown } | null;
   const policy = body ? normalizeWorkspaceAIProviderPolicy(body) : null;
   if (!policy) return NextResponse.json({ ok: false, error: "invalid_provider_policy" }, { status: 422 });
+  const serviceEnabled = serviceEnabledProviders();
+  if (policy.allowedProviders.some((provider) => !serviceEnabled.includes(provider))) {
+    return NextResponse.json({ ok: false, error: "provider_unavailable" }, { status: 422 });
+  }
   try {
     await saveWorkspaceAIProviderPolicy({ organizationId: ctx.organizationId, policy, updatedBy: ctx.userId });
     await recordAudit({
