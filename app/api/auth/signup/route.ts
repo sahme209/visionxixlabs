@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { hash } from "bcryptjs";
 import { prisma } from "@/lib/db";
 import { checkRateLimit } from "@/lib/rateLimit";
+import { ensurePersonalWorkspaceMembership } from "@/lib/auth/ensurePersonalWorkspaceMembership";
 
 export async function POST(req: NextRequest) {
   if (!process.env.DATABASE_URL) {
@@ -52,6 +53,7 @@ export async function POST(req: NextRequest) {
         name: normalizedName || undefined,
       },
     });
+    await ensurePersonalWorkspaceMembership({ userId: user.id, email: user.email });
     return NextResponse.json({ id: user.id, email: user.email, name: user.name });
   } catch (e) {
     const err = e as Error & { code?: string };

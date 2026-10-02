@@ -4,6 +4,7 @@ import GoogleProvider from "next-auth/providers/google";
 import GitHubProvider from "next-auth/providers/github";
 import { compare } from "bcryptjs";
 import { prisma } from "./db";
+import { ensurePersonalWorkspaceMembership } from "./auth/ensurePersonalWorkspaceMembership";
 
 // Helper: only register an OAuth provider when its env credentials are
 // present. Missing OAuth env shouldn't crash the app — the UI just shows
@@ -23,6 +24,7 @@ function buildProviders(): NextAuthOptions["providers"] {
           if (!user?.passwordHash) return null;
           const valid = await compare(credentials.password, user.passwordHash);
           if (!valid) return null;
+          await ensurePersonalWorkspaceMembership({ userId: user.id, email: user.email });
           return { id: user.id, email: user.email, name: user.name, image: user.image };
         } catch (err) {
           console.error("[NextAuth authorize]", err);
@@ -73,7 +75,7 @@ export const authOptions: NextAuthOptions = {
       if (account?.provider === "google" || account?.provider === "github") {
         if (!user.email) return false;
         try {
-          await prisma.user.upsert({
+          const dbUser = await prisma.user.upsert({
             where: { email: user.email.trim().toLowerCase() },
             create: {
               email: user.email.trim().toLowerCase(),
@@ -87,6 +89,7 @@ export const authOptions: NextAuthOptions = {
               image: user.image ?? undefined,
             },
           });
+          await ensurePersonalWorkspaceMembership({ userId: dbUser.id, email: dbUser.email });
         } catch (err) {
           console.error("[NextAuth signIn] upsert failed:", err);
           return false;
