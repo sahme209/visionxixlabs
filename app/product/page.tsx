@@ -17,8 +17,8 @@ const WORKFLOW = [
 
 const BOUNDARIES = [
   ["GitHub", "Repository-scoped, read-only release evidence is the first source of truth."],
-  ["Axiom Agent", "The installed workspace holds consequential deployment operations and provider setup."],
-  ["Web companion", "A lighter signed-in space for profile, help, and connection context."],
+  ["Axiom Agent", "The installed workspace validates provider access and holds consequential deployment operations."],
+  ["Web companion", "A lighter signed-in space where approved provider consent, profile, help, and connection context begin."],
 ];
 
 export default function ProductPage() {
@@ -59,7 +59,7 @@ export default function ProductPage() {
         <section className="relative isolate overflow-hidden border-y border-white/[0.07] px-5 py-20 sm:px-8 lg:px-12 lg:py-28">
           <div aria-hidden className="absolute inset-0 -z-20 bg-cover bg-center opacity-34" style={{ backgroundImage: "url('/images/axiom-history-landscape-v1.png')" }} />
           <div className="absolute inset-0 -z-10 bg-[#11120f]/78" />
-          <div className="mx-auto grid max-w-6xl gap-12 lg:grid-cols-[0.85fr_1.15fr] lg:items-center"><div><p className="text-[10px] uppercase tracking-[0.22em] text-orange-200">Intentional boundaries</p><h2 className="mt-4 text-3xl font-medium tracking-[-0.045em] text-zinc-100 sm:text-5xl">The right surface for each job.</h2><p className="mt-5 max-w-md text-base leading-7 text-zinc-300">The browser is useful for identity and lightweight account context. The installed Agent is where provider setup and deployment operations stay deliberate.</p></div><div className="grid gap-3">{BOUNDARIES.map(([title, detail]) => <div key={title} className="rounded-2xl border border-white/[0.12] bg-[#10110e]/70 p-5 backdrop-blur-md"><h3 className="text-lg font-medium text-zinc-100">{title}</h3><p className="mt-2 text-sm leading-6 text-zinc-400">{detail}</p></div>)}</div></div>
+          <div className="mx-auto grid max-w-6xl gap-12 lg:grid-cols-[0.85fr_1.15fr] lg:items-center"><div><p className="text-[10px] uppercase tracking-[0.22em] text-orange-200">Intentional boundaries</p><h2 className="mt-4 text-3xl font-medium tracking-[-0.045em] text-zinc-100 sm:text-5xl">The right surface for each job.</h2><p className="mt-5 max-w-md text-base leading-7 text-zinc-300">The browser handles identity, lightweight account context, and approved provider consent. The installed Agent performs validation and keeps deployment operations deliberate.</p></div><div className="grid gap-3">{BOUNDARIES.map(([title, detail]) => <div key={title} className="rounded-2xl border border-white/[0.12] bg-[#10110e]/70 p-5 backdrop-blur-md"><h3 className="text-lg font-medium text-zinc-100">{title}</h3><p className="mt-2 text-sm leading-6 text-zinc-400">{detail}</p></div>)}</div></div>
         </section>
 
         <section className="mx-auto max-w-6xl px-5 py-20 sm:px-8 lg:py-28"><div className="rounded-3xl border border-violet-300/15 bg-violet-300/[0.045] p-7 sm:p-10"><p className="text-[10px] uppercase tracking-[0.22em] text-violet-200">Design-partner pilot</p><div className="mt-5 flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between"><div><h2 className="text-3xl font-medium tracking-[-0.045em] text-zinc-100 sm:text-5xl">Prove the workflow before you depend on it.</h2><p className="mt-4 max-w-2xl text-sm leading-6 text-zinc-400">Pilot access is invite-only and no-charge while Axiom validates the governed release workflow with real teams.</p></div><Link href="/plans" className="shrink-0 rounded-full bg-zinc-100 px-5 py-3 text-center text-sm font-semibold text-zinc-950 transition hover:bg-white">See pilot access</Link></div></div></section>
