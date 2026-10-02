@@ -28,6 +28,15 @@ export type AIProviderName =
   | "cloudflare"
   | "mock";
 
+export const AI_PROVIDER_NAMES = [
+  "github_models", "ollama", "lm_studio", "groq", "hugging_face",
+  "openrouter", "gemini", "cloudflare", "mock",
+] as const satisfies readonly AIProviderName[];
+
+export function isAIProviderName(value: unknown): value is AIProviderName {
+  return typeof value === "string" && (AI_PROVIDER_NAMES as readonly string[]).includes(value);
+}
+
 export type AITaskKind =
   | "generate_text"
   | "stream_text"

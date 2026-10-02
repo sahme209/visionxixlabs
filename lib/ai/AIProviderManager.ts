@@ -92,6 +92,11 @@ export class AIProviderManager {
     });
   }
 
+  /** True only for a real provider configured by the service. */
+  isServiceProviderAvailable(name: AIProviderName): boolean {
+    return name !== "mock" && this.providers.get(name)?.isConfigured() === true;
+  }
+
   envSnapshot(): AIEnvSnapshot {
     const e = process.env;
     return {
