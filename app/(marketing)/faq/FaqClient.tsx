@@ -70,13 +70,13 @@ const ENTRIES: readonly FaqEntry[] = [
   {
     category: "cost",
     q: "How is pricing predictable?",
-    a: "Five fixed tiers on /plans, annual toggle for a discount, no per-action surprise. The free-tier AI provider chain (GitHub Models → Ollama → Groq → …) absorbs day-to-day model spend so you don't see provider invoices bleeding through.",
-    proof: { href: "/plans", label: "plans" },
+    a: "Axiom is currently invite-only and no-charge while we validate the governed deployment workflow with design partners. There is no self-serve checkout, no surprise per-action billing, and no promise of a paid plan before the workflow proves useful.",
+    proof: { href: "/plans", label: "pilot access" },
   },
   {
     category: "cost",
-    q: "What happens if I exceed my tier?",
-    a: "Tier caps stage an approval packet — they don't auto-upgrade your bill. The operator decides whether to lift the cap, throttle, or hold. Same contract as every other action.",
+    q: "What happens when the pilot changes?",
+    a: "We discuss any production scope, support expectations, connector permissions, and commercial terms with the workspace owner before changing access. Axiom does not auto-upgrade a workspace or charge a card.",
   },
   {
     category: "fit",
