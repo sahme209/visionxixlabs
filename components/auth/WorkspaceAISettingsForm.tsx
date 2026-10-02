@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 
 type Policy = { allowedProviders: string[]; modelSelections: Record<string, string>; fallbackOrder: string[] };
 type ModelOption = { id: string; label: string };
-type LoadState = "loading" | "ready" | "unavailable" | "saving" | "saved" | "error";
+type LoadState = "loading" | "ready" | "migration_pending" | "unavailable" | "saving" | "saved" | "error";
 
 const PROVIDER_LABELS: Record<string, string> = {
   openai: "OpenAI GPT",
@@ -31,7 +31,10 @@ export function WorkspaceAISettingsForm() {
       .then(async (response) => ({ response, body: await response.json().catch(() => null) }))
       .then(({ response, body }) => {
         if (!active) return;
-        if (!response.ok || !body?.data?.policy || !Array.isArray(body?.data?.availableProviders) || !body?.data?.availableModels) { setState("unavailable"); return; }
+        if (!response.ok || !body?.data?.policy || !Array.isArray(body?.data?.availableProviders) || !body?.data?.availableModels) {
+          setState(body?.error === "provider_policy_migration_pending" ? "migration_pending" : "unavailable");
+          return;
+        }
         setPolicy(body.data.policy);
         setAvailableProviders(body.data.availableProviders);
         setAvailableModels(body.data.availableModels);
@@ -96,8 +99,9 @@ export function WorkspaceAISettingsForm() {
       <p className="mt-2 max-w-xl text-sm leading-6 text-zinc-500">Review the provider families approved by the service, select their approved models, and set fallback order. Credentials, prompts, and provider billing accounts never appear here.</p>
 
       {state === "loading" && <p className="mt-6 text-sm text-zinc-500">Loading workspace policy…</p>}
+      {state === "migration_pending" && <p className="mt-6 text-sm leading-6 text-zinc-500">AI policy controls are waiting for the approved workspace-policy database migration. Service-level provider controls remain in effect until that migration is applied.</p>}
       {state === "unavailable" && <p className="mt-6 text-sm leading-6 text-zinc-500">AI policy is available to workspace owners after at least one provider is enabled by the service.</p>}
-      {state !== "loading" && state !== "unavailable" && (
+      {state !== "loading" && state !== "migration_pending" && state !== "unavailable" && (
         <div className="mt-6">
           {availableProviders.length === 0 ? <p className="text-sm leading-6 text-zinc-500">No live AI provider is enabled for this workspace yet. Axiom will not offer a simulated or unconfigured provider as a choice.</p> : (
             <>

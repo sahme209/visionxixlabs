@@ -28,6 +28,14 @@ interface PolicyRepo {
   };
 }
 
+export type WorkspaceAIProviderPolicyStorageState = "ready" | "migration_pending" | "unavailable";
+
+export function workspaceAIProviderPolicyStorageState(error: unknown): WorkspaceAIProviderPolicyStorageState {
+  const code = typeof error === "object" && error && "code" in error ? String(error.code) : "";
+  if (code === "P2021" || code === "P2022") return "migration_pending";
+  return "unavailable";
+}
+
 function providerList(value: unknown): AIProviderName[] {
   if (!Array.isArray(value)) return [];
   const out: AIProviderName[] = [];
@@ -84,16 +92,23 @@ export function resolveWorkspaceAIProviderPolicy(input: {
   };
 }
 
-export async function loadWorkspaceAIProviderPolicy(organizationId: string): Promise<WorkspaceAIProviderPolicy | null> {
+export async function loadWorkspaceAIProviderPolicyWithState(organizationId: string): Promise<{
+  policy: WorkspaceAIProviderPolicy | null;
+  storageState: WorkspaceAIProviderPolicyStorageState;
+}> {
   try {
     const row = await (prisma as unknown as PolicyRepo).organizationAIProviderPolicy.findUnique({
       where: { organizationId },
       select: { allowedProviders: true, modelSelections: true, fallbackOrder: true },
     });
-    return row ? normalizeWorkspaceAIProviderPolicy(row) : null;
-  } catch {
-    return null;
+    return { policy: row ? normalizeWorkspaceAIProviderPolicy(row) : null, storageState: "ready" };
+  } catch (error) {
+    return { policy: null, storageState: workspaceAIProviderPolicyStorageState(error) };
   }
+}
+
+export async function loadWorkspaceAIProviderPolicy(organizationId: string): Promise<WorkspaceAIProviderPolicy | null> {
+  return (await loadWorkspaceAIProviderPolicyWithState(organizationId)).policy;
 }
 
 export async function saveWorkspaceAIProviderPolicy(input: {

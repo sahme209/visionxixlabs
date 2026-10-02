@@ -6,10 +6,11 @@ import { id as idFactory } from "@/lib/domain/ids";
 import { getAIProviderManager } from "@/lib/ai/AIProviderManager";
 import { listModels } from "@/lib/ai/AIModelRegistry";
 import {
-  loadWorkspaceAIProviderPolicy,
+  loadWorkspaceAIProviderPolicyWithState,
   normalizeWorkspaceAIProviderPolicy,
   resolveWorkspaceAIProviderPolicy,
   saveWorkspaceAIProviderPolicy,
+  workspaceAIProviderPolicyStorageState,
 } from "@/lib/ai/workspaceProviderPolicy";
 
 export const dynamic = "force-dynamic";
@@ -30,8 +31,12 @@ export async function GET(): Promise<NextResponse> {
   const ctx = await ownerContext();
   if (!ctx) return NextResponse.json({ ok: false, error: "workspace_owner_required" }, { status: 403 });
   const availableProviders = serviceEnabledProviders();
+  const loaded = await loadWorkspaceAIProviderPolicyWithState(ctx.organizationId);
+  if (loaded.storageState !== "ready") {
+    return NextResponse.json({ ok: false, error: loaded.storageState === "migration_pending" ? "provider_policy_migration_pending" : "provider_policy_unavailable" }, { status: 503 });
+  }
   const policy = resolveWorkspaceAIProviderPolicy({
-    stored: await loadWorkspaceAIProviderPolicy(ctx.organizationId),
+    stored: loaded.policy,
     serviceEnabled: availableProviders,
   });
   // Provider family names are safe to expose to an owner. Configuration,
@@ -68,7 +73,7 @@ export async function PUT(request: NextRequest): Promise<NextResponse> {
       },
     });
     return NextResponse.json({ ok: true, data: { policy } });
-  } catch {
-    return NextResponse.json({ ok: false, error: "provider_policy_unavailable" }, { status: 503 });
+  } catch (error) {
+    return NextResponse.json({ ok: false, error: workspaceAIProviderPolicyStorageState(error) === "migration_pending" ? "provider_policy_migration_pending" : "provider_policy_unavailable" }, { status: 503 });
   }
 }
