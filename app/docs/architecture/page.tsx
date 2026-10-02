@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { DocHeader, DocSection, Callout, TrustGrid, DocFooterNav, DocFeedback } from "@/components/docs/DocPrimitives";
 
 export const metadata: Metadata = {
@@ -80,6 +81,11 @@ const COLOR_MAP = {
 } as const;
 
 export default function ArchitecturePage() {
+  // The original architecture page describes a browser command center and
+  // local execution surfaces that are not the current released product.
+  // Keep the route stable, but make the ReleaseOps trust boundary canonical.
+  redirect("/docs/releaseops");
+
   return (
     <>
       <DocHeader

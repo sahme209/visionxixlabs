@@ -112,7 +112,7 @@ sudo rpm -i Axiom.Agent-*-1.x86_64.rpm`}</pre>
 
       <DocFooterNav
         prev={{ href: "/docs/releaseops/readiness", label: "Readiness scoring" }}
-        next={{ href: "/docs/desktop-architecture", label: "Desktop architecture" }}
+        next={{ href: "/docs/releaseops", label: "ReleaseOps overview" }}
       />
       <DocFeedback />
     </>

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { DocHeader, DocSection, Callout, TrustGrid, DocFooterNav, DocFeedback } from "@/components/docs/DocPrimitives";
 
 export const metadata: Metadata = {
@@ -8,6 +9,11 @@ export const metadata: Metadata = {
 };
 
 export default function DesktopArchitecturePage() {
+  // The release-specific install guide is the authoritative desktop source.
+  // This legacy page promised local Terraform execution and enterprise modes
+  // that are not currently release-verified.
+  redirect("/docs/desktop-install");
+
   return (
     <>
       <DocHeader
