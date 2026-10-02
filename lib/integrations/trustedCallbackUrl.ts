@@ -25,9 +25,11 @@ function configuredAxiomOrigin(): URL | null {
  * returns cannot be redirected by an inbound Host header or query value.
  */
 export function trustedAxiomUrl(path: string): string | null {
-  if (!path.startsWith("/") || path.startsWith("//")) return null;
+  if (!path.startsWith("/") || path.startsWith("//") || path.includes("\\")) return null;
   const configured = configuredAxiomOrigin();
-  return configured ? new URL(path, configured.origin).toString() : null;
+  if (!configured) return null;
+  const destination = new URL(path, configured.origin);
+  return destination.origin === configured.origin ? destination.toString() : null;
 }
 
 /**
