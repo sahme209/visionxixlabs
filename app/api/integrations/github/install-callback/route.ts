@@ -85,7 +85,10 @@ export async function GET(req: NextRequest): Promise<Response> {
     });
   }
 
-  const status = r.body.ok ? "connected" : "error";
+  // Capturing an installation is not equivalent to proving a scoped API
+  // read works. The companion only calls it validated after Agent completes
+  // that harmless server-side check.
+  const status = r.body.ok ? "installation_recorded" : "error";
   const redirectUrl = new URL(`/auth/success?integration=github&status=${status}`, req.url);
   return NextResponse.redirect(redirectUrl);
 }
