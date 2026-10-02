@@ -18,7 +18,7 @@ export function AccountSettingsForm({ initialDisplayName, email }: { initialDisp
   }
 
   return (
-    <form onSubmit={save} className="mt-8 max-w-xl rounded-2xl border border-white/[0.08] bg-white/[0.025] p-5 sm:p-7">
+    <form onSubmit={save} className="max-w-xl rounded-2xl border border-white/[0.08] bg-white/[0.025] p-5 sm:p-7">
       <div className="flex items-start justify-between gap-4">
         <div>
           <h2 className="text-lg font-medium text-zinc-100">Profile</h2>

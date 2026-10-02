@@ -3,7 +3,9 @@ import { redirect } from "next/navigation";
 import { AuthCompanionHeader } from "@/components/auth/AuthCompanionHeader";
 import { AccountSettingsForm } from "@/components/auth/AccountSettingsForm";
 import { AuthCompanionShell } from "@/components/auth/AuthCompanionShell";
+import { WorkspaceAISettingsForm } from "@/components/auth/WorkspaceAISettingsForm";
 import { currentContext } from "@/lib/auth/currentContext";
+import { isAdminOrOwner } from "@/lib/auth/platformAdmin";
 import { prisma } from "@/lib/db";
 
 export const dynamic = "force-dynamic";
@@ -32,6 +34,7 @@ export default async function AccountPage() {
               </div>
             </aside>
           </div>
+          {isAdminOrOwner({ email: context.email, roles: context.roles }) && <div className="mt-4 max-w-xl"><WorkspaceAISettingsForm /></div>}
           <Link href="/auth/success" className="mt-8 inline-flex text-sm text-violet-300 transition hover:text-violet-200">← Back to overview</Link>
         </section>
       </div>
