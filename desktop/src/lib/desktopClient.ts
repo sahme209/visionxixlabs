@@ -616,6 +616,10 @@ export class DesktopClient {
     return this.post("/api/desktop/integrations/github/validate", {});
   }
 
+  validateSlackConnection(): Promise<ApiResult<{ status: "active" }>> {
+    return this.post("/api/desktop/integrations/slack/validate", {});
+  }
+
   aiProviderStatus(): Promise<ApiResult<Array<{
     provider: string;
     configured: boolean;

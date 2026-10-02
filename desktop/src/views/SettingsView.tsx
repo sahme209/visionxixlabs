@@ -338,6 +338,8 @@ function IntegrationsSection() {
   const [refreshing, setRefreshing] = useState(false);
   const [validatingGitHub, setValidatingGitHub] = useState(false);
   const [githubValidationNote, setGithubValidationNote] = useState<string | null>(null);
+  const [validatingSlack, setValidatingSlack] = useState(false);
+  const [slackValidationNote, setSlackValidationNote] = useState<string | null>(null);
 
   const loadCloudConnections = useCallback(async () => {
     setRefreshing(true);
@@ -380,7 +382,7 @@ function IntegrationsSection() {
   const collaborationState = collaboration
     ? collaboration.some((connection) => connection.status === "active")
       ? `${collaboration.filter((connection) => connection.status === "active").length} verified`
-      : collaboration.some((connection) => connection.status === "pending")
+    : collaboration.some((connection) => connection.status === "awaiting_validation")
       ? "Consent in progress"
       : "Not connected"
     : "Checking status";
@@ -400,6 +402,21 @@ function IntegrationsSection() {
     }
     setValidatingGitHub(false);
   }
+
+  async function validateSlack() {
+    setValidatingSlack(true);
+    setSlackValidationNote(null);
+    const result = await desktopClient.validateSlackConnection();
+    if (result.ok) {
+      setSlackValidationNote("Slack access is verified for this workspace.");
+      await loadCloudConnections();
+    } else {
+      setSlackValidationNote("Slack could not complete a read-only validation. Review the consent record and try again.");
+    }
+    setValidatingSlack(false);
+  }
+
+  const slackCanValidate = collaboration?.some((connection) => connection.provider === "slack" && (connection.status === "awaiting_validation" || connection.status === "needs_attention")) ?? false;
 
   return <div>
     <SectionHeading title="Integration Center" detail="Connect the systems that already run your releases. Every connection is tenant-scoped, least-privilege, and shown as connected only after server-side validation." />
@@ -433,11 +450,15 @@ function IntegrationsSection() {
       <button type="button" onClick={() => void validateGitHub()} disabled={validatingGitHub || github?.status !== "installation_recorded"} className="rounded-lg border border-white/10 px-3 py-2 text-xs text-zinc-300 hover:bg-white/[0.06] disabled:opacity-50">
         {validatingGitHub ? "Validating GitHub…" : "Validate read-only access"}
       </button>
+      <button type="button" onClick={() => void validateSlack()} disabled={validatingSlack || !slackCanValidate} className="rounded-lg border border-white/10 px-3 py-2 text-xs text-zinc-300 hover:bg-white/[0.06] disabled:opacity-50">
+        {validatingSlack ? "Validating Slack…" : "Validate Slack"}
+      </button>
       <button type="button" onClick={() => void loadCloudConnections()} disabled={refreshing} className="rounded-lg border border-white/10 px-3 py-2 text-xs text-zinc-300 hover:bg-white/[0.06] disabled:opacity-50">
         {refreshing ? "Checking…" : "Refresh verified status"}
       </button>
     </div>
     {githubValidationNote && <p className="mt-3 text-xs text-zinc-400">{githubValidationNote}</p>}
+    {slackValidationNote && <p className="mt-3 text-xs text-zinc-400">{slackValidationNote}</p>}
   </div>;
 }
 
