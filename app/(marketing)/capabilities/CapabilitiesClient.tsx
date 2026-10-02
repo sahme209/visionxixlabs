@@ -111,7 +111,6 @@ export function CapabilitiesClient() {
     <div className="relative isolate overflow-hidden">
       <div aria-hidden className="pointer-events-none fixed inset-0 -z-20 bg-cover bg-center opacity-20" style={{ backgroundImage: "url('/images/axiom-history-landscape-v1.png')" }} />
       <div aria-hidden className="pointer-events-none fixed inset-0 -z-10 bg-[linear-gradient(180deg,rgba(11,12,11,0.8),rgba(11,12,11,0.94)_42%,#0c0d0c)]" />
-      </div>
 
       {/* ===== HERO ===== */}
       <section className="relative z-10 mx-auto max-w-6xl px-6 md:px-10 pt-24 pb-10">
