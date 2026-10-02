@@ -48,6 +48,9 @@ export type AITaskKind =
 export interface AIRequestOptions {
   /** Server-side workspace attribution for audit and usage only; never sent to a provider. */
   organizationId?: string;
+  /** Server-resolved provider policy. It is never copied into a provider request. */
+  allowedProviders?: readonly AIProviderName[];
+  fallbackOrder?: readonly AIProviderName[];
   /** Optional override for the provider's default model. */
   model?: string;
   /** Max tokens / max_new_tokens hint. Providers map this best-effort. */

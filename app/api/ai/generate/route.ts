@@ -17,6 +17,7 @@ import { currentContext } from "@/lib/auth/currentContext";
 import { getAIProviderManager } from "@/lib/ai/AIProviderManager";
 import { isAIProviderName, type AIProviderName } from "@/lib/ai/AIProvider";
 import { isKnownModel } from "@/lib/ai/AIModelRegistry";
+import { loadWorkspaceAIProviderPolicy, resolveWorkspaceAIProviderPolicy } from "@/lib/ai/workspaceProviderPolicy";
 import { apiOk, apiErr, asApiSourceMode, resolveCorrelationId } from "@/lib/api";
 import { AxiomErrors } from "@/lib/errors/axiomErrors";
 
@@ -48,7 +49,17 @@ export async function POST(req: NextRequest) {
       throw AxiomErrors.validation("ai.prompt_too_long", `Prompt exceeds ${MAX_PROMPT_CHARS} chars.`);
     }
     const mgr = getAIProviderManager();
-    if (body.only !== undefined && (!isAIProviderName(body.only) || !mgr.isServiceProviderAvailable(body.only))) {
+    const serviceEnabled = mgr.status()
+      .filter((provider) => provider.configured && provider.provider !== "mock")
+      .map((provider) => provider.provider);
+    const policy = resolveWorkspaceAIProviderPolicy({
+      stored: await loadWorkspaceAIProviderPolicy(ctx.organizationId),
+      serviceEnabled,
+    });
+    if (policy.allowedProviders.length === 0) {
+      throw AxiomErrors.validation("ai.provider_unavailable", "No AI provider is enabled for this workspace.");
+    }
+    if (body.only !== undefined && (!isAIProviderName(body.only) || !policy.allowedProviders.includes(body.only))) {
       throw AxiomErrors.validation("ai.provider_unavailable", "That AI provider is not enabled for this workspace.");
     }
     if (body.model !== undefined && (typeof body.model !== "string" || !body.only || !isKnownModel(body.only, body.model))) {
@@ -62,6 +73,8 @@ export async function POST(req: NextRequest) {
       only: body.only,
       correlationId,
       organizationId: ctx.organizationId,
+      allowedProviders: policy.allowedProviders,
+      fallbackOrder: policy.fallbackOrder,
     });
     return apiOk(result, {
       correlationId,

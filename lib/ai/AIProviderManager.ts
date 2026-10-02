@@ -69,14 +69,19 @@ export class AIProviderManager {
   }
 
   /** Configured providers in declared priority, then Mock last. */
-  private chain(opts?: { only?: AIProviderName }): AIProvider[] {
+  private chain(opts?: { only?: AIProviderName; allowedProviders?: readonly AIProviderName[]; fallbackOrder?: readonly AIProviderName[] }): AIProvider[] {
     if (opts?.only) {
       const p = this.providers.get(opts.only);
       return p ? [p] : [this.providers.get("mock")!];
     }
+    const allowed = opts?.allowedProviders ? new Set(opts.allowedProviders) : null;
+    const policyOrder = opts?.fallbackOrder?.length
+      ? opts.fallbackOrder
+      : PROVIDER_PRIORITY;
     const out: AIProvider[] = [];
-    for (const name of PROVIDER_PRIORITY) {
+    for (const name of policyOrder) {
       if (name === "mock") continue;
+      if (allowed && !allowed.has(name)) continue;
       const p = this.providers.get(name);
       if (p && p.isConfigured()) out.push(p);
     }
