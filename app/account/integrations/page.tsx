@@ -28,7 +28,8 @@ export default async function AccountIntegrationsPage() {
   if (!context.isAuthenticated || !context.email) redirect("/auth/signin?callbackUrl=/account/integrations");
   const canManageConnections = isAdminOrOwner({ email: context.email, roles: context.roles });
   let githubState = "Not connected";
-  let collaborationState = "Not connected";
+  let slackState = "Not connected";
+  let teamsState = "Not connected";
   try {
     const repo = prisma as unknown as IntegrationStatusRepo;
     const [installation, collaboration] = await Promise.all([
@@ -36,16 +37,20 @@ export default async function AccountIntegrationsPage() {
       repo.tenantIntegrationConnection.findMany({ where: { organizationId: context.organizationId ?? "", provider: { in: ["slack", "teams"] } }, select: { provider: true, status: true, lastValidatedAt: true } }),
     ]);
     if (installation) githubState = installation.status === "active" ? (installation.lastSeenAt ? "Read-only validated" : "Installation recorded") : readableState(installation.status);
-    const visible = collaboration.map((connection) => visibleTenantConnectionStatus(connection));
-    if (visible.some((state) => state === "active")) collaborationState = "Active";
-    else if (visible.some((state) => state !== "not_connected")) collaborationState = readableState(visible.find((state) => state !== "not_connected") ?? "not_connected");
+    const stateFor = (provider: "slack" | "teams") => {
+      const connection = collaboration.find((item) => item.provider === provider);
+      return connection ? readableState(visibleTenantConnectionStatus(connection)) : "Not connected";
+    };
+    slackState = stateFor("slack");
+    teamsState = stateFor("teams");
   } catch {
     // An unavailable status store must never be interpreted as a live connection.
   }
   const connections = [
     { name: "GitHub", detail: "Release evidence uses repository-scoped, read-only access. A recorded install is not treated as live until Axiom Agent completes a harmless validation read.", state: githubState },
     { name: "Cloud accounts", detail: "AWS, Azure, and Google Cloud stay tenant-scoped and are validated from the installed application.", state: "Managed in Agent" },
-    { name: "Collaboration", detail: "Slack and Teams require browser consent plus live server-side validation before Axiom displays an active connection.", state: collaborationState },
+    { name: "Slack", detail: "Axiom requests only the collaboration scope required for release updates. Browser consent and live server-side validation are both required before it appears active.", state: slackState, control: "slack" },
+    { name: "Microsoft", detail: "Start with tenant identity validation. Teams messaging remains unavailable until a separate, explicitly approved permission is configured and validated.", state: teamsState, control: "teams" },
     { name: "Observability", detail: "Production health is not shown as connected until a tenant-scoped observability connection is verified.", state: "Not connected" },
   ];
   return (
@@ -63,7 +68,8 @@ export default async function AccountIntegrationsPage() {
               <div className="flex items-start justify-between gap-3"><h2 className="text-lg font-medium text-zinc-100">{connection.name}</h2><span className="rounded-full border border-white/[0.1] bg-black/10 px-2.5 py-1 text-[10px] uppercase tracking-[0.12em] text-zinc-400">{connection.state}</span></div>
               <p className="mt-3 text-sm leading-6 text-zinc-500">{connection.detail}</p>
               {canManageConnections && connection.name === "GitHub" && githubState !== "Read-only validated" && <GitHubConsentButton />}
-              {canManageConnections && connection.name === "Collaboration" && collaborationState !== "Active" && <div className="mt-5 flex flex-wrap gap-3"><SlackConsentButton /><TeamsConsentButton /></div>}
+              {canManageConnections && connection.control === "slack" && slackState !== "Active" && <SlackConsentButton />}
+              {canManageConnections && connection.control === "teams" && teamsState !== "Active" && <TeamsConsentButton />}
             </article>
           ))}
         </section>
