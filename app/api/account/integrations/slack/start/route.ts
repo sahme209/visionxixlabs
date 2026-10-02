@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { currentContext } from "@/lib/auth/currentContext";
 import { isAdminOrOwner } from "@/lib/auth/platformAdmin";
+import { isSameOriginRequest } from "@/lib/auth/requestOrigin";
 import { trustedIntegrationCallbackUrl } from "@/lib/integrations/trustedCallbackUrl";
 import { prisma } from "@/lib/db";
 import { buildSlackInstallUrl } from "@/lib/integrations/slack/slackOauth";
@@ -11,7 +12,10 @@ export const runtime = "nodejs";
 
 /** Starts a tenant-bound Slack OAuth handoff. The browser receives only the
  * short-lived state needed by Slack; Axiom stores its digest, never the raw state. */
-export async function POST(_request: NextRequest): Promise<Response> {
+export async function POST(request: NextRequest): Promise<Response> {
+  if (!isSameOriginRequest(request)) {
+    return NextResponse.json({ ok: false, error: "invalid_request_origin" }, { status: 403 });
+  }
   const context = await currentContext();
   if (!context.isAuthenticated || !context.organizationId || !context.userId) {
     return NextResponse.json({ ok: false, error: "auth_required" }, { status: 401 });

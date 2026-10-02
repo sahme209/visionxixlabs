@@ -2,6 +2,7 @@ import { createHash, randomBytes } from "node:crypto";
 import { NextResponse, type NextRequest } from "next/server";
 import { currentContext } from "@/lib/auth/currentContext";
 import { isAdminOrOwner } from "@/lib/auth/platformAdmin";
+import { isSameOriginRequest } from "@/lib/auth/requestOrigin";
 import { trustedIntegrationCallbackUrl } from "@/lib/integrations/trustedCallbackUrl";
 import { prisma } from "@/lib/db";
 import { startTenantIntegrationAuthorization, type TenantConnectionRepo } from "@/lib/integrations/tenantConnectionRepo";
@@ -16,7 +17,10 @@ function pkceChallenge(verifier: string) {
 /** Starts a Microsoft authorization-code flow with PKCE. Initial scope only
  * verifies the signed-in Microsoft identity; Teams message permissions remain
  * unavailable until separately reviewed and approved. */
-export async function POST(_request: NextRequest): Promise<Response> {
+export async function POST(request: NextRequest): Promise<Response> {
+  if (!isSameOriginRequest(request)) {
+    return NextResponse.json({ ok: false, error: "invalid_request_origin" }, { status: 403 });
+  }
   const context = await currentContext();
   if (!context.isAuthenticated || !context.organizationId || !context.userId) {
     return NextResponse.json({ ok: false, error: "auth_required" }, { status: 401 });

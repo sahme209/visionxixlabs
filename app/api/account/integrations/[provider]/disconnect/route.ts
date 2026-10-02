@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { currentContext } from "@/lib/auth/currentContext";
 import { isAdminOrOwner } from "@/lib/auth/platformAdmin";
+import { isSameOriginRequest } from "@/lib/auth/requestOrigin";
 import { record as recordAudit } from "@/lib/audit/secureAudit";
 import { id as idFactory } from "@/lib/domain/ids";
 import { prisma } from "@/lib/db";
@@ -25,6 +26,9 @@ interface DisconnectRepo {
  * account-side app management remains available as an additional safeguard.
  */
 export async function POST(_request: NextRequest, { params }: { params: Promise<{ provider: string }> }): Promise<Response> {
+  if (!isSameOriginRequest(_request)) {
+    return NextResponse.json({ ok: false, error: "invalid_request_origin" }, { status: 403 });
+  }
   const context = await currentContext();
   if (!context.isAuthenticated || !context.organizationId || !context.userId) {
     return NextResponse.json({ ok: false, error: "auth_required" }, { status: 401 });

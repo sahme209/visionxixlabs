@@ -6,6 +6,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { currentContext } from "@/lib/auth/currentContext";
 import { isAdminOrOwner } from "@/lib/auth/platformAdmin";
+import { isSameOriginRequest } from "@/lib/auth/requestOrigin";
 import { prisma } from "@/lib/db";
 import {
   buildInstallationTransitionResponse,
@@ -18,6 +19,9 @@ import { appendAuditEvent, type AuditEventRepo } from "@/lib/releaseops/auditEve
 export const dynamic = "force-dynamic";
 
 export async function POST(req: NextRequest) {
+  if (!isSameOriginRequest(req)) {
+    return NextResponse.json({ ok: false, error: "invalid_request_origin" }, { status: 403 });
+  }
   const ctx = await currentContext();
   if (!ctx.isAuthenticated || !ctx.organizationId || !ctx.userId) {
     return NextResponse.json({ ok: false, error: "auth_required" }, { status: 401 });

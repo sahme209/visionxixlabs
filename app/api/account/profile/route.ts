@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { requireContext } from "@/lib/auth/currentContext";
+import { isSameOriginRequest } from "@/lib/auth/requestOrigin";
 import { prisma } from "@/lib/db";
 
 export const dynamic = "force-dynamic";
@@ -9,11 +10,6 @@ function normalizeDisplayName(value: unknown): string | null {
   if (typeof value !== "string") return null;
   const name = value.trim().replace(/\s+/g, " ");
   return name.length >= 1 && name.length <= 80 ? name : null;
-}
-
-function isSameOrigin(request: NextRequest): boolean {
-  const origin = request.headers.get("origin");
-  return origin === request.nextUrl.origin;
 }
 
 export async function GET() {
@@ -32,7 +28,7 @@ export async function GET() {
 
 export async function PUT(request: NextRequest) {
   try {
-    if (!isSameOrigin(request)) return NextResponse.json({ ok: false, error: "invalid_request_origin" }, { status: 403 });
+    if (!isSameOriginRequest(request)) return NextResponse.json({ ok: false, error: "invalid_request_origin" }, { status: 403 });
     const context = await requireContext();
     const body = await request.json().catch(() => null);
     const displayName = normalizeDisplayName((body as { displayName?: unknown } | null)?.displayName);

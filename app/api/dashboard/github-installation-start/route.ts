@@ -8,6 +8,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { currentContext } from "@/lib/auth/currentContext";
 import { isAdminOrOwner } from "@/lib/auth/platformAdmin";
+import { isSameOriginRequest } from "@/lib/auth/requestOrigin";
 import { trustedIntegrationCallbackUrl } from "@/lib/integrations/trustedCallbackUrl";
 import { getGithubConfig, isGithubAppInstallationReady } from "@/lib/connectors/github/githubConfig";
 import { prisma } from "@/lib/db";
@@ -19,7 +20,10 @@ import {
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
-export async function POST(_request: NextRequest): Promise<Response> {
+export async function POST(request: NextRequest): Promise<Response> {
+  if (!isSameOriginRequest(request)) {
+    return NextResponse.json({ ok: false, error: "invalid_request_origin" }, { status: 403 });
+  }
   const ctx = await currentContext();
   if (!ctx.isAuthenticated || !ctx.organizationId || !ctx.userId) {
     return NextResponse.json({ ok: false, error: "auth_required" }, { status: 401 });
