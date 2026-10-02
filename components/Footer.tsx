@@ -5,7 +5,7 @@ const columns = [
   {
     title: "Product",
     links: [
-      ["Deployment operations", "/axiom/releaseops"],
+      ["Deployment operations", "/product"],
       ["Capabilities", "/capabilities"],
       ["Integrations", "/integrations"],
       ["Plans", "/plans"],
@@ -15,7 +15,7 @@ const columns = [
   {
     title: "Resources",
     links: [
-      ["Documentation", "/docs"],
+      ["Documentation", "/resources"],
       ["Getting started", "/docs/getting-started"],
       ["Security model", "/docs/security-model"],
       ["Release readiness", "/docs/releaseops/readiness"],

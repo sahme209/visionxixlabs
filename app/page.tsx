@@ -2,7 +2,6 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 import {
   ArrowRightIcon,
-  CheckCircleIcon,
   ClockIcon,
   FingerPrintIcon,
   ShieldCheckIcon,
@@ -36,13 +35,13 @@ export default function Home() {
     <div className="axiom-canvas axiom-product-canvas min-h-screen text-[#ecece8]">
       <Navigation />
       <main>
-        <section className="mx-auto max-w-[1720px] px-5 pb-20 pt-36 sm:px-8 lg:px-12 lg:pb-28 lg:pt-44">
+        <section className="mx-auto max-w-6xl px-5 pb-20 pt-32 sm:px-8 lg:pb-28 lg:pt-40">
           <div className="max-w-[760px]">
             <p className="text-[11px] uppercase tracking-[0.18em] text-zinc-500">Axiom Agent · deployment operations</p>
-            <h1 className="mt-7 text-[clamp(3.1rem,6vw,6.4rem)] font-medium leading-[0.94] tracking-[-0.06em] text-[#f1f1ed]">
+            <h1 className="mt-7 text-[clamp(2.85rem,5.2vw,5.5rem)] font-medium leading-[0.96] tracking-[-0.055em] text-[#f1f1ed]">
               Turn the request into the playbook.
             </h1>
-            <p className="mt-8 max-w-[650px] text-lg leading-8 text-zinc-400 sm:text-xl">
+            <p className="mt-7 max-w-[620px] text-base leading-7 text-zinc-400 sm:text-lg">
               A governed desktop workspace for deployment intake, review, execution guidance, production validation, and audit-ready closure.
             </p>
             <div className="mt-9 flex flex-col gap-3 sm:flex-row">
@@ -75,16 +74,17 @@ export default function Home() {
 
         <section className="border-y border-white/[0.06] bg-[#11110f] py-12">
           <p className="text-center text-sm text-zinc-500">Built-in controls used throughout the verified workflow</p>
-          <div className="mx-auto mt-7 grid max-w-[1720px] grid-cols-2 gap-px overflow-hidden rounded-xl border border-white/[0.06] bg-white/[0.06] px-5 sm:grid-cols-4 lg:grid-cols-8 lg:px-0">
+          <div className="mx-auto mt-7 grid max-w-6xl grid-cols-2 gap-px overflow-hidden rounded-xl border border-white/[0.06] bg-white/[0.06] sm:grid-cols-4">
             {capabilities.map((item) => <div key={item} className="flex min-h-24 items-center justify-center bg-[#171714] px-4 text-center text-xs font-medium leading-5 text-zinc-300">{item}</div>)}
           </div>
         </section>
 
-        <section className="mx-auto max-w-[1720px] space-y-10 px-5 py-24 sm:px-8 lg:px-12 lg:py-32">
+        <section className="mx-auto max-w-6xl space-y-8 px-5 py-20 sm:px-8 lg:py-28">
           <EditorialPanel
             eyebrow="01 · Structured intake"
             title="Five stages. No hidden assumptions."
             copy="The request captures the deployment window, affected scope, exact execution, production validation, and recovery path before a playbook is treated as ready."
+            backdrop="/images/axiom-intake-landscape-v1.png"
             visual={<StageBoard />}
           />
           <EditorialPanel
@@ -92,26 +92,28 @@ export default function Home() {
             eyebrow="02 · Revision integrity"
             title="Every meaningful edit has an author and a version."
             copy="Updates use optimistic concurrency. If the record changed elsewhere, Axiom stops and asks the operator to reconcile instead of silently overwriting newer work."
+            backdrop="/images/axiom-history-landscape-v1.png"
             visual={<HistoryBoard />}
           />
           <EditorialPanel
             eyebrow="03 · Operational truth"
             title="A green workflow is not production validation."
             copy="Axiom keeps trigger state, execution state, technical validation, functional validation, rollback readiness, and closure evidence separate so the interface never invents certainty."
+            backdrop="/images/axiom-validation-landscape-v1.png"
             visual={<ValidationBoard />}
           />
         </section>
 
         <section className="border-y border-white/[0.06] bg-[#11110f] px-5 py-24 sm:px-8 lg:px-10">
-          <h2 className="mx-auto max-w-[1720px] text-center text-4xl font-medium tracking-[-0.04em] sm:text-5xl">Designed around production reality.</h2>
-          <div className="mx-auto mt-12 grid max-w-[1720px] gap-px overflow-hidden rounded-xl border border-white/[0.06] bg-white/[0.06] md:grid-cols-3">
+          <h2 className="mx-auto max-w-6xl text-center text-3xl font-medium tracking-[-0.04em] sm:text-4xl">Designed around production reality.</h2>
+          <div className="mx-auto mt-10 grid max-w-6xl gap-px overflow-hidden rounded-xl border border-white/[0.06] bg-white/[0.06] md:grid-cols-3">
             <EvidenceCard icon={<ShieldCheckIcon className="h-6 w-6" />} title="Policy remains authoritative" detail="Desktop preferences cannot weaken organization approvals, permission boundaries, or production gates." />
             <EvidenceCard icon={<FingerPrintIcon className="h-6 w-6" />} title="Browser-authorized desktop sessions" detail="Sign-in and account creation happen in the system browser through an expiring, one-time device-bound challenge." />
             <EvidenceCard icon={<ClockIcon className="h-6 w-6" />} title="Reconnect without rewriting history" detail="Last-known records remain visible and are explicitly marked stale with the last successful service-response time." />
           </div>
         </section>
 
-        <section className="mx-auto max-w-[1720px] px-5 py-24 sm:px-8 lg:px-12">
+        <section className="mx-auto max-w-6xl px-5 py-20 sm:px-8 lg:py-28">
           <h2 className="text-3xl font-medium tracking-[-0.035em]">Recent highlights</h2>
           <div className="mt-8 grid gap-px overflow-hidden rounded-xl border border-white/[0.06] bg-white/[0.06] md:grid-cols-2 xl:grid-cols-4">
             {highlights.map((item) => (
@@ -134,14 +136,16 @@ export default function Home() {
   );
 }
 
-function EditorialPanel({ eyebrow, title, copy, visual, reverse = false }: { eyebrow: string; title: string; copy: string; visual: ReactNode; reverse?: boolean }) {
-  return <article className="grid overflow-hidden rounded-2xl border border-white/[0.06] bg-[#171714] lg:grid-cols-[0.72fr_1.28fr]">
-    <div className={`flex min-h-72 flex-col justify-end p-7 sm:p-10 lg:p-12 ${reverse ? "lg:order-2" : ""}`}><p className="text-[11px] uppercase tracking-[0.16em] text-orange-500">{eyebrow}</p><h2 className="mt-5 text-3xl font-medium leading-tight tracking-[-0.04em] sm:text-4xl">{title}</h2><p className="mt-4 max-w-lg text-base leading-7 text-zinc-500">{copy}</p></div>
-    <div className={`m-3 min-h-[420px] rounded-xl border border-white/[0.06] bg-[#cac8bf] p-5 text-[#171714] sm:m-5 sm:p-8 ${reverse ? "lg:order-1" : ""}`}>{visual}</div>
+function EditorialPanel({ eyebrow, title, copy, visual, backdrop, reverse = false }: { eyebrow: string; title: string; copy: string; visual: ReactNode; backdrop: string; reverse?: boolean }) {
+  return <article className="relative grid overflow-hidden rounded-2xl border border-white/[0.08] bg-[#171714] lg:grid-cols-[0.72fr_1.28fr]">
+    <div aria-hidden className="absolute inset-0 bg-cover bg-center opacity-60" style={{ backgroundImage: `url('${backdrop}')` }} />
+    <div aria-hidden className="absolute inset-0 bg-[linear-gradient(90deg,rgba(12,13,12,0.9),rgba(12,13,12,0.58)_48%,rgba(12,13,12,0.35))]" />
+    <div className={`relative flex min-h-72 flex-col justify-end p-7 sm:p-10 lg:p-12 ${reverse ? "lg:order-2" : ""}`}><p className="text-[11px] uppercase tracking-[0.16em] text-orange-300">{eyebrow}</p><h2 className="mt-5 text-3xl font-medium leading-tight tracking-[-0.04em] sm:text-4xl">{title}</h2><p className="mt-4 max-w-lg text-base leading-7 text-zinc-300/75">{copy}</p></div>
+    <div className={`relative m-3 min-h-[400px] rounded-xl border border-white/[0.08] bg-black/35 p-5 text-zinc-100 shadow-2xl shadow-black/35 backdrop-blur-[2px] sm:m-5 sm:p-8 ${reverse ? "lg:order-1" : ""}`}>{visual}</div>
   </article>;
 }
 
-function StageBoard() { return <div className="mx-auto max-w-xl overflow-hidden rounded-xl border border-black/15 bg-[#151613] text-zinc-200 shadow-2xl"><div className="border-b border-white/[0.07] px-5 py-4 text-sm">Request completeness</div>{phases.map((phase, index) => <div key={phase} className="flex items-center gap-3 border-b border-white/[0.06] px-5 py-4 last:border-0"><CheckCircleIcon className={`h-5 w-5 ${index < 4 ? 'text-emerald-400' : 'text-amber-300'}`} /><span className="text-sm">{phase}</span><span className="ml-auto text-xs text-zinc-600">{index < 4 ? 'Complete' : 'Review required'}</span></div>)}</div>; }
-function HistoryBoard() { return <div className="mx-auto max-w-xl rounded-xl border border-black/15 bg-[#151613] p-5 text-zinc-200 shadow-2xl"><p className="text-sm font-medium">Immutable history</p>{[4,3,2].map((version, index) => <div key={version} className="mt-4 rounded-lg border border-white/[0.07] bg-white/[0.025] p-4"><div className="flex justify-between"><span className="text-sm">Revision {version}</span><span className="text-xs text-zinc-600">{index === 0 ? 'Current' : 'Superseded'}</span></div><p className="mt-2 text-xs text-zinc-500">Actor recorded · changed field names only · SHA-256 digest</p></div>)}</div>; }
-function ValidationBoard() { return <div className="mx-auto grid max-w-2xl gap-px overflow-hidden rounded-xl border border-black/15 bg-black/20 text-zinc-200 shadow-2xl sm:grid-cols-2">{[["Trigger","Workflow accepted"],["Execution","No result yet"],["Technical validation","Required"],["Functional validation","Required"],["Rollback","Instruction recorded"],["Closure","Blocked until evidence"]].map(([label,value]) => <div key={label} className="bg-[#151613] p-5"><p className="text-xs text-zinc-600">{label}</p><p className="mt-2 text-sm">{value}</p></div>)}</div>; }
+function StageBoard() { return <div className="mx-auto max-w-xl overflow-hidden rounded-xl border border-white/[0.1] bg-[#10110f]/95 text-zinc-200 shadow-2xl"><div className="border-b border-white/[0.07] px-5 py-4 text-sm">Request completeness</div>{phases.map((phase, index) => <div key={phase} className="flex items-center gap-3 border-b border-white/[0.06] px-5 py-4 last:border-0"><span className={`h-2 w-2 rounded-full ${index < 4 ? 'bg-orange-300' : 'bg-zinc-600'}`} /><span className="text-sm">{phase}</span><span className="ml-auto text-xs text-zinc-500">{index < 4 ? 'Recorded' : 'Review required'}</span></div>)}</div>; }
+function HistoryBoard() { return <div className="mx-auto max-w-xl rounded-xl border border-white/[0.1] bg-[#10110f]/95 p-5 text-zinc-200 shadow-2xl"><p className="text-sm font-medium">Immutable history</p>{[4,3,2].map((version, index) => <div key={version} className="mt-4 rounded-lg border border-white/[0.07] bg-white/[0.025] p-4"><div className="flex justify-between"><span className="text-sm">Revision {version}</span><span className="text-xs text-zinc-500">{index === 0 ? 'Current record' : 'Superseded'}</span></div><p className="mt-2 text-xs text-zinc-500">Actor recorded · changed field names only · SHA-256 digest</p></div>)}</div>; }
+function ValidationBoard() { return <div className="mx-auto grid max-w-2xl gap-px overflow-hidden rounded-xl border border-white/[0.1] bg-black/35 text-zinc-200 shadow-2xl sm:grid-cols-2">{[["Trigger","Workflow accepted"],["Execution","No result yet"],["Technical validation","Required"],["Functional validation","Required"],["Rollback","Instruction recorded"],["Closure","Blocked until evidence"]].map(([label,value]) => <div key={label} className="bg-[#10110f]/95 p-5"><p className="text-xs text-zinc-500">{label}</p><p className="mt-2 text-sm">{value}</p></div>)}</div>; }
 function EvidenceCard({ icon, title, detail }: { icon: ReactNode; title: string; detail: string }) { return <article className="min-h-64 bg-[#171714] p-7 sm:p-9"><span className="text-zinc-400">{icon}</span><h3 className="mt-12 text-xl font-medium">{title}</h3><p className="mt-3 text-sm leading-6 text-zinc-500">{detail}</p></article>; }

@@ -98,9 +98,9 @@ function SignInForm() {
         <div className="mb-8 flex h-12 w-12 items-center justify-center rounded-xl border border-white/[0.08] bg-white/[0.035]">
           <Image src="/vision-xix-logo.png" alt="" width={30} height={30} className="rounded-md" />
         </div>
-        <h1 className="mb-2 text-3xl font-normal tracking-[-0.045em]">Welcome back</h1>
-        <p className="text-sm text-zinc-500 mb-8">Authenticate the Axiom Agent pairing request opened by the installed application.</p>
-        <p className="-mt-5 mb-7 text-xs leading-5 text-zinc-600">Signing in verifies identity. Deployment operations remain locked until the workspace has an approved pilot or commercial entitlement.</p>
+        <h1 className="mb-2 text-3xl font-normal tracking-[-0.045em]">Welcome to Axiom</h1>
+        <p className="mb-2 text-sm text-zinc-400">Sign in to your web companion for account settings, connection context, and release guidance.</p>
+        <p className="mb-8 text-xs leading-5 text-zinc-600">The installed Agent remains the secure place for provider configuration and deployment operations.</p>
 
         <form onSubmit={handleSubmit} className="space-y-4" noValidate>
           <div>
@@ -213,8 +213,8 @@ function SignInForm() {
               Create one
             </Link>
           ) : (
-            <Link href="/download" className="font-medium text-zinc-200 hover:text-white">
-              Create one from Axiom Agent
+            <Link href="/plans" className="font-medium text-zinc-200 hover:text-white">
+              Request pilot access
             </Link>
           )}
         </p>

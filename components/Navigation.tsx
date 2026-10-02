@@ -6,10 +6,10 @@ import Link from "next/link";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 
 const primaryLinks = [
-  { href: "/axiom/releaseops", label: "Product" },
+  { href: "/product", label: "Product" },
   { href: "/capabilities", label: "Capabilities" },
   { href: "/plans", label: "Pricing" },
-  { href: "/docs", label: "Resources" },
+  { href: "/resources", label: "Resources" },
 ];
 
 const mobileLinks = [

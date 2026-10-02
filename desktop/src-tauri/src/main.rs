@@ -29,7 +29,7 @@ async fn get_health() -> Result<serde_json::Value, String> {
 }
 
 fn main() {
-    tauri::Builder::default()
+    let app = tauri::Builder::default()
         .plugin(tauri_plugin_single_instance::init(|app, _argv, _cwd| {
             if let Some(window) = app.get_webview_window("main") {
                 let _ = window.show();
@@ -110,6 +110,25 @@ fn main() {
 
             Ok(())
         })
-        .run(tauri::generate_context!())
-        .expect("error while running axiom agent");
+        .build(tauri::generate_context!())
+        .expect("error while building axiom agent");
+
+    // Closing the main window intentionally keeps the Agent alive in the
+    // menubar. On macOS, clicking the Dock icon must make that hidden window
+    // visible again; otherwise the application can look as though it did not
+    // launch even though its background process is still running.
+    app.run(|app_handle, event| {
+        #[cfg(target_os = "macos")]
+        if let tauri::RunEvent::Reopen {
+            has_visible_windows: false,
+            ..
+        } = event
+        {
+            if let Some(window) = app_handle.get_webview_window("main") {
+                let _ = window.show();
+                let _ = window.unminimize();
+                let _ = window.set_focus();
+            }
+        }
+    });
 }
