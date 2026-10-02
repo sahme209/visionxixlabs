@@ -22,7 +22,10 @@ const PILOT_BOUNDARIES = [
 
 export default function PlansPage() {
   return (
-    <div className="mx-auto max-w-6xl px-5 pb-24 pt-16 sm:px-8 sm:pt-24">
+    <div className="relative isolate overflow-hidden">
+      <div aria-hidden className="pointer-events-none absolute inset-0 -z-20 bg-cover bg-center opacity-25" style={{ backgroundImage: "url('/images/axiom-hero-landscape-v1.png')" }} />
+      <div aria-hidden className="pointer-events-none absolute inset-0 -z-10 bg-[linear-gradient(180deg,rgba(12,13,12,0.66),rgba(12,13,12,0.94)_38%,#0c0d0c)]" />
+      <main className="relative mx-auto max-w-6xl px-5 pb-24 pt-16 sm:px-8 sm:pt-24">
       <section className="grid gap-10 lg:grid-cols-[1.15fr_0.85fr] lg:items-end">
         <div>
           <p className="text-[10px] uppercase tracking-[0.22em] text-violet-300">Axiom Agent · design-partner access</p>
@@ -61,6 +64,7 @@ export default function PlansPage() {
           {["Validate the workflow", "Prove repeat value", "Agree the production scope"].map((title, index) => <div key={title}><p className="text-xs text-zinc-600">0{index + 1}</p><h2 className="mt-2 text-lg font-medium text-zinc-100">{title}</h2><p className="mt-2 text-sm leading-6 text-zinc-500">{index === 0 ? "Use the system with real release evidence and explicit guardrails." : index === 1 ? "Confirm it improves clarity, speed, and safety for your operators." : "Only then define support, access, and commercial terms in writing."}</p></div>)}
         </div>
       </section>
+      </main>
     </div>
   );
 }
