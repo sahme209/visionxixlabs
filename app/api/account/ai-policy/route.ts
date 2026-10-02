@@ -1,6 +1,8 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { currentContext } from "@/lib/auth/currentContext";
 import { isAdminOrOwner } from "@/lib/auth/platformAdmin";
+import { record as recordAudit } from "@/lib/audit/secureAudit";
+import { id as idFactory } from "@/lib/domain/ids";
 import {
   loadWorkspaceAIProviderPolicy,
   normalizeWorkspaceAIProviderPolicy,
@@ -30,6 +32,20 @@ export async function PUT(request: NextRequest): Promise<NextResponse> {
   if (!policy) return NextResponse.json({ ok: false, error: "invalid_provider_policy" }, { status: 422 });
   try {
     await saveWorkspaceAIProviderPolicy({ organizationId: ctx.organizationId, policy, updatedBy: ctx.userId });
+    await recordAudit({
+      organizationId: idFactory.organization(ctx.organizationId),
+      actorUserId: idFactory.user(ctx.userId),
+      actorKind: "user",
+      action: "policy.update",
+      outcome: "success",
+      entityRef: "ai_provider_policy:workspace",
+      correlationId: idFactory.correlation(`ai_policy_${Date.now().toString(36)}`),
+      source: "live",
+      detail: {
+        allowedProviderCount: policy.allowedProviders.length,
+        fallbackProviderCount: policy.fallbackOrder.length,
+      },
+    });
     return NextResponse.json({ ok: true, data: { policy } });
   } catch {
     return NextResponse.json({ ok: false, error: "provider_policy_unavailable" }, { status: 503 });
