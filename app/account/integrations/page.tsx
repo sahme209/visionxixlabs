@@ -4,6 +4,7 @@ import { AuthCompanionHeader } from "@/components/auth/AuthCompanionHeader";
 import { AuthCompanionShell } from "@/components/auth/AuthCompanionShell";
 import { GitHubConsentButton } from "@/components/auth/GitHubConsentButton";
 import { SlackConsentButton } from "@/components/auth/SlackConsentButton";
+import { TeamsConsentButton } from "@/components/auth/TeamsConsentButton";
 import { currentContext } from "@/lib/auth/currentContext";
 import { isAdminOrOwner } from "@/lib/auth/platformAdmin";
 import { visibleTenantConnectionStatus } from "@/lib/integrations/tenantConnectionState";
@@ -62,7 +63,7 @@ export default async function AccountIntegrationsPage() {
               <div className="flex items-start justify-between gap-3"><h2 className="text-lg font-medium text-zinc-100">{connection.name}</h2><span className="rounded-full border border-white/[0.1] bg-black/10 px-2.5 py-1 text-[10px] uppercase tracking-[0.12em] text-zinc-400">{connection.state}</span></div>
               <p className="mt-3 text-sm leading-6 text-zinc-500">{connection.detail}</p>
               {canManageConnections && connection.name === "GitHub" && githubState !== "Read-only validated" && <GitHubConsentButton />}
-              {canManageConnections && connection.name === "Collaboration" && collaborationState !== "Active" && <SlackConsentButton />}
+              {canManageConnections && connection.name === "Collaboration" && collaborationState !== "Active" && <div className="mt-5 flex flex-wrap gap-3"><SlackConsentButton /><TeamsConsentButton /></div>}
             </article>
           ))}
         </section>

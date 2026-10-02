@@ -23,13 +23,23 @@ const SLACK_NOTICES: Record<string, { tone: "emerald" | "amber" | "rose"; title:
   record_failed: { tone: "rose", title: "Slack consent could not be recorded", detail: "No connection was recorded. You can try again from Integrations." },
 };
 
+const TEAMS_NOTICES: Record<string, { tone: "emerald" | "amber" | "rose"; title: string; detail: string }> = {
+  consent_recorded: { tone: "emerald", title: "Microsoft consent recorded", detail: "Axiom will not show Teams as active until it completes a live server-side validation." },
+  declined: { tone: "amber", title: "Microsoft setup was cancelled", detail: "No connection or provider access was recorded." },
+  invalid_state: { tone: "rose", title: "Microsoft setup link is no longer valid", detail: "No connection was recorded. Start a new setup from Integrations instead of reusing a previous link." },
+  unavailable: { tone: "rose", title: "Teams setup is unavailable", detail: "No connection was recorded because this workspace is not configured for Teams yet." },
+  exchange_failed: { tone: "rose", title: "Microsoft setup could not be completed", detail: "No connection was recorded. You can try again from Integrations." },
+  record_failed: { tone: "rose", title: "Teams consent could not be recorded", detail: "No connection was recorded. You can try again from Integrations." },
+};
+
 export default async function AuthSuccessPage({ searchParams }: { searchParams: Promise<{ integration?: string; status?: string }> }) {
   const context = await currentContext();
   if (!context.isAuthenticated) redirect("/auth/signin?callbackUrl=/auth/success");
   const params = await searchParams;
   const integrationNotice = params.integration === "github"
     ? GITHUB_NOTICES[params.status ?? ""] ?? null
-    : params.integration === "slack" ? SLACK_NOTICES[params.status ?? ""] ?? null : null;
+    : params.integration === "slack" ? SLACK_NOTICES[params.status ?? ""] ?? null
+    : params.integration === "teams" ? TEAMS_NOTICES[params.status ?? ""] ?? null : null;
   return (
     <AuthCompanionShell>
       <div className="mx-auto max-w-6xl">
