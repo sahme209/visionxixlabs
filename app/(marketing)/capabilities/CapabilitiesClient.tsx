@@ -108,12 +108,9 @@ export function CapabilitiesClient() {
   );
 
   return (
-    <div className="relative">
-      {/* Huly aurora — coral × violet × cyan */}
-      <div aria-hidden className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
-        <div className="ambient-drift absolute -top-1/4 left-1/4 h-[60vh] w-[50vw] rounded-full bg-brand-violet/[0.08] blur-[140px]" />
-        <div className="ambient-drift absolute top-[20%] right-[5%] h-[50vh] w-[40vw] rounded-full bg-brand-coral/[0.06] blur-[130px]" style={{ animationDelay: "-8s" }} />
-        <div className="ambient-drift absolute bottom-0 right-1/4 h-[45vh] w-[35vw] rounded-full bg-cyan-500/[0.05] blur-[120px]" style={{ animationDelay: "-14s" }} />
+    <div className="relative isolate overflow-hidden">
+      <div aria-hidden className="pointer-events-none fixed inset-0 -z-20 bg-cover bg-center opacity-20" style={{ backgroundImage: "url('/images/axiom-history-landscape-v1.png')" }} />
+      <div aria-hidden className="pointer-events-none fixed inset-0 -z-10 bg-[linear-gradient(180deg,rgba(11,12,11,0.8),rgba(11,12,11,0.94)_42%,#0c0d0c)]" />
       </div>
 
       {/* ===== HERO ===== */}
