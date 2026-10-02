@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import {
-  CheckCircleIcon,
+  ArchiveBoxIcon,
   ClipboardDocumentCheckIcon,
   DocumentCheckIcon,
   PlayCircleIcon,
@@ -57,7 +57,7 @@ const STAGES = [
     title: "Closure comes after evidence, not after a button click.",
     detail: "The final record retains the decision, validation notes, recovery context, and immutable revision history.",
     status: "Audit-ready closure",
-    icon: CheckCircleIcon,
+    icon: ArchiveBoxIcon,
   },
 ] as const;
 
@@ -108,7 +108,7 @@ export function DeploymentLifecycleDemo() {
                 >
                   <span className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full border text-[10px] ${selected ? "border-violet-300/40 bg-violet-300/15 text-violet-100" : "border-white/[0.1] text-zinc-600"}`}>{index + 1}</span>
                   <span className="text-xs font-medium">{stage.label}</span>
-                  {index < activeIndex ? <CheckCircleIcon className="ml-auto h-3.5 w-3.5 text-emerald-300" aria-label="Completed illustrative stage" /> : null}
+                  {index < activeIndex ? <span className="ml-auto h-1.5 w-1.5 rounded-full bg-emerald-300" aria-label="Completed illustrative stage" /> : null}
                 </button>
               );
             })}
