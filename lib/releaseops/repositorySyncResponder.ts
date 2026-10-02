@@ -180,7 +180,7 @@ export async function buildRepositorySyncResponse(
 
     if (repoRow.provider === "github") {
       if (!fetchers.github) {
-        return { status: 501, body: { ok: false, error: "fetcher_not_configured", hint: "GitHub fetcher missing — check GITHUB_PAT env." } };
+        return { status: 501, body: { ok: false, error: "fetcher_not_configured", hint: "GitHub evidence sync requires an approved, validated GitHub App connection." } };
       }
       switch (input.kind) {
         case "pull_requests":
@@ -193,7 +193,7 @@ export async function buildRepositorySyncResponse(
     }
     if (repoRow.provider === "gitlab") {
       if (!fetchers.gitlab) {
-        return { status: 501, body: { ok: false, error: "fetcher_not_configured", hint: "GitLab fetcher missing — check GITLAB_TOKEN env." } };
+        return { status: 501, body: { ok: false, error: "fetcher_not_configured", hint: "GitLab evidence sync is not configured for this workspace." } };
       }
       switch (input.kind) {
         case "pull_requests":
@@ -206,7 +206,7 @@ export async function buildRepositorySyncResponse(
     }
     if (repoRow.provider === "azuredevops") {
       if (!fetchers.azuredevops) {
-        return { status: 501, body: { ok: false, error: "fetcher_not_configured", hint: "Azure DevOps fetcher missing — check AZURE_DEVOPS_PAT (+ AZURE_DEVOPS_ORG) env." } };
+        return { status: 501, body: { ok: false, error: "fetcher_not_configured", hint: "Azure DevOps evidence sync is not configured for this workspace." } };
       }
       const locator = parseAzureDevOpsLocator(repoRow);
       if (!locator) {
