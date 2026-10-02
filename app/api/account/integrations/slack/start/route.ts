@@ -1,7 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { currentContext } from "@/lib/auth/currentContext";
 import { isAdminOrOwner } from "@/lib/auth/platformAdmin";
-import { loadAppEnv } from "@/lib/config/env";
+import { trustedIntegrationCallbackUrl } from "@/lib/integrations/trustedCallbackUrl";
 import { prisma } from "@/lib/db";
 import { buildSlackInstallUrl } from "@/lib/integrations/slack/slackOauth";
 import { startTenantIntegrationAuthorization, type TenantConnectionRepo } from "@/lib/integrations/tenantConnectionRepo";
@@ -25,7 +25,8 @@ export async function POST(_request: NextRequest): Promise<Response> {
     return NextResponse.json({ ok: false, error: "slack_not_configured" }, { status: 503 });
   }
 
-  const redirectUri = new URL("/api/integrations/slack/callback", loadAppEnv().appUrl).toString();
+  const redirectUri = trustedIntegrationCallbackUrl("/api/integrations/slack/callback");
+  if (!redirectUri) return NextResponse.json({ ok: false, error: "slack_not_configured" }, { status: 503 });
   try {
     const authorization = await startTenantIntegrationAuthorization(
       prisma as unknown as TenantConnectionRepo,

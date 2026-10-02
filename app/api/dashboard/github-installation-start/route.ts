@@ -8,7 +8,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { currentContext } from "@/lib/auth/currentContext";
 import { isAdminOrOwner } from "@/lib/auth/platformAdmin";
-import { loadAppEnv } from "@/lib/config/env";
+import { trustedIntegrationCallbackUrl } from "@/lib/integrations/trustedCallbackUrl";
 import { prisma } from "@/lib/db";
 import {
   startTenantIntegrationAuthorization,
@@ -32,7 +32,8 @@ export async function POST(_request: NextRequest): Promise<Response> {
     return NextResponse.json({ ok: false, error: "github_not_configured" }, { status: 503 });
   }
 
-  const callbackUrl = new URL("/api/integrations/github/install-callback", loadAppEnv().appUrl).toString();
+  const callbackUrl = trustedIntegrationCallbackUrl("/api/integrations/github/install-callback");
+  if (!callbackUrl) return NextResponse.json({ ok: false, error: "github_not_configured" }, { status: 503 });
   try {
     const authorization = await startTenantIntegrationAuthorization(
       prisma as unknown as TenantConnectionRepo,

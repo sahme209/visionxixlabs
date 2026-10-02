@@ -2,7 +2,7 @@ import { createHash, randomBytes } from "node:crypto";
 import { NextResponse, type NextRequest } from "next/server";
 import { currentContext } from "@/lib/auth/currentContext";
 import { isAdminOrOwner } from "@/lib/auth/platformAdmin";
-import { loadAppEnv } from "@/lib/config/env";
+import { trustedIntegrationCallbackUrl } from "@/lib/integrations/trustedCallbackUrl";
 import { prisma } from "@/lib/db";
 import { startTenantIntegrationAuthorization, type TenantConnectionRepo } from "@/lib/integrations/tenantConnectionRepo";
 
@@ -31,7 +31,8 @@ export async function POST(_request: NextRequest): Promise<Response> {
     return NextResponse.json({ ok: false, error: "teams_not_configured" }, { status: 503 });
   }
 
-  const redirectUri = new URL("/api/integrations/teams/callback", loadAppEnv().appUrl).toString();
+  const redirectUri = trustedIntegrationCallbackUrl("/api/integrations/teams/callback");
+  if (!redirectUri) return NextResponse.json({ ok: false, error: "teams_not_configured" }, { status: 503 });
   const verifier = randomBytes(48).toString("base64url");
   try {
     const authorization = await startTenantIntegrationAuthorization(
