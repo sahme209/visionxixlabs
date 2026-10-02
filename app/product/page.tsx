@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import Link from "next/link";
 import { Footer } from "@/components/Footer";
 import { Navigation } from "@/components/Navigation";
@@ -27,9 +26,7 @@ export default function ProductPage() {
     <div className="axiom-canvas min-h-screen text-zinc-100">
       <Navigation />
       <main className="overflow-hidden pt-16">
-        <section className="relative isolate border-b border-white/[0.07] px-5 pb-20 pt-20 sm:px-8 sm:pt-28 lg:px-12 lg:pb-28">
-          <Image src="/images/axiom-hero-landscape-v1.png" alt="" fill priority sizes="100vw" className="-z-20 object-cover object-center opacity-45" />
-          <div className="absolute inset-0 -z-10 bg-[linear-gradient(180deg,rgba(9,10,10,0.58),#0c0d0c_78%)]" />
+        <section className="border-b border-white/[0.07] px-5 pb-20 pt-20 sm:px-8 sm:pt-28 lg:px-12 lg:pb-28">
           <div className="mx-auto max-w-6xl">
             <p className="text-[10px] uppercase tracking-[0.22em] text-violet-200">Axiom Agent · governed deployment operations</p>
             <div className="mt-6 grid gap-12 lg:grid-cols-[1fr_0.92fr] lg:items-end">
@@ -41,7 +38,9 @@ export default function ProductPage() {
                   <Link href="/plans" className="inline-flex min-h-12 items-center justify-center rounded-full border border-white/[0.14] bg-black/20 px-6 text-sm font-medium text-zinc-100 transition hover:bg-white/[0.08]">Explore pilot access</Link>
                 </div>
               </div>
-              <div className="rounded-[1.5rem] border border-white/[0.13] bg-[#11130f]/85 p-4 shadow-2xl shadow-black/40 backdrop-blur-xl sm:p-5">
+              <div className="relative isolate overflow-hidden rounded-[1.5rem] border border-white/[0.13] bg-[#11130f]/85 p-4 shadow-2xl shadow-black/40 sm:p-5">
+                <div aria-hidden className="absolute inset-0 -z-20 bg-cover bg-center opacity-60" style={{ backgroundImage: "url('/images/axiom-hero-landscape-v1.png')" }} />
+                <div aria-hidden className="absolute inset-0 -z-10 bg-[linear-gradient(180deg,rgba(10,11,10,0.28),rgba(10,11,10,0.74))]" />
                 <div className="rounded-[1rem] border border-white/[0.08] bg-black/25 p-5 sm:p-6">
                   <div className="flex items-start justify-between gap-4"><div><p className="text-[10px] uppercase tracking-[0.16em] text-zinc-500">Release workspace</p><p className="mt-2 text-lg font-medium text-zinc-100">Production configuration rollout</p></div><span className="rounded-full border border-amber-200/20 bg-amber-200/[0.08] px-2.5 py-1 text-[10px] uppercase tracking-[0.12em] text-amber-100">Human approval</span></div>
                   <div className="mt-7 grid gap-3 sm:grid-cols-3">{[["Scope", "Repository evidence"], ["Readiness", "Awaiting review"], ["Recovery", "Plan recorded"]].map(([label, value]) => <div key={label} className="rounded-xl border border-white/[0.07] bg-white/[0.035] p-3"><p className="text-[10px] uppercase tracking-[0.12em] text-zinc-600">{label}</p><p className="mt-2 text-sm text-zinc-300">{value}</p></div>)}</div>
@@ -58,7 +57,7 @@ export default function ProductPage() {
         </section>
 
         <section className="relative isolate overflow-hidden border-y border-white/[0.07] px-5 py-20 sm:px-8 lg:px-12 lg:py-28">
-          <Image src="/images/axiom-history-landscape-v1.png" alt="" fill sizes="100vw" className="-z-20 object-cover opacity-40" />
+          <div aria-hidden className="absolute inset-0 -z-20 bg-cover bg-center opacity-34" style={{ backgroundImage: "url('/images/axiom-history-landscape-v1.png')" }} />
           <div className="absolute inset-0 -z-10 bg-[#11120f]/78" />
           <div className="mx-auto grid max-w-6xl gap-12 lg:grid-cols-[0.85fr_1.15fr] lg:items-center"><div><p className="text-[10px] uppercase tracking-[0.22em] text-orange-200">Intentional boundaries</p><h2 className="mt-4 text-3xl font-medium tracking-[-0.045em] text-zinc-100 sm:text-5xl">The right surface for each job.</h2><p className="mt-5 max-w-md text-base leading-7 text-zinc-300">The browser is useful for identity and lightweight account context. The installed Agent is where provider setup and deployment operations stay deliberate.</p></div><div className="grid gap-3">{BOUNDARIES.map(([title, detail]) => <div key={title} className="rounded-2xl border border-white/[0.12] bg-[#10110e]/70 p-5 backdrop-blur-md"><h3 className="text-lg font-medium text-zinc-100">{title}</h3><p className="mt-2 text-sm leading-6 text-zinc-400">{detail}</p></div>)}</div></div>
         </section>
