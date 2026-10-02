@@ -42,6 +42,22 @@ export function trustedAxiomUrl(path: string): string | null {
  * may use HTTP only on loopback.
  */
 export function trustedIntegrationCallbackUrl(path: string): string | null {
+  return trustedIntegrationCallbackUrlFromAppUrl(path, loadAppEnv().appUrl);
+}
+
+/** Pure variant for callback-contract tests and server-side comparisons. */
+export function trustedIntegrationCallbackUrlFromAppUrl(path: string, appUrl: string): string | null {
   if (!CALLBACK_PATHS.has(path)) return null;
-  return trustedAxiomUrl(path);
+  return trustedAxiomUrlFromAppUrl(path, appUrl);
+}
+
+/**
+ * The OAuth code exchange must use the callback that Axiom currently trusts,
+ * not merely a URI stored with an earlier authorization attempt. This keeps a
+ * database mutation or stale configuration from steering the exchange away
+ * from Axiom's configured callback origin.
+ */
+export function matchesTrustedIntegrationCallbackUrl(path: string, candidate: string): boolean {
+  const expected = trustedIntegrationCallbackUrl(path);
+  return expected !== null && expected === candidate;
 }

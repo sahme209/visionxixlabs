@@ -6,7 +6,7 @@ import { id as idFactory } from "@/lib/domain/ids";
 import { connectionCredentialContext } from "@/lib/integrations/tenantAuthorization";
 import { consumeTenantIntegrationAuthorization, type TenantConnectionRepo } from "@/lib/integrations/tenantConnectionRepo";
 import { encryptScopedCredential } from "@/lib/security/credentialVault";
-import { trustedAxiomUrl } from "@/lib/integrations/trustedCallbackUrl";
+import { matchesTrustedIntegrationCallbackUrl, trustedAxiomUrl } from "@/lib/integrations/trustedCallbackUrl";
 import { hasRequiredScopes, splitGrantedScopes } from "@/lib/integrations/grantedScopes";
 
 export const dynamic = "force-dynamic";
@@ -39,6 +39,9 @@ export async function GET(request: NextRequest): Promise<Response> {
     { state, provider: "slack" },
   );
   if (!authorization.ok) return returnToCompanion("invalid_state");
+  if (!matchesTrustedIntegrationCallbackUrl("/api/integrations/slack/callback", authorization.attempt.redirectUri)) {
+    return returnToCompanion("invalid_state");
+  }
   if (url.searchParams.get("error")) return returnToCompanion("declined");
 
   const code = url.searchParams.get("code");

@@ -25,7 +25,7 @@ import {
   consumeTenantIntegrationAuthorization,
   type TenantConnectionRepo,
 } from "@/lib/integrations/tenantConnectionRepo";
-import { trustedAxiomUrl } from "@/lib/integrations/trustedCallbackUrl";
+import { matchesTrustedIntegrationCallbackUrl, trustedAxiomUrl } from "@/lib/integrations/trustedCallbackUrl";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -48,6 +48,9 @@ export async function GET(req: NextRequest): Promise<Response> {
   );
 
   if (!authorization.ok) {
+    return returnToCompanion("invalid_state");
+  }
+  if (!matchesTrustedIntegrationCallbackUrl("/api/integrations/github/install-callback", authorization.attempt.redirectUri)) {
     return returnToCompanion("invalid_state");
   }
 

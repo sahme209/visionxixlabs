@@ -6,7 +6,7 @@ import { id as idFactory } from "@/lib/domain/ids";
 import { authorizationCredentialContext, connectionCredentialContext, digestAuthorizationState } from "@/lib/integrations/tenantAuthorization";
 import { consumeTenantIntegrationAuthorization, type TenantConnectionRepo } from "@/lib/integrations/tenantConnectionRepo";
 import { decryptScopedCredential, encryptScopedCredential } from "@/lib/security/credentialVault";
-import { trustedAxiomUrl } from "@/lib/integrations/trustedCallbackUrl";
+import { matchesTrustedIntegrationCallbackUrl, trustedAxiomUrl } from "@/lib/integrations/trustedCallbackUrl";
 import { hasRequiredScopes, splitGrantedScopes } from "@/lib/integrations/grantedScopes";
 
 export const dynamic = "force-dynamic";
@@ -39,6 +39,9 @@ export async function GET(request: NextRequest): Promise<Response> {
     { state, provider: "teams" },
   );
   if (!authorization.ok) return returnToCompanion("invalid_state");
+  if (!matchesTrustedIntegrationCallbackUrl("/api/integrations/teams/callback", authorization.attempt.redirectUri)) {
+    return returnToCompanion("invalid_state");
+  }
   if (url.searchParams.get("error")) return returnToCompanion("declined");
   const code = url.searchParams.get("code");
   const clientId = process.env.MICROSOFT_CLIENT_ID?.trim() ?? "";
