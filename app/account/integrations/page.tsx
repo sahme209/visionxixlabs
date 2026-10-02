@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { AuthCompanionHeader } from "@/components/auth/AuthCompanionHeader";
 import { AuthCompanionShell } from "@/components/auth/AuthCompanionShell";
+import { GitHubConsentButton } from "@/components/auth/GitHubConsentButton";
 import { currentContext } from "@/lib/auth/currentContext";
 import { visibleTenantConnectionStatus } from "@/lib/integrations/tenantConnectionState";
 import { prisma } from "@/lib/db";
@@ -57,6 +58,7 @@ export default async function AccountIntegrationsPage() {
             <article key={connection.name} className="rounded-2xl border border-white/[0.08] bg-white/[0.025] p-5 sm:p-6">
               <div className="flex items-start justify-between gap-3"><h2 className="text-lg font-medium text-zinc-100">{connection.name}</h2><span className="rounded-full border border-white/[0.1] bg-black/10 px-2.5 py-1 text-[10px] uppercase tracking-[0.12em] text-zinc-400">{connection.state}</span></div>
               <p className="mt-3 text-sm leading-6 text-zinc-500">{connection.detail}</p>
+              {connection.name === "GitHub" && githubState !== "Read-only validated" && <GitHubConsentButton />}
             </article>
           ))}
         </section>
