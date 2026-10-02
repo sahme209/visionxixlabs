@@ -20,6 +20,7 @@ import "server-only";
 import { prisma } from "@/lib/db";
 import { getAIProviderManager } from "@/lib/ai/AIProviderManager";
 import { callProvider, type PreferredProvider } from "@/lib/ai/directProviderCall";
+import { loadWorkspaceAIProviderPolicyWithState, resolveWorkspaceAIProviderPolicy } from "@/lib/ai/workspaceProviderPolicy";
 import type { RationaleAiFetcher } from "./aiRationaleEnricherEngine";
 import {
   lookupCircuitState,
@@ -95,14 +96,50 @@ export function makeInstrumentedFetcher(opts: InstrumentedFetcherOptions): Ratio
     try {
       const maxTokens = opts.maxTokens ?? 500;
       const temperature = opts.temperature ?? 0.2;
-      // Phase 593: when preferredProvider is set, bypass the manager
-      // fallback chain and call the named provider directly. The
-      // AiCallLog.model column records the resolved model so the
-      // cost attribution path prices it correctly.
+      // An unscoped legacy job may still use its explicit provider directly.
+      // A workspace-scoped release must instead pass through the manager so
+      // the persisted allowlist, model selection, and fallback rules apply.
+      const manager = getAIProviderManager();
+      const loadedPolicy = orgId
+        ? await loadWorkspaceAIProviderPolicyWithState(orgId)
+        : null;
+      if (loadedPolicy && loadedPolicy.storageState !== "ready") {
+        throw new Error("workspace_ai_policy_unavailable");
+      }
+      const workspacePolicy = loadedPolicy
+        ? resolveWorkspaceAIProviderPolicy({
+          stored: loadedPolicy.policy,
+          serviceEnabled: manager.status()
+            .filter((provider) => provider.configured && provider.provider !== "mock")
+            .map((provider) => provider.provider),
+        })
+        : null;
+      if (workspacePolicy && !workspacePolicy.enabled) {
+        throw new Error("workspace_ai_disabled");
+      }
+      if (workspacePolicy && workspacePolicy.allowedProviders.length === 0) {
+        throw new Error("workspace_ai_provider_unavailable");
+      }
+      if (workspacePolicy && opts.preferredProvider && !workspacePolicy.allowedProviders.includes(opts.preferredProvider)) {
+        throw new Error("workspace_ai_provider_not_approved");
+      }
+
+      // Organization-scoped release work uses the same server-resolved policy
+      // as the workspace generation route. The direct-provider path is kept
+      // only for unscoped legacy jobs, where no workspace policy exists.
       const generate = opts.generateText
-        ?? (opts.preferredProvider
-            ? (p: string, o: { maxTokens: number; temperature: number }) => callProvider(opts.preferredProvider!, p, o)
-            : (p: string, o: { maxTokens: number; temperature: number }) => getAIProviderManager().generateText(p, o));
+        ?? (workspacePolicy
+            ? (p: string, o: { maxTokens: number; temperature: number }) => manager.generateText(p, {
+              ...o,
+              organizationId: orgId ?? undefined,
+              only: opts.preferredProvider,
+              allowedProviders: workspacePolicy.allowedProviders,
+              modelSelections: workspacePolicy.modelSelections,
+              fallbackOrder: workspacePolicy.fallbackOrder,
+            })
+            : (opts.preferredProvider
+                ? (p: string, o: { maxTokens: number; temperature: number }) => callProvider(opts.preferredProvider!, p, o)
+                : (p: string, o: { maxTokens: number; temperature: number }) => manager.generateText(p, o)));
       const result = await raceWithTimeout(generate(prompt, { maxTokens, temperature }), timeoutMs);
       raw = result as typeof raw;
     } catch (err) {
