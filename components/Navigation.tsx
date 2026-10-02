@@ -103,14 +103,20 @@ export function Navigation() {
       {mobileMenuOpen && (
         <div ref={menuRef} id="mobile-navigation" role="dialog" aria-modal="true" aria-label="Site navigation" className="fixed inset-x-0 bottom-0 top-16 overflow-y-auto border-t border-white/[0.06] bg-[#0c0d0c] px-5 py-6 lg:hidden">
           <div className="mx-auto flex max-w-lg flex-col">
-            {mobileLinks.map((item) => (
-              <Link key={item.href} href={item.href} onClick={closeMenu} className="border-b border-white/[0.06] py-4 text-lg text-zinc-200">
-                {item.label}
-              </Link>
-            ))}
-            <div className="mt-8 grid grid-cols-2 gap-3">
+            <p className="text-[10px] uppercase tracking-[0.18em] text-zinc-500">Explore Axiom</p>
+            <div className="mt-4 grid grid-cols-2 gap-2" aria-label="Primary links">
+              {mobileLinks.map((item) => (
+                <Link key={item.href} href={item.href} onClick={closeMenu} className="rounded-xl border border-white/[0.08] bg-white/[0.025] px-4 py-3.5 text-sm font-medium text-zinc-200 transition hover:border-violet-300/25 hover:bg-white/[0.06]">
+                  {item.label}
+                </Link>
+              ))}
+            </div>
+            <div className="mt-8 border-t border-white/[0.07] pt-5">
+              <p className="text-[10px] uppercase tracking-[0.18em] text-zinc-500">Your workspace</p>
+              <div className="mt-3 grid grid-cols-2 gap-3">
               <Link href="/auth/signin" onClick={closeMenu} className="rounded-full border border-white/[0.14] px-4 py-3 text-center text-sm text-zinc-200">Sign in</Link>
               <Link href="/download" onClick={closeMenu} className="rounded-full bg-white px-4 py-3 text-center text-sm font-medium text-black">Download</Link>
+              </div>
             </div>
           </div>
         </div>
