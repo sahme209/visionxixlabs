@@ -76,6 +76,9 @@ export async function POST(req: NextRequest) {
     if (body.model !== undefined && (typeof body.model !== "string" || !body.only || !isKnownModel(body.only, body.model))) {
       throw AxiomErrors.validation("ai.model_unavailable", "Choose a supported model from an enabled provider.");
     }
+    if (body.model !== undefined && body.only && policy.modelSelections[body.only] !== body.model) {
+      throw AxiomErrors.validation("ai.model_not_approved", "That model is not approved for this workspace provider.");
+    }
     const result = await mgr.generateText(body.prompt, {
       system: body.system,
       maxTokens: typeof body.maxTokens === "number" ? body.maxTokens : undefined,
@@ -85,6 +88,7 @@ export async function POST(req: NextRequest) {
       correlationId,
       organizationId: ctx.organizationId,
       allowedProviders: policy.allowedProviders,
+      modelSelections: policy.modelSelections,
       fallbackOrder: policy.fallbackOrder,
     });
     return apiOk(result, {

@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from "react";
 
-type Policy = { allowedProviders: string[]; fallbackOrder: string[] };
+type Policy = { allowedProviders: string[]; modelSelections: Record<string, string>; fallbackOrder: string[] };
+type ModelOption = { id: string; label: string };
 type LoadState = "loading" | "ready" | "unavailable" | "saving" | "saved" | "error";
 
 const PROVIDER_LABELS: Record<string, string> = {
@@ -19,8 +20,9 @@ const PROVIDER_LABELS: Record<string, string> = {
 };
 
 export function WorkspaceAISettingsForm() {
-  const [policy, setPolicy] = useState<Policy>({ allowedProviders: [], fallbackOrder: [] });
+  const [policy, setPolicy] = useState<Policy>({ allowedProviders: [], modelSelections: {}, fallbackOrder: [] });
   const [availableProviders, setAvailableProviders] = useState<string[]>([]);
+  const [availableModels, setAvailableModels] = useState<Record<string, ModelOption[]>>({});
   const [state, setState] = useState<LoadState>("loading");
 
   useEffect(() => {
@@ -29,9 +31,10 @@ export function WorkspaceAISettingsForm() {
       .then(async (response) => ({ response, body: await response.json().catch(() => null) }))
       .then(({ response, body }) => {
         if (!active) return;
-        if (!response.ok || !body?.data?.policy || !Array.isArray(body?.data?.availableProviders)) { setState("unavailable"); return; }
+        if (!response.ok || !body?.data?.policy || !Array.isArray(body?.data?.availableProviders) || !body?.data?.availableModels) { setState("unavailable"); return; }
         setPolicy(body.data.policy);
         setAvailableProviders(body.data.availableProviders);
+        setAvailableModels(body.data.availableModels);
         setState("ready");
       })
       .catch(() => { if (active) setState("unavailable"); });
@@ -47,7 +50,7 @@ export function WorkspaceAISettingsForm() {
     const response = await fetch("/api/account/ai-policy", {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ allowedProviders: policy.allowedProviders, fallbackOrder }),
+      body: JSON.stringify({ allowedProviders: policy.allowedProviders, modelSelections: policy.modelSelections, fallbackOrder }),
     });
     if (!response.ok) { setState("error"); return; }
     const body = await response.json().catch(() => null);
@@ -75,15 +78,22 @@ export function WorkspaceAISettingsForm() {
       const fallbackOrder = isAllowed
         ? current.fallbackOrder.filter((item) => item !== provider)
         : [...current.fallbackOrder, provider];
-      return { allowedProviders, fallbackOrder };
+      const modelSelections = { ...current.modelSelections };
+      if (isAllowed) delete modelSelections[provider];
+      else if (availableModels[provider]?.[0]) modelSelections[provider] = availableModels[provider][0].id;
+      return { allowedProviders, modelSelections, fallbackOrder };
     });
+  }
+
+  function selectModel(provider: string, model: string) {
+    setPolicy((current) => ({ ...current, modelSelections: { ...current.modelSelections, [provider]: model } }));
   }
 
   return (
     <section className="rounded-2xl border border-white/[0.08] bg-white/[0.025] p-5 sm:p-7" aria-labelledby="ai-policy-title">
       <p className="text-[10px] uppercase tracking-[0.18em] text-violet-300">Workspace control</p>
       <h2 id="ai-policy-title" className="mt-3 text-lg font-medium text-zinc-100">AI provider policy</h2>
-      <p className="mt-2 max-w-xl text-sm leading-6 text-zinc-500">Review the provider families approved by the service and set their fallback order. Credentials, prompts, and provider billing accounts never appear here.</p>
+      <p className="mt-2 max-w-xl text-sm leading-6 text-zinc-500">Review the provider families approved by the service, select their approved models, and set fallback order. Credentials, prompts, and provider billing accounts never appear here.</p>
 
       {state === "loading" && <p className="mt-6 text-sm text-zinc-500">Loading workspace policy…</p>}
       {state === "unavailable" && <p className="mt-6 text-sm leading-6 text-zinc-500">AI policy is available to workspace owners after at least one provider is enabled by the service.</p>}
@@ -103,6 +113,20 @@ export function WorkspaceAISettingsForm() {
                   })}
                 </div>
               </fieldset>
+              {allowed.length > 0 && <fieldset className="mt-4 rounded-xl border border-white/[0.07] p-3">
+                <legend className="px-1 text-xs font-medium text-zinc-300">Approved model per provider</legend>
+                <div className="mt-1 space-y-2">
+                  {allowed.map((provider) => {
+                    const options = availableModels[provider] ?? [];
+                    return <label key={provider} className="flex flex-col gap-2 rounded-lg px-2 py-2 text-sm text-zinc-300 sm:flex-row sm:items-center sm:justify-between">
+                      <span>{PROVIDER_LABELS[provider] ?? provider}</span>
+                      <select value={policy.modelSelections[provider] ?? options[0]?.id ?? ""} onChange={(event) => selectModel(provider, event.target.value)} disabled={options.length === 0} className="min-h-9 rounded-lg border border-white/[0.1] bg-black/20 px-2 text-sm text-zinc-200 disabled:opacity-50">
+                        {options.map((model) => <option key={model.id} value={model.id}>{model.label}</option>)}
+                      </select>
+                    </label>;
+                  })}
+                </div>
+              </fieldset>}
               {allowed.length > 0 && <ol className="mt-4 overflow-hidden rounded-xl border border-white/[0.07]">
               {(policy.fallbackOrder.length ? policy.fallbackOrder : allowed).map((provider, index) => (
                 <li key={provider} className="flex items-center justify-between gap-3 border-b border-white/[0.06] px-4 py-3 last:border-b-0">

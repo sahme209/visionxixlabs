@@ -99,6 +99,14 @@ export class AIProviderManager {
     return out;
   }
 
+  private optionsForProvider(provider: AIProvider, options?: AIRequestOptions & { only?: AIProviderName }): AIRequestOptions | undefined {
+    if (!options) return undefined;
+    // A direct request model is already checked by the route. Fallbacks use
+    // their own approved selection so a model identifier never crosses into a
+    // different provider family.
+    return { ...options, model: options.model ?? options.modelSelections?.[provider.name] };
+  }
+
   status(): ProviderStatusRow[] {
     return PROVIDER_PRIORITY.map((name, i) => {
       const p = this.providers.get(name)!;
@@ -131,7 +139,7 @@ export class AIProviderManager {
   async generateText(prompt: string, options?: AIRequestOptions & { only?: AIProviderName }): Promise<AITextResponse> {
     const out = await runWithFallback<AITextResponse>(
       this.chain({ only: options?.only, allowedProviders: options?.allowedProviders, fallbackOrder: options?.fallbackOrder }),
-      (p) => p.generateText(prompt, options),
+      (p) => p.generateText(prompt, this.optionsForProvider(p, options)),
       { task: "generate_text", correlationId: options?.correlationId, organizationId: options?.organizationId },
     );
     return out.result;
@@ -140,7 +148,7 @@ export class AIProviderManager {
   async summarize(text: string, options?: AIRequestOptions & { only?: AIProviderName }): Promise<AITextResponse> {
     const out = await runWithFallback<AITextResponse>(
       this.chain({ only: options?.only, allowedProviders: options?.allowedProviders, fallbackOrder: options?.fallbackOrder }),
-      (p) => p.summarize(text, options),
+      (p) => p.summarize(text, this.optionsForProvider(p, options)),
       { task: "summarize", correlationId: options?.correlationId, organizationId: options?.organizationId },
     );
     return out.result;
@@ -149,7 +157,7 @@ export class AIProviderManager {
   async classify(text: string, labels: readonly string[], options?: AIRequestOptions & { only?: AIProviderName }): Promise<AIClassifyResponse> {
     const out = await runWithFallback<AIClassifyResponse>(
       this.chain({ only: options?.only, allowedProviders: options?.allowedProviders, fallbackOrder: options?.fallbackOrder }),
-      (p) => p.classify(text, labels, options),
+      (p) => p.classify(text, labels, this.optionsForProvider(p, options)),
       { task: "classify", correlationId: options?.correlationId, organizationId: options?.organizationId },
     );
     return out.result;
@@ -162,7 +170,7 @@ export class AIProviderManager {
   ): Promise<AIStructuredResponse<T>> {
     const out = await runWithFallback<AIStructuredResponse<T>>(
       this.chain({ only: options?.only, allowedProviders: options?.allowedProviders, fallbackOrder: options?.fallbackOrder }),
-      (p) => p.extractStructuredData<T>(text, schemaHint, options),
+      (p) => p.extractStructuredData<T>(text, schemaHint, this.optionsForProvider(p, options)),
       { task: "extract_structured_data", correlationId: options?.correlationId, organizationId: options?.organizationId },
     );
     return out.result;
@@ -183,7 +191,7 @@ export class AIProviderManager {
     }
     const t0 = Date.now();
     try {
-      for await (const chunk of head.streamText(prompt, options)) {
+      for await (const chunk of head.streamText(prompt, this.optionsForProvider(head, options))) {
         yield chunk;
       }
       recordUsage({

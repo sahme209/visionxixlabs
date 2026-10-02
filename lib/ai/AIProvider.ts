@@ -52,6 +52,8 @@ export interface AIRequestOptions {
   organizationId?: string;
   /** Server-resolved provider policy. It is never copied into a provider request. */
   allowedProviders?: readonly AIProviderName[];
+  /** Server-resolved approved model per provider. Never copied into a provider request. */
+  modelSelections?: Partial<Record<AIProviderName, string>>;
   fallbackOrder?: readonly AIProviderName[];
   /** Optional override for the provider's default model. */
   model?: string;

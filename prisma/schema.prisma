@@ -1933,12 +1933,13 @@ model OrganizationBudgetConfig {
   updatedAt            DateTime @updatedAt
 }
 
-/// Workspace-owned AI routing policy. This stores provider identifiers and
-/// fallback order only; credentials remain exclusively in server environment
-/// configuration and are never tenant supplied.
+/// Workspace-owned AI routing policy. This stores provider identifiers,
+/// approved model selections, and fallback order only; credentials remain
+/// exclusively in server environment configuration and are never tenant supplied.
 model OrganizationAIProviderPolicy {
   organizationId     String   @id
   allowedProviders   Json     @default("[]")
+  modelSelections    Json     @default("{}")
   fallbackOrder      Json     @default("[]")
   updatedBy          String
   createdAt          DateTime @default(now())
