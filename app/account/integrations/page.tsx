@@ -35,6 +35,16 @@ function githubConnectionState(installation: GitHubInstallationRow): string {
     : "Validation overdue";
 }
 
+function validationNextStep(connection: { name: string; state: string; control?: string }) {
+  if (connection.name === "GitHub" && (connection.state === "Installation recorded" || connection.state === "Validation overdue")) {
+    return "Open Axiom Agent and run its read-only GitHub validation. A recorded installation cannot contribute release evidence until that harmless check succeeds.";
+  }
+  if ((connection.control === "slack" || connection.control === "teams") && (connection.state === "Awaiting validation" || connection.state === "Needs attention")) {
+    return "Open Axiom Agent and run its server-side validation. Consent alone is not treated as an active connection.";
+  }
+  return null;
+}
+
 export const dynamic = "force-dynamic";
 
 export default async function AccountIntegrationsPage() {
@@ -91,6 +101,7 @@ export default async function AccountIntegrationsPage() {
             <article key={connection.name} className="rounded-2xl border border-white/[0.08] bg-white/[0.025] p-5 sm:p-6">
               <div className="flex items-start justify-between gap-3"><h2 className="text-lg font-medium text-zinc-100">{connection.name}</h2><span className="rounded-full border border-white/[0.1] bg-black/10 px-2.5 py-1 text-[10px] uppercase tracking-[0.12em] text-zinc-400">{connection.state}</span></div>
               <p className="mt-3 text-sm leading-6 text-zinc-500">{connection.detail}</p>
+              {validationNextStep(connection) && <p className="mt-4 rounded-xl border border-violet-300/15 bg-violet-300/[0.04] px-3 py-2.5 text-xs leading-5 text-zinc-400">{validationNextStep(connection)}</p>}
               {canManageConnections && connection.name === "GitHub" && (githubState === "Not connected" || githubState === "Revoked") && connection.setupAvailable && <GitHubConsentButton />}
               {canManageConnections && connection.name === "GitHub" && githubInstallationRowId && githubState !== "Revoked" && <GitHubDisconnectButton installationRowId={githubInstallationRowId} />}
               {canManageConnections && connection.control === "slack" && slackState !== "Active" && connection.setupAvailable && <SlackConsentButton />}
