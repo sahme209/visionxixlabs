@@ -15,8 +15,9 @@
  *
  * This module caches each installation-token scope in-memory until ~5 minutes
  * before its real expiry, so we don't pay the JWT-sign + HTTP round-trip on
- * every API call. A token narrowed to selected repositories never shares a
- * cache entry with an installation-wide token.
+ * every API call. The cache is bounded and expired entries are discarded on
+ * writes. A token narrowed to selected repositories never shares a cache entry
+ * with an installation-wide token.
  *
  * Hard rules:
  *  - Never returns the private key or the JWT. Only the installation
@@ -34,6 +35,7 @@ import { getGithubConfig, resolveGithubAppPrivateKey } from "./githubConfig";
 const GITHUB_API = "https://api.github.com";
 const JWT_TTL_SEC = 9 * 60;             // GitHub max is 10 min; we use 9 to allow for clock skew.
 const TOKEN_REFRESH_BUFFER_MS = 5 * 60_000; // Refresh installation tokens 5 min before expiry.
+const MAX_CACHED_INSTALLATION_TOKENS = 128;
 
 // ---------------------------------------------------------------------------
 // JWT signing (RS256 — GitHub requires it)
@@ -85,6 +87,28 @@ const cachedByScope = new Map<string, CachedInstallationToken>();
 function tokenIsFresh(c: CachedInstallationToken | undefined): boolean {
   if (!c) return false;
   return c.expiresAt - Date.now() > TOKEN_REFRESH_BUFFER_MS;
+}
+
+/**
+ * A release request can name a distinct repository scope, so cache keys are
+ * intentionally high-cardinality. Keep the process-local cache bounded and
+ * remove tokens that are no longer valid before adding another one.
+ */
+function pruneInstallationTokenCache(now = Date.now()): void {
+  for (const [key, cached] of cachedByScope) {
+    if (cached.expiresAt - now <= TOKEN_REFRESH_BUFFER_MS) cachedByScope.delete(key);
+  }
+  if (cachedByScope.size < MAX_CACHED_INSTALLATION_TOKENS) return;
+
+  let oldestKey: string | undefined;
+  let oldestExpiry = Number.POSITIVE_INFINITY;
+  for (const [key, cached] of cachedByScope) {
+    if (cached.expiresAt < oldestExpiry) {
+      oldestKey = key;
+      oldestExpiry = cached.expiresAt;
+    }
+  }
+  if (oldestKey) cachedByScope.delete(oldestKey);
 }
 
 // ---------------------------------------------------------------------------
@@ -142,6 +166,7 @@ export async function resolveGithubInstallationToken(
   if (cached && tokenIsFresh(cached)) {
     return { ok: true, token: cached.token, installationId: cached.installationId, expiresAt: cached.expiresAt };
   }
+  pruneInstallationTokenCache();
 
   const privateKey = resolveGithubAppPrivateKey();
   if (!privateKey) {
