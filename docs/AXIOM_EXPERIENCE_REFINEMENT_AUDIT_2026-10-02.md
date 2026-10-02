@@ -63,6 +63,12 @@ Do not advertise Deployment Rehearsal until it has all of the following:
 
 Until then, use the truthful language **“review and dry-run planning”** rather than “rehearsal” or “sandboxed execution.”
 
+## Desktop launch verification
+
+Source inspection confirms the desktop lifecycle has a visible default window, off-screen persisted-window protection, single-instance focus, close-to-tray recovery, and macOS Dock reopen handling. No source-level startup defect was found in that path.
+
+The downloaded-installer concern remains an external verification item: test the exact signed release artifact on clean Apple Silicon, Intel, Windows, and Linux hosts; capture first launch, Gatekeeper/SmartScreen behavior, browser-pair return, close/reopen, and sign-out. Do not claim a packaged launch is fixed until that matrix is complete.
+
 ## Refinement sequence
 
 1. Request-to-Closure homepage and Product narrative.
