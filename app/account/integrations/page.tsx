@@ -71,10 +71,10 @@ export default async function AccountIntegrationsPage() {
     // An unavailable status store must never be interpreted as a live connection.
   }
   const connections = [
-    { name: "GitHub", detail: "Release evidence uses repository-scoped, read-only access. A recorded install is not treated as live until Axiom Agent completes a harmless validation read.", state: githubState, setupAvailable: setupReady.github },
+    { name: "GitHub", detail: "Release evidence uses repository-scoped, read-only access. A recorded install is not treated as live until Axiom Agent completes a harmless validation read.", state: githubState, setupAvailable: setupReady.github, setupHint: "GitHub App setup is not available yet. An Axiom administrator must configure the approved App before this workspace can start consent." },
     { name: "Cloud accounts", detail: "AWS, Azure, and Google Cloud stay tenant-scoped and are validated from the installed application.", state: "Managed in Agent", setupAvailable: undefined },
-    { name: "Slack", detail: "Axiom requests only the collaboration scope required for release updates. Browser consent and live server-side validation are both required before it appears active.", state: slackState, control: "slack", setupAvailable: setupReady.slack },
-    { name: "Microsoft", detail: "Start with tenant identity validation. Teams messaging remains unavailable until a separate, explicitly approved permission is configured and validated.", state: teamsState, control: "teams", setupAvailable: setupReady.teams },
+    { name: "Slack", detail: "Axiom requests only the collaboration scope required for release updates. Browser consent and live server-side validation are both required before it appears active.", state: slackState, control: "slack", setupAvailable: setupReady.slack, setupHint: "Slack consent is not available yet. An Axiom administrator must configure the approved Slack application before a workspace can connect." },
+    { name: "Microsoft", detail: "Start with tenant identity validation. Teams messaging remains unavailable until a separate, explicitly approved permission is configured and validated.", state: teamsState, control: "teams", setupAvailable: setupReady.teams, setupHint: "Microsoft consent is not available yet. An Axiom administrator must configure the approved Microsoft application before a workspace can connect." },
     { name: "Observability", detail: "Production health is not shown as connected until a tenant-scoped observability connection is verified.", state: "Not connected", setupAvailable: undefined },
   ];
   return (
@@ -84,7 +84,7 @@ export default async function AccountIntegrationsPage() {
         <section className="py-14 sm:py-20">
           <p className="text-[10px] uppercase tracking-[0.22em] text-violet-300">Axiom web companion · integrations</p>
           <h1 className="mt-4 text-4xl font-semibold tracking-[-0.045em] sm:text-5xl">Your release stack, clearly scoped.</h1>
-          <p className="mt-5 max-w-2xl text-base leading-7 text-zinc-400">This companion keeps your account context in place. Connection setup and consequential operations remain in Axiom Agent, where each provider can be consented, validated, revoked, and audited.</p>
+          <p className="mt-5 max-w-2xl text-base leading-7 text-zinc-400">This companion keeps your account context in place. Provider consent starts here when it is available; Axiom Agent performs the harmless validation and keeps consequential release operations, revocation, and audit evidence governed.</p>
         </section>
         <section className="grid gap-3 md:grid-cols-2" aria-label="Integration overview">
           {connections.map((connection) => (
@@ -97,7 +97,7 @@ export default async function AccountIntegrationsPage() {
               {canManageConnections && connection.control === "teams" && teamsState !== "Active" && connection.setupAvailable && <TeamsConsentButton />}
               {canManageConnections && connection.control === "slack" && slackState !== "Not connected" && slackState !== "Revoked" && <IntegrationDisconnectButton provider="slack" label="Slack" />}
               {canManageConnections && connection.control === "teams" && teamsState !== "Not connected" && teamsState !== "Revoked" && <IntegrationDisconnectButton provider="teams" label="Microsoft" />}
-              {canManageConnections && connection.setupAvailable === false && connection.state !== "Active" && <p className="mt-5 text-xs leading-5 text-zinc-500">Connection setup is not available for this pilot workspace yet. No provider consent link is shown.</p>}
+              {canManageConnections && connection.setupAvailable === false && connection.state !== "Active" && <p className="mt-5 text-xs leading-5 text-zinc-500">{connection.setupHint ?? "Connection setup is not available for this pilot workspace yet. No provider consent link is shown."}</p>}
             </article>
           ))}
         </section>
