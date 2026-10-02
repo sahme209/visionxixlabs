@@ -7,6 +7,7 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { _resetAIProviderManagerForTests, getAIProviderManager } from "../AIProviderManager";
 import { PROVIDER_PRIORITY } from "../AIModelRegistry";
+import type { AIStreamChunk } from "../AIProvider";
 
 describe("AIProviderManager", () => {
   beforeEach(() => {
@@ -92,5 +93,14 @@ describe("AIProviderManager", () => {
     }).chain({ only: "github_models", allowedProviders: ["groq"] });
 
     expect(runtimeChain.map((provider) => provider.name)).toEqual([]);
+  });
+
+  it("ends a governed stream without a simulated answer when no provider is allowed", async () => {
+    const mgr = getAIProviderManager();
+    const chunks: AIStreamChunk[] = [];
+    for await (const chunk of mgr.streamText("hello", { allowedProviders: [], fallbackOrder: [] })) {
+      chunks.push(chunk);
+    }
+    expect(chunks).toEqual([{ text: "", done: true, finishReason: "error" }]);
   });
 });

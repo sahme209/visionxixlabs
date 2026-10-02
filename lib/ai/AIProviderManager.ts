@@ -165,7 +165,14 @@ export class AIProviderManager {
     // re-stream from a fallback mid-stream. If it fails before yielding,
     // we surface a single error chunk and end.
     const chain = this.chain({ only: options?.only, allowedProviders: options?.allowedProviders, fallbackOrder: options?.fallbackOrder });
-    const head = chain[0]!;
+    const head = chain[0];
+    // A workspace-governed request has no mock fallback. If the policy
+    // resolves to no live provider, end the stream honestly instead of
+    // dereferencing an empty chain or fabricating a response.
+    if (!head) {
+      yield { text: "", done: true, finishReason: "error" };
+      return;
+    }
     const t0 = Date.now();
     try {
       for await (const chunk of head.streamText(prompt, options)) {
