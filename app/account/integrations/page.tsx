@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { AuthCompanionHeader } from "@/components/auth/AuthCompanionHeader";
 import { AuthCompanionShell } from "@/components/auth/AuthCompanionShell";
 import { GitHubConsentButton } from "@/components/auth/GitHubConsentButton";
+import { IntegrationDisconnectButton } from "@/components/auth/IntegrationDisconnectButton";
 import { SlackConsentButton } from "@/components/auth/SlackConsentButton";
 import { TeamsConsentButton } from "@/components/auth/TeamsConsentButton";
 import { currentContext } from "@/lib/auth/currentContext";
@@ -70,6 +71,8 @@ export default async function AccountIntegrationsPage() {
               {canManageConnections && connection.name === "GitHub" && githubState !== "Read-only validated" && <GitHubConsentButton />}
               {canManageConnections && connection.control === "slack" && slackState !== "Active" && <SlackConsentButton />}
               {canManageConnections && connection.control === "teams" && teamsState !== "Active" && <TeamsConsentButton />}
+              {canManageConnections && connection.control === "slack" && slackState !== "Not connected" && slackState !== "Revoked" && <IntegrationDisconnectButton provider="slack" label="Slack" />}
+              {canManageConnections && connection.control === "teams" && teamsState !== "Not connected" && teamsState !== "Revoked" && <IntegrationDisconnectButton provider="teams" label="Microsoft" />}
             </article>
           ))}
         </section>
