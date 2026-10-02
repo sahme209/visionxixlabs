@@ -26,7 +26,6 @@ import { loadAppEnv } from "@/lib/config/env";
 import { getAwsConfig, listMissingAwsConfig } from "@/lib/cloud/aws/awsConfig";
 import { getAzureConfig } from "@/lib/cloud/azure/azureConfig";
 import { getGcpConfig } from "@/lib/cloud/gcp/gcpConfig";
-import { getGithubMode } from "@/lib/connectors/github/githubLiveClient";
 import { getGithubConfig, listMissingGithubConfig } from "@/lib/connectors/github/githubConfig";
 import { prisma } from "@/lib/db";
 
@@ -60,7 +59,7 @@ export async function buildAxiomOSState(input: BuildAxiomOSStateInput): Promise<
   const operatingLoops = await safeBuildOperatingLoops(input);
 
   // 2) Per-provider posture — enriched with operating-loop counts + timestamps.
-  const providers = buildProviders(operatingLoops, generatedAt);
+  const providers = await buildProviders(operatingLoops, generatedAt, input.tenantId);
 
   // 3) ReleaseOps — typed envelope.
   const releaseOpsPosture = await safeReleaseOps(input);
@@ -144,7 +143,9 @@ export async function buildAxiomOSState(input: BuildAxiomOSStateInput): Promise<
   const limitations = [
     ...(env.databaseUrlSet ? [] : ["DATABASE_URL not set — audit/memory/sessions are ephemeral."]),
     ...(env.awsBrokerConfigured ? [] : ["AWS broker not configured — AWS live scan unavailable."]),
-    ...(getGithubMode() === "live" ? [] : ["GitHub live mode requires PAT or App credentials."]),
+    ...(providers.find((provider) => provider.provider === "github")?.mode === "live"
+      ? []
+      : ["GitHub release evidence requires a tenant installation and a fresh read-only validation."]),
   ];
 
   return {
@@ -179,10 +180,41 @@ export async function buildAxiomOSState(input: BuildAxiomOSStateInput): Promise<
 // Section builders
 // ---------------------------------------------------------------------------
 
-function buildProviders(
+const GITHUB_VALIDATION_FRESH_FOR_MS = 24 * 60 * 60 * 1000;
+
+interface GitHubInstallationHealthRow {
+  status: string;
+  lastSeenAt: Date | null;
+}
+
+interface GitHubInstallationHealthRepo {
+  gitHubInstallation: {
+    findFirst(args: {
+      where: { organizationId: string; status: { in: string[] } };
+      orderBy: { installedAt: "desc" };
+      select: { status: true; lastSeenAt: true };
+    }): Promise<GitHubInstallationHealthRow | null>;
+  };
+}
+
+async function latestGitHubInstallation(organizationId: string): Promise<GitHubInstallationHealthRow | null> {
+  try {
+    return await (prisma as unknown as GitHubInstallationHealthRepo).gitHubInstallation.findFirst({
+      where: { organizationId, status: { in: ["active", "suspended", "revoked"] } },
+      orderBy: { installedAt: "desc" },
+      select: { status: true, lastSeenAt: true },
+    });
+  } catch {
+    // A missing migration or unavailable store is not proof of a connection.
+    return null;
+  }
+}
+
+async function buildProviders(
   operatingLoops: OperatingLoopSummary[],
   generatedAt: string,
-): ProviderPosture[] {
+  organizationId: OrganizationId,
+): Promise<ProviderPosture[]> {
   const env = loadAppEnv();
 
   // Index operating-loop summaries by provider so we can thread per-provider
@@ -246,19 +278,37 @@ function buildProviders(
 
   // GitHub
   const ghCfg = getGithubConfig();
-  const ghMode: AxiomOSSourceMode = ghCfg.mode === "live" ? "live" : "preview";
+  const githubInstallation = await latestGitHubInstallation(String(organizationId));
+  const githubValidated = githubInstallation?.status === "active"
+    && githubInstallation.lastSeenAt !== null
+    && Date.now() - githubInstallation.lastSeenAt.getTime() <= GITHUB_VALIDATION_FRESH_FOR_MS;
+  const githubBlocked = githubInstallation?.status === "revoked" || githubInstallation?.status === "suspended";
+  const ghMode: AxiomOSSourceMode = githubValidated && ghCfg.mode === "live"
+    ? "live"
+    : githubBlocked
+      ? "blocked"
+      : "preview";
+  const githubValidationRequirement = githubValidated
+    ? []
+    : githubInstallation?.status === "active"
+      ? ["Run the tenant-scoped read-only GitHub validation in Axiom Agent"]
+      : githubBlocked
+        ? ["Restore or install a permitted GitHub App installation for this workspace"]
+        : ["Install the approved GitHub App for this workspace and validate read-only access"];
   const github: ProviderPosture = {
     provider: "github",
     mode: ghMode,
-    headline: ghMode === "live"
-      ? `Live read-only via ${ghCfg.authPreference === "github_app" ? "GitHub App" : "PAT"}`
-      : "Preview sync — configure GitHub App or PAT for live data",
-    connectionStatus: ghMode === "live" ? "connected" : "preview",
-    missingRequirements: listMissingGithubConfig(),
+    headline: githubValidated && ghCfg.mode === "live"
+      ? "Tenant-scoped GitHub App validated for read-only release evidence"
+      : githubInstallation?.status === "active"
+        ? "GitHub installation recorded — read-only validation required"
+        : githubBlocked
+          ? "GitHub installation is not available to this workspace"
+          : "No validated tenant GitHub installation",
+    connectionStatus: ghMode === "live" ? "connected" : ghMode === "blocked" ? "blocked" : "preview",
+    missingRequirements: [...listMissingGithubConfig(), ...githubValidationRequirement],
     ...loopExtras("github"),
-    safeNextAction: ghMode === "live"
-      ? { label: "Run GitHub sync", href: "/api/github/sync" }
-      : { label: "Open GitHub integration", href: "/dashboard/integrations/github" },
+    safeNextAction: { label: "Open GitHub integration", href: "/account/integrations" },
   };
 
   void env;
