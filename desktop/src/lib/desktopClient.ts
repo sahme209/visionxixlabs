@@ -620,6 +620,10 @@ export class DesktopClient {
     return this.post("/api/desktop/integrations/slack/validate", {});
   }
 
+  validateTeamsConnection(): Promise<ApiResult<{ status: "active" }>> {
+    return this.post("/api/desktop/integrations/teams/validate", {});
+  }
+
   aiProviderStatus(): Promise<ApiResult<Array<{
     provider: string;
     configured: boolean;

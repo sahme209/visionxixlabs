@@ -340,6 +340,8 @@ function IntegrationsSection() {
   const [githubValidationNote, setGithubValidationNote] = useState<string | null>(null);
   const [validatingSlack, setValidatingSlack] = useState(false);
   const [slackValidationNote, setSlackValidationNote] = useState<string | null>(null);
+  const [validatingTeams, setValidatingTeams] = useState(false);
+  const [teamsValidationNote, setTeamsValidationNote] = useState<string | null>(null);
 
   const loadCloudConnections = useCallback(async () => {
     setRefreshing(true);
@@ -416,7 +418,21 @@ function IntegrationsSection() {
     setValidatingSlack(false);
   }
 
+  async function validateTeams() {
+    setValidatingTeams(true);
+    setTeamsValidationNote(null);
+    const result = await desktopClient.validateTeamsConnection();
+    if (result.ok) {
+      setTeamsValidationNote("Microsoft identity is verified for this workspace. Teams message permissions remain separately controlled.");
+      await loadCloudConnections();
+    } else {
+      setTeamsValidationNote("Microsoft could not complete an identity validation. Review the consent record and try again.");
+    }
+    setValidatingTeams(false);
+  }
+
   const slackCanValidate = collaboration?.some((connection) => connection.provider === "slack" && (connection.status === "awaiting_validation" || connection.status === "needs_attention")) ?? false;
+  const teamsCanValidate = collaboration?.some((connection) => connection.provider === "teams" && (connection.status === "awaiting_validation" || connection.status === "needs_attention")) ?? false;
 
   return <div>
     <SectionHeading title="Integration Center" detail="Connect the systems that already run your releases. Every connection is tenant-scoped, least-privilege, and shown as connected only after server-side validation." />
@@ -453,12 +469,16 @@ function IntegrationsSection() {
       <button type="button" onClick={() => void validateSlack()} disabled={validatingSlack || !slackCanValidate} className="rounded-lg border border-white/10 px-3 py-2 text-xs text-zinc-300 hover:bg-white/[0.06] disabled:opacity-50">
         {validatingSlack ? "Validating Slack…" : "Validate Slack"}
       </button>
+      <button type="button" onClick={() => void validateTeams()} disabled={validatingTeams || !teamsCanValidate} className="rounded-lg border border-white/10 px-3 py-2 text-xs text-zinc-300 hover:bg-white/[0.06] disabled:opacity-50">
+        {validatingTeams ? "Validating Microsoft…" : "Validate Microsoft"}
+      </button>
       <button type="button" onClick={() => void loadCloudConnections()} disabled={refreshing} className="rounded-lg border border-white/10 px-3 py-2 text-xs text-zinc-300 hover:bg-white/[0.06] disabled:opacity-50">
         {refreshing ? "Checking…" : "Refresh verified status"}
       </button>
     </div>
     {githubValidationNote && <p className="mt-3 text-xs text-zinc-400">{githubValidationNote}</p>}
     {slackValidationNote && <p className="mt-3 text-xs text-zinc-400">{slackValidationNote}</p>}
+    {teamsValidationNote && <p className="mt-3 text-xs text-zinc-400">{teamsValidationNote}</p>}
   </div>;
 }
 
