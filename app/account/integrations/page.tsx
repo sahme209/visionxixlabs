@@ -10,6 +10,7 @@ import { TeamsConsentButton } from "@/components/auth/TeamsConsentButton";
 import { currentContext } from "@/lib/auth/currentContext";
 import { isAdminOrOwner } from "@/lib/auth/platformAdmin";
 import { visibleTenantConnectionStatus } from "@/lib/integrations/tenantConnectionState";
+import { trustedIntegrationCallbackUrl } from "@/lib/integrations/trustedCallbackUrl";
 import { prisma } from "@/lib/db";
 
 interface GitHubInstallationRow { id: string; status: string; lastSeenAt: Date | null }
@@ -29,6 +30,11 @@ export default async function AccountIntegrationsPage() {
   const context = await currentContext();
   if (!context.isAuthenticated || !context.email) redirect("/auth/signin?callbackUrl=/account/integrations");
   const canManageConnections = isAdminOrOwner({ email: context.email, roles: context.roles });
+  const setupReady = {
+    github: Boolean(process.env.GITHUB_APP_SLUG?.trim() && trustedIntegrationCallbackUrl("/api/integrations/github/install-callback")),
+    slack: Boolean(process.env.SLACK_CLIENT_ID?.trim() && process.env.SLACK_CLIENT_SECRET?.trim() && trustedIntegrationCallbackUrl("/api/integrations/slack/callback")),
+    teams: Boolean(process.env.MICROSOFT_CLIENT_ID?.trim() && process.env.MICROSOFT_CLIENT_SECRET?.trim() && process.env.MICROSOFT_TENANT_ID?.trim() && trustedIntegrationCallbackUrl("/api/integrations/teams/callback")),
+  };
   let githubState = "Not connected";
   let githubInstallationRowId: string | null = null;
   let slackState = "Not connected";
@@ -53,11 +59,11 @@ export default async function AccountIntegrationsPage() {
     // An unavailable status store must never be interpreted as a live connection.
   }
   const connections = [
-    { name: "GitHub", detail: "Release evidence uses repository-scoped, read-only access. A recorded install is not treated as live until Axiom Agent completes a harmless validation read.", state: githubState },
-    { name: "Cloud accounts", detail: "AWS, Azure, and Google Cloud stay tenant-scoped and are validated from the installed application.", state: "Managed in Agent" },
-    { name: "Slack", detail: "Axiom requests only the collaboration scope required for release updates. Browser consent and live server-side validation are both required before it appears active.", state: slackState, control: "slack" },
-    { name: "Microsoft", detail: "Start with tenant identity validation. Teams messaging remains unavailable until a separate, explicitly approved permission is configured and validated.", state: teamsState, control: "teams" },
-    { name: "Observability", detail: "Production health is not shown as connected until a tenant-scoped observability connection is verified.", state: "Not connected" },
+    { name: "GitHub", detail: "Release evidence uses repository-scoped, read-only access. A recorded install is not treated as live until Axiom Agent completes a harmless validation read.", state: githubState, setupAvailable: setupReady.github },
+    { name: "Cloud accounts", detail: "AWS, Azure, and Google Cloud stay tenant-scoped and are validated from the installed application.", state: "Managed in Agent", setupAvailable: undefined },
+    { name: "Slack", detail: "Axiom requests only the collaboration scope required for release updates. Browser consent and live server-side validation are both required before it appears active.", state: slackState, control: "slack", setupAvailable: setupReady.slack },
+    { name: "Microsoft", detail: "Start with tenant identity validation. Teams messaging remains unavailable until a separate, explicitly approved permission is configured and validated.", state: teamsState, control: "teams", setupAvailable: setupReady.teams },
+    { name: "Observability", detail: "Production health is not shown as connected until a tenant-scoped observability connection is verified.", state: "Not connected", setupAvailable: undefined },
   ];
   return (
     <AuthCompanionShell>
@@ -73,12 +79,13 @@ export default async function AccountIntegrationsPage() {
             <article key={connection.name} className="rounded-2xl border border-white/[0.08] bg-white/[0.025] p-5 sm:p-6">
               <div className="flex items-start justify-between gap-3"><h2 className="text-lg font-medium text-zinc-100">{connection.name}</h2><span className="rounded-full border border-white/[0.1] bg-black/10 px-2.5 py-1 text-[10px] uppercase tracking-[0.12em] text-zinc-400">{connection.state}</span></div>
               <p className="mt-3 text-sm leading-6 text-zinc-500">{connection.detail}</p>
-              {canManageConnections && connection.name === "GitHub" && (githubState === "Not connected" || githubState === "Revoked") && <GitHubConsentButton />}
+              {canManageConnections && connection.name === "GitHub" && (githubState === "Not connected" || githubState === "Revoked") && connection.setupAvailable && <GitHubConsentButton />}
               {canManageConnections && connection.name === "GitHub" && githubInstallationRowId && githubState !== "Revoked" && <GitHubDisconnectButton installationRowId={githubInstallationRowId} />}
-              {canManageConnections && connection.control === "slack" && slackState !== "Active" && <SlackConsentButton />}
-              {canManageConnections && connection.control === "teams" && teamsState !== "Active" && <TeamsConsentButton />}
+              {canManageConnections && connection.control === "slack" && slackState !== "Active" && connection.setupAvailable && <SlackConsentButton />}
+              {canManageConnections && connection.control === "teams" && teamsState !== "Active" && connection.setupAvailable && <TeamsConsentButton />}
               {canManageConnections && connection.control === "slack" && slackState !== "Not connected" && slackState !== "Revoked" && <IntegrationDisconnectButton provider="slack" label="Slack" />}
               {canManageConnections && connection.control === "teams" && teamsState !== "Not connected" && teamsState !== "Revoked" && <IntegrationDisconnectButton provider="teams" label="Microsoft" />}
+              {canManageConnections && connection.setupAvailable === false && connection.state !== "Active" && <p className="mt-5 text-xs leading-5 text-zinc-500">Connection setup is not available for this pilot workspace yet. No provider consent link is shown.</p>}
             </article>
           ))}
         </section>
