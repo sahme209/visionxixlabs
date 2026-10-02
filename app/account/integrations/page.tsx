@@ -3,19 +3,46 @@ import { redirect } from "next/navigation";
 import { AuthCompanionHeader } from "@/components/auth/AuthCompanionHeader";
 import { AuthCompanionShell } from "@/components/auth/AuthCompanionShell";
 import { currentContext } from "@/lib/auth/currentContext";
+import { visibleTenantConnectionStatus } from "@/lib/integrations/tenantConnectionState";
+import { prisma } from "@/lib/db";
 
-const CONNECTIONS = [
-  { name: "GitHub", detail: "Release evidence is collected with repository-scoped, read-only access. Choose repository access in the browser, then validate it in Axiom Agent.", state: "Managed in Agent" },
-  { name: "Cloud accounts", detail: "AWS, Azure, and Google Cloud stay tenant-scoped and are validated from the installed application.", state: "Managed in Agent" },
-  { name: "Collaboration", detail: "Slack and Teams remain unavailable until their connection has completed browser consent and live server-side validation.", state: "Not connected" },
-  { name: "Observability", detail: "Production health is not shown as connected until a tenant-scoped observability connection is verified.", state: "Not connected" },
-];
+interface GitHubInstallationRow { status: string; lastSeenAt: Date | null }
+interface CollaborationConnectionRow { provider: string; status: string; lastValidatedAt: Date | null }
+interface IntegrationStatusRepo {
+  gitHubInstallation: { findFirst(args: { where: { organizationId: string; status: { in: string[] } }; orderBy: { installedAt: "desc" }; select: { status: true; lastSeenAt: true } }): Promise<GitHubInstallationRow | null> };
+  tenantIntegrationConnection: { findMany(args: { where: { organizationId: string; provider: { in: string[] } }; select: { provider: true; status: true; lastValidatedAt: true } }): Promise<CollaborationConnectionRow[]> };
+}
+
+function readableState(state: string) {
+  return state.replaceAll("_", " ").replace(/\b\w/g, (letter) => letter.toUpperCase());
+}
 
 export const dynamic = "force-dynamic";
 
 export default async function AccountIntegrationsPage() {
   const context = await currentContext();
   if (!context.isAuthenticated || !context.email) redirect("/auth/signin?callbackUrl=/account/integrations");
+  let githubState = "Not connected";
+  let collaborationState = "Not connected";
+  try {
+    const repo = prisma as unknown as IntegrationStatusRepo;
+    const [installation, collaboration] = await Promise.all([
+      repo.gitHubInstallation.findFirst({ where: { organizationId: context.organizationId ?? "", status: { in: ["active", "suspended", "revoked"] } }, orderBy: { installedAt: "desc" }, select: { status: true, lastSeenAt: true } }),
+      repo.tenantIntegrationConnection.findMany({ where: { organizationId: context.organizationId ?? "", provider: { in: ["slack", "teams"] } }, select: { provider: true, status: true, lastValidatedAt: true } }),
+    ]);
+    if (installation) githubState = installation.status === "active" ? (installation.lastSeenAt ? "Read-only validated" : "Installation recorded") : readableState(installation.status);
+    const visible = collaboration.map((connection) => visibleTenantConnectionStatus(connection));
+    if (visible.some((state) => state === "active")) collaborationState = "Active";
+    else if (visible.some((state) => state !== "not_connected")) collaborationState = readableState(visible.find((state) => state !== "not_connected") ?? "not_connected");
+  } catch {
+    // An unavailable status store must never be interpreted as a live connection.
+  }
+  const connections = [
+    { name: "GitHub", detail: "Release evidence uses repository-scoped, read-only access. A recorded install is not treated as live until Axiom Agent completes a harmless validation read.", state: githubState },
+    { name: "Cloud accounts", detail: "AWS, Azure, and Google Cloud stay tenant-scoped and are validated from the installed application.", state: "Managed in Agent" },
+    { name: "Collaboration", detail: "Slack and Teams require browser consent plus live server-side validation before Axiom displays an active connection.", state: collaborationState },
+    { name: "Observability", detail: "Production health is not shown as connected until a tenant-scoped observability connection is verified.", state: "Not connected" },
+  ];
   return (
     <AuthCompanionShell>
       <div className="mx-auto max-w-6xl">
@@ -26,7 +53,7 @@ export default async function AccountIntegrationsPage() {
           <p className="mt-5 max-w-2xl text-base leading-7 text-zinc-400">This companion keeps your account context in place. Connection setup and consequential operations remain in Axiom Agent, where each provider can be consented, validated, revoked, and audited.</p>
         </section>
         <section className="grid gap-3 md:grid-cols-2" aria-label="Integration overview">
-          {CONNECTIONS.map((connection) => (
+          {connections.map((connection) => (
             <article key={connection.name} className="rounded-2xl border border-white/[0.08] bg-white/[0.025] p-5 sm:p-6">
               <div className="flex items-start justify-between gap-3"><h2 className="text-lg font-medium text-zinc-100">{connection.name}</h2><span className="rounded-full border border-white/[0.1] bg-black/10 px-2.5 py-1 text-[10px] uppercase tracking-[0.12em] text-zinc-400">{connection.state}</span></div>
               <p className="mt-3 text-sm leading-6 text-zinc-500">{connection.detail}</p>
