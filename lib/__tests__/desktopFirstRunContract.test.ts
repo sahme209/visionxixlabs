@@ -203,6 +203,20 @@ describe("desktop first-run contract", () => {
     expect(resolver).toContain('credentialKind: "desktop_session"');
   });
 
+  it("requires current workspace authority before validating shared integrations", () => {
+    const resolver = readFileSync(join(root, "lib/desktop/resolveRequestDesktopSession.ts"), "utf8");
+    const github = readFileSync(join(root, "app/api/desktop/integrations/github/validate/route.ts"), "utf8");
+    const slack = readFileSync(join(root, "app/api/desktop/integrations/slack/validate/route.ts"), "utf8");
+    const teams = readFileSync(join(root, "app/api/desktop/integrations/teams/validate/route.ts"), "utf8");
+    expect(resolver).toContain("hasWorkspaceAdminRole");
+    expect(resolver).toContain("options.requireWorkspaceAdmin");
+    expect(resolver).toContain('membership?.role === "owner" || membership?.role === "admin"');
+    for (const route of [github, slack, teams]) {
+      expect(route).toContain("allowApiKey: false");
+      expect(route).toContain("requireWorkspaceAdmin: true");
+    }
+  });
+
   it("guides intake through validated stages without removing governance controls", () => {
     const intake = readFileSync(join(root, "desktop/src/views/DeploymentRequestsView.tsx"), "utf8");
     expect(intake).toContain('["Window", "Scope", "Execution", "Validation", "Recovery"]');
