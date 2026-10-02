@@ -26,6 +26,14 @@ describe("mobile website contract", () => {
     const navigation = source("components/Navigation.tsx");
 
     expect(navigation).toContain("const mobileLinks = [");
+    expect(navigation).toContain('{ href: "/product", label: "Product" }');
+    expect(navigation).toContain('{ href: "/capabilities", label: "Capabilities" }');
+    expect(navigation).toContain('{ href: "/plans", label: "Pricing" }');
+    expect(navigation).toContain('{ href: "/resources", label: "Resources" }');
+    expect(navigation).toContain('{ href: "/integrations", label: "Integrations" }');
+    expect(navigation).toContain('{ href: "/security", label: "Security" }');
+    expect(navigation).toContain('{ href: "/status", label: "Status" }');
+    expect(navigation).toContain('{ href: "/contact", label: "Contact" }');
     expect(navigation).toContain('document.body.style.overflow = "hidden"');
     expect(navigation).toContain('document.documentElement.style.overflow = "hidden"');
     expect(navigation).toContain('h-16');

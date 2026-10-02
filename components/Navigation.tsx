@@ -17,6 +17,7 @@ const mobileLinks = [
   { href: "/integrations", label: "Integrations" },
   { href: "/security", label: "Security" },
   { href: "/status", label: "Status" },
+  { href: "/contact", label: "Contact" },
 ];
 
 export function Navigation() {
