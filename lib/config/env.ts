@@ -33,7 +33,7 @@ export interface AppEnv {
   /** Database URL — Prisma reads this directly; we expose for diagnostics. */
   databaseUrlSet: boolean;
   /** AI provider key presence — never the value. */
-  aiProviders: { openai: boolean; anthropic: boolean; gemini: boolean };
+  aiProviders: { openai: boolean; anthropic: boolean; gemini: boolean; xai: boolean };
   /** OAuth provider env presence. */
   oauth: { google: boolean; github: boolean };
   /** AWS broker credentials presence (server-only — we don't expose the value). */
@@ -206,6 +206,7 @@ export function loadAppEnv(): AppEnv {
       openai:    isSet(env.OPENAI_API_KEY),
       anthropic: isSet(env.ANTHROPIC_API_KEY),
       gemini:    isSet(env.GEMINI_API_KEY),
+      xai:       isSet(env.XAI_API_KEY),
     },
     oauth: {
       google: isSet(env.GOOGLE_CLIENT_ID) && isSet(env.GOOGLE_CLIENT_SECRET),

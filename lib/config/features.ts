@@ -64,7 +64,7 @@ export function serverFeatures(): ServerFeatures {
     releaseOps:         env.githubSyncMode,
     executionPlans:     true, // always available as preview
     terraformExport:    true, // always available — exports are local artifacts
-    copilot:            env.aiProviders.openai || env.aiProviders.anthropic || env.aiProviders.gemini,
+    copilot:            env.aiProviders.openai || env.aiProviders.anthropic || env.aiProviders.gemini || env.aiProviders.xai,
     trustCenter:        true,
     oauth:              env.oauth,
   };
