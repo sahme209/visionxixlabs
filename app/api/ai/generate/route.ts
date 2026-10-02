@@ -18,6 +18,8 @@ import { getAIProviderManager } from "@/lib/ai/AIProviderManager";
 import { isAIProviderName, type AIProviderName } from "@/lib/ai/AIProvider";
 import { isKnownModel } from "@/lib/ai/AIModelRegistry";
 import { loadWorkspaceAIProviderPolicyWithState, resolveWorkspaceAIProviderPolicy } from "@/lib/ai/workspaceProviderPolicy";
+import { checkWorkspaceAICredits } from "@/lib/billing/checkWorkspaceAICredits";
+import { recordAIUsageEvent } from "@/lib/billing/recordAIUsageEvent";
 import { apiOk, apiErr, asApiSourceMode, resolveCorrelationId } from "@/lib/api";
 import { AxiomErrors } from "@/lib/errors/axiomErrors";
 
@@ -84,6 +86,26 @@ export async function POST(req: NextRequest) {
     if (policy.allowedProviders.length === 0) {
       throw AxiomErrors.validation("ai.provider_unavailable", "No AI provider is enabled for this workspace.");
     }
+    // This general-purpose generation endpoint must never become an
+    // unmetered escape hatch. Check the tenant's AI credit pool before a
+    // provider call, and fail closed when the meter cannot be read.
+    const creditDecision = await checkWorkspaceAICredits(
+      ctx.organizationId,
+      0,
+      { failClosedOnUsageReadError: true },
+    ).catch(() => {
+      throw AxiomErrors.external(
+        "ai.credit_meter_unavailable",
+        "AI usage controls are temporarily unavailable. No generation was run.",
+      );
+    });
+    if (creditDecision.kind === "block") {
+      throw AxiomErrors.policy(
+        "ai.credit_pool_exhausted",
+        "This workspace has reached its AI credit limit. No generation was run.",
+        { threshold: creditDecision.threshold, remainingCents: creditDecision.remainingCents },
+      );
+    }
     if (body.only !== undefined && (!isAIProviderName(body.only) || !policy.allowedProviders.includes(body.only))) {
       throw AxiomErrors.validation("ai.provider_unavailable", "That AI provider is not enabled for this workspace.");
     }
@@ -105,6 +127,20 @@ export async function POST(req: NextRequest) {
       modelSelections: policy.modelSelections,
       fallbackOrder: policy.fallbackOrder,
     });
+    // Persist only provider-reported usage. Prompts, system instructions,
+    // credentials, and provider account data never enter the usage event.
+    if (result.usage) {
+      await recordAIUsageEvent({
+        organizationId: ctx.organizationId,
+        provider: result.provider,
+        model: result.model,
+        inputTokens: result.usage.promptTokens ?? 0,
+        outputTokens: result.usage.completionTokens ?? 0,
+        triggeredBy: ctx.userId,
+        correlationId,
+        metadata: { route: "api/ai/generate" },
+      });
+    }
     return apiOk(result, {
       correlationId,
       safetyContract: "audit_read_only",
