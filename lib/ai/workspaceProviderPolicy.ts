@@ -5,6 +5,8 @@ import { isAIProviderName, type AIProviderName } from "./AIProvider";
 import { defaultModelFor, isKnownModel } from "./AIModelRegistry";
 
 export interface WorkspaceAIProviderPolicy {
+  /** False is an explicit workspace-level governed-AI kill switch. */
+  enabled: boolean;
   allowedProviders: AIProviderName[];
   /** One approved model per enabled provider. Never a credential or account ID. */
   modelSelections: Partial<Record<AIProviderName, string>>;
@@ -12,6 +14,7 @@ export interface WorkspaceAIProviderPolicy {
 }
 
 interface PolicyRow {
+  enabled?: unknown;
   allowedProviders: unknown;
   modelSelections: unknown;
   fallbackOrder: unknown;
@@ -19,11 +22,11 @@ interface PolicyRow {
 
 interface PolicyRepo {
   organizationAIProviderPolicy: {
-    findUnique(args: { where: { organizationId: string }; select: { allowedProviders: true; modelSelections: true; fallbackOrder: true } }): Promise<PolicyRow | null>;
+    findUnique(args: { where: { organizationId: string }; select: { enabled: true; allowedProviders: true; modelSelections: true; fallbackOrder: true } }): Promise<PolicyRow | null>;
     upsert(args: {
       where: { organizationId: string };
-      create: { organizationId: string; allowedProviders: object; modelSelections: object; fallbackOrder: object; updatedBy: string };
-      update: { allowedProviders: object; modelSelections: object; fallbackOrder: object; updatedBy: string };
+      create: { organizationId: string; enabled: boolean; allowedProviders: object; modelSelections: object; fallbackOrder: object; updatedBy: string };
+      update: { enabled: boolean; allowedProviders: object; modelSelections: object; fallbackOrder: object; updatedBy: string };
     }): Promise<unknown>;
   };
 }
@@ -57,17 +60,24 @@ function modelSelections(value: unknown, allowedProviders: readonly AIProviderNa
 }
 
 export function normalizeWorkspaceAIProviderPolicy(input: {
+  enabled?: unknown;
   allowedProviders?: unknown;
   modelSelections?: unknown;
   fallbackOrder?: unknown;
 }): WorkspaceAIProviderPolicy | null {
+  const enabled = input.enabled === undefined ? true : input.enabled;
+  if (typeof enabled !== "boolean") return null;
   const allowedProviders = providerList(input.allowedProviders);
   const fallbackOrder = providerList(input.fallbackOrder);
   const selections = modelSelections(input.modelSelections, allowedProviders);
-  if (allowedProviders.length === 0) return null;
   if (!selections) return null;
+  if (!enabled) {
+    if (allowedProviders.length !== 0 || fallbackOrder.length !== 0 || Object.keys(selections).length !== 0) return null;
+    return { enabled: false, allowedProviders: [], modelSelections: {}, fallbackOrder: [] };
+  }
+  if (allowedProviders.length === 0) return null;
   if (fallbackOrder.some((provider) => !allowedProviders.includes(provider))) return null;
-  return { allowedProviders, modelSelections: selections, fallbackOrder };
+  return { enabled: true, allowedProviders, modelSelections: selections, fallbackOrder };
 }
 
 export function resolveWorkspaceAIProviderPolicy(input: {
@@ -75,6 +85,9 @@ export function resolveWorkspaceAIProviderPolicy(input: {
   serviceEnabled: readonly AIProviderName[];
 }): WorkspaceAIProviderPolicy {
   const serviceEnabled = providerList(input.serviceEnabled);
+  if (input.stored && !input.stored.enabled) {
+    return { enabled: false, allowedProviders: [], modelSelections: {}, fallbackOrder: [] };
+  }
   const allowedProviders = input.stored
     ? input.stored.allowedProviders.filter((provider) => serviceEnabled.includes(provider))
     : serviceEnabled;
@@ -86,6 +99,7 @@ export function resolveWorkspaceAIProviderPolicy(input: {
     : {};
   for (const provider of allowedProviders) selected[provider] ??= defaultModelFor(provider);
   return {
+    enabled: true,
     allowedProviders,
     modelSelections: selected,
     fallbackOrder: [...fallbackOrder, ...allowedProviders.filter((provider) => !fallbackOrder.includes(provider))],
@@ -99,7 +113,7 @@ export async function loadWorkspaceAIProviderPolicyWithState(organizationId: str
   try {
     const row = await (prisma as unknown as PolicyRepo).organizationAIProviderPolicy.findUnique({
       where: { organizationId },
-      select: { allowedProviders: true, modelSelections: true, fallbackOrder: true },
+      select: { enabled: true, allowedProviders: true, modelSelections: true, fallbackOrder: true },
     });
     return { policy: row ? normalizeWorkspaceAIProviderPolicy(row) : null, storageState: "ready" };
   } catch (error) {
@@ -120,12 +134,14 @@ export async function saveWorkspaceAIProviderPolicy(input: {
     where: { organizationId: input.organizationId },
     create: {
       organizationId: input.organizationId,
+      enabled: input.policy.enabled,
       allowedProviders: input.policy.allowedProviders as unknown as object,
       modelSelections: input.policy.modelSelections as object,
       fallbackOrder: input.policy.fallbackOrder as unknown as object,
       updatedBy: input.updatedBy,
     },
     update: {
+      enabled: input.policy.enabled,
       allowedProviders: input.policy.allowedProviders as unknown as object,
       modelSelections: input.policy.modelSelections as object,
       fallbackOrder: input.policy.fallbackOrder as unknown as object,

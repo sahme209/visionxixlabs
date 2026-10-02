@@ -48,11 +48,11 @@ export async function GET(): Promise<NextResponse> {
 export async function PUT(request: NextRequest): Promise<NextResponse> {
   const ctx = await ownerContext();
   if (!ctx) return NextResponse.json({ ok: false, error: "workspace_owner_required" }, { status: 403 });
-  const body = await request.json().catch(() => null) as { allowedProviders?: unknown; modelSelections?: unknown; fallbackOrder?: unknown } | null;
+  const body = await request.json().catch(() => null) as { enabled?: unknown; allowedProviders?: unknown; modelSelections?: unknown; fallbackOrder?: unknown } | null;
   const policy = body ? normalizeWorkspaceAIProviderPolicy(body) : null;
   if (!policy) return NextResponse.json({ ok: false, error: "invalid_provider_policy" }, { status: 422 });
   const serviceEnabled = serviceEnabledProviders();
-  if (policy.allowedProviders.some((provider) => !serviceEnabled.includes(provider))) {
+  if (policy.enabled && policy.allowedProviders.some((provider) => !serviceEnabled.includes(provider))) {
     return NextResponse.json({ ok: false, error: "provider_unavailable" }, { status: 422 });
   }
   try {
@@ -67,6 +67,7 @@ export async function PUT(request: NextRequest): Promise<NextResponse> {
       correlationId: idFactory.correlation(`ai_policy_${Date.now().toString(36)}`),
       source: "live",
       detail: {
+        enabled: policy.enabled,
         allowedProviderCount: policy.allowedProviders.length,
         selectedModelCount: Object.keys(policy.modelSelections).length,
         fallbackProviderCount: policy.fallbackOrder.length,

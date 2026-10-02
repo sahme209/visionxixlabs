@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 
-type Policy = { allowedProviders: string[]; modelSelections: Record<string, string>; fallbackOrder: string[] };
+type Policy = { enabled: boolean; allowedProviders: string[]; modelSelections: Record<string, string>; fallbackOrder: string[] };
 type ModelOption = { id: string; label: string };
 type LoadState = "loading" | "ready" | "migration_pending" | "unavailable" | "saving" | "saved" | "error";
 
@@ -20,7 +20,7 @@ const PROVIDER_LABELS: Record<string, string> = {
 };
 
 export function WorkspaceAISettingsForm() {
-  const [policy, setPolicy] = useState<Policy>({ allowedProviders: [], modelSelections: {}, fallbackOrder: [] });
+  const [policy, setPolicy] = useState<Policy>({ enabled: true, allowedProviders: [], modelSelections: {}, fallbackOrder: [] });
   const [availableProviders, setAvailableProviders] = useState<string[]>([]);
   const [availableModels, setAvailableModels] = useState<Record<string, ModelOption[]>>({});
   const [state, setState] = useState<LoadState>("loading");
@@ -47,13 +47,13 @@ export function WorkspaceAISettingsForm() {
   const allowed = policy.allowedProviders;
 
   async function save() {
-    if (!allowed.length) return;
+    if (policy.enabled && !allowed.length) return;
     setState("saving");
-    const fallbackOrder = policy.fallbackOrder.filter((provider) => allowed.includes(provider));
+    const fallbackOrder = policy.enabled ? policy.fallbackOrder.filter((provider) => allowed.includes(provider)) : [];
     const response = await fetch("/api/account/ai-policy", {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ allowedProviders: policy.allowedProviders, modelSelections: policy.modelSelections, fallbackOrder }),
+      body: JSON.stringify({ enabled: policy.enabled, allowedProviders: policy.enabled ? policy.allowedProviders : [], modelSelections: policy.enabled ? policy.modelSelections : {}, fallbackOrder }),
     });
     if (!response.ok) { setState("error"); return; }
     const body = await response.json().catch(() => null);
@@ -62,6 +62,7 @@ export function WorkspaceAISettingsForm() {
   }
 
   function moveFallback(provider: string, direction: -1 | 1) {
+    setState("ready");
     setPolicy((current) => {
       const order = current.fallbackOrder.length ? [...current.fallbackOrder] : [...current.allowedProviders];
       const index = order.indexOf(provider);
@@ -73,6 +74,7 @@ export function WorkspaceAISettingsForm() {
   }
 
   function toggleProvider(provider: string) {
+    setState("ready");
     setPolicy((current) => {
       const isAllowed = current.allowedProviders.includes(provider);
       const allowedProviders = isAllowed
@@ -89,7 +91,15 @@ export function WorkspaceAISettingsForm() {
   }
 
   function selectModel(provider: string, model: string) {
+    setState("ready");
     setPolicy((current) => ({ ...current, modelSelections: { ...current.modelSelections, [provider]: model } }));
+  }
+
+  function toggleWorkspaceAI(enabled: boolean) {
+    setState("ready");
+    setPolicy((current) => enabled
+      ? { ...current, enabled: true }
+      : { enabled: false, allowedProviders: [], modelSelections: {}, fallbackOrder: [] });
   }
 
   return (
@@ -106,6 +116,15 @@ export function WorkspaceAISettingsForm() {
           {availableProviders.length === 0 ? <p className="text-sm leading-6 text-zinc-500">No live AI provider is enabled for this workspace yet. Axiom will not offer a simulated or unconfigured provider as a choice.</p> : (
             <>
               <fieldset className="rounded-xl border border-white/[0.07] p-3">
+                <legend className="px-1 text-xs font-medium text-zinc-300">Workspace AI access</legend>
+                <label className="flex cursor-pointer items-start gap-3 rounded-lg px-2 py-2 text-sm text-zinc-300 transition hover:bg-white/[0.04]">
+                  <input type="checkbox" checked={policy.enabled} onChange={(event) => toggleWorkspaceAI(event.target.checked)} className="mt-0.5 h-4 w-4 accent-violet-300" />
+                  <span><span className="font-medium text-zinc-200">Allow governed AI generation in this workspace</span><span className="mt-1 block text-xs leading-5 text-zinc-500">Turning this off blocks requests routed under this workspace policy on the server. It does not expose or remove service-managed credentials.</span></span>
+                </label>
+              </fieldset>
+              {!policy.enabled && <p className="mt-4 rounded-xl border border-amber-300/15 bg-amber-300/[0.05] px-3 py-3 text-sm leading-6 text-amber-100/80">Governed AI generation is disabled for this workspace. Save this policy to enforce the block.</p>}
+              {policy.enabled && <>
+              <fieldset className="mt-4 rounded-xl border border-white/[0.07] p-3">
                 <legend className="px-1 text-xs font-medium text-zinc-300">Allowed provider families</legend>
                 <div className="mt-1 grid gap-2 sm:grid-cols-2">
                   {availableProviders.map((provider) => {
@@ -141,10 +160,11 @@ export function WorkspaceAISettingsForm() {
             </ol>
               }
               {allowed.length === 0 && <p className="mt-3 text-xs leading-5 text-amber-200/80">Choose at least one service-enabled provider before saving a workspace policy.</p>}
+              </>}
             </>
           )}
           <div className="mt-5 flex items-center gap-3">
-            <button type="button" onClick={() => void save()} disabled={state === "saving" || allowed.length === 0} className="min-h-10 rounded-xl bg-zinc-100 px-4 text-sm font-semibold text-zinc-950 transition hover:bg-white disabled:opacity-50">{state === "saving" ? "Saving…" : "Save AI policy"}</button>
+            <button type="button" onClick={() => void save()} disabled={state === "saving" || (policy.enabled && allowed.length === 0)} className="min-h-10 rounded-xl bg-zinc-100 px-4 text-sm font-semibold text-zinc-950 transition hover:bg-white disabled:opacity-50">{state === "saving" ? "Saving…" : "Save AI policy"}</button>
             {state === "saved" && <p className="text-sm text-emerald-300">Policy saved and audited.</p>}
             {state === "error" && <p className="text-sm text-rose-300">Could not save the policy. Try again.</p>}
           </div>

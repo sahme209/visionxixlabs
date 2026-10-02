@@ -16,12 +16,33 @@ describe("workspace AI provider policy", () => {
       fallbackOrder: ["gemini", "groq"],
     });
     expect(resolveWorkspaceAIProviderPolicy({ stored, serviceEnabled: ["groq"] }))
-      .toEqual({ allowedProviders: ["groq"], modelSelections: { groq: "llama-3.1-70b-versatile" }, fallbackOrder: ["groq"] });
+      .toEqual({ enabled: true, allowedProviders: ["groq"], modelSelections: { groq: "llama-3.1-70b-versatile" }, fallbackOrder: ["groq"] });
   });
 
   it("uses all service-enabled providers when a workspace has no policy yet", () => {
     expect(resolveWorkspaceAIProviderPolicy({ stored: null, serviceEnabled: ["groq", "gemini"] }))
-      .toEqual({ allowedProviders: ["groq", "gemini"], modelSelections: { groq: "llama-3.1-70b-versatile", gemini: "gemini-2.5-flash" }, fallbackOrder: ["groq", "gemini"] });
+      .toEqual({ enabled: true, allowedProviders: ["groq", "gemini"], modelSelections: { groq: "llama-3.1-70b-versatile", gemini: "gemini-2.5-flash" }, fallbackOrder: ["groq", "gemini"] });
+  });
+
+  it("accepts an explicit workspace disable and resolves no provider routes", () => {
+    const stored = normalizeWorkspaceAIProviderPolicy({
+      enabled: false,
+      allowedProviders: [],
+      modelSelections: {},
+      fallbackOrder: [],
+    });
+    expect(stored).toEqual({ enabled: false, allowedProviders: [], modelSelections: {}, fallbackOrder: [] });
+    expect(resolveWorkspaceAIProviderPolicy({ stored, serviceEnabled: ["groq", "gemini"] }))
+      .toEqual({ enabled: false, allowedProviders: [], modelSelections: {}, fallbackOrder: [] });
+  });
+
+  it("rejects a disabled policy that carries stale provider routes", () => {
+    expect(normalizeWorkspaceAIProviderPolicy({
+      enabled: false,
+      allowedProviders: ["groq"],
+      modelSelections: { groq: "llama-3.1-70b-versatile" },
+      fallbackOrder: ["groq"],
+    })).toBeNull();
   });
 });
 

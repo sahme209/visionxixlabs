@@ -75,6 +75,12 @@ export async function POST(req: NextRequest) {
       stored: loadedPolicy.policy,
       serviceEnabled,
     });
+    if (!policy.enabled) {
+      throw AxiomErrors.policy(
+        "ai.workspace_disabled",
+        "AI generation is disabled for this workspace. No generation was run.",
+      );
+    }
     if (policy.allowedProviders.length === 0) {
       throw AxiomErrors.validation("ai.provider_unavailable", "No AI provider is enabled for this workspace.");
     }

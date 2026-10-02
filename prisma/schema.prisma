@@ -1938,6 +1938,9 @@ model OrganizationBudgetConfig {
 /// exclusively in server environment configuration and are never tenant supplied.
 model OrganizationAIProviderPolicy {
   organizationId     String   @id
+  /// Workspace owner can explicitly stop governed workspace AI generation
+  /// without removing service-managed provider credentials.
+  enabled            Boolean  @default(true)
   allowedProviders   Json     @default("[]")
   modelSelections    Json     @default("{}")
   fallbackOrder      Json     @default("[]")
