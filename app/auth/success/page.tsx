@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { currentContext } from "@/lib/auth/currentContext";
 import { AuthCompanionHeader } from "@/components/auth/AuthCompanionHeader";
+import { AuthCompanionShell } from "@/components/auth/AuthCompanionShell";
 
 export const dynamic = "force-dynamic";
 
@@ -9,7 +10,7 @@ export default async function AuthSuccessPage() {
   const context = await currentContext();
   if (!context.isAuthenticated) redirect("/auth/signin?callbackUrl=/auth/success");
   return (
-    <main className="axiom-canvas min-h-screen px-5 py-8 text-white sm:px-8 lg:px-12">
+    <AuthCompanionShell>
       <div className="mx-auto max-w-6xl">
         <AuthCompanionHeader email={context.email ?? null} />
 
@@ -63,6 +64,6 @@ export default async function AuthSuccessPage() {
           </article>
         </section>
       </div>
-    </main>
+    </AuthCompanionShell>
   );
 }

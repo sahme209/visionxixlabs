@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { AuthCompanionHeader } from "@/components/auth/AuthCompanionHeader";
+import { AuthCompanionShell } from "@/components/auth/AuthCompanionShell";
 import { currentContext } from "@/lib/auth/currentContext";
 
 const CONNECTIONS = [
@@ -16,7 +17,7 @@ export default async function AccountIntegrationsPage() {
   const context = await currentContext();
   if (!context.isAuthenticated || !context.email) redirect("/auth/signin?callbackUrl=/account/integrations");
   return (
-    <main className="axiom-canvas min-h-screen px-5 py-8 text-white sm:px-8 lg:px-12">
+    <AuthCompanionShell>
       <div className="mx-auto max-w-6xl">
         <AuthCompanionHeader email={context.email ?? null} />
         <section className="py-14 sm:py-20">
@@ -38,6 +39,6 @@ export default async function AccountIntegrationsPage() {
           <Link href="/download" className="mt-5 inline-flex rounded-full bg-zinc-100 px-4 py-2 text-sm font-semibold text-zinc-950 transition hover:bg-white">Open or download Agent</Link>
         </div>
       </div>
-    </main>
+    </AuthCompanionShell>
   );
 }

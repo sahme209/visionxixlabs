@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { AuthCompanionHeader } from "@/components/auth/AuthCompanionHeader";
+import { AuthCompanionShell } from "@/components/auth/AuthCompanionShell";
 import { currentContext } from "@/lib/auth/currentContext";
 
 const HELP_ITEMS = [
@@ -16,7 +17,7 @@ export default async function AccountHelpPage() {
   const context = await currentContext();
   if (!context.isAuthenticated || !context.email) redirect("/auth/signin?callbackUrl=/account/help");
   return (
-    <main className="axiom-canvas min-h-screen px-5 py-8 text-white sm:px-8 lg:px-12">
+    <AuthCompanionShell>
       <div className="mx-auto max-w-6xl">
         <AuthCompanionHeader email={context.email ?? null} />
         <section className="py-14 sm:py-20">
@@ -28,6 +29,6 @@ export default async function AccountHelpPage() {
           {HELP_ITEMS.map((item) => <Link key={item.title} href={item.href} className="rounded-2xl border border-white/[0.08] bg-white/[0.025] p-5 transition hover:border-white/[0.16] hover:bg-white/[0.045]"><h2 className="text-lg font-medium text-zinc-100">{item.title}</h2><p className="mt-3 text-sm leading-6 text-zinc-500">{item.detail}</p><span className="mt-5 inline-block text-sm text-violet-300">Read guide →</span></Link>)}
         </section>
       </div>
-    </main>
+    </AuthCompanionShell>
   );
 }

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { AuthCompanionHeader } from "@/components/auth/AuthCompanionHeader";
+import { AuthCompanionShell } from "@/components/auth/AuthCompanionShell";
 import { currentContext } from "@/lib/auth/currentContext";
 
 const TOPICS = {
@@ -36,7 +37,7 @@ export default async function AccountHelpTopicPage({ params }: { params: Promise
   if (!content) notFound();
 
   return (
-    <main className="axiom-canvas min-h-screen px-5 py-8 text-white sm:px-8 lg:px-12">
+    <AuthCompanionShell>
       <div className="mx-auto max-w-6xl">
         <AuthCompanionHeader email={context.email} />
         <article className="max-w-3xl py-14 sm:py-20">
@@ -47,6 +48,6 @@ export default async function AccountHelpTopicPage({ params }: { params: Promise
           <ol className="mt-10 space-y-3">{content.points.map((point, index) => <li key={point} className="flex gap-4 rounded-xl border border-white/[0.08] bg-white/[0.025] p-5"><span className="text-xs text-violet-300">0{index + 1}</span><p className="text-sm leading-6 text-zinc-300">{point}</p></li>)}</ol>
         </article>
       </div>
-    </main>
+    </AuthCompanionShell>
   );
 }

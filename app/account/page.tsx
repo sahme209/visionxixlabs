@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { AuthCompanionHeader } from "@/components/auth/AuthCompanionHeader";
 import { AccountSettingsForm } from "@/components/auth/AccountSettingsForm";
+import { AuthCompanionShell } from "@/components/auth/AuthCompanionShell";
 import { currentContext } from "@/lib/auth/currentContext";
 import { prisma } from "@/lib/db";
 
@@ -12,7 +13,7 @@ export default async function AccountPage() {
   if (!context.isAuthenticated || !context.userId || !context.email) redirect("/auth/signin?callbackUrl=/account");
   const user = await prisma.user.findUnique({ where: { id: context.userId }, select: { name: true } });
   return (
-    <main className="axiom-canvas min-h-screen px-5 py-8 text-white sm:px-8 lg:px-12">
+    <AuthCompanionShell>
       <div className="mx-auto max-w-6xl">
         <AuthCompanionHeader email={context.email} />
         <section className="py-14 sm:py-20">
@@ -34,6 +35,6 @@ export default async function AccountPage() {
           <Link href="/auth/success" className="mt-8 inline-flex text-sm text-violet-300 transition hover:text-violet-200">← Back to overview</Link>
         </section>
       </div>
-    </main>
+    </AuthCompanionShell>
   );
 }

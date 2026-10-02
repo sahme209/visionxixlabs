@@ -89,6 +89,8 @@ function SignInForm() {
 
   return (
     <div className="axiom-canvas relative flex min-h-screen items-center justify-center overflow-hidden px-5 py-20">
+      <div aria-hidden className="absolute inset-0 bg-cover bg-center opacity-20" style={{ backgroundImage: "url('/images/axiom-hero-landscape-v1.png')" }} />
+      <div aria-hidden className="absolute inset-0 bg-[linear-gradient(180deg,rgba(11,12,11,0.76),rgba(11,12,11,0.96)_72%,#0c0d0c)]" />
       <Link href="/" className="absolute left-6 top-6 z-20 flex items-center gap-2.5 text-sm font-semibold text-zinc-200 transition-colors hover:text-white">
         <Image src="/vision-xix-logo.png" alt="" width={27} height={27} className="rounded-md" />
         Vision XIX Labs
