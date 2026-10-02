@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { redirect } from "next/navigation";
 import Link from "next/link";
 import {
   ArrowRightIcon,
@@ -172,6 +173,11 @@ const READINESS_DIMENSIONS = [
 ];
 
 export default function ReleaseOpsPage() {
+  // This legacy surface promises integrations and orchestration that are not
+  // current release capabilities. Preserve inbound links while routing to the
+  // maintained product story and its explicit execution boundaries.
+  redirect("/product");
+
   const compositeScore = Math.round(
     (READINESS_DIMENSIONS.reduce((s, d) => s + d.score, 0) / READINESS_DIMENSIONS.length) * 100
   );

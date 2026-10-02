@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { redirect } from "next/navigation";
 import Link from "next/link";
 import { DocHeader, DocSection, Callout, TrustGrid, DocFooterNav, DocFeedback } from "@/components/docs/DocPrimitives";
 
@@ -23,6 +24,11 @@ const EVENT_TYPES = [
 ];
 
 export default function AuditLogsPage() {
+  // The legacy audit catalogue included unverified retention, SIEM, and cloud
+  // mutation guarantees. Preserve the URL while directing visitors to the
+  // current security model, which states supported evidence and its limits.
+  redirect("/docs/security-model");
+
   return (
     <>
       <DocHeader
