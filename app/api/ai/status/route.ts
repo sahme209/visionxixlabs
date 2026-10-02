@@ -56,7 +56,10 @@ export async function GET(req: NextRequest) {
     return apiOk(data, {
       correlationId,
       safetyContract: "audit_read_only",
-      sourceMode: asApiSourceMode("live"),
+      // This endpoint reports configured, policy-approved routes—not a live
+      // provider probe. Health has a separate endpoint, so never call this
+      // configuration view "live" on its own.
+      sourceMode: asApiSourceMode(!policy.enabled ? "disabled" : allowed.length > 0 ? "partial_live" : "preview"),
     });
   } catch (err) {
     return apiErr(err, { correlationId, safetyContract: "audit_read_only" });

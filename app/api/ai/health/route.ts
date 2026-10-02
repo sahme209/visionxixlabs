@@ -31,10 +31,20 @@ export async function POST(req: NextRequest) {
     }
     const policy = resolveWorkspaceAIProviderPolicy({ stored: loadedPolicy.policy, serviceEnabled });
     const rows = policy.enabled ? await manager.healthCheckAll(policy.allowedProviders) : [];
+    const healthyProviderCount = rows.filter((row) => row.ok).length;
+    const sourceMode = !policy.enabled
+      ? "disabled"
+      : policy.allowedProviders.length === 0
+        ? "preview"
+        : healthyProviderCount === rows.length
+          ? "live"
+          : healthyProviderCount > 0
+            ? "partial_live"
+            : "blocked";
     return apiOk({ rows, policyEnabled: policy.enabled, generatedAt: new Date().toISOString() }, {
       correlationId,
       safetyContract: "audit_read_only",
-      sourceMode: asApiSourceMode("live"),
+      sourceMode: asApiSourceMode(sourceMode),
     });
   } catch (err) {
     return apiErr(err, { correlationId, safetyContract: "audit_read_only" });
