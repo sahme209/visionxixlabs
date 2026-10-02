@@ -16,6 +16,7 @@ import type { NextRequest } from "next/server";
 import { currentContext } from "@/lib/auth/currentContext";
 import { getAIProviderManager } from "@/lib/ai/AIProviderManager";
 import { isAIProviderName, type AIProviderName } from "@/lib/ai/AIProvider";
+import { isKnownModel } from "@/lib/ai/AIModelRegistry";
 import { apiOk, apiErr, asApiSourceMode, resolveCorrelationId } from "@/lib/api";
 import { AxiomErrors } from "@/lib/errors/axiomErrors";
 
@@ -49,6 +50,9 @@ export async function POST(req: NextRequest) {
     const mgr = getAIProviderManager();
     if (body.only !== undefined && (!isAIProviderName(body.only) || !mgr.isServiceProviderAvailable(body.only))) {
       throw AxiomErrors.validation("ai.provider_unavailable", "That AI provider is not enabled for this workspace.");
+    }
+    if (body.model !== undefined && (typeof body.model !== "string" || !body.only || !isKnownModel(body.only, body.model))) {
+      throw AxiomErrors.validation("ai.model_unavailable", "Choose a supported model from an enabled provider.");
     }
     const result = await mgr.generateText(body.prompt, {
       system: body.system,
