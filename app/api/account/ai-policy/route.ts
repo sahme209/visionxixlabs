@@ -28,11 +28,14 @@ async function ownerContext(): Promise<{ organizationId: string; userId: string 
 export async function GET(): Promise<NextResponse> {
   const ctx = await ownerContext();
   if (!ctx) return NextResponse.json({ ok: false, error: "workspace_owner_required" }, { status: 403 });
+  const availableProviders = serviceEnabledProviders();
   const policy = resolveWorkspaceAIProviderPolicy({
     stored: await loadWorkspaceAIProviderPolicy(ctx.organizationId),
-    serviceEnabled: serviceEnabledProviders(),
+    serviceEnabled: availableProviders,
   });
-  return NextResponse.json({ ok: true, data: { policy } });
+  // Provider family names are safe to expose to an owner. Configuration,
+  // credentials, account identifiers, and usage remain server-side.
+  return NextResponse.json({ ok: true, data: { policy, availableProviders } });
 }
 
 export async function PUT(request: NextRequest): Promise<NextResponse> {
