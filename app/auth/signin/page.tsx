@@ -95,8 +95,8 @@ function SignInForm() {
         Vision XIX Labs
       </Link>
 
-      <div className="relative z-10 w-full max-w-lg p-2 sm:p-8">
-        <div className="mb-8 flex h-12 w-12 items-center justify-center rounded-xl border border-white/[0.08] bg-white/[0.035]">
+      <div className="relative z-10 w-full max-w-lg rounded-[28px] border border-white/[0.09] bg-black/25 p-6 shadow-[0_28px_100px_rgba(0,0,0,0.26)] backdrop-blur-md sm:p-9">
+        <div className="mb-8 flex h-12 w-12 items-center justify-center rounded-xl border border-white/[0.08] bg-white/[0.045]">
           <Image src="/vision-xix-logo.png" alt="" width={30} height={30} className="rounded-md" />
         </div>
         <h1 className="mb-2 text-3xl font-normal tracking-[-0.045em]">Welcome to Axiom</h1>
@@ -186,7 +186,7 @@ function SignInForm() {
                   type="button"
                   onClick={() => handleOAuth("google")}
                   disabled={oauthLoading !== null || loading}
-                  className="inline-flex items-center justify-center gap-2 rounded-full border border-white/[0.08] bg-white/[0.02] px-3 py-2.5 text-xs font-medium text-zinc-200 hover:bg-white/[0.06] hover:text-white disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                  className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-white/[0.09] bg-white/[0.025] px-3 py-2.5 text-xs font-medium text-zinc-200 transition hover:bg-white/[0.07] hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   <GoogleMark className="h-4 w-4" />
                   {oauthLoading === "google" ? "Opening…" : "Sign in with Google"}
@@ -197,7 +197,7 @@ function SignInForm() {
                   type="button"
                   onClick={() => handleOAuth("github")}
                   disabled={oauthLoading !== null || loading}
-                  className="inline-flex items-center justify-center gap-2 rounded-full border border-white/[0.08] bg-white/[0.02] px-3 py-2.5 text-xs font-medium text-zinc-200 hover:bg-white/[0.06] hover:text-white disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                  className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-white/[0.09] bg-white/[0.025] px-3 py-2.5 text-xs font-medium text-zinc-200 transition hover:bg-white/[0.07] hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   <GitHubMark className="h-4 w-4" />
                   {oauthLoading === "github" ? "Opening…" : "Sign in with GitHub"}
