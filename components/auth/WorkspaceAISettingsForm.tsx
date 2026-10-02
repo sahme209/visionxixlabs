@@ -112,6 +112,7 @@ export function WorkspaceAISettingsForm() {
               ))}
             </ol>
               }
+              {allowed.length === 0 && <p className="mt-3 text-xs leading-5 text-amber-200/80">Choose at least one service-enabled provider before saving a workspace policy.</p>}
             </>
           )}
           <div className="mt-5 flex items-center gap-3">
