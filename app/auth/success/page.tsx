@@ -20,6 +20,7 @@ const SLACK_NOTICES: Record<string, { tone: "emerald" | "amber" | "rose"; title:
   invalid_state: { tone: "rose", title: "Slack setup link is no longer valid", detail: "No connection was recorded. Start a new setup from Integrations instead of reusing a previous link." },
   unavailable: { tone: "rose", title: "Slack setup is unavailable", detail: "No connection was recorded because this workspace is not configured for Slack yet." },
   exchange_failed: { tone: "rose", title: "Slack setup could not be completed", detail: "No connection was recorded. You can try again from Integrations." },
+  scope_insufficient: { tone: "rose", title: "Slack did not grant the requested access", detail: "No connection was recorded. Review the requested scopes and restart setup from Integrations." },
   record_failed: { tone: "rose", title: "Slack consent could not be recorded", detail: "No connection was recorded. You can try again from Integrations." },
 };
 
@@ -29,6 +30,7 @@ const TEAMS_NOTICES: Record<string, { tone: "emerald" | "amber" | "rose"; title:
   invalid_state: { tone: "rose", title: "Microsoft setup link is no longer valid", detail: "No connection was recorded. Start a new setup from Integrations instead of reusing a previous link." },
   unavailable: { tone: "rose", title: "Teams setup is unavailable", detail: "No connection was recorded because this workspace is not configured for Teams yet." },
   exchange_failed: { tone: "rose", title: "Microsoft setup could not be completed", detail: "No connection was recorded. You can try again from Integrations." },
+  scope_insufficient: { tone: "rose", title: "Microsoft did not grant the requested access", detail: "No connection was recorded. Review the requested scopes and restart setup from Integrations." },
   record_failed: { tone: "rose", title: "Teams consent could not be recorded", detail: "No connection was recorded. You can try again from Integrations." },
 };
 

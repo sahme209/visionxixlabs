@@ -7,6 +7,7 @@ import { authorizationCredentialContext, connectionCredentialContext, digestAuth
 import { consumeTenantIntegrationAuthorization, type TenantConnectionRepo } from "@/lib/integrations/tenantConnectionRepo";
 import { decryptScopedCredential, encryptScopedCredential } from "@/lib/security/credentialVault";
 import { trustedAxiomUrl } from "@/lib/integrations/trustedCallbackUrl";
+import { hasRequiredScopes, splitGrantedScopes } from "@/lib/integrations/grantedScopes";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -21,6 +22,7 @@ interface ConnectionRepo {
 }
 
 type MicrosoftTokenResponse = { access_token?: string; refresh_token?: string; scope?: string; expires_in?: number };
+const REQUIRED_MICROSOFT_SCOPES = ["openid", "offline_access", "User.Read"] as const;
 
 function returnToCompanion(status: string) {
   const destination = trustedAxiomUrl(`/auth/success?integration=teams&status=${encodeURIComponent(status)}`);
@@ -67,6 +69,8 @@ export async function GET(request: NextRequest): Promise<Response> {
     return returnToCompanion("exchange_failed");
   }
   if (!token.access_token) return returnToCompanion("exchange_failed");
+  const grantedScopes = splitGrantedScopes(token.scope);
+  if (!hasRequiredScopes(grantedScopes, REQUIRED_MICROSOFT_SCOPES)) return returnToCompanion("scope_insufficient");
 
   const organizationId = authorization.attempt.organizationId;
   const connections = (prisma as unknown as ConnectionRepo).tenantIntegrationConnection;
@@ -74,7 +78,7 @@ export async function GET(request: NextRequest): Promise<Response> {
     const existing = await connections.findUnique({ where: { organizationId_provider: { organizationId, provider: "teams" } }, select: { id: true } });
     const connectionId = existing?.id ?? randomUUID();
     const encryptedCredential = encryptScopedCredential(JSON.stringify({ accessToken: token.access_token, refreshToken: token.refresh_token ?? null, expiresIn: token.expires_in ?? null }), connectionCredentialContext({ organizationId, provider: "teams", connectionId }));
-    const data = { status: "pending", encryptedCredential, externalAccountId: tenant, scopesJson: (token.scope ?? "").split(" ").filter(Boolean), consentedByUserId: authorization.attempt.initiatedByUserId };
+    const data = { status: "pending", encryptedCredential, externalAccountId: tenant, scopesJson: grantedScopes, consentedByUserId: authorization.attempt.initiatedByUserId };
     if (existing) await connections.update({ where: { organizationId_provider: { organizationId, provider: "teams" } }, data: { ...data, consentedAt: new Date(), lastValidatedAt: null, revokedAt: null } });
     else await connections.create({ data: { id: connectionId, organizationId, provider: "teams", ...data } });
     await recordAudit({

@@ -7,6 +7,7 @@ import { connectionCredentialContext } from "@/lib/integrations/tenantAuthorizat
 import { consumeTenantIntegrationAuthorization, type TenantConnectionRepo } from "@/lib/integrations/tenantConnectionRepo";
 import { encryptScopedCredential } from "@/lib/security/credentialVault";
 import { trustedAxiomUrl } from "@/lib/integrations/trustedCallbackUrl";
+import { hasRequiredScopes, splitGrantedScopes } from "@/lib/integrations/grantedScopes";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -21,6 +22,7 @@ interface ConnectionRepo {
 }
 
 type SlackTokenResponse = { ok?: boolean; access_token?: string; scope?: string; team?: { id?: string } };
+const REQUIRED_SLACK_SCOPES = ["channels:read", "chat:write"] as const;
 
 function returnToCompanion(status: string) {
   const destination = trustedAxiomUrl(`/auth/success?integration=slack&status=${encodeURIComponent(status)}`);
@@ -57,6 +59,8 @@ export async function GET(request: NextRequest): Promise<Response> {
     return returnToCompanion("exchange_failed");
   }
   if (!token.ok || !token.access_token) return returnToCompanion("exchange_failed");
+  const grantedScopes = splitGrantedScopes(token.scope);
+  if (!hasRequiredScopes(grantedScopes, REQUIRED_SLACK_SCOPES)) return returnToCompanion("scope_insufficient");
 
   const organizationId = authorization.attempt.organizationId;
   const connections = (prisma as unknown as ConnectionRepo).tenantIntegrationConnection;
@@ -68,7 +72,7 @@ export async function GET(request: NextRequest): Promise<Response> {
       status: "pending",
       encryptedCredential,
       externalAccountId: token.team?.id ?? null,
-      scopesJson: (token.scope ?? "").split(/[ ,]+/).filter(Boolean),
+      scopesJson: grantedScopes,
       consentedByUserId: authorization.attempt.initiatedByUserId,
     };
     if (existing) {
