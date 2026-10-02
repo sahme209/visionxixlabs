@@ -4,7 +4,7 @@ import {
   ArrowRightIcon,
   ClockIcon,
   FingerPrintIcon,
-  ShieldCheckIcon,
+  ScaleIcon,
 } from "@heroicons/react/24/outline";
 import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
@@ -107,7 +107,7 @@ export default function Home() {
         <section className="border-y border-white/[0.06] bg-[#11110f] px-5 py-20 sm:px-8 lg:px-10">
           <h2 className="mx-auto max-w-5xl text-center text-3xl font-medium tracking-[-0.04em] sm:text-4xl">Designed around production reality.</h2>
           <div className="mx-auto mt-9 grid max-w-5xl gap-3 md:grid-cols-3">
-            <EvidenceCard icon={<ShieldCheckIcon className="h-6 w-6" />} title="Policy remains authoritative" detail="Desktop preferences cannot weaken organization approvals, permission boundaries, or production gates." />
+            <EvidenceCard icon={<ScaleIcon className="h-6 w-6" />} title="Policy remains authoritative" detail="Desktop preferences cannot weaken organization approvals, permission boundaries, or production gates." />
             <EvidenceCard icon={<FingerPrintIcon className="h-6 w-6" />} title="Browser-authorized desktop sessions" detail="Sign-in and account creation happen in the system browser through an expiring, one-time device-bound challenge." />
             <EvidenceCard icon={<ClockIcon className="h-6 w-6" />} title="Reconnect without rewriting history" detail="Last-known records remain visible and are explicitly marked stale with the last successful service-response time." />
           </div>
