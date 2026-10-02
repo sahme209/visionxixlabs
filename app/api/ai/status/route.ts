@@ -1,14 +1,15 @@
 /**
  * GET /api/ai/status
  *
- * Returns the configured providers + their default models + the env
- * snapshot. No secrets — only booleans for "is this env var set?".
+ * Returns only provider families and models approved for the caller's
+ * workspace. Service configuration and environment readiness stay private.
  */
 
 import type { NextRequest } from "next/server";
 import { currentContext } from "@/lib/auth/currentContext";
 import { getAIProviderManager } from "@/lib/ai/AIProviderManager";
-import { listModels, PROVIDER_PRIORITY } from "@/lib/ai/AIModelRegistry";
+import { listModels } from "@/lib/ai/AIModelRegistry";
+import { loadWorkspaceAIProviderPolicyWithState, resolveWorkspaceAIProviderPolicy } from "@/lib/ai/workspaceProviderPolicy";
 import { apiOk, apiErr, asApiSourceMode, resolveCorrelationId } from "@/lib/api";
 import { AxiomErrors } from "@/lib/errors/axiomErrors";
 
@@ -18,24 +19,39 @@ export async function GET(req: NextRequest) {
   const correlationId = resolveCorrelationId(req.headers);
   try {
     const ctx = await currentContext();
-    if (!ctx.isAuthenticated) {
+    if (!ctx.isAuthenticated || !ctx.organizationId) {
       throw AxiomErrors.validation("auth.required", "Sign in required.");
     }
     const mgr = getAIProviderManager();
     const status = mgr.status();
-    const env = mgr.envSnapshot();
-    // The mock adapter exists only for legacy/internal callers. Never present
-    // it as an active service route to an operator.
-    const active = status.find((provider) => provider.provider !== "mock" && provider.configured) ?? null;
+    const serviceEnabled = status
+      .filter((provider) => provider.provider !== "mock" && provider.configured)
+      .map((provider) => provider.provider);
+    const loadedPolicy = await loadWorkspaceAIProviderPolicyWithState(ctx.organizationId);
+    if (loadedPolicy.storageState !== "ready") {
+      throw AxiomErrors.policy("ai.provider_policy_unavailable", "AI provider policy is not ready for this workspace.");
+    }
+    const policy = resolveWorkspaceAIProviderPolicy({ stored: loadedPolicy.policy, serviceEnabled });
+    const allowed = policy.enabled ? policy.allowedProviders : [];
+    const activeProvider = policy.enabled ? policy.fallbackOrder[0] ?? null : null;
+    const activeModel = activeProvider ? policy.modelSelections[activeProvider] ?? null : null;
     const data = {
-      activeProvider: active?.provider ?? null,
-      activeModel: active?.defaultModel ?? null,
-      priority: PROVIDER_PRIORITY,
-      providers: status.map((s) => ({
-        ...s,
-        models: listModels(s.provider),
-      })),
-      env,
+      policyEnabled: policy.enabled,
+      activeProvider,
+      activeModel,
+      // Only expose provider families explicitly allowed for this workspace;
+      // service configuration and credentials remain server-private.
+      providers: allowed.map((provider, priority) => {
+        const configured = status.find((row) => row.provider === provider);
+        const selectedModel = policy.modelSelections[provider];
+        return {
+          provider,
+          configured: configured?.configured === true,
+          defaultModel: selectedModel ?? configured?.defaultModel ?? "unavailable",
+          priority,
+          models: selectedModel ? listModels(provider).filter((model) => model.id === selectedModel) : [],
+        };
+      }),
     };
     return apiOk(data, {
       correlationId,

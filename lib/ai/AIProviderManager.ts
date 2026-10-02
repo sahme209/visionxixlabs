@@ -208,9 +208,11 @@ export class AIProviderManager {
     }
   }
 
-  async healthCheckAll(): Promise<AIHealthCheck[]> {
+  async healthCheckAll(allowedProviders?: readonly AIProviderName[]): Promise<AIHealthCheck[]> {
     const rows: AIHealthCheck[] = [];
+    const allowed = allowedProviders ? new Set(allowedProviders) : null;
     for (const name of PROVIDER_PRIORITY) {
+      if (allowed && !allowed.has(name)) continue;
       const p = this.providers.get(name)!;
       try {
         rows.push(await p.healthCheck({ timeoutMs: 8_000 }));

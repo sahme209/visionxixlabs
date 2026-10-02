@@ -28,15 +28,9 @@ interface ProviderRow {
   provider: ProviderName; configured: boolean; defaultModel: string;
   priority: number; models: RegisteredModel[];
 }
-interface AIEnvSnapshot {
-  OPENAI_API_KEY: boolean; ANTHROPIC_API_KEY: boolean;
-  GITHUB_TOKEN: boolean; GROQ_API_KEY: boolean; HUGGINGFACE_API_KEY: boolean;
-  OPENROUTER_API_KEY: boolean; GEMINI_API_KEY: boolean; CLOUDFLARE_ACCOUNT_ID: boolean;
-  CLOUDFLARE_API_TOKEN: boolean; OLLAMA_BASE_URL: string; LM_STUDIO_BASE_URL: string;
-}
 interface StatusResp {
-  activeProvider: ProviderName | null; activeModel: string | null;
-  priority: ProviderName[]; providers: ProviderRow[]; env: AIEnvSnapshot;
+  policyEnabled: boolean; activeProvider: ProviderName | null; activeModel: string | null;
+  providers: ProviderRow[];
 }
 interface HealthRow {
   ok: boolean; provider: ProviderName; model: string; latencyMs: number; reason?: string;
@@ -146,7 +140,7 @@ export default function AISettingsPage() {
           <div className="rounded-2xl border border-indigo-500/[0.18] bg-indigo-500/[0.04] p-5 mb-6">
             <p className="text-[10px] font-mono uppercase tracking-widest text-indigo-300 mb-1">Active</p>
             <div className="flex items-center gap-3 flex-wrap">
-              <span className="text-[16px] font-semibold text-white">{status.activeProvider ? LABEL[status.activeProvider] : "No live provider configured"}</span>
+              <span className="text-[16px] font-semibold text-white">{!status.policyEnabled ? "AI is disabled for this workspace" : status.activeProvider ? LABEL[status.activeProvider] : "No approved live provider"}</span>
               {status.activeModel && <span className="text-[11px] font-mono text-zinc-300 bg-white/[0.04] border border-white/[0.06] rounded-full px-2 py-0.5">
                 model: {status.activeModel}
               </span>}
@@ -154,17 +148,17 @@ export default function AISettingsPage() {
           </div>
 
           <div className="space-y-3 mb-8">
-            {status.providers.map((p) => (
+            {status.providers.map((p, index) => (
               <div key={p.provider} className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-4">
                 <div className="flex items-center gap-2 flex-wrap mb-2">
-                  <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-wider">#{p.priority + 1}</span>
+                  <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-wider">#{index + 1}</span>
                   <span className="text-[14px] font-semibold text-white">{LABEL[p.provider]}</span>
                   <span className={`text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border ${
                     p.configured
                       ? "bg-emerald-500/15 text-emerald-300 border-emerald-500/30"
                       : "bg-amber-500/15 text-amber-300 border-amber-500/30"
                   }`}>
-                    {p.configured ? "Ready" : "Setup required"}
+                    {p.configured ? "Approved" : "Unavailable"}
                   </span>
                   <span className="text-[10px] font-mono text-zinc-400 ml-auto">default: {p.defaultModel}</span>
                 </div>
@@ -212,7 +206,7 @@ export default function AISettingsPage() {
                 ))}
               </ul>
             ) : (
-              <p className="text-[12px] text-zinc-500">Click run health check to ping each provider.</p>
+              <p className="text-[12px] text-zinc-500">Click run health check to ping each provider approved for this workspace.</p>
             )}
           </div>
 
