@@ -5,6 +5,7 @@
 
 import { NextResponse, type NextRequest } from "next/server";
 import { currentContext } from "@/lib/auth/currentContext";
+import { isAdminOrOwner } from "@/lib/auth/platformAdmin";
 import { prisma } from "@/lib/db";
 import {
   buildInstallationTransitionResponse,
@@ -20,6 +21,9 @@ export async function POST(req: NextRequest) {
   const ctx = await currentContext();
   if (!ctx.isAuthenticated || !ctx.organizationId || !ctx.userId) {
     return NextResponse.json({ ok: false, error: "auth_required" }, { status: 401 });
+  }
+  if (!isAdminOrOwner({ email: ctx.email, roles: ctx.roles })) {
+    return NextResponse.json({ ok: false, error: "workspace_owner_required" }, { status: 403 });
   }
   let body: { installationRowId?: unknown; action?: unknown } = {};
   try { body = await req.json(); } catch { /* fall through */ }
