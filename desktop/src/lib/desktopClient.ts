@@ -73,7 +73,7 @@ export function v1ApiError(body: Record<string, unknown>, status: number): strin
     case "unknown_token":
       return "Your workspace sign-in is no longer valid. Sign in again to continue.";
     case "commercial_access_required":
-      return "This workspace does not have active paid production access.";
+      return "This workspace does not have approved pilot or production access yet.";
     case "rate_limited":
       return "The service is temporarily rate-limiting requests. Wait a moment, then try again.";
   }

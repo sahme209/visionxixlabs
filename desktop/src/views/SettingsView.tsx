@@ -105,7 +105,7 @@ export function SettingsView({ identity }: { identity: VerifiedDesktopIdentity }
     <ViewShell>
       <div>
         <h1 className="text-2xl font-semibold tracking-[-0.035em]">Settings</h1>
-        <p className="mt-1 text-sm text-zinc-500">Desktop preferences, verified identity, commercial access, and governed connections.</p>
+        <p className="mt-1 text-sm text-zinc-500">Desktop preferences, verified identity, approved access, and governed connections.</p>
       </div>
 
       <div className="grid min-h-[620px] grid-cols-[220px_minmax(0,1fr)] overflow-hidden rounded-2xl border border-white/[0.07] bg-[#0c0c0e]">
@@ -159,7 +159,7 @@ function GeneralSection({ prefs, onSave }: PreferenceSectionProps) {
     <SectionHeading title="General" detail="Application startup, notifications, and account management." />
     <Group label="Account">
       <ActionRow title="Axiom account" detail="Manage your profile and organization in the secure browser." action={<WebButton href="/dashboard/settings" label="Open" />} />
-      <ActionRow title="Plan & billing" detail="Billing opens through a short-lived bearer-authenticated portal session from Plan & usage." action={<span className="text-xs text-zinc-600">See Plan & usage</span>} />
+      <ActionRow title="Pilot access" detail="Pilot access is no-charge today. The service remains authoritative for approved workspace access." action={<span className="text-xs text-zinc-600">See Access & usage</span>} />
     </Group>
     <Group label="Notifications">
       <ToggleRow title="System notifications" detail="Notify when an approval or deployment needs attention." enabled={prefs?.notifications_enabled ?? false} disabled={!prefs} onToggle={() => prefs && void onSave({ ...prefs, notifications_enabled: !prefs.notifications_enabled })} action={<button type="button" disabled={!prefs?.notifications_enabled} onClick={() => void notifyResult({ title: "Axiom Agent", body: "Desktop notifications are ready." })} className="rounded-md border border-white/10 px-2.5 py-1 text-[11px] text-zinc-400 hover:text-white disabled:opacity-40">Test</button>} />
