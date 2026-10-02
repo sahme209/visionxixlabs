@@ -69,10 +69,17 @@ export async function GET(request: NextRequest): Promise<Response> {
     return returnToCompanion("exchange_failed");
   }
   if (!token.access_token) return returnToCompanion("exchange_failed");
-  const grantedScopes = splitGrantedScopes(token.scope);
-  if (!hasRequiredScopes(grantedScopes, REQUIRED_MICROSOFT_SCOPES)) return returnToCompanion("scope_insufficient");
-
   const organizationId = authorization.attempt.organizationId;
+  const grantedScopes = splitGrantedScopes(token.scope);
+  if (!hasRequiredScopes(grantedScopes, REQUIRED_MICROSOFT_SCOPES)) {
+    await recordAudit({
+      organizationId: idFactory.organization(organizationId), actorUserId: idFactory.user(authorization.attempt.initiatedByUserId), actorKind: "user",
+      action: "connector.connect", outcome: "blocked", entityRef: "connector:teams", correlationId: idFactory.correlation(`teams_scope_${Date.now().toString(36)}`), source: "live",
+      errorCode: "scope_insufficient", detail: { grantedScopeCount: grantedScopes.length, requiredScopeCount: REQUIRED_MICROSOFT_SCOPES.length },
+    }).catch(() => undefined);
+    return returnToCompanion("scope_insufficient");
+  }
+
   const connections = (prisma as unknown as ConnectionRepo).tenantIntegrationConnection;
   try {
     const existing = await connections.findUnique({ where: { organizationId_provider: { organizationId, provider: "teams" } }, select: { id: true } });
