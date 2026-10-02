@@ -6,6 +6,7 @@ import { id as idFactory } from "@/lib/domain/ids";
 import { authorizationCredentialContext, connectionCredentialContext, digestAuthorizationState } from "@/lib/integrations/tenantAuthorization";
 import { consumeTenantIntegrationAuthorization, type TenantConnectionRepo } from "@/lib/integrations/tenantConnectionRepo";
 import { decryptScopedCredential, encryptScopedCredential } from "@/lib/security/credentialVault";
+import { trustedAxiomUrl } from "@/lib/integrations/trustedCallbackUrl";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -21,8 +22,11 @@ interface ConnectionRepo {
 
 type MicrosoftTokenResponse = { access_token?: string; refresh_token?: string; scope?: string; expires_in?: number };
 
-function returnToCompanion(request: NextRequest, status: string) {
-  return NextResponse.redirect(new URL(`/auth/success?integration=teams&status=${status}`, request.url));
+function returnToCompanion(status: string) {
+  const destination = trustedAxiomUrl(`/auth/success?integration=teams&status=${encodeURIComponent(status)}`);
+  return destination
+    ? NextResponse.redirect(destination)
+    : NextResponse.json({ ok: false, error: "trusted_return_url_unavailable" }, { status: 503 });
 }
 
 export async function GET(request: NextRequest): Promise<Response> {
@@ -32,13 +36,13 @@ export async function GET(request: NextRequest): Promise<Response> {
     prisma as unknown as TenantConnectionRepo,
     { state, provider: "teams" },
   );
-  if (!authorization.ok) return returnToCompanion(request, "invalid_state");
-  if (url.searchParams.get("error")) return returnToCompanion(request, "declined");
+  if (!authorization.ok) return returnToCompanion("invalid_state");
+  if (url.searchParams.get("error")) return returnToCompanion("declined");
   const code = url.searchParams.get("code");
   const clientId = process.env.MICROSOFT_CLIENT_ID?.trim() ?? "";
   const clientSecret = process.env.MICROSOFT_CLIENT_SECRET?.trim() ?? "";
   const tenant = process.env.MICROSOFT_TENANT_ID?.trim() ?? "";
-  if (!code || !clientId || !clientSecret || !tenant || !authorization.attempt.encryptedPkceVerifier) return returnToCompanion(request, "unavailable");
+  if (!code || !clientId || !clientSecret || !tenant || !authorization.attempt.encryptedPkceVerifier) return returnToCompanion("unavailable");
 
   let verifier: string;
   try {
@@ -47,7 +51,7 @@ export async function GET(request: NextRequest): Promise<Response> {
       authorizationCredentialContext({ organizationId: authorization.attempt.organizationId, provider: "teams", stateDigest: digestAuthorizationState(state) }),
     );
   } catch {
-    return returnToCompanion(request, "invalid_state");
+    return returnToCompanion("invalid_state");
   }
 
   let token: MicrosoftTokenResponse;
@@ -60,9 +64,9 @@ export async function GET(request: NextRequest): Promise<Response> {
     });
     token = await exchange.json() as MicrosoftTokenResponse;
   } catch {
-    return returnToCompanion(request, "exchange_failed");
+    return returnToCompanion("exchange_failed");
   }
-  if (!token.access_token) return returnToCompanion(request, "exchange_failed");
+  if (!token.access_token) return returnToCompanion("exchange_failed");
 
   const organizationId = authorization.attempt.organizationId;
   const connections = (prisma as unknown as ConnectionRepo).tenantIntegrationConnection;
@@ -79,7 +83,7 @@ export async function GET(request: NextRequest): Promise<Response> {
       detail: { scopeCount: data.scopesJson.length, validationRequired: true },
     });
   } catch {
-    return returnToCompanion(request, "record_failed");
+    return returnToCompanion("record_failed");
   }
-  return returnToCompanion(request, "consent_recorded");
+  return returnToCompanion("consent_recorded");
 }

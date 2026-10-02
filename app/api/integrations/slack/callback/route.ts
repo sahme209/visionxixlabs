@@ -6,6 +6,7 @@ import { id as idFactory } from "@/lib/domain/ids";
 import { connectionCredentialContext } from "@/lib/integrations/tenantAuthorization";
 import { consumeTenantIntegrationAuthorization, type TenantConnectionRepo } from "@/lib/integrations/tenantConnectionRepo";
 import { encryptScopedCredential } from "@/lib/security/credentialVault";
+import { trustedAxiomUrl } from "@/lib/integrations/trustedCallbackUrl";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -21,8 +22,11 @@ interface ConnectionRepo {
 
 type SlackTokenResponse = { ok?: boolean; access_token?: string; scope?: string; team?: { id?: string } };
 
-function returnToCompanion(request: NextRequest, status: string) {
-  return NextResponse.redirect(new URL(`/auth/success?integration=slack&status=${status}`, request.url));
+function returnToCompanion(status: string) {
+  const destination = trustedAxiomUrl(`/auth/success?integration=slack&status=${encodeURIComponent(status)}`);
+  return destination
+    ? NextResponse.redirect(destination)
+    : NextResponse.json({ ok: false, error: "trusted_return_url_unavailable" }, { status: 503 });
 }
 
 export async function GET(request: NextRequest): Promise<Response> {
@@ -32,13 +36,13 @@ export async function GET(request: NextRequest): Promise<Response> {
     prisma as unknown as TenantConnectionRepo,
     { state, provider: "slack" },
   );
-  if (!authorization.ok) return returnToCompanion(request, "invalid_state");
-  if (url.searchParams.get("error")) return returnToCompanion(request, "declined");
+  if (!authorization.ok) return returnToCompanion("invalid_state");
+  if (url.searchParams.get("error")) return returnToCompanion("declined");
 
   const code = url.searchParams.get("code");
   const clientId = process.env.SLACK_CLIENT_ID?.trim() ?? "";
   const clientSecret = process.env.SLACK_CLIENT_SECRET?.trim() ?? "";
-  if (!code || !clientId || !clientSecret) return returnToCompanion(request, "unavailable");
+  if (!code || !clientId || !clientSecret) return returnToCompanion("unavailable");
 
   let token: SlackTokenResponse;
   try {
@@ -50,9 +54,9 @@ export async function GET(request: NextRequest): Promise<Response> {
     });
     token = await exchange.json() as SlackTokenResponse;
   } catch {
-    return returnToCompanion(request, "exchange_failed");
+    return returnToCompanion("exchange_failed");
   }
-  if (!token.ok || !token.access_token) return returnToCompanion(request, "exchange_failed");
+  if (!token.ok || !token.access_token) return returnToCompanion("exchange_failed");
 
   const organizationId = authorization.attempt.organizationId;
   const connections = (prisma as unknown as ConnectionRepo).tenantIntegrationConnection;
@@ -78,7 +82,7 @@ export async function GET(request: NextRequest): Promise<Response> {
       detail: { scopeCount: data.scopesJson.length, validationRequired: true },
     });
   } catch {
-    return returnToCompanion(request, "record_failed");
+    return returnToCompanion("record_failed");
   }
-  return returnToCompanion(request, "consent_recorded");
+  return returnToCompanion("consent_recorded");
 }

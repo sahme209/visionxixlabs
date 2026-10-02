@@ -25,9 +25,17 @@ import {
   consumeTenantIntegrationAuthorization,
   type TenantConnectionRepo,
 } from "@/lib/integrations/tenantConnectionRepo";
+import { trustedAxiomUrl } from "@/lib/integrations/trustedCallbackUrl";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
+
+function returnToCompanion(status: string) {
+  const destination = trustedAxiomUrl(`/auth/success?integration=github&status=${encodeURIComponent(status)}`);
+  return destination
+    ? NextResponse.redirect(destination)
+    : NextResponse.json({ ok: false, error: "trusted_return_url_unavailable" }, { status: 503 });
+}
 
 export async function GET(req: NextRequest): Promise<Response> {
   const url = new URL(req.url);
@@ -40,25 +48,25 @@ export async function GET(req: NextRequest): Promise<Response> {
   );
 
   if (!authorization.ok) {
-    return NextResponse.redirect(new URL("/auth/success?integration=github&status=invalid_state", req.url));
+    return returnToCompanion("invalid_state");
   }
 
   // GitHub sends users here after a "request to install" flow even
   // when they don't have admin access to the org. We acknowledge but
   // do not persist.
   if (setupAction === "request") {
-    return NextResponse.redirect(new URL("/auth/success?integration=github&status=approval_requested", req.url));
+    return returnToCompanion("approval_requested");
   }
 
   // The install endpoint has a closed callback vocabulary. A consumed state
   // must not be enough for an unexpected provider action to create or revive
   // an installation record.
   if (setupAction !== "install" && setupAction !== "update") {
-    return NextResponse.redirect(new URL("/auth/success?integration=github&status=error", req.url));
+    return returnToCompanion("error");
   }
 
   if (!installationId) {
-    return NextResponse.redirect(new URL("/auth/success?integration=github&status=missing_installation", req.url));
+    return returnToCompanion("missing_installation");
   }
 
   const organizationId = authorization.attempt.organizationId;
@@ -96,6 +104,5 @@ export async function GET(req: NextRequest): Promise<Response> {
   // read works. The companion only calls it validated after Agent completes
   // that harmless server-side check.
   const status = r.body.ok ? "installation_recorded" : "error";
-  const redirectUrl = new URL(`/auth/success?integration=github&status=${status}`, req.url);
-  return NextResponse.redirect(redirectUrl);
+  return returnToCompanion(status);
 }
