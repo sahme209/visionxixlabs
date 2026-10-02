@@ -37,6 +37,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     requiredScope: "pipeline:read",
     route: "POST /api/desktop/integrations/github/validate",
     allowApiKey: false,
+    requireWorkspaceAdmin: true,
   });
   if (!session) return NextResponse.json({ ok: false, error: "desktop_session_required" }, { status: 401 });
 

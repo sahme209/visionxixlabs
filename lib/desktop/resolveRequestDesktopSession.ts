@@ -3,6 +3,7 @@ import "server-only";
 import type { NextRequest } from "next/server";
 import { authenticateApiKey } from "@/lib/security/authenticateApiKey";
 import type { RequiredScope } from "@/lib/security/apiKeyScope";
+import { prisma } from "@/lib/db";
 import { bearerFromHeader, verifyDesktopToken } from "./desktopToken";
 import {
     resolveActiveSession,
@@ -24,6 +25,23 @@ interface ResolveOptions {
     /** Shared provider-state transitions require a paired user session, not
      * a reusable API key. Existing read routes retain API-key support. */
     allowApiKey?: boolean;
+    /** Shared integration state can only be changed by a currently confirmed
+     * workspace owner or admin. The desktop token identifies a device; it
+     * does not itself freeze role authority for its 30-day lifetime. */
+    requireWorkspaceAdmin?: boolean;
+}
+
+async function hasWorkspaceAdminRole(userId: string, organizationId: string): Promise<boolean> {
+    try {
+        const membership = await prisma.orgMembership.findUnique({
+            where: { userId_organizationId: { userId, organizationId } },
+            select: { role: true },
+        });
+        return membership?.role === "owner" || membership?.role === "admin";
+    } catch {
+        // A role-store failure must not permit a shared provider-state change.
+        return false;
+    }
 }
 
 /**
@@ -41,6 +59,7 @@ export async function resolveRequestDesktopSession(
     try {
         if (token.startsWith("vxlk_")) {
             if (options.allowApiKey === false) return undefined;
+            if (options.requireWorkspaceAdmin) return undefined;
             const sourceIp = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim()
                 ?? request.headers.get("x-real-ip")
                 ?? null;
@@ -69,6 +88,9 @@ export async function resolveRequestDesktopSession(
         const { sessionId } = verifyDesktopToken(token);
         const session = await resolveActiveSession(sessionId);
         if (!session) return undefined;
+        if (options.requireWorkspaceAdmin && !(await hasWorkspaceAdminRole(String(session.userId), String(session.organizationId))) {
+            return undefined;
+        }
         await touchDesktopSession(session.id);
         const principal: DesktopRequestPrincipal = {
             id: session.id,

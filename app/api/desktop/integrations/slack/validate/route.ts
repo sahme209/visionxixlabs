@@ -32,6 +32,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     requiredScope: "pipeline:read",
     route: "POST /api/desktop/integrations/slack/validate",
     allowApiKey: false,
+    requireWorkspaceAdmin: true,
   });
   if (!session) return NextResponse.json({ ok: false, error: "desktop_session_required" }, { status: 401 });
   const repo = prisma as unknown as SlackConnectionRepo;
