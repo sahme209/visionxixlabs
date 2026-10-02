@@ -9,7 +9,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { currentContext } from "@/lib/auth/currentContext";
 import { isAdminOrOwner } from "@/lib/auth/platformAdmin";
 import { trustedIntegrationCallbackUrl } from "@/lib/integrations/trustedCallbackUrl";
-import { getGithubConfig } from "@/lib/connectors/github/githubConfig";
+import { getGithubConfig, isGithubAppInstallationReady } from "@/lib/connectors/github/githubConfig";
 import { prisma } from "@/lib/db";
 import {
   startTenantIntegrationAuthorization,
@@ -29,7 +29,7 @@ export async function POST(_request: NextRequest): Promise<Response> {
   }
 
   const appSlug = process.env.GITHUB_APP_SLUG?.trim() ?? "";
-  if (!appSlug || !getGithubConfig().appConfigured) {
+  if (!isGithubAppInstallationReady(getGithubConfig(), appSlug)) {
     return NextResponse.json({ ok: false, error: "github_not_configured" }, { status: 503 });
   }
 

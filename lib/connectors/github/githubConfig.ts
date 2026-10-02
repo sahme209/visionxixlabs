@@ -39,6 +39,18 @@ export interface GithubRuntimeConfig {
   defaultOrg?: string;
 }
 
+/**
+ * A GitHub App installation handoff needs the public App slug and the
+ * server-only credentials required immediately after GitHub returns. Keeping
+ * this decision in one place prevents a browser flow that cannot be validated.
+ */
+export function isGithubAppInstallationReady(
+  config: Pick<GithubRuntimeConfig, "appConfigured">,
+  appSlug: string | undefined,
+): boolean {
+  return config.appConfigured && Boolean(appSlug?.trim());
+}
+
 export function getGithubConfig(): GithubRuntimeConfig {
   const env = loadAppEnv();
   const e = process.env;
