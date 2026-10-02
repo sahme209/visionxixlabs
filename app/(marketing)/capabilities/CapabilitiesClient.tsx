@@ -91,12 +91,12 @@ const ROLE_FILTERS: ReadonlyArray<{ id: Capability["role"] | "all"; label: strin
 ];
 
 const ROLE_TONE: Record<Capability["role"], string> = {
-  perception:   "text-cyan-300    bg-cyan-500/10    border-cyan-500/30",
-  reasoning:    "text-indigo-300  bg-indigo-500/10  border-indigo-500/30",
-  planning:     "text-fuchsia-300 bg-fuchsia-500/10 border-fuchsia-500/30",
-  safety:       "text-amber-300   bg-amber-500/10   border-amber-500/30",
-  verification: "text-emerald-300 bg-emerald-500/10 border-emerald-500/30",
-  memory:       "text-zinc-300    bg-zinc-500/10    border-zinc-500/30",
+  perception:   "text-zinc-300 bg-white/[0.035] border-white/[0.1]",
+  reasoning:    "text-zinc-300 bg-white/[0.035] border-white/[0.1]",
+  planning:     "text-zinc-300 bg-white/[0.035] border-white/[0.1]",
+  safety:       "text-zinc-300 bg-white/[0.035] border-white/[0.1]",
+  verification: "text-zinc-300 bg-white/[0.035] border-white/[0.1]",
+  memory:        "text-zinc-300 bg-white/[0.035] border-white/[0.1]",
 };
 
 export function CapabilitiesClient() {
@@ -119,20 +119,20 @@ export function CapabilitiesClient() {
           animate={{ opacity: 1, y: 0 }}
           className="mono-label inline-flex items-center gap-3"
         >
-          <span className="text-brand-coral/90 tabular-nums">AK</span>
-          <span className="h-px w-6 bg-gradient-to-r from-brand-coral/60 to-transparent" />
-          AI agent kernels · shipped, not promised
+          <span className="text-violet-200 tabular-nums">AX</span>
+          <span className="h-px w-6 bg-gradient-to-r from-violet-200/60 to-transparent" />
+          Axiom Agent · deployment capabilities
         </motion.p>
         <motion.h1
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="font-display mt-5 text-4xl md:text-6xl font-bold leading-[1.04]"
+          className="mt-5 max-w-4xl text-4xl font-medium leading-[1.02] tracking-[-0.045em] md:text-5xl"
         >
-          {CAPABILITIES.length} AI agent kernels.{" "}
+          Deployment capabilities, {" "}
           <span className="relative inline-block">
-            One bus.
-            <span aria-hidden className="absolute left-0 -bottom-0.5 h-[2px] w-full rounded-full bg-gradient-to-r from-brand-coral via-fuchsia-400/70 to-transparent" />
+            with human control.
+            <span aria-hidden className="absolute left-0 -bottom-0.5 h-[2px] w-full rounded-full bg-gradient-to-r from-violet-200/80 to-transparent" />
           </span>
         </motion.h1>
         <motion.p
@@ -179,7 +179,7 @@ export function CapabilitiesClient() {
               className={[
                 "rounded-full px-3.5 py-1.5 text-[12px] font-medium transition border",
                 filter === f.id
-                  ? "bg-fuchsia-500/15 border-fuchsia-500/40 text-fuchsia-200"
+                  ? "bg-violet-300/[0.12] border-violet-300/30 text-violet-100"
                   : "bg-white/[0.02] border-white/[0.06] text-zinc-400 hover:text-white hover:bg-white/[0.05]",
               ].join(" ")}
             >
@@ -200,7 +200,7 @@ export function CapabilitiesClient() {
               viewport={{ once: true, amount: 0.2 }}
               transition={{ duration: 0.45, delay: Math.min(i * 0.03, 0.3) }}
               whileHover={{ y: -3, transition: { duration: 0.18 } }}
-              className="surface-glass rounded-2xl p-5 hover:border-brand-coral/25 transition-all"
+              className="rounded-2xl border border-white/[0.08] bg-white/[0.025] p-5 transition-all hover:border-violet-300/25 hover:bg-white/[0.045]"
             >
               <div className="flex items-start justify-between gap-3">
                 <p className="text-[13.5px] font-semibold text-white">{c.name}</p>
