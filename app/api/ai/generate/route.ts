@@ -17,7 +17,7 @@ import { currentContext } from "@/lib/auth/currentContext";
 import { getAIProviderManager } from "@/lib/ai/AIProviderManager";
 import { isAIProviderName, type AIProviderName } from "@/lib/ai/AIProvider";
 import { isKnownModel } from "@/lib/ai/AIModelRegistry";
-import { loadWorkspaceAIProviderPolicy, resolveWorkspaceAIProviderPolicy } from "@/lib/ai/workspaceProviderPolicy";
+import { loadWorkspaceAIProviderPolicyWithState, resolveWorkspaceAIProviderPolicy } from "@/lib/ai/workspaceProviderPolicy";
 import { apiOk, apiErr, asApiSourceMode, resolveCorrelationId } from "@/lib/api";
 import { AxiomErrors } from "@/lib/errors/axiomErrors";
 
@@ -63,8 +63,16 @@ export async function POST(req: NextRequest) {
     const serviceEnabled = mgr.status()
       .filter((provider) => provider.configured && provider.provider !== "mock")
       .map((provider) => provider.provider);
+    const loadedPolicy = await loadWorkspaceAIProviderPolicyWithState(ctx.organizationId);
+    if (loadedPolicy.storageState !== "ready") {
+      throw AxiomErrors.policy(
+        "ai.provider_policy_unavailable",
+        "AI provider policy is not ready for this workspace. No generation was run.",
+        { storageState: loadedPolicy.storageState },
+      );
+    }
     const policy = resolveWorkspaceAIProviderPolicy({
-      stored: await loadWorkspaceAIProviderPolicy(ctx.organizationId),
+      stored: loadedPolicy.policy,
       serviceEnabled,
     });
     if (policy.allowedProviders.length === 0) {
