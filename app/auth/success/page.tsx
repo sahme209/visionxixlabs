@@ -14,17 +14,28 @@ const GITHUB_NOTICES: Record<string, { tone: "emerald" | "amber" | "rose"; title
   error: { tone: "rose", title: "GitHub setup could not be recorded", detail: "No connection was recorded. Try again from Integrations or contact the Axiom team." },
 };
 
+const SLACK_NOTICES: Record<string, { tone: "emerald" | "amber" | "rose"; title: string; detail: string }> = {
+  consent_recorded: { tone: "emerald", title: "Slack consent recorded", detail: "Axiom will not show Slack as active until it completes a live server-side validation." },
+  declined: { tone: "amber", title: "Slack setup was cancelled", detail: "No connection or provider access was recorded." },
+  invalid_state: { tone: "rose", title: "Slack setup link is no longer valid", detail: "No connection was recorded. Start a new setup from Integrations instead of reusing a previous link." },
+  unavailable: { tone: "rose", title: "Slack setup is unavailable", detail: "No connection was recorded because this workspace is not configured for Slack yet." },
+  exchange_failed: { tone: "rose", title: "Slack setup could not be completed", detail: "No connection was recorded. You can try again from Integrations." },
+  record_failed: { tone: "rose", title: "Slack consent could not be recorded", detail: "No connection was recorded. You can try again from Integrations." },
+};
+
 export default async function AuthSuccessPage({ searchParams }: { searchParams: Promise<{ integration?: string; status?: string }> }) {
   const context = await currentContext();
   if (!context.isAuthenticated) redirect("/auth/signin?callbackUrl=/auth/success");
   const params = await searchParams;
-  const githubNotice = params.integration === "github" ? GITHUB_NOTICES[params.status ?? ""] ?? null : null;
+  const integrationNotice = params.integration === "github"
+    ? GITHUB_NOTICES[params.status ?? ""] ?? null
+    : params.integration === "slack" ? SLACK_NOTICES[params.status ?? ""] ?? null : null;
   return (
     <AuthCompanionShell>
       <div className="mx-auto max-w-6xl">
         <AuthCompanionHeader email={context.email ?? null} />
 
-        {githubNotice && <div role="status" className={`mt-5 rounded-2xl border p-4 text-sm leading-6 ${githubNotice.tone === "emerald" ? "border-emerald-400/20 bg-emerald-400/[0.05] text-emerald-100" : githubNotice.tone === "amber" ? "border-amber-300/20 bg-amber-300/[0.05] text-amber-100" : "border-rose-300/20 bg-rose-300/[0.05] text-rose-100"}`}><p className="font-medium">{githubNotice.title}</p><p className="mt-1 text-zinc-400">{githubNotice.detail}</p></div>}
+        {integrationNotice && <div role="status" className={`mt-5 rounded-2xl border p-4 text-sm leading-6 ${integrationNotice.tone === "emerald" ? "border-emerald-400/20 bg-emerald-400/[0.05] text-emerald-100" : integrationNotice.tone === "amber" ? "border-amber-300/20 bg-amber-300/[0.05] text-amber-100" : "border-rose-300/20 bg-rose-300/[0.05] text-rose-100"}`}><p className="font-medium">{integrationNotice.title}</p><p className="mt-1 text-zinc-400">{integrationNotice.detail}</p></div>}
 
         <section className="grid gap-5 py-10 lg:grid-cols-[minmax(0,1.45fr)_minmax(18rem,0.72fr)] lg:py-14">
           <div className="rounded-3xl border border-white/[0.09] bg-white/[0.035] p-6 shadow-[0_24px_100px_rgba(0,0,0,0.18)] sm:p-9">
