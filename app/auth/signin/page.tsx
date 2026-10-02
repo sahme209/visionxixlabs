@@ -65,9 +65,8 @@ function SignInForm() {
     // Hard-stop when the provider isn't actually registered on the server.
     if (enabledProviders && !enabledProviders[provider]) {
       setError(
-        `${provider === "google" ? "Google" : "GitHub"} sign-in isn't configured on this deployment yet. ` +
-        `Set ${provider === "google" ? "GOOGLE_CLIENT_ID + GOOGLE_CLIENT_SECRET" : "GITHUB_CLIENT_ID + GITHUB_CLIENT_SECRET"} ` +
-        `+ NEXTAUTH_URL on the host to enable it.`
+        `${provider === "google" ? "Google" : "GitHub"} sign-in is not available for this workspace yet. ` +
+        "Use email sign-in or contact the Axiom team for access."
       );
       return;
     }
@@ -78,10 +77,10 @@ function SignInForm() {
       // When redirect: true succeeds, the browser navigates away. If it
       // returns instead (e.g. cancelled / popup blocked), surface a hint.
       if (res?.error) {
-        setError(`${provider} sign-in failed: ${res.error}`);
+        setError(`We couldn't complete ${provider === "google" ? "Google" : "GitHub"} sign-in. Try again or use email sign-in.`);
       }
-    } catch (err) {
-      setError(err instanceof Error ? err.message : `Couldn't start ${provider} sign-in.`);
+    } catch {
+      setError(`We couldn't start ${provider === "google" ? "Google" : "GitHub"} sign-in. Try again or use email sign-in.`);
     } finally {
       setOauthLoading(null);
     }
