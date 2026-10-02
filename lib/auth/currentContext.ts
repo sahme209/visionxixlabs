@@ -46,7 +46,6 @@ export async function currentContext(): Promise<CurrentContext> {
   const userId = sessionUserId ? id.user(sessionUserId) : id.user(userEmail);
   const orgId = deriveWorkspaceIdFromEmail(userEmail);
   const roles = await resolveWorkspaceRoles({
-    sessionRoles: (session.user as { roles?: string[] | null }).roles,
     userId: String(userId),
     organizationId: String(orgId),
   });
@@ -72,7 +71,6 @@ function deriveWorkspaceLabel(email: string): string {
 }
 
 async function resolveWorkspaceRoles(input: {
-  sessionRoles?: string[] | null;
   userId: string;
   organizationId: string;
 }): Promise<string[]> {
@@ -96,11 +94,11 @@ async function resolveWorkspaceRoles(input: {
     return [];
   }
 
-  // Session roles remain a compatibility path only when they are explicitly
-  // present. They are never synthesized for a new or unmapped identity.
-  return Array.isArray(input.sessionRoles) && input.sessionRoles.length > 0
-    ? input.sessionRoles
-    : [];
+  // Login-session claims are not authority. A revoked or deleted membership
+  // must take effect on the next request, rather than lasting until the
+  // session expires. New identities therefore have no privileged workspace
+  // role until the durable membership exists.
+  return [];
 }
 
 /** Require an authenticated context — throws when not signed in. */
