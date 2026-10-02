@@ -60,8 +60,17 @@ pub struct TrayDecisionRequest {
 static PENDING_CACHE: Mutex<Vec<PendingRunSummary>> = Mutex::new(Vec::new());
 
 pub fn build<R: Runtime>(app: &AppHandle<R>) -> tauri::Result<()> {
-    TrayIconBuilder::with_id(TRAY_ID)
-        .icon(app.default_window_icon().unwrap().clone())
+    let mut builder = TrayIconBuilder::with_id(TRAY_ID);
+    if let Some(icon) = app.default_window_icon() {
+        builder = builder.icon(icon.clone());
+    } else {
+        // The tray is an enhancement, not a launch prerequisite. Some
+        // platform packaging paths can omit the default window icon.
+        eprintln!("axiom: tray disabled because no default window icon is available");
+        return Ok(());
+    }
+
+    builder
         .icon_as_template(true) // macOS template icon — adapts to light/dark menubar.
         .tooltip("Axiom Agent")
         .menu(&build_menu(app, &[])?)
