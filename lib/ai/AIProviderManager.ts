@@ -71,7 +71,7 @@ export class AIProviderManager {
   /** Configured providers in declared priority, then Mock last. */
   private chain(opts?: { only?: AIProviderName; allowedProviders?: readonly AIProviderName[]; fallbackOrder?: readonly AIProviderName[] }): AIProvider[] {
     if (opts?.only) {
-      if (opts.allowedProviders && !opts.allowedProviders.includes(opts.only)) return [this.providers.get("mock")!];
+      if (opts.allowedProviders && !opts.allowedProviders.includes(opts.only)) return [];
       const p = this.providers.get(opts.only);
       return p ? [p] : [this.providers.get("mock")!];
     }
@@ -86,8 +86,10 @@ export class AIProviderManager {
       const p = this.providers.get(name);
       if (p && p.isConfigured()) out.push(p);
     }
-    // Mock always last so we never fail entirely.
-    out.push(this.providers.get("mock")!);
+    // Workspace-governed requests must fail honestly if every approved
+    // provider is unavailable. The deterministic mock remains available only
+    // to legacy/internal callers that did not provide a workspace policy.
+    if (!opts?.allowedProviders) out.push(this.providers.get("mock")!);
     return out;
   }
 

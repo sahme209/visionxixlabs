@@ -80,7 +80,7 @@ describe("AIProviderManager", () => {
       chain: (opts: { allowedProviders: readonly string[]; fallbackOrder: readonly string[] }) => Array<{ name: string }>;
     }).chain({ allowedProviders: ["groq"], fallbackOrder: ["groq"] });
 
-    expect(runtimeChain.map((provider) => provider.name)).toEqual(["groq", "mock"]);
+    expect(runtimeChain.map((provider) => provider.name)).toEqual(["groq"]);
   });
 
   it("does not honor a direct provider request outside the workspace allowlist", () => {
@@ -91,6 +91,6 @@ describe("AIProviderManager", () => {
       chain: (opts: { only: string; allowedProviders: readonly string[] }) => Array<{ name: string }>;
     }).chain({ only: "github_models", allowedProviders: ["groq"] });
 
-    expect(runtimeChain.map((provider) => provider.name)).toEqual(["mock"]);
+    expect(runtimeChain.map((provider) => provider.name)).toEqual([]);
   });
 });
