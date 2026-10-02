@@ -46,6 +46,13 @@ const LIMITATIONS = [
   "Backup/restore, retention, tenant isolation, and permission paths require deployment-specific verification before production use.",
 ] as const;
 
+const SECURITY_PRINCIPLES = [
+  ["Least authority", "Connections and service paths are scoped to the smallest authority the supported workflow needs. A recorded connection is not treated as live until it is validated."],
+  ["Human authority", "Approval, execution, validation, and closure remain distinct decisions. A convenient interface state is never used as proof that production authority exists."],
+  ["Credential boundaries", "Secrets stay server- or operating-system-bound where the supported path requires them. Browser and desktop surfaces do not expose provider credentials as product data."],
+  ["Evidence before claims", "Axiom keeps version, actor, decision, and validation context close to the release record so teams can review what happened instead of relying on a status label."],
+] as const;
+
 export default function SecurityPage() {
   return (
     <div className="axiom-canvas axiom-product-canvas relative min-h-screen overflow-hidden text-white">
@@ -83,6 +90,18 @@ export default function SecurityPage() {
               </article>
             );
           })}
+        </section>
+
+        <section className="mt-12 rounded-2xl border border-white/[0.08] bg-white/[0.025] p-6 md:p-8" aria-labelledby="security-principles-heading">
+          <p className="text-[10px] font-mono uppercase tracking-[0.2em] text-orange-200">Security posture</p>
+          <div className="mt-3 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+            <h2 id="security-principles-heading" className="max-w-2xl text-2xl font-semibold tracking-[-0.035em] text-zinc-100">Designed for regulated work. Verified one control path at a time.</h2>
+            <p className="max-w-md text-sm leading-6 text-zinc-400">These are product design principles, not a claim of military certification, HIPAA compliance, CMMC compliance, FedRAMP authorization, or a customer&apos;s completed risk assessment.</p>
+          </div>
+          <div className="mt-7 grid gap-3 md:grid-cols-2">
+            {SECURITY_PRINCIPLES.map(([title, body]) => <article key={title} className="rounded-xl border border-white/[0.07] bg-black/15 p-5"><h3 className="text-sm font-medium text-zinc-100">{title}</h3><p className="mt-2 text-sm leading-6 text-zinc-400">{body}</p></article>)}
+          </div>
+          <p className="mt-6 border-t border-white/[0.07] pt-5 text-sm leading-6 text-zinc-400">For healthcare and other regulated environments, Axiom must be deployed with the customer&apos;s required agreements, vendor review, identity controls, retention rules, incident process, and independent compliance evidence. Product controls can support that work; they do not replace it.</p>
         </section>
 
         <section className="mt-12 rounded-2xl border border-amber-500/20 bg-amber-500/[0.04] p-6 md:p-8">

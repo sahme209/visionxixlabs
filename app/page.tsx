@@ -12,15 +12,19 @@ import { DeploymentLifecycleDemo } from "@/components/marketing/DeploymentLifecy
 
 const phases = ["Window", "Scope", "Execution", "Validation", "Recovery"];
 
-const capabilities = [
-  "Tenant-scoped records",
-  "Versioned request history",
-  "Optimistic concurrency",
-  "Authored audit changes",
-  "Explicit supersession",
-  "Honest stale-data states",
-  "Approval-gated execution",
-  "Evidence-led closure",
+const playbookQuestions = [
+  {
+    label: "What is happening?",
+    copy: "The request, its playbook, and the evidence that is still missing stay together in one record.",
+  },
+  {
+    label: "What needs attention?",
+    copy: "Readiness, risk, authority, rollback, and validation remain distinct so no green state hides an open decision.",
+  },
+  {
+    label: "What changed?",
+    copy: "Versions, authors, approvals, and closure evidence make the operational story reviewable after the release.",
+  },
 ];
 
 const highlights = [
@@ -72,10 +76,13 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="border-y border-white/[0.06] bg-[#11110f] px-5 py-10 sm:px-8">
-          <p className="text-center text-xs text-zinc-500">Built-in controls used throughout the verified workflow</p>
-          <div className="mx-auto mt-6 grid max-w-5xl grid-cols-2 gap-2 sm:grid-cols-4">
-            {capabilities.map((item) => <div key={item} className="flex min-h-20 items-center justify-center rounded-xl border border-white/[0.06] bg-white/[0.025] px-3 text-center text-[11px] font-medium leading-4 text-zinc-300">{item}</div>)}
+        <section className="border-y border-white/[0.06] bg-[#11110f] px-5 py-12 sm:px-8">
+          <div className="mx-auto max-w-5xl">
+            <p className="text-[11px] uppercase tracking-[0.16em] text-zinc-500">One governed record, not another dashboard</p>
+            <h2 className="mt-3 max-w-2xl text-2xl font-medium tracking-[-0.04em] text-zinc-100 sm:text-3xl">The Playbook keeps the operator oriented.</h2>
+            <div className="mt-7 grid gap-3 md:grid-cols-3">
+              {playbookQuestions.map((item) => <article key={item.label} className="rounded-xl border border-white/[0.06] bg-white/[0.025] p-5"><h3 className="text-sm font-medium text-zinc-100">{item.label}</h3><p className="mt-2 text-sm leading-6 text-zinc-400">{item.copy}</p></article>)}
+            </div>
           </div>
         </section>
 

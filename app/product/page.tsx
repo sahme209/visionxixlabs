@@ -9,10 +9,11 @@ export const metadata: Metadata = {
 };
 
 const WORKFLOW = [
-  ["01", "Collect", "Bring repository, change, and environment context into one release record."],
-  ["02", "Assess", "Keep readiness signals, validation, and recovery planning visible before an approval."],
-  ["03", "Authorize", "Record the human decision and its evidence. Authority is never implied by a green screen."],
-  ["04", "Observe", "Keep post-release health distinct from a plan, a click, or an unverified connector."],
+  ["01", "Intent", "Bring the requested outcome, repository, environment, and accountable owner into one release record."],
+  ["02", "Playbook", "Keep the intended steps, readiness evidence, validation plan, and recovery context together before review."],
+  ["03", "Govern", "Surface risk and require the right human authority. A green state never substitutes for an approval."],
+  ["04", "Execute", "Guide the approved handoff while keeping a recorded plan distinct from a verified provider action."],
+  ["05", "Prove", "Preserve validation, evidence, and closure context so the release remains explainable after production."],
 ];
 
 const BOUNDARIES = [
@@ -43,7 +44,7 @@ export default function ProductPage() {
                 <div aria-hidden className="absolute inset-0 -z-10 bg-[linear-gradient(180deg,rgba(10,11,10,0.28),rgba(10,11,10,0.74))]" />
                 <div className="rounded-[1rem] border border-white/[0.08] bg-black/25 p-5 sm:p-6">
                   <div className="flex items-start justify-between gap-4"><div><p className="text-[10px] uppercase tracking-[0.16em] text-zinc-500">Release workspace</p><p className="mt-2 text-lg font-medium text-zinc-100">Production configuration rollout</p></div><span className="rounded-full border border-amber-200/20 bg-amber-200/[0.08] px-2.5 py-1 text-[10px] uppercase tracking-[0.12em] text-amber-100">Human approval</span></div>
-                  <div className="mt-7 grid gap-3 sm:grid-cols-3">{[["Scope", "Repository evidence"], ["Readiness", "Awaiting review"], ["Recovery", "Plan recorded"]].map(([label, value]) => <div key={label} className="rounded-xl border border-white/[0.07] bg-white/[0.035] p-3"><p className="text-[10px] uppercase tracking-[0.12em] text-zinc-600">{label}</p><p className="mt-2 text-sm text-zinc-300">{value}</p></div>)}</div>
+                  <div className="mt-7 grid gap-3 sm:grid-cols-3">{[["Intent", "Repository evidence"], ["Playbook", "Awaiting review"], ["Recovery", "Plan recorded"]].map(([label, value]) => <div key={label} className="rounded-xl border border-white/[0.07] bg-white/[0.035] p-3"><p className="text-[10px] uppercase tracking-[0.12em] text-zinc-600">{label}</p><p className="mt-2 text-sm text-zinc-300">{value}</p></div>)}</div>
                   <p className="mt-6 border-t border-white/[0.07] pt-4 text-xs leading-5 text-zinc-500">An illustrative record. Axiom separates recorded evidence from verified live state.</p>
                 </div>
               </div>
@@ -52,8 +53,8 @@ export default function ProductPage() {
         </section>
 
         <section className="mx-auto max-w-6xl px-5 py-20 sm:px-8 lg:py-28">
-          <div className="max-w-xl"><p className="text-[10px] uppercase tracking-[0.22em] text-emerald-300">The release, made legible</p><h2 className="mt-4 text-3xl font-medium tracking-[-0.045em] text-zinc-100 sm:text-5xl">Four distinct moments. No hidden assumptions.</h2></div>
-          <div className="mt-10 grid gap-3 md:grid-cols-2">{WORKFLOW.map(([number, title, detail]) => <article key={number} className="rounded-2xl border border-white/[0.08] bg-white/[0.025] p-6 sm:p-7"><p className="text-[10px] tracking-[0.16em] text-violet-300">{number}</p><h3 className="mt-8 text-xl font-medium tracking-[-0.03em] text-zinc-100">{title}</h3><p className="mt-3 max-w-md text-sm leading-6 text-zinc-500">{detail}</p></article>)}</div>
+          <div className="max-w-xl"><p className="text-[10px] uppercase tracking-[0.22em] text-emerald-300">The release, made legible</p><h2 className="mt-4 text-3xl font-medium tracking-[-0.045em] text-zinc-100 sm:text-5xl">Intent. Playbook. Govern. Execute. Prove.</h2></div>
+          <div className="mt-10 grid gap-3 md:grid-cols-2 xl:grid-cols-5">{WORKFLOW.map(([number, title, detail]) => <article key={number} className="rounded-2xl border border-white/[0.08] bg-white/[0.025] p-6 sm:p-7"><p className="text-[10px] tracking-[0.16em] text-violet-300">{number}</p><h3 className="mt-8 text-xl font-medium tracking-[-0.03em] text-zinc-100">{title}</h3><p className="mt-3 max-w-md text-sm leading-6 text-zinc-500">{detail}</p></article>)}</div>
         </section>
 
         <section className="relative isolate overflow-hidden border-y border-white/[0.07] px-5 py-20 sm:px-8 lg:px-12 lg:py-28">

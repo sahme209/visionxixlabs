@@ -138,6 +138,14 @@ const ROLE_TONE: Record<Capability["role"], string> = {
   memory:        "text-zinc-300 bg-white/[0.035] border-white/[0.1]",
 };
 
+const PLAYBOOK_RESPONSIBILITIES = [
+  ["01", "Understand the change", "Bring typed request, repository, environment, and signal context into a record people can review."],
+  ["02", "Prepare the playbook", "Keep intended steps, checks, recovery context, and evidence requirements close to the decision."],
+  ["03", "Expose risk and authority", "Make policy limits and human approval requirements visible before an action is considered."],
+  ["04", "Guide, do not pretend", "Separate planning and recorded handoff from a verified provider action or production result."],
+  ["05", "Prove what happened", "Preserve validation, recovery context, versions, and attributable evidence for later review."],
+] as const;
+
 export function CapabilitiesClient() {
   const [filter, setFilter] = useState<Capability["role"] | "all">("all");
 
@@ -186,10 +194,23 @@ export function CapabilitiesClient() {
         </motion.p>
       </section>
 
+      <section className="relative z-10 mx-auto max-w-6xl px-6 pb-12 md:px-10" aria-labelledby="playbook-responsibilities-heading">
+        <div className="rounded-2xl border border-white/[0.08] bg-black/20 p-6 sm:p-8">
+          <p className="mono-label">One governed Playbook</p>
+          <div className="mt-3 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+            <h2 id="playbook-responsibilities-heading" className="max-w-xl text-2xl font-medium tracking-[-0.04em] text-white sm:text-3xl">The parts of Axiom are useful only when they support one release decision.</h2>
+            <p className="max-w-sm text-sm leading-6 text-zinc-400">A capability is not a promise of autonomous execution or a live integration. It is a governed part of the workflow.</p>
+          </div>
+          <ol className="mt-8 grid gap-3 md:grid-cols-5">
+            {PLAYBOOK_RESPONSIBILITIES.map(([number, title, copy]) => <li key={number} className="rounded-xl border border-white/[0.07] bg-white/[0.025] p-4"><p className="font-mono text-[10px] tracking-[0.16em] text-violet-200">{number}</p><h3 className="mt-5 text-sm font-medium text-zinc-100">{title}</h3><p className="mt-2 text-xs leading-5 text-zinc-400">{copy}</p></li>)}
+          </ol>
+        </div>
+      </section>
+
       <section className="relative z-10 mx-auto max-w-6xl px-6 pb-12 md:px-10" aria-labelledby="operational-terms-heading">
-        <div className="rounded-2xl border border-white/[0.07] bg-white/[0.02] p-6 md:p-8">
-          <p className="mono-label">Operational terms</p>
-          <h2 id="operational-terms-heading" className="mt-3 text-2xl font-semibold tracking-tight text-white">What Axiom can honestly say today.</h2>
+        <details className="group rounded-2xl border border-white/[0.07] bg-white/[0.02] p-6 md:p-8">
+          <summary id="operational-terms-heading" className="cursor-pointer list-none text-lg font-medium text-white marker:hidden"><span className="flex items-center justify-between gap-4">Inspect control details <span className="text-sm font-normal text-zinc-500 transition group-open:rotate-45" aria-hidden>+</span></span></summary>
+          <p className="mt-3 max-w-2xl text-sm leading-6 text-zinc-400">These details are available for technical review. They do not claim live cloud mutation, a configured integration, or autonomous deployment.</p>
           <div className="mt-6 grid gap-4 md:grid-cols-2">
             <article className="rounded-xl border border-amber-500/20 bg-amber-500/[0.04] p-5">
               <h3 className="font-semibold text-amber-100">Blast radius limits</h3>
@@ -204,11 +225,14 @@ export function CapabilitiesClient() {
               </p>
             </article>
           </div>
-        </div>
+        </details>
       </section>
 
       {/* ===== FILTERS ===== */}
-      <section className="relative z-10 mx-auto max-w-6xl px-6 md:px-10 pb-6">
+      <details className="group relative z-10 mx-auto max-w-6xl px-6 pb-12 md:px-10">
+        <summary className="cursor-pointer list-none rounded-2xl border border-white/[0.07] bg-white/[0.02] px-6 py-5 text-lg font-medium text-zinc-100 marker:hidden"><span className="flex items-center justify-between gap-4">Explore the detailed capability inventory <span className="text-sm font-normal text-zinc-500 transition group-open:rotate-45" aria-hidden>+</span></span></summary>
+        <p className="mt-5 max-w-2xl text-sm leading-6 text-zinc-400">The underlying controls remain available for engineering review, without turning this page into a wall of implementation cards.</p>
+        <div className="mt-5">
         <div className="flex flex-wrap gap-2">
           {ROLE_FILTERS.map((f) => (
             <button
@@ -226,11 +250,10 @@ export function CapabilitiesClient() {
             </button>
           ))}
         </div>
-      </section>
+        </div>
 
       {/* ===== GRID ===== */}
-      <section className="relative z-10 mx-auto max-w-6xl px-6 md:px-10 pb-12">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+        <div className="mt-5 grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3">
           {visible.map((c, i) => (
             <motion.div
               key={c.kernel}
@@ -269,7 +292,7 @@ export function CapabilitiesClient() {
             </motion.div>
           ))}
         </div>
-      </section>
+      </details>
 
       {/* ===== CLOSER ===== */}
       <section className="relative z-10 mx-auto max-w-3xl px-6 md:px-10 py-16 text-center">

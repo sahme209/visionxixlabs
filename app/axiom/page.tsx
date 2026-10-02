@@ -1,6 +1,8 @@
 "use client";
 
+import { useEffect } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Footer } from "@/components/Footer";
 import {
   CloudIcon,
@@ -134,6 +136,21 @@ const TRUST_SIGNALS = [
 // ---------------------------------------------------------------------------
 
 export default function AxiomPage() {
+  const router = useRouter();
+  const legacySurfaceEnabled = false;
+
+  useEffect(() => {
+    if (!legacySurfaceEnabled) router.replace("/product");
+  }, [legacySurfaceEnabled, router]);
+
+  if (!legacySurfaceEnabled) {
+    return (
+      <main className="axiom-canvas flex min-h-screen items-center justify-center px-6 text-zinc-100">
+        <p className="text-sm text-zinc-400">Opening the current Axiom Agent product experience… <Link href="/product" className="text-orange-300 underline underline-offset-4">Continue</Link></p>
+      </main>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-[#09090b] text-white relative">
       <div className="absolute inset-0 bg-grid-mesh opacity-30 pointer-events-none" aria-hidden />

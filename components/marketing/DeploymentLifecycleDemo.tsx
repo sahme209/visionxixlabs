@@ -3,8 +3,10 @@
 import { useEffect, useState } from "react";
 import {
   ArchiveBoxIcon,
+  ClipboardDocumentListIcon,
   ClipboardDocumentCheckIcon,
   DocumentCheckIcon,
+  ExclamationTriangleIcon,
   PlayCircleIcon,
   ShieldCheckIcon,
   SparklesIcon,
@@ -12,26 +14,42 @@ import {
 
 const STAGES = [
   {
-    id: "request",
-    label: "Request",
-    title: "A governed release starts with a complete request.",
-    detail: "Scope, change window, validation plan, and recovery path remain attached to one versioned record.",
+    id: "intent",
+    label: "Intent",
+    title: "Start with the change the team is trying to make.",
+    detail: "Axiom keeps the outcome, affected scope, change window, and owner in one governed request instead of spreading context across tools.",
     status: "Revision 4 recorded",
     icon: ClipboardDocumentCheckIcon,
   },
   {
     id: "readiness",
     label: "Readiness",
-    title: "Required signals are checked before review.",
-    detail: "Development, production, validation, and rollback signals are visible as evidence—not assumed complete.",
-    status: "Ready for human approval",
+    title: "Make missing evidence visible before review.",
+    detail: "Development, production, validation, and recovery signals remain facts to check—not assumptions Axiom makes on the operator's behalf.",
+    status: "Signals need review",
     icon: SparklesIcon,
+  },
+  {
+    id: "playbook",
+    label: "Playbook",
+    title: "Turn the request into the plan people can follow.",
+    detail: "The runbook holds the intended steps, required evidence, validation plan, and rollback context together before anyone treats it as executable.",
+    status: "Playbook prepared",
+    icon: ClipboardDocumentListIcon,
+  },
+  {
+    id: "risk",
+    label: "Risk",
+    title: "Show the risk and recovery path in the decision.",
+    detail: "Axiom surfaces affected scope and recorded rollback context so an approver can assess the consequence of proceeding—not just the happy path.",
+    status: "Risk review required",
+    icon: ExclamationTriangleIcon,
   },
   {
     id: "approval",
     label: "Approval",
     title: "A human decides whether the change may proceed.",
-    detail: "Approval is an explicit record with an owner and rationale. It is never a decorative green light.",
+    detail: "Approval is an explicit record with an owner and rationale. It is never a decorative green light or a substitute for authority.",
     status: "Human gate required",
     icon: ShieldCheckIcon,
   },
@@ -50,6 +68,14 @@ const STAGES = [
     detail: "Technical and functional validation remain visible after the workflow runs, so the record stays honest.",
     status: "Evidence requested",
     icon: DocumentCheckIcon,
+  },
+  {
+    id: "evidence",
+    label: "Evidence",
+    title: "Keep the facts that supported the decision.",
+    detail: "Axiom preserves the relevant approval, validation notes, and recovery context so the release can be understood after the moment has passed.",
+    status: "Evidence requested",
+    icon: ArchiveBoxIcon,
   },
   {
     id: "closure",
@@ -134,11 +160,15 @@ export function DeploymentLifecycleDemo() {
             </div>
           </div>
 
-          <div className="mt-8 grid grid-cols-3 gap-2" aria-label="Lifecycle progress">
-            {STAGES.slice(0, 3).map((stage, index) => (
-              <div key={stage.id} className="rounded-lg border border-white/[0.06] bg-white/[0.025] p-3">
-                <p className="text-[10px] text-zinc-600">0{index + 1}</p>
-                <p className="mt-1.5 text-xs text-zinc-300">{stage.label}</p>
+          <div className="mt-8 grid grid-cols-3 gap-2" aria-label="Playbook story">
+            {[
+              ["Intent", "What is changing"],
+              ["Playbook", "How it will proceed"],
+              ["Proof", "What makes it true"],
+            ].map(([label, detail]) => (
+              <div key={label} className="rounded-lg border border-white/[0.06] bg-white/[0.025] p-3">
+                <p className="text-[10px] text-zinc-600">{label}</p>
+                <p className="mt-1.5 text-xs text-zinc-300">{detail}</p>
               </div>
             ))}
           </div>
