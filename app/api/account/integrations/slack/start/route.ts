@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { currentContext } from "@/lib/auth/currentContext";
 import { isAdminOrOwner } from "@/lib/auth/platformAdmin";
+import { loadAppEnv } from "@/lib/config/env";
 import { prisma } from "@/lib/db";
 import { buildSlackInstallUrl } from "@/lib/integrations/slack/slackOauth";
 import { startTenantIntegrationAuthorization, type TenantConnectionRepo } from "@/lib/integrations/tenantConnectionRepo";
@@ -10,7 +11,7 @@ export const runtime = "nodejs";
 
 /** Starts a tenant-bound Slack OAuth handoff. The browser receives only the
  * short-lived state needed by Slack; Axiom stores its digest, never the raw state. */
-export async function POST(request: NextRequest): Promise<Response> {
+export async function POST(_request: NextRequest): Promise<Response> {
   const context = await currentContext();
   if (!context.isAuthenticated || !context.organizationId || !context.userId) {
     return NextResponse.json({ ok: false, error: "auth_required" }, { status: 401 });
@@ -24,7 +25,7 @@ export async function POST(request: NextRequest): Promise<Response> {
     return NextResponse.json({ ok: false, error: "slack_not_configured" }, { status: 503 });
   }
 
-  const redirectUri = new URL("/api/integrations/slack/callback", request.url).toString();
+  const redirectUri = new URL("/api/integrations/slack/callback", loadAppEnv().appUrl).toString();
   try {
     const authorization = await startTenantIntegrationAuthorization(
       prisma as unknown as TenantConnectionRepo,

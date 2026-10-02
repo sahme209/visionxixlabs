@@ -2,6 +2,7 @@ import { createHash, randomBytes } from "node:crypto";
 import { NextResponse, type NextRequest } from "next/server";
 import { currentContext } from "@/lib/auth/currentContext";
 import { isAdminOrOwner } from "@/lib/auth/platformAdmin";
+import { loadAppEnv } from "@/lib/config/env";
 import { prisma } from "@/lib/db";
 import { startTenantIntegrationAuthorization, type TenantConnectionRepo } from "@/lib/integrations/tenantConnectionRepo";
 
@@ -15,7 +16,7 @@ function pkceChallenge(verifier: string) {
 /** Starts a Microsoft authorization-code flow with PKCE. Initial scope only
  * verifies the signed-in Microsoft identity; Teams message permissions remain
  * unavailable until separately reviewed and approved. */
-export async function POST(request: NextRequest): Promise<Response> {
+export async function POST(_request: NextRequest): Promise<Response> {
   const context = await currentContext();
   if (!context.isAuthenticated || !context.organizationId || !context.userId) {
     return NextResponse.json({ ok: false, error: "auth_required" }, { status: 401 });
@@ -30,7 +31,7 @@ export async function POST(request: NextRequest): Promise<Response> {
     return NextResponse.json({ ok: false, error: "teams_not_configured" }, { status: 503 });
   }
 
-  const redirectUri = new URL("/api/integrations/teams/callback", request.url).toString();
+  const redirectUri = new URL("/api/integrations/teams/callback", loadAppEnv().appUrl).toString();
   const verifier = randomBytes(48).toString("base64url");
   try {
     const authorization = await startTenantIntegrationAuthorization(

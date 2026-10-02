@@ -8,6 +8,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { currentContext } from "@/lib/auth/currentContext";
 import { isAdminOrOwner } from "@/lib/auth/platformAdmin";
+import { loadAppEnv } from "@/lib/config/env";
 import { prisma } from "@/lib/db";
 import {
   startTenantIntegrationAuthorization,
@@ -17,7 +18,7 @@ import {
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
-export async function POST(req: NextRequest): Promise<Response> {
+export async function POST(_request: NextRequest): Promise<Response> {
   const ctx = await currentContext();
   if (!ctx.isAuthenticated || !ctx.organizationId || !ctx.userId) {
     return NextResponse.json({ ok: false, error: "auth_required" }, { status: 401 });
@@ -31,7 +32,7 @@ export async function POST(req: NextRequest): Promise<Response> {
     return NextResponse.json({ ok: false, error: "github_not_configured" }, { status: 503 });
   }
 
-  const callbackUrl = new URL("/api/integrations/github/install-callback", req.url).toString();
+  const callbackUrl = new URL("/api/integrations/github/install-callback", loadAppEnv().appUrl).toString();
   try {
     const authorization = await startTenantIntegrationAuthorization(
       prisma as unknown as TenantConnectionRepo,
