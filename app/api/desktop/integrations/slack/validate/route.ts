@@ -28,7 +28,11 @@ async function audit(input: { organizationId: string; userId: string; action: "c
 /** Validates only that Slack accepts the stored tenant-bound token. It sends
  * no message, returns no provider data, and is the sole active-state transition. */
 export async function POST(request: NextRequest): Promise<NextResponse> {
-  const session = await resolveRequestDesktopSession(request, { requiredScope: "pipeline:read", route: "POST /api/desktop/integrations/slack/validate" });
+  const session = await resolveRequestDesktopSession(request, {
+    requiredScope: "pipeline:read",
+    route: "POST /api/desktop/integrations/slack/validate",
+    allowApiKey: false,
+  });
   if (!session) return NextResponse.json({ ok: false, error: "desktop_session_required" }, { status: 401 });
   const repo = prisma as unknown as SlackConnectionRepo;
   let connection: SlackConnectionRow | null;

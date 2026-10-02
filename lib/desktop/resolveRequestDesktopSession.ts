@@ -21,6 +21,9 @@ interface ResolveOptions {
     requiredScope: RequiredScope;
     route: string;
     requireActiveAccess?: boolean;
+    /** Shared provider-state transitions require a paired user session, not
+     * a reusable API key. Existing read routes retain API-key support. */
+    allowApiKey?: boolean;
 }
 
 /**
@@ -37,6 +40,7 @@ export async function resolveRequestDesktopSession(
 
     try {
         if (token.startsWith("vxlk_")) {
+            if (options.allowApiKey === false) return undefined;
             const sourceIp = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim()
                 ?? request.headers.get("x-real-ip")
                 ?? null;

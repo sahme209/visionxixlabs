@@ -31,7 +31,11 @@ async function audit(input: { organizationId: string; userId: string; action: "c
 /** Verifies the saved Microsoft identity using a minimal Graph read. No team,
  * channel, message, or provider identity data is returned to the desktop. */
 export async function POST(request: NextRequest): Promise<NextResponse> {
-  const session = await resolveRequestDesktopSession(request, { requiredScope: "pipeline:read", route: "POST /api/desktop/integrations/teams/validate" });
+  const session = await resolveRequestDesktopSession(request, {
+    requiredScope: "pipeline:read",
+    route: "POST /api/desktop/integrations/teams/validate",
+    allowApiKey: false,
+  });
   if (!session) return NextResponse.json({ ok: false, error: "desktop_session_required" }, { status: 401 });
   const repo = prisma as unknown as TeamsConnectionRepo;
   let connection: TeamsConnectionRow | null;
