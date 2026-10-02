@@ -197,6 +197,20 @@ interface GitHubInstallationHealthRepo {
   };
 }
 
+interface CloudSetupHealthRow {
+  provider: string;
+  status: string;
+}
+
+interface CloudSetupHealthRepo {
+  connectorSetupSession: {
+    findMany(args: {
+      where: { organizationId: string; provider: { in: string[] } };
+      select: { provider: true; status: true };
+    }): Promise<CloudSetupHealthRow[]>;
+  };
+}
+
 async function latestGitHubInstallation(organizationId: string): Promise<GitHubInstallationHealthRow | null> {
   try {
     return await (prisma as unknown as GitHubInstallationHealthRepo).gitHubInstallation.findFirst({
@@ -210,12 +224,42 @@ async function latestGitHubInstallation(organizationId: string): Promise<GitHubI
   }
 }
 
+async function cloudSetupStates(organizationId: string): Promise<Map<string, string>> {
+  try {
+    const rows = await (prisma as unknown as CloudSetupHealthRepo).connectorSetupSession.findMany({
+      where: { organizationId, provider: { in: ["aws", "azure", "gcp"] } },
+      select: { provider: true, status: true },
+    });
+    return new Map(rows.map((row) => [row.provider, row.status]));
+  } catch {
+    // A missing migration or unavailable store must not be upgraded to a
+    // connection claim. Every provider remains preview until revalidated.
+    return new Map();
+  }
+}
+
+function tenantProviderMode(configuredForLiveUse: boolean, setupStatus: string | undefined): AxiomOSSourceMode {
+  if (!configuredForLiveUse) return "preview";
+  if (setupStatus === "connected") return "live";
+  if (setupStatus === "needs_attention") return "partial_live";
+  if (setupStatus === "revoked" || setupStatus === "failed") return "blocked";
+  return "preview";
+}
+
+function tenantValidationRequirement(provider: "AWS" | "Azure" | "GCP", setupStatus: string | undefined, mode: AxiomOSSourceMode): string[] {
+  if (mode === "live") return [];
+  if (setupStatus === "needs_attention") return [`Revalidate this tenant's ${provider} connection before using its health as current evidence`];
+  if (setupStatus === "revoked" || setupStatus === "failed") return [`Restore and validate this tenant's ${provider} connection`];
+  return [`Complete this tenant's ${provider} connection validation`];
+}
+
 async function buildProviders(
   operatingLoops: OperatingLoopSummary[],
   generatedAt: string,
   organizationId: OrganizationId,
 ): Promise<ProviderPosture[]> {
   const env = loadAppEnv();
+  const setupStates = await cloudSetupStates(String(organizationId));
 
   // Index operating-loop summaries by provider so we can thread per-provider
   // findingCount (attentionRequiredCount) + lastScannedAt without re-running
@@ -237,41 +281,44 @@ async function buildProviders(
 
   // AWS
   const awsCfg = getAwsConfig();
-  const awsMode: AxiomOSSourceMode = awsCfg.mode === "live" ? "live" : awsCfg.mode === "preview" ? "preview" : "disabled";
+  const awsSetupStatus = setupStates.get("aws");
+  const awsMode = awsCfg.mode === "disabled"
+    ? "disabled"
+    : tenantProviderMode(awsCfg.mode === "live", awsSetupStatus);
   const aws: ProviderPosture = {
     provider: "aws",
     mode: awsMode,
-    headline: awsMode === "live" ? "Live read-only inventory (single + multi-region)" : "Preview snapshot — configure broker credentials for live scan",
+    headline: awsMode === "live" ? "Tenant-scoped read-only AWS inventory validated" : awsMode === "partial_live" ? "AWS connection needs revalidation" : "Preview snapshot — tenant validation required before live inventory",
     connectionStatus: awsMode === "live" ? "connected" : awsMode === "preview" ? "preview" : "blocked",
-    missingRequirements: listMissingAwsConfig(),
+    missingRequirements: [...listMissingAwsConfig(), ...tenantValidationRequirement("AWS", awsSetupStatus, awsMode)],
     ...loopExtras("aws"),
-    safeNextAction: awsMode === "live"
-      ? { label: "Run AWS scan", href: "/api/aws/scan" }
-      : { label: "Open AWS setup", href: "/docs/aws-setup" },
+    safeNextAction: { label: awsMode === "live" ? "Review AWS evidence" : "Open AWS setup", href: awsMode === "live" ? "/account/integrations" : "/docs/aws-setup" },
   };
 
   // Azure
   const azureCfg = getAzureConfig();
-  const azureMode: AxiomOSSourceMode = azureCfg.mode === "live" ? "live" : azureCfg.mode === "expanding" ? "expanding" : "preview";
+  const azureSetupStatus = setupStates.get("azure");
+  const azureMode = tenantProviderMode(azureCfg.mode === "live", azureSetupStatus);
   const azure: ProviderPosture = {
     provider: "azure",
     mode: azureMode,
-    headline: azureMode === "live" ? "Live validator + preview inventory" : "Preview foundation — configure AZURE_* for live validation",
-    connectionStatus: azureMode === "live" ? "connected" : azureMode === "expanding" ? "expanding" : "preview",
-    missingRequirements: azureMode === "live" ? [] : ["AZURE_TENANT_ID", "AZURE_CLIENT_ID", "AZURE_CLIENT_SECRET", "AZURE_SUBSCRIPTION_ID"],
+    headline: azureMode === "live" ? "Tenant-scoped Azure validation succeeded" : azureMode === "partial_live" ? "Azure connection needs revalidation" : "Preview foundation — tenant validation required before live use",
+    connectionStatus: azureMode === "live" ? "connected" : azureMode === "preview" ? "preview" : "blocked",
+    missingRequirements: [...(azureCfg.mode === "live" ? [] : ["AZURE_TENANT_ID", "AZURE_CLIENT_ID", "AZURE_CLIENT_SECRET", "AZURE_SUBSCRIPTION_ID"]), ...tenantValidationRequirement("Azure", azureSetupStatus, azureMode)],
     ...loopExtras("azure"),
     safeNextAction: { label: "Open Azure setup", href: "/docs/azure-setup" },
   };
 
   // GCP
   const gcpCfg = getGcpConfig();
-  const gcpMode: AxiomOSSourceMode = gcpCfg.mode === "live" ? "live" : gcpCfg.mode === "expanding" ? "expanding" : "preview";
+  const gcpSetupStatus = setupStates.get("gcp");
+  const gcpMode = tenantProviderMode(gcpCfg.mode === "live", gcpSetupStatus);
   const gcp: ProviderPosture = {
     provider: "gcp",
     mode: gcpMode,
-    headline: gcpMode === "live" ? "Live validator + preview inventory" : "Preview foundation — configure GCP credentials for live validation",
-    connectionStatus: gcpMode === "live" ? "connected" : gcpMode === "expanding" ? "expanding" : "preview",
-    missingRequirements: gcpMode === "live" ? [] : ["GCP_PROJECT_ID", "GCP_SERVICE_ACCOUNT_JSON  *or*  GCP_CLIENT_EMAIL + GCP_PRIVATE_KEY"],
+    headline: gcpMode === "live" ? "Tenant-scoped GCP validation succeeded" : gcpMode === "partial_live" ? "GCP connection needs revalidation" : "Preview foundation — tenant validation required before live use",
+    connectionStatus: gcpMode === "live" ? "connected" : gcpMode === "preview" ? "preview" : "blocked",
+    missingRequirements: [...(gcpCfg.mode === "live" ? [] : ["GCP_PROJECT_ID", "GCP_SERVICE_ACCOUNT_JSON  *or*  GCP_CLIENT_EMAIL + GCP_PRIVATE_KEY"]), ...tenantValidationRequirement("GCP", gcpSetupStatus, gcpMode)],
     ...loopExtras("gcp"),
     safeNextAction: { label: "Open GCP setup", href: "/docs/gcp-setup" },
   };
