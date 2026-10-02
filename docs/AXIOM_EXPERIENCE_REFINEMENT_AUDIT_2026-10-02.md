@@ -48,6 +48,21 @@ Refine the existing Axiom Agent product and marketing experience without replaci
 - Navigation or CTAs that take a signed-in user out of the companion without a clear boundary.
 - Visual drift that makes product, capabilities, pricing, resources, and account surfaces feel unrelated.
 
+## Deployment Rehearsal assessment
+
+Existing code includes dry-run planning, a Terraform plan runner, preview-only simulations, and container-related reference modules. Those are useful inputs, but they do **not** prove that Axiom currently provides an isolated Docker rehearsal environment for customer changes.
+
+Do not advertise Deployment Rehearsal until it has all of the following:
+
+1. An ephemeral, tenant-isolated execution environment with a documented lifecycle and destruction guarantee.
+2. Explicit image provenance, dependency/SBOM and vulnerability checks, resource limits, network egress policy, and no default production credential access.
+3. A controlled secret-injection mechanism with short-lived credentials, redaction, audit events, and revocation.
+4. A defined contract for Terraform plan, policy checks, dependency checks, rollback-artifact verification, and the exact limits of each check.
+5. Human approval before any rehearsal that can reach an external system, plus evidence and cleanup status written back to the Playbook.
+6. Provider-sandbox and failure-path tests proving that a rehearsal cannot become a production apply.
+
+Until then, use the truthful language **“review and dry-run planning”** rather than “rehearsal” or “sandboxed execution.”
+
 ## Refinement sequence
 
 1. Request-to-Closure homepage and Product narrative.

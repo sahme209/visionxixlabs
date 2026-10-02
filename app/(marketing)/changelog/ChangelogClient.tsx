@@ -14,15 +14,17 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 
 interface ChangelogEntry {
-  phases: string;              // "282-285"
+  date: string;
   title: string;
   summary: string;
   tag: "marketing" | "kernel" | "agent" | "platform" | "safety" | "ops";
   surface: "web" | "mobile" | "desktop" | "all";
 }
 
-// Newest first. Add to the top when shipping a new batch.
-const ENTRIES: readonly ChangelogEntry[] = [
+// Historical engineering notes are retained for repository context. They are
+// not a public capability catalogue: several predate the current desktop-first
+// product boundary and have not been re-verified as customer-facing workflows.
+export const HISTORICAL_ENGINEERING_NOTES = [
   {
     phases: "336-341",
     title: "Intent · anomaly · risk · secrets · compliance — five new kernels",
@@ -217,6 +219,39 @@ const ENTRIES: readonly ChangelogEntry[] = [
   },
 ];
 
+// Newest first. Public changelog entries describe shipped, user-relevant
+// behavior and why it matters. Do not add a source-only kernel here.
+const ENTRIES: readonly ChangelogEntry[] = [
+  {
+    date: "Sep 30, 2026",
+    title: "Secure browser pairing for Axiom Agent",
+    summary: "The browser companion can establish a short-lived, device-bound sign-in handoff to the installed Agent. This keeps identity in the browser while release operations remain in the desktop workspace.",
+    tag: "safety",
+    surface: "desktop",
+  },
+  {
+    date: "Sep 29, 2026",
+    title: "Revision history that preserves the decision",
+    summary: "Release records now preserve meaningful edits and attribution so operators can see what changed, who recorded it, and the context that existed at review time.",
+    tag: "safety",
+    surface: "desktop",
+  },
+  {
+    date: "Sep 28, 2026",
+    title: "Request-to-Playbook workflow",
+    summary: "The guided desktop flow keeps release scope, readiness, approval context, validation, recovery, and evidence connected instead of treating a successful trigger as a completed release.",
+    tag: "ops",
+    surface: "desktop",
+  },
+  {
+    date: "Sep 27, 2026",
+    title: "Explicit reconnect and stale-record handling",
+    summary: "Last-known records remain visible with their freshness state rather than being silently presented as live production truth after a connection changes or goes away.",
+    tag: "platform",
+    surface: "all",
+  },
+];
+
 const TAG_STYLE: Record<ChangelogEntry["tag"], string> = {
   marketing: "bg-fuchsia-500/15 text-fuchsia-200 border-fuchsia-500/30",
   kernel:    "bg-indigo-500/15 text-indigo-200 border-indigo-500/30",
@@ -272,9 +307,9 @@ export function ChangelogClient() {
           transition={{ delay: 0.2 }}
           className="mt-5 max-w-2xl text-[15px] text-zinc-400 leading-relaxed"
         >
-          A platform shipping every batch of 5 phases. Every entry below is a real
-          commit that landed in production. Approval-only-no-execution applies here
-          too — including to this page itself.
+          A concise record of shipped, user-relevant changes. Each entry explains
+          what changed and why it matters; detailed internal engineering history is
+          not presented as a live capability promise.
         </motion.p>
       </section>
 
@@ -292,7 +327,7 @@ export function ChangelogClient() {
             >
               <div className="flex flex-wrap items-center gap-2 mb-2">
                 <span className="text-[10px] font-mono uppercase tracking-widest text-zinc-500">
-                  phase {e.phases}
+                  {e.date}
                 </span>
                 <span className={["text-[10px] font-mono uppercase tracking-widest px-2 py-0.5 rounded-full border", TAG_STYLE[e.tag]].join(" ")}>
                   {e.tag}

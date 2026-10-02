@@ -24,48 +24,49 @@ const ENTRIES: readonly FaqEntry[] = [
   {
     category: "safety",
     q: "Can Axiom act on production on its own?",
-    a: "No. Approval-only-no-execution is a contract at the type level. Every proposal is staged as an approval packet and the operator either approves or rejects. The cockpit refuses to run an action that lacks a signed approval row.",
-    proof: { href: "/trust", label: "trust contract" },
+    a: "No. The current product is a governed, desktop-first release workspace. A Playbook can record the decision, required approvals, evidence, validation, and recovery context; it does not claim autonomous production deployment.",
+    proof: { href: "/product", label: "product boundaries" },
   },
   {
     category: "safety",
     q: "What's the kill switch?",
-    a: "A single tenant-charter toggle freezes all autonomy verdicts platform-wide. In-flight approvals are voided and the audit row records who pulled the switch. No cluster-wide reboot needed.",
-    proof: { href: "/dashboard/charter", label: "autonomy charter" },
+    a: "Axiom does not present a self-serve autonomy control as a released production safety mechanism. Sensitive authority remains in the installed Agent and external systems; teams should use their existing provider and change-management controls alongside Axiom.",
+    proof: { href: "/security", label: "security boundaries" },
   },
   {
     category: "safety",
     q: "Who's accountable when it makes a wrong call?",
-    a: "The approver who signed the packet. Every action carries a sha-256 rationale row with the council vote, the boundary verdict, and the human signature. Accountability is a row, not a vibe.",
-    proof: { href: "/dashboard/audit", label: "audit log" },
+    a: "The authorized human decision remains accountable. In supported workflows, Axiom keeps the release version, actor, decision, validation notes, and evidence context available for review instead of treating an AI recommendation as authority.",
+    proof: { href: "/product", label: "governed workflow" },
   },
   {
     category: "control",
     q: "How do I scope blast radius?",
-    a: "Boundary gates classify every proposed action into a closed-union severity tier. Tenant charters set which tier autonomy can touch — everything above that requires a multi-party approval packet.",
-    proof: { href: "/dashboard/automation-boundaries", label: "boundary catalog" },
+    a: "Keep affected scope, risk context, recovery planning, and required approvers in the Playbook before review. Axiom makes those facts visible; it does not replace your provider controls or change-management policy.",
+    proof: { href: "/product", label: "Playbook model" },
   },
   {
     category: "control",
     q: "Can I dry-run before approving?",
-    a: "Yes. The simulator sandboxes the proposal end-to-end and returns a verdict before the packet is ever assembled. Operators see the simulated outcome attached to the approval card.",
+    a: "Axiom supports review and dry-run planning where the supported workflow provides it. It does not currently claim a general isolated production-rehearsal environment, so a preview is never presented as proof that production will succeed.",
+    proof: { href: "/security", label: "current limits" },
   },
   {
     category: "data",
     q: "Where does my data live?",
-    a: "Tenant data stays inside the cloud accounts you wire up. Axiom never copies telemetry into a shared lake — it reads on demand and emits typed events back to your accounts. No vendor data plane.",
-    proof: { href: "/trust", label: "trust contract" },
+    a: "Data handling depends on the supported workflow and customer deployment. Axiom documents tenant scope, credential boundaries, and validation status; teams should complete their own data-flow, retention, and vendor review before connecting regulated systems.",
+    proof: { href: "/security", label: "security boundaries" },
   },
   {
     category: "data",
-    q: "How does GDPR data-subject access work?",
-    a: "The GDPR DSR handler enforces Article 12 timelines, assembles a per-subject packet across surfaces, and emits a durable audit row. The deletion path is the same flow with a different verdict.",
-    proof: { href: "/dashboard/compliance-packet", label: "compliance packet" },
+    q: "Is Axiom certified for regulated workloads?",
+    a: "No certification or customer compliance outcome is implied. Axiom is designed around practical controls such as least authority, human approval, credential boundaries, and evidence. Healthcare, defense, and other regulated deployments require their own agreements, assessments, and independent evidence.",
+    proof: { href: "/security", label: "security posture" },
   },
   {
     category: "data",
     q: "What about prompt injection?",
-    a: "All operator-bound LLM calls go through a closed-union provider router with PII redaction up front and an output validator on the return path. Untrusted context is quarantined into a read-only frame the agent kernel can't escape.",
+    a: "Axiom's governed provider path uses service-managed providers, workspace allowlists, and server-side routing controls. Model output is guidance, not deployment authority, and teams must avoid supplying sensitive information beyond their approved data-handling posture.",
   },
   {
     category: "cost",
@@ -81,14 +82,14 @@ const ENTRIES: readonly FaqEntry[] = [
   {
     category: "fit",
     q: "Does Axiom replace my engineers?",
-    a: "Axiom replaces the work nobody on the team actually wants — the on-call paging, the access-review tickets, the SOC 2 evidence gathering, the cross-tool causal timeline. Your engineers get the headroom to ship features.",
-    proof: { href: "/disciplines", label: "26 disciplines" },
+    a: "No. Axiom helps engineers and approvers make a release understandable and reviewable. It is designed to support human judgment, existing controls, and the operating systems teams already use.",
+    proof: { href: "/product", label: "how Axiom fits" },
   },
   {
     category: "fit",
     q: "Does it work alongside Cursor / Cline / Copilot?",
-    a: "Yes — Axiom is a cockpit, not an IDE. Use the editor copilot for code; use Axiom for the operator-facing surface that pairs with your whole company.",
-    proof: { href: "/compare", label: "side-by-side" },
+    a: "Yes. Coding tools help create the change; Axiom is intended to organize the governed release decision around that change. Integration availability is shown honestly per workspace and provider, rather than assumed.",
+    proof: { href: "/product", label: "product boundaries" },
   },
   {
     category: "fit",
@@ -254,9 +255,9 @@ export function FaqClient() {
           Question we didn't answer?
         </h3>
         <p className="mt-3 text-zinc-400 text-[14px]">
-          The fastest path to a real answer is a 30-minute call. We'll route to
-          the kernel module that proves the claim — or admit we haven't built it
-          yet.
+          The fastest path to a real answer is a 30-minute call. We&apos;ll explain
+          the supported workflow, the evidence behind it, and any limits that
+          still need to be verified.
         </p>
         <div className="mt-6 flex items-center justify-center gap-2">
           <Link
