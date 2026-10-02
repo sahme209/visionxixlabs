@@ -21,6 +21,8 @@ import { prisma } from "@/lib/db";
 import { getAIProviderManager } from "@/lib/ai/AIProviderManager";
 import { callProvider, type PreferredProvider } from "@/lib/ai/directProviderCall";
 import { loadWorkspaceAIProviderPolicyWithState, resolveWorkspaceAIProviderPolicy } from "@/lib/ai/workspaceProviderPolicy";
+import { checkWorkspaceAICredits } from "@/lib/billing/checkWorkspaceAICredits";
+import { recordAIUsageEvent } from "@/lib/billing/recordAIUsageEvent";
 import type { RationaleAiFetcher } from "./aiRationaleEnricherEngine";
 import {
   lookupCircuitState,
@@ -92,10 +94,30 @@ export function makeInstrumentedFetcher(opts: InstrumentedFetcherOptions): Ratio
     }
 
     // Provider call with timeout race.
-    let raw: { text: string; model: string; usage: { promptTokens?: number; completionTokens?: number; totalTokens?: number } | null };
+    let raw: {
+      text: string;
+      provider: string;
+      model: string;
+      usage: { promptTokens?: number; completionTokens?: number; totalTokens?: number } | null;
+    };
     try {
       const maxTokens = opts.maxTokens ?? 500;
       const temperature = opts.temperature ?? 0.2;
+      // The release-workflow path must not be an unmetered escape hatch from
+      // the browser generation route. A meter outage also fails closed so a
+      // governed workspace never produces an unaccounted provider call.
+      if (orgId) {
+        const creditDecision = await checkWorkspaceAICredits(
+          orgId,
+          0,
+          { failClosedOnUsageReadError: true },
+        ).catch(() => {
+          throw new Error("workspace_ai_credit_meter_unavailable");
+        });
+        if (creditDecision.kind === "block") {
+          throw new Error("workspace_ai_credit_pool_exhausted");
+        }
+      }
       // An unscoped legacy job may still use its explicit provider directly.
       // A workspace-scoped release must instead pass through the manager so
       // the persisted allowlist, model selection, and fallback rules apply.
@@ -160,6 +182,21 @@ export function makeInstrumentedFetcher(opts: InstrumentedFetcherOptions): Ratio
     }
 
     const latencyMs = now().getTime() - startMs;
+    // Keep the budget meter tenant-scoped without retaining prompt text,
+    // system instructions, provider credentials, or provider account data.
+    // Usage persistence is best effort; the preflight above is the safety
+    // boundary and must already have completed before the provider call.
+    if (orgId && typeof raw.provider === "string" && typeof raw.model === "string" && raw.usage) {
+      await recordAIUsageEvent({
+        organizationId: orgId,
+        provider: raw.provider,
+        model: raw.model,
+        inputTokens: raw.usage.promptTokens ?? 0,
+        outputTokens: raw.usage.completionTokens ?? 0,
+        triggeredBy: `system:${engineName}`,
+        metadata: { engineName, source: "releaseops.instrumented_fetcher" },
+      }).catch(() => undefined);
+    }
     await persistAiCallLog(repo, {
       organizationId: orgId,
       engineName,
