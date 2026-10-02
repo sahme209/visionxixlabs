@@ -27,6 +27,7 @@ interface InstallationView {
   installedAtIso: string;
   suspendedAtIso: string | null;
   revokedAtIso: string | null;
+  lastSeenAtIso: string | null;
 }
 
 interface StatusData {
@@ -86,6 +87,7 @@ export default function GitHubAppPage() {
 
   const data = resp?.ok ? resp.data : null;
   const errorBody = resp && !resp.ok ? resp : null;
+  const readValidated = data?.active?.lastSeenAtIso != null;
   const callbackParam = params.get("install");
   const requestParam = params.get("install_request");
   const installError = params.get("install_error");
@@ -93,7 +95,7 @@ export default function GitHubAppPage() {
   return (
     <div className="relative">
       <PageIntro
-        kicker={`ReleaseOps · GitHub App${data?.installed ? ` · connected as ${data.active?.accountLogin}` : ""}`}
+        kicker={`ReleaseOps · GitHub App${data?.installed ? ` · installation recorded for ${data.active?.accountLogin}` : ""}`}
         title={<>Connect once. <span className="text-zinc-500">Review before each release.</span></>}
         description="Install the Axiom GitHub App on only the repositories you select. Axiom uses read-only evidence to assemble release context; it does not deploy, change code, or expose a GitHub token."
         helps="This connection is the trusted source for pull requests, checks, workflows, and repository protections used in release review."
@@ -194,14 +196,18 @@ export default function GitHubAppPage() {
                 <span className={`text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border ${STATUS_CLASS[data.active.status]}`}>
                   {data.active.status}
                 </span>
-                <p className="text-[13px] font-semibold text-emerald-100">{data.active.accountLogin}</p>
+              <p className="text-[13px] font-semibold text-emerald-100">{data.active.accountLogin}</p>
                 <span className="text-[10px] font-mono text-zinc-500">type: {data.active.accountType}</span>
                 <span className="text-[10px] font-mono text-zinc-500">scope: {data.active.repositorySelection}</span>
                 <span className="text-[10px] font-mono text-zinc-500 ml-auto">
                   installed {new Date(data.active.installedAtIso).toLocaleString()}
                 </span>
               </div>
-              <p className="text-[11.5px] font-mono text-zinc-500">installation_id: {data.active.githubInstallationId}</p>
+              <p className="text-[12px] text-zinc-300 mt-3">
+                {readValidated
+                  ? "Read-only access was last validated by Axiom Agent."
+                  : "Installation is recorded. Open Axiom Agent to run the first read-only validation before it contributes release evidence."}
+              </p>
             </div>
           )}
 
