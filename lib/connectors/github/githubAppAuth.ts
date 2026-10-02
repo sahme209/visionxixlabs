@@ -185,9 +185,12 @@ export async function resolveGithubInstallationToken(
       return { ok: false, errorCode: "github.app_token_malformed", message: "GitHub returned no token / expiry." };
     }
     const expiresAt = Date.parse(body.expires_at);
+    if (!Number.isFinite(expiresAt) || expiresAt - Date.now() <= TOKEN_REFRESH_BUFFER_MS) {
+      return { ok: false, errorCode: "github.app_token_malformed", message: "GitHub returned an invalid or near-expiry installation token." };
+    }
     const nextCached: CachedInstallationToken = {
       token: body.token,
-      expiresAt: Number.isFinite(expiresAt) ? expiresAt : Date.now() + 50 * 60_000,
+      expiresAt,
       installationId,
       scopeKey,
     };
