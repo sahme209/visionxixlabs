@@ -9,7 +9,7 @@
  */
 
 import { describe, it, expect, beforeEach } from "vitest";
-import { clearUsage, readUsageTail, recordUsage, summarizeUsage } from "../AIUsageLogger";
+import { clearUsage, readUsageTail, readUsageTailForOrganization, recordUsage, summarizeUsage } from "../AIUsageLogger";
 
 describe("AIUsageLogger", () => {
   beforeEach(() => { clearUsage(); });
@@ -40,6 +40,13 @@ describe("AIUsageLogger", () => {
     const tail = readUsageTail();
     expect(tail[0].model).toBe("m2");
     expect(tail[1].model).toBe("m1");
+  });
+
+  it("does not return unscoped or another workspace's events", () => {
+    recordUsage({ provider: "mock", model: "unscoped", task: "generate_text", latencyMs: 1, status: "ok" });
+    recordUsage({ organizationId: "org-a", provider: "mock", model: "a", task: "generate_text", latencyMs: 1, status: "ok" });
+    recordUsage({ organizationId: "org-b", provider: "mock", model: "b", task: "generate_text", latencyMs: 1, status: "ok" });
+    expect(readUsageTailForOrganization("org-a").map((event) => event.model)).toEqual(["a"]);
   });
 
   it("bounded buffer caps growth at 500 events", () => {
