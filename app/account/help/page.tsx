@@ -4,10 +4,10 @@ import { AuthCompanionHeader } from "@/components/auth/AuthCompanionHeader";
 import { currentContext } from "@/lib/auth/currentContext";
 
 const HELP_ITEMS = [
-  { title: "Getting started", detail: "Install Axiom Agent, sign in through the browser, and begin with a complete deployment request.", href: "/docs/getting-started" },
-  { title: "Release workflow", detail: "See how readiness, approval, validation, recovery, and closure remain distinct in a governed release.", href: "/docs/releaseops" },
-  { title: "Security and permissions", detail: "Review tenant boundaries, approval authority, and how provider access stays least-privilege.", href: "/docs/security-model" },
-  { title: "Troubleshooting", detail: "Find the current desktop installation and connection guidance before changing a provider setup.", href: "/docs/troubleshooting" },
+  { title: "Getting started", detail: "Install Axiom Agent, sign in through the browser, and begin with a complete deployment request.", href: "/account/help/getting-started" },
+  { title: "Release workflow", detail: "See how readiness, approval, validation, recovery, and closure remain distinct in a governed release.", href: "/account/help/release-workflow" },
+  { title: "Security and permissions", detail: "Review tenant boundaries, approval authority, and how provider access stays least-privilege.", href: "/account/help/security" },
+  { title: "Troubleshooting", detail: "Find the current desktop installation and connection guidance before changing a provider setup.", href: "/account/help/troubleshooting" },
 ];
 
 export const dynamic = "force-dynamic";
