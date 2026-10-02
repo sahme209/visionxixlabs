@@ -31,7 +31,7 @@ export default function ProductPage() {
             <p className="text-[10px] uppercase tracking-[0.22em] text-violet-200">Axiom Agent · governed deployment operations</p>
             <div className="mt-6 grid gap-12 lg:grid-cols-[1fr_0.92fr] lg:items-end">
               <div>
-                <h1 className="max-w-3xl text-[clamp(2.8rem,5.2vw,5.7rem)] font-medium leading-[0.96] tracking-[-0.058em] text-zinc-100">A quiet place to make releases clear.</h1>
+                <h1 className="max-w-3xl text-4xl font-medium leading-[1.02] tracking-[-0.05em] text-zinc-100 sm:text-5xl lg:text-6xl">A quiet place to make releases clear.</h1>
                 <p className="mt-6 max-w-xl text-base leading-7 text-zinc-300 sm:text-lg">Axiom brings release facts, readiness, human approval, recovery context, and evidence into one governed record—without pretending a connector or a plan is already a safe deployment.</p>
                 <div className="mt-8 flex flex-col gap-3 sm:flex-row">
                   <Link href="/download" className="inline-flex min-h-12 items-center justify-center rounded-full bg-zinc-100 px-6 text-sm font-semibold text-zinc-950 transition hover:bg-white">Download Axiom Agent</Link>
