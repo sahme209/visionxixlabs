@@ -97,9 +97,10 @@ export function WorkspaceAISettingsForm() {
 
   function toggleWorkspaceAI(enabled: boolean) {
     setState("ready");
-    setPolicy((current) => enabled
-      ? { ...current, enabled: true }
-      : { enabled: false, allowedProviders: [], modelSelections: {}, fallbackOrder: [] });
+    // Keep the draft choices until Save. The request normalizes a disabled
+    // policy to an empty allowlist, so the server remains the enforcement
+    // boundary while an owner can reconsider without rebuilding the form.
+    setPolicy((current) => ({ ...current, enabled }));
   }
 
   return (
