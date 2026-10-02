@@ -22,8 +22,6 @@ import {
 import { createGitHubFetcher } from "@/lib/releaseops/githubFetcher";
 import { resolveGithubInstallationToken } from "@/lib/connectors/github/githubAppAuth";
 import { appendAuditEvent, type AuditEventRepo } from "@/lib/releaseops/auditEventResponder";
-import { createGitLabFetcher } from "@/lib/releaseops/gitlabFetcher";
-import { createAzureDevOpsFetcher } from "@/lib/releaseops/azureDevOpsFetcher";
 
 export const dynamic = "force-dynamic";
 
@@ -111,8 +109,12 @@ export async function POST(req: NextRequest) {
     }
     fetchers.github = createGitHubFetcher({ token: token.token });
   }
-  if (process.env.GITLAB_TOKEN) fetchers.gitlab = createGitLabFetcher();
-  if (process.env.AZURE_DEVOPS_PAT) fetchers.azuredevops = createAzureDevOpsFetcher();
+  // Do not fall back to a process-wide GitLab or Azure DevOps credential
+  // here. Unlike GitHub, those providers do not yet have an equivalent
+  // tenant-owned consent + validation lifecycle in this route. Leaving their
+  // fetchers absent makes the responder return an explicit, truthful
+  // "not configured for this workspace" result rather than allowing one
+  // workspace to consume a service-wide token.
 
   const r = await buildRepositorySyncResponse(
     prisma as unknown as RepositorySyncRepo,
