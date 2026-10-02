@@ -9,6 +9,7 @@ type LoadState = "loading" | "ready" | "migration_pending" | "unavailable" | "sa
 const PROVIDER_LABELS: Record<string, string> = {
   openai: "OpenAI GPT",
   anthropic: "Anthropic Claude",
+  xai: "xAI Grok",
   github_models: "GitHub Models",
   gemini: "Google Gemini",
   groq: "Groq",

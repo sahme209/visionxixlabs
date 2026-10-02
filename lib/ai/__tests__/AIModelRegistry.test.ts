@@ -24,6 +24,7 @@ describe("AIModelRegistry", () => {
   it("defaultModelFor prefers the 'preferred' tier", () => {
     expect(defaultModelFor("github_models")).toBe("openai/gpt-4o-mini");
     expect(defaultModelFor("groq")).toBe("llama-3.1-70b-versatile");
+    expect(defaultModelFor("xai")).toBe("grok-4.7");
     expect(defaultModelFor("ollama")).toBe("llama3.2");
     expect(defaultModelFor("mock")).toBe("mock-v1");
   });
@@ -33,9 +34,9 @@ describe("AIModelRegistry", () => {
     expect(isKnownModel("groq", "definitely-not-a-real-model")).toBe(false);
   });
 
-  it("PROVIDER_PRIORITY lists exactly the 9 providers in the documented order", () => {
+  it("PROVIDER_PRIORITY lists every supported provider in the documented order", () => {
     expect(PROVIDER_PRIORITY).toEqual([
-      "github_models", "ollama", "lm_studio", "groq",
+      "openai", "anthropic", "xai", "github_models", "ollama", "lm_studio", "groq",
       "hugging_face", "openrouter", "gemini", "cloudflare", "mock",
     ]);
   });

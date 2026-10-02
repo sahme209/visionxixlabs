@@ -2,10 +2,9 @@
  * AIProvider — single contract every provider implements.
  *
  * Design intent:
- *   - Free / free-to-start providers only by default (GitHub Models,
- *     Ollama, LM Studio, Groq, Hugging Face, OpenRouter free, Gemini
- *     free, Cloudflare Workers AI free). Paid OpenAI / Anthropic SDKs
- *     are deliberately NOT used.
+ *   - Service-managed and local providers are wired through the same
+ *     server-only contract. A workspace can use only providers the service
+ *     has configured and its owner has explicitly allowed.
  *   - Provider implementations are pure adapters around HTTP — no
  *     vendor SDKs, so swapping or removing one provider doesn't ripple
  *     into the dependency graph.
@@ -20,6 +19,7 @@
 export type AIProviderName =
   | "openai"
   | "anthropic"
+  | "xai"
   | "github_models"
   | "ollama"
   | "lm_studio"
@@ -31,7 +31,7 @@ export type AIProviderName =
   | "mock";
 
 export const AI_PROVIDER_NAMES = [
-  "openai", "anthropic", "github_models", "ollama", "lm_studio", "groq", "hugging_face",
+  "openai", "anthropic", "xai", "github_models", "ollama", "lm_studio", "groq", "hugging_face",
   "openrouter", "gemini", "cloudflare", "mock",
 ] as const satisfies readonly AIProviderName[];
 
