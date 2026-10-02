@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { redirect } from "next/navigation";
 import Link from "next/link";
 import { DocHeader, DocSection, Callout, TrustGrid, DocFooterNav, DocFeedback } from "@/components/docs/DocPrimitives";
 
@@ -8,6 +9,10 @@ export const metadata: Metadata = {
 };
 
 export default function PermissionsModelPage() {
+  // The former page describes unverified cloud-execution behavior. Keep the
+  // stable URL, but send visitors to the current, evidence-backed boundary.
+  redirect("/docs/security-model");
+
   return (
     <>
       <DocHeader
