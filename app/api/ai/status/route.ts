@@ -24,10 +24,12 @@ export async function GET(req: NextRequest) {
     const mgr = getAIProviderManager();
     const status = mgr.status();
     const env = mgr.envSnapshot();
-    const active = status.find((s) => s.configured) ?? status[status.length - 1]; // mock if nothing else
+    // The mock adapter exists only for legacy/internal callers. Never present
+    // it as an active service route to an operator.
+    const active = status.find((provider) => provider.provider !== "mock" && provider.configured) ?? null;
     const data = {
-      activeProvider: active.provider,
-      activeModel: active.defaultModel,
+      activeProvider: active?.provider ?? null,
+      activeModel: active?.defaultModel ?? null,
       priority: PROVIDER_PRIORITY,
       providers: status.map((s) => ({
         ...s,

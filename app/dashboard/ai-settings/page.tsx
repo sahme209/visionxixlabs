@@ -35,7 +35,7 @@ interface AIEnvSnapshot {
   CLOUDFLARE_API_TOKEN: boolean; OLLAMA_BASE_URL: string; LM_STUDIO_BASE_URL: string;
 }
 interface StatusResp {
-  activeProvider: ProviderName; activeModel: string;
+  activeProvider: ProviderName | null; activeModel: string | null;
   priority: ProviderName[]; providers: ProviderRow[]; env: AIEnvSnapshot;
 }
 interface HealthRow {
@@ -146,10 +146,10 @@ export default function AISettingsPage() {
           <div className="rounded-2xl border border-indigo-500/[0.18] bg-indigo-500/[0.04] p-5 mb-6">
             <p className="text-[10px] font-mono uppercase tracking-widest text-indigo-300 mb-1">Active</p>
             <div className="flex items-center gap-3 flex-wrap">
-              <span className="text-[16px] font-semibold text-white">{LABEL[status.activeProvider]}</span>
-              <span className="text-[11px] font-mono text-zinc-300 bg-white/[0.04] border border-white/[0.06] rounded-full px-2 py-0.5">
+              <span className="text-[16px] font-semibold text-white">{status.activeProvider ? LABEL[status.activeProvider] : "No live provider configured"}</span>
+              {status.activeModel && <span className="text-[11px] font-mono text-zinc-300 bg-white/[0.04] border border-white/[0.06] rounded-full px-2 py-0.5">
                 model: {status.activeModel}
-              </span>
+              </span>}
             </div>
           </div>
 
