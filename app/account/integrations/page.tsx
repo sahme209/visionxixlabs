@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { AuthCompanionHeader } from "@/components/auth/AuthCompanionHeader";
 import { AuthCompanionShell } from "@/components/auth/AuthCompanionShell";
 import { GitHubConsentButton } from "@/components/auth/GitHubConsentButton";
+import { GitHubDisconnectButton } from "@/components/auth/GitHubDisconnectButton";
 import { IntegrationDisconnectButton } from "@/components/auth/IntegrationDisconnectButton";
 import { SlackConsentButton } from "@/components/auth/SlackConsentButton";
 import { TeamsConsentButton } from "@/components/auth/TeamsConsentButton";
@@ -11,10 +12,10 @@ import { isAdminOrOwner } from "@/lib/auth/platformAdmin";
 import { visibleTenantConnectionStatus } from "@/lib/integrations/tenantConnectionState";
 import { prisma } from "@/lib/db";
 
-interface GitHubInstallationRow { status: string; lastSeenAt: Date | null }
+interface GitHubInstallationRow { id: string; status: string; lastSeenAt: Date | null }
 interface CollaborationConnectionRow { provider: string; status: string; lastValidatedAt: Date | null }
 interface IntegrationStatusRepo {
-  gitHubInstallation: { findFirst(args: { where: { organizationId: string; status: { in: string[] } }; orderBy: { installedAt: "desc" }; select: { status: true; lastSeenAt: true } }): Promise<GitHubInstallationRow | null> };
+  gitHubInstallation: { findFirst(args: { where: { organizationId: string; status: { in: string[] } }; orderBy: { installedAt: "desc" }; select: { id: true; status: true; lastSeenAt: true } }): Promise<GitHubInstallationRow | null> };
   tenantIntegrationConnection: { findMany(args: { where: { organizationId: string; provider: { in: string[] } }; select: { provider: true; status: true; lastValidatedAt: true } }): Promise<CollaborationConnectionRow[]> };
 }
 
@@ -29,15 +30,19 @@ export default async function AccountIntegrationsPage() {
   if (!context.isAuthenticated || !context.email) redirect("/auth/signin?callbackUrl=/account/integrations");
   const canManageConnections = isAdminOrOwner({ email: context.email, roles: context.roles });
   let githubState = "Not connected";
+  let githubInstallationRowId: string | null = null;
   let slackState = "Not connected";
   let teamsState = "Not connected";
   try {
     const repo = prisma as unknown as IntegrationStatusRepo;
     const [installation, collaboration] = await Promise.all([
-      repo.gitHubInstallation.findFirst({ where: { organizationId: context.organizationId ?? "", status: { in: ["active", "suspended", "revoked"] } }, orderBy: { installedAt: "desc" }, select: { status: true, lastSeenAt: true } }),
+      repo.gitHubInstallation.findFirst({ where: { organizationId: context.organizationId ?? "", status: { in: ["active", "suspended", "revoked"] } }, orderBy: { installedAt: "desc" }, select: { id: true, status: true, lastSeenAt: true } }),
       repo.tenantIntegrationConnection.findMany({ where: { organizationId: context.organizationId ?? "", provider: { in: ["slack", "teams"] } }, select: { provider: true, status: true, lastValidatedAt: true } }),
     ]);
-    if (installation) githubState = installation.status === "active" ? (installation.lastSeenAt ? "Read-only validated" : "Installation recorded") : readableState(installation.status);
+    if (installation) {
+      githubInstallationRowId = installation.id;
+      githubState = installation.status === "active" ? (installation.lastSeenAt ? "Read-only validated" : "Installation recorded") : readableState(installation.status);
+    }
     const stateFor = (provider: "slack" | "teams") => {
       const connection = collaboration.find((item) => item.provider === provider);
       return connection ? readableState(visibleTenantConnectionStatus(connection)) : "Not connected";
@@ -68,7 +73,8 @@ export default async function AccountIntegrationsPage() {
             <article key={connection.name} className="rounded-2xl border border-white/[0.08] bg-white/[0.025] p-5 sm:p-6">
               <div className="flex items-start justify-between gap-3"><h2 className="text-lg font-medium text-zinc-100">{connection.name}</h2><span className="rounded-full border border-white/[0.1] bg-black/10 px-2.5 py-1 text-[10px] uppercase tracking-[0.12em] text-zinc-400">{connection.state}</span></div>
               <p className="mt-3 text-sm leading-6 text-zinc-500">{connection.detail}</p>
-              {canManageConnections && connection.name === "GitHub" && githubState !== "Read-only validated" && <GitHubConsentButton />}
+              {canManageConnections && connection.name === "GitHub" && (githubState === "Not connected" || githubState === "Revoked") && <GitHubConsentButton />}
+              {canManageConnections && connection.name === "GitHub" && githubInstallationRowId && githubState !== "Revoked" && <GitHubDisconnectButton installationRowId={githubInstallationRowId} />}
               {canManageConnections && connection.control === "slack" && slackState !== "Active" && <SlackConsentButton />}
               {canManageConnections && connection.control === "teams" && teamsState !== "Active" && <TeamsConsentButton />}
               {canManageConnections && connection.control === "slack" && slackState !== "Not connected" && slackState !== "Revoked" && <IntegrationDisconnectButton provider="slack" label="Slack" />}
