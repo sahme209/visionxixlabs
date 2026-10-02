@@ -24,6 +24,14 @@ export interface RegisteredModel {
 }
 
 const MODELS: Record<AIProviderName, RegisteredModel[]> = {
+  openai: [
+    { id: "gpt-4o", label: "GPT-4o", tier: "preferred", family: "openai", freeNote: "Service-managed OpenAI access" },
+    { id: "gpt-4o-mini", label: "GPT-4o mini", tier: "fast", family: "openai", freeNote: "Service-managed OpenAI access" },
+  ],
+  anthropic: [
+    { id: "claude-sonnet-4-20250514", label: "Claude Sonnet", tier: "preferred", family: "anthropic", freeNote: "Service-managed Anthropic access" },
+    { id: "claude-3-5-haiku-latest", label: "Claude Haiku", tier: "fast", family: "anthropic", freeNote: "Service-managed Anthropic access" },
+  ],
   github_models: [
     { id: "openai/gpt-4o-mini",                label: "GPT-4o mini",                 tier: "preferred", family: "openai",   freeNote: "GitHub Models free tier" },
     { id: "openai/gpt-4o",                     label: "GPT-4o",                      tier: "balanced",  family: "openai",   freeNote: "GitHub Models free tier (limits apply)" },
@@ -103,6 +111,6 @@ export function isKnownModel(provider: AIProviderName, modelId: string): boolean
 
 /** Provider declaration order = fallback priority (ties broken by index). */
 export const PROVIDER_PRIORITY: AIProviderName[] = [
-  "github_models", "ollama", "lm_studio", "groq",
+  "openai", "anthropic", "github_models", "ollama", "lm_studio", "groq",
   "hugging_face", "openrouter", "gemini", "cloudflare", "mock",
 ];

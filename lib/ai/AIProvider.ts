@@ -18,6 +18,8 @@
  */
 
 export type AIProviderName =
+  | "openai"
+  | "anthropic"
   | "github_models"
   | "ollama"
   | "lm_studio"
@@ -29,7 +31,7 @@ export type AIProviderName =
   | "mock";
 
 export const AI_PROVIDER_NAMES = [
-  "github_models", "ollama", "lm_studio", "groq", "hugging_face",
+  "openai", "anthropic", "github_models", "ollama", "lm_studio", "groq", "hugging_face",
   "openrouter", "gemini", "cloudflare", "mock",
 ] as const satisfies readonly AIProviderName[];
 

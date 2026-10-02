@@ -26,11 +26,15 @@ import { HuggingFaceProvider } from "./providers/HuggingFaceProvider";
 import { OpenRouterProvider } from "./providers/OpenRouterProvider";
 import { GeminiProvider } from "./providers/GeminiProvider";
 import { CloudflareAIProvider } from "./providers/CloudflareAIProvider";
+import { AnthropicProvider } from "./providers/AnthropicProvider";
 import { MockAIProvider } from "./providers/MockAIProvider";
+import { OpenAIProvider } from "./providers/OpenAIProvider";
 
 let SINGLETON: AIProviderManager | null = null;
 
 export interface AIEnvSnapshot {
+  OPENAI_API_KEY: boolean;
+  ANTHROPIC_API_KEY: boolean;
   GITHUB_TOKEN: boolean;
   GROQ_API_KEY: boolean;
   HUGGINGFACE_API_KEY: boolean;
@@ -56,6 +60,8 @@ export class AIProviderManager {
   constructor() {
     const env = process.env;
     this.providers = new Map<AIProviderName, AIProvider>([
+      ["openai",        new OpenAIProvider({ apiKey: env.OPENAI_API_KEY, modelName: env.OPENAI_MODEL })],
+      ["anthropic",     new AnthropicProvider({ apiKey: env.ANTHROPIC_API_KEY, modelName: env.ANTHROPIC_MODEL })],
       ["github_models", new GitHubModelsProvider({ token: env.GITHUB_TOKEN, modelName: env.GITHUB_MODEL_NAME })],
       ["ollama",        new OllamaProvider({ baseUrl: env.OLLAMA_BASE_URL })],
       ["lm_studio",     new LMStudioProvider({ baseUrl: env.LM_STUDIO_BASE_URL })],
@@ -108,6 +114,8 @@ export class AIProviderManager {
   envSnapshot(): AIEnvSnapshot {
     const e = process.env;
     return {
+      OPENAI_API_KEY: Boolean(e.OPENAI_API_KEY),
+      ANTHROPIC_API_KEY: Boolean(e.ANTHROPIC_API_KEY),
       GITHUB_TOKEN: Boolean(e.GITHUB_TOKEN),
       GROQ_API_KEY: Boolean(e.GROQ_API_KEY),
       HUGGINGFACE_API_KEY: Boolean(e.HUGGINGFACE_API_KEY),

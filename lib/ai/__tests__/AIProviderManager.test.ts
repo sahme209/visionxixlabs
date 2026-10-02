@@ -13,6 +13,8 @@ describe("AIProviderManager", () => {
   beforeEach(() => {
     // Wipe every relevant env var so we test the "nothing configured" path.
     delete process.env.GITHUB_TOKEN;
+    delete process.env.OPENAI_API_KEY;
+    delete process.env.ANTHROPIC_API_KEY;
     delete process.env.GROQ_API_KEY;
     delete process.env.HUGGINGFACE_API_KEY;
     delete process.env.OPENROUTER_API_KEY;
@@ -37,7 +39,11 @@ describe("AIProviderManager", () => {
     const mgr = getAIProviderManager();
     const rows = mgr.status();
     const github = rows.find((r) => r.provider === "github_models")!;
+    const openai = rows.find((r) => r.provider === "openai")!;
+    const anthropic = rows.find((r) => r.provider === "anthropic")!;
     const groq = rows.find((r) => r.provider === "groq")!;
+    expect(openai.configured).toBe(false);
+    expect(anthropic.configured).toBe(false);
     expect(github.configured).toBe(false);
     expect(groq.configured).toBe(false);
   });
@@ -49,11 +55,17 @@ describe("AIProviderManager", () => {
 
   it("envSnapshot returns booleans, never the secret value", () => {
     process.env.GITHUB_TOKEN = "ghp_super_secret_token_value";
+    process.env.OPENAI_API_KEY = "openai_super_secret_value";
+    process.env.ANTHROPIC_API_KEY = "anthropic_super_secret_value";
     _resetAIProviderManagerForTests();
     const snap = getAIProviderManager().envSnapshot();
     expect(snap.GITHUB_TOKEN).toBe(true);
+    expect(snap.OPENAI_API_KEY).toBe(true);
+    expect(snap.ANTHROPIC_API_KEY).toBe(true);
     // No raw secret anywhere in the snapshot
     expect(JSON.stringify(snap)).not.toContain("ghp_super_secret_token_value");
+    expect(JSON.stringify(snap)).not.toContain("openai_super_secret_value");
+    expect(JSON.stringify(snap)).not.toContain("anthropic_super_secret_value");
   });
 
   it("generateText falls back to Mock when nothing real is configured", async () => {
@@ -65,10 +77,10 @@ describe("AIProviderManager", () => {
     expect(r.text).toContain("[MOCK");
   }, 60_000);
 
-  it("priority list places github_models first and mock last", () => {
+  it("priority list places governed cloud providers first and mock last", () => {
     const mgr = getAIProviderManager();
     const rows = mgr.status();
-    expect(rows[0].provider).toBe("github_models");
+    expect(rows[0].provider).toBe("openai");
     expect(rows[rows.length - 1].provider).toBe("mock");
   });
 
