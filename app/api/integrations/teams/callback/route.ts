@@ -84,7 +84,10 @@ export async function GET(request: NextRequest): Promise<Response> {
   try {
     const existing = await connections.findUnique({ where: { organizationId_provider: { organizationId, provider: "teams" } }, select: { id: true } });
     const connectionId = existing?.id ?? randomUUID();
-    const encryptedCredential = encryptScopedCredential(JSON.stringify({ accessToken: token.access_token, refreshToken: token.refresh_token ?? null, expiresIn: token.expires_in ?? null }), connectionCredentialContext({ organizationId, provider: "teams", connectionId }));
+    const expiresAt = typeof token.expires_in === "number" && Number.isFinite(token.expires_in) && token.expires_in > 0
+      ? Date.now() + token.expires_in * 1000
+      : null;
+    const encryptedCredential = encryptScopedCredential(JSON.stringify({ accessToken: token.access_token, refreshToken: token.refresh_token ?? null, expiresAt }), connectionCredentialContext({ organizationId, provider: "teams", connectionId }));
     const data = { status: "pending", encryptedCredential, externalAccountId: tenant, scopesJson: grantedScopes, consentedByUserId: authorization.attempt.initiatedByUserId };
     if (existing) await connections.update({ where: { organizationId_provider: { organizationId, provider: "teams" } }, data: { ...data, consentedAt: new Date(), lastValidatedAt: null, revokedAt: null } });
     else await connections.create({ data: { id: connectionId, organizationId, provider: "teams", ...data } });
