@@ -10,6 +10,7 @@ export function AuthCompanionHeader({ email }: { email: string | null }) {
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const mobileMenuButton = useRef<HTMLButtonElement>(null);
+  const mobileMenu = useRef<HTMLDivElement>(null);
   const navigation = [
     { href: "/auth/success", label: "Overview" },
     { href: "/account/integrations", label: "Integrations" },
@@ -23,13 +24,39 @@ export function AuthCompanionHeader({ email }: { email: string | null }) {
 
   useEffect(() => {
     if (!mobileMenuOpen) return;
+
+    const previousBodyOverflow = document.body.style.overflow;
+    const previousRootOverflow = document.documentElement.style.overflow;
     const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key !== "Escape") return;
-      setMobileMenuOpen(false);
-      requestAnimationFrame(() => mobileMenuButton.current?.focus());
+      if (event.key === "Escape") {
+        setMobileMenuOpen(false);
+        requestAnimationFrame(() => mobileMenuButton.current?.focus());
+        return;
+      }
+      if (event.key !== "Tab") return;
+      const focusable = mobileMenu.current?.querySelectorAll<HTMLElement>(
+        'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])',
+      );
+      if (!focusable?.length) return;
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
     };
+    document.body.style.overflow = "hidden";
+    document.documentElement.style.overflow = "hidden";
     document.addEventListener("keydown", onKeyDown);
-    return () => document.removeEventListener("keydown", onKeyDown);
+    requestAnimationFrame(() => mobileMenu.current?.querySelector<HTMLElement>("a[href]")?.focus());
+    return () => {
+      document.body.style.overflow = previousBodyOverflow;
+      document.documentElement.style.overflow = previousRootOverflow;
+      document.removeEventListener("keydown", onKeyDown);
+    };
   }, [mobileMenuOpen]);
 
   function closeMobileMenu() {
@@ -93,7 +120,7 @@ export function AuthCompanionHeader({ email }: { email: string | null }) {
       </div>
 
       {mobileMenuOpen && (
-        <div id="axiom-companion-menu" className="mt-3 border-t border-white/[0.07] pt-3 sm:hidden">
+        <div ref={mobileMenu} id="axiom-companion-menu" role="dialog" aria-modal="true" aria-label="Signed-in companion navigation" className="mt-3 border-t border-white/[0.07] pt-3 sm:hidden">
           <nav aria-label="Signed-in companion navigation" className="grid grid-cols-2 gap-2">
             {navigation.map((item) => {
               const active = pathname === item.href || (item.href === "/account/help" && pathname.startsWith("/account/help/"));
