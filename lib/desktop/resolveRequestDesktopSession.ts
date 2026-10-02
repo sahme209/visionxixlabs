@@ -88,7 +88,7 @@ export async function resolveRequestDesktopSession(
         const { sessionId } = verifyDesktopToken(token);
         const session = await resolveActiveSession(sessionId);
         if (!session) return undefined;
-        if (options.requireWorkspaceAdmin && !(await hasWorkspaceAdminRole(String(session.userId), String(session.organizationId))) {
+        if (options.requireWorkspaceAdmin && !(await hasWorkspaceAdminRole(String(session.userId), String(session.organizationId)))) {
             return undefined;
         }
         await touchDesktopSession(session.id);
