@@ -47,4 +47,14 @@ describe("tenant integration authorization attempts", () => {
     await expect(consumeTenantIntegrationAuthorization(repo, { state: start.state, provider: "teams" }))
       .resolves.toEqual({ ok: false, reason: "missing" });
   });
+
+  it("consumes a GitHub installation return only once", async () => {
+    const repo = memoryRepo();
+    const start = await startTenantIntegrationAuthorization(repo, {
+      organizationId: "org-a", provider: "github", redirectUri: "https://app.test/callback", initiatedByUserId: "user-a",
+    });
+    expect((await consumeTenantIntegrationAuthorization(repo, { state: start.state, provider: "github" })).ok).toBe(true);
+    await expect(consumeTenantIntegrationAuthorization(repo, { state: start.state, provider: "github" }))
+      .resolves.toEqual({ ok: false, reason: "consumed" });
+  });
 });

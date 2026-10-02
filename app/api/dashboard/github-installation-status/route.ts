@@ -1,8 +1,9 @@
 /**
  * GET /api/dashboard/github-installation-status — Phase 502.
  *
- * UI reads this on every relevant page load to decide whether to
- * show the "+ Install GitHub App" CTA or "Connected as …" badge.
+ * UI reads this on every relevant page load to decide whether GitHub App
+ * installation is configured and whether an installation is active. The
+ * one-time browser handoff itself starts only from the explicit POST route.
  */
 
 import { NextResponse, type NextRequest } from "next/server";
@@ -21,12 +22,10 @@ export async function GET(_req: NextRequest) {
     return NextResponse.json({ ok: false, error: "auth_required" }, { status: 401 });
   }
   const appSlug = process.env.GITHUB_APP_SLUG ?? "";
-  const callbackBaseUrl = process.env.NEXTAUTH_URL ?? "";
-  const stateSigningSecret = process.env.GITHUB_INSTALL_STATE_SECRET ?? process.env.NEXTAUTH_SECRET ?? "";
   const r = await buildInstallationStatusResponse(
     prisma as unknown as GitHubInstallationRepo,
     ctx.organizationId,
-    { appSlug, callbackBaseUrl, stateSigningSecret },
+    { appSlug },
   );
   return NextResponse.json(r.body, { status: r.status });
 }

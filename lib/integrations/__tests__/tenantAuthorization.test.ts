@@ -29,6 +29,6 @@ describe("tenant integration authorization state", () => {
   it("keeps the provider vocabulary closed", () => {
     expect(isTenantIntegrationProvider("slack")).toBe(true);
     expect(isTenantIntegrationProvider("teams")).toBe(true);
-    expect(isTenantIntegrationProvider("github")).toBe(false);
+    expect(isTenantIntegrationProvider("github")).toBe(true);
   });
 });

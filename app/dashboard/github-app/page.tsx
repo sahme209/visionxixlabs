@@ -14,7 +14,6 @@ import { useSearchParams } from "next/navigation";
 import {
   CheckCircleIcon,
   ExclamationTriangleIcon,
-  ArrowTopRightOnSquareIcon,
 } from "@heroicons/react/24/outline";
 import { PageIntro } from "@/components/dashboard/PageIntro";
 
@@ -35,7 +34,7 @@ interface StatusData {
   installed: boolean;
   active: InstallationView | null;
   history: InstallationView[];
-  installUrl: string;
+  installReady: boolean;
 }
 
 type StatusBody =
@@ -53,6 +52,7 @@ export default function GitHubAppPage() {
   const params = useSearchParams();
   const [resp, setResp] = useState<StatusBody | null>(null);
   const [loading, setLoading] = useState(true);
+  const [openingInstall, setOpeningInstall] = useState(false);
   const [networkError, setNetworkError] = useState<string | null>(null);
 
   function loadStatus() {
@@ -67,6 +67,23 @@ export default function GitHubAppPage() {
 
   useEffect(() => { loadStatus(); }, []);
 
+  async function beginInstall() {
+    setOpeningInstall(true);
+    setNetworkError(null);
+    try {
+      const response = await fetch("/api/dashboard/github-installation-start", {
+        method: "POST",
+        credentials: "include",
+      });
+      const body = await response.json() as { ok: boolean; data?: { installUrl?: string } };
+      if (!body.ok || !body.data?.installUrl) throw new Error("GitHub installation is not available yet.");
+      window.location.assign(body.data.installUrl);
+    } catch (error) {
+      setNetworkError(error instanceof Error ? error.message : "Could not start GitHub installation.");
+      setOpeningInstall(false);
+    }
+  }
+
   const data = resp?.ok ? resp.data : null;
   const errorBody = resp && !resp.ok ? resp : null;
   const callbackParam = params.get("install");
@@ -77,9 +94,9 @@ export default function GitHubAppPage() {
     <div className="relative">
       <PageIntro
         kicker={`ReleaseOps · GitHub App${data?.installed ? ` · connected as ${data.active?.accountLogin}` : ""}`}
-        title={<>Install once. <span className="text-zinc-500">Auto-onboarded forever.</span></>}
-        description="Click below to install the Axiom GitHub App on your org. Once installed, the platform reads your repository inventory, syncs branch protection on its own, and routes webhook deliveries here automatically — no manual webhook setup or secrets paste-in required."
-        helps="This is the zero-touch entry point. Other pages will surface the install CTA if they need a connection that isn't there yet."
+        title={<>Connect once. <span className="text-zinc-500">Review before each release.</span></>}
+        description="Install the Axiom GitHub App on only the repositories you select. Axiom uses read-only evidence to assemble release context; it does not deploy, change code, or expose a GitHub token."
+        helps="This connection is the trusted source for pull requests, checks, workflows, and repository protections used in release review."
         connectFirst="You need admin rights on the GitHub org to authorize the install. If you don't, click the link anyway — GitHub will route a request to the org admins on your behalf."
         engineers={["DevOps", "Release Captain", "Security"]}
         requiresApproval="GitHub may require org-admin approval depending on your org's app-install policy."
@@ -150,20 +167,19 @@ export default function GitHubAppPage() {
 
       {data && (
         <>
-          {data.installUrl ? (
+          {data.installReady ? (
             <div className="mb-6 rounded-2xl border border-white/[0.06] bg-white/[0.015] p-5">
               <p className="text-[13px] font-semibold text-violet-100 mb-2">
                 {data.installed ? "Re-install or extend repository selection" : "Install Axiom on your GitHub org"}
               </p>
-              <a
-                href={data.installUrl}
-                target="_blank"
-                rel="noopener noreferrer"
+              <button
+                type="button"
+                onClick={() => { void beginInstall(); }}
+                disabled={openingInstall}
                 className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-violet-500/40 bg-violet-500/[0.12] text-[13px] font-semibold text-violet-100 hover:bg-violet-500/[0.20] transition-colors"
               >
-                <span>Continue to GitHub</span>
-                <ArrowTopRightOnSquareIcon className="h-4 w-4" />
-              </a>
+                <span>{openingInstall ? "Opening GitHub…" : "Continue to GitHub"}</span>
+              </button>
             </div>
           ) : (
             <div className="mb-6 rounded-2xl border border-amber-500/[0.18] bg-amber-500/[0.04] p-5 text-[12.5px] text-zinc-300">

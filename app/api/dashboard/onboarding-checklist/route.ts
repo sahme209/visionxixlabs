@@ -17,12 +17,9 @@ export async function GET(_req: NextRequest) {
   if (!ctx.isAuthenticated || !ctx.organizationId) {
     return NextResponse.json({ ok: false, error: "auth_required" }, { status: 401 });
   }
-  const appSlug = process.env.GITHUB_APP_SLUG ?? "";
-  const callbackBaseUrl = process.env.NEXTAUTH_URL ?? "";
   const r = await buildOnboardingChecklistResponse(
     prisma as unknown as OnboardingChecklistRepo,
     ctx.organizationId,
-    { appSlug, callbackBaseUrl },
   );
   return NextResponse.json(r.body, { status: r.status });
 }

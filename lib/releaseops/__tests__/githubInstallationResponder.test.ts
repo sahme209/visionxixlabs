@@ -3,9 +3,6 @@ import {
   buildInstallationCaptureResponse,
   buildInstallationStatusResponse,
   buildInstallationTransitionResponse,
-  buildInstallUrl,
-  createGitHubInstallState,
-  verifyGitHubInstallState,
   planInstallTransition,
   type GitHubInstallationRepo,
   type InstallationRow,
@@ -122,24 +119,6 @@ describe("planInstallTransition", () => {
   });
 });
 
-describe("buildInstallUrl", () => {
-  const installCtx = { appSlug: "axiom-releaseops", callbackBaseUrl: "https://x", stateSigningSecret: "test-signing-secret" };
-  it("uses a signed state param instead of exposing the org id", () => {
-    const url = new URL(buildInstallUrl(installCtx, "org_abc"));
-    const state = url.searchParams.get("state")!;
-    expect(state).not.toBe("org_abc");
-    expect(verifyGitHubInstallState({ state, secret: "test-signing-secret" })).toEqual({ ok: true, organizationId: "org_abc" });
-  });
-  it("returns empty string when app slug not configured", () => {
-    expect(buildInstallUrl({ ...installCtx, appSlug: "" }, "org_abc")).toBe("");
-  });
-  it("rejects modified and expired signed state", () => {
-    const state = createGitHubInstallState({ organizationId: "org_abc", secret: "test-signing-secret", nowSec: 10, nonce: "fixed" });
-    expect(verifyGitHubInstallState({ state: `${state}x`, secret: "test-signing-secret", nowSec: 11 }).ok).toBe(false);
-    expect(verifyGitHubInstallState({ state, secret: "test-signing-secret", nowSec: 611 })).toEqual({ ok: false, reason: "expired" });
-  });
-});
-
 describe("buildInstallationCaptureResponse", () => {
   it("422 installation_id_required", async () => {
     const stub = makeRepo();
@@ -220,7 +199,7 @@ describe("buildInstallationCaptureResponse", () => {
 });
 
 describe("buildInstallationStatusResponse", () => {
-  const installCtx = { appSlug: "axiom", callbackBaseUrl: "https://x", stateSigningSecret: "test-signing-secret" };
+  const installCtx = { appSlug: "axiom" };
   it("200 not installed when empty", async () => {
     const stub = makeRepo();
     const r = await buildInstallationStatusResponse(stub, "o", installCtx);
@@ -228,8 +207,7 @@ describe("buildInstallationStatusResponse", () => {
     if (!r.body.ok) throw new Error("expected ok");
     expect(r.body.data.installed).toBe(false);
     expect(r.body.data.active).toBeNull();
-    expect(r.body.data.installUrl).toContain("axiom");
-    expect(r.body.data.installUrl).not.toContain("state=o");
+    expect(r.body.data.installReady).toBe(true);
   });
 
   it("200 reports active installation when present", async () => {

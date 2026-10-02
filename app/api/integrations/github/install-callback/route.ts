@@ -5,9 +5,9 @@
  * install flow. Query params from GitHub:
  *   installation_id  — the new installation
  *   setup_action     — "install" | "update" | "request"
- *   state            — a short-lived, signed workspace binding
+ *   state            — a short-lived, one-time workspace binding
  *
- * This handler captures the installation_id, then redirects back into
+ * This handler consumes the browser state, captures the installation_id, then redirects back into
  * the lightweight web companion. The actual GitHub API account-info fetch (to enrich
  * accountLogin / accountType) lands in a follow-on phase that wires
  * the App's private key for installation-token minting; for now we
@@ -15,14 +15,16 @@
  */
 
 import { NextResponse, type NextRequest } from "next/server";
-import { currentContext } from "@/lib/auth/currentContext";
 import { prisma } from "@/lib/db";
 import {
   buildInstallationCaptureResponse,
-  verifyGitHubInstallState,
   type GitHubInstallationRepo,
 } from "@/lib/releaseops/githubInstallationResponder";
 import { appendAuditEvent, type AuditEventRepo } from "@/lib/releaseops/auditEventResponder";
+import {
+  consumeTenantIntegrationAuthorization,
+  type TenantConnectionRepo,
+} from "@/lib/integrations/tenantConnectionRepo";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -32,10 +34,12 @@ export async function GET(req: NextRequest): Promise<Response> {
   const installationId = url.searchParams.get("installation_id");
   const setupAction = url.searchParams.get("setup_action") ?? "install";
   const state = url.searchParams.get("state") ?? "";
-  const stateSecret = process.env.GITHUB_INSTALL_STATE_SECRET ?? process.env.NEXTAUTH_SECRET ?? "";
-  const verifiedState = stateSecret ? verifyGitHubInstallState({ state, secret: stateSecret }) : { ok: false as const, reason: "invalid" as const };
+  const authorization = await consumeTenantIntegrationAuthorization(
+    prisma as unknown as TenantConnectionRepo,
+    { state, provider: "github" },
+  );
 
-  if (!verifiedState.ok) {
+  if (!authorization.ok) {
     return NextResponse.redirect(new URL("/auth/success?integration=github&status=invalid_state", req.url));
   }
 
@@ -50,8 +54,7 @@ export async function GET(req: NextRequest): Promise<Response> {
     return NextResponse.redirect(new URL("/auth/success?integration=github&status=missing_installation", req.url));
   }
 
-  const ctx = await currentContext();
-  const organizationId = verifiedState.organizationId;
+  const organizationId = authorization.attempt.organizationId;
 
   const r = await buildInstallationCaptureResponse(
     prisma as unknown as GitHubInstallationRepo,
@@ -62,9 +65,10 @@ export async function GET(req: NextRequest): Promise<Response> {
       accountLogin: `gh-installation-${installationId}`,
       accountType: "Organization",
       repositorySelection: "selected",
-      ...(ctx.userId ? { installedByUserId: ctx.userId } : {}),
+      installedByUserId: authorization.attempt.initiatedByUserId,
       sourceFlow: setupAction,
-      rawCallbackJson: Object.fromEntries(url.searchParams.entries()),
+      // State is a short-lived bearer secret. Never store it in callback metadata.
+      rawCallbackJson: { installation_id: installationId, setup_action: setupAction },
     },
   );
 
@@ -77,7 +81,7 @@ export async function GET(req: NextRequest): Promise<Response> {
       summary: r.body.data.created
         ? `GitHub App installed (installation #${installationId})`
         : `GitHub App reactivated (installation #${installationId})`,
-      actorUserId: ctx.userId ?? null,
+      actorUserId: authorization.attempt.initiatedByUserId,
     });
   }
 
