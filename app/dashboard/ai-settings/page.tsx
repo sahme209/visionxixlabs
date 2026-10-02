@@ -9,8 +9,8 @@
  *      readiness, default model, recommended model list
  *   3. Health check + ad-hoc generation tester
  *
- * Free-only by default. Paid providers are NOT listed — flipping that
- * later is a deliberate code change.
+ * Service-managed providers only. Workspace policies decide which configured
+ * routes may be used; credentials and provider billing details never render.
  */
 
 import { useCallback, useEffect, useState } from "react";
@@ -20,7 +20,7 @@ import {
 } from "@heroicons/react/24/outline";
 
 type ProviderName =
-  | "github_models" | "ollama" | "lm_studio" | "groq" | "hugging_face"
+  | "openai" | "anthropic" | "github_models" | "ollama" | "lm_studio" | "groq" | "hugging_face"
   | "openrouter" | "gemini" | "cloudflare" | "mock";
 
 interface RegisteredModel { id: string; label: string; tier: string; family: string; freeNote: string }
@@ -29,6 +29,7 @@ interface ProviderRow {
   priority: number; models: RegisteredModel[];
 }
 interface AIEnvSnapshot {
+  OPENAI_API_KEY: boolean; ANTHROPIC_API_KEY: boolean;
   GITHUB_TOKEN: boolean; GROQ_API_KEY: boolean; HUGGINGFACE_API_KEY: boolean;
   OPENROUTER_API_KEY: boolean; GEMINI_API_KEY: boolean; CLOUDFLARE_ACCOUNT_ID: boolean;
   CLOUDFLARE_API_TOKEN: boolean; OLLAMA_BASE_URL: string; LM_STUDIO_BASE_URL: string;
@@ -48,6 +49,7 @@ interface GenerateResp {
 }
 
 const LABEL: Record<ProviderName, string> = {
+  openai: "OpenAI GPT", anthropic: "Anthropic Claude",
   github_models: "GitHub Models", ollama: "Ollama (local)", lm_studio: "LM Studio (local)",
   groq: "Groq", hugging_face: "Hugging Face", openrouter: "OpenRouter",
   gemini: "Gemini", cloudflare: "Cloudflare Workers AI", mock: "Mock (no network)",
@@ -96,7 +98,7 @@ export default function AISettingsPage() {
       .then((r) => r.json())
       .then((j: { ok?: boolean; data?: GenerateResp; error?: { userMessage?: string } }) => {
         if (j.ok && j.data) setTryResp(j.data);
-        else setTryError(j.error?.userMessage ?? "Generation failed — fell back to Mock.");
+        else setTryError(j.error?.userMessage ?? "Generation failed. No simulated response was returned.");
       })
       .catch((err) => setTryError(err instanceof Error ? err.message : "Network error."))
       .finally(() => setTryBusy(false));
@@ -124,12 +126,12 @@ export default function AISettingsPage() {
           </button>
         </div>
         <h1 className="text-4xl md:text-5xl font-bold text-white tracking-[-0.045em] leading-[1.05] mb-3">
-          AI that doesn&apos;t <span className="text-gradient">cost a dime.</span>
+          AI with <span className="text-gradient">governed routes.</span>
         </h1>
         <p className="text-[15px] text-zinc-400 max-w-2xl leading-relaxed">
-          GitHub Models is the primary free provider. If it&apos;s unavailable, the manager falls back through
-          local (Ollama / LM Studio), Groq, Hugging Face, OpenRouter, Gemini, Cloudflare — and finally a
-          deterministic Mock so the platform never hard-fails on missing keys.
+          The service exposes only configured provider families. Workspace policy controls the approved routes
+          and fallback order; when those routes are unavailable, Axiom returns an honest error instead of a
+          simulated answer. Credentials and provider billing accounts remain server-only.
         </p>
       </div>
 
@@ -168,7 +170,7 @@ export default function AISettingsPage() {
                 </div>
                 <details className="text-[11px]">
                   <summary className="text-[10px] font-mono text-zinc-500 cursor-pointer hover:text-zinc-300 uppercase tracking-wider">
-                    {p.models.length} recommended free model{p.models.length === 1 ? "" : "s"}
+                    {p.models.length} approved model option{p.models.length === 1 ? "" : "s"}
                   </summary>
                   <ul className="mt-2 space-y-0.5">
                     {p.models.map((m) => (
