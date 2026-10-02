@@ -7,6 +7,7 @@ export const dynamic = "force-dynamic";
 
 const CLOUD_PROVIDERS = ["aws", "azure", "gcp"] as const;
 const COLLABORATION_PROVIDERS = ["slack", "teams"] as const;
+const GITHUB_VALIDATION_FRESH_FOR_MS = 24 * 60 * 60 * 1000;
 
 interface ConnectorSessionRow {
     provider: string;
@@ -126,7 +127,11 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
                 // read-only validation lifecycle exists.
                 github = {
                     status: installation.status === "active"
-                        ? (installation.lastSeenAt ? "validated_read_only" : "installation_recorded")
+                        ? (!installation.lastSeenAt
+                            ? "installation_recorded"
+                            : Date.now() - installation.lastSeenAt.getTime() <= GITHUB_VALIDATION_FRESH_FOR_MS
+                                ? "validated_read_only"
+                                : "validation_overdue")
                         : installation.status,
                     repositorySelection: installation.repositorySelection,
                 };

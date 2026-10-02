@@ -372,13 +372,15 @@ function IntegrationsSection() {
     ? cloudConnections.map((connection) => `${connection.provider.toUpperCase()} ${connection.status.replaceAll("_", " ")}`).join(" · ")
     : "Loading the service-verified state for AWS, Azure, and Google Cloud.";
   const githubState = github
-    ? github.status === "validated_read_only" ? "Validated read-only" : github.status === "installation_recorded" ? "Consent recorded" : github.status.replaceAll("_", " ")
+    ? github.status === "validated_read_only" ? "Validated read-only" : github.status === "installation_recorded" ? "Consent recorded" : github.status === "validation_overdue" ? "Validation overdue" : github.status.replaceAll("_", " ")
     : "Checking status";
   const githubDetail = github
     ? github.status === "validated_read_only"
       ? `GitHub App access was verified with a scoped, read-only request. ${github.repositorySelection === "all" ? "All-repository" : "Selected-repository"} scope remains managed by GitHub.`
       : github.status === "installation_recorded"
       ? `GitHub App consent and ${github.repositorySelection === "all" ? "all-repository" : "selected-repository"} scope were recorded. Live read-only access is not shown as verified until service validation succeeds.`
+      : github.status === "validation_overdue"
+      ? `GitHub App access was validated previously, but that verification is more than 24 hours old. Run the harmless read-only validation again before relying on it for release evidence.`
       : "No active GitHub App installation is recorded for this workspace. Connect in the browser to choose repository scope."
     : "Loading the service-verified GitHub App state.";
   const collaborationState = collaboration
@@ -463,7 +465,7 @@ function IntegrationsSection() {
     </div>
     <div className="mt-5 flex items-center gap-3">
       <WebButton href="/connect/github" label="Connect GitHub" />
-      <button type="button" onClick={() => void validateGitHub()} disabled={validatingGitHub || github?.status !== "installation_recorded"} className="rounded-lg border border-white/10 px-3 py-2 text-xs text-zinc-300 hover:bg-white/[0.06] disabled:opacity-50">
+      <button type="button" onClick={() => void validateGitHub()} disabled={validatingGitHub || (github?.status !== "installation_recorded" && github?.status !== "validation_overdue")} className="rounded-lg border border-white/10 px-3 py-2 text-xs text-zinc-300 hover:bg-white/[0.06] disabled:opacity-50">
         {validatingGitHub ? "Validating GitHub…" : "Validate read-only access"}
       </button>
       <button type="button" onClick={() => void validateSlack()} disabled={validatingSlack || !slackCanValidate} className="rounded-lg border border-white/10 px-3 py-2 text-xs text-zinc-300 hover:bg-white/[0.06] disabled:opacity-50">

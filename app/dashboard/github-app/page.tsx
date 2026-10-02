@@ -49,6 +49,14 @@ const STATUS_CLASS: Record<InstallationView["status"], string> = {
   unknown:   "bg-zinc-700/40 text-zinc-400 border-zinc-700/40",
 };
 
+const GITHUB_VALIDATION_FRESH_FOR_MS = 24 * 60 * 60 * 1000;
+
+function installationAccountLabel(installation: InstallationView): string {
+  return installation.accountLogin.startsWith("gh-installation-")
+    ? "GitHub installation pending validation"
+    : installation.accountLogin;
+}
+
 export default function GitHubAppPage() {
   const params = useSearchParams();
   const [resp, setResp] = useState<StatusBody | null>(null);
@@ -87,7 +95,9 @@ export default function GitHubAppPage() {
 
   const data = resp?.ok ? resp.data : null;
   const errorBody = resp && !resp.ok ? resp : null;
-  const readValidated = data?.active?.lastSeenAtIso != null;
+  const readValidated = data?.active?.lastSeenAtIso != null
+    && Date.now() - new Date(data.active.lastSeenAtIso).getTime() <= GITHUB_VALIDATION_FRESH_FOR_MS;
+  const validationOverdue = data?.active?.lastSeenAtIso != null && !readValidated;
   const callbackParam = params.get("install");
   const requestParam = params.get("install_request");
   const installError = params.get("install_error");
@@ -95,7 +105,7 @@ export default function GitHubAppPage() {
   return (
     <div className="relative">
       <PageIntro
-        kicker={`ReleaseOps · GitHub App${data?.installed ? ` · installation recorded for ${data.active?.accountLogin}` : ""}`}
+        kicker={`ReleaseOps · GitHub App${data?.installed && data.active ? ` · ${installationAccountLabel(data.active)}` : ""}`}
         title={<>Connect once. <span className="text-zinc-500">Review before each release.</span></>}
         description="Install the Axiom GitHub App on only the repositories you select. Axiom uses read-only evidence to assemble release context; it does not deploy, change code, or expose a GitHub token."
         helps="This connection is the trusted source for pull requests, checks, workflows, and repository protections used in release review."
@@ -196,7 +206,7 @@ export default function GitHubAppPage() {
                 <span className={`text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border ${STATUS_CLASS[data.active.status]}`}>
                   {data.active.status}
                 </span>
-              <p className="text-[13px] font-semibold text-emerald-100">{data.active.accountLogin}</p>
+              <p className="text-[13px] font-semibold text-emerald-100">{installationAccountLabel(data.active)}</p>
                 <span className="text-[10px] font-mono text-zinc-500">type: {data.active.accountType}</span>
                 <span className="text-[10px] font-mono text-zinc-500">scope: {data.active.repositorySelection}</span>
                 <span className="text-[10px] font-mono text-zinc-500 ml-auto">
@@ -206,6 +216,8 @@ export default function GitHubAppPage() {
               <p className="text-[12px] text-zinc-300 mt-3">
                 {readValidated
                   ? "Read-only access was last validated by Axiom Agent."
+                  : validationOverdue
+                  ? "The last read-only validation is over 24 hours old. Open Axiom Agent to recheck it before relying on this installation for release evidence."
                   : "Installation is recorded. Open Axiom Agent to run the first read-only validation before it contributes release evidence."}
               </p>
             </div>
@@ -221,7 +233,7 @@ export default function GitHubAppPage() {
                       <span className={`text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border ${STATUS_CLASS[h.status]}`}>
                         {h.status}
                       </span>
-                      <span className="text-[12px] text-white">{h.accountLogin}</span>
+                      <span className="text-[12px] text-white">{installationAccountLabel(h)}</span>
                       <span className="text-[10px] font-mono text-zinc-500">id {h.githubInstallationId}</span>
                       <span className="text-[10px] font-mono text-zinc-500 ml-auto">
                         installed {new Date(h.installedAtIso).toLocaleString()}
