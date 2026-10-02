@@ -36,10 +36,17 @@ export default function PlansPage() {
             <Link href="/demo" className="inline-flex min-h-12 items-center justify-center rounded-full border border-white/[0.12] bg-white/[0.04] px-6 text-sm font-medium text-zinc-200 transition hover:bg-white/[0.08]">Explore the isolated demo</Link>
           </div>
         </div>
-        <aside className="rounded-2xl border border-violet-300/20 bg-violet-300/[0.05] p-6 sm:p-7">
-          <p className="text-[10px] uppercase tracking-[0.18em] text-violet-200">Current access</p>
+        <aside className="relative isolate overflow-hidden rounded-2xl border border-violet-300/20 bg-[#10120f]/80 p-6 shadow-[0_24px_80px_rgba(0,0,0,0.22)] sm:p-7">
+          <div aria-hidden className="pointer-events-none absolute inset-0 -z-20 bg-cover bg-center opacity-35" style={{ backgroundImage: "url('/images/axiom-intake-landscape-v1.png')" }} />
+          <div aria-hidden className="pointer-events-none absolute inset-0 -z-10 bg-[linear-gradient(135deg,rgba(14,16,13,0.92),rgba(14,16,13,0.54),rgba(14,16,13,0.88))]" />
+          <p className="text-[10px] uppercase tracking-[0.18em] text-violet-100">Current access</p>
           <p className="mt-4 text-2xl font-medium tracking-[-0.035em] text-zinc-100">No charge. No credit card.</p>
-          <p className="mt-3 text-sm leading-6 text-zinc-400">We scope each pilot around the release workflow you actually need, then validate what is working before it becomes a production dependency.</p>
+          <p className="mt-3 text-sm leading-6 text-zinc-300">We scope each pilot around the release workflow you actually need, then validate what is working before it becomes a production dependency.</p>
+          <dl className="mt-6 grid grid-cols-3 gap-2 border-t border-white/[0.12] pt-4 text-[10px] uppercase tracking-[0.12em] text-zinc-300">
+            <div><dt className="text-zinc-500">Scope</dt><dd className="mt-1 text-zinc-100">Agreed</dd></div>
+            <div><dt className="text-zinc-500">Authority</dt><dd className="mt-1 text-zinc-100">Human</dd></div>
+            <div><dt className="text-zinc-500">Evidence</dt><dd className="mt-1 text-zinc-100">Read-only</dd></div>
+          </dl>
         </aside>
       </section>
 
@@ -58,8 +65,10 @@ export default function PlansPage() {
         </article>
       </section>
 
-      <section className="mt-16 rounded-2xl border border-white/[0.08] bg-[#151613] p-6 sm:p-8">
-        <p className="text-[10px] uppercase tracking-[0.18em] text-orange-300">The path to a paid workspace</p>
+      <section className="relative isolate mt-16 overflow-hidden rounded-2xl border border-white/[0.08] bg-[#151613] p-6 sm:p-8">
+        <div aria-hidden className="pointer-events-none absolute inset-0 -z-20 bg-cover bg-center opacity-20" style={{ backgroundImage: "url('/images/axiom-history-landscape-v1.png')" }} />
+        <div aria-hidden className="pointer-events-none absolute inset-0 -z-10 bg-[linear-gradient(110deg,rgba(18,19,16,0.94),rgba(18,19,16,0.72),rgba(18,19,16,0.94))]" />
+        <p className="text-[10px] uppercase tracking-[0.18em] text-orange-200">The path to a paid workspace</p>
         <div className="mt-6 grid gap-5 md:grid-cols-3">
           {["Validate the workflow", "Prove repeat value", "Agree the production scope"].map((title, index) => <div key={title}><p className="text-xs text-zinc-600">0{index + 1}</p><h2 className="mt-2 text-lg font-medium text-zinc-100">{title}</h2><p className="mt-2 text-sm leading-6 text-zinc-500">{index === 0 ? "Use the system with real release evidence and explicit guardrails." : index === 1 ? "Confirm it improves clarity, speed, and safety for your operators." : "Only then define support, access, and commercial terms in writing."}</p></div>)}
         </div>
