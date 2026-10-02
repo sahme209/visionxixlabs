@@ -34,8 +34,8 @@ function providerList(value: unknown): AIProviderName[] {
 }
 
 export function normalizeWorkspaceAIProviderPolicy(input: {
-  allowedProviders: unknown;
-  fallbackOrder: unknown;
+  allowedProviders?: unknown;
+  fallbackOrder?: unknown;
 }): WorkspaceAIProviderPolicy | null {
   const allowedProviders = providerList(input.allowedProviders);
   const fallbackOrder = providerList(input.fallbackOrder);
