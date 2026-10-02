@@ -111,7 +111,7 @@ export class AIProviderManager {
     const out = await runWithFallback<AITextResponse>(
       this.chain({ only: options?.only }),
       (p) => p.generateText(prompt, options),
-      { task: "generate_text", correlationId: options?.correlationId },
+      { task: "generate_text", correlationId: options?.correlationId, organizationId: options?.organizationId },
     );
     return out.result;
   }
@@ -120,7 +120,7 @@ export class AIProviderManager {
     const out = await runWithFallback<AITextResponse>(
       this.chain({ only: options?.only }),
       (p) => p.summarize(text, options),
-      { task: "summarize", correlationId: options?.correlationId },
+      { task: "summarize", correlationId: options?.correlationId, organizationId: options?.organizationId },
     );
     return out.result;
   }
@@ -129,7 +129,7 @@ export class AIProviderManager {
     const out = await runWithFallback<AIClassifyResponse>(
       this.chain({ only: options?.only }),
       (p) => p.classify(text, labels, options),
-      { task: "classify", correlationId: options?.correlationId },
+      { task: "classify", correlationId: options?.correlationId, organizationId: options?.organizationId },
     );
     return out.result;
   }
@@ -142,7 +142,7 @@ export class AIProviderManager {
     const out = await runWithFallback<AIStructuredResponse<T>>(
       this.chain({ only: options?.only }),
       (p) => p.extractStructuredData<T>(text, schemaHint, options),
-      { task: "extract_structured_data", correlationId: options?.correlationId },
+      { task: "extract_structured_data", correlationId: options?.correlationId, organizationId: options?.organizationId },
     );
     return out.result;
   }
@@ -160,13 +160,13 @@ export class AIProviderManager {
       }
       recordUsage({
         provider: head.name, model: options?.model ?? head.defaultModel,
-        task: "stream_text", latencyMs: Date.now() - t0, status: "ok", correlationId: options?.correlationId,
+        task: "stream_text", latencyMs: Date.now() - t0, status: "ok", correlationId: options?.correlationId, organizationId: options?.organizationId,
       });
     } catch (err) {
       const e = err instanceof AIProviderError ? err : new AIProviderError({ provider: head.name, kind: "unknown", message: "stream failed" });
       recordUsage({
         provider: head.name, model: head.defaultModel, task: "stream_text",
-        latencyMs: e.latencyMs || Date.now() - t0, status: "error", errorKind: e.kind, correlationId: options?.correlationId,
+        latencyMs: e.latencyMs || Date.now() - t0, status: "error", errorKind: e.kind, correlationId: options?.correlationId, organizationId: options?.organizationId,
       });
       yield { text: "", done: true, finishReason: "error" };
     }

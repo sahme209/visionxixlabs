@@ -78,6 +78,7 @@ export async function synthesizeInsights(seed: InsightsSeed): Promise<InsightsNa
       maxTokens: 4096,
       temperature: 0.3,
       timeoutMs: 15_000,
+      organizationId: seed.tenantId,
     });
     const text = (r.text ?? "").trim();
     if (!text || r.provider === "mock") {

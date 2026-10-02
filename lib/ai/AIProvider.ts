@@ -37,6 +37,8 @@ export type AITaskKind =
   | "health_check";
 
 export interface AIRequestOptions {
+  /** Server-side workspace attribution for audit and usage only; never sent to a provider. */
+  organizationId?: string;
   /** Optional override for the provider's default model. */
   model?: string;
   /** Max tokens / max_new_tokens hint. Providers map this best-effort. */

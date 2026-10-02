@@ -36,7 +36,7 @@ export async function POST(req: NextRequest) {
   const correlationId = resolveCorrelationId(req.headers);
   try {
     const ctx = await currentContext();
-    if (!ctx.isAuthenticated) {
+    if (!ctx.isAuthenticated || !ctx.organizationId) {
       throw AxiomErrors.validation("auth.required", "Sign in required.");
     }
     const body = (await req.json().catch(() => null)) as PostBody | null;
@@ -54,6 +54,7 @@ export async function POST(req: NextRequest) {
       model: body.model,
       only: body.only,
       correlationId,
+      organizationId: ctx.organizationId,
     });
     return apiOk(result, {
       correlationId,

@@ -33,7 +33,7 @@ const TASK_OF: AITaskKind = "generate_text"; // default tag for the logger; mana
 export async function runWithFallback<T>(
   providers: readonly AIProvider[],
   fn: (provider: AIProvider) => Promise<T & { provider: AIProviderName; model: string; latencyMs: number }>,
-  opts?: { task?: AITaskKind; correlationId?: string },
+  opts?: { task?: AITaskKind; correlationId?: string; organizationId?: string },
 ): Promise<FallbackOutcome<T>> {
   const attempts: FallbackOutcome<T>["attempts"] = [];
   if (providers.length === 0) {
@@ -46,7 +46,7 @@ export async function runWithFallback<T>(
       attempts.push({ provider: p.name, ok: true, latencyMs: r.latencyMs });
       recordUsage({
         provider: r.provider, model: r.model, task: opts?.task ?? TASK_OF,
-        latencyMs: r.latencyMs, status: "ok", correlationId: opts?.correlationId,
+        latencyMs: r.latencyMs, status: "ok", correlationId: opts?.correlationId, organizationId: opts?.organizationId,
       });
       return { result: r, provider: r.provider, model: r.model, attempts };
     } catch (err) {
@@ -58,7 +58,7 @@ export async function runWithFallback<T>(
       attempts.push({ provider: p.name, ok: false, errorKind: e.kind, latencyMs: e.latencyMs });
       recordUsage({
         provider: p.name, model: p.defaultModel, task: opts?.task ?? TASK_OF,
-        latencyMs: e.latencyMs, status: "error", errorKind: e.kind, correlationId: opts?.correlationId,
+        latencyMs: e.latencyMs, status: "error", errorKind: e.kind, correlationId: opts?.correlationId, organizationId: opts?.organizationId,
       });
       if (!shouldTryNext(e)) {
         // not_configured + retryable transport errors all let us try the next
