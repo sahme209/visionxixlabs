@@ -8,9 +8,9 @@ const CALLBACK_PATHS = new Set([
   "/api/integrations/teams/callback",
 ]);
 
-function configuredAxiomOrigin(): URL | null {
+function configuredAxiomOrigin(appUrl: string): URL | null {
   try {
-    const configured = new URL(loadAppEnv().appUrl);
+    const configured = new URL(appUrl);
     const loopback = configured.hostname === "localhost" || configured.hostname === "127.0.0.1" || configured.hostname === "::1";
     if (configured.protocol !== "https:" && !loopback) return null;
     return configured;
@@ -24,12 +24,16 @@ function configuredAxiomOrigin(): URL | null {
  * It deliberately refuses absolute and protocol-relative paths, so callback
  * returns cannot be redirected by an inbound Host header or query value.
  */
-export function trustedAxiomUrl(path: string): string | null {
+export function trustedAxiomUrlFromAppUrl(path: string, appUrl: string): string | null {
   if (!path.startsWith("/") || path.startsWith("//") || path.includes("\\")) return null;
-  const configured = configuredAxiomOrigin();
+  const configured = configuredAxiomOrigin(appUrl);
   if (!configured) return null;
   const destination = new URL(path, configured.origin);
   return destination.origin === configured.origin ? destination.toString() : null;
+}
+
+export function trustedAxiomUrl(path: string): string | null {
+  return trustedAxiomUrlFromAppUrl(path, loadAppEnv().appUrl);
 }
 
 /**
