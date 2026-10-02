@@ -29,15 +29,38 @@ interface ResolveOptions {
      * workspace owner or admin. The desktop token identifies a device; it
      * does not itself freeze role authority for its 30-day lifetime. */
     requireWorkspaceAdmin?: boolean;
+    /**
+     * Desktop tokens are long-lived device credentials, not a substitute for
+     * current workspace membership. Recheck the durable membership on every
+     * desktop-session request so a removed or unaccepted member loses access
+     * immediately. Scoped API-key automation remains a separate authority.
+     */
+    requireWorkspaceMembership?: boolean;
+}
+
+async function hasActiveWorkspaceMembership(userId: string, organizationId: string): Promise<boolean> {
+    try {
+        const membership = await prisma.orgMembership.findUnique({
+            where: { userId_organizationId: { userId, organizationId } },
+            select: { acceptedAt: true },
+        });
+        return membership?.acceptedAt !== null && membership?.acceptedAt !== undefined;
+    } catch {
+        // A membership-store failure must not extend a long-lived desktop
+        // token beyond the workspace's current authority.
+        return false;
+    }
 }
 
 async function hasWorkspaceAdminRole(userId: string, organizationId: string): Promise<boolean> {
     try {
         const membership = await prisma.orgMembership.findUnique({
             where: { userId_organizationId: { userId, organizationId } },
-            select: { role: true },
+            select: { role: true, acceptedAt: true },
         });
-        return membership?.role === "owner" || membership?.role === "admin";
+        return membership?.acceptedAt !== null
+            && membership?.acceptedAt !== undefined
+            && (membership?.role === "owner" || membership?.role === "admin");
     } catch {
         // A role-store failure must not permit a shared provider-state change.
         return false;
@@ -88,6 +111,10 @@ export async function resolveRequestDesktopSession(
         const { sessionId } = verifyDesktopToken(token);
         const session = await resolveActiveSession(sessionId);
         if (!session) return undefined;
+        if (options.requireWorkspaceMembership !== false
+            && !(await hasActiveWorkspaceMembership(String(session.userId), String(session.organizationId)))) {
+            return undefined;
+        }
         if (options.requireWorkspaceAdmin && !(await hasWorkspaceAdminRole(String(session.userId), String(session.organizationId)))) {
             return undefined;
         }

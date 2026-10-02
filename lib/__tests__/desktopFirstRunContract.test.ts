@@ -217,6 +217,14 @@ describe("desktop first-run contract", () => {
     }
   });
 
+  it("rechecks accepted workspace membership for long-lived desktop sessions", () => {
+    const resolver = readFileSync(join(root, "lib/desktop/resolveRequestDesktopSession.ts"), "utf8");
+    expect(resolver).toContain("hasActiveWorkspaceMembership");
+    expect(resolver).toContain("membership?.acceptedAt !== null");
+    expect(resolver).toContain("options.requireWorkspaceMembership !== false");
+    expect(resolver).toContain("A removed or unaccepted member loses access");
+  });
+
   it("requires a fresh GitHub read validation before release evidence is collected", () => {
     const evidence = readFileSync(join(root, "app/api/desktop/deployments/[id]/github-evidence/route.ts"), "utf8");
     expect(evidence).toContain("GITHUB_VALIDATION_FRESH_FOR_MS");
