@@ -86,7 +86,7 @@ export function WorkspaceAISettingsForm() {
       const modelSelections = { ...current.modelSelections };
       if (isAllowed) delete modelSelections[provider];
       else if (availableModels[provider]?.[0]) modelSelections[provider] = availableModels[provider][0].id;
-      return { allowedProviders, modelSelections, fallbackOrder };
+      return { ...current, allowedProviders, modelSelections, fallbackOrder };
     });
   }
 
