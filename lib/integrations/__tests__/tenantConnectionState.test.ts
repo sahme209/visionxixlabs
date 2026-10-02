@@ -7,7 +7,17 @@ describe("visibleTenantConnectionStatus", () => {
   });
 
   it("presents active only after a server-side validation timestamp exists", () => {
-    expect(visibleTenantConnectionStatus({ status: "active", lastValidatedAt: new Date("2026-10-01T00:00:00Z") })).toBe("active");
+    expect(visibleTenantConnectionStatus(
+      { status: "active", lastValidatedAt: new Date("2026-10-01T00:00:00Z") },
+      new Date("2026-10-01T12:00:00Z"),
+    )).toBe("active");
+  });
+
+  it("requires another live validation after the freshness window expires", () => {
+    expect(visibleTenantConnectionStatus(
+      { status: "active", lastValidatedAt: new Date("2026-10-01T00:00:00Z") },
+      new Date("2026-10-02T00:00:01Z"),
+    )).toBe("needs_attention");
   });
 
   it("fails safely for a missing or unknown record", () => {
