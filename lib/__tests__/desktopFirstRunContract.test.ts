@@ -217,6 +217,13 @@ describe("desktop first-run contract", () => {
     }
   });
 
+  it("requires a fresh GitHub read validation before release evidence is collected", () => {
+    const evidence = readFileSync(join(root, "app/api/desktop/deployments/[id]/github-evidence/route.ts"), "utf8");
+    expect(evidence).toContain("GITHUB_VALIDATION_FRESH_FOR_MS");
+    expect(evidence).toContain("github_read_validation_required");
+    expect(evidence).toContain("lastSeenAt: true");
+  });
+
   it("keeps paired-device management scoped to the current workspace", () => {
     const route = readFileSync(join(root, "app/api/desktop/session/route.ts"), "utf8");
     const panel = readFileSync(join(root, "components/auth/DesktopSessionsPanel.tsx"), "utf8");

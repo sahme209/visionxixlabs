@@ -25,14 +25,18 @@ import {
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
-interface InstallationRow { githubInstallationId: string }
+interface InstallationRow {
+  githubInstallationId: string;
+  /** Only a recent harmless read proves the recorded installation still works. */
+  lastSeenAt: Date | null;
+}
 
 interface InstallationRepo {
   gitHubInstallation: {
     findFirst(args: {
       where: { organizationId: string; status: "active" };
       orderBy: { installedAt: "desc" };
-      select: { githubInstallationId: true };
+      select: { githubInstallationId: true; lastSeenAt: true };
     }): Promise<InstallationRow | null>;
   };
 }
@@ -63,6 +67,10 @@ interface GithubWorkflowRunsBody {
 }
 
 type EvidenceState = "observed" | "unavailable";
+
+// Evidence is release input. Do not silently reuse an App installation that
+// may have been removed or had its permissions changed since it was checked.
+const GITHUB_VALIDATION_FRESH_FOR_MS = 24 * 60 * 60 * 1000;
 
 interface RepositoryEvidence {
   repository: string;
@@ -154,9 +162,12 @@ export async function POST(
   const installation = await repo.gitHubInstallation.findFirst({
     where: { organizationId: String(session.organizationId), status: "active" },
     orderBy: { installedAt: "desc" },
-    select: { githubInstallationId: true },
+    select: { githubInstallationId: true, lastSeenAt: true },
   }).catch(() => null);
   if (!installation) return NextResponse.json({ ok: false, error: "github_not_connected" }, { status: 409 });
+  if (!installation.lastSeenAt || Date.now() - installation.lastSeenAt.getTime() > GITHUB_VALIDATION_FRESH_FOR_MS) {
+    return NextResponse.json({ ok: false, error: "github_read_validation_required" }, { status: 409 });
+  }
 
   const intake = parsed.intake;
   const repositories = uniqueGithubRepositories(intake.repositoryUrls);

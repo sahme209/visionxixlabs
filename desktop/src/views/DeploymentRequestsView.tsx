@@ -369,7 +369,10 @@ export function DeploymentRequestsView() {
     const result = await desktopClient.collectGitHubReleaseEvidence(requestId);
     setCollectingGitHubEvidenceId(undefined);
     if (!result.ok) {
-      setGitHubEvidenceErrors((current) => ({ ...current, [requestId]: result.error }));
+      const message = result.error === "github_read_validation_required"
+        ? "GitHub validation is older than 24 hours. Open Settings and run the harmless read-only validation before collecting release evidence."
+        : result.error;
+      setGitHubEvidenceErrors((current) => ({ ...current, [requestId]: message }));
       return;
     }
     setGitHubEvidence((current) => ({ ...current, [requestId]: result.data }));
