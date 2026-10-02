@@ -89,10 +89,11 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 export async function GET(): Promise<NextResponse> {
   try {
     const ctx = await currentContext();
-    if (!ctx.isAuthenticated || !ctx.userId) {
+    if (!ctx.isAuthenticated || !ctx.userId || !ctx.organizationId) {
       throw AxiomErrors.validation("auth.required", "Sign in required.");
     }
-    const sessions = await listActiveSessions(ctx.userId);
+    const sessions = (await listActiveSessions(ctx.userId))
+      .filter((session) => session.organizationId === ctx.organizationId);
     return NextResponse.json(apiSuccess({ sessions: sessions.map(presentSession) }), { status: 200 });
   } catch (err) {
     const axiomErr = toAxiomError(err);
@@ -103,7 +104,7 @@ export async function GET(): Promise<NextResponse> {
 export async function DELETE(request: NextRequest): Promise<NextResponse> {
   try {
     const ctx = await currentContext();
-    if (!ctx.isAuthenticated || !ctx.userId) {
+    if (!ctx.isAuthenticated || !ctx.userId || !ctx.organizationId) {
       throw AxiomErrors.validation("auth.required", "Sign in required.");
     }
     const sessionId = new URL(request.url).searchParams.get("id");
@@ -112,7 +113,7 @@ export async function DELETE(request: NextRequest): Promise<NextResponse> {
     }
     // Make sure the caller owns the session before revoking.
     const mine = await listActiveSessions(ctx.userId);
-    if (!mine.some((s) => s.id === sessionId)) {
+    if (!mine.some((s) => s.id === sessionId && s.organizationId === ctx.organizationId)) {
       throw AxiomErrors.validation("desktop.session.not_found", "Session not found or not owned by caller.");
     }
     await revokeDesktopSession(sessionId, "Revoked from web UI by owner.");

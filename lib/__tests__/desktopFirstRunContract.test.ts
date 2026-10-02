@@ -217,6 +217,18 @@ describe("desktop first-run contract", () => {
     }
   });
 
+  it("keeps paired-device management scoped to the current workspace", () => {
+    const route = readFileSync(join(root, "app/api/desktop/session/route.ts"), "utf8");
+    const panel = readFileSync(join(root, "components/auth/DesktopSessionsPanel.tsx"), "utf8");
+    expect(route).toContain("session.organizationId === ctx.organizationId");
+    expect(route).toContain("s.organizationId === ctx.organizationId");
+    expect(panel).toContain("Paired Axiom Agent devices");
+    expect(panel).toContain("Revoke device");
+    expect(panel).not.toContain("deviceFingerprint");
+    expect(panel).not.toContain("accessToken");
+    expect(panel).not.toContain("encryptedCredential");
+  });
+
   it("guides intake through validated stages without removing governance controls", () => {
     const intake = readFileSync(join(root, "desktop/src/views/DeploymentRequestsView.tsx"), "utf8");
     expect(intake).toContain('["Window", "Scope", "Execution", "Validation", "Recovery"]');
