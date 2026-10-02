@@ -17,6 +17,7 @@ import { authOptions } from "@/lib/auth";
 import { id } from "@/lib/domain/ids";
 import type { OrganizationId, UserId } from "@/lib/domain/ids";
 import { deriveWorkspaceIdFromEmail } from "@/lib/auth/workspaceId";
+import { prisma } from "@/lib/db";
 
 export interface CurrentContext {
   isAuthenticated: boolean;
@@ -26,8 +27,7 @@ export interface CurrentContext {
   organizationId?: OrganizationId;
   /** Stable workspace label rendered in the UI. */
   workspaceLabel?: string;
-  /** Roles attached to the session. Empty for the default workspace until
-   *  the session shape is extended in a future migration. */
+  /** Roles confirmed for the active workspace. */
   roles: string[];
 }
 
@@ -45,6 +45,11 @@ export async function currentContext(): Promise<CurrentContext> {
   }
   const userId = sessionUserId ? id.user(sessionUserId) : id.user(userEmail);
   const orgId = deriveWorkspaceIdFromEmail(userEmail);
+  const roles = await resolveWorkspaceRoles({
+    sessionRoles: (session.user as { roles?: string[] | null }).roles,
+    userId: String(userId),
+    organizationId: String(orgId),
+  });
   return {
     isAuthenticated: true,
     userId,
@@ -52,7 +57,7 @@ export async function currentContext(): Promise<CurrentContext> {
     displayName: session.user.name ?? userEmail,
     organizationId: orgId,
     workspaceLabel: deriveWorkspaceLabel(userEmail),
-    roles: deriveRolesFromSession(session.user as { roles?: string[] | null }),
+    roles,
   };
 }
 
@@ -66,12 +71,36 @@ function deriveWorkspaceLabel(email: string): string {
   return domain;
 }
 
-function deriveRolesFromSession(user: { roles?: string[] | null }): string[] {
-  // When the session augmentation lands, real roles come from here. Until
-  // then, the first user in a workspace is owner — which the apiGuard
-  // permission engine can promote conservatively.
-  if (Array.isArray(user.roles) && user.roles.length > 0) return user.roles;
-  return ["owner"];
+async function resolveWorkspaceRoles(input: {
+  sessionRoles?: string[] | null;
+  userId: string;
+  organizationId: string;
+}): Promise<string[]> {
+  // Membership is the source of truth for workspace authority. A signed-in
+  // identity without a current membership can read only public browser
+  // surfaces; it cannot gain integration or provider-policy authority by
+  // falling back to a synthetic "owner" role.
+  try {
+    const membership = await prisma.orgMembership.findUnique({
+      where: {
+        userId_organizationId: {
+          userId: input.userId,
+          organizationId: input.organizationId,
+        },
+      },
+      select: { role: true },
+    });
+    if (membership?.role) return [membership.role];
+  } catch {
+    // A missing migration or transient store failure must not expand access.
+    return [];
+  }
+
+  // Session roles remain a compatibility path only when they are explicitly
+  // present. They are never synthesized for a new or unmapped identity.
+  return Array.isArray(input.sessionRoles) && input.sessionRoles.length > 0
+    ? input.sessionRoles
+    : [];
 }
 
 /** Require an authenticated context — throws when not signed in. */
