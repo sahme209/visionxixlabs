@@ -29,11 +29,11 @@ export default function PlansPage() {
       <section className="grid gap-10 lg:grid-cols-[1.15fr_0.85fr] lg:items-end">
         <div>
           <p className="text-[10px] uppercase tracking-[0.22em] text-violet-300">Axiom Agent · design-partner access</p>
-          <h1 className="mt-5 max-w-3xl text-[clamp(2.8rem,5vw,5.25rem)] font-medium leading-[0.98] tracking-[-0.055em] text-zinc-100">Start with a no-charge pilot.</h1>
-          <p className="mt-6 max-w-2xl text-base leading-7 text-zinc-400 sm:text-lg">We are proving Axiom&apos;s governed deployment workflow with real teams before publishing paid plans. Pilot workspaces are invite-only, no-charge, and deliberately scoped.</p>
+          <h1 className="mt-5 max-w-3xl text-4xl font-medium leading-[1.02] tracking-[-0.05em] text-zinc-100 sm:text-5xl lg:text-6xl">Start with a no-charge pilot.</h1>
+          <p className="mt-6 max-w-2xl text-base leading-7 text-zinc-400 sm:text-lg">We are proving Axiom&apos;s governed deployment workflow with real teams before publishing paid plans. Pilot workspaces are invite-only, no-charge, and deliberately scoped around one release journey at a time.</p>
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
             <Link href="/contact?topic=axiom-pilot" className="inline-flex min-h-12 items-center justify-center rounded-full bg-zinc-100 px-6 text-sm font-semibold text-zinc-950 transition hover:bg-white">Request pilot access</Link>
-            <Link href="/demo" className="inline-flex min-h-12 items-center justify-center rounded-full border border-white/[0.12] bg-white/[0.04] px-6 text-sm font-medium text-zinc-200 transition hover:bg-white/[0.08]">Explore the isolated demo</Link>
+            <Link href="/product" className="inline-flex min-h-12 items-center justify-center rounded-full border border-white/[0.12] bg-white/[0.04] px-6 text-sm font-medium text-zinc-200 transition hover:bg-white/[0.08]">See the release workflow</Link>
           </div>
         </div>
         <aside className="relative isolate overflow-hidden rounded-2xl border border-violet-300/20 bg-[#10120f]/80 p-6 shadow-[0_24px_80px_rgba(0,0,0,0.22)] sm:p-7">
