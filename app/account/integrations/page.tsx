@@ -20,8 +20,18 @@ interface IntegrationStatusRepo {
   tenantIntegrationConnection: { findMany(args: { where: { organizationId: string; provider: { in: string[] } }; select: { provider: true; status: true; lastValidatedAt: true } }): Promise<CollaborationConnectionRow[]> };
 }
 
+const GITHUB_VALIDATION_FRESH_FOR_MS = 24 * 60 * 60 * 1000;
+
 function readableState(state: string) {
   return state.replaceAll("_", " ").replace(/\b\w/g, (letter) => letter.toUpperCase());
+}
+
+function githubConnectionState(installation: GitHubInstallationRow): string {
+  if (installation.status !== "active") return readableState(installation.status);
+  if (!installation.lastSeenAt) return "Installation recorded";
+  return Date.now() - installation.lastSeenAt.getTime() <= GITHUB_VALIDATION_FRESH_FOR_MS
+    ? "Read-only validated"
+    : "Validation overdue";
 }
 
 export const dynamic = "force-dynamic";
@@ -47,7 +57,7 @@ export default async function AccountIntegrationsPage() {
     ]);
     if (installation) {
       githubInstallationRowId = installation.id;
-      githubState = installation.status === "active" ? (installation.lastSeenAt ? "Read-only validated" : "Installation recorded") : readableState(installation.status);
+      githubState = githubConnectionState(installation);
     }
     const stateFor = (provider: "slack" | "teams") => {
       const connection = collaboration.find((item) => item.provider === provider);
