@@ -13,6 +13,7 @@ import {
   buildInstallationStatusResponse,
   type GitHubInstallationRepo,
 } from "@/lib/releaseops/githubInstallationResponder";
+import { getGithubConfig } from "@/lib/connectors/github/githubConfig";
 
 export const dynamic = "force-dynamic";
 
@@ -21,7 +22,7 @@ export async function GET(_req: NextRequest) {
   if (!ctx.isAuthenticated || !ctx.organizationId) {
     return NextResponse.json({ ok: false, error: "auth_required" }, { status: 401 });
   }
-  const appSlug = process.env.GITHUB_APP_SLUG ?? "";
+  const appSlug = getGithubConfig().appConfigured ? (process.env.GITHUB_APP_SLUG ?? "") : "";
   const r = await buildInstallationStatusResponse(
     prisma as unknown as GitHubInstallationRepo,
     ctx.organizationId,

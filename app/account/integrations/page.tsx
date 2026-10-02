@@ -11,6 +11,7 @@ import { currentContext } from "@/lib/auth/currentContext";
 import { isAdminOrOwner } from "@/lib/auth/platformAdmin";
 import { visibleTenantConnectionStatus } from "@/lib/integrations/tenantConnectionState";
 import { trustedIntegrationCallbackUrl } from "@/lib/integrations/trustedCallbackUrl";
+import { getGithubConfig } from "@/lib/connectors/github/githubConfig";
 import { prisma } from "@/lib/db";
 
 interface GitHubInstallationRow { id: string; status: string; lastSeenAt: Date | null }
@@ -40,8 +41,9 @@ export default async function AccountIntegrationsPage() {
   const context = await currentContext();
   if (!context.isAuthenticated || !context.email) redirect("/auth/signin?callbackUrl=/account/integrations");
   const canManageConnections = isAdminOrOwner({ email: context.email, roles: context.roles });
+  const githubConfig = getGithubConfig();
   const setupReady = {
-    github: Boolean(process.env.GITHUB_APP_SLUG?.trim() && trustedIntegrationCallbackUrl("/api/integrations/github/install-callback")),
+    github: Boolean(process.env.GITHUB_APP_SLUG?.trim() && githubConfig.appConfigured && trustedIntegrationCallbackUrl("/api/integrations/github/install-callback")),
     slack: Boolean(process.env.SLACK_CLIENT_ID?.trim() && process.env.SLACK_CLIENT_SECRET?.trim() && trustedIntegrationCallbackUrl("/api/integrations/slack/callback")),
     teams: Boolean(process.env.MICROSOFT_CLIENT_ID?.trim() && process.env.MICROSOFT_CLIENT_SECRET?.trim() && process.env.MICROSOFT_TENANT_ID?.trim() && trustedIntegrationCallbackUrl("/api/integrations/teams/callback")),
   };

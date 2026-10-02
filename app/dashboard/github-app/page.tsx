@@ -186,7 +186,7 @@ export default function GitHubAppPage() {
           ) : (
             <div className="mb-6 rounded-2xl border border-amber-500/[0.18] bg-amber-500/[0.04] p-5 text-[12.5px] text-zinc-300">
               <p className="font-semibold text-amber-200 mb-1">Install URL not yet configured</p>
-              <p>Set <code className="font-mono text-zinc-100">GITHUB_APP_SLUG</code> in the deploy environment to enable the one-click install link.</p>
+              <p>Configure the GitHub App slug, App ID, and private key in the server environment before enabling the one-click install link.</p>
             </div>
           )}
 
