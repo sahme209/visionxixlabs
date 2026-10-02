@@ -297,7 +297,7 @@ export function ChangelogClient() {
         >
           Changelog —{" "}
           <span className="relative inline-block">
-            phase by phase.
+            release by release.
             <span aria-hidden className="absolute left-0 -bottom-0.5 h-[2px] w-full rounded-full bg-gradient-to-r from-brand-coral via-fuchsia-400/70 to-transparent" />
           </span>
         </motion.h1>
@@ -318,7 +318,7 @@ export function ChangelogClient() {
         <div className="space-y-3">
           {ENTRIES.map((e, i) => (
             <motion.article
-              key={e.phases}
+              key={`${e.date}-${e.title}`}
               initial={{ opacity: 0, y: 12 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, amount: 0.2 }}
