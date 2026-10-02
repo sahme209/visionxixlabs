@@ -50,6 +50,13 @@ export async function GET(req: NextRequest): Promise<Response> {
     return NextResponse.redirect(new URL("/auth/success?integration=github&status=approval_requested", req.url));
   }
 
+  // The install endpoint has a closed callback vocabulary. A consumed state
+  // must not be enough for an unexpected provider action to create or revive
+  // an installation record.
+  if (setupAction !== "install" && setupAction !== "update") {
+    return NextResponse.redirect(new URL("/auth/success?integration=github&status=error", req.url));
+  }
+
   if (!installationId) {
     return NextResponse.redirect(new URL("/auth/success?integration=github&status=missing_installation", req.url));
   }
