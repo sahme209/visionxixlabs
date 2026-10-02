@@ -81,7 +81,7 @@ const CAPABILITIES: readonly Capability[] = [
 ];
 
 const ROLE_FILTERS: ReadonlyArray<{ id: Capability["role"] | "all"; label: string }> = [
-  { id: "all",          label: "All agent kernels" },
+  { id: "all",          label: "All release controls" },
   { id: "perception",   label: "Perception" },
   { id: "reasoning",    label: "Reasoning" },
   { id: "planning",     label: "Planning" },
@@ -89,6 +89,45 @@ const ROLE_FILTERS: ReadonlyArray<{ id: Capability["role"] | "all"; label: strin
   { id: "verification", label: "Verification" },
   { id: "memory",       label: "Memory" },
 ];
+
+// This is a deployment-governance product page, not an internal module index.
+// Keep the public inventory limited to the logic that can participate in a
+// governed release journey. Other kernels can remain internal until they have
+// a truthful product surface and an end-to-end customer workflow.
+const RELEASE_KERNELS = new Set<string>([
+  "lib/agents/detectorSignalEmitter",
+  "lib/agents/reasonerHypothesisWeaver",
+  "lib/agents/simulatorSandboxSpec",
+  "lib/agents/specWriter",
+  "lib/agents/testCoverageProposer",
+  "lib/agents/refactorSequencer",
+  "lib/agents/migrationCoordinator",
+  "lib/agents/githubPipelineRepairer",
+  "lib/agents/githubReleaseNotesDrafter",
+  "lib/agents/incidentTimelineWeaver",
+  "lib/agents/postmortemDrafter",
+  "lib/agents/databaseSchemaReviewer",
+  "lib/agents/slowQueryProposer",
+  "lib/agents/alertNoiseReducer",
+  "lib/agents/agentWorkflowOrchestrator",
+  "lib/agents/intentParser",
+  "lib/agents/anomalyDetector",
+  "lib/agents/changeRiskAssessor",
+  "lib/agents/secretsHygieneScanner",
+  "lib/agents/complianceControlMapper",
+  "lib/agents/policyGateEvaluator",
+  "lib/agents/boundaryGateCatalog",
+  "lib/agents/council",
+  "lib/agents/approverPacketAssembler",
+  "lib/agents/verifierPostExecChecker",
+  "lib/agents/auditorRationaleWriter",
+  "lib/agents/improverProposalSynthesizer",
+  "lib/agents/confidenceCalibrator",
+  "lib/agents/agentActivityAggregator",
+  "lib/agents/agentMemoryConsolidator",
+]);
+
+const RELEASE_CAPABILITIES = CAPABILITIES.filter((capability) => RELEASE_KERNELS.has(capability.kernel));
 
 const ROLE_TONE: Record<Capability["role"], string> = {
   perception:   "text-zinc-300 bg-white/[0.035] border-white/[0.1]",
@@ -103,7 +142,7 @@ export function CapabilitiesClient() {
   const [filter, setFilter] = useState<Capability["role"] | "all">("all");
 
   const visible = useMemo(
-    () => (filter === "all" ? CAPABILITIES : CAPABILITIES.filter((c) => c.role === filter)),
+    () => (filter === "all" ? RELEASE_CAPABILITIES : RELEASE_CAPABILITIES.filter((c) => c.role === filter)),
     [filter],
   );
 
@@ -141,16 +180,16 @@ export function CapabilitiesClient() {
           transition={{ delay: 0.2 }}
           className="mt-5 max-w-2xl text-[15px] text-zinc-400 leading-relaxed"
         >
-          Each engineer is a pure-function kernel in <span className="font-mono text-zinc-300">lib/agents/</span>{" "}
-          with closed-union types. A listed kernel proves that application logic exists;
-          it does not by itself prove a live provider connection or a released execution path.
+          A focused inventory of the release-governance logic behind Axiom: assess a change,
+          prepare evidence, require human approval, and verify the result. A listed capability
+          proves application logic exists; it does not by itself claim a live integration or automated deployment.
         </motion.p>
       </section>
 
       <section className="relative z-10 mx-auto max-w-6xl px-6 pb-12 md:px-10" aria-labelledby="operational-terms-heading">
         <div className="rounded-2xl border border-white/[0.07] bg-white/[0.02] p-6 md:p-8">
           <p className="mono-label">Operational terms</p>
-          <h2 id="operational-terms-heading" className="mt-3 text-2xl font-semibold tracking-tight text-white">What two common claims mean today.</h2>
+          <h2 id="operational-terms-heading" className="mt-3 text-2xl font-semibold tracking-tight text-white">What Axiom can honestly say today.</h2>
           <div className="mt-6 grid gap-4 md:grid-cols-2">
             <article className="rounded-xl border border-amber-500/20 bg-amber-500/[0.04] p-5">
               <h3 className="font-semibold text-amber-100">Blast radius limits</h3>
