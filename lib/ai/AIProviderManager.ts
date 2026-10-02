@@ -71,6 +71,7 @@ export class AIProviderManager {
   /** Configured providers in declared priority, then Mock last. */
   private chain(opts?: { only?: AIProviderName; allowedProviders?: readonly AIProviderName[]; fallbackOrder?: readonly AIProviderName[] }): AIProvider[] {
     if (opts?.only) {
+      if (opts.allowedProviders && !opts.allowedProviders.includes(opts.only)) return [this.providers.get("mock")!];
       const p = this.providers.get(opts.only);
       return p ? [p] : [this.providers.get("mock")!];
     }
@@ -119,7 +120,7 @@ export class AIProviderManager {
 
   async generateText(prompt: string, options?: AIRequestOptions & { only?: AIProviderName }): Promise<AITextResponse> {
     const out = await runWithFallback<AITextResponse>(
-      this.chain({ only: options?.only }),
+      this.chain({ only: options?.only, allowedProviders: options?.allowedProviders, fallbackOrder: options?.fallbackOrder }),
       (p) => p.generateText(prompt, options),
       { task: "generate_text", correlationId: options?.correlationId, organizationId: options?.organizationId },
     );
@@ -128,7 +129,7 @@ export class AIProviderManager {
 
   async summarize(text: string, options?: AIRequestOptions & { only?: AIProviderName }): Promise<AITextResponse> {
     const out = await runWithFallback<AITextResponse>(
-      this.chain({ only: options?.only }),
+      this.chain({ only: options?.only, allowedProviders: options?.allowedProviders, fallbackOrder: options?.fallbackOrder }),
       (p) => p.summarize(text, options),
       { task: "summarize", correlationId: options?.correlationId, organizationId: options?.organizationId },
     );
@@ -137,7 +138,7 @@ export class AIProviderManager {
 
   async classify(text: string, labels: readonly string[], options?: AIRequestOptions & { only?: AIProviderName }): Promise<AIClassifyResponse> {
     const out = await runWithFallback<AIClassifyResponse>(
-      this.chain({ only: options?.only }),
+      this.chain({ only: options?.only, allowedProviders: options?.allowedProviders, fallbackOrder: options?.fallbackOrder }),
       (p) => p.classify(text, labels, options),
       { task: "classify", correlationId: options?.correlationId, organizationId: options?.organizationId },
     );
@@ -150,7 +151,7 @@ export class AIProviderManager {
     options?: AIRequestOptions & { only?: AIProviderName },
   ): Promise<AIStructuredResponse<T>> {
     const out = await runWithFallback<AIStructuredResponse<T>>(
-      this.chain({ only: options?.only }),
+      this.chain({ only: options?.only, allowedProviders: options?.allowedProviders, fallbackOrder: options?.fallbackOrder }),
       (p) => p.extractStructuredData<T>(text, schemaHint, options),
       { task: "extract_structured_data", correlationId: options?.correlationId, organizationId: options?.organizationId },
     );
@@ -161,7 +162,7 @@ export class AIProviderManager {
     // Streaming uses the first configured provider; we don't try to
     // re-stream from a fallback mid-stream. If it fails before yielding,
     // we surface a single error chunk and end.
-    const chain = this.chain({ only: options?.only });
+    const chain = this.chain({ only: options?.only, allowedProviders: options?.allowedProviders, fallbackOrder: options?.fallbackOrder });
     const head = chain[0]!;
     const t0 = Date.now();
     try {

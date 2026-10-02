@@ -70,4 +70,27 @@ describe("AIProviderManager", () => {
     expect(rows[0].provider).toBe("github_models");
     expect(rows[rows.length - 1].provider).toBe("mock");
   });
+
+  it("carries the workspace allowlist and fallback order into the runtime chain", () => {
+    process.env.GITHUB_TOKEN = "test-github-token";
+    process.env.GROQ_API_KEY = "test-groq-key";
+    _resetAIProviderManagerForTests();
+    const mgr = getAIProviderManager();
+    const runtimeChain = (mgr as unknown as {
+      chain: (opts: { allowedProviders: readonly string[]; fallbackOrder: readonly string[] }) => Array<{ name: string }>;
+    }).chain({ allowedProviders: ["groq"], fallbackOrder: ["groq"] });
+
+    expect(runtimeChain.map((provider) => provider.name)).toEqual(["groq", "mock"]);
+  });
+
+  it("does not honor a direct provider request outside the workspace allowlist", () => {
+    process.env.GITHUB_TOKEN = "test-github-token";
+    _resetAIProviderManagerForTests();
+    const mgr = getAIProviderManager();
+    const runtimeChain = (mgr as unknown as {
+      chain: (opts: { only: string; allowedProviders: readonly string[] }) => Array<{ name: string }>;
+    }).chain({ only: "github_models", allowedProviders: ["groq"] });
+
+    expect(runtimeChain.map((provider) => provider.name)).toEqual(["mock"]);
+  });
 });
