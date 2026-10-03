@@ -16,6 +16,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
+import { ReleasePlaybookStageCard } from "@/components/dashboard/ReleasePlaybookStageCard";
 
 interface PlaybookData {
   id: string;
@@ -143,9 +144,107 @@ export default function UnifiedPlaybookPage() {
               <p className="text-[12px] text-zinc-400">
                 All 9 stages of your release journey. Click any stage to expand details.
               </p>
-              {/* TODO: Render 9 stage cards with status indicators */}
-              <div className="rounded-2xl border border-white/[0.08] bg-white/[0.025] p-5 text-[12px] text-zinc-400">
-                Stage cards coming soon (9 stages: Request, Readiness, Playbook, Risk, Approval, Execution, Validation, Evidence, Closure)
+              <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
+                <ReleasePlaybookStageCard
+                  stage="request"
+                  status="complete"
+                  title="Request"
+                  description={data.request.summary as string | null}
+                  facts={[
+                    { label: "Requested", value: `${new Date(data.lifecycle.requestedAt).toLocaleDateString()}` },
+                    { label: "Owner", value: data.request.owner as string || "—" },
+                    { label: "Environment", value: data.request.targetEnvironment as string || "—" },
+                  ]}
+                  detailLink={`#request`}
+                />
+                <ReleasePlaybookStageCard
+                  stage="readiness"
+                  status={data.readiness.blockerCount as number > 0 ? "warning" : "complete"}
+                  title="Readiness"
+                  description={`Score: ${data.readiness.overallScore}/100 (${data.readiness.riskLevel})`}
+                  facts={[
+                    { label: "Score", value: `${data.readiness.overallScore}/100` },
+                    { label: "Risk", value: data.readiness.riskLevel as string },
+                    { label: "Blockers", value: `${data.readiness.blockerCount}` },
+                  ]}
+                  detailLink={`#readiness`}
+                />
+                <ReleasePlaybookStageCard
+                  stage="playbook"
+                  status="pending"
+                  title="Playbook"
+                  description={`${data.playbook.stepCount} steps`}
+                  facts={[
+                    { label: "Steps", value: `${data.playbook.stepCount}` },
+                    { label: "Cherry-picks", value: `${data.playbook.cherryPickCount}` },
+                    { label: "Violations", value: `${data.playbook.policyViolationCount}` },
+                  ]}
+                  detailLink={`#playbook`}
+                />
+                <ReleasePlaybookStageCard
+                  stage="risk"
+                  status="pending"
+                  title="Risk"
+                  description={`Blast radius: ${data.risk.blastRadius}`}
+                  facts={[
+                    { label: "Radius", value: data.risk.blastRadius as string },
+                    { label: "Services", value: `${data.risk.affectedServiceCount}` },
+                  ]}
+                  detailLink={`#risk`}
+                />
+                <ReleasePlaybookStageCard
+                  stage="approval"
+                  status={data.approval.granted as number >= data.approval.required as number ? "complete" : "pending"}
+                  title="Approval"
+                  description={`${data.approval.granted}/${data.approval.required} approvals`}
+                  facts={[
+                    { label: "Granted", value: `${data.approval.granted}` },
+                    { label: "Required", value: `${data.approval.required}` },
+                  ]}
+                  detailLink={`#approval`}
+                />
+                <ReleasePlaybookStageCard
+                  stage="execution"
+                  status={data.execution.status as string === "not_started" ? "pending" : "pending"}
+                  title="Execution"
+                  description={data.execution.status as string}
+                  facts={[
+                    { label: "Status", value: data.execution.status as string },
+                  ]}
+                  detailLink={`#execution`}
+                />
+                <ReleasePlaybookStageCard
+                  stage="validation"
+                  status="pending"
+                  title="Validation"
+                  description={`${data.validation.planCount} checks planned`}
+                  facts={[
+                    { label: "Planned", value: `${data.validation.planCount}` },
+                    { label: "Results", value: `${data.validation.resultsCount}` },
+                  ]}
+                  detailLink={`#validation`}
+                />
+                <ReleasePlaybookStageCard
+                  stage="evidence"
+                  status={data.evidence.generatedAt ? "complete" : "pending"}
+                  title="Evidence"
+                  description={data.evidence.generatedAt ? "Pack ready" : "Pending"}
+                  facts={[
+                    { label: "Generated", value: data.evidence.generatedAt ? "Yes" : "No" },
+                    { label: "Signed", value: data.evidence.signedAt ? "Yes" : "No" },
+                  ]}
+                  detailLink={`#evidence`}
+                />
+                <ReleasePlaybookStageCard
+                  stage="closure"
+                  status="pending"
+                  title="Closure"
+                  description={data.closure.status as string}
+                  facts={[
+                    { label: "Status", value: data.closure.status as string },
+                  ]}
+                  detailLink={`#closure`}
+                />
               </div>
             </div>
           )}
