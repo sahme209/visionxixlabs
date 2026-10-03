@@ -20,12 +20,16 @@
 
 import { NextResponse, type NextRequest } from "next/server";
 import { currentContext } from "@/lib/auth/currentContext";
-import { apiOk, apiErr } from "@/lib/api";
+import { apiOk, apiErr, resolveCorrelationId } from "@/lib/api";
 import { AxiomErrors } from "@/lib/errors/axiomErrors";
 import { prisma } from "@/lib/db";
-import { id as idFactory, newCorrelationId } from "@/lib/domain/ids";
 
 export const dynamic = "force-dynamic";
+
+interface DataSourceState {
+  available: boolean;
+  reason?: string; // Why unavailable (e.g., "schema not yet implemented")
+}
 
 interface UnifiedPlaybookResponse {
   id: string;
@@ -64,7 +68,7 @@ interface UnifiedPlaybookResponse {
 
   // Playbook stage
   playbook: {
-    stepCount: number;
+    stepCount: number | DataSourceState;
     cherryPickCount: number;
     policyViolationCount: number;
   };
@@ -72,7 +76,7 @@ interface UnifiedPlaybookResponse {
   // Risk stage
   risk: {
     blastRadius: string;
-    affectedServiceCount: number;
+    affectedServiceCount: number | DataSourceState;
   };
 
   // Approval stage
@@ -91,8 +95,8 @@ interface UnifiedPlaybookResponse {
 
   // Validation stage
   validation: {
-    planCount: number;
-    resultsCount: number;
+    planCount: number | DataSourceState;
+    resultsCount: number | DataSourceState;
     status: string;
   };
 
@@ -124,10 +128,7 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ): Promise<NextResponse<ResponseBody>> {
   // Obtain or generate correlation ID for this request
-  const headerCorrelationId = request.headers.get("x-correlation-id");
-  const correlationId = headerCorrelationId
-    ? idFactory.correlation(headerCorrelationId)
-    : newCorrelationId();
+  const correlationId = resolveCorrelationId(request.headers);
 
   try {
     const ctx = await currentContext();
@@ -182,12 +183,19 @@ export async function GET(
       }),
     ]);
 
-    // Models that don't yet exist in schema; set to 0 for now
-    // TODO: ReleaseExecution model with steps
-    // TODO: ReleaseValidation model with results
-    // TODO: ReleaseServiceImpact model for affected services
-    const validationPlans: any[] = [];
-    const affectedServices = 0;
+    // Data sources that don't yet exist in schema
+    const executionStepsUnavailable: DataSourceState = {
+      available: false,
+      reason: "ReleaseExecution schema model not yet implemented",
+    };
+    const validationUnavailable: DataSourceState = {
+      available: false,
+      reason: "ReleaseValidation schema model not yet implemented",
+    };
+    const serviceImpactUnavailable: DataSourceState = {
+      available: false,
+      reason: "ReleaseServiceImpact schema model not yet implemented",
+    };
 
     // Verify org membership
     if (!release || release.organizationId !== orgId) {
@@ -230,14 +238,14 @@ export async function GET(
       },
 
       playbook: {
-        stepCount: 0, // TODO: Query release execution steps (ReleaseExecution model not yet defined)
+        stepCount: executionStepsUnavailable,
         cherryPickCount: cherryPicks,
         policyViolationCount: policyViolations,
       },
 
       risk: {
         blastRadius: readiness?.driftRisk ?? 0 > 70 ? "critical" : readiness?.driftRisk ?? 0 > 50 ? "high" : "low",
-        affectedServiceCount: affectedServices,
+        affectedServiceCount: serviceImpactUnavailable,
       },
 
       approval: {
@@ -253,9 +261,9 @@ export async function GET(
       },
 
       validation: {
-        planCount: validationPlans.length,
-        resultsCount: validationPlans.reduce((sum: number, p: any) => sum + ((p.results as any[])?.length ?? 0), 0),
-        status: validationPlans.length === 0 ? "not_run" : "completed",
+        planCount: validationUnavailable,
+        resultsCount: validationUnavailable,
+        status: "unavailable",
       },
 
       evidence: {
