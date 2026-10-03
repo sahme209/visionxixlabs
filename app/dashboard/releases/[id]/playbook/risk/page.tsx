@@ -5,11 +5,16 @@ import { useParams } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 
+interface DataSourceState {
+  available: boolean;
+  reason?: string;
+}
+
 interface PlaybookData {
   id: string;
   risk: {
     blastRadius: string;
-    affectedServiceCount: number;
+    affectedServiceCount: number | DataSourceState;
   };
 }
 
@@ -87,15 +92,28 @@ export default function ReleaseRiskDetailPage() {
             <h2 className="text-[12px] font-mono uppercase tracking-wider text-zinc-400 mb-3">
               Affected Services
             </h2>
-            <div className="rounded-2xl border border-white/[0.08] bg-white/[0.025] p-4">
-              <p className="text-[28px] font-bold text-white">{risk.affectedServiceCount}</p>
-              <p className="text-[12px] text-zinc-400 mt-1">
-                {risk.affectedServiceCount === 0
-                  ? "No service impact detected"
-                  : risk.affectedServiceCount === 1
-                    ? "1 service will be affected"
-                    : `${risk.affectedServiceCount} services will be affected`}
-              </p>
+            <div className={`rounded-2xl border p-4 ${
+              typeof risk.affectedServiceCount === 'number'
+                ? 'border-white/[0.08] bg-white/[0.025]'
+                : 'border-zinc-500/[0.25] bg-zinc-500/[0.05]'
+            }`}>
+              {typeof risk.affectedServiceCount === 'number' ? (
+                <>
+                  <p className="text-[28px] font-bold text-white">{risk.affectedServiceCount}</p>
+                  <p className="text-[12px] text-zinc-400 mt-1">
+                    {risk.affectedServiceCount === 0
+                      ? "No service impact detected"
+                      : risk.affectedServiceCount === 1
+                        ? "1 service will be affected"
+                        : `${risk.affectedServiceCount} services will be affected`}
+                  </p>
+                </>
+              ) : (
+                <>
+                  <p className="text-[14px] font-semibold text-zinc-300 mb-1">Preview</p>
+                  <p className="text-[12px] text-zinc-400">{risk.affectedServiceCount.reason}</p>
+                </>
+              )}
             </div>
           </section>
 

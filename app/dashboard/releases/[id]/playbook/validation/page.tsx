@@ -5,11 +5,16 @@ import { useParams } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 
+interface DataSourceState {
+  available: boolean;
+  reason?: string;
+}
+
 interface PlaybookData {
   id: string;
   validation: {
-    planCount: number;
-    resultsCount: number;
+    planCount: number | DataSourceState;
+    resultsCount: number | DataSourceState;
     status: string;
   };
 }
@@ -52,7 +57,9 @@ export default function ReleaseValidationDetailPage() {
   }
 
   const validation = data.validation;
-  const progress = validation.planCount > 0 ? Math.round((validation.resultsCount / validation.planCount) * 100) : 0;
+  const planCountNum = typeof validation.planCount === 'number' ? validation.planCount : 0;
+  const resultsCountNum = typeof validation.resultsCount === 'number' ? validation.resultsCount : 0;
+  const progress = planCountNum > 0 ? Math.round((resultsCountNum / planCountNum) * 100) : 0;
 
   return (
     <div className="relative">
@@ -73,22 +80,44 @@ export default function ReleaseValidationDetailPage() {
               Test Coverage
             </h2>
             <div className="grid grid-cols-2 gap-4">
-              <div className="rounded-xl border border-white/[0.08] bg-white/[0.025] p-4">
+              <div className={`rounded-xl border p-4 ${
+                typeof validation.planCount === 'number'
+                  ? 'border-white/[0.08] bg-white/[0.025]'
+                  : 'border-zinc-500/[0.25] bg-zinc-500/[0.05]'
+              }`}>
                 <p className="text-[10px] font-mono uppercase tracking-wider text-zinc-400 mb-2">
                   Plans
                 </p>
-                <p className="text-[28px] font-bold text-white">{validation.planCount}</p>
+                {typeof validation.planCount === 'number' ? (
+                  <p className="text-[28px] font-bold text-white">{validation.planCount}</p>
+                ) : (
+                  <>
+                    <p className="text-[14px] font-semibold text-zinc-300 mb-1">Preview</p>
+                    <p className="text-[12px] text-zinc-400">{validation.planCount.reason}</p>
+                  </>
+                )}
               </div>
-              <div className="rounded-xl border border-white/[0.08] bg-white/[0.025] p-4">
+              <div className={`rounded-xl border p-4 ${
+                typeof validation.resultsCount === 'number'
+                  ? 'border-white/[0.08] bg-white/[0.025]'
+                  : 'border-zinc-500/[0.25] bg-zinc-500/[0.05]'
+              }`}>
                 <p className="text-[10px] font-mono uppercase tracking-wider text-zinc-400 mb-2">
                   Results
                 </p>
-                <p className="text-[28px] font-bold text-white">{validation.resultsCount}</p>
+                {typeof validation.resultsCount === 'number' ? (
+                  <p className="text-[28px] font-bold text-white">{validation.resultsCount}</p>
+                ) : (
+                  <>
+                    <p className="text-[14px] font-semibold text-zinc-300 mb-1">Preview</p>
+                    <p className="text-[12px] text-zinc-400">{validation.resultsCount.reason}</p>
+                  </>
+                )}
               </div>
             </div>
           </section>
 
-          {validation.planCount > 0 && (
+          {planCountNum > 0 && (
             <section>
               <h2 className="text-[12px] font-mono uppercase tracking-wider text-zinc-400 mb-3">
                 Completion
@@ -96,7 +125,7 @@ export default function ReleaseValidationDetailPage() {
               <div className="rounded-2xl border border-white/[0.08] bg-white/[0.025] p-4">
                 <div className="flex items-center justify-between mb-3">
                   <span className="text-[13px] text-white">
-                    {validation.resultsCount} of {validation.planCount} complete
+                    {resultsCountNum} of {planCountNum} complete
                   </span>
                   <span className="text-[13px] font-bold text-white">{progress}%</span>
                 </div>

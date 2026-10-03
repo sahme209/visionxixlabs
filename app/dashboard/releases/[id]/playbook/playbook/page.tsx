@@ -5,11 +5,16 @@ import { useParams } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 
+interface DataSourceState {
+  available: boolean;
+  reason?: string;
+}
+
 interface PlaybookData {
   id: string;
   releaseTag: string | null;
   playbook: {
-    stepCount: number;
+    stepCount: number | DataSourceState;
     cherryPickCount: number;
     policyViolationCount: number;
   };
@@ -68,11 +73,22 @@ export default function ReleasePlaybookStageDetailPage() {
         <h1 className="text-[24px] font-bold text-white mb-6">Playbook Details</h1>
 
         <div className="grid grid-cols-3 gap-4 mb-6">
-          <div className="rounded-xl border border-white/[0.08] bg-white/[0.025] p-4">
+          <div className={`rounded-xl border p-4 ${
+            typeof playbook.stepCount === 'number'
+              ? 'border-white/[0.08] bg-white/[0.025]'
+              : 'border-zinc-500/[0.25] bg-zinc-500/[0.05]'
+          }`}>
             <p className="text-[10px] font-mono uppercase tracking-wider text-zinc-400 mb-2">
               Deployment Steps
             </p>
-            <p className="text-[28px] font-bold text-white">{playbook.stepCount}</p>
+            {typeof playbook.stepCount === 'number' ? (
+              <p className="text-[28px] font-bold text-white">{playbook.stepCount}</p>
+            ) : (
+              <>
+                <p className="text-[14px] font-semibold text-zinc-300 mb-1">Preview</p>
+                <p className="text-[12px] text-zinc-400">{playbook.stepCount.reason}</p>
+              </>
+            )}
           </div>
           <div className="rounded-xl border border-white/[0.08] bg-white/[0.025] p-4">
             <p className="text-[10px] font-mono uppercase tracking-wider text-zinc-400 mb-2">
