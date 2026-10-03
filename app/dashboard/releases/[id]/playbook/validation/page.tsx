@@ -149,7 +149,13 @@ export default function ReleaseValidationDetailPage() {
                   No validation plans created yet. Create test plans after approval.
                 </p>
               </div>
-            ) : validation.resultsCount === validation.planCount ? (
+            ) : typeof validation.planCount !== "number" || typeof validation.resultsCount !== "number" ? (
+              <div className="rounded-2xl border border-zinc-500/[0.15] bg-zinc-500/[0.04] p-4">
+                <p className="text-[12px] text-zinc-200">
+                  Validation status is not yet available for this release.
+                </p>
+              </div>
+            ) : resultsCountNum === planCountNum ? (
               <div className="rounded-2xl border border-emerald-500/[0.15] bg-emerald-500/[0.04] p-4">
                 <p className="text-[12px] text-emerald-200">
                   ✓ All validation checks completed successfully.
@@ -158,7 +164,7 @@ export default function ReleaseValidationDetailPage() {
             ) : (
               <div className="rounded-2xl border border-amber-500/[0.15] bg-amber-500/[0.04] p-4">
                 <p className="text-[12px] text-amber-200">
-                  ⏳ Validation in progress. {validation.planCount - validation.resultsCount} checks remaining.
+                  ⏳ Validation in progress. {planCountNum - resultsCountNum} checks remaining.
                 </p>
               </div>
             )}
