@@ -12,7 +12,7 @@ export default function DocsLayout({ children }: { children: React.ReactNode }) 
       <Navigation />
 
       <div className="relative pt-24 pb-16 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto grid lg:grid-cols-[260px_minmax(0,1fr)] gap-8">
+        <div className="max-w-[1400px] mx-auto grid lg:grid-cols-[260px_minmax(0,1fr)] gap-8">
           {/* Sidebar */}
           <aside className="lg:sticky lg:top-24 lg:self-start lg:max-h-[calc(100vh-7rem)] lg:overflow-y-auto pr-2 lg:pr-4 lg:border-r lg:border-white/[0.04]">
             <div className="mb-6 pb-4 border-b border-white/[0.04]">
