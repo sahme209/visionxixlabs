@@ -39,6 +39,17 @@ interface PlaybookData {
 
 type Tab = "what" | "attention" | "changed";
 
+/** Stage counts may arrive as a plain number or as a DataSourceState
+ * ({ available: false, reason }) when the backing model doesn't exist yet.
+ * Stringifying the object directly would render "[object Object]". */
+function describeCount(value: unknown): string {
+  if (typeof value === "number") return String(value);
+  if (value && typeof value === "object" && "available" in value && (value as { available: unknown }).available === false) {
+    return "Preview";
+  }
+  return "—";
+}
+
 export default function UnifiedPlaybookPage() {
   const params = useParams();
   const releaseId = String(params.id);
@@ -159,13 +170,13 @@ export default function UnifiedPlaybookPage() {
                 />
                 <ReleasePlaybookStageCard
                   stage="readiness"
-                  status={data.readiness.blockerCount as number > 0 ? "warning" : "complete"}
+                  status={!data.readiness.evaluatedAt ? "pending" : (data.readiness.blockerCount as number) > 0 ? "warning" : "complete"}
                   title="Readiness"
-                  description={`Score: ${data.readiness.overallScore}/100 (${data.readiness.riskLevel})`}
+                  description={!data.readiness.evaluatedAt ? "Not yet evaluated" : `Score: ${data.readiness.overallScore}/100 (${data.readiness.riskLevel})`}
                   facts={[
-                    { label: "Score", value: `${data.readiness.overallScore}/100` },
+                    { label: "Score", value: data.readiness.evaluatedAt ? `${data.readiness.overallScore}/100` : "—" },
                     { label: "Risk", value: data.readiness.riskLevel as string },
-                    { label: "Blockers", value: `${data.readiness.blockerCount}` },
+                    { label: "Blockers", value: data.readiness.evaluatedAt ? `${data.readiness.blockerCount}` : "—" },
                   ]}
                   detailLink={`#readiness`}
                 />
@@ -173,9 +184,9 @@ export default function UnifiedPlaybookPage() {
                   stage="playbook"
                   status="pending"
                   title="Playbook"
-                  description={`${data.playbook.stepCount} steps`}
+                  description={`${describeCount(data.playbook.stepCount)} steps`}
                   facts={[
-                    { label: "Steps", value: `${data.playbook.stepCount}` },
+                    { label: "Steps", value: describeCount(data.playbook.stepCount) },
                     { label: "Cherry-picks", value: `${data.playbook.cherryPickCount}` },
                     { label: "Violations", value: `${data.playbook.policyViolationCount}` },
                   ]}
@@ -188,13 +199,13 @@ export default function UnifiedPlaybookPage() {
                   description={`Blast radius: ${data.risk.blastRadius}`}
                   facts={[
                     { label: "Radius", value: data.risk.blastRadius as string },
-                    { label: "Services", value: `${data.risk.affectedServiceCount}` },
+                    { label: "Services", value: describeCount(data.risk.affectedServiceCount) },
                   ]}
                   detailLink={`#risk`}
                 />
                 <ReleasePlaybookStageCard
                   stage="approval"
-                  status={(data.approval.granted as unknown as number) >= (data.approval.required as unknown as number) ? "complete" : "pending"}
+                  status={(data.approval.required as unknown as number) > 0 && (data.approval.granted as unknown as number) >= (data.approval.required as unknown as number) ? "complete" : "pending"}
                   title="Approval"
                   description={`${data.approval.granted as unknown as number}/${data.approval.required as unknown as number} approvals`}
                   facts={[
@@ -205,7 +216,15 @@ export default function UnifiedPlaybookPage() {
                 />
                 <ReleasePlaybookStageCard
                   stage="execution"
-                  status={data.execution.status as string === "not_started" ? "pending" : "pending"}
+                  status={
+                    data.execution.status === "completed"
+                      ? "complete"
+                      : data.execution.status === "failed"
+                        ? "error"
+                        : data.execution.status === "rolled_back"
+                          ? "warning"
+                          : "pending"
+                  }
                   title="Execution"
                   description={data.execution.status as string}
                   facts={[
@@ -217,10 +236,10 @@ export default function UnifiedPlaybookPage() {
                   stage="validation"
                   status="pending"
                   title="Validation"
-                  description={`${data.validation.planCount} checks planned`}
+                  description={`${describeCount(data.validation.planCount)} checks planned`}
                   facts={[
-                    { label: "Planned", value: `${data.validation.planCount}` },
-                    { label: "Results", value: `${data.validation.resultsCount}` },
+                    { label: "Planned", value: describeCount(data.validation.planCount) },
+                    { label: "Results", value: describeCount(data.validation.resultsCount) },
                   ]}
                   detailLink={`#validation`}
                 />
@@ -237,7 +256,7 @@ export default function UnifiedPlaybookPage() {
                 />
                 <ReleasePlaybookStageCard
                   stage="closure"
-                  status="pending"
+                  status={data.closure.status === "closed" ? "complete" : "pending"}
                   title="Closure"
                   description={data.closure.status as string}
                   facts={[
@@ -255,7 +274,18 @@ export default function UnifiedPlaybookPage() {
                 Only items that need action. Everything else is green.
               </p>
               <div className="space-y-3">
-                {(data.readiness.blockerCount as unknown as number) > 0 && (
+                {!data.readiness.evaluatedAt && (
+                  <div className="rounded-2xl border border-zinc-500/[0.25] bg-zinc-500/[0.04] p-5">
+                    <div className="flex items-start gap-3">
+                      <div className="text-zinc-400 mt-0.5">•</div>
+                      <div className="flex-1">
+                        <h4 className="text-[13px] font-semibold text-zinc-300 mb-1">Readiness not yet evaluated</h4>
+                        <p className="text-[12px] text-zinc-400">No readiness snapshot has been recorded for this release. Blockers cannot be determined until an evaluation runs.</p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+                {Boolean(data.readiness.evaluatedAt) && (data.readiness.blockerCount as unknown as number) > 0 && (
                   <div className="rounded-2xl border border-orange-500/[0.25] bg-orange-500/[0.04] p-5">
                     <div className="flex items-start gap-3">
                       <div className="text-orange-400 mt-0.5">⚠️</div>
@@ -300,7 +330,7 @@ export default function UnifiedPlaybookPage() {
                     </div>
                   </div>
                 )}
-                {(data.readiness.blockerCount as unknown as number) === 0 && (data.approval.required as unknown as number) === (data.approval.granted as unknown as number) && (data.playbook.policyViolationCount as unknown as number) === 0 && (
+                {Boolean(data.readiness.evaluatedAt) && (data.readiness.blockerCount as unknown as number) === 0 && (data.approval.required as unknown as number) === (data.approval.granted as unknown as number) && (data.playbook.policyViolationCount as unknown as number) === 0 && (
                   <div className="rounded-2xl border border-white/[0.08] bg-white/[0.025] p-5 text-[12px] text-zinc-400">
                     ✓ No blockers, no pending approvals, no policy violations. Ready to proceed.
                   </div>

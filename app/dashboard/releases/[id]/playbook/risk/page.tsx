@@ -22,6 +22,7 @@ const BLAST_COLORS: Record<string, string> = {
   low: "bg-emerald-500/10 text-emerald-300 border-emerald-500/25",
   high: "bg-orange-500/10 text-orange-300 border-orange-500/25",
   critical: "bg-rose-500/10 text-rose-300 border-rose-500/25",
+  unscored: "bg-zinc-500/10 text-zinc-400 border-zinc-500/25",
 };
 
 export default function ReleaseRiskDetailPage() {
@@ -81,7 +82,7 @@ export default function ReleaseRiskDetailPage() {
             <h2 className="text-[12px] font-mono uppercase tracking-wider text-zinc-400 mb-3">
               Blast Radius
             </h2>
-            <div className={`rounded-xl px-4 py-3 inline-block border ${BLAST_COLORS[risk.blastRadius] || BLAST_COLORS.low}`}>
+            <div className={`rounded-xl px-4 py-3 inline-block border ${BLAST_COLORS[risk.blastRadius] || BLAST_COLORS.unscored}`}>
               <span className="text-[13px] font-semibold uppercase tracking-wider">
                 {risk.blastRadius}
               </span>

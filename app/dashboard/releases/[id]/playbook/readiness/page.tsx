@@ -70,6 +70,7 @@ export default function ReleaseReadinessDetailPage() {
   }
 
   const readiness = data.readiness;
+  const hasBeenEvaluated = readiness.evaluatedAt !== null;
   const scorePercentage = Math.round((readiness.overallScore / 100) * 100);
 
   return (
@@ -92,28 +93,34 @@ export default function ReleaseReadinessDetailPage() {
               Overall Readiness Score
             </h2>
             <div className="rounded-2xl border border-white/[0.08] bg-white/[0.025] p-6">
-              <div className="flex items-baseline gap-3 mb-4">
-                <span className="text-[48px] font-bold text-white">{readiness.overallScore}</span>
-                <span className="text-[14px] text-zinc-400">/100</span>
-              </div>
+              {hasBeenEvaluated ? (
+                <>
+                  <div className="flex items-baseline gap-3 mb-4">
+                    <span className="text-[48px] font-bold text-white">{readiness.overallScore}</span>
+                    <span className="text-[14px] text-zinc-400">/100</span>
+                  </div>
 
-              {/* Progress bar */}
-              <div className="w-full h-2 bg-zinc-800 rounded-full overflow-hidden mb-4">
-                <div
-                  className="h-full bg-gradient-to-r from-rose-500 to-emerald-500 transition-all"
-                  style={{ width: `${scorePercentage}%` }}
-                />
-              </div>
+                  {/* Progress bar */}
+                  <div className="w-full h-2 bg-zinc-800 rounded-full overflow-hidden mb-4">
+                    <div
+                      className="h-full bg-gradient-to-r from-rose-500 to-emerald-500 transition-all"
+                      style={{ width: `${scorePercentage}%` }}
+                    />
+                  </div>
 
-              <p className="text-[12px] text-zinc-400">
-                {scorePercentage < 40
-                  ? "High risk — critical issues must be resolved"
-                  : scorePercentage < 70
-                    ? "Medium risk — issues should be addressed"
-                    : scorePercentage < 85
-                      ? "Good — ready for controlled deployment"
-                      : "Excellent — ready for deployment"}
-              </p>
+                  <p className="text-[12px] text-zinc-400">
+                    {scorePercentage < 40
+                      ? "High risk — critical issues must be resolved"
+                      : scorePercentage < 70
+                        ? "Medium risk — issues should be addressed"
+                        : scorePercentage < 85
+                          ? "Good — ready for controlled deployment"
+                          : "Excellent — ready for deployment"}
+                  </p>
+                </>
+              ) : (
+                <p className="text-[13px] text-zinc-400">No readiness snapshot has been recorded for this release yet. A score will appear here once an evaluation runs.</p>
+              )}
             </div>
           </section>
 
@@ -134,7 +141,11 @@ export default function ReleaseReadinessDetailPage() {
             <h2 className="text-[12px] font-mono uppercase tracking-wider text-zinc-400 mb-3">
               Readiness Blockers
             </h2>
-            {readiness.blockerCount > 0 ? (
+            {!hasBeenEvaluated ? (
+              <div className="rounded-2xl border border-zinc-500/[0.25] bg-zinc-500/[0.04] p-4">
+                <p className="text-[13px] text-zinc-300">Not yet evaluated — blockers cannot be determined until a readiness snapshot runs.</p>
+              </div>
+            ) : readiness.blockerCount > 0 ? (
               <div className="rounded-2xl border border-rose-500/[0.25] bg-rose-500/[0.04] p-4">
                 <p className="text-[13px] text-white">
                   <span className="font-bold text-rose-300">{readiness.blockerCount}</span>{" "}

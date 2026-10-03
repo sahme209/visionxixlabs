@@ -148,8 +148,8 @@ export async function GET(
         where: { releaseId, organizationId: orgId },
         orderBy: { evaluatedAt: "desc" },
       }),
-      prisma.releaseEvidencePack.findUnique({
-        where: { releaseId },
+      prisma.releaseEvidencePack.findFirst({
+        where: { releaseId, organizationId: orgId },
       }),
       prisma.auditEvent.findMany({
         where: {
@@ -217,9 +217,7 @@ export async function GET(
         approvalGrantedAt: approvalChain?.resolvedAt?.toISOString() ?? null,
         executionStartedAt: release.actualDeployStart?.toISOString() ?? null,
         validationCompleteAt: null, // TODO: Query validation completion timestamp
-        closedAt: release.status === "deployed" || release.status === "rolled_back" || release.status === "failed"
-          ? release.actualDeployEnd?.toISOString() ?? new Date().toISOString()
-          : null,
+        closedAt: release.actualDeployEnd?.toISOString() ?? null,
       },
 
       request: {
@@ -244,7 +242,13 @@ export async function GET(
       },
 
       risk: {
-        blastRadius: readiness?.driftRisk ?? 0 > 70 ? "critical" : readiness?.driftRisk ?? 0 > 50 ? "high" : "low",
+        blastRadius: !readiness
+          ? "unscored"
+          : readiness.driftRisk > 70
+            ? "critical"
+            : readiness.driftRisk > 50
+              ? "high"
+              : "low",
         affectedServiceCount: serviceImpactUnavailable,
       },
 
@@ -255,7 +259,15 @@ export async function GET(
       },
 
       execution: {
-        status: release.status === "draft" ? "not_started" : release.status === "deploying" ? "in_progress" : "completed",
+        status: release.status === "deploying"
+          ? "in_progress"
+          : release.status === "deployed"
+            ? "completed"
+            : release.status === "rolled_back"
+              ? "rolled_back"
+              : release.status === "failed"
+                ? "failed"
+                : "not_started", // draft | ready
         plannedAt: release.plannedWindowStart?.toISOString() ?? null,
         startedAt: null, // TODO: Query execution history
       },
@@ -268,12 +280,12 @@ export async function GET(
 
       evidence: {
         generatedAt: evidence?.generatedAt?.toISOString() ?? null,
-        signedAt: evidence ? "signedAt" in evidence ? (evidence as any).signedAt?.toISOString() : null : null,
+        signedAt: evidence?.signedAt?.toISOString() ?? null,
       },
 
       closure: {
         status: release.status === "deployed" ? "closed" : "open",
-        closedAt: release.status === "deployed" ? new Date().toISOString() : null,
+        closedAt: release.actualDeployEnd?.toISOString() ?? null,
       },
 
       auditEventCount: auditEvents.length,
