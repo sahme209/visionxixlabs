@@ -139,7 +139,7 @@ export async function GET(
     const orgId = ctx.organizationId;
 
     // Query all data sources in parallel for performance
-    const [release, readiness, evidence, auditEvents, approvalChain, policyViolations] = await Promise.all([
+    const [release, readiness, evidence, auditEvents, approvalChain, policyViolations, cherryPicks] = await Promise.all([
       prisma.release.findUnique({
         where: { id: releaseId },
       }),
@@ -159,7 +159,6 @@ export async function GET(
         orderBy: { createdAt: "asc" },
         take: 100,
       }),
-      // TODO 1: Approval chain
       prisma.axiomApprovalChain.findFirst({
         where: {
           organizationId: orgId,
@@ -167,12 +166,26 @@ export async function GET(
         },
         include: { votes: true },
       }),
-      // TODO 2: Policy violations (schema model not yet defined)
-      Promise.resolve(0 as number),
+      // Policy violations exist in schema; query them directly
+      prisma.policyViolation.count({
+        where: {
+          releaseId,
+          organizationId: orgId,
+        },
+      }),
+      // Cherry-pick exceptions exist in schema; count them
+      prisma.cherryPickException.count({
+        where: {
+          releaseId,
+          organizationId: orgId,
+        },
+      }),
     ]);
 
-    // TODO: These models don't exist yet in schema; set to 0 for now
-    const cherryPicks = 0;
+    // Models that don't yet exist in schema; set to 0 for now
+    // TODO: ReleaseExecution model with steps
+    // TODO: ReleaseValidation model with results
+    // TODO: ReleaseServiceImpact model for affected services
     const validationPlans: any[] = [];
     const affectedServices = 0;
 
@@ -217,7 +230,7 @@ export async function GET(
       },
 
       playbook: {
-        stepCount: 0, // TODO: Query release execution steps
+        stepCount: 0, // TODO: Query release execution steps (ReleaseExecution model not yet defined)
         cherryPickCount: cherryPicks,
         policyViolationCount: policyViolations,
       },
