@@ -22,7 +22,7 @@ export async function POST(req: NextRequest) {
   const correlationId = resolveCorrelationId(req.headers);
   try {
     const ctx = await currentContext();
-    if (!ctx.isAuthenticated) {
+    if (!ctx.isAuthenticated || !ctx.organizationId) {
       throw AxiomErrors.validation("auth.required", "Sign in required.");
     }
     const body = (await req.json().catch(() => null)) as { intent?: string } | null;
@@ -32,7 +32,7 @@ export async function POST(req: NextRequest) {
     if (body.intent.length > MAX_INTENT_CHARS) {
       throw AxiomErrors.validation("workflow.intent_too_long", `Intent exceeds ${MAX_INTENT_CHARS} chars.`);
     }
-    const result = await translateWorkflowIntent(body.intent);
+    const result = await translateWorkflowIntent(body.intent, ctx.organizationId);
     return apiOk(result, {
       correlationId,
       safetyContract: "approval_only_no_execution",
