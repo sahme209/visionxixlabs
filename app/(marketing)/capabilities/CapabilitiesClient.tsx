@@ -160,7 +160,7 @@ export function CapabilitiesClient() {
       <div aria-hidden className="pointer-events-none fixed inset-0 -z-10 bg-[linear-gradient(180deg,rgba(11,12,11,0.8),rgba(11,12,11,0.94)_42%,#0c0d0c)]" />
 
       {/* ===== HERO ===== */}
-      <section className="relative z-10 mx-auto max-w-6xl px-6 md:px-10 pt-24 pb-10">
+      <section className="relative z-10 mx-auto max-w-[1400px] px-6 md:px-10 pt-24 pb-10">
         <motion.p
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
@@ -194,7 +194,7 @@ export function CapabilitiesClient() {
         </motion.p>
       </section>
 
-      <section className="relative z-10 mx-auto max-w-6xl px-6 pb-12 md:px-10" aria-labelledby="playbook-responsibilities-heading">
+      <section className="relative z-10 mx-auto max-w-[1400px] px-6 pb-12 md:px-10" aria-labelledby="playbook-responsibilities-heading">
         <div className="rounded-2xl border border-white/[0.08] bg-black/20 p-6 sm:p-8">
           <p className="mono-label">One governed Playbook</p>
           <div className="mt-3 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
@@ -207,7 +207,7 @@ export function CapabilitiesClient() {
         </div>
       </section>
 
-      <section className="relative z-10 mx-auto max-w-6xl px-6 pb-12 md:px-10" aria-labelledby="operational-terms-heading">
+      <section className="relative z-10 mx-auto max-w-[1400px] px-6 pb-12 md:px-10" aria-labelledby="operational-terms-heading">
         <details className="group rounded-2xl border border-white/[0.07] bg-white/[0.02] p-6 md:p-8">
           <summary id="operational-terms-heading" className="cursor-pointer list-none text-lg font-medium text-white marker:hidden"><span className="flex items-center justify-between gap-4">Inspect control details <span className="text-sm font-normal text-zinc-500 transition group-open:rotate-45" aria-hidden>+</span></span></summary>
           <p className="mt-3 max-w-2xl text-sm leading-6 text-zinc-400">These details are available for technical review. They do not claim live cloud mutation, a configured integration, or autonomous deployment.</p>
@@ -229,7 +229,7 @@ export function CapabilitiesClient() {
       </section>
 
       {/* ===== FILTERS ===== */}
-      <details className="group relative z-10 mx-auto max-w-6xl px-6 pb-12 md:px-10">
+      <details className="group relative z-10 mx-auto max-w-[1400px] px-6 pb-12 md:px-10">
         <summary className="cursor-pointer list-none rounded-2xl border border-white/[0.07] bg-white/[0.02] px-6 py-5 text-lg font-medium text-zinc-100 marker:hidden"><span className="flex items-center justify-between gap-4">Explore the detailed capability inventory <span className="text-sm font-normal text-zinc-500 transition group-open:rotate-45" aria-hidden>+</span></span></summary>
         <p className="mt-5 max-w-2xl text-sm leading-6 text-zinc-400">The underlying controls remain available for engineering review, without turning this page into a wall of implementation cards.</p>
         <div className="mt-5">

@@ -69,9 +69,9 @@ export default function ScanningPage() {
 
       <DocSection id="provider-differences" title="Provider differences" kicker="04 · AWS vs Azure vs GCP">
         <ul className="list-disc list-inside space-y-1.5 text-zinc-400 ml-1">
-          <li><strong>AWS</strong> — Full implementation. Scan, reasoning, plan, execute, monitor, learn.</li>
-          <li><strong>Azure</strong> — Scan + topology mapping live. Service Principal connector. Reasoning + execution rolling out Q2 2026.</li>
-          <li><strong>GCP</strong> — Scan + topology mapping live. Service Account connector. Reasoning + execution rolling out Q3 2026.</li>
+          <li><strong>AWS</strong> — Connection and read-only scanning implemented. Live validation requires broker configuration and customer IAM setup; write execution is not released.</li>
+          <li><strong>Azure</strong> — Scan + topology mapping live. Service Principal connector. Live SDK validation and provider-specific execution are not released.</li>
+          <li><strong>GCP</strong> — Scan + topology mapping live. Service Account connector. Live SDK validation and provider-specific execution are not released.</li>
         </ul>
       </DocSection>
 

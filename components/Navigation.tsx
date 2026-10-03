@@ -68,7 +68,7 @@ export function Navigation() {
 
   return (
     <nav aria-label="Primary navigation" className="fixed inset-x-0 top-0 z-50 border-b border-white/[0.06] bg-[#0c0d0c]/95 backdrop-blur-xl">
-      <div className="mx-auto flex h-16 max-w-[1720px] items-center justify-between px-5 sm:px-8 lg:h-[72px] lg:px-12">
+      <div className="mx-auto flex h-16 max-w-[1400px] items-center justify-between px-5 sm:px-8 lg:h-[72px] lg:px-12">
         <Link href="/" className="flex items-center gap-2.5 text-sm font-semibold tracking-[-0.02em] text-zinc-100" aria-label="Vision XIX Labs home">
           <Image src="/vision-xix-logo.png" alt="" width={28} height={28} className="rounded-md" priority />
           <span>Vision XIX Labs</span>

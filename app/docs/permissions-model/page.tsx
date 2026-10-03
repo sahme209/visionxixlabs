@@ -66,7 +66,7 @@ export default function PermissionsModelPage() {
         <ul className="list-disc list-inside space-y-1 text-zinc-400 ml-1">
           <li>Read-only scan: <code>Reader</code> built-in role at subscription or resource-group scope</li>
           <li>Plus a custom read-only role for Azure Cost Management + Activity Log analytics</li>
-          <li>Execution: separate custom role created per action class (preview Q2 2026)</li>
+          <li>Execution: separate custom role created per action class (not yet released)</li>
           <li>No client secret stored — Axiom uses federated identity (workload identity federation) where available</li>
         </ul>
         <p>Subscription/resource-group scoping is enforced at the role assignment level — you control exactly which scopes Axiom sees.</p>
@@ -77,7 +77,7 @@ export default function PermissionsModelPage() {
         <ul className="list-disc list-inside space-y-1 text-zinc-400 ml-1">
           <li>Read-only scan: <code>roles/viewer</code> + <code>roles/iam.securityReviewer</code> at project or folder scope</li>
           <li>Plus custom roles for Cloud Billing + Cloud Audit analytics</li>
-          <li>Execution: per-action-class custom roles (preview Q3 2026)</li>
+          <li>Execution: per-action-class custom roles (not yet released)</li>
           <li>Authentication via workload identity federation — no JSON key files stored on Axiom&apos;s side</li>
         </ul>
       </DocSection>
