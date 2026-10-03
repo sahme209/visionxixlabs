@@ -237,8 +237,8 @@ export async function GET(
       lastUpdated: new Date().toISOString(),
     };
 
-    return apiOk(data, { correlationId: request.headers.get("x-correlation-id") ?? undefined });
+    return apiOk(data, { correlationId: request.headers.get("x-correlation-id") as string | undefined });
   } catch (err) {
-    return apiErr(err, { correlationId: request.headers.get("x-correlation-id") ?? undefined });
+    return apiErr(err, { correlationId: request.headers.get("x-correlation-id") as string | undefined });
   }
 }
