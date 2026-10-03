@@ -5,6 +5,10 @@ import GitHubProvider from "next-auth/providers/github";
 import { compare } from "bcryptjs";
 import { prisma } from "./db";
 import { ensurePersonalWorkspaceMembership } from "./auth/ensurePersonalWorkspaceMembership";
+import { checkRateLimit } from "./rateLimit";
+import { record as recordAudit } from "./audit/secureAudit";
+import { id as idFactory, newCorrelationId } from "./domain/ids";
+import { deriveWorkspaceIdFromEmail } from "./auth/workspaceId";
 
 // Helper: only register an OAuth provider when its env credentials are
 // present. Missing OAuth env shouldn't crash the app — the UI just shows
@@ -19,8 +23,18 @@ function buildProviders(): NextAuthOptions["providers"] {
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) return null;
+        const normalizedEmail = credentials.email.trim().toLowerCase();
+        // Login attempts were previously unrate-limited at this layer (the
+        // signup route has its own limiter; this credentials callback did
+        // not). Keyed by the attempted email, not IP — NextAuth v4's
+        // authorize(credentials, req) second parameter has an internal
+        // shape this codebase has never relied on elsewhere, and guessing
+        // at it here risks a runtime error on every login attempt. Per-email
+        // keying still blocks the primary threat (brute-forcing one
+        // account's password) without that risk.
+        if (!checkRateLimit(`login:${normalizedEmail}`)) return null;
         try {
-          const user = await prisma.user.findUnique({ where: { email: credentials.email.trim().toLowerCase() } });
+          const user = await prisma.user.findUnique({ where: { email: normalizedEmail } });
           if (!user?.passwordHash) return null;
           const valid = await compare(credentials.password, user.passwordHash);
           if (!valid) return null;
@@ -118,6 +132,35 @@ export const authOptions: NextAuthOptions = {
     session({ session, token }) {
       if (session.user) (session.user as { id?: string }).id = token.id as string;
       return session;
+    },
+  },
+  events: {
+    // Sign-in is a security-sensitive action with no audit record today —
+    // "auth.signin" has existed in the AuditAction taxonomy
+    // (lib/audit/secureAudit.ts) and in the audit-intelligence label map
+    // for a while, but nothing ever called record() for it. Wired here
+    // rather than inside authorize() or the signIn callback: this fires
+    // once, only after NextAuth has fully committed to the session, for
+    // every provider (credentials, Google, GitHub) in one place, instead
+    // of duplicating the call per-provider. Best-effort: audit storage
+    // being unavailable must never block an otherwise-successful sign-in.
+    async signIn({ user, account }) {
+      if (!user.email) return;
+      try {
+        await recordAudit({
+          organizationId: deriveWorkspaceIdFromEmail(user.email),
+          actorUserId: user.id ? idFactory.user(user.id) : undefined,
+          actorKind: "user",
+          action: "auth.signin",
+          outcome: "success",
+          entityRef: `user:${user.email.trim().toLowerCase()}`,
+          correlationId: newCorrelationId(),
+          source: "live",
+          detail: { provider: account?.provider ?? "unknown" },
+        });
+      } catch (err) {
+        console.error("[NextAuth events.signIn] audit record failed (best-effort):", err);
+      }
     },
   },
 };
