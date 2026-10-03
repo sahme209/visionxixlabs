@@ -24,6 +24,7 @@ import "server-only";
 import {
   ruleBasedVoter,
   type AdvisorVoter,
+  type AsyncAdvisorVoter,
   type CouncilVote,
 } from "./advisorCouncilEngine";
 import { RECOMMENDATION_KINDS, type AdvisorInputs, type RecommendationKind } from "./releaseAdvisorEngine";
@@ -136,50 +137,60 @@ export function parseAiVoteResponse(raw: string): { kind: RecommendationKind; co
    ────────────────────────────────────────────────────────────── */
 
 /**
- * Pure wrapper around the AI voter. Caller awaits this to get a vote.
- * Never throws. Returns the rule-based vote tagged with reason on
- * fallback, or the AI's vote tagged with voterId="ai_native" on
- * success.
+ * Builds the async council voter, bound to one workspace. Caller awaits
+ * the returned function to get a vote. Never throws. Returns the
+ * rule-based vote tagged with reason on fallback, or the AI's vote
+ * tagged with voterId="ai_native" on success.
+ *
+ * organizationId is required (not optional) so this governed
+ * release-approval vote always resolves the workspace's AI policy —
+ * allowed providers, model selection, budget check, and usage audit —
+ * the same way every other governed generation call does. Without it,
+ * the underlying fetcher falls back to service-wide defaults instead of
+ * the workspace's own governance settings, which is the wrong answer
+ * for a vote that feeds a release-approval decision.
  */
-export async function aiNativeVoterAsync(input: AdvisorInputs): Promise<CouncilVote> {
-  // Cache hit?
-  const key = fingerprint(input);
-  const cached = CACHE.get(key);
-  if (cached && Date.now() - cached.cachedAtMs < CACHE_TTL_MS) {
-    return { ...cached.vote, rationale: `${cached.vote.rationale} (cached)` };
-  }
+export function makeAiNativeVoterAsync(organizationId: string): AsyncAdvisorVoter {
+  return async function aiNativeVoterAsync(input: AdvisorInputs): Promise<CouncilVote> {
+    // Cache hit?
+    const key = fingerprint(input);
+    const cached = CACHE.get(key);
+    if (cached && Date.now() - cached.cachedAtMs < CACHE_TTL_MS) {
+      return { ...cached.vote, rationale: `${cached.vote.rationale} (cached)` };
+    }
 
-  // Build prompt + call AI. Phase 531 — the instrumented fetcher
-  // applies the circuit breaker + persists a call log row before
-  // returning. Errors propagate to the catch below (where the rule-
-  // based fallback takes over).
-  const prompt = buildPrompt(input);
-  let aiText: string | null = null;
-  try {
-    const fetcher = makeInstrumentedFetcher({ engineName: "council_voter" });
-    const res = await fetcher(prompt);
-    aiText = res.text ?? null;
-  } catch (err) {
-    return fallbackVote(input, err instanceof Error ? err.message : "ai_provider_error");
-  }
+    // Build prompt + call AI. Phase 531 — the instrumented fetcher
+    // applies the circuit breaker + persists a call log row before
+    // returning. Errors propagate to the catch below (where the rule-
+    // based fallback takes over).
+    const prompt = buildPrompt(input);
+    let aiText: string | null = null;
+    try {
+      const fetcher = makeInstrumentedFetcher({ engineName: "council_voter", organizationId });
+      const res = await fetcher(prompt);
+      aiText = res.text ?? null;
+    } catch (err) {
+      return fallbackVote(input, err instanceof Error ? err.message : "ai_provider_error");
+    }
 
-  if (!aiText) {
-    return fallbackVote(input, "ai_empty_response");
-  }
+    if (!aiText) {
+      return fallbackVote(input, "ai_empty_response");
+    }
 
-  const parsed = parseAiVoteResponse(aiText);
-  if (!parsed) {
-    return fallbackVote(input, "ai_unparseable_response");
-  }
+    const parsed = parseAiVoteResponse(aiText);
+    if (!parsed) {
+      return fallbackVote(input, "ai_unparseable_response");
+    }
 
-  const vote: CouncilVote = {
-    voterId: "ai_native",
-    kind: parsed.kind,
-    confidence: parsed.confidence,
-    rationale: parsed.rationale,
+    const vote: CouncilVote = {
+      voterId: "ai_native",
+      kind: parsed.kind,
+      confidence: parsed.confidence,
+      rationale: parsed.rationale,
+    };
+    CACHE.set(key, { vote, cachedAtMs: Date.now() });
+    return vote;
   };
-  CACHE.set(key, { vote, cachedAtMs: Date.now() });
-  return vote;
 }
 
 function fallbackVote(input: AdvisorInputs, reason: string): CouncilVote {

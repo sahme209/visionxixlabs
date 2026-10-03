@@ -70,9 +70,14 @@ export async function PUT(request: NextRequest): Promise<NextResponse> {
       source: "live",
       detail: {
         enabled: policy.enabled,
-        allowedProviderCount: policy.allowedProviders.length,
-        selectedModelCount: Object.keys(policy.modelSelections).length,
-        fallbackProviderCount: policy.fallbackOrder.length,
+        // Provider family names and model ids are safe to audit (no
+        // credentials, no account identifiers) — see the GET handler's
+        // own comment above. Recording the actual lists, not just
+        // counts, is what makes "what did this policy change actually
+        // change" answerable from the audit record alone.
+        allowedProviders: policy.allowedProviders,
+        selectedModels: policy.modelSelections,
+        fallbackOrder: policy.fallbackOrder,
       },
     });
     return NextResponse.json({ ok: true, data: { policy } });

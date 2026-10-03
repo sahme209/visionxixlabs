@@ -20,7 +20,7 @@ import {
   type AdvisorInputsRepo,
 } from "@/lib/releaseops/advisorInputsAggregator";
 import { appendAuditEvent, type AuditEventRepo } from "@/lib/releaseops/auditEventResponder";
-import { aiNativeVoterAsync } from "@/lib/releaseops/aiNativeAdvisorVoter";
+import { makeAiNativeVoterAsync } from "@/lib/releaseops/aiNativeAdvisorVoter";
 import { sendSlackSignalBestEffort, type SlackRepo } from "@/lib/releaseops/slackNotificationResponder";
 import {
   enrichDecisionBestEffort,
@@ -62,7 +62,7 @@ export async function POST(req: NextRequest) {
       organizationId: ctx.organizationId,
       releaseId,
       engineInputs: agg.inputs,
-      ...(withAi ? { asyncVoters: [aiNativeVoterAsync] } : {}),
+      ...(withAi ? { asyncVoters: [makeAiNativeVoterAsync(ctx.organizationId)] } : {}),
     },
   );
 
