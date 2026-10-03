@@ -151,9 +151,9 @@ export default function UnifiedPlaybookPage() {
                   title="Request"
                   description={data.request.summary as string | null}
                   facts={[
-                    { label: "Requested", value: `${new Date(data.lifecycle.requestedAt).toLocaleDateString()}` },
-                    { label: "Owner", value: data.request.owner as string || "—" },
-                    { label: "Environment", value: data.request.targetEnvironment as string || "—" },
+                    { label: "Requested", value: `${new Date(data.lifecycle.requestedAt!).toLocaleDateString()}` },
+                    { label: "Owner", value: (data.request.owner as string) || "—" },
+                    { label: "Environment", value: (data.request.targetEnvironment as string) || "—" },
                   ]}
                   detailLink={`#request`}
                 />
@@ -194,12 +194,12 @@ export default function UnifiedPlaybookPage() {
                 />
                 <ReleasePlaybookStageCard
                   stage="approval"
-                  status={data.approval.granted as number >= data.approval.required as number ? "complete" : "pending"}
+                  status={(data.approval.granted as unknown as number) >= (data.approval.required as unknown as number) ? "complete" : "pending"}
                   title="Approval"
-                  description={`${data.approval.granted}/${data.approval.required} approvals`}
+                  description={`${data.approval.granted as unknown as number}/${data.approval.required as unknown as number} approvals`}
                   facts={[
-                    { label: "Granted", value: `${data.approval.granted}` },
-                    { label: "Required", value: `${data.approval.required}` },
+                    { label: "Granted", value: `${data.approval.granted as unknown as number}` },
+                    { label: "Required", value: `${data.approval.required as unknown as number}` },
                   ]}
                   detailLink={`#approval`}
                 />
@@ -255,13 +255,13 @@ export default function UnifiedPlaybookPage() {
                 Only items that need action. Everything else is green.
               </p>
               <div className="space-y-3">
-                {data.readiness.blockerCount > 0 && (
+                {(data.readiness.blockerCount as unknown as number) > 0 && (
                   <div className="rounded-2xl border border-orange-500/[0.25] bg-orange-500/[0.04] p-5">
                     <div className="flex items-start gap-3">
                       <div className="text-orange-400 mt-0.5">⚠️</div>
                       <div className="flex-1">
                         <h4 className="text-[13px] font-semibold text-orange-300 mb-1">
-                          {data.readiness.blockerCount} readiness {data.readiness.blockerCount === 1 ? "blocker" : "blockers"}
+                          {data.readiness.blockerCount as unknown as number} readiness {(data.readiness.blockerCount as unknown as number) === 1 ? "blocker" : "blockers"}
                         </h4>
                         <p className="text-[12px] text-zinc-400">
                           {data.readiness.riskLevel === "high" ? "High-risk release needs remediation" : "Address blockers before approval"}
@@ -270,28 +270,28 @@ export default function UnifiedPlaybookPage() {
                     </div>
                   </div>
                 )}
-                {data.approval.required > 0 && data.approval.granted < data.approval.required && (
+                {(data.approval.required as unknown as number) > 0 && (data.approval.granted as unknown as number) < (data.approval.required as unknown as number) && (
                   <div className="rounded-2xl border border-amber-500/[0.25] bg-amber-500/[0.04] p-5">
                     <div className="flex items-start gap-3">
                       <div className="text-amber-400 mt-0.5">⏳</div>
                       <div className="flex-1">
                         <h4 className="text-[13px] font-semibold text-amber-300 mb-1">
-                          {data.approval.required - data.approval.granted} approval{data.approval.required - data.approval.granted === 1 ? "" : "s"} pending
+                          {(data.approval.required as unknown as number) - (data.approval.granted as unknown as number)} approval{((data.approval.required as unknown as number) - (data.approval.granted as unknown as number)) === 1 ? "" : "s"} pending
                         </h4>
                         <p className="text-[12px] text-zinc-400">
-                          {data.approval.granted}/{data.approval.required} required approvals collected
+                          {data.approval.granted as unknown as number}/{data.approval.required as unknown as number} required approvals collected
                         </p>
                       </div>
                     </div>
                   </div>
                 )}
-                {data.playbook.policyViolationCount > 0 && (
+                {(data.playbook.policyViolationCount as unknown as number) > 0 && (
                   <div className="rounded-2xl border border-rose-500/[0.25] bg-rose-500/[0.04] p-5">
                     <div className="flex items-start gap-3">
                       <div className="text-rose-400 mt-0.5">🔴</div>
                       <div className="flex-1">
                         <h4 className="text-[13px] font-semibold text-rose-300 mb-1">
-                          {data.playbook.policyViolationCount} policy {data.playbook.policyViolationCount === 1 ? "violation" : "violations"}
+                          {data.playbook.policyViolationCount as unknown as number} policy {(data.playbook.policyViolationCount as unknown as number) === 1 ? "violation" : "violations"}
                         </h4>
                         <p className="text-[12px] text-zinc-400">
                           Playbook contains steps that violate deployment policy
@@ -300,7 +300,7 @@ export default function UnifiedPlaybookPage() {
                     </div>
                   </div>
                 )}
-                {data.readiness.blockerCount === 0 && data.approval.required === data.approval.granted && data.playbook.policyViolationCount === 0 && (
+                {(data.readiness.blockerCount as unknown as number) === 0 && (data.approval.required as unknown as number) === (data.approval.granted as unknown as number) && (data.playbook.policyViolationCount as unknown as number) === 0 && (
                   <div className="rounded-2xl border border-white/[0.08] bg-white/[0.025] p-5 text-[12px] text-zinc-400">
                     ✓ No blockers, no pending approvals, no policy violations. Ready to proceed.
                   </div>

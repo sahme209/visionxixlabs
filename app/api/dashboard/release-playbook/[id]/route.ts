@@ -112,13 +112,15 @@ interface UnifiedPlaybookResponse {
   lastUpdated: string;
 }
 
+import type { ApiEnvelopeFailure } from "@/lib/api/apiEnvelope";
+
 type ResponseBody =
   | { ok: true; data: UnifiedPlaybookResponse }
-  | { ok: false; error: string; hint?: string };
+  | ApiEnvelopeFailure;
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ): Promise<NextResponse<ResponseBody>> {
   try {
     const ctx = await currentContext();
@@ -126,14 +128,13 @@ export async function GET(
       throw AxiomErrors.validation("auth.required", "Sign in required.");
     }
 
-    const releaseId = params.id;
+    const { id: releaseId } = await params;
     const orgId = ctx.organizationId;
 
     // Query all data sources in parallel for performance
     const [release, readiness, evidence, auditEvents] = await Promise.all([
       prisma.release.findUnique({
         where: { id: releaseId },
-        include: { organization: true },
       }),
       prisma.releaseReadinessSnapshot.findFirst({
         where: { releaseId, organizationId: orgId },
@@ -145,7 +146,8 @@ export async function GET(
       prisma.auditEvent.findMany({
         where: {
           organizationId: orgId,
-          resourceId: releaseId,
+          subjectId: releaseId,
+          subjectKind: "release",
         },
         orderBy: { createdAt: "asc" },
         take: 100,
@@ -188,7 +190,7 @@ export async function GET(
       readiness: {
         overallScore: readiness?.overallScore ?? 0,
         riskLevel: readiness?.riskLevel ?? "unscored",
-        blockerCount: readiness ? JSON.parse(JSON.stringify(readiness.blockersJson)).length ?? 0 : 0,
+        blockerCount: readiness && Array.isArray(readiness.blockersJson) ? (readiness.blockersJson as any[]).length : 0,
         evaluatedAt: readiness?.evaluatedAt?.toISOString() ?? null,
       },
 
