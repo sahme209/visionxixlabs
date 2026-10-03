@@ -256,7 +256,7 @@ export default function UnifiedPlaybookPage() {
                 />
                 <ReleasePlaybookStageCard
                   stage="closure"
-                  status={data.closure.status === "closed" ? "complete" : "pending"}
+                  status={data.closure.status === "closed" ? "complete" : data.closure.status === "terminated" ? "error" : "pending"}
                   title="Closure"
                   description={data.closure.status as string}
                   facts={[

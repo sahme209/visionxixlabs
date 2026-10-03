@@ -52,6 +52,7 @@ export default function ReleaseClosureDetailPage() {
 
   const closure = data.closure;
   const isClosed = closure.status === "closed";
+  const isTerminated = closure.status === "terminated";
 
   return (
     <div className="relative">
@@ -75,13 +76,15 @@ export default function ReleaseClosureDetailPage() {
               className={`rounded-2xl border p-5 ${
                 isClosed
                   ? "border-emerald-500/[0.25] bg-emerald-500/[0.04]"
-                  : "border-zinc-500/[0.25] bg-zinc-500/[0.04]"
+                  : isTerminated
+                    ? "border-rose-500/[0.25] bg-rose-500/[0.04]"
+                    : "border-zinc-500/[0.25] bg-zinc-500/[0.04]"
               }`}
             >
               <p className={`text-[14px] font-semibold uppercase tracking-wider ${
-                isClosed ? "text-emerald-300" : "text-zinc-300"
+                isClosed ? "text-emerald-300" : isTerminated ? "text-rose-300" : "text-zinc-300"
               }`}>
-                {isClosed ? "✓ Closed" : "Open"}
+                {isClosed ? "✓ Closed" : isTerminated ? "Terminated — not successful" : "Open"}
               </p>
               {closure.closedAt && (
                 <p className="text-[12px] text-zinc-400 mt-2">
@@ -95,6 +98,13 @@ export default function ReleaseClosureDetailPage() {
             <div className="rounded-2xl border border-emerald-500/[0.15] bg-emerald-500/[0.04] p-4">
               <p className="text-[12px] text-emerald-200">
                 ✓ This release has been completed and closed. All stages are finished.
+              </p>
+            </div>
+          ) : isTerminated ? (
+            <div className="rounded-2xl border border-rose-500/[0.15] bg-rose-500/[0.04] p-4">
+              <p className="text-[12px] text-rose-200">
+                This release failed or was rolled back. Its lifecycle has ended without a successful
+                deployment — it will not progress further without a new release.
               </p>
             </div>
           ) : (

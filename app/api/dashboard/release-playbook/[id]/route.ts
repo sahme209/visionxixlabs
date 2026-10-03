@@ -284,7 +284,11 @@ export async function GET(
       },
 
       closure: {
-        status: release.status === "deployed" ? "closed" : "open",
+        status: release.status === "deployed"
+          ? "closed"
+          : release.status === "failed" || release.status === "rolled_back"
+            ? "terminated"
+            : "open",
         closedAt: release.actualDeployEnd?.toISOString() ?? null,
       },
 
