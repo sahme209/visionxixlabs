@@ -10,6 +10,7 @@ import { currentContext } from "@/lib/auth/currentContext";
 import { cleanupDemoData } from "@/lib/demo/sampleDataPopulator";
 import { apiOk, apiErr, asApiSourceMode, resolveCorrelationId } from "@/lib/api";
 import { AxiomErrors } from "@/lib/errors/axiomErrors";
+import { assertNotDemoLeak } from "@/lib/workspace/workspaceKind";
 
 export const dynamic = "force-dynamic";
 
@@ -20,6 +21,8 @@ export async function POST(req: NextRequest) {
     if (!ctx.isAuthenticated || !ctx.organizationId) {
       throw AxiomErrors.validation("auth.required", "Sign in required.");
     }
+    // CLAUDE.md: Demo data must not appear in real workspaces
+    assertNotDemoLeak(ctx.organizationId, "DemoCleanupAPI");
     const out = await cleanupDemoData({ organizationId: String(ctx.organizationId) });
     return apiOk(out, {
       correlationId,
