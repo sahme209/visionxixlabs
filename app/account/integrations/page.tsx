@@ -89,7 +89,7 @@ export default async function AccountIntegrationsPage() {
   ];
   return (
     <AuthCompanionShell>
-      <div className="mx-auto max-w-6xl">
+      <div className="mx-auto max-w-[1400px]">
         <AuthCompanionHeader email={context.email ?? null} />
         <section className="py-14 sm:py-20">
           <p className="text-[10px] uppercase tracking-[0.22em] text-violet-300">Axiom web companion · integrations</p>

@@ -38,7 +38,7 @@ export default async function AccountHelpTopicPage({ params }: { params: Promise
 
   return (
     <AuthCompanionShell>
-      <div className="mx-auto max-w-6xl">
+      <div className="mx-auto max-w-[1400px]">
         <AuthCompanionHeader email={context.email} />
         <article className="max-w-3xl py-14 sm:py-20">
           <Link href="/account/help" className="text-sm text-violet-300 transition hover:text-violet-200">← Help</Link>

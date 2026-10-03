@@ -17,7 +17,7 @@ export default async function AccountPage() {
   const user = await prisma.user.findUnique({ where: { id: context.userId }, select: { name: true } });
   return (
     <AuthCompanionShell>
-      <div className="mx-auto max-w-6xl">
+      <div className="mx-auto max-w-[1400px]">
         <AuthCompanionHeader email={context.email} />
         <section className="py-14 sm:py-20">
           <p className="text-[10px] uppercase tracking-[0.22em] text-violet-300">Axiom web companion · account settings</p>

@@ -18,7 +18,7 @@ export default async function AccountHelpPage() {
   if (!context.isAuthenticated || !context.email) redirect("/auth/signin?callbackUrl=/account/help");
   return (
     <AuthCompanionShell>
-      <div className="mx-auto max-w-6xl">
+      <div className="mx-auto max-w-[1400px]">
         <AuthCompanionHeader email={context.email ?? null} />
         <section className="py-14 sm:py-20">
           <p className="text-[10px] uppercase tracking-[0.22em] text-violet-300">Axiom web companion · help</p>
