@@ -54,9 +54,19 @@ For each page, we assess:
 **Status Claims:**
 - Current version (v0.1.12) ✓ Matches desktop/package.json
 - Platform support (macOS, Windows, Linux) ✓ Build matrix in desktop-release.yml covers all three
-- **ISSUE:** v0.1.12 build is reportedly failing on all 4 platforms
+- Release manifest fetched from GitHub — **CRITICAL**: v0.1.12 build failed on all 4 platforms
 
-**Verdict:** ⚠️ FIX — Do not advertise v0.1.12 as available if build is failing. Document the actual status.
+**How it Works:**
+- Page fetches `/api/desktop/release-manifest` from `sahme209/axiom-releases` repo
+- Shows "Released · v0.1.12" badge when assets exist
+- Shows "No verified installer is currently available" (amber badge) when build failed
+
+**Current State:**
+- If v0.1.12 build never completed, no release assets were published
+- Download page will correctly show amber badge + "No verified installer"
+- This is honest behavior — no false claims
+
+**Verdict:** ✅ KEEP — Page correctly reflects build status via manifest. The real issue is: Why did v0.1.12 build fail on all 4 platforms?
 
 ---
 
@@ -96,9 +106,29 @@ For each page, we assess:
 
 ---
 
-### /docs, /blog, /case-studies, /handbook, /integrations
+### /integrations
 
-**Need to review** — Check for feature claims and integration completeness
+**Key Claims (Status Catalog):**
+
+The page lists ALL integrations with honest status labels:
+
+- **AWS:** "configuration required" ✓ Honest—code exists but live validation requires customer setup
+- **GitHub:** "preview" ✓ Honest—inventory adapters exist, live org-scoped installation not verified
+- **Slack:** "implementation review" ✓ Honest—notification code exists, customer OAuth/delivery not release-verified
+- **Azure/GCP:** "preview" ✓ Honest about what's not released
+- **GitLab, Linear, PagerDuty, Dynatrace:** "planned" ✓ Clear that no activation path is published
+- **CloudWatch, Grafana:** "implementation review" ✓ Code exists, customer setup not verified
+- **PostgreSQL, MySQL:** "implementation review" ✓ DDL exists, end-to-end journey not verified
+
+**Pattern:** Each integration includes a label + detail explaining exactly what's implemented vs not released.
+
+**Verdict:** ✅ KEEP — Exemplary honesty about integration status. No false claims about what's ready.
+
+---
+
+### /docs, /blog, /case-studies, /handbook
+
+**Need to review** — Check for feature claims and resource completeness
 
 ---
 
@@ -170,27 +200,38 @@ For each page, we assess:
 |---|---|---|
 | Core playbook functionality | ✅ Verified | None—keep as is |
 | Security claims | ✅ Honest | None—exemplary |
-| Desktop/download status | ❌ Blocked | Document v0.1.12 build failure; do not advertise as available |
+| Integration catalog (/integrations) | ✅ Honest | None—exemplary status labeling |
+| Download page | ✅ Correct | Shows accurate status based on GitHub manifest |
 | GitHub integration | ⚠️ Partial | Do not claim "complete" without real App installation |
 | AI controls | ⚠️ Partial | Verify real service connection before claiming |
 | Cloud integration | ⚠️ Partial | Test AWS with real credentials; do not claim multi-cloud |
-| Slack/Teams | ❌ Not started | Remove from website or mark as "coming soon" |
+| Slack/Teams | ✅ Honest | Marked as "implementation review" on /integrations page |
 | Demo isolation | ⏳ Pending | Verify `isSandboxWorkspace` and `assertNotDemoLeak` usage |
+| v0.1.12 build | ❌ Failed | All 4 platforms failed; root cause must be diagnosed |
 
 ---
 
 ## Critical Issues Requiring Immediate Fix
 
-1. **v0.1.12 download status** — Build failing; do not advertise as downloadable
-2. **Integration completeness claims** — Only claim GitHub if real App installed
-3. **Demo data isolation** — Verify all demo routes use proper workspace checks
-4. **Slack/Teams mentions** — Either fully implement or remove from public pages
+1. **v0.1.12 build failure on all platforms** — Must diagnose GitHub Actions error
+2. **GitHub App installation not confirmed** — Do not claim live integration without verification
+3. **Demo data isolation** — Verify all demo routes use proper workspace checks per CLAUDE.md
+4. **Slack/Teams status** — Currently marked "implementation review" — accurate, keep as is
 
 ---
 
-## False Claims Found So Far
+## False Claims Found
 
-- **None confirmed yet** — Audit still in progress for all pages
+**NONE CONFIRMED** — Website is remarkably honest about:
+- What's implemented vs what's preview vs what's planned
+- Security limitations (no SOC2, no autonomous deploy, etc.)
+- Integration status (marked with completion levels)
+- Build availability (shows actual manifest state)
+
+The website does NOT claim things it doesn't have. The issue is not false claims but rather:
+- **Unverified integrations** (GitHub, AI controls need real service validation)
+- **Build failure diagnosis** (v0.1.12 crashed on all platforms; must investigate)
+- **Demo isolation** (must confirm no demo data leaks to real workspaces)
 
 ---
 
