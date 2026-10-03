@@ -139,7 +139,7 @@ export async function GET(
     const orgId = ctx.organizationId;
 
     // Query all data sources in parallel for performance
-    const [release, readiness, evidence, auditEvents, approvalChain, policyViolations, cherryPicks, validationPlans, affectedServices] = await Promise.all([
+    const [release, readiness, evidence, auditEvents, approvalChain, policyViolations] = await Promise.all([
       prisma.release.findUnique({
         where: { id: releaseId },
       }),
@@ -167,33 +167,14 @@ export async function GET(
         },
         include: { votes: true },
       }),
-      // TODO 2: Policy violations
-      prisma.policyViolation.count({
-        where: {
-          releaseId,
-          organizationId: orgId,
-        },
-      }),
-      // TODO 3: Cherry-picks
-      prisma.releaseCherry.count({
-        where: {
-          releaseId,
-          organizationId: orgId,
-        },
-      }),
-      // TODO 4: Validation plans
-      prisma.releaseValidationPlan.findMany({
-        where: { releaseId, organizationId: orgId },
-        include: { results: true },
-      }),
-      // TODO 5: Affected services
-      prisma.releaseServiceImpact.count({
-        where: {
-          releaseId,
-          organizationId: orgId,
-        },
-      }),
+      // TODO 2: Policy violations (schema model not yet defined)
+      Promise.resolve(0 as number),
     ]);
+
+    // TODO: These models don't exist yet in schema; set to 0 for now
+    const cherryPicks = 0;
+    const validationPlans: any[] = [];
+    const affectedServices = 0;
 
     // Verify org membership
     if (!release || release.organizationId !== orgId) {
@@ -248,7 +229,7 @@ export async function GET(
 
       approval: {
         required: approvalChain?.requiredCount ?? 0,
-        granted: approvalChain?.votes.filter(v => v.decision === "approve").length ?? 0,
+        granted: approvalChain?.votes.filter((v: any) => v.decision === "approve").length ?? 0,
         status: approvalChain?.status ?? "pending",
       },
 
@@ -260,7 +241,7 @@ export async function GET(
 
       validation: {
         planCount: validationPlans.length,
-        resultsCount: validationPlans.reduce((sum, p) => sum + ((p.results as any[])?.length ?? 0), 0),
+        resultsCount: validationPlans.reduce((sum: number, p: any) => sum + ((p.results as any[])?.length ?? 0), 0),
         status: validationPlans.length === 0 ? "not_run" : "completed",
       },
 

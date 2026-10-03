@@ -15,7 +15,7 @@ interface PlaybookData {
   };
   lifecycle: {
     approvalGrantedAt: string | null;
-  };
+  } | undefined;
 }
 
 export default function ReleaseApprovalDetailPage() {
@@ -146,13 +146,13 @@ export default function ReleaseApprovalDetailPage() {
           </section>
 
           {/* Approval Timeline */}
-          {approval.approvalGrantedAt && (
+          {data.lifecycle?.approvalGrantedAt && (
             <section>
               <h2 className="text-[12px] font-mono uppercase tracking-wider text-zinc-400 mb-3">
                 Approved At
               </h2>
               <p className="text-[13px] text-white">
-                {new Date(approval.approvalGrantedAt).toLocaleString()}
+                {new Date(data.lifecycle.approvalGrantedAt).toLocaleString()}
               </p>
             </section>
           )}
