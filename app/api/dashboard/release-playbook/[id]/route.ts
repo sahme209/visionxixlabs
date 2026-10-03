@@ -22,6 +22,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { currentContext } from "@/lib/auth/currentContext";
 import { apiOk, apiErr } from "@/lib/api";
 import { AxiomErrors } from "@/lib/errors/axiomErrors";
+import { prisma } from "@/lib/db";
 
 export const dynamic = "force-dynamic";
 
@@ -126,91 +127,111 @@ export async function GET(
     }
 
     const releaseId = params.id;
+    const orgId = ctx.organizationId;
 
-    // TODO: Fetch unified playbook data from database
-    // This is a placeholder that would aggregate data from multiple sources:
-    // - Release record
-    // - Readiness evaluation
-    // - Policy violations
-    // - Cherry-pick approvals
-    // - Approval chain
-    // - Execution status
-    // - Validation results
-    // - Evidence pack
-    // - Audit trail
+    // Query all data sources in parallel for performance
+    const [release, readiness, evidence, auditEvents] = await Promise.all([
+      prisma.release.findUnique({
+        where: { id: releaseId },
+        include: { organization: true },
+      }),
+      prisma.releaseReadinessSnapshot.findFirst({
+        where: { releaseId, organizationId: orgId },
+        orderBy: { evaluatedAt: "desc" },
+      }),
+      prisma.releaseEvidencePack.findUnique({
+        where: { releaseId },
+      }),
+      prisma.auditEvent.findMany({
+        where: {
+          organizationId: orgId,
+          resourceId: releaseId,
+        },
+        orderBy: { createdAt: "asc" },
+        take: 100,
+      }),
+    ]);
 
+    // Verify org membership
+    if (!release || release.organizationId !== orgId) {
+      throw AxiomErrors.validation("not_found", "Release not found.");
+    }
+
+    // Build the unified response
     const data: UnifiedPlaybookResponse = {
       id: releaseId,
-      releaseTag: null,
-      commitSha: null,
-      status: "draft",
+      releaseTag: release.releaseTag ?? null,
+      commitSha: release.commitSha ?? null,
+      status: release.status,
 
       lifecycle: {
-        requestedAt: new Date().toISOString(),
-        requestedBy: ctx.userId ?? null,
-        scopeFinalizedAt: null,
-        readinessScoredAt: null,
-        approvalGrantedAt: null,
-        executionStartedAt: null,
-        validationCompleteAt: null,
-        closedAt: null,
+        requestedAt: release.createdAt.toISOString(),
+        requestedBy: release.createdByUserId ?? null,
+        scopeFinalizedAt: release.scopeFinalizedAt?.toISOString() ?? null,
+        readinessScoredAt: readiness?.evaluatedAt?.toISOString() ?? null,
+        approvalGrantedAt: null, // TODO: Query AxiomApprovalRequest table
+        executionStartedAt: null, // TODO: Query execution history
+        validationCompleteAt: null, // TODO: Query validation results
+        closedAt: release.status === "deployed" || release.status === "rolled_back" || release.status === "failed"
+          ? new Date().toISOString() // Placeholder — would need actual closure timestamp
+          : null,
       },
 
       request: {
-        summary: null,
-        owner: null,
-        targetEnvironment: null,
-        plannedWindowStart: null,
-        plannedWindowEnd: null,
+        summary: release.summary ?? null,
+        owner: release.createdByUserId ?? null,
+        targetEnvironment: release.targetEnvironmentId ?? null,
+        plannedWindowStart: release.plannedWindowStart?.toISOString() ?? null,
+        plannedWindowEnd: release.plannedWindowEnd?.toISOString() ?? null,
       },
 
       readiness: {
-        overallScore: 0,
-        riskLevel: "unscored",
-        blockerCount: 0,
-        evaluatedAt: null,
+        overallScore: readiness?.overallScore ?? 0,
+        riskLevel: readiness?.riskLevel ?? "unscored",
+        blockerCount: readiness ? JSON.parse(JSON.stringify(readiness.blockersJson)).length ?? 0 : 0,
+        evaluatedAt: readiness?.evaluatedAt?.toISOString() ?? null,
       },
 
       playbook: {
-        stepCount: 0,
-        cherryPickCount: 0,
-        policyViolationCount: 0,
+        stepCount: 0, // TODO: Query release steps/cherry-picks
+        cherryPickCount: 0, // TODO: Query cherry-pick records
+        policyViolationCount: 0, // TODO: Query policy violations
       },
 
       risk: {
-        blastRadius: "unknown",
-        affectedServiceCount: 0,
+        blastRadius: readiness?.driftRisk ?? 0 > 70 ? "critical" : readiness?.driftRisk ?? 0 > 50 ? "high" : "low",
+        affectedServiceCount: 0, // TODO: Count affected services
       },
 
       approval: {
-        required: 0,
-        granted: 0,
+        required: 0, // TODO: Query approval policy
+        granted: 0, // TODO: Count approval votes
         status: "pending",
       },
 
       execution: {
-        status: "not_started",
-        plannedAt: null,
-        startedAt: null,
+        status: release.status === "draft" ? "not_started" : release.status === "deploying" ? "in_progress" : "completed",
+        plannedAt: release.plannedWindowStart?.toISOString() ?? null,
+        startedAt: null, // TODO: Query execution history
       },
 
       validation: {
-        planCount: 0,
-        resultsCount: 0,
+        planCount: 0, // TODO: Query validation plans
+        resultsCount: 0, // TODO: Query validation results
         status: "not_run",
       },
 
       evidence: {
-        generatedAt: null,
-        signedAt: null,
+        generatedAt: evidence?.generatedAt?.toISOString() ?? null,
+        signedAt: evidence ? "signedAt" in evidence ? (evidence as any).signedAt?.toISOString() : null : null,
       },
 
       closure: {
-        status: "open",
-        closedAt: null,
+        status: release.status === "deployed" ? "closed" : "open",
+        closedAt: release.status === "deployed" ? new Date().toISOString() : null,
       },
 
-      auditEventCount: 0,
+      auditEventCount: auditEvents.length,
       lastUpdated: new Date().toISOString(),
     };
 
