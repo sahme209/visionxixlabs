@@ -5,7 +5,6 @@ import {
   Check,
   ChevronRight,
   CircleUserRound,
-  Cloud,
   Code2,
   CreditCard,
   GitBranch,
