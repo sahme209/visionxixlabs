@@ -139,7 +139,7 @@ export async function GET(
     const orgId = ctx.organizationId;
 
     // Query all data sources in parallel for performance
-    const [release, readiness, evidence, auditEvents] = await Promise.all([
+    const [release, readiness, evidence, auditEvents, approvalChain, policyViolations, cherryPicks, validationPlans, affectedServices] = await Promise.all([
       prisma.release.findUnique({
         where: { id: releaseId },
       }),
@@ -158,6 +158,40 @@ export async function GET(
         },
         orderBy: { createdAt: "asc" },
         take: 100,
+      }),
+      // TODO 1: Approval chain
+      prisma.axiomApprovalChain.findFirst({
+        where: {
+          organizationId: orgId,
+          approvalItemId: releaseId,
+        },
+        include: { votes: true },
+      }),
+      // TODO 2: Policy violations
+      prisma.policyViolation.count({
+        where: {
+          releaseId,
+          organizationId: orgId,
+        },
+      }),
+      // TODO 3: Cherry-picks
+      prisma.releaseCherry.count({
+        where: {
+          releaseId,
+          organizationId: orgId,
+        },
+      }),
+      // TODO 4: Validation plans
+      prisma.releaseValidationPlan.findMany({
+        where: { releaseId, organizationId: orgId },
+        include: { results: true },
+      }),
+      // TODO 5: Affected services
+      prisma.releaseServiceImpact.count({
+        where: {
+          releaseId,
+          organizationId: orgId,
+        },
       }),
     ]);
 
@@ -178,11 +212,11 @@ export async function GET(
         requestedBy: release.createdByUserId ?? null,
         scopeFinalizedAt: release.scopeFinalizedAt?.toISOString() ?? null,
         readinessScoredAt: readiness?.evaluatedAt?.toISOString() ?? null,
-        approvalGrantedAt: null, // TODO: Query AxiomApprovalRequest table
-        executionStartedAt: null, // TODO: Query execution history
-        validationCompleteAt: null, // TODO: Query validation results
+        approvalGrantedAt: approvalChain?.resolvedAt?.toISOString() ?? null,
+        executionStartedAt: release.actualDeployStart?.toISOString() ?? null,
+        validationCompleteAt: null, // TODO: Query validation completion timestamp
         closedAt: release.status === "deployed" || release.status === "rolled_back" || release.status === "failed"
-          ? new Date().toISOString() // Placeholder — would need actual closure timestamp
+          ? release.actualDeployEnd?.toISOString() ?? new Date().toISOString()
           : null,
       },
 
@@ -202,20 +236,20 @@ export async function GET(
       },
 
       playbook: {
-        stepCount: 0, // TODO: Query release steps/cherry-picks
-        cherryPickCount: 0, // TODO: Query cherry-pick records
-        policyViolationCount: 0, // TODO: Query policy violations
+        stepCount: 0, // TODO: Query release execution steps
+        cherryPickCount: cherryPicks,
+        policyViolationCount: policyViolations,
       },
 
       risk: {
         blastRadius: readiness?.driftRisk ?? 0 > 70 ? "critical" : readiness?.driftRisk ?? 0 > 50 ? "high" : "low",
-        affectedServiceCount: 0, // TODO: Count affected services
+        affectedServiceCount: affectedServices,
       },
 
       approval: {
-        required: 0, // TODO: Query approval policy
-        granted: 0, // TODO: Count approval votes
-        status: "pending",
+        required: approvalChain?.requiredCount ?? 0,
+        granted: approvalChain?.votes.filter(v => v.decision === "approve").length ?? 0,
+        status: approvalChain?.status ?? "pending",
       },
 
       execution: {
@@ -225,9 +259,9 @@ export async function GET(
       },
 
       validation: {
-        planCount: 0, // TODO: Query validation plans
-        resultsCount: 0, // TODO: Query validation results
-        status: "not_run",
+        planCount: validationPlans.length,
+        resultsCount: validationPlans.reduce((sum, p) => sum + ((p.results as any[])?.length ?? 0), 0),
+        status: validationPlans.length === 0 ? "not_run" : "completed",
       },
 
       evidence: {
