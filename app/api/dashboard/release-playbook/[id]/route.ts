@@ -23,6 +23,7 @@ import { currentContext } from "@/lib/auth/currentContext";
 import { apiOk, apiErr } from "@/lib/api";
 import { AxiomErrors } from "@/lib/errors/axiomErrors";
 import { prisma } from "@/lib/db";
+import { id as idFactory, newCorrelationId } from "@/lib/domain/ids";
 
 export const dynamic = "force-dynamic";
 
@@ -122,6 +123,12 @@ export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ): Promise<NextResponse<ResponseBody>> {
+  // Obtain or generate correlation ID for this request
+  const headerCorrelationId = request.headers.get("x-correlation-id");
+  const correlationId = headerCorrelationId
+    ? idFactory.correlation(headerCorrelationId)
+    : newCorrelationId();
+
   try {
     const ctx = await currentContext();
     if (!ctx.isAuthenticated || !ctx.organizationId) {
@@ -237,8 +244,8 @@ export async function GET(
       lastUpdated: new Date().toISOString(),
     };
 
-    return apiOk(data, { correlationId: request.headers.get("x-correlation-id") as string | undefined });
+    return apiOk(data, { correlationId });
   } catch (err) {
-    return apiErr(err, { correlationId: request.headers.get("x-correlation-id") as string | undefined });
+    return apiErr(err, { correlationId });
   }
 }
