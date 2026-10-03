@@ -25,7 +25,7 @@ export default function PlansPage() {
     <div className="relative isolate overflow-hidden">
       <div aria-hidden className="pointer-events-none absolute inset-0 -z-20 bg-cover bg-center opacity-25" style={{ backgroundImage: "url('/images/axiom-hero-landscape-v1.png')" }} />
       <div aria-hidden className="pointer-events-none absolute inset-0 -z-10 bg-[linear-gradient(180deg,rgba(12,13,12,0.66),rgba(12,13,12,0.94)_38%,#0c0d0c)]" />
-      <main className="relative mx-auto max-w-6xl px-5 pb-24 pt-16 sm:px-8 sm:pt-24">
+      <main className="relative mx-auto max-w-[1400px] px-5 pb-24 pt-16 sm:px-8 sm:pt-24">
       <section className="grid gap-10 lg:grid-cols-[1.15fr_0.85fr] lg:items-end">
         <div>
           <p className="text-[10px] uppercase tracking-[0.22em] text-violet-300">Axiom Agent · design-partner access</p>

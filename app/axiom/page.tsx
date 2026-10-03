@@ -164,7 +164,7 @@ export default function AxiomPage() {
         <div className="ambient-drift absolute -top-40 -left-60 w-[520px] h-[500px] rounded-full bg-brand-violet/[0.09] blur-[130px] pointer-events-none" aria-hidden />
         <div className="ambient-drift absolute -top-20 -right-40 w-[480px] h-[440px] rounded-full bg-brand-coral/[0.07] blur-[120px] pointer-events-none" style={{ animationDelay: "-8s" }} aria-hidden />
         <div className="ambient-drift absolute top-40 left-1/3 w-[380px] h-[300px] rounded-full bg-cyan-500/[0.05] blur-[110px] pointer-events-none" style={{ animationDelay: "-14s" }} aria-hidden />
-        <div className="relative max-w-6xl mx-auto px-6 md:px-10 pt-32 pb-20 text-center">
+        <div className="relative max-w-[1400px] mx-auto px-6 md:px-10 pt-32 pb-20 text-center">
           <Reveal direction="up" blur delay={0}>
             <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-zinc-500 mb-6 inline-flex items-center gap-3">
               <span className="text-brand-coral/90 tabular-nums">AX</span>
@@ -232,7 +232,7 @@ export default function AxiomPage() {
       {/* ── Autonomous Workflow ────────────────────────────────────────── */}
       <div className="section-divider" />
       <section className="py-24">
-        <div className="max-w-6xl mx-auto px-6 md:px-10">
+        <div className="max-w-[1400px] mx-auto px-6 md:px-10">
           <Reveal direction="up" blur>
             <div className="text-center mb-16">
               <span className="huly-badge text-xs font-semibold text-violet-400 mb-3 tracking-wide uppercase px-3 py-1">
@@ -282,7 +282,7 @@ export default function AxiomPage() {
       <div className="section-divider" />
       <section className="py-24 relative">
         <div className="absolute top-1/2 left-0 -translate-y-1/2 w-[400px] h-[400px] rounded-full bg-indigo-500/[0.04] blur-[120px] pointer-events-none" aria-hidden />
-        <div className="max-w-6xl mx-auto px-6 md:px-10 relative">
+        <div className="max-w-[1400px] mx-auto px-6 md:px-10 relative">
           <Reveal direction="up" blur>
             <div className="text-center mb-16">
               <span className="huly-badge text-xs font-semibold text-violet-400 mb-3 tracking-wide uppercase px-3 py-1">
@@ -340,7 +340,7 @@ export default function AxiomPage() {
       {/* ── Enterprise Trust ──────────────────────────────────────────── */}
       <div className="section-divider" />
       <section className="py-24">
-        <div className="max-w-6xl mx-auto px-6 md:px-10">
+        <div className="max-w-[1400px] mx-auto px-6 md:px-10">
           <Reveal direction="up" blur>
             <div className="text-center mb-16">
               <span className="huly-badge text-xs font-semibold text-violet-400 mb-3 tracking-wide uppercase px-3 py-1">
@@ -373,7 +373,7 @@ export default function AxiomPage() {
       <div className="section-divider" />
       <section className="py-24 relative">
         <div className="absolute -bottom-20 right-0 w-[350px] h-[350px] rounded-full bg-blue-500/[0.04] blur-[100px] pointer-events-none" aria-hidden />
-        <div className="max-w-6xl mx-auto px-6 md:px-10 relative">
+        <div className="max-w-[1400px] mx-auto px-6 md:px-10 relative">
           <Reveal direction="up" blur>
             <div className="text-center mb-12">
               <span className="huly-badge text-xs font-semibold text-violet-400 mb-3 tracking-wide uppercase px-3 py-1">
@@ -449,7 +449,7 @@ export default function AxiomPage() {
       {/* ── See It In Action ─────────────────────────────────────────── */}
       <div className="section-divider" />
       <section className="py-24 relative">
-        <div className="max-w-6xl mx-auto px-6 md:px-10">
+        <div className="max-w-[1400px] mx-auto px-6 md:px-10">
           <Reveal direction="up" blur>
             <div className="text-center mb-16">
               <span className="huly-badge text-xs font-semibold text-violet-400 mb-3 tracking-wide uppercase px-3 py-1">

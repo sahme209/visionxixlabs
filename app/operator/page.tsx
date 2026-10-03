@@ -163,7 +163,7 @@ export default function OperatorLandingPage() {
 
       {/* Nav */}
       <nav className="border-b border-white/[0.06] backdrop-blur-sm sticky top-0 z-50 bg-[#09090b]/80">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
+        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
           <Link href="/operator" className="flex items-center gap-2">
             <CpuChipIcon className="h-7 w-7 text-violet-400" />
             <span className="font-bold text-lg">Cloud Operator</span>
@@ -194,7 +194,7 @@ export default function OperatorLandingPage() {
         <div className="ambient-drift absolute top-1/4 left-1/4 w-[400px] h-[320px] rounded-full bg-brand-violet/[0.08] blur-[120px] pointer-events-none" style={{ animationDelay: "-8s" }} aria-hidden />
         <div className="ambient-drift absolute bottom-0 -left-32 w-[380px] h-[300px] rounded-full bg-cyan-500/[0.05] blur-[110px] pointer-events-none" style={{ animationDelay: "-14s" }} aria-hidden />
         <div className="hero-beam-vertical pointer-events-none" aria-hidden />
-        <div className="max-w-6xl mx-auto px-6 md:px-10 pt-28 pb-20 text-center relative">
+        <div className="max-w-[1400px] mx-auto px-6 md:px-10 pt-28 pb-20 text-center relative">
           <Reveal>
             <p className="mono-label inline-flex items-center gap-2.5 mb-6">
               <span className="relative flex h-1.5 w-1.5">
@@ -250,7 +250,7 @@ export default function OperatorLandingPage() {
 
       {/* Visual Demo — Score Preview */}
       <section className="pb-20">
-        <div className="max-w-6xl mx-auto px-6 md:px-10">
+        <div className="max-w-[1400px] mx-auto px-6 md:px-10">
           <Reveal>
             <div className="glass-card rounded-2xl border border-white/[0.06] p-8 sm:p-12">
               <div className="grid sm:grid-cols-3 gap-8 items-center">
@@ -310,7 +310,7 @@ export default function OperatorLandingPage() {
       {/* How It Works */}
       <section id="how-it-works" className="py-20 relative">
         <div className="absolute inset-0 bg-grid-mesh opacity-20 pointer-events-none" aria-hidden />
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <Reveal>
             <div className="mb-16">
               <h2 className="font-display text-4xl md:text-5xl lg:text-6xl font-bold leading-[1.04]">How Axiom works.{" "}<span className="text-zinc-500">Scan to execution in minutes.</span></h2>
@@ -341,7 +341,7 @@ export default function OperatorLandingPage() {
       {/* Features */}
       <section id="features" className="py-20 relative">
         <div className="absolute inset-0 bg-grid-mesh opacity-15 pointer-events-none" aria-hidden />
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <Reveal>
             <div className="mb-16">
               <h2 className="font-display text-4xl md:text-5xl lg:text-6xl font-bold leading-[1.04]">Built for trust.{" "}<span className="text-zinc-500">Every action is reversible.</span></h2>
@@ -368,7 +368,7 @@ export default function OperatorLandingPage() {
 
       {/* Social proof */}
       <section className="py-20">
-        <div className="max-w-6xl mx-auto px-6 md:px-10 text-center">
+        <div className="max-w-[1400px] mx-auto px-6 md:px-10 text-center">
           <Reveal>
             <div className="grid grid-cols-3 gap-8">
               <div>
@@ -393,7 +393,7 @@ export default function OperatorLandingPage() {
       {/* Pricing */}
       <section id="pricing" className="py-20 relative">
         <div className="absolute inset-0 bg-grid-mesh opacity-15 pointer-events-none" aria-hidden />
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <Reveal>
             <div className="mb-16">
               <h2 className="font-display text-4xl md:text-5xl lg:text-6xl font-bold leading-[1.04]">Simple pricing.{" "}<span className="text-zinc-500">Start free, scale when ready.</span></h2>
@@ -402,7 +402,7 @@ export default function OperatorLandingPage() {
               </p>
             </div>
           </Reveal>
-          <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+          <div className="grid md:grid-cols-3 gap-6 max-w-[1400px] mx-auto">
             <Stagger>
               {plans.map((plan) => (
                 <div
@@ -454,7 +454,7 @@ export default function OperatorLandingPage() {
 
       {/* FAQ */}
       <section id="faq" className="py-20">
-        <div className="max-w-6xl mx-auto px-6 md:px-10">
+        <div className="max-w-[1400px] mx-auto px-6 md:px-10">
           <Reveal>
             <h2 className="text-4xl md:text-5xl font-extrabold text-center mb-12 tracking-[-0.04em]">Frequently asked questions.</h2>
           </Reveal>
@@ -480,7 +480,7 @@ export default function OperatorLandingPage() {
       <section className="py-24 relative overflow-hidden">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[400px] spotlight-orb opacity-20 pointer-events-none" aria-hidden />
         <div className="absolute -bottom-20 -right-20 w-60 h-60 rounded-full bg-fuchsia-600/8 blur-[100px] pointer-events-none" aria-hidden />
-        <div className="max-w-6xl mx-auto px-6 md:px-10 text-center relative z-10">
+        <div className="max-w-[1400px] mx-auto px-6 md:px-10 text-center relative z-10">
           <Reveal>
             <h2 className="text-4xl md:text-5xl font-extrabold mb-4 tracking-[-0.04em]">
               What&apos;s hiding in your cloud?<br className="hidden sm:block" />

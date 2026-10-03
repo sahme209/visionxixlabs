@@ -39,7 +39,7 @@ export default function Home() {
     <div className="axiom-canvas min-h-screen text-[#ecece8]">
       <Navigation />
       <main>
-        <section className="mx-auto max-w-6xl px-5 pb-18 pt-28 sm:px-8 lg:pb-24 lg:pt-36">
+        <section className="mx-auto max-w-[1400px] px-5 pb-18 pt-28 sm:px-8 lg:px-12 lg:pb-24 lg:pt-36">
           <div className="max-w-[700px]">
             <p className="text-[11px] uppercase tracking-[0.18em] text-zinc-500">Axiom Agent · deployment operations</p>
             <h1 className="mt-6 text-[clamp(2.7rem,4.65vw,5rem)] font-medium leading-[0.98] tracking-[-0.05em] text-[#f1f1ed]">
@@ -76,8 +76,8 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="border-y border-white/[0.06] bg-[#11110f] px-5 py-12 sm:px-8">
-          <div className="mx-auto max-w-5xl">
+        <section className="border-y border-white/[0.06] bg-[#11110f] px-5 py-12 sm:px-8 lg:px-12">
+          <div className="mx-auto max-w-[1400px]">
             <p className="text-[11px] uppercase tracking-[0.16em] text-zinc-500">One governed record, not another dashboard</p>
             <h2 className="mt-3 max-w-2xl text-2xl font-medium tracking-[-0.04em] text-zinc-100 sm:text-3xl">The Playbook keeps the operator oriented.</h2>
             <div className="mt-7 grid gap-3 md:grid-cols-3">
@@ -86,7 +86,7 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="mx-auto max-w-6xl space-y-8 px-5 py-20 sm:px-8 lg:py-28">
+        <section className="mx-auto max-w-[1400px] space-y-8 px-5 py-20 sm:px-8 lg:px-12 lg:py-28">
           <EditorialPanel
             eyebrow="01 · Structured intake"
             title="Five stages. No hidden assumptions."
@@ -111,16 +111,16 @@ export default function Home() {
           />
         </section>
 
-        <section className="border-y border-white/[0.06] bg-[#11110f] px-5 py-20 sm:px-8 lg:px-10">
-          <h2 className="mx-auto max-w-5xl text-center text-3xl font-medium tracking-[-0.04em] sm:text-4xl">Designed around production reality.</h2>
-          <div className="mx-auto mt-9 grid max-w-5xl gap-3 md:grid-cols-3">
+        <section className="border-y border-white/[0.06] bg-[#11110f] px-5 py-20 sm:px-8 lg:px-12">
+          <h2 className="mx-auto max-w-[1400px] text-center text-3xl font-medium tracking-[-0.04em] sm:text-4xl">Designed around production reality.</h2>
+          <div className="mx-auto mt-9 grid max-w-[1400px] gap-3 md:grid-cols-3 px-5 sm:px-8 lg:px-12">
             <EvidenceCard icon={<ScaleIcon className="h-6 w-6" />} title="Policy remains authoritative" detail="Desktop preferences cannot weaken organization approvals, permission boundaries, or production gates." />
             <EvidenceCard icon={<FingerPrintIcon className="h-6 w-6" />} title="Browser-authorized desktop sessions" detail="Sign-in and account creation happen in the system browser through an expiring, one-time device-bound challenge." />
             <EvidenceCard icon={<ClockIcon className="h-6 w-6" />} title="Reconnect without rewriting history" detail="Last-known records remain visible and are explicitly marked stale with the last successful service-response time." />
           </div>
         </section>
 
-        <section className="mx-auto max-w-6xl px-5 py-20 sm:px-8 lg:py-28">
+        <section className="mx-auto max-w-[1400px] px-5 py-20 sm:px-8 lg:px-12 lg:py-28">
           <h2 className="text-3xl font-medium tracking-[-0.035em]">Recent highlights</h2>
           <div className="mt-8 grid gap-px overflow-hidden rounded-xl border border-white/[0.06] bg-white/[0.06] md:grid-cols-2 xl:grid-cols-4">
             {highlights.map((item) => (

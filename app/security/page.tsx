@@ -61,7 +61,7 @@ export default function SecurityPage() {
       <div className="ambient-drift absolute top-1/4 left-1/4 h-[340px] w-[420px] rounded-full bg-brand-coral/[0.06] blur-[120px] pointer-events-none" aria-hidden />
       <Navigation />
 
-      <main className="relative mx-auto max-w-6xl px-4 pb-20 pt-28 sm:px-6 md:px-10 md:pt-36">
+      <main className="relative mx-auto max-w-[1400px] px-4 pb-20 pt-28 sm:px-6 md:px-10 md:pt-36">
         <header className="max-w-3xl">
           <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-zinc-500 inline-flex items-center gap-3">
             <span className="text-brand-coral/90">Security</span>

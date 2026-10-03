@@ -352,7 +352,7 @@ export default function DownloadPage() {
 
       {/* What you get on desktop ────────────────────────────────── */}
       <section className="py-24 px-4 sm:px-6 lg:px-8 relative">
-        <div className="max-w-6xl mx-auto">
+        <div className="max-w-[1400px] mx-auto">
           <Reveal direction="up" blur>
             <div className="mb-16">
               <p className="text-sm font-semibold text-violet-400 mb-4 tracking-wide uppercase">
@@ -456,7 +456,7 @@ export default function DownloadPage() {
 
       {/* Built for enterprise ─────────────────────────────────────── */}
       <section className="py-24 px-4 sm:px-6 lg:px-8 relative">
-        <div className="max-w-6xl mx-auto">
+        <div className="max-w-[1400px] mx-auto">
           <Reveal direction="up" blur>
             <div className="mb-12">
               <p className="text-sm font-semibold text-emerald-400 mb-4 tracking-wide uppercase">
@@ -498,7 +498,7 @@ export default function DownloadPage() {
 
       {/* Platform roadmap ─────────────────────────────────────────── */}
       <section className="py-24 px-4 sm:px-6 lg:px-8 relative">
-        <div className="max-w-5xl mx-auto">
+        <div className="max-w-[1400px] mx-auto">
           <Reveal direction="up" blur>
             <div className="mb-12">
               <p className="text-sm font-semibold text-amber-400 mb-4 tracking-wide uppercase">

@@ -50,7 +50,7 @@ export default function IntegrationsCatalog() {
   return (
     <div className="axiom-canvas axiom-product-canvas min-h-screen text-zinc-100">
       <Navigation />
-      <main className="relative mx-auto max-w-6xl space-y-10 px-4 pb-16 pt-28 sm:px-6">
+      <main className="relative mx-auto max-w-[1400px] space-y-10 px-4 pb-16 pt-28 sm:px-6">
       {/* Coral × violet aurora — Huly-style warm wash behind the hero */}
       <div aria-hidden className="pointer-events-none absolute inset-x-0 -top-8 h-[480px] -z-10 overflow-hidden">
         <div className="ambient-drift absolute -top-24 left-1/2 -translate-x-1/2 w-[820px] h-[420px] rounded-full bg-brand-violet/[0.07] blur-[140px]" />

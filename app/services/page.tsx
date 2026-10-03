@@ -190,7 +190,7 @@ export default function ServicesPage() {
       <Navigation />
 
       <main className="pt-28 pb-24 px-4 sm:px-6 lg:px-8 relative">
-        <div className="max-w-6xl mx-auto px-6 md:px-10">
+        <div className="max-w-[1400px] mx-auto px-6 md:px-10">
           {/* 1. Overview — Huly numbered + coral underline */}
           <Reveal direction="up" blur>
             <section className="mb-12" aria-labelledby="overview-heading">
