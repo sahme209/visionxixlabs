@@ -6,6 +6,74 @@
 
 ---
 
+## 2026-10-03 status update — read this before the rest of the document
+
+Everything below this notice was written around a **live-cloud-account**
+rehearsal design (a real sandbox AWS account, real provider API calls,
+CloudTrail logs, per-run cost estimation). That is a materially different
+and much larger thing than what the current product direction actually
+wants: a **safe, plan-only, non-secret** pre-production check — dependency
+checks, Terraform *plans* (never apply), policy validation, rollback-artifact
+validation — with no live infrastructure execution and no claim of
+production parity. Building the design below as written would require
+real customer cloud credentials this project does not have, and would
+cross a line ("arbitrary infrastructure execution against a cloud account")
+the current direction explicitly avoids. Treat the "Implementation Phases,"
+"Timeline Estimate," and "Sandbox Account Strategy" sections below as
+**not current direction** — kept for historical record only.
+
+**What already exists and satisfies the actual (narrower) requirement,
+verified directly against source on 2026-10-03:**
+
+- **Terraform plan (never apply) as the default boundary** —
+  `lib/execution/terraformBoundary.ts`'s `evaluateTerraformBoundary()`
+  defaults every provider to `planAvailable: true, applyAvailable: false`
+  and only flips `applyAvailable` to `true` when four independent gates
+  are *all* green (broker credentials present, an explicit apply feature
+  flag, a ready audit sink, desktop signing readiness) — with an honest
+  `whyApplyBlocked` message listing exactly which gates are missing.
+  `/api/terraform/plan` is the live route; `/api/terraform/apply` is
+  real but governed by this same boundary.
+- **In-memory execution simulation, no real infrastructure touched** —
+  `lib/simulation/executionSimulator.ts` ("Execution simulator (in-memory
+  twin mutation, no apply)") and the release/security variants
+  (`lib/releaseops/releaseSimulation.ts`, `lib/securityScanner/securitySimulation.ts`)
+  are all listed `status: "passing"` with evidence paths in
+  `lib/validation/platformValidationMatrix.ts` — the single internal
+  source of truth this codebase already uses to avoid overclaiming "what
+  works end-to-end right now."
+- **Policy and boundary gate validation before any approval packet can
+  be assembled** — `lib/agents/approverPacketAssembler.ts` "Refuses to
+  build a packet unless every upstream gate (simulator + policy +
+  boundary + council) has passed," with a closed `rejectReason` union
+  and a packet summary that always reaffirms "Approval-only-no-execution."
+- **The sandbox-spec builder is pure, not a live runner** —
+  `lib/agents/simulatorSandboxSpec.ts` builds a typed description of what
+  an external sandbox run *would* check (backend, assertions, timeout);
+  its own doc comment says plainly "the actual sandbox runner is
+  external." No live runner exists, and nothing in the product claims
+  one does.
+- **The public website already describes this precisely and
+  conservatively** — `/capabilities`, `/faq`, and `/compare` all contain
+  explicit, hand-written disclaimers: "it is not an isolated production
+  rehearsal," "does not currently claim a general isolated
+  production-rehearsal environment," "does not claim an isolated
+  production-equivalent environment." This was independently verified
+  against the live page content, not assumed — there is no truthfulness
+  gap to fix here.
+
+**What's genuinely still missing**, if a future session wants to build
+toward a *named* "rehearsal" feature without live cloud credentials: a
+single dashboard surface that composes the pieces above (plan + simulator
++ policy/boundary gate results) into one operator-facing view, the way
+`DEPLOYMENT-REHEARSAL-SPEC.md`'s original UI/UX section imagined — but
+built on `terraformBoundary.ts` + the existing simulators, not on a new
+live-AWS-sandbox execution engine. That composition work was not started
+in this pass; the underlying safe capability it would compose was found to
+already exist and did not need new code.
+
+---
+
 ## Problem Statement
 
 Release teams need confidence that approved playbooks will execute successfully **before** running in production. Current state:
