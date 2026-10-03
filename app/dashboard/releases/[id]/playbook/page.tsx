@@ -254,9 +254,57 @@ export default function UnifiedPlaybookPage() {
               <p className="text-[12px] text-zinc-400">
                 Only items that need action. Everything else is green.
               </p>
-              {/* TODO: Render blockers, pending approvals, deadline warnings */}
-              <div className="rounded-2xl border border-white/[0.08] bg-white/[0.025] p-5 text-[12px] text-zinc-400">
-                No blockers or pending items at the moment.
+              <div className="space-y-3">
+                {data.readiness.blockerCount > 0 && (
+                  <div className="rounded-2xl border border-orange-500/[0.25] bg-orange-500/[0.04] p-5">
+                    <div className="flex items-start gap-3">
+                      <div className="text-orange-400 mt-0.5">⚠️</div>
+                      <div className="flex-1">
+                        <h4 className="text-[13px] font-semibold text-orange-300 mb-1">
+                          {data.readiness.blockerCount} readiness {data.readiness.blockerCount === 1 ? "blocker" : "blockers"}
+                        </h4>
+                        <p className="text-[12px] text-zinc-400">
+                          {data.readiness.riskLevel === "high" ? "High-risk release needs remediation" : "Address blockers before approval"}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+                {data.approval.required > 0 && data.approval.granted < data.approval.required && (
+                  <div className="rounded-2xl border border-amber-500/[0.25] bg-amber-500/[0.04] p-5">
+                    <div className="flex items-start gap-3">
+                      <div className="text-amber-400 mt-0.5">⏳</div>
+                      <div className="flex-1">
+                        <h4 className="text-[13px] font-semibold text-amber-300 mb-1">
+                          {data.approval.required - data.approval.granted} approval{data.approval.required - data.approval.granted === 1 ? "" : "s"} pending
+                        </h4>
+                        <p className="text-[12px] text-zinc-400">
+                          {data.approval.granted}/{data.approval.required} required approvals collected
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+                {data.playbook.policyViolationCount > 0 && (
+                  <div className="rounded-2xl border border-rose-500/[0.25] bg-rose-500/[0.04] p-5">
+                    <div className="flex items-start gap-3">
+                      <div className="text-rose-400 mt-0.5">🔴</div>
+                      <div className="flex-1">
+                        <h4 className="text-[13px] font-semibold text-rose-300 mb-1">
+                          {data.playbook.policyViolationCount} policy {data.playbook.policyViolationCount === 1 ? "violation" : "violations"}
+                        </h4>
+                        <p className="text-[12px] text-zinc-400">
+                          Playbook contains steps that violate deployment policy
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+                {data.readiness.blockerCount === 0 && data.approval.required === data.approval.granted && data.playbook.policyViolationCount === 0 && (
+                  <div className="rounded-2xl border border-white/[0.08] bg-white/[0.025] p-5 text-[12px] text-zinc-400">
+                    ✓ No blockers, no pending approvals, no policy violations. Ready to proceed.
+                  </div>
+                )}
               </div>
             </div>
           )}
@@ -266,9 +314,98 @@ export default function UnifiedPlaybookPage() {
               <p className="text-[12px] text-zinc-400">
                 Release revisions and audit trail ({data.auditEventCount} events).
               </p>
-              {/* TODO: Render revision timeline + audit log */}
-              <div className="rounded-2xl border border-white/[0.08] bg-white/[0.025] p-5 text-[12px] text-zinc-400">
-                Revision history and audit trail coming soon.
+              <div className="space-y-3">
+                {data.lifecycle.closedAt && (
+                  <div className="rounded-2xl border border-white/[0.08] bg-white/[0.025] p-4">
+                    <div className="flex items-start gap-3">
+                      <div className="text-emerald-400 mt-0.5 text-[14px]">✓</div>
+                      <div className="flex-1">
+                        <p className="text-[12px] font-semibold text-white">Release closed</p>
+                        <p className="text-[11px] text-zinc-400 mt-0.5">
+                          {new Date(data.lifecycle.closedAt).toLocaleDateString()} at {new Date(data.lifecycle.closedAt).toLocaleTimeString()}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+                {data.lifecycle.validationCompleteAt && (
+                  <div className="rounded-2xl border border-white/[0.08] bg-white/[0.025] p-4">
+                    <div className="flex items-start gap-3">
+                      <div className="text-emerald-400 mt-0.5 text-[14px]">✓</div>
+                      <div className="flex-1">
+                        <p className="text-[12px] font-semibold text-white">Validation completed</p>
+                        <p className="text-[11px] text-zinc-400 mt-0.5">
+                          {new Date(data.lifecycle.validationCompleteAt).toLocaleDateString()} at {new Date(data.lifecycle.validationCompleteAt).toLocaleTimeString()}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+                {data.lifecycle.executionStartedAt && (
+                  <div className="rounded-2xl border border-white/[0.08] bg-white/[0.025] p-4">
+                    <div className="flex items-start gap-3">
+                      <div className="text-emerald-400 mt-0.5 text-[14px]">▶</div>
+                      <div className="flex-1">
+                        <p className="text-[12px] font-semibold text-white">Execution started</p>
+                        <p className="text-[11px] text-zinc-400 mt-0.5">
+                          {new Date(data.lifecycle.executionStartedAt).toLocaleDateString()} at {new Date(data.lifecycle.executionStartedAt).toLocaleTimeString()}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+                {data.lifecycle.approvalGrantedAt && (
+                  <div className="rounded-2xl border border-white/[0.08] bg-white/[0.025] p-4">
+                    <div className="flex items-start gap-3">
+                      <div className="text-emerald-400 mt-0.5 text-[14px]">✓</div>
+                      <div className="flex-1">
+                        <p className="text-[12px] font-semibold text-white">Approval granted</p>
+                        <p className="text-[11px] text-zinc-400 mt-0.5">
+                          {new Date(data.lifecycle.approvalGrantedAt).toLocaleDateString()} at {new Date(data.lifecycle.approvalGrantedAt).toLocaleTimeString()}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+                {data.lifecycle.readinessScoredAt && (
+                  <div className="rounded-2xl border border-white/[0.08] bg-white/[0.025] p-4">
+                    <div className="flex items-start gap-3">
+                      <div className="text-amber-400 mt-0.5 text-[14px]">📊</div>
+                      <div className="flex-1">
+                        <p className="text-[12px] font-semibold text-white">Readiness scored</p>
+                        <p className="text-[11px] text-zinc-400 mt-0.5">
+                          {new Date(data.lifecycle.readinessScoredAt).toLocaleDateString()} at {new Date(data.lifecycle.readinessScoredAt).toLocaleTimeString()}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+                {data.lifecycle.scopeFinalizedAt && (
+                  <div className="rounded-2xl border border-white/[0.08] bg-white/[0.025] p-4">
+                    <div className="flex items-start gap-3">
+                      <div className="text-blue-400 mt-0.5 text-[14px]">🎯</div>
+                      <div className="flex-1">
+                        <p className="text-[12px] font-semibold text-white">Scope finalized</p>
+                        <p className="text-[11px] text-zinc-400 mt-0.5">
+                          {new Date(data.lifecycle.scopeFinalizedAt).toLocaleDateString()} at {new Date(data.lifecycle.scopeFinalizedAt).toLocaleTimeString()}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+                {data.lifecycle.requestedAt && (
+                  <div className="rounded-2xl border border-white/[0.08] bg-white/[0.025] p-4">
+                    <div className="flex items-start gap-3">
+                      <div className="text-blue-400 mt-0.5 text-[14px]">📝</div>
+                      <div className="flex-1">
+                        <p className="text-[12px] font-semibold text-white">Request created</p>
+                        <p className="text-[11px] text-zinc-400 mt-0.5">
+                          {new Date(data.lifecycle.requestedAt).toLocaleDateString()} at {new Date(data.lifecycle.requestedAt).toLocaleTimeString()}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           )}
