@@ -231,6 +231,20 @@ export function clearInstallationTokenCache(): void {
   cachedByScope.clear();
 }
 
+/**
+ * Drop every cached token scope for one installation. Call this when an
+ * installation is suspended or revoked — without it, a cached token stays
+ * usable for up to TOKEN_REFRESH_BUFFER_MS past the status change (GitHub
+ * installation tokens live up to ~1h; the cache only refreshes 5 min before
+ * expiry), so a "revoked" installation could still serve live API calls
+ * for most of that window.
+ */
+export function purgeInstallationTokenCache(installationId: number): void {
+  for (const [key, cached] of cachedByScope) {
+    if (cached.installationId === installationId) cachedByScope.delete(key);
+  }
+}
+
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------

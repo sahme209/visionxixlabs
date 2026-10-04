@@ -243,6 +243,27 @@ RULES:
 - Next steps should be actionable engineering tasks, not vague advice.
 - If data is limited, acknowledge it and make reasonable assumptions.`;
 
+// Cloud discovery payloads carry the prospect's real tenant identifiers
+// (Azure subscriptionId, GCP projectId, etc.) — these must never reach a
+// model provider's prompt. Strip by key name (not by value pattern, since
+// these are plain GUIDs/strings with no distinguishing shape to redact
+// against) before any discovery object is interpolated into a prompt.
+const TENANT_IDENTIFIER_KEYS = new Set([
+  "subscriptionid", "projectid", "accountid", "tenantid", "organizationid",
+]);
+
+export function redactTenantIdentifiers(value: unknown): unknown {
+  if (Array.isArray(value)) return value.map(redactTenantIdentifiers);
+  if (value && typeof value === "object") {
+    const out: Record<string, unknown> = {};
+    for (const [key, v] of Object.entries(value as Record<string, unknown>)) {
+      out[key] = TENANT_IDENTIFIER_KEYS.has(key.toLowerCase()) ? "[REDACTED]" : redactTenantIdentifiers(v);
+    }
+    return out;
+  }
+  return value;
+}
+
 async function generateAIRecommendation(
   scans: ScanData[],
   providers: string[],
@@ -274,7 +295,7 @@ RESILIENCE SCORE: ${resilienceScore.total}/100 (Grade: ${resilienceScore.grade})
 - Monitoring & Recovery: ${resilienceScore.categories.monitoringAndRecovery.score}/20
 
 RAW SCAN DETAILS:
-${scans.map((s) => `--- ${s.provider.toUpperCase()} ---\nDiscovery: ${JSON.stringify(s.discovery ?? "no data")}\nSecurity: ${s.security ? `${s.security.findings.length} findings` : "no data"}\nCost: ${JSON.stringify(s.cost ?? "no data")}`).join("\n\n")}
+${scans.map((s) => `--- ${s.provider.toUpperCase()} ---\nDiscovery: ${JSON.stringify(redactTenantIdentifiers(s.discovery) ?? "no data")}\nSecurity: ${s.security ? `${s.security.findings.length} findings` : "no data"}\nCost: ${JSON.stringify(s.cost ?? "no data")}`).join("\n\n")}
 
 Generate a practical recommendation as JSON.`;
 

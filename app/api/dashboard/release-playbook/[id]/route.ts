@@ -81,7 +81,7 @@ interface UnifiedPlaybookResponse {
 
   // Approval stage
   approval: {
-    required: number;
+    required: number | DataSourceState;
     granted: number;
     status: string;
   };
@@ -253,7 +253,13 @@ export async function GET(
       },
 
       approval: {
-        required: approvalChain?.requiredCount ?? 0,
+        // required=0 is a real policy decision ("no approvals needed"); an
+        // absent chain means approval hasn't been evaluated at all yet.
+        // Conflating the two previously made "not yet evaluated" render as
+        // "Not Required" in the UI.
+        required: approvalChain
+          ? approvalChain.requiredCount
+          : { available: false, reason: "Approval chain not yet created — readiness or policy evaluation has not run." },
         granted: approvalChain?.votes.filter((v: any) => v.decision === "approve").length ?? 0,
         status: approvalChain?.status ?? "pending",
       },

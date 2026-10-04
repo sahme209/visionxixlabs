@@ -50,6 +50,12 @@ function describeCount(value: unknown): string {
   return "—";
 }
 
+/** Same DataSourceState unwrap as describeCount, but as a number for
+ * arithmetic/comparison — null means "not yet evaluated," never 0. */
+function requiredCount(value: unknown): number | null {
+  return typeof value === "number" ? value : null;
+}
+
 export default function UnifiedPlaybookPage() {
   const params = useParams();
   const releaseId = String(params.id);
@@ -158,7 +164,7 @@ export default function UnifiedPlaybookPage() {
               <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
                 <ReleasePlaybookStageCard
                   stage="request"
-                  status="complete"
+                  status={data.request.summary ? "complete" : "pending"}
                   title="Request"
                   description={data.request.summary as string | null}
                   facts={[
@@ -182,7 +188,7 @@ export default function UnifiedPlaybookPage() {
                 />
                 <ReleasePlaybookStageCard
                   stage="playbook"
-                  status="pending"
+                  status={(data.playbook.policyViolationCount as unknown as number) > 0 ? "error" : "pending"}
                   title="Playbook"
                   description={`${describeCount(data.playbook.stepCount)} steps`}
                   facts={[
@@ -194,7 +200,13 @@ export default function UnifiedPlaybookPage() {
                 />
                 <ReleasePlaybookStageCard
                   stage="risk"
-                  status="pending"
+                  status={
+                    data.risk.blastRadius === "unscored"
+                      ? "pending"
+                      : data.risk.blastRadius === "critical" || data.risk.blastRadius === "high"
+                        ? "warning"
+                        : "complete"
+                  }
                   title="Risk"
                   description={`Blast radius: ${data.risk.blastRadius}`}
                   facts={[
@@ -205,12 +217,22 @@ export default function UnifiedPlaybookPage() {
                 />
                 <ReleasePlaybookStageCard
                   stage="approval"
-                  status={(data.approval.required as unknown as number) > 0 && (data.approval.granted as unknown as number) >= (data.approval.required as unknown as number) ? "complete" : "pending"}
+                  status={
+                    requiredCount(data.approval.required) === null
+                      ? "pending"
+                      : (requiredCount(data.approval.required) as number) > 0 && (data.approval.granted as unknown as number) >= (requiredCount(data.approval.required) as number)
+                        ? "complete"
+                        : "pending"
+                  }
                   title="Approval"
-                  description={`${data.approval.granted as unknown as number}/${data.approval.required as unknown as number} approvals`}
+                  description={
+                    requiredCount(data.approval.required) === null
+                      ? "Not yet evaluated"
+                      : `${data.approval.granted as unknown as number}/${requiredCount(data.approval.required)} approvals`
+                  }
                   facts={[
                     { label: "Granted", value: `${data.approval.granted as unknown as number}` },
-                    { label: "Required", value: `${data.approval.required as unknown as number}` },
+                    { label: "Required", value: describeCount(data.approval.required) },
                   ]}
                   detailLink={`#approval`}
                 />
@@ -300,21 +322,38 @@ export default function UnifiedPlaybookPage() {
                     </div>
                   </div>
                 )}
-                {(data.approval.required as unknown as number) > 0 && (data.approval.granted as unknown as number) < (data.approval.required as unknown as number) && (
-                  <div className="rounded-2xl border border-amber-500/[0.25] bg-amber-500/[0.04] p-5">
+                {requiredCount(data.approval.required) === null && (
+                  <div className="rounded-2xl border border-zinc-500/[0.25] bg-zinc-500/[0.04] p-5">
                     <div className="flex items-start gap-3">
-                      <div className="text-amber-400 mt-0.5">⏳</div>
+                      <div className="text-zinc-400 mt-0.5">•</div>
                       <div className="flex-1">
-                        <h4 className="text-[13px] font-semibold text-amber-300 mb-1">
-                          {(data.approval.required as unknown as number) - (data.approval.granted as unknown as number)} approval{((data.approval.required as unknown as number) - (data.approval.granted as unknown as number)) === 1 ? "" : "s"} pending
-                        </h4>
-                        <p className="text-[12px] text-zinc-400">
-                          {data.approval.granted as unknown as number}/{data.approval.required as unknown as number} required approvals collected
-                        </p>
+                        <h4 className="text-[13px] font-semibold text-zinc-300 mb-1">Approval requirement not yet evaluated</h4>
+                        <p className="text-[12px] text-zinc-400">No approval chain has been created for this release yet. Run readiness/policy evaluation to determine how many approvals are required.</p>
                       </div>
                     </div>
                   </div>
                 )}
+                {(() => {
+                  const required = requiredCount(data.approval.required);
+                  const granted = data.approval.granted as unknown as number;
+                  if (required === null || granted >= required) return null;
+                  const remaining = required - granted;
+                  return (
+                    <div className="rounded-2xl border border-amber-500/[0.25] bg-amber-500/[0.04] p-5">
+                      <div className="flex items-start gap-3">
+                        <div className="text-amber-400 mt-0.5">⏳</div>
+                        <div className="flex-1">
+                          <h4 className="text-[13px] font-semibold text-amber-300 mb-1">
+                            {remaining} approval{remaining === 1 ? "" : "s"} pending
+                          </h4>
+                          <p className="text-[12px] text-zinc-400">
+                            {granted}/{required} required approvals collected
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })()}
                 {(data.playbook.policyViolationCount as unknown as number) > 0 && (
                   <div className="rounded-2xl border border-rose-500/[0.25] bg-rose-500/[0.04] p-5">
                     <div className="flex items-start gap-3">
@@ -330,7 +369,7 @@ export default function UnifiedPlaybookPage() {
                     </div>
                   </div>
                 )}
-                {Boolean(data.readiness.evaluatedAt) && (data.readiness.blockerCount as unknown as number) === 0 && (data.approval.required as unknown as number) === (data.approval.granted as unknown as number) && (data.playbook.policyViolationCount as unknown as number) === 0 && (
+                {Boolean(data.readiness.evaluatedAt) && (data.readiness.blockerCount as unknown as number) === 0 && requiredCount(data.approval.required) !== null && requiredCount(data.approval.required) === (data.approval.granted as unknown as number) && (data.playbook.policyViolationCount as unknown as number) === 0 && (
                   <div className="rounded-2xl border border-white/[0.08] bg-white/[0.025] p-5 text-[12px] text-zinc-400">
                     ✓ No blockers, no pending approvals, no policy violations. Ready to proceed.
                   </div>

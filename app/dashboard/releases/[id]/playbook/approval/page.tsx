@@ -5,17 +5,26 @@ import { useParams } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeftIcon, CheckCircleIcon, ClockIcon } from "@heroicons/react/24/outline";
 
+interface DataSourceState {
+  available: boolean;
+  reason?: string;
+}
+
 interface PlaybookData {
   id: string;
   releaseTag: string | null;
   approval: {
-    required: number;
+    required: number | DataSourceState;
     granted: number;
     status: string;
   };
   lifecycle: {
     approvalGrantedAt: string | null;
   } | undefined;
+}
+
+function requiredCount(value: number | DataSourceState): number | null {
+  return typeof value === "number" ? value : null;
 }
 
 export default function ReleaseApprovalDetailPage() {
@@ -56,9 +65,11 @@ export default function ReleaseApprovalDetailPage() {
   }
 
   const approval = data.approval;
-  const isApproved = approval.granted >= approval.required && approval.required > 0;
-  const isPending = approval.granted < approval.required;
-  const progress = approval.required > 0 ? Math.round((approval.granted / approval.required) * 100) : 0;
+  const required = requiredCount(approval.required);
+  const notYetEvaluated = required === null;
+  const isApproved = required !== null && approval.granted >= required && required > 0;
+  const isPending = required !== null && approval.granted < required;
+  const progress = required !== null && required > 0 ? Math.round((approval.granted / required) * 100) : 0;
 
   return (
     <div className="relative">
@@ -85,7 +96,7 @@ export default function ReleaseApprovalDetailPage() {
                   <p className="text-[28px] font-bold text-white">
                     {approval.granted}
                     <span className="text-[14px] font-normal text-zinc-400 ml-2">
-                      / {approval.required}
+                      / {notYetEvaluated ? "—" : required}
                     </span>
                   </p>
                   <p className="text-[12px] text-zinc-400 mt-1">approvals collected</p>
@@ -124,7 +135,13 @@ export default function ReleaseApprovalDetailPage() {
             <h2 className="text-[12px] font-mono uppercase tracking-wider text-zinc-400 mb-3">
               Current Status
             </h2>
-            {isApproved ? (
+            {notYetEvaluated ? (
+              <div className="rounded-xl border border-zinc-500/[0.25] bg-zinc-500/[0.04] px-4 py-3 inline-block">
+                <span className="text-[13px] font-semibold text-zinc-300 uppercase tracking-wider">
+                  Not Yet Evaluated
+                </span>
+              </div>
+            ) : isApproved ? (
               <div className="rounded-xl border border-emerald-500/[0.25] bg-emerald-500/[0.04] px-4 py-3 inline-block">
                 <span className="text-[13px] font-semibold text-emerald-300 uppercase tracking-wider">
                   ✓ Approved
@@ -160,9 +177,15 @@ export default function ReleaseApprovalDetailPage() {
           {/* Guidance */}
           <section className="rounded-2xl border border-cyan-500/[0.15] bg-cyan-500/[0.04] p-4">
             <p className="text-[12px] text-cyan-200">
-              💡 This release requires {approval.required} approval{approval.required !== 1 ? "s" : ""}.
-              {isPending && ` ${approval.required - approval.granted} more needed to proceed.`}
-              {isApproved && " All required approvals have been collected."}
+              {notYetEvaluated ? (
+                "💡 No approval chain has been created for this release yet. Run readiness or policy evaluation to determine how many approvals are required."
+              ) : (
+                <>
+                  💡 This release requires {required} approval{required !== 1 ? "s" : ""}.
+                  {isPending && ` ${(required as number) - approval.granted} more needed to proceed.`}
+                  {isApproved && " All required approvals have been collected."}
+                </>
+              )}
             </p>
           </section>
         </div>
