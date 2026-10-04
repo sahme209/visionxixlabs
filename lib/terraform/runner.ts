@@ -230,7 +230,7 @@ export interface TerraformApplyResult {
  * safety boundary the rest of the platform already uses. `terraform plan`
  * (read-only, no mutation) is unaffected by this flag.
  */
-function legacyApplyEnabled(): boolean {
+export function legacyApplyEnabled(): boolean {
   return process.env.TERRAFORM_LEGACY_APPLY_ENABLED === "true";
 }
 
