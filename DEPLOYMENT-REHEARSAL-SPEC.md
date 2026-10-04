@@ -65,9 +65,21 @@ verified directly against source on 2026-10-03:**
   infrastructure-mutating capability that predates this document and the
   Axiom governance model described elsewhere in it — flagging it here so
   this spec stops implying it is covered by the same safety boundary as
-  the governed workspace's rehearsal story. Whether to further restrict,
-  migrate, or retire this legacy apply path is a product decision, not
-  something this correction resolves.
+  the governed workspace's rehearsal story.
+
+  **Update (2026-10-04): this was escalated to a P0 and contained.**
+  `terraformApply()` now hard-refuses to execute unless
+  `TERRAFORM_LEGACY_APPLY_ENABLED=true` is explicitly set — unset by
+  default, and not set in any environment today. `terraform plan`
+  (read-only, no mutation) is untouched and still runs normally so the
+  self-serve rehearsal/preview experience keeps working. The refusal is
+  audited (`terraform.apply_blocked_kill_switch`) distinctly from a real
+  execution failure. This is a containment, not a fix: the underlying gap
+  (no tenant/role model, no environment/blast-radius safeguard, no
+  rollback/recovery evidence, no relationship to terraformBoundary.ts)
+  still needs a real migration of this legacy leadId-based system onto
+  the canonical organization/role model before live apply should ever be
+  re-enabled.
 - **In-memory execution simulation, no real infrastructure touched** —
   `lib/simulation/executionSimulator.ts` ("Execution simulator (in-memory
   twin mutation, no apply)") and the release/security variants

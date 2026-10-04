@@ -46,7 +46,11 @@ export async function POST(req: NextRequest) {
 
     await logAudit({
       leadId: result.leadId,
-      action: applyResult.success ? "terraform.apply_succeeded" : "terraform.apply_failed",
+      action: applyResult.blockedByKillSwitch
+        ? "terraform.apply_blocked_kill_switch"
+        : applyResult.success
+          ? "terraform.apply_succeeded"
+          : "terraform.apply_failed",
       actor: "user",
       metadata: { jobId, outputPreview: applyResult.output.slice(0, 500) },
     });
