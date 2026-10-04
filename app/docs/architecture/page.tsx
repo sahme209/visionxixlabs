@@ -48,7 +48,7 @@ const LAYERS = [
   {
     n: "07",
     name: "Audit fabric",
-    desc: "Immutable AxiomAuditEvent ledger for every action — provider mutations, approvals, rollbacks, user operations. SOC 2 / ISO 27001 control mapping built in.",
+    desc: "Immutable AxiomAuditEvent ledger for every action — provider mutations, approvals, rollbacks, user operations. Maps to SOC 2 / ISO 27001 reference controls as audit evidence — Axiom does not hold these certifications.",
     color: "emerald",
   },
   {

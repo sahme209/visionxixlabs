@@ -5,7 +5,7 @@ import { DocHeader, DocSection, Callout, TrustGrid, DocFooterNav, DocFeedback } 
 
 export const metadata: Metadata = {
   title: "Audit logs — Axiom Documentation",
-  description: "Every action Axiom takes is logged immutably. Connection events, scans, findings, approvals, executions, Terraform exports, rollbacks, user actions — all queryable, exportable, and SOC 2 / ISO 27001 control-mapped.",
+  description: "Every action Axiom takes is logged immutably. Connection events, scans, findings, approvals, executions, Terraform exports, rollbacks, user actions — all queryable, exportable, and mapped to SOC 2 / ISO 27001 reference controls as audit evidence (Axiom does not hold these certifications).",
 };
 
 const EVENT_TYPES = [
