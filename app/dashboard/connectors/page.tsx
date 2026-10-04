@@ -42,7 +42,14 @@ export const metadata: Metadata = {
 // Reads live connector state per request; must run dynamic.
 export const dynamic = "force-dynamic";
 
-type ConnectorStatus = "connected" | "available" | "coming_soon";
+// "supported" means Axiom has a complete, built integration for this
+// provider — it is a product-capability label, NOT a claim that *this*
+// tenant is connected. Actual per-tenant connection state is the
+// separate `liveAccount` overlay below (today: cloud providers only, via
+// getLiveConnectorState()). Do not relabel this "Connected" — that
+// previously read as tenant-specific live state when it was a static
+// catalog entry true for every tenant regardless of what they'd set up.
+type ConnectorStatus = "supported" | "available" | "coming_soon";
 type ConnectorCategory =
   | "cloud"
   | "source_control"
@@ -75,7 +82,7 @@ const CONNECTORS: readonly ConnectorRow[] = [
     id: "aws",
     name: "AWS",
     category: "cloud",
-    status: "connected",
+    status: "supported",
     auth: "iam_role",
     reads: "Accounts, organisations, EC2 / RDS / Lambda / S3 / ELB / EKS, IAM, GuardDuty, Cost Explorer, CloudTrail.",
     writes: "Apply approved Terraform plans, rotate IAM keys, mutate tags, run StagedRemediationRunbook actions.",
@@ -86,7 +93,7 @@ const CONNECTORS: readonly ConnectorRow[] = [
     id: "azure",
     name: "Azure",
     category: "cloud",
-    status: "connected",
+    status: "supported",
     auth: "service_account",
     reads: "Subscriptions, resource groups, compute, networking, key vault, storage, ARM activity log.",
     writes: null,
@@ -97,7 +104,7 @@ const CONNECTORS: readonly ConnectorRow[] = [
     id: "gcp",
     name: "Google Cloud",
     category: "cloud",
-    status: "connected",
+    status: "supported",
     auth: "service_account",
     reads: "Projects, compute, GKE, storage, Security Command Center, Resource Manager.",
     writes: null,
@@ -110,7 +117,7 @@ const CONNECTORS: readonly ConnectorRow[] = [
     id: "github",
     name: "GitHub",
     category: "source_control",
-    status: "connected",
+    status: "supported",
     auth: "oauth",
     reads: "Org members, repos, Actions runs, PRs, environment variables, branch protections.",
     writes: "Open PRs with proposed code changes, comment on PRs, dispatch workflow runs.",
@@ -143,7 +150,7 @@ const CONNECTORS: readonly ConnectorRow[] = [
     id: "slack",
     name: "Slack",
     category: "communication",
-    status: "connected",
+    status: "supported",
     auth: "oauth",
     reads: "OAuth handshake state, signed inbound webhooks for command + reply.",
     writes: "Outbound digests, incident summaries, approval notifications — every outbound message is audited via OutboundNotificationRecord.",
@@ -154,7 +161,7 @@ const CONNECTORS: readonly ConnectorRow[] = [
     id: "microsoft_teams",
     name: "Microsoft Teams",
     category: "communication",
-    status: "connected",
+    status: "supported",
     auth: "oauth",
     reads: "Channel + team identifiers, signed inbound webhooks.",
     writes: "Outbound digests + incident posts (audited via OutboundNotificationRecord).",
@@ -217,7 +224,7 @@ const CONNECTORS: readonly ConnectorRow[] = [
     id: "cloudwatch",
     name: "Amazon CloudWatch",
     category: "observability",
-    status: "connected",
+    status: "supported",
     auth: "iam_role",
     reads: "Metrics, logs, alarms — surfaces inside the AWS connector.",
     writes: null,
@@ -296,7 +303,7 @@ const CONNECTORS: readonly ConnectorRow[] = [
     id: "stripe",
     name: "Stripe",
     category: "billing",
-    status: "connected",
+    status: "supported",
     auth: "api_key",
     reads: "Customer + subscription state for the tenant's plan and trial.",
     writes: "Subscription updates triggered by the operator from /dashboard/billing.",
@@ -319,7 +326,7 @@ const CATEGORY_META: Record<
 };
 
 const STATUS_STYLE: Record<ConnectorStatus, { tone: string; label: string }> = {
-  connected:   { tone: "border-emerald-500/30 bg-emerald-500/10 text-emerald-300", label: "Connected"   },
+  supported:   { tone: "border-white/[0.12]  bg-sky-500/10     text-sky-300",     label: "Supported"   },
   available:   { tone: "border-white/[0.12]  bg-violet-500/10  text-violet-300",  label: "Available"   },
   coming_soon: { tone: "border-zinc-500/30    bg-zinc-500/10    text-zinc-400",    label: "Coming soon" },
 };
@@ -348,7 +355,7 @@ export default async function ConnectorsPage() {
       acc[c.status] += 1;
       return acc;
     },
-    { connected: 0, available: 0, coming_soon: 0 } as Record<ConnectorStatus, number>,
+    { supported: 0, available: 0, coming_soon: 0 } as Record<ConnectorStatus, number>,
   );
 
   const live = await getLiveConnectorState();
@@ -380,7 +387,7 @@ export default async function ConnectorsPage() {
           </span>
         ) : null}
         <span className="rounded-full border border-white/[0.08] bg-white/[0.025] text-zinc-300 px-3 py-1">
-          {counts.connected} connected
+          {counts.supported} supported
         </span>
         <span className="rounded-full border border-white/[0.06] bg-white/[0.015] text-zinc-400 px-3 py-1">
           {counts.available} available

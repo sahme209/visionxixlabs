@@ -2737,9 +2737,13 @@ model LinkedInAccountConnection {
   linkedinName       String?
   /// Optional organization URN if posting to a company page.
   organizationUrn    String?
-  /// Encrypted-at-rest access token (today: stored plain — TODO: wrap with platform secret helper).
+  /// Encrypted at rest via lib/security/credentialVault.ts (AES-256-GCM).
+  /// Rows written before this was wired up are still plaintext; posting.ts
+  /// and the daily-drafts cron treat a decrypt failure as an expired
+  /// token (forces reconnect) rather than trusting an unreadable value.
   accessToken        String
-  /// Refresh token if returned (some scope combos return one).
+  /// Refresh token if returned (some scope combos return one). Encrypted
+  /// at rest the same way as accessToken.
   refreshToken       String?
   /// Scopes granted at connect-time, comma-joined.
   scopes             String

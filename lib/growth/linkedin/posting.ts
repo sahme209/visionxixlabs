@@ -18,6 +18,7 @@ import type { LinkedInPostDraft, LinkedInAccountConnection } from "@prisma/clien
 import { isPostingEnabled } from "./oauth";
 import { writeGrowthAudit } from "../audit";
 import { transitionStatus } from "../draftStore";
+import { decryptCredential } from "@/lib/security/credentialVault";
 
 const POSTS_URL = "https://api.linkedin.com/rest/posts";
 /* LinkedIn rolls REST versions monthly and retires anything ~12 months old
@@ -83,6 +84,23 @@ export async function publishDraft(input: PublishInput): Promise<PublishOutcome>
     return { kind: "token_expired", runId: run.id };
   }
 
+  let accessToken: string;
+  try {
+    accessToken = decryptCredential(connection.accessToken);
+  } catch {
+    // Covers both real decryption failures and legacy rows written before
+    // this connector's tokens were encrypted at rest — either way, the
+    // stored value can't be trusted as a usable token, so treat it the
+    // same as an expired one rather than sending a raw, possibly-garbled
+    // string to LinkedIn's API.
+    await prisma.linkedInAccountConnection.update({
+      where: { id: connection.id },
+      data:  { status: "expired", lastError: "stored credential could not be decrypted — reconnect required" },
+    });
+    const run = await recordRun(draft.id, input.triggeredBy, "failed", { errorDetail: "token_decrypt_failed" });
+    return { kind: "token_expired", runId: run.id };
+  }
+
   const author = connection.organizationUrn || connection.linkedinUrn;
   const text = renderPostText(draft);
 
@@ -113,7 +131,7 @@ export async function publishDraft(input: PublishInput): Promise<PublishOutcome>
     const res = await fetch(POSTS_URL, {
       method: "POST",
       headers: {
-        Authorization:          `Bearer ${connection.accessToken}`,
+        Authorization:          `Bearer ${accessToken}`,
         "Content-Type":         "application/json",
         "LinkedIn-Version":     LINKEDIN_REST_VERSION,
         "X-Restli-Protocol-Version": "2.0.0",
