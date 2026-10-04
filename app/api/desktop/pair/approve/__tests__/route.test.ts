@@ -84,7 +84,13 @@ describe("POST /api/desktop/pair/approve — audit coverage", () => {
     mocks.updatePairing.mockResolvedValue({});
 
     const { POST } = await import("../route");
-    const response = await POST(postRequest());
+    // Next.js's route-handler type plugin widens the dynamically-imported
+    // POST's inferred return type in a way plain `tsc` can't narrow back
+    // down here — every branch in route.ts unconditionally returns a
+    // NextResponse (verified by inspection), so this is a type-checker
+    // limitation around dynamic imports of route modules, not a real
+    // possibility of undefined at runtime.
+    const response = (await POST(postRequest()))!;
     const body = await response.json();
 
     expect(response.status).toBe(200);
@@ -102,7 +108,13 @@ describe("POST /api/desktop/pair/approve — audit coverage", () => {
     });
 
     const { POST } = await import("../route");
-    const response = await POST(postRequest());
+    // Next.js's route-handler type plugin widens the dynamically-imported
+    // POST's inferred return type in a way plain `tsc` can't narrow back
+    // down here — every branch in route.ts unconditionally returns a
+    // NextResponse (verified by inspection), so this is a type-checker
+    // limitation around dynamic imports of route modules, not a real
+    // possibility of undefined at runtime.
+    const response = (await POST(postRequest()))!;
     const body = await response.json();
 
     expect(response.status).toBe(403);
@@ -120,7 +132,13 @@ describe("POST /api/desktop/pair/approve — audit coverage", () => {
     mocks.createDesktopSession.mockRejectedValue(new Error("store unavailable"));
 
     const { POST } = await import("../route");
-    const response = await POST(postRequest());
+    // Next.js's route-handler type plugin widens the dynamically-imported
+    // POST's inferred return type in a way plain `tsc` can't narrow back
+    // down here — every branch in route.ts unconditionally returns a
+    // NextResponse (verified by inspection), so this is a type-checker
+    // limitation around dynamic imports of route modules, not a real
+    // possibility of undefined at runtime.
+    const response = (await POST(postRequest()))!;
     const body = await response.json();
 
     expect(response.status).toBe(500);
