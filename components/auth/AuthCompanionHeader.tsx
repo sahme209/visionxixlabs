@@ -9,6 +9,7 @@ import { signOut } from "next-auth/react";
 export function AuthCompanionHeader({ email }: { email: string | null }) {
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [activeDesktopSessionCount, setActiveDesktopSessionCount] = useState<number | null>(null);
   const mobileMenuButton = useRef<HTMLButtonElement>(null);
   const mobileMenu = useRef<HTMLDivElement>(null);
   const navigation = [
@@ -21,6 +22,25 @@ export function AuthCompanionHeader({ email }: { email: string | null }) {
   useEffect(() => {
     setMobileMenuOpen(false);
   }, [pathname]);
+
+  useEffect(() => {
+    // Signing out of the browser only ends the NextAuth session — paired
+    // desktop sessions are an independent, long-lived control plane (see
+    // lib/desktop/desktopSession.ts) and are not affected. Surface that
+    // here so sign-out isn't a surprise; the actual revoke control lives
+    // on the Settings page's DesktopSessionsPanel.
+    let active = true;
+    void fetch("/api/desktop/session", { cache: "no-store", credentials: "include" })
+      .then((res) => res.json().catch(() => null))
+      .then((body) => {
+        if (!active) return;
+        if (Array.isArray(body?.data?.sessions)) {
+          setActiveDesktopSessionCount(body.data.sessions.filter((s: { status: string }) => s.status === "active").length);
+        }
+      })
+      .catch(() => undefined);
+    return () => { active = false; };
+  }, []);
 
   useEffect(() => {
     if (!mobileMenuOpen) return;
@@ -112,6 +132,7 @@ export function AuthCompanionHeader({ email }: { email: string | null }) {
         <button
           type="button"
           onClick={() => signOut({ callbackUrl: "/" })}
+          title={activeDesktopSessionCount ? `Signing out only ends this browser session — ${activeDesktopSessionCount} paired desktop session${activeDesktopSessionCount === 1 ? "" : "s"} stay signed in. Revoke from Settings if needed.` : undefined}
           className="inline-flex min-h-9 items-center gap-1.5 rounded-lg px-2.5 text-xs text-zinc-400 transition hover:bg-white/[0.06] hover:text-white"
         >
           <ArrowRightOnRectangleIcon className="h-3.5 w-3.5" />
@@ -137,16 +158,24 @@ export function AuthCompanionHeader({ email }: { email: string | null }) {
               );
             })}
           </nav>
-          <div className="mt-3 flex items-center justify-between gap-3 rounded-xl border border-white/[0.07] bg-white/[0.02] px-3 py-2.5">
-            <span className="min-w-0 truncate text-xs text-zinc-500" title={email ?? undefined}>{email ?? "Signed-in workspace"}</span>
-            <button
-              type="button"
-              onClick={() => signOut({ callbackUrl: "/" })}
-              className="inline-flex shrink-0 items-center gap-1.5 rounded-lg px-2 py-1.5 text-xs text-zinc-400 transition hover:bg-white/[0.06] hover:text-white"
-            >
-              <ArrowRightOnRectangleIcon className="h-3.5 w-3.5" />
-              Sign out
-            </button>
+          <div className="mt-3 rounded-xl border border-white/[0.07] bg-white/[0.02] px-3 py-2.5">
+            <div className="flex items-center justify-between gap-3">
+              <span className="min-w-0 truncate text-xs text-zinc-500" title={email ?? undefined}>{email ?? "Signed-in workspace"}</span>
+              <button
+                type="button"
+                onClick={() => signOut({ callbackUrl: "/" })}
+                className="inline-flex shrink-0 items-center gap-1.5 rounded-lg px-2 py-1.5 text-xs text-zinc-400 transition hover:bg-white/[0.06] hover:text-white"
+              >
+                <ArrowRightOnRectangleIcon className="h-3.5 w-3.5" />
+                Sign out
+              </button>
+            </div>
+            {activeDesktopSessionCount ? (
+              <p className="mt-2 text-[11px] leading-snug text-zinc-500">
+                Sign out only ends this browser session — {activeDesktopSessionCount} paired desktop session{activeDesktopSessionCount === 1 ? "" : "s"} stay signed in. Revoke from{" "}
+                <Link href="/account" className="text-violet-300 hover:text-violet-200">Settings</Link> if needed.
+              </p>
+            ) : null}
           </div>
         </div>
       )}
