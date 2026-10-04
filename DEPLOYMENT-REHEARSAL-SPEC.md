@@ -68,18 +68,25 @@ verified directly against source on 2026-10-03:**
   the governed workspace's rehearsal story.
 
   **Update (2026-10-04): this was escalated to a P0 and contained.**
-  `terraformApply()` now hard-refuses to execute unless
-  `TERRAFORM_LEGACY_APPLY_ENABLED=true` is explicitly set — unset by
-  default, and not set in any environment today. `terraform plan`
-  (read-only, no mutation) is untouched and still runs normally so the
-  self-serve rehearsal/preview experience keeps working. The refusal is
-  audited (`terraform.apply_blocked_kill_switch`) distinctly from a real
-  execution failure. This is a containment, not a fix: the underlying gap
-  (no tenant/role model, no environment/blast-radius safeguard, no
-  rollback/recovery evidence, no relationship to terraformBoundary.ts)
-  still needs a real migration of this legacy leadId-based system onto
-  the canonical organization/role model before live apply should ever be
-  re-enabled.
+  The gate lives in `app/api/terraform/apply/route.ts`, checked *before*
+  `terraformApply()` is ever called, unless `TERRAFORM_LEGACY_APPLY_ENABLED`
+  is set to exactly `"true"` — unset by default, and not set in any
+  environment today. When blocked: HTTP **403** (never 200 — a refusal can
+  never be mistaken for a successful apply), body
+  `{ success: false, status: "blocked", code: "legacy_apply_disabled",
+  correlationId }`, no DB status transition (the job's existing plan/
+  approval state is left exactly as it was), and `terraformApply()` itself
+  — the function that shells out to the real `terraform apply` — is never
+  invoked, not just short-circuited internally. `terraform plan` (read-only,
+  no mutation) is untouched and still runs normally so the self-serve
+  rehearsal/preview experience keeps working. The refusal is audited
+  (`terraform.apply_blocked_kill_switch`) with the same correlation ID
+  returned in the response, distinctly from a real execution failure. This
+  is a containment, not a fix: the underlying gap (no tenant/role model, no
+  environment/blast-radius safeguard, no rollback/recovery evidence, no
+  relationship to terraformBoundary.ts) still needs a real migration of
+  this legacy leadId-based system onto the canonical organization/role
+  model before live apply should ever be re-enabled.
 - **In-memory execution simulation, no real infrastructure touched** —
   `lib/simulation/executionSimulator.ts` ("Execution simulator (in-memory
   twin mutation, no apply)") and the release/security variants
