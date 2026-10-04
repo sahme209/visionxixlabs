@@ -35,12 +35,21 @@ class FakeRepo implements DeploymentRequestRepo {
                 this.requests.push(row);
                 return row;
             },
-            findFirst: async ({ where }) =>
-                this.requests.find((row) =>
-                    row.organizationId === where.organizationId
-                    && (where.correlationId === undefined || row.correlationId === where.correlationId)
-                    && (where.id === undefined || row.id === where.id),
-                ) ?? null,
+            findFirst: async ({ where }) => {
+                // Return a snapshot, not the live stored reference — real
+                // Prisma deserializes a fresh object per query, so a value
+                // captured before a later updateMany must never silently
+                // change underneath the caller the way a shared reference
+                // would. Without this, the revision test's "previous vs
+                // new" comparison can pass or fail by aliasing accident
+                // rather than by actually exercising the audit invariant.
+                const row = this.requests.find((candidate) =>
+                    candidate.organizationId === where.organizationId
+                    && (where.correlationId === undefined || candidate.correlationId === where.correlationId)
+                    && (where.id === undefined || candidate.id === where.id),
+                );
+                return row ? { ...row } : null;
+            },
             updateMany: async ({ where, data }) => {
                 const row = this.requests.find((candidate) =>
                     candidate.id === where.id

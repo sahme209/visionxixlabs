@@ -34,10 +34,10 @@ describe("slackOauth.encode/decode state", () => {
     expect(r.state?.nonce).toBe("n");
   });
 
-  it("rejects malformed state", () => {
+  it("rejects a state string with no signature segment", () => {
     const r = decodeSlackState({ state: "not-base64-json-blob", secret: "test-secret" });
     expect(r.ok).toBe(false);
-    expect(r.reason).toBe("malformed");
+    expect(r.reason).toBe("tampered");
   });
 
   it("rejects expired state (>10min)", () => {

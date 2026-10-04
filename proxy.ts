@@ -47,6 +47,7 @@ export function proxy(request: NextRequest) {
     pathname.startsWith("/operator/");
 
   const isBrowserSignupPage = pathname === "/auth/signup";
+  const isBrowserSigninPage = pathname === "/auth/signin";
   const requestedReturnPath =
     request.nextUrl.searchParams.get("callbackUrl") ??
     request.nextUrl.searchParams.get("redirect") ??
@@ -56,11 +57,28 @@ export function proxy(request: NextRequest) {
     requestedReturnPath.startsWith("/accept-invite/") ||
     requestedReturnPath.startsWith("/admin/");
 
+  // A callbackUrl/redirect value that resolves to a different origin than
+  // this request is never a legitimate same-site return path — treat it
+  // the same as any other unapproved browser operations access rather
+  // than letting the sign-in page render and potentially honor it later.
+  const isExternalReturnPath = (() => {
+    if (!requestedReturnPath) return false;
+    try {
+      return new URL(requestedReturnPath, request.nextUrl.origin).origin !== request.nextUrl.origin;
+    } catch {
+      return false;
+    }
+  })();
+
   // A browser can authenticate an identity and open the lightweight web
   // companion. New account creation remains desktop-initiated so it is bound
   // to a short-lived device pairing challenge rather than becoming an
   // unrestricted signup API.
-  if (isWebOperationsRoute || (isBrowserSignupPage && !isApprovedBrowserAuthFlow)) {
+  if (
+    isWebOperationsRoute ||
+    (isBrowserSignupPage && !isApprovedBrowserAuthFlow) ||
+    (isBrowserSigninPage && isExternalReturnPath)
+  ) {
     const destination = request.nextUrl.clone();
     destination.pathname = "/download";
     destination.search = "";

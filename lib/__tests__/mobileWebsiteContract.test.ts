@@ -11,7 +11,8 @@ describe("mobile website contract", () => {
 
     expect(page).toContain("Turn the request into the playbook.");
     expect(page).toContain("flex flex-col gap-3 sm:flex-row");
-    expect(page).toContain("grid min-h-[460px] lg:grid-cols");
+    expect(page).toContain("grid overflow-hidden rounded-2xl");
+    expect(page).toContain("lg:grid-cols-[0.72fr_1.28fr]");
   });
 
   it("keeps primary mobile actions large and full width", () => {

@@ -32,7 +32,7 @@ interface ResolveOptions {
     /**
      * Desktop tokens are long-lived device credentials, not a substitute for
      * current workspace membership. Recheck the durable membership on every
-     * desktop-session request so a removed or unaccepted member loses access
+     * desktop-session request. A removed or unaccepted member loses access
      * immediately. Scoped API-key automation remains a separate authority.
      */
     requireWorkspaceMembership?: boolean;

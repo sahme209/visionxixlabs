@@ -35,7 +35,7 @@ describe("publishDraft — stored credential decrypt failure", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mocks.isPostingEnabled.mockReturnValue(true);
-    mocks.findDraft.mockResolvedValue({ id: "draft-1", status: "scheduled", body: "hello", title: "t", imageUrn: null });
+    mocks.findDraft.mockResolvedValue({ id: "draft-1", status: "scheduled", body: "hello", title: "t", imageUrn: null, hashtags: [] });
     mocks.findConnection.mockResolvedValue({
       id: "conn-1",
       accessToken: "not-real-ciphertext",

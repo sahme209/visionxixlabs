@@ -5,6 +5,7 @@ const mocks = vi.hoisted(() => ({
   findPairing: vi.fn(),
   findUser: vi.fn(),
   createUser: vi.fn(),
+  upsertMembership: vi.fn(),
   rateLimit: vi.fn(() => true),
   hash: vi.fn(async () => "hashed-password"),
 }));
@@ -13,6 +14,7 @@ vi.mock("@/lib/db", () => ({
   prisma: {
     desktopPairingChallengeRecord: { findUnique: mocks.findPairing },
     user: { findUnique: mocks.findUser, create: mocks.createUser },
+    orgMembership: { upsert: mocks.upsertMembership },
   },
 }));
 vi.mock("@/lib/rateLimit", () => ({ checkRateLimit: mocks.rateLimit }));
@@ -42,6 +44,7 @@ describe("desktop-initiated signup", () => {
     mocks.findPairing.mockResolvedValue({ status: "pending", consumedAt: null, expiresAt: new Date("2030-01-01T00:00:00.000Z") });
     mocks.findUser.mockResolvedValue(null);
     mocks.createUser.mockResolvedValue({ id: "user-1", email: "new.user@example.test", name: "New Operator" });
+    mocks.upsertMembership.mockResolvedValue({});
   });
 
   it("requires explicit terms acceptance before database access", async () => {
@@ -71,6 +74,16 @@ describe("desktop-initiated signup", () => {
       },
     });
     expect(JSON.stringify(mocks.createUser.mock.calls)).not.toContain("starter");
+  });
+
+  it("still returns the created identity when workspace membership bootstrap fails (self-heals on next sign-in)", async () => {
+    mocks.upsertMembership.mockRejectedValue(new Error("unique constraint race"));
+    const { POST } = await import("../../app/api/auth/signup/route");
+    const response = await POST(request(validBody));
+    const body = await response.json();
+
+    expect(response.status).toBe(200);
+    expect(body.id).toBe("user-1");
   });
 
   it("rate-limits repeated account creation attempts", async () => {
