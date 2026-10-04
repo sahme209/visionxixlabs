@@ -56,6 +56,24 @@ function requiredCount(value: unknown): number | null {
   return typeof value === "number" ? value : null;
 }
 
+interface GithubEvidenceCounts {
+  pullRequestCount: number;
+  workflowRunsTotal: number;
+  workflowRunsSucceeded: number;
+  workflowRunsFailed: number;
+}
+
+function isGithubEvidenceCounts(value: unknown): value is GithubEvidenceCounts {
+  return !!value && typeof value === "object" && "pullRequestCount" in value;
+}
+
+function describeGithubEvidence(value: unknown): string {
+  if (isGithubEvidenceCounts(value)) {
+    return `${value.pullRequestCount} PR${value.pullRequestCount === 1 ? "" : "s"} · ${value.workflowRunsSucceeded}/${value.workflowRunsTotal} workflow runs passed`;
+  }
+  return "Not bound";
+}
+
 export default function UnifiedPlaybookPage() {
   const params = useParams();
   const releaseId = String(params.id);
@@ -273,6 +291,7 @@ export default function UnifiedPlaybookPage() {
                   facts={[
                     { label: "Generated", value: data.evidence.generatedAt ? "Yes" : "No" },
                     { label: "Signed", value: data.evidence.signedAt ? "Yes" : "No" },
+                    { label: "GitHub", value: describeGithubEvidence(data.evidence.githubEvidence) },
                   ]}
                   detailLink={`#evidence`}
                 />

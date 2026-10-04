@@ -104,6 +104,16 @@ interface UnifiedPlaybookResponse {
   evidence: {
     generatedAt: string | null;
     signedAt: string | null;
+    /** Real GitHub PR/workflow-run evidence for this release's bound
+     *  repository + commit. Unavailable (not a fake zero) when no
+     *  evidence repository has been bound — see evidenceRepositoryId on
+     *  the Release model. */
+    githubEvidence: {
+      pullRequestCount: number;
+      workflowRunsTotal: number;
+      workflowRunsSucceeded: number;
+      workflowRunsFailed: number;
+    } | DataSourceState;
   };
 
   // Closure stage
@@ -202,6 +212,36 @@ export async function GET(
       throw AxiomErrors.validation("not_found", "Release not found.");
     }
 
+    // GitHub evidence — only queryable once a repository has been bound
+    // (release.evidenceRepositoryId) AND a commit is known. Depends on
+    // `release`, so it can't join the Promise.all above. Reads already-
+    // synced local records (repository-sync) rather than calling GitHub
+    // live on every Playbook page load.
+    let githubEvidence: UnifiedPlaybookResponse["evidence"]["githubEvidence"] = {
+      available: false,
+      reason: !release.evidenceRepositoryId
+        ? "No evidence repository bound to this release"
+        : "Release has no commitSha recorded yet",
+    };
+    if (release.evidenceRepositoryId && release.commitSha) {
+      const [pullRequests, workflowRuns] = await Promise.all([
+        prisma.pullRequestRecord.findMany({
+          where: { organizationId: orgId, repositoryId: release.evidenceRepositoryId, commitShaHead: release.commitSha },
+          select: { id: true },
+        }),
+        prisma.workflowRunRecord.findMany({
+          where: { organizationId: orgId, repositoryId: release.evidenceRepositoryId, commitSha: release.commitSha },
+          select: { conclusion: true },
+        }),
+      ]);
+      githubEvidence = {
+        pullRequestCount: pullRequests.length,
+        workflowRunsTotal: workflowRuns.length,
+        workflowRunsSucceeded: workflowRuns.filter((w) => w.conclusion === "success").length,
+        workflowRunsFailed: workflowRuns.filter((w) => w.conclusion === "failure").length,
+      };
+    }
+
     // Build the unified response
     const data: UnifiedPlaybookResponse = {
       id: releaseId,
@@ -287,6 +327,7 @@ export async function GET(
       evidence: {
         generatedAt: evidence?.generatedAt?.toISOString() ?? null,
         signedAt: evidence?.signedAt?.toISOString() ?? null,
+        githubEvidence,
       },
 
       closure: {

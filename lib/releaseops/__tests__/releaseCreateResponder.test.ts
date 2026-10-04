@@ -3,12 +3,14 @@ import {
   buildReleaseCreateResponse,
   TAG_RE,
   type ApplicationRow,
+  type RepositoryRow,
   type ReleaseCreateRepo,
   type ReleaseCreatedRow,
 } from "../releaseCreateResponder";
 
 interface Stub extends ReleaseCreateRepo {
   _apps: ApplicationRow[];
+  _repos: RepositoryRow[];
   _releases: ReleaseCreatedRow[];
   _nextId: number;
 }
@@ -16,11 +18,17 @@ interface Stub extends ReleaseCreateRepo {
 function makeRepo(): Stub {
   const stub: Stub = {
     _apps: [],
+    _repos: [],
     _releases: [],
     _nextId: 1,
     application: {
       async findUnique({ where }) {
         return stub._apps.find((a) => a.id === where.id) ?? null;
+      },
+    },
+    repository: {
+      async findUnique({ where }) {
+        return stub._repos.find((r) => r.id === where.id) ?? null;
       },
     },
     release: {
@@ -40,6 +48,7 @@ function makeRepo(): Stub {
           plannedWindowStart: data.plannedWindowStart,
           plannedWindowEnd: data.plannedWindowEnd,
           summary: data.summary,
+          evidenceRepositoryId: data.evidenceRepositoryId,
         };
         stub._releases.push(row);
         return row;
@@ -187,6 +196,68 @@ describe("buildReleaseCreateResponse", () => {
     expect(r.body.data.created).toBe(false);
     expect(repo._releases).toHaveLength(1);
     expect(repo._releases[0].summary).toBeNull(); // first write
+  });
+
+  it("404 repository_not_found when repositoryId doesn't exist", async () => {
+    const repo = makeRepo();
+    app(repo);
+    const r = await buildReleaseCreateResponse(repo, {
+      organizationId: "o", actorUserId: "u", applicationId: "app_1", releaseTag: "v1.0.0",
+      repositoryId: "missing_repo",
+    });
+    expect(r.status).toBe(404);
+    if (r.body.ok) throw new Error("expected error");
+    expect(r.body.error).toBe("repository_not_found");
+  });
+
+  it("403 cross_org_repository — a repository belonging to a different org can never be bound", async () => {
+    const repo = makeRepo();
+    app(repo);
+    repo._repos.push({ id: "repo_1", organizationId: "other_org", provider: "github", remoteOwner: "acme", remoteName: "checkout" });
+    const r = await buildReleaseCreateResponse(repo, {
+      organizationId: "o", actorUserId: "u", applicationId: "app_1", releaseTag: "v1.0.0",
+      repositoryId: "repo_1",
+    });
+    expect(r.status).toBe(403);
+    if (r.body.ok) throw new Error("expected error");
+    expect(r.body.error).toBe("cross_org_repository");
+    expect(repo._releases).toHaveLength(0);
+  });
+
+  it("422 repository_not_github for a non-GitHub repository", async () => {
+    const repo = makeRepo();
+    app(repo);
+    repo._repos.push({ id: "repo_1", organizationId: "o", provider: "gitlab", remoteOwner: "acme", remoteName: "checkout" });
+    const r = await buildReleaseCreateResponse(repo, {
+      organizationId: "o", actorUserId: "u", applicationId: "app_1", releaseTag: "v1.0.0",
+      repositoryId: "repo_1",
+    });
+    expect(r.status).toBe(422);
+    if (r.body.ok) throw new Error("expected error");
+    expect(r.body.error).toBe("repository_not_github");
+  });
+
+  it("201 binds the evidence repository on creation when valid", async () => {
+    const repo = makeRepo();
+    app(repo);
+    repo._repos.push({ id: "repo_1", organizationId: "o", provider: "github", remoteOwner: "acme", remoteName: "checkout" });
+    const r = await buildReleaseCreateResponse(repo, {
+      organizationId: "o", actorUserId: "u", applicationId: "app_1", releaseTag: "v1.0.0",
+      repositoryId: "repo_1",
+    });
+    expect(r.status).toBe(201);
+    if (!r.body.ok) throw new Error("expected ok");
+    expect(r.body.data.evidenceRepositoryId).toBe("repo_1");
+  });
+
+  it("creates successfully with evidenceRepositoryId null when no repositoryId is supplied", async () => {
+    const repo = makeRepo();
+    app(repo);
+    const r = await buildReleaseCreateResponse(repo, {
+      organizationId: "o", actorUserId: "u", applicationId: "app_1", releaseTag: "v1.0.0",
+    });
+    if (!r.body.ok) throw new Error("expected ok");
+    expect(r.body.data.evidenceRepositoryId).toBeNull();
   });
 
   it("503 migration_pending", async () => {

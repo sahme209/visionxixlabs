@@ -2476,6 +2476,25 @@ model Release {
   createdByUserId String?
   updatedAt       DateTime @updatedAt
 
+  /// The single Repository this release's GitHub evidence (PRs, checks,
+  /// workflow runs) is sourced from. Deliberately NOT a Prisma relation —
+  /// same soft-reference convention as Component.repositoryId — so a
+  /// cross-tenant Repository row can never be attached even by accident;
+  /// the application layer (releaseRepositoryBinding.ts) is the only
+  /// writer and always re-checks organizationId itself.
+  ///
+  /// Set at most once, at release-creation time, and never changed after
+  /// that (no update path exists) — a release's evidence provenance must
+  /// not silently change after readiness/approval decisions have been
+  /// made against it. Null for releases created before this field
+  /// existed, and for any release created without an evidence repository
+  /// selected; the Playbook renders that as an explicit "not bound" state
+  /// (DataSourceState{available:false}), never a guess at which repo it
+  /// might be.
+  evidenceRepositoryId            String?
+  evidenceRepositoryBoundAt       DateTime?
+  evidenceRepositoryBoundByUserId String?
+
   readinessSnapshots ReleaseReadinessSnapshot[]
   evidencePack       ReleaseEvidencePack?
 
@@ -2484,6 +2503,7 @@ model Release {
   @@index([applicationId])
   @@index([status])
   @@index([targetEnvironmentId])
+  @@index([evidenceRepositoryId])
 }
 
 model ReleaseReadinessSnapshot {
