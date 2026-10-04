@@ -5,6 +5,7 @@
 
 import { NextResponse, type NextRequest } from "next/server";
 import { currentContext } from "@/lib/auth/currentContext";
+import { canDecideApprovals } from "@/lib/auth/platformAdmin";
 import { prisma } from "@/lib/db";
 import {
   buildProposalDecisionResponse,
@@ -20,6 +21,9 @@ export async function POST(req: NextRequest) {
   const ctx = await currentContext();
   if (!ctx.isAuthenticated || !ctx.organizationId || !ctx.userId) {
     return NextResponse.json({ ok: false, error: "auth_required" }, { status: 401 });
+  }
+  if (!canDecideApprovals({ email: ctx.email, roles: ctx.roles })) {
+    return NextResponse.json({ ok: false, error: "forbidden_role" }, { status: 403 });
   }
   let body: { proposalId?: unknown; action?: unknown; note?: unknown; ruleKeyOverride?: unknown } = {};
   try { body = await req.json(); } catch { /* fall through */ }

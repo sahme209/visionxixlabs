@@ -106,8 +106,13 @@ export async function decideRunbook(opts: {
   decidedBy?: string;
 }): Promise<StagedRunbookRow | null> {
   try {
-    const row = await prisma.stagedRemediationRunbook.update({
-      where: { id: opts.rowId },
+    // Tenant filter lives in the WHERE of the write itself (updateMany,
+    // not update) — id alone is not a safe unique-scope key here, since
+    // update() would write to any tenant's row and only the subsequent
+    // check would reject the response, after the cross-tenant row was
+    // already mutated.
+    const result = await prisma.stagedRemediationRunbook.updateMany({
+      where: { id: opts.rowId, organizationId: opts.organizationId },
       data: {
         status: opts.decision === "approve" ? "approved" : "rejected",
         decision: opts.decision,
@@ -115,7 +120,9 @@ export async function decideRunbook(opts: {
         decidedBy: opts.decidedBy ?? null,
       },
     });
-    if (row.organizationId !== opts.organizationId) return null; // tenant cross-talk guard
+    if (result.count === 0) return null;
+    const row = await prisma.stagedRemediationRunbook.findUnique({ where: { id: opts.rowId } });
+    if (!row) return null;
     const mapped = mapRow(row);
     // Fire-and-forget outbound notification — never block the API.
     void sendOutboundNotification({

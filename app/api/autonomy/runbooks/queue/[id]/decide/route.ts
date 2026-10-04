@@ -10,6 +10,7 @@
 
 import type { NextRequest } from "next/server";
 import { currentContext } from "@/lib/auth/currentContext";
+import { canDecideApprovals } from "@/lib/auth/platformAdmin";
 import { decideRunbook } from "@/lib/autonomy/runbookQueueStore";
 import { apiOk, apiErr, asApiSourceMode, resolveCorrelationId } from "@/lib/api";
 import { AxiomErrors } from "@/lib/errors/axiomErrors";
@@ -22,6 +23,9 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
     const ctx = await currentContext();
     if (!ctx.isAuthenticated || !ctx.organizationId) {
       throw AxiomErrors.validation("auth.required", "Sign in required.");
+    }
+    if (!canDecideApprovals({ email: ctx.email, roles: ctx.roles })) {
+      throw AxiomErrors.policy("authz.role_required", "Your role cannot decide runbooks.");
     }
     const { id } = await params;
     const body = (await req.json()) as { decision?: string } | null;

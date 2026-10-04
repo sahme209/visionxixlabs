@@ -18,6 +18,7 @@
 
 import { NextResponse, type NextRequest } from "next/server";
 import { requireContext } from "@/lib/auth/currentContext";
+import { canDecideApprovals } from "@/lib/auth/platformAdmin";
 import { prisma } from "@/lib/db";
 import { record as auditRecord } from "@/lib/audit/secureAudit";
 import type { CorrelationId } from "@/lib/domain/ids";
@@ -27,6 +28,9 @@ export const runtime = "nodejs";
 
 export async function POST(req: NextRequest) {
   const ctx = await requireContext();
+  if (!canDecideApprovals({ email: ctx.email, roles: ctx.roles })) {
+    return NextResponse.json({ ok: false, error: "forbidden_role" }, { status: 403 });
+  }
   const correlationId = `approve_${Date.now().toString(36)}` as CorrelationId;
 
   // Accept form-encoded so the approval page can use a plain
