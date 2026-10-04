@@ -145,6 +145,9 @@ export type AuditAction =
   | "workforce.idempotency_slot_completed"
   // Cost-aware model routing — Phase 403.
   | "workforce.model_downgraded"
+  // Workspace AI provider policy enforcement on raw-SDK call sites.
+  | "ai.policy_unavailable"
+  | "ai.provider_not_approved"
   // Connector health scan — Phase 410.
   | "workforce.connector_health_polled"
   // AWS broker / CFN flow
