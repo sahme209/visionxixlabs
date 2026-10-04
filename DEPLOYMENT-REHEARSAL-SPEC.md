@@ -25,15 +25,49 @@ the current direction explicitly avoids. Treat the "Implementation Phases,"
 **What already exists and satisfies the actual (narrower) requirement,
 verified directly against source on 2026-10-03:**
 
-- **Terraform plan (never apply) as the default boundary** —
-  `lib/execution/terraformBoundary.ts`'s `evaluateTerraformBoundary()`
-  defaults every provider to `planAvailable: true, applyAvailable: false`
-  and only flips `applyAvailable` to `true` when four independent gates
-  are *all* green (broker credentials present, an explicit apply feature
-  flag, a ready audit sink, desktop signing readiness) — with an honest
+- **Terraform plan (never apply) as the default boundary, for the Axiom
+  governed workspace** — `lib/execution/terraformBoundary.ts`'s
+  `evaluateTerraformBoundary()` defaults every provider to
+  `planAvailable: true, applyAvailable: false` and only flips
+  `applyAvailable` to `true` when four independent gates are *all* green
+  (broker credentials present, an explicit apply feature flag, a ready
+  audit sink, desktop signing readiness) — with an honest
   `whyApplyBlocked` message listing exactly which gates are missing.
-  `/api/terraform/plan` is the live route; `/api/terraform/apply` is
-  real but governed by this same boundary.
+  `applyFeatureFlagOn` is hardcoded `false` at both call sites
+  (`app/dashboard/orchestration/page.tsx`,
+  `app/api/orchestration/terraform-boundary/route.ts`) and
+  `AXIOM_TF_APPLY_ENABLED` is never read from `process.env` anywhere in
+  the codebase — this boundary is a pure, read-only status reporter; it
+  does not itself run Terraform.
+
+  **Correction (verified 2026-10-04): the paragraph above does NOT
+  describe `/api/terraform/plan`, `/api/terraform/approve`, or
+  `/api/terraform/apply`.** Those three routes
+  (`app/api/terraform/plan|approve|apply/route.ts`) are a wholly
+  separate, pre-existing system — `lib/terraform/runner.ts` — built for
+  the older, leadId/starter-token-based public self-serve "Cloud
+  Operator" product, not the Axiom organization/workspace model. It
+  **does** shell out real `terraform init && validate && plan`
+  (`/api/terraform/plan`) and, after an explicit human types the exact
+  phrase `"CONFIRM APPLY"` (`/api/terraform/approve`, checked again
+  server-side before executing in `terraformApply()`), **real**
+  `terraform apply -auto-approve -no-color`
+  (`lib/terraform/runner.ts` — `terraformApply()`) against whatever
+  cloud account that lead connected. Its only gates are: a signed,
+  time-limited starter token proving ownership of the lead record, and
+  the CONFIRM APPLY phrase + a server-side re-check of
+  `job.approvedAt`/`approvedBy` immediately before the real `apply` call
+  runs. It has no relationship to `terraformBoundary.ts`,
+  `applyFeatureFlagOn`, the audit-sink gate, or desktop signing
+  readiness, and until this correction it had **no audit trail at all**
+  beyond `console.error` on failure (now wired to `logAudit()` for both
+  approve and apply, success and failure). This is a real, live,
+  infrastructure-mutating capability that predates this document and the
+  Axiom governance model described elsewhere in it — flagging it here so
+  this spec stops implying it is covered by the same safety boundary as
+  the governed workspace's rehearsal story. Whether to further restrict,
+  migrate, or retire this legacy apply path is a product decision, not
+  something this correction resolves.
 - **In-memory execution simulation, no real infrastructure touched** —
   `lib/simulation/executionSimulator.ts` ("Execution simulator (in-memory
   twin mutation, no apply)") and the release/security variants
