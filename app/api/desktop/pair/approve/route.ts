@@ -3,6 +3,8 @@ import { currentContext } from "@/lib/auth/currentContext";
 import { prisma } from "@/lib/db";
 import { createDesktopSession } from "@/lib/desktop/desktopSession";
 import { evaluatePairingPolicy } from "@/lib/desktop/desktopAuthPolicy";
+import { record as recordAudit } from "@/lib/audit/secureAudit";
+import { newCorrelationId } from "@/lib/domain/ids";
 
 export const dynamic = "force-dynamic";
 
@@ -40,6 +42,7 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
+  const correlationId = newCorrelationId();
   const body = await request.json().catch(() => ({})) as { challenge?: unknown };
   const challenge = typeof body.challenge === "string" ? body.challenge : undefined;
   const auth = await authorizedRequest(request, challenge);
@@ -55,7 +58,23 @@ export async function POST(request: NextRequest) {
     desktopVersion: auth.record.desktopVersion ?? undefined,
   });
   if (!decision.allowed) {
-    return NextResponse.json({ error: decision.code, message: decision.reason }, { status: 403 });
+    try {
+      await recordAudit({
+        organizationId: auth.organizationId,
+        actorUserId: auth.userId,
+        actorKind: "user",
+        action: "desktop.pair",
+        outcome: "blocked",
+        entityRef: `desktop_pairing:${auth.challenge}`,
+        correlationId,
+        source: "live",
+        errorCode: decision.code,
+        detail: { deviceLabel: auth.record.deviceLabel, platform: auth.record.platform },
+      });
+    } catch (err) {
+      console.error(`[${correlationId}] desktop.pair denial audit failed (best-effort):`, err);
+    }
+    return NextResponse.json({ error: decision.code, message: decision.reason, correlationId: String(correlationId) }, { status: 403 });
   }
 
   const claimed = await prisma.desktopPairingChallengeRecord.updateMany({
@@ -83,18 +102,47 @@ export async function POST(request: NextRequest) {
       where: { id: auth.challenge },
       data: { status: "approved", sessionId: session.id, approvedAt: new Date() },
     });
+    try {
+      await recordAudit({
+        organizationId: auth.organizationId,
+        actorUserId: auth.userId,
+        actorKind: "user",
+        action: "desktop.pair",
+        outcome: "success",
+        entityRef: `desktop_pairing:${auth.challenge}`,
+        correlationId,
+        source: "live",
+        detail: { deviceLabel: auth.record.deviceLabel, platform: auth.record.platform },
+      });
+    } catch (err) {
+      console.error(`[${correlationId}] desktop.pair success audit failed (best-effort):`, err);
+    }
     return NextResponse.json({ ok: true, status: "approved" });
   } catch (error) {
     await prisma.desktopPairingChallengeRecord.updateMany({
       where: { id: auth.challenge, status: "approving", sessionId: null },
       data: { status: "pending", approvedByUserId: null, approvedOrganizationId: null },
     });
-    const correlationId = `desktop_pair_approve_${crypto.randomUUID()}`;
     console.error(`[${correlationId}] Desktop pairing approval failed`, error);
+    try {
+      await recordAudit({
+        organizationId: auth.organizationId,
+        actorUserId: auth.userId,
+        actorKind: "user",
+        action: "desktop.pair",
+        outcome: "failure",
+        entityRef: `desktop_pairing:${auth.challenge}`,
+        correlationId,
+        source: "live",
+        errorCode: "pairing_approval_failed",
+      });
+    } catch (err) {
+      console.error(`[${correlationId}] desktop.pair failure audit failed (best-effort):`, err);
+    }
     return NextResponse.json({
       error: "pairing_approval_failed",
       message: "The desktop could not be approved. Try again or contact your administrator with the reference below.",
-      correlationId,
+      correlationId: String(correlationId),
     }, { status: 500 });
   }
 }
