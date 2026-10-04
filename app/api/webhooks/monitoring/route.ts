@@ -163,7 +163,7 @@ export async function POST(req: Request) {
   } else if (alert.severity === "info" || alert.severity === "low") {
     analysisSkipReason = "severity_below_threshold";
   } else {
-    const credit = await checkWorkspaceAICredits(organizationId, 30);
+    const credit = await checkWorkspaceAICredits(organizationId, 30, { failClosedOnUsageReadError: true });
     if (credit.kind === "block") {
       analysisSkipReason = "ai_credits_exhausted";
     } else if (config.dailyCostCapCents > 0) {
@@ -202,10 +202,15 @@ export async function POST(req: Request) {
     }
   }
 
+  const analysisOutcome: "success" | "failure" | "blocked" =
+    analysisSkipReason === "analysis_error" ? "failure"
+    : (analysisSkipReason === "ai_credits_exhausted" || analysisSkipReason === "daily_cost_cap_reached") ? "blocked"
+    : "success";
+
   void auditRecord({
     organizationId: ids.organization(organizationId),
     action: alert.state === "firing" ? "billing.alert_fired" : "engineer.action_attempted",
-    outcome: "success",
+    outcome: analysisOutcome,
     entityRef: `monitoring-alert:${alertSlug}`,
     correlationId,
     detail: {

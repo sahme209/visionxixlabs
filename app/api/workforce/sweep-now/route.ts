@@ -38,7 +38,7 @@ export async function POST(req: Request) {
   // Phase 628: gate on workspace AI credit pool before a manual
   // sweep fires up to 14 AI calls sequentially. Estimated ~100¢
   // for a full sweep on Sonnet-class (conservative buffer).
-  const creditDecision = await checkWorkspaceAICredits(org, 100);
+  const creditDecision = await checkWorkspaceAICredits(org, 100, { failClosedOnUsageReadError: true });
   if (creditDecision.kind === "block") {
     void auditRecord({
       organizationId: ids.organization(org),

@@ -42,7 +42,7 @@ export async function POST(req: Request) {
   // three-engineer composed pre-flight (3 AI calls per click).
   // Estimated cost ~ 30¢ assuming 2k input + 1k output tokens on
   // Sonnet-class — conservative buffer against spam.
-  const creditDecision = await checkWorkspaceAICredits(org, 30);
+  const creditDecision = await checkWorkspaceAICredits(org, 30, { failClosedOnUsageReadError: true });
   if (creditDecision.kind === "block") {
     void auditRecord({
       organizationId: ids.organization(org),

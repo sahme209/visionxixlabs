@@ -15,7 +15,6 @@ import { runPreviewGithubSync } from "@/lib/connectors/github/githubPreviewSync"
 import { getGithubMode } from "@/lib/connectors/github/githubLiveClient";
 import { apiFailure, apiSuccess } from "@/lib/api/dtoMappers";
 import { AxiomErrors, httpStatusFor, toAxiomError } from "@/lib/errors/axiomErrors";
-import { asRecord, optionalString } from "@/lib/security/validation";
 import { record as auditRecord } from "@/lib/audit/secureAudit";
 import { loadAppEnv } from "@/lib/config/env";
 import type { CorrelationId } from "@/lib/domain/ids";
@@ -30,9 +29,17 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       throw AxiomErrors.validation("auth.required", "Sign in required.");
     }
 
-    const body = asRecord(await request.json().catch(() => ({})));
+    // The live path below authenticates with a single operator-level
+    // credential (GITHUB_PAT / GitHub App), not a per-tenant
+    // GitHubInstallation token — it has no way to verify the caller
+    // actually owns whatever org it's pointed at. Honoring a
+    // client-supplied organization here would let any authenticated
+    // tenant use Axiom's own shared credential to probe an arbitrary
+    // GitHub org/account. The only real caller (RunGithubSyncPanel)
+    // always sends an empty body, so the override has no legitimate
+    // use; the org is always the operator-configured default.
     const env = loadAppEnv();
-    const organization = optionalString(body.organization, "organization", { max: 80 }) ?? env.githubDefaultOrg ?? "your-org";
+    const organization = env.githubDefaultOrg ?? "your-org";
 
     const mode = getGithubMode();
 

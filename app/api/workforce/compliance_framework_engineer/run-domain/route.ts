@@ -44,7 +44,7 @@ export async function POST(req: Request) {
 
   // Phase 628: gate on AI credit pool. Assessment uses maxTokens=4000
   // — estimate ~40¢ on Sonnet-class with conservative buffer.
-  const creditDecision = await checkWorkspaceAICredits(org, 40);
+  const creditDecision = await checkWorkspaceAICredits(org, 40, { failClosedOnUsageReadError: true });
   if (creditDecision.kind === "block") {
     void auditRecord({
       organizationId: ids.organization(org),

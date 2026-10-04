@@ -201,16 +201,22 @@ export async function buildOperatingGraph(input: BuildOperatingGraphInput): Prom
   });
 
   // ---------------------------------------------------------------------------
-  // 7) policy node — literal governance reminder
+  // 7) policy node — literal governance reminder. This describes the
+  // platform's architectural guarantee that a simulated change must pass
+  // through the approval-gating mechanism, not a live, per-tenant check
+  // of this workspace's current autonomy configuration. A workspace in
+  // "autonomous" mode (TenantAutonomyCharter) may have approval_required
+  // actions auto-decided by policy rather than waiting on a human —
+  // sourceMode: "foundation" (not "live") keeps that distinction honest.
   // ---------------------------------------------------------------------------
   nodes.push({
     id: "policy:approval_gated",
     type: "policy",
     title: "Approval gating",
     status: "healthy",
-    sourceMode: "live",
+    sourceMode: "foundation",
     route: "/dashboard/approvals",
-    limitations: [],
+    limitations: ["Reflects the platform's approval-gating design, not a live check of this workspace's autonomy mode — see /dashboard/governance for the active charter."],
     safeNextAction: { label: "Open Approval queue", href: "/dashboard/approvals" },
     evidenceRefs: ["axiomOS:safetyStatus", "approvalPolicy:strict"],
   });

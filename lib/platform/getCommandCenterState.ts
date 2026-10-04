@@ -109,11 +109,15 @@ export async function getCommandCenterState(): Promise<CommandCenterState> {
   });
   const reliability = buildReliabilityPosture({
     source: "preview",
+    // "preview" source + the envelope's own "Component health unknown
+    // until probes register" note below must agree with each row's
+    // status — these three had never been wired to a real check, so a
+    // hardcoded "healthy" literal contradicted the note it sat next to.
     components: [
-      { id: "web_app",          label: "Web app",         status: "healthy" },
-      { id: "database",         label: "Database",        status: "healthy" },
+      { id: "web_app",          label: "Web app",         status: "unknown" },
+      { id: "database",         label: "Database",        status: "unknown" },
       { id: "connector.aws",    label: "AWS connector",   status: features.awsLiveScan ? "healthy" : "unknown" },
-      { id: "workflow_engine",  label: "Workflow engine", status: "healthy" },
+      { id: "workflow_engine",  label: "Workflow engine", status: "unknown" },
       { id: "copilot_llm",      label: "Copilot LLM",     status: features.copilot ? "healthy" : "unknown" },
     ],
     circuits: [],

@@ -30,7 +30,7 @@ export async function POST(req: Request) {
   }
   const correlationId = `workload_perf_${Date.now().toString(36)}` as CorrelationId;
 
-  const creditDecision = await checkWorkspaceAICredits(org, 30);
+  const creditDecision = await checkWorkspaceAICredits(org, 30, { failClosedOnUsageReadError: true });
   if (creditDecision.kind === "block") {
     void auditRecord({
       organizationId: ids.organization(org),

@@ -40,6 +40,8 @@ import { recordAIUsageEvent } from "@/lib/billing/recordAIUsageEvent";
 import { record as recordAudit } from "@/lib/audit/secureAudit";
 import { id as idFactory } from "@/lib/domain/ids";
 import { routeAITask } from "@/lib/ai/providerRouter";
+import { getAIProviderManager } from "@/lib/ai/AIProviderManager";
+import { loadWorkspaceAIProviderPolicyWithState, resolveWorkspaceAIProviderPolicy } from "@/lib/ai/workspaceProviderPolicy";
 import { prisma } from "@/lib/db";
 import { validateProposal } from "./validateProposal";
 import { planRefinementAction } from "./planRefinementAction";
@@ -120,7 +122,7 @@ export const codeProposeRealExecutor: StageExecutorFn = async (ctx) => {
   //    monthly AI credit pool is exhausted. Soft-warn thresholds (70/90%)
   //    don't block but get reflected in the response detail. Metered-billing
   //    and custom-contract plans always pass.
-  const preflight = await checkWorkspaceAICredits(ctx.organizationId);
+  const preflight = await checkWorkspaceAICredits(ctx.organizationId, undefined, { failClosedOnUsageReadError: true });
   if (preflight.kind === "block") {
     try {
       await recordAudit({
@@ -229,6 +231,60 @@ export const codeProposeRealExecutor: StageExecutorFn = async (ctx) => {
       } catch { /* best-effort */ }
     }
   } catch { /* fail-open with default model */ }
+
+  // 3.7. Workspace AI provider policy gate. This executor calls Anthropic
+  // directly with the mandatory SDK (see file header — no provider-neutral
+  // shim), so unlike call sites routed through the AIProviderManager, no
+  // upstream layer enforces the workspace's own enabled/allowed-provider
+  // policy for it. A workspace that disables AI, or disallows Anthropic
+  // specifically, must be able to stop this stage before it writes code
+  // changes against the tenant's repo. A policy read failure fails closed
+  // — an unreadable policy is never treated as "no restriction."
+  const policyState = await loadWorkspaceAIProviderPolicyWithState(ctx.organizationId);
+  if (policyState.storageState !== "ready") {
+    try {
+      await recordAudit({
+        organizationId: idFactory.organization(ctx.organizationId),
+        actorKind: "system",
+        action: "ai.policy_unavailable",
+        outcome: "blocked",
+        entityRef: `coding_task:${ctx.runId}`,
+        correlationId: idFactory.correlation(ctx.correlationId),
+        source: "live",
+        detail: { stageId: ctx.stageId, storageState: policyState.storageState },
+      });
+    } catch { /* best-effort */ }
+    return {
+      ok: false,
+      error: "Workspace AI policy could not be verified. Try again shortly.",
+      detail: { stageId: ctx.stageId, policyUnavailable: true },
+    };
+  }
+  const workspacePolicy = resolveWorkspaceAIProviderPolicy({
+    stored: policyState.policy,
+    serviceEnabled: getAIProviderManager().status()
+      .filter((provider) => provider.configured && provider.provider !== "mock")
+      .map((provider) => provider.provider),
+  });
+  if (!workspacePolicy.enabled || !workspacePolicy.allowedProviders.includes("anthropic")) {
+    try {
+      await recordAudit({
+        organizationId: idFactory.organization(ctx.organizationId),
+        actorKind: "system",
+        action: "ai.provider_not_approved",
+        outcome: "blocked",
+        entityRef: `coding_task:${ctx.runId}`,
+        correlationId: idFactory.correlation(ctx.correlationId),
+        source: "live",
+        detail: { stageId: ctx.stageId, provider: "anthropic", workspaceAiEnabled: workspacePolicy.enabled },
+      });
+    } catch { /* best-effort */ }
+    return {
+      ok: false,
+      error: "This workspace's AI provider policy does not permit AI-generated code changes right now.",
+      detail: { stageId: ctx.stageId, providerNotApproved: true },
+    };
+  }
 
   const client = new Anthropic();
 
