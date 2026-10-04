@@ -206,10 +206,46 @@ export async function terraformPlan(jobId: string): Promise<{
   return { success: true, output, summary };
 }
 
-export async function terraformApply(jobId: string): Promise<{ success: boolean; output: string }> {
+export interface TerraformApplyResult {
+  success: boolean;
+  output: string;
+  /** True when apply was refused by the platform kill-switch below, not by
+   *  Terraform itself or the job's own approval state. Lets callers audit
+   *  this distinctly from a real execution failure. */
+  blockedByKillSwitch?: boolean;
+}
+
+/**
+ * Hard, fail-closed kill-switch for this legacy (pre-Axiom-tenant-model)
+ * self-serve "Cloud Operator" apply path.
+ *
+ * This system has no organization/tenant concept, no role-based
+ * authorization, no environment/blast-radius safeguard, and no rollback
+ * or recovery evidence — it is gated only by a signed starter token
+ * (proves lead ownership) and a typed "CONFIRM APPLY" phrase. That is not
+ * sufficient authorization for executing real `terraform apply` against a
+ * customer's connected cloud account. Live apply stays OFF
+ * (TERRAFORM_LEGACY_APPLY_ENABLED unset/not exactly "true") until it is
+ * rebuilt on the canonical tenant/role model and the terraformBoundary.ts
+ * safety boundary the rest of the platform already uses. `terraform plan`
+ * (read-only, no mutation) is unaffected by this flag.
+ */
+export function legacyApplyEnabled(): boolean {
+  return process.env.TERRAFORM_LEGACY_APPLY_ENABLED === "true";
+}
+
+export async function terraformApply(jobId: string): Promise<TerraformApplyResult> {
   const job = await prisma.terraformExecutionJob.findUnique({ where: { id: jobId } });
   if (!job) throw new Error("Job not found");
   if (!job.workingDirectory) throw new Error("Job has no working directory");
+
+  if (!legacyApplyEnabled()) {
+    return {
+      success: false,
+      blockedByKillSwitch: true,
+      output: "Live apply is temporarily disabled for this self-serve flow pending a security review (no tenant/role authorization model yet). Your plan and approval are saved — contact support to proceed.",
+    };
+  }
 
   // Safety: must be approved
   if (!job.approvedAt || !job.approvedBy) {
