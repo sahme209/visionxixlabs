@@ -66,7 +66,7 @@ const LAYERS = [
   {
     n: "10",
     name: "ReleaseOps layer",
-    desc: "Deployment intelligence + governance above CI/CD systems (GitHub, GitLab, Azure DevOps, Jenkins, ArgoCD, ServiceNow). Shares topology, memory, reasoning, audit with cloud ops.",
+    desc: "Deployment intelligence + governance above CI/CD systems — GitHub Actions is live today; GitLab CI, Azure DevOps, Jenkins, ArgoCD, and ServiceNow are planned. Shares topology, memory, reasoning, audit with cloud ops.",
     color: "fuchsia",
   },
 ];

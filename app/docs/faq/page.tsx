@@ -21,7 +21,7 @@ const FAQ_GROUPS = [
       },
       {
         q: "Does Axiom replace my existing tooling?",
-        a: "No. Axiom runs above CloudWatch, AWS Config, Terraform, GitHub Actions, ServiceNow, etc. It coordinates and analyzes them — it does not replace any of them.",
+        a: "No. Axiom runs above CloudWatch, AWS Config, Terraform, and GitHub Actions. It coordinates and analyzes them — it does not replace any of them.",
       },
     ],
   },
@@ -89,7 +89,7 @@ const FAQ_GROUPS = [
     items: [
       {
         q: "What does Axiom ReleaseOps integrate with?",
-        a: "GitHub Actions, GitLab CI, Azure DevOps, Jenkins, ArgoCD, and ServiceNow on the workflow side. Terraform Cloud / Enterprise on the IaC side. AWS/Azure/GCP on the infrastructure side.",
+        a: "GitHub Actions on the workflow side today — GitLab CI, Azure DevOps, Jenkins, ArgoCD, and ServiceNow are planned. Terraform Cloud / Enterprise on the IaC side. AWS on the infrastructure side; Azure/GCP support is in preview.",
       },
       {
         q: "Does ReleaseOps run deployments itself?",
