@@ -117,7 +117,7 @@ export default async function AuditPage() {
       )}
 
       {!migrationPending && records.length === 0 && (
-        <div className="rounded-2xl border border-white/[0.06] bg-white/[0.015] px-7 py-12 text-center">
+        <div className="surface-glass rounded-2xl px-7 py-12 text-center">
           <p className="text-[15px] font-semibold text-white mb-1">No events yet</p>
           <p className="text-[12px] text-zinc-500 leading-relaxed max-w-md mx-auto">
             Connect a cloud, run a scan, or approve a recommendation — every
@@ -128,7 +128,7 @@ export default async function AuditPage() {
 
       {records.length > 0 && (
         <>
-          <section className="mb-10 rounded-2xl border border-white/[0.06] bg-white/[0.015] divide-x divide-white/[0.04] grid grid-cols-3 overflow-hidden">
+          <section className="surface-glass mb-10 rounded-2xl divide-x divide-white/[0.04] grid grid-cols-3 overflow-hidden">
             <CountTile label="success"  count={counts.success}  tone={counts.success > 0 ? "text-emerald-300" : "text-zinc-600"} />
             <CountTile label="failure"  count={counts.failure}  tone={counts.failure > 0 ? "text-rose-300" : "text-zinc-600"} />
             <CountTile label="blocked"  count={counts.blocked}  tone={counts.blocked > 0 ? "text-amber-300" : "text-zinc-600"} />
@@ -136,7 +136,7 @@ export default async function AuditPage() {
 
           <section>
             <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-zinc-500 mb-3">timeline · latest 200</p>
-            <ul className="rounded-2xl border border-white/[0.06] bg-white/[0.015] divide-y divide-white/[0.04] overflow-hidden">
+            <ul className="surface-glass rounded-2xl divide-y divide-white/[0.04] overflow-hidden">
               {records.map((r) => {
                 const outcome = r.outcome as Outcome;
                 const actor = r.actorKind as ActorKind;
