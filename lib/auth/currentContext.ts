@@ -17,6 +17,7 @@ import { authOptions } from "@/lib/auth";
 import { id } from "@/lib/domain/ids";
 import type { OrganizationId, UserId } from "@/lib/domain/ids";
 import { deriveWorkspaceIdFromEmail } from "@/lib/auth/workspaceId";
+import { ensurePersonalWorkspaceMembership } from "@/lib/auth/ensurePersonalWorkspaceMembership";
 import { prisma } from "@/lib/db";
 
 export interface CurrentContext {
@@ -48,6 +49,7 @@ export async function currentContext(): Promise<CurrentContext> {
   const roles = await resolveWorkspaceRoles({
     userId: String(userId),
     organizationId: String(orgId),
+    email: userEmail,
   });
   return {
     isAuthenticated: true,
@@ -73,6 +75,7 @@ function deriveWorkspaceLabel(email: string): string {
 async function resolveWorkspaceRoles(input: {
   userId: string;
   organizationId: string;
+  email: string;
 }): Promise<string[]> {
   // Membership is the source of truth for workspace authority. A signed-in
   // identity without a current membership can read only public browser
@@ -92,6 +95,28 @@ async function resolveWorkspaceRoles(input: {
   } catch {
     // A missing migration or transient store failure must not expand access.
     return [];
+  }
+
+  // The bootstrap that grants a new identity ownership of its own derived
+  // workspace runs once, best-effort, at sign-in (see lib/auth.ts) with its
+  // own error swallowed. If that single attempt silently failed (a
+  // transient DB blip at that exact moment), the user would otherwise be
+  // locked out of their own workspace indefinitely, with no self-healing
+  // path. Retry it once, here, scoped only to the user's own derived
+  // workspace — never a shared/invited organization, where a missing
+  // membership legitimately means "not a member," not "bootstrap failed."
+  if (input.organizationId === String(deriveWorkspaceIdFromEmail(input.email))) {
+    try {
+      await ensurePersonalWorkspaceMembership({ userId: input.userId, email: input.email });
+      const membership = await prisma.orgMembership.findUnique({
+        where: { userId_organizationId: { userId: input.userId, organizationId: input.organizationId } },
+        select: { role: true },
+      });
+      if (membership?.role) return [membership.role];
+    } catch {
+      // Still best-effort — a retry failure must not expand access either.
+      return [];
+    }
   }
 
   // Login-session claims are not authority. A revoked or deleted membership

@@ -81,7 +81,14 @@ describe("POST /api/workforce/workload_performance_engineer/run-domain — credi
 
   it("proceeds to run the engineer when credits are available", async () => {
     mocks.checkWorkspaceAICredits.mockResolvedValue({ kind: "allow" });
-    mocks.runWorkloadPerformanceEngineer.mockResolvedValue({ id: "analysis-1" });
+    mocks.runWorkloadPerformanceEngineer.mockResolvedValue({
+      id: "analysis-1",
+      outcome: "ok",
+      performanceVerdict: "healthy",
+      baselineDeviations: [],
+      rootCauseHypotheses: [],
+      slug: "analysis-1",
+    });
     mocks.persistWorkloadPerformanceAnalysis.mockResolvedValue(undefined);
     const { POST } = await import("../route");
 
