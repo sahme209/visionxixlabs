@@ -4009,3 +4009,37 @@ model TauriDeploymentOperation {
   @@index([organizationId, deploymentRequestId, createdAt])
   @@index([organizationId, status, updatedAt])
 }
+
+/// Incident-response evidence record — the named gap identified in
+/// docs/COMPLIANCE_CONTROL_MAPPING.md ("there is currently no dedicated
+/// incident-response runbook or recovery evidence model"). status and
+/// severity are closed-union strings validated in
+/// lib/incident/incidentLifecycle.ts, not Postgres enums — matching the
+/// Release.status / TenantIntegrationConnection.status convention used
+/// everywhere else newer in this schema, so extending the union never
+/// requires an ALTER TYPE migration.
+model IncidentRecord {
+  id                 String    @id @default(cuid())
+  organizationId     String
+  /// Closed-union: detected | investigating | mitigated | resolved | postmortem_complete
+  status             String    @default("detected")
+  /// Closed-union: low | medium | high | critical
+  severity           String
+  title              String
+  description        String?
+  detectedAt         DateTime  @default(now())
+  detectedByUserId   String?
+  /// Soft reference, no FK — same convention as Component.repositoryId.
+  /// An incident record is permanent evidence and must survive
+  /// independently of any single affected tenant's own lifecycle.
+  affectedOrganizationIds String[] @default([])
+  mitigatedAt            DateTime?
+  resolvedAt             DateTime?
+  postmortemCompletedAt  DateTime?
+  postmortemUrl          String?
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  @@index([organizationId, status])
+  @@index([organizationId, detectedAt])
+}
