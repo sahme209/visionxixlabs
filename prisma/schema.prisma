@@ -80,6 +80,10 @@ enum AuditEventStatus {
   pending
   precheck_failed
   applied
+  /// Handler ran but never called a real cloud SDK — see
+  /// StepResult["simulated"] in lib/axiom/applyEngine.ts. Distinct from
+  /// "applied", which means a real mutation was executed.
+  simulated
   verified
   failed
   rolled_back
