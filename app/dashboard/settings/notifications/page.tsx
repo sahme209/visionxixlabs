@@ -82,6 +82,14 @@ export default function NotificationSettingsPage() {
     }
   }
 
+  if (phase === "error" && !prefs) {
+    return (
+      <div role="alert" aria-live="assertive" className="max-w-2xl mx-auto px-1 -mt-2 py-12 text-center text-[13px] text-rose-300">
+        {error ?? "Could not load preferences."}
+      </div>
+    );
+  }
+
   if (phase === "loading" || !prefs) {
     return (
       <div className="max-w-2xl mx-auto px-1 -mt-2 py-12 text-center">
@@ -180,8 +188,8 @@ export default function NotificationSettingsPage() {
           >
             {phase === "saving" ? "Saving…" : "Save preferences"}
           </button>
-          {phase === "saved" && <span className="text-[12px] text-emerald-300">Saved.</span>}
-          {phase === "error" && error && <span className="text-[12px] text-rose-300">{error}</span>}
+          {phase === "saved" && <span role="status" aria-live="polite" className="text-[12px] text-emerald-300">Saved.</span>}
+          {phase === "error" && error && <span role="alert" aria-live="assertive" className="text-[12px] text-rose-300">{error}</span>}
         </div>
       </form>
 
