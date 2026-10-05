@@ -94,7 +94,7 @@ const MODULES: readonly PlatformModule[] = [
     routes: [
       { href: "/dashboard/cicd",           label: "CI/CD cockpit" },
       { href: "/dashboard/releaseops",     label: "Release ops" },
-      { href: "/dashboard/github",         label: "GitHub" },
+      { href: "/dashboard/github",         label: "GitHub demo scan" },
       { href: "/dashboard/integrations/github", label: "GitHub setup" },
       { href: "/dashboard/runbooks",       label: "Runbooks" },
       { href: "/dashboard/runbooks/queue", label: "Runbook queue" },

@@ -89,9 +89,9 @@ export function RunGithubSyncPanel() {
       <div className="flex items-center justify-between gap-4 mb-4 flex-wrap">
         <div className="min-w-0">
           <p className="text-[11px] font-mono text-zinc-500 uppercase tracking-[0.18em] mb-1">// step 2 · run a read-only sync</p>
-          <h3 className="text-base font-semibold text-white tracking-tight">Trigger a GitHub sync now</h3>
+          <h3 className="text-base font-semibold text-white tracking-tight">Trigger a demo GitHub sync now</h3>
           <p className="text-[12px] text-zinc-400 leading-relaxed mt-0.5">
-            Read-only — no mutation, no PR commits. The scanner discovers repos, workflows, branch protection, and deployment environments.
+            Read-only — no mutation, no PR commits. Scans Axiom&apos;s own demonstration repository (not your organization&apos;s GitHub) to discover repos, workflows, branch protection, and deployment environments.
           </p>
         </div>
         <button
