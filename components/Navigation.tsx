@@ -24,6 +24,7 @@ const mobileLinks = [
 export function Navigation() {
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -32,6 +33,17 @@ export function Navigation() {
     // own onClick (e.g. browser back/forward), not just a click-through.
     setMobileMenuOpen(false);
   }, [pathname]);
+
+  useEffect(() => {
+    // Shrinks the bar height and deepens its border/shadow once the page
+    // has scrolled past the hero, so the nav reads as "docked chrome"
+    // rather than a static banner — the same elevation-on-scroll detail
+    // Cursor's and Linear's marketing sites use.
+    const onScroll = () => setScrolled(window.scrollY > 8);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   useEffect(() => {
     if (!mobileMenuOpen) return;
@@ -75,8 +87,19 @@ export function Navigation() {
   const closeMenu = () => setMobileMenuOpen(false);
 
   return (
-    <nav aria-label="Primary navigation" className="fixed inset-x-0 top-0 z-50 border-b border-white/[0.06] bg-[#0c0d0c]/95 backdrop-blur-xl">
-      <div className="mx-auto flex h-16 max-w-[1400px] items-center justify-between px-5 sm:px-8 lg:h-[72px] lg:px-12">
+    <nav
+      aria-label="Primary navigation"
+      className={`fixed inset-x-0 top-0 z-50 backdrop-blur-xl transition-[background-color,border-color,box-shadow] duration-300 ${
+        scrolled
+          ? "border-b border-white/[0.09] bg-[#0c0d0c]/90 shadow-[0_1px_0_rgba(255,255,255,0.03),0_12px_30px_-20px_rgba(0,0,0,0.8)]"
+          : "border-b border-white/[0.06] bg-[#0c0d0c]/95"
+      }`}
+    >
+      <div
+        className={`mx-auto flex max-w-[1400px] items-center justify-between px-5 transition-[height] duration-300 sm:px-8 lg:px-12 ${
+          scrolled ? "h-14 lg:h-16" : "h-16 lg:h-[72px]"
+        }`}
+      >
         <Link href="/" className="flex items-center gap-2.5 text-sm font-semibold tracking-[-0.02em] text-zinc-100" aria-label="Vision XIX Labs home">
           <Image src="/vision-xix-logo.png" alt="" width={28} height={28} className="rounded-md" priority />
           <span>Vision XIX Labs</span>
