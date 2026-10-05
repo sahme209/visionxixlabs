@@ -390,7 +390,7 @@ export default function ResilienceDashboard() {
                   Connect at least one cloud provider to get started.
                 </p>
               )}
-              {error && <p className="text-sm text-red-400 mt-3">{error}</p>}
+              {error && <p role="alert" aria-live="assertive" className="text-sm text-red-400 mt-3">{error}</p>}
             </div>
           </div>
         </Reveal>

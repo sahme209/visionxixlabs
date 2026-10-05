@@ -133,8 +133,8 @@ export function BulkActionBar() {
       >
         Reject selected
       </button>
-      {phase === "done" && <span className="text-[11px] text-emerald-300">Done.</span>}
-      {phase === "error" && error && <span className="text-[11px] text-rose-300">{error}</span>}
+      {phase === "done" && <span role="status" aria-live="polite" className="text-[11px] text-emerald-300">Done.</span>}
+      {phase === "error" && error && <span role="alert" aria-live="assertive" className="text-[11px] text-rose-300">{error}</span>}
     </div>
   );
 }

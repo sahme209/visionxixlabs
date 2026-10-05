@@ -1349,7 +1349,7 @@ function DesktopRuntimePanel() {
           <p className="text-[11px] text-zinc-500 font-mono uppercase tracking-[0.18em]">// composing desktop state…</p>
         )}
         {!loading && error && (
-          <p className="text-[12px] text-amber-300/90">{error}</p>
+          <p role="alert" aria-live="assertive" className="text-[12px] text-amber-300/90">{error}</p>
         )}
         {!loading && !error && state && (
           <>
@@ -1549,7 +1549,7 @@ function LiveProvidersStrip() {
         </div>
       )}
       {!loading && error && (
-        <div className="px-5 py-4">
+        <div role="alert" aria-live="assertive" className="px-5 py-4">
           <p className="text-[11px] font-mono text-amber-300/80 uppercase tracking-[0.18em] mb-1">
             // provider state unavailable
           </p>

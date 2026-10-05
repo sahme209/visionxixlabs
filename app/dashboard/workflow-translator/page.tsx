@@ -85,7 +85,7 @@ export default function WorkflowTranslatorPage() {
           <PlayIcon className="h-3.5 w-3.5" />
           {busy ? "Drafting…" : "Translate"}
         </button>
-        {error && <p className="mt-3 text-[11px] font-mono text-rose-300">{error}</p>}
+        {error && <p role="alert" aria-live="assertive" className="mt-3 text-[11px] font-mono text-rose-300">{error}</p>}
       </div>
 
       {resp && (

@@ -133,7 +133,7 @@ export default function EvidencePage() {
         </div>
       )}
       {!loading && error && (
-        <div className="rounded-2xl border border-amber-500/[0.18] bg-amber-500/[0.04] p-5 mb-6">
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-amber-500/[0.18] bg-amber-500/[0.04] p-5 mb-6">
           <p className="text-[11px] font-mono text-amber-300/80 uppercase tracking-[0.18em] mb-1">// evidence unavailable</p>
           <p className="text-[13px] text-zinc-300">{error}</p>
         </div>
