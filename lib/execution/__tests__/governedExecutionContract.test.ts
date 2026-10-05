@@ -10,12 +10,12 @@ type Ctx = { organizationId: string };
 
 function allowAll(): GovernedExecutionPrerequisites<Ctx> {
   return {
-    tenantAuthorization: vi.fn(async () => ({ ok: true })),
-    roleCheck: vi.fn(async () => ({ ok: true })),
-    explicitApproval: vi.fn(async () => ({ ok: true })),
-    environmentSafeguard: vi.fn(async () => ({ ok: true })),
-    immutableEvidence: vi.fn(async () => ({ ok: true })),
-    rollbackAndValidation: vi.fn(async () => ({ ok: true })),
+    tenantAuthorization: vi.fn(async (_ctx: Ctx) => ({ ok: true as const })),
+    roleCheck: vi.fn(async (_ctx: Ctx) => ({ ok: true as const })),
+    explicitApproval: vi.fn(async (_ctx: Ctx) => ({ ok: true as const })),
+    environmentSafeguard: vi.fn(async (_ctx: Ctx) => ({ ok: true as const })),
+    immutableEvidence: vi.fn(async (_ctx: Ctx) => ({ ok: true as const })),
+    rollbackAndValidation: vi.fn(async (_ctx: Ctx) => ({ ok: true as const })),
   };
 }
 
@@ -38,7 +38,7 @@ describe("evaluateGovernedExecutionPrerequisites — ordering and short-circuit"
 
   it("checks prerequisites in the canonical order and stops at the first failure", async () => {
     const prereqs = allowAll();
-    prereqs.explicitApproval = vi.fn(async () => ({ ok: false, reason: "no approval record found" }));
+    prereqs.explicitApproval = vi.fn(async (_ctx: Ctx) => ({ ok: false, reason: "no approval record found" }));
 
     const result = await evaluateGovernedExecutionPrerequisites(prereqs, { organizationId: "org-1" });
 
@@ -58,7 +58,7 @@ describe("evaluateGovernedExecutionPrerequisites — ordering and short-circuit"
 
   it("treats a thrown error identically to an explicit failure — never a silent pass", async () => {
     const prereqs = allowAll();
-    prereqs.roleCheck = vi.fn(async () => { throw new Error("role lookup database error"); });
+    prereqs.roleCheck = vi.fn(async (_ctx: Ctx) => { throw new Error("role lookup database error"); });
 
     const result = await evaluateGovernedExecutionPrerequisites(prereqs, { organizationId: "org-1" });
 
@@ -80,7 +80,7 @@ describe("evaluateGovernedExecutionPrerequisites — ordering and short-circuit"
       rollback_and_validation: "rollbackAndValidation",
     } as const;
     const prereqs = allowAll();
-    prereqs[keyMap[name]] = vi.fn(async () => ({ ok: false, reason: `${name} failed` }));
+    prereqs[keyMap[name]] = vi.fn(async (_ctx: Ctx) => ({ ok: false, reason: `${name} failed` }));
 
     const result = await evaluateGovernedExecutionPrerequisites(prereqs, { organizationId: "org-1" });
     expect(result.allowed).toBe(false);
