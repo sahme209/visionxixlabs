@@ -31,7 +31,11 @@ export default defineConfig({
   },
   test: {
     environment: "node",
-    include: ["lib/**/__tests__/**/*.test.ts"],
+    // Test files for app/api/** routes are sometimes colocated under the
+    // route's own __tests__ directory rather than lib/__tests__ — both
+    // patterns are real, both must run. A narrower "lib/**" pattern here
+    // once silently excluded every app/** test file from CI entirely.
+    include: ["lib/**/__tests__/**/*.test.ts", "app/**/__tests__/**/*.test.ts"],
     globals: false,
   },
 });
