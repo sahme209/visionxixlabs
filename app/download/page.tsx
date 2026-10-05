@@ -355,14 +355,17 @@ export default function DownloadPage() {
         <div className="max-w-[1400px] mx-auto">
           <Reveal direction="up" blur>
             <p className="text-sm font-semibold text-violet-400 mb-4 tracking-wide uppercase">Your first five minutes</p>
-            <h2 className="text-2xl sm:text-3xl font-medium tracking-[-0.03em] text-white max-w-2xl">What actually happens after you install.</h2>
-            <ol className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-5">
+            <h2 className="text-2xl sm:text-3xl font-medium tracking-[-0.03em] text-white max-w-2xl">What's intended to happen after you install.</h2>
+            <p className="mt-4 max-w-2xl text-xs leading-5 text-amber-200/80">
+              A known issue can currently interrupt pairing after you approve it in the browser. If the desktop app doesn't pick up an approved session, this is that defect — not something wrong on your end. We're actively tracing it before promising it end-to-end.
+            </p>
+            <ol className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-5">
               {[
                 { step: "1", title: "Install", detail: "Download the signed build for your platform above and open it." },
                 { step: "2", title: "Sign in", detail: "The desktop app opens a browser window to authenticate — credentials never pass through the installed app directly." },
-                { step: "3", title: "Authorize the pairing", detail: "The browser shows \"Authorize Axiom Agent\" with your device's fingerprint and label. You approve it there, once, for that device." },
-                { step: "4", title: "See your restricted workspace", detail: "The desktop app opens scoped to your own workspace membership — not an admin view, not another tenant's data." },
-                { step: "5", title: "Next steps are explicit", detail: "The app tells you directly what's connected and what isn't yet — a repository to bind, an integration to approve — never a silent assumption." },
+                { step: "3", title: "Authorize the pairing", detail: "The browser shows \"Authorize Axiom Agent\" with your device's fingerprint and label, asking you to approve it once for that device." },
+                { step: "4", title: "Workspace should scope to you", detail: "Once pairing succeeds, the desktop app is intended to open scoped to your own workspace membership — not an admin view, not another tenant's data." },
+                { step: "5", title: "Next steps, once connected", detail: "From there the app is meant to tell you directly what's connected and what isn't yet — a repository to bind, an integration to approve — never a silent assumption." },
               ].map((item) => (
                 <li key={item.step} className="rounded-xl border border-white/[0.08] bg-white/[0.02] p-5">
                   <span className="flex h-7 w-7 items-center justify-center rounded-full border border-violet-300/25 bg-violet-300/10 text-xs font-medium text-violet-100">{item.step}</span>
@@ -372,7 +375,7 @@ export default function DownloadPage() {
               ))}
             </ol>
             <p className="mt-8 text-xs text-zinc-500 max-w-2xl">
-              This is a description of the real pairing flow, not a screenshot sequence — every step above corresponds to an actual screen in the current build, not a planned or illustrative one.
+              This describes the intended real pairing flow, not a screenshot sequence — every screen named above exists in the current build. It is not yet a guarantee that pairing completes end-to-end; see the notice above.
             </p>
           </Reveal>
         </div>

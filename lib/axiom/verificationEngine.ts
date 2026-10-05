@@ -5,11 +5,26 @@ import type { CloudProvider } from "./cloudSnapshot";
 // Types
 // ---------------------------------------------------------------------------
 
+/**
+ * No check in this module performs a real cloud read — every one of
+ * them only generates a read-only CLI command for a human to run and
+ * interpret themselves (see getVerificationCommands below, which is
+ * honest about that). "not_verified" is the only value this module
+ * can honestly produce until a real tenant-bound cloud/integration
+ * read is implemented; "verified"/"verify_failed" are reserved for
+ * that real implementation, never fabricated here.
+ */
+export type VerificationStatus = "not_verified" | "verified" | "verify_failed";
+
 export type VerificationResult = {
   itemId: string;
   actionType: ActionType;
   provider: CloudProvider;
+  /** Always false today — see VerificationStatus doc above. Kept
+   *  alongside `status` for existing boolean-checking call sites;
+   *  never true until a real check exists. */
   verified: boolean;
+  status: VerificationStatus;
   details: string[];
   warnings: string[];
   checks: VerificationCheck[];
@@ -18,7 +33,8 @@ export type VerificationResult = {
 
 export type VerificationCheck = {
   name: string;
-  passed: boolean;
+  /** Always "not_verified" today — see VerificationStatus doc above. */
+  status: VerificationStatus;
   message: string;
   severity: "critical" | "warning" | "info";
 };
@@ -43,6 +59,7 @@ export function verifyAppliedAction(item: ExecutionPlanItem): VerificationResult
       actionType: item.actionType,
       provider: item.provider,
       verified: false,
+      status: "not_verified",
       details: [`No verification rules for action type: ${item.actionType}`],
       warnings: [],
       checks: [],
@@ -51,15 +68,19 @@ export function verifyAppliedAction(item: ExecutionPlanItem): VerificationResult
   }
 
   const checks = verifier(item);
-  const critical = checks.filter((c) => c.severity === "critical" && !c.passed);
-  const warnings = checks.filter((c) => c.severity === "warning" && !c.passed).map((c) => c.message);
-  const details = checks.filter((c) => c.passed).map((c) => c.message);
+  const warnings = checks.filter((c) => c.severity === "warning").map((c) => c.message);
+  // Every check this module produces is advisory guidance for a human
+  // to run and interpret — never a performed read. Nothing here can
+  // ever resolve to "verified"; that requires a real tenant-bound
+  // cloud/integration read, which does not exist in this module.
+  const details = checks.map((c) => c.message);
 
   return {
     itemId: item.id,
     actionType: item.actionType,
     provider: item.provider,
-    verified: critical.length === 0,
+    verified: false,
+    status: "not_verified",
     details,
     warnings,
     checks,
@@ -71,8 +92,11 @@ export function verifyAllActions(items: ExecutionPlanItem[]): VerificationResult
   return items.map(verifyAppliedAction);
 }
 
+/** Always false while every result is "not_verified" — never treat the
+ *  absence of a real check as success. Reserved for when real checks
+ *  exist. */
 export function allVerified(results: VerificationResult[]): boolean {
-  return results.every((r) => r.verified);
+  return results.length > 0 && results.every((r) => r.status === "verified");
 }
 
 // Generate the read-only CLI commands a caller would run to perform verification
@@ -134,7 +158,7 @@ function checkInstanceExists(item: ExecutionPlanItem): VerificationCheck {
 
   return {
     name: "instance_exists",
-    passed: true,
+    status: "not_verified",
     message: `Verify instance exists: ${item.resourceIds.length} resource(s) in ${item.region}. Run: ${commands[item.provider]}`,
     severity: "critical",
   };
@@ -149,7 +173,7 @@ function checkMachineTypeChanged(item: ExecutionPlanItem, recommended: string): 
 
   return {
     name: "machine_type_changed",
-    passed: true,
+    status: "not_verified",
     message: `Verify machine type is "${recommended}": ${queries[item.provider]}`,
     severity: "critical",
   };
@@ -164,7 +188,7 @@ function checkInstanceRunning(item: ExecutionPlanItem): VerificationCheck {
 
   return {
     name: "instance_running",
-    passed: true,
+    status: "not_verified",
     message: `Verify instance is running: ${queries[item.provider]}`,
     severity: "critical",
   };
@@ -179,7 +203,7 @@ function checkInstanceHealth(item: ExecutionPlanItem): VerificationCheck {
 
   return {
     name: "instance_healthy",
-    passed: true,
+    status: "not_verified",
     message: `Verify health checks pass: ${checks[item.provider]}`,
     severity: "warning",
   };
@@ -194,7 +218,7 @@ function checkNetworkReachability(item: ExecutionPlanItem): VerificationCheck {
 
   return {
     name: "network_reachable",
-    passed: true,
+    status: "not_verified",
     message: notes[item.provider],
     severity: "warning",
   };
@@ -209,7 +233,7 @@ function checkNoErrorState(item: ExecutionPlanItem): VerificationCheck {
 
   return {
     name: "no_error_state",
-    passed: true,
+    status: "not_verified",
     message: `Verify no error state: ${queries[item.provider]}`,
     severity: "critical",
   };
@@ -249,7 +273,7 @@ function checkStorageExists(item: ExecutionPlanItem): VerificationCheck {
 
   return {
     name: "storage_exists",
-    passed: true,
+    status: "not_verified",
     message: `Verify storage resource exists: ${queries[item.provider]}`,
     severity: "critical",
   };
@@ -264,7 +288,7 @@ function checkLifecyclePolicyExists(item: ExecutionPlanItem): VerificationCheck 
 
   return {
     name: "lifecycle_policy_exists",
-    passed: true,
+    status: "not_verified",
     message: `Verify lifecycle policy is active: ${queries[item.provider]}`,
     severity: "critical",
   };
@@ -279,7 +303,7 @@ function checkPolicyMatchesConfig(item: ExecutionPlanItem): VerificationCheck {
 
   return {
     name: "policy_matches_config",
-    passed: true,
+    status: "not_verified",
     message: `Verify policy configuration matches expected: ${expected[item.provider]}`,
     severity: "critical",
   };
@@ -294,7 +318,7 @@ function checkNoConflictingRules(item: ExecutionPlanItem): VerificationCheck {
 
   return {
     name: "no_conflicting_rules",
-    passed: true,
+    status: "not_verified",
     message: notes[item.provider],
     severity: "warning",
   };
@@ -309,7 +333,7 @@ function checkAccessPatternsUnaffected(item: ExecutionPlanItem): VerificationChe
 
   return {
     name: "access_patterns_unaffected",
-    passed: true,
+    status: "not_verified",
     message: notes[item.provider],
     severity: "warning",
   };
@@ -329,13 +353,13 @@ function verifyCommitment(item: ExecutionPlanItem): VerificationCheck[] {
   return [
     {
       name: "commitment_active",
-      passed: true,
+      status: "not_verified",
       message: `Verify commitment is active and utilized: ${queries[item.provider]}`,
       severity: "critical",
     },
     {
       name: "commitment_utilization",
-      passed: true,
+      status: "not_verified",
       message: "Check commitment utilization after 7 days. Utilization below 80% indicates over-commitment — workloads may have shifted or been decommissioned.",
       severity: "warning",
     },
@@ -366,7 +390,7 @@ function checkInstanceGone(item: ExecutionPlanItem): VerificationCheck {
 
   return {
     name: "instance_terminated",
-    passed: true,
+    status: "not_verified",
     message: `Verify instance is deleted: ${queries[item.provider]}`,
     severity: "critical",
   };
@@ -381,7 +405,7 @@ function checkSnapshotExists(item: ExecutionPlanItem): VerificationCheck {
 
   return {
     name: "backup_snapshot_exists",
-    passed: true,
+    status: "not_verified",
     message: `Verify pre-deletion snapshot exists: ${queries[item.provider]}`,
     severity: "critical",
   };
@@ -396,7 +420,7 @@ function checkOrphanedResources(item: ExecutionPlanItem): VerificationCheck {
 
   return {
     name: "no_orphaned_resources",
-    passed: true,
+    status: "not_verified",
     message: notes[item.provider],
     severity: "warning",
   };
@@ -405,7 +429,7 @@ function checkOrphanedResources(item: ExecutionPlanItem): VerificationCheck {
 function checkDependenciesUnbroken(item: ExecutionPlanItem): VerificationCheck {
   return {
     name: "dependencies_unbroken",
-    passed: true,
+    status: "not_verified",
     message: "Verify no load balancer target groups, DNS records, or monitoring rules still reference the deleted instance(s). Orphaned references cause silent routing failures.",
     severity: "warning",
   };
@@ -425,13 +449,13 @@ function verifyRestrictPublicAccess(item: ExecutionPlanItem): VerificationCheck[
   return [
     {
       name: "public_access_blocked",
-      passed: true,
+      status: "not_verified",
       message: `Verify public access is restricted: ${queries[item.provider]}`,
       severity: "critical",
     },
     {
       name: "no_broken_access",
-      passed: true,
+      status: "not_verified",
       message: "Verify no legitimate public-facing services are broken (CDN distributions, static website hosting, public datasets). Monitor 403 error rates for 24 hours.",
       severity: "warning",
     },
@@ -452,19 +476,19 @@ function verifyEnableBackup(item: ExecutionPlanItem): VerificationCheck[] {
   return [
     {
       name: "backup_schedule_active",
-      passed: true,
+      status: "not_verified",
       message: `Verify backup schedule is active: ${queries[item.provider]}`,
       severity: "critical",
     },
     {
       name: "first_backup_completed",
-      passed: true,
+      status: "not_verified",
       message: "Verify the first backup job has completed successfully. Check again after 24 hours to confirm the daily schedule is running.",
       severity: "warning",
     },
     {
       name: "retention_policy_correct",
-      passed: true,
+      status: "not_verified",
       message: "Verify retention policy is set to 30 days and cross-region replication is enabled if configured.",
       severity: "info",
     },
