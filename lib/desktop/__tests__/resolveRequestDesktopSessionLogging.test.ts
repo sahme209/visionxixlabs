@@ -13,7 +13,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { NextRequest } from "next/server";
 
 const mocks = vi.hoisted(() => ({
-  bearerFromHeader: vi.fn((h: string | null) => h),
+  bearerFromHeader: vi.fn((h: string | null) => (h?.startsWith("Bearer ") ? h.slice(7) : h)),
   verifyDesktopToken: vi.fn(),
   resolveActiveSession: vi.fn(),
   touchDesktopSession: vi.fn(async () => {}),
@@ -61,7 +61,7 @@ function makeRequest(bearer: string | null): NextRequest {
 describe("resolveRequestDesktopSession — failure observability", () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    mocks.bearerFromHeader.mockImplementation((h: string | null) => h);
+    mocks.bearerFromHeader.mockImplementation((h: string | null) => (h?.startsWith("Bearer ") ? h.slice(7) : h));
   });
 
   it("logs the real error instead of silently discarding it when token verification throws", async () => {
