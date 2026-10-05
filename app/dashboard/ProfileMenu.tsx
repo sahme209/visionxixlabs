@@ -25,6 +25,7 @@ import {
 export function ProfileMenu({ email }: { email: string }) {
   const [open, setOpen] = useState(false);
   const wrapRef = useRef<HTMLDivElement | null>(null);
+  const triggerRef = useRef<HTMLButtonElement | null>(null);
   const pathname = usePathname();
 
   // Close on outside click.
@@ -37,12 +38,29 @@ export function ProfileMenu({ email }: { email: string }) {
     return () => document.removeEventListener("mousedown", onDoc);
   }, [open]);
 
+  // Close on Escape and return focus to the trigger — every other
+  // dialog/menu in this app (Navigation's mobile menu, CommandPalette)
+  // supports this; this menu previously had no keydown handling at all.
+  useEffect(() => {
+    if (!open) return;
+    function onKeyDown(e: KeyboardEvent) {
+      if (e.key === "Escape") {
+        e.preventDefault();
+        setOpen(false);
+        triggerRef.current?.focus();
+      }
+    }
+    document.addEventListener("keydown", onKeyDown);
+    return () => document.removeEventListener("keydown", onKeyDown);
+  }, [open]);
+
   // Close on route change.
   useEffect(() => { setOpen(false); }, [pathname]);
 
   return (
     <div ref={wrapRef} className="relative">
       <button
+        ref={triggerRef}
         type="button"
         onClick={() => setOpen((v) => !v)}
         className="inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-[12px] text-zinc-400 hover:bg-white/[0.04] hover:text-zinc-200 transition-colors"
