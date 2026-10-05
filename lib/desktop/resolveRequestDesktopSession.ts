@@ -10,6 +10,9 @@ import {
     touchDesktopSession,
 } from "./desktopSession";
 import { readDesktopCommercialAccess } from "./desktopCommercialAccess";
+import { createLogger } from "@/lib/observability/logger";
+
+const log = createLogger("desktop.resolveRequestDesktopSession");
 
 export interface DesktopRequestPrincipal {
     id: string;
@@ -94,7 +97,10 @@ export async function resolveRequestDesktopSession(
                 route: options.route,
                 requireActiveCommercialAccess: options.requireActiveAccess !== false,
             });
-            if (!auth.ok) return undefined;
+            if (!auth.ok) {
+                log.info("api key auth rejected", { route: options.route });
+                return undefined;
+            }
             const principal: DesktopRequestPrincipal = {
                 id: `api_key:${auth.apiKeyId}`,
                 userId: `api_key:${auth.apiKeyId}`,
@@ -103,19 +109,32 @@ export async function resolveRequestDesktopSession(
             };
             if (options.requireActiveAccess !== false) {
                 const access = await readDesktopCommercialAccess(principal.organizationId);
-                if (!access.allowed) return undefined;
+                if (!access.allowed) {
+                    log.info("api key commercial access not allowed", { route: options.route, organizationId: principal.organizationId });
+                    return undefined;
+                }
             }
             return principal;
         }
 
         const { sessionId } = verifyDesktopToken(token);
         const session = await resolveActiveSession(sessionId);
-        if (!session) return undefined;
+        if (!session) {
+            // Expected and benign on an expired/revoked/unknown session —
+            // but if this fires for every pairing attempt in production,
+            // it's a strong signal the session store itself is the problem
+            // (e.g. an in-memory store that doesn't survive across
+            // serverless invocations), not an individual bad token.
+            log.info("no active session for token", { route: options.route });
+            return undefined;
+        }
         if (options.requireWorkspaceMembership !== false
             && !(await hasActiveWorkspaceMembership(String(session.userId), String(session.organizationId)))) {
+            log.info("workspace membership missing or unaccepted", { route: options.route, organizationId: session.organizationId, userId: session.userId });
             return undefined;
         }
         if (options.requireWorkspaceAdmin && !(await hasWorkspaceAdminRole(String(session.userId), String(session.organizationId)))) {
+            log.info("workspace admin role required but absent", { route: options.route, organizationId: session.organizationId, userId: session.userId });
             return undefined;
         }
         await touchDesktopSession(session.id);
@@ -127,10 +146,23 @@ export async function resolveRequestDesktopSession(
         };
         if (options.requireActiveAccess !== false) {
             const access = await readDesktopCommercialAccess(principal.organizationId);
-            if (!access.allowed) return undefined;
+            if (!access.allowed) {
+                log.info("commercial access not allowed", { route: options.route, organizationId: principal.organizationId });
+                return undefined;
+            }
         }
         return principal;
-    } catch {
+    } catch (error) {
+        // Previously this swallowed every exception with zero trace —
+        // including a missing/too-short DESKTOP_SESSION_SIGNING_KEY (and
+        // NEXTAUTH_SECRET fallback), which would silently break 100% of
+        // desktop pairing with nothing in the logs to diagnose from. Log
+        // the real error so a production failure actually leaves a trail.
+        log.error("unexpected exception resolving desktop session", {
+            route: options.route,
+            errorMessage: error instanceof Error ? error.message : String(error),
+            errorCode: error instanceof Error && "code" in error ? (error as { code?: unknown }).code : undefined,
+        });
         return undefined;
     }
 }
