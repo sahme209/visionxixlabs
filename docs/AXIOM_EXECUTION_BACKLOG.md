@@ -15,8 +15,8 @@ Evidence labels (never upgrade a row without the stated proof):
   Postgres test database, sanitized demo/recording tooling, or explicit
   production merge approval. State the exact one.
 
-Current feature-branch CI baseline: **415/415 test files, 4411/4411 tests**
-(commit `d2e431c9`). `main` HEAD: `77784b0a` (Terraform kill-switch only).
+Current feature-branch CI baseline: **417/417 test files, 4436/4436 tests**
+(commit `d9eb7210`). `main` HEAD: `77784b0a` (Terraform kill-switch only).
 
 ---
 
@@ -37,7 +37,7 @@ Current feature-branch CI baseline: **415/415 test files, 4411/4411 tests**
 | Sub-item | State | Next atomic unit |
 |---|---|---|
 | 1.1 Retire-vs-migrate decision | CI VERIFIED — decision made: **migrate via honest relabeling + admin-gating**, not retire outright (`1e9ff5dc`). Rationale: `/dashboard/github` ("GitHub demo scan") still has real, non-decorative callers in `lib/product/axiomProductModel.ts`, `lib/safety/automationBoundaryDetector.ts`, `lib/operatingLoop/operatingLoopBuilder.ts`, `lib/readiness/launchReadinessRunner.ts`, `lib/actions/actionRegistry.ts`, `lib/validation/platformValidationMatrix.ts`, `lib/releaseops/getReleaseOpsState.ts` — removing the route would break those surfaces for no safety gain once mislabeling is fixed. `/dashboard/github` no longer accepts a client-supplied org (closed exploit); `/api/github/deep-posture` is `requireAdmin`-gated. | None — decision closed. Re-open only if a caller list audit finds a NEW cross-tenant exposure. |
-| 1.2 Full caller/credential-boundary map | SOURCE AUDITED (list above) | **Next atomic unit**: write this exact caller list into a code comment at the top of `lib/connectors/github/githubLiveClient.ts` so the next person touching this file sees the full blast radius without re-grepping. (small, safe, do next) |
+| 1.2 Full caller/credential-boundary map | CI VERIFIED (docs-only change, no logic risk) — caller list now lives as a code comment at the top of `lib/connectors/github/githubLiveClient.ts` itself, not just in this ledger | none — closed |
 | 1.3 Tenant GitHub evidence path kept separate and clean | CI VERIFIED (`GitHubInstallation` model, `/dashboard/integrations/github`, confirmed clean by dedicated audit this session) | none |
 
 ---
@@ -137,7 +137,9 @@ Current feature-branch CI baseline: **415/415 test files, 4411/4411 tests**
 | Governance-vs-FinOps pricing narrative | CI VERIFIED (bridging copy added) |
 | Download page aligned with real pairing state (not overpromising while P0.2 is open) | CI VERIFIED |
 | Homepage demo honesty (`DeploymentLifecycleDemo`) | CI VERIFIED — already compliant, confirmed by audit |
-| Remaining page sweep: footer/CTA/nav/security/capabilities/pricing claims/mobile/accessibility | SOURCE AUDITED for the pages explicitly checked this session (home, product, pricing, download, changelog, architecture docs); **not yet swept**: `/capabilities`, `/resources`, `/security` (beyond a skim), footer link-by-link, full mobile-breakpoint pass, full WCAG pass |
+| Footer link-by-link check | SOURCE AUDITED — all 17 footer links (`components/Footer.tsx`'s `columns` array) verified to resolve to a real `page.tsx` file; zero dead links found |
+| `/capabilities`, `/integrations` overstated-claim scan | SOURCE AUDITED — grepped for certification/guarantee/100%/fully-automated/connected language; clean, nothing found |
+| Remaining page sweep: CTA/nav/pricing claims (deeper pass)/mobile/accessibility | **not yet swept** — `/resources`, `/security` (beyond a skim), full mobile-breakpoint pass, full WCAG pass remain |
 | Real screenshots / 30-second video | EXTERNALLY BLOCKED — needs sanitized live demo session + recording tooling |
 
 ---
