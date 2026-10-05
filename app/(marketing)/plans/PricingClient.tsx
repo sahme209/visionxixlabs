@@ -262,6 +262,11 @@ export function PricingClient() {
         <p className="mt-4 text-[14px] text-zinc-400 leading-relaxed">
           Your monthly cost is the sum of two clean line items. We make it visually obvious so you can audit it line by line.
         </p>
+        <p className="mt-3 text-[13px] text-zinc-500 leading-relaxed">
+          These charges cover the same governed release workspace described on the{" "}
+          <Link href="/product" className="text-violet-300 hover:text-violet-200 underline underline-offset-2">product page</Link>
+          {" "}— the AI engineers, cloud connectors, and scans below are the readiness and evidence inputs that feed the Playbook, not a separate product.
+        </p>
 
         <div className="mt-8 space-y-4">
           <div className="surface-glass rounded-2xl p-6">
