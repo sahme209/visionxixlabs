@@ -126,7 +126,7 @@ export default async function IncidentsPage() {
 
 function Lane({ title, tone, icon: Icon, empty }: { title: string; tone: string; icon: typeof BellAlertIcon; empty: string }) {
   return (
-    <article className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4 flex flex-col">
+    <article className="surface-glass rounded-xl p-4 flex flex-col">
       <header className="flex items-center gap-2 mb-2">
         <Icon className={`h-4 w-4 ${tone}`} />
         <p className="text-[12px] font-semibold text-white">{title}</p>
