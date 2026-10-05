@@ -15,8 +15,8 @@ Evidence labels (never upgrade a row without the stated proof):
   Postgres test database, sanitized demo/recording tooling, or explicit
   production merge approval. State the exact one.
 
-Current feature-branch CI baseline: **417/417 test files, 4436/4436 tests**
-(commit `d9eb7210`). `main` HEAD: `77784b0a` (Terraform kill-switch only).
+Current feature-branch CI baseline: **418/418 test files, 4439/4439 tests**
+(commit `c688d24c`). `main` HEAD: `77784b0a` (Terraform kill-switch only).
 
 ---
 
