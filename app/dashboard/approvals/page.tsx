@@ -174,7 +174,7 @@ export default async function ApprovalsPage() {
               least one — the hourly /api/cron/expire-approvals worker
               flips items pending for 7+ days to expired so the queue
               top stays honest. */}
-          <section className={`mb-10 rounded-2xl border border-white/[0.06] bg-white/[0.015] divide-x divide-white/[0.04] grid ${counts.expired > 0 ? "grid-cols-5" : "grid-cols-4"} overflow-hidden`}>
+          <section className={`surface-glass mb-10 rounded-2xl divide-x divide-white/[0.04] grid ${counts.expired > 0 ? "grid-cols-5" : "grid-cols-4"} overflow-hidden`}>
             <CountTile label="pending"  count={counts.pending}  tone={counts.pending > 0 ? "text-amber-300" : "text-zinc-600"} />
             <CountTile label="snoozed"  count={counts.snoozed}  tone="text-zinc-400" />
             <CountTile label="approved" count={counts.approved} tone={counts.approved > 0 ? "text-emerald-300" : "text-zinc-600"} />
@@ -202,7 +202,7 @@ export default async function ApprovalsPage() {
                   <BulkSelectAll allPendingIds={items.filter((i) => i.status === "pending").map((i) => i.id)} />
                 </div>
               </div>
-              <ul className="rounded-2xl border border-white/[0.06] bg-white/[0.015] divide-y divide-white/[0.04] overflow-hidden">
+              <ul className="surface-glass rounded-2xl divide-y divide-white/[0.04] overflow-hidden">
                 {items.map((item) => (
                   <li key={item.id} className="px-6 py-5">
                     <div className="flex items-start justify-between gap-4">
