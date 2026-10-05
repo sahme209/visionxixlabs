@@ -18,11 +18,11 @@ vi.mock("@aws-sdk/client-iam", () => ({
   UpdateAccessKeyCommand: vi.fn().mockImplementation((input) => ({ input })),
 }));
 
-vi.mock("../credentials", () => ({
+vi.mock("../../credentials", () => ({
   getCredentialProvider: () => ({ getAWSCredentials: mocks.getAWSCredentials }),
 }));
 
-vi.mock("../executionRegistry", () => ({ registerExecutionPlugin: vi.fn() }));
+vi.mock("../../executionRegistry", () => ({ registerExecutionPlugin: vi.fn() }));
 
 function makeLogger() {
   return { info: vi.fn(), warn: vi.fn(), error: vi.fn() };
