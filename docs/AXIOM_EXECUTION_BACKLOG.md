@@ -92,7 +92,7 @@ Current feature-branch CI baseline: **417/417 test files, 4436/4436 tests**
 | Azure/GCP/Slack/Teams/CI-CD/ticketing/observability/incident tools | SOURCE AUDITED — confirmed **NOT IMPLEMENTED FOR LIVE USE**, every connection-status surface already fails closed to "not connected"/"unavailable" honestly (dedicated audit this session found zero fake-connected states) | Next atomic unit: none code-side — these are correctly inert until real OAuth app registrations exist (external blocker) |
 | Deployment rehearsal truthfulness (plans/policy/dependency/secrets-ref/rollback artifacts) | SOURCE AUDITED — confirmed honest (prechecks are real local validation, rollback is plan-only and labeled as such, `applyEngine.ts` messages fixed to say "not yet executed") |
 | Governed-execution canonical contract — **design** | IMPLEMENTED LOCALLY (`docs/GOVERNED_EXECUTION_BOUNDARY.md`) |
-| Governed-execution canonical contract — **enforceable interfaces/types** | IMPLEMENTED LOCALLY → CI VERIFIED once pushed (`lib/execution/governedExecutionContract.ts` + tests): `evaluateGovernedExecutionPrerequisites()` runs all six in canonical order, short-circuits on first failure, treats a thrown error identically to an explicit failure, and `defaultDenyPrerequisites()` gives any future execution path a safe all-deny starting point instead of a fourth bespoke kill-switch. Next atomic unit: wire one of the three existing kill-switches (Terraform/IAM/applyEngine) to actually call this shared contract instead of its own standalone boolean check — not done yet, deliberately deferred to avoid touching already-hardened, tested production code in the same batch as new scaffolding. |
+| Governed-execution canonical contract — **enforceable interfaces/types** | CI VERIFIED (`lib/execution/governedExecutionContract.ts` + `__tests__`, commit `2fc972ef`/`d9eb7210`, 417/417 suite). **Internal-only — not wired into any route, not a feature, not "governed execution is live."** `evaluateGovernedExecutionPrerequisites()` runs all six checks in canonical order, short-circuits on first failure, treats a thrown error identically to an explicit failure; `defaultDenyPrerequisites()` is a safe all-deny default, not an enabled capability. No existing kill-switch (Terraform/IAM/applyEngine) calls this yet and none should until there's a deliberate, reviewed reason to — do not wire it in just because it exists. |
 
 ---
 
@@ -115,7 +115,7 @@ Current feature-branch CI baseline: **417/417 test files, 4436/4436 tests**
 | Sub-item | State |
 |---|---|
 | Design (models, flows, principles) | IMPLEMENTED LOCALLY (`docs/ENTERPRISE_IDENTITY_DESIGN.md`) |
-| Concrete TypeScript interface contracts for the design | IMPLEMENTED LOCALLY → CI VERIFIED once pushed (`lib/identity/enterpriseIdentityContract.ts` + tests): `resolveIdentityProviderForEmail()` (domain-routing, never user-picked, proven to prevent IdP-mixing across tenants), `mapClaimsToRole()` (first-match-wins, no match is a hard denial — never a default role), `evaluateMfaClaim()` (fails closed when MFA is required and absent from `amr`/`acr`). Next atomic unit: `TenantIdentityProvider`/`ScimProvisionedIdentity` Prisma models from the design doc are not yet added to `schema.prisma` — deferred until this logic layer is reviewed, to avoid another un-applied migration piling up before §6's existing one is verified. |
+| Concrete TypeScript interface contracts for the design | CI VERIFIED (`lib/identity/enterpriseIdentityContract.ts` + `__tests__`, commit `2fc972ef`/`d9eb7210`, 417/417 suite). **Internal-only — not wired into any sign-in route, no `TenantIdentityProvider` row can exist (the schema isn't even added yet), and nothing about this makes SSO/MFA live.** `resolveIdentityProviderForEmail()` (domain-routing, never user-picked — proven to prevent IdP-mixing across tenants), `mapClaimsToRole()` (first-match-wins, no match is a hard denial, never a default role), `evaluateMfaClaim()` (fails closed when MFA is required and absent from `amr`/`acr`). Next atomic unit: `TenantIdentityProvider`/`ScimProvisionedIdentity` Prisma models from the design doc are not yet added to `schema.prisma` — deferred until this logic layer is reviewed, to avoid another un-applied migration piling up before §6's existing one is verified. |
 | Real IdP registration / live SSO | EXTERNALLY BLOCKED — needs a real OIDC/SAML identity provider |
 
 ---
@@ -161,9 +161,28 @@ Current feature-branch CI baseline: **417/417 test files, 4436/4436 tests**
 
 ---
 
-## Active work this turn
+## Standing note on §5/§7 internal contract modules
 
-Starting **§5 governed-execution canonical contract (enforceable interfaces)** and
-**§7 enterprise-identity concrete interface contracts** as the two next atomic
-units — both are pure TypeScript type/interface work with no cloud or IdP
-credentials required, directly unblockable, and explicitly requested.
+`lib/execution/governedExecutionContract.ts` and
+`lib/identity/enterpriseIdentityContract.ts` are CI-verified pure logic,
+**not features**. Neither is imported by any route, page, or kill-switch
+today. Do not describe governed execution or SSO/MFA as "live,"
+"implemented," or "available" anywhere (code comments, docs, UI copy,
+status reports) on the strength of these modules existing — that claim
+requires real wiring into a live route plus the external credentials
+each still needs (a real IdP for identity; a real cloud account plus a
+human-approved rollout for execution). Keep them internal until a
+specific, reviewed reason to wire one in exists; do not add further
+unconnected abstraction layers on top of them without the same
+justification.
+
+## Resume protocol
+
+This ledger is the resume point. When starting a new session on this
+branch: read the tables above, find the first row that is not CI
+VERIFIED/REAL-SYSTEM VERIFIED/PRODUCTION VERIFIED and is not
+EXTERNALLY BLOCKED, and continue from its "next atomic unit." If an
+external blocker listed above has become available (logs obtained,
+Vercel access granted, a device in hand, a cloud/IdP credential issued,
+a Postgres test database reachable, recording tooling available,
+merge approval given), resume that row immediately.
