@@ -331,6 +331,7 @@ function SuggestionCard({ suggestion, onChanged }: { suggestion: Suggestion; onC
         <div className="pt-3 border-t border-white/[0.04] flex items-center gap-2 flex-wrap text-[11px] font-mono">
           <input
             type="text"
+            aria-label="Optional note"
             value={note}
             onChange={(e) => setNote(e.target.value)}
             placeholder="optional note"

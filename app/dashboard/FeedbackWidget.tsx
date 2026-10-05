@@ -123,6 +123,7 @@ export function FeedbackWidget() {
               </div>
 
               <textarea
+                aria-label="Feedback message"
                 value={message}
                 onChange={(e) => setMessage(e.target.value.slice(0, 2000))}
                 rows={4}

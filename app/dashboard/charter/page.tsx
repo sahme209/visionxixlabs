@@ -184,10 +184,11 @@ export default function CharterPage() {
 
           <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 mb-6 grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-[10px] font-mono text-zinc-500 uppercase tracking-wider mb-1">
+              <label htmlFor="charter-per-cycle" className="block text-[10px] font-mono text-zinc-500 uppercase tracking-wider mb-1">
                 Per-cycle action limit (1–50)
               </label>
               <input
+                id="charter-per-cycle"
                 type="number"
                 min={1}
                 max={50}
@@ -198,10 +199,11 @@ export default function CharterPage() {
               />
             </div>
             <div>
-              <label className="block text-[10px] font-mono text-zinc-500 uppercase tracking-wider mb-1">
+              <label htmlFor="charter-slack-webhook" className="block text-[10px] font-mono text-zinc-500 uppercase tracking-wider mb-1">
                 Slack webhook override (optional)
               </label>
               <input
+                id="charter-slack-webhook"
                 type="text"
                 value={slackWebhook}
                 onChange={(e) => setSlackWebhook(e.target.value)}
@@ -210,10 +212,11 @@ export default function CharterPage() {
               />
             </div>
             <div className="md:col-span-2">
-              <label className="block text-[10px] font-mono text-zinc-500 uppercase tracking-wider mb-1">
+              <label htmlFor="charter-rationale" className="block text-[10px] font-mono text-zinc-500 uppercase tracking-wider mb-1">
                 Rationale (audit log)
               </label>
               <textarea
+                id="charter-rationale"
                 value={rationale}
                 onChange={(e) => setRationale(e.target.value)}
                 rows={3}

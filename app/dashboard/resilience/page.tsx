@@ -581,6 +581,7 @@ export default function ResilienceDashboard() {
                   <div className="flex gap-2">
                     <input
                       type="text"
+                      aria-label="Type CONFIRM APPLY to authorize deployment"
                       value={confirmInput}
                       onChange={(e) => setConfirmInput(e.target.value)}
                       placeholder="Type CONFIRM APPLY"

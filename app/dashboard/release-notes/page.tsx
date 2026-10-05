@@ -201,6 +201,7 @@ function DraftCard({ draft, onChanged }: { draft: NotesView; onChanged: () => vo
           <>
             <input
               type="text"
+              aria-label="Publish URL"
               value={publishedUrl}
               onChange={(e) => setPublishedUrl(e.target.value)}
               placeholder="publish URL (optional)"

@@ -721,6 +721,7 @@ function ChatPanel({ targetKind }: { targetKind?: string }) {
       <div className="flex items-stretch gap-2 mb-3">
         <input
           type="text"
+          aria-label="Ask the AGI about its recent reasoning"
           value={question}
           onChange={(e) => setQuestion(e.target.value)}
           onKeyDown={(e) => { if (e.key === "Enter" && !busy) ask(question); }}

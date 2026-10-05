@@ -260,6 +260,7 @@ function CouncilCard({ decision, onChanged }: { decision: CouncilView; onChanged
       {decision.operatorDecision === "pending" && (
         <div className="pt-3 border-t border-white/[0.04] flex items-center gap-2 flex-wrap text-[11px] font-mono">
           <select
+            aria-label="Override recommendation kind"
             value={overrideKind}
             onChange={(e) => setOverrideKind(e.target.value)}
             disabled={busy !== null}
@@ -276,6 +277,7 @@ function CouncilCard({ decision, onChanged }: { decision: CouncilView; onChanged
           </select>
           <input
             type="text"
+            aria-label="Optional note"
             value={note}
             onChange={(e) => setNote(e.target.value)}
             placeholder="optional note"

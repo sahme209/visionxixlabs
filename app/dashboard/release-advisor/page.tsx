@@ -241,6 +241,7 @@ function RecCard({ rec, onChanged }: { rec: RecommendationView; onChanged: () =>
         <div className="pt-3 border-t border-white/[0.04] flex items-center gap-2 flex-wrap text-[11px] font-mono">
           <input
             type="text"
+            aria-label="Optional decision note"
             value={note}
             onChange={(e) => setNote(e.target.value)}
             placeholder="optional decision note"

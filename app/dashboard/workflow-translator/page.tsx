@@ -70,6 +70,7 @@ export default function WorkflowTranslatorPage() {
 
       <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 max-w-3xl mb-6">
         <textarea
+          aria-label="Describe the workflow you want"
           value={intent}
           onChange={(e) => setIntent(e.target.value)}
           rows={4}

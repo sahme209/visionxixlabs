@@ -281,6 +281,7 @@ function ProposalCard({ proposal, onChanged }: { proposal: ProposalView; onChang
         <div className="pt-3 border-t border-white/[0.04] flex items-center gap-2 flex-wrap text-[11px] font-mono">
           <input
             type="text"
+            aria-label="Override rule key"
             value={override}
             onChange={(e) => setOverride(e.target.value)}
             placeholder="override rule key (optional)"
@@ -293,6 +294,7 @@ function ProposalCard({ proposal, onChanged }: { proposal: ProposalView; onChang
             onChange={(e) => setNote(e.target.value)}
             placeholder="optional decision note"
             disabled={busy !== null}
+            aria-label="Optional decision note"
             className="flex-1 min-w-[160px] rounded-md border border-white/[0.08] bg-black/30 px-2 py-1 text-[11px] text-zinc-100 placeholder:text-zinc-600 focus:border-violet-500/40 focus:outline-none disabled:opacity-50"
           />
           <button type="button" onClick={() => decide("accept")} disabled={busy !== null}

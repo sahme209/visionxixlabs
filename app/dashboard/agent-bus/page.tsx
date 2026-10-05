@@ -87,6 +87,7 @@ export default function AgentBusPage() {
 
         <div className="mt-5 flex items-center gap-2 flex-wrap">
           <input
+            aria-label="Filter by thread ID"
             value={thread}
             onChange={(e) => setThread(e.target.value)}
             placeholder="Filter by threadId…"

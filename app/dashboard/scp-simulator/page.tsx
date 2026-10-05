@@ -143,6 +143,7 @@ export default function ScpSimulatorPage() {
         <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-4">
           <p className="text-[11px] font-mono text-sky-300/80 uppercase tracking-wider mb-2">// candidate policy</p>
           <textarea
+            aria-label="Candidate policy JSON"
             value={policyJson}
             onChange={(e) => setPolicyJson(e.target.value)}
             rows={18}
@@ -154,8 +155,9 @@ export default function ScpSimulatorPage() {
         <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-4 space-y-3">
           <p className="text-[11px] font-mono text-sky-300/80 uppercase tracking-wider">// synthetic request</p>
           <div>
-            <label className="block text-[10px] font-mono text-zinc-500 uppercase tracking-wider mb-1">Action</label>
+            <label htmlFor="scp-action" className="block text-[10px] font-mono text-zinc-500 uppercase tracking-wider mb-1">Action</label>
             <input
+              id="scp-action"
               type="text"
               value={action}
               onChange={(e) => setAction(e.target.value)}
@@ -163,8 +165,9 @@ export default function ScpSimulatorPage() {
             />
           </div>
           <div>
-            <label className="block text-[10px] font-mono text-zinc-500 uppercase tracking-wider mb-1">Resource</label>
+            <label htmlFor="scp-resource" className="block text-[10px] font-mono text-zinc-500 uppercase tracking-wider mb-1">Resource</label>
             <input
+              id="scp-resource"
               type="text"
               value={resource}
               onChange={(e) => setResource(e.target.value)}
@@ -172,8 +175,9 @@ export default function ScpSimulatorPage() {
             />
           </div>
           <div>
-            <label className="block text-[10px] font-mono text-zinc-500 uppercase tracking-wider mb-1">Principal tags (JSON)</label>
+            <label htmlFor="scp-principal-tags" className="block text-[10px] font-mono text-zinc-500 uppercase tracking-wider mb-1">Principal tags (JSON)</label>
             <textarea
+              id="scp-principal-tags"
               value={principalTagsRaw}
               onChange={(e) => setPrincipalTagsRaw(e.target.value)}
               rows={4}

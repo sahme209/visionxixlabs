@@ -216,6 +216,7 @@ export default function AISettingsPage() {
               <h2 className="text-[10px] font-mono uppercase tracking-widest text-zinc-500">Try it</h2>
             </div>
             <textarea
+              aria-label="Test prompt"
               value={tryPrompt}
               onChange={(e) => setTryPrompt(e.target.value)}
               rows={3}

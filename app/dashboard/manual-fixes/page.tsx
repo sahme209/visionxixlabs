@@ -209,6 +209,7 @@ function FixRow({ fix, onReconciled }: { fix: FixView; onReconciled: () => void 
         <div className="mt-3 pt-3 border-t border-white/[0.04] flex items-center gap-2 flex-wrap text-[11px] font-mono">
           <input
             type="text"
+            aria-label="Reconciliation reference"
             value={ref}
             onChange={(e) => setRef(e.target.value)}
             placeholder="reconciliation ref (PR #, commit) — optional"

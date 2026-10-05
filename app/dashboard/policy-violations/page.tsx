@@ -258,6 +258,7 @@ function DecideControls({
           Exception rationale ({reason.trim().length}/10 min)
         </span>
         <textarea
+          aria-label="Exception rationale"
           value={reason}
           onChange={(e) => setReason(e.target.value)}
           placeholder="Why is this exception justified? Include approval reference + risk acceptance."

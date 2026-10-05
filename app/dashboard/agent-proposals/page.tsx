@@ -166,6 +166,7 @@ export default function AgentProposalsPage() {
                 {p.status === "pending" ? (
                   <div className="mt-3 flex items-center gap-2 flex-wrap">
                     <input
+                      aria-label="Optional decision reason"
                       value={reason[p.id] ?? ""}
                       onChange={(e) => setReason((m) => ({ ...m, [p.id]: e.target.value }))}
                       placeholder="optional decision reason"

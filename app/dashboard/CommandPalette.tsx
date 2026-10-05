@@ -211,6 +211,7 @@ export function CommandPalette() {
           <input
             ref={inputRef}
             type="text"
+            aria-label="Search commands"
             role="combobox"
             aria-expanded={open}
             aria-controls="command-palette-listbox"

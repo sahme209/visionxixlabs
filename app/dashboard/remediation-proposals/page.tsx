@@ -269,6 +269,7 @@ function ProposalCard({ proposal, onChanged }: { proposal: ProposalView; onChang
         <div className="pt-3 border-t border-white/[0.04] flex items-center gap-2 flex-wrap text-[11px] font-mono">
           <input
             type="text"
+            aria-label="Linked manual-fix ID"
             value={linkedManualFixId}
             onChange={(e) => setLinkedManualFixId(e.target.value)}
             placeholder="optional manual-fix id"
@@ -277,6 +278,7 @@ function ProposalCard({ proposal, onChanged }: { proposal: ProposalView; onChang
           />
           <input
             type="text"
+            aria-label="Optional note"
             value={note}
             onChange={(e) => setNote(e.target.value)}
             placeholder="optional note"

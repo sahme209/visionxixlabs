@@ -217,11 +217,13 @@ function Field({
   placeholder: string;
   type: "url" | "email";
 }) {
+  const fieldId = `notif-field-${label.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`;
   return (
     <div>
-      <label className="block text-[13px] font-medium text-white mb-1.5">{label}</label>
+      <label htmlFor={fieldId} className="block text-[13px] font-medium text-white mb-1.5">{label}</label>
       <p className="text-[11px] text-zinc-500 mb-2">{hint}</p>
       <input
+        id={fieldId}
         type={type}
         value={value}
         onChange={(e) => onChange(e.target.value)}
