@@ -43,8 +43,14 @@ class FakeRepo implements IncidentRecordRepo {
       this.rows.push(row);
       return row;
     },
-    findFirst: async ({ where }: { where: { id: string; organizationId: string } }) =>
-      this.rows.find((r) => r.id === where.id && r.organizationId === where.organizationId) ?? null,
+    findFirst: async ({ where }: { where: { id: string; organizationId: string } }) => {
+      // Return a snapshot, not the live stored reference — real Prisma
+      // deserializes a fresh object per query, so a value captured here
+      // (e.g. existing.status for the audit "from" field) must never
+      // silently change when a later update() mutates the stored row.
+      const row = this.rows.find((r) => r.id === where.id && r.organizationId === where.organizationId);
+      return row ? { ...row } : null;
+    },
     findMany: async ({ where }: { where: { organizationId: string } }) =>
       this.rows.filter((r) => r.organizationId === where.organizationId),
     update: async ({ where, data }: { where: { id: string }; data: Record<string, unknown> }) => {
