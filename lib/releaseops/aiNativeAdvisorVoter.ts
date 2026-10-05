@@ -44,10 +44,18 @@ interface CachedVote {
 const CACHE = new Map<string, CachedVote>();
 const CACHE_TTL_MS = 10 * 60 * 1000; // 10 minutes
 
-function fingerprint(input: AdvisorInputs): string {
+function fingerprint(organizationId: string, input: AdvisorInputs): string {
   // Deterministic fingerprint of every signal the voter sees. now is
   // excluded so quasi-identical runs within the TTL share the cache.
+  //
+  // organizationId is part of the key, not just an input to the fetcher:
+  // a cache hit skips makeInstrumentedFetcher entirely, so without the
+  // org in the key, two workspaces whose AdvisorInputs happen to collide
+  // (e.g. sandbox/demo workspaces sharing scripted fixture data) could
+  // silently share a cached vote and bypass each other's workspace AI
+  // policy, budget, and audit enforcement on that call.
   const subset = {
+    organizationId,
     release: { status: input.release.status, releaseTag: input.release.releaseTag, commitSha: input.release.commitSha },
     readiness: input.readiness,
     policyViolations: input.policyViolations,
@@ -153,7 +161,7 @@ export function parseAiVoteResponse(raw: string): { kind: RecommendationKind; co
 export function makeAiNativeVoterAsync(organizationId: string): AsyncAdvisorVoter {
   return async function aiNativeVoterAsync(input: AdvisorInputs): Promise<CouncilVote> {
     // Cache hit?
-    const key = fingerprint(input);
+    const key = fingerprint(organizationId, input);
     const cached = CACHE.get(key);
     if (cached && Date.now() - cached.cachedAtMs < CACHE_TTL_MS) {
       return { ...cached.vote, rationale: `${cached.vote.rationale} (cached)` };

@@ -42,7 +42,31 @@ export async function POST(req: Request) {
   // three-engineer composed pre-flight (3 AI calls per click).
   // Estimated cost ~ 30¢ assuming 2k input + 1k output tokens on
   // Sonnet-class — conservative buffer against spam.
-  const creditDecision = await checkWorkspaceAICredits(org, 30, { failClosedOnUsageReadError: true });
+  let creditDecision;
+  try {
+    creditDecision = await checkWorkspaceAICredits(org, 30, { failClosedOnUsageReadError: true });
+  } catch (err) {
+    // Fail closed, not crash: a transient usage-read failure must not
+    // surface as an uncaught 500 — degrade to the same blocked response
+    // the route already gives for an exhausted credit pool.
+    void auditRecord({
+      organizationId: ids.organization(org),
+      actorUserId: ctx.userId ? ids.user(String(ctx.userId)) : undefined,
+      action: "billing.entitlement_blocked",
+      outcome: "blocked",
+      entityRef: "safety-preflight",
+      correlationId,
+      detail: {
+        action: "safety_preflight",
+        reason: "credit_meter_unavailable",
+        errorMessage: err instanceof Error ? err.message : String(err),
+      },
+    });
+    return NextResponse.redirect(
+      new URL("/dashboard/workforce/safety-preflight?blocked=credits_exhausted", req.url),
+      303,
+    );
+  }
   if (creditDecision.kind === "block") {
     void auditRecord({
       organizationId: ids.organization(org),
