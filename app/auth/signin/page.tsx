@@ -149,7 +149,7 @@ function SignInForm() {
             </div>
           </div>
           {error && (
-            <div className="rounded-lg border border-red-500/20 bg-red-500/[0.08] px-3.5 py-2.5 text-sm text-red-300">
+            <div role="alert" aria-live="assertive" className="rounded-lg border border-red-500/20 bg-red-500/[0.08] px-3.5 py-2.5 text-sm text-red-300">
               {error}
             </div>
           )}

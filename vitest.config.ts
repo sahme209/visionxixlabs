@@ -35,7 +35,11 @@ export default defineConfig({
     // route's own __tests__ directory rather than lib/__tests__ — both
     // patterns are real, both must run. A narrower "lib/**" pattern here
     // once silently excluded every app/** test file from CI entirely.
-    include: ["lib/**/__tests__/**/*.test.ts", "app/**/__tests__/**/*.test.ts"],
+    include: [
+      "lib/**/__tests__/**/*.test.ts",
+      "app/**/__tests__/**/*.test.ts",
+      "components/**/__tests__/**/*.test.ts",
+    ],
     globals: false,
   },
 });
