@@ -27,7 +27,7 @@ Current feature-branch CI baseline: **418/418 test files, 4439/4439 tests**
 | P0.1 | Terraform/IAM default-deny | CI VERIFIED | none — hold at current state until governed-execution prerequisites (§4) ship |
 | P0.2 | Desktop pairing root-cause fix | EXTERNALLY BLOCKED — needs real Vercel production function logs for the failed `/api/desktop/access` request | none possible until logs arrive |
 | P0.3 | `TERRAFORM_LEGACY_APPLY_ENABLED` Vercel value confirmed absent/not-"true" | EXTERNALLY BLOCKED — needs Vercel dashboard access (none in this sandbox) | none possible |
-| P0.4 | `main` branch protection | EXTERNALLY BLOCKED — repo-settings API call is blocked by this session's own permission classifier; needs you to run the `gh api` command already given, or use the GitHub UI | none possible from here |
+| P0.4 | `main` branch protection | **REAL-SYSTEM VERIFIED** — user created ruleset `main-protection` (id `24532481`) via the GitHub UI, confirmed `active` and targeting `main` via `GET /repos/sahme209/visionxixlabs/rulesets`. Requires a PR with ≥1 approval and the "Typecheck + Vitest" status check, blocks force pushes and deletions. | none — closed. PR #4 can now safely stay a draft until review happens; nothing can bypass CI or force-push `main` in the meantime. |
 | P0.5 | Real-device pairing verification (install→launch→sign-in→approve→return; entitled/unentitled/expired/replayed/revoked/wrong-user/wrong-tenant/fingerprint-mismatch) | EXTERNALLY BLOCKED — needs physical hardware | none possible; all *logical* equivalents of these states are already CI VERIFIED via `app/api/desktop/pair/status/__tests__/route.test.ts` and `app/api/desktop/session/__tests__/route.test.ts` |
 
 ---
@@ -163,7 +163,7 @@ Resume protocol for this sub-thread: continue top-to-bottom through this table, 
 
 ## 9.2 Feature-branch PR
 
-[PR #4](https://github.com/sahme209/visionxixlabs/pull/4) opened as a **draft** against `main` (user explicitly authorized). Body links back to this ledger as the authoritative evidence source. Deliberately not marked ready for review — blocked on P0.4 (`main` branch protection, still unconfigured) and a human diff review of 308 commits / 383 files before anyone merges. Do not mark ready-for-review or merge from this session; that is the user's call once P0.4 is resolved and review happens.
+[PR #4](https://github.com/sahme209/visionxixlabs/pull/4) opened as a **draft** against `main` (user explicitly authorized). Body links back to this ledger as the authoritative evidence source. Deliberately not marked ready for review — P0.4 (`main` branch protection) is now resolved (ruleset `main-protection`, active), but a human diff review of 300+ commits / 380+ files is still needed before anyone merges. Do not mark ready-for-review or merge from this session; that is the user's call once review happens.
 
 ---
 

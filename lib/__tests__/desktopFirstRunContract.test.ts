@@ -29,7 +29,11 @@ describe("desktop first-run contract", () => {
     expect(accessPolicy).toContain('code: "payment_past_due"');
     expect(accessRoute).toContain("requireActiveAccess: false");
     expect(resolver).toContain("options.requireActiveAccess !== false");
-    expect(resolver).toContain("if (!access.allowed) return undefined");
+    // Reformatted to a multi-line block when failure-observability logging
+    // was added (see resolveRequestDesktopSessionLogging.test.ts) — same
+    // gate, still denies access and returns undefined, just no longer a
+    // single-line statement.
+    expect(resolver).toMatch(/if \(!access\.allowed\) \{\s*\n\s*log\.info\([^)]*\);\s*\n\s*return undefined;\s*\n\s*\}/);
     expect(apiKeyAuth).toContain('billing.status !== "active"');
     expect(apiKeyAuth).toContain('reason: "commercial_access_required"');
     expect(stateRoute).toContain("{ status: 402 }");
