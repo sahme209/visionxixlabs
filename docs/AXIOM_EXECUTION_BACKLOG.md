@@ -159,6 +159,12 @@ Resume protocol for this sub-thread: continue top-to-bottom through this table, 
 
 ---
 
+## 9.2 Feature-branch PR
+
+[PR #4](https://github.com/sahme209/visionxixlabs/pull/4) opened as a **draft** against `main` (user explicitly authorized). Body links back to this ledger as the authoritative evidence source. Deliberately not marked ready for review — blocked on P0.4 (`main` branch protection, still unconfigured) and a human diff review of 308 commits / 383 files before anyone merges. Do not mark ready-for-review or merge from this session; that is the user's call once P0.4 is resolved and review happens.
+
+---
+
 ## 10. Final validation / production promotion
 
 | Sub-item | State |
