@@ -60,9 +60,11 @@ interface UnifiedPlaybookResponse {
 
   // Readiness stage
   readiness: {
-    overallScore: number;
+    /** Unavailable (not 0) when no readiness snapshot has run yet — a
+     *  fabricated 0 is indistinguishable from a genuine zero-risk score. */
+    overallScore: number | DataSourceState;
     riskLevel: string;
-    blockerCount: number;
+    blockerCount: number | DataSourceState;
     evaluatedAt: string | null;
   };
 
@@ -83,6 +85,8 @@ interface UnifiedPlaybookResponse {
   approval: {
     required: number | DataSourceState;
     granted: number;
+    /** "not_evaluated" when no chain exists yet — distinct from a chain
+     *  that exists and is genuinely "pending". */
     status: string;
   };
 
@@ -196,7 +200,7 @@ export async function GET(
     // Data sources that don't yet exist in schema
     const executionStepsUnavailable: DataSourceState = {
       available: false,
-      reason: "ReleaseExecution schema model not yet implemented",
+      reason: "Playbook step tracking is not yet implemented.",
     };
     const validationUnavailable: DataSourceState = {
       available: false,
@@ -269,9 +273,13 @@ export async function GET(
       },
 
       readiness: {
-        overallScore: readiness?.overallScore ?? 0,
+        overallScore: readiness
+          ? readiness.overallScore
+          : { available: false, reason: "No readiness snapshot has been evaluated yet." },
         riskLevel: readiness?.riskLevel ?? "unscored",
-        blockerCount: readiness && Array.isArray(readiness.blockersJson) ? (readiness.blockersJson as any[]).length : 0,
+        blockerCount: readiness
+          ? (Array.isArray(readiness.blockersJson) ? (readiness.blockersJson as any[]).length : 0)
+          : { available: false, reason: "No readiness snapshot has been evaluated yet." },
         evaluatedAt: readiness?.evaluatedAt?.toISOString() ?? null,
       },
 
@@ -301,7 +309,7 @@ export async function GET(
           ? approvalChain.requiredCount
           : { available: false, reason: "Approval chain not yet created — readiness or policy evaluation has not run." },
         granted: approvalChain?.votes.filter((v: any) => v.decision === "approve").length ?? 0,
-        status: approvalChain?.status ?? "pending",
+        status: approvalChain?.status ?? "not_evaluated",
       },
 
       execution: {

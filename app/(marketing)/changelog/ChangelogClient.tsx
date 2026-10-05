@@ -29,7 +29,7 @@ export const HISTORICAL_ENGINEERING_NOTES = [
     phases: "336-341",
     title: "Intent · anomaly · risk · secrets · compliance — five new kernels",
     summary:
-      "Five pure-function kernels (73 new tests). intentParser turns natural-language operator input into a typed ActionSpec. anomalyDetector uses MAD-based z-scores for robust time-series anomaly classification. changeRiskAssessor scores blast radius of a proposed change against the service topology graph. secretsHygieneScanner detects AWS / Stripe / GitHub / OpenAI / Anthropic / Slack / PEM secrets with redacted previews. complianceControlMapper turns the audit stream into per-control evidence for SOC 2 / ISO 27001 / GDPR / HIPAA + a per-framework readiness %.",
+      "Five pure-function kernels (73 new tests). intentParser turns natural-language operator input into a typed ActionSpec. anomalyDetector uses MAD-based z-scores for robust time-series anomaly classification. changeRiskAssessor scores blast radius of a proposed change against the service topology graph. secretsHygieneScanner detects AWS / Stripe / GitHub / OpenAI / Anthropic / Slack / PEM secrets with redacted previews. complianceControlMapper maps the audit stream to SOC 2 / ISO 27001 reference controls as audit evidence, with a per-framework readiness % — Axiom does not hold these certifications.",
     tag: "agent",
     surface: "all",
   },
