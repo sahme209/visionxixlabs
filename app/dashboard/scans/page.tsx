@@ -132,7 +132,7 @@ export default async function ScansPage() {
       )}
 
       {!migrationPending && runs.length === 0 && (
-        <div className="rounded-2xl border border-white/[0.06] bg-white/[0.015] px-7 py-12 text-center">
+        <div className="surface-glass rounded-2xl px-7 py-12 text-center">
           <p className="text-[15px] font-semibold text-white mb-1">No scans yet</p>
           <p className="text-[12px] text-zinc-500 leading-relaxed max-w-md mx-auto">
             Click Run scan above to kick off the first one. After that the cron
@@ -144,7 +144,7 @@ export default async function ScansPage() {
       {runs.length > 0 && (
         <section>
           <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-zinc-500 mb-3">history · latest 50</p>
-          <ul className="rounded-2xl border border-white/[0.06] bg-white/[0.015] divide-y divide-white/[0.04] overflow-hidden">
+          <ul className="surface-glass rounded-2xl divide-y divide-white/[0.04] overflow-hidden">
             {runs.map((r) => {
               const status = r.status as Status;
               const trigger = r.trigger as Trigger;

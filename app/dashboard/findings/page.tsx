@@ -172,7 +172,7 @@ export default async function FindingsPage({
       {findings.length > 0 && (
         <>
           {/* Severity counts strip */}
-          <section className="mb-10 rounded-2xl border border-white/[0.06] bg-white/[0.015] divide-x divide-white/[0.04] grid grid-cols-5 overflow-hidden">
+          <section className="surface-glass mb-10 rounded-2xl divide-x divide-white/[0.04] grid grid-cols-5 overflow-hidden">
             {(["critical", "high", "medium", "low", "info"] as Severity[]).map((s) => (
               <div key={s} className="px-4 py-4 text-center">
                 <p className={`text-[22px] font-semibold tabular-nums ${counts[s] > 0 ? SEVERITY_TONE[s] : "text-zinc-600"}`}>
@@ -211,6 +211,7 @@ export default async function FindingsPage({
               <input
                 type="text"
                 name="q"
+                aria-label="Search findings by title or description"
                 defaultValue={search}
                 placeholder="Search title or description…"
                 className="flex-1 min-w-[180px] rounded-full border border-white/[0.06] bg-white/[0.015] px-4 py-1.5 text-[12px] text-white placeholder:text-zinc-600 focus:outline-none focus:border-white/[0.18] transition-colors"
