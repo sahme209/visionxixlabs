@@ -68,3 +68,16 @@ export function isApproverRole(roles: string[] | undefined): boolean {
 export function canDecideApprovals(opts: { email: string | undefined; roles: string[] | undefined }): boolean {
   return isPlatformAdmin(opts.email) || isApproverRole(opts.roles);
 }
+
+/**
+ * Incident-response role guard. Same role set as isApproverRole
+ * (owner, admin, operator, security_reviewer) — incident evidence is
+ * exactly the kind of record those roles are already trusted to decide
+ * on, and finance_viewer/read_only have no legitimate reason to create
+ * or transition one. A dedicated name, not a reused call site, so a
+ * future change to approval-decision roles doesn't silently change who
+ * can touch incident records without a deliberate decision.
+ */
+export function canManageIncidents(opts: { email: string | undefined; roles: string[] | undefined }): boolean {
+  return isPlatformAdmin(opts.email) || isApproverRole(opts.roles);
+}

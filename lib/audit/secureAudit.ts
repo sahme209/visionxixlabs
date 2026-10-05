@@ -156,6 +156,10 @@ export type AuditAction =
   | "aws.cfn_callback_broker_unavailable"
   | "aws.cfn_callback_validation_failed"
   | "aws.cfn_callback_linked"
+  // Incident response
+  | "incident.created"
+  | "incident.transitioned"
+  | "incident.action_denied"
   // Generic
   | "system.error";
 
