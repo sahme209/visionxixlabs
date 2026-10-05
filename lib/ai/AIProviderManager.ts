@@ -18,6 +18,7 @@ import {
 import { PROVIDER_PRIORITY } from "./AIModelRegistry";
 import { runWithFallback } from "./AIFallbackHandler";
 import { recordUsage } from "./AIUsageLogger";
+import { redact } from "@/lib/security/redaction";
 import { GitHubModelsProvider } from "./providers/GitHubModelsProvider";
 import { OllamaProvider } from "./providers/OllamaProvider";
 import { LMStudioProvider } from "./providers/LMStudioProvider";
@@ -141,9 +142,17 @@ export class AIProviderManager {
   }
 
   async generateText(prompt: string, options?: AIRequestOptions & { only?: AIProviderName }): Promise<AITextResponse> {
+    // Governance boundary: this is the one place every production call
+    // path funnels through before a prompt leaves the service for an
+    // external provider (Anthropic, OpenAI, etc.). Scrub known secret/
+    // credential patterns here — not just at the logging layer — so an
+    // accidentally-pasted key or connection string in a user prompt, or
+    // in auto-generated release/incident context, never reaches a
+    // third-party API unredacted.
+    const safePrompt = redact(prompt);
     const out = await runWithFallback<AITextResponse>(
       this.chain({ only: options?.only, allowedProviders: options?.allowedProviders, fallbackOrder: options?.fallbackOrder }),
-      (p) => p.generateText(prompt, this.optionsForProvider(p, options)),
+      (p) => p.generateText(safePrompt, this.optionsForProvider(p, options)),
       { task: "generate_text", correlationId: options?.correlationId, organizationId: options?.organizationId },
     );
     return out.result;

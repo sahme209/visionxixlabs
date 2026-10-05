@@ -19,9 +19,13 @@ describe("workspace AI provider policy", () => {
       .toEqual({ enabled: true, allowedProviders: ["groq"], modelSelections: { groq: "llama-3.1-70b-versatile" }, fallbackOrder: ["groq"] });
   });
 
-  it("uses all service-enabled providers when a workspace has no policy yet", () => {
+  it("defaults to disabled — not every service-enabled provider — when a workspace has no policy yet", () => {
+    // AI is opt-in: a brand-new workspace that has never explicitly
+    // configured this policy must not get AI access just because the
+    // service enabled some providers globally. An admin has to turn it
+    // on for this specific workspace first.
     expect(resolveWorkspaceAIProviderPolicy({ stored: null, serviceEnabled: ["groq", "gemini"] }))
-      .toEqual({ enabled: true, allowedProviders: ["groq", "gemini"], modelSelections: { groq: "llama-3.1-70b-versatile", gemini: "gemini-2.5-flash" }, fallbackOrder: ["groq", "gemini"] });
+      .toEqual({ enabled: false, allowedProviders: [], modelSelections: {}, fallbackOrder: [] });
   });
 
   it("accepts an explicit workspace disable and resolves no provider routes", () => {

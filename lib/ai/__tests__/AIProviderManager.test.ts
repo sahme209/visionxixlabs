@@ -83,6 +83,16 @@ describe("AIProviderManager", () => {
     expect(r.text).toContain("[MOCK");
   }, 60_000);
 
+  it("redacts a secret-shaped prompt before it ever reaches a provider", async () => {
+    // Mock's own generateText echoes a slice of the prompt it actually
+    // received, so this proves the redaction happened upstream of
+    // every provider dispatch, not just at the logging layer.
+    const mgr = getAIProviderManager();
+    const r = await mgr.generateText("my key is AKIAABCDEFGHIJKLMNOP please use it");
+    expect(r.text).not.toContain("AKIAABCDEFGHIJKLMNOP");
+    expect(r.text).toContain("[REDACTED-AWS-ACCESS-KEY]");
+  }, 60_000);
+
   it("priority list places governed cloud providers first and mock last", () => {
     const mgr = getAIProviderManager();
     const rows = mgr.status();

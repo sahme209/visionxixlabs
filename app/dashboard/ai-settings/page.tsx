@@ -19,6 +19,11 @@ import {
   BoltIcon, PlayIcon,
 } from "@heroicons/react/24/outline";
 
+interface AiPolicyAdminResp {
+  policy: { enabled: boolean; allowedProviders: ProviderName[]; modelSelections: Partial<Record<ProviderName, string>>; fallbackOrder: ProviderName[] };
+  availableProviders: ProviderName[];
+}
+
 type ProviderName =
   | "openai" | "anthropic" | "github_models" | "ollama" | "lm_studio" | "groq" | "hugging_face"
   | "openrouter" | "gemini" | "cloudflare" | "mock";
@@ -59,6 +64,13 @@ export default function AISettingsPage() {
   const [tryResp, setTryResp] = useState<GenerateResp | null>(null);
   const [tryError, setTryError] = useState<string | null>(null);
   const [tryBusy, setTryBusy] = useState(false);
+  // Master AI toggle — undefined while loading, null when the signed-in
+  // user isn't a workspace owner/admin (the /api/account/ai-policy GET
+  // itself enforces this server-side; absence of adminPolicy here just
+  // hides the control, it is not the authorization boundary).
+  const [adminPolicy, setAdminPolicy] = useState<AiPolicyAdminResp | null | undefined>(undefined);
+  const [toggleBusy, setToggleBusy] = useState(false);
+  const [toggleError, setToggleError] = useState<string | null>(null);
 
   const loadStatus = useCallback(() => {
     setLoadingStatus(true);
@@ -71,6 +83,43 @@ export default function AISettingsPage() {
       .catch((err) => setError(err instanceof Error ? err.message : "Network error."))
       .finally(() => setLoadingStatus(false));
   }, []);
+
+  const loadAdminPolicy = useCallback(() => {
+    fetch("/api/account/ai-policy", { credentials: "include" })
+      .then((r) => r.json())
+      .then((j: { ok?: boolean; data?: AiPolicyAdminResp }) => {
+        setAdminPolicy(j.ok && j.data ? j.data : null);
+      })
+      .catch(() => setAdminPolicy(null));
+  }, []);
+
+  const toggleAi = useCallback(() => {
+    if (!adminPolicy || toggleBusy) return;
+    const next = !adminPolicy.policy.enabled;
+    setToggleBusy(true);
+    setToggleError(null);
+    fetch("/api/account/ai-policy", {
+      method: "PUT",
+      credentials: "include",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify(
+        next
+          ? { enabled: true, allowedProviders: adminPolicy.availableProviders, modelSelections: {}, fallbackOrder: [] }
+          : { enabled: false, allowedProviders: [], modelSelections: {}, fallbackOrder: [] },
+      ),
+    })
+      .then((r) => r.json())
+      .then((j: { ok?: boolean; error?: string }) => {
+        if (!j.ok) {
+          setToggleError(j.error === "provider_unavailable" ? "No AI provider is currently configured for this service." : "Could not update the AI setting.");
+          return;
+        }
+        loadAdminPolicy();
+        loadStatus();
+      })
+      .catch(() => setToggleError("Network error."))
+      .finally(() => setToggleBusy(false));
+  }, [adminPolicy, toggleBusy, loadAdminPolicy, loadStatus]);
 
   const runHealth = useCallback(() => {
     setLoadingHealth(true);
@@ -99,6 +148,7 @@ export default function AISettingsPage() {
   }, [tryPrompt]);
 
   useEffect(() => { loadStatus(); }, [loadStatus]);
+  useEffect(() => { loadAdminPolicy(); }, [loadAdminPolicy]);
 
   return (
     <div className="relative">
@@ -138,13 +188,43 @@ export default function AISettingsPage() {
       {status && (
         <>
           <div className="rounded-2xl border border-indigo-500/[0.18] bg-indigo-500/[0.04] p-5 mb-6">
-            <p className="text-[10px] font-mono uppercase tracking-widest text-indigo-300 mb-1">Active</p>
+            <div className="flex items-start justify-between gap-4 flex-wrap mb-1">
+              <p className="text-[10px] font-mono uppercase tracking-widest text-indigo-300">Active</p>
+              {adminPolicy && (
+                <div className="flex items-center gap-2">
+                  <span className="text-[11px] font-mono text-zinc-400">AI features</span>
+                  <button
+                    type="button"
+                    role="switch"
+                    aria-checked={adminPolicy.policy.enabled}
+                    aria-label={adminPolicy.policy.enabled ? "Turn AI off for this workspace" : "Turn AI on for this workspace"}
+                    onClick={toggleAi}
+                    disabled={toggleBusy}
+                    className={`relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition-colors disabled:opacity-50 ${
+                      adminPolicy.policy.enabled ? "bg-emerald-500/80" : "bg-white/[0.12]"
+                    }`}
+                  >
+                    <span
+                      className={`inline-block h-4.5 w-4.5 transform rounded-full bg-white transition-transform ${
+                        adminPolicy.policy.enabled ? "translate-x-6" : "translate-x-1"
+                      }`}
+                    />
+                  </button>
+                </div>
+              )}
+            </div>
             <div className="flex items-center gap-3 flex-wrap">
               <span className="text-[16px] font-semibold text-white">{!status.policyEnabled ? "AI is disabled for this workspace" : status.activeProvider ? LABEL[status.activeProvider] : "No approved live provider"}</span>
               {status.activeModel && <span className="text-[11px] font-mono text-zinc-300 bg-white/[0.04] border border-white/[0.06] rounded-full px-2 py-0.5">
                 model: {status.activeModel}
               </span>}
             </div>
+            {toggleError && (
+              <p role="alert" aria-live="assertive" className="mt-2 text-[11px] text-rose-300">{toggleError}</p>
+            )}
+            {adminPolicy === null && (
+              <p className="mt-2 text-[11px] text-zinc-500">Only a workspace owner or admin can change this setting.</p>
+            )}
           </div>
 
           <div className="space-y-3 mb-8">

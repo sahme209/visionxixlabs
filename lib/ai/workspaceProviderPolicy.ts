@@ -85,18 +85,22 @@ export function resolveWorkspaceAIProviderPolicy(input: {
   serviceEnabled: readonly AIProviderName[];
 }): WorkspaceAIProviderPolicy {
   const serviceEnabled = providerList(input.serviceEnabled);
-  if (input.stored && !input.stored.enabled) {
+  // AI is opt-in, not opt-out: a workspace that has never explicitly
+  // configured this policy (no row at all — e.g. every brand-new
+  // workspace) must default to disabled, not to every service-enabled
+  // provider allowed. Flipping this the other way would mean AI calls
+  // start flowing for a tenant the moment any provider is turned on
+  // service-wide, with no admin ever having opted in for that specific
+  // workspace — unacceptable for a product treating workspace data as
+  // potentially sensitive by default.
+  if (!input.stored || !input.stored.enabled) {
     return { enabled: false, allowedProviders: [], modelSelections: {}, fallbackOrder: [] };
   }
-  const allowedProviders = input.stored
-    ? input.stored.allowedProviders.filter((provider) => serviceEnabled.includes(provider))
-    : serviceEnabled;
-  const fallbackOrder = input.stored
-    ? input.stored.fallbackOrder.filter((provider) => allowedProviders.includes(provider))
-    : [];
-  const selected = input.stored
-    ? Object.fromEntries(Object.entries(input.stored.modelSelections).filter(([provider, model]) => isAIProviderName(provider) && allowedProviders.includes(provider) && isKnownModel(provider, model))) as Partial<Record<AIProviderName, string>>
-    : {};
+  const allowedProviders = input.stored.allowedProviders.filter((provider) => serviceEnabled.includes(provider));
+  const fallbackOrder = input.stored.fallbackOrder.filter((provider) => allowedProviders.includes(provider));
+  const selected = Object.fromEntries(
+    Object.entries(input.stored.modelSelections).filter(([provider, model]) => isAIProviderName(provider) && allowedProviders.includes(provider) && isKnownModel(provider, model)),
+  ) as Partial<Record<AIProviderName, string>>;
   for (const provider of allowedProviders) selected[provider] ??= defaultModelFor(provider);
   return {
     enabled: true,
