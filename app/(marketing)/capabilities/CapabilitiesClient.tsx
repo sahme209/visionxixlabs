@@ -195,7 +195,7 @@ export function CapabilitiesClient() {
       </section>
 
       <section className="relative z-10 mx-auto max-w-[1400px] px-6 pb-12 md:px-10" aria-labelledby="playbook-responsibilities-heading">
-        <div className="rounded-2xl border border-white/[0.08] bg-black/20 p-6 sm:p-8">
+        <div className="surface-glass rounded-2xl p-6 sm:p-8">
           <p className="mono-label">One governed Playbook</p>
           <div className="mt-3 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
             <h2 id="playbook-responsibilities-heading" className="max-w-xl text-2xl font-medium tracking-[-0.04em] text-white sm:text-3xl">The parts of Axiom are useful only when they support one release decision.</h2>
@@ -208,7 +208,7 @@ export function CapabilitiesClient() {
       </section>
 
       <section className="relative z-10 mx-auto max-w-[1400px] px-6 pb-12 md:px-10" aria-labelledby="operational-terms-heading">
-        <details className="group rounded-2xl border border-white/[0.07] bg-white/[0.02] p-6 md:p-8">
+        <details className="surface-glass group rounded-2xl p-6 md:p-8">
           <summary id="operational-terms-heading" className="cursor-pointer list-none text-lg font-medium text-white marker:hidden"><span className="flex items-center justify-between gap-4">Inspect control details <span className="text-sm font-normal text-zinc-500 transition group-open:rotate-45" aria-hidden>+</span></span></summary>
           <p className="mt-3 max-w-2xl text-sm leading-6 text-zinc-400">These details are available for technical review. They do not claim live cloud mutation, a configured integration, or autonomous deployment.</p>
           <div className="mt-6 grid gap-4 md:grid-cols-2">
@@ -230,7 +230,7 @@ export function CapabilitiesClient() {
 
       {/* ===== FILTERS ===== */}
       <details className="group relative z-10 mx-auto max-w-[1400px] px-6 pb-12 md:px-10">
-        <summary className="cursor-pointer list-none rounded-2xl border border-white/[0.07] bg-white/[0.02] px-6 py-5 text-lg font-medium text-zinc-100 marker:hidden"><span className="flex items-center justify-between gap-4">Explore the detailed capability inventory <span className="text-sm font-normal text-zinc-500 transition group-open:rotate-45" aria-hidden>+</span></span></summary>
+        <summary className="surface-glass cursor-pointer list-none rounded-2xl px-6 py-5 text-lg font-medium text-zinc-100 marker:hidden"><span className="flex items-center justify-between gap-4">Explore the detailed capability inventory <span className="text-sm font-normal text-zinc-500 transition group-open:rotate-45" aria-hidden>+</span></span></summary>
         <p className="mt-5 max-w-2xl text-sm leading-6 text-zinc-400">The underlying controls remain available for engineering review, without turning this page into a wall of implementation cards.</p>
         <div className="mt-5">
         <div className="flex flex-wrap gap-2">
