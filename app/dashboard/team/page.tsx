@@ -129,7 +129,7 @@ export default async function TeamPage({
 
       {/* Notices */}
       {noticeRaw === "invite_sent" && (
-        <section className="mb-6 rounded-md border border-emerald-500/30 bg-emerald-500/[0.06] p-4">
+        <section role="status" aria-live="polite" className="mb-6 rounded-md border border-emerald-500/30 bg-emerald-500/[0.06] p-4">
           <p className="text-[12.5px] text-emerald-200 font-mono mb-2">invite link minted · copy and send via your preferred channel · expires in 7 days</p>
           {inviteUrlRaw && (
             <div className="mt-2 p-3 rounded border border-emerald-500/20 bg-black/30 break-all">
@@ -139,17 +139,17 @@ export default async function TeamPage({
         </section>
       )}
       {noticeRaw === "role_updated" && (
-        <section className="mb-6 rounded-md border border-emerald-500/30 bg-emerald-500/[0.06] p-4">
+        <section role="status" aria-live="polite" className="mb-6 rounded-md border border-emerald-500/30 bg-emerald-500/[0.06] p-4">
           <p className="text-[12.5px] text-emerald-200 font-mono">role updated</p>
         </section>
       )}
       {noticeRaw === "removed" && (
-        <section className="mb-6 rounded-md border border-zinc-500/30 bg-zinc-500/[0.06] p-4">
+        <section role="status" aria-live="polite" className="mb-6 rounded-md border border-zinc-500/30 bg-zinc-500/[0.06] p-4">
           <p className="text-[12.5px] text-zinc-300 font-mono">member removed from workspace</p>
         </section>
       )}
       {errorRaw && (
-        <section className="mb-6 rounded-md border border-rose-500/30 bg-rose-500/[0.06] p-4">
+        <section role="alert" aria-live="assertive" className="mb-6 rounded-md border border-rose-500/30 bg-rose-500/[0.06] p-4">
           <p className="text-[12.5px] text-rose-200 font-mono">error: {errorRaw}</p>
         </section>
       )}
