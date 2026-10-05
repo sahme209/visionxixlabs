@@ -63,7 +63,7 @@ export default function SecurityPage() {
 
       <main className="relative mx-auto max-w-[1400px] px-4 pb-20 pt-28 sm:px-6 md:px-10 md:pt-36">
         <header className="max-w-3xl">
-          <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-zinc-500 inline-flex items-center gap-3">
+          <p className="mono-label inline-flex items-center gap-3">
             <span className="text-brand-coral/90">Security</span>
             <span className="h-px w-6 bg-gradient-to-r from-brand-coral/60 to-transparent" />
             Product controls and current limits
@@ -80,7 +80,7 @@ export default function SecurityPage() {
           {CONTROLS.map((control) => {
             const Icon = control.icon;
             return (
-              <article key={control.title} className="rounded-2xl border border-white/[0.07] bg-white/[0.025] p-6">
+              <article key={control.title} className="surface-glass rounded-2xl p-6">
                 <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-emerald-500/20 bg-emerald-500/[0.07]">
                   <Icon className="h-5 w-5 text-emerald-300" />
                 </div>
@@ -92,7 +92,7 @@ export default function SecurityPage() {
           })}
         </section>
 
-        <section className="mt-12 rounded-2xl border border-white/[0.08] bg-white/[0.025] p-6 md:p-8" aria-labelledby="security-principles-heading">
+        <section className="surface-glass mt-12 rounded-2xl p-6 md:p-8" aria-labelledby="security-principles-heading">
           <p className="text-[10px] font-mono uppercase tracking-[0.2em] text-orange-200">Security posture</p>
           <div className="mt-3 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
             <h2 id="security-principles-heading" className="max-w-2xl text-2xl font-semibold tracking-[-0.035em] text-zinc-100">Designed for regulated work. Verified one control path at a time.</h2>
@@ -114,7 +114,7 @@ export default function SecurityPage() {
           </ul>
         </section>
 
-        <section className="mt-12 flex flex-col gap-4 rounded-2xl border border-white/[0.07] bg-white/[0.02] p-6 sm:flex-row sm:items-center sm:justify-between md:p-8">
+        <section className="surface-glass mt-12 flex flex-col gap-4 rounded-2xl p-6 sm:flex-row sm:items-center sm:justify-between md:p-8">
           <div>
             <h2 className="text-xl font-semibold">Need a control explained?</h2>
             <p className="mt-2 text-sm text-zinc-400">Use the verified support address or review the detailed security documentation.</p>
