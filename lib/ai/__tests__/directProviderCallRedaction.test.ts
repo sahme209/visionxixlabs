@@ -7,10 +7,11 @@
  */
 
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import type { GenerateTextOptions } from "../providers/types";
 
 const mocks = vi.hoisted(() => ({
-  anthropicGenerate: vi.fn(async () => ({ text: "ok", usage: null })),
-  openaiGenerate: vi.fn(async () => ({ text: "ok", usage: null })),
+  anthropicGenerate: vi.fn(async (_args: GenerateTextOptions) => ({ text: "ok", usage: null })),
+  openaiGenerate: vi.fn(async (_args: GenerateTextOptions) => ({ text: "ok", usage: null })),
 }));
 
 vi.mock("../providers/anthropic", () => ({ generateText: mocks.anthropicGenerate }));
