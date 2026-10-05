@@ -323,7 +323,7 @@ export async function GET(
                 ? "failed"
                 : "not_started", // draft | ready
         plannedAt: release.plannedWindowStart?.toISOString() ?? null,
-        startedAt: null, // TODO: Query execution history
+        startedAt: release.actualDeployStart?.toISOString() ?? null,
       },
 
       validation: {
