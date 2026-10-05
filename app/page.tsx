@@ -43,18 +43,26 @@ export default function Home() {
       <main>
         <section className="mx-auto max-w-[1400px] px-5 pb-18 pt-28 sm:px-8 lg:px-12 lg:pb-24 lg:pt-36">
           <div className="max-w-[700px]">
-            <p className="text-[11px] uppercase tracking-[0.18em] text-zinc-500">Axiom Agent · deployment operations</p>
-            <h1 className="mt-6 text-[clamp(2.7rem,4.65vw,5rem)] font-medium leading-[0.98] tracking-[-0.05em] text-[#f1f1ed]">
+            <span className="inline-flex items-center gap-2 rounded-full border border-white/[0.09] bg-white/[0.03] px-3 py-1.5 text-[11px] font-medium text-zinc-400">
+              <span className="relative flex h-1.5 w-1.5">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-60" />
+                <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-400" />
+              </span>
+              <span className="uppercase tracking-[0.16em] text-zinc-500">Axiom Agent</span>
+              <span className="text-zinc-600">·</span>
+              deployment operations
+            </span>
+            <h1 className="mt-5 text-[clamp(2.7rem,4.65vw,5rem)] font-medium leading-[0.98] tracking-[-0.05em] text-[#f1f1ed]">
               Turn the request into the playbook.
             </h1>
             <p className="mt-7 max-w-[620px] text-base leading-7 text-zinc-400 sm:text-lg">
               A governed desktop workspace for deployment intake, review, execution guidance, production validation, and audit-ready closure.
             </p>
             <div className="mt-9 flex flex-col gap-3 sm:flex-row">
-              <Link href="/download" className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-[#efefec] px-7 py-3 text-sm font-semibold text-[#151513] hover:bg-white">
+              <Link href="/download" className="btn-huly inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-[#efefec] px-7 py-3 text-sm font-semibold text-[#151513] shadow-[0_8px_24px_-8px_rgba(255,255,255,0.25)] hover:bg-white">
                 Download Axiom Agent <ArrowRightIcon className="h-4 w-4" />
               </Link>
-              <Link href="/demo" className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-white/10 bg-white/[0.05] px-7 py-3 text-sm font-medium text-zinc-200 hover:bg-white/[0.08]">
+              <Link href="/demo" className="btn-huly inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-white/10 bg-white/[0.05] px-7 py-3 text-sm font-medium text-zinc-200 hover:bg-white/[0.08]">
                 Explore the isolated demo <ArrowRightIcon className="h-4 w-4" />
               </Link>
             </div>
