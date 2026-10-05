@@ -84,8 +84,14 @@ export async function resolveRequestDesktopSession(
 
     try {
         if (token.startsWith("vxlk_")) {
-            if (options.allowApiKey === false) return undefined;
-            if (options.requireWorkspaceAdmin) return undefined;
+            if (options.allowApiKey === false) {
+                log.info("api key not allowed on this route", { route: options.route });
+                return undefined;
+            }
+            if (options.requireWorkspaceAdmin) {
+                log.info("api key cannot satisfy admin-only route", { route: options.route });
+                return undefined;
+            }
             const sourceIp = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim()
                 ?? request.headers.get("x-real-ip")
                 ?? null;

@@ -119,4 +119,32 @@ describe("resolveRequestDesktopSession — failure observability", () => {
       expect.objectContaining({ route: "/api/desktop/access", organizationId: "org_1", userId: "user_1" }),
     );
   });
+
+  it("logs a reason when an API key hits a route that disallows API keys", async () => {
+    const principal = await resolveRequestDesktopSession(makeRequest("vxlk_abc123"), {
+      requiredScope: "release_gate:read",
+      route: "/api/desktop/access",
+      allowApiKey: false,
+    });
+
+    expect(principal).toBeUndefined();
+    expect(mocks.logInfo).toHaveBeenCalledWith(
+      expect.stringContaining("not allowed"),
+      expect.objectContaining({ route: "/api/desktop/access" }),
+    );
+  });
+
+  it("logs a reason when an API key hits an admin-only route", async () => {
+    const principal = await resolveRequestDesktopSession(makeRequest("vxlk_abc123"), {
+      requiredScope: "release_gate:read",
+      route: "/api/desktop/access",
+      requireWorkspaceAdmin: true,
+    });
+
+    expect(principal).toBeUndefined();
+    expect(mocks.logInfo).toHaveBeenCalledWith(
+      expect.stringContaining("admin-only"),
+      expect.objectContaining({ route: "/api/desktop/access" }),
+    );
+  });
 });
