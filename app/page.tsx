@@ -10,6 +10,7 @@ import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
 import { DeploymentLifecycleDemo } from "@/components/marketing/DeploymentLifecycleDemo";
 import { HomepageMediaShowcase } from "@/components/marketing/HomepageMediaShowcase";
+import { HomepageInteractiveDemo } from "@/components/marketing/HomepageInteractiveDemo";
 
 const phases = ["Window", "Scope", "Execution", "Validation", "Recovery"];
 
@@ -79,6 +80,17 @@ export default function Home() {
               </div>
             }
           />
+        </section>
+
+        <section className="mx-auto max-w-[1400px] px-5 pb-18 sm:px-8 lg:px-12 lg:pb-24">
+          <p className="text-[11px] uppercase tracking-[0.16em] text-zinc-500">Try it yourself</p>
+          <h2 className="mt-3 max-w-2xl text-2xl font-medium tracking-[-0.04em] text-zinc-100 sm:text-3xl">
+            Click through a real workspace setup, right here.
+          </h2>
+          <p className="mt-2 max-w-xl text-sm leading-6 text-zinc-400">
+            No account needed. This steps through the actual scenario content from Axiom&apos;s sandbox, using scripted example data — never a real cloud account or real AI spend.
+          </p>
+          <HomepageInteractiveDemo />
         </section>
 
         <section className="border-y border-white/[0.06] bg-[#11110f] px-5 py-12 sm:px-8 lg:px-12">
