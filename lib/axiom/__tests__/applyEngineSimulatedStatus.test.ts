@@ -98,7 +98,10 @@ describe("applyExecutionPlan — simulated status", () => {
       confirmedMediumRiskIds: [],
     });
 
-    const applyAudit = result.auditLog.find((e) => e.action === "apply");
-    expect(applyAudit?.status).toBe("simulated");
+    // Two "apply" audit entries exist: the in-progress "applying" one
+    // written before the handler runs, then the completion one — take
+    // the last, not the first.
+    const applyAuditEntries = result.auditLog.filter((e) => e.action === "apply");
+    expect(applyAuditEntries[applyAuditEntries.length - 1]?.status).toBe("simulated");
   });
 });
