@@ -38,6 +38,10 @@ export type ApplyActionResult = {
   success: boolean;
   message: string;
   resourceIds: string[];
+  /** True when the underlying handler never called a real cloud SDK —
+   *  see StepResult["simulated"] in lib/axiom/applyEngine.ts. Callers
+   *  must not treat success+simulated as a completed mutation. */
+  simulated?: boolean;
 };
 
 // ---------------------------------------------------------------------------

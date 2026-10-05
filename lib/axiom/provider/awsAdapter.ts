@@ -106,7 +106,7 @@ export class AWSAdapter implements CloudProviderAdapter {
     try {
       const result = await handler.apply(item);
       return result.success
-        ? { ok: true, data: { success: true, message: result.message, resourceIds: item.resourceIds } }
+        ? { ok: true, data: { success: true, message: result.message, resourceIds: item.resourceIds, simulated: result.simulated } }
         : { ok: false, error: result.message, code: "apply_failed" };
     } catch (e) {
       return adapterError("apply_failed", e);

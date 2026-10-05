@@ -151,6 +151,7 @@ export async function POST(req: NextRequest) {
 
     // ---- Build response ----
     const applied = results.filter((r) => r.status === "verified" || r.status === "applied").length;
+    const simulated = results.filter((r) => r.status === "simulated").length;
     const failed = results.filter((r) => r.status === "apply_failed" || r.status === "precheck_failed").length;
 
     return NextResponse.json({
@@ -158,6 +159,7 @@ export async function POST(req: NextRequest) {
       provider: plan.provider,
       totalActions: results.length,
       applied,
+      simulated,
       failed,
       results: results.map(toResponseItem),
     });
@@ -177,7 +179,7 @@ type ActionPipelineResult = {
   provider: CloudProvider;
   region: string;
   resourceIds: string[];
-  status: "verified" | "applied" | "apply_failed" | "precheck_failed" | "verify_failed";
+  status: "verified" | "applied" | "simulated" | "apply_failed" | "precheck_failed" | "verify_failed";
   precheck: { passed: boolean; warnings: string[]; blockers: string[] };
   rollbackPlan: { steps: string[]; automated: boolean; estimatedDurationMin: number };
   verification: { verified: boolean; details: string[]; warnings: string[] } | null;
@@ -311,9 +313,14 @@ async function executePipeline(
   }
 
   // ---- 4. Verify ----
+  // verifyAppliedAction()'s checks are currently hardcoded `passed: true`
+  // stubs (lib/axiom/verificationEngine.ts) — not real post-apply reads.
+  // When the handler itself never called a live cloud SDK (applyResult.
+  // simulated), running this stub afterward is doubly meaningless, so
+  // "simulated" takes priority over whatever it returns.
   const verification = verifyAppliedAction(item);
 
-  if (verification.verified && auditLogId) {
+  if (!applyResult.simulated && verification.verified && auditLogId) {
     try { await markVerified(auditLogId); } catch {}
   }
 
@@ -323,7 +330,7 @@ async function executePipeline(
     provider: item.provider,
     region: item.region,
     resourceIds: item.resourceIds,
-    status: verification.verified ? "verified" : "verify_failed",
+    status: applyResult.simulated ? "simulated" : (verification.verified ? "verified" : "verify_failed"),
     precheck: { passed: true, warnings: precheck.warnings, blockers: [] },
     rollbackPlan: { steps: rollback.rollbackSteps.map((s) => s.description), automated: rollback.automated, estimatedDurationMin: rollback.estimatedTotalDurationMin },
     verification: { verified: verification.verified, details: verification.details, warnings: verification.warnings },

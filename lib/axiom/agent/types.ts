@@ -142,7 +142,10 @@ export type ApprovalItem = {
 
 export type AgentApplyResult = {
   itemId: string;
-  status: "verified" | "applied" | "failed" | "skipped";
+  /** "simulated" means the handler never called a real cloud SDK — see
+   *  StepResult["simulated"] in lib/axiom/applyEngine.ts. Never counted
+   *  as realized savings or a completed mutation. */
+  status: "verified" | "applied" | "simulated" | "failed" | "skipped";
   message: string;
   auditEventId: string | null;
 };
