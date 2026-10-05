@@ -85,10 +85,10 @@ export default function ReleaseOverviewPage() {
 
       {loading && <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 text-[12px] text-zinc-400">Loading release overview…</div>}
       {!loading && networkError && (
-        <div className="rounded-2xl border border-rose-500/[0.18] bg-rose-500/[0.04] p-5 text-[13px] text-zinc-300">{networkError}</div>
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-rose-500/[0.18] bg-rose-500/[0.04] p-5 text-[13px] text-zinc-300">{networkError}</div>
       )}
       {!loading && errorBody && (
-        <div className="rounded-2xl border border-amber-500/[0.18] bg-amber-500/[0.04] p-5">
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-amber-500/[0.18] bg-amber-500/[0.04] p-5">
           <p className="text-[12px] font-semibold text-amber-200">{errorBody.error}</p>
           {errorBody.hint && <p className="text-[12.5px] text-zinc-300 mt-1">{errorBody.hint}</p>}
         </div>
