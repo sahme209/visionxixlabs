@@ -49,6 +49,7 @@ describe("desktop session lifecycle — /api/desktop/session", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.stubEnv("DESKTOP_SESSION_SIGNING_KEY", "test-signing-key-at-least-32-characters-long");
     store = new FakeStore();
     setDesktopSessionStore(store);
     mocks.evaluatePairingPolicy.mockResolvedValue({ allowed: true });
