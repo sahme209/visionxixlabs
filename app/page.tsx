@@ -9,6 +9,7 @@ import {
 import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
 import { DeploymentLifecycleDemo } from "@/components/marketing/DeploymentLifecycleDemo";
+import { HomepageMediaShowcase } from "@/components/marketing/HomepageMediaShowcase";
 
 const phases = ["Window", "Scope", "Execution", "Validation", "Recovery"];
 
@@ -58,22 +59,26 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="relative mt-14 overflow-hidden rounded-2xl border border-white/[0.12] bg-[#171714] p-3 shadow-2xl shadow-black/30 sm:p-5 lg:mt-16 lg:p-8">
-            <div
-              aria-hidden
-              className="absolute inset-0 scale-105 bg-cover bg-[position:60%_center] opacity-75 sm:bg-center"
-              style={{ backgroundImage: "url('/images/axiom-hero-landscape-v1.png')" }}
-            />
-            <div aria-hidden className="absolute inset-0 bg-[linear-gradient(180deg,rgba(9,10,12,0.12),rgba(9,10,12,0.42)_42%,rgba(9,10,12,0.86))]" />
-            <div aria-hidden className="absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-black/35 to-transparent" />
-            <div className="relative">
-              <div className="mb-3 flex items-center justify-between px-1 text-[10px] uppercase tracking-[0.16em] text-zinc-300/80">
-                <span>Release operations, made visible</span>
-                <span className="hidden sm:inline">Axiom Agent preview</span>
+          <HomepageMediaShowcase
+            fallback={
+              <div className="relative mt-14 overflow-hidden rounded-2xl border border-white/[0.12] bg-[#171714] p-3 shadow-2xl shadow-black/30 sm:p-5 lg:mt-16 lg:p-8">
+                <div
+                  aria-hidden
+                  className="absolute inset-0 scale-105 bg-cover bg-[position:60%_center] opacity-75 sm:bg-center"
+                  style={{ backgroundImage: "url('/images/axiom-hero-landscape-v1.png')" }}
+                />
+                <div aria-hidden className="absolute inset-0 bg-[linear-gradient(180deg,rgba(9,10,12,0.12),rgba(9,10,12,0.42)_42%,rgba(9,10,12,0.86))]" />
+                <div aria-hidden className="absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-black/35 to-transparent" />
+                <div className="relative">
+                  <div className="mb-3 flex items-center justify-between px-1 text-[10px] uppercase tracking-[0.16em] text-zinc-300/80">
+                    <span>Release operations, made visible</span>
+                    <span className="hidden sm:inline">Axiom Agent preview</span>
+                  </div>
+                  <DeploymentLifecycleDemo />
+                </div>
               </div>
-              <DeploymentLifecycleDemo />
-            </div>
-          </div>
+            }
+          />
         </section>
 
         <section className="border-y border-white/[0.06] bg-[#11110f] px-5 py-12 sm:px-8 lg:px-12">

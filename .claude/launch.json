@@ -7,6 +7,10 @@
       "runtimeArgs": ["run", "dev"],
       "port": 3000,
       "cwd": "/private/tmp/visionxixlabs-recovered-20261002"
+    },
+    {
+      "name": "production-homepage",
+      "url": "https://visionxixlabs.com"
     }
   ]
 }

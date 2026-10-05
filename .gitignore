@@ -51,7 +51,11 @@ next-env.d.ts
 /stripe-sync.*.json
 .env.vercel
 
-# Local output from scripts/capture-homepage-media.mjs — raw screenshots/
-# video are reviewed against docs/RELEASE_MEDIA_CHECKLIST.md before ever
-# being published anywhere; never committed as-is.
-/scripts/.media-output/
+# Real captured output from scripts/capture-homepage-media.mjs. Reviewed
+# against docs/RELEASE_MEDIA_CHECKLIST.md (version match, no secrets/real
+# customer data, captions added) before being committed deliberately —
+# never committed automatically just by running the script.
+/public/media/homepage-desktop.png
+/public/media/homepage-mobile.png
+/public/media/homepage-walkthrough.webm
+/public/media/homepage-walkthrough.vtt
