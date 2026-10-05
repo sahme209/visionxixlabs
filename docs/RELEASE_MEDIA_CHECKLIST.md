@@ -79,3 +79,23 @@ database connection, no authenticated session, no screen-recording/video
 pipeline). Until that capture work happens, the homepage/download media above
 remain the only release media, and both are illustrative-labeled or
 text-based by design rather than real screenshots standing in as real ones.
+
+## Capturing real homepage screenshots/video
+
+`scripts/capture-homepage-media.mjs` drives a real local dev server with
+Playwright and saves whatever actually renders — desktop + mobile full-page
+screenshots and a ~30s video of the real page (see the script's header
+comment for exact usage). It does not fabricate anything; it fails loudly if
+the dev server isn't reachable.
+
+Before publishing anything it produces:
+
+1. Run the 5-point checklist at the top of this doc against the output.
+2. **Add captions/a transcript to the video manually** — the script only
+   records raw video; it does not generate captions. A plain text transcript
+   of what's shown (e.g. "0:00 homepage loads", "0:03 Playbook demo begins
+   cycling through Request → Readiness → ...") satisfies the accessibility
+   baseline below until real captions are burned in.
+3. Confirm the homepage content at capture time matches what's actually
+   deployed — re-capture if `app/page.tsx` has changed since.
+
