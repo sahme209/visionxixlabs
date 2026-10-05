@@ -14,8 +14,12 @@ const mocks = vi.hoisted(() => ({
 }));
 
 vi.mock("@aws-sdk/client-iam", () => ({
-  IAMClient: vi.fn().mockImplementation(() => ({ send: mocks.send })),
-  UpdateAccessKeyCommand: vi.fn().mockImplementation((input) => ({ input })),
+  IAMClient: vi.fn().mockImplementation(function IAMClientMock() {
+    return { send: mocks.send };
+  }),
+  UpdateAccessKeyCommand: vi.fn().mockImplementation(function UpdateAccessKeyCommandMock(this: { input: unknown }, input: unknown) {
+    this.input = input;
+  }),
 }));
 
 vi.mock("../../credentials", () => ({
