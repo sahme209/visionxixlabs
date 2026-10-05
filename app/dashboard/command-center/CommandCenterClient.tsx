@@ -749,7 +749,7 @@ function AxiomOSStrip() {
   }
   if (error || !state) {
     return (
-      <div className="rounded-xl border border-zinc-700/30 bg-white/[0.02] p-5 mb-6">
+      <div role="alert" aria-live="assertive" className="rounded-xl border border-zinc-700/30 bg-white/[0.02] p-5 mb-6">
         <p className="text-[11px] font-mono text-zinc-500 uppercase tracking-[0.18em]">// axiom os · preview</p>
         <p className="text-sm text-zinc-400 mt-2">{error ?? "Sign in to load unified state."}</p>
       </div>
@@ -895,7 +895,7 @@ function ReadinessStrip() {
   }
   if (error || !report) {
     return (
-      <div className="rounded-xl border border-amber-500/[0.18] bg-amber-500/[0.04] p-5 mb-6">
+      <div role="alert" aria-live="assertive" className="rounded-xl border border-amber-500/[0.18] bg-amber-500/[0.04] p-5 mb-6">
         <p className="text-[11px] font-mono text-amber-300/80 uppercase tracking-[0.18em]">// production readiness · preview</p>
         <p className="text-sm text-amber-200/80 mt-2">{error ?? "Readiness report not yet available — sign in to load."}</p>
       </div>

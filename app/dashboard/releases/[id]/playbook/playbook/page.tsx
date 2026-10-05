@@ -51,7 +51,7 @@ export default function ReleasePlaybookStageDetailPage() {
 
   if (error || !data) {
     return (
-      <div className="rounded-2xl border border-rose-500/[0.18] bg-rose-500/[0.04] p-5 text-[13px] text-zinc-300">
+      <div role="alert" aria-live="assertive" className="rounded-2xl border border-rose-500/[0.18] bg-rose-500/[0.04] p-5 text-[13px] text-zinc-300">
         {error || "Release not found"}
       </div>
     );

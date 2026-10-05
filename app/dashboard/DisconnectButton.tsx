@@ -66,13 +66,17 @@ export function DisconnectButton({
   }
   if (phase === "error") {
     return (
-      <button
-        onClick={() => { setPhase("idle"); setError(null); }}
-        className="text-[10px] font-mono text-rose-300 hover:text-rose-200 transition-colors"
-        title={error ?? undefined}
-      >
-        retry
-      </button>
+      <span className="inline-flex items-center gap-2">
+        <span role="alert" aria-live="assertive" className="text-[10px] font-mono text-rose-300">
+          {error ?? "Disconnect failed."}
+        </span>
+        <button
+          onClick={() => { setPhase("idle"); setError(null); }}
+          className="text-[10px] font-mono text-rose-300 hover:text-rose-200 transition-colors underline"
+        >
+          retry
+        </button>
+      </span>
     );
   }
   return (
