@@ -250,7 +250,35 @@ function PlanSection({ identity }: { identity: VerifiedDesktopIdentity }) {
         </>
       )}
     </div>
+    <UsageSummaryCard />
   </div>;
+}
+
+function UsageSummaryCard() {
+  const [usage, setUsage] = useState<{ periodMonth: string; aiInvocationCount: number; aiInputTokens: number; aiOutputTokens: number; aiCostCents: number } | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    void desktopClient.usageSummary().then((result) => {
+      if (result.ok) setUsage(result.data);
+      else setError(result.error);
+    });
+  }, []);
+
+  return (
+    <div className="mt-6">
+      <p className="mb-2 text-xs text-zinc-500">AI usage this month{usage ? ` (${usage.periodMonth})` : ""}</p>
+      {error && <p role="alert" className="text-xs text-red-300">{error}</p>}
+      {!usage && !error && <p className="text-xs text-zinc-600">Loading…</p>}
+      {usage && (
+        <div className="grid gap-4 sm:grid-cols-3">
+          <SummaryCard label="AI invocations" value={usage.aiInvocationCount.toLocaleString()} detail="Agent + automation calls this billing period" />
+          <SummaryCard label="Tokens" value={`${(usage.aiInputTokens + usage.aiOutputTokens).toLocaleString()}`} detail={`${usage.aiInputTokens.toLocaleString()} in / ${usage.aiOutputTokens.toLocaleString()} out`} />
+          <SummaryCard label="Attributed cost" value={`$${(usage.aiCostCents / 100).toFixed(2)}`} detail="VisionXIXLabs cost, not necessarily billed to you" />
+        </div>
+      )}
+    </div>
+  );
 }
 
 function AgentsSection({ prefs, onSave }: PreferenceSectionProps) {
