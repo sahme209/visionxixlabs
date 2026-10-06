@@ -19,12 +19,14 @@ describe("buildGithubAppManifest", () => {
     expect(manifest.public).toBe(false);
   });
 
-  it("requests only read-only scopes actually used by the live client/scanner", () => {
+  it("requests only the scopes actually used — write only for contents/pull_requests (branch/commit/PR creation), read everywhere else", () => {
     const manifest = buildGithubAppManifest({ origin: "https://app.example.com" });
     expect(manifest.default_permissions).toEqual(GITHUB_APP_MANIFEST_PERMISSIONS);
-    for (const value of Object.values(manifest.default_permissions)) {
-      expect(value).toBe("read");
-    }
+    expect(manifest.default_permissions.contents).toBe("write");
+    expect(manifest.default_permissions.pull_requests).toBe("write");
+    expect(manifest.default_permissions.actions).toBe("read");
+    expect(manifest.default_permissions.deployments).toBe("read");
+    expect(manifest.default_permissions.administration).toBe("read");
   });
 
   it("requests only the webhook events the responder actually handles", () => {

@@ -167,6 +167,13 @@ export type AuditAction =
   // GitHub App Manifest flow — one-time platform-operator setup.
   | "github_app.manifest_created"
   | "github_app.manifest_create_failed"
+  // GitHub write access — branch/commit/PR creation from the desktop app.
+  // Detail must only ever contain repo/branch/PR identifiers, never file
+  // content, diffs, or tokens.
+  | "github.branch_created"
+  | "github.file_committed"
+  | "github.pull_request_opened"
+  | "github.clone_token_minted"
   // Generic
   | "system.error";
 
