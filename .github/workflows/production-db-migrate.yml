@@ -10,6 +10,16 @@ on:
         description: 'Type APPLY to run pending Prisma migrations against production.'
         required: true
         type: string
+      resolve_rolled_back_migration:
+        description: >-
+          Optional: exact migration folder name to mark as rolled-back before
+          applying (only needed to recover from a migration that failed
+          part-way and is blocking all later migrations — e.g. a previous
+          run reported "P3018 ... migration failed to apply"). Leave blank
+          on every normal run.
+        required: false
+        type: string
+        default: ''
 
 permissions:
   contents: read
@@ -44,6 +54,12 @@ jobs:
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
         run: test -n "$DATABASE_URL"
+
+      - name: Resolve a previously failed migration, if named
+        if: ${{ inputs.resolve_rolled_back_migration != '' }}
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: npx prisma migrate resolve --rolled-back "${{ inputs.resolve_rolled_back_migration }}" --schema prisma/schema.prisma
 
       - name: Apply pending Prisma migrations
         env:
