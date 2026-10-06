@@ -74,10 +74,27 @@ async function hasActiveWorkspaceMembership(userId: string, organizationId: stri
 async function selfHealPersonalWorkspaceMembership(userId: string, organizationId: string): Promise<void> {
     try {
         const user = await prisma.user.findUnique({ where: { id: userId }, select: { email: true } });
-        if (!user?.email) return;
-        if (String(deriveWorkspaceIdFromEmail(user.email)) !== organizationId) return;
+        if (!user?.email) {
+            log.error("self-heal skipped: no user row (or no email) found for this session's userId", { userId, organizationId });
+            return;
+        }
+        const derivedPersonalWorkspaceId = String(deriveWorkspaceIdFromEmail(user.email));
+        if (derivedPersonalWorkspaceId !== organizationId) {
+            log.error("self-heal skipped: session organizationId does not match this identity's derived personal workspace", {
+                userId,
+                sessionOrganizationId: organizationId,
+                derivedPersonalWorkspaceId,
+            });
+            return;
+        }
         await ensurePersonalWorkspaceMembership({ userId, email: user.email });
-    } catch {
+    } catch (err) {
+        log.error("self-heal membership bootstrap retry failed", {
+            userId,
+            organizationId,
+            errorMessage: err instanceof Error ? err.message : String(err),
+            errorCode: err instanceof Error && "code" in err ? (err as { code?: unknown }).code : undefined,
+        });
         // best-effort — a failure here just means the caller's membership
         // recheck below still fails and the request is denied, same as today.
     }

@@ -18,6 +18,9 @@ import { id } from "@/lib/domain/ids";
 import type { OrganizationId, UserId } from "@/lib/domain/ids";
 import { deriveWorkspaceIdFromEmail } from "@/lib/auth/workspaceId";
 import { ensurePersonalWorkspaceMembership } from "@/lib/auth/ensurePersonalWorkspaceMembership";
+import { createLogger } from "@/lib/observability/logger";
+
+const log = createLogger("auth.currentContext.membershipRetry");
 import { prisma } from "@/lib/db";
 
 export interface CurrentContext {
@@ -92,10 +95,18 @@ async function resolveWorkspaceRoles(input: {
       select: { role: true },
     });
     if (membership?.role) return [membership.role];
-  } catch {
+  } catch (err) {
     // A missing migration or transient store failure must not expand access.
+    log.error("initial membership lookup failed", {
+      userId: input.userId,
+      organizationId: input.organizationId,
+      errorMessage: err instanceof Error ? err.message : String(err),
+      errorCode: err instanceof Error && "code" in err ? (err as { code?: unknown }).code : undefined,
+    });
     return [];
   }
+
+  const derivedPersonalWorkspaceId = String(deriveWorkspaceIdFromEmail(input.email));
 
   // The bootstrap that grants a new identity ownership of its own derived
   // workspace runs once, best-effort, at sign-in (see lib/auth.ts) with its
@@ -105,7 +116,7 @@ async function resolveWorkspaceRoles(input: {
   // path. Retry it once, here, scoped only to the user's own derived
   // workspace — never a shared/invited organization, where a missing
   // membership legitimately means "not a member," not "bootstrap failed."
-  if (input.organizationId === String(deriveWorkspaceIdFromEmail(input.email))) {
+  if (input.organizationId === derivedPersonalWorkspaceId) {
     try {
       await ensurePersonalWorkspaceMembership({ userId: input.userId, email: input.email });
       const membership = await prisma.orgMembership.findUnique({
@@ -113,10 +124,33 @@ async function resolveWorkspaceRoles(input: {
         select: { role: true },
       });
       if (membership?.role) return [membership.role];
-    } catch {
+      log.error("membership bootstrap retry ran without throwing but still produced no role", {
+        userId: input.userId,
+        organizationId: input.organizationId,
+      });
+    } catch (err) {
       // Still best-effort — a retry failure must not expand access either.
+      log.error("membership bootstrap retry failed", {
+        userId: input.userId,
+        organizationId: input.organizationId,
+        errorMessage: err instanceof Error ? err.message : String(err),
+        errorCode: err instanceof Error && "code" in err ? (err as { code?: unknown }).code : undefined,
+      });
       return [];
     }
+  } else {
+    // This is the other real failure mode worth being able to see: the
+    // session's organizationId does not match this identity's own derived
+    // personal workspace at all, so the retry above is correctly skipped —
+    // but if that's unexpected (e.g. nobody ever intentionally invited this
+    // user into a different workspace), this log line is the only way to
+    // tell "bootstrap is broken" apart from "this genuinely isn't your
+    // personal workspace."
+    log.error("session organizationId does not match this identity's derived personal workspace; bootstrap retry skipped", {
+      userId: input.userId,
+      sessionOrganizationId: input.organizationId,
+      derivedPersonalWorkspaceId,
+    });
   }
 
   // Login-session claims are not authority. A revoked or deleted membership
