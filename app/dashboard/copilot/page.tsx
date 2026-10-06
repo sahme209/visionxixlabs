@@ -174,7 +174,7 @@ export default function CopilotPage() {
                   <button
                     type="submit"
                     disabled={!input.trim() || loading}
-                    className={`btn-amber-shimmer inline-flex items-center gap-2 px-4 py-2.5 rounded-full text-xs font-semibold uppercase tracking-wider ${(!input.trim() || loading) ? "opacity-40 cursor-not-allowed" : ""}`}
+                    className={`btn-white-shimmer inline-flex items-center gap-2 px-4 py-2.5 rounded-full text-xs font-semibold uppercase tracking-wider ${(!input.trim() || loading) ? "opacity-40 cursor-not-allowed" : ""}`}
                   >
                     <PaperAirplaneIcon className="h-3.5 w-3.5" />
                     Send
