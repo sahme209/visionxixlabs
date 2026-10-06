@@ -13,6 +13,7 @@ import {
   LockKeyhole,
   LogOut,
   Palette,
+  Server,
   Settings2,
   ShieldCheck,
   Trees,
@@ -56,7 +57,8 @@ type Section =
   | "models"
   | "git"
   | "worktrees"
-  | "integrations";
+  | "integrations"
+  | "environments";
 
 const sections: Array<{ id: Section; label: string; icon: typeof CircleUserRound }> = [
   { id: "general", label: "General", icon: Settings2 },
@@ -66,6 +68,7 @@ const sections: Array<{ id: Section; label: string; icon: typeof CircleUserRound
   { id: "agents", label: "Agents", icon: Bot },
   { id: "models", label: "Models", icon: Code2 },
   { id: "git", label: "Git & PRs", icon: GitBranch },
+  { id: "environments", label: "Environments", icon: Server },
   { id: "worktrees", label: "Worktrees", icon: Trees },
   { id: "integrations", label: "Integrations", icon: Link2 },
 ];
@@ -142,6 +145,7 @@ export function SettingsView({ identity }: { identity: VerifiedDesktopIdentity }
           {active === "agents" && <AgentsSection prefs={prefs} onSave={savePreferences} />}
           {active === "models" && <ModelsSection />}
           {active === "git" && <GitSection prefs={prefs} onSave={savePreferences} />}
+          {active === "environments" && <EnvironmentsSection />}
           {active === "worktrees" && <WorktreesSection prefs={prefs} />}
           {active === "integrations" && <IntegrationsSection />}
         </div>
@@ -481,6 +485,246 @@ function CreatePullRequestPanel() {
         {error && <p role="alert" className="text-[12px] text-rose-300 leading-5">{error}</p>}
       </div>
     </Group>
+  );
+}
+
+/**
+ * Environments & AWS deploy — moved here from the hosted web dashboard
+ * because the service deliberately never renders live-operations pages
+ * in a browser (the "downloadable app is the canonical operational
+ * product" rule). Lists/creates Environment rows, configures the AWS
+ * ECS deploy target per environment (role ARN never leaves this device
+ * except in the POST body to the server that stores it), and triggers a
+ * real deploy by dispatching the tenant's own GitHub Actions workflow.
+ */
+const STANDARD_ENVIRONMENTS = [
+  { slug: "dev", name: "Development", tier: "dev" },
+  { slug: "test", name: "Testing", tier: "test" },
+  { slug: "prod", name: "Production", tier: "prod" },
+];
+
+interface EnvironmentListItem {
+  id: string; slug: string; name: string; tier: string; displayOrder: number; hasApprovalPolicy: boolean;
+}
+
+function EnvironmentsSection() {
+  const [environments, setEnvironments] = useState<EnvironmentListItem[] | null>(null);
+  const [loadError, setLoadError] = useState<string | null>(null);
+  const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [creating, setCreating] = useState(false);
+  const [createError, setCreateError] = useState<string | null>(null);
+
+  const load = useCallback(() => {
+    void desktopClient.listEnvironments().then((result) => {
+      if (result.ok) { setEnvironments(result.data.environments); setLoadError(null); }
+      else setLoadError(result.error);
+    });
+  }, []);
+
+  useEffect(() => { load(); }, [load]);
+
+  async function createStandardSet() {
+    setCreating(true);
+    setCreateError(null);
+    try {
+      const existingSlugs = new Set((environments ?? []).map((e) => e.slug));
+      for (const env of STANDARD_ENVIRONMENTS) {
+        if (existingSlugs.has(env.slug)) continue;
+        const result = await desktopClient.createEnvironment(env);
+        if (!result.ok) { setCreateError(`${env.name}: ${result.error}`); return; }
+      }
+      load();
+    } finally {
+      setCreating(false);
+    }
+  }
+
+  const missing = STANDARD_ENVIRONMENTS.filter((s) => !(environments ?? []).some((e) => e.slug === s.slug));
+
+  return (
+    <div>
+      <SectionHeading title="Environments" detail="Dev/test/prod separation for real deploys. Configure an AWS ECS deploy target per environment, then trigger a deploy by dispatching your repo's own GitHub Actions workflow." />
+      {loadError && <p role="alert" className="mb-4 text-[12px] text-rose-300">{loadError}</p>}
+      <Group label="Workspace environments">
+        {environments === null && loadError === null && <ActionRow title="Loading…" detail="Checking your workspace's configured environments." action={null} />}
+        {environments !== null && environments.length === 0 && (
+          <ActionRow
+            title="No environments yet"
+            detail="Create the standard dev/test/prod set, or add one manually below."
+            action={
+              <button type="button" onClick={() => void createStandardSet()} disabled={creating} className="rounded-md border border-white/10 bg-white/[0.04] px-2.5 py-1 text-[11px] text-zinc-200 hover:bg-white/[0.08] disabled:opacity-50">
+                {creating ? "Creating…" : "Create dev/test/prod"}
+              </button>
+            }
+          />
+        )}
+        {environments !== null && environments.length > 0 && missing.length > 0 && (
+          <ActionRow
+            title="Missing standard environments"
+            detail={`Not yet configured: ${missing.map((s) => s.slug).join(", ")}`}
+            action={
+              <button type="button" onClick={() => void createStandardSet()} disabled={creating} className="rounded-md border border-white/10 bg-white/[0.04] px-2.5 py-1 text-[11px] text-zinc-200 hover:bg-white/[0.08] disabled:opacity-50">
+                {creating ? "Creating…" : "Add missing"}
+              </button>
+            }
+          />
+        )}
+        {createError && <div className="px-4 py-2 text-[12px] text-rose-300">{createError}</div>}
+        {(environments ?? []).map((env) => (
+          <div key={env.id} className="border-b border-white/[0.045] last:border-b-0">
+            <ActionRow
+              title={`${env.name} (${env.tier})`}
+              detail={`slug: ${env.slug}${env.hasApprovalPolicy ? " · approval policy attached" : ""}`}
+              action={
+                <button type="button" onClick={() => setExpandedId(expandedId === env.id ? null : env.id)} className="rounded-md border border-white/10 px-2.5 py-1 text-[11px] text-zinc-300 hover:bg-white/[0.06]">
+                  {expandedId === env.id ? "Hide" : "AWS deploy"}
+                </button>
+              }
+            />
+            {expandedId === env.id && <DeploymentTargetPanel environmentId={env.id} />}
+          </div>
+        ))}
+      </Group>
+      <NewEnvironmentForm onCreated={load} />
+    </div>
+  );
+}
+
+function NewEnvironmentForm({ onCreated }: { onCreated: () => void }) {
+  const [slug, setSlug] = useState("");
+  const [name, setName] = useState("");
+  const [tier, setTier] = useState("dev");
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [ok, setOk] = useState(false);
+
+  async function submit() {
+    setBusy(true); setError(null); setOk(false);
+    try {
+      const result = await desktopClient.createEnvironment({ slug, name, tier });
+      if (!result.ok) { setError(result.error); return; }
+      setOk(true);
+      setSlug(""); setName("");
+      onCreated();
+      setTimeout(() => setOk(false), 1500);
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <Group label="New environment">
+      <div className="px-4 py-3.5 space-y-3">
+        <div className="grid grid-cols-3 gap-3">
+          <LabeledInput label="Slug" placeholder="staging" value={slug} onChange={setSlug} />
+          <LabeledInput label="Display name" placeholder="Staging" value={name} onChange={setName} />
+          <label className="block">
+            <span className="mb-1 block text-[11px] text-zinc-500">Tier</span>
+            <select value={tier} onChange={(event) => setTier(event.target.value)} className="w-full rounded-lg border border-white/10 bg-black/25 px-3 py-2 text-xs text-zinc-200 outline-none focus:border-white/25">
+              {["dev", "test", "qa", "uat", "stage", "preprod", "prod"].map((t) => <option key={t} value={t}>{t}</option>)}
+            </select>
+          </label>
+        </div>
+        <div className="flex items-center gap-3">
+          <button type="button" onClick={() => void submit()} disabled={busy || !slug || !name} className="inline-flex items-center gap-2 rounded-lg border border-white/10 bg-white/[0.04] px-3 py-2 text-xs text-zinc-200 hover:bg-white/[0.08] disabled:opacity-50">
+            {busy ? "Creating…" : "Create environment"}
+          </button>
+          {ok && <span className="text-[12px] text-emerald-300">Created</span>}
+        </div>
+        {error && <p role="alert" className="text-[12px] text-rose-300">{error}</p>}
+      </div>
+    </Group>
+  );
+}
+
+function DeploymentTargetPanel({ environmentId }: { environmentId: string }) {
+  const [roleArn, setRoleArn] = useState("");
+  const [region, setRegion] = useState("");
+  const [ecsCluster, setEcsCluster] = useState("");
+  const [ecsService, setEcsService] = useState("");
+  const [loaded, setLoaded] = useState(false);
+  const [loadError, setLoadError] = useState<string | null>(null);
+  const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
+  const [saveOk, setSaveOk] = useState(false);
+
+  const [deployRepo, setDeployRepo] = useState("");
+  const [deploying, setDeploying] = useState(false);
+  const [deployError, setDeployError] = useState<string | null>(null);
+  const [deployOk, setDeployOk] = useState(false);
+
+  useEffect(() => {
+    void desktopClient.getDeploymentTarget(environmentId).then((result) => {
+      if (result.ok) {
+        if (result.data.target) {
+          setRoleArn(result.data.target.roleArn);
+          setRegion(result.data.target.region);
+          setEcsCluster(result.data.target.ecsCluster);
+          setEcsService(result.data.target.ecsService);
+        }
+      } else {
+        setLoadError(result.error);
+      }
+      setLoaded(true);
+    });
+  }, [environmentId]);
+
+  async function save() {
+    setSaving(true); setSaveError(null); setSaveOk(false);
+    try {
+      const result = await desktopClient.saveDeploymentTarget({ environmentId, roleArn, region, ecsCluster, ecsService });
+      if (!result.ok) { setSaveError(result.error); return; }
+      setSaveOk(true);
+      setTimeout(() => setSaveOk(false), 1500);
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  async function triggerDeploy() {
+    setDeploying(true); setDeployError(null); setDeployOk(false);
+    try {
+      const result = await desktopClient.triggerAwsDeploy({ repositoryFullName: deployRepo, environmentId });
+      if (!result.ok) { setDeployError(result.error); return; }
+      setDeployOk(true);
+    } finally {
+      setDeploying(false);
+    }
+  }
+
+  if (!loaded) return <div className="px-4 py-3 text-[12px] text-zinc-500">Loading deploy target…</div>;
+  if (loadError) return <div className="px-4 py-3 text-[12px] text-rose-300">{loadError}</div>;
+
+  return (
+    <div className="border-t border-white/[0.04] bg-black/20 px-4 py-3.5 space-y-3">
+      <div className="grid grid-cols-2 gap-3">
+        <LabeledInput label="Role ARN" placeholder="arn:aws:iam::123456789012:role/axiom-deploy" value={roleArn} onChange={setRoleArn} />
+        <LabeledInput label="Region" placeholder="us-east-2" value={region} onChange={setRegion} />
+        <LabeledInput label="ECS cluster" placeholder="axiom-prod-cluster" value={ecsCluster} onChange={setEcsCluster} />
+        <LabeledInput label="ECS service" placeholder="axiom-web-service" value={ecsService} onChange={setEcsService} />
+      </div>
+      <div className="flex items-center gap-3">
+        <button type="button" onClick={() => void save()} disabled={saving || !roleArn || !region || !ecsCluster || !ecsService} className="inline-flex items-center gap-2 rounded-lg border border-white/10 bg-white/[0.04] px-3 py-2 text-xs text-zinc-200 hover:bg-white/[0.08] disabled:opacity-50">
+          {saving ? "Saving…" : "Save deploy target"}
+        </button>
+        {saveOk && <span className="text-[12px] text-emerald-300">Saved</span>}
+      </div>
+      {saveError && <p role="alert" className="text-[12px] text-rose-300">{saveError}</p>}
+
+      <div className="mt-2 border-t border-white/[0.04] pt-3">
+        <p className="mb-2 text-[11px] text-zinc-500">
+          Add .github/workflows/axiom-deploy-aws-ecs.yml to the target repo once (see the Git &amp; PRs section to commit it via a pull request), then trigger a deploy here:
+        </p>
+        <div className="flex items-center gap-3">
+          <LabeledInput label="Repository" placeholder="owner/repo" value={deployRepo} onChange={setDeployRepo} />
+          <button type="button" onClick={() => void triggerDeploy()} disabled={deploying || !deployRepo.includes("/")} className="mt-5 inline-flex items-center gap-2 rounded-lg border border-emerald-500/30 bg-emerald-500/[0.08] px-3 py-2 text-xs text-emerald-200 hover:bg-emerald-500/[0.14] disabled:opacity-50 shrink-0">
+            {deploying ? "Deploying…" : "Deploy"}
+          </button>
+        </div>
+        {deployOk && <p className="text-[12px] text-emerald-300">Deploy dispatched — check the repository's Actions tab for progress.</p>}
+        {deployError && <p role="alert" className="text-[12px] text-rose-300">{deployError}</p>}
+      </div>
+    </div>
   );
 }
 

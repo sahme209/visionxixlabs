@@ -640,6 +640,30 @@ export class DesktopClient {
     return this.post("/api/desktop/github/clone-token", input);
   }
 
+  listEnvironments(): Promise<ApiResult<{
+    environments: Array<{ id: string; slug: string; name: string; tier: string; displayOrder: number; hasApprovalPolicy: boolean; createdAtIso: string }>;
+  }>> {
+    return this.get("/api/desktop/environments");
+  }
+
+  createEnvironment(input: { slug: string; name: string; tier: string }): Promise<ApiResult<{ id: string; slug: string; name: string; tier: string; created: boolean }>> {
+    return this.post("/api/desktop/environments", input);
+  }
+
+  getDeploymentTarget(environmentId: string): Promise<ApiResult<{
+    target: { roleArn: string; region: string; ecsCluster: string; ecsService: string } | null;
+  }>> {
+    return this.get(`/api/desktop/environments/deployment-target?environmentId=${encodeURIComponent(environmentId)}`);
+  }
+
+  saveDeploymentTarget(input: { environmentId: string; roleArn: string; region: string; ecsCluster: string; ecsService: string }): Promise<ApiResult<{ roleArn: string; region: string; ecsCluster: string; ecsService: string }>> {
+    return this.post("/api/desktop/environments/deployment-target", input);
+  }
+
+  triggerAwsDeploy(input: { repositoryFullName: string; environmentId: string }): Promise<ApiResult<{ dispatched: boolean }>> {
+    return this.post("/api/desktop/environments/deploy", input);
+  }
+
   aiProviderStatus(): Promise<ApiResult<Array<{
     provider: string;
     configured: boolean;
