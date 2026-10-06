@@ -45,6 +45,34 @@ async function gh<T>(
   }
 }
 
+export interface GetFileInput {
+  owner: string;
+  repo: string;
+  branch: string;
+  path: string;
+  installationToken: string;
+}
+
+/** Reads one UTF-8 text file through the same tenant-scoped installation token. */
+export async function getFile(input: GetFileInput): Promise<GithubWriteResult<{ path: string; sha: string; content: string; htmlUrl: string }>> {
+  const encodedPath = input.path.split("/").map(encodeURIComponent).join("/");
+  const result = await gh<{ type: string; path: string; sha: string; content: string; encoding: string; html_url: string }>(
+    `/repos/${encodeURIComponent(input.owner)}/${encodeURIComponent(input.repo)}/contents/${encodedPath}?ref=${encodeURIComponent(input.branch)}`,
+    input.installationToken,
+  );
+  if (!result.ok) return result;
+  if (result.data.type !== "file" || result.data.encoding !== "base64") return { ok: false, error: "github_path_is_not_a_text_file" };
+  const bytes = Buffer.from(result.data.content.replaceAll("\n", ""), "base64");
+  if (bytes.byteLength > 100_000) return { ok: false, error: "github_file_too_large" };
+  let content: string;
+  try {
+    content = new TextDecoder("utf-8", { fatal: true }).decode(bytes);
+  } catch {
+    return { ok: false, error: "github_file_is_not_utf8_text" };
+  }
+  return { ok: true, data: { path: result.data.path, sha: result.data.sha, content, htmlUrl: result.data.html_url } };
+}
+
 export interface CreateBranchInput {
   owner: string;
   repo: string;

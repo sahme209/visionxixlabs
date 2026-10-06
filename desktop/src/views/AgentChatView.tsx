@@ -33,6 +33,11 @@ const TOOL_LABELS: Record<string, string> = {
   commit_github_file: "Commit a file",
   open_github_pull_request: "Open a pull request",
   trigger_aws_deploy: "Deploy to AWS",
+  read_github_file: "Read a repository file",
+  create_environment: "Create an environment",
+  configure_deployment_target: "Configure a deployment target",
+  connect_identity_provider: "Connect an identity provider",
+  preview_scim_lifecycle: "Preview SCIM lifecycle",
 };
 
 function describeArgs(toolName: string, args: unknown): string {
@@ -47,6 +52,12 @@ function describeArgs(toolName: string, args: unknown): string {
       return `${a.repositoryFullName}: PR "${a.title}" — ${a.head} → ${a.base}`;
     case "trigger_aws_deploy":
       return `${a.repositoryFullName} → environment ${a.environmentId}`;
+    case "create_environment":
+      return `${a.name} (${a.slug}) · ${a.tier}`;
+    case "configure_deployment_target":
+      return `${a.environmentId}: ${a.ecsCluster}/${a.ecsService} in ${a.region}`;
+    case "connect_identity_provider":
+      return `${a.protocol}: ${a.issuerOrEntityId}`;
     default:
       return JSON.stringify(a);
   }
@@ -60,6 +71,10 @@ export function AgentChatView() {
   const [sending, setSending] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [decidingId, setDecidingId] = useState<string | null>(null);
+  const [composerMode, setComposerMode] = useState<"chat" | "code">("chat");
+  const [repositoryFullName, setRepositoryFullName] = useState("");
+  const [branch, setBranch] = useState("main");
+  const [filePath, setFilePath] = useState("");
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -74,8 +89,11 @@ export function AgentChatView() {
   }, [turns, pendingProposal]);
 
   async function send() {
-    const message = input.trim();
-    if (!message || !conversationId || sending) return;
+    const instruction = input.trim();
+    const message = composerMode === "code"
+      ? `Work on ${repositoryFullName.trim()} at branch ${branch.trim()}, file ${filePath.trim()}. First read the file with read_github_file. Then ${instruction}. If a change is needed, propose commit_github_file with the complete updated file content and a clear commit message. Do not claim the change is complete until I approve it.`
+      : instruction;
+    if (!instruction || !conversationId || sending || (composerMode === "code" && (!repositoryFullName.includes("/") || !branch.trim() || !filePath.trim()))) return;
     setInput("");
     setError(null);
     setTurns((prev) => [...prev, { id: `local_${Date.now()}`, role: "user", content: message }]);
@@ -127,7 +145,7 @@ export function AgentChatView() {
             <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-6 text-center">
               <p className="text-sm text-zinc-300">Tell me what you want to happen.</p>
               <p className="mt-2 text-xs text-zinc-500 leading-5">
-                "Open a PR on acme/widgets that fixes the README typo" or "deploy acme/widgets to prod" — I'll check what's safe to do automatically,
+                &ldquo;Open a PR on acme/widgets that fixes the README typo&rdquo; or &ldquo;deploy acme/widgets to prod&rdquo; — I&apos;ll check what&apos;s safe to do automatically,
                 and ask you to approve anything that changes GitHub or AWS before it happens.
               </p>
             </div>
@@ -140,23 +158,35 @@ export function AgentChatView() {
         </div>
       </div>
       <div className="border-t border-white/[0.06] px-8 py-5">
-        <div className="max-w-3xl mx-auto flex items-center gap-3">
-          <input
+        <div className="max-w-3xl mx-auto">
+          <div className="mb-3 flex items-center gap-1" role="tablist" aria-label="Agent composer mode">
+            <button type="button" role="tab" aria-selected={composerMode === "chat"} onClick={() => setComposerMode("chat")} className={`rounded-md px-3 py-1.5 text-xs ${composerMode === "chat" ? "bg-white/[0.09] text-white" : "text-zinc-500 hover:text-zinc-300"}`}>Chat</button>
+            <button type="button" role="tab" aria-selected={composerMode === "code"} onClick={() => setComposerMode("code")} className={`rounded-md px-3 py-1.5 text-xs ${composerMode === "code" ? "bg-white/[0.09] text-white" : "text-zinc-500 hover:text-zinc-300"}`}>Edit repository file</button>
+          </div>
+          {composerMode === "code" && <div className="mb-3 grid grid-cols-[1.3fr_0.8fr_1.5fr] gap-2">
+            <input aria-label="GitHub repository" value={repositoryFullName} onChange={(event) => setRepositoryFullName(event.target.value)} placeholder="owner/repository" className="rounded-lg border border-white/10 bg-white/[0.03] px-3 py-2 text-xs text-zinc-200 outline-none placeholder:text-zinc-600 focus:border-white/25" />
+            <input aria-label="Git branch" value={branch} onChange={(event) => setBranch(event.target.value)} placeholder="branch" className="rounded-lg border border-white/10 bg-white/[0.03] px-3 py-2 text-xs text-zinc-200 outline-none placeholder:text-zinc-600 focus:border-white/25" />
+            <input aria-label="Repository file path" value={filePath} onChange={(event) => setFilePath(event.target.value)} placeholder="src/path/to/file.ts" className="rounded-lg border border-white/10 bg-white/[0.03] px-3 py-2 text-xs text-zinc-200 outline-none placeholder:text-zinc-600 focus:border-white/25" />
+          </div>}
+          <div className="flex items-end gap-3">
+          <textarea
             value={input}
             onChange={(event) => setInput(event.target.value)}
             onKeyDown={(event) => { if (event.key === "Enter" && !event.shiftKey) { event.preventDefault(); void send(); } }}
-            placeholder={pendingProposal ? "Approve or reject the proposed action above to continue…" : "What do you want to happen?"}
+            placeholder={pendingProposal ? "Approve or reject the proposed action above to continue…" : composerMode === "code" ? "Describe the change you want in this file…" : "What do you want to happen?"}
             disabled={sending || !conversationId || Boolean(pendingProposal)}
-            className="flex-1 rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-zinc-100 placeholder:text-zinc-600 outline-none focus:border-white/25 disabled:opacity-50"
+            rows={2}
+            className="min-h-[48px] flex-1 resize-none rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-zinc-100 placeholder:text-zinc-600 outline-none focus:border-white/25 disabled:opacity-50"
           />
           <button
             type="button"
             onClick={() => void send()}
-            disabled={sending || !input.trim() || !conversationId || Boolean(pendingProposal)}
+            disabled={sending || !input.trim() || !conversationId || Boolean(pendingProposal) || (composerMode === "code" && (!repositoryFullName.includes("/") || !branch.trim() || !filePath.trim()))}
             className="rounded-xl bg-white px-5 py-3 text-sm font-semibold text-black disabled:opacity-40"
           >
             {sending ? "Thinking…" : "Send"}
           </button>
+          </div>
         </div>
       </div>
     </div>

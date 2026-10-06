@@ -1515,6 +1515,16 @@ model AgentActionProposal {
   @@index([conversationId])
 }
 
+/// Small, explicit workspace context carried across Agent conversations.
+/// It stores identifiers the workspace actually used, never model-generated
+/// secrets or an opaque transcript summary.
+model AgentWorkspaceMemory {
+  organizationId      String   @id
+  repositoryFullNames String[] @default([])
+  environmentIds      String[] @default([])
+  updatedAt           DateTime @updatedAt
+}
+
 model AxiomApprovalPolicy {
   id             String  @id @default(cuid())
   organizationId String

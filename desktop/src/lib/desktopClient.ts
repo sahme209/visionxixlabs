@@ -719,12 +719,15 @@ export class DesktopClient {
     return this.post("/api/desktop/identity-providers/scim-preview", input);
   }
 
-  aiProviderStatus(): Promise<ApiResult<Array<{
-    provider: string;
-    configured: boolean;
-    defaultModel: string;
-  }>>> {
+  aiProviderStatus(): Promise<ApiResult<{
+    policy: { enabled: boolean; allowedProviders: string[]; modelSelections: Record<string, string>; fallbackOrder: string[] };
+    providers: Array<{ provider: string; models: Array<{ id: string; label: string; tier: string }> }>;
+  }>> {
     return this.get("/api/desktop/ai-providers");
+  }
+
+  updateAiProviderPolicy(policy: { enabled: boolean; allowedProviders: string[]; modelSelections: Record<string, string>; fallbackOrder: string[] }): Promise<ApiResult<{ policy: typeof policy }>> {
+    return this.put("/api/desktop/ai-providers", policy);
   }
 
   integrationHealth(): Promise<ApiResult<{

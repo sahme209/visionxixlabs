@@ -17,6 +17,7 @@ import { prisma } from "@/lib/db";
 import { runDecisionLoop, type ConversationTurnInput } from "@/lib/axiom/agentRuntime/decisionLoop";
 import { executeReadOnlyTool, isProdEnvironmentTarget, type ToolExecutionRepo, type ProdEnvironmentCheckRepo } from "@/lib/axiom/agentRuntime/toolExecution";
 import { id as idFactory } from "@/lib/domain/ids";
+import { loadWorkspaceMemory, rememberToolContext, workspaceMemoryPrompt, type WorkspaceMemoryRepo } from "@/lib/axiom/agentRuntime/workspaceMemory";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -60,12 +61,16 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
   const transcript: ConversationTurnInput[] = priorTurns.map((t) => ({ role: t.role as ConversationTurnInput["role"], content: t.content }));
 
   const correlationId = idFactory.correlation(`agent_msg_${Date.now().toString(36)}`);
+  const memoryRepo = prisma as unknown as WorkspaceMemoryRepo;
+  const workspaceContext = workspaceMemoryPrompt(await loadWorkspaceMemory(memoryRepo, organizationId));
   const outcome = await runDecisionLoop({
     organizationId,
     correlationId: String(correlationId),
     transcript,
+    workspaceContext,
     executeReadOnlyTool: async (toolName, args) => {
       const result = await executeReadOnlyTool(prisma as unknown as ToolExecutionRepo, organizationId, toolName, args);
+      if (result.ok) await rememberToolContext(memoryRepo, organizationId, args).catch(() => undefined);
       // Every tool call — including read-only ones — gets its own audit
       // row, immediately marked executed, so "what did the agent look
       // at" is as visible in the trail as "what did it change."
@@ -90,6 +95,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
   }
 
   if (outcome.kind === "proposal") {
+    await rememberToolContext(memoryRepo, organizationId, outcome.args).catch(() => undefined);
     await prisma.agentConversationTurn.create({ data: { conversationId, role: "assistant", content: outcome.message } });
     const proposal = await prisma.agentActionProposal.create({
       data: {

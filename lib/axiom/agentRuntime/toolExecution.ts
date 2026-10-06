@@ -8,8 +8,9 @@
 import "server-only";
 
 import { resolveTenantScopedToken, parseRepositoryFullName } from "@/lib/connectors/github/resolveTenantScopedToken";
-import { getLatestWorkflowRun } from "@/lib/connectors/github/githubWriteClient";
+import { getFile, getLatestWorkflowRun } from "@/lib/connectors/github/githubWriteClient";
 import { AWS_ECS_DEPLOY_WORKFLOW_FILENAME } from "@/lib/releaseops/awsEcsDeployWorkflowTemplate";
+import { buildScimLifecyclePreviewResponse } from "@/lib/iam/scimLifecyclePreviewResponder";
 
 export interface ToolExecutionRepo {
   environment: {
@@ -41,6 +42,24 @@ export async function executeReadOnlyTool(
     });
     if (!runResult.ok) return { ok: false, error: runResult.error };
     return { ok: true, result: runResult.data ?? { status: "no_runs_yet" } };
+  }
+
+  if (toolName === "read_github_file") {
+    const repositoryFullName = typeof args.repositoryFullName === "string" ? args.repositoryFullName : "";
+    const branch = typeof args.branch === "string" ? args.branch : "";
+    const path = typeof args.path === "string" ? args.path : "";
+    const parsed = parseRepositoryFullName(repositoryFullName);
+    if (!parsed) return { ok: false, error: "invalid_repository_full_name" };
+    if (!branch || !path) return { ok: false, error: "invalid_payload" };
+    const tokenResult = await resolveTenantScopedToken(organizationId, parsed);
+    if (!tokenResult.ok) return { ok: false, error: tokenResult.error };
+    const fileResult = await getFile({ owner: parsed.owner, repo: parsed.repo, branch, path, installationToken: tokenResult.token });
+    return fileResult.ok ? { ok: true, result: fileResult.data } : { ok: false, error: fileResult.error };
+  }
+
+  if (toolName === "preview_scim_lifecycle") {
+    const preview = buildScimLifecyclePreviewResponse({ employees: args.employees, currentGrants: args.currentGrants });
+    return preview.body.ok ? { ok: true, result: preview.body.data } : { ok: false, error: preview.body.error };
   }
 
   return { ok: false, error: `unknown_low_risk_tool: ${toolName}` };

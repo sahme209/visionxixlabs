@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
 import { open } from "@tauri-apps/plugin-shell";
 import { invoke } from "@tauri-apps/api/core";
 import {
@@ -16,7 +16,6 @@ import {
   Palette,
   Server,
   Settings2,
-  ShieldCheck,
   Trees,
 } from "lucide-react";
 import { ViewShell } from "../components/Primitives";
@@ -308,10 +307,16 @@ const PROVIDER_LABELS: Record<string, string> = {
   openrouter: "OpenRouter",
   gemini: "Google Gemini",
   cloudflare: "Cloudflare Workers AI",
+  xai: "xAI",
 };
 
 function ModelsSection() {
-  const [providers, setProviders] = useState<Array<{ provider: string; configured: boolean; defaultModel: string }> | null>(null);
+  type ModelPolicy = { enabled: boolean; allowedProviders: string[]; modelSelections: Record<string, string>; fallbackOrder: string[] };
+  type ProviderModels = { provider: string; models: Array<{ id: string; label: string; tier: string }> };
+  const [providers, setProviders] = useState<ProviderModels[] | null>(null);
+  const [policy, setPolicy] = useState<ModelPolicy | null>(null);
+  const [query, setQuery] = useState("");
+  const [savingModel, setSavingModel] = useState<string | null>(null);
   const [loadError, setLoadError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -319,7 +324,8 @@ function ModelsSection() {
     void desktopClient.aiProviderStatus().then((result) => {
       if (cancelled) return;
       if (result.ok) {
-        setProviders(result.data);
+        setProviders(result.data.providers);
+        setPolicy(result.data.policy);
       } else {
         setLoadError(
           result.error === "desktop_session_required"
@@ -331,28 +337,61 @@ function ModelsSection() {
     return () => { cancelled = true; };
   }, []);
 
-  const configured = providers?.filter((provider) => provider.configured) ?? [];
+  const rows = useMemo(() => (providers ?? [])
+    .flatMap((provider) => provider.models.map((model) => ({ ...model, provider: provider.provider })))
+    .filter((model) => {
+      const needle = query.trim().toLowerCase();
+      return !needle || model.label.toLowerCase().includes(needle) || (PROVIDER_LABELS[model.provider] ?? model.provider).toLowerCase().includes(needle);
+    }), [providers, query]);
+
+  async function toggleModel(provider: string, modelId: string) {
+    if (!policy || savingModel) return;
+    const selected = policy.enabled && policy.modelSelections[provider] === modelId;
+    const nextAllowed = selected
+      ? policy.allowedProviders.filter((item) => item !== provider)
+      : [...policy.allowedProviders.filter((item) => item !== provider), provider];
+    const nextSelections = { ...policy.modelSelections };
+    if (selected) delete nextSelections[provider];
+    else nextSelections[provider] = modelId;
+    const nextPolicy: ModelPolicy = nextAllowed.length === 0
+      ? { enabled: false, allowedProviders: [], modelSelections: {}, fallbackOrder: [] }
+      : {
+          enabled: true,
+          allowedProviders: nextAllowed,
+          modelSelections: nextSelections,
+          fallbackOrder: [...policy.fallbackOrder.filter((item) => nextAllowed.includes(item)), ...nextAllowed.filter((item) => !policy.fallbackOrder.includes(item))],
+        };
+    setSavingModel(`${provider}:${modelId}`);
+    setLoadError(null);
+    const result = await desktopClient.updateAiProviderPolicy(nextPolicy);
+    if (result.ok) setPolicy(result.data.policy);
+    else setLoadError(result.error === "workspace_admin_required" ? "Only a workspace administrator can change model availability." : result.error);
+    setSavingModel(null);
+  }
+
   return <div>
-    <SectionHeading title="AI Provider Center" detail="Choose from models approved by your workspace. Axiom keeps provider credentials, routing rules, spend controls, and safety policy in the service—not on this device." />
-    <Group label="Service-approved providers">
-      {providers === null && loadError === null && <ModelProviderRow name="Provider availability" detail="Checking the service-approved provider set." state="Checking" />}
-      {loadError !== null && <ModelProviderRow name="Could not check provider availability" detail={loadError} state="Error" />}
-      {providers !== null && configured.length === 0 && <ModelProviderRow name="No live provider enabled" detail="This workspace has no non-simulated provider enabled by the service. Add or approve a provider in the service before it can appear available here." state="Not enabled" />}
-      {configured.map((provider) => (
-        <ModelProviderRow
-          key={provider.provider}
-          name={PROVIDER_LABELS[provider.provider] ?? provider.provider}
-          detail={`Default service model: ${provider.defaultModel}. Workspace policy, not this device, determines whether it may be used for a task.`}
-          state="Service enabled"
-        />
-      ))}
-    </Group>
-    <Group label="Provider policy">
-      <PolicyRow title="Human-confirmed AI output" detail="Generated playbook content remains proposed until a person reviews it." />
-      <PolicyRow title="No desktop BYOK fields" detail="Provider credentials are not accepted by this build. Organization-managed routing is configured outside the desktop client." />
-      <PolicyRow title="Availability is explicit" detail="A provider appears as enabled only when the service has configured it. Requested families such as GPT, Claude, Grok, or others are not shown as usable until a supported, approved route exists." />
-    </Group>
-    <WebButton href="/capabilities" label="Review released capabilities" standalone />
+    <SectionHeading title="Models" detail="Choose which service-configured models the Agent may use. Turning a model on updates the workspace policy immediately." />
+    <div className="mt-6 overflow-hidden rounded-xl border border-white/[0.07] bg-white/[0.02]">
+      <div className="border-b border-white/[0.06] p-4">
+        <label htmlFor="model-search" className="sr-only">Search models</label>
+        <input id="model-search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Add or search model" className="w-full rounded-lg border border-white/10 bg-black/30 px-3 py-2.5 text-sm text-zinc-100 outline-none placeholder:text-zinc-600 focus:border-white/25" />
+        <p className="mt-2 text-[11px] text-zinc-600">One active model per provider. Multiple providers can be enabled and are used in fallback order.</p>
+      </div>
+      {providers === null && loadError === null && <p className="p-4 text-sm text-zinc-500">Checking service-configured models…</p>}
+      {loadError !== null && <p role="alert" className="p-4 text-sm text-rose-300">{loadError}</p>}
+      {providers !== null && rows.length === 0 && <p className="p-4 text-sm text-zinc-500">No configured model matches this search.</p>}
+      {rows.map((model) => {
+        const enabled = Boolean(policy?.enabled && policy.modelSelections[model.provider] === model.id);
+        const key = `${model.provider}:${model.id}`;
+        return <div key={key} className="flex items-center justify-between gap-4 border-b border-white/[0.055] px-4 py-3.5 last:border-b-0">
+          <div className="min-w-0"><p className="text-sm text-zinc-200">{model.label}</p><p className="mt-0.5 text-[11px] text-zinc-600">{PROVIDER_LABELS[model.provider] ?? model.provider} · {model.tier}</p></div>
+          <button type="button" role="switch" aria-checked={enabled} aria-label={`${enabled ? "Disable" : "Enable"} ${model.label}`} disabled={!policy || Boolean(savingModel)} onClick={() => void toggleModel(model.provider, model.id)} className={`relative h-6 w-11 shrink-0 rounded-full transition-colors disabled:opacity-45 ${enabled ? "bg-emerald-500" : "bg-zinc-700"}`}>
+            <span aria-hidden className={`absolute top-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform ${enabled ? "translate-x-5" : "translate-x-0.5"}`} />
+          </button>
+        </div>;
+      })}
+    </div>
+    <p className="mt-4 text-[11px] leading-5 text-zinc-600">Credentials remain server-managed and never reach this device. Write actions remain approval-gated regardless of model choice.</p>
   </div>;
 }
 
@@ -753,7 +792,7 @@ function DeploymentTargetPanel({ environmentId }: { environmentId: string }) {
             {deploying ? "Deploying…" : "Deploy"}
           </button>
         </div>
-        {deployOk && <p className="text-[12px] text-emerald-300">Deploy dispatched — check the repository's Actions tab for progress.</p>}
+        {deployOk && <p className="text-[12px] text-emerald-300">Deploy dispatched — check the repository&apos;s Actions tab for progress.</p>}
         {deployError && <p role="alert" className="text-[12px] text-rose-300">{deployError}</p>}
       </div>
     </div>
@@ -1032,9 +1071,12 @@ function IntegrationsSection() {
   }, []);
 
   useEffect(() => {
-    void loadCloudConnections();
+    const initialLoad = window.setTimeout(() => { void loadCloudConnections(); }, 0);
     window.addEventListener("focus", loadCloudConnections);
-    return () => window.removeEventListener("focus", loadCloudConnections);
+    return () => {
+      window.clearTimeout(initialLoad);
+      window.removeEventListener("focus", loadCloudConnections);
+    };
   }, [loadCloudConnections]);
 
   const cloudConnections = integrationStatus?.cloud ?? null;
@@ -1172,12 +1214,10 @@ function ToggleRow({ title, detail, enabled, disabled, onToggle, action }: { tit
 function SelectRow({ title, detail, value, disabled, options, onChange }: { title: string; detail: string; value: string; disabled: boolean; options: Option[]; onChange: (value: string) => void }) { return <ActionRow title={title} detail={detail} action={<select aria-label={title} value={value} disabled={disabled} onChange={(event) => onChange(event.target.value)} className="rounded-lg border border-white/10 bg-[#17181a] px-3 py-2 text-xs text-zinc-200 outline-none disabled:opacity-50">{options.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}</select>} />; }
 function TextRow({ title, detail, value, disabled, onCommit }: { title: string; detail: string; value: string; disabled: boolean; onCommit: (value: string) => void }) { return <ActionRow title={title} detail={detail} action={<input key={value} aria-label={title} defaultValue={value} disabled={disabled} onBlur={(event) => { const next = event.currentTarget.value.trim(); if (next !== value) onCommit(next); }} onKeyDown={(event) => { if (event.key === "Enter") event.currentTarget.blur(); }} className="w-40 rounded-lg border border-white/10 bg-black/25 px-3 py-2 text-xs text-zinc-200 outline-none focus:border-white/25 disabled:opacity-50" />} />; }
 function LockedRow({ title, detail }: { title: string; detail: string }) { return <ActionRow title={title} detail={detail} action={<span className="inline-flex items-center gap-1 rounded-full border border-emerald-500/20 bg-emerald-500/10 px-2 py-1 text-[10px] text-emerald-300"><LockKeyhole className="h-3 w-3" />Always on</span>} />; }
-function PolicyRow({ title, detail }: { title: string; detail: string }) { return <div className="flex items-start gap-3 border-b border-white/[0.045] px-4 py-3.5 last:border-b-0"><ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-zinc-400" /><div><p className="text-sm text-zinc-200">{title}</p><p className="mt-1 text-xs leading-5 text-zinc-500">{detail}</p></div></div>; }
 function Notice({ title, detail }: { title: string; detail: string }) { return <div className="mb-6 rounded-lg border border-white/15 bg-white/[0.04] p-4"><p className="text-sm font-medium text-zinc-100">{title}</p><p className="mt-2 text-xs leading-5 text-zinc-400">{detail}</p></div>; }
 function SummaryCard({ label, value, detail }: { label: string; value: string; detail: string }) { return <div className="rounded-lg border border-white/[0.05] bg-white/[0.015] p-4"><p className="text-xs text-zinc-500">{label}</p><p className="mt-2 text-2xl font-semibold capitalize">{value}</p><p className="mt-2 text-sm text-zinc-500">{detail}</p></div>; }
 function IntegrationRow({ name, group, detail, state }: { name: string; group: string; detail: string; state: string }) {
   const connected = /verified|connected/i.test(state) && !/not connected/i.test(state);
   return <div className="flex items-start gap-4 rounded-lg border border-white/[0.05] bg-white/[0.015] p-4"><span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-white/[0.05] bg-black/20 text-zinc-300"><Link2 className="h-4 w-4" /></span><div className="min-w-0 flex-1"><p className="text-[10px] uppercase tracking-[0.14em] text-zinc-600">{group}</p><p className="mt-0.5 text-sm text-zinc-200">{name}</p><p className="mt-1 text-xs leading-5 text-zinc-500">{detail}</p></div><span className={`shrink-0 rounded-full border px-2 py-1 text-[10px] ${connected ? "border-emerald-500/20 bg-emerald-500/10 text-emerald-200" : "border-white/20 bg-white/10 text-zinc-200"}`}>{state}</span></div>;
 }
-function ModelProviderRow({ name, detail, state }: { name: string; detail: string; state: string }) { return <div className="flex items-start gap-4 border-b border-white/[0.045] px-4 py-3.5 last:border-b-0"><span className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-violet-500/20 bg-violet-500/10 text-[10px] font-semibold text-violet-200">AI</span><div className="min-w-0 flex-1"><p className="text-sm text-zinc-200">{name}</p><p className="mt-1 text-xs leading-5 text-zinc-500">{detail}</p></div><span className="shrink-0 rounded-full border border-white/[0.08] bg-white/[0.02] px-2 py-1 text-[10px] text-zinc-400">{state}</span></div>; }
 function WebButton({ href, label, standalone = false }: { href: string; label: string; standalone?: boolean }) { return <button type="button" onClick={() => void open(`${WEB_BASE}${href}`)} className={`${standalone ? "mt-1" : ""} inline-flex items-center gap-1.5 rounded-lg border border-white/10 px-3 py-2 text-xs text-zinc-300 hover:bg-white/[0.06]`}>{label}<ChevronRight className="h-3.5 w-3.5" /></button>; }

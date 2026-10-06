@@ -13,6 +13,9 @@ import "server-only";
 import { resolveTenantScopedToken, parseRepositoryFullName } from "@/lib/connectors/github/resolveTenantScopedToken";
 import { createBranch, commitFile, createPullRequest, dispatchWorkflow } from "@/lib/connectors/github/githubWriteClient";
 import { AWS_ECS_DEPLOY_WORKFLOW_FILENAME } from "@/lib/releaseops/awsEcsDeployWorkflowTemplate";
+import { buildEnvironmentCreateResponse, type EnvironmentCreateRepo } from "@/lib/releaseops/environmentCreateResponder";
+import { buildDeploymentTargetUpsertResponse, type DeploymentTargetRepo } from "@/lib/releaseops/deploymentTargetResponder";
+import { buildIdentityProviderCreateResponse, type IdentityProviderRepo } from "@/lib/identity/identityProviderResponder";
 
 export interface ActionExecutionRepo {
   environment: {
@@ -30,6 +33,7 @@ export async function executeApprovedAction(
   organizationId: string,
   toolName: string,
   args: Record<string, unknown>,
+  actorUserId = "agent-approver",
 ): Promise<ActionExecutionResult> {
   const repositoryFullName = typeof args.repositoryFullName === "string" ? args.repositoryFullName : "";
   const parsed = parseRepositoryFullName(repositoryFullName);
@@ -87,6 +91,42 @@ export async function executeApprovedAction(
       installationToken: token.token,
     });
     return result.ok ? { ok: true, result: { dispatched: true } } : { ok: false, error: result.error };
+  }
+
+  if (toolName === "create_environment") {
+    const result = await buildEnvironmentCreateResponse(repo as unknown as EnvironmentCreateRepo, {
+      organizationId,
+      slug: typeof args.slug === "string" ? args.slug : "",
+      name: typeof args.name === "string" ? args.name : "",
+      tier: typeof args.tier === "string" ? args.tier : "",
+    });
+    return result.body.ok ? { ok: true, result: result.body.data } : { ok: false, error: result.body.error };
+  }
+
+  if (toolName === "configure_deployment_target") {
+    const result = await buildDeploymentTargetUpsertResponse(repo as unknown as DeploymentTargetRepo, {
+      organizationId,
+      environmentId: typeof args.environmentId === "string" ? args.environmentId : "",
+      roleArn: typeof args.roleArn === "string" ? args.roleArn : "",
+      region: typeof args.region === "string" ? args.region : "",
+      ecsCluster: typeof args.ecsCluster === "string" ? args.ecsCluster : "",
+      ecsService: typeof args.ecsService === "string" ? args.ecsService : "",
+    });
+    return result.body.ok ? { ok: true, result: result.body.data } : { ok: false, error: result.body.error };
+  }
+
+  if (toolName === "connect_identity_provider") {
+    const result = await buildIdentityProviderCreateResponse(repo as unknown as IdentityProviderRepo, {
+      organizationId,
+      actorUserId,
+      protocol: typeof args.protocol === "string" ? args.protocol : "",
+      issuerOrEntityId: typeof args.issuerOrEntityId === "string" ? args.issuerOrEntityId : "",
+      metadataDocument: typeof args.metadataDocument === "string" ? args.metadataDocument : "",
+      managedDomains: Array.isArray(args.managedDomains) ? args.managedDomains.filter((value): value is string => typeof value === "string") : [],
+      roleMapping: Array.isArray(args.roleMapping) ? args.roleMapping as Array<{ claimKey: string; claimValue: string; role: "owner" | "admin" | "operator" | "security_reviewer" | "finance_viewer" | "read_only" }> : [],
+      requireMfaClaim: args.requireMfaClaim === true,
+    });
+    return result.body.ok ? { ok: true, result: result.body.data } : { ok: false, error: result.body.error };
   }
 
   return { ok: false, error: `unknown_write_tool: ${toolName}` };
