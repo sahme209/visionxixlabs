@@ -31,6 +31,7 @@ export const AUDIT_SUBJECT_KINDS = [
   "change_ticket",
   "release_freeze",
   "branch_validation",
+  "environment",
 ] as const;
 export type AuditSubjectKind = (typeof AUDIT_SUBJECT_KINDS)[number];
 

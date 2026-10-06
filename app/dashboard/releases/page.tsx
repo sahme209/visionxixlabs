@@ -119,6 +119,7 @@ export default function ReleasesPage() {
         requiresApproval="Scope changes after readiness approval, exception waivers, and emergency-change deploys."
         actions={[
           { label: "ReleaseOps command center", href: "/dashboard/releaseops" },
+          { label: "Environments",               href: "/dashboard/environments" },
           { label: "Connector setup",            href: "/dashboard/connector-setup" },
         ]}
         safetyNote="Click any release → full overview · every transition audited"
@@ -387,11 +388,21 @@ type NewReleaseState =
   | { kind: "ok"; releaseTag: string; created: boolean }
   | { kind: "error"; message: string };
 
+interface EnvironmentOption {
+  id: string;
+  name: string;
+  slug: string;
+  tier: string;
+}
+
 function NewReleasePanel({ onCreated }: { onCreated: () => void }) {
   const [state, setState] = useState<NewReleaseState>({ kind: "closed" });
   const [apps, setApps] = useState<ApplicationOption[]>([]);
   const [appsLoading, setAppsLoading] = useState(false);
   const [applicationId, setApplicationId] = useState("");
+  const [environments, setEnvironments] = useState<EnvironmentOption[]>([]);
+  const [environmentsLoading, setEnvironmentsLoading] = useState(false);
+  const [environmentId, setEnvironmentId] = useState("");
   const [releaseTag, setReleaseTag] = useState("");
   const [commitSha, setCommitSha] = useState("");
   const [windowStart, setWindowStart] = useState("");
@@ -413,8 +424,22 @@ function NewReleasePanel({ onCreated }: { onCreated: () => void }) {
       .finally(() => setAppsLoading(false));
   }, [state.kind, apps.length, appsLoading, applicationId]);
 
+  useEffect(() => {
+    if (state.kind !== "open" && state.kind !== "submitting") return;
+    if (environments.length > 0 || environmentsLoading) return;
+    setEnvironmentsLoading(true);
+    fetch("/api/dashboard/environment-list", { credentials: "include" })
+      .then((r) => r.json())
+      .then((j) => {
+        if (j.ok && Array.isArray(j.data.environments)) {
+          setEnvironments(j.data.environments.map((e: { id: string; name: string; slug: string; tier: string }) => ({ id: e.id, name: e.name, slug: e.slug, tier: e.tier })));
+        }
+      })
+      .finally(() => setEnvironmentsLoading(false));
+  }, [state.kind, environments.length, environmentsLoading]);
+
   function reset() {
-    setApplicationId(""); setReleaseTag(""); setCommitSha(""); setWindowStart(""); setWindowEnd(""); setSummary("");
+    setApplicationId(""); setEnvironmentId(""); setReleaseTag(""); setCommitSha(""); setWindowStart(""); setWindowEnd(""); setSummary("");
     setState({ kind: "closed" });
   }
 
@@ -422,6 +447,7 @@ function NewReleasePanel({ onCreated }: { onCreated: () => void }) {
     setState({ kind: "submitting" });
     try {
       const body: Record<string, unknown> = { applicationId, releaseTag };
+      if (environmentId) body.environmentId = environmentId;
       if (commitSha) body.commitSha = commitSha;
       if (windowStart) body.plannedWindowStartIso = new Date(windowStart).toISOString();
       if (windowEnd) body.plannedWindowEndIso = new Date(windowEnd).toISOString();
@@ -488,7 +514,23 @@ function NewReleasePanel({ onCreated }: { onCreated: () => void }) {
         <ReleaseField label="Release tag (required)" value={releaseTag} onChange={setReleaseTag} placeholder="v1.2.3" disabled={busy} />
         <ReleaseField label="Commit SHA (optional)" value={commitSha} onChange={setCommitSha} placeholder="abc1234…" disabled={busy} />
       </div>
-      <div className="grid grid-cols-3 gap-3 mb-3">
+      <div className="grid grid-cols-4 gap-3 mb-3">
+        <label className="block">
+          <span className="block text-[10px] font-mono uppercase tracking-wider text-zinc-400 mb-1">Target environment (optional)</span>
+          <select
+            value={environmentId}
+            onChange={(e) => setEnvironmentId(e.target.value)}
+            disabled={busy || environmentsLoading}
+            className="w-full rounded-lg border border-white/[0.08] bg-black/30 px-3 py-2 text-[12.5px] text-zinc-100 disabled:opacity-50"
+          >
+            <option value="">unset</option>
+            {environmentsLoading ? (
+              <option value="" disabled>loading…</option>
+            ) : (
+              environments.map((e) => <option key={e.id} value={e.id}>{e.name} ({e.tier})</option>)
+            )}
+          </select>
+        </label>
         <label className="block">
           <span className="block text-[10px] font-mono uppercase tracking-wider text-zinc-400 mb-1">Planned start (optional)</span>
           <input
