@@ -26,6 +26,7 @@ const icon = (children: React.ReactNode) => {
   return SidebarIcon;
 };
 
+const IconAgent = icon(<><path d="M12 2a4 4 0 0 1 4 4v1a4 4 0 0 1-8 0V6a4 4 0 0 1 4-4z" /><path d="M5 20v-1a7 7 0 0 1 14 0v1" /><circle cx="9" cy="7" r="0.5" fill="currentColor" /><circle cx="15" cy="7" r="0.5" fill="currentColor" /></>);
 const IconRequest = icon(<><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><path d="M14 2v6h6M8 13h8M8 17h5" /></>);
 const IconDocs = icon(<><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" /><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" /></>);
 const IconSettings = icon(<><circle cx="12" cy="12" r="3" /><path d="M19 12a7 7 0 1 1-14 0 7 7 0 0 1 14 0z" /></>);
@@ -33,13 +34,17 @@ const IconSettings = icon(<><circle cx="12" cy="12" r="3" /><path d="M19 12a7 7 
 /**
  * Customer navigation follows the deployment lifecycle. Experimental cloud,
  * AGI, billing, simulation, and connector-control surfaces are deliberately
- * absent until they are part of a verified release journey.
+ * absent until they are part of a verified release journey. Agent is first:
+ * it's the primary way to act now (plain English -> risk-checked,
+ * approval-gated, auditable action) — the Release workspace remains the
+ * direct/manual path alongside it, not replaced by it.
  */
 export const CUSTOMER_NAV_GROUPS: NavGroup[] = [
   {
     kind: "deployment",
     label: "Deployment",
     items: [
+      { id: "agent", label: "Agent", Icon: IconAgent },
       { id: "deployment-requests", label: "Release workspace", Icon: IconRequest },
     ],
   },

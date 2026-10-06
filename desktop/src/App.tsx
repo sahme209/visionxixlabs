@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Sidebar } from "./components/Sidebar";
 import { TopBar } from "./components/TopBar";
+import { AgentChatView } from "./views/AgentChatView";
 import { DeploymentRequestsView } from "./views/DeploymentRequestsView";
 import { DocsView } from "./views/DocsView";
 import { SettingsView } from "./views/SettingsView";
@@ -12,7 +13,7 @@ import { clearAuthSession } from "./lib/authSession";
 import { readDesktopPreferences } from "./lib/preferences";
 
 /** Only verified, customer-reachable desktop destinations belong here. */
-export type CustomerView = "deployment-requests" | "docs" | "settings";
+export type CustomerView = "agent" | "deployment-requests" | "docs" | "settings";
 
 /**
  * Dormant source modules remain type-checked for requirements recovery, but
@@ -103,7 +104,7 @@ export default function App() {
 }
 
 function AuthenticatedWorkspace({ identity }: { identity: VerifiedDesktopIdentity }) {
-  const [activeView, setActiveView] = useState<CustomerView>("deployment-requests");
+  const [activeView, setActiveView] = useState<CustomerView>("agent");
   const [booted, setBooted] = useState(false);
 
   useEffect(() => {
@@ -119,6 +120,7 @@ function AuthenticatedWorkspace({ identity }: { identity: VerifiedDesktopIdentit
       <main className="flex-1 flex flex-col min-w-0 min-h-0">
         <TopBar activeView={activeView} identity={identity} />
         <div className="flex-1 min-h-0 flex flex-col">
+          {activeView === "agent" && <AgentChatView />}
           {activeView === "deployment-requests" && <DeploymentRequestsView />}
           {activeView === "docs" && <DocsView />}
           {activeView === "settings" && <SettingsView identity={identity} />}

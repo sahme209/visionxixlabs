@@ -156,3 +156,29 @@ export async function dispatchWorkflow(input: DispatchWorkflowInput): Promise<Gi
   if (!result.ok) return { ok: false, error: `workflow_dispatch_failed: ${result.error}` };
   return result;
 }
+
+export interface LatestWorkflowRunInput {
+  owner: string;
+  repo: string;
+  workflowFile: string;
+  installationToken: string;
+}
+
+export interface LatestWorkflowRun {
+  status: string;
+  conclusion: string | null;
+  htmlUrl: string;
+  createdAt: string;
+}
+
+/** Read-only — the newest run for a workflow file, or null if none exist yet. */
+export async function getLatestWorkflowRun(input: LatestWorkflowRunInput): Promise<GithubWriteResult<LatestWorkflowRun | null>> {
+  const result = await gh<{ workflow_runs: Array<{ status: string; conclusion: string | null; html_url: string; created_at: string }> }>(
+    `/repos/${encodeURIComponent(input.owner)}/${encodeURIComponent(input.repo)}/actions/workflows/${encodeURIComponent(input.workflowFile)}/runs?per_page=1`,
+    input.installationToken,
+  );
+  if (!result.ok) return { ok: false, error: result.error };
+  const run = result.data.workflow_runs[0];
+  if (!run) return { ok: true, data: null };
+  return { ok: true, data: { status: run.status, conclusion: run.conclusion, htmlUrl: run.html_url, createdAt: run.created_at } };
+}
