@@ -109,8 +109,23 @@ html[data-density="compact"] {
            hover:text-white hover:bg-white/[0.04] transition-all duration-150 cursor-pointer
            relative;
   }
+  /* Quiet current-page indicator — a left accent bar instead of a filled
+     pill, matching the same treatment applied to the Settings nav. No
+     background fill keeps the sidebar flat, consistent with the rest of
+     this pass toward Cursor's minimal settings/nav style. */
   .sidebar-item-active {
-    @apply text-white bg-white/[0.075] border border-white/[0.07];
+    @apply text-white;
+  }
+  .sidebar-item-active::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 2px;
+    height: 16px;
+    border-radius: 9999px;
+    background: #ffffff;
   }
 
   /* ── Metric / KPI cards ───────────────────────────────────────────── */
