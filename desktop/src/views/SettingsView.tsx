@@ -266,11 +266,21 @@ const PROVIDER_LABELS: Record<string, string> = {
 
 function ModelsSection() {
   const [providers, setProviders] = useState<Array<{ provider: string; configured: boolean; defaultModel: string }> | null>(null);
+  const [loadError, setLoadError] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
     void desktopClient.aiProviderStatus().then((result) => {
-      if (!cancelled && result.ok) setProviders(result.data);
+      if (cancelled) return;
+      if (result.ok) {
+        setProviders(result.data);
+      } else {
+        setLoadError(
+          result.error === "desktop_session_required"
+            ? "Your sign-in needs to refresh. Try signing out and back in."
+            : "Could not load provider availability. Try again later.",
+        );
+      }
     });
     return () => { cancelled = true; };
   }, []);
@@ -279,7 +289,8 @@ function ModelsSection() {
   return <div>
     <SectionHeading title="AI Provider Center" detail="Choose from models approved by your workspace. Axiom keeps provider credentials, routing rules, spend controls, and safety policy in the service—not on this device." />
     <Group label="Service-approved providers">
-      {providers === null && <ModelProviderRow name="Provider availability" detail="Checking the service-approved provider set." state="Checking" />}
+      {providers === null && loadError === null && <ModelProviderRow name="Provider availability" detail="Checking the service-approved provider set." state="Checking" />}
+      {loadError !== null && <ModelProviderRow name="Could not check provider availability" detail={loadError} state="Error" />}
       {providers !== null && configured.length === 0 && <ModelProviderRow name="No live provider enabled" detail="This workspace has no non-simulated provider enabled by the service. Add or approve a provider in the service before it can appear available here." state="Not enabled" />}
       {configured.map((provider) => (
         <ModelProviderRow
