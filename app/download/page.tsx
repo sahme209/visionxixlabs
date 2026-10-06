@@ -615,7 +615,7 @@ export default function DownloadPage() {
               <a
                 href={mounted ? primaryPlatform.href : "/download/preview"}
                 {...(mounted && primaryPlatform.available && primaryPlatform.fileName ? { download: primaryPlatform.fileName } : {})}
-                className="btn-amber-shimmer group inline-flex items-center justify-center gap-2.5 px-7 py-3.5 rounded-full text-sm font-semibold uppercase tracking-wide"
+                className="btn-white-shimmer group inline-flex items-center justify-center gap-2.5 px-7 py-3.5 rounded-full text-sm font-semibold uppercase tracking-wide"
               >
                 <ArrowDownTrayIcon className="h-4 w-4" />
                 {mounted && primaryPlatform.available ? `Download for ${primaryPlatform.label}` : "Check current platform release"}

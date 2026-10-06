@@ -233,7 +233,7 @@ export default function ReleaseOpsPage() {
               <AnimatedButton
                 href="/download"
                 variant="primary"
-                className="btn-amber-shimmer relative z-10 rounded-full text-zinc-900 font-semibold"
+                className="btn-white-shimmer relative z-10 rounded-full text-zinc-900 font-semibold"
               >
                 Open Command Center
                 <ArrowRightIcon className="ml-2 h-4 w-4" />
@@ -514,7 +514,7 @@ export default function ReleaseOpsPage() {
                   <div className="flex flex-wrap gap-3">
                     <Link
                       href="/download"
-                      className="btn-amber-shimmer inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-semibold"
+                      className="btn-white-shimmer inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-semibold"
                     >
                       <CommandLineIcon className="h-4 w-4" />
                       Download Axiom
@@ -609,7 +609,7 @@ export default function ReleaseOpsPage() {
             <div className="flex flex-wrap items-center justify-center gap-4 mb-8">
               <Link
                 href="/download"
-                className="btn-amber-shimmer group inline-flex items-center gap-2.5 px-7 py-3.5 rounded-full text-sm font-semibold uppercase tracking-wide"
+                className="btn-white-shimmer group inline-flex items-center gap-2.5 px-7 py-3.5 rounded-full text-sm font-semibold uppercase tracking-wide"
               >
                 Open Command Center
                 <ArrowRightIcon className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />

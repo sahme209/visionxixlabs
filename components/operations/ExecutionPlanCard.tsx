@@ -258,7 +258,7 @@ export function ExecutionPlanCard({ plan, className = "", onApprove }: Execution
           <button
             onClick={onApprove}
             disabled={!allSafetyPassed}
-            className={`btn-amber-shimmer inline-flex items-center gap-2 px-5 py-1.5 rounded-full text-xs font-semibold uppercase tracking-wider ${
+            className={`btn-white-shimmer inline-flex items-center gap-2 px-5 py-1.5 rounded-full text-xs font-semibold uppercase tracking-wider ${
               allSafetyPassed ? "" : "opacity-40 cursor-not-allowed"
             }`}
           >

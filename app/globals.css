@@ -1880,7 +1880,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* ── Amber Gradient Button (Huly-style warm CTA) ─────────────── */
-@keyframes amber-shimmer-sweep {
+@keyframes white-shimmer-sweep {
   0% { background-position: -200% center; }
   100% { background-position: 200% center; }
 }
@@ -1895,7 +1895,7 @@ h1, h2, h3, h4, h5, h6 {
    tiny scale on hover — refined huly.io vocabulary, not flat dead.
    The ::after pseudo runs a slow sheen sweep across the pill so it
    still feels alive even at rest. */
-.btn-amber-shimmer {
+.btn-white-shimmer {
   position: relative;
   overflow: hidden;
   background: #ffffff;
@@ -1906,7 +1906,7 @@ h1, h2, h3, h4, h5, h6 {
   text-shadow: none;
   transition: background-color 220ms ease, transform 220ms ease, box-shadow 220ms ease;
 }
-.btn-amber-shimmer::after {
+.btn-white-shimmer::after {
   content: "";
   position: absolute;
   inset: 0;
@@ -1918,11 +1918,11 @@ h1, h2, h3, h4, h5, h6 {
     transparent 70%
   );
   background-size: 250% 100%;
-  animation: amber-shimmer-sweep 6s ease-in-out infinite;
+  animation: white-shimmer-sweep 6s ease-in-out infinite;
   mix-blend-mode: overlay;
   pointer-events: none;
 }
-.btn-amber-shimmer:hover {
+.btn-white-shimmer:hover {
   background: #fafafa;
   transform: translateY(-1px);
   box-shadow: 0 12px 30px -12px rgba(255, 255, 255, 0.25);
@@ -1944,7 +1944,7 @@ h1, h2, h3, h4, h5, h6 {
     #fafafa 100%
   );
   background-size: 200% auto;
-  animation: amber-shimmer-sweep 3s ease-in-out infinite;
+  animation: white-shimmer-sweep 3s ease-in-out infinite;
 }
 
 /* ── Progressive Text Dimming (Huly pricing-style) ────────────── */
@@ -2268,7 +2268,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* ── Footer Warm Amber Orb ─────────────────────────────────────── */
-.footer-amber-orb {
+.footer-white-orb {
   position: absolute;
   width: 300px;
   height: 300px;
