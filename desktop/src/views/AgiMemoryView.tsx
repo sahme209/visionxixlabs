@@ -47,7 +47,7 @@ const KIND_LABEL: Record<string, string> = {
 
 const OUTCOME_CLASS: Record<string, string> = {
   ai_generated:    "bg-violet-500/15 text-violet-300 border-violet-500/25",
-  fallback_rules:  "bg-amber-500/15 text-amber-300 border-amber-500/25",
+  fallback_rules:  "bg-white/15 text-zinc-300 border-white/25",
   error:           "bg-rose-500/15 text-rose-300 border-rose-500/25",
 };
 
@@ -133,14 +133,14 @@ export function AgiMemoryView() {
       )}
 
       {!loading && errorBody?.error === "migration_pending" && (
-        <div className="glass-card p-4 border border-amber-500/30">
-          <p className="text-sm font-semibold text-amber-300 mb-1">Schema migration pending</p>
+        <div className="glass-card p-4 border border-white/30">
+          <p className="text-sm font-semibold text-zinc-300 mb-1">Schema migration pending</p>
           <p className="text-xs text-zinc-400">{errorBody.hint}</p>
         </div>
       )}
 
       {!loading && errorBody?.error === "auth_required" && (
-        <div className="glass-card p-4 text-sm text-amber-300 border border-amber-500/20">Sign in required.</div>
+        <div className="glass-card p-4 text-sm text-zinc-300 border border-white/20">Sign in required.</div>
       )}
 
       {data && data.entries.length === 0 && (
@@ -204,7 +204,7 @@ function MemoryRow({ entry }: { entry: Entry }) {
         </div>
       )}
       {entry.outcome !== "ai_generated" && entry.errorMessage && (
-        <p className="mt-1 text-[10px] font-mono text-amber-300">↳ {entry.errorMessage}</p>
+        <p className="mt-1 text-[10px] font-mono text-zinc-300">↳ {entry.errorMessage}</p>
       )}
       <p className="mt-0.5 text-[9.5px] font-mono text-zinc-600">{entry.targetKind} · {entry.targetId} · {entry.engineVersion}</p>
     </div>
@@ -230,7 +230,7 @@ function FilterPill({ label, active, onClick }: { label: string; active: boolean
 function Stat({ label, value, tone = "zinc" }: { label: string; value: string; tone?: "violet" | "amber" | "rose" | "zinc" }) {
   const cls = {
     violet:  "border-violet-500/30 text-violet-200",
-    amber:   "border-amber-500/20 text-amber-200",
+    amber:   "border-white/20 text-zinc-200",
     rose:    "border-rose-500/20 text-rose-200",
     zinc:    "border-zinc-700/40 text-zinc-200",
   }[tone];
@@ -345,7 +345,7 @@ function SummaryPanel({ targetKind }: { targetKind?: string }) {
         </div>
       </div>
       {summary.outcome !== "ai_generated" && summary.errorMessage && (
-        <p className="mt-1.5 text-[10px] font-mono text-amber-300">↳ {summary.errorMessage}</p>
+        <p className="mt-1.5 text-[10px] font-mono text-zinc-300">↳ {summary.errorMessage}</p>
       )}
       {err && <p className="mt-1 text-[10.5px] font-mono text-rose-300">✗ {err}</p>}
     </div>
@@ -399,7 +399,7 @@ function SummaryTimeline({ filterKind }: { filterKind: TargetKind | "all" }) {
   if (loading) return null;
   if (errorBody?.error === "migration_pending") {
     return (
-      <div className="glass-card p-3 border border-amber-500/20 text-[11.5px] text-amber-200">
+      <div className="glass-card p-3 border border-white/20 text-[11.5px] text-zinc-200">
         Timeline schema migration pending — run prisma migrate deploy.
       </div>
     );
@@ -681,7 +681,7 @@ function ChatPanel({ targetKind }: { targetKind?: string }) {
       )}
 
       {migrationPending && (
-        <p className="text-[10px] font-mono text-amber-300 mb-1">↳ chat history schema migration pending</p>
+        <p className="text-[10px] font-mono text-zinc-300 mb-1">↳ chat history schema migration pending</p>
       )}
 
       {err && <p className="text-[10.5px] font-mono text-rose-300 mb-1">✗ {err}</p>}
@@ -735,7 +735,7 @@ function ChatTurnRow({ turn, onDelete }: { turn: ChatTurn; onDelete?: () => void
         </div>
       )}
       {turn.answer.outcome !== "ai_generated" && turn.answer.errorMessage && (
-        <p className="mt-1 text-[10px] font-mono text-amber-300">↳ {turn.answer.errorMessage}</p>
+        <p className="mt-1 text-[10px] font-mono text-zinc-300">↳ {turn.answer.errorMessage}</p>
       )}
     </div>
   );

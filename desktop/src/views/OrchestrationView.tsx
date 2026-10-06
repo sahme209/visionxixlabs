@@ -353,7 +353,7 @@ export function OrchestrationView() {
         </section>
       )}
       {v1RunsError && (
-        <div className="rounded-lg border border-amber-500/30 bg-amber-500/[0.08] p-3 text-[11px] text-amber-200">
+        <div className="rounded-lg border border-white/30 bg-white/[0.08] p-3 text-[11px] text-zinc-200">
           v1 pipeline runs unavailable: <span className="font-mono">{v1RunsError}</span>
         </div>
       )}

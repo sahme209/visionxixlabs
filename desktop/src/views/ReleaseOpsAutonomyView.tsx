@@ -66,13 +66,13 @@ export function ReleaseOpsAutonomyView() {
         <div className="glass-card p-4 text-sm text-rose-300 border border-rose-500/20">{networkError}</div>
       )}
       {!loading && errorBody?.error === "migration_pending" && (
-        <div className="glass-card p-4 border border-amber-500/30">
-          <p className="text-sm font-semibold text-amber-300 mb-1">Schema migration pending</p>
+        <div className="glass-card p-4 border border-white/30">
+          <p className="text-sm font-semibold text-zinc-300 mb-1">Schema migration pending</p>
           <p className="text-xs text-zinc-400">{errorBody.hint}</p>
         </div>
       )}
       {!loading && errorBody?.error === "auth_required" && (
-        <div className="glass-card p-4 text-sm text-amber-300 border border-amber-500/20">Sign in required.</div>
+        <div className="glass-card p-4 text-sm text-zinc-300 border border-white/20">Sign in required.</div>
       )}
 
       {data && data.org.length === 0 && (
@@ -101,7 +101,7 @@ function TickCard({ tick }: { tick: OrgTick }) {
         <span className="text-[11px] font-mono text-zinc-300">{new Date(tick.generatedAtIso).toLocaleString()}</span>
         <span className="text-[10px] font-mono text-zinc-500">total {tick.totalRuns}</span>
         <span className="text-[10px] font-mono text-emerald-300">ok {tick.okRuns}</span>
-        <span className="text-[10px] font-mono text-amber-300">skip {tick.skippedRuns}</span>
+        <span className="text-[10px] font-mono text-zinc-300">skip {tick.skippedRuns}</span>
         <span className="text-[10px] font-mono text-rose-300">err {tick.errorRuns}</span>
       </div>
       <div className="grid grid-cols-4 gap-2">
@@ -124,7 +124,7 @@ function Engine({ label, runs }: { label: string; runs: { outcome: string }[] })
       <p className="text-[11px] font-mono">
         <span className="text-emerald-300">{ok}</span>
         <span className="text-zinc-500"> · </span>
-        <span className="text-amber-300">{skip}</span>
+        <span className="text-zinc-300">{skip}</span>
         <span className="text-zinc-500"> · </span>
         <span className="text-rose-300">{err}</span>
       </p>
@@ -135,7 +135,7 @@ function Engine({ label, runs }: { label: string; runs: { outcome: string }[] })
 function Stat({ label, value, tone = "zinc" }: { label: string; value: string; tone?: "emerald" | "amber" | "rose" | "zinc" }) {
   const cls = {
     emerald: "border-emerald-500/20 text-emerald-200",
-    amber:   "border-amber-500/20 text-amber-200",
+    amber:   "border-white/20 text-zinc-200",
     rose:    "border-rose-500/20 text-rose-200",
     zinc:    "border-zinc-700/40 text-zinc-200",
   }[tone];

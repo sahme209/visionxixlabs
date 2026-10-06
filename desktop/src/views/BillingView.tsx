@@ -86,7 +86,7 @@ export function BillingView() {
               <p className="text-[10px] font-mono text-zinc-500 uppercase tracking-[0.18em] mb-1">plan tier</p>
               <p className="text-[14px] font-mono text-zinc-200">{state.planTier}</p>
             </Card>
-            <Card className={`p-4 border ${state.nearLimit ? "border-amber-500/30" : "border-emerald-500/20"}`}>
+            <Card className={`p-4 border ${state.nearLimit ? "border-white/30" : "border-emerald-500/20"}`}>
               <p className="text-[10px] font-mono text-zinc-500 uppercase tracking-[0.18em] mb-1">quota status</p>
               <Badge tone={state.nearLimit ? "warning" : "success"}>
                 {state.nearLimit ? `${((state.ratio ?? 0) * 100).toFixed(0)}% — near limit` : state.monthlyLimit === null ? "unlimited" : "healthy"}
@@ -106,13 +106,13 @@ export function BillingView() {
             {state.monthlyLimit !== null && (
               <div className="h-2 bg-zinc-800 rounded-full overflow-hidden">
                 <div
-                  className={`h-full ${state.nearLimit ? "bg-amber-500" : "bg-emerald-500"}`}
+                  className={`h-full ${state.nearLimit ? "bg-zinc-500" : "bg-emerald-500"}`}
                   style={{ width: `${Math.min(100, (state.ratio ?? 0) * 100)}%` }}
                 />
               </div>
             )}
             {state.nearLimit && (
-              <p className="text-[11px] text-amber-300 mt-2">
+              <p className="text-[11px] text-zinc-300 mt-2">
                 You&apos;re near the monthly cap. Contact your workspace administrator to review plan limits.
               </p>
             )}

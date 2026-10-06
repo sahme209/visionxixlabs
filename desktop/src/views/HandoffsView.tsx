@@ -64,12 +64,12 @@ export function HandoffsView() {
       </div>
 
       {/* Boundary banner — desktop never bypasses approval */}
-      <div className="rounded-xl border border-amber-500/15 bg-amber-500/[0.04] p-4 flex gap-3">
-        <div className="w-8 h-8 rounded-lg bg-amber-500/15 border border-amber-500/25 flex items-center justify-center shrink-0 mt-0.5">
-          <ShieldIcon className="h-4 w-4 text-amber-300" />
+      <div className="rounded-xl border border-white/15 bg-white/[0.04] p-4 flex gap-3">
+        <div className="w-8 h-8 rounded-lg bg-white/15 border border-white/25 flex items-center justify-center shrink-0 mt-0.5">
+          <ShieldIcon className="h-4 w-4 text-zinc-300" />
         </div>
         <div className="text-xs text-zinc-300 leading-relaxed">
-          <span className="font-semibold text-amber-300">Approval-gated.</span> Desktop apply requires a persisted approval grant
+          <span className="font-semibold text-zinc-300">Approval-gated.</span> Desktop apply requires a persisted approval grant
           plus tenant policy allowance. Review and preview are always available; destructive operations
           are blocked locally until those gates pass.
         </div>
@@ -166,7 +166,7 @@ function tonePill(s: "neutral" | "running" | "success" | "warning" | "error"): s
   switch (s) {
     case "success": return "text-emerald-300 bg-emerald-500/10 border-emerald-500/20";
     case "running": return "text-violet-300 bg-violet-500/10 border-violet-500/20";
-    case "warning": return "text-amber-300 bg-amber-500/10 border-amber-500/20";
+    case "warning": return "text-zinc-300 bg-white/10 border-white/20";
     case "error":   return "text-red-300 bg-red-500/10 border-red-500/20";
     case "neutral": return "text-zinc-400 bg-zinc-700/30 border-zinc-700/40";
   }
@@ -174,7 +174,7 @@ function tonePill(s: "neutral" | "running" | "success" | "warning" | "error"): s
 
 function riskBadge(r: "low" | "medium" | "high"): string {
   if (r === "high")   return "text-red-300 bg-red-500/10 border-red-500/20";
-  if (r === "medium") return "text-amber-300 bg-amber-500/10 border-amber-500/20";
+  if (r === "medium") return "text-zinc-300 bg-white/10 border-white/20";
   return "text-emerald-300 bg-emerald-500/10 border-emerald-500/20";
 }
 

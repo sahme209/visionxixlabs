@@ -50,14 +50,14 @@ const KIND_LABEL: Record<string, string> = {
 const DECISION_CLASS: Record<Decision, string> = {
   pending:    "bg-violet-500/15 text-violet-300 border-violet-500/25",
   accepted:   "bg-emerald-500/15 text-emerald-300 border-emerald-500/25",
-  overridden: "bg-amber-500/15 text-amber-300 border-amber-500/25",
+  overridden: "bg-white/15 text-zinc-300 border-white/25",
   dismissed:  "bg-zinc-700/40 text-zinc-300 border-zinc-700/40",
   unknown:    "bg-zinc-700/40 text-zinc-400 border-zinc-700/40",
 };
 
 function agreementClass(score: number): string {
   if (score >= 80) return "bg-emerald-500/15 text-emerald-300 border-emerald-500/25";
-  if (score >= 60) return "bg-amber-500/15 text-amber-300 border-amber-500/25";
+  if (score >= 60) return "bg-white/15 text-zinc-300 border-white/25";
   return "bg-rose-500/15 text-rose-300 border-rose-500/25";
 }
 
@@ -106,13 +106,13 @@ export function AdvisorCouncilView() {
         <div className="glass-card p-4 text-sm text-rose-300 border border-rose-500/20">{networkError}</div>
       )}
       {!loading && errorBody?.error === "migration_pending" && (
-        <div className="glass-card p-4 border border-amber-500/30">
-          <p className="text-sm font-semibold text-amber-300 mb-1">Schema migration pending</p>
+        <div className="glass-card p-4 border border-white/30">
+          <p className="text-sm font-semibold text-zinc-300 mb-1">Schema migration pending</p>
           <p className="text-xs text-zinc-400">{errorBody.hint}</p>
         </div>
       )}
       {!loading && errorBody?.error === "auth_required" && (
-        <div className="glass-card p-4 text-sm text-amber-300 border border-amber-500/20">Sign in required.</div>
+        <div className="glass-card p-4 text-sm text-zinc-300 border border-white/20">Sign in required.</div>
       )}
 
       {data && (
@@ -195,7 +195,7 @@ function CouncilCard({ decision, onChanged }: { decision: CouncilView; onChanged
 
       <p className="text-[10px] font-mono text-zinc-500 mt-1">release {decision.releaseId} · engine {decision.engineVersion}</p>
       {decision.overrideKind && (
-        <p className="text-[11px] font-mono text-amber-300 mt-1">↳ override → {KIND_LABEL[decision.overrideKind] ?? decision.overrideKind}</p>
+        <p className="text-[11px] font-mono text-zinc-300 mt-1">↳ override → {KIND_LABEL[decision.overrideKind] ?? decision.overrideKind}</p>
       )}
       {decision.decisionNote && (
         <p className="text-[11px] font-mono text-zinc-400 mt-1 italic">↳ {decision.decisionNote}</p>
@@ -231,7 +231,7 @@ function CouncilCard({ decision, onChanged }: { decision: CouncilView; onChanged
             {busy === "accept" ? "…" : "Accept"}
           </button>
           <button type="button" onClick={() => decide("override")} disabled={busy !== null}
-            className="px-2 py-1 rounded border border-amber-500/30 bg-amber-500/[0.10] text-amber-200 hover:bg-amber-500/[0.18] disabled:opacity-50 disabled:cursor-wait">
+            className="px-2 py-1 rounded border border-white/30 bg-white/[0.10] text-zinc-200 hover:bg-white/[0.18] disabled:opacity-50 disabled:cursor-wait">
             {busy === "override" ? "…" : `Override → ${overrideKind}`}
           </button>
           <button type="button" onClick={() => decide("dismiss")} disabled={busy !== null}
@@ -248,7 +248,7 @@ function CouncilCard({ decision, onChanged }: { decision: CouncilView; onChanged
 function Stat({ label, value, tone = "zinc" }: { label: string; value: string; tone?: "emerald" | "amber" | "rose" | "zinc" }) {
   const cls = {
     emerald: "border-emerald-500/20 text-emerald-200",
-    amber:   "border-amber-500/20 text-amber-200",
+    amber:   "border-white/20 text-zinc-200",
     rose:    "border-rose-500/20 text-rose-200",
     zinc:    "border-zinc-700/40 text-zinc-200",
   }[tone];
@@ -379,7 +379,7 @@ type EnrichBody = { ok: true; data: { enrichment: EnrichmentView | null } } | { 
 
 const ENRICH_OUTCOME_CLASS: Record<string, string> = {
   ai_generated:    "bg-violet-500/15 text-violet-300 border-violet-500/25",
-  fallback_rules:  "bg-amber-500/15 text-amber-300 border-amber-500/25",
+  fallback_rules:  "bg-white/15 text-zinc-300 border-white/25",
   error:           "bg-rose-500/15 text-rose-300 border-rose-500/25",
 };
 
@@ -488,7 +488,7 @@ function AiRationaleCard({ decisionId }: { decisionId: string }) {
         </div>
       </div>
       {enrichment.outcome !== "ai_generated" && enrichment.errorMessage && (
-        <p className="mt-1.5 text-[10px] font-mono text-amber-300">↳ {enrichment.errorMessage}</p>
+        <p className="mt-1.5 text-[10px] font-mono text-zinc-300">↳ {enrichment.errorMessage}</p>
       )}
       {err && <p className="mt-1 text-[10.5px] font-mono text-rose-300">✗ {err}</p>}
     </div>

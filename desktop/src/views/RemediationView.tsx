@@ -87,7 +87,7 @@ export function RemediationView() {
                 <div className="px-5 pb-5 grid grid-cols-2 gap-3 border-t border-axiom-border bg-axiom-bg/40">
                   <DetailCard title="Terraform preview" subtitle={b.terraform.fileName}>
                     {b.terraform.manualReviewRequired ? (
-                      <p className="text-[11px] text-amber-300">Manual review required — no canonical HCL template.</p>
+                      <p className="text-[11px] text-zinc-300">Manual review required — no canonical HCL template.</p>
                     ) : (
                       <pre className="text-[10.5px] font-mono text-zinc-300 bg-black/40 rounded-lg p-3 overflow-x-auto max-h-48 whitespace-pre">{b.terraform.hcl}</pre>
                     )}
@@ -96,7 +96,7 @@ export function RemediationView() {
 
                   <DetailCard title="CLI preview" subtitle={b.cli.cli}>
                     {b.cli.manualReviewRequired ? (
-                      <p className="text-[11px] text-amber-300">Manual review required — no canonical CLI template.</p>
+                      <p className="text-[11px] text-zinc-300">Manual review required — no canonical CLI template.</p>
                     ) : (
                       <pre className="text-[10.5px] font-mono text-zinc-300 bg-black/40 rounded-lg p-3 overflow-x-auto max-h-48 whitespace-pre-wrap">{b.cli.command}</pre>
                     )}
@@ -136,8 +136,8 @@ export function RemediationView() {
         })}
       </section>
 
-      <section className="rounded-xl border border-amber-500/20 bg-amber-500/[0.04] p-4">
-        <p className="text-[10px] font-mono text-amber-300 uppercase tracking-[0.22em] mb-1.5">// honest limitations</p>
+      <section className="rounded-xl border border-white/20 bg-white/[0.04] p-4">
+        <p className="text-[10px] font-mono text-zinc-300 uppercase tracking-[0.22em] mb-1.5">// honest limitations</p>
         <p className="text-[12px] text-zinc-300">This release does not execute remediation locally. Apply remains disabled until the installed runtime can verify a signed approval and tenant policy.</p>
       </section>
     </ViewShell>

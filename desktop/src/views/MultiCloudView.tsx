@@ -87,7 +87,7 @@ export function MultiCloudView({ onNavigate }: { onNavigate: (view: "connector-s
       {/* Phase 399 whoami header — workspace + monthly v1 API quota.
           Only renders when an API key is paired. */}
       {workspace && (
-        <Card className={`p-4 border ${workspace.nearLimit ? "border-amber-500/30" : "border-emerald-500/20"}`}>
+        <Card className={`p-4 border ${workspace.nearLimit ? "border-white/30" : "border-emerald-500/20"}`}>
           <div className="flex items-center justify-between gap-6 flex-wrap">
             <div>
               <p className="text-[10px] font-mono text-zinc-500 uppercase tracking-[0.18em] mb-1">workspace</p>

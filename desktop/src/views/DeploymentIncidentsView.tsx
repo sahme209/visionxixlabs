@@ -24,7 +24,7 @@ type ListBody =
 
 const SEVERITY_CLASS: Record<IncidentView["severity"], string> = {
   low:      "bg-emerald-500/15 text-emerald-300 border-emerald-500/25",
-  medium:   "bg-amber-500/15 text-amber-300 border-amber-500/25",
+  medium:   "bg-white/15 text-zinc-300 border-white/25",
   high:     "bg-rose-500/15 text-rose-300 border-rose-500/25",
   critical: "bg-rose-500/25 text-rose-200 border-rose-500/40",
   unknown:  "bg-zinc-700/40 text-zinc-400 border-zinc-700/40",
@@ -32,7 +32,7 @@ const SEVERITY_CLASS: Record<IncidentView["severity"], string> = {
 
 const STATUS_CLASS: Record<IncidentView["status"], string> = {
   open:      "bg-rose-500/15 text-rose-300 border-rose-500/25",
-  mitigated: "bg-amber-500/15 text-amber-300 border-amber-500/25",
+  mitigated: "bg-white/15 text-zinc-300 border-white/25",
   resolved:  "bg-emerald-500/15 text-emerald-300 border-emerald-500/25",
   wont_fix:  "bg-zinc-700/40 text-zinc-300 border-zinc-700/40",
   unknown:   "bg-zinc-700/40 text-zinc-400 border-zinc-700/40",
@@ -86,14 +86,14 @@ export function DeploymentIncidentsView() {
       )}
 
       {!loading && errorBody?.error === "migration_pending" && (
-        <div className="glass-card p-4 border border-amber-500/30">
-          <p className="text-sm font-semibold text-amber-300 mb-1">Schema migration pending</p>
+        <div className="glass-card p-4 border border-white/30">
+          <p className="text-sm font-semibold text-zinc-300 mb-1">Schema migration pending</p>
           <p className="text-xs text-zinc-400">{errorBody.hint}</p>
         </div>
       )}
 
       {!loading && errorBody?.error === "auth_required" && (
-        <div className="glass-card p-4 text-sm text-amber-300 border border-amber-500/20">Sign in required.</div>
+        <div className="glass-card p-4 text-sm text-zinc-300 border border-white/20">Sign in required.</div>
       )}
 
       {data && (
@@ -154,7 +154,7 @@ function IncidentCard({ incident, onChanged }: { incident: IncidentView; onChang
         {incident.status === "open" && (
           <>
             <button type="button" onClick={() => transition("mitigate")} disabled={busy !== null}
-              className="px-2 py-1 rounded border border-amber-500/30 bg-amber-500/[0.10] text-amber-200 hover:bg-amber-500/[0.18] disabled:opacity-50 disabled:cursor-wait">
+              className="px-2 py-1 rounded border border-white/30 bg-white/[0.10] text-zinc-200 hover:bg-white/[0.18] disabled:opacity-50 disabled:cursor-wait">
               {busy === "mitigate" ? "…" : "Mitigate"}
             </button>
             <button type="button" onClick={() => transition("resolve")} disabled={busy !== null}
@@ -188,7 +188,7 @@ function IncidentCard({ incident, onChanged }: { incident: IncidentView; onChang
 function Stat({ label, value, tone = "zinc" }: { label: string; value: string; tone?: "emerald" | "amber" | "rose" | "zinc" }) {
   const cls = {
     emerald: "border-emerald-500/20 text-emerald-200",
-    amber:   "border-amber-500/20 text-amber-200",
+    amber:   "border-white/20 text-zinc-200",
     rose:    "border-rose-500/20 text-rose-200",
     zinc:    "border-zinc-700/40 text-zinc-200",
   }[tone];

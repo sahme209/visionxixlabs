@@ -534,8 +534,8 @@ export function DeploymentRequestsView() {
                   Closure recorded{request.closedAt ? ` ${new Date(request.closedAt).toLocaleString()}` : ""}. This record documents a reported external outcome; it did not dispatch a deployment.
                 </div>
               ) : closingRequestId === request.id ? (
-                <div className="mt-3 rounded-lg border border-amber-500/20 bg-amber-500/5 p-3">
-                  <p className="text-xs font-medium text-amber-100">Record external outcome</p>
+                <div className="mt-3 rounded-lg border border-white/20 bg-white/5 p-3">
+                  <p className="text-xs font-medium text-zinc-100">Record external outcome</p>
                   <p className="mt-1 text-[10px] leading-4 text-zinc-500">Attach the external validation or change reference. This closes only the Axiom record; it cannot deploy, merge, or approve anything.</p>
                   <div className="mt-3 grid gap-2 sm:grid-cols-2">
                     <input value={closureEvidenceId} onChange={(event) => setClosureEvidenceId(event.target.value)} placeholder="Validation or change reference" className="rounded-lg border border-white/10 bg-black/20 px-3 py-2 text-xs text-white" />
@@ -608,8 +608,8 @@ export function DeploymentRequestsView() {
                 </div>
               )}
               {request.latestPlaybook && !generatedPlaybooks[request.id] && (
-                <div className={`mt-3 rounded-lg border px-3 py-2 ${request.latestPlaybook.status === "superseded" ? "border-amber-500/15 bg-amber-500/5" : "border-violet-500/15 bg-violet-500/5"}`}>
-                  <p className={`text-xs ${request.latestPlaybook.status === "superseded" ? "text-amber-100" : "text-violet-100"}`}>
+                <div className={`mt-3 rounded-lg border px-3 py-2 ${request.latestPlaybook.status === "superseded" ? "border-white/15 bg-white/5" : "border-violet-500/15 bg-violet-500/5"}`}>
+                  <p className={`text-xs ${request.latestPlaybook.status === "superseded" ? "text-zinc-100" : "text-violet-100"}`}>
                     {request.latestPlaybook.status === "superseded"
                       ? `Previous playbook v${request.latestPlaybook.version} was superseded by a request revision.`
                       : `Latest persisted playbook: v${request.latestPlaybook.version} · ${request.latestPlaybook.status.replaceAll("_", " ")}`}
@@ -665,7 +665,7 @@ export function DeploymentRequestsView() {
                       </li>
                     ))}
                   </ol>
-                  <p className="text-xs text-amber-200/80 mt-3">
+                  <p className="text-xs text-zinc-200/80 mt-3">
                     Generated and audited only. No merge, dispatch, release, or environment approval was performed.
                   </p>
                 </div>
@@ -688,8 +688,8 @@ function ReleaseContext({ request }: { request: RequestSummary }) {
 
   return (
     <div className="mt-3" aria-label="Release context">
-      <div className={`mb-2 rounded-lg border px-3 py-2 ${readiness ? "border-emerald-500/20 bg-emerald-500/5" : "border-amber-500/20 bg-amber-500/5"}`}>
-        <p className={`text-xs font-semibold ${readiness ? "text-emerald-100" : "text-amber-100"}`}>
+      <div className={`mb-2 rounded-lg border px-3 py-2 ${readiness ? "border-emerald-500/20 bg-emerald-500/5" : "border-white/20 bg-white/5"}`}>
+        <p className={`text-xs font-semibold ${readiness ? "text-emerald-100" : "text-zinc-100"}`}>
           {readiness ? "Ready for human approval" : "Not ready for human approval"}
         </p>
         <p className="mt-0.5 text-[10px] text-zinc-500">
@@ -698,7 +698,7 @@ function ReleaseContext({ request }: { request: RequestSummary }) {
             : `${context.readiness.blockers.length} recorded item${context.readiness.blockers.length === 1 ? "" : "s"} needs attention before approval.`}
         </p>
         {!readiness && (
-          <ul className="mt-2 space-y-1 text-[10px] text-amber-100/80">
+          <ul className="mt-2 space-y-1 text-[10px] text-zinc-100/80">
             {context.readiness.blockers.map((blocker) => <li key={blocker}>• {blocker}</li>)}
           </ul>
         )}
@@ -786,7 +786,7 @@ function ContextSignal({ label, value, detail, tone = "neutral" }: {
   const color = tone === "good"
     ? "border-emerald-500/20 bg-emerald-500/5"
     : tone === "attention"
-    ? "border-amber-500/20 bg-amber-500/5"
+    ? "border-white/20 bg-white/5"
     : "border-white/5 bg-white/[0.02]";
   return (
     <div className={`rounded-lg border px-3 py-2 ${color}`}>

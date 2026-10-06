@@ -47,7 +47,7 @@ const KIND_LABEL: Record<ProposalKind, string> = {
 const SEVERITY_CLASS: Record<ProposalView["severity"], string> = {
   critical: "bg-rose-500/25 text-rose-200 border-rose-500/40",
   high:     "bg-rose-500/15 text-rose-300 border-rose-500/25",
-  medium:   "bg-amber-500/15 text-amber-300 border-amber-500/25",
+  medium:   "bg-white/15 text-zinc-300 border-white/25",
   low:      "bg-emerald-500/15 text-emerald-300 border-emerald-500/25",
   unknown:  "bg-zinc-700/40 text-zinc-400 border-zinc-700/40",
 };
@@ -128,13 +128,13 @@ export function PolicyProposalsView() {
         <div className="glass-card p-4 text-sm text-rose-300 border border-rose-500/20">{networkError}</div>
       )}
       {!loading && errorBody?.error === "migration_pending" && (
-        <div className="glass-card p-4 border border-amber-500/30">
-          <p className="text-sm font-semibold text-amber-300 mb-1">Schema migration pending</p>
+        <div className="glass-card p-4 border border-white/30">
+          <p className="text-sm font-semibold text-zinc-300 mb-1">Schema migration pending</p>
           <p className="text-xs text-zinc-400">{errorBody.hint}</p>
         </div>
       )}
       {!loading && errorBody?.error === "auth_required" && (
-        <div className="glass-card p-4 text-sm text-amber-300 border border-amber-500/20">Sign in required.</div>
+        <div className="glass-card p-4 text-sm text-zinc-300 border border-white/20">Sign in required.</div>
       )}
 
       {data && (
@@ -267,7 +267,7 @@ function ProposalCard({ proposal, onChanged }: { proposal: ProposalView; onChang
 function Stat({ label, value, tone = "zinc" }: { label: string; value: string; tone?: "emerald" | "amber" | "rose" | "zinc" }) {
   const cls = {
     emerald: "border-emerald-500/20 text-emerald-200",
-    amber:   "border-amber-500/20 text-amber-200",
+    amber:   "border-white/20 text-zinc-200",
     rose:    "border-rose-500/20 text-rose-200",
     zinc:    "border-zinc-700/40 text-zinc-200",
   }[tone];

@@ -199,8 +199,8 @@ function AuthStatusBanner({ previewMode }: { previewMode: boolean }) {
       <div className="relative rounded-2xl border border-emerald-500/20 bg-gradient-to-br from-emerald-500/[0.08] via-cyan-500/[0.04] to-violet-500/[0.04] p-5 overflow-hidden animate-fade-in-up">
         <div className="relative flex items-start justify-between gap-6 flex-wrap">
           <div className="flex items-start gap-4">
-            <div className={`w-10 h-10 rounded-xl ${gatePass ? "bg-emerald-500/20" : "bg-amber-500/20"} flex items-center justify-center shrink-0`}>
-              <svg className={`h-5 w-5 ${gatePass ? "text-emerald-300" : "text-amber-300"}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <div className={`w-10 h-10 rounded-xl ${gatePass ? "bg-emerald-500/20" : "bg-white/20"} flex items-center justify-center shrink-0`}>
+              <svg className={`h-5 w-5 ${gatePass ? "text-emerald-300" : "text-zinc-300"}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 {gatePass
                   ? <><path d="M20 6 9 17l-5-5"/></>
                   : <><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></>}
@@ -218,7 +218,7 @@ function AuthStatusBanner({ previewMode }: { previewMode: boolean }) {
               </h3>
               {whoami.gate ? (
                 <p className="text-[12px] text-zinc-400 leading-relaxed max-w-2xl">
-                  Release gate: <span className={`font-mono ${gatePass ? "text-emerald-300" : "text-amber-300"}`}>{gatePass ? "PASSED" : "BLOCKED"}</span>{" "}
+                  Release gate: <span className={`font-mono ${gatePass ? "text-emerald-300" : "text-zinc-300"}`}>{gatePass ? "PASSED" : "BLOCKED"}</span>{" "}
                   · pass rate <span className="font-mono text-zinc-300">{(whoami.gate.passRate * 100).toFixed(1)}%</span>{" "}
                   · {whoami.gate.summary}
                 </p>

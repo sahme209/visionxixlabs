@@ -26,10 +26,10 @@ const STATUS_TONE: Record<ConnectorHealthStatus, { tone: "success" | "warning" |
 
 const STATUS_DOT: Record<ConnectorHealthStatus, string> = {
   healthy:      "bg-emerald-400",
-  degraded:     "bg-amber-400",
-  stale:        "bg-amber-400",
+  degraded:     "bg-zinc-400",
+  stale:        "bg-zinc-400",
   auth_failed:  "bg-red-400",
-  rate_limited: "bg-amber-400",
+  rate_limited: "bg-zinc-400",
 };
 
 export function ConnectorHealthView() {
@@ -100,7 +100,7 @@ function Stat({
 }: { label: string; value: number; tone: "neutral" | "emerald" | "amber" | "red" }) {
   const cls =
     tone === "emerald" ? "border-emerald-500/30 bg-emerald-500/[0.06] text-emerald-100" :
-    tone === "amber"   ? "border-amber-500/30 bg-amber-500/[0.06] text-amber-100" :
+    tone === "amber"   ? "border-white/30 bg-white/[0.06] text-zinc-100" :
     tone === "red"     ? "border-red-500/30 bg-red-500/[0.06] text-red-100" :
                          "border-axiom-border bg-white/[0.02] text-zinc-300";
   return (

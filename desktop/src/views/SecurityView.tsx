@@ -82,7 +82,7 @@ export function SecurityView() {
       {gate && (
         <section className="space-y-3">
           <h2 className="text-xs font-mono text-zinc-500 uppercase tracking-[0.22em]">// quality gate · live</h2>
-          <Card className={`p-5 border ${gate.passed ? "border-emerald-500/20" : "border-amber-500/30"}`}>
+          <Card className={`p-5 border ${gate.passed ? "border-emerald-500/20" : "border-white/30"}`}>
             <div className="flex items-start justify-between gap-4">
               <div className="min-w-0">
                 <div className="flex items-center gap-2 mb-1.5">

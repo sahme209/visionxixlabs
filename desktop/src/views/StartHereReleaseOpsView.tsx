@@ -65,12 +65,12 @@ export function StartHereReleaseOpsView({ onNavigate }: { onNavigate?: (v: View)
         </div>
       </div>
 
-      <div className="glass-card p-4 border border-amber-500/20">
-        <h2 className="text-sm font-semibold text-amber-200 mb-2">Honest gaps</h2>
+      <div className="glass-card p-4 border border-white/20">
+        <h2 className="text-sm font-semibold text-zinc-200 mb-2">Honest gaps</h2>
         <ul className="space-y-1.5 text-[12.5px] text-zinc-300">
-          <li><span className="font-mono text-amber-300">Branch protection auto-sync</span> — paste-in JSON today; <code className="font-mono text-zinc-100">gh api</code> fetch lands with the App private key.</li>
-          <li><span className="font-mono text-amber-300">Installation-token repo discovery</span> — we capture the installation_id but don't yet call <code className="font-mono text-zinc-100">/installation/repositories</code>.</li>
-          <li><span className="font-mono text-amber-300">Slack notifications</span> — model + UI exist; outbound hop is a separate phase.</li>
+          <li><span className="font-mono text-zinc-300">Branch protection auto-sync</span> — paste-in JSON today; <code className="font-mono text-zinc-100">gh api</code> fetch lands with the App private key.</li>
+          <li><span className="font-mono text-zinc-300">Installation-token repo discovery</span> — we capture the installation_id but don't yet call <code className="font-mono text-zinc-100">/installation/repositories</code>.</li>
+          <li><span className="font-mono text-zinc-300">Slack notifications</span> — model + UI exist; outbound hop is a separate phase.</li>
         </ul>
       </div>
     </ViewShell>

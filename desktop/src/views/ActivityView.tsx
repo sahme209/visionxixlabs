@@ -128,7 +128,7 @@ function Stat({
   label, value, tone, sub,
 }: { label: string; value: string; tone: "neutral" | "warning" | "error"; sub?: string }) {
   const colorClass =
-    tone === "warning" ? "border-amber-500/30 bg-amber-500/[0.06] text-amber-200" :
+    tone === "warning" ? "border-white/30 bg-white/[0.06] text-zinc-200" :
     tone === "error"   ? "border-red-500/30 bg-red-500/[0.06] text-red-200" :
                          "border-axiom-border bg-white/[0.02] text-zinc-300";
   return (
@@ -211,10 +211,10 @@ function RecentVotesPanel({ votes }: { votes: ReadonlyArray<VoteRecord> }) {
 
 function QueueRetryPanel({ queue }: { queue: ReadonlyArray<QueuedVote> }) {
   return (
-    <Card className="p-0 overflow-hidden border-amber-500/30">
-      <div className="px-4 py-2.5 border-b border-amber-500/30 bg-amber-500/[0.05] flex items-center justify-between">
-        <p className="text-[11px] font-mono uppercase tracking-[0.18em] text-amber-200">Offline queue · awaiting retry</p>
-        <span className="text-[10px] font-mono text-amber-300">{queue.length}</span>
+    <Card className="p-0 overflow-hidden border-white/30">
+      <div className="px-4 py-2.5 border-b border-white/30 bg-white/[0.05] flex items-center justify-between">
+        <p className="text-[11px] font-mono uppercase tracking-[0.18em] text-zinc-200">Offline queue · awaiting retry</p>
+        <span className="text-[10px] font-mono text-zinc-300">{queue.length}</span>
       </div>
       <ul className="divide-y divide-axiom-border">
         {queue.map((q) => (
@@ -228,7 +228,7 @@ function QueueRetryPanel({ queue }: { queue: ReadonlyArray<QueuedVote> }) {
                 Attempts: {q.attempts}{q.lastError ? ` · ${q.lastError}` : ""}
               </div>
             </div>
-            <span className="text-[10px] font-mono text-amber-300">
+            <span className="text-[10px] font-mono text-zinc-300">
               enqueued {relativeTime(new Date(q.enqueuedAt))}
             </span>
           </li>
@@ -243,7 +243,7 @@ function RunStatusDot({ status }: { status: string }) {
     status === "succeeded"         ? "bg-emerald-400" :
     status === "failed"            ? "bg-red-400" :
     status === "running"           ? "bg-cyan-400 animate-pulse" :
-    status === "awaiting_approval" ? "bg-amber-400 animate-pulse" :
+    status === "awaiting_approval" ? "bg-zinc-400 animate-pulse" :
                                      "bg-zinc-500";
   return <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${cls}`} />;
 }

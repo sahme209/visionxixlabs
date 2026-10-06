@@ -28,7 +28,7 @@ type DetailResp = { ok: true; data: DetailData } | { ok: false; error: string; h
 
 const STATE_TONE: Record<ViewRow["state"], string> = {
   pass: "text-emerald-300", fail: "text-rose-300",
-  not_applicable: "text-zinc-500", unknown: "text-amber-300",
+  not_applicable: "text-zinc-500", unknown: "text-zinc-300",
 };
 
 export function BranchValidationView() {
@@ -110,8 +110,8 @@ export function BranchValidationView() {
         <div className="flex-1 min-w-0 overflow-y-auto space-y-3">
           {loadingDetail && <div className="glass-card p-4 text-sm text-zinc-400">Loading branch validation…</div>}
           {detail && !detail.ok && (
-            <div className="glass-card p-4 border border-amber-500/30">
-              <p className="text-sm font-semibold text-amber-300 mb-1">{detail.error}</p>
+            <div className="glass-card p-4 border border-white/30">
+              <p className="text-sm font-semibold text-zinc-300 mb-1">{detail.error}</p>
               {detail.hint && <p className="text-xs text-zinc-400">{detail.hint}</p>}
               {detail.error === "invalid_payload" && (
                 <p className="text-xs text-zinc-400 mt-2">
@@ -156,7 +156,7 @@ export function BranchValidationView() {
 function Stat({ label, value, tone = "zinc" }: { label: string; value: string; tone?: "emerald" | "amber" | "rose" | "zinc" }) {
   const cls = {
     emerald: "border-emerald-500/20 text-emerald-200",
-    amber:   "border-amber-500/20 text-amber-200",
+    amber:   "border-white/20 text-zinc-200",
     rose:    "border-rose-500/20 text-rose-200",
     zinc:    "border-zinc-700/40 text-zinc-200",
   }[tone];
@@ -276,7 +276,7 @@ function PolicyEvaluateButton({ releaseId }: { releaseId: string }) {
   }
 
   const verdictTone = (v: "clean" | "warnings_only" | "blocked") =>
-    v === "clean" ? "text-emerald-300" : v === "warnings_only" ? "text-amber-300" : "text-rose-300";
+    v === "clean" ? "text-emerald-300" : v === "warnings_only" ? "text-zinc-300" : "text-rose-300";
 
   const busy = outcome.kind === "running";
   return (
@@ -351,17 +351,17 @@ function ReadinessEvaluateButton({
   }
 
   const riskTone = (r: string) =>
-    r === "low" ? "text-emerald-300" : r === "medium" ? "text-amber-300" : r === "high" ? "text-orange-300" : "text-rose-300";
+    r === "low" ? "text-emerald-300" : r === "medium" ? "text-zinc-300" : r === "high" ? "text-orange-300" : "text-rose-300";
 
   const busy = outcome.kind === "running";
   return (
-    <div className="glass-card p-3 border border-amber-500/20 flex items-center gap-2 flex-wrap text-[11px] font-mono">
-      <span className="text-amber-300/70 uppercase tracking-[0.18em] text-[9px]">Readiness</span>
+    <div className="glass-card p-3 border border-white/20 flex items-center gap-2 flex-wrap text-[11px] font-mono">
+      <span className="text-zinc-300/70 uppercase tracking-[0.18em] text-[9px]">Readiness</span>
       <button
         type="button"
         disabled={busy}
         onClick={trigger}
-        className="px-2.5 py-1 rounded border border-amber-500/40 bg-amber-500/[0.12] font-semibold text-amber-100 hover:bg-amber-500/[0.20] disabled:opacity-50 disabled:cursor-wait transition-colors"
+        className="px-2.5 py-1 rounded border border-white/40 bg-white/[0.12] font-semibold text-zinc-100 hover:bg-white/[0.20] disabled:opacity-50 disabled:cursor-wait transition-colors"
       >
         {busy ? "Scoring…" : "Re-evaluate"}
       </button>

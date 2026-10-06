@@ -71,14 +71,14 @@ const DECISION_CLASS: Record<Decision, string> = {
 
 const OUTCOME_CLASS: Record<string, string> = {
   ai_generated:   "bg-violet-500/15 text-violet-300 border-violet-500/25",
-  fallback_rules: "bg-amber-500/15 text-amber-300 border-amber-500/25",
+  fallback_rules: "bg-white/15 text-zinc-300 border-white/25",
   error:          "bg-rose-500/15 text-rose-300 border-rose-500/25",
   unknown:        "bg-zinc-700/40 text-zinc-400 border-zinc-700/40",
 };
 
 function confidenceClass(c: number): string {
   if (c >= 80) return "bg-emerald-500/15 text-emerald-300 border-emerald-500/25";
-  if (c >= 60) return "bg-amber-500/15 text-amber-300 border-amber-500/25";
+  if (c >= 60) return "bg-white/15 text-zinc-300 border-white/25";
   return "bg-rose-500/15 text-rose-300 border-rose-500/25";
 }
 
@@ -180,13 +180,13 @@ export function AgiSuggestionsView() {
         <div className="glass-card p-4 text-sm text-rose-300 border border-rose-500/20">{networkError}</div>
       )}
       {!loading && errorBody?.error === "migration_pending" && (
-        <div className="glass-card p-4 border border-amber-500/30">
-          <p className="text-sm font-semibold text-amber-300 mb-1">Schema migration pending</p>
+        <div className="glass-card p-4 border border-white/30">
+          <p className="text-sm font-semibold text-zinc-300 mb-1">Schema migration pending</p>
           <p className="text-xs text-zinc-400">{errorBody.hint}</p>
         </div>
       )}
       {!loading && errorBody?.error === "auth_required" && (
-        <div className="glass-card p-4 text-sm text-amber-300 border border-amber-500/20">Sign in required.</div>
+        <div className="glass-card p-4 text-sm text-zinc-300 border border-white/20">Sign in required.</div>
       )}
 
       {data && data.suggestions.length === 0 && (
@@ -309,7 +309,7 @@ function Stat({ label, value, tone = "zinc" }: { label: string; value: string; t
   const cls = {
     violet:  "border-violet-500/30 text-violet-200",
     emerald: "border-emerald-500/20 text-emerald-200",
-    amber:   "border-amber-500/20 text-amber-200",
+    amber:   "border-white/20 text-zinc-200",
     rose:    "border-rose-500/20 text-rose-200",
     zinc:    "border-zinc-700/40 text-zinc-200",
   }[tone];

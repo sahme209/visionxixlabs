@@ -25,7 +25,7 @@ type StatusBody =
 
 const STATUS_CLASS: Record<InstallationView["status"], string> = {
   active:    "bg-emerald-500/15 text-emerald-300 border-emerald-500/25",
-  suspended: "bg-amber-500/15 text-amber-300 border-amber-500/25",
+  suspended: "bg-white/15 text-zinc-300 border-white/25",
   revoked:   "bg-rose-500/15 text-rose-300 border-rose-500/25",
   unknown:   "bg-zinc-700/40 text-zinc-400 border-zinc-700/40",
 };
@@ -66,14 +66,14 @@ export function GitHubAppView() {
       )}
 
       {!loading && errorBody?.error === "migration_pending" && (
-        <div className="glass-card p-4 border border-amber-500/30">
-          <p className="text-sm font-semibold text-amber-300 mb-1">Schema migration pending</p>
+        <div className="glass-card p-4 border border-white/30">
+          <p className="text-sm font-semibold text-zinc-300 mb-1">Schema migration pending</p>
           <p className="text-xs text-zinc-400">{errorBody.hint}</p>
         </div>
       )}
 
       {!loading && errorBody?.error === "auth_required" && (
-        <div className="glass-card p-4 text-sm text-amber-300 border border-amber-500/20">Sign in required.</div>
+        <div className="glass-card p-4 text-sm text-zinc-300 border border-white/20">Sign in required.</div>
       )}
 
       {data && (
@@ -93,8 +93,8 @@ export function GitHubAppView() {
               </a>
             </div>
           ) : (
-            <div className="glass-card p-4 border border-amber-500/30">
-              <p className="text-sm font-semibold text-amber-300 mb-1">Install URL not configured</p>
+            <div className="glass-card p-4 border border-white/30">
+              <p className="text-sm font-semibold text-zinc-300 mb-1">Install URL not configured</p>
               <p className="text-xs text-zinc-400">Set GITHUB_APP_SLUG in the deploy env to enable the one-click install.</p>
             </div>
           )}

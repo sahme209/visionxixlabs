@@ -36,8 +36,8 @@ export function ConnectorsView({ onNavigate }: { onNavigate: (view: View) => voi
         </p>
       </div>
 
-      <div role="status" className="rounded-xl border border-amber-500/25 bg-amber-500/[0.08] p-4">
-        <p className="text-sm font-semibold text-amber-200">Enrollment unavailable in this candidate</p>
+      <div role="status" className="rounded-xl border border-white/25 bg-white/[0.08] p-4">
+        <p className="text-sm font-semibold text-zinc-200">Enrollment unavailable in this candidate</p>
         <p className="mt-1 text-xs leading-5 text-zinc-400">
           A scoped, tenant-audited desktop connector-management endpoint is still required. No provider credential is requested, stored, or reported as connected from this screen.
         </p>
@@ -51,7 +51,7 @@ export function ConnectorsView({ onNavigate }: { onNavigate: (view: View) => voi
                 <h2 className={`text-base font-semibold ${provider.color}`}>{provider.name}</h2>
                 <p className="mt-1 text-xs font-mono text-zinc-500">{provider.auth}</p>
               </div>
-              <span className="rounded-full border border-amber-500/20 bg-amber-500/10 px-2 py-1 text-[9px] font-mono uppercase tracking-wider text-amber-300">
+              <span className="rounded-full border border-white/20 bg-white/10 px-2 py-1 text-[9px] font-mono uppercase tracking-wider text-zinc-300">
                 setup blocked
               </span>
             </div>
