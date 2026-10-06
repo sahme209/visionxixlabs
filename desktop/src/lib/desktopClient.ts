@@ -668,6 +668,33 @@ export class DesktopClient {
     return this.post("/api/desktop/environments/deploy", input);
   }
 
+  createAgentConversation(): Promise<ApiResult<{ id: string; title: string | null; createdAt: string }>> {
+    return this.post("/api/desktop/agent/conversations", {});
+  }
+
+  getAgentConversation(conversationId: string): Promise<ApiResult<{
+    id: string; title: string | null;
+    turns: Array<{ id: string; role: string; content: string; actionProposalId: string | null; createdAt: string }>;
+    actions: Array<{ id: string; toolName: string; argsJson: unknown; riskLevel: string; status: string; resultJson: unknown; errorMessage: string | null; createdAt: string }>;
+  }>> {
+    return this.get(`/api/desktop/agent/conversations/${encodeURIComponent(conversationId)}`);
+  }
+
+  sendAgentMessage(conversationId: string, message: string): Promise<ApiResult<{
+    reply: string;
+    proposal: { id: string; toolName: string; argsJson: unknown; riskLevel: string; status: string } | null;
+  }>> {
+    return this.post(`/api/desktop/agent/conversations/${encodeURIComponent(conversationId)}/messages`, { message });
+  }
+
+  approveAgentAction(actionId: string): Promise<ApiResult<{ id: string; status: string; resultJson: unknown; errorMessage: string | null }>> {
+    return this.post(`/api/desktop/agent/actions/${encodeURIComponent(actionId)}/approve`, {});
+  }
+
+  rejectAgentAction(actionId: string): Promise<ApiResult<{ id: string; status: string }>> {
+    return this.post(`/api/desktop/agent/actions/${encodeURIComponent(actionId)}/reject`, {});
+  }
+
   listIdentityProviders(): Promise<ApiResult<{
     providers: Array<{ id: string; protocol: string; status: string; issuerOrEntityId: string; managedDomains: string[]; requireMfaClaim: boolean; revokedAt: string | null }>;
   }>> {
