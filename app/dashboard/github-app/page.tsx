@@ -100,8 +100,17 @@ export default function GitHubAppPage() {
     setNetworkError(null);
     try {
       const response = await fetch("/api/dashboard/github-app/manifest", { credentials: "include" });
-      const body = await response.json() as { ok: boolean; data?: { manifest: Record<string, unknown>; createUrl: string } };
-      if (!body.ok || !body.data) throw new Error("GitHub App creation isn't available right now.");
+      const body = await response.json() as { ok: boolean; error?: string; data?: { manifest: Record<string, unknown>; createUrl: string } };
+      if (!body.ok || !body.data) {
+        const reason = body.error === "workspace_owner_required"
+          ? "Your account isn't recognized as this workspace's owner or admin, so GitHub App creation is blocked. If you believe this is wrong, try signing out and back in — this can happen if your workspace membership didn't finish setting up."
+          : body.error === "auth_required"
+            ? "Your sign-in has expired. Sign in again and retry."
+            : body.error === "trusted_origin_unavailable"
+              ? "The server's own app URL isn't configured correctly — this is a deployment configuration issue, not something you can fix here."
+              : "GitHub App creation isn't available right now.";
+        throw new Error(reason);
+      }
       const form = document.createElement("form");
       form.method = "POST";
       form.action = body.data.createUrl;
